@@ -325,6 +325,12 @@ spoton::spoton(void):QMainWindow()
   m_ui.listenerTransport->insertItem(0, tr("SCTP"));
   m_ui.neighborTransport->insertItem(0, tr("SCTP"));
 #endif
+#if SPOTON_GOLDBUG == 1
+  m_optionsUi.position->model()->setData
+    (m_optionsUi.position->model()->index(1, 0), 0, Qt::UserRole - 1);
+  m_optionsUi.position->model()->setData
+    (m_optionsUi.position->model()->index(2, 0), 0, Qt::UserRole - 1);
+#endif
   connect(this,
 	  SIGNAL(iconsChanged(void)),
 	  &m_encryptFile,
@@ -1984,6 +1990,8 @@ spoton::spoton(void):QMainWindow()
   if(m_settings.contains("gui/emailSplitter"))
     m_ui.emailSplitter->restoreState
       (m_settings.value("gui/emailSplitter").toByteArray());
+#else
+  m_ui.action_Minimal_Display->setChecked(true);
 #endif
 
   if(m_settings.contains("gui/listenersHorizontalSplitter"))
@@ -2194,7 +2202,11 @@ spoton::spoton(void):QMainWindow()
 
   slotSetIcons(m_optionsUi.icons->currentIndex());
 
+#if SPOTON_GOLDBUG == 0
   QSize size(m_settings.value("gui/tabIconSize", QSize(24, 24)).toSize());
+#else
+  QSize size(m_settings.value("gui/tabIconSize", QSize(32, 32)).toSize());
+#endif
 
   if(size == QSize(16, 16))
     m_optionsUi.iconsize->setCurrentIndex(0);
@@ -2204,8 +2216,13 @@ spoton::spoton(void):QMainWindow()
     m_optionsUi.iconsize->setCurrentIndex(3);
   else
     {
+#if SPOTON_GOLDBUG == 0
       m_optionsUi.iconsize->setCurrentIndex(1);
       size = QSize(24, 24);
+#else
+      m_optionsUi.iconsize->setCurrentIndex(2);
+      size = QSize(32, 32);
+#endif
     }
 
   m_ui.tab->setIconSize(size);

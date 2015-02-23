@@ -7686,7 +7686,7 @@ QPushButton:pressed {
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>683</width>
+                     <width>709</width>
                      <height>245</height>
                     </rect>
                    </property>
@@ -10978,21 +10978,9 @@ spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <widget class="QMenu" name="menu_Icons">
-     <property name="title">
-      <string>Icons</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Icons/icons.qrc">
-       <normaloff>:/nouve/icons.png</normaloff>:/nouve/icons.png</iconset>
-     </property>
-    </widget>
     <addaction name="action_Quit"/>
     <addaction name="separator"/>
     <addaction name="action_Minimal_Display"/>
-    <addaction name="separator"/>
-    <addaction name="menu_Icons"/>
-    <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="action_ResetSpotOn"/>
     <addaction name="separator"/>
@@ -11118,9 +11106,6 @@ spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&
    <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>Minimal Display</string>
    </property>
@@ -11146,7 +11131,7 @@ spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&
   </action>
   <action name="action_Options">
    <property name="text">
-    <string>Settings</string>
+    <string>&amp;Settings</string>
    </property>
   </action>
  </widget>

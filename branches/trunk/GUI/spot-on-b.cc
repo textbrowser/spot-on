@@ -4168,8 +4168,6 @@ void spoton::slotSetIcons(int index)
 #if SPOTON_GOLDBUG == 1
   m_ui.action_Quit->setIcon
     (QIcon(QString(":/%1/quit.png").arg(iconSet)));
-  m_ui.menu_Icons->setIcon
-    (QIcon(QString(":/%1/icons.png").arg(iconSet)));
 #endif
 
   QStringList list;

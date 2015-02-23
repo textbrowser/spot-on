@@ -54,8 +54,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>461</width>
-             <height>630</height>
+             <width>462</width>
+             <height>678</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -138,7 +138,7 @@
               <item>
                <widget class="QComboBox" name="iconsize">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>2</number>
                 </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToContents</enum>
@@ -198,7 +198,7 @@
               <item>
                <widget class="QComboBox" name="position">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToContents</enum>
@@ -758,8 +758,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>567</width>
-             <height>936</height>
+             <width>581</width>
+             <height>977</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1412,7 +1412,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>23</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
