@@ -2210,6 +2210,8 @@ spoton::spoton(void):QMainWindow()
 
   if(size == QSize(16, 16))
     m_optionsUi.iconsize->setCurrentIndex(0);
+  else if(size == QSize(24, 24))
+    m_optionsUi.iconsize->setCurrentIndex(1);
   else if(size == QSize(32, 32))
     m_optionsUi.iconsize->setCurrentIndex(2);
   else if(size == QSize(64, 64))
