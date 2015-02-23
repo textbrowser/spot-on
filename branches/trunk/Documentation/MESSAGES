@@ -1,0 +1,521 @@
+Messages
+
+Echo Chat
+Echoed? Yes
+
+Groups: 3
+Gemini Encryption Key
+{
+0 - 0000 (Base-64)
+EOL
+1 - Message (Base-64)
+}
+EOL
+{
+0 - Keyed (Gemini Hash Key) SHA-512 Message Code (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Groups: 4
+Public Key
+{
+0 - 0000 (Base-64)
+EOL
+1 - Encryption Key (Base-64)
+EOL
+2 - Hash Key (Base-64)
+EOL
+3 - Encryption Algorithm (Base-64)
+EOL
+4 - Hash Algorithm (Base-64)
+}
+EOL
+Encryption Key
+{
+0 - Dispatcher's SHA-512 Hash (Base-64)
+EOL
+1 - Name (Base-64)
+EOL
+2 - Message (Base-64)
+EOL
+3 - Sequence Number (Base-64)
+EOL
+4 - UTC Date (Base-64)
+EOL
+5 - Signature (Base-64)
+}
+EOL
+{
+0 - Keyed Message Code of the Second Group (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Echo Call
+Echoed? Yes
+
+Groups: 4
+Public Key
+{
+0 - 0000(a | c) (Base-64)
+EOL
+1 - Encryption Key (Base-64)
+EOL
+2 - Hash Key (Base-64)
+EOL
+3 - Encryption Algorithm (Base-64)
+EOL
+4 - Hash Algorithm (Base-64)
+}
+EOL
+Encryption Key
+{
+0 - Dispatcher's SHA-512 Hash (Base-64)
+EOL
+1 - Gemini Encryption Key (Base-64)
+EOL
+2 - Gemini Hash Key (Base-64)
+EOL
+3 - Timestamp (Base-64)
+EOL
+4 - Signature (Base-64)
+}
+EOL
+{
+0 - Keyed Message Code of the Second Group (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Groups: 3
+Gemini Encryption Key
+{
+0 - 0000b (Base-64)
+EOL
+1 - Dispatcher's SHA-512 Hash (Base-64)
+EOL
+2 - Gemini Encryption Key (Base-64)
+EOL
+3 - Gemini Hash Key (Base-64)
+EOL
+4 - Timestamp (Base-64)
+EOL
+5 - Signature (Base-64)
+}
+EOL
+{
+0 - Keyed (Gemini Hash Key) SHA-512 Message Code (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Echo Mail
+Echoed? Yes
+
+Groups: 7
+Public Key
+{
+0 - 0001a (Base-64)
+EOL
+1 - Encryption Key 1 (Base-64)
+EOL
+2 - Hash Key 1 (Base-64)
+EOL
+3 - Encryption Algorithm (Base-64)
+EOL
+4 - Hash Algorithm (Base-64)
+}
+EOL
+Encryption Key 1
+{
+0 - Dispatcher's SHA-512 Hash (Base-64)
+EOL
+1 - Recipient's SHA-512 Hash (Base-64)
+EOL
+2 - Signature (Base-64)
+}
+EOL
+Public Key
+{
+0 - 0001b (Base-64)
+EOL
+1 - Encryption Key 2 (Base-64)
+EOL
+2 - Hash Key 2 (Base-64)
+EOL
+3 - Encryption Algorithm (Base-64)
+EOL
+4 - Hash Algorithm (Base-64)
+}
+EOL
+Encryption Key 2
+{
+0 - Dispatcher's SHA-512 Hash (Base-64)
+EOL
+1 - Dispatcher's Name (Optional Gold Bug) (Base-64)
+EOL
+2 - Subject (Optional Gold Bug) (Base-64)
+EOL
+3 - Message (Optional Gold Bug) (Base-64)
+EOL
+4 - Attachment (Optional Gold Bug) (Base-64)
+EOL
+5 - Attachment Name (Optional Gold Bug) (Base-64)
+EOL
+6 - Signature (Optional Gold Bug) (Base-64)
+EOL
+7 - Gold Bug Used? (Base-64)
+}
+EOL
+{
+0 - Keyed 2 Message Code of the Fourth Group (Base-64)
+}
+EOL
+{
+0 - Keyed 1 Message Code of the Second Group (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Groups: 4, 7
+Public Key
+{
+0 - 0001b (Base-64)
+EOL
+1 - Encryption Key (Base-64)
+EOL
+2 - Hash Key (Base-64)
+EOL
+3 - Encryption Algorithm (Base-64)
+EOL
+4 - Hash Algorithm (Base-64)
+}
+EOL
+Encryption Key
+{
+0 - Dispatcher's SHA-512 Hash (Base-64)
+EOL
+1 - Dispatcher's Name (Optional Gold Bug) (Base-64)
+EOL
+2 - Subject (Optional Gold Bug) (Base-64)
+EOL
+3 - Message (Optional Gold Bug) (Base-64)
+EOL
+4 - Attachment (Optional Gold Bug) (Base-64)
+EOL
+5 - Attachment Name (Optional Gold Bug) (Base-64)
+EOL
+6 - Signature (Optional Gold Bug) (Base-64)
+EOL
+7 - Gold Bug Used? (Base-64)
+}
+EOL
+{
+0 - Keyed Message Code of the Second Group (Base-64)
+}
+EOL
+{
+0 - Optional Random Message (Base-64)
+}
+EOL
+{
+0 - Optional Keyed (Institution Hash Key)
+    Message Code of the Optional Random Message and the Recipient's Public
+    Key (Base-64)
+}
+EOL
+{
+0 - Optional Keyed (Institution Hash Key)
+    Message Code of the Preceding Five Groups (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Retrieve Mail
+Echoed? Yes
+
+Groups: 4
+Public Key
+{
+0 - 0002a (Base-64)
+EOL
+1 - Encryption Key (Base-64)
+EOL
+2 - Hash Key (Base-64)
+EOL
+3 - Encryption Algorithm (Base-64)
+EOL
+4 - Hash Algorithm (Base-64)
+}
+EOL
+Encryption Key
+{
+0 - Requester's SHA-512 Hash (Base-64)
+EOL
+1 - Random Message (Base-64)
+EOL
+2 - Timestamp (Base-64)
+EOL
+3 - Signature (Base-64)
+}
+EOL
+{
+0 - Keyed Message Code of the Second Group (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Groups: 3
+Institution Encryption Key
+{
+0 - 0002b (Base-64)
+EOL
+1 - Random Message (Base-64)
+EOL
+2 - Keyed (Institution Hash Key) Message Code of the Random Message
+    and the Requester's Public Key (Base-64)
+EOL
+3 - Random Message (Base-64)
+EOL
+4 - Timestamp (Base-64)
+EOL
+5 - Signature (Base-64)
+}
+EOL
+{
+0 - Keyed (Institution Hash Key) Message Code (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Key Exchange
+Echoed? No
+
+Message Type ("0011" or "0012")
+0 - Key Type (Base-64)
+EOL
+1 - Dispatcher's Name (Base-64)
+EOL
+2 - Dispatcher's Public Key (Base-64)
+EOL
+3 - Dispatcher's Public Key Signature (Base-64)
+EOL
+4 - Dispatcher's Signature Public Key (Base-64)
+EOL
+5 - Dispatcher's Signature Public Key Signature (Base-64)
+
+Participant Status
+Echoed? Yes
+
+Groups: 3
+Gemini Encryption Key
+{
+0 - 0013 (Base-64)
+EOL
+1 - Message (Base-64)
+}
+EOL
+{
+0 - Keyed (Gemini Hash Key) SHA-512 Message Code (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Groups: 4
+Public Key
+{
+0 - 0013 (Base-64)
+EOL
+1 - Encryption Key (Base-64)
+EOL
+2 - Hash Key (Base-64)
+EOL
+3 - Encryption Algorithm (Base-64)
+EOL
+4 - Hash Algorithm (Base-64)
+}
+EOL
+Encryption Key
+{
+0 - Dispatcher's SHA-512 Hash (Base-64)
+EOL
+1 - Name (Base-64)
+EOL
+2 - Status (Base-64)
+EOL
+3 - UTC Date (Base-64)
+EOL
+4 - Signature (Base-64)
+}
+EOL
+{
+0 - Keyed Message Code of the Second Group (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+UUID Exchange
+Echoed? No
+
+Message Type ("0014")
+UUID (Base-64)
+
+Echo Listener Publication
+Echoed? Yes
+
+Message Type ("0030")
+0 - IP Address (Base-64)
+EOL
+1 - Port (Base-64)
+EOL
+2 - Scope ID (Base-64)
+EOL
+3 - Transport (Base-64)
+EOL
+4 - Orientation (Base-64)
+
+Echo Buzz
+Echoed? Yes
+
+Groups: 2
+Symmetric Key
+{
+0 - 0040a (Base-64)
+EOL
+1 - Name (Base-64)
+EOL
+2 - ID (Base-64)
+}
+EOL
+{
+0 - Keyed Message Code (Base-64)
+}
+
+Groups: 2
+Symmetric Key
+{
+0 - 0040b (Base-64)
+EOL
+1 - Name (Base-64)
+EOL
+2 - ID (Base-64)
+EOL
+3 - Message (Base-64)
+}
+EOL
+{
+0 - Keyed Message Code (Base-64)
+}
+
+Account Authentication
+Echoed? No
+
+Message Type ("0050") (Client Request)
+0 - Keyed SHA-512 Hash (Base-64)
+EOL
+1 - Random Data (Base-64)
+
+Message Type ("0051") (Server Response)
+0 - Keyed SHA-512 Hash (Base-64)
+EOL
+1 - Random Data (Base-64)
+
+Message Type ("0052") (Server Authentication Request)
+0 (Base-64)
+
+StarBeam
+Echoed? Yes
+
+Groups: 3
+Symmetric Key
+{
+Optional Nova AES-256
+{
+0 - 0060 (Base-64)
+EOL
+1 - File Name (Base-64)
+EOL
+2 - Pulse Offset (Base-64)
+EOL
+3 - Data Size (Base-64)
+EOL
+4 - Total Size (Base-64)
+EOL
+5 - Pulse Data (Base-64)
+EOL
+6 - Pulse Size (Base-64)
+}
+Optional Nova SHA-512
+{
+0 - Keyed Message Code (Base-64)
+}
+}
+EOL
+{
+0 - Keyed SHA-512 Message Code (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Hash Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Buzz Magnet Share
+Echoed? No
+
+Message Type ("0065")
+0 - Buzz Magnet (Base-64)
+
+Message of the Day
+Echoed? No
+
+Message Type ("0070")
+MOTD (Base-64)
+
+Request Weather Station's Public Keys
+Echoed? No
+
+Message Type ("0080")
+0 (Base-64)

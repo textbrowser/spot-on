@@ -1,0 +1,4 @@
+1. Please create the spot_on_user database via createdb spot_on_user_db -E UTF8.
+   Replace user with an applicable value.
+2. Modify the spot_on_user in postgresql_create_schema.sql, if necessary.
+3. Log into the new database and execute \i postgresql_create_schema.sql.

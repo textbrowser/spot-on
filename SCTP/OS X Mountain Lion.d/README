@@ -1,0 +1,27 @@
+Note that support for Mountain Lion is preliminary at this time. Please report back all issues to tuexen@fh-muenster.de.
+Get the support extension
+SCTPSupport.kext.zip
+
+sudo cp -R SCTPSupport.kext /System/Library/Extensions/System.kext/PlugIns/
+sudo touch /System/Library/Extensions
+Wait a couple of minutes and reboot. Get the kernel extension
+SCTP.kext.zip
+
+sudo cp -R SCTP.kext /System/Library/Extensions/
+sudo touch /System/Library/Extensions
+You can load it using
+sudo kextload /System/Library/Extensions/SCTP.kext
+You can unload it using
+sudo kextunload /System/Library/Extensions/SCTP.kext
+
+Support files you need to install:
+socket.h
+
+sudo cp socket.h /usr/include/sys/
+sctp.h
+sctp_uio.h
+
+sudo cp sctp.h sctp_uio.h /usr/include/netinet/
+libsctp.dylib
+
+sudo cp libsctp.dylib /usr/lib/

@@ -1,0 +1,24 @@
+Requirements: Qt 4.8.x, libGeoIP, libcrypto, libeay, libgcrypt,
+libgpg-error, libssl. Qt 5.x is also supported.
+
+If header (h) or interface (ui) files have changed, please perform
+a distclean before building Spot-On.
+
+Absolute cleaning:
+make distclean or mingw32-make distclean
+
+FreeBSD:
+qmake -o Makefile spot-on.freebsd.pro
+gmake or make
+
+Linux:
+qmake -o Makefile spot-on.pro
+make
+
+OS X:
+qmake -spec macx-g++ -o Makefile spot-on.osx.pro
+make
+
+Windows:
+qmake -o Makefile spot-on.win.pro
+make or mingw32-make

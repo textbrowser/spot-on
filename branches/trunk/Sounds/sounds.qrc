@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+    	<file>buzz.wav</file>
+	<file>echo.wav</file>
+	<file>login.wav</file>
+	<file>receive.wav</file>
+	<file>send.wav</file>
+    </qresource>
+</RCC>
