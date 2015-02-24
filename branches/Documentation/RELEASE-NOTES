@@ -5,8 +5,8 @@
      The INI settings poptasticVerifyPopHostPeer and
      poptasticVerifySmtpHostPeer have been separated.
 3.   Links distribution.
-4.   Modified the SMP mechanism so that the other party is prevented
-     from setting future states.
+4.   Modified the SMP mechanism so that one party is prevented
+     from explicitly setting future states of another party.
 
 0.19 (02/22/2015)
 

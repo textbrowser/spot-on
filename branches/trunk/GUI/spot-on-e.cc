@@ -1126,3 +1126,37 @@ void spoton::slotLaunchKernelAfterAuthentication(bool state)
 
   settings.setValue("gui/launchKernelAfterAuth", state);
 }
+
+void spoton::slotInitializeSMP(void)
+{
+  QString hash("");
+  bool temporary = true;
+  int row = -1;
+
+  if((row = m_ui.participants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.participants->item
+	(row, 1); // OID
+
+      if(item)
+	temporary = item->data(Qt::UserRole).toBool();
+
+      item = m_ui.participants->item(row, 3); // public_key_hash
+
+      if(item)
+	hash = item->text();
+    }
+
+  if(hash.isEmpty())
+    return;
+  else if(temporary) // Temporary friend?
+    return; // Not allowed!
+
+  spoton_smp *smp = 0;
+
+  if(m_smps.contains(hash))
+    smp = m_smps.value(hash);
+
+  if(smp)
+    smp->initialize();
+}

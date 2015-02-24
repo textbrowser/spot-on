@@ -49,6 +49,7 @@ class spoton_smp
   QList<QByteArray> step1(bool *ok);
   bool passed(void) const;
   int step(void) const;
+  void initialize();
   void reset(void);
   void setGuess(const QString &guess);
 

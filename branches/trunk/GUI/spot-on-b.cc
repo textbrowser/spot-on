@@ -446,8 +446,7 @@ void spoton::slotReceivedKernelMessage(void)
 			}
 
 		      if(ok)
-			if(smp->step() < 4)
-			  sendSMPLinkToKernel(values, keyType, oid);
+			sendSMPLinkToKernel(values, keyType, oid);
 
 #if SPOTON_GOLDBUG == 1
 		      if(m_ui.tab->currentIndex() != 0)

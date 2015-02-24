@@ -380,6 +380,7 @@ class spoton: public QMainWindow
   void slotImportNeighbors(void);
   void slotImportPublicKeys(void);
   void slotImportUrls(void);
+  void slotInitializeSMP(void);
   void slotJoinBuzzChannel(void);
   void slotLaunchKernelAfterAuthentication(bool state);
   void slotLimitConnections(int value);

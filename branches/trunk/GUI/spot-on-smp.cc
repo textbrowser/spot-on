@@ -714,6 +714,19 @@ int spoton_smp::step(void) const
   return m_step;
 }
 
+void spoton_smp::initialize(void)
+{
+  gcry_mpi_t g = 0;
+
+  if(m_guess)
+    g = gcry_mpi_set(0, m_guess);
+
+  reset();
+
+  if(g)
+    m_guess = gcry_mpi_set(0, g);
+}
+
 void spoton_smp::reset(void)
 {
   gcry_mpi_release(m_a2);

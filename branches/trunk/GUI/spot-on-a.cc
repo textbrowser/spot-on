@@ -5981,6 +5981,9 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "chat");
       menu.addSeparator();
+      menu.addAction(tr("&Initialize the SMP machine."),
+		     this,
+		     SLOT(slotInitializeSMP(void)));
       menu.addAction(tr("&Set an SMP secret."),
 		     this,
 		     SLOT(slotPrepareSMP(void)));
