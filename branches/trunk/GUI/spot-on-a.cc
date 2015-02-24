@@ -1453,6 +1453,8 @@ spoton::spoton(void):QMainWindow()
   settings.remove("gui/keySize");
   settings.remove("gui/my_poptasticStatus");
   settings.remove("gui/poptasticName");
+  settings.remove("gui/poptasticVerifyPopHostPeer");
+  settings.remove("gui/poptasticVerifySmtpHostPeer");
   settings.remove("gui/rsaKeySize");
   settings.remove("gui/signatureKey");
 

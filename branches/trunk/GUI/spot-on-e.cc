@@ -139,10 +139,14 @@ void spoton::slotConfigurePoptastic(void)
   else
     m_poptasticSettingsUi.out_method->setCurrentIndex(1);
 
-  m_poptasticSettingsUi.in_verify->setChecked
-    (m_settings.value("gui/poptasticVerifyPopHostPeer", 0).toInt());
-  m_poptasticSettingsUi.out_verify->setChecked
-    (m_settings.value("gui/poptasticVerifySmtpHostPeer", 0).toInt());
+  m_poptasticSettingsUi.in_verify_host->setChecked
+    (m_settings.value("gui/poptasticVerifyPopHost", 0).toInt());
+  m_poptasticSettingsUi.in_verify_peer->setChecked
+    (m_settings.value("gui/poptasticVerifyPopPeer", 0).toInt());
+  m_poptasticSettingsUi.out_verify_host->setChecked
+    (m_settings.value("gui/poptasticVerifySmtpHost", 0).toInt());
+  m_poptasticSettingsUi.out_verify_peer->setChecked
+    (m_settings.value("gui/poptasticVerifySmtpPeer", 0).toInt());
 
   if(!protocols.contains("pop3s"))
     {
@@ -251,10 +255,14 @@ void spoton::slotConfigurePoptastic(void)
 	m_poptasticSettingsUi.in_username->text().toUtf8();
       m_settings["gui/poptasticRefreshInterval"] =
 	m_poptasticSettingsUi.poptasticRefresh->value();
-      m_settings["gui/poptasticVerifyPopHostPeer"] =
-	m_poptasticSettingsUi.in_verify->isChecked() ? 1 : 0;
-      m_settings["gui/poptasticVerifySmtpHostPeer"] =
-	m_poptasticSettingsUi.out_verify->isChecked() ? 1 : 0;
+      m_settings["gui/poptasticVerifyPopHost"] =
+	m_poptasticSettingsUi.in_verify_host->isChecked() ? 1 : 0;
+      m_settings["gui/poptasticVerifyPopPeer"] =
+	m_poptasticSettingsUi.in_verify_peer->isChecked() ? 1 : 0;
+      m_settings["gui/poptasticVerifySmtpHost"] =
+	m_poptasticSettingsUi.out_verify_host->isChecked() ? 1 : 0;
+      m_settings["gui/poptasticVerifySmtpPeer"] =
+	m_poptasticSettingsUi.out_verify_peer->isChecked() ? 1 : 0;
       settings.setValue("gui/disablePop3",
 			m_poptasticSettingsUi.in_method->
 			currentIndex() == 0 ? true : false);
@@ -268,11 +276,17 @@ void spoton::slotConfigurePoptastic(void)
 	("gui/poptasticRefreshInterval",
 	 m_poptasticSettingsUi.poptasticRefresh->value());
       settings.setValue
-	("gui/poptasticVerifyPopHostPeer",
-	 m_poptasticSettingsUi.in_verify->isChecked() ? 1 : 0);
+	("gui/poptasticVerifyPopHost",
+	 m_poptasticSettingsUi.in_verify_host->isChecked() ? 1 : 0);
       settings.setValue
-	("gui/poptasticVerifySmtpHostPeer",
-	 m_poptasticSettingsUi.out_verify->isChecked() ? 1 : 0);
+	("gui/poptasticVerifyPopPeer",
+	 m_poptasticSettingsUi.in_verify_peer->isChecked() ? 1 : 0);
+      settings.setValue
+	("gui/poptasticVerifySmtpHost",
+	 m_poptasticSettingsUi.out_verify_host->isChecked() ? 1 : 0);
+      settings.setValue
+	("gui/poptasticVerifySmtpPeer",
+	 m_poptasticSettingsUi.out_verify_peer->isChecked() ? 1 : 0);
 
       {
 	QSqlDatabase db = spoton_misc::database(connectionName);
@@ -504,13 +518,15 @@ void spoton::slotTestPoptasticPop3Settings(void)
 	      arg(m_poptasticSettingsUi.in_server_port->value());
 
 	  long verify = static_cast<long>
-	    (m_poptasticSettingsUi.in_verify->isChecked());
+	    (m_poptasticSettingsUi.in_verify_host->isChecked());
 
 	  if(verify)
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
 	  else
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
+	  verify = static_cast<long>
+	    (m_poptasticSettingsUi.in_verify_peer->isChecked());
 	  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
 	  if(index == 2) // TLS
@@ -624,13 +640,15 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 	    }
 
 	  long verify = static_cast<long>
-	    (m_poptasticSettingsUi.out_verify->isChecked());
+	    (m_poptasticSettingsUi.out_verify_host->isChecked());
 
 	  if(verify)
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
 	  else
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
+	  verify = static_cast<long>
+	    (m_poptasticSettingsUi.out_verify_peer->isChecked());
 	  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
 	  if(index == 2) // TLS
@@ -690,14 +708,16 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticSettingsUi.in_server_port->setValue(995);
   m_poptasticSettingsUi.in_ssltls->setCurrentIndex(2);
   m_poptasticSettingsUi.in_username->clear();
-  m_poptasticSettingsUi.in_verify->setChecked(false);
+  m_poptasticSettingsUi.in_verify_host->setChecked(false);
+  m_poptasticSettingsUi.in_verify_peer->setChecked(false);
   m_poptasticSettingsUi.out_method->setCurrentIndex(1);
   m_poptasticSettingsUi.out_password->clear();
   m_poptasticSettingsUi.out_server_address->clear();
   m_poptasticSettingsUi.out_server_port->setValue(587);
   m_poptasticSettingsUi.out_ssltls->setCurrentIndex(2);
   m_poptasticSettingsUi.out_username->clear();
-  m_poptasticSettingsUi.out_verify->setChecked(false);
+  m_poptasticSettingsUi.out_verify_host->setChecked(false);
+  m_poptasticSettingsUi.out_verify_peer->setChecked(false);
   m_poptasticSettingsUi.poptasticRefresh->setValue(5.00);
   m_poptasticSettingsUi.proxy->setChecked(false);
   m_poptasticSettingsUi.proxy_password->clear();
