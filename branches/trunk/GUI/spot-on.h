@@ -240,8 +240,7 @@ class spoton: public QMainWindow
   void sendKeysToKernel(void);
   void sendSMPLinkToKernel(const QList<QByteArray> &list,
 			   const QString &keyType,
-			   const QString &oid,
-			   const int step);
+			   const QString &oid);
   void sharePublicKeyWithParticipant(const QString &keyType);
   void showUrls(const QString &link, const QString &querystr);
   void updateListenersTable(const QSqlDatabase &db);

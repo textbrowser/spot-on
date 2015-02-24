@@ -326,13 +326,11 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  QList<QByteArray> values;
 		  QPointer<spoton_chatwindow> chat = 0;
-		  int step = 1;
 
 		  if(m_chatWindows.contains(list.value(0).toBase64()))
 		    chat = m_chatWindows.value(list.value(0).toBase64());
 
-		  if(spoton_misc::
-		     isValidSMPMagnet(list.value(2), values, &step))
+		  if(spoton_misc::isValidSMPMagnet(list.value(2), values))
 		    {
 		      QByteArray hash
 			(list.at(0)); /*
@@ -354,8 +352,7 @@ void spoton::slotReceivedKernelMessage(void)
 			 arg(now.toString("ss")));
 		      msg.append
 			(tr("<i>Received an SMP message "
-			    "(step %1) from %2...%3.</i>").
-			 arg(step).
+			    "from %2...%3.</i>").
 			 arg(hash.toBase64().mid(0, 16).
 			     constData()).
 			 arg(hash.toBase64().right(16).
@@ -400,14 +397,7 @@ void spoton::slotReceivedKernelMessage(void)
 			    }
 			}
 
-		      if(step == 2)
-			values = smp->step2(values, &ok);
-		      else if(step == 3)
-			values = smp->step3(values, &ok);
-		      else if(step == 4)
-			values = smp->step4(values, &ok, &passed);
-		      else if(step == 5)
-			smp->step5(values, &ok, &passed);
+		      values = smp->nextStep(values, &ok, &passed);
 
 		      if(smp->step() == 4 || smp->step() == 5)
 			{
@@ -455,7 +445,9 @@ void spoton::slotReceivedKernelMessage(void)
 			    }
 			}
 
-		      sendSMPLinkToKernel(values, keyType, oid, step + 1);
+		      if(ok)
+			if(smp->step() < 4)
+			  sendSMPLinkToKernel(values, keyType, oid);
 
 #if SPOTON_GOLDBUG == 1
 		      if(m_ui.tab->currentIndex() != 0)

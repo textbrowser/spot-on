@@ -122,8 +122,7 @@ class spoton_misc
 			       const QByteArray &signature,
 			       spoton_crypt *crypt);
   static bool isValidSMPMagnet(const QByteArray &magnet,
-			       QList<QByteArray> &values,
-			       int *step);
+			       QList<QByteArray> &values);
   static bool isValidStarBeamMagnet(const QByteArray &magnet);
   static bool isValidStarBeamMissingLinksMagnet(const QByteArray &magnet);
   static bool prepareUrlDistillersDatabase(void);

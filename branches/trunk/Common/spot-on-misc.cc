@@ -3542,8 +3542,7 @@ bool spoton_misc::prepareUrlKeysDatabase(void)
 }
 
 bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
-				   QList<QByteArray> &values,
-				   int *step)
+				   QList<QByteArray> &values)
 {
   QList<QByteArray> list;
   QStringList starts;
@@ -3559,31 +3558,13 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
   else
     goto done_label;
 
-  starts << "step="
-	 << "xt=";
+  starts << "xt=";
 
   while(!list.isEmpty())
     {
       QString str(list.takeFirst());
 
-      if(starts.contains("step=") && str.startsWith("step="))
-	{
-	  str.remove(0, 5);
-
-	  if(str.toInt() >= 2 && str.toInt() <= 5)
-	    {
-	      if(step)
-		*step = str.toInt();
-
-	      tokens += 1;
-	    }
-	  else
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	}
-      else if(str.startsWith("value="))
+      if(str.startsWith("value="))
 	{
 	  str.remove(0, 6);
 
@@ -3615,18 +3596,13 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
 	}
     }
 
-  if(tokens >= 3 && tokens <= 6)
+  if(tokens >= 2 && tokens <= 5)
     valid = true;
 
  done_label:
 
   if(!valid)
-    {
-      if(step)
-	*step = 1;
-
-      values.clear();
-    }
+    values.clear();
 
   return valid;
 }

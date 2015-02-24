@@ -44,16 +44,13 @@ class spoton_smp
   ~spoton_smp(void);
   static const unsigned int BITS = 1536;
   static void test(void);
+  QList<QByteArray> nextStep(const QList<QByteArray> &other,
+			     bool *ok, bool *passed );
   QList<QByteArray> step1(bool *ok);
-  QList<QByteArray> step2(const QList<QByteArray> &other, bool *ok);
-  QList<QByteArray> step3(const QList<QByteArray> &other, bool *ok);
-  QList<QByteArray> step4(const QList<QByteArray> &other, bool *ok,
-			  bool *passed);
   bool passed(void) const;
   int step(void) const;
   void reset(void);
   void setGuess(const QString &guess);
-  void step5(const QList<QByteArray> &other, bool *ok, bool *passed);
 
  private:
   bool m_passed;
@@ -69,6 +66,11 @@ class spoton_smp
   gcry_mpi_t m_qb;
   gcry_mpi_t generateRandomExponent(bool *ok);
   int m_step;
+  QList<QByteArray> step2(const QList<QByteArray> &other, bool *ok);
+  QList<QByteArray> step3(const QList<QByteArray> &other, bool *ok);
+  QList<QByteArray> step4(const QList<QByteArray> &other, bool *ok,
+			  bool *passed);
+  void step5(const QList<QByteArray> &other, bool *ok, bool *passed);
 };
 
 #endif

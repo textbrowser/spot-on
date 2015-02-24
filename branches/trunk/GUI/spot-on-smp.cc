@@ -60,7 +60,7 @@ spoton_smp::spoton_smp(void)
   m_passed = false;
   m_pb = 0;
   m_qb = 0;
-  m_step = 1;
+  m_step = 0;
 }
 
 spoton_smp::~spoton_smp()
@@ -68,6 +68,37 @@ spoton_smp::~spoton_smp()
   gcry_mpi_release(m_generator);
   gcry_mpi_release(m_modulus);
   reset();
+}
+
+QList<QByteArray> spoton_smp::nextStep(const QList<QByteArray> &other,
+				       bool *ok, bool *passed)
+{
+  /*
+  ** A submits the first exchange and transitions to the first state.
+  ** B receives A's information and transitions to the second state.
+  ** A receives B's information and transitions to the third state.
+  ** B receives A's information and transitions to the fourth state.
+  ** A receives B's information and transitions to the fifth state. 
+  */
+
+  if(m_step == 0)
+    return step2(other, ok);
+  else if(m_step == 1)
+    return step3(other, ok);
+  else if(m_step == 2)
+    return step4(other, ok, passed);
+  else if(m_step == 3)
+    step5(other, ok, passed);
+  else
+    {
+      if(ok)
+	*ok = false;
+
+      if(passed)
+	*passed = false;
+    }
+
+  return QList<QByteArray> ();
 }
 
 QList<QByteArray> spoton_smp::step1(bool *ok)
@@ -702,7 +733,7 @@ void spoton_smp::reset(void)
   m_passed = false;
   m_pb = 0;
   m_qb = 0;
-  m_step = 1;
+  m_step = 0;
 }
 
 void spoton_smp::setGuess(const QString &guess)
@@ -873,7 +904,7 @@ void spoton_smp::test(void)
       return;
     }
 
-  list = b.step2(list, &ok);
+  list = b.nextStep(list, &ok, &passed);
 
   if(!ok)
     {
@@ -881,7 +912,7 @@ void spoton_smp::test(void)
       return;
     }
 
-  list = a.step3(list, &ok);
+  list = a.nextStep(list, &ok, &passed);
 
   if(!ok)
     {
@@ -889,7 +920,7 @@ void spoton_smp::test(void)
       return;
     }
 
-  list = b.step4(list, &ok, &passed);
+  list = b.nextStep(list, &ok, &passed);
 
   if(!ok)
     {
@@ -902,7 +933,7 @@ void spoton_smp::test(void)
   else
     qDebug() << "Secrets are different from b's perspective.";
 
-  a.step5(list, &ok, &passed);
+  a.nextStep(list, &ok, &passed);
 
   if(!ok)
     {

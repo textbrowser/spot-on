@@ -1022,13 +1022,12 @@ void spoton::slotVerifySMPSecret(void)
   list = smp->step1(&ok);
 
   if(ok)
-    sendSMPLinkToKernel(list, keyType, oid, 2);
+    sendSMPLinkToKernel(list, keyType, oid);
 }
 
 void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
 				 const QString &keyType,
-				 const QString &oid,
-				 const int step)
+				 const QString &oid)
 {
   if(keyType.isEmpty())
     return;
@@ -1040,12 +1039,8 @@ void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
     return;
   else if(oid.isEmpty())
     return;
-  else if(step <= 0 || step > 5)
-    return;
 
   QString magnet("magnet:?");
-
-  magnet.append(QString("step=%1&").arg(step));
 
   for(int i = 0; i < list.size(); i++)
     magnet.append
