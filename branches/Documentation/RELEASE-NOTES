@@ -2,6 +2,8 @@
 
 1.   Modified default values of UI elements.
 2.   Ability to verify the Poptastic hosts and peers separately.
+     The INI settings poptasticVerifyPopHostPeer and
+     poptasticVerifySmtpHostPeer have been separated.
 3.   Links distribution.
 
 0.19 (02/22/2015)
