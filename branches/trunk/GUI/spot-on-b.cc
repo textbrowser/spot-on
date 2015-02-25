@@ -5808,6 +5808,10 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 	  this,
 	  SLOT(slotChatWindowDestroyed(void)));
   connect(chat,
+	  SIGNAL(initializeSMP(void)),
+	  this,
+	  SLOT(slotInitializeSMP(void)));
+  connect(chat,
 	  SIGNAL(messageSent(void)),
 	  this,
 	  SLOT(slotChatWindowMessageSent(void)));

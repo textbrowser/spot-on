@@ -72,6 +72,7 @@ class spoton_chatwindow: public QMainWindow
 		     const QString &id);
 
  signals:
+  void initializeSMP(void);
   void messageSent(void);
   void prepareSMP(void);
   void verifySMPSecret(void);

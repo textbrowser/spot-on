@@ -96,6 +96,9 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 
   QMenu *menu = new QMenu(this);
 
+  menu->addAction(tr("&Reset the SMP machine's internal state to s0."),
+		  this,
+		  SIGNAL(initializeSMP(void)));
   menu->addAction(tr("&Set an SMP secret."),
 		  this,
 		  SIGNAL(prepareSMP(void)));

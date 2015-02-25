@@ -2536,7 +2536,7 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "chat");
       menu->addSeparator();
-      menu->addAction(tr("&Initialize the SMP machine."),
+      menu->addAction(tr("&Reset the SMP machine's internal state to s0."),
 		      this,
 		      SLOT(slotInitializeSMP(void)));
       menu->addAction(tr("&Set an SMP secret."),
