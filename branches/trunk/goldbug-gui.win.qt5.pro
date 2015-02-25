@@ -31,7 +31,7 @@ QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
-			  -Wstrict-overflow=4
+			  -Wstrict-overflow=5
 QMAKE_DISTCLEAN += .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 INCLUDEPATH	+= . ..\\..\\. GUI ..\\..\\libSpotOn\\Include.win32 \

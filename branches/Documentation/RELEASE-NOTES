@@ -9,6 +9,7 @@
      from explicitly setting future states of another party.
 5.   Updated Qt products to version 5.4.1 on Windows.
 6.   Do not update status information in spoton_misc::saveGemini().
+7.   Maximized strict-overflow's level.
 
 0.19 (02/22/2015)
 

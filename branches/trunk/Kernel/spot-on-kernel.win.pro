@@ -33,7 +33,7 @@ QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
-			  -Wstrict-overflow=4
+			  -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 INCLUDEPATH	+= . ..\\. ..\\..\\..\\. ..\\..\\..\\libSpotOn\\Include.win32 \
                    ..\\..\\..\\libGeoIP\\Include.win32 \

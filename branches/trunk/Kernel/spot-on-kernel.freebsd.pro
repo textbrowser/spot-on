@@ -34,7 +34,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
-                          -Wstack-protector -Wstrict-overflow=4
+                          -Wstack-protector -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 INCLUDEPATH	+= . ../. ../../../.
 LIBS		+= -L../../../libNTRU -L../../../libSpotOn \
