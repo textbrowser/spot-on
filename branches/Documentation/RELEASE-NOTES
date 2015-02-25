@@ -8,6 +8,7 @@
 4.   Modified the SMP mechanism so that one party is prevented
      from explicitly setting future states of another party.
 5.   Updated Qt products to version 5.4.1 on Windows.
+6.   Do not update status information in spoton_misc::saveGemini().
 
 0.19 (02/22/2015)
 
