@@ -26,7 +26,7 @@ QMAKE_CXXFLAGS_RELEASE += -mtune=generic -fwrapv -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
-			  -Wstrict-overflow=4
+			  -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libspoton purge
 INCLUDEPATH	+= . ../. ../../../. ../../../libSpotOn/Include.win32 \
 		   u:/usr/local473/include
