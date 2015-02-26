@@ -968,6 +968,11 @@ void spoton::slotPrepareSMP(void)
 
   smp->reset();
   smp->setGuess(guess);
+
+  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
+
+  if(chat)
+    chat->setSMPVerified(false);
 }
 
 void spoton::slotVerifySMPSecret(void)
@@ -1159,4 +1164,9 @@ void spoton::slotInitializeSMP(void)
 
   if(smp)
     smp->initialize();
+
+  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
+
+  if(chat)
+    chat->setSMPVerified(false);
 }

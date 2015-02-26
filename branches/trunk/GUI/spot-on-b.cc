@@ -444,6 +444,8 @@ void spoton::slotReceivedKernelMessage(void)
 				chat->activateWindow();
 			    }
 			}
+		      else if(chat)
+			chat->setSMPVerified(false);
 
 		      if(ok)
 			sendSMPLinkToKernel(values, keyType, oid);
