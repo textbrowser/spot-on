@@ -26,3 +26,12 @@
 */
 
 #include "spot-on-urldistribution.h"
+
+spoton_urldistribution::spoton_urldistribution(QObject *parent):
+  QThread(parent)
+{
+}
+
+spoton_urldistribution::~spoton_urldistribution()
+{
+}

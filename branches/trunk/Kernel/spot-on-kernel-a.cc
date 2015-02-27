@@ -78,6 +78,7 @@ extern "C"
 #include "spot-on-neighbor.h"
 #include "spot-on-starbeam-reader.h"
 #include "spot-on-starbeam-writer.h"
+#include "spot-on-urldistribution.h"
 
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000
@@ -567,6 +568,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_guiServer = new spoton_gui_server(this);
   m_mailer = new spoton_mailer(this);
   m_starbeamWriter = new spoton_starbeam_writer(this);
+  m_urlDistribution = new spoton_urldistribution(this);
   connect(m_guiServer,
 	  SIGNAL(buzzMagnetReceivedFromUI(const qint64,
 					  const QByteArray &)),

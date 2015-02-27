@@ -27,4 +27,16 @@
 
 #ifndef _spoton_urldistribution_h_
 #define _spoton_urldistribution_h_
+
+#include <QThread>
+
+class spoton_urldistribution: public QThread
+{
+  Q_OBJECT
+
+ public:
+  spoton_urldistribution(QObject *parent);
+  ~spoton_urldistribution();
+};
+
 #endif
