@@ -66,7 +66,8 @@ HEADERS		= ../Common/spot-on-external-address.h \
 		  spot-on-sctp-server.h \
 		  spot-on-sctp-socket.h \
 		  spot-on-starbeam-reader.h \
-		  spot-on-starbeam-writer.h
+		  spot-on-starbeam-writer.h \
+		  spot-on-urldistribution.h
 
 SOURCES		= ../Common/spot-on-crypt.cc \
 		  ../Common/spot-on-crypt-ntru.cc \
@@ -83,7 +84,8 @@ SOURCES		= ../Common/spot-on-crypt.cc \
 		  spot-on-sctp-server.cc \
 		  spot-on-sctp-socket.cc \
 		  spot-on-starbeam-reader.cc \
-		  spot-on-starbeam-writer.cc
+		  spot-on-starbeam-writer.cc \
+		  spot-on-urldistribution.cc
 
 OBJECTIVE_HEADERS += ../Common/CocoaInitializer.h
 OBJECTIVE_SOURCES += ../Common/CocoaInitializer.mm
