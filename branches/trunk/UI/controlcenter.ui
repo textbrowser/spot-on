@@ -6956,7 +6956,7 @@
                 </property>
                 <item>
                  <property name="text">
-                  <string>Linear</string>
+                  <string>Simple Random Sampling</string>
                  </property>
                 </item>
                </widget>

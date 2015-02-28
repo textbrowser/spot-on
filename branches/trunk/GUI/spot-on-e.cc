@@ -844,12 +844,9 @@ void spoton::slotShareKeysWithKernel(const QString &link)
 
 void spoton::slotSaveUrlDistribution(int index)
 {
-  QString str("");
+  Q_UNUSED(index);
 
-  if(index == 0)
-    str = "linear";
-  else
-    str = "simple random";
+  QString str("simple random");
 
   m_settings["gui/urlDistribution"] = str;
 
