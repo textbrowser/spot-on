@@ -6945,8 +6945,7 @@ QPushButton:pressed {
           <item>
            <widget class="QGroupBox" name="groupBox_15">
             <property name="styleSheet">
-             <string notr="true">
-QGroupBox { 
+             <string notr="true">QGroupBox { 
 background-color:
 qlineargradient(spread:pad, 
 x1:0, y1:1, 
@@ -6965,9 +6964,6 @@ padding: 7px;
 
 
 </string>
-            </property>
-            <property name="title">
-             <string>Initial Setup</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_66">
              <item>
@@ -7686,7 +7682,7 @@ QPushButton:pressed {
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>709</width>
+                     <width>683</width>
                      <height>245</height>
                     </rect>
                    </property>
