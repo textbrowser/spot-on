@@ -1167,3 +1167,12 @@ void spoton::slotInitializeSMP(void)
   if(chat)
     chat->setSMPVerified(false);
 }
+
+void spoton::slotSaveRefreshEmail(bool state)
+{
+  m_settings["gui/refreshEmail"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/refreshEmail", state);
+}

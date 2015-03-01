@@ -12,7 +12,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../Icons/icons.qrc">
-    <normaloff>:/Logo/goldbug.png</normaloff>:/Logo/goldbug.png</iconset>
+    <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -54,8 +54,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>462</width>
-             <height>678</height>
+             <width>461</width>
+             <height>656</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -138,7 +138,7 @@
               <item>
                <widget class="QComboBox" name="iconsize">
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>1</number>
                 </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToContents</enum>
@@ -198,7 +198,7 @@
               <item>
                <widget class="QComboBox" name="position">
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToContents</enum>
@@ -409,6 +409,13 @@
                <property name="margin">
                 <number>5</number>
                </property>
+               <item>
+                <widget class="QCheckBox" name="refreshEmail">
+                 <property name="text">
+                  <string>&amp;Refresh containers after launch.</string>
+                 </property>
+                </widget>
+               </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_62">
                  <property name="spacing">
@@ -758,8 +765,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>581</width>
-             <height>977</height>
+             <width>567</width>
+             <height>936</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1412,7 +1419,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>27</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1453,6 +1460,7 @@
   <tabstop>enableChatEmoticons</tabstop>
   <tabstop>chatSendMethod</tabstop>
   <tabstop>chatUpdateInterval</tabstop>
+  <tabstop>refreshEmail</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
   <tabstop>emailRetrievalInterval</tabstop>
   <tabstop>listenersUpdateInterval</tabstop>

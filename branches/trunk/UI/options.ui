@@ -12,7 +12,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../Icons/icons.qrc">
-    <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
+    <normaloff>:/Logo/goldbug.png</normaloff>:/Logo/goldbug.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -55,7 +55,7 @@
              <x>0</x>
              <y>0</y>
              <width>461</width>
-             <height>654</height>
+             <height>656</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -410,6 +410,13 @@
                 <number>5</number>
                </property>
                <item>
+                <widget class="QCheckBox" name="refreshEmail">
+                 <property name="text">
+                  <string>&amp;Refresh containers after launch.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_62">
                  <property name="spacing">
                   <number>5</number>
@@ -757,9 +764,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-365</y>
-             <width>679</width>
-             <height>965</height>
+             <y>0</y>
+             <width>567</width>
+             <height>936</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1412,7 +1419,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1453,6 +1460,7 @@
   <tabstop>enableChatEmoticons</tabstop>
   <tabstop>chatSendMethod</tabstop>
   <tabstop>chatUpdateInterval</tabstop>
+  <tabstop>refreshEmail</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
   <tabstop>emailRetrievalInterval</tabstop>
   <tabstop>listenersUpdateInterval</tabstop>

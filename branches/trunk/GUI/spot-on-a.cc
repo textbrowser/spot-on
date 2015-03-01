@@ -452,6 +452,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveBuzzAutoJoin(bool)));
+  connect(m_optionsUi.refreshEmail,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveRefreshEmail(bool)));
   connect(m_ui.saveAttachment,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1772,6 +1776,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/postoffice_enabled", false).toBool());
   m_optionsUi.publishPeriodically->setChecked
     (m_settings.value("gui/publishPeriodically", false).toBool());
+  m_optionsUi.refreshEmail->setChecked
+    (m_settings.value("gui/refreshEmail", false).toBool());
   m_ui.saveCopy->setChecked
     (m_settings.value("gui/saveCopy", true).toBool());
   m_optionsUi.scrambler->setChecked
