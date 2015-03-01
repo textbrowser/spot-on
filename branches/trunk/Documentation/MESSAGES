@@ -472,19 +472,13 @@ Symmetric Key
 {
 Optional Nova AES-256
 {
-0 - 0060 (Base-64)
-EOL
-1 - File Name (Base-64)
-EOL
-2 - Pulse Offset (Base-64)
-EOL
-3 - Data Size (Base-64)
-EOL
-4 - Total Size (Base-64)
-EOL
-5 - Pulse Data (Base-64)
-EOL
-6 - Pulse Size (Base-64)
+0 - 0060
+1 - File Name
+2 - Pulse Offset
+3 - Data Size
+4 - Total Size
+5 - Pulse Data
+6 - Pulse Size
 }
 Optional Nova SHA-512
 {

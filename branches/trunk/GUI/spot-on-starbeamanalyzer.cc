@@ -268,6 +268,7 @@ void spoton_starbeamanalyzer::analyze(const QString &fileName,
     {
       QByteArray bytes(ps, 0);
       bool excessive = false;
+      bool first = true;
       bool interrupted = false;
       int percent = 0;
       int problems = 0;
@@ -298,6 +299,14 @@ void spoton_starbeamanalyzer::analyze(const QString &fileName,
 	      ** Potential problem.
 	      */
 
+	      if(first)
+		{
+		  if(pos - ps >= 0)
+		    emit potentialProblem(fileName, pos - ps);
+
+		  first = false;
+		}
+
 	      emit potentialProblem(fileName, pos);
 	    }
 
@@ -318,6 +327,7 @@ void spoton_starbeamanalyzer::analyze(const QString &fileName,
 	}
 
       file.close();
+      first = true;
 
       /*
       ** Now that we've reviewed the file, let's review shadow portions.
@@ -335,6 +345,14 @@ void spoton_starbeamanalyzer::analyze(const QString &fileName,
 	      {
 		excessive = true;
 		break;
+	      }
+
+	    if(first)
+	      {
+		if(pos - ps >= 0)
+		  emit potentialProblem(fileName, pos - ps);
+
+		first = false;
 	      }
 
 	    emit potentialProblem(fileName, pos);

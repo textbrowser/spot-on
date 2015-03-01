@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QDataStream>
 #include <QDir>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -94,59 +95,86 @@ void spoton_starbeam_writer::processData
   novas = m_novas;
   locker.unlock();
 
-  if(data.split('\n').size() != 7)
+  QByteArray d
+    (data.mid(0, data.length() -
+	      spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES));
+  QByteArray messageCode(data.mid(d.length()));
+  bool found = false;
+
+  for(int i = 0; i < novas.size(); i++)
     {
-      QByteArray d
-	(data.mid(0, data.length() -
-		  spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES));
-      QByteArray messageCode(data.mid(d.length()));
+      QByteArray bytes;
+      QByteArray computedHash;
+      bool ok = true;
+      spoton_crypt crypt
+	("aes256",
+	 "sha512",
+	 QByteArray(),
+	 novas.at(i).mid(0,
+			 static_cast<int> (spoton_crypt::
+					   cipherKeyLength("aes256"))),
+	 novas.at(i).mid(static_cast<int> (spoton_crypt::
+					   cipherKeyLength("aes256"))),
+	 0,
+	 0,
+	 QString(""));
 
-      for(int i = 0; i < novas.size(); i++)
+      computedHash = crypt.keyedHash(d, &ok);
+
+      if(!ok)
+	continue;
+
+      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+	 spoton_crypt::memcmp(computedHash, messageCode))
 	{
-	  QByteArray bytes;
-	  QByteArray computedHash;
-	  bool ok = true;
-	  spoton_crypt crypt
-	    ("aes256",
-	     "sha512",
-	     QByteArray(),
-	     novas.at(i).mid(0,
-			     static_cast<int> (spoton_crypt::
-					       cipherKeyLength("aes256"))),
-	     novas.at(i).mid(static_cast<int> (spoton_crypt::
-					       cipherKeyLength("aes256"))),
-	     0,
-	     0,
-	     QString(""));
+	  bytes = crypt.decrypted(d, &ok);
 
-	  computedHash = crypt.keyedHash(d, &ok);
-
-	  if(!ok)
-	    continue;
-
-	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
-	     spoton_crypt::memcmp(computedHash, messageCode))
+	  if(ok)
 	    {
-	      bytes = crypt.decrypted(d, &ok);
+	      found = true;
 
-	      if(ok)
+	      QDataStream stream(&bytes, QIODevice::ReadOnly);
+
+	      list.clear();
+
+	      for(int i = 0; i < 7; i++)
 		{
-		  list = bytes.split('\n');
+		  QByteArray a;
 
-		  for(int i = 0; i < list.size(); i++)
-		    list.replace(i, QByteArray::fromBase64(list.at(i)));
+		  stream >> a;
+		  list << a;
 
-		  break;
+		  if(stream.status() != QDataStream::Ok)
+		    {
+		      list.clear();
+		      break;
+		    }
 		}
+
+	      break;
 	    }
 	}
     }
-  else
-    {
-      list = data.split('\n');
 
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
+  if(!found)
+    {
+      QDataStream stream(&data, QIODevice::ReadOnly);
+
+      list.clear();
+
+      for(int i = 0; i < 7; i++)
+	{
+	  QByteArray a;
+
+	  stream >> a;
+	  list << a;
+
+	  if(stream.status() != QDataStream::Ok)
+	    {
+	      list.clear();
+	      break;
+	    }
+	}
     }
 
   if(list.value(0) != "0060")

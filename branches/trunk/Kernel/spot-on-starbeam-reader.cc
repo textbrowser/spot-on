@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QDataStream>
 #include <QDir>
 #include <QSqlQuery>
 
@@ -375,8 +376,10 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 
 	      if((rc = file.read(buffer.data(), buffer.length())) > 0)
 		{
+		  QByteArray bytes;
 		  QByteArray data(buffer.mid(0, static_cast<int> (rc)));
 		  QByteArray messageCode;
+		  QDataStream stream(&bytes, QIODevice::WriteOnly);
 		  int size = 0;
 		  spoton_crypt crypt(elements.value("ct").constData(),
 				     QString(""),
@@ -388,17 +391,16 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 
 		  data = qCompress(data, 9);
 		  size = data.length();
+		  stream << QByteArray("0060")
+			 << QFileInfo(fileName).fileName().toUtf8()
+			 << QByteArray::number(m_position)
+			 << QByteArray::number(size)
+			 << fileSize.toLatin1()
+			 << data
+			 << pulseSize.toLatin1();
 
 		  if(nova.isEmpty())
-		    data = crypt.encrypted
-		      (QByteArray("0060").toBase64() + "\n" +
-		       QFileInfo(fileName).fileName().toUtf8().
-		       toBase64() + "\n" +
-		       QByteArray::number(m_position).toBase64() + "\n" +
-		       QByteArray::number(size).toBase64() + "\n" +
-		       fileSize.toLatin1().toBase64() + "\n" +
-		       data.toBase64() + "\n" +
-		       pulseSize.toLatin1().toBase64(), &ok);
+		    data = crypt.encrypted(bytes, &ok);
 		  else
 		    {
 		      QPair<QByteArray, QByteArray> pair;
@@ -418,15 +420,7 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 					   0,
 					   QString(""));
 
-			data = crypt.encrypted
-			  (QByteArray("0060").toBase64() + "\n" +
-			   QFileInfo(fileName).fileName().toUtf8().
-			   toBase64() + "\n" +
-			   QByteArray::number(m_position).toBase64() + "\n" +
-			   QByteArray::number(size).toBase64() + "\n" +
-			   fileSize.toLatin1().toBase64() + "\n" +
-			   data.toBase64() + "\n" +
-			   pulseSize.toLatin1().toBase64(), &ok);
+			data = crypt.encrypted(bytes, &ok);
 
 			if(ok)
 			  data = data + crypt.keyedHash(data, &ok);
