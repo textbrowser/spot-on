@@ -5609,6 +5609,12 @@ void spoton::slotValidatePassphrase(void)
 				  true);
 		m_settings["gui/spot_on_neighbors_txt_processed"] = true;
 	      }
+
+	    if(m_optionsUi.refreshEmail->isChecked())
+	      {
+		populateMail();
+		refreshInstitutions();
+	      }
 	  }
       }
 

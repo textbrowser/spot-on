@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>386</width>
-                <height>427</height>
+                <width>766</width>
+                <height>488</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -781,7 +781,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>739</width>
+             <width>762</width>
              <height>560</height>
             </rect>
            </property>
@@ -1288,16 +1288,16 @@
                        <widget class="QLineEdit" name="emailName"/>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="clearOutgoing">
+                       <widget class="QPushButton" name="saveEmailName">
                         <property name="text">
-                         <string>Clear All</string>
+                         <string>Save</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="saveEmailName">
+                       <widget class="QPushButton" name="clearOutgoing">
                         <property name="text">
-                         <string>Save</string>
+                         <string>New Letter</string>
                         </property>
                        </widget>
                       </item>
@@ -1834,8 +1834,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>724</width>
-             <height>405</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2436,7 +2436,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>249</width>
+                     <width>240</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -3915,8 +3915,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>347</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -3969,8 +3969,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>635</width>
-                 <height>630</height>
+                 <width>752</width>
+                 <height>596</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4790,7 +4790,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>711</width>
+             <width>762</width>
              <height>1081</height>
             </rect>
            </property>
@@ -5927,7 +5927,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>455</width>
+             <width>762</width>
              <height>544</height>
             </rect>
            </property>
@@ -7458,8 +7458,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>241</width>
-             <height>151</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7889,8 +7889,8 @@
   <tabstop>mail</tabstop>
   <tabstop>mailMessage</tabstop>
   <tabstop>emailName</tabstop>
-  <tabstop>clearOutgoing</tabstop>
   <tabstop>saveEmailName</tabstop>
+  <tabstop>clearOutgoing</tabstop>
   <tabstop>emailWriteActionMenu</tabstop>
   <tabstop>emailParticipants</tabstop>
   <tabstop>outgoingSubject</tabstop>
