@@ -123,6 +123,7 @@ void spoton::slotPrepareUrlDatabases(void)
   progress.setLabelText(tr("Creating URL databases..."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle(tr("%1: Creating URL Databases").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
@@ -280,6 +281,7 @@ bool spoton::deleteAllUrls(void)
   progress.setLabelText(tr("Vacuuming URL databases..."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle(tr("%1: Vacuuming URL Databases").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
@@ -376,6 +378,7 @@ void spoton::slotGatherUrlStatistics(void)
   progress.setLabelText(tr("Gathering URL statistics..."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle(tr("%1: Gathering URL Statistics").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
@@ -508,6 +511,7 @@ void spoton::slotImportUrls(void)
 #endif
   progress.setLabelText(tr("Importing URLs..."));
   progress.setMinimum(0);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle(tr("%1: Importing URLs").
 			  arg(SPOTON_APPLICATION_NAME));
   progress.show();
@@ -1453,6 +1457,7 @@ void spoton::slotDeleteLink(const QUrl &u)
   progress.setLabelText(tr("Deleting URL keywords..."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle(tr("%1: Deleting URL Keywords").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();

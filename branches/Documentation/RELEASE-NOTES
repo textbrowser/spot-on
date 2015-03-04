@@ -1,18 +1,19 @@
-0.20 (03/01/2015)
+0.20 (03/14/2015)
 
 1.   Modified default values of UI elements.
 2.   Ability to verify the Poptastic hosts and peers separately.
      The INI settings poptasticVerifyPopHostPeer and
      poptasticVerifySmtpHostPeer have been separated.
 3.   Links distribution.
-4.   Modified the SMP mechanism so that one party is prevented
-     from explicitly setting future states of another party.
+4.   Modified the SMP mechanism so that the parties are prevented
+     from explicitly setting future states of other parties.
 5.   Updated Qt products to version 5.4.1 on Windows.
 6.   Do not update status information in spoton_misc::saveGemini().
 7.   Maximized strict-overflow's level.
 8.   Serialized the StarBeam data.
 9.   Modified the StarBeam analysis tool so that is records the
      missing pulse immediately preceding the first missed pulse.
+10.  Set window modality on progress dialogs.
 
 0.19 (02/22/2015)
 
