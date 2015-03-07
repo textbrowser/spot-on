@@ -2239,14 +2239,23 @@ spoton::spoton(void):QMainWindow()
   prepareContextMenuMirrors();
   show();
   update();
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_sb.status->setText(tr("Preparing databases. Please be patient."));
-  m_sb.status->repaint();
-  spoton_misc::prepareDatabases();
-  spoton_misc::prepareUrlDistillersDatabase();
-  spoton_misc::prepareUrlKeysDatabase();
-  m_sb.status->clear();
-  QApplication::restoreOverrideCursor();
+
+  if(!QSqlDatabase::isDriverAvailable("QSQLITE"))
+    QMessageBox::critical
+      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+       tr("The SQLite database driver QSQLITE is not available. "
+	  "This is a fatal flaw."));
+  else
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_sb.status->setText(tr("Preparing databases. Please be patient."));
+      m_sb.status->repaint();
+      spoton_misc::prepareDatabases();
+      spoton_misc::prepareUrlDistillersDatabase();
+      spoton_misc::prepareUrlKeysDatabase();
+      m_sb.status->clear();
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 spoton::~spoton()
