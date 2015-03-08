@@ -8,6 +8,11 @@
 #include "err.h"
 #include "arith.h"
 
+#ifdef __APPLE__
+#include <libkern/OSByteOrder.h> 
+#define htole64(x) OSSwapHostToLittleInt64(x)
+#endif
+
 #define NTRU_SPARSE_THRESH 20
 
 uint8_t ntru_num_bits(uint16_t n) {
