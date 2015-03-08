@@ -1427,8 +1427,6 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
   if(!m_privateKey || m_privateKeyLength <= 0)
     {
-      locker1.unlock();
-
       if(ok)
 	*ok = false;
 
@@ -2159,8 +2157,6 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
   if(!m_privateKey || m_privateKeyLength <= 0)
     {
-      locker1.unlock();
-
       if(ok)
 	*ok = false;
 
