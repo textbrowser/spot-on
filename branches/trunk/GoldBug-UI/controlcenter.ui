@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>679</width>
+    <width>720</width>
     <height>919</height>
    </rect>
   </property>
@@ -181,7 +181,7 @@ color: rgb(255, 255, 255);
                    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
@@ -262,7 +262,7 @@ QPushButton:pressed {
                   <item>
                    <widget class="QPushButton" name="copyrepleo_chat">
                     <property name="toolTip">
-                     <string>Copy the Chat-Repleo of one selected friend.</string>
+                     <string>Copy the Chat-Repleo of the selected friend.</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
@@ -382,7 +382,7 @@ background-position: top center; } </string>
                   <item>
                    <widget class="QPushButton" name="melodica">
                     <property name="toolTip">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; width=&quot;350&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;MELODICA: Call Friend with new Gemini&lt;br/&gt;(&lt;span style=&quot; text-decoration: underline;&quot;&gt;M&lt;/span&gt;ulti &lt;span style=&quot; text-decoration: underline;&quot;&gt;E&lt;/span&gt;ncrypted &lt;span style=&quot; text-decoration: underline;&quot;&gt;LO&lt;/span&gt;ng &lt;span style=&quot; text-decoration: underline;&quot;&gt;DI&lt;/span&gt;stance &lt;span style=&quot; text-decoration: underline;&quot;&gt;CA&lt;/span&gt;lling).&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;(Creates for selected friend an auto-Gemini at both sides for instant perfect forward secrecy (IPFS)). It is renewed whenever you click MELODICA, and not only once per online session.&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; width=&quot;350&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;MELODICA: Call Friend with new Gemini&lt;br/&gt;(&lt;span style=&quot; text-decoration: underline;&quot;&gt;M&lt;/span&gt;ulti &lt;span style=&quot; text-decoration: underline;&quot;&gt;E&lt;/span&gt;ncrypted &lt;span style=&quot; text-decoration: underline;&quot;&gt;LO&lt;/span&gt;ng &lt;span style=&quot; text-decoration: underline;&quot;&gt;DI&lt;/span&gt;stance &lt;span style=&quot; text-decoration: underline;&quot;&gt;CA&lt;/span&gt;lling).&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;(Creates for selected friend an auto-Gemini at both sides for instant perfect forward secrecy (IPFS)). It is renewed whenever you click MELODICA and not only once per online session.&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
@@ -429,7 +429,7 @@ QPushButton:pressed {
                      </sizepolicy>
                     </property>
                     <property name="toolTip">
-                     <string>Send message.</string>
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send the message.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
@@ -491,7 +491,7 @@ QPushButton:pressed {
                  </property>
                  <widget class="QTableWidget" name="participants">
                   <property name="toolTip">
-                   <string>Double-click for pop-up window.</string>
+                   <string>Double-click a friend for a pop-up window.</string>
                   </property>
                   <property name="verticalScrollBarPolicy">
                    <enum>Qt::ScrollBarAsNeeded</enum>
@@ -912,7 +912,7 @@ QPushButton:pressed {
              <item>
               <widget class="QPushButton" name="emptyTrash">
                <property name="toolTip">
-                <string>Empty trash.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Empty the trash.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -1402,6 +1402,9 @@ QPushButton:pressed {
                    </item>
                    <item>
                     <widget class="QPushButton" name="saveEmailName">
+                     <property name="toolTip">
+                      <string>Save my name.</string>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true">QPushButton {
  border: 2px solid gray;
@@ -1517,7 +1520,7 @@ QPushButton:pressed {
                        <item>
                         <widget class="QPushButton" name="copyrepleo_email">
                          <property name="toolTip">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy the E-Mail-Repleo of one selected friend.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy the E-Mail-Repleo of the selected friend.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">QPushButton {
@@ -1556,7 +1559,7 @@ QPushButton:pressed {
                        <item>
                         <widget class="QPushButton" name="clearOutgoing">
                          <property name="toolTip">
-                          <string>Clear All</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clear all.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">QPushButton {
@@ -1958,7 +1961,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QCheckBox" name="postofficeCheckBox">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;With enabling C/O service, you create a post office for your friends.&lt;/p&gt;&lt;p&gt;Two methods exist: define a common neighbor (e.g. Gretel and Hansel connect to a common server as a node and all three have e-mail keys shared), then the server stores the e-mails even if either Gretel or Hansel is offline.&lt;/p&gt;&lt;p&gt;Second, advanced method: create an institution and add the e-mail key of a friend to your node. In case your friend adds the magnet link for your institution as well to their node, your institution will save all emails for them (as well from senders to them).&lt;/p&gt;&lt;p&gt;The institution will work as an e-mail server for all those, who send their email keys to the institution and add the institutional magnet URI to their own client.&lt;/p&gt;&lt;p&gt;For test purposes one can use as institution e.g. the name &amp;quot;GBmail&amp;quot; and for the address &amp;quot;dotcom&amp;quot;:&lt;/p&gt;&lt;p&gt;magnet:?in=GBmail&amp;amp;ct=aes256&amp;amp;pa=dotcom&amp;amp;ht=sha512&amp;amp;xt=urn:institution&lt;/p&gt;&lt;p&gt;If a friend is doing the same, and the institution knows yours and your friends e-mail keys, you three are fine. This method does not require direct IP connections between you, your friend, or to the institution within the Echo network; nor must the institution share its e-email keys.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabling C/O service, you create a post office for your friends.&lt;/p&gt;&lt;p&gt;Two methods exist: define a common neighbor (e.g. Gretel and Hansel connect to a common server as a node and all three have e-mail keys shared), then the server stores the e-mails even if either Gretel or Hansel is offline.&lt;/p&gt;&lt;p&gt;Second, advanced method: create an institution and add the e-mail key of a friend to your node. In case your friend adds the magnet link for your institution as well to their node, your institution will save all emails for them (as well from senders to them).&lt;/p&gt;&lt;p&gt;The institution will work as an e-mail server for all those who send their email keys to the institution and add the institutional magnet URI to their own client.&lt;/p&gt;&lt;p&gt;For test purposes one can use as institution e.g. the name &amp;quot;GBmail&amp;quot; and for the address &amp;quot;dotcom&amp;quot;:&lt;/p&gt;&lt;p&gt;magnet:?in=GBmail&amp;amp;ct=aes256&amp;amp;pa=dotcom&amp;amp;ht=sha512&amp;amp;xt=urn:institution&lt;/p&gt;&lt;p&gt;If a friend is doing the same and the institution knows your and your friends e-mail keys, you three are fine. This method does not require direct IP connections between you, your friend, and to the institution within the Echo network; nor must the institution share its e-email keys.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
                   <string>&amp;Enable C/O service for your friends.</string>
@@ -2553,7 +2556,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLineEdit" name="demagnetize">
             <property name="toolTip">
-             <string>Demagnetize link.</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Demagnetize a link.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -3233,10 +3236,10 @@ QPushButton:pressed {
                <item>
                 <widget class="QLabel" name="label_83">
                  <property name="toolTip">
-                  <string>You get the Nova from a sender of a file.</string>
+                  <string>The sender of a file must notify you of the Nova.</string>
                  </property>
                  <property name="text">
-                  <string>Novas are a passphrase added to the magnet of the file. </string>
+                  <string>A Nova is a passphrase that offers an additional layer of authenticated encryption.</string>
                  </property>
                 </widget>
                </item>
@@ -3568,7 +3571,7 @@ QPushButton:pressed {
                     </sizepolicy>
                    </property>
                    <property name="toolTip">
-                    <string>The pieces (also called links) of a mosaic create the file.</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The pieces (also called links) of a mosaic define the file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
                     <string>&amp;Maximum Mosaic Size.</string>
@@ -3640,7 +3643,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QPushButton" name="etpSelectFile">
                    <property name="toolTip">
-                    <string>Select a file from your hard drive.</string>
+                    <string>Select a file.</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
@@ -3735,7 +3738,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QPushButton" name="generateNova">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle each pulse with an additional layer of AES-256 encryption. Do remember to notify all recipients of the key that you created for this transfer magnet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle each pulse with an additional layer of AES-256 encryption. Do remember to notify all recipients of the keys that you created for this transfer magnet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
@@ -3822,7 +3825,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QCheckBox" name="missingLinksCheckBox">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tools: StarBeam Analyzer. It allows to check if you received all links for a mosaic. If not, send your friend the &amp;quot;missing links magnet&amp;quot; and they will transfer only the missing links of the file again. The hash comparison with your friend allows to check if you have the same file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tools: StarBeam Analyzer. It allows to check if you received all links for a mosaic. If not, send your friend the &amp;quot;missing links magnet&amp;quot; and they will transfer only the missing links of the file. The hash comparison with your friend allows you to check if you have the same file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
                     <string>&amp;Missing Links Magnet:</string>
@@ -3886,7 +3889,7 @@ QPushButton:pressed {
                  </property>
                  <widget class="QTableWidget" name="transmitted">
                   <property name="toolTip">
-                   <string>Uploads. Please unchecked paused after you have copied and sent the magnet to your receiving friend(s).</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uploads. Please uncheck &amp;quot;paused&amp;quot; after you have copied and sent the magnet(s) to your receiving friend(s).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="verticalScrollBarPolicy">
                    <enum>Qt::ScrollBarAsNeeded</enum>
@@ -4081,7 +4084,7 @@ QPushButton:pressed {
         <string/>
        </attribute>
        <attribute name="toolTip">
-        <string>Add Friends Key/Repleo</string>
+        <string>Add Friends E-Mail/Key/Repleo</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_14">
         <property name="spacing">
@@ -4295,7 +4298,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                <item>
                 <widget class="QRadioButton" name="addFriendSymmetricBundleRadio">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Repleo is the key of your friend encrypted with your public key.&lt;/p&gt;&lt;p&gt;In case you send your key first to your friend, they can decide to send their own key in plaintext or encrypted with your key. &lt;/p&gt;&lt;p&gt;This is called a Repleo, when the key is not sent in plaintext.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The Repleo contains your key pair encrypted with your friend's public key.&lt;/p&gt;&lt;p&gt;In case you send your key pair first to your friend, they can decide to send their own key pair in plaintext or encrypted with your key. &lt;/p&gt;&lt;p&gt;This is called a Repleo; the key is not sent in plaintext.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="layoutDirection">
                   <enum>Qt::LeftToRight</enum>
@@ -4345,7 +4348,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="overwriteMode">
@@ -4380,7 +4383,7 @@ p, li { white-space: pre-wrap; }
                <item>
                 <widget class="QPushButton" name="addFriend">
                  <property name="toolTip">
-                  <string>Add the key of your friend.</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the key(s) of your friend.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QPushButton {
@@ -4994,7 +4997,7 @@ color: rgb(255, 255, 255);</string>
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Harry, add this neighbor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add this neighbor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton#addNeighbor {
@@ -5105,7 +5108,7 @@ QPushButton:pressed {
         <string/>
        </attribute>
        <attribute name="toolTip">
-        <string>Create Chat/Listener Server</string>
+        <string>Create Listener Server</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <property name="spacing">
@@ -5408,7 +5411,7 @@ QPushButton:pressed {
                     <item>
                      <widget class="QCheckBox" name="permanentCertificate">
                       <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create a permanent certificate which identifies, &lt;/p&gt;&lt;p&gt;when an unknown neighbor connects &lt;/p&gt;&lt;p&gt;and the certificate is different from the known. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create a permanent certificate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
                        <string>Create Permanent Certificate</string>
@@ -5732,7 +5735,7 @@ background-position: top center; } </string>
                  <item>
                   <widget class="QPushButton" name="addListener">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Echoed Messaging and Presence Protocol (EMPP). Create own chat server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Echoed Messaging and Presence Protocol (EMPP).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton#addListener {
@@ -5768,7 +5771,7 @@ QPushButton#addListener:pressed {
                  <item>
                   <widget class="QPushButton" name="listenerAnnounce">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Go Live sends the listener information (that means your IP and port) to connected neighbors. Your peers will be able to connect if you have not set accounts for this listener.&lt;/p&gt;&lt;p&gt;Wilkie Twycross, apparition instructor in Hogwarts, shows regularly in a workshop about &amp;quot;Going Live with a listener&amp;quot;, how easy it is to set up a server for your friends with or without a chat account. Apparition is possible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Go Live sends the listener information to connected neighbors. Your peers will be able to connect if you have not set accounts for this listener.&lt;/p&gt;&lt;p&gt;Wilkie Twycross, apparition instructor in Hogwarts, shows regularly in a workshop about &amp;quot;Going Live with a listener&amp;quot;, how easy it is to prepare a server for your friends with or without a chat account. Apparition is possible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton#listenerAnnounce {
@@ -5856,7 +5859,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QGroupBox" name="accountsGB">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Accounts prevent unknown nodes to connect and enable the creation of a graph of trust. The account name and the account password must contain at least thirty-two characters each.&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Accounts prevent unknown nodes from connecting and enable the creation of a graph of trust. The account name and the account password must contain at least thirty-two characters each.&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="title">
                   <string>Create Accounts for existing Listener Connections</string>
@@ -7682,8 +7685,8 @@ QPushButton:pressed {
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>683</width>
-                     <height>245</height>
+                     <width>799</width>
+                     <height>239</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_67">
@@ -8897,7 +8900,7 @@ QPushButton:pressed {
              <item>
               <widget class="QCheckBox" name="acceptChatKeys">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Accept that neighbors with Spot-On (e.g. servers) can send their key over IP to you. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Accept key pairs from neighbors. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Auto-Accept &amp;Chat-Keys via IP.</string>
@@ -9826,7 +9829,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QRadioButton" name="acceptPublishedDisconnected">
                  <property name="toolTip">
-                  <string>Selection this option if you would like to accept published listeners.</string>
+                  <string>Select this option if you would like to accept published listeners.</string>
                  </property>
                  <property name="text">
                   <string>&amp;Accept Published Listeners (Disconnected)</string>
@@ -10966,8 +10969,8 @@ spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>679</width>
-     <height>27</height>
+     <width>720</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -11095,7 +11098,7 @@ spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&
     <string>&amp;StarBeam Analyzer</string>
    </property>
    <property name="toolTip">
-    <string>StarBeam Analyzer: check for 100% and load the chunks if they are missing.</string>
+    <string>StarBeam Analyzer: discover missing links.</string>
    </property>
   </action>
   <action name="action_Minimal_Display">
