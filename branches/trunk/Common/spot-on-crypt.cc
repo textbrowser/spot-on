@@ -1418,6 +1418,9 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
     bool ok = true;
 
     initializePrivateKeyContainer(&ok);
+
+    if(!ok)
+      return QByteArray();
   }
 
   QReadLocker locker1(&m_privateKeyMutex);
@@ -2147,6 +2150,9 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
     bool ok = true;
 
     initializePrivateKeyContainer(&ok);
+
+    if(!ok)
+      return QByteArray();
   }
 
   QReadLocker locker1(&m_privateKeyMutex);
@@ -2223,10 +2229,10 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       goto done_label;
     }
 
-  locker1.unlock();
-
   if((err = gcry_pk_testkey(key_t)) != 0)
     {
+      locker1.unlock();
+
       if(ok)
 	*ok = false;
 
@@ -2237,12 +2243,12 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	(QString("spoton_crypt::digitalSignature(): gcry_pk_testkey() "
 		 "failure (%1).").arg(buffer.constData()));
 
-      QWriteLocker locker(&m_privateKeyMutex);
+      QWriteLocker locker2(&m_privateKeyMutex);
 
       gcry_free(m_privateKey);
       m_privateKey = 0;
       m_privateKeyLength = 0;
-      locker.unlock();
+      locker2.unlock();
       goto done_label;
     }
 
@@ -2269,6 +2275,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	break;
       }
 
+  locker1.unlock();
   gcry_md_hash_buffer
     (GCRY_MD_SHA512,
      hash.data(),
