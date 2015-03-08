@@ -1,6 +1,16 @@
 CC?=gcc
 AR?=ar
-CFLAGS?=-g -O2
+
+# use -march=native for the bench target unless we're compiling for PowerPC
+MACHINE=$(shell uname -m)
+ifneq ($(MACHINE), ppc64)
+    ifneq ($(MACHINE), powerpc)
+        BENCH_ARCH_OPTION=-march=native
+    endif
+endif
+bench: OPTFLAGS=-O3 $(BENCH_ARCH_OPTION)
+
+CFLAGS?=-g $(OPTFLAGS)
 CFLAGS+=-Wall -Wextra -Wno-unused-parameter
 SSSE3_FLAG = $(shell /bin/grep -m 1 -o ssse3 /proc/cpuinfo)
 ifneq ($(SSE), no)
@@ -112,11 +122,11 @@ testnoham: clean lib $(TEST_OBJS_PATHS)
 	@echo CFLAGS=$(CFLAGS)
 	$(CC) $(CFLAGS) -o testnoham $(TEST_OBJS_PATHS) -L. -lntru -lm
 
-bench: lib
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o bench $(SRCDIR)/bench.c $(LDFLAGS) -L. -lntru
+bench: static-lib
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o bench $(SRCDIR)/bench.c $(LDFLAGS) $(LIBS) -L. -lntru
 
-hybrid: lib
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o hybrid $(SRCDIR)/hybrid.c $(LDFLAGS) -L. -lntru -lcrypto
+hybrid: static-lib
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o hybrid $(SRCDIR)/hybrid.c $(LDFLAGS) $(LIBS) -L. -lntru -lcrypto
 
 $(SRCDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -fPIC $< -o $@

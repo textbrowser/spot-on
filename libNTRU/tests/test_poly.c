@@ -175,6 +175,7 @@ uint8_t verify_inverse(NtruPrivPoly *a, NtruIntPoly *b, uint16_t modulus) {
     a_int.coeffs[0] += 1;
 
     ntru_mult_int(&a_int, b, &c, modulus);
+    ntru_mod(&c, modulus);
     return ntru_equals1(&c);
 }
 
@@ -185,7 +186,10 @@ uint8_t test_inv() {
     /* Verify a short polynomial */
     NtruPrivPoly a1 = {0, {{11, 4, 4, {1, 2, 6, 9}, {0, 3, 4, 10}}}};
     NtruIntPoly b1;
-    uint8_t invertible = ntru_invert(&a1, 32, &b1);
+    uint8_t invertible = ntru_invert_16(&a1, 32, &b1);
+    valid &= invertible;
+    valid &= verify_inverse(&a1, &b1, 32);
+    invertible &= ntru_invert_64(&a1, 32, &b1);
     valid &= invertible;
     valid &= verify_inverse(&a1, &b1, 32);
 
@@ -241,14 +245,17 @@ uint8_t test_arr() {
     NtruRandContext rand_ctx;
     ntru_rand_init(&rand_ctx, &rng);
     uint8_t valid = rand_int(params.N, 11, &p1, &rand_ctx);
-    ntru_to_arr_64(&p1, params.q, a);
+    ntru_to_arr_16(&p1, params.q, a);
     ntru_rand_release(&rand_ctx);
     NtruIntPoly p2;
     ntru_from_arr(a, params.N, params.q, &p2);
     valid &= equals_int(&p1, &p2);
 
-#ifdef __SSSE3__
     uint8_t b[sizeof(a)];
+    ntru_to_arr_64(&p1, params.q, b);
+    valid &= memcmp(a, b, sizeof a) == 0;
+
+#ifdef __SSSE3__
     ntru_to_arr_sse_2048(&p1, b);
     valid &= memcmp(a, b, sizeof a) == 0;
 #endif
