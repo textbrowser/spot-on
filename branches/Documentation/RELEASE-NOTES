@@ -15,6 +15,8 @@
      missing pulse immediately preceding the first missed pulse.
 10.  Set window modality on progress dialogs.
 11.  Notify the user if the SQLite (QSQLITE) driver is missing.
+12.  Updated NTRU files to 276ae6ae79bd97c835095051ef915861c6b01127.
+     The changes provide corrections on PowerPC.
 
 0.19 (02/22/2015)
 
