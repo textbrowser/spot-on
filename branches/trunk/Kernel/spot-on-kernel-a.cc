@@ -555,9 +555,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 					5.00).toDouble()));
 
   if(!setting("gui/disableSmtp", false).toBool())
-    m_poptasticPostTimer.start
-      (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
-					5.00).toDouble()));
+    m_poptasticPostTimer.start(2500);
 
   m_processReceivedMessagesTimer.start(100);
   m_publishAllListenersPlaintextTimer.setInterval(10 * 60 * 1000);
