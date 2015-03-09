@@ -116,7 +116,8 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 
 #ifdef SPOTON_LINKED_WITH_LIBNTRU
   if(data.isEmpty() || !m_privateKey || m_privateKeyLength <= 0 ||
-     static_cast<uint> (m_privateKeyLength) <= qstrlen("ntru-private-key-") ||
+     m_privateKeyLength <=
+     static_cast<size_t> (qstrlen("ntru-private-key-")) ||
      static_cast<uint> (m_publicKey.length()) <= qstrlen("ntru-public-key-"))
     {
       spoton_misc::logError
@@ -132,8 +133,8 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 
   e = new (std::nothrow) uint8_t[data.size()];
   privateKey_array = new (std::nothrow)
-    uint8_t[static_cast<uint> (m_privateKeyLength) -
-	    qstrlen("ntru-private-key-")];
+    uint8_t[m_privateKeyLength -
+	    static_cast<size_t> (qstrlen("ntru-private-key-"))];
   publicKey_array = new (std::nothrow)
     uint8_t[static_cast<uint> (m_publicKey.length()) -
 	    qstrlen("ntru-public-key-")];
@@ -151,14 +152,18 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
       ntru_import_priv(privateKey_array, &kp.priv);
       privateKey.replace
 	(0, privateKey.length(), QByteArray(privateKey.length(), 0));
-      privateKey.clear();
       publicKey.append(m_publicKey, m_publicKey.length());
       publicKey.remove
 	(0, static_cast<int> (qstrlen("ntru-public-key-")));
       memcpy(publicKey_array, publicKey.constData(), publicKey.length());
       ntru_import_pub(publicKey_array, &kp.pub);
+      publicKey.replace
+	(0, publicKey.length(), QByteArray(publicKey.length(), 0));
       memcpy(e, data.constData(), data.length());
       memset(privateKey_array, 0, privateKey.length());
+      privateKey.clear();
+      memset(publicKey_array, 0, publicKey.length());
+      publicKey.clear();
 
       int index = 0;
       struct NtruEncParams parameters[] = {EES1087EP2,
@@ -273,6 +278,10 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
 	 mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
 	 publicKey.length() - static_cast<int> (qstrlen("ntru-public-key-")));
       ntru_import_pub(publicKey_array, &pk);
+      memset
+	(publicKey_array, 0,
+	 publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
+	 length());
 
       int index = 0;
       struct NtruEncParams parameters[] = {EES1087EP2,
