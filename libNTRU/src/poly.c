@@ -12,6 +12,10 @@
 #include <libkern/OSByteOrder.h> 
 #define htole64(x) OSSwapHostToLittleInt64(x)
 #endif
+#ifdef __MINGW32__
+/* assume little endian */
+#define htole64(x) (x)
+#endif
 
 #define NTRU_SPARSE_THRESH 20
 
