@@ -2175,6 +2175,8 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       if(ok)
 	*ok = true;
 
+      array.replace(0, array.length(), QByteArray(array.length(), 0));
+      array.clear();
       return QByteArray();
     }
 
