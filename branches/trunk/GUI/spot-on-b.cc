@@ -136,7 +136,7 @@ void spoton::slotSendMessage(void)
 	  message.append("\n");
 
 	  QPointer<spoton_chatwindow> chat = m_chatWindows.value
-	    (publicKeyHash);
+	    (publicKeyHash, 0);
 
 	  if(chat)
 	    chat->append(msg);
@@ -328,7 +328,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  QPointer<spoton_chatwindow> chat = 0;
 
 		  if(m_chatWindows.contains(list.value(0).toBase64()))
-		    chat = m_chatWindows.value(list.value(0).toBase64());
+		    chat = m_chatWindows.value(list.value(0).toBase64(), 0);
 
 		  if(spoton_misc::isValidSMPMagnet(list.value(2), values))
 		    {
@@ -615,7 +615,11 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(m_optionsUi.displayPopups->isChecked())
 		    if(first)
 		      if(!m_chatWindows.contains(hash.toBase64()))
-			slotParticipantDoubleClicked(items.at(0));
+			{
+			  slotParticipantDoubleClicked(items.at(0));
+			  chat = m_chatWindows.value(list.value(0).
+						     toBase64(), 0);
+			}
 
 		  if(chat)
 		    {
