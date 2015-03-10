@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>720</width>
-    <height>919</height>
+    <width>669</width>
+    <height>896</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -181,7 +181,7 @@ color: rgb(255, 255, 255);
                    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
@@ -600,7 +600,7 @@ QPushButton:pressed {
                    <item>
                     <widget class="QLabel" name="label_5">
                      <property name="text">
-                      <string>&amp;My Name:</string>
+                      <string>&amp;My Name</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -1379,7 +1379,7 @@ QPushButton:pressed {
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_16">
                    <property name="text">
-                    <string>&amp;From:</string>
+                    <string>&amp;From</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -1491,7 +1491,7 @@ QPushButton:pressed {
                  <item row="9" column="0">
                   <widget class="QLabel" name="label_6">
                    <property name="text">
-                    <string>&amp;Optional:</string>
+                    <string>&amp;Optional</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -1611,7 +1611,7 @@ QPushButton:pressed {
                    <item>
                     <widget class="QLabel" name="label_10">
                      <property name="text">
-                      <string>&amp;To:</string>
+                      <string>&amp;To</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -1690,7 +1690,7 @@ QPushButton:pressed {
                  <item row="4" column="0">
                   <widget class="QLabel" name="label_25">
                    <property name="text">
-                    <string>&amp;Subject:</string>
+                    <string>&amp;Subject</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -1808,7 +1808,7 @@ QPushButton:pressed {
                  <item row="6" column="0">
                   <widget class="QLabel" name="label_31">
                    <property name="text">
-                    <string>&amp;Attachment:</string>
+                    <string>&amp;Attachment</string>
                    </property>
                    <property name="buddy">
                     <cstring>attachment</cstring>
@@ -1833,7 +1833,7 @@ QPushButton:pressed {
                    <item>
                     <widget class="QLabel" name="label_26">
                      <property name="text">
-                      <string>&amp;Message:</string>
+                      <string>&amp;Message</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -2309,7 +2309,7 @@ QPushButton:pressed {
                        <item>
                         <widget class="QCheckBox" name="addInstitutionCheckBox">
                          <property name="text">
-                          <string>&amp;or add Magnet</string>
+                          <string>&amp;or a Magnet</string>
                          </property>
                         </widget>
                        </item>
@@ -2434,7 +2434,7 @@ color: rgb(255, 255, 255);
           <item>
            <widget class="QLabel" name="label_32">
             <property name="text">
-             <string>IRC-&amp;Nick:</string>
+             <string>IRC-&amp;Nick</string>
             </property>
             <property name="buddy">
              <cstring>buzzName</cstring>
@@ -2485,7 +2485,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_82">
             <property name="text">
-             <string>&amp;Common Channels:</string>
+             <string>&amp;Common Channels</string>
             </property>
             <property name="buddy">
              <cstring>commonBuzzChannels</cstring>
@@ -2520,7 +2520,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_33">
             <property name="text">
-             <string>&amp;IRC-Channel-Name:</string>
+             <string>&amp;IRC Channel Name</string>
             </property>
             <property name="buddy">
              <cstring>channel</cstring>
@@ -2546,7 +2546,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_9">
             <property name="text">
-             <string>or Channel-&amp;Magnet:</string>
+             <string>or Channel &amp;Magnet</string>
             </property>
             <property name="buddy">
              <cstring>demagnetize</cstring>
@@ -2570,7 +2570,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_74">
             <property name="text">
-             <string>Hash-&amp;Key:</string>
+             <string>Hash &amp;Key</string>
             </property>
             <property name="buddy">
              <cstring>buzzHashKey</cstring>
@@ -2583,7 +2583,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_62">
             <property name="text">
-             <string>&amp;Salt:</string>
+             <string>&amp;Salt</string>
             </property>
             <property name="buddy">
              <cstring>channelSalt</cstring>
@@ -2603,7 +2603,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_49">
             <property name="text">
-             <string>&amp;Bookmarks:</string>
+             <string>&amp;Bookmarks</string>
             </property>
             <property name="buddy">
              <cstring>favorites</cstring>
@@ -2903,7 +2903,7 @@ color: rgb(255, 255, 255);</string>
                  <item>
                   <widget class="QRadioButton" name="pairRadio">
                    <property name="text">
-                    <string>&amp;Create:</string>
+                    <string>&amp;Create</string>
                    </property>
                   </widget>
                  </item>
@@ -3155,7 +3155,7 @@ QPushButton:pressed {
               </column>
               <column>
                <property name="text">
-                <string>SB-Magnet</string>
+                <string>SB Magnet</string>
                </property>
               </column>
               <column>
@@ -3495,7 +3495,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QLabel" name="label_63">
                    <property name="text">
-                    <string>DL &amp;Folder:</string>
+                    <string>DL &amp;Folder</string>
                    </property>
                    <property name="buddy">
                     <cstring>destination</cstring>
@@ -3574,7 +3574,7 @@ QPushButton:pressed {
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The pieces (also called links) of a mosaic define the file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
-                    <string>&amp;Maximum Mosaic Size.</string>
+                    <string>&amp;Maximum Mosaic Size</string>
                    </property>
                    <property name="buddy">
                     <cstring>etpMaxMosaicSize</cstring>
@@ -3618,7 +3618,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QLabel" name="label_60">
                  <property name="text">
-                  <string>Select a file, choose magnet(s) and press transmit.</string>
+                  <string>Select a file, choose magnet(s) and press Transmit.</string>
                  </property>
                 </widget>
                </item>
@@ -3630,7 +3630,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QLabel" name="label_53">
                    <property name="text">
-                    <string>&amp;File:</string>
+                    <string>&amp;File</string>
                    </property>
                    <property name="buddy">
                     <cstring>transmittedFile</cstring>
@@ -3704,7 +3704,7 @@ QPushButton:pressed {
                  </attribute>
                  <column>
                   <property name="text">
-                   <string>SB-Magnet</string>
+                   <string>SB Magnet</string>
                   </property>
                  </column>
                  <column>
@@ -3717,7 +3717,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QLabel" name="label_69">
                  <property name="text">
-                  <string>Optional: Create a Nova-password for your file-magnet.</string>
+                  <string>Optional: Create a Nova password for your file.</string>
                  </property>
                 </widget>
                </item>
@@ -3779,7 +3779,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QLabel" name="label_54">
                    <property name="text">
-                    <string>Chunk Size:</string>
+                    <string>Chunk Size</string>
                    </property>
                    <property name="buddy">
                     <cstring>pulseSize</cstring>
@@ -3828,7 +3828,7 @@ QPushButton:pressed {
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tools: StarBeam Analyzer. It allows to check if you received all links for a mosaic. If not, send your friend the &amp;quot;missing links magnet&amp;quot; and they will transfer only the missing links of the file. The hash comparison with your friend allows you to check if you have the same file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
-                    <string>&amp;Missing Links Magnet:</string>
+                    <string>&amp;Missing Links Magnet</string>
                    </property>
                   </widget>
                  </item>
@@ -4056,7 +4056,7 @@ QPushButton:pressed {
  }</string>
                    </property>
                    <property name="text">
-                    <string>Rewind &amp;&amp; Transmit again</string>
+                    <string>Rewind &amp;&amp; Transmit Again</string>
                    </property>
                    <property name="icon">
                     <iconset resource="../Icons/icons.qrc">
@@ -4210,7 +4210,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
              <item>
               <widget class="QLabel" name="label_27">
                <property name="text">
-                <string>Keys are not attached to an IP-Address.</string>
+                <string>Keys are not attached to an IP address.</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -4348,7 +4348,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="overwriteMode">
@@ -4569,7 +4569,7 @@ color: rgb(255, 255, 255);</string>
                 <enum>Qt::RightToLeft</enum>
                </property>
                <property name="text">
-                <string>&amp;Port:</string>
+                <string>&amp;Port</string>
                </property>
                <property name="buddy">
                 <cstring>neighborPort</cstring>
@@ -4582,7 +4582,7 @@ color: rgb(255, 255, 255);</string>
                 <enum>Qt::RightToLeft</enum>
                </property>
                <property name="text">
-                <string>&amp;IP:</string>
+                <string>&amp;IP</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -4648,7 +4648,7 @@ color: rgb(255, 255, 255);</string>
              <item row="3" column="0">
               <widget class="QLabel" name="neighborScopeIdLabel">
                <property name="text">
-                <string>&amp;Scope ID:</string>
+                <string>&amp;Scope ID</string>
                </property>
                <property name="buddy">
                 <cstring>neighborScopeId</cstring>
@@ -4726,7 +4726,7 @@ color: rgb(255, 255, 255);</string>
               <item>
                <widget class="QCheckBox" name="addException">
                 <property name="text">
-                 <string>Allow Exceptions of Permanent SSL-Cert-Checks.</string>
+                 <string>Allow Exceptions of permanent SSL certificates.</string>
                 </property>
                </widget>
               </item>
@@ -4741,7 +4741,7 @@ color: rgb(255, 255, 255);</string>
                 <item>
                  <widget class="QLabel" name="sslKeySizeLabel">
                   <property name="text">
-                   <string>&amp;SSL Key Size for this connection</string>
+                   <string>&amp;SSL Key Size</string>
                   </property>
                   <property name="buddy">
                    <cstring>neighborKeySize</cstring>
@@ -4819,7 +4819,7 @@ color: rgb(255, 255, 255);</string>
               <item>
                <widget class="QLabel" name="label_28">
                 <property name="text">
-                 <string>Accept in general only Neighbors with min. SSL Keysize:</string>
+                 <string>Accept in general only neighbors with minimum SSL keysize.</string>
                 </property>
                </widget>
               </item>
@@ -4878,14 +4878,14 @@ color: rgb(255, 255, 255);</string>
                  <number>1</number>
                 </property>
                 <property name="text">
-                 <string>For Chat over Tor use e.g.: Socks5, 127.0.0.1, Port 9150 </string>
+                 <string>For connections over Tor use e.g.: Socks5, 127.0.0.1, port 9150.</string>
                 </property>
                </widget>
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_7">
                 <property name="text">
-                 <string>&amp;Hostname:</string>
+                 <string>&amp;Hostname</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyHostname</cstring>
@@ -4908,7 +4908,7 @@ color: rgb(255, 255, 255);</string>
               <item row="1" column="0">
                <widget class="QLabel" name="label_3">
                 <property name="text">
-                 <string>&amp;Type:</string>
+                 <string>&amp;Type</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyType</cstring>
@@ -4921,7 +4921,7 @@ color: rgb(255, 255, 255);</string>
               <item row="4" column="0">
                <widget class="QLabel" name="label_19">
                 <property name="text">
-                 <string>&amp;Username:</string>
+                 <string>&amp;Username</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyUsername</cstring>
@@ -4963,7 +4963,7 @@ color: rgb(255, 255, 255);</string>
               <item row="5" column="0">
                <widget class="QLabel" name="label_20">
                 <property name="text">
-                 <string>&amp;Password:</string>
+                 <string>&amp;Password</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyPassword</cstring>
@@ -4973,7 +4973,7 @@ color: rgb(255, 255, 255);</string>
               <item row="3" column="0">
                <widget class="QLabel" name="label_8">
                 <property name="text">
-                 <string>&amp;Port:</string>
+                 <string>&amp;Port</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyPort</cstring>
@@ -5154,7 +5154,7 @@ color: rgb(255, 255, 255);</string>
         <item>
          <widget class="QGroupBox" name="listenersBox">
           <property name="title">
-           <string>Create own Chat-Server</string>
+           <string>Create Server</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <property name="spacing">
@@ -5180,7 +5180,7 @@ color: rgb(255, 255, 255);</string>
                 <normaloff>:/nuvola/server.png</normaloff>:/nuvola/server.png</iconset>
               </attribute>
               <attribute name="title">
-               <string>Chat-Server Setup</string>
+               <string>Server Setup</string>
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_30">
                <item>
@@ -5434,7 +5434,7 @@ QPushButton:pressed {
                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create and use two listeners / ports for both SSL (HTTPS) and non-SSL (HTTP) incoming connections.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
-                       <string>Use SSL with this Key Size: </string>
+                       <string>Use SSL with this Key Size</string>
                       </property>
                       <property name="checked">
                        <bool>true</bool>
@@ -5518,7 +5518,7 @@ QPushButton:pressed {
                     <item>
                      <widget class="QLabel" name="label_87">
                       <property name="text">
-                       <string>&amp;Limit connections:</string>
+                       <string>&amp;Limit connections</string>
                       </property>
                       <property name="buddy">
                        <cstring>limitConnections</cstring>
@@ -5554,14 +5554,10 @@ QPushButton:pressed {
                  <property name="spacing">
                   <number>3</number>
                  </property>
-                 <item row="8" column="5" colspan="9">
-                  <widget class="QLabel" name="label_15">
-                   <property name="text">
-                    <string>(to be forwarded in your router)</string>
-                   </property>
-                  </widget>
+                 <item row="6" column="1" colspan="7">
+                  <widget class="QLineEdit" name="listenerIP"/>
                  </item>
-                 <item row="9" column="6" colspan="8">
+                 <item row="9" column="6" colspan="2">
                   <widget class="QComboBox" name="listenerOrientation">
                    <property name="sizeAdjustPolicy">
                     <enum>QComboBox::AdjustToContents</enum>
@@ -5624,14 +5620,14 @@ QPushButton:pressed {
                     <enum>Qt::RightToLeft</enum>
                    </property>
                    <property name="text">
-                    <string>&amp;Port:</string>
+                    <string>&amp;Port</string>
                    </property>
                    <property name="buddy">
                     <cstring>listenerPort</cstring>
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="2" colspan="12">
+                 <item row="0" column="2" colspan="6">
                   <widget class="QComboBox" name="listenerIPCombo">
                    <property name="styleSheet">
                     <string notr="true">QComboBox#listenerIPCombo {
@@ -5641,7 +5637,8 @@ QPushButton:pressed {
      border-radius: 10px;
      border-color: black;
      min-width: 10em;
-     padding: 4px;
+     margin: 2px;
+     padding: 2px;
  }
 
 
@@ -5663,15 +5660,12 @@ background-position: top center; } </string>
                  <item row="7" column="0">
                   <widget class="QLabel" name="listenerScopeIdLabel">
                    <property name="text">
-                    <string>&amp;Scope ID:</string>
+                    <string>&amp;Scope ID</string>
                    </property>
                    <property name="buddy">
                     <cstring>listenerScopeId</cstring>
                    </property>
                   </widget>
-                 </item>
-                 <item row="6" column="1" colspan="13">
-                  <widget class="QLineEdit" name="listenerIP"/>
                  </item>
                  <item row="5" column="0" rowspan="2">
                   <widget class="QLabel" name="label_11">
@@ -5679,7 +5673,7 @@ background-position: top center; } </string>
                     <enum>Qt::RightToLeft</enum>
                    </property>
                    <property name="text">
-                    <string>My IP:</string>
+                    <string>My IP</string>
                    </property>
                    <property name="buddy">
                     <cstring>listenerIP</cstring>
@@ -5709,13 +5703,13 @@ background-position: top center; } </string>
                    </property>
                   </widget>
                  </item>
-                 <item row="7" column="1" colspan="13">
+                 <item row="7" column="1" colspan="7">
                   <widget class="QLineEdit" name="listenerScopeId"/>
                  </item>
                  <item row="9" column="0">
                   <widget class="QLabel" name="label_65">
                    <property name="text">
-                    <string>&amp;Transport:</string>
+                    <string>&amp;Transport</string>
                    </property>
                    <property name="buddy">
                     <cstring>listenerTransport</cstring>
@@ -5891,7 +5885,7 @@ QPushButton:pressed {
                     <item row="0" column="0">
                      <widget class="QLabel" name="label_47">
                       <property name="text">
-                       <string>&amp;Name:</string>
+                       <string>&amp;Name</string>
                       </property>
                       <property name="buddy">
                        <cstring>accountName</cstring>
@@ -5948,7 +5942,7 @@ QPushButton:pressed {
                     <item row="1" column="0">
                      <widget class="QLabel" name="label_48">
                       <property name="text">
-                       <string>&amp;Password:</string>
+                       <string>&amp;Password</string>
                       </property>
                       <property name="buddy">
                        <cstring>accountPassword</cstring>
@@ -6066,7 +6060,7 @@ QPushButton:pressed {
                     <item row="0" column="0">
                      <widget class="QLabel" name="label_84">
                       <property name="text">
-                       <string>&amp;Token:</string>
+                       <string>&amp;Token</string>
                       </property>
                       <property name="buddy">
                        <cstring>ae_token</cstring>
@@ -6076,7 +6070,7 @@ QPushButton:pressed {
                     <item row="1" column="0">
                      <widget class="QLabel" name="label_85">
                       <property name="text">
-                       <string>Encryption Token T&amp;ype:</string>
+                       <string>Encryption Token T&amp;ype</string>
                       </property>
                       <property name="buddy">
                        <cstring>ae_e_type</cstring>
@@ -6100,7 +6094,7 @@ QPushButton:pressed {
                     <item row="2" column="0">
                      <widget class="QLabel" name="label_86">
                       <property name="text">
-                       <string>&amp;Hash Token Type:</string>
+                       <string>&amp;Hash Token Type</string>
                       </property>
                       <property name="buddy">
                        <cstring>ae_h_type</cstring>
@@ -6605,7 +6599,7 @@ QPushButton:pressed {
                <item row="4" column="0">
                 <widget class="QLabel" name="label_37">
                  <property name="text">
-                  <string>&amp;Encryption Algorithm:</string>
+                  <string>&amp;Encryption Algorithm</string>
                  </property>
                  <property name="buddy">
                   <cstring>encryptionKeyType</cstring>
@@ -6615,7 +6609,7 @@ QPushButton:pressed {
                <item row="1" column="0">
                 <widget class="QLabel" name="label_92">
                  <property name="text">
-                  <string>&amp;Signature Key Size:</string>
+                  <string>&amp;Signature Key Size</string>
                  </property>
                  <property name="buddy">
                   <cstring>signatureKeySize</cstring>
@@ -6650,7 +6644,7 @@ QPushButton:pressed {
                <item row="4" column="2">
                 <widget class="QLabel" name="label_36">
                  <property name="text">
-                  <string>&amp;Signature Alg.:</string>
+                  <string>&amp;Signature Algorithm</string>
                  </property>
                  <property name="buddy">
                   <cstring>signatureKeyType</cstring>
@@ -6695,7 +6689,7 @@ QPushButton:pressed {
                <item row="6" column="0">
                 <widget class="QLabel" name="label_40">
                  <property name="text">
-                  <string>&amp;Hashtype:</string>
+                  <string>&amp;Hash Type</string>
                  </property>
                  <property name="buddy">
                   <cstring>hashType</cstring>
@@ -6725,7 +6719,7 @@ QPushButton:pressed {
                <item row="6" column="2">
                 <widget class="QLabel" name="label_38">
                  <property name="text">
-                  <string>&amp;Cipher:</string>
+                  <string>&amp;Cipher Type</string>
                  </property>
                  <property name="buddy">
                   <cstring>cipherType</cstring>
@@ -6764,7 +6758,7 @@ QPushButton:pressed {
                <item row="7" column="0">
                 <widget class="QLabel" name="label_42">
                  <property name="text">
-                  <string>&amp;Salt Length:</string>
+                  <string>&amp;Salt Length</string>
                  </property>
                  <property name="buddy">
                   <cstring>saltLength</cstring>
@@ -6774,7 +6768,7 @@ QPushButton:pressed {
                <item row="7" column="2">
                 <widget class="QLabel" name="label_41">
                  <property name="text">
-                  <string>&amp;Iteration Count:</string>
+                  <string>&amp;Iteration Count</string>
                  </property>
                  <property name="buddy">
                   <cstring>iterationCount</cstring>
@@ -6787,7 +6781,7 @@ QPushButton:pressed {
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, new key pairs will be generated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
-                  <string>&amp;Encryption Key Size:</string>
+                  <string>&amp;Encryption Key Size</string>
                  </property>
                 </widget>
                </item>
@@ -6884,7 +6878,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QLabel" name="label_70">
                  <property name="text">
-                  <string>Key &amp;Type:</string>
+                  <string>Key &amp;Type</string>
                  </property>
                  <property name="buddy">
                   <cstring>keys</cstring>
@@ -6984,7 +6978,7 @@ padding: 7px;
                <item row="5" column="2">
                 <widget class="QLabel" name="label_98">
                  <property name="text">
-                  <string>&amp;Answer:</string>
+                  <string>&amp;Answer</string>
                  </property>
                  <property name="buddy">
                   <cstring>answer</cstring>
@@ -6994,7 +6988,7 @@ padding: 7px;
                <item row="0" column="0">
                 <widget class="QLabel" name="label_14">
                  <property name="text">
-                  <string>&amp;My Nickname:</string>
+                  <string>&amp;My Nickname</string>
                  </property>
                  <property name="buddy">
                   <cstring>username</cstring>
@@ -7014,7 +7008,7 @@ padding: 7px;
                <item row="3" column="2">
                 <widget class="QLabel" name="label_97">
                  <property name="text">
-                  <string>&amp;Question:</string>
+                  <string>&amp;Question</string>
                  </property>
                  <property name="buddy">
                   <cstring>question</cstring>
@@ -7024,7 +7018,7 @@ padding: 7px;
                <item row="5" column="0">
                 <widget class="QLabel" name="label_56">
                  <property name="text">
-                  <string>Confirmation:</string>
+                  <string>Confirmation</string>
                  </property>
                  <property name="buddy">
                   <cstring>passphrase2</cstring>
@@ -7061,7 +7055,7 @@ padding: 7px;
                <item row="3" column="0">
                 <widget class="QLabel" name="label_55">
                  <property name="text">
-                  <string>P&amp;assphrase:</string>
+                  <string>P&amp;assphrase</string>
                  </property>
                  <property name="buddy">
                   <cstring>passphrase1</cstring>
@@ -7685,8 +7679,8 @@ QPushButton:pressed {
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>799</width>
-                     <height>239</height>
+                     <width>764</width>
+                     <height>236</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_67">
@@ -10558,7 +10552,7 @@ QPushButton:pressed {
                <enum>Qt::RightToLeft</enum>
               </property>
               <property name="text">
-               <string>&amp;Question-Method</string>
+               <string>&amp;Question Method</string>
               </property>
              </widget>
             </item>
@@ -10642,7 +10636,7 @@ QPushButton:pressed {
               <item row="2" column="0">
                <widget class="QLabel" name="label_94">
                 <property name="text">
-                 <string>&amp;Question:</string>
+                 <string>&amp;Question</string>
                 </property>
                 <property name="buddy">
                  <cstring>question_authenticate</cstring>
@@ -10674,7 +10668,7 @@ background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0
               <item row="4" column="0">
                <widget class="QLabel" name="label_100">
                 <property name="text">
-                 <string>&amp;Answer:</string>
+                 <string>&amp;Answer</string>
                 </property>
                 <property name="buddy">
                  <cstring>answer_authenticate</cstring>
@@ -10713,7 +10707,7 @@ background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0
               <item row="7" column="0">
                <widget class="QLabel" name="label_96">
                 <property name="text">
-                 <string>P&amp;assphrase:</string>
+                 <string>P&amp;assphrase</string>
                 </property>
                 <property name="buddy">
                  <cstring>passphrase</cstring>
@@ -10969,8 +10963,8 @@ spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>720</width>
-     <height>25</height>
+     <width>669</width>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
