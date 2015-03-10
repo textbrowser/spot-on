@@ -7672,6 +7672,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 		     "sha512",
 		     QByteArray(),
 		     symmetricKey,
+		     hashKey,
 		     0,
 		     0,
 		     QString(""));
@@ -7689,7 +7690,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
       return;
     }
 
-  QByteArray hash(spoton_crypt::keyedHash(data, hashKey, "sha512", &ok));
+  QByteArray hash(crypt.keyedHash(data, &ok));
 
   if(!ok)
     {

@@ -80,12 +80,12 @@ QList<QByteArray> spoton_receive::process0000
 				 "sha512",
 				 QByteArray(),
 				 gemini.first,
+				 gemini.second,
 				 0,
 				 0,
 				 QString(""));
 
-	      computedHash = spoton_crypt::keyedHash
-		(message, gemini.second, "sha512", &ok);
+	      computedHash = crypt.keyedHash(message, &ok);
 
 	      if(ok)
 		{
@@ -753,12 +753,12 @@ QList<QByteArray> spoton_receive::process0013
 				 "sha512",
 				 QByteArray(),
 				 gemini.first,
+				 gemini.second,
 				 0,
 				 0,
 				 QString(""));
 
-	      computedHash = spoton_crypt::keyedHash
-		(message, gemini.second, "sha512", &ok);
+	      computedHash = crypt.keyedHash(message, &ok);
 
 	      if(ok)
 		{

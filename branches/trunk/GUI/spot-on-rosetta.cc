@@ -656,9 +656,10 @@ void spoton_rosetta::slotConvert(void)
 	}
 
       crypt = new spoton_crypt(ui.cipher->currentText(),
-			       QString(""),
+			       ui.hash->currentText(),
 			       QByteArray(),
 			       encryptionKey,
+			       hashKey,
 			       0,
 			       0,
 			       QString(""));
@@ -684,8 +685,7 @@ void spoton_rosetta::slotConvert(void)
 	   signature.toBase64(), &ok);
 
       if(ok)
-	messageCode = spoton_crypt::keyedHash
-	  (data, hashKey, ui.hash->currentText().toLatin1(), &ok);
+	messageCode = crypt->keyedHash(data, &ok);
 
       if(ok)
 	data = keyInformation.toBase64() + "@" +
