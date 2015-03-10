@@ -22,6 +22,8 @@
      Also modified casts.
 15.  Corrected initial displays of communication dialogs.
 16.  Post Poptastic messages every 2.5 seconds.
+17.  Use spoton_crypt instance methods when available instead of static
+     methods.
 
 0.19 (02/22/2015)
 
