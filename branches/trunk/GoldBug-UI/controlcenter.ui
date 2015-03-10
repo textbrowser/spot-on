@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>679</width>
-    <height>919</height>
+    <width>669</width>
+    <height>896</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -181,7 +181,7 @@ color: rgb(255, 255, 255);
                    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
@@ -262,7 +262,7 @@ QPushButton:pressed {
                   <item>
                    <widget class="QPushButton" name="copyrepleo_chat">
                     <property name="toolTip">
-                     <string>Copy the Chat-Repleo of one selected friend.</string>
+                     <string>Copy the Chat-Repleo of the selected friend.</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
@@ -382,7 +382,7 @@ background-position: top center; } </string>
                   <item>
                    <widget class="QPushButton" name="melodica">
                     <property name="toolTip">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; width=&quot;350&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;MELODICA: Call Friend with new Gemini&lt;br/&gt;(&lt;span style=&quot; text-decoration: underline;&quot;&gt;M&lt;/span&gt;ulti &lt;span style=&quot; text-decoration: underline;&quot;&gt;E&lt;/span&gt;ncrypted &lt;span style=&quot; text-decoration: underline;&quot;&gt;LO&lt;/span&gt;ng &lt;span style=&quot; text-decoration: underline;&quot;&gt;DI&lt;/span&gt;stance &lt;span style=&quot; text-decoration: underline;&quot;&gt;CA&lt;/span&gt;lling).&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;(Creates for selected friend an auto-Gemini at both sides for instant perfect forward secrecy (IPFS)). It is renewed whenever you click MELODICA, and not only once per online session.&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; width=&quot;350&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;MELODICA: Call Friend with new Gemini&lt;br/&gt;(&lt;span style=&quot; text-decoration: underline;&quot;&gt;M&lt;/span&gt;ulti &lt;span style=&quot; text-decoration: underline;&quot;&gt;E&lt;/span&gt;ncrypted &lt;span style=&quot; text-decoration: underline;&quot;&gt;LO&lt;/span&gt;ng &lt;span style=&quot; text-decoration: underline;&quot;&gt;DI&lt;/span&gt;stance &lt;span style=&quot; text-decoration: underline;&quot;&gt;CA&lt;/span&gt;lling).&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;(Creates for selected friend an auto-Gemini at both sides for instant perfect forward secrecy (IPFS)). It is renewed whenever you click MELODICA and not only once per online session.&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
@@ -429,7 +429,7 @@ QPushButton:pressed {
                      </sizepolicy>
                     </property>
                     <property name="toolTip">
-                     <string>Send message.</string>
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send the message.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
@@ -491,7 +491,7 @@ QPushButton:pressed {
                  </property>
                  <widget class="QTableWidget" name="participants">
                   <property name="toolTip">
-                   <string>Double-click for pop-up window.</string>
+                   <string>Double-click a friend for a pop-up window.</string>
                   </property>
                   <property name="verticalScrollBarPolicy">
                    <enum>Qt::ScrollBarAsNeeded</enum>
@@ -600,7 +600,7 @@ QPushButton:pressed {
                    <item>
                     <widget class="QLabel" name="label_5">
                      <property name="text">
-                      <string>&amp;My Name:</string>
+                      <string>&amp;My Name</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -912,7 +912,7 @@ QPushButton:pressed {
              <item>
               <widget class="QPushButton" name="emptyTrash">
                <property name="toolTip">
-                <string>Empty trash.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Empty the trash.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -1379,7 +1379,7 @@ QPushButton:pressed {
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_16">
                    <property name="text">
-                    <string>&amp;From:</string>
+                    <string>&amp;From</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -1402,6 +1402,9 @@ QPushButton:pressed {
                    </item>
                    <item>
                     <widget class="QPushButton" name="saveEmailName">
+                     <property name="toolTip">
+                      <string>Save my name.</string>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true">QPushButton {
  border: 2px solid gray;
@@ -1488,7 +1491,7 @@ QPushButton:pressed {
                  <item row="9" column="0">
                   <widget class="QLabel" name="label_6">
                    <property name="text">
-                    <string>&amp;Optional:</string>
+                    <string>&amp;Optional</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -1517,7 +1520,7 @@ QPushButton:pressed {
                        <item>
                         <widget class="QPushButton" name="copyrepleo_email">
                          <property name="toolTip">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy the E-Mail-Repleo of one selected friend.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy the E-Mail-Repleo of the selected friend.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">QPushButton {
@@ -1556,7 +1559,7 @@ QPushButton:pressed {
                        <item>
                         <widget class="QPushButton" name="clearOutgoing">
                          <property name="toolTip">
-                          <string>Clear All</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clear all.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">QPushButton {
@@ -1608,7 +1611,7 @@ QPushButton:pressed {
                    <item>
                     <widget class="QLabel" name="label_10">
                      <property name="text">
-                      <string>&amp;To:</string>
+                      <string>&amp;To</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -1687,7 +1690,7 @@ QPushButton:pressed {
                  <item row="4" column="0">
                   <widget class="QLabel" name="label_25">
                    <property name="text">
-                    <string>&amp;Subject:</string>
+                    <string>&amp;Subject</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -1805,7 +1808,7 @@ QPushButton:pressed {
                  <item row="6" column="0">
                   <widget class="QLabel" name="label_31">
                    <property name="text">
-                    <string>&amp;Attachment:</string>
+                    <string>&amp;Attachment</string>
                    </property>
                    <property name="buddy">
                     <cstring>attachment</cstring>
@@ -1830,7 +1833,7 @@ QPushButton:pressed {
                    <item>
                     <widget class="QLabel" name="label_26">
                      <property name="text">
-                      <string>&amp;Message:</string>
+                      <string>&amp;Message</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
@@ -1958,7 +1961,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QCheckBox" name="postofficeCheckBox">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;With enabling C/O service, you create a post office for your friends.&lt;/p&gt;&lt;p&gt;Two methods exist: define a common neighbor (e.g. Gretel and Hansel connect to a common server as a node and all three have e-mail keys shared), then the server stores the e-mails even if either Gretel or Hansel is offline.&lt;/p&gt;&lt;p&gt;Second, advanced method: create an institution and add the e-mail key of a friend to your node. In case your friend adds the magnet link for your institution as well to their node, your institution will save all emails for them (as well from senders to them).&lt;/p&gt;&lt;p&gt;The institution will work as an e-mail server for all those, who send their email keys to the institution and add the institutional magnet URI to their own client.&lt;/p&gt;&lt;p&gt;For test purposes one can use as institution e.g. the name &amp;quot;GBmail&amp;quot; and for the address &amp;quot;dotcom&amp;quot;:&lt;/p&gt;&lt;p&gt;magnet:?in=GBmail&amp;amp;ct=aes256&amp;amp;pa=dotcom&amp;amp;ht=sha512&amp;amp;xt=urn:institution&lt;/p&gt;&lt;p&gt;If a friend is doing the same, and the institution knows yours and your friends e-mail keys, you three are fine. This method does not require direct IP connections between you, your friend, or to the institution within the Echo network; nor must the institution share its e-email keys.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabling C/O service, you create a post office for your friends.&lt;/p&gt;&lt;p&gt;Two methods exist: define a common neighbor (e.g. Gretel and Hansel connect to a common server as a node and all three have e-mail keys shared), then the server stores the e-mails even if either Gretel or Hansel is offline.&lt;/p&gt;&lt;p&gt;Second, advanced method: create an institution and add the e-mail key of a friend to your node. In case your friend adds the magnet link for your institution as well to their node, your institution will save all emails for them (as well from senders to them).&lt;/p&gt;&lt;p&gt;The institution will work as an e-mail server for all those who send their email keys to the institution and add the institutional magnet URI to their own client.&lt;/p&gt;&lt;p&gt;For test purposes one can use as institution e.g. the name &amp;quot;GBmail&amp;quot; and for the address &amp;quot;dotcom&amp;quot;:&lt;/p&gt;&lt;p&gt;magnet:?in=GBmail&amp;amp;ct=aes256&amp;amp;pa=dotcom&amp;amp;ht=sha512&amp;amp;xt=urn:institution&lt;/p&gt;&lt;p&gt;If a friend is doing the same and the institution knows your and your friends e-mail keys, you three are fine. This method does not require direct IP connections between you, your friend, and to the institution within the Echo network; nor must the institution share its e-email keys.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
                   <string>&amp;Enable C/O service for your friends.</string>
@@ -2306,7 +2309,7 @@ QPushButton:pressed {
                        <item>
                         <widget class="QCheckBox" name="addInstitutionCheckBox">
                          <property name="text">
-                          <string>&amp;or add Magnet</string>
+                          <string>&amp;or a Magnet</string>
                          </property>
                         </widget>
                        </item>
@@ -2431,7 +2434,7 @@ color: rgb(255, 255, 255);
           <item>
            <widget class="QLabel" name="label_32">
             <property name="text">
-             <string>IRC-&amp;Nick:</string>
+             <string>IRC-&amp;Nick</string>
             </property>
             <property name="buddy">
              <cstring>buzzName</cstring>
@@ -2482,7 +2485,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_82">
             <property name="text">
-             <string>&amp;Common Channels:</string>
+             <string>&amp;Common Channels</string>
             </property>
             <property name="buddy">
              <cstring>commonBuzzChannels</cstring>
@@ -2517,7 +2520,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_33">
             <property name="text">
-             <string>&amp;IRC-Channel-Name:</string>
+             <string>&amp;IRC Channel Name</string>
             </property>
             <property name="buddy">
              <cstring>channel</cstring>
@@ -2543,7 +2546,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_9">
             <property name="text">
-             <string>or Channel-&amp;Magnet:</string>
+             <string>or Channel &amp;Magnet</string>
             </property>
             <property name="buddy">
              <cstring>demagnetize</cstring>
@@ -2553,7 +2556,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLineEdit" name="demagnetize">
             <property name="toolTip">
-             <string>Demagnetize link.</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Demagnetize a link.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -2567,7 +2570,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_74">
             <property name="text">
-             <string>Hash-&amp;Key:</string>
+             <string>Hash &amp;Key</string>
             </property>
             <property name="buddy">
              <cstring>buzzHashKey</cstring>
@@ -2580,7 +2583,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_62">
             <property name="text">
-             <string>&amp;Salt:</string>
+             <string>&amp;Salt</string>
             </property>
             <property name="buddy">
              <cstring>channelSalt</cstring>
@@ -2600,7 +2603,7 @@ QPushButton:pressed {
           <item>
            <widget class="QLabel" name="label_49">
             <property name="text">
-             <string>&amp;Bookmarks:</string>
+             <string>&amp;Bookmarks</string>
             </property>
             <property name="buddy">
              <cstring>favorites</cstring>
@@ -2900,7 +2903,7 @@ color: rgb(255, 255, 255);</string>
                  <item>
                   <widget class="QRadioButton" name="pairRadio">
                    <property name="text">
-                    <string>&amp;Create:</string>
+                    <string>&amp;Create</string>
                    </property>
                   </widget>
                  </item>
@@ -3152,7 +3155,7 @@ QPushButton:pressed {
               </column>
               <column>
                <property name="text">
-                <string>SB-Magnet</string>
+                <string>SB Magnet</string>
                </property>
               </column>
               <column>
@@ -3233,10 +3236,10 @@ QPushButton:pressed {
                <item>
                 <widget class="QLabel" name="label_83">
                  <property name="toolTip">
-                  <string>You get the Nova from a sender of a file.</string>
+                  <string>The sender of a file must notify you of the Nova.</string>
                  </property>
                  <property name="text">
-                  <string>Novas are a passphrase added to the magnet of the file. </string>
+                  <string>A Nova is a passphrase that offers an additional layer of authenticated encryption.</string>
                  </property>
                 </widget>
                </item>
@@ -3492,7 +3495,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QLabel" name="label_63">
                    <property name="text">
-                    <string>DL &amp;Folder:</string>
+                    <string>DL &amp;Folder</string>
                    </property>
                    <property name="buddy">
                     <cstring>destination</cstring>
@@ -3568,10 +3571,10 @@ QPushButton:pressed {
                     </sizepolicy>
                    </property>
                    <property name="toolTip">
-                    <string>The pieces (also called links) of a mosaic create the file.</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The pieces (also called links) of a mosaic define the file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
-                    <string>&amp;Maximum Mosaic Size.</string>
+                    <string>&amp;Maximum Mosaic Size</string>
                    </property>
                    <property name="buddy">
                     <cstring>etpMaxMosaicSize</cstring>
@@ -3615,7 +3618,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QLabel" name="label_60">
                  <property name="text">
-                  <string>Select a file, choose magnet(s) and press transmit.</string>
+                  <string>Select a file, choose magnet(s) and press Transmit.</string>
                  </property>
                 </widget>
                </item>
@@ -3627,7 +3630,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QLabel" name="label_53">
                    <property name="text">
-                    <string>&amp;File:</string>
+                    <string>&amp;File</string>
                    </property>
                    <property name="buddy">
                     <cstring>transmittedFile</cstring>
@@ -3640,7 +3643,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QPushButton" name="etpSelectFile">
                    <property name="toolTip">
-                    <string>Select a file from your hard drive.</string>
+                    <string>Select a file.</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
@@ -3701,7 +3704,7 @@ QPushButton:pressed {
                  </attribute>
                  <column>
                   <property name="text">
-                   <string>SB-Magnet</string>
+                   <string>SB Magnet</string>
                   </property>
                  </column>
                  <column>
@@ -3714,7 +3717,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QLabel" name="label_69">
                  <property name="text">
-                  <string>Optional: Create a Nova-password for your file-magnet.</string>
+                  <string>Optional: Create a Nova password for your file.</string>
                  </property>
                 </widget>
                </item>
@@ -3735,7 +3738,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QPushButton" name="generateNova">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle each pulse with an additional layer of AES-256 encryption. Do remember to notify all recipients of the key that you created for this transfer magnet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle each pulse with an additional layer of AES-256 encryption. Do remember to notify all recipients of the keys that you created for this transfer magnet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
@@ -3776,7 +3779,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QLabel" name="label_54">
                    <property name="text">
-                    <string>Chunk Size:</string>
+                    <string>Chunk Size</string>
                    </property>
                    <property name="buddy">
                     <cstring>pulseSize</cstring>
@@ -3822,10 +3825,10 @@ QPushButton:pressed {
                  <item>
                   <widget class="QCheckBox" name="missingLinksCheckBox">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tools: StarBeam Analyzer. It allows to check if you received all links for a mosaic. If not, send your friend the &amp;quot;missing links magnet&amp;quot; and they will transfer only the missing links of the file again. The hash comparison with your friend allows to check if you have the same file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tools: StarBeam Analyzer. It allows to check if you received all links for a mosaic. If not, send your friend the &amp;quot;missing links magnet&amp;quot; and they will transfer only the missing links of the file. The hash comparison with your friend allows you to check if you have the same file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
-                    <string>&amp;Missing Links Magnet:</string>
+                    <string>&amp;Missing Links Magnet</string>
                    </property>
                   </widget>
                  </item>
@@ -3886,7 +3889,7 @@ QPushButton:pressed {
                  </property>
                  <widget class="QTableWidget" name="transmitted">
                   <property name="toolTip">
-                   <string>Uploads. Please unchecked paused after you have copied and sent the magnet to your receiving friend(s).</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uploads. Please uncheck &amp;quot;paused&amp;quot; after you have copied and sent the magnet(s) to your receiving friend(s).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="verticalScrollBarPolicy">
                    <enum>Qt::ScrollBarAsNeeded</enum>
@@ -4053,7 +4056,7 @@ QPushButton:pressed {
  }</string>
                    </property>
                    <property name="text">
-                    <string>Rewind &amp;&amp; Transmit again</string>
+                    <string>Rewind &amp;&amp; Transmit Again</string>
                    </property>
                    <property name="icon">
                     <iconset resource="../Icons/icons.qrc">
@@ -4081,7 +4084,7 @@ QPushButton:pressed {
         <string/>
        </attribute>
        <attribute name="toolTip">
-        <string>Add Friends Key/Repleo</string>
+        <string>Add Friends E-Mail/Key/Repleo</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_14">
         <property name="spacing">
@@ -4207,7 +4210,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
              <item>
               <widget class="QLabel" name="label_27">
                <property name="text">
-                <string>Keys are not attached to an IP-Address.</string>
+                <string>Keys are not attached to an IP address.</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -4295,7 +4298,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                <item>
                 <widget class="QRadioButton" name="addFriendSymmetricBundleRadio">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Repleo is the key of your friend encrypted with your public key.&lt;/p&gt;&lt;p&gt;In case you send your key first to your friend, they can decide to send their own key in plaintext or encrypted with your key. &lt;/p&gt;&lt;p&gt;This is called a Repleo, when the key is not sent in plaintext.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The Repleo contains your key pair encrypted with your friend's public key.&lt;/p&gt;&lt;p&gt;In case you send your key pair first to your friend, they can decide to send their own key pair in plaintext or encrypted with your key. &lt;/p&gt;&lt;p&gt;This is called a Repleo; the key is not sent in plaintext.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="layoutDirection">
                   <enum>Qt::LeftToRight</enum>
@@ -4345,7 +4348,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="overwriteMode">
@@ -4380,7 +4383,7 @@ p, li { white-space: pre-wrap; }
                <item>
                 <widget class="QPushButton" name="addFriend">
                  <property name="toolTip">
-                  <string>Add the key of your friend.</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the key(s) of your friend.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QPushButton {
@@ -4566,7 +4569,7 @@ color: rgb(255, 255, 255);</string>
                 <enum>Qt::RightToLeft</enum>
                </property>
                <property name="text">
-                <string>&amp;Port:</string>
+                <string>&amp;Port</string>
                </property>
                <property name="buddy">
                 <cstring>neighborPort</cstring>
@@ -4579,7 +4582,7 @@ color: rgb(255, 255, 255);</string>
                 <enum>Qt::RightToLeft</enum>
                </property>
                <property name="text">
-                <string>&amp;IP:</string>
+                <string>&amp;IP</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -4645,7 +4648,7 @@ color: rgb(255, 255, 255);</string>
              <item row="3" column="0">
               <widget class="QLabel" name="neighborScopeIdLabel">
                <property name="text">
-                <string>&amp;Scope ID:</string>
+                <string>&amp;Scope ID</string>
                </property>
                <property name="buddy">
                 <cstring>neighborScopeId</cstring>
@@ -4723,7 +4726,7 @@ color: rgb(255, 255, 255);</string>
               <item>
                <widget class="QCheckBox" name="addException">
                 <property name="text">
-                 <string>Allow Exceptions of Permanent SSL-Cert-Checks.</string>
+                 <string>Allow Exceptions of permanent SSL certificates.</string>
                 </property>
                </widget>
               </item>
@@ -4738,7 +4741,7 @@ color: rgb(255, 255, 255);</string>
                 <item>
                  <widget class="QLabel" name="sslKeySizeLabel">
                   <property name="text">
-                   <string>&amp;SSL Key Size for this connection</string>
+                   <string>&amp;SSL Key Size</string>
                   </property>
                   <property name="buddy">
                    <cstring>neighborKeySize</cstring>
@@ -4816,7 +4819,7 @@ color: rgb(255, 255, 255);</string>
               <item>
                <widget class="QLabel" name="label_28">
                 <property name="text">
-                 <string>Accept in general only Neighbors with min. SSL Keysize:</string>
+                 <string>Accept in general only neighbors with minimum SSL keysize.</string>
                 </property>
                </widget>
               </item>
@@ -4875,14 +4878,14 @@ color: rgb(255, 255, 255);</string>
                  <number>1</number>
                 </property>
                 <property name="text">
-                 <string>For Chat over Tor use e.g.: Socks5, 127.0.0.1, Port 9150 </string>
+                 <string>For connections over Tor use e.g.: Socks5, 127.0.0.1, port 9150.</string>
                 </property>
                </widget>
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_7">
                 <property name="text">
-                 <string>&amp;Hostname:</string>
+                 <string>&amp;Hostname</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyHostname</cstring>
@@ -4905,7 +4908,7 @@ color: rgb(255, 255, 255);</string>
               <item row="1" column="0">
                <widget class="QLabel" name="label_3">
                 <property name="text">
-                 <string>&amp;Type:</string>
+                 <string>&amp;Type</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyType</cstring>
@@ -4918,7 +4921,7 @@ color: rgb(255, 255, 255);</string>
               <item row="4" column="0">
                <widget class="QLabel" name="label_19">
                 <property name="text">
-                 <string>&amp;Username:</string>
+                 <string>&amp;Username</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyUsername</cstring>
@@ -4960,7 +4963,7 @@ color: rgb(255, 255, 255);</string>
               <item row="5" column="0">
                <widget class="QLabel" name="label_20">
                 <property name="text">
-                 <string>&amp;Password:</string>
+                 <string>&amp;Password</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyPassword</cstring>
@@ -4970,7 +4973,7 @@ color: rgb(255, 255, 255);</string>
               <item row="3" column="0">
                <widget class="QLabel" name="label_8">
                 <property name="text">
-                 <string>&amp;Port:</string>
+                 <string>&amp;Port</string>
                 </property>
                 <property name="buddy">
                  <cstring>proxyPort</cstring>
@@ -4994,7 +4997,7 @@ color: rgb(255, 255, 255);</string>
                 </sizepolicy>
                </property>
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Harry, add this neighbor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add this neighbor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton#addNeighbor {
@@ -5105,7 +5108,7 @@ QPushButton:pressed {
         <string/>
        </attribute>
        <attribute name="toolTip">
-        <string>Create Chat/Listener Server</string>
+        <string>Create Listener Server</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <property name="spacing">
@@ -5151,7 +5154,7 @@ color: rgb(255, 255, 255);</string>
         <item>
          <widget class="QGroupBox" name="listenersBox">
           <property name="title">
-           <string>Create own Chat-Server</string>
+           <string>Create Server</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <property name="spacing">
@@ -5177,7 +5180,7 @@ color: rgb(255, 255, 255);</string>
                 <normaloff>:/nuvola/server.png</normaloff>:/nuvola/server.png</iconset>
               </attribute>
               <attribute name="title">
-               <string>Chat-Server Setup</string>
+               <string>Server Setup</string>
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_30">
                <item>
@@ -5408,7 +5411,7 @@ QPushButton:pressed {
                     <item>
                      <widget class="QCheckBox" name="permanentCertificate">
                       <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create a permanent certificate which identifies, &lt;/p&gt;&lt;p&gt;when an unknown neighbor connects &lt;/p&gt;&lt;p&gt;and the certificate is different from the known. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create a permanent certificate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
                        <string>Create Permanent Certificate</string>
@@ -5431,7 +5434,7 @@ QPushButton:pressed {
                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create and use two listeners / ports for both SSL (HTTPS) and non-SSL (HTTP) incoming connections.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
-                       <string>Use SSL with this Key Size: </string>
+                       <string>Use SSL with this Key Size</string>
                       </property>
                       <property name="checked">
                        <bool>true</bool>
@@ -5515,7 +5518,7 @@ QPushButton:pressed {
                     <item>
                      <widget class="QLabel" name="label_87">
                       <property name="text">
-                       <string>&amp;Limit connections:</string>
+                       <string>&amp;Limit connections</string>
                       </property>
                       <property name="buddy">
                        <cstring>limitConnections</cstring>
@@ -5551,14 +5554,10 @@ QPushButton:pressed {
                  <property name="spacing">
                   <number>3</number>
                  </property>
-                 <item row="8" column="5" colspan="9">
-                  <widget class="QLabel" name="label_15">
-                   <property name="text">
-                    <string>(to be forwarded in your router)</string>
-                   </property>
-                  </widget>
+                 <item row="6" column="1" colspan="7">
+                  <widget class="QLineEdit" name="listenerIP"/>
                  </item>
-                 <item row="9" column="6" colspan="8">
+                 <item row="9" column="6" colspan="2">
                   <widget class="QComboBox" name="listenerOrientation">
                    <property name="sizeAdjustPolicy">
                     <enum>QComboBox::AdjustToContents</enum>
@@ -5621,14 +5620,14 @@ QPushButton:pressed {
                     <enum>Qt::RightToLeft</enum>
                    </property>
                    <property name="text">
-                    <string>&amp;Port:</string>
+                    <string>&amp;Port</string>
                    </property>
                    <property name="buddy">
                     <cstring>listenerPort</cstring>
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="2" colspan="12">
+                 <item row="0" column="2" colspan="6">
                   <widget class="QComboBox" name="listenerIPCombo">
                    <property name="styleSheet">
                     <string notr="true">QComboBox#listenerIPCombo {
@@ -5638,7 +5637,8 @@ QPushButton:pressed {
      border-radius: 10px;
      border-color: black;
      min-width: 10em;
-     padding: 4px;
+     margin: 2px;
+     padding: 2px;
  }
 
 
@@ -5660,15 +5660,12 @@ background-position: top center; } </string>
                  <item row="7" column="0">
                   <widget class="QLabel" name="listenerScopeIdLabel">
                    <property name="text">
-                    <string>&amp;Scope ID:</string>
+                    <string>&amp;Scope ID</string>
                    </property>
                    <property name="buddy">
                     <cstring>listenerScopeId</cstring>
                    </property>
                   </widget>
-                 </item>
-                 <item row="6" column="1" colspan="13">
-                  <widget class="QLineEdit" name="listenerIP"/>
                  </item>
                  <item row="5" column="0" rowspan="2">
                   <widget class="QLabel" name="label_11">
@@ -5676,7 +5673,7 @@ background-position: top center; } </string>
                     <enum>Qt::RightToLeft</enum>
                    </property>
                    <property name="text">
-                    <string>My IP:</string>
+                    <string>My IP</string>
                    </property>
                    <property name="buddy">
                     <cstring>listenerIP</cstring>
@@ -5706,13 +5703,13 @@ background-position: top center; } </string>
                    </property>
                   </widget>
                  </item>
-                 <item row="7" column="1" colspan="13">
+                 <item row="7" column="1" colspan="7">
                   <widget class="QLineEdit" name="listenerScopeId"/>
                  </item>
                  <item row="9" column="0">
                   <widget class="QLabel" name="label_65">
                    <property name="text">
-                    <string>&amp;Transport:</string>
+                    <string>&amp;Transport</string>
                    </property>
                    <property name="buddy">
                     <cstring>listenerTransport</cstring>
@@ -5732,7 +5729,7 @@ background-position: top center; } </string>
                  <item>
                   <widget class="QPushButton" name="addListener">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Echoed Messaging and Presence Protocol (EMPP). Create own chat server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Echoed Messaging and Presence Protocol (EMPP).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton#addListener {
@@ -5768,7 +5765,7 @@ QPushButton#addListener:pressed {
                  <item>
                   <widget class="QPushButton" name="listenerAnnounce">
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Go Live sends the listener information (that means your IP and port) to connected neighbors. Your peers will be able to connect if you have not set accounts for this listener.&lt;/p&gt;&lt;p&gt;Wilkie Twycross, apparition instructor in Hogwarts, shows regularly in a workshop about &amp;quot;Going Live with a listener&amp;quot;, how easy it is to set up a server for your friends with or without a chat account. Apparition is possible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Go Live sends the listener information to connected neighbors. Your peers will be able to connect if you have not set accounts for this listener.&lt;/p&gt;&lt;p&gt;Wilkie Twycross, apparition instructor in Hogwarts, shows regularly in a workshop about &amp;quot;Going Live with a listener&amp;quot;, how easy it is to prepare a server for your friends with or without a chat account. Apparition is possible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton#listenerAnnounce {
@@ -5856,7 +5853,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QGroupBox" name="accountsGB">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Accounts prevent unknown nodes to connect and enable the creation of a graph of trust. The account name and the account password must contain at least thirty-two characters each.&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Accounts prevent unknown nodes from connecting and enable the creation of a graph of trust. The account name and the account password must contain at least thirty-two characters each.&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="title">
                   <string>Create Accounts for existing Listener Connections</string>
@@ -5888,7 +5885,7 @@ QPushButton:pressed {
                     <item row="0" column="0">
                      <widget class="QLabel" name="label_47">
                       <property name="text">
-                       <string>&amp;Name:</string>
+                       <string>&amp;Name</string>
                       </property>
                       <property name="buddy">
                        <cstring>accountName</cstring>
@@ -5945,7 +5942,7 @@ QPushButton:pressed {
                     <item row="1" column="0">
                      <widget class="QLabel" name="label_48">
                       <property name="text">
-                       <string>&amp;Password:</string>
+                       <string>&amp;Password</string>
                       </property>
                       <property name="buddy">
                        <cstring>accountPassword</cstring>
@@ -6063,7 +6060,7 @@ QPushButton:pressed {
                     <item row="0" column="0">
                      <widget class="QLabel" name="label_84">
                       <property name="text">
-                       <string>&amp;Token:</string>
+                       <string>&amp;Token</string>
                       </property>
                       <property name="buddy">
                        <cstring>ae_token</cstring>
@@ -6073,7 +6070,7 @@ QPushButton:pressed {
                     <item row="1" column="0">
                      <widget class="QLabel" name="label_85">
                       <property name="text">
-                       <string>Encryption Token T&amp;ype:</string>
+                       <string>Encryption Token T&amp;ype</string>
                       </property>
                       <property name="buddy">
                        <cstring>ae_e_type</cstring>
@@ -6097,7 +6094,7 @@ QPushButton:pressed {
                     <item row="2" column="0">
                      <widget class="QLabel" name="label_86">
                       <property name="text">
-                       <string>&amp;Hash Token Type:</string>
+                       <string>&amp;Hash Token Type</string>
                       </property>
                       <property name="buddy">
                        <cstring>ae_h_type</cstring>
@@ -6602,7 +6599,7 @@ QPushButton:pressed {
                <item row="4" column="0">
                 <widget class="QLabel" name="label_37">
                  <property name="text">
-                  <string>&amp;Encryption Algorithm:</string>
+                  <string>&amp;Encryption Algorithm</string>
                  </property>
                  <property name="buddy">
                   <cstring>encryptionKeyType</cstring>
@@ -6612,7 +6609,7 @@ QPushButton:pressed {
                <item row="1" column="0">
                 <widget class="QLabel" name="label_92">
                  <property name="text">
-                  <string>&amp;Signature Key Size:</string>
+                  <string>&amp;Signature Key Size</string>
                  </property>
                  <property name="buddy">
                   <cstring>signatureKeySize</cstring>
@@ -6647,7 +6644,7 @@ QPushButton:pressed {
                <item row="4" column="2">
                 <widget class="QLabel" name="label_36">
                  <property name="text">
-                  <string>&amp;Signature Alg.:</string>
+                  <string>&amp;Signature Algorithm</string>
                  </property>
                  <property name="buddy">
                   <cstring>signatureKeyType</cstring>
@@ -6692,7 +6689,7 @@ QPushButton:pressed {
                <item row="6" column="0">
                 <widget class="QLabel" name="label_40">
                  <property name="text">
-                  <string>&amp;Hashtype:</string>
+                  <string>&amp;Hash Type</string>
                  </property>
                  <property name="buddy">
                   <cstring>hashType</cstring>
@@ -6722,7 +6719,7 @@ QPushButton:pressed {
                <item row="6" column="2">
                 <widget class="QLabel" name="label_38">
                  <property name="text">
-                  <string>&amp;Cipher:</string>
+                  <string>&amp;Cipher Type</string>
                  </property>
                  <property name="buddy">
                   <cstring>cipherType</cstring>
@@ -6761,7 +6758,7 @@ QPushButton:pressed {
                <item row="7" column="0">
                 <widget class="QLabel" name="label_42">
                  <property name="text">
-                  <string>&amp;Salt Length:</string>
+                  <string>&amp;Salt Length</string>
                  </property>
                  <property name="buddy">
                   <cstring>saltLength</cstring>
@@ -6771,7 +6768,7 @@ QPushButton:pressed {
                <item row="7" column="2">
                 <widget class="QLabel" name="label_41">
                  <property name="text">
-                  <string>&amp;Iteration Count:</string>
+                  <string>&amp;Iteration Count</string>
                  </property>
                  <property name="buddy">
                   <cstring>iterationCount</cstring>
@@ -6784,7 +6781,7 @@ QPushButton:pressed {
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, new key pairs will be generated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
-                  <string>&amp;Encryption Key Size:</string>
+                  <string>&amp;Encryption Key Size</string>
                  </property>
                 </widget>
                </item>
@@ -6881,7 +6878,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QLabel" name="label_70">
                  <property name="text">
-                  <string>Key &amp;Type:</string>
+                  <string>Key &amp;Type</string>
                  </property>
                  <property name="buddy">
                   <cstring>keys</cstring>
@@ -6981,7 +6978,7 @@ padding: 7px;
                <item row="5" column="2">
                 <widget class="QLabel" name="label_98">
                  <property name="text">
-                  <string>&amp;Answer:</string>
+                  <string>&amp;Answer</string>
                  </property>
                  <property name="buddy">
                   <cstring>answer</cstring>
@@ -6991,7 +6988,7 @@ padding: 7px;
                <item row="0" column="0">
                 <widget class="QLabel" name="label_14">
                  <property name="text">
-                  <string>&amp;My Nickname:</string>
+                  <string>&amp;My Nickname</string>
                  </property>
                  <property name="buddy">
                   <cstring>username</cstring>
@@ -7011,7 +7008,7 @@ padding: 7px;
                <item row="3" column="2">
                 <widget class="QLabel" name="label_97">
                  <property name="text">
-                  <string>&amp;Question:</string>
+                  <string>&amp;Question</string>
                  </property>
                  <property name="buddy">
                   <cstring>question</cstring>
@@ -7021,7 +7018,7 @@ padding: 7px;
                <item row="5" column="0">
                 <widget class="QLabel" name="label_56">
                  <property name="text">
-                  <string>Confirmation:</string>
+                  <string>Confirmation</string>
                  </property>
                  <property name="buddy">
                   <cstring>passphrase2</cstring>
@@ -7058,7 +7055,7 @@ padding: 7px;
                <item row="3" column="0">
                 <widget class="QLabel" name="label_55">
                  <property name="text">
-                  <string>P&amp;assphrase:</string>
+                  <string>P&amp;assphrase</string>
                  </property>
                  <property name="buddy">
                   <cstring>passphrase1</cstring>
@@ -7682,8 +7679,8 @@ QPushButton:pressed {
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>683</width>
-                     <height>245</height>
+                     <width>764</width>
+                     <height>236</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_67">
@@ -8897,7 +8894,7 @@ QPushButton:pressed {
              <item>
               <widget class="QCheckBox" name="acceptChatKeys">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Accept that neighbors with Spot-On (e.g. servers) can send their key over IP to you. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Accept key pairs from neighbors. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Auto-Accept &amp;Chat-Keys via IP.</string>
@@ -9826,7 +9823,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QRadioButton" name="acceptPublishedDisconnected">
                  <property name="toolTip">
-                  <string>Selection this option if you would like to accept published listeners.</string>
+                  <string>Select this option if you would like to accept published listeners.</string>
                  </property>
                  <property name="text">
                   <string>&amp;Accept Published Listeners (Disconnected)</string>
@@ -10555,7 +10552,7 @@ QPushButton:pressed {
                <enum>Qt::RightToLeft</enum>
               </property>
               <property name="text">
-               <string>&amp;Question-Method</string>
+               <string>&amp;Question Method</string>
               </property>
              </widget>
             </item>
@@ -10639,7 +10636,7 @@ QPushButton:pressed {
               <item row="2" column="0">
                <widget class="QLabel" name="label_94">
                 <property name="text">
-                 <string>&amp;Question:</string>
+                 <string>&amp;Question</string>
                 </property>
                 <property name="buddy">
                  <cstring>question_authenticate</cstring>
@@ -10671,7 +10668,7 @@ background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0
               <item row="4" column="0">
                <widget class="QLabel" name="label_100">
                 <property name="text">
-                 <string>&amp;Answer:</string>
+                 <string>&amp;Answer</string>
                 </property>
                 <property name="buddy">
                  <cstring>answer_authenticate</cstring>
@@ -10710,7 +10707,7 @@ background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0
               <item row="7" column="0">
                <widget class="QLabel" name="label_96">
                 <property name="text">
-                 <string>P&amp;assphrase:</string>
+                 <string>P&amp;assphrase</string>
                 </property>
                 <property name="buddy">
                  <cstring>passphrase</cstring>
@@ -10966,8 +10963,8 @@ spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>679</width>
-     <height>27</height>
+     <width>669</width>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -11095,7 +11092,7 @@ spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&
     <string>&amp;StarBeam Analyzer</string>
    </property>
    <property name="toolTip">
-    <string>StarBeam Analyzer: check for 100% and load the chunks if they are missing.</string>
+    <string>StarBeam Analyzer: discover missing links.</string>
    </property>
   </action>
   <action name="action_Minimal_Display">

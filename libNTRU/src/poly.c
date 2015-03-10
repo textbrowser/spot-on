@@ -8,6 +8,17 @@
 #include "err.h"
 #include "arith.h"
 
+#ifdef __APPLE__
+#include <libkern/OSByteOrder.h> 
+#define htole64(x) OSSwapHostToLittleInt64(x)
+#endif
+#ifdef __MINGW32__
+/* assume little endian */
+#define htole64(x) (x)
+#endif
+
+#define NTRU_SPARSE_THRESH 20
+
 uint8_t ntru_num_bits(uint16_t n) {
     uint8_t b = 1;
     while (n >>= 1)
@@ -262,6 +273,7 @@ uint8_t ntru_mult_int_sse(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16
             _mm_storeu_si128((__m128i*)&c_coeffs[k+i], c128);
         }
     }
+    /* no need to SSE-ify the following loop b/c the compiler auto-vectorizes it */
     for (k=0; k<N; k++)
         c->coeffs[k] = c_coeffs[k] + c_coeffs[N+k];
 
@@ -394,7 +406,8 @@ uint8_t ntru_mult_tern_64(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint1
 }
 
 #ifdef __SSSE3__
-uint8_t ntru_mult_tern_sse(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t modulus) {
+/* Optimized for small df */
+uint8_t ntru_mult_tern_sse_sparse(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t modulus) {
     uint16_t N = a->N;
     if (N != b->N)
         return 0;
@@ -455,6 +468,64 @@ uint8_t ntru_mult_tern_sse(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint
     c->N = N;
     ntru_mod(c, modulus);
     return 1;
+}
+
+/* Optimized for large df */
+uint8_t ntru_mult_tern_sse_dense(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t modulus) {
+    uint16_t N = a->N;
+    if (N != b->N)
+        return 0;
+    if (modulus & (modulus-1))   // check that modulus is a power of 2
+        return 0;
+    c->N = N;
+
+    uint16_t i;
+    for(i=N; i<NTRU_INT_POLY_SIZE; i++)
+        a->coeffs[i] = 0;
+    int16_t c_coeffs[2*NTRU_INT_POLY_SIZE];   /* double capacity for intermediate result */
+    memset(&c_coeffs, 0, sizeof(c_coeffs));
+
+    /* add coefficients that are multiplied by 1 */
+    for (i=0; i<b->num_ones; i++) {
+        int16_t j;
+        int16_t k = b->ones[i];
+        /* it is safe not to truncate the last block of 8 coefficients */
+        /* because there is extra room at the end of the coeffs array  */
+        for (j=0; j<N; j+=8,k+=8) {
+            __m128i ck = _mm_lddqu_si128((__m128i*)&c_coeffs[k]);
+            __m128i aj = _mm_lddqu_si128((__m128i*)&a->coeffs[j]);
+            __m128i ca = _mm_add_epi16(ck, aj);
+            _mm_storeu_si128((__m128i*)&c_coeffs[k], ca);
+        }
+    }
+
+    /* subtract coefficients that are multiplied by -1 */
+    for (i=0; i<b->num_neg_ones; i++) {
+        int16_t j;
+        int16_t k = b->neg_ones[i];
+        /* it is safe not to truncate the last block of 8 coefficients */
+        /* because there is extra room at the end of the coeffs array  */
+        for (j=0; j<N; j+=8,k+=8) {
+            __m128i ck = _mm_lddqu_si128((__m128i*)&c_coeffs[k]);
+            __m128i aj = _mm_lddqu_si128((__m128i*)&a->coeffs[j]);
+            __m128i ca = _mm_sub_epi16(ck, aj);
+            _mm_storeu_si128((__m128i*)&c_coeffs[k], ca);
+        }
+    }
+    for (i=0; i<N; i++)
+        c_coeffs[i] = c_coeffs[i] + c_coeffs[N+i];
+    memcpy(&c->coeffs, c_coeffs, N*2);
+
+    c->N = N;
+    ntru_mod(c, modulus);
+    return 1;
+}
+
+uint8_t ntru_mult_tern_sse(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t modulus) {
+    if (b->num_ones<NTRU_SPARSE_THRESH && b->num_neg_ones<NTRU_SPARSE_THRESH)
+        return ntru_mult_tern_sse_sparse(a, b, c, modulus);
+    else
+        return ntru_mult_tern_sse_dense(a, b, c, modulus);
 }
 #endif   /* __SSSE3__ */
 
@@ -605,6 +676,11 @@ void ntru_to_arr_64(NtruIntPoly *p, uint16_t q, uint8_t *a) {
             a64[a_idx] = coeff >> (log_q-bit_idx);
         }
     }
+
+    /* reverse byte order on big-endian machines */
+    uint16_t i;
+    for (i=0; i<=a_idx; i++)
+        a64[i] = htole64(a64[i]);
 }
 
 void ntru_to_arr_16(NtruIntPoly *p, uint16_t q, uint8_t *a) {
@@ -809,23 +885,31 @@ NtruIntPoly *ntru_clone(NtruIntPoly *a) {
     return b;
 }
 
+#ifdef __SSSE3__
+void ntru_mod_sse(NtruIntPoly *p, uint16_t modulus) {
+    uint16_t i;
+    __m128i mod_mask = _mm_set1_epi16(modulus - 1);
+
+    for (i=0; i<p->N; i+=8) {
+        __m128i a = _mm_lddqu_si128((__m128i*)&p->coeffs[i]);
+        a = _mm_and_si128(a, mod_mask);
+        _mm_storeu_si128((__m128i*)&p->coeffs[i], a);
+    }
+}
+#endif
+
 void ntru_mod_64(NtruIntPoly *p, uint16_t modulus) {
     typedef uint64_t __attribute__((__may_alias__)) uint64_t_alias;
     uint16_t i;
-    if (modulus == 2048) {
-        for (i=0; i<p->N-4; i+=4)
+    if (modulus == 20480)
+        for (i=0; i<p->N; i+=4)
             *((uint64_t_alias*)&p->coeffs[i]) &= 0x07FF07FF07FF07FF;
-        for (; i<p->N; i++)
-            p->coeffs[i] &= 0x07FF;
-    }
     else {
         uint64_t mod_mask = modulus - 1;
         mod_mask += mod_mask << 16;
         mod_mask += mod_mask << 32;
-        for (i=0; i<p->N-4; i+=4)
+        for (i=0; i<p->N; i+=4)
             *((uint64_t_alias*)&p->coeffs[i]) &= mod_mask;
-        for (; i<p->N; i++)
-            p->coeffs[i] &= mod_mask;
     }
 }
 
@@ -834,13 +918,17 @@ void ntru_mod_16(NtruIntPoly *p, uint16_t modulus) {
     if (modulus == 2048)
         for (i=0; i<p->N; i++)
             p->coeffs[i] &= 2047;
-    else
+    else {
+        uint16_t mod_mask = modulus - 1;
         for (i=0; i<p->N; i++)
-            p->coeffs[i] %= modulus;
+            p->coeffs[i] &= mod_mask;
+    }
 }
 
 void ntru_mod(NtruIntPoly *p, uint16_t modulus) {
-#ifdef _LP64
+#ifdef __SSSE3__
+    ntru_mod_sse(p, modulus);
+#elif _LP64
     ntru_mod_64(p, modulus);
 #else
     ntru_mod_16(p, modulus);
@@ -1210,8 +1298,10 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
 
         /* right-shift f, left-shift c num_zeros coefficients each */
         if (num_zeros >= 64) {
-            memmove(f_coeffs64+num_zeros/64, f_coeffs64, N-num_zeros/64*8);
-            memset(f_coeffs64+N-num_zeros/64*8, 0, num_zeros/64*8);
+            memmove(c_coeffs64+num_zeros/64, c_coeffs64, N64*8-num_zeros/64*8);
+            memset(c_coeffs64, 0, num_zeros/64*8);
+            memmove(f_coeffs64, f_coeffs64+num_zeros/64, N64*8-num_zeros/64*8);
+            memset(f_coeffs64+N64-num_zeros/64, 0, num_zeros/64*8);
             num_zeros %= 64;
         }
         if (num_zeros > 0) {
@@ -1256,7 +1346,8 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
     memset(&Fq->coeffs, 0, N * sizeof Fq->coeffs[0]);
     Fq->N = N;
     int16_t j = 0;
-    k %= N;
+    while (k >= N)
+        k -= N;
     for (i=N-1; i>=0; i--) {
         j = i - k;
         if (j < 0)
@@ -1267,12 +1358,4 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
     ntru_mod2_to_modq(a, Fq, q);
 
     return 1;
-}
-
-int32_t ntru_sum_coeffs(NtruIntPoly *a) {
-    int16_t sum = 0;
-    uint16_t i;
-    for (i=1; i<a->N; i++)
-        sum += a->coeffs[i];
-    return sum;
 }

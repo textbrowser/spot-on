@@ -169,7 +169,7 @@ void spoton::slotUpdateChatWindows(void)
       }
 
   /*
-  ** Remove chat windows that do not have corresponding participants
+  ** Remove chat windows that do not have corresponding participant
   ** entries.
   */
 

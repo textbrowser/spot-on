@@ -151,11 +151,11 @@ uint8_t ntru_mult_tern_16(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint1
 uint8_t ntru_mult_tern_64(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t modulus);
 
 /**
- * @brief General polynomial by ternary polynomial multiplication, SSE version
+ * @brief General polynomial by ternary polynomial multiplication, SSSE3 version
  *
  * Multiplies a NtruIntPoly by a NtruTernPoly. The number of coefficients
  * must be the same for both polynomials.
- * This variant requires SSE support.
+ * This variant requires SSSE3 support.
  *
  * @param a a general polynomial
  * @param b a ternary polynomial
@@ -201,11 +201,26 @@ uint8_t ntru_mult_priv(NtruPrivPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t
  *
  * Converts a NtruIntPoly to a uint8_t array. Each coefficient is encoded
  * in (log q) bits.
+ * Uses 16-bit arithmetic.
+ *
+ * @param p a polynomial
+ * @param p the modulus; must be a power of two
+ * @param a output parameter; a pointer to store the encoded polynomial.
+ *          No extra room is needed at the end.
+ */
+void ntru_to_arr_16(NtruIntPoly *p, uint16_t q, uint8_t *a);
+
+/**
+ * @brief Polynomial to binary
+ *
+ * Converts a NtruIntPoly to a uint8_t array. Each coefficient is encoded
+ * in (log q) bits.
  * Uses 64-bit arithmetic.
  *
  * @param p a polynomial
  * @param p the modulus; must be a power of two
- * @param a output parameter; a pointer to store the encoded polynomial
+ * @param a output parameter; a pointer to store the encoded polynomial.
+ *          Must accommodate at least 7 more bytes than the result takes up.
  */
 void ntru_to_arr_64(NtruIntPoly *p, uint16_t q, uint8_t *a);
 
@@ -214,10 +229,11 @@ void ntru_to_arr_64(NtruIntPoly *p, uint16_t q, uint8_t *a);
  *
  * Converts a NtruIntPoly to a uint8_t array. q is assumed to be 2048, so
  * each coefficient is encoded in 11 bits.
- * Requires SSE support.
+ * Requires SSSE3 support.
  *
  * @param p a polynomial
- * @param a output parameter; a pointer to store the encoded polynomial
+ * @param a output parameter; a pointer to store the encoded polynomial.
+ *          Must accommodate at least 7 more bytes than the result takes up.
  */
 void ntru_to_arr_sse_2048(NtruIntPoly *p, uint8_t *a);
 
@@ -305,7 +321,7 @@ uint8_t ntru_mult_int_64(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_
  *
  * Multiplies a NtruIntPoly by another, taking the coefficient values modulo an integer.
  * The number of coefficients must be the same for both polynomials.
- * Requires SSE support.
+ * Requires SSSE3 support.
  *
  * @param a input and output parameter; coefficients are overwritten
  * @param b a polynomial to multiply by
@@ -441,7 +457,7 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq);
  * Returns 0 if the polynomial is not invertible, 1 otherwise.
  * The algorithm is described in "Almost Inverses and Fast NTRU Key Generation" at
  * http://www.securityinnovation.com/uploads/Crypto/NTRUTech014.pdf
- * This function requires SSE support.
+ * This function requires SSSE3 support.
  *
  * @param a a ternary or product-form polynomial
  * @param q the modulus
@@ -449,16 +465,5 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq);
  * @return 1 if a is invertible, 0 otherwise
  */
 uint8_t ntru_invert_sse(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq);
-
-/**
- * @brief Sum of coefficients
- *
- * Returns the sum of all coefficients except the lowest coefficient,
- * i.e. evaluates the polynomial at 1 and subtracts the constant coefficient.
- *
- * @param a a polynomial
- * @return the sum of all coefficients
- */
-int32_t ntru_sum_coeffs(NtruIntPoly *a);
 
 #endif   /* NTRU_POLY_H */

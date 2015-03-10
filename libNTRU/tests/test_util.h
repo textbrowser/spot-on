@@ -6,12 +6,6 @@
 #include "poly.h"
 #include "rand.h"
 
-#ifndef NTRU_AVOID_HAMMING_WT_PATENT
-#define ALL_PARAM_SETS {EES401EP1, EES449EP1, EES667EP1, EES1087EP2, EES541EP1, EES613EP1, EES887EP1, EES1171EP1, EES659EP1, EES761EP1, EES1087EP1, EES1499EP1, EES401EP2, EES439EP1, EES593EP1, EES743EP1}
-#else
-#define ALL_PARAM_SETS {EES401EP1, EES449EP1, EES667EP1, EES1087EP2, EES541EP1, EES613EP1, EES887EP1, EES1171EP1, EES659EP1, EES761EP1, EES1087EP1, EES1499EP1}
-#endif   /* NTRU_AVOID_HAMMING_WT_PATENT */
-
 uint8_t equals_int(NtruIntPoly *a, NtruIntPoly *b);
 
 uint8_t equals_int_mod(NtruIntPoly *a, NtruIntPoly *b, uint16_t modulus);
@@ -19,6 +13,8 @@ uint8_t equals_int_mod(NtruIntPoly *a, NtruIntPoly *b, uint16_t modulus);
 uint8_t equals_key_pair(NtruEncKeyPair *kp1, NtruEncKeyPair *kp2);
 
 uint8_t equals_arr(uint8_t *arr1, uint8_t *arr2, uint16_t len);
+
+uint8_t equals_params(NtruEncParams *params1, NtruEncParams *params2);
 
 uint8_t rand_int(uint16_t N, uint16_t pow2q, NtruIntPoly *poly, NtruRandContext *rand_ctx);
 

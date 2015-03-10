@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include <stdint.h>
-#include <string.h>
+#include <stdlib.h>
 #include <time.h>
 #include "ntru.h"
 #include "rand.h"
@@ -124,56 +123,91 @@ void clock_gettime(uint32_t X, struct timespec *ts)
 
 #endif // __MINGW32__
 
+int compare_double(const void *p1, const void *p2) {
+    double t1 = *(double*)p1;
+    double t2 = *(double*)p2;
+    return t1<t2 ? -1 : (t1>t2 ? 1 : 0);
+}
+
+double median(double *samples, int num_samples) {
+    if (num_samples == 0)
+        return 0;
+    if (num_samples == 1)
+        return samples[0];
+    qsort(samples, num_samples, sizeof(samples[0]), compare_double);
+    if (num_samples%2 == 0)
+        return (samples[num_samples/2-1]+samples[num_samples/2]) / 2;
+    else
+        return samples[num_samples/2];
+}
+
+void print_time(char *label, double *samples, int num_samples) {
+    double time = median(samples, num_samples);
+    double per_sec = 1000000.0 / time;
+#ifdef WIN32
+    printf("%s %dus=%d/sec   ", label, (uint32_t)time, (uint32_t)per_sec);
+#else
+    printf("%s %dμs=%d/sec   ", label, (uint32_t)time, (uint32_t)per_sec);
+#endif
+    fflush(stdout);
+}
+
 int main(int argc, char **argv) {
     printf("Please wait...\n");
 
-    NtruEncKeyPair kp;
-
-#ifndef NTRU_AVOID_HAMMING_WT_PATENT
-    NtruEncParams params = EES439EP1;
-#else
-    NtruEncParams params = EES761EP1;
-#endif
+    NtruEncParams param_arr[] = ALL_PARAM_SETS;
     uint8_t success = 1;
-    uint32_t i;
-    struct timespec t1;
-    clock_gettime(CLOCK_REALTIME, &t1);
-    NtruRandGen rng = NTRU_RNG_DEFAULT;
-    NtruRandContext rand_ctx;
-    ntru_rand_init(&rand_ctx, &rng);
-    for (i=0; i<NUM_ITER_KEYGEN; i++)
-        success &= ntru_gen_key_pair(&params, &kp, &rand_ctx) == 0;
-    struct timespec t2;
-    clock_gettime(CLOCK_REALTIME, &t2);
-    double time = (1000000000.0*(t2.tv_sec-t1.tv_sec)+t2.tv_nsec-t1.tv_nsec) / NUM_ITER_KEYGEN;
-    double per_sec = 1000000000.0 / time;
-    printf("%f key generations/sec\n", per_sec);
 
-    uint16_t enc_len = ntru_enc_len(&params);
-    char plain_char[33];
-    strcpy(plain_char, "test message secret test message");
-    uint8_t plain[strlen(plain_char)];
-    for (i=0; i<strlen(plain_char); i++)
-        plain[i] = plain_char[i];
-    uint8_t encrypted[enc_len];
-    uint8_t decrypted[strlen(plain_char)];
-    clock_gettime(CLOCK_REALTIME, &t1);
-    for (i=0; i<NUM_ITER_ENCDEC; i++)
-        success &= ntru_encrypt((uint8_t*)&plain, strlen(plain_char), &kp.pub, &params, &rand_ctx, (uint8_t*)&encrypted) == 0;
-    clock_gettime(CLOCK_REALTIME, &t2);
-    time = (1000000000.0*(t2.tv_sec-t1.tv_sec)+t2.tv_nsec-t1.tv_nsec) / NUM_ITER_ENCDEC;
-    per_sec = 1000000000.0 / time;
-    printf("%f encryptions/sec\n", per_sec);
-    ntru_rand_release(&rand_ctx);
+    uint8_t param_idx;
+    for (param_idx=0; param_idx<sizeof(param_arr)/sizeof(param_arr[0]); param_idx++) {
+        NtruEncParams params = param_arr[param_idx];
+        NtruEncKeyPair kp;
+        uint32_t i;
+        struct timespec t1, t2;
+        printf("%-10s   ", params.name);
+        fflush(stdout);
 
-    uint16_t dec_len;
-    clock_gettime(CLOCK_REALTIME, &t1);
-    for (i=0; i<NUM_ITER_ENCDEC; i++)
-        success &= ntru_decrypt((uint8_t*)&encrypted, &kp, &params, (uint8_t*)&decrypted, &dec_len) == 0;
-    clock_gettime(CLOCK_REALTIME, &t2);
-    time = (1000000000.0*(t2.tv_sec-t1.tv_sec)+t2.tv_nsec-t1.tv_nsec) / NUM_ITER_ENCDEC;
-    per_sec = 1000000000.0 / time;
-    printf("%f decryptions/sec\n", per_sec);
+        double samples_keygen[NUM_ITER_KEYGEN];
+        NtruRandGen rng = NTRU_RNG_DEFAULT;
+        NtruRandContext rand_ctx;
+        ntru_rand_init(&rand_ctx, &rng);
+        for (i=0; i<NUM_ITER_KEYGEN; i++) {
+            clock_gettime(CLOCK_REALTIME, &t1);
+            success &= ntru_gen_key_pair(&params, &kp, &rand_ctx) == NTRU_SUCCESS;
+            clock_gettime(CLOCK_REALTIME, &t2);
+            double duration = 1000000000.0*(t2.tv_sec-t1.tv_sec) + t2.tv_nsec-t1.tv_nsec;   /* nanoseconds */
+            samples_keygen[i] = duration / 1000.0;   /* microseconds */
+        }
+        print_time("keygen", samples_keygen, NUM_ITER_KEYGEN);
+
+        double samples_encdec[NUM_ITER_ENCDEC];
+        uint16_t max_len = ntru_max_msg_len(&params);   /* max message length for this param set */
+        uint8_t plain[max_len];
+        ntru_rand_generate(plain, max_len, &rand_ctx);
+        uint16_t enc_len = ntru_enc_len(&params);
+        uint8_t encrypted[enc_len];
+        uint8_t decrypted[max_len];
+        for (i=0; i<NUM_ITER_ENCDEC; i++) {
+            clock_gettime(CLOCK_REALTIME, &t1);
+            success &= ntru_encrypt((uint8_t*)&plain, max_len, &kp.pub, &params, &rand_ctx, (uint8_t*)&encrypted) == NTRU_SUCCESS;
+            clock_gettime(CLOCK_REALTIME, &t2);
+            double duration = 1000000000.0*(t2.tv_sec-t1.tv_sec) + t2.tv_nsec-t1.tv_nsec;   /* nanoseconds */
+            samples_encdec[i] = duration / 1000.0;   /* microseconds */
+        }
+        print_time("enc", samples_encdec, NUM_ITER_ENCDEC);
+        ntru_rand_release(&rand_ctx);
+
+        uint16_t dec_len;
+        for (i=0; i<NUM_ITER_ENCDEC; i++) {
+            clock_gettime(CLOCK_REALTIME, &t1);
+            success &= ntru_decrypt((uint8_t*)&encrypted, &kp, &params, (uint8_t*)&decrypted, &dec_len) == NTRU_SUCCESS;
+            clock_gettime(CLOCK_REALTIME, &t2);
+            double duration = 1000000000.0*(t2.tv_sec-t1.tv_sec) + t2.tv_nsec-t1.tv_nsec;   /* nanoseconds */
+            samples_encdec[i] = duration / 1000.0;   /* microseconds */
+        }
+        print_time("dec", samples_encdec, NUM_ITER_ENCDEC);
+        printf("\n");
+    }
 
     if (!success)
         printf("Error!\n");
