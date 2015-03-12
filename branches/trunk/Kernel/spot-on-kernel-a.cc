@@ -1650,6 +1650,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 			   hashType,
 			   QByteArray(),
 			   symmetricKey,
+			   hashKey,
 			   0,
 			   0,
 			   QString(""));
@@ -1671,8 +1672,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 
 	if(ok)
 	  {
-	    QByteArray messageCode
-	      (spoton_crypt::keyedHash(data, hashKey, hashType, &ok));
+	    QByteArray messageCode(crypt.keyedHash(data, &ok));
 
 	    if(ok)
 	      data = keyInformation.toBase64() + "\n" +
@@ -1690,6 +1690,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 			       "sha512" ,
 			       QByteArray(),
 			       gemini.first,
+			       gemini.second,
 			       0,
 			       0,
 			       QString(""));
@@ -1698,8 +1699,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 	      (QByteArray("0000").toBase64() + "\n" + data, &ok);
 
 	    if(ok)
-	      messageCode = spoton_crypt::keyedHash
-		(data, gemini.second, "sha512", &ok);
+	      messageCode = crypt.keyedHash(data, &ok);
 
 	    if(ok)
 	      {
@@ -2290,6 +2290,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 				       hashType,
 				       QByteArray(),
 				       symmetricKey,
+				       hashKey,
 				       0,
 				       0,
 				       QString(""));
@@ -2311,9 +2312,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 		    if(ok)
 		      {
-			QByteArray messageCode
-			  (spoton_crypt::keyedHash(data, hashKey,
-						   hashType, &ok));
+			QByteArray messageCode(crypt.keyedHash(data, &ok));
 
 			if(ok)
 			  data = keyInformation.toBase64() + "\n" +
@@ -2331,6 +2330,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 					   "sha512" ,
 					   QByteArray(),
 					   gemini.first,
+					   gemini.second,
 					   0,
 					   0,
 					   QString(""));
@@ -2339,8 +2339,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			  (QByteArray("0013").toBase64() + "\n" + data, &ok);
 
 			if(ok)
-			  messageCode = spoton_crypt::keyedHash
-			    (data, gemini.second, "sha512", &ok);
+			  messageCode = crypt.keyedHash(data, &ok);
 
 			if(ok)
 			  {
@@ -2408,6 +2407,7 @@ void spoton_kernel::slotScramble(void)
 			 hashType,
 			 QByteArray(),
 			 symmetricKey,
+			 spoton_crypt::strongRandomBytes(64),
 			 0,
 			 0,
 			 QString(""));
@@ -2415,8 +2415,7 @@ void spoton_kernel::slotScramble(void)
       data = crypt.encrypted(message, &ok);
 
       if(ok)
-	messageCode = spoton_crypt::keyedHash
-	  (data, spoton_crypt::strongRandomBytes(64), hashType, &ok);
+	messageCode = crypt.keyedHash(data, &ok);
 
       if(ok)
 	{
@@ -2537,6 +2536,7 @@ void spoton_kernel::slotRetrieveMail(void)
 				 hashType,
 				 QByteArray(),
 				 institutionName,
+				 institutionPostalAddress,
 				 0,
 				 0,
 				 QString(""));
@@ -2552,9 +2552,7 @@ void spoton_kernel::slotRetrieveMail(void)
 
 	      if(ok)
 		{
-		  QByteArray messageCode
-		    (spoton_crypt::keyedHash(data, institutionPostalAddress,
-					     hashType, &ok));
+		  QByteArray messageCode(crypt.keyedHash(data, &ok));
 
 		  if(ok)
 		    data = data.toBase64() + "\n" +
@@ -2666,6 +2664,7 @@ void spoton_kernel::slotRetrieveMail(void)
 				     hashType,
 				     QByteArray(),
 				     symmetricKey,
+				     hashKey,
 				     0,
 				     0,
 				     QString(""));
@@ -2679,9 +2678,7 @@ void spoton_kernel::slotRetrieveMail(void)
 
 		  if(ok)
 		    {
-		      QByteArray messageCode
-			(spoton_crypt::keyedHash(data, hashKey,
-						 hashType, &ok));
+		      QByteArray messageCode(crypt.keyedHash(data, &ok));
 
 		      if(ok)
 			data = keyInformation.toBase64() + "\n" +
@@ -2926,6 +2923,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     hashType,
 				     QByteArray(),
 				     symmetricKey,
+				     hashKey,
 				     0,
 				     0,
 				     QString(""));
@@ -2954,8 +2952,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		       &ok);
 
 		  if(ok)
-		    messageCode1 = spoton_crypt::keyedHash
-		      (data, hashKey, hashType, &ok);
+		    messageCode1 = crypt.keyedHash(data, &ok);
 
 		  if(ok)
 		    recipientHashInformation = spoton_crypt::keyedHash
@@ -3465,6 +3462,7 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 		     hashType,
 		     QByteArray(),
 		     key,
+		     hashKey,
 		     0,
 		     0,
 		     QString(""));
@@ -3490,7 +3488,7 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
   data = crypt.encrypted(data, &ok);
 
   if(ok)
-    messageCode = spoton_crypt::keyedHash(data, hashKey, hashType, &ok);
+    messageCode = crypt.keyedHash(data, &ok);
 
   if(ok)
     data = data.toBase64() + "\n" + messageCode.toBase64();
@@ -3941,6 +3939,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 				       hashType,
 				       QByteArray(),
 				       symmetricKey,
+				       hashKey,
 				       0,
 				       0,
 				       QString(""));
@@ -3963,8 +3962,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 		    if(ok)
 		      {
 			QByteArray messageCode
-			  (spoton_crypt::keyedHash(data, hashKey, hashType,
-						   &ok));
+			  (crypt.keyedHash(data, &ok));
 
 			if(ok)
 			  data = keyInformation.toBase64() + "\n" +
@@ -4130,6 +4128,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 				       "sha512",
 				       QByteArray(),
 				       gemini.first,
+				       gemini.second,
 				       0,
 				       0,
 				       QString(""));
@@ -4153,8 +4152,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 		    if(ok)
 		      {
 			QByteArray messageCode
-			  (spoton_crypt::keyedHash(data, gemini.second,
-						   "sha512", &ok));
+			  (crypt.keyedHash(data, &ok));
 
 			if(ok)
 			  data = data.toBase64() + "\n" +
@@ -4949,6 +4947,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 				       hashType,
 				       QByteArray(),
 				       symmetricKey,
+				       hashKey,
 				       0,
 				       0,
 				       QString(""));
@@ -4971,8 +4970,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 		    if(ok)
 		      {
 			QByteArray messageCode
-			  (spoton_crypt::keyedHash(data, hashKey, hashType,
-						   &ok));
+			  (crypt.keyedHash(data, &ok));
 
 			if(ok)
 			  data = keyInformation.toBase64() + "\n" +

@@ -382,9 +382,10 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 		  QDataStream stream(&bytes, QIODevice::WriteOnly);
 		  int size = 0;
 		  spoton_crypt crypt(elements.value("ct").constData(),
-				     QString(""),
+				     elements.value("ht").constData(),
 				     QByteArray(),
 				     elements.value("ek"),
+				     elements.value("mk"),
 				     0,
 				     0,
 				     QString(""));
@@ -431,11 +432,7 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 		    }
 
 		  if(ok)
-		    messageCode = spoton_crypt::keyedHash
-		      (data,
-		       elements.value("mk"),
-		       elements.value("ht"),
-		       &ok);
+		    messageCode = crypt.keyedHash(data, &ok);
 
 		  if(ok)
 		    data = data.toBase64() + "\n" + messageCode.toBase64();
