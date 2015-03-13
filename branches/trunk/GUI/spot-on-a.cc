@@ -1670,7 +1670,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.emailName->setText
     (QString::fromUtf8(m_settings.value("gui/emailName", "unknown").
 		       toByteArray()).trimmed());
-  m_ui.etpMacKey->setMaxLength(512);
   m_ui.nodeName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.nodeName->setText
     (QString::fromUtf8(m_settings.value("gui/nodeName", "unknown").
@@ -1692,11 +1691,6 @@ spoton::spoton(void):QMainWindow()
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
   m_ui.institutionName->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
-  m_ui.institutionPostalAddress->setMaxLength(256);
-  m_ui.passphrase1->setMaxLength
-    (spoton_common::PASSPHRASE_MAXIMUM_LENGTH);
-   m_ui.passphrase2->setMaxLength
-    (spoton_common::PASSPHRASE_MAXIMUM_LENGTH);
   m_ui.transmitNova->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")) + 512);
   m_ui.channelType->addItems(spoton_crypt::cipherTypes());
@@ -4919,14 +4913,6 @@ void spoton::slotSetPassphrase(void)
       str1 = m_ui.question->text();
       str2 = m_ui.answer->text();
     }
-
-  for(int i = str1.length() - 1; i >= 0; i--)
-    if(!str1.at(i).isPrint())
-      str1.remove(i, 1);
-
-  for(int i = str2.length() - 1; i >= 0; i--)
-    if(!str2.at(i).isPrint())
-      str2.remove(i, 1);
 
   if(str1.length() < 16 || str2.length() < 16)
     {

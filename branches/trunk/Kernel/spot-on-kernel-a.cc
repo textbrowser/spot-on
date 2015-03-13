@@ -431,33 +431,17 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      {
 		cout << "Passphrase, please: ";
 		cout.flush();
-		input1 = cin.readLine
-		  (spoton_common::PASSPHRASE_MAXIMUM_LENGTH);
-
-		for(int i = input1.length() - 1; i >= 0; i--)
-		  if(!input1.at(i).isPrint())
-		    input1.remove(i, 1);
+		input1 = cin.readLine(std::numeric_limits<int>::max());
 	      }
 	    else
 	      {
 		cout << "Question, please: ";
 		cout.flush();
-		input1 = cin.readLine
-		  (spoton_common::QUESTIONANSWER_MAXIMUM_LENGTH);
-
-		for(int i = input1.length() - 1; i >= 0; i--)
-		  if(!input1.at(i).isPrint())
-		    input1.remove(i, 1);
-
+		input1 = cin.readLine(std::numeric_limits<int>::max());
 		cout << endl;
 		cout << "Answer, please: ";
 		cout.flush();
-		input2 = cin.readLine
-		  (spoton_common::QUESTIONANSWER_MAXIMUM_LENGTH);
-
-		for(int i = input2.length() - 1; i >= 0; i--)
-		  if(!input2.at(i).isPrint())
-		    input2.remove(i, 1);
+		input2 = cin.readLine(std::numeric_limits<int>::max());
 	      }
 	  }
 

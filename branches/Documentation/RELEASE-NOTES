@@ -24,6 +24,13 @@
 16.  Post Poptastic messages every 2.5 seconds.
 17.  Use spoton_crypt instance methods when available instead of static
      methods.
+18.  Removed maximum length restrictions on e-mail postal addresses and
+     StarBeam hash keys.
+19.  Removed maximum length restrictions on user passphrases.
+     The --passphrase and --question-answer options have been modified so
+     as to accept at most std::numeric_limits<int>::max()) characters.
+20.  Removed printable-character restrictions for listener accounts,
+     user passphrases, and user questions/answers.
 
 0.19 (02/22/2015)
 
