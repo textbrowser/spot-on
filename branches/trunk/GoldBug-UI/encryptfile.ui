@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>805</width>
-    <height>278</height>
+    <width>600</width>
+    <height>270</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -361,6 +361,36 @@ QPushButton:pressed {
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>&amp;Read Size</string>
+        </property>
+        <property name="buddy">
+         <cstring>readSize</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="readSize">
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToContents</enum>
+        </property>
+        <item>
+         <property name="text">
+          <string>1024 Bits</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>32768 Bits</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="sign">
         <property name="text">
          <string>&amp;Sign file.</string>
@@ -439,8 +469,8 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>805</width>
-     <height>24</height>
+     <width>600</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -501,6 +531,7 @@ QPushButton:pressed {
   <tabstop>gcm</tabstop>
   <tabstop>hash</tabstop>
   <tabstop>cancel</tabstop>
+  <tabstop>readSize</tabstop>
   <tabstop>sign</tabstop>
   <tabstop>convert</tabstop>
   <tabstop>reset</tabstop>

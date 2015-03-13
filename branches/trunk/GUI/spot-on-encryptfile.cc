@@ -48,7 +48,7 @@ spoton_encryptfile::spoton_encryptfile(void):QMainWindow()
   setWindowTitle
     (tr("%1: File Encryption").
      arg(SPOTON_APPLICATION_NAME));
-#if GCRYPT_VERSION_NUMBER < 0x010600
+#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
   ui.gcm->setEnabled(false);
 #endif
 #ifdef Q_OS_MAC
@@ -268,8 +268,10 @@ void spoton_encryptfile::slotConvert(void)
   list << ui.hash->currentText();
   list << derivedKeys.first;
   list << derivedKeys.second;
+  list << ui.readSize->currentText().toInt();
   ui.cancel->setVisible(true);
   ui.convert->setEnabled(false);
+  ui.readSize->setEnabled(false);
   ui.reset->setEnabled(false);
   ui.progressBar->setValue(0);
   ui.progressBar->setVisible(true);
@@ -336,11 +338,13 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	{
 	  sign = bytes.mid(0, 1).toInt();
 	  bytes.clear();
-	  bytes.resize(4096 + 16 + 4); /*
-				       ** 16 = length of initialization
-				       **      vector.
-				       ** 4 = length of original buffer.
-				       */
+	  bytes.resize
+	    (qMax(1024 / 8, credentials.value(4).toInt() / 8) + 16 + 4);
+	  /*
+	  ** 16 = length of initialization
+	  **      vector.
+	  ** 4 = length of original buffer.
+	  */
 	}
       else
 	{
@@ -445,6 +449,8 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	}
 
       emit status("Decrypting the file.");
+      bytes.clear();
+      bytes.resize(4096);
 
       while((rc = file1.read(bytes.data(), bytes.length())) > 0)
 	{
@@ -541,7 +547,7 @@ void spoton_encryptfile::encrypt(const bool sign,
 	}
 
       bytes.clear();
-      bytes.resize(4096);
+      bytes.resize(qMax(1024 / 8, credentials.value(4).toInt() / 8));
       emit status("Encrypting the file.");
 
       while((rc = file1.read(bytes.data(), bytes.length())) > 0)
@@ -671,6 +677,7 @@ void spoton_encryptfile::slotCompleted(const QString &error)
   statusBar()->clearMessage();
   ui.cancel->setVisible(false);
   ui.convert->setEnabled(true);
+  ui.readSize->setEnabled(true);
   ui.reset->setEnabled(true);
   ui.progressBar->setVisible(false);
 
@@ -709,6 +716,7 @@ void spoton_encryptfile::slotReset(void)
   ui.hash->setCurrentIndex(0);
   ui.password->clear();
   ui.pin->clear();
+  ui.readSize->setCurrentIndex(1);
   ui.sign->setChecked(true);
 }
 

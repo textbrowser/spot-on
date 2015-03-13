@@ -31,6 +31,9 @@
      as to accept at most std::numeric_limits<int>::max()) characters.
 20.  Removed printable-character restrictions for listener accounts,
      user passphrases, and user questions/answers.
+21.  Corrected #if usage in spot-on-encryptfile.cc with respect to
+     GCRYPT_VERSION_NUMBER.
+22.  Added a read size option to the file encryption too.
 
 0.19 (02/22/2015)
 
