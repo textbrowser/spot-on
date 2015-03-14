@@ -1871,10 +1871,6 @@ void spoton_kernel::slotUpdateSettings(void)
 
   if(!setting("gui/disableSmtp", false).toBool())
     {
-      if(!m_poptasticPostTimer.isActive())
-	m_poptasticPostTimer.start(integer);
-      else if(integer != m_poptasticPostTimer.interval())
-	m_poptasticPostTimer.start(integer);
     }
   else
     {
