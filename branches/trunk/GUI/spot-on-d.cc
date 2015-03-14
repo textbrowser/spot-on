@@ -559,7 +559,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.listenerScopeId->setHidden(state);
   m_ui.label_12->setHidden(state);
   m_ui.listenerPort->setHidden(state);
-  m_ui.label_15->setHidden(state);
   m_ui.sslListener->setHidden(state);
   m_ui.listenerKeySize->setHidden(state);
   m_ui.listenersEchoMode->setHidden(state);
