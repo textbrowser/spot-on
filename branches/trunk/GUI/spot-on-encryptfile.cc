@@ -268,10 +268,9 @@ void spoton_encryptfile::slotConvert(void)
   list << ui.hash->currentText();
   list << derivedKeys.first;
   list << derivedKeys.second;
-  list << ui.readSize->currentText().toInt();
+  list << ui.readSize->currentText();
   ui.cancel->setVisible(true);
   ui.convert->setEnabled(false);
-  ui.readSize->setEnabled(false);
   ui.reset->setEnabled(false);
   ui.progressBar->setValue(0);
   ui.progressBar->setVisible(true);
@@ -355,28 +354,12 @@ void spoton_encryptfile::decrypt(const QString &fileName,
       if(sign)
 	{
 	  emit status(tr("Verifying the hash."));
+	  rc = file1.read(hash.data(),
+			  spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 
-	  if(file1.seek(file1.size() -
-			spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES))
+	  if(rc != spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES)
 	    {
-	      rc = file1.read(hash.data(),
-			      spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
-
-	      if(rc != spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES)
-		{
-		  error = tr("File read failure.");
-		  goto done_label;
-		}
-	    }
-	  else
-	    {
-	      error = tr("File seek failure.");
-	      goto done_label;
-	    }
-
-	  if(!file1.seek(1))
-	    {
-	      error = tr("File seek failure.");
+	      error = tr("File read failure.");
 	      goto done_label;
 	    }
 
@@ -389,11 +372,6 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 		}
 
 	      QByteArray data(bytes.mid(0, static_cast<int> (rc)));
-
-	      if(file1.atEnd())
-		data = data.mid
-		  (0, data.length() -
-		   spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 
 	      {
 		QByteArray hash;
@@ -438,19 +416,21 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 
 	  if(!error.isEmpty())
 	    goto done_label;
-
-	  if(!file1.seek(1))
-	    {
-	      error = tr("File seek failure.");
-	      goto done_label;
-	    }
-	  else
-	    emit completed(0);
 	}
 
+      /*
+      ** Seek to the data area.
+      */
+
+      if(!file1.seek(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES + 1))
+	{
+	  error = tr("File seek failure.");
+	  goto done_label;
+	}
+      else
+	emit completed(0);
+
       emit status("Decrypting the file.");
-      bytes.clear();
-      bytes.resize(4096);
 
       while((rc = file1.read(bytes.data(), bytes.length())) > 0)
 	{
@@ -461,12 +441,6 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	    }
 
 	  QByteArray data(bytes.mid(0, static_cast<int> (rc)));
-
-	  if(sign)
-	    if(file1.atEnd())
-	      data = data.mid(0, data.length() -
-			      spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
-
 	  bool ok = true;
 
 	  data = crypt.decrypted(data, &ok);
@@ -538,6 +512,7 @@ void spoton_encryptfile::encrypt(const bool sign,
 			 modeOfOperation);
 
       bytes.append(QByteArray::number(sign));
+      bytes.append(QByteArray(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES, 0));
       rc = file2.write(bytes.constData(), bytes.length());
 
       if(bytes.length() != rc)
@@ -613,6 +588,12 @@ void spoton_encryptfile::encrypt(const bool sign,
 	    error = tr("Hash failure.");
 	  else
 	    {
+	      if(!file2.seek(1))
+		{
+		  error = tr("File seek error.");
+		  goto done_label;
+		}
+
 	      rc = file2.write(hashes.constData(), hashes.length());
 
 	      if(hashes.length() != rc)
@@ -677,7 +658,6 @@ void spoton_encryptfile::slotCompleted(const QString &error)
   statusBar()->clearMessage();
   ui.cancel->setVisible(false);
   ui.convert->setEnabled(true);
-  ui.readSize->setEnabled(true);
   ui.reset->setEnabled(true);
   ui.progressBar->setVisible(false);
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
-    <height>225</height>
+    <width>643</width>
+    <height>236</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -273,6 +273,9 @@
       </item>
       <item>
        <widget class="QComboBox" name="readSize">
+        <property name="toolTip">
+         <string>Bits</string>
+        </property>
         <property name="currentIndex">
          <number>1</number>
         </property>
@@ -281,12 +284,12 @@
         </property>
         <item>
          <property name="text">
-          <string>1024 Bits</string>
+          <string>1024</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>32768 Bits</string>
+          <string>32768</string>
          </property>
         </item>
        </widget>
@@ -324,8 +327,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>636</width>
-     <height>23</height>
+     <width>643</width>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
