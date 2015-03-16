@@ -42,7 +42,7 @@ FORMS           = UI/adaptiveechoprompt.ui \
                   UI/logviewer.ui \
 		  UI/options.ui \
                   UI/passwordprompt.ui \
-		  UI/poptasticsettings.ui \
+		  UI/poptastic-retrophone-settings.ui \
 		  UI/postgresqlconnect.ui \
 		  UI/rosetta.ui \
                   UI/starbeamanalyzer.ui \

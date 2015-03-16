@@ -292,8 +292,8 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.setupUi(m_optionsWindow);
   m_optionsWindow->setWindowTitle
     (tr("%1: Options").arg(SPOTON_APPLICATION_NAME));
-  m_poptasticDialog = new QDialog(this);
-  m_poptasticSettingsUi.setupUi(m_poptasticDialog);
+  m_poptasticRetroPhoneDialog = new QDialog(this);
+  m_poptasticRetroPhoneSettingsUi.setupUi(m_poptasticRetroPhoneDialog);
   m_sbWidget = new QWidget(this);
   m_sb.setupUi(m_sbWidget);
   m_sb.authentication_request->setVisible(false);
@@ -5585,14 +5585,14 @@ void spoton::slotValidatePassphrase(void)
 	      (m_crypts.value("chat", 0), &ok);
 
 	    if(ok)
-	      m_poptasticSettingsUi.in_username->setText
+	      m_poptasticRetroPhoneSettingsUi.in_username->setText
 		(hash["in_username"].toString().trimmed());
 	    else
-	      m_poptasticSettingsUi.in_username->setText
+	      m_poptasticRetroPhoneSettingsUi.in_username->setText
 		("unknown@unknown.org");
 
 	    m_settings["gui/poptasticName"] =
-	      m_poptasticSettingsUi.in_username->text().toUtf8();
+	      m_poptasticRetroPhoneSettingsUi.in_username->text().toUtf8();
 
 	    if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
 				 false).toBool())

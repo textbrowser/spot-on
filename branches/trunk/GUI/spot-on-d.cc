@@ -2779,7 +2779,7 @@ void spoton::slotSharePoptasticPublicKey(void)
   if(ok)
     {
       QByteArray message;
-      QByteArray name(m_poptasticSettingsUi.in_username->text().
+      QByteArray name(m_poptasticRetroPhoneSettingsUi.in_username->text().
 		      trimmed().toUtf8());
 
       if(name.isEmpty())

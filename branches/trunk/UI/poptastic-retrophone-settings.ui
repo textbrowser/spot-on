@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>poptasticsettings</class>
- <widget class="QDialog" name="poptasticsettings">
+ <class>poptasticretrophonesettings</class>
+ <widget class="QDialog" name="poptasticretrophonesettings">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>750</width>
-    <height>638</height>
+    <height>662</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../Icons/icons.qrc">
-    <normaloff>:/Logo/goldbug.png</normaloff>:/Logo/goldbug.png</iconset>
+    <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -758,7 +758,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>poptasticsettings</receiver>
+   <receiver>poptasticretrophonesettings</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -774,7 +774,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>poptasticsettings</receiver>
+   <receiver>poptasticretrophonesettings</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

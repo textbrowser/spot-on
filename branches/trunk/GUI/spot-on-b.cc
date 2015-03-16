@@ -103,7 +103,7 @@ void spoton::slotSendMessage(void)
 	    name = m_settings.value("gui/nodeName", "unknown").
 	      toByteArray();
 	  else
-	    name = m_poptasticSettingsUi.in_username->text().
+	    name = m_poptasticRetroPhoneSettingsUi.in_username->text().
 	      trimmed().toUtf8();
 
 	  if(name.isEmpty())
@@ -984,15 +984,16 @@ void spoton::highlightPaths(void)
   QFileInfo fileInfo;
   QPalette palette;
 
-  fileInfo.setFile(m_poptasticSettingsUi.capath->text());
+  fileInfo.setFile(m_poptasticRetroPhoneSettingsUi.capath->text());
 
   if(fileInfo.isReadable())
     color = QColor(144, 238, 144);
   else
     color = QColor(240, 128, 128); // Light coral!
 
-  palette.setColor(m_poptasticSettingsUi.capath->backgroundRole(), color);
-  m_poptasticSettingsUi.capath->setPalette(palette);
+  palette.setColor(m_poptasticRetroPhoneSettingsUi.
+		   capath->backgroundRole(), color);
+  m_poptasticRetroPhoneSettingsUi.capath->setPalette(palette);
   fileInfo.setFile(m_ui.destination->text());
 
   if(fileInfo.isReadable() && fileInfo.isWritable())
@@ -1312,7 +1313,8 @@ QByteArray spoton::copyMyPoptasticPublicKey(void) const
   QByteArray sSignature;
   bool ok = true;
 
-  name = m_poptasticSettingsUi.in_username->text().trimmed().toUtf8();
+  name = m_poptasticRetroPhoneSettingsUi.in_username->
+    text().trimmed().toUtf8();
 
   if(name.isEmpty())
     name = "unknown@unknown.org";
@@ -2569,7 +2571,8 @@ void spoton::slotCopyFriendshipBundle(void)
   if(keyType == "chat")
     myName = m_settings.value("gui/nodeName", "unknown").toByteArray();
   else
-    myName = m_poptasticSettingsUi.in_username->text().trimmed().toUtf8();
+    myName = m_poptasticRetroPhoneSettingsUi.in_username->text().
+      trimmed().toUtf8();
 
   if(myName.isEmpty())
     {

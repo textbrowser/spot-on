@@ -99,7 +99,7 @@ extern "C"
 #include "spot-on-starbeamanalyzer.h"
 #include "ui_controlcenter.h"
 #include "ui_options.h"
-#include "ui_poptasticsettings.h"
+#include "ui_poptastic-retrophone-settings.h"
 #include "ui_statusbar.h"
 
 class QProgressDialog;
@@ -130,7 +130,7 @@ class spoton: public QMainWindow
   QDateTime m_neighborsLastModificationTime;
   QDateTime m_participantsLastModificationTime;
   QDateTime m_starsLastModificationTime;
-  QDialog *m_poptasticDialog;
+  QDialog *m_poptasticRetroPhoneDialog;
   QHash<QByteArray, QString> m_neighborToOidMap;
   QHash<QByteArray, quint64> m_receivedChatSequenceNumbers;
   QHash<QString, QByteArray> m_buzzIds;
@@ -157,7 +157,7 @@ class spoton: public QMainWindow
   QTimer m_tableTimer;
   QTimer m_updateChatWindowsTimer;
   QWidget *m_sbWidget;
-  Ui_poptasticsettings m_poptasticSettingsUi;
+  Ui_poptasticretrophonesettings m_poptasticRetroPhoneSettingsUi;
   Ui_spoton_mainwindow m_ui;
   Ui_spoton_options m_optionsUi;
   Ui_statusbar m_sb;
