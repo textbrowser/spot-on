@@ -1873,6 +1873,7 @@ void spoton_kernel::slotUpdateSettings(void)
     {
       if(!m_poptasticPostTimer.isActive())
 	m_poptasticPostTimer.start(2500);
+    }
   else
     {
       m_poptasticPostTimer.stop();
