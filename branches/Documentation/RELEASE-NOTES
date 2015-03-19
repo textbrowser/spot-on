@@ -2,6 +2,9 @@
 
 1.   Corrected Poptastic kernel timer.
 2.   RetroPhone work. Incomplete.
+3.   Disable SSL session tickets.
+4.   Disable SSL session sharing. Qt 5.2.x or higher is required.
+5.   Disable SSL session persistence. Qt 5.2.x or higher is required.
 
 0.20 (03/14/2015)
 

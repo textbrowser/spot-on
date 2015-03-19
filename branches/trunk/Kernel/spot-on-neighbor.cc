@@ -246,6 +246,14 @@ spoton_neighbor::spoton_neighbor
 		    (QSsl::SslOptionDisableEmptyFragments, true);
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableLegacyRenegotiation, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableSessionTickets, true);
+#if QT_VERSION >= 0x050200
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableSessionPersistence, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableSessionSharing, true);
+#endif
 #endif
 		  spoton_crypt::setSslCiphers
 		    (m_tcpSocket->supportedCiphers(), m_sslControlString,
@@ -638,6 +646,14 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 		(QSsl::SslOptionDisableEmptyFragments, true);
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableLegacyRenegotiation, true);
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableSessionTickets, true);
+#if QT_VERSION >= 0x050200
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableSessionPersistence, true);
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableSessionSharing, true);
+#endif
 #endif
 	      configuration.setPeerVerifyMode(QSslSocket::QueryPeer);
 	      spoton_crypt::setSslCiphers
