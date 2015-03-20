@@ -1429,7 +1429,7 @@ void spoton_neighbor::saveStatus(const QSqlDatabase &db,
   query.exec("PRAGMA synchronous = OFF");
   query.prepare("UPDATE neighbors SET is_encrypted = ?, status = ? "
 		"WHERE OID = ? AND status_control <> 'deleted'");
-  query.bindValue(0, isEncrypted());
+  query.bindValue(0, isEncrypted() ? 1 : 0);
   query.bindValue(1, status);
   query.bindValue(2, m_id);
   query.exec();
