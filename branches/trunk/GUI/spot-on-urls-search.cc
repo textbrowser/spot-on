@@ -100,6 +100,7 @@ void spoton::discoverUrls(void)
     }
   else
     {
+      QHash<QString, char> discovered;
       QString keywordclause("");
       QString searchfor(tr("Searched for... "));
       QStringList keywords
@@ -108,6 +109,11 @@ void spoton::discoverUrls(void)
 
       for(int i = 0; i < keywords.size(); i++)
 	{
+	  if(!discovered.contains(keywords.at(i)))
+	    discovered[keywords.at(i)] = '0';
+	  else
+	    continue;
+
 	  searchfor.append(keywords.at(i));
 
 	  if(i != keywords.size() - 1)
