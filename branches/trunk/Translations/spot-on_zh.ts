@@ -2244,22 +2244,22 @@ SSL Control String: %13</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls-search.cc" line="104"/>
+        <location filename="../GUI/spot-on-urls-search.cc" line="105"/>
         <source>Searched for... </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls-search.cc" line="281"/>
+        <location filename="../GUI/spot-on-urls-search.cc" line="287"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls-search.cc" line="314"/>
+        <location filename="../GUI/spot-on-urls-search.cc" line="320"/>
         <source> &lt;a href=&quot;&gt;&quot;&gt;Next&lt;/a&gt; </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls-search.cc" line="317"/>
+        <location filename="../GUI/spot-on-urls-search.cc" line="323"/>
         <source> &lt;a href=&quot;&lt;&quot;&gt;Previous&lt;/a&gt; </source>
         <translation type="unfinished"></translation>
     </message>
