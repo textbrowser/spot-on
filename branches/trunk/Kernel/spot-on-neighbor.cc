@@ -154,25 +154,7 @@ spoton_neighbor::spoton_neighbor
   m_bytesRead = 0;
   m_bytesWritten = 0;
   m_echoMode = echoMode;
-
-  try
-    {
-      m_externalAddress = new spoton_external_address(this);
-    }
-  catch(std::bad_alloc &exception)
-    {
-      if(m_sctpSocket)
-	m_sctpSocket->deleteLater();
-
-      if(m_tcpSocket)
-	m_tcpSocket->deleteLater();
-
-      if(m_udpSocket)
-	m_udpSocket->deleteLater();
-
-      throw;
-    }
-
+  m_externalAddress = new spoton_external_address(this);
   m_id = -1; /*
 	     ** This neighbor was created by a listener. We must
 	     ** obtain a valid id at some point (setId())!
@@ -578,20 +560,12 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
       m_useSsl = false;
     }
 
-  try
-    {
-      if(m_transport == "sctp")
-	m_sctpSocket = new spoton_sctp_socket(this);
-      else if(m_transport == "tcp")
-	m_tcpSocket = new spoton_neighbor_tcp_socket(this);
-      else if(m_transport == "udp")
-	m_udpSocket = new spoton_neighbor_udp_socket(this);
-    }
-  catch(std::bad_alloc &exception)
-    {
-      m_externalAddress->deleteLater();
-      throw;
-    }
+  if(m_transport == "sctp")
+    m_sctpSocket = new spoton_sctp_socket(this);
+  else if(m_transport == "tcp")
+    m_tcpSocket = new spoton_neighbor_tcp_socket(this);
+  else if(m_transport == "udp")
+    m_udpSocket = new spoton_neighbor_udp_socket(this);
 
   if(m_sctpSocket)
     m_sctpSocket->setReadBufferSize(m_maximumBufferSize);

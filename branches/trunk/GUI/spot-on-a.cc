@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
     }
   catch(std::bad_alloc &exception)
     {
-      std::cerr << "Critical memory failure. Exiting.\n";
+      std::cerr << "Critical memory failure. Exiting." << std::endl;
       curl_global_cleanup();
       return EXIT_FAILURE;
     }

@@ -176,25 +176,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   m_address.setScopeId(scopeId);
   m_certificate = certificate;
   m_echoMode = echoMode;
-
-  try
-    {
-      m_externalAddress = new spoton_external_address(this);
-    }
-  catch(std::bad_alloc &exception)
-    {
-      if(m_sctpServer)
-	m_sctpServer->deleteLater();
-
-      if(m_tcpServer)
-	m_tcpServer->deleteLater();
-
-      if(m_udpServer)
-	m_udpServer->deleteLater();
-
-      throw;
-    }
-
+  m_externalAddress = new spoton_external_address(this);
   m_keySize = qAbs(keySize);
 
   if(transport == "tcp")
@@ -718,6 +700,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    neighbor->deleteLater();
 
 	  error = "irregular exception";
+	  neighbor = 0;
 	  spoton_misc::logError("spoton_listener::slotNewConnection(): "
 				"critical failure.");
 	}
