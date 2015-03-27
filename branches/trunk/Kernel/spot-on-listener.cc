@@ -690,7 +690,6 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
       catch(std::bad_alloc &exception)
 	{
 	  error = "memory allocation failure";
-	  neighbor = 0;
 	  spoton_misc::logError("spoton_listener::slotNewConnection(): "
 				"memory failure.");
 	}
@@ -700,7 +699,6 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    neighbor->deleteLater();
 
 	  error = "irregular exception";
-	  neighbor = 0;
 	  spoton_misc::logError("spoton_listener::slotNewConnection(): "
 				"critical failure.");
 	}
