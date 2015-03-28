@@ -9,7 +9,7 @@ make distclean or mingw32-make distclean
 
 FreeBSD:
 qmake -o Makefile spot-on.freebsd.pro
-gmake or make
+gmake
 
 Linux:
 qmake -o Makefile spot-on.pro
