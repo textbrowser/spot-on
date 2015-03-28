@@ -406,6 +406,8 @@ void spoton::slotGatherUrlStatistics(void)
 	    else
 	      c2 = QChar(j + 97 - 10);
 
+	    query.setForwardOnly(true);
+
 	    if(query.exec(QString("SELECT COUNT(*) FROM spot_on_urls_%1%2").
 			  arg(c1).arg(c2)))
 	      if(query.next())

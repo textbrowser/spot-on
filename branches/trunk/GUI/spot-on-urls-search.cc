@@ -197,6 +197,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
   QSqlQuery query(m_urlDatabase);
   quint64 count = 0;
 
+  query.setForwardOnly(true);
   query.prepare(querystr);
 
   if(query.exec())

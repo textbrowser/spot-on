@@ -200,6 +200,7 @@ void spoton_starbeam_writer::processData
 	    QSqlQuery query(db);
 	    bool ok = true;
 
+	    query.setForwardOnly(true);
 	    query.prepare("SELECT locked FROM received WHERE file_hash = ?");
 	    query.bindValue
 	      (0, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());

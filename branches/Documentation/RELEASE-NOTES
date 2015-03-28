@@ -10,6 +10,7 @@
 8.   Ignore duplicate keywords in link searching.
 9.   Corrected isEncrypted() use in spoton_neighbor::saveStatus().
 10.  Corrected throw clauses. Removed redundant try-catch blocks.
+11.  Set forward-only database queries.
 
 0.20 (03/14/2015)
 
