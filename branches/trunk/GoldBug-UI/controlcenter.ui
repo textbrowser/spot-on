@@ -4676,9 +4676,17 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <item>
                  <widget class="QComboBox" name="neighborTransport">
+                  <property name="currentIndex">
+                   <number>1</number>
+                  </property>
                   <property name="sizeAdjustPolicy">
                    <enum>QComboBox::AdjustToContents</enum>
                   </property>
+                  <item>
+                   <property name="text">
+                    <string>SCTP</string>
+                   </property>
+                  </item>
                   <item>
                    <property name="text">
                     <string>TCP</string>
@@ -5583,9 +5591,17 @@ QPushButton:pressed {
                  </item>
                  <item row="9" column="1" colspan="4">
                   <widget class="QComboBox" name="listenerTransport">
+                   <property name="currentIndex">
+                    <number>1</number>
+                   </property>
                    <property name="sizeAdjustPolicy">
                     <enum>QComboBox::AdjustToContents</enum>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>SCTP</string>
+                    </property>
+                   </item>
                    <item>
                     <property name="text">
                      <string>TCP</string>

@@ -321,9 +321,11 @@ spoton::spoton(void):QMainWindow()
   m_ui.signatureKeyType->model()->setData
     (m_ui.signatureKeyType->model()->index(2, 0), 0, Qt::UserRole - 1);
 #endif
-#ifdef SPOTON_SCTP_ENABLED
-  m_ui.listenerTransport->insertItem(0, tr("SCTP"));
-  m_ui.neighborTransport->insertItem(0, tr("SCTP"));
+#ifndef SPOTON_SCTP_ENABLED
+  m_ui.listenerTransport->model()->setData
+    (m_ui.listenerTransport->model()->index(0, 0), 0, Qt::UserRole - 1);
+  m_ui.neighborTransport->model()->setData
+    (m_ui.neighborTransport->model()->index(0, 0), 0, Qt::UserRole - 1);
 #endif
 #if SPOTON_GOLDBUG == 1
   m_optionsUi.position->model()->setData
@@ -2324,11 +2326,7 @@ void spoton::slotAddListener(void)
   QByteArray publicKey;
   QString error("");
 
-#ifdef SPOTON_SCTP_ENABLED
   if(m_ui.listenerTransport->currentIndex() == 1 &&
-#else
-  if(m_ui.listenerTransport->currentIndex() == 0 &&
-#endif
      m_ui.permanentCertificate->isChecked() &&
      m_ui.sslListener->isChecked())
     {
@@ -2395,19 +2393,12 @@ void spoton::slotAddListener(void)
 	else
 	  protocol = "IPv6";
 
-#ifdef SPOTON_SCTP_ENABLED
 	if(m_ui.listenerTransport->currentIndex() == 0)
 	  transport = "sctp";
 	else if(m_ui.listenerTransport->currentIndex() == 1)
 	  transport = "tcp";
 	else
 	  transport = "udp";
-#else
-	if(m_ui.listenerTransport->currentIndex() == 0)
-	  transport = "tcp";
-	else
-	  transport = "udp";
-#endif
 
 	query.prepare("INSERT INTO listeners "
 		      "(ip_address, "
@@ -2518,19 +2509,11 @@ void spoton::slotAddListener(void)
 		(6, crypt->encryptedThenHashed("half", &ok).toBase64());
 	  }
 
-#ifdef SPOTON_SCTP_ENABLED
 	if(m_ui.listenerTransport->currentIndex() == 1 &&
 	   m_ui.sslListener->isChecked())
 	  query.bindValue(7, m_ui.listenerKeySize->currentText().toInt());
 	else
 	  query.bindValue(7, 0);
-#else
-	if(m_ui.listenerTransport->currentIndex() == 0 &&
-	   m_ui.sslListener->isChecked())
-	  query.bindValue(7, m_ui.listenerKeySize->currentText().toInt());
-	else
-	  query.bindValue(7, 0);
-#endif
 
 	if(ok)
 	  query.bindValue
@@ -2547,7 +2530,6 @@ void spoton::slotAddListener(void)
 	    (10, crypt->encryptedThenHashed(publicKey, &ok).
 	     toBase64());
 
-#ifdef SPOTON_SCTP_ENABLED
 	if(m_ui.listenerTransport->currentIndex() == 0)
 	  query.bindValue
 	    (11, crypt->encryptedThenHashed("sctp", &ok).toBase64());
@@ -2557,14 +2539,6 @@ void spoton::slotAddListener(void)
 	else
 	  query.bindValue
 	    (11, crypt->encryptedThenHashed("udp", &ok).toBase64());
-#else
-	if(m_ui.listenerTransport->currentIndex() == 0)
-	  query.bindValue
-	    (11, crypt->encryptedThenHashed("tcp", &ok).toBase64());
-	else
-	  query.bindValue
-	    (11, crypt->encryptedThenHashed("udp", &ok).toBase64());
-#endif
 
 	if(m_ui.listenerShareAddress->isChecked())
 	  query.bindValue(12, 1);
@@ -2695,19 +2669,12 @@ void spoton::slotAddNeighbor(void)
 	else
 	  protocol = "Dynamic DNS";
 
-#ifdef SPOTON_SCTP_ENABLED
 	if(m_ui.neighborTransport->currentIndex() == 0)
 	  transport = "sctp";
 	else if(m_ui.neighborTransport->currentIndex() == 1)
 	  transport = "tcp";
 	else
 	  transport = "udp";
-#else
-	if(m_ui.neighborTransport->currentIndex() == 0)
-	  transport = "tcp";
-	else
-	  transport = "udp";
-#endif
 
 	query.prepare("INSERT INTO neighbors "
 		      "(local_ip_address, "
@@ -2916,7 +2883,6 @@ void spoton::slotAddNeighbor(void)
 		 encryptedThenHashed("half", &ok).toBase64());
 	  }
 
-#ifdef SPOTON_SCTP_ENABLED
 	if(m_ui.neighborTransport->currentIndex() == 1)
 	  {
 	    if(m_ui.requireSsl->isChecked())
@@ -2927,48 +2893,22 @@ void spoton::slotAddNeighbor(void)
 	  }
 	else
 	  query.bindValue(19, 0);
-#else
-	if(m_ui.neighborTransport->currentIndex() == 0)
-	  {
-	    if(m_ui.requireSsl->isChecked())
-	      query.bindValue
-		(19, m_ui.neighborKeySize->currentText().toInt());
-	    else
-	      query.bindValue(19, 0);
-	  }
-	else
-	  query.bindValue(19, 0);
-#endif
-#ifdef SPOTON_SCTP_ENABLED
+
 	if(m_ui.addException->isChecked() &&
 	   m_ui.neighborTransport->currentIndex() == 1)
 	  query.bindValue(20, 1);
 	else
 	  query.bindValue(20, 0);
-#else
-	if(m_ui.addException->isChecked() &&
-	   m_ui.neighborTransport->currentIndex() == 0)
-	  query.bindValue(20, 1);
-	else
-	  query.bindValue(20, 0);
-#endif
 
 	if(ok)
 	  query.bindValue
 	    (21, crypt->encryptedThenHashed(QByteArray(),
 					    &ok).toBase64());
 
-#ifdef SPOTON_SCTP_ENABLED
 	if(m_ui.neighborTransport->currentIndex() == 1)
 	  query.bindValue(22, m_ui.requireSsl->isChecked() ? 1 : 0);
 	else
 	  query.bindValue(22, 0);
-#else
-	if(m_ui.neighborTransport->currentIndex() == 0)
-	  query.bindValue(22, m_ui.requireSsl->isChecked() ? 1 : 0);
-	else
-	  query.bindValue(22, 0);
-#endif
 
 	if(ok)
 	  query.bindValue
@@ -2982,7 +2922,6 @@ void spoton::slotAddNeighbor(void)
 
 	if(ok)
 	  {
-#ifdef SPOTON_SCTP_ENABLED
 	    if(m_ui.neighborTransport->currentIndex() == 0)
 	      query.bindValue
 		(25, crypt->encryptedThenHashed("sctp", &ok).toBase64());
@@ -2992,14 +2931,6 @@ void spoton::slotAddNeighbor(void)
 	    else
 	      query.bindValue
 		(25, crypt->encryptedThenHashed("udp", &ok).toBase64());
-#else
-	    if(m_ui.neighborTransport->currentIndex() == 0)
-	      query.bindValue
-		(25, crypt->encryptedThenHashed("tcp", &ok).toBase64());
-	    else
-	      query.bindValue
-		(25, crypt->encryptedThenHashed("udp", &ok).toBase64());
-#endif
 	  }
 
 	if(ok)

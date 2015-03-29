@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>766</width>
-                <height>488</height>
+                <width>386</width>
+                <height>427</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -781,7 +781,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
+             <width>739</width>
              <height>560</height>
             </rect>
            </property>
@@ -2166,9 +2166,17 @@
                      </item>
                      <item row="2" column="1">
                       <widget class="QComboBox" name="listenerTransport">
+                       <property name="currentIndex">
+                        <number>1</number>
+                       </property>
                        <property name="sizeAdjustPolicy">
                         <enum>QComboBox::AdjustToContents</enum>
                        </property>
+                       <item>
+                        <property name="text">
+                         <string>SCTP</string>
+                        </property>
+                       </item>
                        <item>
                         <property name="text">
                          <string>TCP</string>
@@ -3369,9 +3377,17 @@
                         </property>
                         <item>
                          <widget class="QComboBox" name="neighborTransport">
+                          <property name="currentIndex">
+                           <number>1</number>
+                          </property>
                           <property name="sizeAdjustPolicy">
                            <enum>QComboBox::AdjustToContents</enum>
                           </property>
+                          <item>
+                           <property name="text">
+                            <string>SCTP</string>
+                           </property>
+                          </item>
                           <item>
                            <property name="text">
                             <string>TCP</string>
@@ -3915,8 +3931,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -3969,8 +3985,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>752</width>
-                 <height>596</height>
+                 <width>635</width>
+                 <height>630</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4790,7 +4806,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
+             <width>711</width>
              <height>1081</height>
             </rect>
            </property>
@@ -5927,7 +5943,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
+             <width>455</width>
              <height>544</height>
             </rect>
            </property>
@@ -6923,8 +6939,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>576</width>
+             <height>460</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7458,8 +7474,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>241</width>
+             <height>151</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
