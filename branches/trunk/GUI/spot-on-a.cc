@@ -2581,7 +2581,7 @@ void spoton::slotAddListener(void)
 	if(sslCS.isEmpty())
 	  sslCS = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 
-	if(transport != "tcp")
+	if(!m_ui.sslListener->isChecked() || transport != "tcp")
 	  sslCS = "N/A";
 
 	query.bindValue(14, sslCS);
@@ -3015,7 +3015,7 @@ void spoton::slotAddNeighbor(void)
 	if(sslCS.isEmpty())
 	  sslCS = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 
-	if(transport != "tcp")
+	if(!m_ui.requireSsl->isChecked() || transport != "tcp")
 	  sslCS = "N/A";
 
 	query.bindValue(27, sslCS);

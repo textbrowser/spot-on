@@ -191,12 +191,9 @@ spoton_neighbor::spoton_neighbor
   if(m_transport == "tcp")
     m_requireSsl = true;
   else
-    {
-      m_requireSsl = false;
-      m_sslControlString = "N/A";
-    }
+    m_requireSsl = false;
 
-  if(certificate.isEmpty() || privateKey.isEmpty())
+  if(certificate.isEmpty() || m_transport != "tcp" || privateKey.isEmpty())
     m_useSsl = false;
   else
     m_useSsl = true;
@@ -264,6 +261,9 @@ spoton_neighbor::spoton_neighbor
 	    }
 	}
     }
+
+  if(!m_useSsl)
+    m_sslControlString = "N/A";
 
   connect(this,
 	  SIGNAL(accountAuthenticated(const QByteArray &,
@@ -549,16 +549,10 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
       if(m_keySize != 0)
 	m_useSsl = true;
       else
-	{
-	  m_sslControlString = "N/A";
-	  m_useSsl = false;
-	}
+	m_useSsl = false;
     }
   else
-    {
-      m_sslControlString = "N/A";
-      m_useSsl = false;
-    }
+    m_useSsl = false;
 
   if(m_transport == "sctp")
     m_sctpSocket = new spoton_sctp_socket(this);
@@ -653,6 +647,10 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 			    this, SLOT(slotHostFound(const QHostInfo &)));
 
   m_address.setScopeId(scopeId);
+
+  if(!m_useSsl)
+    m_sslControlString = "N/A";
+
   connect(this,
 	  SIGNAL(resetKeepAlive(void)),
 	  this,
@@ -1167,8 +1165,16 @@ void spoton_neighbor::slotTimeout(void)
 		    m_sslControlString = query.value(9).toString();
 
 		    if(m_sslControlString.isEmpty())
-		      m_sslControlString =
-			"HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+		      {
+			if(m_useSsl)
+			  m_sslControlString =
+			    "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:"
+			    "@STRENGTH";
+			else
+			  m_sslControlString = "N/A";
+		      }
+		    else if(!m_useSsl)
+		      m_sslControlString = "N/A";
 		  }
 
 		if(query.value(1).toLongLong())
@@ -4261,6 +4267,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 
       if(!m_requireSsl)
 	{
+	  m_sslControlString = "N/A";
 	  m_useSsl = false;
 
 	  if(m_tcpSocket)
@@ -4975,6 +4982,8 @@ void spoton_neighbor::slotModeChanged(QSslSocket::SslMode mode)
 	  m_authenticationTimer.start();
 	}
     }
+  else
+    m_sslControlString = "N/A";
 }
 
 void spoton_neighbor::slotDisconnected(void)

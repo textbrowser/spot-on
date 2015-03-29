@@ -2583,6 +2583,7 @@ void spoton::slotSetListenerSSLControlString(void)
   QString oid("");
   QString sslCS("");
   QString transport("");
+  int keySize = 0;
   int row = -1;
 
   if((row = m_ui.listeners->currentRow()) >= 0)
@@ -2592,6 +2593,11 @@ void spoton::slotSetListenerSSLControlString(void)
 
       if(item)
 	oid = item->text();
+
+      item = m_ui.listeners->item(row, 2); // SSL Key Size
+
+      if(item)
+	keySize = item->text().toInt();
 
       item = m_ui.listeners->item
 	(row, m_ui.listeners->columnCount() - 2); // SSL Control String
@@ -2610,7 +2616,7 @@ void spoton::slotSetListenerSSLControlString(void)
 
   bool ok = true;
 
-  if(transport != "TCP")
+  if(keySize <= 0 || transport != "TCP")
     sslCS = "N/A";
 
   sslCS = QInputDialog::getText
@@ -2627,7 +2633,7 @@ void spoton::slotSetListenerSSLControlString(void)
   if(sslCS.isEmpty())
     sslCS = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 
-  if(transport != "TCP")
+  if(keySize <= 0 || transport != "TCP")
     sslCS = "N/A";
 
   QString connectionName("");
@@ -2660,6 +2666,7 @@ void spoton::slotSetNeighborSSLControlString(void)
   QString oid("");
   QString sslCS("");
   QString transport("");
+  int keySize = 0;
   int row = -1;
 
   if((row = m_ui.neighbors->currentRow()) >= 0)
@@ -2669,6 +2676,11 @@ void spoton::slotSetNeighborSSLControlString(void)
 
       if(item)
 	oid = item->text();
+
+      item = m_ui.neighbors->item(row, 3); // SSL Key Size
+
+      if(item)
+	keySize = item->text().toInt();
 
       item = m_ui.neighbors->item(row, 34); // SSL Control String
 
@@ -2686,7 +2698,7 @@ void spoton::slotSetNeighborSSLControlString(void)
 
   bool ok = true;
 
-  if(transport != "TCP")
+  if(keySize <= 0 || transport != "TCP")
     sslCS = "N/A";
 
   sslCS = QInputDialog::getText
@@ -2703,7 +2715,7 @@ void spoton::slotSetNeighborSSLControlString(void)
   if(sslCS.isEmpty())
     sslCS = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 
-  if(transport != "TCP")
+  if(keySize <= 0 || transport != "TCP")
     sslCS = "N/A";
 
   QString connectionName("");
