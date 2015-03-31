@@ -37,6 +37,7 @@ extern "C"
 #include <iostream>
 
 #include <QProgressDialog>
+#include <QScopedPointer>
 #include <QThread>
 
 #include "spot-on.h"
@@ -4978,16 +4979,16 @@ void spoton::slotSetPassphrase(void)
 	    {
 	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+	      QScopedPointer<spoton_crypt> crypt
+		(new spoton_crypt(m_ui.cipherType->currentText(),
+				  m_ui.hashType->currentText(),
+				  QByteArray(),
+				  derivedKeys.first,
+				  derivedKeys.second,
+				  m_ui.saltLength->value(),
+				  m_ui.iterationCount->value(),
+				  "chat"));
 	      QStringList list;
-	      spoton_crypt *crypt = new spoton_crypt
-		(m_ui.cipherType->currentText(),
-		 m_ui.hashType->currentText(),
-		 QByteArray(),
-		 derivedKeys.first,
-		 derivedKeys.second,
-		 m_ui.saltLength->value(),
-		 m_ui.iterationCount->value(),
-		 "chat");
 
 	      list << "chat"
 		   << "chat-signature"
@@ -5014,14 +5015,14 @@ void spoton::slotSetPassphrase(void)
 		  */
 
 		  spoton_crypt::reencodePrivatePublicKeys
-		    (crypt, m_crypts.value("chat", 0), list.at(i), error2);
+		    (crypt.data(),
+		     m_crypts.value("chat", 0), list.at(i), error2);
 		  m_sb.status->clear();
 
 		  if(!error2.isEmpty())
 		    break;
 		}
 
-	      delete crypt;
 	      QApplication::restoreOverrideCursor();
 	    }
 	}
@@ -5196,20 +5197,19 @@ void spoton::slotSetPassphrase(void)
 	{
 	  if(reencode)
 	    {
-	      spoton_crypt *crypt = new spoton_crypt
-		(m_ui.cipherType->currentText(),
-		 m_ui.hashType->currentText(),
-		 QByteArray(),
-		 derivedKeys.first,
-		 derivedKeys.second,
-		 m_ui.saltLength->value(),
-		 m_ui.iterationCount->value(),
-		 "chat");
+	      QScopedPointer<spoton_crypt> crypt
+		(new spoton_crypt(m_ui.cipherType->currentText(),
+				  m_ui.hashType->currentText(),
+				  QByteArray(),
+				  derivedKeys.first,
+				  derivedKeys.second,
+				  m_ui.saltLength->value(),
+				  m_ui.iterationCount->value(),
+				  "chat"));
 
 	      spoton_reencode reencode;
 
-	      reencode.reencode(m_sb, crypt, m_crypts.value("chat"));
-	      delete crypt;
+	      reencode.reencode(m_sb, crypt.data(), m_crypts.value("chat"));
 	    }
 
 	  QHashIterator<QString, spoton_crypt *> it(m_crypts);
