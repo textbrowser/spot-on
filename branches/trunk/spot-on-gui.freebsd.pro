@@ -49,6 +49,7 @@ FORMS           = UI/adaptiveechoprompt.ui \
 		  UI/controlcenter.ui \
 		  UI/encryptfile.ui \
 		  UI/ipinformation.ui \
+		  UI/keyboard.ui \
                   UI/logviewer.ui \
 		  UI/options.ui \
                   UI/passwordprompt.ui \
