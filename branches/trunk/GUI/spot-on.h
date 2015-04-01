@@ -33,6 +33,7 @@
 #include <QClipboard>
 #include <QDateTime>
 #include <QDesktopServices>
+#include <QDialog>
 #include <QDir>
 #include <QFileDialog>
 #include <QFuture>
@@ -87,21 +88,20 @@ extern "C"
 #include "spot-on-defines.h"
 #include "ui_keyboard.h"
 
-class spoton_lineedit: public QLineEdit
+class spoton_virtual_keyboard: public QDialog
 {
   Q_OBJECT
 
  public:
-  spoton_lineedit(QWidget *parent):QLineEdit(parent)
+  spoton_virtual_keyboard(QWidget *parent):QDialog(parent)
   {
-    m_dialog = new QDialog(this);
-    m_ui.setupUi(m_dialog);
+    m_ui.setupUi(this);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-    m_dialog->setAttribute(Qt::WA_MacMetalStyle, true);
+    setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-    m_dialog->setWindowTitle
+    setWindowTitle
       (tr("%1: Virtual Keyboard").arg(SPOTON_APPLICATION_NAME));
     m_ui.passphrase->clear();
     m_ui.passphrase->setEchoMode(QLineEdit::Password);
@@ -210,8 +210,7 @@ class spoton_lineedit: public QLineEdit
 	m_ui.row3->addWidget(button);
       }
 
-    foreach(QToolButton *button, m_dialog->
-	    findChildren<QToolButton *> ())
+    foreach(QToolButton *button, findChildren<QToolButton *> ())
       if(button != m_ui.back && button != m_ui.shift)
 	connect(button,
 		SIGNAL(clicked(void)),
@@ -219,31 +218,10 @@ class spoton_lineedit: public QLineEdit
 		SLOT(slotKeyPressed(void)));
   }
 
-  ~spoton_lineedit()
+  ~spoton_virtual_keyboard()
   {
   }
 
- private:
-  void mouseDoubleClickEvent(QMouseEvent *event)
-  {
-    if(event)
-      if(event->type() == QEvent::MouseButtonDblClick)
-	{
-	  m_ui.shift->setChecked(false);
-	  m_ui.show->setChecked(false);
-	  slotShift();
-
-	  if(m_dialog->exec() == QDialog::Accepted)
-	    setText(m_ui.passphrase->text());
-
-	  m_ui.passphrase->clear();
-	}
-
-    QLineEdit::mouseDoubleClickEvent(event);
-  }
-
- private:
-  QDialog *m_dialog;
   Ui_keyboard m_ui;
 
  private slots:
@@ -273,9 +251,18 @@ class spoton_lineedit: public QLineEdit
     m_ui.passphrase->setText(text);
   }
 
+  void slotShow(bool state)
+  {
+    if(state)
+      m_ui.passphrase->setEchoMode(QLineEdit::Normal);
+    else
+      m_ui.passphrase->setEchoMode(QLineEdit::Password);
+  }
+
+ public slots:
   void slotShift(void)
   {
-    foreach(QToolButton *button, m_dialog->findChildren<QToolButton *> ())
+    foreach(QToolButton *button, findChildren<QToolButton *> ())
       if(button != m_ui.back && button != m_ui.shift)
 	{
 	  if(m_ui.shift->isChecked())
@@ -284,14 +271,43 @@ class spoton_lineedit: public QLineEdit
 	    button->setText(button->text().toLower());
 	}
   }
+};
 
-  void slotShow(bool state)
+class spoton_lineedit: public QLineEdit
+{
+  Q_OBJECT
+
+ public:
+  spoton_lineedit(QWidget *parent):QLineEdit(parent)
   {
-    if(state)
-      m_ui.passphrase->setEchoMode(QLineEdit::Normal);
-    else
-      m_ui.passphrase->setEchoMode(QLineEdit::Password);
+    m_dialog = new spoton_virtual_keyboard(this);
   }
+
+  ~spoton_lineedit()
+  {
+  }
+
+ private:
+  void mouseDoubleClickEvent(QMouseEvent *event)
+  {
+    if(event)
+      if(event->type() == QEvent::MouseButtonDblClick)
+	{
+	  m_dialog->m_ui.shift->setChecked(false);
+	  m_dialog->m_ui.show->setChecked(false);
+	  m_dialog->slotShift();
+
+	  if(m_dialog->exec() == QDialog::Accepted)
+	    setText(m_dialog->m_ui.passphrase->text());
+
+	  m_dialog->m_ui.passphrase->clear();
+	}
+
+    QLineEdit::mouseDoubleClickEvent(event);
+  }
+
+ private:
+  spoton_virtual_keyboard *m_dialog;
 };
 
 #include "Common/spot-on-common.h"

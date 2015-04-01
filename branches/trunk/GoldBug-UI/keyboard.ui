@@ -140,11 +140,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="passphrase">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="passphrase"/>
      </item>
     </layout>
    </item>

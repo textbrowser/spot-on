@@ -970,14 +970,14 @@ void spoton::slotPrepareSMP(void)
     return; // Not allowed!
 
   QString guess("");
-  bool ok = true;
+  spoton_virtual_keyboard dialog(this);
 
-  guess = QInputDialog::getText
-    (QApplication::activeWindow(),
-     tr("%1: SMP Secret").arg(SPOTON_APPLICATION_NAME),
-     tr("&Secret"), QLineEdit::Normal, QString(""), &ok);
+  if(dialog.exec() == QDialog::Accepted)
+    guess = dialog.m_ui.passphrase->text();
+  else
+    return;
 
-  if(!ok)
+  if(guess.isEmpty())
     return;
 
   spoton_smp *smp = 0;
