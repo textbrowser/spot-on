@@ -11,6 +11,8 @@
 9.   Corrected isEncrypted() use in spoton_neighbor::saveStatus().
 10.  Corrected throw clauses. Removed redundant try-catch blocks.
 11.  Set forward-only database queries.
+12.  Virtual keyboard for sensitive fields. Please double-click to
+     activate.
 
 0.20 (03/14/2015)
 
