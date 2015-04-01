@@ -13,6 +13,8 @@
 11.  Set forward-only database queries.
 12.  Virtual keyboard for sensitive fields. Please double-click to
      activate.
+13.  Upgraded libgcrypt to version 1.6.3 on Windows.
+14.  Upgraded libgpg-error to version 1.13 on Windows.
 
 0.20 (03/14/2015)
 
