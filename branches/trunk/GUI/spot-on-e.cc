@@ -43,6 +43,7 @@ extern "C"
 
 #include "spot-on.h"
 #include "spot-on-defines.h"
+#include "ui_keyboard.h"
 
 static QStringList curl_protocols(void)
 {

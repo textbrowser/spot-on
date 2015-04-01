@@ -18,16 +18,47 @@
     <normaloff>:/nuvola/goldbug.png</normaloff>:/nuvola/goldbug.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>5</number>
+   </property>
+   <property name="margin">
+    <number>5</number>
+   </property>
    <item>
-    <layout class="QHBoxLayout" name="number_layout"/>
+    <layout class="QHBoxLayout" name="number_layout">
+     <property name="spacing">
+      <number>5</number>
+     </property>
+    </layout>
    </item>
    <item>
-    <layout class="QGridLayout" name="character_layout"/>
+    <layout class="QHBoxLayout" name="row1">
+     <property name="spacing">
+      <number>5</number>
+     </property>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="row2">
+     <property name="spacing">
+      <number>5</number>
+     </property>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="row3">
+     <property name="spacing">
+      <number>5</number>
+     </property>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>5</number>
+     </property>
      <item>
-      <widget class="QToolButton" name="toolButton">
+      <widget class="QToolButton" name="shift">
        <property name="minimumSize">
         <size>
          <width>45</width>
@@ -36,6 +67,12 @@
        </property>
        <property name="text">
         <string>Shift</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -53,15 +90,12 @@
       </spacer>
      </item>
      <item>
-      <widget class="QToolButton" name="toolButton_26">
+      <widget class="QToolButton" name="space">
        <property name="minimumSize">
         <size>
-         <width>250</width>
-         <height>0</height>
+         <width>300</width>
+         <height>45</height>
         </size>
-       </property>
-       <property name="text">
-        <string/>
        </property>
       </widget>
      </item>
@@ -78,19 +112,35 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QToolButton" name="back">
+       <property name="minimumSize">
+        <size>
+         <width>45</width>
+         <height>45</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Back</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>5</number>
+     </property>
      <item>
-      <widget class="QCheckBox" name="checkBox">
+      <widget class="QCheckBox" name="show">
        <property name="text">
         <string>&amp;Show</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="passphrase">
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -111,9 +161,11 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>toolButton_26</tabstop>
-  <tabstop>checkBox</tabstop>
-  <tabstop>lineEdit</tabstop>
+  <tabstop>shift</tabstop>
+  <tabstop>space</tabstop>
+  <tabstop>back</tabstop>
+  <tabstop>show</tabstop>
+  <tabstop>passphrase</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>

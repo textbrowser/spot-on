@@ -25,6 +25,9 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef _spoton_defines_h_
+#define _spoton_defines_h_
+
 #ifdef SPOTON_GOLDBUG
 #ifdef SPOTON_APPLICATION_NAME
 #undefine SPOTON_APPLICATION_NAME
@@ -32,4 +35,6 @@
 #define SPOTON_APPLICATION_NAME "GoldBug"
 #else
 #define SPOTON_APPLICATION_NAME "Spot-On"
+#endif
+
 #endif

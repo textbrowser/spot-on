@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>500</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>386</width>
-                <height>427</height>
+                <width>766</width>
+                <height>490</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -781,8 +781,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>739</width>
-             <height>560</height>
+             <width>818</width>
+             <height>554</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1834,8 +1834,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>789</width>
+             <height>485</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2444,8 +2444,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>240</width>
-                     <height>1433</height>
+                     <width>271</width>
+                     <height>1425</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -2905,8 +2905,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>806</width>
-             <height>579</height>
+             <width>884</width>
+             <height>551</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -3931,8 +3931,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>347</height>
+             <width>776</width>
+             <height>500</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -3985,8 +3985,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>635</width>
-                 <height>630</height>
+                 <width>751</width>
+                 <height>618</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4805,9 +4805,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>711</width>
-             <height>1081</height>
+             <y>-485</y>
+             <width>769</width>
+             <height>1039</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5530,7 +5530,7 @@
                     </widget>
                    </item>
                    <item row="3" column="1">
-                    <widget class="QLineEdit" name="passphrase1">
+                    <widget class="spoton_lineedit" name="passphrase1">
                      <property name="echoMode">
                       <enum>QLineEdit::Password</enum>
                      </property>
@@ -5554,7 +5554,7 @@
                     </widget>
                    </item>
                    <item row="5" column="1">
-                    <widget class="QLineEdit" name="passphrase2">
+                    <widget class="spoton_lineedit" name="passphrase2">
                      <property name="echoMode">
                       <enum>QLineEdit::Password</enum>
                      </property>
@@ -5601,7 +5601,7 @@
                     </widget>
                    </item>
                    <item row="7" column="1">
-                    <widget class="QLineEdit" name="question"/>
+                    <widget class="spoton_lineedit" name="question"/>
                    </item>
                    <item row="8" column="0">
                     <widget class="QLabel" name="label_98">
@@ -5614,7 +5614,7 @@
                     </widget>
                    </item>
                    <item row="8" column="1">
-                    <widget class="QLineEdit" name="answer"/>
+                    <widget class="spoton_lineedit" name="answer"/>
                    </item>
                    <item row="8" column="2">
                     <widget class="QPushButton" name="setPassphrase">
@@ -5943,8 +5943,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>455</width>
-             <height>544</height>
+             <width>761</width>
+             <height>519</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -6939,8 +6939,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>576</width>
-             <height>460</height>
+             <width>776</width>
+             <height>500</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7474,8 +7474,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>241</width>
-             <height>151</height>
+             <width>776</width>
+             <height>500</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7574,7 +7574,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="passphrase">
+                 <widget class="spoton_lineedit" name="passphrase">
                   <property name="echoMode">
                    <enum>QLineEdit::Password</enum>
                   </property>
@@ -7621,7 +7621,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="question_authenticate"/>
+                 <widget class="spoton_lineedit" name="question_authenticate"/>
                 </item>
                 <item>
                  <widget class="QLabel" name="label_100">
@@ -7634,7 +7634,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="answer_authenticate"/>
+                 <widget class="spoton_lineedit" name="answer_authenticate"/>
                 </item>
                </layout>
               </item>
@@ -7696,7 +7696,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -7861,6 +7861,11 @@
    <extends>QTabWidget</extends>
    <header>GUI/spot-on-tabwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>spoton_lineedit</class>
+   <extends>QLineEdit</extends>
+   <header>spot-on.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

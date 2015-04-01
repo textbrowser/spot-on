@@ -45,6 +45,7 @@
 #endif
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QMouseEvent>
 #ifdef Q_OS_WIN32
 #include <qt_windows.h>
 #include <QtNetwork>
@@ -66,10 +67,8 @@
 #include <QUuid>
 #include <QtDebug>
 #ifdef SPOTON_LINKED_WITH_LIBPHONON
-#if 0
 #include <phonon/AudioOutput>
 #include <phonon/MediaObject>
-#endif
 #endif
 
 #include <limits>
@@ -84,6 +83,216 @@ extern "C"
 #include "Common/CocoaInitializer.h"
 #endif
 #endif
+
+#include "spot-on-defines.h"
+#include "ui_keyboard.h"
+
+class spoton_lineedit: public QLineEdit
+{
+  Q_OBJECT
+
+ public:
+  spoton_lineedit(QWidget *parent):QLineEdit(parent)
+  {
+    m_dialog = new QDialog(this);
+    m_ui.setupUi(m_dialog);
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+    m_dialog->setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+    m_dialog->setWindowTitle
+      (tr("%1: Virtual Keyboard").arg(SPOTON_APPLICATION_NAME));
+    m_ui.passphrase->clear();
+    m_ui.passphrase->setEchoMode(QLineEdit::Password);
+    connect(m_ui.back,
+	    SIGNAL(clicked(void)),
+	    this,
+	    SLOT(slotBack(void)));
+    connect(m_ui.shift,
+	    SIGNAL(clicked(void)),
+	    this,
+	    SLOT(slotShift(void)));
+    connect(m_ui.show,
+	    SIGNAL(toggled(bool)),
+	    this,
+	    SLOT(slotShow(bool)));
+
+    QStringList row;
+
+    row << "~\n`"
+	<< "!\n1"
+	<< "@\n2"
+	<< "#\n3"
+	<< "$\n4"
+	<< "%\n5"
+	<< "^\n6"
+	<< "&&\n7"
+	<< "*\n8"
+	<< "(\n9"
+	<< ")\n0"
+	<< "_\n-"
+	<< "+\n=";
+
+    for(int i = 0; i < row.size(); i++)
+      {
+	QToolButton *button = new QToolButton(this);
+
+	button->setMinimumSize(45, 45);
+	button->setText(row.at(i));
+	m_ui.number_layout->addWidget(button);
+      }
+
+    row.clear();
+    row << "q"
+	<< "w"
+	<< "e"
+	<< "r"
+	<< "t"
+	<< "y"
+	<< "u"
+	<< "i"
+	<< "o"
+	<< "p"
+	<< "{\n["
+	<< "}\n]"
+	<< "|\n\\";
+
+    for(int i = 0; i < row.size(); i++)
+      {
+	QToolButton *button = new QToolButton(this);
+
+	button->setMinimumSize(45, 45);
+	button->setText(row.at(i));
+	m_ui.row1->addWidget(button);
+      }
+
+    row.clear();
+    row << "a"
+	<< "s"
+	<< "d"
+	<< "f"
+	<< "g"
+	<< "h"
+	<< "j"
+	<< "k"
+	<< "l"
+	<< ":\n;"
+	<< "\"\n'";
+
+    for(int i = 0; i < row.size(); i++)
+      {
+	QToolButton *button = new QToolButton(this);
+
+	button->setMinimumSize(45, 45);
+	button->setText(row.at(i));
+	m_ui.row2->addWidget(button);
+      }
+
+    row.clear();
+    row << "z"
+	<< "x"
+	<< "c"
+	<< "v"
+	<< "b"
+	<< "n"
+	<< "m"
+	<< "<\n,"
+	<< ">\n."
+	<< "?\n/";
+
+    for(int i = 0; i < row.size(); i++)
+      {
+	QToolButton *button = new QToolButton(this);
+
+	button->setMinimumSize(45, 45);
+	button->setText(row.at(i));
+	m_ui.row3->addWidget(button);
+      }
+
+    foreach(QToolButton *button, m_dialog->
+	    findChildren<QToolButton *> ())
+      if(button != m_ui.back && button != m_ui.shift)
+	connect(button,
+		SIGNAL(clicked(void)),
+		this,
+		SLOT(slotKeyPressed(void)));
+  }
+
+  ~spoton_lineedit()
+  {
+  }
+
+ private:
+  void mouseDoubleClickEvent(QMouseEvent *event)
+  {
+    if(event)
+      if(event->type() == QEvent::MouseButtonDblClick)
+	{
+	  m_ui.shift->setChecked(false);
+	  m_ui.show->setChecked(false);
+	  slotShift();
+
+	  if(m_dialog->exec() == QDialog::Accepted)
+	    setText(m_ui.passphrase->text());
+
+	  m_ui.passphrase->clear();
+	}
+
+    QLineEdit::mouseDoubleClickEvent(event);
+  }
+
+ private:
+  QDialog *m_dialog;
+  Ui_keyboard m_ui;
+
+ private slots:
+  void slotBack(void)
+  {
+    m_ui.passphrase->backspace();
+  }
+
+  void slotKeyPressed(void)
+  {
+    QToolButton *button = qobject_cast<QToolButton *> (sender());
+
+    if(!button)
+      return;
+
+    QString text(m_ui.passphrase->text());
+
+    if(button == m_ui.space)
+      text.append(" ");
+    else if(m_ui.shift->isChecked())
+      text.append(button->text().split('\n').value(0).toUpper());
+    else if(button->text().contains('\n'))
+      text.append(button->text().split('\n').value(1));
+    else
+      text.append(button->text());
+
+    m_ui.passphrase->setText(text);
+  }
+
+  void slotShift(void)
+  {
+    foreach(QToolButton *button, m_dialog->findChildren<QToolButton *> ())
+      if(button != m_ui.back && button != m_ui.shift)
+	{
+	  if(m_ui.shift->isChecked())
+	    button->setText(button->text().toUpper());
+	  else
+	    button->setText(button->text().toLower());
+	}
+  }
+
+  void slotShow(bool state)
+  {
+    if(state)
+      m_ui.passphrase->setEchoMode(QLineEdit::Normal);
+    else
+      m_ui.passphrase->setEchoMode(QLineEdit::Password);
+  }
+};
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
