@@ -39,6 +39,7 @@
 #include <QFuture>
 #include <QHash>
 #include <QInputDialog>
+#include <QLocale>
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
 #include <QMacStyle>
@@ -118,21 +119,37 @@ class spoton_virtual_keyboard: public QDialog
 	    this,
 	    SLOT(slotShow(bool)));
 
+    QLocale::Country country = QLocale::system().country();
     QStringList row;
 
-    row << "~\n`"
-	<< "!\n1"
-	<< "@\n2"
-	<< "#\n3"
-	<< "$\n4"
-	<< "%\n5"
-	<< "^\n6"
-	<< "&&\n7"
-	<< "*\n8"
-	<< "(\n9"
-	<< ")\n0"
-	<< "_\n-"
-	<< "+\n=";
+    if(country == QLocale::Germany)
+      row << "~\n`"
+	  << "!\n1"
+	  << "@\n2"
+	  << "#\n3"
+	  << "$\n4"
+	  << "%\n5"
+	  << "^\n6"
+	  << "&&\n7"
+	  << "*\n8"
+	  << "(\n9"
+	  << ")\n0"
+	  << "_\nß"
+	  << "+\n´";
+    else
+      row << "~\n`"
+	  << "!\n1"
+	  << "@\n2"
+	  << "#\n3"
+	  << "$\n4"
+	  << "%\n5"
+	  << "^\n6"
+	  << "&&\n7"
+	  << "*\n8"
+	  << "(\n9"
+	  << ")\n0"
+	  << "_\n-"
+	  << "+\n=";
 
     for(int i = 0; i < row.size(); i++)
       {
@@ -144,19 +161,35 @@ class spoton_virtual_keyboard: public QDialog
       }
 
     row.clear();
-    row << "q"
-	<< "w"
-	<< "e"
-	<< "r"
-	<< "t"
-	<< "y"
-	<< "u"
-	<< "i"
-	<< "o"
-	<< "p"
-	<< "{\n["
-	<< "}\n]"
-	<< "|\n\\";
+
+    if(country == QLocale::Germany)
+      row << "q"
+	  << "w"
+	  << "e"
+	  << "r"
+	  << "t"
+	  << "z"
+	  << "u"
+	  << "i"
+	  << "o"
+	  << "p"
+	  << "ü\n"
+	  << "+\n*"
+	  << "#\n\'";
+    else
+      row << "q"
+	  << "w"
+	  << "e"
+	  << "r"
+	  << "t"
+	  << "y"
+	  << "u"
+	  << "i"
+	  << "o"
+	  << "p"
+	  << "{\n["
+	  << "}\n]"
+	  << "|\n\\";
 
     for(int i = 0; i < row.size(); i++)
       {
@@ -168,17 +201,31 @@ class spoton_virtual_keyboard: public QDialog
       }
 
     row.clear();
-    row << "a"
-	<< "s"
-	<< "d"
-	<< "f"
-	<< "g"
-	<< "h"
-	<< "j"
-	<< "k"
-	<< "l"
-	<< ":\n;"
-	<< "\"\n'";
+
+    if(country == QLocale::Germany)
+      row << "a"
+	  << "s"
+	  << "d"
+	  << "f"
+	  << "g"
+	  << "h"
+	  << "j"
+	  << "k"
+	  << "l"
+	  << "ö\n;"
+	  << "ä\n'";
+    else
+      row << "a"
+	  << "s"
+	  << "d"
+	  << "f"
+	  << "g"
+	  << "h"
+	  << "j"
+	  << "k"
+	  << "l"
+	  << ":\n;"
+	  << "\"\n'";
 
     for(int i = 0; i < row.size(); i++)
       {
@@ -190,16 +237,29 @@ class spoton_virtual_keyboard: public QDialog
       }
 
     row.clear();
-    row << "z"
-	<< "x"
-	<< "c"
-	<< "v"
-	<< "b"
-	<< "n"
-	<< "m"
-	<< "<\n,"
-	<< ">\n."
-	<< "?\n/";
+
+    if(country == QLocale::Germany)
+      row << "y"
+	  << "x"
+	  << "c"
+	  << "v"
+	  << "b"
+	  << "n"
+	  << "m"
+	  << ",\n;"
+	  << ".\n:"
+	  << "-\n_";
+    else
+      row << "z"
+	  << "x"
+	  << "c"
+	  << "v"
+	  << "b"
+	  << "n"
+	  << "m"
+	  << "<\n,"
+	  << ">\n."
+	  << "?\n/";
 
     for(int i = 0; i < row.size(); i++)
       {
