@@ -501,7 +501,7 @@ uint8_t ntru_mult_tern_sse_dense(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c
         __m128i *ck = (__m128i*)&c_coeffs[k];
         __m128i aj = a_coeffs0[8-num_coeffs0];
         __m128i ca = _mm_add_epi16(*ck, aj);
-        _mm_storeu_si128(ck, ca);
+        _mm_store_si128(ck, ca);
         k += 8;
         /* process the remaining coefficients in blocks of 8. */
         /* it is safe not to truncate the last block of 8 coefficients */
@@ -511,7 +511,7 @@ uint8_t ntru_mult_tern_sse_dense(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c
         for (j=num_coeffs0; j<N; j+=8,k+=8) {
             __m128i aj = _mm_lddqu_si128((__m128i*)&a->coeffs[j]);
             __m128i ca = _mm_add_epi16(*ck, aj);
-            _mm_storeu_si128(ck, ca);
+            _mm_store_si128(ck, ca);
             ck++;
         }
     }
@@ -526,7 +526,7 @@ uint8_t ntru_mult_tern_sse_dense(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c
         __m128i *ck = (__m128i*)&c_coeffs[k];
         __m128i aj = a_coeffs0[8-num_coeffs0];
         __m128i ca = _mm_sub_epi16(*ck, aj);
-        _mm_storeu_si128(ck, ca);
+        _mm_store_si128(ck, ca);
         k += 8;
         /* process the remaining coefficients in blocks of 8. */
         /* it is safe not to truncate the last block of 8 coefficients */
@@ -536,16 +536,28 @@ uint8_t ntru_mult_tern_sse_dense(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c
         for (j=num_coeffs0; j<N; j+=8,k+=8) {
             __m128i aj = _mm_lddqu_si128((__m128i*)&a->coeffs[j]);
             __m128i ca = _mm_sub_epi16(*ck, aj);
-            _mm_storeu_si128(ck, ca);
+            _mm_store_si128(ck, ca);
             ck++;
         }
     }
-    for (i=0; i<N; i++)
-        c_coeffs[i] = c_coeffs[i] + c_coeffs[N+i];
-    memcpy(&c->coeffs, c_coeffs, N*2);
+
+    /* reduce c_coeffs[0..2N-1] to [0..N-1] and reduce values mod modulus */
+    /* handle the first coefficients individually if c_coeffs is not 16-byte aligned */
+    uint16_t mod_mask_16 = modulus - 1;
+    for (i=0; ((size_t)&c_coeffs[i])%16; i++)
+        c->coeffs[i] = (c_coeffs[i] + c_coeffs[N+i]) & mod_mask_16;
+    /* handle the remaining ones in blocks of 8 */
+    __m128i mod_mask_128 = _mm_set1_epi16(modulus - 1);
+    __m128i *ci = (__m128i*)(&c_coeffs[i]);
+    for (; i<N; i+=8) {
+        __m128i c128_1 = _mm_lddqu_si128((__m128i*)&c_coeffs[i+N]);
+        __m128i c128_0 = _mm_add_epi16(*ci, c128_1);
+        c128_0 = _mm_and_si128(c128_0, mod_mask_128);
+        _mm_storeu_si128((__m128i*)&c->coeffs[i], c128_0);
+        ci++;
+    }
 
     c->N = N;
-    ntru_mod(c, modulus);
     return 1;
 }
 
@@ -1330,6 +1342,7 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
             memset(c_coeffs64, 0, num_zeros/64*8);
             memmove(f_coeffs64, f_coeffs64+num_zeros/64, N64*8-num_zeros/64*8);
             memset(f_coeffs64+N64-num_zeros/64, 0, num_zeros/64*8);
+            deg_f -= num_zeros / 64 * 64;
             num_zeros %= 64;
         }
         if (num_zeros > 0) {
@@ -1364,6 +1377,9 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
             c_coeffs64 = temp_coeffs;
         }
         ntru_add_int_mod2_64(f_coeffs64, g_coeffs64, N64);
+        /* adding f+g may have lowered the degree of f */
+        while (deg_f>0 && (f_coeffs64[deg_f/64]&(((uint64_t)1)<<(deg_f%64)))==0)
+            deg_f--;
         ntru_add_int_mod2_64(b_coeffs64, c_coeffs64, N64);
     }
 
