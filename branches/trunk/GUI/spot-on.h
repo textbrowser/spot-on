@@ -123,19 +123,19 @@ class spoton_virtual_keyboard: public QDialog
     QStringList row;
 
     if(country == QLocale::Germany)
-      row << "~\n`"
+      row << "°\n^"
 	  << "!\n1"
-	  << "@\n2"
-	  << "#\n3"
+	  << "''\n2"
+	  << "§\n3"
 	  << "$\n4"
 	  << "%\n5"
-	  << "^\n6"
-	  << "&&\n7"
-	  << "*\n8"
-	  << "(\n9"
-	  << ")\n0"
-	  << "_\nß"
-	  << "+\n´";
+	  << "&\n6"
+	  << "/\n7"
+	  << "(\n8"
+	  << ")\n9"
+	  << "=\n0"
+	  << "?\nß"
+	  << "`\n´";
     else
       row << "~\n`"
 	  << "!\n1"
@@ -173,9 +173,9 @@ class spoton_virtual_keyboard: public QDialog
 	  << "i"
 	  << "o"
 	  << "p"
-	  << "ü\n"
-	  << "+\n*"
-	  << "#\n\'";
+	  << "ü"
+	  << "*\n+"
+	  << "'\n#";
     else
       row << "q"
 	  << "w"
@@ -212,8 +212,8 @@ class spoton_virtual_keyboard: public QDialog
 	  << "j"
 	  << "k"
 	  << "l"
-	  << "ö\n;"
-	  << "ä\n'";
+	  << "ö"
+	  << "ä";
     else
       row << "a"
 	  << "s"
@@ -246,9 +246,9 @@ class spoton_virtual_keyboard: public QDialog
 	  << "b"
 	  << "n"
 	  << "m"
-	  << ",\n;"
-	  << ".\n:"
-	  << "-\n_";
+      << ";\n,"
+      << ":\n."
+      << "_\n-";
     else
       row << "z"
 	  << "x"
