@@ -51,7 +51,7 @@ EOL
 }
 EOL
 {
-0 - Keyed Message Code of the Second Group (Base-64)
+0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
@@ -91,7 +91,7 @@ EOL
 }
 EOL
 {
-0 - Keyed Message Code of the Second Group (Base-64)
+0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
@@ -185,11 +185,12 @@ EOL
 }
 EOL
 {
-0 - Keyed 2 Message Code of the Fourth Group (Base-64)
+0 - Keyed 2 Message Code of the Third and Fourth Groups (Base-64)
 }
 EOL
 {
-0 - Keyed 1 Message Code of the Second Group (Base-64)
+0 - Keyed 1 Message Code of the First, Second, Third, and Fourth
+    Groups (Base-64)
 }
 EOL
 {
@@ -232,7 +233,7 @@ EOL
 }
 EOL
 {
-0 - Keyed Message Code of the Second Group (Base-64)
+0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
@@ -285,7 +286,7 @@ EOL
 }
 EOL
 {
-0 - Keyed Message Code of the Second Group (Base-64)
+0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
@@ -386,7 +387,7 @@ EOL
 }
 EOL
 {
-0 - Keyed Message Code of the Second Group (Base-64)
+0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {

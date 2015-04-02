@@ -2469,6 +2469,8 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
       QByteArray hashKeyAlgorithm;
       QByteArray keyInformation1(list.value(0));
       QByteArray keyInformation2(list.value(2));
+      QByteArray originalKeyInformation1(keyInformation1);
+      QByteArray originalKeyInformation2(keyInformation2);
       QByteArray messageCode1(list.value(5));
       QByteArray messageCode2(list.value(4));
       QByteArray recipientHash;
@@ -2506,7 +2508,8 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 	    }
 
 	  computedHash = spoton_crypt::keyedHash
-	    (data1 + keyInformation2 + data2, hashKey, hashKeyAlgorithm, &ok);
+	    (originalKeyInformation1 + data1 + keyInformation2 + data2,
+	     hashKey, hashKeyAlgorithm, &ok);
 
 	  if(ok)
 	    if(computedHash.isEmpty() || messageCode1.isEmpty() ||
@@ -2615,7 +2618,8 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			}
 
 		      computedHash = spoton_crypt::keyedHash
-			(data2, hashKey, hashKeyAlgorithm, &ok);
+			(originalKeyInformation2 + data2,
+			 hashKey, hashKeyAlgorithm, &ok);
 
 		      if(ok)
 			if(computedHash.isEmpty() || messageCode2.isEmpty() ||
@@ -2784,6 +2788,7 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 	  QByteArray hashKey;
 	  QByteArray hashKeyAlgorithm;
 	  QByteArray keyInformation(list.value(0));
+	  QByteArray originalKeyInformation(keyInformation);
 	  QByteArray symmetricKey;
 	  QByteArray symmetricKeyAlgorithm;
 	  bool ok = true;
@@ -2823,7 +2828,8 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 	      QByteArray data(list.value(1));
 
 	      computedHash = spoton_crypt::keyedHash
-		(data, hashKey, hashKeyAlgorithm, &ok);
+		(originalKeyInformation + data, hashKey,
+		 hashKeyAlgorithm, &ok);
 
 	      if(ok)
 		{
@@ -2968,6 +2974,7 @@ void spoton_neighbor::process0002a
       QByteArray hashKey;
       QByteArray hashKeyAlgorithm;
       QByteArray keyInformation(list.value(0));
+      QByteArray originalKeyInformation(keyInformation);
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
 
@@ -3006,7 +3013,7 @@ void spoton_neighbor::process0002a
 	  QByteArray data(list.value(1));
 
 	  computedHash = spoton_crypt::keyedHash
-	    (data, hashKey, hashKeyAlgorithm, &ok);
+	    (originalKeyInformation + data, hashKey, hashKeyAlgorithm, &ok);
 
 	  if(ok)
 	    {

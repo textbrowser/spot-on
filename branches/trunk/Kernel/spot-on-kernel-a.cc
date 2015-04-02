@@ -1656,7 +1656,8 @@ void spoton_kernel::slotMessageReceivedFromUI
 
 	if(ok)
 	  {
-	    QByteArray messageCode(crypt.keyedHash(data, &ok));
+	    QByteArray messageCode
+	      (crypt.keyedHash(keyInformation + data, &ok));
 
 	    if(ok)
 	      data = keyInformation.toBase64() + "\n" +
@@ -2294,7 +2295,8 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 		    if(ok)
 		      {
-			QByteArray messageCode(crypt.keyedHash(data, &ok));
+			QByteArray messageCode
+			  (crypt.keyedHash(keyInformation + data, &ok));
 
 			if(ok)
 			  data = keyInformation.toBase64() + "\n" +
@@ -2660,7 +2662,8 @@ void spoton_kernel::slotRetrieveMail(void)
 
 		  if(ok)
 		    {
-		      QByteArray messageCode(crypt.keyedHash(data, &ok));
+		      QByteArray messageCode
+			(crypt.keyedHash(keyInformation + data, &ok));
 
 		      if(ok)
 			data = keyInformation.toBase64() + "\n" +
@@ -2934,7 +2937,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		       &ok);
 
 		  if(ok)
-		    messageCode1 = crypt.keyedHash(data, &ok);
+		    messageCode1 = crypt.keyedHash
+		      (keyInformation + data, &ok);
 
 		  if(ok)
 		    recipientHashInformation = spoton_crypt::keyedHash
@@ -3201,12 +3205,12 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 		  if(ok)
 		    messageCode1 = spoton_crypt::keyedHash
-		      (data1 + keyInformation2 + data2,
+		      (keyInformation1 + data1 + keyInformation2 + data2,
 		       hashKey1, hashType, &ok);
 
 		  if(ok)
 		    messageCode2 = spoton_crypt::keyedHash
-		      (data2, hashKey2, hashType, &ok);
+		      (keyInformation2 + data2, hashKey2, hashType, &ok);
 		}
 
 	      if(ok)
@@ -3944,7 +3948,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 		    if(ok)
 		      {
 			QByteArray messageCode
-			  (crypt.keyedHash(data, &ok));
+			  (crypt.keyedHash(keyInformation + data, &ok));
 
 			if(ok)
 			  data = keyInformation.toBase64() + "\n" +
@@ -4952,7 +4956,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 		    if(ok)
 		      {
 			QByteArray messageCode
-			  (crypt.keyedHash(data, &ok));
+			  (crypt.keyedHash(keyInformation + data, &ok));
 
 			if(ok)
 			  data = keyInformation.toBase64() + "\n" +
