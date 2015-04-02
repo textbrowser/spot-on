@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr_FR">
+<TS version="2.1" language="fr_FR">
 <context>
     <name>QObject</name>
     <message>
@@ -2156,7 +2156,7 @@ SSL Control String: %13</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-d.cc" line="691"/>
+        <location filename="../GUI/spot-on-d.cc" line="692"/>
         <source>Database error. Unable to save the message of the day.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2360,8 +2360,8 @@ SSL Control String: %13</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="781"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1113"/>
+        <location filename="../GUI/spot-on-urls.cc" line="782"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1114"/>
         <source>Database write error. Is urls_key_information.db properly defined?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2489,16 +2489,6 @@ SSL Control String: %13</source>
     <message>
         <location filename="../GUI/spot-on-e.cc" line="766"/>
         <source>%1: Select CA File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../GUI/spot-on-e.cc" line="977"/>
-        <source>%1: SMP Secret</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../GUI/spot-on-e.cc" line="978"/>
-        <source>&amp;Secret</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2925,14 +2915,6 @@ SSL Control String: %13</source>
     <message>
         <location filename="../GUI/spot-on-encryptfile.cc" line="674"/>
         <source>The conversion process completed successfully.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>spoton_lineedit</name>
-    <message>
-        <location filename="../GUI/spot-on.h" line="105"/>
-        <source>%1: Virtual Keyboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5787,6 +5769,14 @@ SSL Control String: %13</source>
     <message>
         <location filename="../GUI/spot-on-starbeamanalyzer.cc" line="544"/>
         <source>The number of pulses that are missing is excessive (missing pulses / total pulses &gt;= 75%).</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>spoton_virtual_keyboard</name>
+    <message>
+        <location filename="../GUI/spot-on.h" line="106"/>
+        <source>%1: Virtual Keyboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
