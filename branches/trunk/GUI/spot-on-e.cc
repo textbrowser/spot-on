@@ -977,9 +977,6 @@ void spoton::slotPrepareSMP(void)
   else
     return;
 
-  if(guess.isEmpty())
-    return;
-
   spoton_smp *smp = 0;
 
   if(m_smps.contains(hash))
