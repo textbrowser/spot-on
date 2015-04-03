@@ -36,6 +36,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RELEASE =
 QMAKE_LFLAGS_RPATH =
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
 INCLUDEPATH	+= . ../../. GUI ../../libGeoIP/Include.osx64 \
                    /usr/local/include /usr/local/opt
 ICON		= Icons/Logo/spot-on-logo.icns

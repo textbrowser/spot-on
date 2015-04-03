@@ -39,6 +39,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RELEASE =
 QMAKE_LFLAGS_RPATH =
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
 INCLUDEPATH	+= . ../. ../../../. ../../../libGeoIP/Include.osx64 \
 		   ../../../libSCTP/Include.osx64 \
                    /usr/local/include /usr/local/opt
