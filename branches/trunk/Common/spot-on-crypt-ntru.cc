@@ -276,13 +276,14 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
   uint8_t *e = 0;
   uint8_t *publicKey_array = 0;
 
+  ntru_rand_init(&rand_ctx_def, &rng_def);
+
   try
     {
       data_array = new (std::nothrow) uint8_t[data.length()];
       publicKey_array = new (std::nothrow)
 	uint8_t[publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
 		length()];
-      ntru_rand_init(&rand_ctx_def, &rng_def);
 
       if(data_array && publicKey_array)
 	{
