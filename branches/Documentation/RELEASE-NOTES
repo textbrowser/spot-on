@@ -17,6 +17,8 @@
 14.  Upgraded libgpg-error to version 1.13 on Windows.
 15.  Bind data encrypted with public keys into the message authentication
      codes. Previous functionality will be disrupted.
+16.  Destroy the chunk.memory object in spoton_kernel::popPoptastic() if
+     cURL fails.
 
 0.20 (03/14/2015)
 

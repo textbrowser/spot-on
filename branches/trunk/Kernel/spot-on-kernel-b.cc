@@ -303,7 +303,10 @@ void spoton_kernel::popPoptastic(void)
 		    }
 		}
 	      else
-		break;
+		{
+		  free(chunk.memory);
+		  break;
+		}
 
 	      free(chunk.memory);
 
