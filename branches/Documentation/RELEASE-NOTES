@@ -19,6 +19,7 @@
      codes. Previous functionality will be disrupted.
 16.  Destroy the chunk.memory object in spoton_kernel::popPoptastic() if
      cURL fails.
+17.  Support OS X 10.6.x and Qt 5.x.
 
 0.20 (03/14/2015)
 
