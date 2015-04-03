@@ -129,7 +129,7 @@ class spoton_virtual_keyboard: public QDialog
 	  << "§\n3"
 	  << "$\n4"
 	  << "%\n5"
-	  << "&\n6"
+	  << "&&\n6"
 	  << "/\n7"
 	  << "(\n8"
 	  << ")\n9"
