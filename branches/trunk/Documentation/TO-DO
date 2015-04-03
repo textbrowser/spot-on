@@ -221,4 +221,4 @@ Ignored Items
 
 Remaining Items
 
-1.     None.
+1.     C++11, unique_ptr and malloc().
