@@ -125,7 +125,7 @@ class spoton_virtual_keyboard: public QDialog
     if(country == QLocale::Germany)
       row << "°\n^"
 	  << "!\n1"
-	  << "''\n2"
+	  << "\"\n2"
 	  << "§\n3"
 	  << "$\n4"
 	  << "%\n5"
@@ -246,9 +246,9 @@ class spoton_virtual_keyboard: public QDialog
 	  << "b"
 	  << "n"
 	  << "m"
-      << ";\n,"
-      << ":\n."
-      << "_\n-";
+	  << ";\n,"
+	  << ":\n."
+	  << "_\n-";
     else
       row << "z"
 	  << "x"
