@@ -20,6 +20,7 @@
 16.  Destroy the chunk.memory object in spoton_kernel::popPoptastic() if
      cURL fails.
 17.  Support OS X 10.6.x and Qt 5.x.
+18.  Non-iterative message sharing between neighbors.
 
 0.20 (03/14/2015)
 

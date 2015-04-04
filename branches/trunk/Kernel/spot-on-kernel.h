@@ -103,9 +103,6 @@ class spoton_kernel: public QObject
   static void messagingCacheAdd(const QByteArray &data,
 				const bool do_not_hash = false,
 				const int add_msecs = 0);
-  static void receivedMessage
-    (const QByteArray &data, const qint64 id,
-     const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
   static void removeBuzzKey(const QByteArray &data);
   bool acceptRemoteConnection(const QHostAddress &localAddress,
 			      const QHostAddress &peerAddress);
@@ -132,7 +129,6 @@ class spoton_kernel: public QObject
   QTimer m_messagingCachePurgeTimer;
   QTimer m_poptasticPopTimer;
   QTimer m_poptasticPostTimer;
-  QTimer m_processReceivedMessagesTimer;
   QTimer m_publishAllListenersPlaintextTimer;
   QTimer m_scramblerTimer;
   QTimer m_settingsTimer;
@@ -151,14 +147,12 @@ class spoton_kernel: public QObject
   static QHash<QByteArray, uint> s_messagingCache;
   static QHash<QString, QVariant> s_settings;
   static QList<QList<QByteArray> > s_institutionKeys;
-  static QList<QList<QVariant> > s_messagesToProcess;
   static QReadWriteLock s_adaptiveEchoPairsMutex;
   static QReadWriteLock s_buzzKeysMutex;
   static QReadWriteLock s_emailRequestCacheMutex;
   static QReadWriteLock s_geminisCacheMutex;
   static QReadWriteLock s_institutionKeysMutex;
   static QReadWriteLock s_institutionLastModificationTimeMutex;
-  static QReadWriteLock s_messagesToProcessMutex;
   static QReadWriteLock s_messagingCacheMutex;
   static QReadWriteLock s_settingsMutex;
   bool initializeSecurityContainers(const QString &passphrase,
@@ -233,7 +227,6 @@ class spoton_kernel: public QObject
   void slotPoppedMessage(const QByteArray &message);
   void slotPoptasticPop(void);
   void slotPoptasticPost(void);
-  void slotProcessReceivedMessages(void);
   void slotPublicKeyReceivedFromUI(const qint64 oid,
 				   const QByteArray &keyType,
 				   const QByteArray &name,
@@ -282,6 +275,8 @@ class spoton_kernel: public QObject
   void sendStatus(const QByteArrayList &status);
   void statusMessageReceived(const QByteArray &publicKeyHash,
 			     const QString &status);
+  void write(const QByteArray &data, const qint64 id,
+	     const QPairByteArrayByteArray &adaptiveEchoPair);
 };
 
 #endif
