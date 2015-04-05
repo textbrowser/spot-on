@@ -1346,13 +1346,15 @@ void spoton_kernel::prepareStarbeamReaders(void)
 	query.setForwardOnly(true);
 
 	if(query.exec("SELECT "
+		      "read_interval, "
 		      "status_control, "
 		      "OID "
 		      "FROM transmitted"))
 	  while(query.next())
 	    {
-	      QString status(query.value(0).toString().toLower());
+	      QString status(query.value(1).toString().toLower());
 	      QPointer<spoton_starbeam_reader> starbeam = 0;
+	      double readInterval = query.value(0).toDouble();
 	      qint64 id = query.value(query.record().count() - 1).
 		toLongLong();
 
@@ -1365,7 +1367,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		      try
 			{
 			  starbeam = new (std::nothrow) spoton_starbeam_reader
-			    (id, this);
+			    (id, readInterval, this);
 
 			  if(starbeam)
 			    m_starbeamReaders.insert(id, starbeam);

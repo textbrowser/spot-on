@@ -438,9 +438,6 @@ void spoton_misc::prepareDatabases(void)
 							    */
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH));
-	query.exec
-	  ("ALTER TABLE neighbors ADD COLUMN priority "
-	   "INTEGER NOT NULL DEFAULT 4");
       }
 
     db.close();
@@ -545,6 +542,7 @@ void spoton_misc::prepareDatabases(void)
 					  */
 		   "position TEXT NOT NULL, "
 		   "pulse_size TEXT NOT NULL, "
+		   "read_interval REAL NOT NULL DEFAULT 1.500, "
 		   "status_control TEXT NOT NULL DEFAULT 'paused', "
 		   "total_size TEXT NOT NULL)");
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted_magnets ("
@@ -557,6 +555,9 @@ void spoton_misc::prepareDatabases(void)
 		   "position_hash TEXT NOT NULL, " // Keyed hash.
 		   "transmitted_oid INTEGER NOT NULL, "
 		   "PRIMARY KEY (position_hash, transmitted_oid))");
+	query.exec
+	  ("ALTER TABLE transmitted ADD COLUMN read_interval "
+	   "REAL NOT NULL DEFAULT 1.500");
       }
 
     db.close();
@@ -1979,15 +1980,6 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 512;
 
   settings.insert("gui/saltLength", integer);
-  rational = qAbs(settings.value("gui/starbeamReadInterval", 1.500).
-		  toDouble(&ok));
-
-  if(!ok)
-    rational = 1.500;
-  else if(rational < 0.100 || rational > 60.00)
-    rational = 1.500;
-
-  settings.insert("gui/starbeamReadInterval", rational);
   integer = qAbs(settings.value("kernel/gcryctl_init_secmem",
 				65536).toInt(&ok));
 

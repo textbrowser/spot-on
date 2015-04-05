@@ -35,20 +35,18 @@
 #include "spot-on-starbeam-reader.h"
 
 spoton_starbeam_reader::spoton_starbeam_reader
-(const qint64 id, QObject *parent):QObject(parent)
+(const qint64 id, const double readInterval, QObject *parent):QObject(parent)
 {
   m_id = id;
   m_missingLinksIterator = 0;
   m_position = 0;
+  m_readInterval = qBound(0.100, readInterval, 60.000);
   connect(&m_timer,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
   m_timer.setSingleShot(true);
-  m_timer.start
-    (static_cast<int> (1000 * spoton_kernel::
-		       setting("gui/starbeamReadInterval",
-			       1.500).toDouble()));
+  m_timer.start(1000 * m_readInterval);
 }
 
 spoton_starbeam_reader::~spoton_starbeam_reader()
@@ -122,14 +120,16 @@ void spoton_starbeam_reader::slotTimeout(void)
 
 	    query.setForwardOnly(true);
 	    query.prepare("SELECT file, missing_links, nova, position, "
-			  "pulse_size, status_control, total_size "
-			  "FROM transmitted WHERE OID = ?");
+			  "pulse_size, read_interval, status_control, "
+			  "total_size FROM transmitted WHERE OID = ?");
 	    query.bindValue(0, m_id);
 
 	    if(query.exec())
 	      if(query.next())
 		{
-		  status = query.value(5).toString().toLower();
+		  m_readInterval = qBound(0.100, query.value(5).toDouble(),
+					  60.000);
+		  status = query.value(6).toString().toLower();
 
 		  if(status == "completed")
 		    m_timer.stop();
@@ -245,7 +245,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 			  decryptedAfterAuthenticated
 			  (QByteArray::
 			   fromBase64(query.
-				      value(6).
+				      value(7).
 				      toByteArray()),
 			   &ok).
 			  constData();
@@ -276,10 +276,7 @@ void spoton_starbeam_reader::slotTimeout(void)
     }
 
   if(status != "completed")
-    m_timer.start
-      (static_cast<int> (1000 * spoton_kernel::
-			 setting("gui/starbeamReadInterval",
-				 1.500).toDouble()));
+    m_timer.start(1000 * m_readInterval);
 }
 
 void spoton_starbeam_reader::populateMagnets(const QSqlDatabase &db)

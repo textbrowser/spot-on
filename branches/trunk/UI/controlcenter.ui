@@ -3931,8 +3931,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>500</height>
+             <width>630</width>
+             <height>353</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -3985,7 +3985,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>751</width>
+                 <width>702</width>
                  <height>618</height>
                 </rect>
                </property>
@@ -4806,7 +4806,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>769</width>
+             <width>809</width>
              <height>1039</height>
             </rect>
            </property>
@@ -6587,35 +6587,6 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLabel" name="label_9">
-                    <property name="text">
-                     <string>&amp;Read Interval</string>
-                    </property>
-                    <property name="buddy">
-                     <cstring>sb_read_interval</cstring>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="sb_read_interval">
-                    <property name="suffix">
-                     <string> seconds</string>
-                    </property>
-                    <property name="decimals">
-                     <number>3</number>
-                    </property>
-                    <property name="minimum">
-                     <double>0.100000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>60.000000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.500000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
                    <spacer name="horizontalSpacer_59">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
@@ -6708,6 +6679,11 @@
                        <column>
                         <property name="text">
                          <string>SHA-1 Hash</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string>Read Interval</string>
                         </property>
                        </column>
                        <column>
@@ -8132,7 +8108,6 @@
   <tabstop>receivedActionMenu</tabstop>
   <tabstop>received</tabstop>
   <tabstop>transmittedActionMenu</tabstop>
-  <tabstop>sb_read_interval</tabstop>
   <tabstop>transmitted</tabstop>
   <tabstop>rewind</tabstop>
   <tabstop>transmittedMagnets</tabstop>

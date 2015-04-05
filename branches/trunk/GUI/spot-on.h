@@ -734,7 +734,6 @@ class spoton: public QMainWindow
   void slotResetCertificate(void);
   void slotRetrieveMail(void);
   void slotRewindFile(void);
-  void slotSBReadIntervalChanged(double value);
   void slotSaveAttachment(void);
   void slotSaveBuzzAutoJoin(bool state);
   void slotSaveBuzzName(void);
@@ -769,6 +768,7 @@ class spoton: public QMainWindow
   void slotSetNeighborPriority(void);
   void slotSetNeighborSSLControlString(void);
   void slotSetPassphrase(void);
+  void slotSetSBReadInterval(void);
   void slotSetUrlIniPath(void);
   void slotShareBuzzMagnet(void);
   void slotShareChatPublicKey(void);

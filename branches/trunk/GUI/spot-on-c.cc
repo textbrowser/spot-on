@@ -1327,8 +1327,9 @@ void spoton::slotPopulateStars(void)
 	m_ui.transmitted->setRowCount(0);
 	row = 0;
 	query.prepare("SELECT 0, position, pulse_size, total_size, "
-		      "status_control, file, mosaic, hash, OID "
-		      "FROM transmitted WHERE status_control <> 'deleted'");
+		      "status_control, file, mosaic, hash, read_interval, "
+		      "OID FROM transmitted "
+		      "WHERE status_control <> 'deleted'");
 
 	if(query.exec())
 	  while(query.next())
@@ -1403,7 +1404,7 @@ void spoton::slotPopulateStars(void)
 		      else
 			item->setBackground(QBrush());
 		    }
-		  else if(i == query.record().count() - 1)
+		  else if(i == 8 || i == query.record().count() - 1)
 		    item = new QTableWidgetItem
 		      (query.value(i).toString());
 
@@ -2795,6 +2796,9 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       menu->addAction(tr("Copy &Magnet"),
 		      this, SLOT(slotCopyTransmittedMagnet(void)));
+      menu->addSeparator();
+      menu->addAction(tr("Set &Read Interval"), this,
+		      SLOT(slotSetSBReadInterval(void)));
       m_ui.transmittedActionMenu->setMenu(menu);
     }
 

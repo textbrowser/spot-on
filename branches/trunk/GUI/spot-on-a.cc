@@ -871,10 +871,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotDaysChanged(int)));
-  connect(m_ui.sb_read_interval,
-	  SIGNAL(valueChanged(double)),
-	  this,
-	  SLOT(slotSBReadIntervalChanged(double)));
   connect(m_optionsUi.maximumEmailFileSize,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -5980,6 +5976,9 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action = menu.addAction(tr("&Copy File Hash"), this,
 			      SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "transmitted");
+      menu.addSeparator();
+      menu.addAction(tr("Set &Read Interval"), this,
+		     SLOT(slotSetSBReadInterval(void)));
       menu.exec(m_ui.transmitted->mapToGlobal(point));
     }
   else if(m_ui.transmittedMagnets == sender())

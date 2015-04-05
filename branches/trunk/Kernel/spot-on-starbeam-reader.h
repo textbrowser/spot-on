@@ -40,7 +40,8 @@ class spoton_starbeam_reader: public QObject
   Q_OBJECT
 
  public:
-  spoton_starbeam_reader(const qint64 id, QObject *parent);
+  spoton_starbeam_reader(const qint64 id, const double readInterval,
+			 QObject *parent);
   ~spoton_starbeam_reader();
 
  private:
@@ -48,6 +49,7 @@ class spoton_starbeam_reader: public QObject
   QList<QByteArray> m_missingLinks;
   QListIterator<QByteArray> *m_missingLinksIterator;
   QTimer m_timer;
+  double m_readInterval;
   qint64 m_id;
   qint64 m_position;
   QHash<QString, QByteArray> elementsFromMagnet(const QByteArray &magnet,

@@ -1201,11 +1201,60 @@ void spoton::slotSaveRefreshEmail(bool state)
   settings.setValue("gui/refreshEmail", state);
 }
 
-void spoton::slotSBReadIntervalChanged(double value)
+void spoton::slotSetSBReadInterval(void)
 {
-  m_settings["gui/starbeamReadInterval"] = value;
+  QString oid("");
+  double rational = 1.500;
+  int row = -1;
 
-  QSettings settings;
+  if((row = m_ui.transmitted->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.transmitted->item
+	(row, m_ui.transmitted->columnCount() - 1); // OID
 
-  settings.setValue("gui/starbeamReadInterval", value);
+      if(item)
+	oid = item->text();
+
+      item = m_ui.transmitted->item(row, 8); // Read Interval
+
+      if(item)
+	rational = item->text().toDouble();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  bool ok = true;
+
+  rational = QInputDialog::getDouble
+    (this, tr("%1: StarBeam Read Interval").arg(SPOTON_APPLICATION_NAME),
+     tr("&Read Interval"), rational, 0.100, 60.000, 3, &ok);
+
+  if(!ok)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare
+	  ("UPDATE transmitted SET read_interval = ? "
+	   "WHERE OID = ? AND status_control <> 'deleted'");
+	query.bindValue(0, rational);
+	query.bindValue(1, oid);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
