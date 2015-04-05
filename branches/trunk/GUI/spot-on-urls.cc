@@ -1179,6 +1179,7 @@ void spoton::slotAddDistiller(void)
 
     if(db.open())
       {
+	QByteArray domain(url.encodedHost() + url.encodedPath());
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO distillers "
@@ -1195,11 +1196,11 @@ void spoton::slotAddDistiller(void)
 
 	query.bindValue
 	  (1,
-	   crypt->encryptedThenHashed(url.host().toUtf8(), &ok).toBase64());
+	   crypt->encryptedThenHashed(domain, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->keyedHash(url.host().toUtf8(), &ok).toBase64());
+	    (2, crypt->keyedHash(domain, &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
