@@ -45,7 +45,6 @@ spoton_starbeam_reader::spoton_starbeam_reader
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
-  m_timer.setSingleShot(true);
   m_timer.start(1000 * m_readInterval);
 }
 
@@ -276,7 +275,7 @@ void spoton_starbeam_reader::slotTimeout(void)
     }
 
   if(status != "completed")
-    m_timer.start(1000 * m_readInterval);
+    setReadInterval(m_readInterval);
 }
 
 void spoton_starbeam_reader::populateMagnets(const QSqlDatabase &db)
@@ -517,4 +516,13 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status,
 
   if(ok)
     query.exec();
+}
+
+void spoton_starbeam_reader::setReadInterval(const double readInterval)
+{
+  m_readInterval = qBound(0.100, readInterval, 60.000);
+
+  if(static_cast<int> (1000 * m_readInterval) != m_timer.interval())
+    if(m_timer.isActive())
+      m_timer.start(1000 * m_readInterval);
 }

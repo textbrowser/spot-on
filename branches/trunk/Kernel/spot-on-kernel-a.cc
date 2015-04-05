@@ -1387,6 +1387,13 @@ void spoton_kernel::prepareStarbeamReaders(void)
 			     "critical failure.");
 			}
 		    }
+		  else
+		    {
+		      starbeam = m_starbeamReaders.value(id);
+
+		      if(starbeam)
+			starbeam->setReadInterval(readInterval);
+		    }
 		}
 	      else
 		{

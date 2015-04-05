@@ -43,6 +43,7 @@ class spoton_starbeam_reader: public QObject
   spoton_starbeam_reader(const qint64 id, const double readInterval,
 			 QObject *parent);
   ~spoton_starbeam_reader();
+  void setReadInterval(const double readInterval);
 
  private:
   QList<QByteArray> m_magnets;
