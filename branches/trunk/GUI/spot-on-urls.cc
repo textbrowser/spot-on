@@ -1161,7 +1161,8 @@ void spoton::slotAddDistiller(void)
 
   QString connectionName("");
   QString error("");
-  QUrl url(QUrl::fromUserInput(m_ui.domain->text().toLower()));
+  QUrl url(QUrl::fromUserInput(m_ui.domain->text().trimmed()));
+					   
   bool ok = true;
 
   if(url.isEmpty() || !url.isValid())
@@ -1273,9 +1274,9 @@ void spoton::populateUrlDistillers(void)
 	if(query.exec())
 	  while(query.next())
 	    {
+	      QByteArray domain;
 	      QString direction
 		(query.value(0).toString().toLower().trimmed());
-	      QString domain("");
 	      bool ok = true;
 
 	      domain = crypt->
@@ -1283,14 +1284,16 @@ void spoton::populateUrlDistillers(void)
 					    fromBase64(query.
 						       value(1).
 						       toByteArray()),
-					    &ok).constData();
+					    &ok);
 
 	      if(ok)
 		{
 		  if(direction == "download")
-		    m_ui.downDistillers->addItem(domain);
+		    m_ui.downDistillers->addItem
+		      (QString::fromUtf8(domain.constData()));
 		  else
-		    m_ui.upDistillers->addItem(domain);
+		    m_ui.upDistillers->addItem
+		      (QString::fromUtf8(domain.constData()));
 		}
 	    }
       }
