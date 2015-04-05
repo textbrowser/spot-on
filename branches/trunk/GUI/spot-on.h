@@ -423,8 +423,6 @@ class spoton: public QMainWindow
   QHash<QString, QString> m_keysShared;
   QHash<QString, spoton_crypt *> m_crypts;
   QHash<QString, spoton_smp *> m_smps;
-#ifdef SPOTON_LINKED_WITH_LIBPHONON
-#endif
   QMainWindow *m_optionsWindow;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;

@@ -2781,17 +2781,17 @@ bool spoton_misc::isValidStarBeamMissingLinksMagnet(const QByteArray &magnet)
 void spoton_misc::prepareSignalHandler(void (*sig_handler) (int))
 {
   QList<int> list;
-#if defined Q_OS_LINUX || defined Q_OS_MAC || defined Q_OS_UNIX
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
   struct sigaction act;
 #endif
   list << SIGABRT
-#if defined Q_OS_LINUX || defined Q_OS_MAC || defined Q_OS_UNIX
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
        << SIGBUS
 #endif
        << SIGFPE
        << SIGILL
        << SIGINT
-#if defined Q_OS_LINUX || defined Q_OS_MAC || defined Q_OS_UNIX
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
        << SIGQUIT
 #endif
        << SIGSEGV
@@ -2799,7 +2799,7 @@ void spoton_misc::prepareSignalHandler(void (*sig_handler) (int))
 
   while(!list.isEmpty())
     {
-#if defined Q_OS_LINUX || defined Q_OS_MAC || defined Q_OS_UNIX
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
       act.sa_handler = sig_handler;
       sigemptyset(&act.sa_mask);
       act.sa_flags = 0;

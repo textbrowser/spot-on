@@ -56,8 +56,8 @@ extern "C"
 #include <process.h>
 #endif
 #include <signal.h>
-#if defined Q_OS_LINUX || defined Q_OS_MAC || defined Q_OS_OS2 || \
-  defined Q_OS_UNIX
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_OS2) ||	\
+  defined(Q_OS_UNIX)
 #include <termios.h>
 #include <unistd.h>
 #else
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
   libspoton_enable_sqlite_cache();
   spoton_misc::prepareSignalHandler(sig_handler);
 
-#if defined Q_OS_LINUX || defined Q_OS_MAC || defined Q_OS_UNIX
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
   /*
   ** Ignore SIGPIPE.
   */

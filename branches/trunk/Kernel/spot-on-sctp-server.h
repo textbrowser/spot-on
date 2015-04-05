@@ -29,7 +29,7 @@
 #define _spoton_sctp_server_h_
 
 #include <QHostInfo>
-#if defined Q_OS_LINUX || defined Q_OS_MAC || defined Q_OS_UNIX
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
 #include <QSocketNotifier>
 #else
 #include <QTimer>
@@ -56,7 +56,7 @@ class spoton_sctp_server: public QObject
  private:
   QHostAddress m_serverAddress;
   QString m_errorString;
-#if defined Q_OS_LINUX || defined Q_OS_MAC || defined Q_OS_UNIX
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
   QSocketNotifier *m_socketNotifier;
 #else
   QTimer m_timer;
@@ -69,7 +69,7 @@ class spoton_sctp_server: public QObject
   quint16 m_serverPort;
 
  private slots:
-#if defined Q_OS_LINUX || defined Q_OS_MAC || defined Q_OS_UNIX
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
   void slotActivated(int socketDescriptor);
 #else
   void slotTimeout(void);

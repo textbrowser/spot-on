@@ -47,10 +47,10 @@
 
 extern "C"
 {
-#ifdef Q_OS_UNIX
-#include <unistd.h>
-#elif defined(Q_OS_WIN32)
+#ifdef Q_OS_WIN32
 #include <io.h>
+#else
+#include <unistd.h>
 #endif
 }
 
@@ -131,10 +131,10 @@ spoton_neighbor::spoton_neighbor
     }
   else if(m_udpSocket)
     {
-#ifdef Q_OS_UNIX
-      m_udpSocket->setSocketDescriptor(dup(socketDescriptor));
-#elif defined(Q_OS_WIN32)
+#ifdef Q_OS_WIN32
       m_udpSocket->setSocketDescriptor(_dup(socketDescriptor));
+#else
+      m_udpSocket->setSocketDescriptor(dup(socketDescriptor));
 #endif
       m_udpSocket->setLocalAddress(QHostAddress(localIpAddress));
       m_udpSocket->setLocalPort(localPort.toUShort());
