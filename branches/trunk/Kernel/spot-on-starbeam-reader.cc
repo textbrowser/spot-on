@@ -45,7 +45,10 @@ spoton_starbeam_reader::spoton_starbeam_reader
 	  this,
 	  SLOT(slotTimeout(void)));
   m_timer.setSingleShot(true);
-  m_timer.start(1500);
+  m_timer.start
+    (static_cast<int> (1000 * spoton_kernel::
+		       setting("gui/starbeamReadInterval",
+			       1.500).toDouble()));
 }
 
 spoton_starbeam_reader::~spoton_starbeam_reader()
@@ -273,7 +276,10 @@ void spoton_starbeam_reader::slotTimeout(void)
     }
 
   if(status != "completed")
-    m_timer.start(1500);
+    m_timer.start
+      (static_cast<int> (1000 * spoton_kernel::
+			 setting("gui/starbeamReadInterval",
+				 1.500).toDouble()));
 }
 
 void spoton_starbeam_reader::populateMagnets(const QSqlDatabase &db)

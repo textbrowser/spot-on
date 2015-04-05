@@ -1200,3 +1200,12 @@ void spoton::slotSaveRefreshEmail(bool state)
 
   settings.setValue("gui/refreshEmail", state);
 }
+
+void spoton::slotSBReadIntervalChanged(double value)
+{
+  m_settings["gui/starbeamReadInterval"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/starbeamReadInterval", value);
+}

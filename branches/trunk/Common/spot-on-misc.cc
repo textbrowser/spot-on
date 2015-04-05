@@ -1979,6 +1979,15 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 512;
 
   settings.insert("gui/saltLength", integer);
+  rational = qAbs(settings.value("gui/starbeamReadInterval", 1.500).
+		  toDouble(&ok));
+
+  if(!ok)
+    rational = 1.500;
+  else if(rational < 0.100 || rational > 60.00)
+    rational = 1.500;
+
+  settings.insert("gui/starbeamReadInterval", rational);
   integer = qAbs(settings.value("kernel/gcryctl_init_secmem",
 				65536).toInt(&ok));
 

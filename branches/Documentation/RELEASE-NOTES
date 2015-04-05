@@ -23,6 +23,7 @@
 18.  Non-iterative message sharing between neighbors.
 19.  Modified read intervals of StarBeam readers. Reading is now
      predictable. Terminate a reader's timer if the StarBeam is completed.
+20.  StarBeam read intervals. Default, 1.5 seconds.
 
 0.20 (03/14/2015)
 

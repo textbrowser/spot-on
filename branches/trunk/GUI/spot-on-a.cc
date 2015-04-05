@@ -871,6 +871,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotDaysChanged(int)));
+  connect(m_ui.sb_read_interval,
+	  SIGNAL(valueChanged(double)),
+	  this,
+	  SLOT(slotSBReadIntervalChanged(double)));
   connect(m_optionsUi.maximumEmailFileSize,
 	  SIGNAL(valueChanged(int)),
 	  this,
