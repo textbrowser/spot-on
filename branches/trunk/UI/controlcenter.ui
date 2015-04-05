@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>500</height>
+             <height>503</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -420,7 +420,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>766</width>
-                <height>490</height>
+                <height>493</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -781,8 +781,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>818</width>
-             <height>554</height>
+             <width>761</width>
+             <height>543</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1834,8 +1834,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>789</width>
-             <height>485</height>
+             <width>776</width>
+             <height>503</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2444,8 +2444,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>271</width>
-                     <height>1425</height>
+                     <width>233</width>
+                     <height>1393</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -2905,8 +2905,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>884</width>
-             <height>551</height>
+             <width>788</width>
+             <height>531</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -3932,7 +3932,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>500</height>
+             <height>503</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -3986,7 +3986,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>751</width>
-                 <height>618</height>
+                 <height>558</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4805,9 +4805,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-485</y>
-             <width>769</width>
-             <height>1039</height>
+             <y>0</y>
+             <width>761</width>
+             <height>1015</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5944,7 +5944,7 @@
              <x>0</x>
              <y>0</y>
              <width>761</width>
-             <height>519</height>
+             <height>511</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -6587,6 +6587,35 @@
                    </widget>
                   </item>
                   <item>
+                   <widget class="QLabel" name="label_9">
+                    <property name="text">
+                     <string>&amp;Read Interval</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>sb_read_interval</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QDoubleSpinBox" name="sb_read_interval">
+                    <property name="suffix">
+                     <string> ms</string>
+                    </property>
+                    <property name="decimals">
+                     <number>3</number>
+                    </property>
+                    <property name="minimum">
+                     <double>0.100000000000000</double>
+                    </property>
+                    <property name="maximum">
+                     <double>60000.000000000000000</double>
+                    </property>
+                    <property name="value">
+                     <double>1500.000000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
                    <spacer name="horizontalSpacer_59">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
@@ -6940,7 +6969,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>500</height>
+             <height>503</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7475,7 +7504,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>500</height>
+             <height>503</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7696,7 +7725,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -8103,6 +8132,7 @@
   <tabstop>receivedActionMenu</tabstop>
   <tabstop>received</tabstop>
   <tabstop>transmittedActionMenu</tabstop>
+  <tabstop>sb_read_interval</tabstop>
   <tabstop>transmitted</tabstop>
   <tabstop>rewind</tabstop>
   <tabstop>transmittedMagnets</tabstop>

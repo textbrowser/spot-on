@@ -44,6 +44,7 @@ spoton_starbeam_reader::spoton_starbeam_reader
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
+  m_timer.setSingleShot(true);
   m_timer.start(1500);
 }
 
@@ -89,9 +90,17 @@ void spoton_starbeam_reader::slotTimeout(void)
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
   if(!s_crypt)
-    return;
+    {
+      spoton_misc::logError
+	(QString("spoton_starbeam_reader:slotTimeout(): s_crypt is "
+		 "malformed for starbeam reader %1. Aborting.").
+	 arg(m_id));
+      deleteLater();
+      return;
+    }
 
   QString connectionName("");
+  QString status("");
   bool shouldDelete = false;
 
   {
@@ -117,9 +126,11 @@ void spoton_starbeam_reader::slotTimeout(void)
 	    if(query.exec())
 	      if(query.next())
 		{
-		  QString status(query.value(5).toString().toLower());
+		  status = query.value(5).toString().toLower();
 
-		  if(status == "deleted")
+		  if(status == "completed")
+		    m_timer.stop();
+		  else if(status == "deleted")
 		    shouldDelete = true;
 		  else if(m_position >= 0 && status == "transmitting")
 		    {
@@ -261,7 +272,8 @@ void spoton_starbeam_reader::slotTimeout(void)
       return;
     }
 
-  m_timer.start(qrand() % 500 + 1000);
+  if(status != "completed")
+    m_timer.start(1500);
 }
 
 void spoton_starbeam_reader::populateMagnets(const QSqlDatabase &db)
@@ -455,6 +467,8 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 		spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
 				      "read() failure.");
 	    }
+	  else
+	    ok = true;
 	}
       else
 	spoton_misc::logError("spoton_starbeam_reader::pulsate(): "

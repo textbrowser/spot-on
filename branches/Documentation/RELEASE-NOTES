@@ -21,6 +21,8 @@
      cURL fails.
 17.  Support OS X 10.6.x and Qt 5.x.
 18.  Non-iterative message sharing between neighbors.
+19.  Modified read intervals of StarBeam readers. Reading is now
+     predictable. Terminate a reader's timer if the StarBeam is completed.
 
 0.20 (03/14/2015)
 
