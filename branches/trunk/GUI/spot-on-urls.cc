@@ -1351,6 +1351,7 @@ void spoton::slotDeleteUrlDistillers(void)
 	  QSqlQuery query(db);
 	  bool ok = true;
 
+	  query.exec("PRAGMA secure_delete = ON");
 	  query.prepare("DELETE FROM distillers WHERE "
 			"direction = ? AND domain_hash = ?");
 	  query.bindValue(0, direction);
