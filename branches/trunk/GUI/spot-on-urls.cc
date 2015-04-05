@@ -1179,7 +1179,7 @@ void spoton::slotAddDistiller(void)
 
     if(db.open())
       {
-	QByteArray domain(url.encodedHost() + url.encodedPath());
+	QByteArray domain(url.host().toUtf8() + url.path().toUtf8());
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO distillers "
