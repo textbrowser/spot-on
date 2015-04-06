@@ -227,7 +227,8 @@ spoton::spoton(void):QMainWindow()
      arg(__DATE__).
      arg(__TIME__).
      arg(sslSupported ?
-	 SSLeay_version(SSLEAY_VERSION) : "OpenSSL is not supported").
+	 SSLeay_version(SSLEAY_VERSION) :
+	 "OpenSSL is not supported, according to Qt").
      arg(QT_VERSION_STR).arg(sizeof(void *) * 8).
      arg(curl_version()).
      arg(GCRYPT_VERSION).
