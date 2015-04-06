@@ -12,7 +12,8 @@
 10.  Corrected throw clauses. Removed redundant try-catch blocks.
 11.  Set forward-only database queries.
 12.  Virtual keyboard for sensitive fields. Please double-click to
-     activate.
+     activate. All authentication fields support the keyboards. The SMP
+     mechanism does as well. English and German layouts currently provided.
 13.  Upgraded libgcrypt to version 1.6.3 on Windows.
 14.  Upgraded libgpg-error to version 1.13 on Windows.
 15.  Bind data encrypted with public keys into the message authentication
@@ -26,7 +27,7 @@
 20.  StarBeam read intervals. Default, 1.5 seconds.
 21.  Added PRAGMA secure_delete = ON in spoton::slotDeleteUrlDistillers().
 22.  URL distillers must include paths and not only hosts.
-23.  Activate tool button menus.
+23.  Activate tool button menus for mobile devices.
 
 0.20 (03/14/2015)
 
