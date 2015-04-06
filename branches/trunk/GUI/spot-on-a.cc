@@ -222,14 +222,16 @@ spoton::spoton(void):QMainWindow()
 	     "%3.\n"
 	     "Qt %4, %5-bit.\n"
 	     "%6.\n"
-	     "libgcrypt %7.").
+	     "libgcrypt %7.\n"
+	     "libspoton %8.").
      arg(__DATE__).
      arg(__TIME__).
      arg(sslSupported ?
 	 SSLeay_version(SSLEAY_VERSION) : "OpenSSL is not supported").
      arg(QT_VERSION_STR).arg(sizeof(void *) * 8).
      arg(curl_version()).
-     arg(GCRYPT_VERSION));
+     arg(GCRYPT_VERSION).
+     arg(LIBSPOTON_VERSION_STR));
   m_ui.statisticsBox->setVisible(false);
   m_ui.urlSettings->setVisible(true);
   m_ui.urlsBox->setVisible(false);
