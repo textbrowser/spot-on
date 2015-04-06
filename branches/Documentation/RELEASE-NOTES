@@ -26,6 +26,7 @@
 20.  StarBeam read intervals. Default, 1.5 seconds.
 21.  Added PRAGMA secure_delete = ON in spoton::slotDeleteUrlDistillers().
 22.  URL distillers must include paths and not only hosts.
+23.  Activate tool button menus.
 
 0.20 (03/14/2015)
 

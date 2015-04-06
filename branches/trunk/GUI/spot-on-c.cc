@@ -2533,6 +2533,10 @@ void spoton::prepareContextMenuMirrors(void)
 		      this,
 		      SLOT(slotVerifySMPSecret(void)));
       m_ui.chatActionMenu->setMenu(menu);
+      connect(m_ui.chatActionMenu,
+	      SIGNAL(clicked(void)),
+	      m_ui.chatActionMenu,
+	      SLOT(showMenu(void)));
     }
 
   if(!m_ui.emailWriteActionMenu->menu())
@@ -2566,6 +2570,10 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
       m_ui.emailWriteActionMenu->setMenu(menu);
+      connect(m_ui.emailWriteActionMenu,
+	      SIGNAL(clicked(void)),
+	      m_ui.emailWriteActionMenu,
+	      SLOT(showMenu(void)));
     }
 
   if(!m_ui.listenersActionMenu->menu())
@@ -2603,6 +2611,10 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("Set &SSL Control String"),
 		      this, SLOT(slotSetListenerSSLControlString(void)));
       m_ui.listenersActionMenu->setMenu(menu);
+      connect(m_ui.listenersActionMenu,
+	      SIGNAL(clicked(void)),
+	      m_ui.listenersActionMenu,
+	      SLOT(showMenu(void)));
     }
 
   if(!m_ui.magnetsActionMenu->menu())
@@ -2620,6 +2632,10 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("Delete &All"),
 		      this, SLOT(slotDeleteEtpAllMagnets(void)));
       m_ui.magnetsActionMenu->setMenu(menu);
+      connect(m_ui.magnetsActionMenu,
+	      SIGNAL(clicked(void)),
+	      m_ui.magnetsActionMenu,
+	      SLOT(showMenu(void)));
     }
 
   if(!m_ui.neighborsActionMenu->menu())
@@ -2745,6 +2761,10 @@ void spoton::prepareContextMenuMirrors(void)
 	}
 
       m_ui.neighborsActionMenu->setMenu(menu);
+      connect(m_ui.neighborsActionMenu,
+	      SIGNAL(clicked(void)),
+	      m_ui.neighborsActionMenu,
+	      SLOT(showMenu(void)));
     }
 
   if(!m_ui.receivedActionMenu->menu())
@@ -2771,6 +2791,10 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("Discover &Missing Links"), this,
 		      SLOT(slotDiscoverMissingLinks(void)));
       m_ui.receivedActionMenu->setMenu(menu);
+      connect(m_ui.receivedActionMenu,
+	      SIGNAL(clicked(void)),
+	      m_ui.receivedActionMenu,
+	      SLOT(showMenu(void)));
     }
 
   if(!m_ui.transmittedActionMenu->menu())
@@ -2800,6 +2824,10 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("Set &Read Interval"), this,
 		      SLOT(slotSetSBReadInterval(void)));
       m_ui.transmittedActionMenu->setMenu(menu);
+      connect(m_ui.transmittedActionMenu,
+	      SIGNAL(clicked(void)),
+	      m_ui.transmittedActionMenu,
+	      SLOT(showMenu(void)));
     }
 
   if(!m_ui.urlActionMenu->menu())
@@ -2828,6 +2856,10 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "url");
       m_ui.urlActionMenu->setMenu(menu);
+      connect(m_ui.urlActionMenu,
+	      SIGNAL(clicked(void)),
+	      m_ui.urlActionMenu,
+	      SLOT(showMenu(void)));
     }
 }
 
