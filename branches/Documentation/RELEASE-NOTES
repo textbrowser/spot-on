@@ -28,6 +28,8 @@
 21.  Added PRAGMA secure_delete = ON in spoton::slotDeleteUrlDistillers().
 22.  URL distillers must include paths and not only hosts.
 23.  Activate tool button menus for mobile devices.
+24.  Removed explicit casts to malloc() in libspoton.c. Increased version to
+     0.09.
 
 0.20 (03/14/2015)
 
