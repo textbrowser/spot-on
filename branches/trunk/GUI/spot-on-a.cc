@@ -6635,7 +6635,7 @@ void spoton::slotPopulateParticipants(void)
 		      "key_type, "
 		      "public_key "
 		      "FROM friends_public_keys "
-		      "WHERE key_type_hash IN (?, ?, ?, ?)");
+		      "WHERE key_type_hash IN (?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
 
@@ -6645,11 +6645,16 @@ void spoton::slotPopulateParticipants(void)
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
+	    (2, crypt->keyedHash(QByteArray("email-signature"), &ok).
+	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (3, crypt->keyedHash(QByteArray("url"), &ok).toBase64());
+	    (3, crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (4, crypt->keyedHash(QByteArray("url"), &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())
@@ -6868,7 +6873,9 @@ void spoton::slotPopulateParticipants(void)
 			m_ui.participants->setItem(row - 1, i, item);
 		    }
 
-		  if(keyType == "email" || keyType == "poptastic")
+		  if(keyType == "email" ||
+		     keyType == "email-signature" ||
+		     keyType == "poptastic")
 		    {
 		      if(i == 0)
 			{
@@ -6880,7 +6887,8 @@ void spoton::slotPopulateParticipants(void)
 			{
 			  if(name.isEmpty())
 			    {
-			      if(keyType == "email")
+			      if(keyType == "email" ||
+				 keyType == "email-signature")
 				name = "unknown";
 			      else
 				name = "unknown@unknown.org";
