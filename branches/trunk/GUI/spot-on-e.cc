@@ -1258,3 +1258,37 @@ void spoton::slotSetSBReadInterval(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton::slotCopyEmailSignatureKey(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  if(!m_crypts.value("email-signature", 0))
+    {
+      clipboard->clear();
+      return;
+    }
+
+  QByteArray name;
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+  bool ok = true;
+
+  name = m_settings.value("gui/emailName", "unknown").toByteArray();
+
+  sPublicKey = m_crypts.value("chat-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("chat-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    clipboard->setText
+      ("K" + QByteArray("email").toBase64() + "@" + name.toBase64() + "@" +
+       sPublicKey.toBase64() + "@" + sSignature.toBase64());
+  else
+    clipboard->clear();
+}

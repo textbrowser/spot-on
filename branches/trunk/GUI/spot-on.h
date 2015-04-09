@@ -582,6 +582,7 @@ class spoton: public QMainWindow
   void slotCopyAllMyPublicKeys(void);
   void slotCopyEmailFriendshipBundle(void);
   void slotCopyEmailKeys(void);
+  void slotCopyEmailSignatureKey(void);
   void slotCopyEtpMagnet(void);
   void slotCopyFileHash(void);
   void slotCopyFriendshipBundle(void);

@@ -1424,6 +1424,10 @@ spoton::spoton(void):QMainWindow()
   connect
     (menu->addAction(tr("Copy &All Public Keys")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyAllMyPublicKeys(void)));
+  menu->addSeparator();
+  connect
+    (menu->addAction(tr("Copy &E-Mail Signature Key")),
+     SIGNAL(triggered(void)), this, SLOT(slotCopyEmailSignatureKey(void)));
   m_ui.commonBuzzChannels->setItemData
     (0,
      "magnet:?rn=Spot-On_Developer_Channel_Key&xf=10000&"
