@@ -1312,19 +1312,19 @@ void spoton::saveEmailSignatureKey(const QList<QByteArray> &list)
     if(db.open())
       {
 	QByteArray keyType(QByteArray::fromBase64(list.value(0)));
-	QByteArray mPublicKey(QByteArray::fromBase64(list.value(2)));
 	QByteArray name(QByteArray::fromBase64(list.value(1)));
+	QByteArray sPublicKey(QByteArray::fromBase64(list.value(2)));
 
 	if(spoton_misc::saveFriendshipBundle("artificial-key",
 					     name,
 					     "artificial-key",
-					     mPublicKey,
+					     sPublicKey,
 					     -1,
 					     db,
 					     m_crypts.value("chat", 0)))
 	  if(spoton_misc::saveFriendshipBundle("email-signature",
 					       name,
-					       mPublicKey,
+					       sPublicKey,
 					       QByteArray(),
 					       -1,
 					       db,

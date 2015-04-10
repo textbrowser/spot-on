@@ -3609,3 +3609,17 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
 
   return valid;
 }
+
+bool spoton_misc::isSingleKey(const QByteArray &publicKey,
+			      const QSqlDatabase &db,
+			      spoton_crypt *crypt)
+{
+  if(!db.isOpen())
+    return false;
+  else if(!crypt)
+    return false;
+
+  Q_UNUSED(publicKey);
+
+  return true;
+}

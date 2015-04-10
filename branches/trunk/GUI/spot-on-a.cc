@@ -6877,6 +6877,12 @@ void spoton::slotPopulateParticipants(void)
 		     keyType == "email-signature" ||
 		     keyType == "poptastic")
 		    {
+		      bool isSingleKey = false;
+
+		      if(keyType == "email-signature")
+			isSingleKey = spoton_misc::
+			  isSingleKey(publicKey, db, crypt);
+
 		      if(i == 0)
 			{
 			  rowE += 1;
@@ -6935,8 +6941,18 @@ void spoton::slotPopulateParticipants(void)
 		      item->setData(Qt::UserRole, temporary);
 		      item->setData
 			(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
+		      item->setData(Qt::ItemDataRole(Qt::UserRole + 2),
+				    isSingleKey);
 		      item->setFlags
 			(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+		      if(isSingleKey)
+			item->setIcon
+			  (QIcon(QString(":/%1/key.png").
+				 arg(m_settings.
+				     value("gui/iconSet", "nouve").
+				     toString())));
+
 		      m_ui.emailParticipants->setItem
 			(rowE - 1, i, item);
 		    }

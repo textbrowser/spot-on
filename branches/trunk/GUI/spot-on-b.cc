@@ -2744,6 +2744,7 @@ void spoton::slotSendMail(void)
 
     if(db.open())
       {
+	QList<bool> isSingleKeys;
 	QModelIndexList list;
 	QStringList names;
 	QStringList oids;
@@ -2753,7 +2754,14 @@ void spoton::slotSendMail(void)
 	  selectedRows(0); // Participant
 
 	while(!list.isEmpty())
-	  names.append(list.takeFirst().data().toString());
+	  {
+	    QModelIndex index(list.takeFirst());
+
+	    isSingleKeys.append
+	      (index.data(Qt::ItemDataRole(Qt::UserRole + 2)).
+	       toBool());
+	    names.append(index.data().toString());
+	  }
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(1); // OID
@@ -2767,8 +2775,13 @@ void spoton::slotSendMail(void)
 	while(!list.isEmpty())
 	  publicKeyHashes.append(list.takeFirst().data().toString());
 
-	while(!oids.isEmpty())
+	while(!isSingleKeys.isEmpty())
 	  {
+	    bool isSingleKey = isSingleKeys.takeFirst();
+
+	    if(isSingleKey)
+	      continue;
+
 	    QByteArray goldbug
 	      (m_ui.goldbug->text().toLatin1());
 	    QByteArray publicKeyHash(publicKeyHashes.takeFirst().toLatin1());
