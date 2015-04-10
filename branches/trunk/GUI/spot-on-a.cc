@@ -1424,10 +1424,6 @@ spoton::spoton(void):QMainWindow()
   connect
     (menu->addAction(tr("Copy &All Public Keys")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyAllMyPublicKeys(void)));
-  menu->addSeparator();
-  connect
-    (menu->addAction(tr("Copy &E-Mail Signature Key")),
-     SIGNAL(triggered(void)), this, SLOT(slotCopyEmailSignatureKey(void)));
   m_ui.commonBuzzChannels->setItemData
     (0,
      "magnet:?rn=Spot-On_Developer_Channel_Key&xf=10000&"
@@ -6635,7 +6631,7 @@ void spoton::slotPopulateParticipants(void)
 		      "key_type, "
 		      "public_key "
 		      "FROM friends_public_keys "
-		      "WHERE key_type_hash IN (?, ?, ?, ?, ?)");
+		      "WHERE key_type_hash IN (?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
 
@@ -6645,16 +6641,11 @@ void spoton::slotPopulateParticipants(void)
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->keyedHash(QByteArray("email-signature"), &ok).
-	     toBase64());
+	    (2, crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (3, crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (4, crypt->keyedHash(QByteArray("url"), &ok).toBase64());
+	    (3, crypt->keyedHash(QByteArray("url"), &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())
@@ -6874,20 +6865,8 @@ void spoton::slotPopulateParticipants(void)
 		    }
 
 		  if(keyType == "email" ||
-		     keyType == "email-signature" ||
 		     keyType == "poptastic")
 		    {
-		      bool isSingleKey = false;
-
-		      if(keyType == "email-signature")
-			{
-			  isSingleKey = spoton_misc::
-			    isSingleKey(publicKey, db, crypt);
-
-			  if(!isSingleKey)
-			    continue;
-			}
-
 		      if(i == 0)
 			{
 			  rowE += 1;
@@ -6946,18 +6925,8 @@ void spoton::slotPopulateParticipants(void)
 		      item->setData(Qt::UserRole, temporary);
 		      item->setData
 			(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
-		      item->setData(Qt::ItemDataRole(Qt::UserRole + 2),
-				    isSingleKey);
 		      item->setFlags
 			(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-		      if(isSingleKey)
-			item->setIcon
-			  (QIcon(QString(":/%1/key.png").
-				 arg(m_settings.
-				     value("gui/iconSet", "nouve").
-				     toString())));
-
 		      m_ui.emailParticipants->setItem
 			(rowE - 1, i, item);
 		    }

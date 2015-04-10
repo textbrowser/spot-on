@@ -1871,7 +1871,6 @@ void spoton::addFriendsKey(const QByteArray &k)
       keyType = QByteArray::fromBase64(keyType);
 
       if(!(keyType == "chat" || keyType == "email" ||
-	   keyType == "email-signature" ||
 	   keyType == "poptastic" ||
 	   keyType == "rosetta" || keyType == "url"))
 	{
@@ -1914,24 +1913,8 @@ void spoton::addFriendsKey(const QByteArray &k)
 	    return;
 	}
 
-      if(keyType == "email-signature")
-	{
-	  if(mPublicKey == myPublicKey && !myPublicKey.isEmpty())
-	    {
-	      QMessageBox::critical
-		(this, tr("%1: Error").
-		 arg(SPOTON_APPLICATION_NAME),
-		 tr("You're attempting to add your own '%1' key. "
-		    "Please do not do this!").arg(keyType.constData()));
-	      return;
-	    }
-
-	  saveEmailSignatureKey(list);
-	  return;
-	}
-      else
-	mySPublicKey = m_crypts.value
-	  (QString("%1-signature").arg(keyType.constData()))->publicKey(&ok);
+      mySPublicKey = m_crypts.value
+	(QString("%1-signature").arg(keyType.constData()))->publicKey(&ok);
 
       if(!ok)
 	{
@@ -2744,7 +2727,6 @@ void spoton::slotSendMail(void)
 
     if(db.open())
       {
-	QList<bool> isSingleKeys;
 	QModelIndexList list;
 	QStringList names;
 	QStringList oids;
@@ -2754,14 +2736,7 @@ void spoton::slotSendMail(void)
 	  selectedRows(0); // Participant
 
 	while(!list.isEmpty())
-	  {
-	    QModelIndex index(list.takeFirst());
-
-	    isSingleKeys.append
-	      (index.data(Qt::ItemDataRole(Qt::UserRole + 2)).
-	       toBool());
-	    names.append(index.data().toString());
-	  }
+	  names.append(list.takeFirst().data().toString());
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(1); // OID
@@ -2775,13 +2750,8 @@ void spoton::slotSendMail(void)
 	while(!list.isEmpty())
 	  publicKeyHashes.append(list.takeFirst().data().toString());
 
-	while(!isSingleKeys.isEmpty())
+	while(!oids.isEmpty())
 	  {
-	    bool isSingleKey = isSingleKeys.takeFirst();
-
-	    if(isSingleKey)
-	      continue;
-
 	    QByteArray goldbug
 	      (m_ui.goldbug->text().toLatin1());
 	    QByteArray publicKeyHash(publicKeyHashes.takeFirst().toLatin1());
