@@ -133,7 +133,8 @@ class spoton_misc
 				   const QByteArray &sPublicKey,
 				   const qint64 neighborOid,
 				   const QSqlDatabase &db,
-				   spoton_crypt *crypt);
+				   spoton_crypt *crypt,
+				   const bool useKeyTypeForName = true);
   static bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 			 const QString &oid,
 			 spoton_crypt *crypt);

@@ -1871,6 +1871,7 @@ void spoton::addFriendsKey(const QByteArray &k)
       keyType = QByteArray::fromBase64(keyType);
 
       if(!(keyType == "chat" || keyType == "email" ||
+	   keyType == "email-signature" ||
 	   keyType == "poptastic" ||
 	   keyType == "rosetta" || keyType == "url"))
 	{
@@ -1913,8 +1914,24 @@ void spoton::addFriendsKey(const QByteArray &k)
 	    return;
 	}
 
-      mySPublicKey = m_crypts.value
-	(QString("%1-signature").arg(keyType.constData()))->publicKey(&ok);
+      if(keyType == "email-signature")
+	{
+	  if(mPublicKey == myPublicKey && !myPublicKey.isEmpty())
+	    {
+	      QMessageBox::critical
+		(this, tr("%1: Error").
+		 arg(SPOTON_APPLICATION_NAME),
+		 tr("You're attempting to add your own '%1' key. "
+		    "Please do not do this!").arg(keyType.constData()));
+	      return;
+	    }
+
+	  saveEmailSignatureKey(list);
+	  return;
+	}
+      else
+	mySPublicKey = m_crypts.value
+	  (QString("%1-signature").arg(keyType.constData()))->publicKey(&ok);
 
       if(!ok)
 	{

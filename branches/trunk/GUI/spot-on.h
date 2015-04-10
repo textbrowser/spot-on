@@ -515,6 +515,7 @@ class spoton: public QMainWindow
   void refreshInstitutions(void);
   void removeFavorite(const bool removeAll);
   void saveDestination(const QString &path);
+  void saveEmailSignatureKey(const QList<QByteArray> &list);
   void saveGeoIPPath(const int version, const QString &path);
   void saveKernelPath(const QString &path);
   void saveSettings(void);

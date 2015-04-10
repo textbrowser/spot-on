@@ -1286,10 +1286,55 @@ void spoton::slotCopyEmailSignatureKey(void)
       digitalSignature(sPublicKey, &ok);
 
   if(ok)
+    /*
+    ** Use one of the duplicates as an artificial key.
+    */
+
     clipboard->setText
       ("K" + QByteArray("email-signature").toBase64() + "@" +
        name.toBase64() + "@" +
+       sPublicKey.toBase64() + "@" + sSignature.toBase64() + "@" +
        sPublicKey.toBase64() + "@" + sSignature.toBase64());
   else
     clipboard->clear();
+}
+
+void spoton::saveEmailSignatureKey(const QList<QByteArray> &list)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QByteArray keyType(QByteArray::fromBase64(list.value(0)));
+	QByteArray mPublicKey(QByteArray::fromBase64(list.value(2)));
+	QByteArray name(QByteArray::fromBase64(list.value(1)));
+
+	if(spoton_misc::saveFriendshipBundle("artificial-key",
+					     name,
+					     "artificial-key",
+					     mPublicKey,
+					     -1,
+					     db,
+					     m_crypts.value("chat", 0)))
+	  if(spoton_misc::saveFriendshipBundle("email-signature",
+					       name,
+					       mPublicKey,
+					       QByteArray(),
+					       -1,
+					       db,
+					       m_crypts.value("chat", 0),
+					       false))
+	    m_ui.friendInformation->selectAll();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }

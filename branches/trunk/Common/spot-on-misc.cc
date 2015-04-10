@@ -769,7 +769,8 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 				       const QByteArray &sPublicKey,
 				       const qint64 neighborOid,
 				       const QSqlDatabase &db,
-				       spoton_crypt *crypt)
+				       spoton_crypt *crypt,
+				       const bool useKeyTypeForName)
 {
   if(!db.isOpen())
     return false;
@@ -826,8 +827,15 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 				   &ok).toBase64());
 	}
     }
-  else if(ok) // Signature keys will be labeled as their type.
-    query.bindValue(4, crypt->encryptedThenHashed(keyType, &ok).toBase64());
+  else if(ok)
+    {
+      if(useKeyTypeForName)
+	query.bindValue(4, crypt->encryptedThenHashed(keyType, &ok).
+			toBase64());
+      else
+	query.bindValue(4, crypt->encryptedThenHashed(name, &ok).
+			toBase64());
+    }
 
   if(ok)
     query.bindValue
