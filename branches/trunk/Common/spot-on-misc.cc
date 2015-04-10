@@ -3619,7 +3619,24 @@ bool spoton_misc::isSingleKey(const QByteArray &publicKey,
   else if(!crypt)
     return false;
 
-  Q_UNUSED(publicKey);
+  QSqlQuery query(db);
+  bool ok = true;
 
-  return true;
+  query.setForwardOnly(true);
+  query.prepare("SELECT COUNT(*) FROM friends_public_keys "
+		"WHERE key_type_hash = ? AND "
+		"public_key_hash IN "
+		"(SELECT public_key_hash FROM relationships_with_signatures "
+		"WHERE signature_public_key_hash = ?)");
+  query.bindValue(0, crypt->keyedHash("artificial-key", &ok).toBase64());
+
+  if(ok)
+    query.bindValue(1, crypt->sha512Hash(publicKey, &ok).toBase64());
+
+  if(ok)
+    if(query.exec())
+      if(query.next())
+	return query.value(0).toBool();
+
+  return false;
 }

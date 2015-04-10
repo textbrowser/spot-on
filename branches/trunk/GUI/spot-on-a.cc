@@ -6880,8 +6880,13 @@ void spoton::slotPopulateParticipants(void)
 		      bool isSingleKey = false;
 
 		      if(keyType == "email-signature")
-			isSingleKey = spoton_misc::
-			  isSingleKey(publicKey, db, crypt);
+			{
+			  isSingleKey = spoton_misc::
+			    isSingleKey(publicKey, db, crypt);
+
+			  if(!isSingleKey)
+			    continue;
+			}
 
 		      if(i == 0)
 			{
