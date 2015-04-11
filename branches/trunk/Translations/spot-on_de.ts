@@ -894,11 +894,11 @@ Priority: %25</source>
         <location filename="../GUI/spot-on-a.cc" line="5167"/>
         <location filename="../GUI/spot-on-a.cc" line="5175"/>
         <location filename="../GUI/spot-on-a.cc" line="5188"/>
-        <location filename="../GUI/spot-on-a.cc" line="7861"/>
-        <location filename="../GUI/spot-on-a.cc" line="7875"/>
-        <location filename="../GUI/spot-on-a.cc" line="7954"/>
-        <location filename="../GUI/spot-on-a.cc" line="8215"/>
-        <location filename="../GUI/spot-on-a.cc" line="8264"/>
+        <location filename="../GUI/spot-on-a.cc" line="7863"/>
+        <location filename="../GUI/spot-on-a.cc" line="7877"/>
+        <location filename="../GUI/spot-on-a.cc" line="7956"/>
+        <location filename="../GUI/spot-on-a.cc" line="8217"/>
+        <location filename="../GUI/spot-on-a.cc" line="8266"/>
         <location filename="../GUI/spot-on-b.cc" line="169"/>
         <location filename="../GUI/spot-on-b.cc" line="1776"/>
         <location filename="../GUI/spot-on-b.cc" line="1785"/>
@@ -1421,23 +1421,23 @@ Ausrichtung: %23
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="7707"/>
+        <location filename="../GUI/spot-on-a.cc" line="7709"/>
         <source>&lt;b&gt;Cert. Effective Date:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Cert. Expiration Date:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;Cert. Issuer Organization:&lt;/b&gt; %3&lt;br&gt;&lt;b&gt;Cert. Issuer Common Name:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Cert. Issuer Locality Name:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Cert. Issuer Organizational Unit Name:&lt;/b&gt; %6&lt;br&gt;&lt;b&gt;Cert. Issuer Country Name:&lt;/b&gt; %7&lt;br&gt;&lt;b&gt;Cert. Issuer State or Province Name:&lt;/b&gt; %8&lt;br&gt;&lt;b&gt;Cert. Serial Number:&lt;/b&gt; %9&lt;br&gt;&lt;b&gt;Cert. Subject Organization:&lt;/b&gt; %10&lt;br&gt;&lt;b&gt;Cert. Subject Common Name:&lt;/b&gt; %11&lt;br&gt;&lt;b&gt;Cert. Subject Locality Name:&lt;/b&gt; %12&lt;br&gt;&lt;b&gt;Cert. Subject Organizational Unit Name:&lt;/b&gt; %13&lt;br&gt;&lt;b&gt;Cert. Subject Country Name:&lt;/b&gt; %14&lt;br&gt;&lt;b&gt;Cert. Subject State or Province Name:&lt;/b&gt; %15&lt;br&gt;&lt;b&gt;Cert. Version:&lt;/b&gt; %16&lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="7877"/>
+        <location filename="../GUI/spot-on-a.cc" line="7879"/>
         <location filename="../GUI/spot-on-d.cc" line="1319"/>
         <source>Invalid neighbor OID. Please select a neighbor.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="7898"/>
+        <location filename="../GUI/spot-on-a.cc" line="7900"/>
         <source>%1: Please Authenticate</source>
         <translation type="unfinished">%1: Bitte Authentifiziere</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="7956"/>
+        <location filename="../GUI/spot-on-a.cc" line="7958"/>
         <source>The account name and the account password must contain at least thirty-two characters each.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1450,14 +1450,14 @@ Ausrichtung: %23
         <translation type="obsolete">Leer</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="8210"/>
+        <location filename="../GUI/spot-on-a.cc" line="8212"/>
         <location filename="../GUI/spot-on-b.cc" line="3620"/>
         <location filename="../GUI/spot-on-c.cc" line="165"/>
         <source>A database error occurred.</source>
         <translation type="unfinished">Ein Datenbank Fehler ist aufgetreten.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="8241"/>
+        <location filename="../GUI/spot-on-a.cc" line="8243"/>
         <source>Invalid clipboard object. This is a fatal flaw.</source>
         <translation type="unfinished">Ungültiges Object aus der Zwischenablage. Dieses ist eine fatale Ungenauigkeit.</translation>
     </message>
@@ -1474,8 +1474,8 @@ Ausrichtung: %23
     <message>
         <location filename="../GUI/spot-on-a.cc" line="2324"/>
         <location filename="../GUI/spot-on-a.cc" line="2638"/>
-        <location filename="../GUI/spot-on-a.cc" line="7863"/>
-        <location filename="../GUI/spot-on-a.cc" line="8169"/>
+        <location filename="../GUI/spot-on-a.cc" line="7865"/>
+        <location filename="../GUI/spot-on-a.cc" line="8171"/>
         <location filename="../GUI/spot-on-b.cc" line="1778"/>
         <location filename="../GUI/spot-on-b.cc" line="4855"/>
         <location filename="../GUI/spot-on-b.cc" line="5146"/>
@@ -1757,8 +1757,8 @@ SSL Control String: %13</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-a.cc" line="6826"/>
-        <location filename="../GUI/spot-on-a.cc" line="6913"/>
-        <location filename="../GUI/spot-on-a.cc" line="6962"/>
+        <location filename="../GUI/spot-on-a.cc" line="6915"/>
+        <location filename="../GUI/spot-on-a.cc" line="6964"/>
         <source>User %1 requests your friendship.</source>
         <translation>Nutzer %1 fragt Deine Freundschaft an.</translation>
     </message>
