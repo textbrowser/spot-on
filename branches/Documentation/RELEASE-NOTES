@@ -73,7 +73,6 @@
      writes a one or zero at position 0, followed by N zeros or the
      computed hash starting at position 1, followed by the encrypted data.
 24.  Upgraded OpenSSL libraries to version 1.0.2 on Windows.
-25.  Allow adding of e-mail signature keys.
 
 0.19 (02/22/2015)
 
