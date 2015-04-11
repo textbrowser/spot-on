@@ -30,6 +30,7 @@
 23.  Activate tool button menus for mobile devices.
 24.  Removed explicit casts to malloc() in libspoton.c. Increased version to
      0.09.
+25.  The kernel will ignore SIGHUP on Unix systems.
 
 0.20 (03/14/2015)
 

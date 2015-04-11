@@ -201,11 +201,20 @@ int main(int argc, char *argv[])
   spoton_misc::prepareSignalHandler(sig_handler);
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+  struct sigaction act;
+
+  /*
+  ** Ignore SIGHUP.
+  */
+
+  act.sa_handler = SIG_IGN;
+  sigemptyset(&act.sa_mask);
+  act.sa_flags = 0;
+  sigaction(SIGHUP, &act, 0);
+
   /*
   ** Ignore SIGPIPE.
   */
-
-  struct sigaction act;
 
   act.sa_handler = SIG_IGN;
   sigemptyset(&act.sa_mask);
