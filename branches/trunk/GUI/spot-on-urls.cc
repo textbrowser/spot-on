@@ -1162,7 +1162,6 @@ void spoton::slotAddDistiller(void)
   QString connectionName("");
   QString error("");
   QUrl url(QUrl::fromUserInput(m_ui.domain->text().trimmed()));
-					   
   bool ok = true;
 
   if(url.isEmpty() || !url.isValid())

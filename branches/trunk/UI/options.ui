@@ -764,7 +764,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-463</y>
              <width>581</width>
              <height>977</height>
             </rect>
@@ -1356,6 +1356,9 @@
                  </property>
                  <property name="text">
                   <string>Accept shared &amp;magnets.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>

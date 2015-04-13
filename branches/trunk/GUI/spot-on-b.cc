@@ -33,6 +33,13 @@
 
 void spoton::slotSendMessage(void)
 {
+  bool ok = true;
+
+  sendMessage(&ok);
+}
+
+void spoton::sendMessage(bool *ok)
+{
   QDateTime now(QDateTime::currentDateTime());
   QModelIndexList list(m_ui.participants->selectionModel()->
 		       selectedRows(1)); // OID
@@ -166,8 +173,13 @@ void spoton::slotSendMessage(void)
     playSong("send.wav");
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      if(ok)
+	*ok = false;
+
+      QMessageBox::critical(QApplication::activeWindow(), tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error);
+    }
 }
 
 void spoton::slotReceivedKernelMessage(void)
@@ -580,7 +592,7 @@ void spoton::slotReceivedKernelMessage(void)
 			  isValidStarBeamMagnet(content.toLatin1()))
 		    {
 		      if(m_settings.value("gui/autoAddSharedSBMagnets",
-					  false).toBool())
+					  true).toBool())
 			slotAddEtpMagnet(content, false);
 
 		      QString str("");
@@ -5821,6 +5833,10 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 	  SIGNAL(prepareSMP(void)),
 	  this,
 	  SLOT(slotPrepareSMP(void)));
+  connect(chat,
+	  SIGNAL(shareStarBeam(void)),
+	  this,
+	  SLOT(slotShareStarBeam(void)));
   connect(chat,
 	  SIGNAL(verifySMPSecret(void)),
 	  this,

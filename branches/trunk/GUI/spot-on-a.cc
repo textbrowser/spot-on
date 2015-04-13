@@ -1753,7 +1753,7 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.acceptUrlKeys->setChecked
     (m_settings.value("gui/acceptUrlKeys", false).toBool());
   m_optionsUi.autoAddSharedSBMagnets->setChecked
-    (m_settings.value("gui/autoAddSharedSBMagnets", false).toBool());
+    (m_settings.value("gui/autoAddSharedSBMagnets", true).toBool());
   m_optionsUi.buzzAutoJoin->setChecked
     (m_settings.value("gui/buzzAutoJoin", true).toBool());
   m_optionsUi.enableChatEmoticons->setChecked
@@ -5932,6 +5932,10 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addAction(tr("&Verify the SMP secret."),
 		     this,
 		     SLOT(slotVerifySMPSecret(void)));
+      menu.addSeparator();
+      menu.addAction(tr("Share &StarBeam"),
+		     this,
+		     SLOT(slotShareStarBeam(void)));
       menu.exec(m_ui.participants->mapToGlobal(point));
     }
   else if(m_ui.received == sender())

@@ -78,7 +78,7 @@ QList<QByteArray> spoton_smp::nextStep(const QList<QByteArray> &other,
   ** B receives A's information and transitions to the second state.
   ** A receives B's information and transitions to the third state.
   ** B receives A's information and transitions to the fourth state.
-  ** A receives B's information and transitions to the fifth state. 
+  ** A receives B's information and transitions to the fifth state.
   */
 
   if(m_step == 0)

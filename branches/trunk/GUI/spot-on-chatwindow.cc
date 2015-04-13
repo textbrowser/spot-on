@@ -105,6 +105,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   menu->addAction(tr("&Verify the SMP secret."),
 		  this,
 		  SIGNAL(verifySMPSecret(void)));
+  menu->addSeparator();
+  menu->addAction(tr("Share &StarBeam"),
+		  this,
+		  SIGNAL(shareStarBeam(void)));
   ui.smp->setMenu(menu);
   slotSetIcons();
 }

@@ -31,6 +31,11 @@
 24.  Removed explicit casts to malloc() in libspoton.c. Increased version to
      0.09.
 25.  The kernel will ignore SIGHUP on Unix systems.
+26.  Modified default permissions. StarBeam magnets will now be
+     automatically accepted by participants. Please see the Options
+     panel.
+27.  Warp StarBeams. Please see the new context-menu option under Chat
+     participants.
 
 0.20 (03/14/2015)
 

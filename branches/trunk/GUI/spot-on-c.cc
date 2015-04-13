@@ -2532,6 +2532,10 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("&Verify the SMP secret."),
 		      this,
 		      SLOT(slotVerifySMPSecret(void)));
+      menu->addSeparator();
+      menu->addAction(tr("Share &StarBeam"),
+		     this,
+		     SLOT(slotShareStarBeam(void)));
       m_ui.chatActionMenu->setMenu(menu);
       connect(m_ui.chatActionMenu,
 	      SIGNAL(clicked(void)),

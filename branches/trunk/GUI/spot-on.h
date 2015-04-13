@@ -521,10 +521,12 @@ class spoton: public QMainWindow
   void saveUrlIniPath(const QString &path);
   void sendBuzzKeysToKernel(void);
   void sendKeysToKernel(void);
+  void sendMessage(bool *ok);
   void sendSMPLinkToKernel(const QList<QByteArray> &list,
 			   const QString &keyType,
 			   const QString &oid);
   void sharePublicKeyWithParticipant(const QString &keyType);
+  void showError(const QString &error);
   void showUrls(const QString &link, const QString &querystr);
   void updateListenersTable(const QSqlDatabase &db);
   void updateNeighborsTable(const QSqlDatabase &db);
@@ -777,6 +779,7 @@ class spoton: public QMainWindow
   void slotShareEmailPublicKeyWithParticipant(void);
   void slotShareKeysWithKernel(const QString &link);
   void slotSharePoptasticPublicKey(void);
+  void slotShareStarBeam(void);
   void slotShareUrlPublicKeyWithParticipant(void);
   void slotShareURLPublicKey(void);
   void slotShowContextMenu(const QPoint &point);

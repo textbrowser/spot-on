@@ -75,6 +75,7 @@ class spoton_chatwindow: public QMainWindow
   void initializeSMP(void);
   void messageSent(void);
   void prepareSMP(void);
+  void shareStarBeam(void);
   void verifySMPSecret(void);
 };
 
