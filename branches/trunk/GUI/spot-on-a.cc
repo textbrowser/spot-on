@@ -394,6 +394,12 @@ spoton::spoton(void):QMainWindow()
 			     "border: none; "
 			     "}");
   statusBar()->setMaximumHeight(m_sbWidget->height());
+#if SPOTON_GOLDBUG == 0
+  connect(m_ui.action_About,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotAbout(void)));
+#endif
   connect(m_ui.actionClear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -8346,4 +8352,15 @@ void spoton::slotBuzzTools(int index)
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotFavoritesActivated(int)));
+}
+
+void spoton::slotAbout(void)
+{
+  QMessageBox::information
+    (this, tr("%1: About").
+     arg(SPOTON_APPLICATION_NAME),
+     QString("Version %1\n"
+	     "%2").
+     arg(SPOTON_VERSION_STR).
+     arg(m_ui.buildInformation->text()));
 }

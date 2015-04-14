@@ -538,6 +538,7 @@ class spoton: public QMainWindow
 		       const QString &oid);
 
  private slots:
+  void slotAbout(void);
   void slotAcceptBuzzMagnets(bool state);
   void slotAcceptChatKeys(bool state);
   void slotAcceptEmailKeys(bool state);
