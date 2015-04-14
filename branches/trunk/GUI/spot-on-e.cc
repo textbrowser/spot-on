@@ -1326,6 +1326,10 @@ void spoton::slotShareStarBeam(void)
       return;
     }
 
+  /*
+  ** Some of this logic is redundant. Please see sendMessage().
+  */
+
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     {
       error = tr("The interface is not connected to the kernel.");
