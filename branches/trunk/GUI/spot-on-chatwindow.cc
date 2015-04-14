@@ -44,6 +44,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &id,
 				     const QString &keyType,
 				     const QString &participant,
+				     const QString &publicKeyHash,
 				     QSslSocket *kernelSocket,
 				     QWidget *parent):QMainWindow(parent)
 {
@@ -54,6 +55,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
     m_keyType = "chat";
 
   m_kernelSocket = kernelSocket;
+  m_publicKeyHash = publicKeyHash;
   ui.setupUi(this);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -98,18 +100,18 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 
   menu->addAction(tr("&Reset the SMP machine's internal state to s0."),
 		  this,
-		  SIGNAL(initializeSMP(void)));
+		  SLOT(slotInitializeSMP(void)));
   menu->addAction(tr("&Set an SMP secret."),
 		  this,
-		  SIGNAL(prepareSMP(void)));
+		  SLOT(slotPrepareSMP(void)));
   menu->addAction(tr("&Verify the SMP secret."),
 		  this,
-		  SIGNAL(verifySMPSecret(void)));
-  menu->addSeparator();
-  menu->addAction(tr("Share &StarBeam"),
-		  this,
-		  SIGNAL(shareStarBeam(void)));
+		  SLOT(slotVerifySMPSecret(void)));
   ui.smp->setMenu(menu);
+  connect(ui.smp,
+	  SIGNAL(clicked(void)),
+	  ui.smp,
+	  SLOT(showMenu(void)));
   slotSetIcons();
 }
 
@@ -398,4 +400,19 @@ void spoton_chatwindow::setSMPVerified(const bool state)
 	(tr("The Socialist Millionaire Protocol succeeded on %1.").
 	 arg(now.toString()));
     }
+}
+
+void spoton_chatwindow::slotInitializeSMP(void)
+{
+  emit initializeSMP(m_publicKeyHash);
+}
+
+void spoton_chatwindow::slotPrepareSMP(void)
+{
+  emit prepareSMP(m_publicKeyHash);
+}
+
+void spoton_chatwindow::slotVerifySMPSecret(void)
+{
+  emit verifySMPSecret(m_publicKeyHash, m_keyType, m_id);
 }

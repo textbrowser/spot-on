@@ -5815,32 +5815,32 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
     }
 
   QPointer<spoton_chatwindow> chat = new spoton_chatwindow
-    (icon, oid, keyType, participant, &m_kernelSocket, 0);
+    (icon, oid, keyType, participant, publicKeyHash, &m_kernelSocket, 0);
 
   connect(chat,
 	  SIGNAL(destroyed(void)),
 	  this,
 	  SLOT(slotChatWindowDestroyed(void)));
   connect(chat,
-	  SIGNAL(initializeSMP(void)),
+	  SIGNAL(initializeSMP(const QString &)),
 	  this,
-	  SLOT(slotInitializeSMP(void)));
+	  SLOT(slotInitializeSMP(const QString &)));
   connect(chat,
 	  SIGNAL(messageSent(void)),
 	  this,
 	  SLOT(slotChatWindowMessageSent(void)));
   connect(chat,
-	  SIGNAL(prepareSMP(void)),
+	  SIGNAL(prepareSMP(const QString &)),
 	  this,
-	  SLOT(slotPrepareSMP(void)));
+	  SLOT(slotPrepareSMP(const QString &)));
   connect(chat,
-	  SIGNAL(shareStarBeam(void)),
+	  SIGNAL(verifySMPSecret(const QString &,
+				 const QString &,
+				 const QString &)),
 	  this,
-	  SLOT(slotShareStarBeam(void)));
-  connect(chat,
-	  SIGNAL(verifySMPSecret(void)),
-	  this,
-	  SLOT(slotVerifySMPSecret(void)));
+	  SLOT(slotVerifySMPSecret(const QString &,
+				   const QString &,
+				   const QString &)));
   connect(this,
 	  SIGNAL(iconsChanged(void)),
 	  chat,

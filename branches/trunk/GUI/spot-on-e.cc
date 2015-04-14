@@ -944,6 +944,15 @@ void spoton::slotSaveOpenLinks(bool state)
   settings.setValue("gui/openLinks", state);
 }
 
+void spoton::slotPrepareSMP(const QString &hash)
+{
+  /*
+  ** Chat windows only please!
+  */
+
+  prepareSMP(hash);
+}
+
 void spoton::slotPrepareSMP(void)
 {
   QString hash("");
@@ -968,6 +977,14 @@ void spoton::slotPrepareSMP(void)
     return;
   else if(temporary) // Temporary friend?
     return; // Not allowed!
+
+  prepareSMP(hash);
+}
+
+void spoton::prepareSMP(const QString &hash)
+{
+  if(hash.isEmpty())
+    return;
 
   QString guess("");
   spoton_virtual_keyboard dialog(QApplication::activeWindow());
@@ -994,6 +1011,16 @@ void spoton::slotPrepareSMP(void)
 
   if(chat)
     chat->setSMPVerified(false);
+}
+
+void spoton::slotVerifySMPSecret(const QString &hash, const QString &keyType,
+				 const QString &oid)
+{
+  /*
+  ** Chat windows only please!
+  */
+
+  verifySMPSecret(hash, keyType, oid);
 }
 
 void spoton::slotVerifySMPSecret(void)
@@ -1030,10 +1057,21 @@ void spoton::slotVerifySMPSecret(void)
 
   if(hash.isEmpty())
     return;
+  else if(keyType.isEmpty())
+    return;
   else if(oid.isEmpty())
     return;
   else if(temporary) // Temporary friend?
     return; // Not allowed!
+
+  verifySMPSecret(hash, keyType, oid);
+}
+
+void spoton::verifySMPSecret(const QString &hash, const QString &keyType,
+			     const QString &oid)
+{
+  if(hash.isEmpty() || keyType.isEmpty() || oid.isEmpty())
+    return;
 
   spoton_smp *smp = 0;
 
@@ -1153,6 +1191,15 @@ void spoton::slotLaunchKernelAfterAuthentication(bool state)
   settings.setValue("gui/launchKernelAfterAuth", state);
 }
 
+void spoton::slotInitializeSMP(const QString &hash)
+{
+  /*
+  ** Chat windows only please!
+  */
+
+  initializeSMP(hash);
+}
+
 void spoton::slotInitializeSMP(void)
 {
   QString hash("");
@@ -1177,6 +1224,14 @@ void spoton::slotInitializeSMP(void)
     return;
   else if(temporary) // Temporary friend?
     return; // Not allowed!
+
+  initializeSMP(hash);
+}
+
+void spoton::initializeSMP(const QString &hash)
+{
+  if(hash.isEmpty())
+    return;
 
   spoton_smp *smp = 0;
 
@@ -1287,22 +1342,26 @@ void spoton::slotShareStarBeam(void)
   QModelIndexList list(m_ui.participants->selectionModel()->
 		       selectedRows(1)); // OID
 
-  if(list.size() != 1)
+  if(list.isEmpty())
     {
-      error = tr("Please select only one participant for warp StarBeams.");
+      error = tr
+	("Please select at least one participant for warp StarBeams.");
       showError(error);
       return;
     }
 
-  QString keyType
-    (list.value(0).data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
-
-  if(keyType != "chat")
+  for(int i = 0; i < list.size(); i++)
     {
-      error = tr("Please do not select Poptastic participants for "
-		 "warp StarBeams.");
-      showError(error);
-      return;
+      QString keyType
+	(list.at(i).data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
+
+      if(keyType != "chat")
+	{
+	  error = tr("Please do not select Poptastic participants for "
+		     "warp StarBeams.");
+	  showError(error);
+	  return;
+	}
     }
 
   /*

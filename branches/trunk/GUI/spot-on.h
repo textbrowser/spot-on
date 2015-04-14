@@ -498,6 +498,7 @@ class spoton: public QMainWindow
 		 const QByteArray &title,
 		 const QByteArray &url);
   void initializeKernelSocket(void);
+  void initializeSMP(const QString &hash);
   void joinDefaultBuzzChannel(void);
   void magnetize(void);
   void playSong(const QString &name);
@@ -510,6 +511,7 @@ class spoton: public QMainWindow
   void populateUrlDistillers(void);
   void prepareContextMenuMirrors(void);
   void prepareListenerIPCombo(void);
+  void prepareSMP(const QString &hash);
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
   void refreshInstitutions(void);
@@ -532,6 +534,8 @@ class spoton: public QMainWindow
   void updateNeighborsTable(const QSqlDatabase &db);
   void updateParticipantsTable(const QSqlDatabase &db);
   void updatePublicKeysLabel(void);
+  void verifySMPSecret(const QString &hash, const QString &keyType,
+		       const QString &oid);
 
  private slots:
   void slotAcceptBuzzMagnets(bool state);
@@ -665,6 +669,7 @@ class spoton: public QMainWindow
   void slotImportNeighbors(void);
   void slotImportPublicKeys(void);
   void slotImportUrls(void);
+  void slotInitializeSMP(const QString &hash);
   void slotInitializeSMP(void);
   void slotJoinBuzzChannel(void);
   void slotLaunchKernelAfterAuthentication(bool state);
@@ -708,6 +713,7 @@ class spoton: public QMainWindow
   void slotPopulateStars(void);
   void slotPostgreSQLConnect(void);
   void slotPostgreSQLDisconnect(bool state);
+  void slotPrepareSMP(const QString &hash);
   void slotPrepareSMP(void);
   void slotPrepareUrlDatabases(void);
   void slotProtocolRadioToggled(bool state);
@@ -810,6 +816,8 @@ class spoton: public QMainWindow
   void slotUrlDistillersRadioButton(bool state);
   void slotValidatePassphrase(void);
   void slotVerify(void);
+  void slotVerifySMPSecret(const QString &hash, const QString &keyType,
+			   const QString &oid);
   void slotVerifySMPSecret(void);
   void slotViewLog(void);
   void slotViewRosetta(void);

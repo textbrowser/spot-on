@@ -1,4 +1,4 @@
-0.21 (04/14/2015)
+0.21 (04/15/2015)
 
 1.   Corrected Poptastic kernel timer.
 2.   RetroPhone work. Incomplete.
@@ -36,6 +36,8 @@
      panel.
 27.  Warp StarBeams. Please see the new context-menu option under Chat
      participants.
+28.  Corrected separation between chat windows and the main window with
+     respect to SMP.
 
 0.20 (03/14/2015)
 
