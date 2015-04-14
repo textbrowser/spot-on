@@ -1350,20 +1350,6 @@ void spoton::slotShareStarBeam(void)
       return;
     }
 
-  for(int i = 0; i < list.size(); i++)
-    {
-      QString keyType
-	(list.at(i).data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
-
-      if(keyType != "chat")
-	{
-	  error = tr("Please do not select Poptastic participants for "
-		     "warp StarBeams.");
-	  showError(error);
-	  return;
-	}
-    }
-
   /*
   ** Select a file.
   */
