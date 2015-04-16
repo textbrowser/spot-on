@@ -66,6 +66,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 #endif
   statusBar()->setSizeGripEnabled(false);
 #endif
+  connect(ui.box,
+	  SIGNAL(toggled(bool)),
+	  ui.table,
+	  SLOT(setVisible(bool)));
   connect(ui.clearMessages,
 	  SIGNAL(clicked(void)),
 	  ui.messages,
@@ -90,6 +94,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
     setWindowTitle(participant.trimmed());
 
   ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
+  ui.table->setVisible(false);
 
   if(participant.trimmed().isEmpty())
     ui.name->setText("unknown");

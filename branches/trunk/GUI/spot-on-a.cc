@@ -2268,7 +2268,6 @@ spoton::spoton(void):QMainWindow()
 
 spoton::~spoton()
 {
-  QApplication::instance()->quit();
 }
 
 void spoton::slotQuit(void)
@@ -2318,7 +2317,7 @@ void spoton::cleanup(void)
   m_crypts.clear();
   m_starbeamAnalyzer->deleteLater();
   spoton_crypt::terminate();
-  deleteLater();
+  QApplication::instance()->quit();
 }
 
 void spoton::slotAddListener(void)
@@ -4541,7 +4540,6 @@ void spoton::closeEvent(QCloseEvent *event)
       return;
     }
 
-  QMainWindow::closeEvent(event);
   slotQuit();
 }
 
