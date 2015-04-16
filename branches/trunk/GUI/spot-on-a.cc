@@ -4539,7 +4539,6 @@ void spoton::closeEvent(QCloseEvent *event)
       return;
     }
 
-  QMainWindow::closeEvent(event);
   slotQuit();
 }
 
