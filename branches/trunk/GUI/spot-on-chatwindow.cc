@@ -96,6 +96,8 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   else
     ui.name->setText(participant.trimmed());
 
+  ui.table->setModel(spoton::s_gui->starbeamReceivedModel());
+
   QMenu *menu = new QMenu(this);
 
   menu->addAction(tr("&Reset the SMP machine's internal state to s0."),

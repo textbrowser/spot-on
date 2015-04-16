@@ -34,6 +34,7 @@
 #endif
 #include <QPlainTextEdit>
 #include <QProgressBar>
+#include <QStandardItemModel>
 #if QT_VERSION >= 0x050000
 #include <QStandardPaths>
 #endif
@@ -1130,7 +1131,8 @@ void spoton::slotShareBuzzMagnet(void)
 void spoton::slotPopulateStars(void)
 {
   if(currentTabName() != "starbeam")
-    return;
+    if(m_chatWindows.size() == 0)
+      return;
 
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
@@ -1168,6 +1170,7 @@ void spoton::slotPopulateStars(void)
 	int row = -1;
 	int vval = 0;
 
+	m_starbeamReceivedModel->clear();
 	query.setForwardOnly(true);
 
 	/*

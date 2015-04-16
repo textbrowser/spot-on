@@ -38,6 +38,7 @@ extern "C"
 
 #include <QProgressDialog>
 #include <QScopedPointer>
+#include <QStandardItemModel>
 #include <QThread>
 
 #include "spot-on.h"
@@ -205,6 +206,7 @@ spoton::spoton(void):QMainWindow()
   m_neighborsLastModificationTime = QDateTime();
   m_participantsLastModificationTime = QDateTime();
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(this);
+  m_starbeamReceivedModel = new QStandardItemModel(this);
   m_starsLastModificationTime = QDateTime();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);

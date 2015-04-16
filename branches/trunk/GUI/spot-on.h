@@ -89,6 +89,8 @@ extern "C"
 #include "spot-on-defines.h"
 #include "ui_keyboard.h"
 
+class QStandardItemModel;
+
 class spoton_virtual_keyboard: public QDialog
 {
   Q_OBJECT
@@ -398,6 +400,7 @@ class spoton: public QMainWindow
   ~spoton();
   QHash<QString, QVariant> m_settings;
   QHash<QString, quint64> m_chatSequenceNumbers;
+  QStandardItemModel *starbeamReceivedModel(void) const;
   Ui_spoton_mainwindow ui(void) const;
   static QPointer<spoton> s_gui;
   static QString mapIconToEmoticon(const QString &content);
@@ -426,6 +429,7 @@ class spoton: public QMainWindow
   QMainWindow *m_optionsWindow;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
+  QStandardItemModel *m_starbeamReceivedModel;
   QString m_urlQuery;
   QTimer m_buzzStatusTimer;
   QTimer m_chatInactivityTimer;

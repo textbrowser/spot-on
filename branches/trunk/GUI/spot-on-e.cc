@@ -1520,3 +1520,8 @@ void spoton::showError(const QString &error)
   QMessageBox::critical(QApplication::activeWindow(), tr("%1: Error").
 			arg(SPOTON_APPLICATION_NAME), error);
 }
+
+QStandardItemModel *spoton::starbeamReceivedModel(void) const
+{
+  return m_starbeamReceivedModel;
+}
