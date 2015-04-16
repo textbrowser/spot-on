@@ -87,9 +87,58 @@
      </layout>
     </item>
     <item>
+     <widget class="QTextBrowser" name="messages">
+      <property name="tabChangesFocus">
+       <bool>true</bool>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+      </property>
+      <property name="openLinks">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>5</number>
+      </property>
+      <item>
+       <widget class="spoton_textedit" name="message">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="tabChangesFocus">
+         <bool>true</bool>
+        </property>
+        <property name="acceptRichText">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="sendMessage">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; width=&quot;754&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td colspan=&quot;3&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;List of Emoticons&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;20&quot; rowspan=&quot;10&quot; bgcolor=&quot;#66cc99&quot;/&gt;&lt;td width=&quot;120&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-)(-:&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;110&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;kiss&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;70&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/kiss.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width=&quot;120&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;O:-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;110&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;angel&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;70&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/angel.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:|&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;neutral&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/neutral.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt; background-color:#ffffca;&quot;&gt;:-||&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;angry&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/angry.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;(t)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;phone&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/phone.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-/ &lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;confused&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/confused.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;@&amp;gt;--&amp;gt;--&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;rose&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/rose.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;8-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;cool&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/glasses-cool.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-(&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;sad&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/sad.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:'(&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;crying&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/crying.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-O&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;shocked&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/shocked.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;o-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;cyclops&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/cyclops.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;C:-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;skywalker&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/skywalker.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;}:)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;devil&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/devil.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;smile&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/smile.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-D&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;laugh&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/laugh.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-P&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;tongue&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/tongue.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-))&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;happy&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/happy.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;;)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;wink&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/wink.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Send</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QGroupBox" name="box">
       <property name="title">
        <string>&amp;StarBeams</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -136,52 +185,6 @@
       </layout>
      </widget>
     </item>
-    <item>
-     <widget class="QTextBrowser" name="messages">
-      <property name="tabChangesFocus">
-       <bool>true</bool>
-      </property>
-      <property name="textInteractionFlags">
-       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-      </property>
-      <property name="openLinks">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>5</number>
-      </property>
-      <item>
-       <widget class="spoton_textedit" name="message">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="tabChangesFocus">
-         <bool>true</bool>
-        </property>
-        <property name="acceptRichText">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="sendMessage">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; width=&quot;754&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td colspan=&quot;3&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;List of Emoticons&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;20&quot; rowspan=&quot;10&quot; bgcolor=&quot;#66cc99&quot;/&gt;&lt;td width=&quot;120&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-)(-:&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;110&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;kiss&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;70&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/kiss.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width=&quot;120&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;O:-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;110&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;angel&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td width=&quot;70&quot; bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/angel.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:|&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;neutral&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/neutral.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt; background-color:#ffffca;&quot;&gt;:-||&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;angry&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/angry.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;(t)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;phone&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/phone.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-/ &lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;confused&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/confused.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;@&amp;gt;--&amp;gt;--&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;rose&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/rose.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;8-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;cool&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/glasses-cool.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-(&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;sad&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/sad.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:'(&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;crying&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/crying.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-O&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;shocked&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/shocked.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;o-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;cyclops&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/cyclops.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;C:-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;skywalker&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/skywalker.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;}:)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;devil&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/devil.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;smile&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/smile.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-D&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;laugh&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/laugh.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-P&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;tongue&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/tongue.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;:-))&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;happy&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/happy.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;;)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;wink&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#ffffca&quot;&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/emoticons/wink.png&quot;/&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="text">
-         <string>Send</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
    </layout>
   </widget>
  </widget>
@@ -195,7 +198,6 @@
  <tabstops>
   <tabstop>smp</tabstop>
   <tabstop>clearMessages</tabstop>
-  <tabstop>box</tabstop>
   <tabstop>table</tabstop>
   <tabstop>messages</tabstop>
   <tabstop>message</tabstop>
