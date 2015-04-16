@@ -39,6 +39,7 @@
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QSettings>
+#include <QStandardItemModel>
 
 spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &id,
