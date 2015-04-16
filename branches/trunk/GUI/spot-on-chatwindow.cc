@@ -46,8 +46,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &participant,
 				     const QString &publicKeyHash,
 				     QSslSocket *kernelSocket,
+				     spoton_crypt *crypt,
 				     QWidget *parent):QMainWindow(parent)
 {
+  m_crypt = crypt;
   m_id = id;
   m_keyType = keyType.toLower();
 
@@ -56,6 +58,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 
   m_kernelSocket = kernelSocket;
   m_publicKeyHash = publicKeyHash;
+  m_starsLastModificationTime = QDateTime();
   ui.setupUi(this);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -66,6 +69,14 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 #endif
   statusBar()->setSizeGripEnabled(false);
 #endif
+  connect(&m_timer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPopulateStars(void)));
+  connect(ui.box,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotBoxToggled(bool)));
   connect(ui.clearMessages,
 	  SIGNAL(clicked(void)),
 	  ui.messages,
@@ -90,6 +101,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
     setWindowTitle(participant.trimmed());
 
   ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
+  ui.table->setVisible(false);
 
   if(participant.trimmed().isEmpty())
     ui.name->setText("unknown");
@@ -139,6 +151,7 @@ QString spoton_chatwindow::id(void) const
 
 void spoton_chatwindow::closeEvent(QCloseEvent *event)
 {
+  m_timer.stop();
   QMainWindow::closeEvent(event);
 }
 
@@ -415,4 +428,51 @@ void spoton_chatwindow::slotPrepareSMP(void)
 void spoton_chatwindow::slotVerifySMPSecret(void)
 {
   emit verifySMPSecret(m_publicKeyHash, m_keyType, m_id);
+}
+
+void spoton_chatwindow::slotPopulateStars(void)
+{
+  if(!m_crypt)
+    return;
+  else if(!ui.box->isChecked())
+    return;
+
+  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
+		     "starbeam.db");
+
+  if(fileInfo.exists())
+    {
+      if(fileInfo.lastModified() <= m_starsLastModificationTime)
+	return;
+      else
+	m_starsLastModificationTime = fileInfo.lastModified();
+    }
+  else
+    m_starsLastModificationTime = QDateTime();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(fileInfo.absoluteFilePath());
+
+    if(db.open())
+      {
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_chatwindow::slotBoxToggled(bool state)
+{
+  if(state)
+    m_timer.start(2500);
+  else
+    m_timer.stop();
+
+  ui.table->setVisible(state);
 }

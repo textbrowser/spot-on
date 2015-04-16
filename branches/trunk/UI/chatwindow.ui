@@ -87,6 +87,56 @@
      </layout>
     </item>
     <item>
+     <widget class="QGroupBox" name="box">
+      <property name="title">
+       <string>&amp;StarBeams</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QTableWidget" name="table">
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOn</enum>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="horizontalScrollMode">
+          <enum>QAbstractItemView::ScrollPerPixel</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>200</number>
+         </attribute>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>Percent Received</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>File</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <widget class="QTextBrowser" name="messages">
       <property name="tabChangesFocus">
        <bool>true</bool>
@@ -145,6 +195,8 @@
  <tabstops>
   <tabstop>smp</tabstop>
   <tabstop>clearMessages</tabstop>
+  <tabstop>box</tabstop>
+  <tabstop>table</tabstop>
   <tabstop>messages</tabstop>
   <tabstop>message</tabstop>
   <tabstop>sendMessage</tabstop>
