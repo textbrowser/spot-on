@@ -28,11 +28,9 @@
 #ifndef _spoton_chatwindow_h_
 #define _spoton_chatwindow_h_
 
-#include <QDateTime>
 #include <QIcon>
 #include <QPointer>
 #include <QSslSocket>
-#include <QTimer>
 
 #include "ui_chatwindow.h"
 
@@ -49,7 +47,6 @@ class spoton_chatwindow: public QMainWindow
 		    const QString &participant,
 		    const QString &publicKeyHash,
 		    QSslSocket *kernelSocket,
-		    spoton_crypt *crypt,
 		    QWidget *parent);
   ~spoton_chatwindow();
   QString id(void) const;
@@ -59,14 +56,11 @@ class spoton_chatwindow: public QMainWindow
   void setSMPVerified(const bool state);
 
  private:
-  QDateTime m_starsLastModificationTime;
   QPointer<QSslSocket> m_kernelSocket;
   QString m_id;
   QString m_keyType;
   QString m_publicKeyHash;
-  QTimer m_timer;
   Ui_chatwindow ui;
-  spoton_crypt *m_crypt;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
   bool event(QEvent *event);
@@ -76,9 +70,7 @@ class spoton_chatwindow: public QMainWindow
   void keyPressEvent(QKeyEvent *event);
 
  private slots:
-  void slotBoxToggled(bool state);
   void slotInitializeSMP(void);
-  void slotPopulateStars(void);
   void slotPrepareSMP(void);
   void slotSendMessage(void);
   void slotSetIcons(void);

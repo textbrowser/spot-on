@@ -148,7 +148,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QTableWidget" name="table">
+        <widget class="QTableView" name="table">
          <property name="verticalScrollBarPolicy">
           <enum>Qt::ScrollBarAlwaysOn</enum>
          </property>
@@ -164,22 +164,12 @@
          <property name="sortingEnabled">
           <bool>true</bool>
          </property>
-         <attribute name="horizontalHeaderDefaultSectionSize">
+         <attribute name="horizontalHeaderMinimumSectionSize">
           <number>200</number>
          </attribute>
-         <attribute name="horizontalHeaderStretchLastSection">
+         <attribute name="verticalHeaderCascadingSectionResizes">
           <bool>true</bool>
          </attribute>
-         <column>
-          <property name="text">
-           <string>Percent Received</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>File</string>
-          </property>
-         </column>
         </widget>
        </item>
       </layout>
@@ -198,10 +188,11 @@
  <tabstops>
   <tabstop>smp</tabstop>
   <tabstop>clearMessages</tabstop>
-  <tabstop>table</tabstop>
   <tabstop>messages</tabstop>
   <tabstop>message</tabstop>
   <tabstop>sendMessage</tabstop>
+  <tabstop>box</tabstop>
+  <tabstop>table</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
