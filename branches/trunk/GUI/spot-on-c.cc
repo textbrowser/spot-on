@@ -1162,15 +1162,16 @@ void spoton::slotPopulateStars(void)
     if(db.open())
       {
 	QModelIndexList list;
+	QSqlQuery query(db);
 	QString mosaic("");
 	QString selectedFileName("");
-	QSqlQuery query(db);
 	QWidget *focusWidget = QApplication::focusWidget();
 	int hval = 0;
 	int row = -1;
 	int vval = 0;
 
-	m_starbeamReceivedModel->clear();
+	m_starbeamReceivedModel->removeRows
+	  (0, m_starbeamReceivedModel->rowCount());
 	query.setForwardOnly(true);
 
 	/*
@@ -1197,6 +1198,7 @@ void spoton::slotPopulateStars(void)
 	  while(query.next())
 	    {
 	      m_ui.received->setRowCount(row + 1);
+	      m_starbeamReceivedModel->setRowCount(row + 1);
 
 	      QCheckBox *check = 0;
 	      QString fileName("");
@@ -1240,7 +1242,14 @@ void spoton::slotPopulateStars(void)
 			item = new QTableWidgetItem(tr("error"));
 
 		      if(i == 3)
-			fileName = item->text();
+			{
+			  fileName = item->text();
+
+			  QStandardItem *sItem = new QStandardItem(fileName);
+
+			  sItem->setEditable(false);
+			  m_starbeamReceivedModel->setItem(row, 1, sItem);
+			}
 		    }
 		  else if(i == query.record().count() - 1)
 		    item = new QTableWidgetItem
@@ -1273,6 +1282,12 @@ void spoton::slotPopulateStars(void)
 
 		  if(percent < 100)
 		    {
+		      QStandardItem *sItem = new QStandardItem
+			(QString("%1%").arg(percent));
+
+		      sItem->setEditable(false);
+		      m_starbeamReceivedModel->setItem(row, 0, sItem);
+
 		      QProgressBar *progressBar = new QProgressBar();
 
 		      progressBar->setValue(percent);
@@ -1312,6 +1327,16 @@ void spoton::slotPopulateStars(void)
 	m_ui.received->horizontalHeader()->setStretchLastSection(true);
 	m_ui.received->horizontalScrollBar()->setValue(hval);
 	m_ui.received->verticalScrollBar()->setValue(vval);
+
+	if(currentTabName() != "starbeam")
+	  {
+	    db.close();
+
+	    if(focusWidget)
+	      focusWidget->setFocus();
+
+	    goto done_label;
+	  }
 
 	/*
 	** Second, transmitted.
@@ -1490,6 +1515,7 @@ void spoton::slotPopulateStars(void)
     db.close();
   }
 
+ done_label:
   QSqlDatabase::removeDatabase(connectionName);
 }
 

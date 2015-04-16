@@ -39,6 +39,7 @@
 28.  Corrected separation between chat windows and the main window with
      respect to SMP.
 29.  Removed QMainWindow::closeEvent() from spoton::closeEvent().
+30.  Display received StarBeam information in participant windows.
 
 0.20 (03/14/2015)
 

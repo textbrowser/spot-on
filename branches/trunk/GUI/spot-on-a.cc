@@ -46,7 +46,7 @@ extern "C"
 #include "spot-on-buzzpage.h"
 #include "ui_passwordprompt.h"
 
-QPointer<spoton> spoton::s_gui = 0;
+static QPointer<spoton> s_gui = 0;
 
 #if QT_VERSION >= 0x050000
 static void qt_message_handler(QtMsgType type,
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 
   try
     {
-      spoton::s_gui = new spoton();
+      s_gui = new spoton();
       qapplication.exec();
       curl_global_cleanup();
       return EXIT_SUCCESS;
@@ -207,6 +207,11 @@ spoton::spoton(void):QMainWindow()
   m_participantsLastModificationTime = QDateTime();
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(this);
   m_starbeamReceivedModel = new QStandardItemModel(this);
+
+  QStringList list;
+
+  list << tr("Percent Received") << tr("File");
+  m_starbeamReceivedModel->setHorizontalHeaderLabels(list);
   m_starsLastModificationTime = QDateTime();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
@@ -8363,4 +8368,9 @@ void spoton::slotAbout(void)
 	     "%2").
      arg(SPOTON_VERSION_STR).
      arg(m_ui.buildInformation->text()));
+}
+
+QPointer<spoton> spoton::instance(void)
+{
+  return s_gui;
 }

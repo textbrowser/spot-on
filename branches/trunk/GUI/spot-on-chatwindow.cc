@@ -102,7 +102,8 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   else
     ui.name->setText(participant.trimmed());
 
-  ui.table->setModel(spoton::s_gui->starbeamReceivedModel());
+  ui.table->setModel(spoton::instance()->starbeamReceivedModel());
+  ui.table->resizeColumnToContents(0);
 
   QMenu *menu = new QMenu(this);
 
@@ -197,10 +198,10 @@ void spoton_chatwindow::slotSendMessage(void)
     }
 
   if(m_keyType == "chat")
-    name = spoton::s_gui->m_settings.
+    name = spoton::instance()->m_settings.
       value("gui/nodeName", "unknown").toByteArray();
   else
-    name = spoton::s_gui->m_settings.
+    name = spoton::instance()->m_settings.
       value("gui/poptasticName", "unknown@unknown.org").toByteArray();
 
   message.append
@@ -222,9 +223,9 @@ void spoton_chatwindow::slotSendMessage(void)
   ui.messages->append(message);
   ui.messages->verticalScrollBar()->setValue
     (ui.messages->verticalScrollBar()->maximum());
-  spoton::s_gui->ui().messages->append(message);
-  spoton::s_gui->ui().messages->verticalScrollBar()->setValue
-    (spoton::s_gui->ui().messages->verticalScrollBar()->maximum());
+  spoton::instance()->ui().messages->append(message);
+  spoton::instance()->ui().messages->verticalScrollBar()->setValue
+    (spoton::instance()->ui().messages->verticalScrollBar()->maximum());
   message.clear();
 
   if(name.isEmpty())
@@ -235,7 +236,7 @@ void spoton_chatwindow::slotSendMessage(void)
 	name = "unknown@unknown.org";
     }
 
-  spoton::s_gui->m_chatSequenceNumbers[m_id] += 1;
+  spoton::instance()->m_chatSequenceNumbers[m_id] += 1;
 
   if(m_keyType == "chat")
     message.append("message_");
@@ -248,7 +249,7 @@ void spoton_chatwindow::slotSendMessage(void)
   message.append(ui.message->toPlainText().toUtf8().toBase64());
   message.append("_");
   message.append
-    (QByteArray::number(spoton::s_gui->m_chatSequenceNumbers[m_id]).
+    (QByteArray::number(spoton::instance()->m_chatSequenceNumbers[m_id]).
      toBase64());
   message.append("_");
   message.append(QDateTime::currentDateTime().toUTC().
