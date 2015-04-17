@@ -5803,6 +5803,8 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 
       if(chat)
 	{
+	  m_starsLastModificationTime = QDateTime();
+
 	  if(smp)
 	    chat->setSMPVerified(smp->passed());
 
@@ -5813,6 +5815,8 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
       else
 	m_chatWindows.remove(publicKeyHash);
     }
+
+  m_starsLastModificationTime = QDateTime();
 
   QPointer<spoton_chatwindow> chat = new spoton_chatwindow
     (icon, oid, keyType, participant, publicKeyHash, &m_kernelSocket, 0);
