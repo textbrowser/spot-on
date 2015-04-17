@@ -1300,6 +1300,11 @@ void spoton::slotPopulateStars(void)
 		    }
 		  else
 		    {
+		      QStandardItem *sItem = new QStandardItem("100%");
+
+		      sItem->setEditable(false);
+		      m_starbeamReceivedModel->setItem(row, 0, sItem);
+
 		      QTableWidgetItem *item = new QTableWidgetItem("100%");
 
 		      item->setFlags
