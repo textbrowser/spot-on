@@ -5816,8 +5816,6 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 	m_chatWindows.remove(publicKeyHash);
     }
 
-  m_starsLastModificationTime = QDateTime();
-
   QPointer<spoton_chatwindow> chat = new spoton_chatwindow
     (icon, oid, keyType, participant, publicKeyHash, &m_kernelSocket, 0);
 
@@ -5858,6 +5856,7 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 			     const QString &,
 			     const QString &)));
   m_chatWindows[publicKeyHash] = chat;
+  m_starsLastModificationTime = QDateTime();
   chat->center(this);
 
   if(smp)
