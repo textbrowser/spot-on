@@ -47,8 +47,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &participant,
 				     const QString &publicKeyHash,
 				     QSslSocket *kernelSocket,
+				     spoton_crypt *crypt,
 				     QWidget *parent):QMainWindow(parent)
 {
+  m_crypt = crypt;
   m_id = id;
   m_keyType = keyType.toLower();
 
@@ -69,6 +71,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 #endif
   connect(ui.box,
 	  SIGNAL(toggled(bool)),
+	  ui.share,
+	  SLOT(setVisible(bool)));
+  connect(ui.box,
+	  SIGNAL(toggled(bool)),
 	  ui.table,
 	  SLOT(setVisible(bool)));
   connect(ui.clearMessages,
@@ -83,6 +89,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSendMessage(void)));
+  connect(ui.share,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotShareStarBeam(void)));
 
   if(participant.trimmed().isEmpty())
     {
@@ -95,6 +105,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
     setWindowTitle(participant.trimmed());
 
   ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
+  ui.share->setVisible(false);
   ui.table->setVisible(false);
 
   if(participant.trimmed().isEmpty())
@@ -174,6 +185,11 @@ void spoton_chatwindow::center(QWidget *parent)
 }
 
 void spoton_chatwindow::slotSendMessage(void)
+{
+  sendMessage(0);
+}
+
+void spoton_chatwindow::sendMessage(bool *ok)
 {
   QByteArray message;
   QByteArray name;
@@ -294,8 +310,13 @@ void spoton_chatwindow::slotSendMessage(void)
 #endif
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      if(ok)
+	*ok = false;
+      else
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME), error);
+    }
 }
 
 void spoton_chatwindow::append(const QString &text)
@@ -424,4 +445,200 @@ void spoton_chatwindow::slotPrepareSMP(void)
 void spoton_chatwindow::slotVerifySMPSecret(void)
 {
   emit verifySMPSecret(m_publicKeyHash, m_keyType, m_id);
+}
+
+void spoton_chatwindow::slotShareStarBeam(void)
+{
+  QString error("");
+
+  if(!m_crypt)
+    {
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      showError(error);
+      return;
+    }
+
+  /*
+  ** Some of this logic is redundant. Please see sendMessage().
+  */
+
+  if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
+    {
+      error = tr("The interface is not connected to the kernel.");
+      showError(error);
+      return;
+    }
+  else if(!m_kernelSocket->isEncrypted())
+    {
+      error = tr("The connection to the kernel is not encrypted.");
+      showError(error);
+      return;
+    }
+
+  /*
+  ** Select a file.
+  */
+
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle(tr("%1: Select StarBeam Transmit File").
+			arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
+#endif
+#endif
+
+  if(dialog.exec() != QDialog::Accepted)
+    return;
+
+  QFileInfo fileInfo(dialog.selectedFiles().value(0));
+
+  if(!fileInfo.exists() || !fileInfo.isReadable())
+    {
+      error = tr("The selected file is not readable.");
+      showError(error);
+      return;
+    }
+
+  /*
+  ** Create a StarBeam magnet.
+  */
+
+  QByteArray eKey(spoton_crypt::strongRandomBytes(spoton_crypt::
+						  cipherKeyLength("aes256")).
+		  toBase64());
+  QByteArray mKey(spoton_crypt::strongRandomBytes(512).toBase64());
+  QByteArray magnet;
+  bool ok = true;
+
+  magnet.append("magnet:?");
+  magnet.append("ct=aes256&");
+  magnet.append("ek=");
+  magnet.append(eKey);
+  magnet.append("&");
+  magnet.append("ht=sha512&");
+  magnet.append("mk=");
+  magnet.append(mKey);
+  magnet.append("&");
+  magnet.append("xt=urn:starbeam");
+  ui.message->setText(magnet);
+  sendMessage(&ok);
+
+  if(!ok)
+    return;
+
+  QString connectionName("");
+
+  /*
+  ** Create a StarBeam database entry.
+  */
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QByteArray encryptedMosaic;
+	QByteArray mosaic(spoton_crypt::strongRandomBytes(64).toBase64());
+	QSqlQuery query(db);
+
+	query.prepare("INSERT INTO transmitted "
+		      "(file, hash, missing_links, mosaic, nova, "
+		      "position, pulse_size, read_interval, "
+		      "status_control, total_size) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	query.bindValue
+	  (0, m_crypt->
+	   encryptedThenHashed(fileInfo.absoluteFilePath().toUtf8(),
+			       &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, m_crypt->
+	     encryptedThenHashed
+	     (spoton_crypt::
+	      sha1FileHash(fileInfo.absoluteFilePath()).toHex(),
+	      &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, m_crypt->
+	     encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  {
+	    encryptedMosaic = m_crypt->encryptedThenHashed(mosaic, &ok);
+
+	    if(ok)
+	      query.bindValue(3, encryptedMosaic.toBase64());
+	  }
+
+	if(ok)
+	  query.bindValue
+	    (4, m_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (5, m_crypt->encryptedThenHashed("0", &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (6, m_crypt->
+	     encryptedThenHashed(QByteArray::number(30000),
+				 &ok).toBase64());
+
+	query.bindValue(7, 2.500);
+	query.bindValue(8, "transmitting");
+
+	if(ok)
+	  query.bindValue
+	    (9, m_crypt->
+	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.exec();
+
+	query.prepare("INSERT INTO transmitted_magnets "
+		      "(magnet, magnet_hash, transmitted_oid) "
+		      "VALUES (?, ?, (SELECT OID FROM transmitted WHERE "
+		      "mosaic = ?))");
+
+	if(ok)
+	  query.bindValue
+	    (0, m_crypt->
+	     encryptedThenHashed(magnet, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, m_crypt->keyedHash(magnet, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(2, encryptedMosaic.toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_chatwindow::showError(const QString &error)
+{
+  if(error.isEmpty())
+    return;
+
+  QMessageBox::critical(this, tr("%1: Error").
+			arg(SPOTON_APPLICATION_NAME), error);
 }

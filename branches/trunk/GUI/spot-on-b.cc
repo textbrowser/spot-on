@@ -33,9 +33,7 @@
 
 void spoton::slotSendMessage(void)
 {
-  bool ok = true;
-
-  sendMessage(&ok);
+  sendMessage(0);
 }
 
 void spoton::sendMessage(bool *ok)
@@ -176,9 +174,9 @@ void spoton::sendMessage(bool *ok)
     {
       if(ok)
 	*ok = false;
-
-      QMessageBox::critical(QApplication::activeWindow(), tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME), error);
+      else
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME), error);
     }
 }
 
@@ -5817,7 +5815,8 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
     }
 
   QPointer<spoton_chatwindow> chat = new spoton_chatwindow
-    (icon, oid, keyType, participant, publicKeyHash, &m_kernelSocket, 0);
+    (icon, oid, keyType, participant, publicKeyHash, &m_kernelSocket,
+     m_crypts.value("chat", 0), 0);
 
   connect(chat,
 	  SIGNAL(destroyed(void)),

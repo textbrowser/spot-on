@@ -1358,7 +1358,7 @@ void spoton::slotShareStarBeam(void)
   ** Select a file.
   */
 
-  QFileDialog dialog(QApplication::activeWindow());
+  QFileDialog dialog(this);
 
   dialog.setWindowTitle(tr("%1: Select StarBeam Transmit File").
 			arg(SPOTON_APPLICATION_NAME));
@@ -1431,9 +1431,9 @@ void spoton::slotShareStarBeam(void)
 
 	query.prepare("INSERT INTO transmitted "
 		      "(file, hash, missing_links, mosaic, nova, "
-		      "position, pulse_size, "
+		      "position, pulse_size, read_interval, "
 		      "status_control, total_size) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->
 	   encryptedThenHashed(fileInfo.absoluteFilePath().toUtf8(),
@@ -1474,11 +1474,12 @@ void spoton::slotShareStarBeam(void)
 	     encryptedThenHashed(QByteArray::number(30000),
 				 &ok).toBase64());
 
-	query.bindValue(7, "transmitting");
+	query.bindValue(7, 2.500);
+	query.bindValue(8, "transmitting");
 
 	if(ok)
 	  query.bindValue
-	    (8, crypt->
+	    (9, crypt->
 	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
 				 &ok).toBase64());
 
@@ -1517,7 +1518,7 @@ void spoton::showError(const QString &error)
   if(error.isEmpty())
     return;
 
-  QMessageBox::critical(QApplication::activeWindow(), tr("%1: Error").
+  QMessageBox::critical(this, tr("%1: Error").
 			arg(SPOTON_APPLICATION_NAME), error);
 }
 

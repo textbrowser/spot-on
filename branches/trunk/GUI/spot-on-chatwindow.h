@@ -47,6 +47,7 @@ class spoton_chatwindow: public QMainWindow
 		    const QString &participant,
 		    const QString &publicKeyHash,
 		    QSslSocket *kernelSocket,
+		    spoton_crypt *crypt,
 		    QWidget *parent);
   ~spoton_chatwindow();
   QString id(void) const;
@@ -61,6 +62,7 @@ class spoton_chatwindow: public QMainWindow
   QString m_keyType;
   QString m_publicKeyHash;
   Ui_chatwindow ui;
+  spoton_crypt *m_crypt;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
   bool event(QEvent *event);
@@ -68,6 +70,8 @@ class spoton_chatwindow: public QMainWindow
 #endif
   void closeEvent(QCloseEvent *event);
   void keyPressEvent(QKeyEvent *event);
+  void sendMessage(bool *ok);
+  void showError(const QString &error);
 
  private slots:
   void slotInitializeSMP(void);
@@ -76,6 +80,7 @@ class spoton_chatwindow: public QMainWindow
   void slotSetIcons(void);
   void slotSetStatus(const QIcon &icon, const QString &name,
 		     const QString &id);
+  void slotShareStarBeam(void);
   void slotVerifySMPSecret(void);
 
  signals:
