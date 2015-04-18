@@ -150,6 +150,7 @@ void spoton_chatwindow::slotSetIcons(void)
 
   ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
+  ui.share->setIcon(QIcon(QString(":/%1/starbeam.png").arg(iconSet)));
 }
 
 QString spoton_chatwindow::id(void) const
@@ -471,6 +472,12 @@ void spoton_chatwindow::slotShareStarBeam(void)
   else if(!m_kernelSocket->isEncrypted())
     {
       error = tr("The connection to the kernel is not encrypted.");
+      showError(error);
+      return;
+    }
+  else if(ui.message->toPlainText().isEmpty())
+    {
+      error = tr("Please provide a real message.");
       showError(error);
       return;
     }

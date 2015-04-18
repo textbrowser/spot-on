@@ -1342,6 +1342,12 @@ void spoton::slotShareStarBeam(void)
       showError(error);
       return;
     }
+  else if(m_ui.message->toPlainText().isEmpty())
+    {
+      error = tr("Please provide a real message.");
+      showError(error);
+      return;
+    }
 
   QModelIndexList list(m_ui.participants->selectionModel()->
 		       selectedRows(1)); // OID
@@ -1349,7 +1355,7 @@ void spoton::slotShareStarBeam(void)
   if(list.isEmpty())
     {
       error = tr
-	("Please select at least one participant for warp StarBeams.");
+	("Please select at least one participant for StarBeam sharing.");
       showError(error);
       return;
     }
