@@ -661,7 +661,7 @@
         <location filename="../GUI/spot-on-d.cc" line="1616"/>
         <location filename="../GUI/spot-on-d.cc" line="1713"/>
         <location filename="../GUI/spot-on-e.cc" line="770"/>
-        <location filename="../GUI/spot-on-e.cc" line="1373"/>
+        <location filename="../GUI/spot-on-e.cc" line="1367"/>
         <location filename="../GUI/spot-on-urls.cc" line="633"/>
         <source>&amp;Select</source>
         <translation type="unfinished"></translation>
@@ -930,7 +930,7 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <location filename="../GUI/spot-on-d.cc" line="1634"/>
         <location filename="../GUI/spot-on-e.cc" line="65"/>
         <location filename="../GUI/spot-on-e.cc" line="79"/>
-        <location filename="../GUI/spot-on-e.cc" line="1527"/>
+        <location filename="../GUI/spot-on-e.cc" line="1521"/>
         <location filename="../GUI/spot-on-urls-search.cc" line="42"/>
         <location filename="../GUI/spot-on-urls-search.cc" line="51"/>
         <location filename="../GUI/spot-on-urls.cc" line="232"/>
@@ -1722,7 +1722,6 @@ SSL Control String: %13</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="61"/>
-        <location filename="../GUI/spot-on-e.cc" line="1347"/>
         <source>Please provide a real message.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2062,7 +2061,7 @@ SSL Control String: %13</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-c.cc" line="834"/>
-        <location filename="../GUI/spot-on-e.cc" line="1369"/>
+        <location filename="../GUI/spot-on-e.cc" line="1363"/>
         <source>%1: Select StarBeam Transmit File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2555,12 +2554,12 @@ SSL Control String: %13</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1357"/>
+        <location filename="../GUI/spot-on-e.cc" line="1351"/>
         <source>Please select at least one participant for StarBeam sharing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1388"/>
+        <location filename="../GUI/spot-on-e.cc" line="1382"/>
         <source>The selected file is not readable.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2681,7 +2680,6 @@ SSL Control String: %13</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="213"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="480"/>
         <source>Please provide a real message.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2692,7 +2690,7 @@ SSL Control String: %13</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="318"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="649"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="643"/>
         <source>%1: Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2712,17 +2710,17 @@ SSL Control String: %13</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="491"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="485"/>
         <source>%1: Select StarBeam Transmit File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="495"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="489"/>
         <source>&amp;Select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="510"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="504"/>
         <source>The selected file is not readable.</source>
         <translation type="unfinished"></translation>
     </message>
