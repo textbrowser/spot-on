@@ -700,7 +700,7 @@
         <location filename="../GUI/spot-on-d.cc" line="1616"/>
         <location filename="../GUI/spot-on-d.cc" line="1713"/>
         <location filename="../GUI/spot-on-e.cc" line="770"/>
-        <location filename="../GUI/spot-on-e.cc" line="1367"/>
+        <location filename="../GUI/spot-on-e.cc" line="1373"/>
         <location filename="../GUI/spot-on-urls.cc" line="633"/>
         <source>&amp;Select</source>
         <translation type="unfinished">Wähle</translation>
@@ -991,7 +991,7 @@ Priority: %25</source>
         <location filename="../GUI/spot-on-d.cc" line="1634"/>
         <location filename="../GUI/spot-on-e.cc" line="65"/>
         <location filename="../GUI/spot-on-e.cc" line="79"/>
-        <location filename="../GUI/spot-on-e.cc" line="1521"/>
+        <location filename="../GUI/spot-on-e.cc" line="1527"/>
         <location filename="../GUI/spot-on-urls-search.cc" line="42"/>
         <location filename="../GUI/spot-on-urls-search.cc" line="51"/>
         <location filename="../GUI/spot-on-urls.cc" line="232"/>
@@ -1976,6 +1976,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     </message>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="61"/>
+        <location filename="../GUI/spot-on-e.cc" line="1347"/>
         <source>Please provide a real message.</source>
         <translation type="unfinished">Bitte gebe eine echte Nachricht ein.</translation>
     </message>
@@ -2351,7 +2352,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     </message>
     <message>
         <location filename="../GUI/spot-on-c.cc" line="834"/>
-        <location filename="../GUI/spot-on-e.cc" line="1363"/>
+        <location filename="../GUI/spot-on-e.cc" line="1369"/>
         <source>%1: Select StarBeam Transmit File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2856,12 +2857,12 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1351"/>
-        <source>Please select at least one participant for warp StarBeams.</source>
+        <location filename="../GUI/spot-on-e.cc" line="1357"/>
+        <source>Please select at least one participant for StarBeam sharing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1382"/>
+        <location filename="../GUI/spot-on-e.cc" line="1388"/>
         <source>The selected file is not readable.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2981,60 +2982,61 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="202"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="467"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="203"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="468"/>
         <source>The interface is not connected to the kernel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="207"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="473"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="208"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="474"/>
         <source>The connection to the kernel is not encrypted.</source>
         <translation type="unfinished">Die VErbindung zum Kernel ist nicht verschlüsselt.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="212"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="213"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="480"/>
         <source>Please provide a real message.</source>
         <translation type="unfinished">Bitte gebe eine echte Nachricht ein.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="231"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="232"/>
         <source>&lt;b&gt;me:&lt;/b&gt; </source>
         <translation type="unfinished">&lt;b&gt;Ich:&lt;/b&gt; </translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="317"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="642"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="318"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="649"/>
         <source>%1: Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="422"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="423"/>
         <source>The Socialist Millionaire Protocol failed on %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="430"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="431"/>
         <source>The Socialist Millionaire Protocol succeeded on %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="456"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="457"/>
         <source>Invalid spoton_crypt object. This is a fatal flaw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="484"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="491"/>
         <source>%1: Select StarBeam Transmit File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="488"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="495"/>
         <source>&amp;Select</source>
         <translation type="unfinished">Wähle</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="503"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="510"/>
         <source>The selected file is not readable.</source>
         <translation type="unfinished"></translation>
     </message>
