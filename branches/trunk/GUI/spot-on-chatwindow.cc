@@ -475,12 +475,6 @@ void spoton_chatwindow::slotShareStarBeam(void)
       showError(error);
       return;
     }
-  else if(ui.message->toPlainText().isEmpty())
-    {
-      error = tr("Please provide a real message.");
-      showError(error);
-      return;
-    }
 
   /*
   ** Select a file.

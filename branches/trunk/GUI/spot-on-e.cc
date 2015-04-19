@@ -1342,12 +1342,6 @@ void spoton::slotShareStarBeam(void)
       showError(error);
       return;
     }
-  else if(m_ui.message->toPlainText().isEmpty())
-    {
-      error = tr("Please provide a real message.");
-      showError(error);
-      return;
-    }
 
   QModelIndexList list(m_ui.participants->selectionModel()->
 		       selectedRows(1)); // OID
