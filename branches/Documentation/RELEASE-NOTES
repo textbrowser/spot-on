@@ -1,11 +1,11 @@
-0.21 (04/15/2015)
+0.21 (04/19/2015)
 
 1.   Corrected Poptastic kernel timer.
 2.   RetroPhone work. Incomplete.
 3.   Disable SSL session tickets.
 4.   Disable SSL session sharing. Qt 5.2.x or higher is required.
 5.   Disable SSL session persistence. Qt 5.2.x or higher is required.
-6.   Upgraded NTRU files, 04/02/2015.
+6.   Upgraded NTRU files, 04/18/2015.
 7.   Upgraded OpenSSL products to version 1.0.2a on Windows.
 8.   Ignore duplicate keywords in link searching.
 9.   Corrected isEncrypted() use in spoton_neighbor::saveStatus().
