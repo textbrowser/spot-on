@@ -294,9 +294,10 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(chat)
 			{
 			  chat->append(msg);
-
+#ifdef Q_OS_WIN32
 			  if(chat->isVisible())
 			    chat->activateWindow();
+#endif
 			}
 		    }
 
@@ -371,9 +372,10 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(chat)
 			{
 			  chat->append(msg);
-
+#ifdef Q_OS_WIN32
 			  if(chat->isVisible())
 			    chat->activateWindow();
+#endif
 			}
 
 		      m_ui.messages->append(msg);
@@ -449,9 +451,10 @@ void spoton::slotReceivedKernelMessage(void)
 			    {
 			      chat->append(msg);
 			      chat->setSMPVerified(passed);
-
+#ifdef Q_OS_WIN32
 			      if(chat->isVisible())
 				chat->activateWindow();
+#endif
 			    }
 			}
 		      else if(chat)
@@ -634,9 +637,10 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(chat)
 		    {
 		      chat->append(msg);
-
+#ifdef Q_OS_WIN32
 		      if(chat->isVisible())
 			chat->activateWindow();
+#endif
 		    }
 
 		  m_ui.messages->append(msg);
