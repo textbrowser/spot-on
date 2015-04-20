@@ -7695,7 +7695,7 @@ QPushButton:pressed {
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>769</width>
+                     <width>799</width>
                      <height>239</height>
                     </rect>
                    </property>
@@ -10483,48 +10483,20 @@ QPushButton:pressed {
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="logo">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Why the name GoldBug?&lt;/p&gt;&lt;p&gt;&amp;quot; 'The GoldBug' is a short story by Edgar Allan Poe. The plot follows William LeGrand, who recently discovered a gold-colored bug. &lt;/p&gt;&lt;p&gt;His companion, Jupiter, fears LeGrand is becomming now obsessed with searching for treasure, knowledge and wisdom after being in contact with the GoldBug - and goes to LeGrand's friend, an unnamed narrator, who agrees to visit his old friend. After LeGrand has deciphered a secret message the three start an adventure as a team. &lt;/p&gt;&lt;p&gt;'The Gold-Bug' - as one of the few pieces of literature - incorporates ciphers as part of the story. Poe took advantage of the popularity of cryptography as he was writing 'The Gold-Bug' in 1843, and the success of the story centers e.g. on one such cryptogram and the search for the Philosopher's Stone. 'The Gold-Bug' was an instant reviewed story and was the most popular and most widely evaluation of Poe's works during his lifetime. His ideas also helped to popularize secured writing and cryptograms.&amp;quot; - Wikipedia.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QPushButton#passphraseButton {
-     border-style: outset;
-     border-width: 1px;
-     border-radius: 10px;
-     border-color: transparent;
-     min-width: 10em;
-     padding: 6px;
- }
-
-</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="../Icons/icons.qrc">
-                <normaloff>:/nouve/goldbug.png</normaloff>:/nouve/goldbug.png</iconset>
-              </property>
-              <property name="iconSize">
+             <widget class="QLabel" name="logo">
+              <property name="maximumSize">
                <size>
                 <width>200</width>
                 <height>200</height>
                </size>
               </property>
-              <property name="checkable">
-               <bool>false</bool>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Why the name GoldBug?&lt;/p&gt;&lt;p&gt;&amp;quot; 'The GoldBug' is a short story by Edgar Allan Poe. The plot follows William LeGrand, who recently discovered a gold-colored bug. &lt;/p&gt;&lt;p&gt;His companion, Jupiter, fears LeGrand is becomming now obsessed with searching for treasure, knowledge and wisdom after being in contact with the GoldBug - and goes to LeGrand's friend, an unnamed narrator, who agrees to visit his old friend. After LeGrand has deciphered a secret message the three start an adventure as a team. &lt;/p&gt;&lt;p&gt;'The Gold-Bug' - as one of the few pieces of literature - incorporates ciphers as part of the story. Poe took advantage of the popularity of cryptography as he was writing 'The Gold-Bug' in 1843, and the success of the story centers e.g. on one such cryptogram and the search for the Philosopher's Stone. 'The Gold-Bug' was an instant reviewed story and was the most popular and most widely evaluation of Poe's works during his lifetime. His ideas also helped to popularize secured writing and cryptograms.&amp;quot; - Wikipedia.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
-              <property name="autoDefault">
-               <bool>false</bool>
+              <property name="pixmap">
+               <pixmap resource="../Icons/icons.qrc">:/Logo/goldbug.png</pixmap>
               </property>
-              <property name="default">
-               <bool>false</bool>
-              </property>
-              <property name="flat">
+              <property name="scaledContents">
                <bool>true</bool>
               </property>
              </widget>
@@ -11348,7 +11320,6 @@ spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&
   <tabstop>question</tabstop>
   <tabstop>answer</tabstop>
   <tabstop>setPassphrase</tabstop>
-  <tabstop>logo</tabstop>
   <tabstop>question_rb_authenticate</tabstop>
   <tabstop>passphrase_rb_authenticate</tabstop>
   <tabstop>question_authenticate</tabstop>
