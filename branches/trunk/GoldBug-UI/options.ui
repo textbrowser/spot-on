@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>462</width>
-             <height>705</height>
+             <y>-149</y>
+             <width>461</width>
+             <height>708</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -677,6 +677,13 @@
                 <number>5</number>
                </property>
                <item>
+                <widget class="QCheckBox" name="starbeamAutoVerify">
+                 <property name="text">
+                  <string>&amp;Automatically verify digests.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_82">
                  <property name="spacing">
                   <number>5</number>
@@ -764,9 +771,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-463</y>
-             <width>581</width>
-             <height>977</height>
+             <y>0</y>
+             <width>679</width>
+             <height>965</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1422,7 +1429,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1514,6 +1521,7 @@
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
+  <tabstop>starbeamAutoVerify</tabstop>
   <tabstop>starbeamUpdateInterval</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>

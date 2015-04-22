@@ -761,6 +761,7 @@ class spoton: public QMainWindow
   void slotSaveRefreshEmail(bool state);
   void slotSaveSharePrivateKeys(bool state);
   void slotSaveSslControlString(void);
+  void slotSaveStarBeamAutoVerify(bool state);
   void slotSaveUrlCredentials(void);
   void slotSaveUrlName(void);
   void slotSaveUrlDistribution(int index);

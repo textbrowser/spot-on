@@ -480,6 +480,7 @@ Optional Nova AES-256
 4 - Total Size
 5 - Pulse Data
 6 - Pulse Size
+7 - SHA-1 File Digest
 }
 Optional Nova SHA-512
 {

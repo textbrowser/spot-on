@@ -61,6 +61,7 @@ class spoton_starbeam_reader: public QObject
 	       const QString &fileSize,
 	       const QByteArray &magnet,
 	       const QByteArray &nova,
+	       const QByteArray &hash,
 	       const QSqlDatabase &db,
 	       spoton_crypt *crypt);
   void savePositionAndStatus(const QString &status, const QSqlDatabase &db);

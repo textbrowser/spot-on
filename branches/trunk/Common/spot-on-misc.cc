@@ -143,7 +143,7 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS institutions ("
 		   "cipher_type TEXT NOT NULL, "
 		   "hash TEXT PRIMARY KEY NOT NULL, " /*
-						      ** Hash of the
+						      ** Keyed hash of the
 						      ** name.
 						      */
 		   "hash_type TEXT NOT NULL, "
@@ -509,7 +509,7 @@ void spoton_misc::prepareDatabases(void)
 							   ** the file name.
 							   */
 		   "hash TEXT, "                           /*
-							   ** Hash of
+							   ** SHA-1 hash of
 							   ** the file.
 							   */
 		   "locked INTEGER NOT NULL DEFAULT 0, "
@@ -528,7 +528,7 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted ("
 		   "file TEXT NOT NULL, "
 		   "hash TEXT NOT NULL, " /*
-					  ** Keyed hash of the file.
+					  ** SHA-1 hash of the file.
 					  */
 		   "missing_links BLOB NOT NULL, "
 		   "mosaic TEXT PRIMARY KEY NOT NULL, "
@@ -555,9 +555,6 @@ void spoton_misc::prepareDatabases(void)
 		   "position_hash TEXT NOT NULL, " // Keyed hash.
 		   "transmitted_oid INTEGER NOT NULL, "
 		   "PRIMARY KEY (position_hash, transmitted_oid))");
-	query.exec
-	  ("ALTER TABLE transmitted ADD COLUMN read_interval "
-	   "REAL NOT NULL DEFAULT 1.500");
       }
 
     db.close();

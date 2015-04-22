@@ -1,8 +1,9 @@
 0.22 (04/23/2015)
 
-1.   QWidget::activateWindow() should only be used on Window!
+1.   QWidget::activateWindow() should only be used on Windows!
 2.   Corrected spoton_misc::prepareUrlDistillersDatabase() and
      spoton_misc::prepareUrlKeysDatabase() with respect to the ok variables.
+3.   Automatically verify StarBeams. Optional.
 
 0.21 (04/19/2015)
 

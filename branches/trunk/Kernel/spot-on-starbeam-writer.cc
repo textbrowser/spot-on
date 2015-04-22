@@ -137,7 +137,7 @@ void spoton_starbeam_writer::processData
 
 	      list.clear();
 
-	      for(int i = 0; i < 7; i++)
+	      for(int i = 0; i < 8; i++)
 		{
 		  QByteArray a;
 
@@ -162,7 +162,7 @@ void spoton_starbeam_writer::processData
 
       list.clear();
 
-      for(int i = 0; i < 7; i++)
+      for(int i = 0; i < 8; i++)
 	{
 	  QByteArray a;
 

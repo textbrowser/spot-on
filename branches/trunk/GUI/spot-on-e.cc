@@ -1526,3 +1526,12 @@ QStandardItemModel *spoton::starbeamReceivedModel(void) const
 {
   return m_starbeamReceivedModel;
 }
+
+void spoton::slotSaveStarBeamAutoVerify(bool state)
+{
+  m_settings["gui/starbeamAutoVerify"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/starbeamAutoVerify", state);
+}

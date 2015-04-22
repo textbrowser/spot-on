@@ -1321,6 +1321,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveSharePrivateKeys(bool)));
+  connect(m_optionsUi.starbeamAutoVerify,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveStarBeamAutoVerify(bool)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1796,6 +1800,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/saveCopy", true).toBool());
   m_optionsUi.scrambler->setChecked
     (m_settings.value("gui/scramblerEnabled", false).toBool());
+  m_optionsUi.starbeamAutoVerify->setChecked
+    (m_settings.value("gui/starbeamAutoVerify", false).toBool());
   m_optionsUi.superEcho->setCurrentIndex
     (m_settings.value("gui/superEcho", 1).toInt());
 
