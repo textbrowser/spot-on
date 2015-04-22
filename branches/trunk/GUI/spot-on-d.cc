@@ -2515,7 +2515,7 @@ void spoton::prepareUrlContainers(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton::slotPostgreSQLDisconnect(bool state)
+void spoton::slotPostgreSQLDisconnect(int index)
 {
   m_ui.postgresqlConnect->setProperty("user_text", "connect");
   m_ui.postgresqlConnect->setText(tr("PostgreSQL Connect"));
@@ -2525,19 +2525,22 @@ void spoton::slotPostgreSQLDisconnect(bool state)
   if(QSqlDatabase::contains("URLDatabase"))
     QSqlDatabase::removeDatabase("URLDatabase");
 
-  if(state)
+  if(index == 0)
+    m_ui.postgresqlConnect->setVisible(true);
+  else
     {
+      m_ui.postgresqlConnect->setVisible(false);
       m_urlDatabase = QSqlDatabase::addDatabase("QSQLITE", "URLDatabase");
       m_urlDatabase.setDatabaseName
 	(spoton_misc::homePath() + QDir::separator() + "urls.db");
       m_urlDatabase.open();
     }
 
-  m_settings["gui/sqliteSearch"] = state;
+  m_settings["gui/sqliteSearch"] = index == 1;
 
   QSettings settings;
 
-  settings.setValue("gui/sqliteSearch", state);
+  settings.setValue("gui/sqliteSearch", index == 1);
 }
 
 void spoton::generateHalfGeminis(void)

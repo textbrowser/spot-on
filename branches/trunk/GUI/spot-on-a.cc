@@ -244,24 +244,20 @@ spoton::spoton(void):QMainWindow()
   m_ui.urlSettings->setVisible(true);
   m_ui.urlsBox->setVisible(false);
   m_ui.showUrlSettings->setChecked(true);
+  m_ui.urls_db_type->model()->setData
+    (m_ui.urls_db_type->model()->index(0, 0), 0, Qt::UserRole - 1);
   m_ui.postgresqlConnect->setEnabled(false);
+  m_ui.postgresqlConnect->setVisible(false);
 
   foreach(QString driver, QSqlDatabase::drivers())
     if(driver.toLower().contains("qpsql"))
       {
 	m_ui.postgresqlConnect->setEnabled(true);
+	m_ui.urls_db_type->model()->setData
+	  (m_ui.urls_db_type->model()->index(0, 0), QVariant(1 | 32),
+	   Qt::UserRole - 1);
 	break;
       }
-
-  if(!m_ui.postgresqlConnect->isEnabled())
-    {
-      m_ui.postgresqlConnect->setToolTip(tr("Unable to locate the QPSQL "
-					    "database driver."));
-      m_ui.sqlite->setChecked(true);
-      m_ui.sqlite->setEnabled(false);
-    }
-  else
-    m_ui.postgresqlConnect->setEnabled(false);
 
 #ifndef SPOTON_LINKED_WITH_LIBGEOIP
   m_ui.geoipPath4->setEnabled(false);
@@ -1285,10 +1281,8 @@ spoton::spoton(void):QMainWindow()
 	  SLOT(slotDiscover(void)));
   connect(m_ui.url_pages, SIGNAL(linkActivated(const QString &)),
 	  this, SLOT(slotPageClicked(const QString &)));
-  connect(m_ui.sqlite, SIGNAL(toggled(bool)),
-	  m_ui.postgresqlConnect, SLOT(setDisabled(bool)));
-  connect(m_ui.sqlite, SIGNAL(toggled(bool)),
-	  this, SLOT(slotPostgreSQLDisconnect(bool)));
+  connect(m_ui.urls_db_type, SIGNAL(currentIndexChanged(int)),
+	  this, SLOT(slotPostgreSQLDisconnect(int)));
   connect(m_optionsUi.acceptGeminis, SIGNAL(toggled(bool)),
 	  this, SLOT(slotAcceptGeminis(bool)));
   connect(m_ui.action_Poptastic_Settings, SIGNAL(triggered(void)),
@@ -1497,17 +1491,17 @@ spoton::spoton(void):QMainWindow()
 
   spoton_misc::correctSettingsContainer(m_settings);
 
-  if(m_ui.sqlite->isEnabled())
+  if(m_ui.postgresqlConnect->isEnabled())
     {
       if(m_settings.value("gui/sqliteSearch", true).toBool())
-	m_ui.sqlite->setChecked(true);
+	m_ui.urls_db_type->setCurrentIndex(1);
       else
-	m_ui.sqlite->setChecked(false);
+	m_ui.urls_db_type->setCurrentIndex(0);
     }
+  else
+    m_ui.urls_db_type->setCurrentIndex(1);
 
-  if(m_ui.sqlite->isChecked())
-    slotPostgreSQLDisconnect(true); // Open the SQLite database.
-
+  slotPostgreSQLDisconnect(m_ui.urls_db_type->currentIndex());
   m_optionsUi.chatUpdateInterval->setValue
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());
   m_emailRetrievalTimer.setInterval

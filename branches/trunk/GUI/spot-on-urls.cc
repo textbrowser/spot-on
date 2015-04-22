@@ -129,9 +129,7 @@ void spoton::slotPrepareUrlDatabases(void)
   progress.show();
   progress.update();
 
-  if(m_ui.sqlite->isChecked())
-    slotPostgreSQLDisconnect(true);
-
+  slotPostgreSQLDisconnect(m_ui.urls_db_type->currentIndex());
   created = spoton_misc::prepareUrlDistillersDatabase();
 
   if(created)

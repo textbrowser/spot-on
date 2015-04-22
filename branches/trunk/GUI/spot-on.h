@@ -717,7 +717,7 @@ class spoton: public QMainWindow
   void slotPopulateParticipants(void);
   void slotPopulateStars(void);
   void slotPostgreSQLConnect(void);
-  void slotPostgreSQLDisconnect(bool state);
+  void slotPostgreSQLDisconnect(int index);
   void slotPrepareSMP(const QString &hash);
   void slotPrepareSMP(void);
   void slotPrepareUrlDatabases(void);

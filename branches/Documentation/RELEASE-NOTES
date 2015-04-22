@@ -1,6 +1,8 @@
 0.22 (04/23/2015)
 
 1.   QWidget::activateWindow() should only be used on Window!
+2.   Corrected spoton_misc::prepareUrlDistillersDatabase() and
+     spoton_misc::prepareUrlKeysDatabase() with respect to the ok variables.
 
 0.21 (04/19/2015)
 
