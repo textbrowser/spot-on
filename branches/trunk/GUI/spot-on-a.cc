@@ -244,8 +244,10 @@ spoton::spoton(void):QMainWindow()
   m_ui.urlSettings->setVisible(true);
   m_ui.urlsBox->setVisible(false);
   m_ui.showUrlSettings->setChecked(true);
+#if SPOTON_GOLDBUG == 0
   m_ui.urls_db_type->model()->setData
     (m_ui.urls_db_type->model()->index(0, 0), 0, Qt::UserRole - 1);
+#endif
   m_ui.postgresqlConnect->setEnabled(false);
   m_ui.postgresqlConnect->setVisible(false);
 
@@ -253,9 +255,11 @@ spoton::spoton(void):QMainWindow()
     if(driver.toLower().contains("qpsql"))
       {
 	m_ui.postgresqlConnect->setEnabled(true);
+#if SPOTON_GOLDBUG == 0
 	m_ui.urls_db_type->model()->setData
 	  (m_ui.urls_db_type->model()->index(0, 0), QVariant(1 | 32),
 	   Qt::UserRole - 1);
+#endif
 	break;
       }
 
@@ -1281,8 +1285,10 @@ spoton::spoton(void):QMainWindow()
 	  SLOT(slotDiscover(void)));
   connect(m_ui.url_pages, SIGNAL(linkActivated(const QString &)),
 	  this, SLOT(slotPageClicked(const QString &)));
+#if SPOTON_GOLDBUG == 0
   connect(m_ui.urls_db_type, SIGNAL(currentIndexChanged(int)),
 	  this, SLOT(slotPostgreSQLDisconnect(int)));
+#endif
   connect(m_optionsUi.acceptGeminis, SIGNAL(toggled(bool)),
 	  this, SLOT(slotAcceptGeminis(bool)));
   connect(m_ui.action_Poptastic_Settings, SIGNAL(triggered(void)),
@@ -1490,7 +1496,7 @@ spoton::spoton(void):QMainWindow()
       (settings.allKeys().at(i));
 
   spoton_misc::correctSettingsContainer(m_settings);
-
+#if SPOTON_GOLDBUG == 0
   if(m_ui.postgresqlConnect->isEnabled())
     {
       if(m_settings.value("gui/sqliteSearch", true).toBool())
@@ -1502,6 +1508,7 @@ spoton::spoton(void):QMainWindow()
     m_ui.urls_db_type->setCurrentIndex(1);
 
   slotPostgreSQLDisconnect(m_ui.urls_db_type->currentIndex());
+#endif
   m_optionsUi.chatUpdateInterval->setValue
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());
   m_emailRetrievalTimer.setInterval
