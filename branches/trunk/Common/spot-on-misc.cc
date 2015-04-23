@@ -503,6 +503,7 @@ void spoton_misc::prepareDatabases(void)
 		   "magnet_hash TEXT PRIMARY KEY NOT NULL, " // Keyed hash.
 		   "one_time_magnet INTEGER NOT NULL DEFAULT 1)");
 	query.exec("CREATE TABLE IF NOT EXISTS received ("
+		   "expected_file_hash TEXT, "
 		   "file TEXT NOT NULL, "
 		   "file_hash TEXT PRIMARY KEY NOT NULL, " /*
 							   ** Keyed hash of
@@ -515,6 +516,8 @@ void spoton_misc::prepareDatabases(void)
 		   "locked INTEGER NOT NULL DEFAULT 0, "
 		   "pulse_size TEXT NOT NULL, "
 		   "total_size TEXT NOT NULL)");
+	query.exec("ALTER TABLE received "
+		   "ADD COLUMN expected_file_hash TEXT");
 	query.exec("CREATE TABLE IF NOT EXISTS received_novas ("
 		   "nova TEXT NOT NULL, " /*
 					  ** Please
@@ -3615,4 +3618,33 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
     values.clear();
 
   return valid;
+}
+
+void spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
+					   const QByteArray &hash,
+					   const QString &oid,
+					   spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+  else if(!db.isOpen())
+    return;
+
+  QSqlQuery query(db);
+  bool ok = true;
+
+  query.prepare
+    ("UPDATE received SET hash = ? WHERE OID = ?");
+
+  if(hash.isEmpty())
+    query.bindValue(0, QVariant::String);
+  else
+    query.bindValue
+      (0, crypt->encryptedThenHashed(hash.toHex(), &ok).
+       toBase64());
+
+  query.bindValue(1, oid);
+
+  if(ok)
+    query.exec();
 }

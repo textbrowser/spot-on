@@ -174,6 +174,10 @@ class spoton_misc
 				    const QString &statusControl,
 				    const QString &orientation,
 				    spoton_crypt *crypt);
+  static void saveReceivedStarBeamHash(const QSqlDatabase &db,
+				       const QByteArray &hash,
+				       const QString &oid,
+				       spoton_crypt *crypt);
   static void vacuumAllDatabases(void);
   template<typename T>
     static T readSharedResource(T *resource, QReadWriteLock &mutex)

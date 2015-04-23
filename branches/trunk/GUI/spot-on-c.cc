@@ -1192,6 +1192,7 @@ void spoton::slotPopulateStars(void)
 	row = 0;
 	query.exec("PRAGMA read_uncommitted = True");
 	query.prepare("SELECT locked, pulse_size, total_size, file, hash, "
+		      "expected_file_hash, "
 		      "OID FROM received");
 
 	if(query.exec())
@@ -1200,6 +1201,8 @@ void spoton::slotPopulateStars(void)
 	      m_ui.received->setRowCount(row + 1);
 	      m_starbeamReceivedModel->setRowCount(row + 1);
 
+	      QByteArray expectedFileHash;
+	      QByteArray hash;
 	      QCheckBox *check = 0;
 	      QString fileName("");
 	      bool ok = true;
@@ -1225,7 +1228,7 @@ void spoton::slotPopulateStars(void)
 			      SLOT(slotMosaicLocked(bool)));
 		      m_ui.received->setCellWidget(row, 0, check);
 		    }
-		  else if(i >= 1 && i <= 4)
+		  else if(i >= 1 && i <= 5)
 		    {
 		      QByteArray bytes;
 
@@ -1250,6 +1253,10 @@ void spoton::slotPopulateStars(void)
 			  sItem->setEditable(false);
 			  m_starbeamReceivedModel->setItem(row, 1, sItem);
 			}
+		      else if(i == 4)
+			hash = bytes;
+		      else if(i == 5)
+			expectedFileHash = bytes;
 		    }
 		  else if(i == query.record().count() - 1)
 		    item = new QTableWidgetItem
@@ -1310,6 +1317,51 @@ void spoton::slotPopulateStars(void)
 		      item->setFlags
 			(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		      m_ui.received->setItem(row, 1, item);
+
+		      if(m_settings.value("gui/starbeamAutoVerify",
+					  false).toBool())
+			if(hash.isEmpty())
+			  {
+			    QFile file;
+
+			    file.setFileName(fileName);
+
+			    if(file.open(QIODevice::ReadOnly))
+			      {
+				QApplication::setOverrideCursor
+				  (QCursor(Qt::WaitCursor));
+				hash =
+				  spoton_crypt::sha1FileHash(fileName);
+				spoton_misc::saveReceivedStarBeamHash
+				  (db, hash,
+				   query.value(query.record().count() - 1).
+				   toString(),
+				   crypt);
+				QApplication::restoreOverrideCursor();
+			      }
+			  }
+		    }
+		}
+
+	      QStandardItem *item3 = m_starbeamReceivedModel->
+		item(row, 0);
+	      QTableWidgetItem *item4 = m_ui.received->item(row, 5);
+
+	      if(item3 && item4)
+		{
+		  if(expectedFileHash == hash)
+		    {
+		      item3->setBackground
+			(QBrush(QColor("lightgreen")));
+		      item4->setBackground
+			(QBrush(QColor("lightgreen")));
+		    }
+		  else
+		    {
+		      item3->setBackground
+			(QBrush(QColor(240, 128, 128)));
+		      item4->setBackground
+			(QBrush(QColor(240, 128, 128)));
 		    }
 		}
 
@@ -2173,9 +2225,13 @@ void spoton::slotComputeFileHash(void)
 	  query.prepare
 	    ("UPDATE transmitted SET hash = ? WHERE OID = ?");
 
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(hash.toHex(), &ok).
-	   toBase64());
+	if(hash.isEmpty())
+	  query.bindValue(0, QVariant::String);
+	else
+	  query.bindValue
+	    (0, crypt->encryptedThenHashed(hash.toHex(), &ok).
+	     toBase64());
+
 	query.bindValue(1, oid);
 
 	if(ok)

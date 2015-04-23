@@ -1459,7 +1459,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		}
 	    }
 
-	if(query.exec("SELECT file, file_hash, hash, pulse_size, total_size "
+	if(query.exec("SELECT expected_file_hash, "
+		      "file, file_hash, hash, pulse_size, total_size "
 		      "FROM received"))
 	  while(query.next())
 	    {
@@ -1468,57 +1469,66 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      bool ok = true;
 
 	      updateQuery.prepare("UPDATE received "
-				  "SET file = ?, "
+				  "SET expected_file_hash = ?, "
+				  "file = ?, "
 				  "file_hash = ?, "
 				  "hash = ?, "
 				  "pulse_size = ?, "
 				  "total_size = ? "
 				  "WHERE file_hash = ?");
-	      bytes = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok);
 
-	      if(ok)
-		updateQuery.bindValue
-		  (0, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
-
-	      if(ok)
-		updateQuery.bindValue
-		  (1, newCrypt->keyedHash(bytes, &ok).toBase64());
-
-	      if(ok)
-		if(!query.isNull(2))
-		  bytes = oldCrypt->decryptedAfterAuthenticated
-		    (QByteArray::
-		     fromBase64(query.
-				value(2).
-				toByteArray()),
-		     &ok);
+	      if(!query.isNull(0))
+		bytes = oldCrypt->decryptedAfterAuthenticated
+		  (QByteArray::
+		   fromBase64(query.
+			      value(0).
+			      toByteArray()),
+		   &ok);
 
 	      if(ok)
 		{
-		  if(query.isNull(2))
-		    updateQuery.bindValue(2, QVariant::String);
+		  if(query.isNull(0))
+		    updateQuery.bindValue(0, QVariant::String);
 		  else
 		    updateQuery.bindValue
-		      (2, newCrypt->
-		       encryptedThenHashed(bytes, &ok).toBase64());
+		      (0, newCrypt->encryptedThenHashed(bytes, &ok).
+		       toBase64());
 		}
 
 	      if(ok)
 		bytes = oldCrypt->decryptedAfterAuthenticated
 		  (QByteArray::
 		   fromBase64(query.
-			      value(3).
+			      value(1).
 			      toByteArray()),
 		   &ok);
 
 	      if(ok)
 		updateQuery.bindValue
-		  (3, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+		  (1, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+	      if(ok)
+		updateQuery.bindValue
+		  (2, newCrypt->keyedHash(bytes, &ok).toBase64());
+
+	      if(ok)
+		if(!query.isNull(3))
+		  bytes = oldCrypt->decryptedAfterAuthenticated
+		    (QByteArray::
+		     fromBase64(query.
+				value(3).
+				toByteArray()),
+		     &ok);
+
+	      if(ok)
+		{
+		  if(query.isNull(3))
+		    updateQuery.bindValue(3, QVariant::String);
+		  else
+		    updateQuery.bindValue
+		      (3, newCrypt->
+		       encryptedThenHashed(bytes, &ok).toBase64());
+		}
 
 	      if(ok)
 		bytes = oldCrypt->decryptedAfterAuthenticated
@@ -1532,7 +1542,19 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.bindValue
 		  (4, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
 
-	      updateQuery.bindValue(5, query.value(1));
+	      if(ok)
+		bytes = oldCrypt->decryptedAfterAuthenticated
+		  (QByteArray::
+		   fromBase64(query.
+			      value(5).
+			      toByteArray()),
+		   &ok);
+
+	      if(ok)
+		updateQuery.bindValue
+		  (5, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+	      updateQuery.bindValue(6, query.value(2));
 
 	      if(ok)
 		updateQuery.exec();
@@ -1543,7 +1565,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM received WHERE "
 				      "file_hash = ?");
-		  deleteQuery.bindValue(0, query.value(1));
+		  deleteQuery.bindValue(0, query.value(2));
 		  deleteQuery.exec();
 		}
 	    }
