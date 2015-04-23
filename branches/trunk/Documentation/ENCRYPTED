@@ -106,6 +106,7 @@ magnet
 
 received
 
+expected_file_hash
 file
 hash
 pulse_size
