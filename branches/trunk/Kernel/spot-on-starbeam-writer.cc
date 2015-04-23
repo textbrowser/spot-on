@@ -219,6 +219,7 @@ void spoton_starbeam_writer::processData
 	return;
     }
 
+  QByteArray hash = list.value(7);
   int dataSize = qAbs(static_cast<int> (list.value(3).toLongLong()));
   int pulseSize = qAbs(static_cast<int> (list.value(6).toLongLong()));
   qint64 maximumSize = 1048576 * spoton_kernel::setting
@@ -301,18 +302,25 @@ void spoton_starbeam_writer::processData
 
 	query.prepare
 	  ("INSERT OR REPLACE INTO received "
-	   "(file, file_hash, hash, pulse_size, total_size) "
-	   "VALUES (?, ?, (SELECT hash FROM received WHERE file_hash = ?), "
-	   "?, ?)");
+	   "(expected_file_hash, file, file_hash, hash, pulse_size, "
+	   "total_size) "
+	   "VALUES (?, ?, ?, "
+	   "(SELECT hash FROM received WHERE file_hash = ?), ?, ?)");
+
+	if(ok)
+	  {
+	    if(hash.isEmpty())
+	      query.bindValue(0, QVariant::String);
+	    else
+	      query.bindValue
+		(0, s_crypt->
+		 encryptedThenHashed(hash, &ok).toBase64());
+	  }
 
 	if(ok)
 	  query.bindValue
-	    (0, s_crypt->
+	    (1, s_crypt->
 	     encryptedThenHashed(fileName.toUtf8(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -320,13 +328,17 @@ void spoton_starbeam_writer::processData
 
 	if(ok)
 	  query.bindValue
-	    (3, s_crypt->
+	    (3, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (4, s_crypt->
 	     encryptedThenHashed(QByteArray::number(pulseSize), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (4, s_crypt->
+	    (5, s_crypt->
 	     encryptedThenHashed(QByteArray::number(totalSize), &ok).
 	     toBase64());
 
