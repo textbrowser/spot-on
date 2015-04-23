@@ -97,6 +97,9 @@ int main(int argc, char *argv[])
 #endif
 #endif
 #if QT_VERSION >= 0x050000
+#ifdef Q_OS_WIN32
+  QApplication::setStyle("fusion");
+#endif
   qInstallMessageHandler(qt_message_handler);
 #else
   qInstallMsgHandler(qt_message_handler);
