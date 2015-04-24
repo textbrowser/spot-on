@@ -143,8 +143,8 @@ void spoton_listener_udp_server::slotReadyRead(void)
     {
       if(!clientExists(peerAddress, peerPort))
 	emit newConnection(socketDescriptor(), peerAddress, peerPort);
-      else
-	emit newDatagram(datagram);
+
+      emit newDatagram(datagram);
     }
 }
 
