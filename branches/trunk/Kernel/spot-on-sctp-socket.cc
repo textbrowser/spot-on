@@ -777,7 +777,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 #ifdef Q_OS_WIN32
 	rc = inspectConnectResult(rc, WSAGetLastError());
 #else
-	rc = inspectConnectResult(rc, errno);
+        rc = inspectConnectResult(rc, errno);
 #endif
     }
   else
@@ -846,7 +846,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 #ifdef Q_OS_WIN32
 	rc = inspectConnectResult(rc, WSAGetLastError());
 #else
-	rc = inspectConnectResult(rc, errno);
+        rc = inspectConnectResult(rc, errno);
 #endif
     }
 

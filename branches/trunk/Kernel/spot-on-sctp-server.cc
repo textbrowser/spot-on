@@ -284,7 +284,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 	    ("listen()::bind()::error=%1").arg(WSAGetLastError());
 #else
 	  m_errorString = QString
-	      ("listen()::bind()::errno=%1").arg(errno);
+	    ("listen()::bind()::errno=%1").arg(errno);
 #endif
 	  goto done_label;
 	}
@@ -342,7 +342,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 	    ("listen()::bind()::error=%1").arg(WSAGetLastError());
 #else
 	  m_errorString = QString
-	      ("listen()::bind()::errno=%1").arg(errno);
+	    ("listen()::bind()::errno=%1").arg(errno);
 #endif
 	  goto done_label;
 	}
