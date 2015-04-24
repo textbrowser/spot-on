@@ -5817,8 +5817,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
       else if(m_udpSocket)
 	{
 	  if(m_isUserDefined)
-	    sent = m_udpSocket->write
-	      (data, remaining);
+	    sent = m_udpSocket->write(data, remaining);
 	  else
 	    sent = m_udpSocket->writeDatagram
 	      (data, remaining, m_address, m_port);
@@ -5981,4 +5980,12 @@ void spoton_neighbor::slotStopTimer(QTimer *timer)
 {
   if(timer)
     timer->stop();
+}
+
+void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
+{
+  QWriteLocker locker(&m_dataMutex);
+
+  m_data.append(datagram);
+  emit newData();
 }

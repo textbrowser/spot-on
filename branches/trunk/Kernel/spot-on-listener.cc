@@ -109,10 +109,13 @@ void spoton_listener_udp_server::slotReadyRead(void)
   ** This unfortunately violates our multi-threaded approach for UDP sockets.
   */
 
+  QByteArray datagram;
   QHostAddress peerAddress;
   quint16 peerPort = 0;
 
-  readDatagram(0, 0, &peerAddress, &peerPort); // Discard the datagram.
+  datagram.resize(static_cast<int> (qMax(static_cast<qint64> (0),
+					 pendingDatagramSize())));
+  readDatagram(datagram.data(), datagram.size(), &peerAddress, &peerPort);
 
   if(!spoton_kernel::s_kernel->acceptRemoteConnection(localAddress(),
 						      peerAddress))
@@ -136,9 +139,13 @@ void spoton_listener_udp_server::slotReadyRead(void)
        arg(peerAddress.toString()).
        arg(localAddress().toString()).
        arg(localPort()));
-  else if(!clientExists(peerAddress, peerPort))
-    emit newConnection
-      (socketDescriptor(), peerAddress, peerPort);
+  else
+    {
+      if(!clientExists(peerAddress, peerPort))
+	emit newConnection(socketDescriptor(), peerAddress, peerPort);
+      else
+	emit newDatagram(datagram);
+    }
 }
 
 spoton_listener::spoton_listener(const QString &ipAddress,
@@ -780,6 +787,10 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
       neighbor->setProperty("address", address);
       m_udpServer->addClientAddress(address);
+      connect(m_udpServer,
+	      SIGNAL(newDatagram(const QByteArray &)),
+	      neighbor,
+	      SLOT(slotNewDatagram(const QByteArray &)));
       connect(neighbor,
 	      SIGNAL(destroyed(QObject *)),
 	      m_udpServer,
