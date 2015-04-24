@@ -1,4 +1,4 @@
-0.22 (04/23/2015)
+0.22 (04/24/2015)
 
 1.   QWidget::activateWindow() should only be used on Windows!
 2.   Corrected spoton_misc::prepareUrlDistillersDatabase() and
@@ -6,6 +6,8 @@
 3.   Automatically verify StarBeams. Please see the Options panel.
 4.   Include a file's digest within each StarBeam pulse.
 5.   On Qt 5.x and Windows, assume a fusion style.
+6.   Allow modification of pulse sizes on active StarBeams.
+7.   Improved error messages in the UI.
 
 0.21 (04/19/2015)
 

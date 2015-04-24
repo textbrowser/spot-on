@@ -252,11 +252,16 @@ void spoton_buzzpage::slotSendMessage(void)
 
     if(m_kernelSocket->write(message.constData(),
 			     message.length()) != message.length())
-      spoton_misc::logError
-	(QString("spoton_buzzpage::slotSendMessage(): "
-		 "write() failure for %1:%2.").
-	 arg(m_kernelSocket->peerAddress().toString()).
-	 arg(m_kernelSocket->peerPort()));
+      {
+	error = tr("An error occurred while writing to the "
+		   "kernel socket.");
+	spoton_misc::logError
+	  (QString("spoton_buzzpage::slotSendMessage(): "
+		   "write() failure for %1:%2.").
+	   arg(m_kernelSocket->peerAddress().toString()).
+	   arg(m_kernelSocket->peerPort()));
+	goto done_label;
+      }
   }
 
   ui.message->clear();

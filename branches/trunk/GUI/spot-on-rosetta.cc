@@ -476,27 +476,37 @@ void spoton_rosetta::slotAddContact(void)
 
 	name = QByteArray::fromBase64(name);
 
-	if(spoton_misc::saveFriendshipBundle(keyType,
-					     name,
-					     mPublicKey,
-					     sPublicKey,
-					     -1,
-					     db,
-					     m_eCrypt))
-	  if(spoton_misc::saveFriendshipBundle(keyType + "-signature",
-					       name,
-					       sPublicKey,
-					       QByteArray(),
-					       -1,
-					       db,
-					       m_eCrypt))
+	if((ok = spoton_misc::saveFriendshipBundle(keyType,
+						   name,
+						   mPublicKey,
+						   sPublicKey,
+						   -1,
+						   db,
+						   m_eCrypt)))
+	  if((ok = spoton_misc::saveFriendshipBundle(keyType + "-signature",
+						     name,
+						     sPublicKey,
+						     QByteArray(),
+						     -1,
+						     db,
+						     m_eCrypt)))
 	    ui.newContact->selectAll();
       }
+    else
+      ok = false;
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    QMessageBox::critical
+      (this, tr("%1: Error").
+       arg(SPOTON_APPLICATION_NAME),
+       tr("An error occurred while attempting to save the friendship "
+	  "bundle."));
+
   populateContacts();
 }
 
@@ -824,9 +834,15 @@ void spoton_rosetta::slotConvert(void)
 	}
 
       if(!ok)
-	error = tr("A serious cryptographic error occurred.");
+	{
+	  error = tr("A serious cryptographic error occurred.");
+	  ui.output->clear();
+	}
       else
-	ui.output->setText(QString::fromUtf8(data.constData()));
+	{
+	  ui.output->setText(QString::fromUtf8(data.constData()));
+	  ui.output->selectAll();
+	}
 
     done_label2:
 
@@ -840,7 +856,13 @@ void spoton_rosetta::slotConvert(void)
 void spoton_rosetta::slotDelete(void)
 {
   if(ui.contacts->itemData(ui.contacts->currentIndex()).isNull())
-    return;
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid item data. This is a serious flaw."));
+      return;
+    }
 
   QMessageBox mb(this);
 
@@ -861,6 +883,7 @@ void spoton_rosetta::slotDelete(void)
     return;
 
   QString connectionName("");
+  bool ok = true;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -881,15 +904,25 @@ void spoton_rosetta::slotDelete(void)
 	query.bindValue(0, spoton_crypt::sha512Hash(data, &ok).toBase64());
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
 
 	spoton_misc::purgeSignatureRelationships(db, m_eCrypt);
       }
+    else
+      ok = false;
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    QMessageBox::critical
+      (this, tr("%1: Error").
+       arg(SPOTON_APPLICATION_NAME),
+       tr("An error occurred while attempting to delete the specified "
+	  "participant."));
+
   populateContacts();
 }
 
@@ -939,9 +972,21 @@ void spoton_rosetta::slotCopyOrPaste(void)
 void spoton_rosetta::slotRename(void)
 {
   if(!m_eCrypt)
-    return;
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      return;
+    }
   else if(ui.contacts->itemData(ui.contacts->currentIndex()).isNull())
-    return;
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid item data. This is a serious flaw."));
+      return;
+    }
 
   QString name("");
   bool ok = true;
@@ -954,8 +999,6 @@ void spoton_rosetta::slotRename(void)
 
   if(name.isEmpty() || !ok)
     return;
-
-  ok = false;
 
   QString connectionName("");
 
@@ -984,12 +1027,20 @@ void spoton_rosetta::slotRename(void)
 	if(ok)
 	  ok = query.exec();
       }
+    else
+      ok = false;
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(ok)
-    populateContacts();
+  if(!ok)
+    QMessageBox::critical
+      (this, tr("%1: Error").
+       arg(SPOTON_APPLICATION_NAME),
+       tr("An error occurred while attempting to rename the specified "
+	  "participant."));
+
+  populateContacts();
 }

@@ -1256,6 +1256,56 @@ void spoton::slotSaveRefreshEmail(bool state)
   settings.setValue("gui/refreshEmail", state);
 }
 
+void spoton::slotSetSBPulseSize(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QString oid("");
+  int integer = 15000;
+  int row = -1;
+
+  if((row = m_ui.transmitted->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.transmitted->item
+	(row, m_ui.transmitted->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+
+      item = m_ui.transmitted->item(row, 2); // Pulse Size
+
+      if(item)
+	integer = item->text().toInt();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  bool ok = true;
+
+  integer = QInputDialog::getInt
+    (this, tr("%1: StarBeam Pulse Size").arg(SPOTON_APPLICATION_NAME),
+     tr("&Pulse Size"), integer, 1024, 250000, 1, &ok);
+
+  if(!ok)
+    return;
+
+  QByteArray bytes(crypt->encryptedThenHashed(QByteArray::number(integer),
+					      &ok).toBase64());
+
+  if(ok)
+    setSBField(oid, bytes, "pulse_size");
+}
+
 void spoton::slotSetSBReadInterval(void)
 {
   QString oid("");
@@ -1288,6 +1338,12 @@ void spoton::slotSetSBReadInterval(void)
   if(!ok)
     return;
 
+  setSBField(oid, rational, "read_interval");
+}
+
+void spoton::setSBField(const QString &oid, const QVariant &value,
+			const QString &field)
+{
   QString connectionName("");
 
   {
@@ -1301,9 +1357,10 @@ void spoton::slotSetSBReadInterval(void)
 	QSqlQuery query(db);
 
 	query.prepare
-	  ("UPDATE transmitted SET read_interval = ? "
-	   "WHERE OID = ? AND status_control <> 'deleted'");
-	query.bindValue(0, rational);
+	  (QString("UPDATE transmitted SET %1 = ? "
+		   "WHERE OID = ? AND status_control <> 'deleted'").
+	   arg(field));
+	query.bindValue(0, value);
 	query.bindValue(1, oid);
 	query.exec();
       }

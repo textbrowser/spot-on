@@ -2915,6 +2915,8 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("Copy &Magnet"),
 		      this, SLOT(slotCopyTransmittedMagnet(void)));
       menu->addSeparator();
+      menu->addAction(tr("Set &Pulse Size"), this,
+		      SLOT(slotSetSBPulseSize(void)));
       menu->addAction(tr("Set &Read Interval"), this,
 		      SLOT(slotSetSBReadInterval(void)));
       m_ui.transmittedActionMenu->setMenu(menu);

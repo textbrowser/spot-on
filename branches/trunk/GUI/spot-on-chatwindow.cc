@@ -275,11 +275,16 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
   if(m_kernelSocket->write(message.constData(), message.length()) !=
      message.length())
-    spoton_misc::logError
-      (QString("spoton_chatwindow::slotSendMessage(): write() failure for "
-	       "%1:%2.").
-       arg(m_kernelSocket->peerAddress().toString()).
-       arg(m_kernelSocket->peerPort()));
+    {
+      error = tr("An error occurred while writing to the "
+		 "kernel socket.");
+      spoton_misc::logError
+	(QString("spoton_chatwindow::slotSendMessage(): write() failure for "
+		 "%1:%2.").
+	 arg(m_kernelSocket->peerAddress().toString()).
+	 arg(m_kernelSocket->peerPort()));
+      goto done_label;
+    }
   else
     emit messageSent();
 
@@ -626,13 +631,23 @@ void spoton_chatwindow::slotShareStarBeam(void)
 	  query.bindValue(2, encryptedMosaic.toBase64());
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
       }
+    else
+      ok = false;
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    {
+      error = tr("An error occurred while attempting to "
+		 "save the StarBeam data. Please enable "
+		 "logging via the Log Viewer and try again.");
+      showError(error);
+    }
 }
 
 void spoton_chatwindow::showError(const QString &error)

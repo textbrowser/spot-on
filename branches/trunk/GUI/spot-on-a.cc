@@ -6005,6 +6005,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "transmitted");
       menu.addSeparator();
+      menu.addAction(tr("Set &Pulse Size"), this,
+		     SLOT(slotSetSBPulseSize(void)));
       menu.addAction(tr("Set &Read Interval"), this,
 		     SLOT(slotSetSBReadInterval(void)));
       menu.exec(m_ui.transmitted->mapToGlobal(point));

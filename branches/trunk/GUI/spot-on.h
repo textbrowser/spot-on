@@ -531,6 +531,8 @@ class spoton: public QMainWindow
   void sendSMPLinkToKernel(const QList<QByteArray> &list,
 			   const QString &keyType,
 			   const QString &oid);
+  void setSBField(const QString &oid, const QVariant &value,
+		  const QString &field);
   void sharePublicKeyWithParticipant(const QString &keyType);
   void showError(const QString &error);
   void showUrls(const QString &link, const QString &querystr);
@@ -782,6 +784,7 @@ class spoton: public QMainWindow
   void slotSetNeighborPriority(void);
   void slotSetNeighborSSLControlString(void);
   void slotSetPassphrase(void);
+  void slotSetSBPulseSize(void);
   void slotSetSBReadInterval(void);
   void slotSetUrlIniPath(void);
   void slotShareBuzzMagnet(void);
