@@ -5984,8 +5984,12 @@ void spoton_neighbor::slotStopTimer(QTimer *timer)
 
 void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 {
+  if(datagram.isEmpty())
+    return;
+
   QWriteLocker locker(&m_dataMutex);
 
   m_data.append(datagram);
+  locker.unlock();
   emit newData();
 }

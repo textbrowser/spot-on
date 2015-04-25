@@ -144,7 +144,8 @@ void spoton_listener_udp_server::slotReadyRead(void)
       if(!clientExists(peerAddress, peerPort))
 	emit newConnection(socketDescriptor(), peerAddress, peerPort);
 
-      emit newDatagram(datagram);
+      if(!datagram.isEmpty())
+	emit newDatagram(datagram);
     }
 }
 
@@ -833,40 +834,41 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    QSqlQuery query(db);
 	    bool ok = true;
 
-	    query.exec("INSERT INTO neighbors "
-		       "(local_ip_address, "
-		       "local_port, "
-		       "protocol, "
-		       "remote_ip_address, "
-		       "remote_port, "
-		       "scope_id, "
-		       "status, "
-		       "hash, "
-		       "sticky, "
-		       "country, "
-		       "remote_ip_address_hash, "
-		       "qt_country_hash, "
-		       "external_ip_address, "
-		       "uuid, "
-		       "user_defined, "
-		       "proxy_hostname, "
-		       "proxy_password, "
-		       "proxy_port, "
-		       "proxy_type, "
-		       "proxy_username, "
-		       "echo_mode, "
-		       "ssl_key_size, "
-		       "certificate, "
-		       "account_name, "
-		       "account_password, "
-		       "maximum_buffer_size, "
-		       "maximum_content_length, "
-		       "transport, "
-		       "orientation, "
-		       "motd, "
-		       "ssl_control_string) "
-		       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-		       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	    query.prepare
+	      ("INSERT INTO neighbors "
+	       "(local_ip_address, "
+	       "local_port, "
+	       "protocol, "
+	       "remote_ip_address, "
+	       "remote_port, "
+	       "scope_id, "
+	       "status, "
+	       "hash, "
+	       "sticky, "
+	       "country, "
+	       "remote_ip_address_hash, "
+	       "qt_country_hash, "
+	       "external_ip_address, "
+	       "uuid, "
+	       "user_defined, "
+	       "proxy_hostname, "
+	       "proxy_password, "
+	       "proxy_port, "
+	       "proxy_type, "
+	       "proxy_username, "
+	       "echo_mode, "
+	       "ssl_key_size, "
+	       "certificate, "
+	       "account_name, "
+	       "account_password, "
+	       "maximum_buffer_size, "
+	       "maximum_content_length, "
+	       "transport, "
+	       "orientation, "
+	       "motd, "
+	       "ssl_control_string) "
+	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue(0, m_address.toString());
 	    query.bindValue(1, m_port);
 

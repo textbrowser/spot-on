@@ -9,6 +9,10 @@
 6.   Allow modification of pulse sizes on active StarBeams.
 7.   Improved error messages in the UI.
 8.   Corrected server-side processing of UDP datagrams.
+9.   Corrected QSqlQuery preparation. QSqlQuery::exec() must not
+     be used to prepare statements.
+     (spoton_listener::slotNewConnection(), 
+      spoton_misc::savePublishedNeighbo())
 
 0.21 (04/19/2015)
 
