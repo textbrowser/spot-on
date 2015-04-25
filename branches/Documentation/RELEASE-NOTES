@@ -1,4 +1,4 @@
-0.22 (04/25/2015)
+0.22 (04/27/2015)
 
 1.   QWidget::activateWindow() should only be used on Windows!
 2.   Corrected spoton_misc::prepareUrlDistillersDatabase() and
