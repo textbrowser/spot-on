@@ -2046,7 +2046,7 @@
                    <item>
                     <widget class="QLabel" name="label_21">
                      <property name="text">
-                      <string>The uniqueness of a listener is defined by the local IP, the local port, the scope ID, and the transport.</string>
+                      <string>The uniqueness of a listener is defined by its local IP, local port, scope ID, and transport.</string>
                      </property>
                      <property name="wordWrap">
                       <bool>true</bool>
@@ -3248,7 +3248,7 @@
                     <item>
                      <widget class="QLabel" name="label_23">
                       <property name="text">
-                       <string>The uniqueness of a neighbor is defined by the proxy hostname, the proxy port, the remote IP, the remote port, the scope ID, and the transport.</string>
+                       <string>The uniqueness of a neighbor is defined by its proxy hostname, proxy port, remote IP, remote port, scope ID, and transport.</string>
                       </property>
                       <property name="wordWrap">
                        <bool>true</bool>
