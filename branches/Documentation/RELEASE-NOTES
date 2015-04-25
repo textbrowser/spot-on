@@ -1,4 +1,4 @@
-0.22 (04/24/2015)
+0.22 (04/25/2015)
 
 1.   QWidget::activateWindow() should only be used on Windows!
 2.   Corrected spoton_misc::prepareUrlDistillersDatabase() and
@@ -10,9 +10,10 @@
 7.   Improved error messages in the UI.
 8.   Corrected server-side processing of UDP datagrams.
 9.   Corrected QSqlQuery preparation. QSqlQuery::exec() must not
-     be used to prepare statements.
-     (spoton_listener::slotNewConnection(), 
+     be used to prepare SQL statements.
+     (spoton_listener::slotNewConnection(),
       spoton_misc::savePublishedNeighbo())
+10.  Issue QThread::wait() after QThread::quit().
 
 0.21 (04/19/2015)
 

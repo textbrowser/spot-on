@@ -1036,15 +1036,13 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	      query.bindValue(30, "N/A");
 
 	    if(ok)
-	      {
-		if(query.exec())
-		  {
-		    QVariant variant(query.lastInsertId());
+	      if(query.exec())
+		{
+		  QVariant variant(query.lastInsertId());
 
-		    if(variant.isValid())
-		      id = query.lastInsertId().toLongLong();
-		  }
-	      }
+		  if(variant.isValid())
+		    id = query.lastInsertId().toLongLong();
+		}
 
 	    query.clear();
 	  }

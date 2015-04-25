@@ -5973,6 +5973,7 @@ void spoton_neighbor::deleteLater(void)
   m_data.clear();
   locker2.unlock();
   quit();
+  wait();
   QObject::deleteLater();
 }
 
