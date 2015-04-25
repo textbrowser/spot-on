@@ -74,6 +74,7 @@ class spoton_chatwindow: public QMainWindow
   void showError(const QString &error);
 
  private slots:
+  void slotBoxToggled(bool state);
   void slotInitializeSMP(void);
   void slotPrepareSMP(void);
   void slotSendMessage(void);
