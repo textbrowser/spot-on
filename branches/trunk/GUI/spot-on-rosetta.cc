@@ -506,8 +506,8 @@ void spoton_rosetta::slotAddContact(void)
        arg(SPOTON_APPLICATION_NAME),
        tr("An error occurred while attempting to save the friendship "
 	  "bundle."));
-
-  populateContacts();
+  else
+    populateContacts();
 }
 
 void spoton_rosetta::slotDecryptToggled(bool state)
@@ -922,8 +922,8 @@ void spoton_rosetta::slotDelete(void)
        arg(SPOTON_APPLICATION_NAME),
        tr("An error occurred while attempting to delete the specified "
 	  "participant."));
-
-  populateContacts();
+  else
+    populateContacts();
 }
 
 void spoton_rosetta::slotCopyConverted(void)
@@ -1041,6 +1041,6 @@ void spoton_rosetta::slotRename(void)
        arg(SPOTON_APPLICATION_NAME),
        tr("An error occurred while attempting to rename the specified "
 	  "participant."));
-
-  populateContacts();
+  else
+    populateContacts();
 }

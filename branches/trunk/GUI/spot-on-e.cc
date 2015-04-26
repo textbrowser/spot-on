@@ -302,7 +302,6 @@ void spoton::slotConfigurePoptastic(void)
 	if(db.open())
 	  {
 	    QSqlQuery query(db);
-	    bool ok = true;
 
 	    query.prepare
 	      ("INSERT INTO poptastic "
@@ -440,13 +439,25 @@ void spoton::slotConfigurePoptastic(void)
 				     &ok).toBase64());
 
 	    if(ok)
-	      query.exec();
+	      ok = query.exec();
 	  }
+	else
+	  ok = false;
 
 	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
+
+      if(!ok)
+	{
+	  QMessageBox::critical(this, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("An error occurred while "
+				   "attempting to save the Poptastic "
+				   "information."));
+	  return;
+	}
     }
 
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
@@ -1304,6 +1315,11 @@ void spoton::slotSetSBPulseSize(void)
 
   if(ok)
     setSBField(oid, bytes, "pulse_size");
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting to "
+			     "secure the pulse size."));
 }
 
 void spoton::slotSetSBReadInterval(void)

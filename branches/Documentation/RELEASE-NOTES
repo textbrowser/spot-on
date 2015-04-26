@@ -14,6 +14,9 @@
      (spoton_listener::slotNewConnection(),
       spoton_misc::savePublishedNeighbo())
 10.  Issue QThread::wait() after QThread::quit().
+11.  Corrected Qt DLLs in the Windows bundle.
+12.  Corrected inspection of QSqlQuery::exec() errors in various
+     locations.
 
 0.21 (04/19/2015)
 

@@ -1052,7 +1052,7 @@ void spoton::slotAddAEToken(void)
 					   &ok).toBase64());
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
       }
     else
       ok = false;
@@ -1104,6 +1104,7 @@ void spoton::slotDeleteAEToken(void)
     }
 
   QString connectionName("");
+  bool ok = true;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -1114,7 +1115,6 @@ void spoton::slotDeleteAEToken(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
 
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM listeners_adaptive_echo_tokens WHERE "
@@ -1127,14 +1127,24 @@ void spoton::slotDeleteAEToken(void)
 	   toBase64());
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
       }
+    else
+      ok = false;
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  populateAETokens();
+
+  if(!ok)
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to delete the specified adaptive echo "
+			     "token."));
+  else
+    populateAETokens();
 }
 
 void spoton::populateAETokens(void)
@@ -1386,6 +1396,7 @@ void spoton::slotSetAETokenInformation(void)
       if(token.length() >= 96)
 	{
 	  QString connectionName("");
+	  bool ok = true;
 
 	  {
 	    QSqlDatabase db = spoton_misc::database(connectionName);
@@ -1396,7 +1407,6 @@ void spoton::slotSetAETokenInformation(void)
 	    if(db.open())
 	      {
 		QSqlQuery query(db);
-		bool ok = true;
 
 		query.prepare("UPDATE neighbors SET "
 			      "ae_token = ?, "
@@ -1414,13 +1424,21 @@ void spoton::slotSetAETokenInformation(void)
 		query.bindValue(2, oid);
 
 		if(ok)
-		  query.exec();
+		  ok = query.exec();
 	      }
+	    else
+	      ok = false;
 
 	    db.close();
 	  }
 
 	  QSqlDatabase::removeDatabase(connectionName);
+
+	  if(!ok)
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error occurred while attempting "
+				     "to set an adaptive echo token."));
 	}
       else
 	QMessageBox::critical(this, tr("%1: Error").
@@ -1725,6 +1743,11 @@ void spoton::slotSaveAttachment(void)
 	  file.close();
 	}
     }
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to extract the attachment."));
 }
 
 void spoton::applyGoldbugToAttachments(const QString &folderOid,

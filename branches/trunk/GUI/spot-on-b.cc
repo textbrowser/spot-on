@@ -1812,6 +1812,7 @@ void spoton::addFriendsKey(const QByteArray &k)
       QByteArray keyType("poptastic");
       QByteArray name(key.trimmed());
       QString connectionName("");
+      bool ok = true;
 
       {
 	QSqlDatabase db = spoton_misc::database(connectionName);
@@ -1821,20 +1822,29 @@ void spoton::addFriendsKey(const QByteArray &k)
 
 	if(db.open())
 	  {
-	    if(spoton_misc::saveFriendshipBundle(keyType,
-						 name,
-						 name + "-poptastic",
-						 QByteArray(),
-						 -1,
-						 db,
-						 m_crypts.value("chat", 0)))
+	    if((ok = spoton_misc::
+		saveFriendshipBundle(keyType,
+				     name,
+				     name + "-poptastic",
+				     QByteArray(),
+				     -1,
+				     db,
+				     m_crypts.value("chat", 0))))
 	      m_ui.friendInformation->selectAll();
 	  }
+	else
+	  ok = false;
 
 	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
+
+      if(!ok)
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error occurred while attempting "
+				 "to save the friendship bundle."));
     }
   else if(m_ui.addFriendPublicKeyRadio->isChecked())
     {
@@ -2031,27 +2041,37 @@ void spoton::addFriendsKey(const QByteArray &k)
 
 	    name = QByteArray::fromBase64(name);
 
-	    if(spoton_misc::saveFriendshipBundle(keyType,
-						 name,
-						 mPublicKey,
-						 sPublicKey,
-						 -1,
-						 db,
-						 m_crypts.value("chat", 0)))
-	      if(spoton_misc::saveFriendshipBundle(keyType + "-signature",
-						   name,
-						   sPublicKey,
-						   QByteArray(),
-						   -1,
-						   db,
-						   m_crypts.value("chat", 0)))
+	    if((ok = spoton_misc::
+		saveFriendshipBundle(keyType,
+				     name,
+				     mPublicKey,
+				     sPublicKey,
+				     -1,
+				     db,
+				     m_crypts.value("chat", 0))))
+	      if((ok = spoton_misc::
+		  saveFriendshipBundle(keyType + "-signature",
+				       name,
+				       sPublicKey,
+				       QByteArray(),
+				       -1,
+				       db,
+				       m_crypts.value("chat", 0))))
 		m_ui.friendInformation->selectAll();
 	  }
+	else
+	  ok = false;
 
 	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
+
+      if(!ok)
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error occurred while attempting "
+				 "to save the friendship bundle."));
     }
   else
     {
@@ -2330,29 +2350,38 @@ void spoton::addFriendsKey(const QByteArray &k)
 
 	if(db.open())
 	  {
-	    if(spoton_misc::saveFriendshipBundle(list.value(0), // Key Type
-						 list.value(1), // Name
-						 list.value(2), // Public Key
-						 list.value(4), // Signature
-                                                                // Public Key
-						 -1,            // Neighbor OID
-						 db,
-						 m_crypts.value("chat", 0)))
-	      if(spoton_misc::
-		 saveFriendshipBundle(list.value(0) + "-signature",
-				      list.value(1), // Name
-				      list.value(4), // Signature Public Key
-				      QByteArray(),  // Signature Public Key
-				      -1,            // Neighbor OID
-				      db,
-				      m_crypts.value("chat", 0)))
+	    if((ok = spoton_misc::
+		saveFriendshipBundle(list.value(0), // Key Type
+				     list.value(1), // Name
+				     list.value(2), // Public Key
+				     list.value(4), // Signature
+				     // Public Key
+				     -1,            // Neighbor OID
+				     db,
+				     m_crypts.value("chat", 0))))
+	      if((ok = spoton_misc::
+		  saveFriendshipBundle(list.value(0) + "-signature",
+				       list.value(1), // Name
+				       list.value(4), // Signature Public Key
+				       QByteArray(),  // Signature Public Key
+				       -1,            // Neighbor OID
+				       db,
+				       m_crypts.value("chat", 0))))
 		m_ui.friendInformation->selectAll();
 	  }
+	else
+	  ok = false;
 
 	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
+
+      if(!ok)
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error occurred while attempting "
+				 "to save the friendship bundle."));
     }
 }
 
@@ -5310,6 +5339,7 @@ void spoton::slotDeleteAccepedIP(void)
     }
 
   QString connectionName("");
+  bool ok = true;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -5320,7 +5350,6 @@ void spoton::slotDeleteAccepedIP(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
 
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM listeners_allowed_ips WHERE "
@@ -5331,8 +5360,10 @@ void spoton::slotDeleteAccepedIP(void)
 	query.bindValue(1, oid);
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
       }
+    else
+      ok = false;
 
     db.close();
   }
@@ -5355,30 +5386,36 @@ void spoton::slotDeleteAccepedIP(void)
 	     "WHERE status_control <> 'deleted' AND user_defined = 0");
 	else
 	  {
-	    bool ok = true;
-
 	    query.prepare("UPDATE neighbors SET "
 			  "status_control = 'disconnected' "
 			  "WHERE remote_ip_address_hash = ? AND "
 			  "status_control <> 'deleted' AND "
 			  "user_defined = 0");
-	    query.bindValue
-	      (0,
-	       crypt->keyedHash(ip.toLatin1(), &ok).
-	       toBase64());
 
 	    if(ok)
-	      query.exec();
+	      query.bindValue
+		(0,
+		 crypt->keyedHash(ip.toLatin1(), &ok).toBase64());
+
+	    if(ok)
+	      ok = query.exec();
 	  }
       }
+    else
+      ok = false;
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(row > -1)
+  if(ok)
     delete m_ui.acceptedIPList->takeItem(row);
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to delete the specified IP."));
 }
 
 void spoton::slotTestSslControlString(void)
@@ -5495,7 +5532,7 @@ void spoton::slotAddAccount(void)
 	query.bindValue(4, m_ui.ota->isChecked() ? 1 : 0);
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
       }
     else
       ok = false;
@@ -5567,6 +5604,7 @@ void spoton::slotDeleteAccount(void)
     }
 
   QString connectionName("");
+  bool ok = true;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -5577,7 +5615,6 @@ void spoton::slotDeleteAccount(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
 
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM listeners_accounts WHERE "
@@ -5588,14 +5625,23 @@ void spoton::slotDeleteAccount(void)
 	query.bindValue(1, oid);
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
       }
+    else
+      ok = false;
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  populateAccounts(oid);
+
+  if(!ok)
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to delete the specified account."));
+  else
+    populateAccounts(oid);
 }
 
 void spoton::populateAccounts(const QString &listenerOid)

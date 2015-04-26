@@ -1878,6 +1878,7 @@ void spoton::slotDeleteNova(void)
     }
 
   QString connectionName("");
+  bool ok = true;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -1888,7 +1889,6 @@ void spoton::slotDeleteNova(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
 
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM received_novas WHERE "
@@ -1898,15 +1898,26 @@ void spoton::slotDeleteNova(void)
 	   toBase64());
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
       }
+    else
+      ok = false;
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  populateNovas();
-  askKernelToReadStarBeamKeys();
+
+  if(!ok)
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to delete the speficied nova."));
+  else
+    {
+      populateNovas();
+      askKernelToReadStarBeamKeys();
+    }
 }
 
 void spoton::slotGenerateNova(void)

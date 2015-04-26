@@ -7941,6 +7941,7 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
       if(name.length() >= 32 && password.length() >= 32)
 	{
 	  QString connectionName("");
+	  bool ok = true;
 
 	  {
 	    QSqlDatabase db = spoton_misc::database(connectionName);
@@ -7951,7 +7952,6 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
 	    if(db.open())
 	      {
 		QSqlQuery query(db);
-		bool ok = true;
 
 		query.prepare("UPDATE neighbors SET "
 			      "account_authenticated = NULL, "
@@ -7970,13 +7970,22 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
 		query.bindValue(2, oid);
 
 		if(ok)
-		  query.exec();
+		  ok = query.exec();
 	      }
+	    else
+	      ok = false;
 
 	    db.close();
 	  }
 
 	  QSqlDatabase::removeDatabase(connectionName);
+
+	  if(!ok)
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error occurred while attempting "
+				     "to record authentication "
+				     "information."));
 	}
       else
 	QMessageBox::critical
