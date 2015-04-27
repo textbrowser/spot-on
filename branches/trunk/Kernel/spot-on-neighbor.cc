@@ -5255,49 +5255,48 @@ QString spoton_neighbor::findMessageType
   ** attached to the kernel.
   */
 
-  if(s_crypt)
-    if(interfaces > 0 && list.size() == 3 &&
-       spoton_misc::participantCount("chat", s_crypt) > 0)
-      {
-	QPair<QByteArray, QByteArray> gemini;
+  if(interfaces > 0 && list.size() == 3 && s_crypt &&
+     spoton_misc::participantCount("chat", s_crypt) > 0)
+    {
+      QPair<QByteArray, QByteArray> gemini;
 
-	gemini = spoton_misc::findGeminiInCosmos
-	  (QByteArray::fromBase64(list.value(0)),
-	   QByteArray::fromBase64(list.value(1)),
-	   s_crypt);
+      gemini = spoton_misc::findGeminiInCosmos
+	(QByteArray::fromBase64(list.value(0)),
+	 QByteArray::fromBase64(list.value(1)),
+	 s_crypt);
 
-	if(!gemini.first.isEmpty())
-	  {
-	    QByteArray data;
-	    bool ok = true;
-	    spoton_crypt crypt("aes256",
-			       "sha512",
-			       QByteArray(),
-			       gemini.first,
-			       0,
-			       0,
-			       QString(""));
+      if(!gemini.first.isEmpty())
+	{
+	  QByteArray data;
+	  bool ok = true;
+	  spoton_crypt crypt("aes256",
+			     "sha512",
+			     QByteArray(),
+			     gemini.first,
+			     0,
+			     0,
+			     QString(""));
 
-	    data = crypt.decrypted
-	      (QByteArray::fromBase64(list.value(0)), &ok);
+	  data = crypt.decrypted
+	    (QByteArray::fromBase64(list.value(0)), &ok);
 
-	    if(ok)
-	      type = QByteArray::fromBase64(data.split('\n').value(0));
+	  if(ok)
+	    type = QByteArray::fromBase64(data.split('\n').value(0));
 
-	    if(!type.isEmpty())
-	      {
-		symmetricKeys.append(gemini.first);
-		symmetricKeys.append("aes256");
-		symmetricKeys.append(gemini.second);
-		symmetricKeys.append("sha512");
-		goto done_label;
-	      }
-	    else
-	      symmetricKeys.clear();
-	  }
-	else
-	  symmetricKeys.clear();
-      }
+	  if(!type.isEmpty())
+	    {
+	      symmetricKeys.append(gemini.first);
+	      symmetricKeys.append("aes256");
+	      symmetricKeys.append(gemini.second);
+	      symmetricKeys.append("sha512");
+	      goto done_label;
+	    }
+	  else
+	    symmetricKeys.clear();
+	}
+      else
+	symmetricKeys.clear();
+    }
 
   /*
   ** Finally, attempt to decipher the message via our private key.
@@ -5306,23 +5305,22 @@ QString spoton_neighbor::findMessageType
   ** a letter.
   */
 
-  if(s_crypt)
-    if(interfaces > 0 && list.size() == 4)
-      if(!spoton_misc::allParticipantsHaveGeminis())
-	if(spoton_misc::participantCount("chat", s_crypt) > 0)
-	  {
-	    QByteArray data;
-	    bool ok = true;
+  if(interfaces > 0 && list.size() == 4 && s_crypt)
+    if(!spoton_misc::allParticipantsHaveGeminis())
+      if(spoton_misc::participantCount("chat", s_crypt) > 0)
+	{
+	  QByteArray data;
+	  bool ok = true;
 
-	    data = s_crypt->publicKeyDecrypt
-	      (QByteArray::fromBase64(list.value(0)), &ok);
+	  data = s_crypt->publicKeyDecrypt
+	    (QByteArray::fromBase64(list.value(0)), &ok);
 
-	    if(ok)
-	      type = QByteArray::fromBase64(data.split('\n').value(0));
+	  if(ok)
+	    type = QByteArray::fromBase64(data.split('\n').value(0));
 
-	    if(!type.isEmpty())
-	      goto done_label;
-	  }
+	  if(!type.isEmpty())
+	    goto done_label;
+	}
 
   if(list.size() == 3 || list.size() == 7)
     /*
