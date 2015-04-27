@@ -7,19 +7,23 @@ libOpenSSL/Libraries.win32
 libSpotOn
 libcURL/Win32.d/bin
 
-Please copy all required Qt DLLS.
-
 Please copy GeoIP.dat from GeoIP/Data.
 
 Please copy Microsoft.VC90.CRT.manifest from libOpenSSL/Libraries.win32.
 
-Please copy the SQL directory.
-
 Please copy SctpDrv-12.05.0.exe from SCTP.
+
+Please copy all required Qt DLLs, including plugins.
 
 Please copy qt.conf.
 
 Please copy spot-on-neighbors.txt.
+
+Please copy the Documentation directory.
+
+Please copy the SQL directory.
+
+Please copy the Translations directory. Remove TS files.
 
 Afterwards, your release folder should appear similar to the folder
 in WINDOWS_FILES.png.
