@@ -292,6 +292,11 @@
           <string>32768</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>65536</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>

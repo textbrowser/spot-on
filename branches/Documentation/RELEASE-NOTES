@@ -1,6 +1,8 @@
 <html>
 0.22 (04/29/2015)
 <ol>
+<li>Added Documentation/Spot-On-Kernel.1.</li>
+<li>Added the option 65536 to the File Encryption's Read Size.</li>
 <li>Allow modification of StarBeam pulse sizes.</li>
 <li>Automatically verify StarBeams. Please see the Options panel.</li>
 <li>Corrected QSqlQuery preparation. QSqlQuery::exec() must not be used to prepare SQL statements. (spoton_listener::slotNewConnection(), spoton_misc::savePublishedNeighbo())</li>
