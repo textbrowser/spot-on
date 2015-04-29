@@ -17,6 +17,7 @@
 11.  Corrected Qt DLLs in the Windows bundle.
 12.  Corrected inspection of QSqlQuery::exec() errors in various
      locations.
+13.  Updated SQLite to version 3.8.9, Windows.
 
 0.21 (04/19/2015)
 
