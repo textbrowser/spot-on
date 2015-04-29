@@ -2822,7 +2822,7 @@ SSL Control String: %13</source>
 <context>
     <name>spoton_encryptfile</name>
     <message>
-        <location filename="../UI/encryptfile.ui" line="336"/>
+        <location filename="../UI/encryptfile.ui" line="341"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2913,52 +2913,57 @@ SSL Control String: %13</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="300"/>
+        <location filename="../UI/encryptfile.ui" line="297"/>
+        <source>65536</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/encryptfile.ui" line="305"/>
         <source>&amp;Sign the file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="310"/>
+        <location filename="../UI/encryptfile.ui" line="315"/>
         <source>Convert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="317"/>
+        <location filename="../UI/encryptfile.ui" line="322"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="345"/>
+        <location filename="../UI/encryptfile.ui" line="350"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="350"/>
+        <location filename="../UI/encryptfile.ui" line="355"/>
         <source>&amp;Empty Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="358"/>
+        <location filename="../UI/encryptfile.ui" line="363"/>
         <source>E&amp;nable Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="363"/>
+        <location filename="../UI/encryptfile.ui" line="368"/>
         <source>&amp;Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="366"/>
+        <location filename="../UI/encryptfile.ui" line="371"/>
         <source>Ctrl+C</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="371"/>
+        <location filename="../UI/encryptfile.ui" line="376"/>
         <source>&amp;Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/encryptfile.ui" line="374"/>
+        <location filename="../UI/encryptfile.ui" line="379"/>
         <source>Ctrl+V</source>
         <translation type="unfinished"></translation>
     </message>
