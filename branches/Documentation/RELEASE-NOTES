@@ -1,4 +1,4 @@
-0.22 (04/27/2015)
+0.22 (04/29/2015)
 
 1.   QWidget::activateWindow() should only be used on Windows!
 2.   Corrected spoton_misc::prepareUrlDistillersDatabase() and
@@ -6,7 +6,7 @@
 3.   Automatically verify StarBeams. Please see the Options panel.
 4.   Include a file's digest within each StarBeam pulse.
 5.   On Qt 5.x and Windows, assume a fusion style.
-6.   Allow modification of pulse sizes on active StarBeams.
+6.   Allow modification of StarBeam pulse sizes.
 7.   Improved error messages in the UI.
 8.   Corrected server-side processing of UDP datagrams.
 9.   Corrected QSqlQuery preparation. QSqlQuery::exec() must not
@@ -17,6 +17,7 @@
 11.  Corrected Qt DLLs in the Windows bundle.
 12.  Corrected inspection of QSqlQuery::exec() errors in various
      locations.
+13.  Updated SQLite to version 3.8.9, Windows.
 
 0.21 (04/19/2015)
 
