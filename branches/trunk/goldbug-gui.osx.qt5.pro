@@ -37,14 +37,13 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RELEASE =
 QMAKE_LFLAGS_RPATH =
-INCLUDEPATH	+= . ../../. GUI ../../libGeoIP/Include.osx64 \
+INCLUDEPATH	+= . ../../. GUI \
                    /usr/local/include /usr/local/opt
 ICON		= Icons/Logo/goldbug.icns
-LIBS		+= -L../../libGeoIP/Libraries.osx64 -lGeoIP \
-                   -L../../libNTRU -lntru \
+LIBS		+= -L../../libNTRU -lntru \
                    -L../../libSpotOn -lspoton \
                    -L/usr/local/lib -L/usr/local/opt/curl/lib \
-                   -L/usr/local/opt/openssl/lib \
+                   -L/usr/local/opt/openssl/lib -lGeoIP \
                    -lcrypto -lcurl -lgcrypt -lgpg-error -lssl \
                    -framework AppKit -framework Cocoa
 PRE_TARGETDEPS = libntru.dylib libspoton.dylib
@@ -194,8 +193,6 @@ install1.path           = /Applications/GoldBug.d
 install1.files          = spot-on-neighbors.txt
 libgeoip_data_install.path = /Applications/GoldBug.d/GeoIP
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
-libgeoip_install.path   = .
-libgeoip_install.extra  = cp ../../libGeoIP/Libraries.osx64/libGeoIP.1.dylib ./GoldBug.app/Contents/Frameworks/libGeoIP.1.dylib && install_name_tool -change ../../libGeoIP/Libraries.osx64/libGeoIP.1.dylib @executable_path/../Frameworks/libGeoIP.1.dylib ./GoldBug.app/Contents/MacOS/GoldBug
 libntru_install.path  = .
 libntru_install.extra = cp ../../libNTRU/libntru.dylib ./GoldBug.app/Contents/Frameworks/libntru.dylib && install_name_tool -change ../../libNTRU/libntru.dylib @executable_path/../Frameworks/libntru.dylib ./GoldBug.app/Contents/MacOS/GoldBug
 libspoton_install.path  = .
@@ -220,7 +217,6 @@ INSTALLS	= macdeployqt \
                   preinstall \
                   install1 \
                   libgeoip_data_install \
-                  libgeoip_install \
                   libntru_install \
                   libspoton_install \
                   lupdate \

@@ -37,16 +37,15 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RELEASE =
 QMAKE_LFLAGS_RPATH =
-INCLUDEPATH	+= . ../. ../../../. ../../../libGeoIP/Include.osx64 \
+INCLUDEPATH	+= . ../. ../../../. \
 		   ../../../libSCTP/Include.osx64 \
                    /usr/local/include /usr/local/opt
 ICON		=
-LIBS		+= -L../../../libGeoIP/Libraries.osx64 -lGeoIP \
-                   -L../../../libNTRU -lntru \
+LIBS		+= -L../../../libNTRU -lntru \
 		   -L../../../libSCTP/Libraries.osx64 -lusrsctp \
                    -L../../../libSpotOn -lspoton \
                    -L/usr/local/lib -L/usr/local/opt/curl/lib \
-                   -L/usr/local/opt/openssl/lib \
+                   -L/usr/local/opt/openssl/lib -lGeoIP \
                    -lcrypto -lcurl -lgcrypt -lgpg-error -lssl
 PRE_TARGETDEPS = libntru.dylib libspoton.dylib
 OBJECTS_DIR = temp/obj
@@ -97,8 +96,6 @@ spoton.path		= /Applications/Spot-On.d/Spot-On-Kernel.app
 spoton.files		= ../Spot-On-Kernel.app/*
 libgeoip_data_install.path = /Applications/Spot-On.d/GeoIP
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
-libgeoip_install.path  = .
-libgeoip_install.extra = cp ../../../libGeoIP/Libraries.osx64/libGeoIP.1.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libGeoIP.1.dylib && install_name_tool -change ../../../libGeoIP/Libraries.osx64/libGeoIP.1.dylib @executable_path/../Frameworks/libGeoIP.1.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 libntru_install.path  = .
 libntru_install.extra = cp ../../../libNTRU/libntru.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libntru.dylib && install_name_tool -change ../../../libNTRU/libntru.dylib @executable_path/../Frameworks/libntru.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 libsctp_install.path  = .
@@ -118,7 +115,6 @@ QMAKE_STRIP	= echo
 INSTALLS	= macdeployqt \
                   preinstall \
                   libgeoip_data_install \
-                  libgeoip_install \
                   libntru_install \
 		  libsctp_install \
                   libspoton_install \
