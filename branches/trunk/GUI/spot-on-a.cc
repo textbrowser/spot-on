@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
 #endif
 #if QT_VERSION >= 0x050000
 #ifdef Q_OS_WIN32
+  QApplication::addLibraryPath("plugins");
   QApplication::setStyle("fusion");
 #endif
   qInstallMessageHandler(qt_message_handler);
