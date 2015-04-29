@@ -15,4 +15,8 @@
 <li>QWidget::activateWindow() should only be used on Windows!</li>
 <li>Updated SQLite to version 3.8.9, Windows.</li>
 </ol>
+
+Archived Contents
+<br><br>
+https://github.com/textbrowser/spot-on/blob/master/branches/Documentation/RELEASE-NOTES.archived
 </html>
