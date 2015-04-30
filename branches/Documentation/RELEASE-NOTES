@@ -1,7 +1,7 @@
 <html>
 0.23 (05/01/2015)
 <ol>
-<li>Encapsulate data into stream. Previous functionality will be disrupted.</li>
+<li>Encapsulate data into streams. Previous functionality will be disrupted.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
 </ol>
 0.22 (04/29/2015)

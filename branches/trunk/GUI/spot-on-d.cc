@@ -1729,7 +1729,7 @@ void spoton::slotSaveAttachment(void)
       dialog.setDirectory(QDir::homePath());
       dialog.setFileMode(QFileDialog::AnyFile);
       dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
-      dialog.selectFile(attachmentName);
+      dialog.selectFile(attachmentName.replace(" ", "-"));
       dialog.setWindowTitle(tr("%1: Save Attachment").
 			    arg(SPOTON_APPLICATION_NAME));
 
