@@ -69,10 +69,6 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 #endif
   statusBar()->setSizeGripEnabled(false);
 #endif
-  connect(ui.box,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotBoxToggled(bool)));
   connect(ui.clearMessages,
 	  SIGNAL(clicked(void)),
 	  ui.messages,
@@ -100,10 +96,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   else
     setWindowTitle(participant.trimmed());
 
-  ui.horizontalSpacer->changeSize(0, 0);
   ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
-  ui.share->setVisible(false);
-  ui.table->setVisible(false);
 
   if(participant.trimmed().isEmpty())
     ui.name->setText("unknown");
@@ -654,18 +647,4 @@ void spoton_chatwindow::showError(const QString &error)
 
   QMessageBox::critical(this, tr("%1: Error").
 			arg(SPOTON_APPLICATION_NAME), error);
-}
-
-void spoton_chatwindow::slotBoxToggled(bool state)
-{
-  if(state)
-    ui.horizontalSpacer->changeSize
-      (width() - ui.share->width() - 25, ui.share->height(),
-       QSizePolicy::Expanding, QSizePolicy::Expanding);
-  else
-    ui.horizontalSpacer->changeSize(0, 0);
-
-  ui.horizontalSpacer->invalidate();
-  ui.share->setVisible(state);
-  ui.table->setVisible(state);
 }
