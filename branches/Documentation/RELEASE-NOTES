@@ -1,7 +1,8 @@
 <html>
 0.23 (05/01/2015)
 <ol>
-<li>Encapsulate data into streams. Previous functionality will be disrupted.</li>
+<li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
+<li>Guard QList::removeAt().</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
 </ol>
 0.22 (04/29/2015)
