@@ -69,6 +69,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 #endif
   statusBar()->setSizeGripEnabled(false);
 #endif
+  connect(ui.box,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotBoxToggled(bool)));
   connect(ui.clearMessages,
 	  SIGNAL(clicked(void)),
 	  ui.messages,
@@ -103,8 +107,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   else
     ui.name->setText(participant.trimmed());
 
-  ui.table->setModel(spoton::instance()->starbeamReceivedModel());
+  ui.share->setVisible(false);
   ui.table->resizeColumnToContents(0);
+  ui.table->setModel(spoton::instance()->starbeamReceivedModel());
+  ui.table->setVisible(false);
 
   QMenu *menu = new QMenu(this);
 
@@ -123,8 +129,6 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 	  ui.smp,
 	  SLOT(showMenu(void)));
   slotSetIcons();
-  ui.splitter->setStretchFactor(0, 1);
-  ui.splitter->setStretchFactor(1, 0);
 }
 
 spoton_chatwindow::~spoton_chatwindow()
@@ -649,4 +653,10 @@ void spoton_chatwindow::showError(const QString &error)
 
   QMessageBox::critical(this, tr("%1: Error").
 			arg(SPOTON_APPLICATION_NAME), error);
+}
+
+void spoton_chatwindow::slotBoxToggled(bool state)
+{
+  ui.share->setVisible(state);
+  ui.table->setVisible(state);
 }
