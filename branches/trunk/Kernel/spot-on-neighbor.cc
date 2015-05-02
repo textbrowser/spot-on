@@ -2486,7 +2486,8 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 	{
 	  QList<QByteArray> list(keyInformation1.split('\n'));
 
-	  list.removeAt(0); // Message Type
+	  if(!list.isEmpty())
+	    list.removeAt(0); // Message Type
 
 	  if(list.size() == 4)
 	    {
@@ -2594,7 +2595,8 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 		    {
 		      QList<QByteArray> list(keyInformation2.split('\n'));
 
-		      list.removeAt(0); // Message Type
+		      if(!list.isEmpty())
+			list.removeAt(0); // Message Type
 
 		      if(list.size() == 4)
 			{
@@ -2800,7 +2802,8 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 	    {
 	      QList<QByteArray> list(keyInformation.split('\n'));
 
-	      list.removeAt(0); // Message Type
+	      if(!list.isEmpty())
+		list.removeAt(0); // Message Type
 
 	      if(list.size() == 4)
 		{
@@ -2985,7 +2988,8 @@ void spoton_neighbor::process0002a
 	{
 	  QList<QByteArray> list(keyInformation.split('\n'));
 
-	  list.removeAt(0); // Message Type
+	  if(!list.isEmpty())
+	    list.removeAt(0); // Message Type
 
 	  if(list.size() == 4)
 	    {
@@ -5242,7 +5246,14 @@ QString spoton_neighbor::findMessageType
 	  data = crypt.decrypted(QByteArray::fromBase64(list.value(0)), &ok);
 
 	  if(ok)
-	    type = QByteArray::fromBase64(data.split('\n').value(0));
+	    {
+	      QByteArray a;
+	      QDataStream stream(&data, QIODevice::ReadOnly);
+
+	      stream >> a;
+	      type = a;
+	    }
+
 	  if(!type.isEmpty())
 	    goto done_label;
 	  else
@@ -5281,7 +5292,13 @@ QString spoton_neighbor::findMessageType
 	    (QByteArray::fromBase64(list.value(0)), &ok);
 
 	  if(ok)
-	    type = QByteArray::fromBase64(data.split('\n').value(0));
+	    {
+	      QByteArray a;
+	      QDataStream stream(&data, QIODevice::ReadOnly);
+
+	      stream >> a;
+	      type = a;
+	    }
 
 	  if(!type.isEmpty())
 	    {
@@ -5316,7 +5333,13 @@ QString spoton_neighbor::findMessageType
 	    (QByteArray::fromBase64(list.value(0)), &ok);
 
 	  if(ok)
-	    type = QByteArray::fromBase64(data.split('\n').value(0));
+	    {
+	      QByteArray a;
+	      QDataStream stream(&data, QIODevice::ReadOnly);
+
+	      stream >> a;
+	      type = a;
+	    }
 
 	  if(!type.isEmpty())
 	    goto done_label;

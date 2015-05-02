@@ -241,11 +241,32 @@ void spoton::slotReceivedKernelMessage(void)
 
 	      if(page)
 		{
-		  list = list.value(0).split('\n');
-		  list.removeAt(0); // Message Type
+		  QByteArray bytes(list.value(0));
+		  QDataStream stream(&bytes, QIODevice::ReadOnly);
+		  QList<QByteArray> list;
+		  int end = 4;
 
-		  for(int i = 0; i < list.size(); i++)
-		    list.replace(i, QByteArray::fromBase64(list.at(i)));
+		  for(int i = 0; i < end; i++)
+		    {
+		      QByteArray a;
+
+		      stream >> a;
+		      list << a;
+
+		      if(stream.status() != QDataStream::Ok)
+			{
+			  list.clear();
+			  break;
+			}
+
+		      if(a == "0040a")
+			end = 3;
+		      else if(a == "004b")
+			end = 4;
+		    }
+
+		  if(!list.isEmpty())
+		    list.removeAt(0); // Message Type
 
 		  if(list.size() == 2)
 		    page->userStatus(list);

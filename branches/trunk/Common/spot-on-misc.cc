@@ -516,8 +516,6 @@ void spoton_misc::prepareDatabases(void)
 		   "locked INTEGER NOT NULL DEFAULT 0, "
 		   "pulse_size TEXT NOT NULL, "
 		   "total_size TEXT NOT NULL)");
-	query.exec("ALTER TABLE received "
-		   "ADD COLUMN expected_file_hash TEXT");
 	query.exec("CREATE TABLE IF NOT EXISTS received_novas ("
 		   "nova TEXT NOT NULL, " /*
 					  ** Please

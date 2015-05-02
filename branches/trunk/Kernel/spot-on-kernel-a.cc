@@ -1595,6 +1595,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 			      "sha512").toString().toLatin1());
   QByteArray keyInformation;
   QByteArray symmetricKey;
+  QDataStream stream(&keyInformation, QIODevice::WriteOnly);
   QPair<QByteArray, QByteArray> gemini;
   QString neighborOid("");
   QString receiverName("");
@@ -1614,13 +1615,13 @@ void spoton_kernel::slotMessageReceivedFromUI
      symmetricKey.isEmpty())
     return;
 
+  stream << QByteArray("0000")
+	 << symmetricKey
+	 << hashKey
+	 << cipherType
+	 << hashType;
   keyInformation = spoton_crypt::publicKeyEncrypt
-    (QByteArray("0000").toBase64() + "\n" +
-     symmetricKey.toBase64() + "\n" +
-     hashKey.toBase64() + "\n" +
-     cipherType.toBase64() + "\n" +
-     hashType.toBase64(),
-     publicKey, &ok);
+    (keyInformation, publicKey, &ok);
 
   if(ok)
     {
@@ -1647,12 +1648,17 @@ void spoton_kernel::slotMessageReceivedFromUI
 						 utcDate, &ok);
 
 	if(ok)
-	  data = crypt.encrypted(myPublicKeyHash.toBase64() + "\n" +
-				 name.toBase64() + "\n" +
-				 message.toBase64() + "\n" +
-				 sequenceNumber.toBase64() + "\n" +
-				 utcDate.toBase64() + "\n" +
-				 signature.toBase64(), &ok);
+	  {
+	    QDataStream stream(&data, QIODevice::WriteOnly);
+
+	    stream << myPublicKeyHash
+		   << name
+		   << message
+		   << sequenceNumber
+		   << utcDate
+		   << signature;
+	    data = crypt.encrypted(data, &ok);
+	  }
 
 	if(ok)
 	  {
@@ -1670,7 +1676,9 @@ void spoton_kernel::slotMessageReceivedFromUI
 	if(!gemini.first.isEmpty() &&
 	   !gemini.second.isEmpty())
 	  {
+	    QByteArray bytes;
 	    QByteArray messageCode;
+	    QDataStream stream(&bytes, QIODevice::WriteOnly);
 	    spoton_crypt crypt("aes256",
 			       "sha512" ,
 			       QByteArray(),
@@ -1680,8 +1688,9 @@ void spoton_kernel::slotMessageReceivedFromUI
 			       0,
 			       QString(""));
 
-	    data = crypt.encrypted
-	      (QByteArray("0000").toBase64() + "\n" + data, &ok);
+	    stream << QByteArray("0000")
+		   << data;
+	    data = crypt.encrypted(bytes, &ok);
 
 	    if(ok)
 	      messageCode = crypt.keyedHash(data, &ok);
@@ -2267,13 +2276,17 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		}
 
 	      if(ok)
-		keyInformation = spoton_crypt::publicKeyEncrypt
-		  (QByteArray("0013").toBase64() + "\n" +
-		   symmetricKey.toBase64() + "\n" +
-		   hashKey.toBase64() + "\n" +
-		   symmetricKeyAlgorithm.toBase64() + "\n" +
-		   hashType.toBase64(),
-		   publicKey, &ok);
+		{
+		  QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+
+		  stream << QByteArray("0013")
+			 << symmetricKey
+			 << hashKey
+			 << symmetricKeyAlgorithm
+			 << hashType;
+		  keyInformation = spoton_crypt::publicKeyEncrypt
+		    (keyInformation, publicKey, &ok);
+		}
 
 	      if(ok)
 		{
@@ -2301,13 +2314,17 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			 toLatin1(), &ok);
 
 		    if(ok)
-		      data = crypt.encrypted
-			(myPublicKeyHash.toBase64() + "\n" +
-			 name.toBase64() + "\n" +
-			 status.toBase64() + "\n" +
-			 dateTime.toUTC().toString("MMddyyyyhhmmss").
-			 toLatin1().toBase64() + "\n" +
-			 signature.toBase64(), &ok);
+		      {
+			QDataStream stream(&data, QIODevice::WriteOnly);
+
+			stream << myPublicKeyHash
+			       << name
+			       << status
+			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
+			          toLatin1()
+			       << signature;
+			data = crypt.encrypted(data, &ok);
+		      }
 
 		    if(ok)
 		      {
@@ -2325,7 +2342,9 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		    if(!gemini.first.isEmpty() &&
 		       !gemini.second.isEmpty())
 		      {
+			QByteArray bytes;
 			QByteArray messageCode;
+			QDataStream stream(&bytes, QIODevice::WriteOnly);
 			spoton_crypt crypt("aes256",
 					   "sha512" ,
 					   QByteArray(),
@@ -2335,8 +2354,9 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 					   0,
 					   QString(""));
 
-			data = crypt.encrypted
-			  (QByteArray("0013").toBase64() + "\n" + data, &ok);
+			stream << QByteArray("0013")
+			       << data;
+			data = crypt.encrypted(bytes, &ok);
 
 			if(ok)
 			  messageCode = crypt.keyedHash(data, &ok);
@@ -3459,6 +3479,7 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 {
   QByteArray data;
   QByteArray messageCode;
+  QDataStream stream(&data, QIODevice::WriteOnly);
   bool ok = true;
   spoton_crypt crypt(channelType,
 		     hashType,
@@ -3469,23 +3490,15 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 		     0,
 		     QString(""));
 
-  data.append(messageType.toLatin1().toBase64());
-  data.append("\n");
+  stream << messageType.toLatin1();
 
   if(messageType == "0040a")
-    {
-      data.append(name.toBase64());
-      data.append("\n");
-      data.append(id.toBase64());
-    }
+    stream << name
+	   << id;
   else
-    {
-      data.append(name.toBase64());
-      data.append("\n");
-      data.append(id.toBase64());
-      data.append("\n");
-      data.append(message.toBase64());
-    }
+    stream << name
+	   << id
+	   << message;
 
   data = crypt.encrypted(data, &ok);
 
@@ -3919,13 +3932,17 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 		}
 
 	      if(ok)
-		keyInformation = spoton_crypt::publicKeyEncrypt
-		  (QByteArray("0000a").toBase64() + "\n" +
-		   symmetricKey.toBase64() + "\n" +
-		   hashKey.toBase64() + "\n" +
-		   symmetricKeyAlgorithm.toBase64() + "\n" +
-		   hashType.toBase64(),
-		   publicKey, &ok);
+		{
+		  QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+
+		  stream << QByteArray("0000a")
+			 << symmetricKey
+			 << hashKey
+			 << symmetricKeyAlgorithm
+			 << hashType;
+		  keyInformation = spoton_crypt::publicKeyEncrypt
+		    (keyInformation, publicKey, &ok);
+		}
 
 	      if(ok)
 		{
@@ -3953,13 +3970,17 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 			 toLatin1(), &ok);
 
 		    if(ok)
-		      data = crypt.encrypted
-			(myPublicKeyHash.toBase64() + "\n" +
-			 gemini.first.toBase64() + "\n" +
-			 gemini.second.toBase64() + "\n" +
-			 dateTime.toUTC().toString("MMddyyyyhhmmss").
-			 toLatin1().toBase64() + "\n" +
-			 signature.toBase64(), &ok);
+		      {
+			QDataStream stream(&data, QIODevice::WriteOnly);
+
+			stream << myPublicKeyHash
+			       << gemini.first
+			       << gemini.second
+			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
+			          toLatin1()
+			       << signature;
+			data = crypt.encrypted(data, &ok);
+		      }
 
 		    if(ok)
 		      {
@@ -4142,14 +4163,18 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 			 toLatin1(), &ok);
 
 		    if(ok)
-		      data = crypt.encrypted
-			(QByteArray("0000b").toBase64() + "\n" +
-			 myPublicKeyHash.toBase64() + "\n" +
-			 symmetricKey.toBase64() + "\n" +
-			 hashKey.toBase64() + "\n" +
-			 dateTime.toUTC().toString("MMddyyyyhhmmss").
-			 toLatin1().toBase64() + "\n" +
-			 signature.toBase64(), &ok);
+		      {
+			QDataStream stream(&data, QIODevice::WriteOnly);
+
+			stream << QByteArray("0000b")
+			       << myPublicKeyHash
+			       << symmetricKey
+			       << hashKey
+			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
+			          toLatin1()
+			       << signature;
+			data = crypt.encrypted(data, &ok);
+		      }
 
 		    if(ok)
 		      {
@@ -4873,13 +4898,17 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 		}
 
 	      if(ok)
-		keyInformation = spoton_crypt::publicKeyEncrypt
-		  (QByteArray("0000c").toBase64() + "\n" +
-		   symmetricKey.toBase64() + "\n" +
-		   hashKey.toBase64() + "\n" +
-		   symmetricKeyAlgorithm.toBase64() + "\n" +
-		   hashType.toBase64(),
-		   publicKey, &ok);
+		{
+		  QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+
+		  stream << QByteArray("0000c")
+			 << symmetricKey
+			 << hashKey
+			 << symmetricKeyAlgorithm
+			 << hashType;
+		  keyInformation = spoton_crypt::publicKeyEncrypt
+		    (keyInformation, publicKey, &ok);
+		}
 
 	      if(ok)
 		{
@@ -4907,13 +4936,17 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 			 toLatin1(), &ok);
 
 		    if(ok)
-		      data = crypt.encrypted
-			(myPublicKeyHash.toBase64() + "\n" +
-			 geminis.first.toBase64() + "\n" +
-			 geminis.second.toBase64() + "\n" +
-			 dateTime.toUTC().toString("MMddyyyyhhmmss").
-			 toLatin1().toBase64() + "\n" +
-			 signature.toBase64(), &ok);
+		      {
+			QDataStream stream(&data, QIODevice::WriteOnly);
+
+			stream << myPublicKeyHash
+			       << geminis.first
+			       << geminis.second
+			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
+			          toLatin1()
+			       << signature;
+			data = crypt.encrypted(data, &ok);
+		      }
 
 		    if(ok)
 		      {

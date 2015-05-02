@@ -94,12 +94,24 @@ QList<QByteArray> spoton_receive::process0000
 		  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		     spoton_crypt::memcmp(computedHash, messageCode))
 		    {
+		      list.clear();
 		      message = crypt.decrypted(message, &ok);
 
 		      if(ok)
-			list = message.split('\n');
+			{
+			  QByteArray a;
+			  QDataStream stream(&message, QIODevice::ReadOnly);
 
-		      list.removeAt(0); // Message Type
+			  stream >> a; // Message Type
+
+			  if(stream.status() == QDataStream::Ok)
+			    {
+			      stream >> a; // Message
+
+			      if(stream.status() == QDataStream::Ok)
+				list = a.split('\n');
+			    }
+			}
 
 		      if(list.size() != 3)
 			{
@@ -153,17 +165,32 @@ QList<QByteArray> spoton_receive::process0000
 
       if(ok)
 	{
-	  QList<QByteArray> list(keyInformation.split('\n'));
+	  QDataStream stream(&keyInformation, QIODevice::ReadOnly);
+	  QList<QByteArray> list;
 
-	  list.removeAt(0); // Message Type
+	  for(int i = 0; i < 5; i++)
+	    {
+	      QByteArray a;
+
+	      stream >> a;
+	      list << a;
+
+	      if(stream.status() != QDataStream::Ok)
+		{
+		  list.clear();
+		  break;
+		}
+	    }
+
+	  if(!list.isEmpty())
+	    list.removeAt(0); // Message Type
 
 	  if(list.size() == 4)
 	    {
-	      hashKey = QByteArray::fromBase64(list.value(1));
-	      hashKeyAlgorithm = QByteArray::fromBase64(list.value(3));
-	      symmetricKey = QByteArray::fromBase64(list.value(0));
-	      symmetricKeyAlgorithm = QByteArray::fromBase64
-		(list.value(2));
+	      hashKey = list.value(1);
+	      hashKeyAlgorithm = list.value(3);
+	      symmetricKey = list.value(0);
+	      symmetricKeyAlgorithm = list.value(2);
 	    }
 	  else
 	    {
@@ -207,14 +234,25 @@ QList<QByteArray> spoton_receive::process0000
 
 		  if(ok)
 		    {
-		      QList<QByteArray> list(data.split('\n'));
+		      QDataStream stream(&data, QIODevice::ReadOnly);
+		      QList<QByteArray> list;
+
+		      for(int i = 0; i < 6; i++)
+			{
+			  QByteArray a;
+
+			  stream >> a;
+			  list << a;
+
+			  if(stream.status() != QDataStream::Ok)
+			    {
+			      list.clear();
+			      break;
+			    }
+			}
 
 		      if(list.size() == 6)
 			{
-			  for(int i = 0; i < list.size(); i++)
-			    list.replace
-			      (i, QByteArray::fromBase64(list.at(i)));
-
 			  if(spoton_misc::
 			     isAcceptedParticipant(list.value(0), "chat",
 						   s_crypt) ||
@@ -326,17 +364,32 @@ QList<QByteArray> spoton_receive::process0000a
 
       if(ok)
 	{
-	  QList<QByteArray> list(keyInformation.split('\n'));
+	  QDataStream stream(&keyInformation, QIODevice::ReadOnly);
+	  QList<QByteArray> list;
 
-	  list.removeAt(0); // Message Type
+	  for(int i = 0; i < 5; i++)
+	    {
+	      QByteArray a;
+
+	      stream >> a;
+	      list << a;
+
+	      if(stream.status() != QDataStream::Ok)
+		{
+		  list.clear();
+		  break;
+		}
+	    }
+
+	  if(!list.isEmpty())
+	    list.removeAt(0); // Message Type
 
 	  if(list.size() == 4)
 	    {
-	      hashKey = QByteArray::fromBase64(list.value(1));
-	      hashKeyAlgorithm = QByteArray::fromBase64(list.value(3));
-	      symmetricKey = QByteArray::fromBase64(list.value(0));
-	      symmetricKeyAlgorithm = QByteArray::fromBase64
-		(list.value(2));
+	      hashKey = list.value(1);
+	      hashKeyAlgorithm = list.value(3);
+	      symmetricKey = list.value(0);
+	      symmetricKeyAlgorithm = list.value(2);
 	    }
 	  else
 	    {
@@ -377,14 +430,25 @@ QList<QByteArray> spoton_receive::process0000a
 
 		  if(ok)
 		    {
-		      QList<QByteArray> list(data.split('\n'));
+		      QDataStream stream(&data, QIODevice::ReadOnly);
+		      QList<QByteArray> list;
+
+		      for(int i = 0; i < 5; i++)
+			{
+			  QByteArray a;
+
+			  stream >> a;
+			  list << a;
+
+			  if(stream.status() != QDataStream::Ok)
+			    {
+			      list.clear();
+			      break;
+			    }
+			}
 
 		      if(list.size() == 5)
 			{
-			  for(int i = 0; i < list.size(); i++)
-			    list.replace
-			      (i, QByteArray::fromBase64(list.at(i)));
-
 			  if(spoton_misc::
 			     isAcceptedParticipant(list.value(0),
 						   "chat",
@@ -504,14 +568,25 @@ QList<QByteArray> spoton_receive::process0000b
 
       if(ok)
 	{
-	  QList<QByteArray> list(data.split('\n'));
+	  QDataStream stream(&data, QIODevice::ReadOnly);
+	  QList<QByteArray> list;
+
+	  for(int i = 0; i < 6; i++)
+	    {
+	      QByteArray a;
+
+	      stream >> a;
+	      list << a;
+
+	      if(stream.status() != QDataStream::Ok)
+		{
+		  list.clear();
+		  break;
+		}
+	    }
 
 	  if(list.size() == 6)
 	    {
-	      for(int i = 0; i < list.size(); i++)
-		list.replace
-		  (i, QByteArray::fromBase64(list.at(i)));
-
 	      if(spoton_misc::isAcceptedParticipant(list.value(1),
 						    "chat",
 						    s_crypt) ||
@@ -613,7 +688,8 @@ QList<QByteArray> spoton_receive::process0001b
 	{
 	  QList<QByteArray> list(keyInformation.split('\n'));
 
-	  list.removeAt(0); // Message Type
+	  if(!list.isEmpty())
+	    list.removeAt(0); // Message Type
 
 	  if(list.size() == 4)
 	    {
@@ -771,12 +847,24 @@ QList<QByteArray> spoton_receive::process0013
 		  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		     spoton_crypt::memcmp(computedHash, messageCode))
 		    {
+		      list.clear();
 		      message = crypt.decrypted(message, &ok);
 
 		      if(ok)
-			list = message.split('\n');
+			{
+			  QByteArray a;
+			  QDataStream stream(&message, QIODevice::ReadOnly);
 
-		      list.removeAt(0); // Message Type
+			  stream >> a; // Message Type
+
+			  if(stream.status() == QDataStream::Ok)
+			    {
+			      stream >> a; // Message
+
+			      if(stream.status() == QDataStream::Ok)
+				list = a.split('\n');
+			    }
+			}
 
 		      if(list.size() != 3)
 			{
@@ -830,17 +918,32 @@ QList<QByteArray> spoton_receive::process0013
 
       if(ok)
 	{
-	  QList<QByteArray> list(keyInformation.split('\n'));
+	  QDataStream stream(&keyInformation, QIODevice::ReadOnly);
+	  QList<QByteArray> list;
 
-	  list.removeAt(0); // Message Type
+	  for(int i = 0; i < 5; i++)
+	    {
+	      QByteArray a;
+
+	      stream >> a;
+	      list << a;
+
+	      if(stream.status() != QDataStream::Ok)
+		{
+		  list.clear();
+		  break;
+		}
+	    }
+
+	  if(!list.isEmpty())
+	    list.removeAt(0); // Message Type
 
 	  if(list.size() == 4)
 	    {
-	      hashKey = QByteArray::fromBase64(list.value(1));
-	      hashKeyAlgorithm = QByteArray::fromBase64(list.value(3));
-	      symmetricKey = QByteArray::fromBase64(list.value(0));
-	      symmetricKeyAlgorithm = QByteArray::fromBase64
-		(list.value(2));
+	      hashKey = list.value(1);
+	      hashKeyAlgorithm = list.value(3);
+	      symmetricKey = list.value(0);
+	      symmetricKeyAlgorithm = list.value(2);
 	    }
 	  else
 	    {
@@ -881,14 +984,25 @@ QList<QByteArray> spoton_receive::process0013
 
 		  if(ok)
 		    {
-		      QList<QByteArray> list(data.split('\n'));
+		      QDataStream stream(&data, QIODevice::ReadOnly);
+		      QList<QByteArray> list;
+
+		      for(int i = 0; i < 5; i++)
+			{
+			  QByteArray a;
+
+			  stream >> a;
+			  list << a;
+
+			  if(stream.status() != QDataStream::Ok)
+			    {
+			      list.clear();
+			      break;
+			    }
+			}
 
 		      if(list.size() == 5)
 			{
-			  for(int i = 0; i < list.size(); i++)
-			    list.replace
-			      (i, QByteArray::fromBase64(list.at(i)));
-
 			  if(spoton_misc::
 			     isAcceptedParticipant(list.value(0),
 						   "chat",
@@ -971,8 +1085,6 @@ QString spoton_receive::findMessageType
 
   if(interfaces > 0 &&
      list.size() == 3 && (spoton_misc::
-			  participantCount("chat", s_crypt) > 0 ||
-			  spoton_misc::
 			  participantCount("poptastic", s_crypt) > 0))
     {
       QPair<QByteArray, QByteArray> gemini;
@@ -998,7 +1110,13 @@ QString spoton_receive::findMessageType
 	    (QByteArray::fromBase64(list.value(0)), &ok);
 
 	  if(ok)
-	    type = QByteArray::fromBase64(data.split('\n').value(0));
+	    {
+	      QByteArray a;
+	      QDataStream stream(&data, QIODevice::ReadOnly);
+
+	      stream >> a;
+	      type = a;
+	    }
 
 	  if(!type.isEmpty())
 	    {
@@ -1017,8 +1135,7 @@ QString spoton_receive::findMessageType
 
   if(interfaces > 0 && list.size() == 4)
     if(!spoton_misc::allParticipantsHaveGeminis())
-      if(spoton_misc::participantCount("chat", s_crypt) > 0 ||
-	 spoton_misc::participantCount("poptastic", s_crypt) > 0)
+      if(spoton_misc::participantCount("poptastic", s_crypt) > 0)
 	{
 	  QByteArray data;
 	  bool ok = true;
@@ -1027,7 +1144,13 @@ QString spoton_receive::findMessageType
 	    (QByteArray::fromBase64(list.value(0)), &ok);
 
 	  if(ok)
-	    type = QByteArray::fromBase64(data.split('\n').value(0));
+	    {
+	      QByteArray a;
+	      QDataStream stream(&data, QIODevice::ReadOnly);
+
+	      stream >> a;
+	      type = a;
+	    }
 
 	  if(!type.isEmpty())
 	    goto done_label;
