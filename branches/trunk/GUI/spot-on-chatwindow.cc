@@ -123,6 +123,8 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 	  ui.smp,
 	  SLOT(showMenu(void)));
   slotSetIcons();
+  ui.splitter->setStretchFactor(0, 1);
+  ui.splitter->setStretchFactor(1, 0);
 }
 
 spoton_chatwindow::~spoton_chatwindow()
