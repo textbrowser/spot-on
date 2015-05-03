@@ -69,10 +69,6 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 #endif
   statusBar()->setSizeGripEnabled(false);
 #endif
-  connect(ui.box,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotBoxToggled(bool)));
   connect(ui.clearMessages,
 	  SIGNAL(clicked(void)),
 	  ui.messages,
@@ -89,6 +85,22 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotShareStarBeam(void)));
+  connect(ui.starbeam,
+	  SIGNAL(toggled(bool)),
+	  ui.echo,
+	  SLOT(setVisible(bool)));
+  connect(ui.starbeam,
+	  SIGNAL(toggled(bool)),
+	  ui.line,
+	  SLOT(setVisible(bool)));
+  connect(ui.starbeam,
+	  SIGNAL(toggled(bool)),
+	  ui.share,
+	  SLOT(setVisible(bool)));
+  connect(ui.starbeam,
+	  SIGNAL(toggled(bool)),
+	  ui.table,
+	  SLOT(setVisible(bool)));
 
   if(participant.trimmed().isEmpty())
     {
@@ -100,7 +112,9 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   else
     setWindowTitle(participant.trimmed());
 
+  ui.echo->setVisible(false);
   ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
+  ui.line->setVisible(false);
 
   if(participant.trimmed().isEmpty())
     ui.name->setText("unknown");
@@ -653,10 +667,4 @@ void spoton_chatwindow::showError(const QString &error)
 
   QMessageBox::critical(this, tr("%1: Error").
 			arg(SPOTON_APPLICATION_NAME), error);
-}
-
-void spoton_chatwindow::slotBoxToggled(bool state)
-{
-  ui.share->setVisible(state);
-  ui.table->setVisible(state);
 }
