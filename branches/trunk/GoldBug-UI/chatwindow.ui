@@ -244,9 +244,6 @@
       <attribute name="horizontalHeaderDefaultSectionSize">
        <number>200</number>
       </attribute>
-      <attribute name="horizontalHeaderMinimumSectionSize">
-       <number>200</number>
-      </attribute>
       <attribute name="horizontalHeaderStretchLastSection">
        <bool>true</bool>
       </attribute>
