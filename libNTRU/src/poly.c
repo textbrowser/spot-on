@@ -18,6 +18,9 @@
 #define htole64(x) (x)
 #define htole32(x) (x)
 #endif
+#ifdef _OS2_
+#include <endian.h>
+#endif
 
 #define NTRU_SPARSE_THRESH 14
 #define NTRU_KARATSUBA_THRESH_16 40
