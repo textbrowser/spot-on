@@ -23,6 +23,7 @@ DEFINES	+= SPOTON_GOLDBUG \
 # about the internals of libNTRU and libSpotOn.
 
 QMAKE_CLEAN     += GoldBug ../../libNTRU/*.so ../../libNTRU/src/*.o \
+                   ../../libNTRU/src/*.s \
 		   ../../libSpotOn/*.o ../../libSpotOn/*.so \
 		   ../../libSpotOn/test
 QMAKE_DISTCLEAN += -r temp

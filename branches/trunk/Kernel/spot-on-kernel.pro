@@ -24,7 +24,8 @@ DEFINES += SPOTON_LINKED_WITH_LIBGEOIP \
 # about the internals of libNTRU and libSpotOn.
 
 QMAKE_CLEAN     += ../Spot-On-Kernel ../../../libNTRU/*.so \
-		   ../../../libNTRU/src/*.o ../../../libSpotOn/*.o \
+		   ../../../libNTRU/src/*.o ../../../libNTRU/src/*.s \
+		   ../../../libSpotOn/*.o \
 		   ../../../libSpotOn/*.so ../../../libSpotOn/test
 QMAKE_DISTCLEAN += -r temp
 QMAKE_CXXFLAGS_RELEASE -= -O2

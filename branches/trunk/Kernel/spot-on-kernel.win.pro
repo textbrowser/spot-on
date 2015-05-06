@@ -26,6 +26,7 @@ DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
 QMAKE_CLEAN     += ..\\..\\release\\Spot-On-Kernel \
                    ..\\..\\..\\libNTRU\\libntru.dll \
                    ..\\..\\..\\libNTRU\\src\\*.o \
+		   ..\\..\\..\\libNTRU\\src\\*.s \
 		   ..\\..\\..\\libSpotOn\\libspoton.dll \
 		   ..\\..\\..\\libSpotOn\\*.o ..\\..\\..\\libSpotOn\\test.exe
 QMAKE_CXXFLAGS_RELEASE -= -O2

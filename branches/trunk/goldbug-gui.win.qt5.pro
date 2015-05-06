@@ -24,6 +24,7 @@ DEFINES         += SPOTON_GOLDBUG \
 # about the internals of libNTRU and libSpotOn.
 
 QMAKE_CLEAN     += GoldBug ..\\..\\libNTRU.dll ..\\..\\libNTRU\\src\\*.o \
+                   ..\\..\\libNTRU\\src\\*.s \
                    ..\\..\\libSpotOn\\libspoton.dll \
 		   ..\\..\\libSpotOn\\*.o \
 		   ..\\..\\libSpotOn\\test.exe

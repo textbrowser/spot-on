@@ -24,6 +24,7 @@ DEFINES += SPOTON_GOLDBUG \
 # about the internals of libNTRU and libSpotOn.
 
 QMAKE_CLEAN     += GoldBug ../../libNTRU/*.dylib ../../libNTRU/src/*.o \
+                   ../../libNTRU/src/*.s \
                    ../../libSpotOn/*.dylib ../../libSpotOn/*.o \
 		   ../../libSpotOn/test
 QMAKE_CXX = clang++

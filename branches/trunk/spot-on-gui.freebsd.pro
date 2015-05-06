@@ -22,6 +22,7 @@ DEFINES	+= SPOTON_LINKED_WITH_LIBGEOIP \
 # about the internals of libNTRU and libSpotOn.
 
 QMAKE_CLEAN     += Spot-On ../../libNTRU/*.so ../../libNTRU/src/*.o \
+                   ../../libNTRU/src/*.s \
 		   ../../libSpotOn/*.o ../../libSpotOn/*.so \
 		   ../../libSpotOn/test
 QMAKE_CXX = clang++

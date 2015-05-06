@@ -24,6 +24,7 @@ DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
 # about the internals of libNTRU and libSpotOn.
 
 QMAKE_CLEAN     += Spot-On ..\\..\\libNTRU.dll ..\\..\\libNTRU\\src\\*.o \
+                   ..\\..\\libNTRU\\src\\*.s \
                    ..\\..\\libSpotOn\\libspoton.dll \
 		   ..\\..\\libSpotOn\\*.o \
 		   ..\\..\\libSpotOn\\test.exe

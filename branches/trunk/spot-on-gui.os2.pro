@@ -17,6 +17,7 @@ DEFINES		+= SPOTON_LINKED_WITH_LIBPTHREAD
 # about the internals of libSpotOn.
 
 QMAKE_CLEAN     += Spot-On ../../libSpotOn/libspotn.dll \
+                   ../../libNTRU/src/*.s \
 		   ../../libSpotOn/*.o \
 		   ../../libSpotOn/test.exe
 QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie \
