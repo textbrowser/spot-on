@@ -47,22 +47,22 @@ install: lib
 	    copy $(SRCDIR)\%%h "$(INST_INCLUDE)"
 
 uninstall:
-	del /f "$(DESTDIR)$(INST_LIBDIR)\libntru.dll"
-	del /f "$(DESTDIR)$(INST_DOCDIR)\README.md"
+	rm -f "$(DESTDIR)$(INST_LIBDIR)\libntru.dll"
+	rm -f "$(DESTDIR)$(INST_DOCDIR)\README.md"
 	for %%h in ($(DESTDIR)$(INST_HEADERS)) do \
-	    del /f "$(DESTDIR)$(INST_INCLUDE)\%%h"
+	    rm -f "$(DESTDIR)$(INST_INCLUDE)\%%h"
 	rmdir "$(DESTDIR)$(INST_INCLUDE)"
 	rmdir "$(DESTDIR)$(INST_LIBDIR)"
 	rmdir "$(DESTDIR)$(INST_DOCDIR)"
 
 dist:
-	del /f $(DIST_NAME)\$(SRCDIR)\*.c
-	del /f $(DIST_NAME)\$(SRCDIR)\*.h
+	rm -f $(DIST_NAME)\$(SRCDIR)\*.c
+	rm -f $(DIST_NAME)\$(SRCDIR)\*.h
 	rmdir $(DIST_NAME)\$(SRCDIR)
-	del /f $(DIST_NAME)\$(TESTDIR)\*.c
-	del /f $(DIST_NAME)\$(TESTDIR)\*.h
+	rm -f $(DIST_NAME)\$(TESTDIR)\*.c
+	rm -f $(DIST_NAME)\$(TESTDIR)\*.h
 	rmdir $(DIST_NAME)\$(TESTDIR)
-	del /f /q $(DIST_NAME)\*.*
+	rm -f /q $(DIST_NAME)\*.*
 	rmdir $(DIST_NAME)
 	mkdir $(DIST_NAME)
 	mkdir $(DIST_NAME)\$(SRCDIR)
@@ -119,30 +119,29 @@ $(TESTDIR)/%.o: tests/%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -I$(SRCDIR) -c $< -o $@
 
 clean:
-	del /f $(SRCDIR)\*.o
-	del /f $(SRCDIR)\*.s
-	del /f $(TESTDIR)\*.o
-	del /f libntru.dll
-	del /f testham.exe
-	del /f testnoham.exe
-	del /f bench.exe
-	@rem ***** clean files generated on other OSes *****
-	del /f libntru.so
-	del /f libntru.dylib
-	del /f testham
-	del /f testnoham
-	del /f bench
-	del /f hybrid
-	del /f hybrid.exe
+	rm -f $(SRCDIR)\*.o
+	rm -f $(SRCDIR)\*.s
+	rm -f $(TESTDIR)\*.o
+	rm -f libntru.dll
+	rm -f testham.exe
+	rm -f testnoham.exe
+	rm -f bench.exe
+	rm -f libntru.so
+	rm -f libntru.dylib
+	rm -f testham
+	rm -f testnoham
+	rm -f bench
+	rm -f hybrid
+	rm -f hybrid.exe
 
 distclean: clean
-	del /f $(DIST_NAME)\$(SRCDIR)\*.c
-	del /f $(DIST_NAME)\$(SRCDIR)\*.h
+	rm -f $(DIST_NAME)\$(SRCDIR)\*.c
+	rm -f $(DIST_NAME)\$(SRCDIR)\*.h
 	rmdir $(DIST_NAME)\$(SRCDIR)
-	del /f $(DIST_NAME)\$(TESTDIR)\*.c
-	del /f $(DIST_NAME)\$(TESTDIR)\*.h
+	rm -f $(DIST_NAME)\$(TESTDIR)\*.c
+	rm -f $(DIST_NAME)\$(TESTDIR)\*.h
 	rmdir $(DIST_NAME)\$(TESTDIR)
-	del /f $(DIST_NAME)\*.*
+	rm -f $(DIST_NAME)\*.*
 	rmdir $(DIST_NAME)
-	del /f $(DIST_NAME).zip
-	del /f $(DIST_NAME).tar.xz
+	rm -f $(DIST_NAME).zip
+	rm -f $(DIST_NAME).tar.xz
