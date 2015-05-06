@@ -18,7 +18,7 @@
 #define htole64(x) (x)
 #define htole32(x) (x)
 #endif
-#ifdef _OS2_
+#ifdef __OS2__
 #include <endian.h>
 #endif
 
