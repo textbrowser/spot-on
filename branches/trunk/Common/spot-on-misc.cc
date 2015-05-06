@@ -3388,7 +3388,8 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 		   status.toLower() == "online")
 		  query.bindValue(0, status.toLower());
 		else
-		  query.bindValue(0, "offline");
+		  query.bindValue
+		    (0, status.mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
 
 		query.bindValue
 		  (1, QDateTime::currentDateTime().toString(Qt::ISODate));
@@ -3421,7 +3422,8 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 		   status.toLower() == "online")
 		  query.bindValue(1, status.toLower());
 		else
-		  query.bindValue(1, "offline");
+		  query.bindValue
+		    (1, status.mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
 
 		query.bindValue
 		  (2, now.toString(Qt::ISODate));
@@ -3442,7 +3444,8 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 		   status.toLower() == "online")
 		  query.bindValue(0, status.toLower());
 		else
-		  query.bindValue(0, "offline");
+		  query.bindValue
+		    (0, status.mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
 
 		query.bindValue
 		  (1, now.toString(Qt::ISODate));

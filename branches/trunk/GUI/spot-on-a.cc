@@ -547,6 +547,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSetPassphrase(void)));
+  connect(m_ui.custom,
+	  SIGNAL(textChanged(void)),
+	  this,
+	  SLOT(slotSaveCustomStatus(void)));
   connect(m_ui.passphrase1,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -1665,14 +1669,24 @@ spoton::spoton(void):QMainWindow()
   QByteArray status
     (m_settings.value("gui/my_status", "Online").toByteArray().toLower());
 
+  m_ui.custom->setText
+    (QString::fromUtf8(m_settings.value("gui/customStatus", "").
+		       toByteArray().trimmed()));
+  m_ui.custom->setVisible(false);
+
   if(status == "away")
     m_ui.status->setCurrentIndex(0);
   else if(status == "busy")
     m_ui.status->setCurrentIndex(1);
+  else if(status == "custom")
+    {
+      m_ui.custom->setVisible(true);
+      m_ui.status->setCurrentIndex(2);
+    }
   else if(status == "offline")
-    m_ui.status->setCurrentIndex(2);
-  else
     m_ui.status->setCurrentIndex(3);
+  else
+    m_ui.status->setCurrentIndex(4);
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
   if(!m_ui.geoipPath4->text().isEmpty())
@@ -6760,21 +6774,21 @@ void spoton::slotPopulateParticipants(void)
 		      else if(i == 4) // Status
 			{
 			  QString status(query.value(i).toString().
-					 toLower());
+					 trimmed());
 
 			  if(status.isEmpty())
 			    status = "offline";
 
-			  if(status == "away")
+			  if(status.toLower() == "away")
 			    item = new QTableWidgetItem(tr("Away"));
-			  else if(status == "busy")
+			  else if(status.toLower() == "busy")
 			    item = new QTableWidgetItem(tr("Busy"));
-			  else if(status == "offline")
+			  else if(status.toLower() == "offline")
 			    item = new QTableWidgetItem(tr("Offline"));
-			  else if(status == "online")
+			  else if(status.toLower() == "online")
 			    item = new QTableWidgetItem(tr("Online"));
 			  else
-			    item = new QTableWidgetItem(tr("Friend"));
+			    item = new QTableWidgetItem(status);
 			}
 		      else if(i == 6 ||
 			      i == 7) /*
@@ -6834,6 +6848,12 @@ void spoton::slotPopulateParticipants(void)
 			      else if(status == "online")
 				item->setIcon
 				  (QIcon(QString(":/%1/online.png").
+					 arg(m_settings.value("gui/iconSet",
+							      "nouve").
+					     toString().toLower())));
+			      else
+				item->setIcon
+				  (QIcon(QString(":/%1/chat.png").
 					 arg(m_settings.value("gui/iconSet",
 							      "nouve").
 					     toString().toLower())));

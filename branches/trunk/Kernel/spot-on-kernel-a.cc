@@ -2157,6 +2157,10 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
   QByteArray status(setting("gui/my_status", "Online").
 		    toByteArray().toLower());
+
+  if(status == "custom")
+    status = setting("gui/customStatus", "").toByteArray().trimmed();
+
   QHash<QString, QVariant> hash;
   QList<QByteArray> list;
   QString connectionName("");

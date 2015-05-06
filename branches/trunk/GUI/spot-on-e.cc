@@ -1608,3 +1608,14 @@ void spoton::slotSaveStarBeamAutoVerify(bool state)
 
   settings.setValue("gui/starbeamAutoVerify", state);
 }
+
+void spoton::slotSaveCustomStatus(void)
+{
+  m_settings["gui/customStatus"] = m_ui.custom->toPlainText().
+    trimmed().toUtf8();
+
+  QSettings settings;
+
+  settings.setValue("gui/customStatus",
+		    m_ui.custom->toPlainText().trimmed().toUtf8());
+}

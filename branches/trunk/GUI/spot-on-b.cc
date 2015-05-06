@@ -154,12 +154,7 @@ void spoton::sendMessage(bool *ok)
 	       arg(m_kernelSocket.peerAddress().toString()).
 	       arg(m_kernelSocket.peerPort()));
 	  else
-	    {
-	      if(m_ui.status->currentIndex() != 2) // Offline
-		m_ui.status->setCurrentIndex(3); // Online
-
-	      m_chatInactivityTimer.start();
-	    }
+	    m_chatInactivityTimer.start();
 	}
     }
 
@@ -1249,11 +1244,18 @@ void spoton::slotViewLog(void)
 
 void spoton::slotStatusChanged(int index)
 {
+  m_ui.custom->setVisible(false);
+
   if(index == 0)
     m_settings["gui/my_status"] = "Away";
   else if(index == 1)
     m_settings["gui/my_status"] = "Busy";
   else if(index == 2)
+    {
+      m_settings["gui/my_status"] = "Custom";
+      m_ui.custom->setVisible(true);
+    }
+  else if(index == 3)
     m_settings["gui/my_status"] = "Offline";
   else
     m_settings["gui/my_status"] = "Online";
@@ -4255,7 +4257,8 @@ void spoton::slotSetIcons(int index)
   m_ui.saveNodeName->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   m_ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   list.clear();
-  list << "away.png" << "busy.png" << "offline.png" << "online.png";
+  list << "away.png" << "busy.png" << "chat.png" 
+       << "offline.png" << "online.png";
 
   for(int i = 0; i < list.size(); i++)
     m_ui.status->setItemIcon
@@ -5470,7 +5473,7 @@ void spoton::slotTestSslControlString(void)
 
 void spoton::slotChatInactivityTimeout(void)
 {
-  if(m_ui.status->currentIndex() == 3) // Online
+  if(m_ui.status->currentIndex() == 4) // Online
     m_ui.status->setCurrentIndex(0); // Away
 }
 
@@ -5952,9 +5955,6 @@ void spoton::slotChatWindowDestroyed(void)
 
 void spoton::slotChatWindowMessageSent(void)
 {
-  if(m_ui.status->currentIndex() != 2) // Offline
-    m_ui.status->setCurrentIndex(3); // Online
-
   m_chatInactivityTimer.start();
 }
 
