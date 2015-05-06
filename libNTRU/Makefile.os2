@@ -77,8 +77,6 @@ dist:
 	copy $(SRCDIR)\*.h $(DIST_NAME)\$(SRCDIR)
 	copy $(TESTDIR)\*.c $(DIST_NAME)\$(TESTDIR)
 	copy $(TESTDIR)\*.h $(DIST_NAME)\$(TESTDIR)
-	@rem zip is provided by MinGW
-	zip -rm $(DIST_NAME).zip $(DIST_NAME)
 
 test:
 	$(MAKE) -f $(MAKEFILENAME) testnoham
