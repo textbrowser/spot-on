@@ -1008,15 +1008,20 @@ void spoton::prepareSMP(const QString &hash)
   spoton_smp *smp = 0;
 
   if(m_smps.contains(hash))
-    smp = m_smps.value(hash);
+    smp = m_smps.value(hash, 0);
   else
     {
       smp = new spoton_smp();
       m_smps[hash] = smp;
     }
 
-  smp->reset();
-  smp->setGuess(guess);
+  if(smp)
+    {
+      smp->reset();
+      smp->setGuess(guess);
+    }
+  else
+    qDebug() << "spoton::prepareSMP(): smp is 0!";
 
   QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
 
@@ -1089,12 +1094,18 @@ void spoton::verifySMPSecret(const QString &hash, const QString &keyType,
   if(!m_smps.contains(hash))
     return;
   else
-    smp = m_smps.value(hash);
+    smp = m_smps.value(hash, 0);
 
   QList<QByteArray> list;
   bool ok = true;
 
-  list = smp->step1(&ok);
+  if(smp)
+    list = smp->step1(&ok);
+  else
+    {
+      ok = false;
+      qDebug() << "spoton::verifySMPSecret(): smp is 0!";
+    }
 
   if(ok)
     sendSMPLinkToKernel(list, keyType, oid);
@@ -1247,10 +1258,12 @@ void spoton::initializeSMP(const QString &hash)
   spoton_smp *smp = 0;
 
   if(m_smps.contains(hash))
-    smp = m_smps.value(hash);
+    smp = m_smps.value(hash, 0);
 
   if(smp)
     smp->initialize();
+  else
+    qDebug() << "spoton::initializeSMP(): smp is 0!";
 
   QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
 
@@ -1612,16 +1625,15 @@ void spoton::slotSaveStarBeamAutoVerify(bool state)
 void spoton::slotSaveCustomStatus(void)
 {
   QString text
-    (m_ui.custom->toPlainText().trimmed().
-     mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
+    (m_ui.custom->toPlainText().mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
 
   m_ui.custom->blockSignals(true);
   m_ui.custom->clear();
   m_ui.custom->append(text);
   m_ui.custom->blockSignals(false);
-  m_settings["gui/customStatus"] = text.toUtf8();
+  m_settings["gui/customStatus"] = text.trimmed().toUtf8();
 
   QSettings settings;
 
-  settings.setValue("gui/customStatus", text.toUtf8());
+  settings.setValue("gui/customStatus", text.trimmed().toUtf8());
 }

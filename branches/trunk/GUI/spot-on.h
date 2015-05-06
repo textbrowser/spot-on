@@ -425,7 +425,14 @@ class spoton: public QMainWindow
   QHash<QString, QPointer<spoton_chatwindow> > m_chatWindows;
   QHash<QString, QString> m_keysShared;
   QHash<QString, spoton_crypt *> m_crypts;
-  QHash<QString, spoton_smp *> m_smps;
+  QHash<QString, spoton_smp *> m_smps; /*
+				       ** The objects contained within
+				       ** m_smps are destroyed whenever
+				       ** participants are removed or
+				       ** whenever the UI process terminates.
+				       ** Unlike m_chatWindows, m_smps
+				       ** purging is less rigid.
+				       */
   QMainWindow *m_optionsWindow;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;

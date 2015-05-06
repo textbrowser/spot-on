@@ -3958,7 +3958,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
 				     receiverName,
 				     cipherType,
 				     oid,
-				     m_crypts.value("url"),
+				     m_crypts.value("url", 0),
 				     &ok);
 
   if(!ok || publicKey.isEmpty() || symmetricKey.isEmpty())
@@ -4221,7 +4221,7 @@ void spoton::slotRenameParticipant(void)
 	    if(m_chatWindows.contains(publicKeyHash))
 	      {
 		QPointer<spoton_chatwindow> chat =
-		  m_chatWindows.value(publicKeyHash);
+		  m_chatWindows.value(publicKeyHash, 0);
 
 		if(chat)
 		  chat->setName(name);

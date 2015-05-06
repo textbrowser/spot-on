@@ -918,7 +918,7 @@ void spoton::slotRemoveParticipants(void)
 	    if(m_chatWindows.contains(hash.toString()))
 	      {
 		QPointer<spoton_chatwindow> chat =
-		  m_chatWindows.value(hash.toString());
+		  m_chatWindows.value(hash.toString(), 0);
 
 		m_chatWindows.remove(hash.toString());
 
@@ -928,7 +928,7 @@ void spoton::slotRemoveParticipants(void)
 
 	    if(m_smps.contains(hash.toString()))
 	      {
-		spoton_smp *smp = m_smps.value(hash.toString());
+		spoton_smp *smp = m_smps.value(hash.toString(), 0);
 
 		m_smps.remove(hash.toString());
 

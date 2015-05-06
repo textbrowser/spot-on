@@ -1287,7 +1287,7 @@ void spoton_kernel::prepareNeighbors(void)
 		}
 	      else
 		{
-		  neighbor = m_neighbors.value(id);
+		  neighbor = m_neighbors.value(id, 0);
 
 		  if(neighbor)
 		    neighbor->deleteLater();
@@ -1398,7 +1398,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		    }
 		  else
 		    {
-		      starbeam = m_starbeamReaders.value(id);
+		      starbeam = m_starbeamReaders.value(id, 0);
 
 		      if(starbeam)
 			starbeam->setReadInterval(readInterval);
@@ -1406,7 +1406,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		}
 	      else
 		{
-		  starbeam = m_starbeamReaders.value(id);
+		  starbeam = m_starbeamReaders.value(id, 0);
 
 		  if(starbeam)
 		    starbeam->deleteLater();
@@ -1536,7 +1536,7 @@ void spoton_kernel::slotNewNeighbor(QPointer<spoton_neighbor> neighbor)
     {
       qint64 id = neighbor->id();
 
-      if(m_neighbors.contains(id) && !m_neighbors.value(id))
+      if(m_neighbors.contains(id) && !m_neighbors.value(id, 0))
 	m_neighbors.remove(id);
 
       if(!m_neighbors.contains(id))
@@ -3446,7 +3446,7 @@ void spoton_kernel::slotPublicizeAllListenersPlaintext(void)
 
 void spoton_kernel::slotPublicizeListenerPlaintext(const qint64 oid)
 {
-  QPointer<spoton_listener> listener = m_listeners.value(oid);
+  QPointer<spoton_listener> listener = m_listeners.value(oid, 0);
 
   if(listener)
     if(!listener->externalAddress().isNull())
@@ -3695,7 +3695,7 @@ void spoton_kernel::slotDetachNeighbors(const qint64 listenerOid)
   QPointer<spoton_listener> listener = 0;
 
   if(m_listeners.contains(listenerOid))
-    listener = m_listeners.value(listenerOid);
+    listener = m_listeners.value(listenerOid, 0);
   else
     spoton_misc::logError(QString("spoton_kernel::slotDetachNeighbors(): "
 				  "listener %1 not found.").
@@ -3716,7 +3716,7 @@ void spoton_kernel::slotDisconnectNeighbors(const qint64 listenerOid)
   QPointer<spoton_listener> listener = 0;
 
   if(m_listeners.contains(listenerOid))
-    listener = m_listeners.value(listenerOid);
+    listener = m_listeners.value(listenerOid, 0);
 
   if(listener)
     foreach(spoton_neighbor *socket,
