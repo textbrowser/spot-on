@@ -2,6 +2,7 @@
 0.23 (05/08/2015)
 <ol>
 <li>Added libspoton_delete_urls() to libspoton. Version updated to 0.10.</li>
+<li>Allow configuration of alternating row colors of Chat, E-Mail, and URLs participants. Please see Options.</li>
 <li>Assume zero pointer defaults in Qt::value().</li>
 <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
 <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
