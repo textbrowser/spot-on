@@ -1637,3 +1637,38 @@ void spoton::slotSaveCustomStatus(void)
 
   settings.setValue("gui/customStatus", text.trimmed().toUtf8());
 }
+
+void spoton::slotSaveAlternatingColors(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  QString str("");
+
+  if(checkBox == m_optionsUi.chatAlternatingRowColors)
+    {
+      m_ui.participants->setAlternatingRowColors(state);
+      str = "gui/chatAlternatingRowColors";
+    }
+  else if(checkBox == m_optionsUi.emailAlternatingRowColors)
+    {
+      m_ui.emailParticipants->setAlternatingRowColors(state);
+      str = "gui/emailAlternatingRowColors";
+    }
+  else if(checkBox == m_optionsUi.urlsAlternatingRowColors)
+    {
+      m_ui.urlParticipants->setAlternatingRowColors(state);
+      str = "gui/urlsAlternatingRowColors";
+    }
+
+  if(!str.isEmpty())
+    {
+      m_settings[str] = state;
+
+      QSettings settings;
+
+      settings.setValue(str, state);
+    }
+}

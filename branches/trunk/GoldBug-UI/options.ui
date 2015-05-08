@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-149</y>
-             <width>461</width>
-             <height>708</height>
+             <y>-272</y>
+             <width>458</width>
+             <height>806</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -279,6 +279,16 @@
                 <number>5</number>
                </property>
                <item>
+                <widget class="QCheckBox" name="chatAlternatingRowColors">
+                 <property name="text">
+                  <string>Alternating row &amp;colors.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QCheckBox" name="displayPopups">
                  <property name="text">
                   <string>&amp;Display participant popups automatically.</string>
@@ -409,6 +419,16 @@
                <property name="margin">
                 <number>5</number>
                </property>
+               <item>
+                <widget class="QCheckBox" name="emailAlternatingRowColors">
+                 <property name="text">
+                  <string>Alternating row &amp;colors.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
                <item>
                 <widget class="QCheckBox" name="refreshEmail">
                  <property name="text">
@@ -733,6 +753,25 @@
              </widget>
             </item>
             <item>
+             <widget class="QGroupBox" name="groupBox_17">
+              <property name="title">
+               <string>URLs</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_22">
+               <item>
+                <widget class="QCheckBox" name="urlsAlternatingRowColors">
+                 <property name="text">
+                  <string>Alternating row &amp;colors.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -772,8 +811,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>679</width>
-             <height>965</height>
+             <width>653</width>
+             <height>940</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1429,7 +1468,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1511,10 +1550,12 @@
   <tabstop>iconsize</tabstop>
   <tabstop>position</tabstop>
   <tabstop>buzzAutoJoin</tabstop>
+  <tabstop>chatAlternatingRowColors</tabstop>
   <tabstop>displayPopups</tabstop>
   <tabstop>enableChatEmoticons</tabstop>
   <tabstop>chatSendMethod</tabstop>
   <tabstop>chatUpdateInterval</tabstop>
+  <tabstop>emailAlternatingRowColors</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
   <tabstop>emailRetrievalInterval</tabstop>
   <tabstop>listenersUpdateInterval</tabstop>
@@ -1523,6 +1564,7 @@
   <tabstop>kernelUpdateInterval</tabstop>
   <tabstop>starbeamAutoVerify</tabstop>
   <tabstop>starbeamUpdateInterval</tabstop>
+  <tabstop>urlsAlternatingRowColors</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>
   <tabstop>acceptGeminis</tabstop>

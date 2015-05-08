@@ -1333,6 +1333,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveStarBeamAutoVerify(bool)));
+  connect(m_optionsUi.chatAlternatingRowColors,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveAlternatingColors(bool)));
+  connect(m_optionsUi.emailAlternatingRowColors,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveAlternatingColors(bool)));
+  connect(m_optionsUi.urlsAlternatingRowColors,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveAlternatingColors(bool)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1814,6 +1826,12 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/publishPeriodically", false).toBool());
   m_optionsUi.refreshEmail->setChecked
     (m_settings.value("gui/refreshEmail", false).toBool());
+  m_optionsUi.chatAlternatingRowColors->setChecked
+    (m_settings.value("gui/chatAlternatingRowColors", true).toBool());
+  m_optionsUi.emailAlternatingRowColors->setChecked
+    (m_settings.value("gui/emailAlternatingRowColors", true).toBool());
+  m_optionsUi.urlsAlternatingRowColors->setChecked
+    (m_settings.value("gui/urlsAlternatingRowColors", true).toBool());
   m_ui.saveCopy->setChecked
     (m_settings.value("gui/saveCopy", true).toBool());
   m_optionsUi.scrambler->setChecked
@@ -2067,6 +2085,12 @@ spoton::spoton(void):QMainWindow()
   m_ui.kernelSecureMemoryPool->setValue
     (m_settings.value("kernel/gcryctl_init_secmem", 65536).toInt());
   m_ui.destination->setToolTip(m_ui.destination->text());
+  m_ui.emailParticipants->setAlternatingRowColors
+    (m_optionsUi.emailAlternatingRowColors->isChecked());
+  m_ui.participants->setAlternatingRowColors
+    (m_optionsUi.chatAlternatingRowColors->isChecked());
+  m_ui.urlParticipants->setAlternatingRowColors
+    (m_optionsUi.urlsAlternatingRowColors->isChecked());
   m_ui.emailParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.listeners->setContextMenuPolicy(Qt::CustomContextMenu);
