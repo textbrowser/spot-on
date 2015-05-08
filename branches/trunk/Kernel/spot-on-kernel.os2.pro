@@ -34,7 +34,7 @@ LIBS		+= -L../../../libSpotOn \
 		   -L../../../libSpotOn/Libraries.win32 \
 		   -Lu:/usr/local473/lib \
 		   -lcrypto -lcurl -lgcrypt -lgpg-error -lmmap -lpthread \
-		   -lspoton -lssl -lssp_s
+		   -lspot -lssl -lssp_s
 PRE_TARGETDEPS = libspotn.dll
 
 HEADERS		= ../Common/spot-on-external-address.h \
