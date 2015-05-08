@@ -15,7 +15,7 @@ libspoton.o: libspoton.c libspoton.h
 	     libspot.def
 	     echo "DATA MULTIPLE" >> libspot.def
 	     echo "EXPORTS" >> libspot.def
-	     emxexp libspot.o >> libspot.def
+	     emxexp libspoton.o >> libspot.def
 
 clean:
 	rm -f libspot.*
