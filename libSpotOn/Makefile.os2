@@ -11,6 +11,7 @@ libspoton.o: libspoton.c libspoton.h
 	     -Wpointer-arith -Wsign-conversion -Wstrict-overflow=5 \
 	     -Wstrict-prototypes -DLIBSPOTON_OS_WINDOWS=1 \
 	     -c -o libspoton.o libspoton.c
+	     emxexp libspoton.o > libspoton.def
 
 clean:
 	rm -f libspoton.o
