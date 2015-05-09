@@ -3583,7 +3583,7 @@ void spoton_kernel::slotMessagingCachePurge(void)
 void spoton_kernel::purgeMessagingCache(void)
 {
   /*
-  ** Removed expired e-mail requests.
+  ** Remove expired e-mail requests.
   */
 
   QWriteLocker locker1(&s_emailRequestCacheMutex);
