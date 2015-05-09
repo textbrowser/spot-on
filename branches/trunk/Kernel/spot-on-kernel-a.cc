@@ -1641,11 +1641,17 @@ void spoton_kernel::slotMessageReceivedFromUI
 			   QString(""));
 
 	if(setting("gui/chatSignMessages", true).toBool())
-	  signature = s_crypt2->digitalSignature(myPublicKeyHash +
-						 name +
-						 message +
-						 sequenceNumber +
-						 utcDate, &ok);
+	  signature = s_crypt2->digitalSignature
+	    ("0000" +
+	     symmetricKey +
+	     hashKey +
+	     cipherType +
+	     hashType +
+	     myPublicKeyHash +
+	     name +
+	     message +
+	     sequenceNumber +
+	     utcDate, &ok);
 
 	if(ok)
 	  {
@@ -2313,7 +2319,14 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      signature = s_crypt2->digitalSignature
-			(myPublicKeyHash + name + status +
+			("0013" +
+			 symmetricKey +
+			 hashKey +
+			 symmetricKeyAlgorithm +
+			 hashType +
+			 myPublicKeyHash +
+			 name +
+			 status +
 			 dateTime.toUTC().toString("MMddyyyyhhmmss").
 			 toLatin1(), &ok);
 
@@ -2678,9 +2691,15 @@ void spoton_kernel::slotRetrieveMail(void)
 
 	      if(ok)
 		signature = s_crypt->digitalSignature
-		  (myPublicKeyHash + message +
-		   dateTime.toUTC().toString("MMddyyyyhhmmss").
-		   toLatin1(), &ok);
+		  ("0002a" +
+		   symmetricKey +
+		   hashKey +
+		   symmetricKeyAlgorithm +
+		   hashType +
+		   myPublicKeyHash +
+		   message +
+		   dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
+		   &ok);
 
 	      if(ok)
 		{
@@ -2956,7 +2975,12 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		  if(setting("gui/emailSignMessages",
 			     true).toBool())
 		    signature = s_crypt2->digitalSignature
-		      (myPublicKeyHash +
+		      ("0001b" +
+		       symmetricKey +
+		       hashKey +
+		       symmetricKeyAlgorithm +
+		       hashType +
+		       myPublicKeyHash +
 		       items.value(0) + // Name
 		       items.value(1) + // Subject
 		       items.value(2) + // Message
@@ -3126,7 +3150,13 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		  if(setting("gui/emailSignMessages",
 			     true).toBool())
 		    signature = s_crypt2->digitalSignature
-		      (myPublicKeyHash + recipientHash, &ok);
+		      ("0001a" +
+		       symmetricKey +
+		       hashKey1 +
+		       symmetricKeyAlgorithm +
+		       hashType +
+		       myPublicKeyHash +
+		       recipientHash, &ok);
 
 		  if(ok)
 		    data1 = crypt.encrypted
@@ -3223,7 +3253,12 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		  if(setting("gui/emailSignMessages",
 			     true).toBool())
 		    signature = s_crypt2->digitalSignature
-		      (myPublicKeyHash +
+		      ("0001b" +
+		       symmetricKey +
+		       hashKey2 +
+		       symmetricKeyAlgorithm +
+		       hashType +
+		       myPublicKeyHash +
 		       items.value(0) + // Name
 		       items.value(1) + // Subject
 		       items.value(2) + // Message
@@ -3969,7 +4004,14 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      signature = s_crypt2->digitalSignature
-			(myPublicKeyHash + gemini.first + gemini.second +
+			("0000a" +
+			 symmetricKey +
+			 hashKey +
+			 symmetricKeyAlgorithm +
+			 hashType +
+			 myPublicKeyHash +
+			 gemini.first +
+			 gemini.second +
 			 dateTime.toUTC().toString("MMddyyyyhhmmss").
 			 toLatin1(), &ok);
 
@@ -4935,7 +4977,14 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      signature = s_crypt2->digitalSignature
-			(myPublicKeyHash + geminis.first + geminis.second +
+			("0000c" +
+			 symmetricKey +
+			 hashKey +
+			 symmetricKeyAlgorithm +
+			 hashType +
+			 myPublicKeyHash +
+			 geminis.first +
+			 geminis.second +
 			 dateTime.toUTC().toString("MMddyyyyhhmmss").
 			 toLatin1(), &ok);
 

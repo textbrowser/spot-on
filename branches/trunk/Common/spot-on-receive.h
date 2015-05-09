@@ -46,6 +46,7 @@ class spoton_receive
 					const bool acceptSignedMessagesOnly,
 					const QHostAddress &address,
 					const quint16 port,
+					const QString &messageType,
 					spoton_crypt *s_crypt);
   static QList<QByteArray> process0000b
     (int length, const QByteArray &dataIn,

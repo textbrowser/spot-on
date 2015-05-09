@@ -35,7 +35,7 @@ Encryption Key
 2 - Message
 3 - Sequence Number
 4 - UTC Date
-5 - Signature
+5 - Signature (First Group and Previous Five Items)
 }
 EOL
 {
@@ -67,7 +67,7 @@ Encryption Key
 1 - Gemini Encryption Key
 2 - Gemini Digest Key
 3 - Timestamp
-4 - Signature
+4 - Signature (First Group and Previous Four Items)
 }
 EOL
 {
@@ -88,7 +88,7 @@ Gemini Encryption Key
 2 - Gemini Encryption Key
 3 - Gemini Digest Key
 4 - Timestamp
-5 - Signature
+5 - Signature (Previous Five Items)
 }
 EOL
 {
@@ -124,7 +124,7 @@ Encryption Key 1
 EOL
 1 - Recipient's SHA-512 Digest (Base-64)
 EOL
-2 - Signature (Base-64)
+2 - Signature (First Group and Previous Two Items) (Base-64)
 }
 EOL
 Public Key
@@ -154,7 +154,7 @@ EOL
 EOL
 5 - Attachment Name (Optional Gold Bug) (Base-64)
 EOL
-6 - Signature (Optional Gold Bug) (Base-64)
+6 - Signature (0001b Group and Previous Six Items) (Optional Gold Bug) (Base-64)
 EOL
 7 - Gold Bug Used? (Base-64)
 }
@@ -202,7 +202,7 @@ EOL
 EOL
 5 - Attachment Name (Optional Gold Bug) (Base-64)
 EOL
-6 - Signature (Optional Gold Bug) (Base-64)
+6 - Signature (First Group and Previous Six Items) (Optional Gold Bug) (Base-64)
 EOL
 7 - Gold Bug Used? (Base-64)
 }
@@ -257,7 +257,7 @@ EOL
 EOL
 2 - Timestamp (Base-64)
 EOL
-3 - Signature (Base-64)
+3 - Signature (First Group and Previous Three Items) (Base-64)
 }
 EOL
 {
@@ -284,7 +284,7 @@ EOL
 EOL
 4 - Timestamp (Base-64)
 EOL
-5 - Signature (Base-64)
+5 - Signature (Previous Five Items) (Base-64)
 }
 EOL
 {
@@ -349,7 +349,7 @@ Encryption Key
 1 - Name
 2 - Status
 3 - UTC Date
-4 - Signature
+4 - Signature (First Group and Previous Four Items)
 }
 EOL
 {

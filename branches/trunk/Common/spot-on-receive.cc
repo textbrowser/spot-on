@@ -262,7 +262,12 @@ QList<QByteArray> spoton_receive::process0000
 			    {
 			      if(acceptSignedMessagesOnly)
 				if(!spoton_misc::
-				   isValidSignature(list.value(0) +
+				   isValidSignature("0000" +
+						    symmetricKey +
+						    hashKey +
+						    symmetricKeyAlgorithm +
+						    hashKeyAlgorithm +
+						    list.value(0) +
 						    list.value(1) +
 						    list.value(2) +
 						    list.value(3) +
@@ -323,6 +328,7 @@ QList<QByteArray> spoton_receive::process0000a
  const bool acceptSignedMessagesOnly,
  const QHostAddress &address,
  const quint16 port,
+ const QString &messageType,
  spoton_crypt *s_crypt)
 {
   if(!s_crypt)
@@ -468,7 +474,12 @@ QList<QByteArray> spoton_receive::process0000a
 				   ** 4 - Signature
 				   */
 
-				   isValidSignature(list.value(0) +
+				   isValidSignature(messageType.toLatin1() +
+						    symmetricKey +
+						    hashKey +
+						    symmetricKeyAlgorithm +
+						    hashKeyAlgorithm +
+						    list.value(0) +
 						    list.value(1) +
 						    list.value(2) +
 						    list.value(3),
@@ -1014,7 +1025,12 @@ QList<QByteArray> spoton_receive::process0013
 			    {
 			      if(acceptSignedMessagesOnly)
 				if(!spoton_misc::
-				   isValidSignature(list.value(0) +
+				   isValidSignature("0013" +
+						    symmetricKey +
+						    hashKey +
+						    symmetricKeyAlgorithm +
+						    hashKeyAlgorithm +
+						    list.value(0) +
 						    list.value(1) +
 						    list.value(2) +
 						    list.value(3),
@@ -1169,7 +1185,22 @@ QString spoton_receive::findMessageType
 	  type = QByteArray::fromBase64(data.split('\n').value(0));
 
 	if(!type.isEmpty())
-	  goto done_label;
+	  {
+	    if(type == "0001b")
+	      {
+		QList<QByteArray> list(data.split('\n'));
+
+		for(int i = 0; i < list.size(); i++)
+		  list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+		symmetricKeys.append(list.value(1));
+		symmetricKeys.append(list.value(3));
+		symmetricKeys.append(list.value(2));
+		symmetricKeys.append(list.value(4));
+	      }
+
+	    goto done_label;
+	  }
       }
 
  done_label:

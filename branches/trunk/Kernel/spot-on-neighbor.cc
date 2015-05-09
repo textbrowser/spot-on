@@ -2406,6 +2406,7 @@ void spoton_neighbor::process0000a(int length, const QByteArray &dataIn,
 							 "Only",
 							 true).toBool(),
 				  m_address, m_port,
+				  messageType,
 				  spoton_kernel::s_crypts.value("chat", 0)));
 
   if(!list.isEmpty())
@@ -2551,7 +2552,12 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 					    "MessagesOnly",
 					    true).toBool())
 		    if(!spoton_misc::
-		       isValidSignature(senderPublicKeyHash1 +
+		       isValidSignature("0001a" +
+					symmetricKey +
+					hashKey +
+					symmetricKeyAlgorithm +
+					hashKeyAlgorithm +
+					senderPublicKeyHash1 +
 					recipientHash,
 					senderPublicKeyHash1,
 					signature,
@@ -2698,6 +2704,8 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 
 			  storeLetter(symmetricKey,
 				      symmetricKeyAlgorithm,
+				      hashKey,
+				      hashKeyAlgorithm,
 				      senderPublicKeyHash2,
 				      name,
 				      subject,
@@ -2724,7 +2732,12 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 		if(spoton_kernel::setting("gui/coAcceptSignedMessagesOnly",
 					  true).toBool())
 		  if(!spoton_misc::
-		     isValidSignature(senderPublicKeyHash1 +
+		     isValidSignature("0001a" +
+				      symmetricKey +
+				      hashKey +
+				      symmetricKeyAlgorithm +
+				      hashKeyAlgorithm +
+				      senderPublicKeyHash1 +
 				      recipientHash,
 				      senderPublicKeyHash1,
 				      signature,
@@ -2864,6 +2877,8 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 			      storeLetter
 				(symmetricKey,
 				 symmetricKeyAlgorithm,
+				 hashKey,
+				 hashKeyAlgorithm,
 				 list.value(0),  // Public Key Hash
 				 list.value(1),  // Name
 				 list.value(2),  // Subject
@@ -3049,7 +3064,13 @@ void spoton_neighbor::process0002a
 			  saveParticipantStatus
 			    (list.value(0)); // Public Key Hash
 			  emit retrieveMail
-			    (list.value(0) + list.value(1) +
+			    ("0002a" +
+			     symmetricKey +
+			     hashKey +
+			     symmetricKeyAlgorithm +
+			     hashKeyAlgorithm +
+			     list.value(0) +
+			     list.value(1) +
 			     list.value(2), // Data
 			     list.value(0), // Public Key Hash
 			     list.value(2), // Timestamp
@@ -4545,6 +4566,8 @@ void spoton_neighbor::slotSendMailFromPostOffice
 
 void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 				  const QByteArray &symmetricKeyAlgorithm,
+				  const QByteArray &hashKey,
+				  const QByteArray &hashKeyAlgorithm,
 				  const QByteArray &senderPublicKeyHash,
 				  const QByteArray &name,
 				  const QByteArray &subject,
@@ -4577,7 +4600,12 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
   if(spoton_kernel::setting("gui/emailAcceptSignedMessagesOnly",
 			    true).toBool())
     if(!spoton_misc::
-       isValidSignature(senderPublicKeyHash +
+       isValidSignature("0001b" +
+			symmetricKey +
+			hashKey +
+			symmetricKeyAlgorithm +
+			hashKeyAlgorithm +
+			senderPublicKeyHash +
 			name +
 			subject +
 			message +
@@ -5374,6 +5402,7 @@ QString spoton_neighbor::findMessageType
 	      type = "0002b";
 	    else
 	      type = "0001b";
+
 	    goto done_label;
 	  }
       }
@@ -5392,7 +5421,22 @@ QString spoton_neighbor::findMessageType
 	    type = QByteArray::fromBase64(data.split('\n').value(0));
 
 	  if(!type.isEmpty())
-	    goto done_label;
+	    {
+	      if(type == "0001b")
+		{
+		  QList<QByteArray> list(data.split('\n'));
+
+		  for(int i = 0; i < list.size(); i++)
+		    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+		  symmetricKeys.append(list.value(1));
+		  symmetricKeys.append(list.value(3));
+		  symmetricKeys.append(list.value(2));
+		  symmetricKeys.append(list.value(4));
+		}
+
+	      goto done_label;
+	    }
 	}
 
  done_label:

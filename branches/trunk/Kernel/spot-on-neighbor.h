@@ -286,6 +286,8 @@ class spoton_neighbor: public QThread
   void saveStatus(const QString &status);
   void storeLetter(const QByteArray &symmetricKey,
 		   const QByteArray &symmetricKeyAlgorithm,
+		   const QByteArray &hashKey,
+		   const QByteArray &hashKeyAlgorithm,
 		   const QByteArray &senderPublicKeyHash,
 		   const QByteArray &name,
 		   const QByteArray &subject,

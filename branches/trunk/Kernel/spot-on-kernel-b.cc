@@ -714,6 +714,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		      setting("gui/chatAcceptSignedMessagesOnly", true).
 		      toBool(),
 		      QHostAddress("127.0.0.1"), 0,
+		      messageType,
 		      s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
@@ -785,7 +786,12 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  if(setting("gui/emailAcceptSignedMessagesOnly",
 		     true).toBool())
 	    if(!spoton_misc::
-	       isValidSignature(senderPublicKeyHash +
+	       isValidSignature("0001b" +
+				symmetricKeys.value(0) + // Encryption Key
+				symmetricKeys.value(2) + // Hash Key
+				symmetricKeys.value(1) + // Encryption Type
+				symmetricKeys.value(3) + // Hash Type
+				senderPublicKeyHash +
 				name +
 				subject +
 				message +
