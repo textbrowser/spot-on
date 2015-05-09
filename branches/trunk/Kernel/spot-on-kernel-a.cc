@@ -534,7 +534,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SLOT(slotStatusTimerExpired(void)));
   m_controlDatabaseTimer.start(2500);
   m_impersonateTimer.setInterval(2500);
-  m_messagingCachePurgeTimer.setInterval(15000);
+  m_messagingCachePurgeTimer.setInterval
+    (setting("kernel/cachePurgeInterval", 15000).toInt());
 
   if(!setting("gui/disablePop3", false).toBool())
     m_poptasticPopTimer.start
@@ -1906,6 +1907,12 @@ void spoton_kernel::slotUpdateSettings(void)
     }
   else
     m_publishAllListenersPlaintextTimer.stop();
+
+  integer = static_cast<int>
+    (1000 * setting("kernel/cachePurgeInterval", 15.00).toDouble());
+
+  if(integer != m_messagingCachePurgeTimer.interval())
+    m_messagingCachePurgeTimer.start(integer);
 }
 
 void spoton_kernel::connectSignalsToNeighbor

@@ -2439,6 +2439,14 @@ void spoton::slotUpdateSpinBoxChanged(double value)
       m_settings["gui/participantsUpdateTimer"] = value;
       settings.setValue("gui/participantsUpdateTimer", value);
     }
+  else if(doubleSpinBox == m_optionsUi.kernelCacheInterval)
+    {
+      if(value < 5.00)
+	value = 15.00;
+
+      m_settings["kernel/cachePurgeInterval"] = value;
+      settings.setValue("kernel/cachePurgeInterval", value);
+    }
   else if(doubleSpinBox == m_optionsUi.kernelUpdateInterval)
     {
       m_kernelUpdateTimer.setInterval(static_cast<int> (1000 * value));

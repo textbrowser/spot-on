@@ -1287,6 +1287,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(double)),
 	  this,
 	  SLOT(slotUpdateSpinBoxChanged(double)));
+  connect(m_optionsUi.kernelCacheInterval,
+	  SIGNAL(valueChanged(double)),
+	  this,
+	  SLOT(slotUpdateSpinBoxChanged(double)));
   connect(m_ui.discover,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1537,6 +1541,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());
   m_emailRetrievalTimer.setInterval
     (m_settings.value("gui/emailRetrievalInterval", 5 * 60 * 1000).toInt());
+  m_optionsUi.kernelCacheInterval->setValue
+    (m_settings.value("kernel/cachePurgeInterval", 15.00).toDouble());
   m_optionsUi.kernelUpdateInterval->setValue
     (m_settings.value("gui/kernelUpdateTimer", 3.50).toDouble());
   m_optionsUi.listenersUpdateInterval->setValue

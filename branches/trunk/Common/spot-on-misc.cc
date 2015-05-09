@@ -1987,6 +1987,15 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 512;
 
   settings.insert("gui/saltLength", integer);
+  rational = qAbs(settings.value("kernel/cachePurgeInterval", 15.00).
+		  toDouble(&ok));
+
+  if(!ok)
+    rational = 15.00;
+  else if(rational < 5.00 || rational > 90.00)
+    rational = 15.00;
+
+  settings.insert("kernel/cachePurgeInterval", rational);
   integer = qAbs(settings.value("kernel/gcryctl_init_secmem",
 				65536).toInt(&ok));
 
