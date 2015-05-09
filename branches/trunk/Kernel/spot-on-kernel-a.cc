@@ -535,7 +535,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_controlDatabaseTimer.start(2500);
   m_impersonateTimer.setInterval(2500);
   m_messagingCachePurgeTimer.setInterval
-    (setting("kernel/cachePurgeInterval", 15000).toInt());
+    (static_cast<int> (1000 * setting("kernel/cachePurgeInterval", 15.00).
+		       toDouble()));
 
   if(!setting("gui/disablePop3", false).toBool())
     m_poptasticPopTimer.start
