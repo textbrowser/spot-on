@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>522</width>
+    <width>548</width>
     <height>815</height>
    </rect>
   </property>
@@ -173,6 +173,11 @@ QPushButton:pressed {
          </property>
          <item>
           <widget class="QTextEdit" name="newContact">
+           <property name="font">
+            <font>
+             <family>Monospace</family>
+            </font>
+           </property>
            <property name="styleSheet">
             <string notr="true">background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0.5, stop:0 rgba(183, 235, 255, 255), stop:1 rgba(255, 255, 255, 255)); </string>
            </property>
@@ -789,8 +794,8 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>522</width>
-     <height>25</height>
+     <width>548</width>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

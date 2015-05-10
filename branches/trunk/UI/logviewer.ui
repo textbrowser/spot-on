@@ -102,7 +102,7 @@
   </action>
   <action name="action_Empty_Log">
    <property name="text">
-    <string>&amp;Empty Log</string>
+    <string>&amp;Clear</string>
    </property>
   </action>
   <action name="actionEnable_Log">
