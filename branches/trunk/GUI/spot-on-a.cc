@@ -2305,6 +2305,24 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.tab->setIconSize(size);
   prepareContextMenuMirrors();
+
+  QList<QWidget *> widgets;
+
+  widgets << m_ui.etpMagnet
+	  << m_ui.friendInformation
+	  << m_ui.motd
+	  << m_ui.neighborSummary
+	  << m_ui.searchfor
+	  << m_ui.urls;
+
+  for(int i = 0; i < widgets.size(); i++)
+    {
+      QFont font(widgets.at(i)->font());
+
+      font.setStyleHint(QFont::Monospace);
+      widgets.at(i)->setFont(font);
+    }
+
   show();
   update();
 

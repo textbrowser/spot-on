@@ -129,6 +129,11 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.cipher->addItems(spoton_crypt::cipherTypes());
   ui.hash->addItems(spoton_crypt::hashTypes());
 
+  QFont font(ui.newContact->font());
+
+  font.setStyleHint(QFont::Monospace);
+  ui.newContact->setFont(font);
+
   /*
   ** Please do not translate n/a.
   */
