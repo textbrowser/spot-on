@@ -202,7 +202,7 @@
          <enum>Qt::LeftToRight</enum>
         </property>
         <property name="text">
-         <string>Echo Magnet</string>
+         <string>Echo Magnets</string>
         </property>
        </widget>
       </item>
