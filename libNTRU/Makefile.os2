@@ -35,6 +35,7 @@ all: lib
 
 lib: $(LIB_OBJS_PATHS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -shared -o libntru.dll $(LIB_OBJS_PATHS)
+	dllar -Zomf -o libntru.dll src/*.o
 
 install: lib
 	mkdir "$(DESTDIR)$(INST_PFX)"
