@@ -81,11 +81,11 @@ dist:
 
 test:
 	$(MAKE) -f $(MAKEFILENAME) testnoham
-	echo.
+	echo
 	echo Testing patent-reduced build
 	testnoham.exe
 	$(MAKE) -f $(MAKEFILENAME) testham
-	echo.
+	echo
 	echo Testing full build
 	testham.exe
 
