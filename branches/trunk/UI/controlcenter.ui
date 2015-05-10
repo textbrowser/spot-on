@@ -2464,7 +2464,7 @@
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>0</y>
+                     <y>-936</y>
                      <width>240</width>
                      <height>1433</height>
                     </rect>
@@ -2853,7 +2853,13 @@
                         <number>5</number>
                        </property>
                        <item>
-                        <widget class="QPlainTextEdit" name="motd"/>
+                        <widget class="QPlainTextEdit" name="motd">
+                         <property name="font">
+                          <font>
+                           <family>Monospace</family>
+                          </font>
+                         </property>
+                        </widget>
                        </item>
                        <item>
                         <layout class="QHBoxLayout" name="horizontalLayout_80">
@@ -3232,6 +3238,11 @@
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Monospace</family>
+                     </font>
                     </property>
                     <property name="tabChangesFocus">
                      <bool>true</bool>
@@ -3859,6 +3870,11 @@
                     </item>
                     <item>
                      <widget class="QTextEdit" name="friendInformation">
+                      <property name="font">
+                       <font>
+                        <family>Monospace</family>
+                       </font>
+                      </property>
                       <property name="tabChangesFocus">
                        <bool>true</bool>
                       </property>
@@ -4005,7 +4021,7 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-375</y>
                  <width>752</width>
                  <height>602</height>
                 </rect>
@@ -4734,6 +4750,11 @@
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Monospace</family>
+                  </font>
+                 </property>
                  <property name="tabChangesFocus">
                   <bool>true</bool>
                  </property>
@@ -4747,6 +4768,11 @@
                </item>
                <item>
                 <widget class="QTextBrowser" name="urls">
+                 <property name="font">
+                  <font>
+                   <family>Monospace</family>
+                  </font>
+                 </property>
                  <property name="tabChangesFocus">
                   <bool>true</bool>
                  </property>
@@ -4836,7 +4862,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-498</y>
              <width>762</width>
              <height>1081</height>
             </rect>
@@ -6118,6 +6144,11 @@
                          <horstretch>0</horstretch>
                          <verstretch>0</verstretch>
                         </sizepolicy>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Monospace</family>
+                        </font>
                        </property>
                        <property name="tabChangesFocus">
                         <bool>true</bool>
