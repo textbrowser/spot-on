@@ -81,21 +81,21 @@ dist:
 
 test:
 	$(MAKE) -f $(MAKEFILENAME) testnoham
-	@echo.
-	@echo Testing patent-reduced build
+	echo.
+	echo Testing patent-reduced build
 	testnoham.exe
 	$(MAKE) -f $(MAKEFILENAME) testham
-	@echo.
-	@echo Testing full build
+	echo.
+	echo Testing full build
 	testham.exe
 
 testham: clean lib $(TEST_OBJS_PATHS)
-	@echo CFLAGS=$(CFLAGS)
+	echo CFLAGS=$(CFLAGS)
 	$(CC) $(CFLAGS) -o testham.exe $(TEST_OBJS_PATHS) -L. -lntru -lm
 
 testnoham: CFLAGS += -DNTRU_AVOID_HAMMING_WT_PATENT
 testnoham: clean lib $(TEST_OBJS_PATHS)
-	@echo CFLAGS=$(CFLAGS)
+	echo CFLAGS=$(CFLAGS)
 	$(CC) $(CFLAGS) -o testnoham.exe $(TEST_OBJS_PATHS) -L. -lntru -lm
 
 bench: lib
