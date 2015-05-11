@@ -4627,7 +4627,12 @@ void spoton_kernel::discoverAdaptiveEchoPair
   if(d.isEmpty())
     return;
 
-  QByteArray last(QByteArray::fromBase64(data.split('\n').last()));
+  QList<QByteArray> list(data.split('\n'));
+
+  if(list.isEmpty())
+    return;
+
+  QByteArray last(QByteArray::fromBase64(list.last()));
 
   if(last.isEmpty())
     return;
