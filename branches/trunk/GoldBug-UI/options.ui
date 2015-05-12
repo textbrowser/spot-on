@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-353</y>
-             <width>462</width>
-             <height>883</height>
+             <y>0</y>
+             <width>458</width>
+             <height>839</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -857,8 +857,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>581</width>
-             <height>977</height>
+             <width>653</width>
+             <height>912</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -916,6 +916,22 @@
                 <widget class="QCheckBox" name="chatAcceptSigned">
                  <property name="text">
                   <string>&amp;Accept only signed geminis, messages, and status bulletins.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="autoAddSharedSBMagnets">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Accept shared StarBeam &amp;magnets.</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -1427,37 +1443,6 @@
              </widget>
             </item>
             <item>
-             <widget class="QGroupBox" name="groupBox_13">
-              <property name="title">
-               <string>StarBeam</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_19">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="autoAddSharedSBMagnets">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Accept shared &amp;magnets.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
              <widget class="QGroupBox" name="groupBox_15">
               <property name="title">
                <string>URLs</string>
@@ -1514,7 +1499,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1587,7 +1572,6 @@
   <tabstop>scrambler</tabstop>
   <tabstop>sharePrivateKeys</tabstop>
   <tabstop>superEcho</tabstop>
-  <tabstop>autoAddSharedSBMagnets</tabstop>
   <tabstop>acceptUrlKeys</tabstop>
   <tabstop>scrambler</tabstop>
   <tabstop>sharePrivateKeys</tabstop>
@@ -1616,6 +1600,7 @@
   <tabstop>acceptBuzzMagnets</tabstop>
   <tabstop>acceptGeminis</tabstop>
   <tabstop>chatAcceptSigned</tabstop>
+  <tabstop>autoAddSharedSBMagnets</tabstop>
   <tabstop>acceptChatKeys</tabstop>
   <tabstop>impersonate</tabstop>
   <tabstop>chatSignMessages</tabstop>
@@ -1635,7 +1620,6 @@
   <tabstop>scrambler</tabstop>
   <tabstop>sharePrivateKeys</tabstop>
   <tabstop>superEcho</tabstop>
-  <tabstop>autoAddSharedSBMagnets</tabstop>
   <tabstop>acceptUrlKeys</tabstop>
  </tabstops>
  <resources>
