@@ -541,9 +541,14 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  if(dateTime.isValid())
 		    {
+		      QDateTime d(dateTime);
+		      QDateTime n(now);
 		      QString str("green");
 
-		      if(qAbs(dateTime.secsTo(now)) >
+		      d.setTimeSpec(Qt::UTC);
+		      n.setTimeSpec(Qt::UTC);
+
+		      if(qAbs(d.secsTo(n)) >
 			 spoton_common::CHAT_MAXIMUM_DELTA_MAXIMUM)
 			str = "red";
 
