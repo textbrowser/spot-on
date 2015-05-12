@@ -540,15 +540,24 @@ void spoton::slotReceivedKernelMessage(void)
 		     arg(now.toString("ss")));
 
 		  if(dateTime.isValid())
-		    msg.append
-		      (QString("[%1/%2/%3 "
-			       "<font color=green>%4:%5:%6</font>]").
-		       arg(dateTime.toString("MM")).
-		       arg(dateTime.toString("dd")).
-		       arg(dateTime.toString("yyyy")).
-		       arg(dateTime.toString("hh")).
-		       arg(dateTime.toString("mm")).
-		       arg(dateTime.toString("ss")));
+		    {
+		      QString str("green");
+
+		      if(qAbs(dateTime.secsTo(now)) >
+			 spoton_common::CHAT_MAXIMUM_DELTA_MAXIMUM)
+			str = "red";
+
+		      msg.append
+			(QString("[%1/%2/%3 "
+				 "<font color=%4>%5:%6:%7</font>]").
+			 arg(dateTime.toString("MM")).
+			 arg(dateTime.toString("dd")).
+			 arg(dateTime.toString("yyyy")).
+			 arg(str).
+			 arg(dateTime.toString("hh")).
+			 arg(dateTime.toString("mm")).
+			 arg(dateTime.toString("ss")));
+		    }
 		  else
 		    msg.append
 		      ("[00/00/0000 <font color=red>00:00:00</font>]");
