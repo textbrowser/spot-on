@@ -542,7 +542,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(dateTime.isValid())
 		    {
 		      QDateTime d(dateTime);
-		      QDateTime n(now);
+		      QDateTime n(now.toUTC());
 		      QString str("green");
 
 		      d.setTimeSpec(Qt::UTC);
