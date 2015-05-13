@@ -1627,10 +1627,6 @@ void spoton::slotSaveCustomStatus(void)
   QString text
     (m_ui.custom->toPlainText().mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
 
-  m_ui.custom->blockSignals(true);
-  m_ui.custom->clear();
-  m_ui.custom->append(text);
-  m_ui.custom->blockSignals(false);
   m_settings["gui/customStatus"] = text.trimmed().toUtf8();
 
   QSettings settings;
