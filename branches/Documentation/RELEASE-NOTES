@@ -6,7 +6,7 @@
 <li>Allow configuration of the kernel's cache purge timer.</li>
 <li>Assume zero pointer defaults in Qt::value().</li>
 <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
-<li>Denote extreme time deltas in Chat. Currently configured to fifteen seconds. Source only.</li>
+<li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
 <li>Digital signatures should vouch for private key information.</li>
 <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
 <li>Guard QList::last().</li>

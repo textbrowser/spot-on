@@ -48,7 +48,7 @@ namespace spoton_common
 						 ** will be represented in
 						 ** base sixteen.
 						 */
-  static const int CHAT_MAXIMUM_DELTA_MAXIMUM = 15;
+  static const int CHAT_MAXIMUM_DELTA_MAXIMUM = 30;
   static const int NAME_MAXIMUM_LENGTH = 64;
   static const int STATUS_MAXIMUM_LENGTH = 64;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =

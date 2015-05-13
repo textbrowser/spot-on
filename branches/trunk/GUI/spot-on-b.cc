@@ -550,7 +550,7 @@ void spoton::slotReceivedKernelMessage(void)
 
 		      if(qAbs(d.secsTo(n)) >
 			 spoton_common::CHAT_MAXIMUM_DELTA_MAXIMUM)
-			str = "red";
+			str = "#ff8c00";
 
 		      if(str == "green")
 			msg.append
