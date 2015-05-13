@@ -136,6 +136,7 @@ void spoton::slotUpdateChatWindows(void)
 	QString name("");
 	QString oid("");
 	QString publicKeyHash("");
+	QString status("");
 	QTableWidgetItem *item = 0;
 
 	item = m_ui.participants->item(i, 0);
@@ -151,12 +152,17 @@ void spoton::slotUpdateChatWindows(void)
 	if(item)
 	  oid = item->text();
 
+	item = m_ui.participants->item(i, 4);
+
+	if(item)
+	  status = item->text();
+
 	if(!oid.isEmpty())
 	  {
 	    if(!m_chatWindows.contains(oid))
 	      m_chatWindows.remove(oid);
 
-	    emit statusChanged(icon, name, oid);
+	    emit statusChanged(icon, name, oid, status);
 	  }
 
 	item = m_ui.participants->item(i, 3);

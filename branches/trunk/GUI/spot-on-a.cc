@@ -6746,6 +6746,7 @@ void spoton::slotPopulateParticipants(void)
 	      QString name("");
 	      QString oid("");
 	      QString status(query.value(4).toString().toLower());
+	      QString statusText("");
 	      bool ok = true;
 	      bool temporary =
 		query.value(2).toLongLong() == -1 ? false : true;
@@ -6837,6 +6838,8 @@ void spoton::slotPopulateParticipants(void)
 			    item = new QTableWidgetItem(tr("Online"));
 			  else
 			    item = new QTableWidgetItem(status);
+
+			  statusText = item->text();
 			}
 		      else if(i == 6 ||
 			      i == 7) /*
@@ -7076,7 +7079,7 @@ void spoton::slotPopulateParticipants(void)
 		}
 
 	      if(keyType == "chat" || keyType == "poptastic")
-		emit statusChanged(icon, name, oid);
+		emit statusChanged(icon, name, oid, statusText);
 
 	      if(hashes.contains(query.value(3).toString()))
 		rows.append(row - 1);

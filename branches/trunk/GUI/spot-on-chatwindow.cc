@@ -46,6 +46,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &keyType,
 				     const QString &participant,
 				     const QString &publicKeyHash,
+				     const QString &status,
 				     QSslSocket *kernelSocket,
 				     spoton_crypt *crypt,
 				     QWidget *parent):QMainWindow(parent)
@@ -114,6 +115,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 
   ui.echo->setVisible(false);
   ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
+
+  if(!status.trimmed().isEmpty())
+    ui.icon->setToolTip(status.trimmed());
+
   ui.line->setVisible(false);
 
   if(participant.trimmed().isEmpty())
@@ -344,12 +349,18 @@ void spoton_chatwindow::append(const QString &text)
 
 void spoton_chatwindow::slotSetStatus(const QIcon &icon,
 				      const QString &name,
-				      const QString &id)
+				      const QString &id,
+				      const QString &status)
 {
   if(id == m_id)
     {
       if(!icon.isNull())
-	ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
+	{
+	  ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
+
+	  if(!status.trimmed().isEmpty())
+	    ui.icon->setToolTip(status.trimmed());
+	}
 
       if(!name.trimmed().isEmpty())
 	{
