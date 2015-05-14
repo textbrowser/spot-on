@@ -14,7 +14,7 @@
 <li>Guard QList::last().</li>
 <li>Guard QList::removeAt().</li>
 <li>Notify the user of URL import statistics.</li>
-<li>Perform a database transaction before attempting to insert shared URLs. If the particular database driver does not support transactions, insert failures may create incomplete entries in the spot_on_keywords tables. If the imported URL cannot have its keywords stored and if the specified database does not support transactions, the import will be considered successful.</li>
+<li>Perform a database transaction before attempting to insert shared URLs. If the particular database driver does not support transactions, insert failures may create incomplete entries in the spot_on_keywords tables. If the imported URL cannot have all of its keywords stored and if the specified database does not support transactions, the particular import will be considered successful.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
 <li>Updated NTRU files (05/02/2015).</li>
 </ol>
