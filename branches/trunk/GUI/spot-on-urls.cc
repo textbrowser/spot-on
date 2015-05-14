@@ -450,6 +450,15 @@ void spoton::slotImportUrls(void)
       return;
     }
 
+  if(!m_urlCommonCrypt)
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Did you prepare common credentials?"));
+      return;
+    }
+
   /*
   ** We need to determine the encryption key that was
   ** used to encrypt the URLs shared by another application.
@@ -495,14 +504,10 @@ void spoton::slotImportUrls(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
+  int readEncrypted = 1;
+
   if(cipherType.isEmpty() || symmetricKey.isEmpty())
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Unable to retrieve the import cipher type and symmetric key."));
-      return;
-    }
+    readEncrypted = 0;
 
   QProgressDialog progress(this);
 
@@ -535,8 +540,11 @@ void spoton::slotImportUrls(void)
 	  if(query.next())
 	    progress.setMaximum(query.value(0).toInt());
 
-	if(query.exec("SELECT description, encrypted, title, url "
-		      "FROM urls"))
+	query.prepare("SELECT description, encrypted, title, url "
+		      "FROM urls WHERE encrypted = ?");
+	query.bindValue(0, readEncrypted);
+
+	if(query.exec())
 	  {
 	    int processed = 0;
 
