@@ -249,12 +249,13 @@ void spoton_encryptfile::slotConvert(void)
   statusBar()->showMessage
     (tr("Generating derived keys. Please be patient."));
   statusBar()->repaint();
-  derivedKeys = spoton_crypt::derivedKeys(ui.cipher->currentText(),
-					  ui.hash->currentText(),
-					  15000,
-					  password.toUtf8(),
-					  pin.toUtf8(),
-					  error);
+  derivedKeys = spoton_crypt::derivedKeys
+    (ui.cipher->currentText(),
+     ui.hash->currentText(),
+     static_cast<unsigned long> (ui.iteration_count->value()),
+     password.toUtf8(),
+     pin.toUtf8(),
+     error);
   statusBar()->clearMessage();
   QApplication::restoreOverrideCursor();
 
@@ -694,6 +695,7 @@ void spoton_encryptfile::slotReset(void)
   ui.encrypt->setChecked(true);
   ui.file->clear();
   ui.hash->setCurrentIndex(0);
+  ui.iteration_count->setValue(ui.iteration_count->minimum());
   ui.password->clear();
   ui.pin->clear();
   ui.readSize->setCurrentIndex(1);

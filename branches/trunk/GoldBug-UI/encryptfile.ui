@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>613</width>
+    <width>850</width>
     <height>285</height>
    </rect>
   </property>
@@ -291,6 +291,26 @@ QPushButton:pressed {
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>&amp;Iteration Count</string>
+        </property>
+        <property name="buddy">
+         <cstring>iteration_count</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="iteration_count">
+        <property name="minimum">
+         <number>15000</number>
+        </property>
+        <property name="maximum">
+         <number>999999999</number>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_5">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -477,8 +497,8 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>613</width>
-     <height>27</height>
+     <width>850</width>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -538,6 +558,7 @@ QPushButton:pressed {
   <tabstop>cbc</tabstop>
   <tabstop>gcm</tabstop>
   <tabstop>hash</tabstop>
+  <tabstop>iteration_count</tabstop>
   <tabstop>cancel</tabstop>
   <tabstop>readSize</tabstop>
   <tabstop>sign</tabstop>
