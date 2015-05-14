@@ -1221,7 +1221,13 @@ void spoton::slotAddDistiller(void)
   QUrl url(QUrl::fromUserInput(m_ui.domain->text().trimmed()));
   bool ok = true;
 
-  if(url.isEmpty() || !url.isValid())
+  if(!(m_ui.downDist->isChecked() || m_ui.upDist->isChecked()))
+    {
+      error = tr("Please specify at least one direction.");
+      ok = false;
+      goto done_label;
+    }
+  else if(url.isEmpty() || !url.isValid())
     {
       error = tr("Invalid domain.");
       ok = false;
@@ -1240,32 +1246,40 @@ void spoton::slotAddDistiller(void)
 	  (url.scheme().toLatin1() + "://" +
 	   url.host().toUtf8() + url.path().toUtf8());
 	QSqlQuery query(db);
-
-	query.prepare("INSERT INTO distillers "
-		      "(direction, "
-		      "domain, "
-		      "domain_hash) "
-		      "VALUES "
-		      "(?, ?, ?)");
+	QStringList list;
 
 	if(m_ui.downDist->isChecked())
-	  query.bindValue(0, "download");
-	else
-	  query.bindValue(0, "upload");
+	  list << "download";
 
-	query.bindValue
-	  (1,
-	   crypt->encryptedThenHashed(domain, &ok).toBase64());
+	if(m_ui.upDist->isChecked())
+	  list << "upload";
 
-	if(ok)
-	  query.bindValue
-	    (2, crypt->keyedHash(domain, &ok).toBase64());
+	for(int i = 0; i < list.size(); i++)
+	  {
+	    query.prepare("INSERT INTO distillers "
+			  "(direction, "
+			  "domain, "
+			  "domain_hash) "
+			  "VALUES "
+			  "(?, ?, ?)");
+	    query.bindValue(0, list.at(i));
+	    query.bindValue
+	      (1,
+	       crypt->encryptedThenHashed(domain, &ok).toBase64());
 
-	if(ok)
-	  ok = query.exec();
+	    if(ok)
+	      query.bindValue
+		(2, crypt->keyedHash(domain, &ok).toBase64());
 
-	if(query.lastError().isValid())
-	  error = query.lastError().text().trimmed();
+	    if(ok)
+	      ok = query.exec();
+
+	    if(query.lastError().isValid())
+	      {
+		error = query.lastError().text().trimmed();
+		break;
+	      }
+	  }
       }
     else
       {
