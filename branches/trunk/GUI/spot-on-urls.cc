@@ -249,8 +249,9 @@ void spoton::slotDeleteAllUrls(void)
 		    arg(SPOTON_APPLICATION_NAME));
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to vacuum all of the "
-		"URL databases? Your credentials will also be removed."));
+  mb.setText(tr("Are you sure that you wish to vacuum most of the "
+		"URL databases? Your credentials will also be removed. "
+		"The shared.db database will not be vacuumed."));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
