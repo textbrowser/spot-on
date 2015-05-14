@@ -479,6 +479,9 @@ class spoton: public QMainWindow
   bool event(QEvent *event);
 #endif
 #endif
+  bool importUrl(const QByteArray &description,
+		 const QByteArray &title,
+		 const QByteArray &url);
   bool isKernelActive(void) const;
   bool promptBeforeExit(void);
   bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
@@ -505,9 +508,6 @@ class spoton: public QMainWindow
   void generateHalfGeminis(void);
   void highlightPaths(void);
   void importNeighbors(const QString &filePath);
-  void importUrl(const QByteArray &description,
-		 const QByteArray &title,
-		 const QByteArray &url);
   void initializeKernelSocket(void);
   void initializeSMP(const QString &hash);
   void joinDefaultBuzzChannel(void);

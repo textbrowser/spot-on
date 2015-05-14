@@ -29,6 +29,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QProgressDialog>
+#include <QSqlDriver>
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
 #endif
@@ -525,6 +526,9 @@ void spoton::slotImportUrls(void)
   progress.show();
   progress.update();
 
+  quint64 imported = 0;
+  quint64 not_imported = 0;
+
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
@@ -565,7 +569,10 @@ void spoton::slotImportUrls(void)
 		if(encrypted)
 		  {
 		    if(!readEncrypted)
-		      continue;
+		      {
+			not_imported += 1;
+			continue;
+		      }
 
 		    spoton_crypt crypt
 		      (cipherType,
@@ -595,14 +602,23 @@ void spoton::slotImportUrls(void)
 		  }
 
 		if(ok)
-		  importUrl(description, title, url);
+		  ok = importUrl(description, title, url);
 
-		QSqlQuery deleteQuery(db);
+		if(ok)
+		  imported += 1;
+		else
+		  not_imported += 1;
 
-		deleteQuery.exec("PRAGMA secure_delete = ON");
-		deleteQuery.prepare("DELETE FROM urls WHERE url = ?");
-		deleteQuery.bindValue(0, query.value(3));
-		deleteQuery.exec();
+		if(ok)
+		  {
+		    QSqlQuery deleteQuery(db);
+
+		    deleteQuery.exec("PRAGMA secure_delete = ON");
+		    deleteQuery.prepare("DELETE FROM urls WHERE url = ?");
+		    deleteQuery.bindValue(0, query.value(3));
+		    deleteQuery.exec();
+		  }
+
 		processed += 1;
 		progress.update();
 #ifndef Q_OS_MAC
@@ -616,6 +632,13 @@ void spoton::slotImportUrls(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QMessageBox::information
+    (this, tr("%1: Information").
+     arg(SPOTON_APPLICATION_NAME),
+     tr("A total of %1 URL(s) was(were) imported and a total of %2 "
+	"URL(s) was(were) not "
+	"imported. URLs that were not imported will remain in shared.db.").
+     arg(imported).arg(not_imported));
 }
 
 void spoton::slotShowUrlSettings(void)
@@ -826,7 +849,7 @@ void spoton::slotSaveUrlCredentials(void)
     }
 }
 
-void spoton::importUrl(const QByteArray &d, // Description
+bool spoton::importUrl(const QByteArray &d, // Description
 		       const QByteArray &t, // Title
 		       const QByteArray &u) // URL
 {
@@ -835,15 +858,15 @@ void spoton::importUrl(const QByteArray &d, // Description
   */
 
   if(!m_urlCommonCrypt)
-    return;
+    return false;
 
   if(!m_urlDatabase.isOpen())
-    return;
+    return false;
 
   QUrl url(QUrl::fromUserInput(u));
 
   if(url.isEmpty() || !url.isValid())
-    return;
+    return false;
 
   QByteArray all_keywords;
   QByteArray description(d.trimmed());
@@ -866,7 +889,11 @@ void spoton::importUrl(const QByteArray &d, // Description
   urlHash = m_urlCommonCrypt->keyedHash(url.toEncoded(), &ok).toHex();
 
   if(!ok)
-    return;
+    return ok;
+
+  if(m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
+    if(!m_urlDatabase.transaction())
+      return false;
 
   QSqlQuery query(m_urlDatabase);
 
@@ -927,9 +954,28 @@ void spoton::importUrl(const QByteArray &d, // Description
 					  constData()));
 	  query.bindValue(0, keywordHash.constData());
 	  query.bindValue(1, urlHash.constData());
-	  query.exec();
+
+	  if(!query.exec())
+	    if(!query.lastError().text().toLower().contains("unique"))
+	      ok = false;
+
+	  if(!m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
+	    ok = true;
+
+	  if(!ok)
+	    break;
 	}
     }
+
+  if(m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
+    {
+      if(ok)
+	m_urlDatabase.commit();
+      else
+	m_urlDatabase.rollback();
+    }
+
+  return ok;
 }
 
 void spoton::slotPostgreSQLConnect(void)
