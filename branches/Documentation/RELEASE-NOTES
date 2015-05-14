@@ -7,15 +7,18 @@
 <li>Allow configuration of the kernel's cache purge timer.</li>
 <li>Allow importing of URLs without Import Credentials. Only plaintext URLs will be imported.</li>
 <li>Assume zero pointer defaults in Qt::value().</li>
+<li>Compute automatic digests in threads. Safely interrupt on process termination.</li>
 <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
 <li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
 <li>Digital signatures should vouch for private key information.</li>
 <li>Do not delete URLs from shared.db unless they were properly loaded.<li>
+<li>Dual-purpose domain check boxes. Please see URLs.</li>
 <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
 <li>Guard QList::last().</li>
 <li>Guard QList::removeAt().</li>
 <li>Notify the user of URL import statistics.</li>
 <li>Perform a database transaction before attempting to insert shared URLs. If the particular database driver does not support transactions, insert failures may create incomplete entries in the spot_on_keywords tables. If the imported URL cannot have all of its keywords stored and if the specified database does not support transactions, the particular import will be considered successful.</li>
+<li>Prompt before accessing a remote URL.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
 <li>Updated NTRU files (05/02/2015).</li>
 </ol>
