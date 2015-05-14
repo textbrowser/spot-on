@@ -1440,7 +1440,27 @@ void spoton::slotDeleteLink(const QUrl &u)
   if(!scheme.startsWith("delete-"))
     {
       if(m_settings.value("gui/openLinks", false).toBool())
-	QDesktopServices::openUrl(u);
+	{
+	  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+	  mb.setIcon(QMessageBox::Question);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	  mb.setText(tr("Are you sure that you wish to access %1?").
+		     arg(url.toString()));
+
+	  if(mb.exec() != QMessageBox::Yes)
+	    return;
+
+	  QDesktopServices::openUrl(u);
+	}
 
       return;
     }
