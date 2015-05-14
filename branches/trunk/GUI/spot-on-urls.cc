@@ -541,8 +541,7 @@ void spoton::slotImportUrls(void)
 	    progress.setMaximum(query.value(0).toInt());
 
 	query.prepare("SELECT description, encrypted, title, url "
-		      "FROM urls WHERE encrypted = ?");
-	query.bindValue(0, readEncrypted);
+		      "FROM urls");
 
 	if(query.exec())
 	  {
@@ -564,6 +563,9 @@ void spoton::slotImportUrls(void)
 
 		if(encrypted)
 		  {
+		    if(!readEncrypted)
+		      continue;
+
 		    spoton_crypt crypt
 		      (cipherType,
 		       QString(""),
