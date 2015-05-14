@@ -4283,7 +4283,7 @@ void spoton::slotSetIcons(int index)
   m_ui.saveNodeName->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   m_ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   list.clear();
-  list << "away.png" << "busy.png" << "chat.png" 
+  list << "away.png" << "busy.png" << "chat.png"
        << "offline.png" << "online.png";
 
   for(int i = 0; i < list.size(); i++)
