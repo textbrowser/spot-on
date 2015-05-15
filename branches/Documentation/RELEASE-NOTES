@@ -20,7 +20,7 @@
 <li>Perform a database transaction before attempting to insert shared URLs. If the particular database driver does not support transactions, insert failures may create incomplete entries in the spot_on_keywords tables. If the imported URL cannot have all of its keywords stored and if the specified database does not support transactions, the particular import will be considered successful.</li>
 <li>Prompt before accessing a remote URL.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
-<li>Updated NTRU files (05/02/2015).</li>
+<li>Updated NTRU files (05/14/2015).</li>
 </ol>
 0.22 (04/29/2015)
 <ol>

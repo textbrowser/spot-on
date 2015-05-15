@@ -1,4 +1,4 @@
-CC=gcc
+CC?=gcc
 AS=$(CC) -c
 OPTFLAGS=-O2
 bench: OPTFLAGS=-O3
@@ -12,6 +12,9 @@ endif
 ifeq ($(SSE), yes)
     CFLAGS+=-mssse3
 endif
+ifeq ($(SSE), no)
+    CFLAGS+=-march=x86-64
+endif
 SRCDIR=src
 TESTDIR=tests
 LIB_OBJS=bitstring.o encparams.o hash.o idxgen.o key.o mgf.o ntru.o poly.o rand.o arith.o sha1.o sha2.o
@@ -19,7 +22,7 @@ ifeq ($(SSE), yes)
     LIB_OBJS+=sha1-mb-x86_64.o sha256-mb-x86_64.o
 endif
 TEST_OBJS=test_bitstring.o test_hash.o test_idxgen.o test_key.o test_ntru.o test.o test_poly.o test_util.o
-VERSION=0.3
+VERSION=0.4
 INST_PFX=/usr
 INST_LIBDIR=$(INST_PFX)/lib
 INST_INCLUDE=$(INST_PFX)/include/libntru
@@ -113,7 +116,7 @@ tests/%.o: tests/%.c
 
 clean:
 	@# also clean files generated on other OSes
-	rm -f $(SRCDIR)/*.o $(SRCDIR)/*.s $(TESTDIR)/*.o libntru.so libntru.dylib libntru.dll testham testnoham testham.exe testnoham.exe bench bench.exe hybrid hybrid.exe
+	rm -f $(SRCDIR)/*.o $(SRCDIR)/*.s $(TESTDIR)/*.o libntru.so libntru.a libntru.dylib libntru.dll testham testnoham testham.exe testnoham.exe bench bench.exe hybrid hybrid.exe
 
 distclean: clean
 	rm -rf $(DIST_NAME)

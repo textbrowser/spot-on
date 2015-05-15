@@ -18,6 +18,7 @@
 #define htole64(x) (x)
 #define htole32(x) (x)
 #endif
+
 #ifdef __OS2__
 #include <endian.h>
 #endif
@@ -39,7 +40,7 @@ uint8_t ntru_rand_tern(uint16_t N, uint16_t num_ones, uint16_t num_neg_ones, Ntr
 
     uint16_t rand_len = num_ones + num_neg_ones + 10;   /* 10 more to avoid calling the RNG again, for up to 10 collisions */
     uint16_t rand_data[rand_len*2];
-    if (!rand_ctx->rand_gen->generate((uint8_t*)rand_data, rand_len*2, rand_ctx))
+    if (!ntru_rand_generate((uint8_t*)rand_data, rand_len*2, rand_ctx))
         return 0;
     uint16_t r_idx = 0;   /* index into rand_data */
 
@@ -50,7 +51,7 @@ uint8_t ntru_rand_tern(uint16_t N, uint16_t num_ones, uint16_t num_neg_ones, Ntr
         r_idx++;
         /* refill rand_data if we run out */
         if (r_idx >= rand_len) {
-            if (!rand_ctx->rand_gen->generate((uint8_t*)rand_data, rand_len*2, rand_ctx))
+            if (!ntru_rand_generate((uint8_t*)rand_data, rand_len*2, rand_ctx))
                 return 0;
             r_idx = 0;
         }
@@ -67,7 +68,7 @@ uint8_t ntru_rand_tern(uint16_t N, uint16_t num_ones, uint16_t num_neg_ones, Ntr
         r_idx++;
         /* refill rand_data if we run out */
         if (r_idx >= rand_len) {
-            if (!rand_ctx->rand_gen->generate((uint8_t*)rand_data, rand_len*2, rand_ctx))
+            if (!ntru_rand_generate((uint8_t*)rand_data, rand_len*2, rand_ctx))
                 return 0;
             r_idx = 0;
         }
@@ -149,33 +150,36 @@ uint8_t ntru_mult_int(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t m
 #endif
 }
 
-void ntru_mult_karatsuba_16(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uint16_t N) {
-    if (len < NTRU_KARATSUBA_THRESH_16) {
-        memset(c, 0, 2*(2*len-1));   /* only needed if N < NTRU_KARATSUBA_THRESH_16 */
-        uint16_t c_idx = 0;
-        uint16_t k;
-        for (k=0; k<2*len-1; k++) {
-            int16_t ck = 0;
-            uint16_t i;
-            int16_t istart = k - len + 1;
-            if (istart < 0)
-                istart = 0;
-            int16_t iend = k + 1;
-            if (iend > len)
-                iend = len;
-            int16_t a_idx = k - istart;
-            for (i=istart; i<iend; i++) {
-                ck += b[i] * a[a_idx];
-                a_idx--;
-                if (a_idx < 0)
-                    a_idx = len - 1;
-            }
-            c[c_idx] += ck;
-            c_idx++;
-            if (c_idx >= N)
-                c_idx = 0;
+void ntru_mult_int_16_base(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uint16_t N, uint16_t modulus) {
+    memset(c, 0, 2*(2*len-1));   /* only needed if N < NTRU_KARATSUBA_THRESH_16 */
+    uint16_t c_idx = 0;
+    uint16_t k;
+    for (k=0; k<2*len-1; k++) {
+        int16_t ck = 0;
+        uint16_t i;
+        int16_t istart = k - len + 1;
+        if (istart < 0)
+            istart = 0;
+        int16_t iend = k + 1;
+        if (iend > len)
+            iend = len;
+        int16_t a_idx = k - istart;
+        for (i=istart; i<iend; i++) {
+            ck += b[i] * a[a_idx];
+            a_idx--;
+            if (a_idx < 0)
+                a_idx = len - 1;
         }
+        c[c_idx] += ck;
+        c_idx++;
+        if (c_idx >= N)
+            c_idx = 0;
     }
+}
+
+void ntru_mult_karatsuba_16(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uint16_t N) {
+    if (len < NTRU_KARATSUBA_THRESH_16)
+        ntru_mult_int_16_base(a, b, c, len, N, -1);
     else {
         uint16_t len2 = len / 2;
         int16_t z0[NTRU_INT_POLY_SIZE];
@@ -239,7 +243,7 @@ uint8_t ntru_mult_int_16(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_
     return 1;
 }
 
-uint8_t ntru_mult_int_64_base(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uint16_t N, uint16_t modulus) {
+void ntru_mult_int_64_base(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uint16_t N, uint16_t modulus) {
     uint16_t N2 = (len+1) / 2;
     uint16_t mod_mask_16 = modulus - 1;
     uint64_t mod_mask_64 = mod_mask_16 + (mod_mask_16<<25);
@@ -290,8 +294,6 @@ uint8_t ntru_mult_int_64_base(int16_t *a, int16_t *b, int16_t *c, uint16_t len, 
         if (++k >= N)
             k = 0;
     }
-
-    return 1;
 }
 
 void ntru_mult_karatsuba_64(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uint16_t N, uint16_t modulus) {
@@ -580,7 +582,6 @@ uint8_t ntru_mult_tern_64(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint1
         }
     }
 
-    c->N = N;
     ntru_mod(c, modulus);
     return 1;
 }
@@ -645,7 +646,6 @@ uint8_t ntru_mult_tern_sse_sparse(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *
             c->coeffs[k] -= a->coeffs[j];
     }
 
-    c->N = N;
     ntru_mod(c, modulus);
     return 1;
 }
@@ -737,7 +737,6 @@ uint8_t ntru_mult_tern_sse_dense(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c
         ci++;
     }
 
-    c->N = N;
     return 1;
 }
 
@@ -1117,12 +1116,7 @@ void ntru_from_arr(uint8_t *arr, uint16_t N, uint16_t q, NtruIntPoly *p) {
     p->N = N;
     memset(&p->coeffs, 0, N * sizeof p->coeffs[0]);
 
-    uint8_t bits_per_coeff = 0;
-    while (q > 1) {
-        q /= 2;
-        bits_per_coeff++;
-    }
-
+    uint8_t bits_per_coeff = ntru_log2(q);
     uint32_t mask = 0xFFFFFFFF >> (32-bits_per_coeff);   /* for truncating values to bitsPerCoeff bits */
     uint16_t byte_idx = 0;
     uint8_t bit_idx = 0;   /* next bit in arr[byte_idx] */
@@ -1168,31 +1162,21 @@ void ntru_mod_sse(NtruIntPoly *p, uint16_t modulus) {
 
 void ntru_mod_64(NtruIntPoly *p, uint16_t modulus) {
     typedef uint64_t __attribute__((__may_alias__)) uint64_t_alias;
+    uint64_t mod_mask = modulus - 1;
+    mod_mask += mod_mask << 16;
+    mod_mask += mod_mask << 32;
     uint16_t i;
-    if (modulus == 2048)
-        for (i=0; i<p->N; i+=4)
-            *((uint64_t_alias*)&p->coeffs[i]) &= 0x07FF07FF07FF07FF;
-    else {
-        uint64_t mod_mask = modulus - 1;
-        mod_mask += mod_mask << 16;
-        mod_mask += mod_mask << 32;
-        for (i=0; i<p->N; i+=4)
-            *((uint64_t_alias*)&p->coeffs[i]) &= mod_mask;
-    }
+    for (i=0; i<p->N; i+=4)
+        *((uint64_t_alias*)&p->coeffs[i]) &= mod_mask;
 }
 
 void ntru_mod_32(NtruIntPoly *p, uint16_t modulus) {
     typedef uint32_t __attribute__((__may_alias__)) uint32_t_alias;
+    uint32_t mod_mask = modulus - 1;
+    mod_mask += mod_mask << 16;
     uint16_t i;
-    if (modulus == 2048)
-        for (i=0; i<p->N; i+=2)
-            *((uint32_t_alias*)&p->coeffs[i]) &= 0x07FF07FF07FF07FF;
-    else {
-        uint32_t mod_mask = modulus - 1;
-        mod_mask += mod_mask << 16;
-        for (i=0; i<p->N; i+=2)
-            *((uint32_t_alias*)&p->coeffs[i]) &= mod_mask;
-    }
+    for (i=0; i<p->N; i+=2)
+        *((uint32_t_alias*)&p->coeffs[i]) &= mod_mask;
 }
 
 void ntru_mod(NtruIntPoly *p, uint16_t modulus) {
@@ -1209,17 +1193,17 @@ void ntru_mod3_standard(NtruIntPoly *p) {
     uint16_t i;
     for (i=0; i<p->N; i++) {
         int8_t c = p->coeffs[i] % 3;
-        if (c > 1)
-            c = -1;
-        if (c < -1)
+        if (c == -2)
             c = 1;
+        if (c == -1)
+            c = 2;
         p->coeffs[i] = c;
     }
 }
 
 #ifdef __SSSE3__
 /* (i%3)+3 for i=0..7 */
-__m128i NTRU_MOD3_LUT = {0x0403020403020403, 0};
+__m128i NTRU_MOD3_LUT = {0x0403050403050403, 0};
 
 /**
  * SSE version of ntru_mod3.
@@ -1262,7 +1246,7 @@ void ntru_mod3_sse(NtruIntPoly *p) {
         /* _mm_shuffle_epi8 changed bytes 1, 3, 5, ... to non-zero; change them back to zero */
         mask = _mm_set1_epi16(0x00FF);
         a_mod3 = _mm_and_si128(a_mod3, mask);
-        /* subtract 3 so coefficients are in the -1..1 range */
+        /* subtract 3 so coefficients are in the 0..2 range */
         __m128i three = _mm_set1_epi16(0x0003);
         a_mod3 = _mm_sub_epi16(a_mod3, three);
 
@@ -1280,24 +1264,16 @@ void ntru_mod3(NtruIntPoly *p) {
 }
 
 void ntru_mod_center(NtruIntPoly *p, uint16_t modulus) {
+    uint16_t m2 = modulus / 2;
+    uint16_t mod_mask = modulus - 1;
     uint16_t i;
-    if (modulus == 2048)
-        for (i=0; i<p->N; i++) {
-            int16_t c = p->coeffs[i] & 2047;
-            if (c & 1024)
-                c -= 2048;
-            p->coeffs[i] = c;
-        }
-    else {
-        uint16_t m2 = modulus / 2;
-        for (i=0; i<p->N; i++) {
-            int16_t c = p->coeffs[i] % modulus;
-            if (c < -m2)
-                c += modulus;
-            if (c > m2)
-                c -= modulus;
-            p->coeffs[i] = c;
-        }
+    for (i=0; i<p->N; i++) {
+        int16_t c = p->coeffs[i] & mod_mask;
+        if (c < -m2)
+            c += modulus;
+        if (c > m2)
+            c -= modulus;
+        p->coeffs[i] = c;
     }
 }
 
@@ -1378,7 +1354,7 @@ void ntru_clear_int(NtruIntPoly *p) {
  * @param Fq the inverse of 1+3a modulo 2
  * @param q the modulus
  */
-void ntru_mod2_to_modq(NtruPrivPoly *a, NtruIntPoly *Fq, uint16_t q) {
+void ntru_lift_inverse(NtruPrivPoly *a, NtruIntPoly *Fq, uint16_t q) {
     NtruIntPoly temp1, temp2;
     uint32_t v = 2;
     while (v < q) {
@@ -1512,13 +1488,12 @@ uint8_t ntru_invert_32(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
         Fq->coeffs[j] = (b_coeffs32[i/32]>>(i%32)) & 1;   /* Fq->coeffs[j]=b[i] */
     }
 
-    ntru_mod2_to_modq(a, Fq, q);
+    ntru_lift_inverse(a, Fq, q);
 
     return 1;
 }
 
 uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
-    int16_t i;
 #ifndef NTRU_AVOID_HAMMING_WT_PATENT
     uint16_t N = a->prod_flag ? a->poly.prod.N : a->poly.tern.N;
 #else
@@ -1572,6 +1547,7 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
             num_zeros %= 64;
         }
         if (num_zeros > 0) {
+            int16_t i;
             /* c(x) = c(x)*(x^num_zeros) */
             for (i=N64-1; i>0; i--) {
                 c_coeffs64[i] <<= num_zeros;
@@ -1618,6 +1594,7 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
     int16_t j = 0;
     while (k >= N)
         k -= N;
+    int16_t i;
     for (i=N-1; i>=0; i--) {
         j = i - k;
         if (j < 0)
@@ -1625,7 +1602,7 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t q, NtruIntPoly *Fq) {
         Fq->coeffs[j] = (b_coeffs64[i/64]>>(i%64)) & 1;   /* Fq->coeffs[j]=b[i] */
     }
 
-    ntru_mod2_to_modq(a, Fq, q);
+    ntru_lift_inverse(a, Fq, q);
 
     return 1;
 }

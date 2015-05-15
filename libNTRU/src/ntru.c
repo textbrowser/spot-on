@@ -12,11 +12,8 @@
 
 const int8_t NTRU_COEFF1_TABLE[] = {0, 0, 0, 1, 1, 1, -1, -1};
 const int8_t NTRU_COEFF2_TABLE[] = {0, 1, -1, 0, 1, -1, 0, 1};
-const uint8_t NTRU_BIT1_TABLE[] = {1, 1, 1, 0, 0, 0, 1, 0, 1};
-const uint8_t NTRU_BIT2_TABLE[] = {1, 1, 1, 1, 0, 0, 0, 1, 0};
-const uint8_t NTRU_BIT3_TABLE[] = {1, 0, 1, 0, 0, 1, 1, 1, 0};
 
-uint8_t ntru_gen_key_pair(NtruEncParams *params, NtruEncKeyPair *kp, NtruRandContext *rand_ctx) {
+uint8_t ntru_gen_key_pair(const NtruEncParams *params, NtruEncKeyPair *kp, NtruRandContext *rand_ctx) {
     uint16_t N = params->N;
     uint16_t q = params->q;
     uint16_t df1 = params->df1;
@@ -124,7 +121,7 @@ void ntru_from_sves(uint8_t *M, uint16_t M_len, uint16_t N, NtruIntPoly *poly) {
         uint8_t j;
         for (j=0; j<8 && coeff_idx<N-1; j++) {
             /* process 3 bits at a time in the inner loop */
-            uint8_t coeff_tbl_idx = ((chunk&1)<<2) + (chunk&2) + ((chunk&4)>>2);   /* low 3 bits in reverse order */
+            uint8_t coeff_tbl_idx = chunk & 7;   /* low 3 bits */
             poly->coeffs[coeff_idx++] = NTRU_COEFF1_TABLE[coeff_tbl_idx];
             poly->coeffs[coeff_idx++] = NTRU_COEFF2_TABLE[coeff_tbl_idx];
             chunk >>= 3;
@@ -138,15 +135,15 @@ void ntru_from_sves(uint8_t *M, uint16_t M_len, uint16_t N, NtruIntPoly *poly) {
 /**
  * @brief Ternary polynomial to byte array
  *
- * Encodes a polynomial whose elements are between -1 and 1, to a uint8_t array.
+ * Encodes a polynomial whose elements are between 0 and 2, to a uint8_t array.
  * The (2*i)-th coefficient and the (2*i+1)-th coefficient must not both equal
- * -1 for any integer i, so this method is only safe to use with arrays
+ * 2 for any integer i, so this method is only safe to use with arrays
  * produced by ntru_from_sves().
  * See P1363.1 section 9.2.3.
  *
  * @param poly a ternary polynomial
- * @param data output parameter; must accommodate ceil(num_bits/8) bytes
- * @return NTRU_SUCCESS for success, NTRU_ERR_INVALID_ENCODING otherwise
+ * @param data output parameter; must accommodate ceil(num_bits/8)+3 bytes
+ * @return 1 for success, 0 for invalid encoding
  */
 uint8_t ntru_to_sves(NtruIntPoly *poly, uint8_t *data) {
     uint16_t N = poly->N;
@@ -154,31 +151,77 @@ uint8_t ntru_to_sves(NtruIntPoly *poly, uint8_t *data) {
     uint16_t num_bits = (N*3+1) / 2;
     memset(data, 0, (num_bits+7)/8);
 
-    uint8_t bit_index = 0;
-    uint16_t byte_index = 0;
     uint16_t i;
     uint16_t start = 0;
     uint16_t end = N/2*2;   /* if there is an odd number of coeffs, throw away the highest one */
+
+    memset(&poly->coeffs[N], 0, 2*15);   /* we process coefficients in blocks of 16, so clear the last block */
+    uint16_t d_idx = 0;
+    uint8_t valid = 1;
     for (i=start; i<end; ) {
-        int16_t coeff1 = poly->coeffs[i++] + 1;
-        int16_t coeff2 = poly->coeffs[i++] + 1;
-        if (coeff1==0 && coeff2==0)
-            return NTRU_ERR_INVALID_ENCODING;
-        int16_t bit_tbl_index = coeff1*3 + coeff2;
-        uint8_t j;
-        uint8_t bits[] = {NTRU_BIT1_TABLE[bit_tbl_index], NTRU_BIT2_TABLE[bit_tbl_index], NTRU_BIT3_TABLE[bit_tbl_index]};
-        for (j=0; j<3; j++) {
-            data[byte_index] |= bits[j] << bit_index;
-            if (bit_index == 7) {
-                bit_index = 0;
-                byte_index++;
-            }
-            else
-                bit_index++;
-        }
+        int16_t coeff1 = poly->coeffs[i++];
+        int16_t coeff2 = poly->coeffs[i++];
+        if (coeff1==2 && coeff2==2)
+            valid = 0;
+        int16_t c = coeff1*3 + coeff2;
+        data[d_idx] = c;
+
+        coeff1 = poly->coeffs[i++];
+        coeff2 = poly->coeffs[i++];
+        if (coeff1==2 && coeff2==2)
+            valid = 0;
+        c = coeff1*3 + coeff2;
+        data[d_idx] |= c << 3;
+
+        coeff1 = poly->coeffs[i++];
+        coeff2 = poly->coeffs[i++];
+        if (coeff1==2 && coeff2==2)
+            valid = 0;
+        c = coeff1*3 + coeff2;
+        data[d_idx] |= c << 6;
+        d_idx++;
+        data[d_idx] = c >> 2;
+
+        coeff1 = poly->coeffs[i++];
+        coeff2 = poly->coeffs[i++];
+        if (coeff1==2 && coeff2==2)
+            valid = 0;
+        c = coeff1*3 + coeff2;
+        data[d_idx] |= c << 1;
+
+        coeff1 = poly->coeffs[i++];
+        coeff2 = poly->coeffs[i++];
+        if (coeff1==2 && coeff2==2)
+            valid = 0;
+        c = coeff1*3 + coeff2;
+        data[d_idx] |= c << 4;
+
+        coeff1 = poly->coeffs[i++];
+        coeff2 = poly->coeffs[i++];
+        if (coeff1==2 && coeff2==2)
+            valid = 0;
+        c = coeff1*3 + coeff2;
+        data[d_idx] |= c << 7;
+        d_idx++;
+        data[d_idx] = c >> 1;
+
+        coeff1 = poly->coeffs[i++];
+        coeff2 = poly->coeffs[i++];
+        if (coeff1==2 && coeff2==2)
+            valid = 0;
+        c = coeff1*3 + coeff2;
+        data[d_idx] |= c << 2;
+
+        coeff1 = poly->coeffs[i++];
+        coeff2 = poly->coeffs[i++];
+        if (coeff1==2 && coeff2==2)
+            valid = 0;
+        c = coeff1*3 + coeff2;
+        data[d_idx] |= c << 5;
+        d_idx++;
     }
 
-    return NTRU_SUCCESS;
+    return valid;
 }
 
 /**
@@ -193,7 +236,7 @@ uint8_t ntru_to_sves(NtruIntPoly *poly, uint8_t *data) {
  * @param params encryption parameters
  * @param seed output parameter; an array to write the seed value to
  */
-void ntru_get_seed(uint8_t *msg, uint16_t msg_len, NtruIntPoly *h, uint8_t *b, NtruEncParams *params, uint8_t *seed) {
+void ntru_get_seed(uint8_t *msg, uint16_t msg_len, NtruIntPoly *h, uint8_t *b, const NtruEncParams *params, uint8_t *seed) {
     uint16_t oid_len = sizeof params->oid;
     uint16_t pklen = params->pklen;
 
@@ -242,7 +285,7 @@ void ntru_gen_tern_poly(NtruIGFState *s, uint16_t df, NtruTernPoly *p) {
     }
 }
 
-void ntru_gen_blind_poly(uint8_t *seed, uint16_t seed_len, NtruEncParams *params, NtruPrivPoly *r) {
+void ntru_gen_blind_poly(uint8_t *seed, uint16_t seed_len, const NtruEncParams *params, NtruPrivPoly *r) {
     NtruIGFState s;
     ntru_IGF_init(seed, seed_len, params, &s);
 
@@ -259,20 +302,22 @@ void ntru_gen_blind_poly(uint8_t *seed, uint16_t seed_len, NtruEncParams *params
         r->poly.tern.N = s.N;
         ntru_gen_tern_poly(&s, params->df1, &r->poly.tern);
     }
+    r->prod_flag = params->prod_flag;
 }
 
+/* All elements of p->coeffs must be in the [0..2] range */
 uint8_t ntru_check_rep_weight(NtruIntPoly *p, uint16_t dm0) {
     uint16_t i;
     uint16_t weights[3];
     weights[0] = weights[1] = weights[2] = 0;
 
     for (i=0; i<p->N; i++)
-        weights[p->coeffs[i]+1]++;
+        weights[p->coeffs[i]]++;
 
     return (weights[0]>=dm0 && weights[1]>=dm0 && weights[2]>=dm0);
 }
 
-uint8_t ntru_encrypt(uint8_t *msg, uint16_t msg_len, NtruEncPubKey *pub, NtruEncParams *params, NtruRandContext *rand_ctx, uint8_t *enc) {
+uint8_t ntru_encrypt(uint8_t *msg, uint16_t msg_len, NtruEncPubKey *pub, const NtruEncParams *params, NtruRandContext *rand_ctx, uint8_t *enc) {
     uint16_t N = params->N;
     uint16_t q = params->q;
     uint16_t db = params->db;
@@ -288,7 +333,7 @@ uint8_t ntru_encrypt(uint8_t *msg, uint16_t msg_len, NtruEncPubKey *pub, NtruEnc
     for (;;) {
         /* M = b|octL|msg|p0 */
         uint8_t b[db/8];
-        if (!rand_ctx->rand_gen->generate(b, db/8, rand_ctx))
+        if (!ntru_rand_generate(b, db/8, rand_ctx))
             return NTRU_ERR_PRNG;
 
         uint16_t M_len = (buf_len_bits+7) / 8;
@@ -312,12 +357,7 @@ uint8_t ntru_encrypt(uint8_t *msg, uint16_t msg_len, NtruEncPubKey *pub, NtruEnc
         NtruIntPoly R;
         NtruPrivPoly r;
         ntru_gen_blind_poly((uint8_t*)&sdata, sdata_len, params, &r);
-#ifndef NTRU_AVOID_HAMMING_WT_PATENT
-        if (params->prod_flag)
-            ntru_mult_prod(&pub->h, &r.poly.prod, &R, q);
-        else
-#endif   /* NTRU_AVOID_HAMMING_WT_PATENT */
-            ntru_mult_tern(&pub->h, &r.poly.tern, &R, q);
+        ntru_mult_priv(&r, &pub->h, &R, q);
         uint16_t oR4_len = (N*2+7) / 8;
         uint8_t oR4[oR4_len];
         ntru_to_arr4(&R, (uint8_t*)&oR4);
@@ -337,19 +377,14 @@ uint8_t ntru_encrypt(uint8_t *msg, uint16_t msg_len, NtruEncPubKey *pub, NtruEnc
 }
 
 void ntru_decrypt_poly(NtruIntPoly *e, NtruEncPrivKey *priv, uint16_t q, NtruIntPoly *d) {
-#ifndef NTRU_AVOID_HAMMING_WT_PATENT
-    if (priv->t.prod_flag)
-        ntru_mult_prod(e, &priv->t.poly.prod, d, q);
-    else
-#endif   /* NTRU_AVOID_HAMMING_WT_PATENT */
-        ntru_mult_tern(e, &priv->t.poly.tern, d, q);
+    ntru_mult_priv(&priv->t, e, d, q);
     ntru_mult_fac(d, 3);
     ntru_add_int(d, e);
     ntru_mod_center(d, q);
     ntru_mod3(d);
 }
 
-uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, NtruEncParams *params, uint8_t *dec, uint16_t *dec_len) {
+uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, const NtruEncParams *params, uint8_t *dec, uint16_t *dec_len) {
     uint16_t N = params->N;
     uint16_t q = params->q;
     uint16_t db = params->db;
@@ -360,6 +395,7 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, NtruEncParams *params, ui
         return NTRU_ERR_INVALID_MAX_LEN;
 
     uint16_t blen = db / 8;
+    uint8_t retcode = NTRU_SUCCESS;
 
     NtruIntPoly e;
     ntru_from_arr(enc, N, q, &e);
@@ -367,7 +403,7 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, NtruEncParams *params, ui
     ntru_decrypt_poly(&e, &kp->priv, q, &ci);
 
     if (!ntru_check_rep_weight(&ci, dm0))
-        return NTRU_ERR_DM0_VIOLATION;
+        retcode = NTRU_ERR_DM0_VIOLATION;
 
     NtruIntPoly cR = e;
     ntru_sub_int(&cR, &ci);
@@ -384,8 +420,9 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, NtruEncParams *params, ui
     ntru_mod3(&cmtrin);
     uint16_t cM_len_bits = (N*3+1) / 2;
     uint16_t cM_len_bytes = (cM_len_bits+7) / 8;
-    uint8_t cM[cM_len_bytes];
-    ntru_to_sves(&cmtrin, (uint8_t*)&cM);
+    uint8_t cM[cM_len_bytes+3];   /* 3 extra bytes for ntru_to_sves() */
+    if (!ntru_to_sves(&cmtrin, (uint8_t*)&cM))
+        retcode = NTRU_ERR_INVALID_ENCODING;
 
     uint8_t cb[blen];
     uint8_t *cM_head = cM;
@@ -394,7 +431,7 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, NtruEncParams *params, ui
     uint8_t cl = *cM_head;   /* llen=1, so read one byte */
     cM_head++;
     if (cl > max_len_bytes)
-        return NTRU_ERR_MSG_TOO_LONG;
+        retcode = NTRU_ERR_MSG_TOO_LONG;
 
     memcpy(dec, cM_head, cl);
     cM_head += cl;
@@ -402,7 +439,7 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, NtruEncParams *params, ui
     uint8_t *i;
     for (i=cM_head; i<cM+cM_len_bytes; i++)
         if (*i)
-            return NTRU_ERR_NO_ZERO_PAD;
+            retcode = NTRU_ERR_NO_ZERO_PAD;
 
     uint16_t sdata_len = sizeof(params->oid) + cl + blen + db/8;
     uint8_t sdata[sdata_len];
@@ -411,20 +448,15 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, NtruEncParams *params, ui
     NtruPrivPoly cr;
     ntru_gen_blind_poly((uint8_t*)&sdata, sdata_len, params, &cr);
     NtruIntPoly cR_prime;
-#ifndef NTRU_AVOID_HAMMING_WT_PATENT
-    if (params->prod_flag)
-        ntru_mult_prod(&kp->pub.h, &cr.poly.prod, &cR_prime, q);
-    else
-#endif   /* NTRU_AVOID_HAMMING_WT_PATENT */
-        ntru_mult_tern(&kp->pub.h, &cr.poly.tern, &cR_prime, q);
+    ntru_mult_priv(&cr, &kp->pub.h, &cR_prime, q);
     if (!ntru_equals_int(&cR_prime, &cR))
-        return NTRU_ERR_INVALID_ENCODING;
+        retcode = NTRU_ERR_INVALID_ENCODING;
 
     *dec_len = cl;
-    return NTRU_SUCCESS;
+    return retcode;
 }
 
-uint8_t ntru_max_msg_len(NtruEncParams *params) {
+uint8_t ntru_max_msg_len(const NtruEncParams *params) {
     uint16_t N = params->N;
     uint8_t llen = 1;   /* ceil(log2(max_len)) */
     uint16_t db = params->db;

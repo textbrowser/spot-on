@@ -6,20 +6,23 @@ NTRU's main strengths are high performance and resistance to quantum computer
 attacks. Its main drawback is that it is patent encumbered. The patents expire
 in 2020; when built with the NTRU_AVOID_HAMMING_WT_PATENT flag, libntru becomes
 patent-free in 2017.
-For more information on the NTRUEncrypt algorithm, see the NTRU introduction
-page:
 
-  http://tbuktu.github.com/ntru/
+Benchmark results:
+
+![Benchmark results](https://tbuktu.github.io/ntru/images/bench.png?raw=true "Benchmark results")
+
+For more information on the NTRUEncrypt algorithm, see the NTRU introduction
+page at https://tbuktu.github.com/ntru/.
 
 
 ## Compiling
 
-Run ```make``` to build the library, or ```make test``` to run unit tests.
+Run ```make``` to build the library, or ```make test``` to run unit tests. ```make bench``` builds a benchmark program.
 
-The ```SSE``` environment variable enables SSE support (```SSE=yes```)
+The ```SSE``` environment variable enables SSSE3 support (```SSE=yes```)
 or disables it (```SSE=no```).
-Default on Linux and MacOS is to autodetect SSE on the build host,
-Windows default is no SSE.
+Default on Linux and MacOS is to autodetect SSSE3 on the build host,
+Windows default is no SSSE3.
 
 ## Usage
 
@@ -42,7 +45,6 @@ Windows default is no SSE.
     ntru_rand_init_det(&rand_ctx_igf2, &rng_igf2, seed, strlen(seed));
     if (ntru_gen_key_pair(&params, &kp, &rand_ctx_igf2) != NTRU_SUCCESS)
         printf("keygen fail\n");
-    ntru_rand_release(&rand_ctx_igf2);
 
     /* encryption */
     uint8_t msg[9];
@@ -77,9 +79,9 @@ For encryption of messages longer than `ntru_max_msg_len(...)`, see `src/hybrid.
 
 ## Further reading
 
-  * Wikipedia article: http://en.wikipedia.org/wiki/NTRUEncrypt
-  * Original NTRUEncrypt paper: http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.25.8422&rep=rep1&type=pdf
-  * Follow-up NTRUEncrypt paper: http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.64.6834&rep=rep1&type=pdf
-  * NTRU articles (technical and mathematical): http://www.securityinnovation.com/security-lab/crypto.html
+  * Wikipedia article: https://en.wikipedia.org/wiki/NTRUEncrypt
+  * Original NTRUEncrypt paper: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.25.8422&rep=rep1&type=pdf
+  * Follow-up NTRUEncrypt paper: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.64.6834&rep=rep1&type=pdf
+  * NTRU articles (technical and mathematical): https://www.securityinnovation.com/products/encryption-libraries/ntru-crypto/ntru-resources.html
   * EESS: http://grouper.ieee.org/groups/1363/lattPK/submissions/EESS1v2.pdf
   * Jeffrey Hoffstein et al: An Introduction to Mathematical Cryptography, Springer-Verlag, ISBN 978-0-387-77993-5
