@@ -4490,6 +4490,10 @@ void spoton::slotGeneralTimerTimeout(void)
 	     "unknown" : m_externalAddress.address().toString()));
       m_sb.status->repaint();
     }
+
+  for(int i = m_starbeamDigestFutures.size() - 1; i >= 0; i--)
+    if(m_starbeamDigestFutures.at(i).isFinished())
+      m_starbeamDigestFutures.removeAt(i);
 }
 
 void spoton::slotSelectGeoIPPath(void)
