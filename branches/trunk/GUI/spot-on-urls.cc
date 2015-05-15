@@ -228,6 +228,7 @@ void spoton::slotPrepareUrlDatabases(void)
       }
 
   progress.hide();
+  update();
 #ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
@@ -636,6 +637,7 @@ void spoton::slotImportUrls(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   progress.hide();
+  update();
 #ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
