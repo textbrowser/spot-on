@@ -1734,6 +1734,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.nodeName->setText
     (QString::fromUtf8(m_settings.value("gui/nodeName", "unknown").
 		       toByteArray()).trimmed());
+  m_ui.pulseSize->setMaximum(spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE);
   m_ui.urlName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.urlName->setText
     (QString::fromUtf8(m_settings.value("gui/urlName", "unknown").

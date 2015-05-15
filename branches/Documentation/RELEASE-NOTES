@@ -21,6 +21,7 @@
 <li>Prompt before accessing a remote URL.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
 <li>Updated NTRU files (05/14/2015).</li>
+<li>Verify a StarBeam's provided pulse size against some defined maximum.</li>
 </ol>
 0.22 (04/29/2015)
 <ol>

@@ -25,7 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QAbstractSocket>
+#include <QHash>
 
 #ifndef _spoton_common_h_
 #define _spoton_common_h_
@@ -48,7 +48,7 @@ namespace spoton_common
 						 ** will be represented in
 						 ** base sixteen.
 						 */
-  static const int CHAT_MAXIMUM_DELTA_MAXIMUM = 30;
+  static const int CHAT_TIME_DELTA_MAXIMUM = 30;
   static const int NAME_MAXIMUM_LENGTH = 64;
   static const int STATUS_MAXIMUM_LENGTH = 64;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
@@ -56,6 +56,7 @@ namespace spoton_common
 	      ** The buffer size must be greater than the content length.
 	      */
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH = 10485760;
+  static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 250000;
   static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH = 256;
 }
 

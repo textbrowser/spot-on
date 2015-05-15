@@ -256,11 +256,13 @@ void spoton_starbeam_writer::processData
 	 "dataSize > totalSize or position >= totalSize.");
       return;
     }
-  else if(pulseSize > maximumSize)
+  else if(pulseSize > maximumSize ||
+	  pulseSize > spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE)
     {
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
-	 "pulseSize > maximumSize.");
+	 "pulseSize > maximumSize or pulseSize > "
+	 "spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE.");
       return;
     }
 
