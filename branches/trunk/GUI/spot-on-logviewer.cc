@@ -151,10 +151,13 @@ void spoton_logviewer::slotTimeout(void)
     {
       int vValue = ui.log->verticalScrollBar()->value();
 
-      file.seek(qMax(static_cast<long long int> (0),
-		     file.size() - 256 * 1024));
-      ui.log->setPlainText(file.read(256 * 1024).trimmed());
-      ui.log->verticalScrollBar()->setValue(vValue);
+      if(file.seek(qMax(static_cast<qint64> (0),
+			file.size() - 256 * 1024)))
+	{
+	  ui.log->setPlainText(file.read(256 * 1024).trimmed());
+	  ui.log->verticalScrollBar()->setValue(vValue);
+	}
+
       file.close();
     }
 }

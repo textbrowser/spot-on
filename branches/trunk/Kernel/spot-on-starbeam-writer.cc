@@ -229,15 +229,40 @@ void spoton_starbeam_writer::processData
   qint64 totalSize = qAbs(list.value(4).toLongLong());
 
   if(dataSize != list.value(5).length()) // Data
-    return;
+    {
+      spoton_misc::logError
+	("spoton_starbeam_writer::processData(): "
+	 "dataSize != list.value(5).length().");
+      return;
+    }
   else if(dataSize > (pulseSize + pulseSize / 100 + 12))
-    return;
+    {
+      spoton_misc::logError
+	("spoton_starbeam_writer::processData(): "
+	 "dataSize > (pulseSize + pulseSize / 100 + 12).");
+      return;
+    }
   else if(dataSize > maximumSize || totalSize > maximumSize)
-    return;
+    {
+      spoton_misc::logError
+	("spoton_starbeam_writer::processData(): "
+	 "dataSize > maximumSize or totalSize > maximumSize.");
+      return;
+    }
   else if(dataSize > totalSize || position >= totalSize)
-    return;
+    {
+      spoton_misc::logError
+	("spoton_starbeam_writer::processData(): "
+	 "dataSize > totalSize or position >= totalSize.");
+      return;
+    }
   else if(pulseSize > maximumSize)
-    return;
+    {
+      spoton_misc::logError
+	("spoton_starbeam_writer::processData(): "
+	 "pulseSize > maximumSize.");
+      return;
+    }
 
   QFile file;
 
@@ -245,7 +270,12 @@ void spoton_starbeam_writer::processData
 
   if(file.exists())
     if(!(file.permissions() & QFile::WriteOwner))
-      return;
+      {
+	spoton_misc::logError
+	  ("spoton_starbeam_writer::processData(): "
+	   "file permissions error.");
+	return;
+      }
 
   if(file.open(QIODevice::ReadWrite))
     {
