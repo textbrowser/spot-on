@@ -866,10 +866,6 @@ bool spoton::importUrl(const QByteArray &d, // Description
 		       const QByteArray &t, // Title
 		       const QByteArray &u) // URL
 {
-  /*
-  ** We do not use explicit database transactions.
-  */
-
   if(!m_urlCommonCrypt)
     return false;
 
@@ -935,13 +931,18 @@ bool spoton::importUrl(const QByteArray &d, // Description
   if(ok)
     query.bindValue(4, urlHash.constData());
 
+  /*
+  ** If a unique-constraint violation was raised, commit the current
+  ** database transaction.
+  */
+
   if(ok)
     if(!query.exec())
       {
 	if(!query.lastError().text().toLower().contains("unique"))
 	  ok = false;
-	else
-	  goto done_label;
+	else if(m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
+	  m_urlDatabase.commit();
       }
 
   if(ok)
@@ -985,8 +986,6 @@ bool spoton::importUrl(const QByteArray &d, // Description
 	    break;
 	}
     }
-
- done_label:
 
   if(m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
     {
