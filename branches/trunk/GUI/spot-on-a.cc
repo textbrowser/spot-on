@@ -2364,6 +2364,15 @@ void spoton::slotQuit(void)
 
 void spoton::cleanup(void)
 {
+  m_starbeamDigestInterrupt.fetchAndAddRelaxed(1);
+
+  while(!m_starbeamDigestFutures.isEmpty())
+    {
+      QFuture<void> future(m_starbeamDigestFutures.takeFirst());
+
+      future.waitForFinished();
+    }
+
   m_buzzStatusTimer.stop();
   m_chatInactivityTimer.stop();
   m_emailRetrievalTimer.stop();

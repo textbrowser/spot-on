@@ -1668,3 +1668,38 @@ void spoton::slotSaveAlternatingColors(bool state)
       settings.setValue(str, state);
     }
 }
+
+void spoton::computeFileDigest(const QString &fileName,
+			       const QString &oid,
+			       spoton_crypt *crypt)
+{
+  QFile file;
+
+  file.setFileName(fileName);
+
+  if(file.open(QIODevice::ReadOnly))
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "starbeam.db");
+
+	if(db.open())
+	  {
+	    QByteArray hash
+	      (spoton_crypt::sha1FileHash(fileName,
+					  m_starbeamDigestInterrupt));
+
+	    if(!m_starbeamDigestInterrupt.fetchAndAddRelaxed(0))
+	      spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt);
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}

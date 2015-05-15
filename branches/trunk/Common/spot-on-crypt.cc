@@ -3313,6 +3313,30 @@ QByteArray spoton_crypt::sha1FileHash(const QString &fileName)
   return hash.result();
 }
 
+QByteArray spoton_crypt::sha1FileHash(const QString &fileName,
+				      QAtomicInt &atomic)
+{
+  QByteArray buffer(4096, 0);
+  QCryptographicHash hash(QCryptographicHash::Sha1);
+  QFile file(fileName);
+
+  if(file.open(QIODevice::ReadOnly))
+    {
+      qint64 rc = 0;
+
+      while((rc = file.read(buffer.data(), buffer.length())) > 0)
+	{
+	  if(atomic.fetchAndAddRelaxed(0))
+	    break;
+
+	  hash.addData(buffer, static_cast<int> (rc));
+	}
+    }
+
+  file.close();
+  return hash.result();
+}
+
 void spoton_crypt::setHashKey(const QByteArray &hashKey)
 {
   QWriteLocker locker(&m_hashKeyMutex);

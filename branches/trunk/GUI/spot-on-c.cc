@@ -40,6 +40,10 @@
 #endif
 #include <QTableWidgetItem>
 #include <QThread>
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent>
+#endif
+#include <QtCore>
 
 void spoton::slotGenerateEtpKeys(int index)
 {
@@ -1321,25 +1325,14 @@ void spoton::slotPopulateStars(void)
 		      if(m_settings.value("gui/starbeamAutoVerify",
 					  false).toBool())
 			if(hash.isEmpty())
-			  {
-			    QFile file;
-
-			    file.setFileName(fileName);
-
-			    if(file.open(QIODevice::ReadOnly))
-			      {
-				QApplication::setOverrideCursor
-				  (QCursor(Qt::WaitCursor));
-				hash =
-				  spoton_crypt::sha1FileHash(fileName);
-				spoton_misc::saveReceivedStarBeamHash
-				  (db, hash,
-				   query.value(query.record().count() - 1).
-				   toString(),
-				   crypt);
-				QApplication::restoreOverrideCursor();
-			      }
-			  }
+			  m_starbeamDigestFutures.append
+			    (QtConcurrent::run(this,
+					       &spoton::computeFileDigest,
+					       fileName,
+					       query.
+					       value(query.record().
+						     count() - 1).toString(),
+					       crypt));
 		    }
 		}
 

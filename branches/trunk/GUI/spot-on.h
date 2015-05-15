@@ -410,6 +410,7 @@ class spoton: public QMainWindow
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE = 2;
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL = 3;
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY = 4;
+  QAtomicInt m_starbeamDigestInterrupt;
   QByteArray m_kernelSocketData;
   QDateTime m_buzzFavoritesLastModificationTime;
   QDateTime m_magnetsLastModificationTime;
@@ -433,6 +434,7 @@ class spoton: public QMainWindow
 				       ** Unlike m_chatWindows, m_smps
 				       ** purging is less rigid.
 				       */
+  QList<QFuture<void> > m_starbeamDigestFutures;
   QMainWindow *m_optionsWindow;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
@@ -502,6 +504,9 @@ class spoton: public QMainWindow
   void changeEchoMode(const QString &mode, QTableWidget *tableWidget);
   void cleanup(void);
   void closeEvent(QCloseEvent *event);
+  void computeFileDigest(const QString &fileName,
+			 const QString &oid,
+			 spoton_crypt *crypt);
   void demagnetize(void);
   void derivativeUpdates(void);
   void discoverUrls(void);

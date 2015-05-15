@@ -86,6 +86,8 @@ class spoton_crypt
 					 const QByteArray &salt,
 					 QString &error);
   static QByteArray sha1FileHash(const QString &fileName);
+  static QByteArray sha1FileHash(const QString &fileName,
+				 QAtomicInt &atomic);
   static QByteArray sha1Hash(const QByteArray &data, bool *ok);
   static QByteArray sha512Hash(const QByteArray &data, bool *ok);
   static QByteArray shaXHash(const int algorithm,
