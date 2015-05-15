@@ -1,4 +1,4 @@
-CC?=gcc
+CC=gcc
 AS=$(CC) -c
 OPTFLAGS=-O2
 bench: OPTFLAGS=-O3
