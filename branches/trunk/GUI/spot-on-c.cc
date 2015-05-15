@@ -2215,6 +2215,8 @@ void spoton::slotComputeFileHash(void)
 
   QApplication::restoreOverrideCursor();
 
+  file.close();
+
   QString connectionName("");
 
   {

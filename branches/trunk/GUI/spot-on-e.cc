@@ -1702,4 +1702,6 @@ void spoton::computeFileDigest(const QString &fileName,
 
       QSqlDatabase::removeDatabase(connectionName);
     }
+
+  file.close();
 }
