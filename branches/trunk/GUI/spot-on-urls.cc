@@ -228,6 +228,9 @@ void spoton::slotPrepareUrlDatabases(void)
       }
 
   progress.hide();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   if(!created)
     QMessageBox::critical(this, tr("%1: Error").
@@ -632,6 +635,16 @@ void spoton::slotImportUrls(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  progress.hide();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  displayUrlImportResults(imported, not_imported);
+}
+
+void spoton::displayUrlImportResults(const int imported,
+				     const int not_imported)
+{
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
@@ -923,7 +936,13 @@ bool spoton::importUrl(const QByteArray &d, // Description
     query.bindValue(4, urlHash.constData());
 
   if(ok)
-    ok = query.exec();
+    if(!query.exec())
+      {
+	if(!query.lastError().text().toLower().contains("unique"))
+	  ok = false;
+	else
+	  goto done_label;
+      }
 
   if(ok)
     if(all_keywords.isEmpty())
@@ -966,6 +985,8 @@ bool spoton::importUrl(const QByteArray &d, // Description
 	    break;
 	}
     }
+
+ done_label:
 
   if(m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
     {

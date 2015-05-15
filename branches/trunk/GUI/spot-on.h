@@ -510,6 +510,7 @@ class spoton: public QMainWindow
   void demagnetize(void);
   void derivativeUpdates(void);
   void discoverUrls(void);
+  void displayUrlImportResults(const int imported, const int not_imported);
   void generateHalfGeminis(void);
   void highlightPaths(void);
   void importNeighbors(const QString &filePath);
