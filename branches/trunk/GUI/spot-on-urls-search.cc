@@ -202,6 +202,8 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
   if(query.exec())
     {
+      QString html("<html>");
+
       while(query.next())
 	{
 	  if(!count)
@@ -238,7 +240,6 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
 	  if(ok)
 	    {
-	      QString html("");
 	      QString scheme(url.scheme().toLower().trimmed());
 	      QUrl deleteUrl(url);
 
@@ -249,21 +250,26 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 		}
 
 	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
-	      html.append
-		(QString("<a href=\"%1\">%2</a> | "
-			 "<a href=\"%3\">Remove URL</a>").
-		 arg(url.toString()).arg(title).arg(deleteUrl.toString()));
+	      html.append("<a href=\"");
+	      html.append(url.toEncoded().constData());
+	      html.append("\">");
+	      html.append(title);
+	      html.append("</a>");
+	      html.append(" | ");
+	      html.append("<a href=\"");
+	      html.append(deleteUrl.toEncoded().constData());
+	      html.append("\">");
+	      html.append("Remove URL</a>");
 	      html.append("<br>");
 	      html.append(QString("<font color=\"green\" size=3>%1</font>").
-			  arg(url.toString()));
+			  arg(url.toEncoded().constData()));
 	      html.append("<br>");
 	      html.append(QString("<font color=\"gray\" size=3>%1</font>").
 			  arg(description));
 	      html.append("<br>");
 	      html.append(QString("<font color=\"gray\" size=3>%1</font>").
 			  arg(query.value(3).toString()));
-	      html.append("<br>");
-	      m_ui.urls->append(html);
+	      html.append("<br><br>");
 	      count += 1;
 	    }
 	}
@@ -273,6 +279,8 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	  if(m_urlOffset / m_urlLimit >= m_urlPages)
 	    m_urlPages += 1;
 
+      html.append("</html>");
+      m_ui.urls->setHtml(html);
       m_ui.urls->horizontalScrollBar()->setValue(0);
       m_ui.urls->verticalScrollBar()->setValue(0);
     }

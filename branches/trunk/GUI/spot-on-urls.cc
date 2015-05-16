@@ -1465,7 +1465,8 @@ void spoton::slotDeleteLink(const QUrl &u)
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Are you sure that you wish to access %1?").
-		     arg(url.toString()));
+		     arg((url.toEncoded().mid(0, 32) + "..." +
+			  url.toEncoded().right(32)).constData()));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return;
@@ -1588,7 +1589,6 @@ void spoton::slotDeleteLink(const QUrl &u)
 		      arg(c1).arg(c2));
 	query.bindValue(0, urlHash.constData());
 	query.exec();
-
 	processed += 1;
 	progress.update();
 #ifndef Q_OS_MAC
