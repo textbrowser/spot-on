@@ -1731,10 +1731,15 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
   if(!smp)
     return;
 
+  QByteArray bytes(smp->guessWhirlpool());
+
+  if(bytes.isEmpty())
+    return;
+
   QPair<QByteArray, QByteArray> gemini;
 
-  gemini.first = smp->guessWhirlpool().mid(0, 32);
-  gemini.second = smp->guessWhirlpool().right(32);
+  gemini.first = bytes.mid(0, 32);
+  gemini.second = bytes.right(32);
 
   if(saveGemini(gemini, item1->text()))
     {
