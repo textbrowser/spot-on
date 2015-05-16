@@ -9,7 +9,9 @@
 <li>Assume zero pointer defaults in Qt::value().</li>
 <li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
 <li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
+<li>Corrected importing of public keys. Cannot assume that key pairs exist.</li>
 <li>Corrected removal of URLs having special characters.</li>
+<li>Corrected use of spoton::addFriendsKey().</li>
 <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
 <li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
 <li>Digital signatures should vouch for private key information.</li>
@@ -21,6 +23,7 @@
 <li>Notify the user of URL import statistics.</li>
 <li>Prompt before accessing a remote URL.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
+<li>Simplified copying and exporting of public keys.</li>
 <li>Updated NTRU files (05/14/2015).</li>
 <li>Verify a StarBeam's provided pulse size against some defined maximum.</li>
 </ol>

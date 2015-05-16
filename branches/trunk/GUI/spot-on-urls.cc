@@ -934,7 +934,7 @@ bool spoton::importUrl(const QByteArray &d, // Description
     if(!query.exec())
       if(!query.lastError().text().toLower().contains("unique"))
 	ok = false;
-  
+
   if(ok)
     if(all_keywords.isEmpty())
       separate = false;

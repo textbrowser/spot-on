@@ -7749,10 +7749,10 @@ void spoton::slotCopyAllMyPublicKeys(void)
   if(clipboard)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(copyMyChatPublicKey() + "@" +
-			 copyMyEmailPublicKey() + "@" +
-			 copyMyPoptasticPublicKey() + "@" +
-			 copyMyRosettaPublicKey() + "@" +
+      clipboard->setText(copyMyChatPublicKey() + "\n" +
+			 copyMyEmailPublicKey() + "\n" +
+			 copyMyPoptasticPublicKey() + "\n" +
+			 copyMyRosettaPublicKey() + "\n" +
 			 copyMyUrlPublicKey());
       QApplication::restoreOverrideCursor();
     }

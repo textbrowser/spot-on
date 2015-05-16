@@ -491,7 +491,7 @@ class spoton: public QMainWindow
   bool updateMailStatus(const QString &oid, const QString &status);
   int applyGoldbugToLetter(const QByteArray &goldbug,
 			   const int row);
-  void addFriendsKey(const QByteArray &key);
+  void addFriendsKey(const QByteArray &key, const QString &type);
   void applyGoldbugToAttachments(const QString &folderOid,
 				 const QSqlDatabase &db,
 				 int *count,

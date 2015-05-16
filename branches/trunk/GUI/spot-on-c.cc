@@ -3165,93 +3165,78 @@ void spoton::slotExportPublicKeys(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QByteArray keys(copyMyChatPublicKey() + "@" +
-		  copyMyEmailPublicKey() + "@" +
-		  copyMyPoptasticPublicKey() + "@" +
-		  copyMyRosettaPublicKey() + "@" +
+  QByteArray keys(copyMyChatPublicKey() + "\n" +
+		  copyMyEmailPublicKey() + "\n" +
+		  copyMyPoptasticPublicKey() + "\n" +
+		  copyMyRosettaPublicKey() + "\n" +
 		  copyMyUrlPublicKey());
 
   QApplication::restoreOverrideCursor();
 
-  if(keys.count("@") == 3)
-    /*
-    ** Problem!
-    */
-
-    QMessageBox::critical
-      (this, tr("%1: Error").
-       arg(SPOTON_APPLICATION_NAME),
-       tr("A deep failure occurred while gathering your public keys. "
-	  "Do you have public keys? Please inspect the Settings tab."));
-  else
+  if(keys.length() >= 30000)
     {
-      if(keys.length() >= 30000)
-	{
-	  QMessageBox mb(this);
+      QMessageBox mb(this);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-	  mb.setIcon(QMessageBox::Question);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText
-	    (tr("The gathered public keys contain a lot (%1) of data. "
-		"Are you sure that you wish to export the data?").
-	     arg(keys.length()));
+      mb.setIcon(QMessageBox::Question);
+      mb.setWindowTitle(tr("%1: Confirmation").
+			arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("The gathered public keys contain a lot (%1) of data. "
+		    "Are you sure that you wish to export the data?").
+		 arg(keys.length()));
 
-	  if(mb.exec() != QMessageBox::Yes)
-	    return;
-	}
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+    }
 
-      QFileDialog dialog(this);
+  QFileDialog dialog(this);
 
-      dialog.setConfirmOverwrite(true);
-      dialog.setWindowTitle
-	(tr("%1: Select Public Keys Export File").
-	 arg(SPOTON_APPLICATION_NAME));
-      dialog.setFileMode(QFileDialog::AnyFile);
+  dialog.setConfirmOverwrite(true);
+  dialog.setWindowTitle
+    (tr("%1: Select Public Keys Export File").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::AnyFile);
 #if QT_VERSION < 0x050000
-      dialog.setDirectory
-	(QDesktopServices::storageLocation(QDesktopServices::
-					   DesktopLocation));
+  dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
+							DesktopLocation));
 #else
-      dialog.setDirectory
-	(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
-	 value(0));
+  dialog.setDirectory(QStandardPaths::
+		      standardLocations(QStandardPaths::DesktopLocation).
+		      value(0));
 #endif
-      dialog.setLabelText(QFileDialog::Accept, tr("&Save"));
-      dialog.setAcceptMode(QFileDialog::AcceptSave);
+  dialog.setLabelText(QFileDialog::Accept, tr("&Save"));
+  dialog.setAcceptMode(QFileDialog::AcceptSave);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-      dialog.setAttribute(Qt::WA_MacMetalStyle, false);
+  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
 #endif
 #endif
-      dialog.selectFile
-	(QString("spot-on-public-keys-export-%1.txt").
-	 arg(QDateTime::currentDateTime().toString("MM-dd-yyyy-hh-mm-ss")));
+  dialog.selectFile(QString("spot-on-public-keys-export-%1.txt").
+		    arg(QDateTime::currentDateTime().
+			toString("MM-dd-yyyy-hh-mm-ss")));
 
-      if(dialog.exec() == QDialog::Accepted)
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QFile file;
+
+      file.setFileName(dialog.selectedFiles().value(0));
+
+      if(file.open(QIODevice::Truncate | QIODevice::WriteOnly))
 	{
-	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-	  QFile file;
-
-	  file.setFileName(dialog.selectedFiles().value(0));
-
-	  if(file.open(QIODevice::Truncate | QIODevice::WriteOnly))
-	    {
-	      file.write(keys);
-	      file.flush();
-	    }
-
-	  file.close();
-	  QApplication::restoreOverrideCursor();
+	  file.write(keys);
+	  file.flush();
 	}
+
+      file.close();
+      QApplication::restoreOverrideCursor();
     }
 }
 
@@ -3310,8 +3295,6 @@ void spoton::slotImportPublicKeys(void)
 	    return;
 	}
 
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
       QByteArray bytes;
       QFile file;
 
@@ -3322,30 +3305,16 @@ void spoton::slotImportPublicKeys(void)
 
       file.close();
 
-      QList<QByteArray> list(bytes.split('@'));
+      QList<QByteArray> list(bytes.split('\n'));
 
       while(!list.isEmpty())
-	if(list.size() >= 6)
-	  {
-	    QByteArray bytes("K");
+	{
+	  QByteArray bytes("K");
 
-	    bytes.append(list.takeFirst().remove(0, 1));
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    addFriendsKey(bytes);
-	  }
-	else
-	  break;
-
-      QApplication::restoreOverrideCursor();
+	  bytes.append(list.takeFirst());
+	  bytes.remove(0, 1);
+	  addFriendsKey(bytes, "K");
+	}
     }
 }
 

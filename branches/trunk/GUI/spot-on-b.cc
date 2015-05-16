@@ -1798,41 +1798,29 @@ void spoton::slotAddFriendsKey(void)
     (m_ui.friendInformation->toPlainText().toLatin1());
 
   if(m_ui.addFriendEmail->isChecked())
-    addFriendsKey(key);
+    addFriendsKey(key, "E");
   else if(key.startsWith("K") || key.startsWith("k"))
     {
-      QList<QByteArray> list(key.split('@'));
+      QList<QByteArray> list(key.split('\n'));
 
       while(!list.isEmpty())
-	if(list.size() >= 6)
-	  {
-	    QByteArray bytes("K");
+	{
+	  QByteArray bytes("K");
 
-	    bytes.append(list.takeFirst().remove(0, 1));
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    bytes.append("@");
-	    bytes.append(list.takeFirst());
-	    addFriendsKey(bytes);
-	  }
-	else
-	  break;
+	  bytes.append(list.takeFirst());
+	  bytes.remove(0, 1);
+	  addFriendsKey(bytes, "K");
+	}
     }
   else
-    addFriendsKey(key);
+    addFriendsKey(key, "R");
 }
 
-void spoton::addFriendsKey(const QByteArray &k)
+void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 {
   QByteArray key(k.trimmed());
 
-  if(m_ui.addFriendEmail->isChecked())
+  if(type == "E")
     {
       if(!m_crypts.value("chat", 0))
 	{
@@ -1895,7 +1883,7 @@ void spoton::addFriendsKey(const QByteArray &k)
 			      tr("An error occurred while attempting "
 				 "to save the friendship bundle."));
     }
-  else if(m_ui.addFriendPublicKeyRadio->isChecked())
+  else if(type == "K")
     {
       if(!m_crypts.value("chat", 0) ||
 	 !m_crypts.value("email", 0) ||
@@ -1941,7 +1929,7 @@ void spoton::addFriendsKey(const QByteArray &k)
 
       QByteArray keyType(list.value(0));
 
-      keyType = QByteArray::fromBase64(keyType);
+      keyType = QByteArray::fromBase64(keyType);qDebug()<<keyType;
 
       if(!(keyType == "chat" || keyType == "email" ||
 	   keyType == "poptastic" ||
@@ -2122,7 +2110,7 @@ void spoton::addFriendsKey(const QByteArray &k)
 			      tr("An error occurred while attempting "
 				 "to save the friendship bundle."));
     }
-  else
+  else if(type == "R")
     {
       /*
       ** Now we have to perform the inverse of slotCopyFriendshipBundle().
