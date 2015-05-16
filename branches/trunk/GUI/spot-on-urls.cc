@@ -227,11 +227,8 @@ void spoton::slotPrepareUrlDatabases(void)
 #endif
       }
 
-  progress.hide();
+  progress.close();
   update();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
 
   if(!created)
     QMessageBox::critical(this, tr("%1: Error").
@@ -523,11 +520,14 @@ void spoton::slotImportUrls(void)
 #endif
 #endif
   progress.setLabelText(tr("Importing URLs..."));
+  progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle(tr("%1: Importing URLs").
 			  arg(SPOTON_APPLICATION_NAME));
   progress.show();
+  progress.raise();
+  progress.activateWindow();
   progress.update();
 
   quint64 imported = 0;
@@ -636,11 +636,8 @@ void spoton::slotImportUrls(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  progress.hide();
+  progress.close();
   update();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
   displayUrlImportResults(imported, not_imported);
 }
 

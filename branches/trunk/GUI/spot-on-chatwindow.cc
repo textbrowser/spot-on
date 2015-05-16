@@ -430,6 +430,7 @@ bool spoton_chatwindow::event(QEvent *event)
 	  */
 
 	  hide();
+	  show();
 	  update();
 	}
 

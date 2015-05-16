@@ -5234,7 +5234,7 @@ void spoton::slotSetPassphrase(void)
 #endif
 		}
 
-	      progress.hide();
+	      progress.close();
 	    }
 	}
     }

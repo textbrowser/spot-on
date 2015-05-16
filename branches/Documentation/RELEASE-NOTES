@@ -7,6 +7,7 @@
 <li>Allow configuration of the kernel's cache purge timer.</li>
 <li>Allow importing of URLs without Import Credentials. Only plaintext URLs will be imported.</li>
 <li>Assume zero pointer defaults in Qt::value().</li>
+<li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
 <li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
 <li>Corrected removal of URLs having special characters.</li>
 <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
