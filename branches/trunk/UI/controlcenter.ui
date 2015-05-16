@@ -3968,8 +3968,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>347</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -3991,6 +3991,29 @@
                 </property>
                 <property name="checkable">
                  <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="url_database_connection_information">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
                 </property>
                </widget>
               </item>
@@ -4022,8 +4045,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>635</width>
-                 <height>619</height>
+                 <width>752</width>
+                 <height>602</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6000,7 +6023,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
+             <width>476</width>
              <height>544</height>
             </rect>
            </property>

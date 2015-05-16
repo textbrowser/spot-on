@@ -2625,6 +2625,9 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "chat");
       menu->addSeparator();
+      menu->addAction(tr("&Derive Gemini pair via SMP secret."),
+		      this,
+		      SLOT(slotDeriveGeminiPairViaSMP(void)));
       menu->addAction(tr("&Reset the SMP machine's internal state to s0."),
 		      this,
 		      SLOT(slotInitializeSMP(void)));

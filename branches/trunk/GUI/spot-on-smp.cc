@@ -70,6 +70,29 @@ spoton_smp::~spoton_smp()
   reset();
 }
 
+QByteArray spoton_smp::guessWhirlpool(void) const
+{
+  QByteArray bytes;
+  bool ok = true;
+  size_t size = 0;
+  unsigned char *buffer = 0;
+
+  if(!m_guess)
+    goto done_label;
+
+  if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, m_guess) != 0)
+    goto done_label;
+  else
+    bytes = QByteArray
+      (reinterpret_cast<char *> (buffer), static_cast<int> (size));
+
+  bytes = spoton_crypt::whirlpoolHash(bytes, &ok);
+
+ done_label:
+  gcry_free(buffer);
+  return bytes;
+}
+
 QList<QByteArray> spoton_smp::nextStep(const QList<QByteArray> &other,
 				       bool *ok, bool *passed)
 {

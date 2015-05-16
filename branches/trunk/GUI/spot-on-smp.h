@@ -44,6 +44,7 @@ class spoton_smp
   ~spoton_smp(void);
   static const unsigned int BITS = 1536;
   static void test(void);
+  QByteArray guessWhirlpool(void) const;
   QList<QByteArray> nextStep(const QList<QByteArray> &other,
 			     bool *ok, bool *passed );
   QList<QByteArray> step1(bool *ok);

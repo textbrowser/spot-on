@@ -95,6 +95,7 @@ class spoton_crypt
   static QByteArray strongRandomBytes(const size_t size);
   static QByteArray veryStrongRandomBytes(const size_t size);
   static QByteArray weakRandomBytes(const size_t size);
+  static QByteArray whirlpoolHash(const QByteArray &data, bool *ok);
   static QList<QSslCipher> defaultSslCiphers
     (const QString &sslControlString);
   static QStringList cipherTypes(void);

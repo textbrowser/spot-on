@@ -1705,3 +1705,48 @@ void spoton::computeFileDigest(const QString &fileName,
 
   file.close();
 }
+
+void spoton::slotDeriveGeminiPairViaSMP(void)
+{
+  int row = m_ui.participants->currentRow();
+
+  if(row < 0)
+    return;
+
+  QTableWidgetItem *item1 = m_ui.participants->item(row, 1); // OID
+  QTableWidgetItem *item2 = m_ui.participants->item
+    (row, 3); // public_key_hash
+  QTableWidgetItem *item3 = m_ui.participants->item
+    (row, 6); // Gemini Encryption Key
+  QTableWidgetItem *item4 = m_ui.participants->item
+    (row, 7); // Gemini Hash Key
+
+  if(!item1 || !item2 || !item3 || !item4)
+    return;
+  else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
+    return; // Temporary!
+
+  spoton_smp *smp = m_smps.value(item2->text(), 0);
+
+  if(!smp)
+    return;
+
+  QPair<QByteArray, QByteArray> gemini;
+
+  gemini.first = smp->guessWhirlpool().mid(0, 32);
+  gemini.second = smp->guessWhirlpool().right(32);
+
+  if(saveGemini(gemini, item1->text()))
+    {
+      disconnect(m_ui.participants,
+		 SIGNAL(itemChanged(QTableWidgetItem *)),
+		 this,
+		 SLOT(slotGeminiChanged(QTableWidgetItem *)));
+      item3->setText(gemini.first.toBase64());
+      item4->setText(gemini.second.toBase64());
+      connect(m_ui.participants,
+	      SIGNAL(itemChanged(QTableWidgetItem *)),
+	      this,
+	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
+    }
+}

@@ -15,9 +15,11 @@
 <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
 <li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
 <li>Digital signatures should vouch for private key information.</li>
+<li>Display URL database connection information within the Search panel.</li>
 <li>Do not delete URLs from shared.db unless they were properly loaded.<li>
 <li>Dual-purpose domain check boxes. Please see URLs.</li>
 <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
+<li>Establish authentication and encryption keys via silent SMP. The 32-byte authentication and 32-byte encryption keys are created from a Whirlpool digest of the SHA-512 digest of the secret.</li>
 <li>Guard QList::last().</li>
 <li>Guard QList::removeAt().</li>
 <li>Notify the user of URL import statistics.</li>

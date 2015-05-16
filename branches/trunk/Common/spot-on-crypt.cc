@@ -1088,6 +1088,37 @@ QByteArray spoton_crypt::shaXHash(const int algorithm,
   return hash;
 }
 
+QByteArray spoton_crypt::whirlpoolHash(const QByteArray &data, bool *ok)
+{
+  QByteArray hash;
+  unsigned int length = gcry_md_get_algo_dlen(GCRY_MD_WHIRLPOOL);
+
+  if(length > 0)
+    {
+      if(ok)
+	*ok = true;
+
+      hash.resize(length);
+      gcry_md_hash_buffer
+	(GCRY_MD_WHIRLPOOL,
+	 hash.data(),
+	 data.constData(),
+	 data.length());
+    }
+  else
+    {
+      if(ok)
+	*ok = false;
+
+      spoton_misc::logError
+	(QString("spoton_crypt::whirlpool(): "
+		 "gcry_md_get_algo_dlen() "
+		 "failure for %1.").arg(GCRY_MD_WHIRLPOOL));
+    }
+
+  return hash;
+}
+
 QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 					  const QByteArray &publicKey,
 					  bool *ok)
