@@ -902,10 +902,6 @@ bool spoton::importUrl(const QByteArray &d, // Description
   if(!ok)
     return ok;
 
-  if(m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
-    if(!m_urlDatabase.transaction())
-      return false;
-
   QSqlQuery query(m_urlDatabase);
 
   query.prepare
@@ -934,19 +930,14 @@ bool spoton::importUrl(const QByteArray &d, // Description
     query.bindValue(4, urlHash.constData());
 
   /*
-  ** If a unique-constraint violation was raised, commit the current
-  ** database transaction.
+  ** If a unique-constraint violation was raised, ignore it.
   */
 
   if(ok)
     if(!query.exec())
-      {
-	if(!query.lastError().text().toLower().contains("unique"))
-	  ok = false;
-	else if(m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
-	  m_urlDatabase.commit();
-      }
-
+      if(!query.lastError().text().toLower().contains("unique"))
+	ok = false;
+  
   if(ok)
     if(all_keywords.isEmpty())
       separate = false;
@@ -961,12 +952,13 @@ bool spoton::importUrl(const QByteArray &d, // Description
 	{
 	  QByteArray keywordHash;
 	  QSqlQuery query(m_urlDatabase);
+	  bool ok = true;
 
 	  keywordHash = m_urlCommonCrypt->keyedHash
 	    (keywords.at(i).toUtf8(), &ok).toHex();
 
 	  if(!ok)
-	    break;
+	    continue;
 
 	  query.prepare
 	    (QString("INSERT INTO spot_on_keywords_%1 ("
@@ -976,25 +968,8 @@ bool spoton::importUrl(const QByteArray &d, // Description
 					  constData()));
 	  query.bindValue(0, keywordHash.constData());
 	  query.bindValue(1, urlHash.constData());
-
-	  if(!query.exec())
-	    if(!query.lastError().text().toLower().contains("unique"))
-	      ok = false;
-
-	  if(!m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
-	    ok = true;
-
-	  if(!ok)
-	    break;
+	  query.exec();
 	}
-    }
-
-  if(m_urlDatabase.driver()->hasFeature(QSqlDriver::Transactions))
-    {
-      if(ok)
-	m_urlDatabase.commit();
-      else
-	m_urlDatabase.rollback();
     }
 
   return ok;
