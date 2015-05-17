@@ -55,6 +55,7 @@ class spoton_smp
   void setGuess(const QString &guess);
 
  private:
+  QByteArray m_guessWhirl;
   bool m_passed;
   gcry_mpi_t m_a2;
   gcry_mpi_t m_a3;

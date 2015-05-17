@@ -72,25 +72,7 @@ spoton_smp::~spoton_smp()
 
 QByteArray spoton_smp::guessWhirlpool(void) const
 {
-  QByteArray bytes;
-  bool ok = true;
-  size_t size = 0;
-  unsigned char *buffer = 0;
-
-  if(!m_guess)
-    goto done_label;
-
-  if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, m_guess) != 0)
-    goto done_label;
-  else
-    bytes = QByteArray
-      (reinterpret_cast<char *> (buffer), static_cast<int> (size));
-
-  bytes = spoton_crypt::whirlpoolHash(bytes, &ok);
-
- done_label:
-  gcry_free(buffer);
-  return bytes;
+  return m_guessWhirl;
 }
 
 QList<QByteArray> spoton_smp::nextStep(const QList<QByteArray> &other,
@@ -740,6 +722,7 @@ int spoton_smp::step(void) const
 
 void spoton_smp::initialize(void)
 {
+  QByteArray gw(m_guessWhirl);
   gcry_mpi_t g = 0;
 
   if(m_guess)
@@ -749,6 +732,8 @@ void spoton_smp::initialize(void)
 
   if(g)
     m_guess = gcry_mpi_set(0, g);
+
+  m_guessWhirl = gw;
 }
 
 void spoton_smp::reset(void)
@@ -766,6 +751,7 @@ void spoton_smp::reset(void)
   m_b2 = 0;
   m_b3 = 0;
   m_guess = 0;
+  m_guessWhirl.clear();
   m_pa = 0;
   m_passed = false;
   m_pb = 0;
@@ -791,6 +777,8 @@ void spoton_smp::setGuess(const QString &guess)
       (&m_guess, GCRYMPI_FMT_USG,
        reinterpret_cast<const unsigned char *> (hash.constData()),
        hash.length(), 0);
+
+  m_guessWhirl = spoton_crypt::whirlpoolHash(guess.toUtf8(), &ok);
 }
 
 void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
