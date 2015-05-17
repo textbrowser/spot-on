@@ -3968,8 +3968,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4045,8 +4045,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>752</width>
-                 <height>602</height>
+                 <width>635</width>
+                 <height>641</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4583,6 +4583,16 @@
                     </layout>
                    </item>
                    <item>
+                    <widget class="QLabel" name="label_9">
+                     <property name="text">
+                      <string>URL distillers may cause the discarding of URLs during the import process. Please see the URLs panel.</string>
+                     </property>
+                     <property name="wordWrap">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
                     <layout class="QHBoxLayout" name="urls_import_layout">
                      <property name="spacing">
                       <number>5</number>
@@ -4886,7 +4896,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>711</width>
+             <width>762</width>
              <height>1081</height>
             </rect>
            </property>

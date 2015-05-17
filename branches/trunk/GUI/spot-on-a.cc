@@ -1433,6 +1433,7 @@ spoton::spoton(void):QMainWindow()
 #endif
   m_ui.passphrase_rb->setChecked(true);
   m_ui.passphrase_rb_authenticate->setChecked(true);
+  m_ui.showStatistics->click();
   m_ui.answer->setEnabled(false);
   m_ui.answer_authenticate->setEnabled(false);
   m_ui.question->setEnabled(false);
