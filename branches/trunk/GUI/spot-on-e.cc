@@ -1402,6 +1402,18 @@ void spoton::setSBField(const QString &oid, const QVariant &value,
 
 void spoton::slotShareStarBeam(void)
 {
+  int row = m_ui.participants->currentRow();
+
+  if(row < 0)
+    return;
+
+  QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+
+  if(!item)
+    return;
+  else if(item->data(Qt::UserRole).toBool()) // Temporary friend?
+    return; // Temporary!
+
   QString error("");
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 

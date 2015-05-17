@@ -17,6 +17,7 @@
 <li>Digital signatures should vouch for private key information.</li>
 <li>Display URL database connection information within the Search panel.</li>
 <li>Do not delete URLs from shared.db unless they were properly loaded.<li>
+<li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
 <li>Dual-purpose domain check boxes. Please see URLs.</li>
 <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
 <li>Establish authentication and encryption keys via silent SMP. The 32-byte authentication and 32-byte encryption keys are created from a Whirlpool digest of the SHA-512 digest of the secret.</li>
