@@ -20,7 +20,7 @@
 <li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
 <li>Dual-purpose domain check boxes. Please see URLs.</li>
 <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
-<li>Establish authentication and encryption keys via silent SMP. The 32-byte authentication and 32-byte encryption keys are created from a Whirlpool digest of the secret.</li>
+<li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>
 <li>Guard QList::last().</li>
 <li>Guard QList::removeAt().</li>
 <li>Notify the user of URL import statistics.</li>

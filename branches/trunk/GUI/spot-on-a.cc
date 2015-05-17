@@ -7137,6 +7137,10 @@ void spoton::slotPopulateParticipants(void)
 	  setStretchLastSection(true);
 	m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
 	m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
+	m_ui.participants->resizeColumnToContents
+	  (m_ui.participants->columnCount() - 2); // Gemini Encryption Key.
+	m_ui.participants->resizeColumnToContents
+	  (m_ui.participants->columnCount() - 1); // Gemini Hash Key.
 	m_ui.participants->setSelectionMode
 	  (QAbstractItemView::ExtendedSelection);
 	m_ui.participants->setSortingEnabled(true);

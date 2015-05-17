@@ -58,6 +58,7 @@ namespace spoton_common
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH = 10485760;
   static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 250000;
   static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH = 256;
+  static const unsigned long GEMINI_ITERATION_COUNT = 10000;
 }
 
 #endif

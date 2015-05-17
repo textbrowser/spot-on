@@ -358,6 +358,7 @@ class spoton_lineedit: public QLineEdit
 	  m_dialog->m_ui.shift->setChecked(false);
 	  m_dialog->m_ui.show->setChecked(false);
 	  m_dialog->slotShift();
+	  m_dialog->m_ui.passphrase->setFocus();
 
 	  if(m_dialog->exec() == QDialog::Accepted)
 	    setText(m_dialog->m_ui.passphrase->text());

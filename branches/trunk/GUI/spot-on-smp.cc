@@ -70,6 +70,23 @@ spoton_smp::~spoton_smp()
   reset();
 }
 
+QByteArray spoton_smp::guessSha(void) const
+{
+  QByteArray bytes;
+  size_t size = 0;
+  unsigned char *buffer = 0;
+
+  if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, m_guess) != 0)
+    goto done_label;
+  else
+    bytes = QByteArray
+      (reinterpret_cast<char *> (buffer), static_cast<int> (size));
+
+ done_label:
+  gcry_free(buffer);
+  return bytes;
+}
+
 QByteArray spoton_smp::guessWhirlpool(void) const
 {
   return m_guessWhirl;

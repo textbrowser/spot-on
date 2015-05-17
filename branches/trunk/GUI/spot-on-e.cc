@@ -1745,17 +1745,21 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QByteArray bytes(smp->guessWhirlpool());
+  QPair<QByteArray, QByteArray> gemini;
+  QString error("");
 
+  gemini = spoton_crypt::derivedKeys
+    ("aes256",
+     "sha512",
+     spoton_common::GEMINI_ITERATION_COUNT,
+     smp->guessWhirlpool(),
+     smp->guessSha(),
+     spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
+     error);
   QApplication::restoreOverrideCursor();
 
-  if(bytes.isEmpty())
+  if(!error.isEmpty())
     return;
-
-  QPair<QByteArray, QByteArray> gemini;
-
-  gemini.first = bytes.mid(0, 32);
-  gemini.second = bytes.right(32);
 
   if(saveGemini(gemini, item1->text()))
     {
