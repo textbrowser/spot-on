@@ -1743,7 +1743,11 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
   if(!smp)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QByteArray bytes(smp->guessWhirlpool());
+
+  QApplication::restoreOverrideCursor();
 
   if(bytes.isEmpty())
     return;
