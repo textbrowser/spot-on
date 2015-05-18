@@ -7,7 +7,7 @@
 <li>Allow configuration of the kernel's cache purge timer.</li>
 <li>Allow importing of URLs without Import Credentials. Only plaintext URLs will be imported.</li>
 <li>Assume zero pointer defaults in Qt::value().</li>
-<li>Bound size_t argument of memcpy() in spoton_crypt::setHashKey(), spoton_misc::peerAddressAndPort(), spoton_sctp_server::setMaxPendingConnections(), spoton_sctp_socket::localAddressAndPort().</li>
+<li>Bound size_t parameter of memcpy() in spoton_crypt::setHashKey(), spoton_misc::peerAddressAndPort(), spoton_sctp_server::setMaxPendingConnections(), spoton_sctp_socket::localAddressAndPort().</li>
 <li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
 <li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
 <li>Corrected importing of public keys. Cannot assume that key pairs exist.</li>
