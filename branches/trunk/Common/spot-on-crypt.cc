@@ -511,7 +511,7 @@ void spoton_crypt::init(const QString &cipherType,
     spoton_misc::logError("spoton_crypt::init(): "
 			  "gcry_cipher_get_algo_keylen() failed.");
 
-  if(m_symmetricKey)
+  if(m_symmetricKey && m_symmetricKeyLength > 0)
     {
       memcpy(m_symmetricKey,
 	     symmetricKey.constData(),
@@ -832,7 +832,7 @@ QByteArray spoton_crypt::symmetricKey(void)
 {
   QReadLocker locker(&m_symmetricKeyMutex);
 
-  if(m_symmetricKey)
+  if(m_symmetricKey && m_symmetricKeyLength > 0)
     return QByteArray
       (m_symmetricKey, static_cast<int> (m_symmetricKeyLength));
   else
@@ -3368,6 +3368,23 @@ QByteArray spoton_crypt::sha1FileHash(const QString &fileName,
   return hash.result();
 }
 
+void spoton_crypt::setEncryptionKey(const QByteArray &encryptionKey)
+{
+  QWriteLocker locker(&m_symmetricKeyMutex);
+
+  gcry_free(m_symmetricKey);
+  m_symmetricKey = 0;
+
+  if(m_symmetricKeyLength > 0 &&
+     (m_symmetricKey =
+      static_cast<char *> (gcry_calloc_secure(m_symmetricKeyLength,
+					      sizeof(char)))) != 0)
+    memcpy(m_symmetricKey,
+	   encryptionKey.constData(),
+	   qMin(m_symmetricKeyLength,
+		static_cast<size_t> (encryptionKey.length())));
+}
+
 void spoton_crypt::setHashKey(const QByteArray &hashKey)
 {
   QWriteLocker locker(&m_hashKeyMutex);
@@ -3382,7 +3399,8 @@ void spoton_crypt::setHashKey(const QByteArray &hashKey)
 					      sizeof(char)))) != 0)
     memcpy(m_hashKey,
 	   hashKey.constData(),
-	   m_hashKeyLength);
+	   qMin(m_hashKeyLength,
+		static_cast<size_t> (hashKey.length())));
   else
     m_hashKeyLength = 0;
 }

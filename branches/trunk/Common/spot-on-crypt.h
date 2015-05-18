@@ -201,6 +201,7 @@ class spoton_crypt
 	    const QString &id,
 	    const QString &modeOfOperation);
   void initializePrivateKeyContainer(bool *ok);
+  void setEncryptionKey(const QByteArray &encryptionKey);
   void setHashKey(const QByteArray &hashKey);
   static bool setInitializationVector(QByteArray &iv,
 				      const int algorithm,

@@ -3149,7 +3149,8 @@ QHostAddress spoton_misc::peerAddressAndPort(const int socketDescriptor,
 	      Q_IPV6ADDR temp;
 
 	      memcpy(&temp.c, &sockaddr->sockaddr_in6.sin6_addr.s6_addr,
-		     sizeof(temp.c));
+		     qMin(sizeof(sockaddr->sockaddr_in6.sin6_addr.s6_addr),
+			  sizeof(temp.c)));
 	      address.setAddress(temp);
 	      address.setScopeId
 		(QString::number(sockaddr->sockaddr_in6.sin6_scope_id));

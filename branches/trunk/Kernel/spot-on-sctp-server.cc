@@ -631,7 +631,7 @@ void spoton_sctp_server::slotTimeout(void)
 	  Q_IPV6ADDR temp;
 
 	  memcpy(&temp.c, &clientaddr.sin6_addr.s6_addr,
-		 sizeof(temp.c));
+		 qMin(sizeof(clientaddr.sin6_addr.s6_addr), sizeof(temp.c)));
 	  address.setAddress(temp);
 	  address.setScopeId
 	    (QString::number(clientaddr.sin6_scope_id));
