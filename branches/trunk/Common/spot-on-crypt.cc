@@ -1049,6 +1049,12 @@ QByteArray spoton_crypt::sha1Hash(const QByteArray &data,
   return shaXHash(GCRY_MD_SHA1, data, ok);
 }
 
+QByteArray spoton_crypt::sha256Hash(const QByteArray &data,
+				    bool *ok)
+{
+  return shaXHash(GCRY_MD_SHA256, data, ok);
+}
+
 QByteArray spoton_crypt::sha512Hash(const QByteArray &data,
 				    bool *ok)
 {

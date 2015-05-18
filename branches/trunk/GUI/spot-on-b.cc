@@ -5951,13 +5951,12 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 			     const QString &)));
   m_chatWindows[publicKeyHash] = chat;
   m_starsLastModificationTime = QDateTime();
+  chat->showNormal();
+  chat->raise();
   chat->center(this);
 
   if(smp)
     chat->setSMPVerified(smp->passed());
-
-  chat->showNormal();
-  chat->raise();
 }
 
 void spoton::slotChatWindowDestroyed(void)

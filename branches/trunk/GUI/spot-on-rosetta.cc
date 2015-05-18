@@ -154,6 +154,9 @@ void spoton_rosetta::slotClose(void)
 
 void spoton_rosetta::show(QWidget *parent)
 {
+  QMainWindow::show();
+  raise();
+
   if(parent)
     {
       QPoint p(parent->pos());
@@ -178,8 +181,6 @@ void spoton_rosetta::show(QWidget *parent)
   ui.name->setText
     (QString::fromUtf8(settings.value("gui/rosettaName", "unknown").
 		       toByteArray()).trimmed());
-  QMainWindow::show();
-  raise();
   populateContacts();
 }
 

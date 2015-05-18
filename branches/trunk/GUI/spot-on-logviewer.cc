@@ -105,6 +105,9 @@ void spoton_logviewer::slotClear(void)
 
 void spoton_logviewer::show(QWidget *parent)
 {
+  QMainWindow::show();
+  raise();
+
   if(parent)
     {
       QPoint p(parent->pos());
@@ -124,8 +127,6 @@ void spoton_logviewer::show(QWidget *parent)
       move(X, Y);
     }
 
-  QMainWindow::show();
-  raise();
   m_lastModificationTime = QDateTime();
   m_timer.start();
 }

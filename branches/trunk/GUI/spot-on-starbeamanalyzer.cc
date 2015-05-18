@@ -117,6 +117,9 @@ void spoton_starbeamanalyzer::slotClose(void)
 
 void spoton_starbeamanalyzer::show(QWidget *parent)
 {
+  QMainWindow::show();
+  raise();
+
   if(parent)
     {
       QPoint p(parent->pos());
@@ -135,9 +138,6 @@ void spoton_starbeamanalyzer::show(QWidget *parent)
 
       move(X, Y);
     }
-
-  QMainWindow::show();
-  raise();
 }
 
 void spoton_starbeamanalyzer::keyPressEvent(QKeyEvent *event)

@@ -1,5 +1,5 @@
 <html>
-0.23 (05/16/2015)
+0.23 (05/22/2015)
 <ol>
 <li>Added libspoton_delete_urls() to libspoton. Version updated to 0.10.</li>
 <li>Allow adjustment of the iteration count in the file encryption tool.</li>
@@ -15,6 +15,7 @@
 <li>Corrected use of spoton::addFriendsKey().</li>
 <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
 <li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
+<li>Derive subsequent file encryption keys from initially-derived key via SHA-256.</li>
 <li>Digital signatures should vouch for private key information.</li>
 <li>Display URL database connection information within the Search panel.</li>
 <li>Do not delete URLs from shared.db unless they were properly loaded.<li>

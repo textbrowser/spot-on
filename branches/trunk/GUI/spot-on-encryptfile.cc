@@ -133,6 +133,9 @@ void spoton_encryptfile::slotClose(void)
 
 void spoton_encryptfile::show(QWidget *parent)
 {
+  QMainWindow::show();
+  raise();
+
   if(parent)
     {
       QPoint p(parent->pos());
@@ -151,9 +154,6 @@ void spoton_encryptfile::show(QWidget *parent)
 
       move(X, Y);
     }
-
-  QMainWindow::show();
-  raise();
 }
 
 void spoton_encryptfile::keyPressEvent(QKeyEvent *event)
@@ -452,7 +452,18 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	      break;
 	    }
 	  else
-	    rc = file2.write(data, data.length());
+	    {
+	      crypt.setEncryptionKey
+		(spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok));
+
+	      if(ok)
+		rc = file2.write(data, data.length());
+	      else
+		{
+		  error = tr("spoton::sha256Hash() error.");
+		  break;
+		}
+	    }
 
 	  if(data.length() != rc)
 	    {
@@ -545,7 +556,18 @@ void spoton_encryptfile::encrypt(const bool sign,
 	      break;
 	    }
 	  else
-	    rc = file2.write(data, data.length());
+	    {
+	      crypt.setEncryptionKey
+		(spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok));
+
+	      if(ok)
+		rc = file2.write(data, data.length());
+	      else
+		{
+		  error = tr("spoton_crypt::sha256Hash() error.");
+		  break;
+		}
+	    }
 
 	  if(data.length() != rc)
 	    {

@@ -89,6 +89,7 @@ class spoton_crypt
   static QByteArray sha1FileHash(const QString &fileName,
 				 QAtomicInt &atomic);
   static QByteArray sha1Hash(const QByteArray &data, bool *ok);
+  static QByteArray sha256Hash(const QByteArray &data, bool *ok);
   static QByteArray sha512Hash(const QByteArray &data, bool *ok);
   static QByteArray shaXHash(const int algorithm,
 			     const QByteArray &data, bool *ok);
@@ -168,6 +169,7 @@ class spoton_crypt
   void generatePrivatePublicKeys(const QString &keySize,
 				 const QString &keyType,
 				 QString &error);
+  void setEncryptionKey(const QByteArray &encryptionKey);
 
  private:
   QByteArray m_publicKey;
@@ -201,7 +203,6 @@ class spoton_crypt
 	    const QString &id,
 	    const QString &modeOfOperation);
   void initializePrivateKeyContainer(bool *ok);
-  void setEncryptionKey(const QByteArray &encryptionKey);
   void setHashKey(const QByteArray &hashKey);
   static bool setInitializationVector(QByteArray &iv,
 				      const int algorithm,
