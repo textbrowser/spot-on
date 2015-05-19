@@ -2211,8 +2211,6 @@ void spoton::slotAssignNewIPToNeighbor(void)
       ui.ip->setInputMask("000.000.000.000; ");
       ui.scope->setEnabled(false);
     }
-  else if(protocol == "IPv6")
-    ui.ip->setInputMask("hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh; ");
 
   ui.ip->setText(remoteIP);
   ui.port->setValue(remotePort.toInt());
@@ -2220,13 +2218,10 @@ void spoton::slotAssignNewIPToNeighbor(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
-      if(protocol == "Dynamic DNS")
-	ip = ui.ip->text().trimmed();
-      else
-	ip = QHostAddress(ui.ip->text().trimmed()).toString();
+      ip = ui.ip->text().trimmed();
 
-      if(ip.isEmpty())
-	return;
+      if(!ip.isEmpty())
+	ip = spoton_misc::massageIpForUi(ip, protocol);
 
       remotePort = QString::number(ui.port->value());
       scopeId = ui.scope->text();
@@ -2263,11 +2258,10 @@ void spoton::slotAssignNewIPToNeighbor(void)
 
 	    if(ok)
 	      query.bindValue
-		(1,
-		 crypt->keyedHash((ip +
-				   remotePort +
-				   scopeId +
-				   transport).toLatin1(), &ok).
+		(1, crypt->
+		 keyedHash((proxyHostName + proxyPort + ip + remotePort +
+			    scopeId +
+			    transport).toLatin1(), &ok).
 		 toBase64());
 
 	    if(ok)

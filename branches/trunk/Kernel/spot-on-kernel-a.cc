@@ -1178,7 +1178,7 @@ void spoton_kernel::prepareNeighbors(void)
 			  ** The indices of the list do not correspond
 			  ** with the indices of the query container.
 			  **
-			  ** list[4] - Proxy Hostname
+			  ** list[4] - Proxy HostName
 			  ** list[5] - Proxy Password
 			  ** list[6] - Proxy Port
 			  ** list[7] - Proxy Type

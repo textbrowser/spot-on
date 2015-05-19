@@ -2548,24 +2548,7 @@ void spoton::slotAddListener(void)
 	    else
 	      {
 		if(m_ui.listenerIPCombo->currentIndex() == 0)
-		  {
-		    ip = digits.value(0) + ":" +
-		      digits.value(1) + ":" +
-		      digits.value(2) + ":" +
-		      digits.value(3) + ":" +
-		      digits.value(4) + ":" +
-		      digits.value(5) + ":" +
-		      digits.value(6) + ":" +
-		      digits.value(7);
-		    ip.remove(":::::::");
-
-		    /*
-		    ** Special exception.
-		    */
-
-		    if(ip == "0:0:0:0:0:0:0:0")
-		      ip = "::";
-		  }
+		  ip = spoton_misc::massageIpForUi(ip, protocol);
 	      }
 
 	    if(ok)
@@ -2752,7 +2735,7 @@ void spoton::slotAddNeighbor(void)
 	QString ip(m_ui.neighborIP->text().trimmed());
 	QString port(QString::number(m_ui.neighborPort->value()));
 	QString protocol("");
-	QString proxyHostname("");
+	QString proxyHostName("");
 	QString proxyPassword("");
 	QString proxyPort("1");
 	QString proxyType("");
@@ -2822,49 +2805,7 @@ void spoton::slotAddNeighbor(void)
 	     encryptedThenHashed(QByteArray(), &ok).toBase64());
 	else
 	  {
-	    if(protocol == "IPv4" || protocol == "IPv6")
-	      {
-		QStringList digits;
-		QStringList list;
-
-		if(protocol == "IPv4")
-		  list = ip.split(".", QString::KeepEmptyParts);
-		else
-		  list = ip.split(":", QString::KeepEmptyParts);
-
-		for(int i = 0; i < list.size(); i++)
-		  digits.append(list.at(i));
-
-		ip.clear();
-
-		if(protocol == "IPv4")
-		  {
-		    ip = QString::number(digits.value(0).toInt()) + "." +
-		      QString::number(digits.value(1).toInt()) + "." +
-		      QString::number(digits.value(2).toInt()) + "." +
-		      QString::number(digits.value(3).toInt());
-		    ip.remove("...");
-		  }
-		else
-		  {
-		    ip = digits.value(0) + ":" +
-		      digits.value(1) + ":" +
-		      digits.value(2) + ":" +
-		      digits.value(3) + ":" +
-		      digits.value(4) + ":" +
-		      digits.value(5) + ":" +
-		      digits.value(6) + ":" +
-		      digits.value(7);
-		    ip.remove(":::::::");
-
-		    /*
-		    ** Special exception.
-		    */
-
-		    if(ip == "0:0:0:0:0:0:0:0")
-		      ip = "::";
-		  }
-	      }
+	    ip = spoton_misc::massageIpForUi(ip, protocol);
 
 	    if(ok)
 	      query.bindValue
@@ -2886,14 +2827,14 @@ void spoton::slotAddNeighbor(void)
 
 	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
 	  {
-	    proxyHostname = m_ui.proxyHostname->text().trimmed();
+	    proxyHostName = m_ui.proxyHostname->text().trimmed();
 	    proxyPort = QString::number(m_ui.proxyPort->value());
 	  }
 
 	if(ok)
 	  query.bindValue
 	    (7, crypt->
-	     keyedHash((proxyHostname + proxyPort + ip + port + scopeId +
+	     keyedHash((proxyHostName + proxyPort + ip + port + scopeId +
 			transport).toLatin1(), &ok).
 	     toBase64());
 
@@ -2942,7 +2883,7 @@ void spoton::slotAddNeighbor(void)
 	if(ok)
 	  query.bindValue
 	    (12, crypt->
-	     encryptedThenHashed(proxyHostname.toLatin1(), &ok).
+	     encryptedThenHashed(proxyHostName.toLatin1(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -3134,16 +3075,15 @@ void spoton::slotProtocolRadioToggled(bool state)
     {
       if(radio == m_ui.ipv6Listener)
 	{
-	  m_ui.listenerIP->setInputMask
-	    ("hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh; ");
+	  m_ui.listenerIP->clear();
+	  m_ui.listenerIP->setInputMask("");
 	  m_ui.listenerScopeId->setEnabled(true);
 	  m_ui.listenerScopeIdLabel->setEnabled(true);
 	}
       else
 	{
 	  m_ui.neighborIP->clear();
-	  m_ui.neighborIP->setInputMask
-	    ("hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh:hhhh; ");
+	  m_ui.neighborIP->setInputMask("");
 	  m_ui.neighborScopeId->setEnabled(true);
 	  m_ui.neighborScopeIdLabel->setEnabled(true);
 	}
@@ -3856,7 +3796,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "External IP: %6\n"
 		      "Country: %7 Remote IP: %8 Remote Port: %9 "
 		      "Scope ID: %10\n"
-		      "Proxy Hostname: %11 Proxy Port: %12\n"
+		      "Proxy HostName: %11 Proxy Port: %12\n"
 		      "Echo Mode: %13\n"
 		      "Communications Mode: %14\n"
 		      "Uptime: %15 Minutes\n"

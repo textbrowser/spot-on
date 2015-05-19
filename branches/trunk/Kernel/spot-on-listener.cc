@@ -952,7 +952,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
 	    query.bindValue(14, 0);
 
-	    QString proxyHostname("");
+	    QString proxyHostName("");
 	    QString proxyPassword("");
 	    QString proxyPort("1");
 	    QString proxyType(QString::number(QNetworkProxy::NoProxy));
@@ -961,7 +961,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    if(ok)
 	      query.bindValue
 		(15, s_crypt->encryptedThenHashed
-		 (proxyHostname.toLatin1(), &ok).
+		 (proxyHostName.toLatin1(), &ok).
 		 toBase64());
 
 	    if(ok)

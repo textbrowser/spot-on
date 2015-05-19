@@ -980,7 +980,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      QString orientation("");
 	      QString port("");
 	      QString protocol("");
-	      QString proxyHostname("");
+	      QString proxyHostName("");
 	      QString proxyPassword("");
 	      QString proxyPort("1");
 	      QString proxyType("");
@@ -1047,7 +1047,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		   &ok).constData();
 
 	      if(ok)
-		proxyHostname = oldCrypt->decryptedAfterAuthenticated
+		proxyHostName = oldCrypt->decryptedAfterAuthenticated
 		  (QByteArray::
 		   fromBase64(query.
 			      value(5).
@@ -1205,7 +1205,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      if(ok)
 		updateQuery.bindValue
 		  (7, newCrypt->
-		   encryptedThenHashed(proxyHostname.toLatin1(), &ok).
+		   encryptedThenHashed(proxyHostName.toLatin1(), &ok).
 		   toBase64());
 
 	      if(ok)

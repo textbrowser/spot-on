@@ -3702,7 +3702,7 @@ void spoton::importNeighbors(const QString &filePath)
 		    if(ok)
 		      query.bindValue
 			(7, crypt->
-			 keyedHash(QByteArray() + // Proxy Hostname
+			 keyedHash(QByteArray() + // Proxy HostName
 				   QByteArray() + // Proxy Port
 				   hash["ip_address"] +
 				   hash["port"] +

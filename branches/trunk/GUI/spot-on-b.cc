@@ -1929,7 +1929,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 
       QByteArray keyType(list.value(0));
 
-      keyType = QByteArray::fromBase64(keyType);qDebug()<<keyType;
+      keyType = QByteArray::fromBase64(keyType);
 
       if(!(keyType == "chat" || keyType == "email" ||
 	   keyType == "poptastic" ||

@@ -1663,7 +1663,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 
 	query.bindValue(12, 1);
 
-	QString proxyHostname("");
+	QString proxyHostName("");
 	QString proxyPassword("");
 	QString proxyPort("1");
 	QString proxyType(QString::number(QNetworkProxy::NoProxy));
@@ -1671,7 +1671,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 
 	if(ok)
 	  query.bindValue
-	    (13, crypt->encryptedThenHashed(proxyHostname.toLatin1(), &ok).
+	    (13, crypt->encryptedThenHashed(proxyHostName.toLatin1(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -3659,4 +3659,29 @@ void spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
 
   if(ok)
     query.exec();
+}
+
+QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)
+{
+  QString iipp(ip);
+
+  if(protocol == "IPv4")
+    {
+      QStringList digits;
+      QStringList list;
+
+      list = iipp.split(".", QString::KeepEmptyParts);
+
+      for(int i = 0; i < list.size(); i++)
+	digits.append(list.at(i));
+
+      iipp.clear();
+      iipp = QString::number(digits.value(0).toInt()) + "." +
+	QString::number(digits.value(1).toInt()) + "." +
+	QString::number(digits.value(2).toInt()) + "." +
+	QString::number(digits.value(3).toInt());
+      iipp.remove("...");
+    }
+
+  return iipp;
 }
