@@ -3059,6 +3059,7 @@ void spoton::slotProtocolRadioToggled(bool state)
     {
       if(radio == m_ui.ipv4Listener)
 	{
+	  m_ui.listenerIP->clear();
 	  m_ui.listenerIP->setInputMask("000.000.000.000; ");
 	  m_ui.listenerScopeId->setEnabled(false);
 	  m_ui.listenerScopeIdLabel->setEnabled(false);
