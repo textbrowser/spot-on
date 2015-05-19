@@ -15,7 +15,7 @@
 <li>Corrected use of spoton::addFriendsKey().</li>
 <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
 <li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
-<li>Derive subsequent file encryption keys from initially-derived key via SHA-256.</li>
+<li>Derive subsequent file encryption key from initially-derived key via SHA-256 (Key_(i + 1) = SHA-256(Key_i)).</li>
 <li>Digital signatures should vouch for private key information.</li>
 <li>Display URL database connection information within the Search panel.</li>
 <li>Do not delete URLs from shared.db unless they were properly loaded.<li>

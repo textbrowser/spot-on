@@ -169,7 +169,7 @@ class spoton_crypt
   void generatePrivatePublicKeys(const QString &keySize,
 				 const QString &keyType,
 				 QString &error);
-  void setEncryptionKey(const QByteArray &encryptionKey);
+  void setEncryptionKey(const QByteArray &encryptionKey, bool *ok);
 
  private:
   QByteArray m_publicKey;

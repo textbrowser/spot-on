@@ -453,14 +453,24 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	    }
 	  else
 	    {
-	      crypt.setEncryptionKey
+	      QByteArray bytes
 		(spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok));
 
 	      if(ok)
-		rc = file2.write(data, data.length());
+		{
+		  crypt.setEncryptionKey(bytes, &ok);
+
+		  if(ok)
+		    rc = file2.write(data, data.length());
+		  else
+		    {
+		      error = tr("spoton_crypt::setEncryptionKey() error.");
+		      break;
+		    }
+		}
 	      else
 		{
-		  error = tr("spoton::sha256Hash() error.");
+		  error = tr("spoton_crypt::sha256Hash() error.");
 		  break;
 		}
 	    }
@@ -557,11 +567,21 @@ void spoton_encryptfile::encrypt(const bool sign,
 	    }
 	  else
 	    {
-	      crypt.setEncryptionKey
+	      QByteArray bytes
 		(spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok));
 
 	      if(ok)
-		rc = file2.write(data, data.length());
+		{
+		  crypt.setEncryptionKey(bytes, &ok);
+
+		  if(ok)
+		    rc = file2.write(data, data.length());
+		  else
+		    {
+		      error = tr("spoton_crypt::setEncryptionKey() error.");
+		      break;
+		    }
+		}
 	      else
 		{
 		  error = tr("spoton_crypt::sha256Hash() error.");
