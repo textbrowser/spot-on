@@ -979,7 +979,9 @@ void spoton::slotPostgreSQLConnect(void)
     {
       m_ui.postgresqlConnect->setProperty("user_text", "connect");
       m_ui.postgresqlConnect->setText(tr("PostgreSQL Connect"));
+#if SPOTON_GOLDBUG == 0
       m_ui.url_database_connection_information->clear();
+#endif
       m_urlDatabase.close();
       m_urlDatabase = QSqlDatabase();
 
@@ -1035,7 +1037,9 @@ void spoton::slotPostgreSQLConnect(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+#if SPOTON_GOLDBUG == 0
       m_ui.url_database_connection_information->clear();
+#endif
       m_urlDatabase.close();
       m_urlDatabase = QSqlDatabase();
 
@@ -1057,7 +1061,9 @@ void spoton::slotPostgreSQLConnect(void)
 
       if(!m_urlDatabase.isOpen())
 	{
+#if SPOTON_GOLDBUG == 0
 	  m_ui.url_database_connection_information->clear();
+#endif
 
 	  QString str(m_urlDatabase.lastError().text().trimmed());
 
@@ -1076,11 +1082,13 @@ void spoton::slotPostgreSQLConnect(void)
 	{
 	  m_ui.postgresqlConnect->setProperty("user_text", "disconnect");
 	  m_ui.postgresqlConnect->setText(tr("PostgreSQL Disconnect"));
+#if SPOTON_GOLDBUG == 0
 	  m_ui.url_database_connection_information->setText
 	    (QString("%1@%2/%3").
 	     arg(ui.name->text()).
 	     arg(ui.host->text()).
 	     arg(ui.database->text()));
+#endif
 	  settings.setValue("gui/postgresql_database",
 			    ui.database->text());
 	  settings.setValue("gui/postgresql_host",

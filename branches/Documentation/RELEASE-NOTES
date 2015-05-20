@@ -1,5 +1,5 @@
 <html>
-0.23 (05/22/2015)
+05.22.2015
 <ol>
 <li>Added libspoton_delete_urls() to libspoton. Version updated to 0.10.</li>
 <li>Allow adjustment of the iteration count in the file encryption tool.</li>
@@ -34,7 +34,7 @@
 <li>Updated NTRU files (05/14/2015).</li>
 <li>Verify a StarBeam's provided pulse size against some defined maximum.</li>
 </ol>
-0.22 (04/29/2015)
+04.09.2015
 <ol>
 <li>Added Documentation/Spot-On-Kernel.1.</li>
 <li>Added the option 65536 to the File Encryption's Read Size.</li>

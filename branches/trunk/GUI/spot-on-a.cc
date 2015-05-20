@@ -2392,7 +2392,9 @@ void spoton::cleanup(void)
   if(QSqlDatabase::contains("URLDatabase"))
     QSqlDatabase::removeDatabase("URLDatabase");
 
+#if SPOTON_GOLDBUG == 0
   m_ui.url_database_connection_information->clear();
+#endif
   saveSettings();
   delete m_urlCommonCrypt;
 

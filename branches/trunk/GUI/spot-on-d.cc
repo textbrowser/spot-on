@@ -2550,7 +2550,9 @@ void spoton::slotPostgreSQLDisconnect(int index)
 {
   m_ui.postgresqlConnect->setProperty("user_text", "connect");
   m_ui.postgresqlConnect->setText(tr("PostgreSQL Connect"));
+#if SPOTON_GOLDBUG == 0
   m_ui.url_database_connection_information->clear();
+#endif
   m_urlDatabase.close();
   m_urlDatabase = QSqlDatabase();
 
@@ -2567,10 +2569,12 @@ void spoton::slotPostgreSQLDisconnect(int index)
 	(spoton_misc::homePath() + QDir::separator() + "urls.db");
       m_urlDatabase.open();
 
+#if SPOTON_GOLDBUG == 0
       if(m_urlDatabase.isOpen())
 	m_ui.url_database_connection_information->setText
 	  (QString("%1@%2/%3").arg("sqlite").arg("localhost").
 	   arg("urls.db"));
+#endif
     }
 
   m_settings["gui/sqliteSearch"] = index == 1;
