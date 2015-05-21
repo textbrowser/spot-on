@@ -3186,12 +3186,14 @@ void spoton_neighbor::process0002b
 		{
 		  QList<QByteArray> list(data.split('\n'));
 
-		  if(list.size() == 6)
-		    {
-		      for(int i = 0; i < list.size(); i++)
-			list.replace
-			  (i, QByteArray::fromBase64(list.at(i)));
+		  for(int i = 0; i < list.size(); i++)
+		    list.replace
+		      (i, QByteArray::fromBase64(list.at(i)));
 
+		  if(list.size() == 6 &&
+		     list.value(1).size() >= 64 &&
+		     list.value(3).size() >= 64)
+		    {
 		      if(list.value(0) == "0002b")
 			{
 			  QByteArray publicKeyHash
@@ -3222,12 +3224,20 @@ void spoton_neighbor::process0002b
 			   "message type does not match 0002b.");
 		    }
 		  else
-		    spoton_misc::logError
-		      (QString("spoton_neighbor::process0002b(): "
-			       "received irregular data. "
-			       "Expecting 6 "
-			       "entries, "
-			       "received %1.").arg(list.size()));
+		    {
+		      if(list.size() != 6)
+			spoton_misc::logError
+			  (QString("spoton_neighbor::process0002b(): "
+				   "received irregular data. "
+				   "Expecting 6 "
+				   "entries, "
+				   "received %1.").arg(list.size()));
+		      else
+			spoton_misc::logError
+			  ("spoton_neighbor::process0002b(): "
+			   "received irregular data. "
+			   "Expecting larger messages.");
+		    }
 		}
 	    }
 	  else

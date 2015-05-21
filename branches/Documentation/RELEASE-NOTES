@@ -30,8 +30,8 @@
 <li>Prompt before accessing a remote URL.</li>
 <li>Removed input masks from IPv6 fields.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
-<li>Require account salts to be at least 512 bytes.</li>
-<li>Require the message in 0002a to be at least 64 bytes.</li>
+<li>Require account salts to contain at least 512 bytes.</li>
+<li>Require the messages in 0002a and 0002b to contain at least 64 bytes.</li>
 <li>Simplified copying and exporting of public keys.</li>
 <li>Updated NTRU files (05/14/2015).</li>
 <li>Verify a StarBeam's provided pulse size against some defined maximum.</li>
