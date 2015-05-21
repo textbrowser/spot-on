@@ -1673,7 +1673,7 @@ void spoton_neighbor::processData(void)
 
 	  if(!spoton_misc::readSharedResource(&m_accountAuthenticated,
 					      m_accountAuthenticatedMutex))
-	    if(!accountClientSentSalt.isEmpty())
+	    if(accountClientSentSalt.length() >= 512)
 	      process0051(length, data);
 
 	  if(!spoton_misc::readSharedResource(&m_accountAuthenticated,
@@ -3908,8 +3908,9 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 
       spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
-      if(!list.at(1).isEmpty() && !accountClientSentSalt.isEmpty() &&
-	 !spoton_crypt::memcmp(list.at(1), accountClientSentSalt))
+      if(accountClientSentSalt.length() >= 512 &&
+	 list.at(1).trimmed().length() >= 512 &&
+	 !spoton_crypt::memcmp(list.at(1).trimmed(), accountClientSentSalt))
 	{
 	  if(s_crypt)
 	    {
@@ -3917,7 +3918,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	      QByteArray name;
 	      QByteArray newHash;
 	      QByteArray password;
-	      QByteArray salt(list.at(1));
+	      QByteArray salt(list.at(1).trimmed());
 	      bool ok = true;
 
 	      QReadLocker locker1(&m_accountNameMutex);
@@ -3992,11 +3993,11 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	  spoton_misc::setSharedResource
 	    (&m_accountAuthenticated, false, m_accountAuthenticatedMutex);
 
-	  if(accountClientSentSalt.isEmpty())
+	  if(accountClientSentSalt.length() < 512)
 	    spoton_misc::logError
 	      ("spoton_neighbor::process0051(): "
 	       "the server replied to an authentication message, however, "
-	       "my provided salt is empty.");
+	       "my provided salt is small.");
 	  else if(spoton_crypt::memcmp(list.at(1), accountClientSentSalt))
 	    spoton_misc::logError
 	      ("spoton_neighbor::process0051(): "

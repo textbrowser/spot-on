@@ -2194,7 +2194,7 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 				      const QByteArray &salt,
 				      spoton_crypt *crypt)
 {
-  if(!crypt)
+  if(!crypt || salt.length() < 512)
     {
       name.clear();
       password.clear();
