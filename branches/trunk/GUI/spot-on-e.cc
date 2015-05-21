@@ -955,6 +955,40 @@ void spoton::slotSaveOpenLinks(bool state)
   settings.setValue("gui/openLinks", state);
 }
 
+void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
+					const QString &oid)
+{
+  /*
+  ** This method does not consider if the specified participant
+  ** is temporary.
+  */
+
+  spoton_smp *smp = m_smps.value(publicKeyHash, 0);
+
+  if(!smp)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QPair<QByteArray, QByteArray> gemini;
+  QString error("");
+
+  gemini = spoton_crypt::derivedKeys
+    ("aes256",
+     "sha512",
+     spoton_common::GEMINI_ITERATION_COUNT,
+     smp->guessWhirlpool(),
+     smp->guessSha(),
+     spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
+     error);
+  QApplication::restoreOverrideCursor();
+
+  if(!error.isEmpty())
+    return;
+
+  saveGemini(gemini, oid);
+}
+
 void spoton::slotPrepareSMP(const QString &hash)
 {
   /*

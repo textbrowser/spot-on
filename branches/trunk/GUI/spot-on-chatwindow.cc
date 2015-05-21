@@ -133,6 +133,9 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 
   QMenu *menu = new QMenu(this);
 
+  menu->addAction(tr("&Derive Gemini pair via SMP secret."),
+		  this,
+		  SLOT(slotDeriveGeminiPairViaSMP(void)));
   menu->addAction(tr("&Reset the SMP machine's internal state to s0."),
 		  this,
 		  SLOT(slotInitializeSMP(void)));
@@ -458,6 +461,11 @@ void spoton_chatwindow::setSMPVerified(const bool state)
 	(tr("The Socialist Millionaire Protocol succeeded on %1.").
 	 arg(now.toString()));
     }
+}
+
+void spoton_chatwindow::slotDeriveGeminiPairViaSMP(void)
+{
+  emit deriveGeminiPairViaSMP(m_publicKeyHash, m_id);
 }
 
 void spoton_chatwindow::slotInitializeSMP(void)

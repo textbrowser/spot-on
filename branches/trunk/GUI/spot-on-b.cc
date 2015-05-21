@@ -5912,6 +5912,11 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
      m_crypts.value("chat", 0), 0);
 
   connect(chat,
+	  SIGNAL(deriveGeminiPairViaSMP(const QString &, const QString &)),
+	  this,
+	  SLOT(slotDeriveGeminiPairViaSMP(const QString &,
+					  const QString &)));
+  connect(chat,
 	  SIGNAL(destroyed(void)),
 	  this,
 	  SLOT(slotChatWindowDestroyed(void)));

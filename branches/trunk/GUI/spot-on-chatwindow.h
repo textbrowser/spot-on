@@ -75,6 +75,7 @@ class spoton_chatwindow: public QMainWindow
   void showError(const QString &error);
 
  private slots:
+  void slotDeriveGeminiPairViaSMP(void);
   void slotInitializeSMP(void);
   void slotPrepareSMP(void);
   void slotSendMessage(void);
@@ -85,6 +86,8 @@ class spoton_chatwindow: public QMainWindow
   void slotVerifySMPSecret(void);
 
  signals:
+  void deriveGeminiPairViaSMP(const QString &publicKeyHash,
+			      const QString &oid);
   void initializeSMP(const QString &publicKeyHash);
   void messageSent(void);
   void prepareSMP(const QString &publicKeyHash);
