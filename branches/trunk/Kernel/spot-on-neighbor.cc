@@ -3055,12 +3055,13 @@ void spoton_neighbor::process0002a
 		    {
 		      QList<QByteArray> list(data.split('\n'));
 
-		      if(list.size() == 4)
-			{
-			  for(int i = 0; i < list.size(); i++)
-			    list.replace
-			      (i, QByteArray::fromBase64(list.at(i)));
+		      for(int i = 0; i < list.size(); i++)
+			list.replace
+			  (i, QByteArray::fromBase64(list.at(i)));
 
+		      if(list.size() == 4 &&
+			 list.value(1).length() >= 64) // Message
+			{
 			  saveParticipantStatus
 			    (list.value(0)); // Public Key Hash
 			  emit retrieveMail
@@ -3078,12 +3079,20 @@ void spoton_neighbor::process0002a
 			     adaptiveEchoPair);
 			}
 		      else
-			spoton_misc::logError
-			  (QString("spoton_neighbor::process0002a(): "
-				   "received irregular data. "
-				   "Expecting 4 "
-				   "entries, "
-				   "received %1.").arg(list.size()));
+			{
+			  if(list.size() != 4)
+			    spoton_misc::logError
+			      (QString("spoton_neighbor::process0002a(): "
+				       "received irregular data. "
+				       "Expecting 4 "
+				       "entries, "
+				       "received %1.").arg(list.size()));
+			  else
+			    spoton_misc::logError
+			      ("spoton_neighbor::process0002a(): "
+			       "received irregular data. "
+			       "Expecting a larger message.");
+			}
 		    }
 		}
 	      else
