@@ -404,9 +404,9 @@ void spoton::slotReceivedKernelMessage(void)
 			continue;
 
 		      QList<QTableWidgetItem *> items
-			(m_ui.participants->
-			 findItems(hash.toBase64(),
-				   Qt::MatchExactly));
+			(findItems(m_ui.participants,
+				   hash.toBase64(),
+				   3));
 		      QString oid("");
 		      bool ok = true;
 		      bool passed = false;
@@ -503,8 +503,9 @@ void spoton::slotReceivedKernelMessage(void)
 					   "MMddyyyyhhmmss"));
 		  QDateTime now(QDateTime::currentDateTime());
 		  QList<QTableWidgetItem *> items
-		    (m_ui.participants->findItems(hash.toBase64(),
-						  Qt::MatchExactly));
+		    (findItems(m_ui.participants,
+			       hash.toBase64(),
+			       3));
 		  QString content(QString::fromUtf8(message.constData(),
 						    message.length()));
 		  QString msg("");
@@ -1795,7 +1796,7 @@ void spoton::slotFetchMoreButton(void)
 void spoton::slotAddFriendsKey(void)
 {
   QByteArray key
-    (m_ui.friendInformation->toPlainText().toLatin1());
+    (m_ui.friendInformation->toPlainText().toLatin1().trimmed());
 
   if(m_ui.addFriendEmail->isChecked())
     addFriendsKey(key, "E");
@@ -3453,10 +3454,10 @@ void spoton::populateMail(void)
 				else if(i == 1) // receiver_sender
 				  {
 				    QList<QTableWidgetItem *> items
-				      (m_ui.emailParticipants->
-				       findItems(query.value(8).
+				      (findItems(m_ui.emailParticipants,
+						 query.value(8).
 						 toByteArray(),
-						 Qt::MatchExactly));
+						 3));
 
 				    if(!items.isEmpty() && items.at(0))
 				      {
@@ -4637,8 +4638,9 @@ int spoton::applyGoldbugToLetter(const QByteArray &goldbug,
 	    if(item)
 	      {
 		QList<QTableWidgetItem *> items
-		  (m_ui.emailParticipants->
-		   findItems(list.value(4).toBase64(), Qt::MatchExactly));
+		  (findItems(m_ui.emailParticipants,
+			     list.value(4).toBase64(),
+			     3));
 
 		if(!items.isEmpty() && items.at(0))
 		  {

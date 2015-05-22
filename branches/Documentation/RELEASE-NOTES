@@ -1,5 +1,5 @@
 <html>
-05.22.2015
+2015.05.29
 <ol>
 <li>Added libspoton_delete_urls() to libspoton. Version updated to 0.10.</li>
 <li>Allow adjustment of the iteration count in the file encryption tool.</li>
@@ -19,7 +19,7 @@
 <li>Derive subsequent file encryption key from initially-derived key via SHA-256 (Key_(i + 1) = SHA-256(Key_i)).</li>
 <li>Digital signatures should vouch for private key information.</li>
 <li>Display URL database connection information within the Search panel.</li>
-<li>Do not delete URLs from shared.db unless they were properly loaded.<li>
+<li>Do not delete URLs from shared.db unless they are properly loaded.<li>
 <li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
 <li>Dual-purpose domain check boxes. Please see URLs.</li>
 <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
@@ -30,13 +30,15 @@
 <li>Prompt before accessing a remote URL.</li>
 <li>Removed input masks from IPv6 fields.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
+<li>Replaced the itemClicked() signal on the e-mail table with itemDoubleClicked() as itemClicked() and itemSelectionChanged() may cause duplicate dialog prompts.</li>
 <li>Require account salts to contain at least 512 bytes.</li>
 <li>Require the messages in 0002a and 0002b to contain at least 64 bytes.</li>
 <li>Simplified copying and exporting of public keys.</li>
+<li>The method QTableWidget::findItems() may return items that are irrelevant to the query. Implemented a special column-based method.</li>
 <li>Updated NTRU files (05/14/2015).</li>
 <li>Verify a StarBeam's provided pulse size against some defined maximum.</li>
 </ol>
-04.09.2015
+2015.04.09
 <ol>
 <li>Added Documentation/Spot-On-Kernel.1.</li>
 <li>Added the option 65536 to the File Encryption's Read Size.</li>

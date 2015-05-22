@@ -10927,12 +10927,9 @@ QPushButton:pressed {
            </layout>
           </item>
           <item>
-           <widget class="QLabel" name="label_73">
+           <widget class="QLabel" name="version">
             <property name="styleSheet">
              <string notr="true"> color:#666666;</string>
-            </property>
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://sourceforge.net/p/spot-on/code/HEAD/tree/branches/Documentation/RELEASE-NOTES&quot;&gt;&lt;span style=&quot; color:#666666;&quot;&gt;spot-on-kernel&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#666666;&quot;&gt; 05.22.2015&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>

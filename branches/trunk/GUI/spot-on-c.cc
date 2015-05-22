@@ -4196,3 +4196,26 @@ void spoton::slotRenameParticipant(void)
 	  }
       }
 }
+
+QList<QTableWidgetItem *> spoton::findItems(QTableWidget *table,
+					    const QString &text,
+					    const int column)
+{
+  if(column < 0 || !table)
+    return QList<QTableWidgetItem *> ();
+
+  QList<QTableWidgetItem *> list;
+
+  for(int i = 0; i < table->rowCount(); i++)
+    {
+      QTableWidgetItem *item = table->item(i, column);
+
+      if(!item)
+	continue;
+
+      if(item->text() == text)
+	list.append(item);
+    }
+
+  return list;
+}

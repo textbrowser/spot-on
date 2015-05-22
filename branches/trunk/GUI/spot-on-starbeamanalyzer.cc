@@ -31,6 +31,7 @@
 #include <QTableWidgetItem>
 #include <QtCore>
 
+#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-starbeamanalyzer.h"
 
@@ -390,7 +391,7 @@ void spoton_starbeamanalyzer::slotUpdatePercent(const QString &fileName,
 						const int percent)
 {
   QList<QTableWidgetItem *> list
-    (ui.tableWidget->findItems(fileName, Qt::MatchExactly));
+    (spoton::findItems(ui.tableWidget, fileName, 4));
 
   if(!list.isEmpty())
     {
@@ -461,7 +462,7 @@ void spoton_starbeamanalyzer::slotPotentialProblem(const QString &fileName,
 						   const qint64 pos)
 {
   QList<QTableWidgetItem *> list
-    (ui.tableWidget->findItems(fileName, Qt::MatchExactly));
+    (spoton::findItems(ui.tableWidget, fileName, 4));
 
   if(!list.isEmpty())
     {
@@ -532,7 +533,7 @@ void spoton_starbeamanalyzer::slotCopy(void)
 void spoton_starbeamanalyzer::slotExcessiveProblems(const QString &fileName)
 {
   QList<QTableWidgetItem *> list
-    (ui.tableWidget->findItems(fileName, Qt::MatchExactly));
+    (spoton::findItems(ui.tableWidget, fileName, 4));
 
   if(!list.isEmpty())
     {

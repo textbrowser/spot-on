@@ -219,6 +219,12 @@ spoton::spoton(void):QMainWindow()
   m_starsLastModificationTime = QDateTime();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
+  m_ui.version->setText
+    (QString("<html><head/><body><p><a href=\"https://github.com/textbrowser/"
+	     "spot-on/blob/master/branches/Documentation/RELEASE-NOTES\">"
+	     "<span style=\" text-decoration: underline; color:#0000ff;\">"
+	     "Spot-On Version %1</span></a></p></body></html>").
+     arg(SPOTON_VERSION_STR));
   setWindowTitle
     (tr("%1").arg(SPOTON_APPLICATION_NAME));
   m_ui.listenerOrientation->model()->setData
@@ -788,7 +794,7 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotRefreshPostOffice(void)));
   connect(m_ui.mail,
-	  SIGNAL(itemClicked(QTableWidgetItem *)),
+	  SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
 	  this,
 	  SLOT(slotMailSelected(QTableWidgetItem *)));
   connect(m_ui.mail,

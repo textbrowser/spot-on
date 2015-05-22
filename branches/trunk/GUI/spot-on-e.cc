@@ -958,10 +958,27 @@ void spoton::slotSaveOpenLinks(bool state)
 void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
 					const QString &oid)
 {
-  /*
-  ** This method does not consider if the specified participant
-  ** is temporary.
-  */
+  QList<QTableWidgetItem *> list(spoton::findItems(m_ui.participants,
+						   oid,
+						   1));
+
+  if(list.isEmpty())
+    return;
+
+  QTableWidgetItem *item1 = list.at(0);
+
+  if(!item1)
+    return;
+
+  QTableWidgetItem *item2 = m_ui.participants->item
+    (item1->row(), 7); // Gemini Hash Key
+
+  item1 = m_ui.participants->item(item1->row(), 6); // Gemini Encryption Key
+
+  if(!item1 || !item2)
+    return;
+  else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
+    return; // Temporary!
 
   spoton_smp *smp = m_smps.value(publicKeyHash, 0);
 
@@ -986,7 +1003,19 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
   if(!error.isEmpty())
     return;
 
-  saveGemini(gemini, oid);
+  if(saveGemini(gemini, oid))
+    {
+      disconnect(m_ui.participants,
+		 SIGNAL(itemChanged(QTableWidgetItem *)),
+		 this,
+		 SLOT(slotGeminiChanged(QTableWidgetItem *)));
+      item1->setText(gemini.first.toBase64());
+      item2->setText(gemini.second.toBase64());
+      connect(m_ui.participants,
+	      SIGNAL(itemChanged(QTableWidgetItem *)),
+	      this,
+	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
+    }
 }
 
 void spoton::slotPrepareSMP(const QString &hash)

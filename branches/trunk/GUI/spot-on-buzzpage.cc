@@ -38,6 +38,7 @@
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
+#include "spot-on.h"
 #include "spot-on-buzzpage.h"
 #include "spot-on-defines.h"
 
@@ -381,7 +382,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
   QByteArray name
     (list.value(0).mid(0, spoton_common::NAME_MAXIMUM_LENGTH).trimmed());
   QList<QTableWidgetItem *> items
-    (ui.clients->findItems(id, Qt::MatchExactly));
+    (spoton::findItems(ui.clients, id, 1));
 
   if(name.isEmpty() || name == "unknown")
     name = id.mid(0, 16) + "-unknown";

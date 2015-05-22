@@ -403,6 +403,9 @@ class spoton: public QMainWindow
   QHash<QString, quint64> m_chatSequenceNumbers;
   QStandardItemModel *starbeamReceivedModel(void) const;
   Ui_spoton_mainwindow ui(void) const;
+  static QList<QTableWidgetItem *> findItems(QTableWidget *table,
+					     const QString &text,
+					     const int column);
   static QPointer<spoton> instance(void);
   static QString mapIconToEmoticon(const QString &content);
 
