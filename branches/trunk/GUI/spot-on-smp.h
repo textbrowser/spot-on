@@ -56,8 +56,8 @@ class spoton_smp
   void setGuess(const QString &guess);
 
  private:
-  QByteArray m_guessWhirl;
   bool m_passed;
+  char *m_guessWhirl; // Stored in secure memory.
   gcry_mpi_t m_a2;
   gcry_mpi_t m_a3;
   gcry_mpi_t m_b2;
@@ -70,6 +70,7 @@ class spoton_smp
   gcry_mpi_t m_qb;
   gcry_mpi_t generateRandomExponent(bool *ok);
   int m_step;
+  size_t m_guessWhirlLength;
   QList<QByteArray> step2(const QList<QByteArray> &other, bool *ok);
   QList<QByteArray> step3(const QList<QByteArray> &other, bool *ok);
   QList<QByteArray> step4(const QList<QByteArray> &other, bool *ok,

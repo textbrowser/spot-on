@@ -56,6 +56,8 @@ spoton_smp::spoton_smp(void)
   m_b2 = 0;
   m_b3 = 0;
   m_guess = 0;
+  m_guessWhirl = 0;
+  m_guessWhirlLength = 0;
   m_pa = 0;
   m_passed = false;
   m_pb = 0;
@@ -89,7 +91,11 @@ QByteArray spoton_smp::guessSha(void) const
 
 QByteArray spoton_smp::guessWhirlpool(void) const
 {
-  return m_guessWhirl;
+  if(m_guessWhirl && m_guessWhirlLength > 0)
+    return QByteArray(m_guessWhirl,
+		      static_cast<int> (m_guessWhirlLength));
+  else
+    return QByteArray();
 }
 
 QList<QByteArray> spoton_smp::nextStep(const QList<QByteArray> &other,
@@ -739,22 +745,41 @@ int spoton_smp::step(void) const
 
 void spoton_smp::initialize(void)
 {
-  QByteArray gw(m_guessWhirl);
+  QByteArray bytes;
   gcry_mpi_t g = 0;
 
   if(m_guess)
     g = gcry_mpi_set(0, m_guess);
+
+  if(m_guessWhirl && m_guessWhirlLength > 0)
+    bytes = QByteArray(m_guessWhirl, static_cast<int> (m_guessWhirlLength));
 
   reset();
 
   if(g)
     m_guess = gcry_mpi_set(0, g);
 
-  m_guessWhirl = gw;
+  if(bytes.length() > 0)
+    {
+      m_guessWhirlLength = bytes.length();
+
+      if(m_guessWhirlLength > 0)
+	m_guessWhirl = static_cast<char *>
+	  (gcry_calloc_secure(m_guessWhirlLength, sizeof(char)));
+
+      if(m_guessWhirl)
+	memcpy(m_guessWhirl, bytes.constData(), m_guessWhirlLength);
+      else
+	{
+	  m_guessWhirlLength = 0;
+	  qDebug() << "spoton_smp::initialize(): m_guessWhirl is zero!";
+	}
+    }
 }
 
 void spoton_smp::reset(void)
 {
+  gcry_free(m_guessWhirl);
   gcry_mpi_release(m_a2);
   gcry_mpi_release(m_a3);
   gcry_mpi_release(m_b2);
@@ -768,7 +793,8 @@ void spoton_smp::reset(void)
   m_b2 = 0;
   m_b3 = 0;
   m_guess = 0;
-  m_guessWhirl.clear();
+  m_guessWhirl = 0;
+  m_guessWhirlLength = 0;
   m_pa = 0;
   m_passed = false;
   m_pb = 0;
@@ -784,6 +810,14 @@ void spoton_smp::setGuess(const QString &guess)
       m_guess = 0;
     }
 
+  if(m_guessWhirl)
+    {
+      gcry_free(m_guessWhirl);
+      m_guessWhirl = 0;
+    }
+
+  m_guessWhirlLength = 0;
+
   QByteArray hash;
   bool ok = true;
 
@@ -795,7 +829,24 @@ void spoton_smp::setGuess(const QString &guess)
        reinterpret_cast<const unsigned char *> (hash.constData()),
        hash.length(), 0);
 
-  m_guessWhirl = spoton_crypt::whirlpoolHash(guess.toUtf8(), &ok);
+  hash = spoton_crypt::whirlpoolHash(guess.toUtf8(), &ok);
+
+  if(ok)
+    {
+      m_guessWhirlLength = hash.length();
+
+      if(m_guessWhirlLength > 0)
+	m_guessWhirl = static_cast<char *>
+	  (gcry_calloc_secure(m_guessWhirlLength, sizeof(char)));
+
+      if(m_guessWhirl)
+	memcpy(m_guessWhirl, hash.constData(), m_guessWhirlLength);
+      else
+	{
+	  m_guessWhirlLength = 0;
+	  qDebug() << "spoton_smp::setGuess(): m_guessWhirl is zero!";
+	}
+    }
 }
 
 void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
