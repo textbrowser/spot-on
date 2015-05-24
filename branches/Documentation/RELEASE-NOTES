@@ -27,6 +27,7 @@
 <li>Guard QList::last().</li>
 <li>Guard QList::removeAt().</li>
 <li>Notify the user of URL import statistics.</li>
+<li>Populate URL polarizers before performing an import.</li>
 <li>Prompt before accessing a remote URL.</li>
 <li>Removed input masks from IPv6 fields.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>

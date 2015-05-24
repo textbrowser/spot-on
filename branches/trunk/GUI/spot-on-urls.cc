@@ -529,6 +529,7 @@ void spoton::slotImportUrls(void)
   progress.raise();
   progress.activateWindow();
   progress.update();
+  populateUrlDistillers();
 
   quint64 imported = 0;
   quint64 not_imported = 0;
