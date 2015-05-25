@@ -717,7 +717,8 @@ void spoton_rosetta::slotConvert(void)
       delete crypt;
 
       if(!ok)
-	error = tr("A serious cryptographic error occurred.");
+	if(error.isEmpty())
+	  error = tr("A serious cryptographic error occurred.");
 
       if(ok)
 	{
@@ -804,7 +805,6 @@ void spoton_rosetta::slotConvert(void)
 	  else
 	    {
 	      error = tr("Stream error.");
-	      ok = false;
 	      goto done_label2;
 	    }
 	}
@@ -891,7 +891,9 @@ void spoton_rosetta::slotConvert(void)
 
       if(!ok)
 	{
-	  error = tr("A serious cryptographic error occurred.");
+	  if(error.isEmpty())
+	    error = tr("A serious cryptographic error occurred.");
+
 	  ui.output->clear();
 	}
       else
