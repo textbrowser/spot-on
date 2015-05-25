@@ -2399,6 +2399,10 @@ void spoton_neighbor::process0000(int length, const QByteArray &dataIn,
 void spoton_neighbor::process0000a(int length, const QByteArray &dataIn,
 				   const QString &messageType)
 {
+  /*
+  ** This method also processes 0000c.
+  */
+
   QList<QByteArray> list
     (spoton_receive::process0000a(length, dataIn,
 				  spoton_kernel::setting("gui/chatAccept"
@@ -5567,7 +5571,8 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 					  geminiHashKey))
     {
       spoton_misc::logError
-	("spoton_neighbor::saveGemini(): duplicate keys.");
+	(QString("spoton_neighbor::saveGemini(): duplicate keys, "
+		 "message type %1.").arg(messageType));
       return;
     }
 

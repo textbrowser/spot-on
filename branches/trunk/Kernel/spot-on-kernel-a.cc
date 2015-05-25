@@ -4799,13 +4799,12 @@ bool spoton_kernel::duplicateEmailRequests(const QByteArray &data)
 
 bool spoton_kernel::duplicateGeminis(const QByteArray &data)
 {
-  QByteArray hash;
-
   spoton_crypt *s_crypt = s_crypts.value("chat", 0);
 
   if(!s_crypt)
     return false;
 
+  QByteArray hash;
   bool ok = true;
 
   hash = s_crypt->keyedHash(data, &ok);
