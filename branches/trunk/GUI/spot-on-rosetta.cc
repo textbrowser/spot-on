@@ -622,6 +622,7 @@ void spoton_rosetta::slotConvert(void)
       QByteArray myPublicKeyHash;
       QByteArray publicKey;
       QByteArray signature;
+      QDataStream stream(&keyInformation, QIODevice::WriteOnly);
       QString error("");
       bool ok = true;
       size_t encryptionKeyLength = 0;
@@ -657,12 +658,12 @@ void spoton_rosetta::slotConvert(void)
       hashKey = spoton_crypt::veryStrongRandomBytes(hashKey.length());
       publicKey = ui.contacts->itemData(ui.contacts->currentIndex()).
 	toByteArray();
+      stream << encryptionKey
+	     << hashKey
+	     << ui.cipher->currentText().toLatin1()
+	     << ui.hash->currentText().toLatin1();
       keyInformation = spoton_crypt::publicKeyEncrypt
-	(encryptionKey.toBase64() + "\n" +
-	 hashKey.toBase64() + "\n" +
-	 ui.cipher->currentText().toLatin1().toBase64() + "\n" +
-	 ui.hash->currentText().toLatin1().toBase64(),
-	 publicKey, &ok);
+	(keyInformation, publicKey, &ok);
 
       if(!ok)
 	{
@@ -695,10 +696,14 @@ void spoton_rosetta::slotConvert(void)
 	}
 
       if(ok)
-	data = crypt->encrypted
-	  (myPublicKeyHash.toBase64() + "\n" +
-	   ui.input->toPlainText().toUtf8().toBase64() + "\n" +
-	   signature.toBase64(), &ok);
+	{
+	  QDataStream stream(&data, QIODevice::WriteOnly);
+
+	  stream << myPublicKeyHash
+		 << ui.input->toPlainText().toUtf8()
+		 << signature;
+	  data = crypt->encrypted(data, &ok);
+	}
 
       if(ok)
 	messageCode = crypt->keyedHash(data, &ok);
@@ -741,6 +746,7 @@ void spoton_rosetta::slotConvert(void)
       QByteArray messageCode;
       QByteArray publicKeyHash;
       QByteArray signature;
+      QDataStream stream(&keyInformation, QIODevice::ReadOnly);
       QList<QByteArray> list;
       QString error("");
       bool ok = true;
@@ -771,12 +777,36 @@ void spoton_rosetta::slotConvert(void)
 
       if(ok)
 	{
-	  QList<QByteArray> list(keyInformation.split('\n'));
+	  QDataStream stream(&keyInformation, QIODevice::ReadOnly);
+	  QList<QByteArray> list;
 
-	  encryptionKey = QByteArray::fromBase64(list.value(0));
-	  hashKey = QByteArray::fromBase64(list.value(1));
-	  cipherType = QByteArray::fromBase64(list.value(2));
-	  hashType = QByteArray::fromBase64(list.value(3));
+	  for(int i = 0; i < 4; i++)
+	    {
+	      QByteArray a;
+
+	      stream >> a;
+	      list << a;
+
+	      if(stream.status() != QDataStream::Ok)
+		{
+		  list.clear();
+		  break;
+		}
+	    }
+
+	  if(list.size() == 4)
+	    {
+	      encryptionKey = list.value(0);
+	      hashKey = list.value(1);
+	      cipherType = list.value(2);
+	      hashType = list.value(3);
+	    }
+	  else
+	    {
+	      error = tr("Stream error.");
+	      ok = false;
+	      goto done_label2;
+	    }
 	}
 
       if(ok)
@@ -815,14 +845,34 @@ void spoton_rosetta::slotConvert(void)
 
       if(ok)
 	{
-	  QList<QByteArray> list(data.split('\n'));
+	  QDataStream stream(&data, QIODevice::ReadOnly);
+	  QList<QByteArray> list;
 
-	  for(int i = 0; i < list.size(); i++)
-	    list.replace(i, QByteArray::fromBase64(list.at(i)));
+	  for(int i = 0; i < 3; i++)
+	    {
+	      QByteArray a;
 
-	  publicKeyHash = list.value(0);
-	  data = list.value(1);
-	  signature = list.value(2);
+	      stream >> a;
+	      list << a;
+
+	      if(stream.status() != QDataStream::Ok)
+		{
+		  list.clear();
+		  break;
+		}
+	    }
+
+	  if(list.size() == 3)
+	    {
+	      publicKeyHash = list.value(0);
+	      data = list.value(1);
+	      signature = list.value(2);
+	    }
+	  else
+	    {
+	      error = tr("Stream error.");
+	      ok = false;
+	    }
 	}
 
       delete crypt;

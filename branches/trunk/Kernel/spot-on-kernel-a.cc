@@ -4452,7 +4452,7 @@ QList<QByteArray> spoton_kernel::findInstitutionKey
       dateTime = s_institutionLastModificationTime;
       locker.unlock();
 
-      if(fileInfo.lastModified() <= dateTime)
+      if(fileInfo.lastModified() < dateTime)
 	{
 	  /*
 	  ** Locate the institution keys in our container.

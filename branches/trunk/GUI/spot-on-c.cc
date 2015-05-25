@@ -207,7 +207,7 @@ void spoton::slotPopulateEtpMagnets(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() <= m_magnetsLastModificationTime)
+      if(fileInfo.lastModified() < m_magnetsLastModificationTime)
 	return;
       else
 	m_magnetsLastModificationTime = fileInfo.lastModified();
@@ -668,7 +668,7 @@ void spoton::slotPopulateKernelStatistics(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() <= m_kernelStatisticsLastModificationTime)
+      if(fileInfo.lastModified() < m_kernelStatisticsLastModificationTime)
 	return;
       else
 	m_kernelStatisticsLastModificationTime = fileInfo.lastModified();
@@ -1148,7 +1148,7 @@ void spoton::slotPopulateStars(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() <= m_starsLastModificationTime)
+      if(fileInfo.lastModified() < m_starsLastModificationTime)
 	return;
       else
 	m_starsLastModificationTime = fileInfo.lastModified();

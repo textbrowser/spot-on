@@ -138,7 +138,7 @@ void spoton_logviewer::slotTimeout(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() <= m_lastModificationTime)
+      if(fileInfo.lastModified() < m_lastModificationTime)
 	return;
       else
 	m_lastModificationTime = fileInfo.lastModified();

@@ -3125,7 +3125,7 @@ void spoton::slotPopulateListeners(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() <= m_listenersLastModificationTime)
+      if(fileInfo.lastModified() < m_listenersLastModificationTime)
 	return;
       else
 	m_listenersLastModificationTime = fileInfo.lastModified();
@@ -3590,7 +3590,7 @@ void spoton::slotPopulateNeighbors(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() <= m_neighborsLastModificationTime)
+      if(fileInfo.lastModified() < m_neighborsLastModificationTime)
 	return;
       else
 	m_neighborsLastModificationTime = fileInfo.lastModified();
@@ -6589,7 +6589,7 @@ void spoton::slotPopulateParticipants(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() <= m_participantsLastModificationTime)
+      if(fileInfo.lastModified() < m_participantsLastModificationTime)
 	return;
       else
 	m_participantsLastModificationTime = fileInfo.lastModified();
@@ -8053,7 +8053,7 @@ void spoton::slotPopulateBuzzFavorites(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() <= m_buzzFavoritesLastModificationTime)
+      if(fileInfo.lastModified() < m_buzzFavoritesLastModificationTime)
 	return;
       else
 	m_buzzFavoritesLastModificationTime = fileInfo.lastModified();
