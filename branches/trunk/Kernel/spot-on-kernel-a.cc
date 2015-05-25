@@ -3878,8 +3878,8 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 
   if(!ok)
     return;
-
-  ok = false;
+  else
+    ok = false;
 
   QByteArray data;
   QString connectionName("");
@@ -4096,8 +4096,8 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 
   if(!ok)
     return;
-
-  ok = false;
+  else
+    ok = false;
 
   QByteArray data;
   QByteArray hashKey;
@@ -4886,6 +4886,8 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 
   if(!ok)
     return;
+  else
+    ok = false;
 
   QByteArray data;
   QString connectionName("");
@@ -5059,10 +5061,9 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
 
   QWriteLocker locker(&m_poptasticCacheMutex);
 
-  m_poptasticCache.enqueue(QList<QVariant> ()
-			   << receiverName
-			   << message
-			   << mailOid);
+  m_poptasticCache.enqueue(QList<QVariant> () << receiverName
+			                      << message
+			                      << mailOid);
 }
 
 void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
@@ -5084,13 +5085,12 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 
   QWriteLocker locker(&m_poptasticCacheMutex);
 
-  m_poptasticCache.enqueue(QList<QVariant> ()
-			   << name
-			   << message
-			   << subject
-			   << attachment
-			   << attachmentName
-			   << mailOid);
+  m_poptasticCache.enqueue(QList<QVariant> () << name
+			                      << message
+			                      << subject
+			                      << attachment
+			                      << attachmentName
+			                      << mailOid);
 }
 
 QList<QPair<QByteArray, QByteArray> > spoton_kernel::adaptiveEchoTokens(void)
