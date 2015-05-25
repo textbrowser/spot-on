@@ -1304,6 +1304,8 @@ spoton::spoton(void):QMainWindow()
   connect(m_ui.url_pages, SIGNAL(linkActivated(const QString &)),
 	  this, SLOT(slotPageClicked(const QString &)));
 #if SPOTON_GOLDBUG == 0
+  connect(m_ui.apply_polarizers, SIGNAL(toggled(bool)),
+	  this, SLOT(slotApplyPolarizersToggled(bool)));
   connect(m_ui.urls_db_type, SIGNAL(currentIndexChanged(int)),
 	  this, SLOT(slotPostgreSQLDisconnect(int)));
 #endif
@@ -1532,6 +1534,9 @@ spoton::spoton(void):QMainWindow()
 
   spoton_misc::correctSettingsContainer(m_settings);
 #if SPOTON_GOLDBUG == 0
+  m_ui.apply_polarizers->setChecked
+    (m_settings.value("gui/applyPolarizers", true).toBool());
+
   if(m_ui.postgresqlConnect->isEnabled())
     {
       if(m_settings.value("gui/sqliteSearch", true).toBool())

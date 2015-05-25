@@ -1838,3 +1838,12 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
 	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
     }
 }
+
+void spoton::slotApplyPolarizersToggled(bool state)
+{
+  m_settings["gui/applyPolarizers"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/applyPolarizers", state);
+}

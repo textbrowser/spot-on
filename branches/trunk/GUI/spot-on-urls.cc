@@ -507,6 +507,8 @@ void spoton::slotImportUrls(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
+  bool apply_polarizers = m_settings.value
+    ("gui/applyPolarizers", true).toBool();
   int readEncrypted = 1;
 
   if(cipherType.isEmpty() || symmetricKey.isEmpty())
@@ -529,7 +531,9 @@ void spoton::slotImportUrls(void)
   progress.raise();
   progress.activateWindow();
   progress.update();
-  populateUrlDistillers();
+
+  if(apply_polarizers)
+    populateUrlDistillers();
 
   quint64 imported = 0;
   quint64 not_imported = 0;
