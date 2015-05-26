@@ -1,4 +1,4 @@
-Spot-On only supports version 1.5.x of gcrypt.
+Spot-On only supports version 1.5.x, and newer, of gcrypt.
 
 OS X (32-bit)
 
