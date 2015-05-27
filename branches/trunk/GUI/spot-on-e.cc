@@ -965,19 +965,11 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
   if(list.isEmpty())
     return;
 
-  QTableWidgetItem *item1 = list.at(0);
+  QTableWidgetItem *item = list.at(0);
 
-  if(!item1)
+  if(!item)
     return;
-
-  QTableWidgetItem *item2 = m_ui.participants->item
-    (item1->row(), 7); // Gemini Hash Key
-
-  item1 = m_ui.participants->item(item1->row(), 6); // Gemini Encryption Key
-
-  if(!item1 || !item2)
-    return;
-  else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
+  else if(item->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
 
   spoton_smp *smp = m_smps.value(publicKeyHash, 0);
@@ -1003,19 +995,7 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
   if(!error.isEmpty())
     return;
 
-  if(saveGemini(gemini, oid))
-    {
-      disconnect(m_ui.participants,
-		 SIGNAL(itemChanged(QTableWidgetItem *)),
-		 this,
-		 SLOT(slotGeminiChanged(QTableWidgetItem *)));
-      item1->setText(gemini.first.toBase64());
-      item2->setText(gemini.second.toBase64());
-      connect(m_ui.participants,
-	      SIGNAL(itemChanged(QTableWidgetItem *)),
-	      this,
-	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
-    }
+  saveGemini(gemini, oid);
 }
 
 void spoton::slotPrepareSMP(const QString &hash)
@@ -1791,12 +1771,8 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
   QTableWidgetItem *item1 = m_ui.participants->item(row, 1); // OID
   QTableWidgetItem *item2 = m_ui.participants->item
     (row, 3); // public_key_hash
-  QTableWidgetItem *item3 = m_ui.participants->item
-    (row, 6); // Gemini Encryption Key
-  QTableWidgetItem *item4 = m_ui.participants->item
-    (row, 7); // Gemini Hash Key
 
-  if(!item1 || !item2 || !item3 || !item4)
+  if(!item1 || !item2)
     return;
   else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
@@ -1824,19 +1800,7 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
   if(!error.isEmpty())
     return;
 
-  if(saveGemini(gemini, item1->text()))
-    {
-      disconnect(m_ui.participants,
-		 SIGNAL(itemChanged(QTableWidgetItem *)),
-		 this,
-		 SLOT(slotGeminiChanged(QTableWidgetItem *)));
-      item3->setText(gemini.first.toBase64());
-      item4->setText(gemini.second.toBase64());
-      connect(m_ui.participants,
-	      SIGNAL(itemChanged(QTableWidgetItem *)),
-	      this,
-	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
-    }
+  saveGemini(gemini, item1->text());
 }
 
 void spoton::slotApplyPolarizersToggled(bool state)
