@@ -420,7 +420,7 @@ void spoton::slotGatherUrlStatistics(void)
 				  "('\"spot_on_urls_%1%2\"')").
 			  arg(c1).arg(c2)))
 	      if(query.next())
-		size += query.value(0).toLongLong();
+		size += static_cast<quint64> (query.value(0).toLongLong());
 	  }
 
 	processed += 1;
@@ -787,13 +787,14 @@ void spoton::slotSaveUrlCredentials(void)
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  keys = spoton_crypt::derivedKeys(m_ui.urlCipher->currentText(),
-				   m_ui.urlHash->currentText(),
-				   m_ui.urlIteration->value(),
-				   m_ui.urlPassphrase->text(),
-				   salt,
-				   64, // Dooble.
-				   error);
+  keys = spoton_crypt::derivedKeys
+    (m_ui.urlCipher->currentText(),
+     m_ui.urlHash->currentText(),
+     static_cast<unsigned long> (m_ui.urlIteration->value()),
+     m_ui.urlPassphrase->text(),
+     salt,
+     64, // Dooble.
+     error);
   QApplication::restoreOverrideCursor();
 
   if(error.isEmpty())
@@ -1129,12 +1130,13 @@ void spoton::slotSaveCommonUrlCredentials(void)
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  keys = spoton_crypt::derivedKeys(m_ui.commonUrlCipher->currentText(),
-				   m_ui.commonUrlHash->currentText(),
-				   m_ui.commonUrlIterationCount->value(),
-				   m_ui.commonUrlPassphrase->text(),
-				   m_ui.commonUrlPin->text().toUtf8(),
-				   error);
+  keys = spoton_crypt::derivedKeys
+    (m_ui.commonUrlCipher->currentText(),
+     m_ui.commonUrlHash->currentText(),
+     static_cast<unsigned long> (m_ui.commonUrlIterationCount->value()),
+     m_ui.commonUrlPassphrase->text(),
+     m_ui.commonUrlPin->text().toUtf8(),
+     error);
   QApplication::restoreOverrideCursor();
 
   if(error.isEmpty())

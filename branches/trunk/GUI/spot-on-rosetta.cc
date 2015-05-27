@@ -653,9 +653,10 @@ void spoton_rosetta::slotConvert(void)
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       encryptionKey.resize(static_cast<int> (encryptionKeyLength));
       encryptionKey = spoton_crypt::veryStrongRandomBytes
-	(encryptionKey.length());
+	(static_cast<size_t> (encryptionKey.length()));
       hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
-      hashKey = spoton_crypt::veryStrongRandomBytes(hashKey.length());
+      hashKey = spoton_crypt::veryStrongRandomBytes
+	(static_cast<size_t> (hashKey.length()));
       publicKey = ui.contacts->itemData(ui.contacts->currentIndex()).
 	toByteArray();
       stream << encryptionKey

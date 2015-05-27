@@ -986,7 +986,7 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
     ("aes256",
      "sha512",
      spoton_common::GEMINI_ITERATION_COUNT,
-     smp->guessWhirlpool(),
+     smp->guessWhirlpool().toHex(),
      smp->guessSha(),
      spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
      error);
@@ -1791,7 +1791,7 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
     ("aes256",
      "sha512",
      spoton_common::GEMINI_ITERATION_COUNT,
-     smp->guessWhirlpool(),
+     smp->guessWhirlpool().toHex(),
      smp->guessSha(),
      spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
      error);

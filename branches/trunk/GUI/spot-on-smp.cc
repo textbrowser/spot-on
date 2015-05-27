@@ -258,7 +258,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&g2a, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(1).mid(0, static_cast<int> (BITS / 8));
@@ -266,7 +266,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&g3a, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   /*
@@ -416,7 +416,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&g2b, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(1).mid(0, static_cast<int> (BITS / 8));
@@ -424,7 +424,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&g3b, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(2).mid(0, static_cast<int> (BITS / 8));
@@ -432,7 +432,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&m_pb, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(3).mid(0, static_cast<int> (BITS / 8));
@@ -440,7 +440,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&qb, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   /*
@@ -594,7 +594,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&pa, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(1).mid(0, static_cast<int> (BITS / 8));
@@ -602,7 +602,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&qa, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(2).mid(0, static_cast<int> (BITS / 8));
@@ -610,7 +610,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&ra, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   /*
@@ -761,7 +761,7 @@ void spoton_smp::initialize(void)
 
   if(bytes.length() > 0)
     {
-      m_guessWhirlLength = bytes.length();
+      m_guessWhirlLength = static_cast<size_t> (bytes.length());
 
       if(m_guessWhirlLength > 0)
 	m_guessWhirl = static_cast<char *>
@@ -827,13 +827,13 @@ void spoton_smp::setGuess(const QString &guess)
     gcry_mpi_scan
       (&m_guess, GCRYMPI_FMT_USG,
        reinterpret_cast<const unsigned char *> (hash.constData()),
-       hash.length(), 0);
+       static_cast<size_t> (hash.length()), 0);
 
   hash = spoton_crypt::whirlpoolHash(guess.toUtf8(), &ok);
 
   if(ok)
     {
-      m_guessWhirlLength = hash.length();
+      m_guessWhirlLength = static_cast<size_t> (hash.length());
 
       if(m_guessWhirlLength > 0)
 	m_guessWhirl = static_cast<char *>
@@ -880,7 +880,7 @@ void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
   if(gcry_mpi_scan(&rb, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
 							    constData()),
-		   bytes.length(), 0) != 0)
+		   static_cast<size_t> (bytes.length()), 0) != 0)
     {
       if(ok)
 	*ok = false;

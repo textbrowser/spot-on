@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 
 spoton::spoton(void):QMainWindow()
 {
-  qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+  qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
   QDir().mkdir(spoton_misc::homePath());
   m_keysShared["buzz_channels_sent_to_kernel"] = "false";
   m_keysShared["keys_sent_to_kernel"] = "false";
@@ -5002,26 +5002,26 @@ void spoton::slotSetPassphrase(void)
   QString error3("");
 
   salt.resize(m_ui.saltLength->value());
-  salt = spoton_crypt::strongRandomBytes(salt.length());
+  salt = spoton_crypt::strongRandomBytes(static_cast<size_t> (salt.length()));
 
   QPair<QByteArray, QByteArray> derivedKeys;
 
   if(m_ui.passphrase_rb->isChecked())
-    derivedKeys =
-      spoton_crypt::derivedKeys(m_ui.cipherType->currentText(),
-				m_ui.hashType->currentText(),
-				m_ui.iterationCount->value(),
-				str1,
-				salt,
-				error1);
+    derivedKeys = spoton_crypt::derivedKeys
+      (m_ui.cipherType->currentText(),
+       m_ui.hashType->currentText(),
+       static_cast<unsigned long> (m_ui.iterationCount->value()),
+       str1,
+       salt,
+       error1);
   else
-    derivedKeys =
-      spoton_crypt::derivedKeys(m_ui.cipherType->currentText(),
-				m_ui.hashType->currentText(),
-				m_ui.iterationCount->value(),
-				str1 + str2,
-				salt,
-				error1);
+    derivedKeys = spoton_crypt::derivedKeys
+      (m_ui.cipherType->currentText(),
+       m_ui.hashType->currentText(),
+       static_cast<unsigned long> (m_ui.iterationCount->value()),
+       str1 + str2,
+       salt,
+       error1);
 
   m_sb.status->clear();
   QApplication::restoreOverrideCursor();
@@ -5037,14 +5037,17 @@ void spoton::slotSetPassphrase(void)
 	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
 	      QScopedPointer<spoton_crypt> crypt
-		(new spoton_crypt(m_ui.cipherType->currentText(),
-				  m_ui.hashType->currentText(),
-				  QByteArray(),
-				  derivedKeys.first,
-				  derivedKeys.second,
-				  m_ui.saltLength->value(),
-				  m_ui.iterationCount->value(),
-				  "chat"));
+		(new
+		 spoton_crypt(m_ui.cipherType->currentText(),
+			      m_ui.hashType->currentText(),
+			      QByteArray(),
+			      derivedKeys.first,
+			      derivedKeys.second,
+			      m_ui.saltLength->value(),
+			      static_cast<unsigned long> (m_ui.
+							  iterationCount->
+							  value()),
+			      "chat"));
 	      QStringList list;
 
 	      list << "chat"
@@ -5167,7 +5170,8 @@ void spoton::slotSetPassphrase(void)
 		     derivedKeys.first,
 		     derivedKeys.second,
 		     m_ui.saltLength->value(),
-		     m_ui.iterationCount->value(),
+		     static_cast<unsigned long> (m_ui.iterationCount->
+						 value()),
 		     list.at(i));
 
 		  if(!list.at(i).contains("signature"))
@@ -5255,14 +5259,17 @@ void spoton::slotSetPassphrase(void)
 	  if(reencode)
 	    {
 	      QScopedPointer<spoton_crypt> crypt
-		(new spoton_crypt(m_ui.cipherType->currentText(),
-				  m_ui.hashType->currentText(),
-				  QByteArray(),
-				  derivedKeys.first,
-				  derivedKeys.second,
-				  m_ui.saltLength->value(),
-				  m_ui.iterationCount->value(),
-				  "chat"));
+		(new
+		 spoton_crypt(m_ui.cipherType->currentText(),
+			      m_ui.hashType->currentText(),
+			      QByteArray(),
+			      derivedKeys.first,
+			      derivedKeys.second,
+			      m_ui.saltLength->value(),
+			      static_cast<unsigned long> (m_ui.
+							  iterationCount->
+							  value()),
+			      "chat"));
 
 	      spoton_reencode reencode;
 
@@ -5294,14 +5301,17 @@ void spoton::slotSetPassphrase(void)
 
 	  for(int i = 0; i < list.size(); i++)
 	    m_crypts.insert
-	      (list.at(i), new spoton_crypt(m_ui.cipherType->currentText(),
-					    m_ui.hashType->currentText(),
-					    QByteArray(),
-					    derivedKeys.first,
-					    derivedKeys.second,
-					    m_ui.saltLength->value(),
-					    m_ui.iterationCount->value(),
-					    list.at(i)));
+	      (list.at(i),
+	       new spoton_crypt(m_ui.cipherType->currentText(),
+				m_ui.hashType->currentText(),
+				QByteArray(),
+				derivedKeys.first,
+				derivedKeys.second,
+				m_ui.saltLength->value(),
+				static_cast<unsigned long> (m_ui.
+							    iterationCount->
+							    value()),
+				list.at(i)));
 
 	  m_rosetta.setCryptObjects(m_crypts.value("rosetta", 0),
 				    m_crypts.value("rosetta-signature", 0));
@@ -5464,17 +5474,18 @@ void spoton::slotValidatePassphrase(void)
 	QPair<QByteArray, QByteArray> keys;
 
 	if(m_ui.passphrase_rb_authenticate->isChecked())
-	  keys = spoton_crypt::derivedKeys(m_ui.cipherType->currentText(),
-					   m_ui.hashType->currentText(),
-					   m_ui.iterationCount->value(),
-					   m_ui.passphrase->text(),
-					   salt,
-					   error);
+	  keys = spoton_crypt::derivedKeys
+	    (m_ui.cipherType->currentText(),
+	     m_ui.hashType->currentText(),
+	     static_cast<unsigned long> (m_ui.iterationCount->value()),
+	     m_ui.passphrase->text(),
+	     salt,
+	     error);
 	else
 	  keys = spoton_crypt::derivedKeys
 	    (m_ui.cipherType->currentText(),
 	     m_ui.hashType->currentText(),
-	     m_ui.iterationCount->value(),
+	     static_cast<unsigned long> (m_ui.iterationCount->value()),
 	     m_ui.question_authenticate->text() +
 	     m_ui.answer_authenticate->text(),
 	     salt,
@@ -5509,14 +5520,17 @@ void spoton::slotValidatePassphrase(void)
 
 	    for(int i = 0; i < list.size(); i++)
 	      m_crypts.insert
-		(list.at(i), new spoton_crypt(m_ui.cipherType->currentText(),
-					      m_ui.hashType->currentText(),
-					      QByteArray(),
-					      keys.first,
-					      keys.second,
-					      m_ui.saltLength->value(),
-					      m_ui.iterationCount->value(),
-					      list.at(i)));
+		(list.at(i),
+		 new spoton_crypt(m_ui.cipherType->currentText(),
+				  m_ui.hashType->currentText(),
+				  QByteArray(),
+				  keys.first,
+				  keys.second,
+				  m_ui.saltLength->value(),
+				  static_cast<unsigned long> (m_ui.
+							      iterationCount->
+							      value()),
+				  list.at(i)));
 
 	    m_rosetta.setCryptObjects(m_crypts.value("rosetta", 0),
 				      m_crypts.value("rosetta-signature", 0));

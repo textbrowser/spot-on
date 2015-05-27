@@ -4931,7 +4931,8 @@ void spoton::slotJoinBuzzChannel(void)
   bool found = false;
   spoton_buzzpage *page = 0;
   spoton_crypt *crypt = m_crypts.value("chat", 0);
-  unsigned long iterationCount = m_ui.buzzIterationCount->value();
+  unsigned long iterationCount =
+    static_cast<unsigned long> (m_ui.buzzIterationCount->value());
 
   if(!crypt)
     {

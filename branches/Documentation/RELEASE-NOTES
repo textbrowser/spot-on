@@ -27,6 +27,7 @@
 <li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>
 <li>Guard QList::last().</li>
 <li>Guard QList::removeAt().</li>
+<li>Many integer conversion corrections.</li>
 <li>Modified QFileInfo::lastModified() usage. It's possible that a less-than-or-equal to comparison will leave containers in unpleasant states.</li>
 <li>Notify the user of URL import statistics.</li>
 <li>Populate URL polarizers before performing an import.</li>

@@ -60,22 +60,26 @@ void spoton::slotGenerateEtpKeys(int index)
 	{
 	  m_ui.etpEncryptionKey->setText
 	    (spoton_crypt::
-	     strongRandomBytes(m_ui.etpEncryptionKey->maxLength()).
+	     strongRandomBytes(static_cast<size_t> (m_ui.etpEncryptionKey->
+						    maxLength())).
 	     toBase64());
 	  m_ui.etpMacKey->setText
 	    (spoton_crypt::
-	     strongRandomBytes(m_ui.etpMacKey->maxLength()).
+	     strongRandomBytes(static_cast<size_t> (m_ui.etpMacKey->
+						    maxLength())).
 	     toBase64());
 	}
       else if(index == 2)
 	m_ui.etpEncryptionKey->setText
 	  (spoton_crypt::
-	   strongRandomBytes(m_ui.etpEncryptionKey->maxLength()).
+	   strongRandomBytes(static_cast<size_t> (m_ui.etpEncryptionKey->
+						  maxLength())).
 	   toBase64());
       else if(index == 3)
 	m_ui.etpMacKey->setText
 	  (spoton_crypt::
-	   strongRandomBytes(m_ui.etpMacKey->maxLength()).
+	   strongRandomBytes(static_cast<size_t> (m_ui.etpMacKey->
+						  maxLength())).
 	   toBase64());
 
       disconnect(m_ui.generate,
@@ -489,7 +493,8 @@ void spoton::slotBuzzActionsActivated(int index)
   else if(index == 1)
     {
       m_ui.channel->setText
-	(spoton_crypt::strongRandomBytes(m_ui.channel->maxLength()).
+	(spoton_crypt::strongRandomBytes(static_cast<size_t> (m_ui.channel->
+							      maxLength())).
 	 toBase64());
       m_ui.channelSalt->setText
 	(spoton_crypt::strongRandomBytes(512).toBase64());

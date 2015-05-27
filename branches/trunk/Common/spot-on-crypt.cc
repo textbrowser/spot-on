@@ -157,7 +157,8 @@ void spoton_crypt::init(const int secureMemorySize)
 	    {
 	      QByteArray buffer(64, 0);
 
-	      gpg_strerror_r(err, buffer.data(), buffer.length());
+	      gpg_strerror_r(err, buffer.data(),
+			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt::init(): initializing "
 			 "secure memory failure (%1).").
@@ -250,25 +251,25 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
       if(i == 1)
 	err = gcry_kdf_derive
 	  (passphrase.toUtf8().constData(),
-	   passphrase.toUtf8().length(),
+	   static_cast<size_t> (passphrase.toUtf8().length()),
 	   GCRY_KDF_PBKDF2,
 	   hashAlgorithm,
 	   salt.constData(),
-	   salt.length(),
+	   static_cast<size_t> (salt.length()),
 	   iterationCount,
-	   temporaryKey.length(),
+	   static_cast<size_t> (temporaryKey.length()),
 	   temporaryKey.data());
       else if(i == 2)
 	{
 	  err = gcry_kdf_derive
 	    (temporaryKey.constData(),
-	     temporaryKey.length(),
+	     static_cast<size_t> (temporaryKey.length()),
 	     GCRY_KDF_PBKDF2,
 	     hashAlgorithm,
 	     salt.constData(),
-	     salt.length(),
+	     static_cast<size_t> (salt.length()),
 	     iterationCount,
-	     key.length(),
+	     static_cast<size_t> (key.length()),
 	     key.data());
 
 	  if(err == 0)
@@ -288,7 +289,8 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::derivedKeys(): gcry_kdf_derive() "
 		     "returned non-zero (%1).").arg(buffer.constData()));
@@ -373,11 +375,11 @@ QByteArray spoton_crypt::saltedPassphraseHash(const QString &hashType,
     }
 
   saltedPassphrase.append(passphrase).append(salt);
-  saltedPassphraseHash.resize(length);
+  saltedPassphraseHash.resize(static_cast<int> (length));
   gcry_md_hash_buffer(hashAlgorithm,
 		      saltedPassphraseHash.data(),
 		      saltedPassphrase.constData(),
-		      saltedPassphrase.length());
+		      static_cast<size_t> (saltedPassphrase.length()));
 
  done_label:
   return saltedPassphraseHash;
@@ -542,7 +544,8 @@ void spoton_crypt::init(const QString &cipherType,
 		{
 		  QByteArray buffer(64, 0);
 
-		  gpg_strerror_r(err, buffer.data(), buffer.length());
+		  gpg_strerror_r(err, buffer.data(),
+				 static_cast<size_t> (buffer.length()));
 		  spoton_misc::logError
 		    (QString("spoton_crypt::init(): "
 			     "gcry_cipher_open() failure (%1).").
@@ -567,7 +570,8 @@ void spoton_crypt::init(const QString &cipherType,
 		{
 		  QByteArray buffer(64, 0);
 
-		  gpg_strerror_r(err, buffer.data(), buffer.length());
+		  gpg_strerror_r(err, buffer.data(),
+				 static_cast<size_t> (buffer.length()));
 		  spoton_misc::logError
 		    (QString("spoton_crypt::init(): "
 			     "gcry_cipher_setkey() "
@@ -649,7 +653,7 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
 
       if((err = gcry_cipher_decrypt(m_cipherHandle,
 				    decrypted.data(),
-				    decrypted.length(),
+				    static_cast<size_t> (decrypted.length()),
 				    0,
 				    0)) == 0)
 	{
@@ -795,11 +799,13 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 
 	      gcry_error_t err = 0;
 
-	      if((err = gcry_cipher_encrypt(m_cipherHandle,
-					    encrypted.data(),
-					    encrypted.length(),
-					    0,
-					    0)) == 0)
+	      if((err =
+		  gcry_cipher_encrypt(m_cipherHandle,
+				      encrypted.data(),
+				      static_cast<size_t> (encrypted.
+							   length()),
+				      0,
+				      0)) == 0)
 		{
 		  if(ok)
 		    *ok = true;
@@ -815,7 +821,8 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 
 		  QByteArray buffer(64, 0);
 
-		  gpg_strerror_r(err, buffer.data(), buffer.length());
+		  gpg_strerror_r(err, buffer.data(),
+				 static_cast<size_t> (buffer.length()));
 		  spoton_misc::logError
 		    (QString("spoton_crypt::encrypted(): "
 			     "gcry_cipher_encrypt() failure (%1).").
@@ -901,7 +908,8 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
 
 	      QByteArray buffer(64, 0);
 
-	      gpg_strerror_r(err, buffer.data(), buffer.length());
+	      gpg_strerror_r(err, buffer.data(),
+			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt::setInitializationVector(): "
 			 "gcry_cipher_setiv() failure (%1).").
@@ -963,7 +971,8 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): "
 		     "gcry_md_open() failure (%1).").
@@ -988,7 +997,8 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): gcry_md_setkey() "
 		     "failure (%1).").arg(buffer.constData()));
@@ -999,7 +1009,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 	  gcry_md_write
 	    (hd,
 	     data.constData(),
-	     data.length());
+	     static_cast<size_t> (data.length()));
 
 	  unsigned char *buffer = gcry_md_read(hd, m_hashAlgorithm);
 
@@ -1012,10 +1022,10 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 		  if(ok)
 		    *ok = true;
 
-		  hash.resize(length);
+		  hash.resize(static_cast<int> (length));
 		  memcpy(hash.data(),
 			 buffer,
-			 hash.length());
+			 static_cast<size_t> (hash.length()));
 		}
 	      else
 		{
@@ -1073,12 +1083,12 @@ QByteArray spoton_crypt::shaXHash(const int algorithm,
       if(ok)
 	*ok = true;
 
-      hash.resize(length);
+      hash.resize(static_cast<int> (length));
       gcry_md_hash_buffer
 	(algorithm,
 	 hash.data(),
 	 data.constData(),
-	 data.length());
+	 static_cast<size_t> (data.length()));
     }
   else
     {
@@ -1104,12 +1114,12 @@ QByteArray spoton_crypt::whirlpoolHash(const QByteArray &data, bool *ok)
       if(ok)
 	*ok = true;
 
-      hash.resize(length);
+      hash.resize(static_cast<int> (length));
       gcry_md_hash_buffer
 	(GCRY_MD_WHIRLPOOL,
 	 hash.data(),
 	 data.constData(),
-	 data.length());
+	 static_cast<size_t> (data.length()));
     }
   else
     {
@@ -1138,7 +1148,8 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 
   if((err = gcry_sexp_new(&key_t,
 			  publicKey.constData(),
-			  publicKey.length(), 1)) == 0 && key_t)
+			  static_cast<size_t> (publicKey.length()),
+			  1)) == 0 && key_t)
     {
       QString keyType("");
       gcry_sexp_t data_t = 0;
@@ -1172,7 +1183,8 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	  if(nbits == 2048) // We do not support 2048-bit keys.
 	    {
 	      random.resize(48);
-	      random = strongRandomBytes(random.length());
+	      random = strongRandomBytes
+		(static_cast<size_t> (random.length()));
 	      err = gcry_sexp_build(&data_t, 0,
 				    "(data (flags oaep)(hash-algo sha384)"
 				    "(value %b)(random-override %b))",
@@ -1184,7 +1196,8 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	  else
 	    {
 	      random.resize(64);
-	      random = strongRandomBytes(random.length());
+	      random = strongRandomBytes
+		(static_cast<size_t> (random.length()));
 	      err = gcry_sexp_build(&data_t, 0,
 				    "(data (flags oaep)(hash-algo sha512)"
 				    "(value %b)(random-override %b))",
@@ -1265,7 +1278,8 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 		{
 		  QByteArray buffer(64, 0);
 
-		  gpg_strerror_r(err, buffer.data(), buffer.length());
+		  gpg_strerror_r(err, buffer.data(),
+				 static_cast<size_t> (buffer.length()));
 		  spoton_misc::logError
 		    (QString("spoton_crypt()::publicKeyEncrypt(): "
 			     "gcry_pk_encrypt() "
@@ -1289,7 +1303,8 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	    {
 	      QByteArray buffer(64, 0);
 
-	      gpg_strerror_r(err, buffer.data(), buffer.length());
+	      gpg_strerror_r(err, buffer.data(),
+			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt()::publicKeyEncrypt(): "
 			 "gcry_sexp_build() "
@@ -1314,7 +1329,8 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt()::publicKeyEncrypt(): gcry_sexp_new() "
 		     "failure (%1).").arg(buffer.constData()));
@@ -1417,7 +1433,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
 
   QWriteLocker locker2(&m_privateKeyMutex);
 
-  m_privateKeyLength = keyData.length();
+  m_privateKeyLength = static_cast<size_t> (keyData.length());
 
   if(m_privateKeyLength <= 0 ||
      (m_privateKey =
@@ -1528,7 +1544,8 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::publicKeyDecrypt(): gcry_sexp_new() "
 		     "failure (%1).").arg(buffer.constData()));
@@ -1549,7 +1566,8 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
       QByteArray buffer(64, 0);
 
-      gpg_strerror_r(err, buffer.data(), buffer.length());
+      gpg_strerror_r(err, buffer.data(),
+		     static_cast<size_t> (buffer.length()));
       spoton_misc::logError
 	(QString("spoton_crypt::publicKeyDecrypt(): gcry_pk_testkey() "
 		 "failure (%1).").arg(buffer.constData()));
@@ -1565,7 +1583,8 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
   if((err = gcry_sexp_new(&data_t,
 			  data.constData(),
-			  data.length(), 1)) != 0 || !data_t)
+			  static_cast<size_t> (data.length()),
+			  1)) != 0 || !data_t)
     {
       if(ok)
 	*ok = false;
@@ -1894,7 +1913,8 @@ void spoton_crypt::generatePrivatePublicKeys(const QString &keySize,
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::generatePrivatePublicKeys(): "
 		     "gcry_sexp_build() "
@@ -1918,7 +1938,8 @@ void spoton_crypt::generatePrivatePublicKeys(const QString &keySize,
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::generatePrivatePublicKeys(): "
 		     "gcry_pk_genkey() "
@@ -2104,7 +2125,8 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): gcry_md_open() "
 		     "failure (%1).").
@@ -2118,14 +2140,15 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
     {
       if((err = gcry_md_setkey(hd,
 			       key.constData(),
-			       key.length())) != 0)
+			       static_cast<size_t> (key.length()))) != 0)
 	{
 	  if(ok)
 	    *ok = false;
 
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): gcry_md_setkey() "
 		     "failure (%1).").arg(buffer.constData()));
@@ -2135,7 +2158,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 	  gcry_md_write
 	    (hd,
 	     data.constData(),
-	     data.length());
+	     static_cast<size_t> (data.length()));
 
 	  unsigned char *buffer = gcry_md_read(hd, hashAlgorithm);
 
@@ -2148,10 +2171,10 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 		  if(ok)
 		    *ok = true;
 
-		  hash.resize(length);
+		  hash.resize(static_cast<int> (length));
 		  memcpy(hash.data(),
 			 buffer,
-			 hash.length());
+			 static_cast<size_t> (hash.length()));
 		}
 	      else
 		{
@@ -2252,7 +2275,8 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::digitalSignature(): gcry_sexp_new() "
 		     "failure (%1).").arg(buffer.constData()));
@@ -2273,7 +2297,8 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
       QByteArray buffer(64, 0);
 
-      gpg_strerror_r(err, buffer.data(), buffer.length());
+      gpg_strerror_r(err, buffer.data(),
+		     static_cast<size_t> (buffer.length()));
       spoton_misc::logError
 	(QString("spoton_crypt::digitalSignature(): gcry_pk_testkey() "
 		 "failure (%1).").arg(buffer.constData()));
@@ -2315,12 +2340,13 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
     (GCRY_MD_SHA512,
      hash.data(),
      data.constData(),
-     data.length());
+     static_cast<size_t> (data.length()));
 
   if(keyType == "dsa" || keyType == "ecdsa" || keyType == "elg")
     {
       if(hash.length() > 0)
-	hash_p = static_cast<unsigned char *> (malloc(hash.length()));
+	hash_p = static_cast<unsigned char *>
+	  (malloc(static_cast<size_t> (hash.length())));
       else
 	hash_p = 0;
 
@@ -2334,10 +2360,12 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	  goto done_label;
 	}
       else
-	memcpy(hash_p, hash.constData(), hash.length());
+	memcpy(hash_p, hash.constData(),
+	       static_cast<size_t> (hash.length()));
 
       err = gcry_mpi_scan
-	(&hash_t, GCRYMPI_FMT_USG, hash_p, hash.length(), 0);
+	(&hash_t, GCRYMPI_FMT_USG, hash_p,
+	 static_cast<size_t> (hash.length()), 0);
 
       if(err != 0 || !hash_t)
 	{
@@ -2348,7 +2376,8 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	    {
 	      QByteArray buffer(64, 0);
 
-	      gpg_strerror_r(err, buffer.data(), buffer.length());
+	      gpg_strerror_r(err, buffer.data(),
+			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt()::digitalSignature(): "
 			 "gcry_mpi_scan() "
@@ -2375,7 +2404,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 			  hash.constData());
   else if(keyType == "rsa")
     {
-      random = strongRandomBytes(random.length());
+      random = strongRandomBytes(static_cast<size_t> (random.length()));
       err = gcry_sexp_build(&data_t, 0,
 			    "(data (flags pss)(hash sha512 %b)"
 			    "(random-override %b))",
@@ -2462,7 +2491,8 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	    {
 	      QByteArray buffer(64, 0);
 
-	      gpg_strerror_r(err, buffer.data(), buffer.length());
+	      gpg_strerror_r(err, buffer.data(),
+			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt()::digitalSignature(): "
 			 "gcry_pk_sign() "
@@ -2485,7 +2515,8 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt()::digitalSignature(): "
 		     "gcry_sexp_build() "
@@ -2519,7 +2550,7 @@ QByteArray spoton_crypt::strongRandomBytes(const size_t size)
 
   gcry_fast_random_poll();
   gcry_randomize(random.data(),
-		 random.length(),
+		 static_cast<size_t> (random.length()),
 		 GCRY_STRONG_RANDOM);
   return random;
 }
@@ -2530,7 +2561,7 @@ QByteArray spoton_crypt::veryStrongRandomBytes(const size_t size)
 
   gcry_fast_random_poll();
   gcry_randomize(random.data(),
-		 random.length(),
+		 static_cast<size_t> (random.length()),
 		 GCRY_VERY_STRONG_RANDOM);
   return random;
 }
@@ -2560,7 +2591,7 @@ QByteArray spoton_crypt::weakRandomBytes(const size_t size)
 
   gcry_fast_random_poll();
   gcry_randomize(random.data(),
-		 random.length(),
+		 static_cast<size_t> (random.length()),
 		 GCRY_WEAK_RANDOM);
   return random;
 }
@@ -2592,7 +2623,8 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 
   if((err = gcry_sexp_new(&key_t,
 			  publicKey.constData(),
-			  publicKey.length(), 1)) != 0 || !key_t)
+			  static_cast<size_t> (publicKey.length()),
+			  1)) != 0 || !key_t)
     {
       ok = false;
 
@@ -2600,7 +2632,8 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::isValidSignature(): gcry_sexp_new() "
 		     "failure (%1).").arg(buffer.constData()));
@@ -2614,7 +2647,7 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 
   if((err = gcry_sexp_new(&signature_t,
 			  signature.constData(),
-			  signature.length(),
+			  static_cast<size_t> (signature.length()),
 			  1)) != 0 || !signature_t)
     {
       ok = false;
@@ -2623,7 +2656,8 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt()::isValidSignature(): "
 		     "gcry_sexp_new() "
@@ -2663,12 +2697,13 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
     (GCRY_MD_SHA512,
      hash.data(),
      data.constData(),
-     data.length());
+     static_cast<size_t> (data.length()));
 
   if(keyType == "dsa" || keyType == "ecdsa" || keyType == "elg")
     {
       if(hash.length() > 0)
-	hash_p = static_cast<unsigned char *> (malloc(hash.length()));
+	hash_p = static_cast<unsigned char *>
+	  (malloc(static_cast<size_t> (hash.length())));
       else
 	hash_p = 0;
 
@@ -2680,10 +2715,12 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 	  goto done_label;
 	}
       else
-	memcpy(hash_p, hash.constData(), hash.length());
+	memcpy(hash_p, hash.constData(),
+	       static_cast<size_t> (hash.length()));
 
       err = gcry_mpi_scan
-	(&hash_t, GCRYMPI_FMT_USG, hash_p, hash.length(), 0);
+	(&hash_t, GCRYMPI_FMT_USG, hash_p,
+	 static_cast<size_t> (hash.length()), 0);
 
       if(err != 0 || !hash_t)
 	{
@@ -2693,7 +2730,8 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 	    {
 	      QByteArray buffer(64, 0);
 
-	      gpg_strerror_r(err, buffer.data(), buffer.length());
+	      gpg_strerror_r(err, buffer.data(),
+			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt()::isValidSignature(): "
 			 "gcry_mpi_scan() "
@@ -2742,7 +2780,8 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 	{
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt()::isValidSignature(): "
 		     "gcry_sexp_build() "
@@ -2762,7 +2801,8 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 
       QByteArray buffer(64, 0);
 
-      gpg_strerror_r(err, buffer.data(), buffer.length());
+      gpg_strerror_r(err, buffer.data(),
+		     static_cast<size_t> (buffer.length()));
       spoton_misc::logError
 	(QString("spoton_crypt()::isValidSignature(): "
 		 "gcry_pk_verify() "
@@ -3024,12 +3064,13 @@ void spoton_crypt::generateCertificate(RSA *rsa,
       goto done_label;
     }
 
-  if(std::numeric_limits<size_t>::max() - address.toString().toLatin1().
-     length() < 1)
+  if(std::numeric_limits<int>::max() -
+     address.toString().toLatin1().length() < 1)
     commonName = 0;
   else
     commonName = static_cast<unsigned char *>
-      (calloc(address.toString().toLatin1().length() + 1,
+      (calloc(static_cast<size_t> (address.toString().
+				   toLatin1().length() + 1),
 	      sizeof(unsigned char)));
 
   if(!commonName)
@@ -3043,7 +3084,7 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   length = address.toString().toLatin1().length();
   memcpy(commonName,
 	 address.toString().toLatin1().constData(),
-	 length);
+	 static_cast<size_t> (length));
   commonNameEntry = X509_NAME_ENTRY_create_by_NID
     (0,
      NID_commonName, V_ASN1_PRINTABLESTRING,
@@ -3409,7 +3450,8 @@ void spoton_crypt::setEncryptionKey(const QByteArray &encryptionKey, bool *ok)
 
 	  QByteArray buffer(64, 0);
 
-	  gpg_strerror_r(err, buffer.data(), buffer.length());
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::setEncryptionKey(): "
 		     "gcry_cipher_setkey() "
@@ -3429,7 +3471,7 @@ void spoton_crypt::setHashKey(const QByteArray &hashKey)
 
   gcry_free(m_hashKey);
   m_hashKey = 0;
-  m_hashKeyLength = hashKey.length();
+  m_hashKeyLength = static_cast<size_t> (hashKey.length());
 
   if(m_hashKeyLength > 0 &&
      (m_hashKey =
@@ -3470,8 +3512,8 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1,
 
   for(int i = 0; i < length; i++)
     {
-      std::bitset<8> ba1(a.at(i));
-      std::bitset<8> ba2(b.at(i));
+      std::bitset<8> ba1(static_cast<unsigned long> (a.at(i)));
+      std::bitset<8> ba2(static_cast<unsigned long> (b.at(i)));
 
       rc |= ba1[0] ^ ba2[0];
       rc |= ba1[1] ^ ba2[1];
@@ -3563,7 +3605,7 @@ QByteArray spoton_crypt::decryptedAfterAuthenticated(const QByteArray &data,
       return QByteArray();
     }
 
-  if(data.mid(length).isEmpty())
+  if(data.mid(static_cast<int> (length)).isEmpty())
     {
       if(ok)
 	*ok = false;
@@ -3571,12 +3613,13 @@ QByteArray spoton_crypt::decryptedAfterAuthenticated(const QByteArray &data,
       return QByteArray();
     }
 
-  QByteArray computedHash(keyedHash(data.mid(length), ok));
-  QByteArray hash(data.mid(0, length));
+  QByteArray computedHash(keyedHash(data.mid(static_cast<int> (length)),
+				    ok));
+  QByteArray hash(data.mid(0, static_cast<int> (length)));
 
   if(!computedHash.isEmpty() && !hash.isEmpty() && memcmp(computedHash,
 							  hash))
-    return decrypted(data.mid(length), ok);
+    return decrypted(data.mid(static_cast<int> (length)), ok);
   else
     {
       if(ok)

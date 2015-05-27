@@ -158,21 +158,26 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 	  privateKey.remove
 	    (0, static_cast<int> (qstrlen("ntru-private-key-")));
 	  memcpy(privateKey_array, privateKey.constData(),
-		 privateKey.length());
+		 static_cast<size_t> (privateKey.length()));
 	  ntru_import_priv(privateKey_array, &kp.priv);
 	  privateKey.replace
 	    (0, privateKey.length(), QByteArray(privateKey.length(), 0));
 	  publicKey.append(m_publicKey, m_publicKey.length());
 	  publicKey.remove
 	    (0, static_cast<int> (qstrlen("ntru-public-key-")));
-	  memcpy(publicKey_array, publicKey.constData(), publicKey.length());
+	  memcpy
+	    (publicKey_array, publicKey.constData(),
+	     static_cast<size_t> (publicKey.length()));
 	  ntru_import_pub(publicKey_array, &kp.pub);
 	  publicKey.replace
 	    (0, publicKey.length(), QByteArray(publicKey.length(), 0));
-	  memcpy(e, data.constData(), data.length());
-	  memset(privateKey_array, 0, privateKey.length());
+	  memcpy(e, data.constData(),
+		 static_cast<size_t> (data.length()));
+	  memset(privateKey_array, 0,
+		 static_cast<size_t> (privateKey.length()));
 	  privateKey.clear();
-	  memset(publicKey_array, 0, publicKey.length());
+	  memset(publicKey_array, 0,
+		 static_cast<size_t> (publicKey.length()));
 	  publicKey.clear();
 
 	  int index = 0;
@@ -289,18 +294,23 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
 	{
 	  NtruEncPubKey pk;
 
-	  memcpy(data_array, data.constData(), data.length());
+	  memcpy(data_array, data.constData(),
+		 static_cast<size_t> (data.length()));
 	  memcpy
 	    (publicKey_array,
 	     publicKey.
 	     mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
-	     publicKey.length() -
-	     static_cast<int> (qstrlen("ntru-public-key-")));
+	     static_cast<size_t> (publicKey.length() -
+				  static_cast<int> (qstrlen("ntru-"
+							    "public-key-"))));
 	  ntru_import_pub(publicKey_array, &pk);
 	  memset
 	    (publicKey_array, 0,
-	     publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
-	     length());
+	     static_cast<size_t> (publicKey.
+				  mid(static_cast<int> (qstrlen("ntru-"
+								"public-"
+								"key-"))).
+				  length()));
 
 	  int index = 0;
 	  struct NtruEncParams parameters[] = {EES1087EP2,
