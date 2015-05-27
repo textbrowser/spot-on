@@ -5977,7 +5977,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "chat");
       menu.addSeparator();
-      menu.addAction(tr("&Derive Gemini pair via SMP secret."),
+      menu.addAction(tr("&Derive Gemini pair from SMP secret."),
 		     this,
 		     SLOT(slotDeriveGeminiPairViaSMP(void)));
       menu.addAction(tr("&Reset the SMP machine's internal state to s0."),
