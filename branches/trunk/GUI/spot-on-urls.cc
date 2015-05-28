@@ -646,8 +646,8 @@ void spoton::slotImportUrls(void)
   displayUrlImportResults(imported, not_imported);
 }
 
-void spoton::displayUrlImportResults(const int imported,
-				     const int not_imported)
+void spoton::displayUrlImportResults(const quint64 imported,
+				     const quint64 not_imported)
 {
   QMessageBox::information
     (this, tr("%1: Information").
