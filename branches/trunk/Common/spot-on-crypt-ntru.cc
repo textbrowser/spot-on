@@ -133,21 +133,23 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 
   QByteArray decrypted;
   uint8_t *d = 0;
-  uint8_t *e = 0;
+  uint8_t *encrypted = 0;
   uint8_t *privateKey_array = 0;
   uint8_t *publicKey_array = 0;
 
   try
     {
-      e = new (std::nothrow) uint8_t[data.size()];
-      privateKey_array = new (std::nothrow)
-	uint8_t[m_privateKeyLength -
-		static_cast<size_t> (qstrlen("ntru-private-key-"))];
-      publicKey_array = new (std::nothrow)
-	uint8_t[static_cast<uint> (m_publicKey.length()) -
-		qstrlen("ntru-public-key-")];
+      size_t length1 = m_privateKeyLength -
+	static_cast<size_t> (qstrlen("ntru-private-key-"));
+      size_t length2 = static_cast<size_t>
+	(static_cast<uint> (m_publicKey.length()) -
+	 qstrlen("ntru-public-key-"));
 
-      if(e && privateKey_array && publicKey_array)
+      encrypted = new (std::nothrow) uint8_t[data.size()];
+      privateKey_array = new (std::nothrow) uint8_t[length1];
+      publicKey_array = new (std::nothrow) uint8_t[length2];
+
+      if(encrypted && privateKey_array && publicKey_array)
 	{
 	  NtruEncKeyPair kp;
 	  QByteArray privateKey;
@@ -157,33 +159,29 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 	    (m_privateKey, static_cast<int> (m_privateKeyLength));
 	  privateKey.remove
 	    (0, static_cast<int> (qstrlen("ntru-private-key-")));
-	  memcpy(privateKey_array, privateKey.constData(),
-		 static_cast<size_t> (privateKey.length()));
+	  memcpy(privateKey_array, privateKey.constData(), length1);
 	  ntru_import_priv(privateKey_array, &kp.priv);
 	  privateKey.replace
 	    (0, privateKey.length(), QByteArray(privateKey.length(), 0));
 	  publicKey.append(m_publicKey, m_publicKey.length());
 	  publicKey.remove
 	    (0, static_cast<int> (qstrlen("ntru-public-key-")));
-	  memcpy
-	    (publicKey_array, publicKey.constData(),
-	     static_cast<size_t> (publicKey.length()));
+	  memcpy(publicKey_array, publicKey.constData(), length2);
 	  ntru_import_pub(publicKey_array, &kp.pub);
 	  publicKey.replace
 	    (0, publicKey.length(), QByteArray(publicKey.length(), 0));
-	  memcpy(e, data.constData(),
-		 static_cast<size_t> (data.length()));
-	  memset(privateKey_array, 0,
-		 static_cast<size_t> (privateKey.length()));
+	  memcpy(encrypted, data.constData(),
+	  	 static_cast<size_t> (data.length()));
+	  memset(privateKey_array, 0, length1);
 	  privateKey.clear();
-	  memset(publicKey_array, 0,
-		 static_cast<size_t> (publicKey.length()));
+	  memset(publicKey_array, 0, length2);
 	  publicKey.clear();
 
 	  int index = 0;
 	  struct NtruEncParams parameters[] = {EES1087EP2,
 					       EES1171EP1,
 					       EES1499EP1};
+	  uint8_t err = 0;
 	  uint8_t length = 0;
 	  uint16_t decrypted_len = 0;
 
@@ -220,8 +218,8 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 	      goto done_label;
 	    }
 
-	  if(ntru_decrypt(e, &kp, &parameters[index],
-			  d, &decrypted_len) == NTRU_SUCCESS)
+	  if((err = ntru_decrypt(encrypted, &kp, &parameters[index],
+				 d, &decrypted_len)) == NTRU_SUCCESS)
 	    {
 	      if(ok)
 		*ok = true;
@@ -231,8 +229,8 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 	    }
 	  else
 	    spoton_misc::logError
-	      ("spoton_crypt::publicKeyDecryptNTRU(): ntru_decrypt() "
-	       "failure.");
+	      (QString("spoton_crypt::publicKeyDecryptNTRU(): "
+		       "ntru_decrypt() failure (%1).").arg(err));
 	}
       else
 	spoton_misc::logError
@@ -244,7 +242,7 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 
  done_label:
   delete []d;
-  delete []e;
+  delete []encrypted;
   delete []privateKey_array;
   delete []publicKey_array;
   return decrypted;
