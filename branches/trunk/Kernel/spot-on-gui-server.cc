@@ -425,9 +425,10 @@ void spoton_gui_server::slotReadyRead(void)
 			       spoton_kernel::
 			       setting("gui/saltLength",
 				       512).toInt(),
-			       spoton_kernel::
-			       setting("gui/iterationCount",
-				       10000).toInt(),
+			       static_cast<unsigned
+			       long> (spoton_kernel::
+				      setting("gui/iterationCount",
+					      10000).toInt()),
 			       names.at(i));
 			    spoton_kernel::s_crypts.insert
 			      (names.at(i), crypt);

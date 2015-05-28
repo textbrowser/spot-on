@@ -45,7 +45,7 @@ spoton_starbeam_reader::spoton_starbeam_reader
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
-  m_timer.start(1000 * m_readInterval);
+  m_timer.start(static_cast<int> (1000 * m_readInterval));
 }
 
 spoton_starbeam_reader::~spoton_starbeam_reader()
@@ -535,5 +535,5 @@ void spoton_starbeam_reader::setReadInterval(const double readInterval)
 
   if(static_cast<int> (1000 * m_readInterval) != m_timer.interval())
     if(m_timer.isActive())
-      m_timer.start(1000 * m_readInterval);
+      m_timer.start(static_cast<int> (1000 * m_readInterval));
 }

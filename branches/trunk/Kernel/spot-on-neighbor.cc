@@ -1442,7 +1442,7 @@ void spoton_neighbor::slotReadyRead(void)
   else if(m_udpSocket)
     data = m_udpSocket->readAll();
 
-  m_bytesRead += data.length();
+  m_bytesRead += static_cast<quint64> (data.length());
 
   if(!data.isEmpty() && !isEncrypted() && m_useSsl)
     {
@@ -4309,7 +4309,7 @@ void spoton_neighbor::saveParticipantStatus(const QByteArray &name,
 {
   spoton_misc::saveParticipantStatus
     (name, publicKeyHash, status, timestamp,
-     2.5 * spoton_kernel::STATUS_INTERVAL,
+     static_cast<int> (2.5 * spoton_kernel::STATUS_INTERVAL),
      spoton_kernel::s_crypts.value("chat", 0));
 }
 
@@ -5766,7 +5766,7 @@ void spoton_neighbor::addToBytesWritten(const int bytesWritten)
 {
   QWriteLocker locker(&m_bytesWrittenMutex);
 
-  m_bytesWritten += qAbs(bytesWritten);
+  m_bytesWritten += static_cast<quint64> (qAbs(bytesWritten));
 }
 
 void spoton_neighbor::slotSendAccountInformation(void)
@@ -6015,7 +6015,7 @@ quint16 spoton_neighbor::peerPort(void) const
   else if(m_udpSocket)
     return m_udpSocket->peerPort();
   else
-    return -1;
+    return 0;
 }
 
 bool spoton_neighbor::isEncrypted(void) const

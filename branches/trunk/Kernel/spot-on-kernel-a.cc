@@ -364,7 +364,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_uptime = QDateTime::currentDateTime();
   s_institutionLastModificationTime = QDateTime();
-  qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+  qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
   QDir().mkdir(spoton_misc::homePath());
 
   /*
@@ -2275,7 +2275,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		{
 		  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 		  hashKey = spoton_crypt::strongRandomBytes
-		    (hashKey.length());
+		    (static_cast<size_t> (hashKey.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
 
 		  /*
@@ -2283,7 +2283,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		  */
 
 		  symmetricKey = spoton_crypt::strongRandomBytes
-		    (symmetricKey.length());
+		    (static_cast<size_t> (symmetricKey.length()));
 		}
 	      else
 		{
@@ -2441,7 +2441,7 @@ void spoton_kernel::slotScramble(void)
     {
       symmetricKey.resize(static_cast<int> (symmetricKeyLength));
       symmetricKey = spoton_crypt::strongRandomBytes
-	(symmetricKey.length());
+	(static_cast<size_t> (symmetricKey.length()));
     }
   else
     ok = false;
@@ -2664,10 +2664,10 @@ void spoton_kernel::slotRetrieveMail(void)
 		{
 		  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 		  hashKey = spoton_crypt::strongRandomBytes
-		    (hashKey.length());
+		    (static_cast<size_t> (hashKey.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
 		  symmetricKey = spoton_crypt::strongRandomBytes
-		    (symmetricKey.length());
+		    (static_cast<size_t> (symmetricKey.length()));
 		}
 	      else
 		{
@@ -2906,10 +2906,11 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	      if(symmetricKeyLength > 0)
 		{
 		  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
-		  hashKey = spoton_crypt::strongRandomBytes(hashKey.length());
+		  hashKey = spoton_crypt::strongRandomBytes
+		    (static_cast<size_t> (hashKey.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
 		  symmetricKey = spoton_crypt::strongRandomBytes
-		    (symmetricKey.length());
+		    (static_cast<size_t> (symmetricKey.length()));
 		}
 	      else
 		{
@@ -3122,10 +3123,10 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		{
 		  hashKey1.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 		  hashKey1 = spoton_crypt::strongRandomBytes
-		    (hashKey1.length());
+		    (static_cast<size_t> (hashKey1.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
 		  symmetricKey = spoton_crypt::strongRandomBytes
-		    (symmetricKey.length());
+		    (static_cast<size_t> (symmetricKey.length()));
 		}
 	      else
 		{
@@ -3184,10 +3185,10 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		{
 		  hashKey2.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 		  hashKey2 = spoton_crypt::strongRandomBytes
-		    (hashKey2.length());
+		    (static_cast<size_t> (hashKey2.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
 		  symmetricKey = spoton_crypt::strongRandomBytes
-		    (symmetricKey.length());
+		    (static_cast<size_t> (symmetricKey.length()));
 		}
 	      else
 		{
@@ -3351,15 +3352,17 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
     if(error.isEmpty())
       {
 	QPair<QByteArray, QByteArray> keys
-	  (spoton_crypt::derivedKeys(setting("gui/cipherType",
-					     "aes256").toString(),
-				     setting("gui/hashType",
-					     "sha512").toString(),
-				     setting("gui/""iterationCount",
-					     10000).toInt(),
-				     passphrase,
-				     salt,
-				     error));
+	  (spoton_crypt::
+	   derivedKeys(setting("gui/cipherType",
+			       "aes256").toString(),
+		       setting("gui/hashType",
+			       "sha512").toString(),
+		       static_cast<unsigned long> (setting("gui/"
+							   "iterationCount",
+							   10000).toInt()),
+		       passphrase,
+		       salt,
+		       error));
 
 	if(error.isEmpty())
 	  {
@@ -3392,8 +3395,10 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 			 keys.first,
 			 keys.second,
 			 setting("gui/saltLength", 512).toInt(),
-			 setting("gui/iterationCount",
-				 10000).toInt(),
+			 static_cast<unsigned long> (setting("gui/"
+							     "iterationCount",
+							     10000).
+						     toInt()),
 			 list.at(i));
 		      s_crypts.insert(list.at(i), crypt);
 		    }
@@ -3963,11 +3968,11 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 		      hashKey.resize
 			(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 		      hashKey = spoton_crypt::strongRandomBytes
-			(hashKey.length());
+			(static_cast<size_t> (hashKey.length()));
 		      symmetricKey.resize
 			(static_cast<int> (symmetricKeyLength));
 		      symmetricKey = spoton_crypt::strongRandomBytes
-			(symmetricKey.length());
+			(static_cast<size_t> (symmetricKey.length()));
 		    }
 		  else
 		    {
@@ -4176,11 +4181,11 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 		      hashKey.resize
 			(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 		      hashKey = spoton_crypt::strongRandomBytes
-			(hashKey.length());
+			(static_cast<size_t> (hashKey.length()));
 		      symmetricKey.resize
 			(static_cast<int> (symmetricKeyLength));
 		      symmetricKey = spoton_crypt::strongRandomBytes
-			(symmetricKey.length());
+			(static_cast<size_t> (symmetricKey.length()));
 		    }
 		  else
 		    {
@@ -4942,11 +4947,11 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 		      hashKey.resize
 			(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 		      hashKey = spoton_crypt::strongRandomBytes
-			(hashKey.length());
+			(static_cast<size_t> (hashKey.length()));
 		      symmetricKey.resize
 			(static_cast<int> (symmetricKeyLength));
 		      symmetricKey = spoton_crypt::strongRandomBytes
-			(symmetricKey.length());
+			(static_cast<size_t> (symmetricKey.length()));
 		    }
 		  else
 		    {

@@ -477,10 +477,12 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
     {
 #ifdef Q_OS_WIN32
       sent = send
-	(m_socketDescriptor, data, qMin(remaining, writeSize), 0);
+	(m_socketDescriptor, data,
+	 static_cast<size_t> (qMin(remaining, writeSize)), 0);
 #else
       sent = send
-	(m_socketDescriptor, data, qMin(remaining, writeSize), MSG_DONTWAIT);
+	(m_socketDescriptor, data,
+	 static_cast<size_t> (qMin(remaining, writeSize)), MSG_DONTWAIT);
 #endif
 
       if(sent == -1)
