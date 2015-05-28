@@ -3489,7 +3489,9 @@ bool spoton_misc::prepareUrlDistillersDatabase(void)
 	if(!query.exec("CREATE TABLE IF NOT EXISTS distillers ("
 		       "direction TEXT NOT NULL DEFAULT 'download', "
 		       "domain TEXT NOT NULL, "
-		       "domain_hash TEXT KEY NOT NULL, "
+		       "domain_hash TEXT KEY NOT NULL, " /*
+							 ** Keyed hash.
+							 */
 		       "PRIMARY KEY (direction, domain_hash))"))
 	  ok = false;
 	else

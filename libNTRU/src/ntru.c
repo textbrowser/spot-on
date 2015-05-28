@@ -403,7 +403,10 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, const NtruEncParams *para
     ntru_decrypt_poly(&e, &kp->priv, q, &ci);
 
     if (!ntru_check_rep_weight(&ci, dm0))
+      {
         retcode = NTRU_ERR_DM0_VIOLATION;
+	return retcode;
+      }
 
     NtruIntPoly cR = e;
     ntru_sub_int(&cR, &ci);
@@ -422,8 +425,10 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, const NtruEncParams *para
     uint16_t cM_len_bytes = (cM_len_bits+7) / 8;
     uint8_t cM[cM_len_bytes+3];   /* 3 extra bytes for ntru_to_sves() */
     if (!ntru_to_sves(&cmtrin, (uint8_t*)&cM))
+      {
         retcode = NTRU_ERR_INVALID_ENCODING;
-
+	return retcode;
+      }
     uint8_t cb[blen];
     uint8_t *cM_head = cM;
     memcpy(cb, cM_head, blen);
@@ -431,16 +436,20 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, const NtruEncParams *para
     uint8_t cl = *cM_head;   /* llen=1, so read one byte */
     cM_head++;
     if (cl > max_len_bytes)
+      {
         retcode = NTRU_ERR_MSG_TOO_LONG;
-
+	return retcode;
+      }
     memcpy(dec, cM_head, cl);
     cM_head += cl;
 
     uint8_t *i;
     for (i=cM_head; i<cM+cM_len_bytes; i++)
         if (*i)
+	  {
             retcode = NTRU_ERR_NO_ZERO_PAD;
-
+	    return retcode;
+	  }
     uint16_t sdata_len = sizeof(params->oid) + cl + blen + db/8;
     uint8_t sdata[sdata_len];
     ntru_get_seed(dec, cl, &kp->pub.h, (uint8_t*)&cb, params, (uint8_t*)&sdata);
@@ -450,8 +459,10 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, const NtruEncParams *para
     NtruIntPoly cR_prime;
     ntru_mult_priv(&cr, &kp->pub.h, &cR_prime, q);
     if (!ntru_equals_int(&cR_prime, &cR))
+      {
         retcode = NTRU_ERR_INVALID_ENCODING;
-
+	return retcode;
+      }
     *dec_len = cl;
     return retcode;
 }

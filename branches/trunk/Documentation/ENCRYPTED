@@ -129,3 +129,21 @@ total_size
 transmitted_magnets
 
 magnet
+
+urls_distillers_information.db
+
+domain
+
+urls_key_information.db
+
+import_key_information
+
+cipher_type
+symmetric_key
+
+remote_key_information
+
+cipher_type
+encryption_key
+hash_key
+hash_type
