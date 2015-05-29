@@ -221,7 +221,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.setupUi(this);
   m_ui.version->setText
     (QString("<html><head/><body><p><a href=\"https://github.com/textbrowser/"
-	     "spot-on/blob/master/branches/Documentation/RELEASE-NOTES\">"
+	     "spot-on/blob/master/branches/Documentation/RELEASE-NOTES.html\">"
 	     "<span style=\" text-decoration: underline; color:#0000ff;\">"
 	     "Spot-On Version %1</span></a></p></body></html>").
      arg(SPOTON_VERSION_STR));

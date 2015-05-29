@@ -1736,7 +1736,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		}
 	    }
 
-	if(query.exec("SELECT magnet, magnet_hash FROM transmitted_magnets"))
+	if(query.exec("SELECT magnet, magnet_hash, transmitted_oid "
+		      "FROM transmitted_magnets"))
 	  while(query.next())
 	    {
 	      QByteArray magnet;
@@ -1746,7 +1747,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      updateQuery.prepare("UPDATE transmitted_magnets "
 				  "SET magnet = ?, "
 				  "magnet_hash = ? "
-				  "WHERE magnet_hash = ?");
+				  "WHERE magnet_hash = ? AND "
+				  "transmitted_oid = ?");
 	      magnet = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::
 		 fromBase64(query.
@@ -1767,6 +1769,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 	      updateQuery.bindValue
 		(2, query.value(1));
+	      updateQuery.bindValue
+		(3, query.value(2));
 
 	      if(ok)
 		updateQuery.exec();
@@ -1777,8 +1781,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare
 		    ("DELETE FROM transmitted_magnets WHERE "
-		     "magnet_hash = ?");
+		     "magnet_hash = ? AND transmitted_oid = ?");
 		  deleteQuery.bindValue(0, query.value(1));
+		  deleteQuery.bindValue(0, query.value(2));
 		  deleteQuery.exec();
 		}
 	    }
