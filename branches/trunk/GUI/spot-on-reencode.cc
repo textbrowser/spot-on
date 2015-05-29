@@ -775,7 +775,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	    }
 
 	if(query.exec("SELECT account_name, account_name_hash, "
-		      "account_password FROM listeners_accounts"))
+		      "account_password, listener_oid "
+		      "FROM listeners_accounts"))
 	  while(query.next())
 	    {
 	      QByteArray name;
@@ -787,7 +788,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				  "SET account_name = ?, "
 				  "account_name_hash = ?, "
 				  "account_password = ? "
-				  "WHERE account_name_hash = ?");
+				  "WHERE account_name_hash = ? AND "
+				  "listener_oid = ?");
 	      name = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::
 		 fromBase64(query.
@@ -817,6 +819,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 						    &ok).toBase64());
 
 	      updateQuery.bindValue(3, query.value(1));
+	      updateQuery.bindValue(4, query.value(3));
 
 	      if(ok)
 		updateQuery.exec();
@@ -826,8 +829,10 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM listeners_accounts WHERE "
-				      "account_name_hash = ?");
+				      "account_name_hash = ? AND "
+				      "listener_oid = ?");
 		  deleteQuery.bindValue(0, query.value(1));
+		  deleteQuery.bindValue(1, query.value(3));
 		  deleteQuery.exec();
 		}
 	    }
@@ -892,7 +897,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		}
 	    }
 
-	if(query.exec("SELECT ip_address, ip_address_hash "
+	if(query.exec("SELECT ip_address, ip_address_hash, "
+		      "listener_oid "
 		      "FROM listeners_allowed_ips"))
 	  while(query.next())
 	    {
@@ -903,7 +909,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      updateQuery.prepare("UPDATE listeners_allowed_ips "
 				  "SET ip_address = ?, "
 				  "ip_address_hash = ? "
-				  "WHERE ip_address_hash = ?");
+				  "WHERE ip_address_hash = ? AND "
+				  "listener_oid = ?");
 	      ip = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::
 		 fromBase64(query.
@@ -920,6 +927,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  (1, newCrypt->keyedHash(ip, &ok).toBase64());
 
 	      updateQuery.bindValue(2, query.value(1));
+	      updateQuery.bindValue(3, query.value(2));
 
 	      if(ok)
 		updateQuery.exec();
@@ -930,8 +938,10 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM listeners_allowed_ips "
 				      "WHERE "
-				      "ip_address_hash = ?");
+				      "ip_address_hash = ? AND "
+				      "listener_oid = ?");
 		  deleteQuery.bindValue(0, query.value(1));
+		  deleteQuery.bindValue(1, query.value(2));
 		  deleteQuery.exec();
 		}
 	    }

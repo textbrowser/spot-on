@@ -11,6 +11,8 @@
 <li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
 <li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
 <li>Corrected importing of public keys. Cannot assume that key pairs exist.</li>
+<li>Corrected re-encoding of listeners_accounts. Must include the listener_oid in the where-clauses.</li>
+<li>Corrected re-encoding of listeners_allowed_ips. Must include the listener_oid in the where-clauses.</li>
 <li>Corrected removal of URLs having special characters.</li>
 <li>Corrected setting of remote IP information. Please see Neighbors.</li>
 <li>Corrected use of spoton::addFriendsKey().</li>
