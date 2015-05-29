@@ -1778,6 +1778,201 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  sb.status->setText
+    (QObject::tr("Re-encoding urls_distillers_information.db."));
+  sb.status->repaint();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT direction, domain, "
+		      "domain_hash FROM distillers"))
+	  while(query.next())
+	    {
+	      QByteArray domain;
+	      QSqlQuery updateQuery(db);
+	      bool ok = true;
+
+	      updateQuery.prepare("UPDATE distillers "
+				  "SET domain = ?, "
+				  "domain_hash = ? WHERE "
+				  "direction = ? AND "
+				  "domain_hash = ?");
+	      domain = oldCrypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(1).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		updateQuery.bindValue
+		  (0, newCrypt->encryptedThenHashed(domain, &ok).toBase64());
+
+	      if(ok)
+		updateQuery.bindValue
+		  (1,
+		   newCrypt->keyedHash(domain,
+				       &ok).toBase64());
+
+	      updateQuery.bindValue
+		(2, query.value(0));
+	      updateQuery.bindValue
+		(3, query.value(2));
+
+	      if(ok)
+		updateQuery.exec();
+	      else
+		{
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM distillers WHERE "
+				      "direction = ? AND domain_hash = ?");
+		  deleteQuery.bindValue(0, query.value(0));
+		  deleteQuery.bindValue(1, query.value(2));
+		  deleteQuery.exec();
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  sb.status->setText
+    (QObject::tr("Re-encoding urls_key_information.db."));
+  sb.status->repaint();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_key_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT cipher_type, symmetric_key, OID "
+		      "FROM import_key_information"))
+	  while(query.next())
+	    {
+	      QByteArray bytes;
+	      QSqlQuery updateQuery(db);
+	      bool ok = true;
+
+	      updateQuery.prepare("UPDATE import_key_information "
+				  "SET cipher_type = ?, "
+				  "symmetric_key = ? WHERE "
+				  "OID = ?");
+	      bytes = oldCrypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		updateQuery.bindValue
+		  (0, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+	      if(ok)
+		bytes = oldCrypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		updateQuery.bindValue
+		  (1, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+	      updateQuery.bindValue
+		(2, query.value(2));
+
+	      if(ok)
+		updateQuery.exec();
+	      else
+		{
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM import_key_information "
+				      "WHERE OID = ?");
+		  deleteQuery.bindValue(0, query.value(2));
+		  deleteQuery.exec();
+		}
+	    }
+
+	if(query.exec("SELECT cipher_type, encryption_key, "
+		      "hash_key, hash_type, OID "
+		      "FROM remote_key_information"))
+	  while(query.next())
+	    {
+	      QList<QByteArray> list;
+	      QSqlQuery updateQuery(db);
+	      bool ok = true;
+
+	      updateQuery.prepare("UPDATE remote_key_information "
+				  "SET cipher_type = ?, "
+				  "encryption_key = ?, "
+				  "hash_key = ?, "
+				  "hash_type = ? WHERE "
+				  "OID = ?");
+
+	      for(int i = 0; i < 4; i++)
+		{
+		  QByteArray bytes
+		    (oldCrypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.
+							    value(i).
+							    toByteArray()),
+						 &ok));
+
+		  if(ok)
+		    list.append(bytes);
+		  else
+		    break;
+		}
+
+	      for(int i = 0; i < list.size(); i++)
+		{
+		  if(ok)
+		    updateQuery.bindValue
+		      (i, newCrypt->encryptedThenHashed(list.at(i),
+							&ok).toBase64());
+
+		  if(!ok)
+		    break;
+		}
+
+	      updateQuery.bindValue
+		(4, query.value(4));
+
+	      if(ok)
+		updateQuery.exec();
+	      else
+		{
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM remote_key_information "
+				      "WHERE OID = ?");
+		  deleteQuery.bindValue(0, query.value(4));
+		  deleteQuery.exec();
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   sb.status->clear();
 
   QByteArray bytes;

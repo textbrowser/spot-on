@@ -32,6 +32,7 @@
 <li>Notify the user of URL import statistics.</li>
 <li>Populate URL polarizers before performing an import.</li>
 <li>Prompt before accessing a remote URL.</li>
+<li>Re-encode URL common and import credential information.</li>
 <li>Removed input masks from IPv6 fields.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
 <li>Replaced the itemClicked() signal on the e-mail table with itemDoubleClicked() as itemClicked() and itemSelectionChanged() may cause duplicate dialog prompts.</li>
