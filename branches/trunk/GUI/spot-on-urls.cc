@@ -630,12 +630,12 @@ void spoton::slotImportUrls(void)
 			    if(!item)
 			      continue;
 
-			    QUrl u(QUrl::fromUserInput(url));
+			    QUrl u1(QUrl::fromUserInput(item->text()));
+			    QUrl u2(QUrl::fromUserInput(url));
 
 			    if(accept_url_dl)
 			      {
-				if(u.toString().toUtf8().
-				   startsWith(item->text().toUtf8()))
+				if(u2.toEncoded().startsWith(u1.toEncoded()))
 				  {
 				    ok = true;
 				    break;
@@ -643,8 +643,7 @@ void spoton::slotImportUrls(void)
 			      }
 			    else
 			      {
-				if(u.toString().toUtf8().
-				   startsWith(item->text().toUtf8()))
+				if(u2.toEncoded().startsWith(u1.toEncoded()))
 				  {
 				    ok = false;
 				    break;
@@ -709,9 +708,15 @@ void spoton::slotShowUrlSettings(void)
 
 #if SPOTON_GOLDBUG == 0
   if(m_ui.urlsBox->isVisible())
-    m_ui.urls_settings_layout->addWidget(m_ui.importUrls);
+    {
+      m_ui.urls_settings_layout->addWidget(m_ui.apply_polarizers);
+      m_ui.urls_settings_layout->addWidget(m_ui.importUrls);
+    }
   else
-    m_ui.urls_import_layout->addWidget(m_ui.importUrls);
+    {
+      m_ui.urls_import_layout->addWidget(m_ui.apply_polarizers);
+      m_ui.urls_import_layout->addWidget(m_ui.importUrls);
+    }
 #endif
 }
 
@@ -1360,7 +1365,7 @@ void spoton::slotAddDistiller(void)
 
   if(ok)
     {
-      m_ui.domain->selectAll();
+      m_ui.domain->clear();
       populateUrlDistillers();
     }
   else if(error.isEmpty())
