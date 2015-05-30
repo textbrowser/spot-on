@@ -1811,3 +1811,12 @@ void spoton::slotApplyPolarizersToggled(bool state)
 
   settings.setValue("gui/applyPolarizers", state);
 }
+
+void spoton::slotOntopChatDialogs(bool state)
+{
+  m_settings["gui/ontopChatDialogs"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/ontopChatDialogs", state);
+}

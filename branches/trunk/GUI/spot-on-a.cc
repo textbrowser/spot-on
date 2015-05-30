@@ -1357,6 +1357,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveAlternatingColors(bool)));
+  connect(m_optionsUi.ontopChatDialogs,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotOntopChatDialogs(bool)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1885,6 +1889,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/displayPopupsAutomatically", true).toBool());
   m_optionsUi.sharePrivateKeys->setChecked
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
+  m_optionsUi.ontopChatDialogs->setChecked
+    (m_settings.value("gui/ontopChatDialogs", false).toBool());
 
   /*
   ** Please don't translate n/a.

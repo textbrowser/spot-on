@@ -56,6 +56,7 @@ class spoton_chatwindow: public QMainWindow
   void center(QWidget *parent);
   void setName(const QString &name);
   void setSMPVerified(const bool state);
+  void showNormal(void);
 
  private:
   QPointer<QSslSocket> m_kernelSocket;

@@ -54,8 +54,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>458</width>
-             <height>839</height>
+             <width>462</width>
+             <height>910</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -302,6 +302,13 @@
                 <widget class="QCheckBox" name="enableChatEmoticons">
                  <property name="text">
                   <string>Enable &amp;emoticons.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="ontopChatDialogs">
+                 <property name="text">
+                  <string>&amp;On-top dialogs.</string>
                  </property>
                 </widget>
                </item>
@@ -857,8 +864,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>653</width>
-             <height>912</height>
+             <width>581</width>
+             <height>949</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1499,7 +1506,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1513,6 +1520,9 @@
   <action name="action_Close">
    <property name="text">
     <string>&amp;Close</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
    </property>
   </action>
   <action name="action_Empty_Log">
@@ -1536,10 +1546,13 @@
   <tabstop>iconsize</tabstop>
   <tabstop>position</tabstop>
   <tabstop>buzzAutoJoin</tabstop>
+  <tabstop>chatAlternatingRowColors</tabstop>
   <tabstop>displayPopups</tabstop>
   <tabstop>enableChatEmoticons</tabstop>
+  <tabstop>ontopChatDialogs</tabstop>
   <tabstop>chatSendMethod</tabstop>
   <tabstop>chatUpdateInterval</tabstop>
+  <tabstop>emailAlternatingRowColors</tabstop>
   <tabstop>refreshEmail</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
   <tabstop>emailRetrievalInterval</tabstop>
@@ -1547,11 +1560,15 @@
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
+  <tabstop>kernelCacheInterval</tabstop>
+  <tabstop>starbeamAutoVerify</tabstop>
   <tabstop>starbeamUpdateInterval</tabstop>
+  <tabstop>urlsAlternatingRowColors</tabstop>
   <tabstop>scrollArea_2</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>
   <tabstop>acceptGeminis</tabstop>
   <tabstop>chatAcceptSigned</tabstop>
+  <tabstop>autoAddSharedSBMagnets</tabstop>
   <tabstop>acceptChatKeys</tabstop>
   <tabstop>impersonate</tabstop>
   <tabstop>chatSignMessages</tabstop>
@@ -1573,34 +1590,28 @@
   <tabstop>sharePrivateKeys</tabstop>
   <tabstop>superEcho</tabstop>
   <tabstop>acceptUrlKeys</tabstop>
-  <tabstop>scrambler</tabstop>
-  <tabstop>sharePrivateKeys</tabstop>
-  <tabstop>scrollArea</tabstop>
-  <tabstop>icons</tabstop>
-  <tabstop>iconsize</tabstop>
-  <tabstop>position</tabstop>
   <tabstop>buzzAutoJoin</tabstop>
-  <tabstop>chatAlternatingRowColors</tabstop>
+  <tabstop>position</tabstop>
   <tabstop>displayPopups</tabstop>
   <tabstop>enableChatEmoticons</tabstop>
   <tabstop>chatSendMethod</tabstop>
   <tabstop>chatUpdateInterval</tabstop>
-  <tabstop>emailAlternatingRowColors</tabstop>
+  <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
   <tabstop>emailRetrievalInterval</tabstop>
   <tabstop>listenersUpdateInterval</tabstop>
-  <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
+  <tabstop>icons</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
-  <tabstop>kernelCacheInterval</tabstop>
-  <tabstop>starbeamAutoVerify</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>sharePrivateKeys</tabstop>
   <tabstop>starbeamUpdateInterval</tabstop>
-  <tabstop>urlsAlternatingRowColors</tabstop>
+  <tabstop>iconsize</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>
   <tabstop>acceptGeminis</tabstop>
   <tabstop>chatAcceptSigned</tabstop>
-  <tabstop>autoAddSharedSBMagnets</tabstop>
+  <tabstop>scrambler</tabstop>
   <tabstop>acceptChatKeys</tabstop>
   <tabstop>impersonate</tabstop>
   <tabstop>chatSignMessages</tabstop>

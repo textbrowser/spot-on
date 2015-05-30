@@ -61,6 +61,11 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   m_kernelSocket = kernelSocket;
   m_publicKeyHash = publicKeyHash;
   ui.setupUi(this);
+
+  QSettings settings;
+
+  if(settings.value("gui/ontopChatDialogs", false).toBool())
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   setAttribute(Qt::WA_MacMetalStyle, true);
@@ -688,4 +693,14 @@ void spoton_chatwindow::showError(const QString &error)
 
   QMessageBox::critical(this, tr("%1: Error").
 			arg(SPOTON_APPLICATION_NAME), error);
+}
+
+void spoton_chatwindow::showNormal(void)
+{
+  QSettings settings;
+
+  if(settings.value("gui/ontopChatDialogs", false).toBool())
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+
+  QMainWindow::showNormal();
 }
