@@ -507,6 +507,7 @@ void spoton::slotImportUrls(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
+  bool accept_url_dl = m_settings.value("gui/acceptUrlDL", true).toBool();
   bool apply_polarizers = m_settings.value
     ("gui/applyPolarizers", true).toBool();
   int readEncrypted = 1;
@@ -611,7 +612,50 @@ void spoton::slotImportUrls(void)
 		  }
 
 		if(ok)
-		  ok = importUrl(description, title, url);
+		  {
+		    if(apply_polarizers)
+		      {
+			if(accept_url_dl)
+			  /*
+			  ** We will only accept listed entries.
+			  */
+
+			  ok = false;
+
+			for(int i = 0; i < m_ui.downDistillers->count(); i++)
+			  {
+			    QListWidgetItem *item = m_ui.downDistillers->
+			      item(i);
+
+			    if(!item)
+			      continue;
+
+			    QUrl u(QUrl::fromUserInput(url));
+
+			    if(accept_url_dl)
+			      {
+				if(u.toString().toUtf8().
+				   startsWith(item->text().toUtf8()))
+				  {
+				    ok = true;
+				    break;
+				  }
+			      }
+			    else
+			      {
+				if(u.toString().toUtf8().
+				   startsWith(item->text().toUtf8()))
+				  {
+				    ok = false;
+				    break;
+				  }
+			      }
+			  }
+		      }
+
+		    if(ok)
+		      ok = importUrl(description, title, url);
+		  }
 
 		if(ok)
 		  imported += 1;
@@ -1474,6 +1518,10 @@ void spoton::slotDeleteLink(const QUrl &u)
       if(m_settings.value("gui/openLinks", false).toBool())
 	{
 	  QMessageBox mb(this);
+	  QString str(url.toEncoded().constData());
+
+	  if(str.length() > 64)
+	    str = str.mid(0, 24) + "..." + str.right(24);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -1485,14 +1533,12 @@ void spoton::slotDeleteLink(const QUrl &u)
 			    arg(SPOTON_APPLICATION_NAME));
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText(tr("Are you sure that you wish to access %1?").
-		     arg((url.toEncoded().mid(0, 32) + "..." +
-			  url.toEncoded().right(32)).constData()));
+	  mb.setText(tr("Are you sure that you wish to access %1?").arg(str));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return;
 
-	  QDesktopServices::openUrl(u);
+	  QDesktopServices::openUrl(url);
 	}
 
       return;
