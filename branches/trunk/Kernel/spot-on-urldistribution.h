@@ -37,6 +37,10 @@ class spoton_urldistribution: public QThread
  public:
   spoton_urldistribution(QObject *parent);
   ~spoton_urldistribution();
+
+ private:
+  quint64 m_limit;
+  quint64 m_offset;
 };
 
 #endif

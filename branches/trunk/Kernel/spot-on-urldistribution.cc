@@ -25,11 +25,14 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "../Common/spot-on-common.h"
 #include "spot-on-urldistribution.h"
 
 spoton_urldistribution::spoton_urldistribution(QObject *parent):
   QThread(parent)
 {
+  m_limit = spoton_common::KERNEL_URLS_BATCH_SIZE;
+  m_offset = 0;
 }
 
 spoton_urldistribution::~spoton_urldistribution()
