@@ -92,14 +92,6 @@ void spoton::slotConfigurePoptastic(void)
 	  this,
 	  SLOT(slotPoptasticSettingsReset(void)),
 	  Qt::UniqueConnection);
-  connect(m_poptasticRetroPhoneSettingsUi.capath,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSelectCAPath(void)));
-  connect(m_ui.passphrase2,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSetPassphrase(void)));
   connect(m_poptasticRetroPhoneSettingsUi.selectcapath,
 	  SIGNAL(clicked(void)),
 	  this,
