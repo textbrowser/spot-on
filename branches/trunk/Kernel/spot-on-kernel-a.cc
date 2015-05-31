@@ -730,6 +730,8 @@ spoton_kernel::~spoton_kernel()
   m_poptasticPopFuture.waitForFinished();
   m_poptasticPostFuture.waitForFinished();
   m_statisticsFuture.waitForFinished();
+  m_urlDistribution->quit();
+  m_urlDistribution->wait();
   cleanup();
   spoton_misc::cleanupDatabases(s_crypts.value("chat", 0));
 

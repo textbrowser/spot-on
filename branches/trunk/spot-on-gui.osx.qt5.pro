@@ -83,6 +83,7 @@ HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on-textedit.h
 
 SOURCES		= Common/spot-on-crypt.cc \
+		  Common/spot-on-crypt-mceliece.cc \
 		  Common/spot-on-crypt-ntru.cc \
 		  Common/spot-on-external-address.cc \
 		  Common/spot-on-misc.cc \

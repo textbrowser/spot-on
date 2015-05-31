@@ -39,7 +39,7 @@ QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../../. GUI
 LIBS		+= -L../../libNTRU -L../../libSpotOn \
-		   -lGeoIP -lbotan-1.10 -lcrypto -lcurl -lgcrypt \
+		   -lGeoIP -lcrypto -lcurl -lgcrypt \
 		   -lgpg-error -lntru -lspoton -lssl
 PRE_TARGETDEPS = libntru.so libspoton.so
 OBJECTS_DIR = temp/obj
@@ -77,6 +77,7 @@ HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on-textedit.h
 
 SOURCES		= Common/spot-on-crypt.cc \
+		  Common/spot-on-crypt-mceliece.cc \
 		  Common/spot-on-crypt-ntru.cc \
 		  Common/spot-on-external-address.cc \
 		  Common/spot-on-misc.cc \

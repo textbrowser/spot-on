@@ -1140,8 +1140,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 					  bool *ok)
 {
   if(publicKey.startsWith("mceliece-"))
-    {
-    }
+    return publicKeyEncryptMcEliece(data, publicKey, ok);
   else if(publicKey.startsWith("ntru-public-key-"))
     return publicKeyEncryptNTRU(data, publicKey, ok);
 
@@ -1499,6 +1498,9 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
   if(array.startsWith("mceliece-"))
     {
+      array.replace(0, array.length(), QByteArray(array.length(), 0));
+      array.clear();
+      return publicKeyDecryptMcEliece(data, ok);
     }
   else if(array.startsWith("ntru-private-key-"))
     {
@@ -1883,6 +1885,20 @@ void spoton_crypt::generatePrivatePublicKeys(const QString &keySize,
       arg(ks);
   else if(keyType.toLower() == "mceliece")
     {
+      bool ok = true;
+
+      generateMcElieceKeys(keySize, privateKey, publicKey, &ok);
+
+      if(ok)
+	goto save_keys_label;
+      else
+	{
+	  error = QObject::tr("generateMcElieceKeys() failure");
+	  spoton_misc::logError
+	    ("spoton_crypt::generatePrivatePublicKeys(): "
+	     "generateMcElieceKeys() failure.");
+	  goto done_label;
+	}
     }
   else if(keyType.toLower() == "ntru")
     {

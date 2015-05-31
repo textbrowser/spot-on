@@ -13,7 +13,8 @@ CONFIG		+= qt release warn_on
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.
 
-DEFINES	+= SPOTON_LINKED_WITH_LIBGEOIP \
+DEFINES	+= SPOTON_LINKED_WITH_LIBBOTAN \
+           SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
 	   SPOTON_SCTP_ENABLED
@@ -75,6 +76,7 @@ HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on-textedit.h
 
 SOURCES		= Common/spot-on-crypt.cc \
+		  Common/spot-on-crypt-mceliece.cc \
 		  Common/spot-on-crypt-ntru.cc \
 		  Common/spot-on-external-address.cc \
 		  Common/spot-on-misc.cc \
