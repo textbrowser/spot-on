@@ -1,5 +1,5 @@
 <html>
-2015.05.29
+2015.06.06
 <ol>
 <li>Added libspoton_delete_urls() to libspoton. Version updated to 0.10.</li>
 <li>Allow adjustment of the iteration count in the file encryption tool.</li>
@@ -30,12 +30,14 @@
 <li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>
 <li>Guard QList::last().</li>
 <li>Guard QList::removeAt().</li>
+<li>Log re-encoding errors.</li>
 <li>Many integer conversion corrections.</li>
 <li>Modified QFileInfo::lastModified() usage. It's possible that a less-than-or-equal to comparison will leave containers in unpleasant states.</li>
 <li>Notify the user of URL import statistics.</li>
 <li>Populate URL polarizers before performing an import.</li>
 <li>Prompt before accessing a remote URL.</li>
-<li>Re-encode URL common and import credential information.</li>
+<li>Re-encode URL common and import credentials information.</li>
+<li>Removed duplicate QObject::connect() instance from spoton::slotConfigurePoptastic().</li>
 <li>Removed input masks from IPv6 fields.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
 <li>Replaced the itemClicked() signal on the e-mail table with itemDoubleClicked() as itemClicked() and itemSelectionChanged() may cause duplicate dialog prompts.</li>

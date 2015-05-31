@@ -103,6 +103,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding buzz_channels error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -198,6 +200,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		      }
 		    else
 		      {
+			spoton_misc::logError
+			  ("Re-encoding folders error.");
+
 			QSqlQuery deleteQuery(db);
 
 			deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -263,6 +268,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		      updateQuery.exec();
 		    else
 		      {
+			spoton_misc::logError
+			  ("Re-encoding folders_attachment error.");
+
 			QSqlQuery deleteQuery(db);
 
 			deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -351,6 +359,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding institutions error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -423,6 +433,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding post_office error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -552,6 +564,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError
+		    ("Re-encoding friends_public_keys error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -758,6 +773,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding listeners error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -825,6 +842,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError
+		    ("Re-encoding listeners_accounts error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -886,6 +906,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError
+		    ("Re-encoding listeners_adaptive_echo_tokens error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -933,6 +956,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError
+		    ("Re-encoding listeners_allowed_ips error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1314,6 +1340,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding neighbors error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1395,6 +1423,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding poptastic error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1459,6 +1489,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding magnets error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1570,6 +1602,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding received error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1612,6 +1646,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding received_novas error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1718,6 +1754,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding transmitted error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1776,6 +1814,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError
+		    ("Re-encoding transmitted_magnets error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1845,6 +1886,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError("Re-encoding distillers error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1913,6 +1956,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError
+		    ("Re-encoding import_key_information error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
@@ -1973,6 +2019,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.exec();
 	      else
 		{
+		  spoton_misc::logError
+		    ("Re-encoding remote_key_information error.");
+
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
