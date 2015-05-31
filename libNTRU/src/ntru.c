@@ -433,6 +433,9 @@ uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, const NtruEncParams *para
     if (cl>max_len_bytes && retcode==NTRU_SUCCESS)
         retcode = NTRU_ERR_MSG_TOO_LONG;
 
+    uint8_t length = ntru_max_msg_len(params);
+    if(cl > length)
+      cl = length;
     memcpy(dec, cM_head, cl);
     cM_head += cl;
 
