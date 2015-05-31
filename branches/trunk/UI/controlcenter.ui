@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>500</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -420,7 +420,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>766</width>
-                <height>488</height>
+                <height>490</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -585,6 +585,9 @@
                        </property>
                        <property name="tabChangesFocus">
                         <bool>true</bool>
+                       </property>
+                       <property name="acceptRichText">
+                        <bool>false</bool>
                        </property>
                       </widget>
                      </item>
@@ -802,8 +805,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
-             <height>560</height>
+             <width>818</width>
+             <height>554</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1855,8 +1858,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>789</width>
+             <height>485</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2465,8 +2468,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>240</width>
-                     <height>1433</height>
+                     <width>271</width>
+                     <height>1425</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -2932,8 +2935,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>806</width>
-             <height>579</height>
+             <width>884</width>
+             <height>551</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -3969,7 +3972,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>500</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4044,9 +4047,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-375</y>
-                 <width>752</width>
-                 <height>624</height>
+                 <y>0</y>
+                 <width>751</width>
+                 <height>623</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4908,9 +4911,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>762</width>
-             <height>1081</height>
+             <y>-485</y>
+             <width>769</width>
+             <height>1039</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5931,7 +5934,7 @@
                    <item row="0" column="3">
                     <widget class="QComboBox" name="encryptionKeyType">
                      <property name="currentIndex">
-                      <number>2</number>
+                      <number>0</number>
                      </property>
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
@@ -5939,6 +5942,11 @@
                      <item>
                       <property name="text">
                        <string>ElGamal</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>McEliece</string>
                       </property>
                      </item>
                      <item>
@@ -6046,8 +6054,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
-             <height>544</height>
+             <width>761</width>
+             <height>519</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7058,7 +7066,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>500</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7603,7 +7611,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>500</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7821,7 +7829,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

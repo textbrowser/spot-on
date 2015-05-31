@@ -2493,6 +2493,8 @@ void spoton::slotRegenerateKey(void)
   if(m_ui.encryptionKeyType->currentIndex() == 0)
     encryptionKeyType = "elg";
   else if(m_ui.encryptionKeyType->currentIndex() == 1)
+    encryptionKeyType = "mceliece";
+  else if(m_ui.encryptionKeyType->currentIndex() == 2)
     encryptionKeyType = "ntru";
   else
     encryptionKeyType = "rsa";

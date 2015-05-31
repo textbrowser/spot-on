@@ -1139,7 +1139,10 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 					  const QByteArray &publicKey,
 					  bool *ok)
 {
-  if(publicKey.startsWith("ntru-public-key-"))
+  if(publicKey.startsWith("mceliece-"))
+    {
+    }
+  else if(publicKey.startsWith("ntru-public-key-"))
     return publicKeyEncryptNTRU(data, publicKey, ok);
 
   QByteArray encrypted;
@@ -1417,6 +1420,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
     }
 
   if(keyData.contains("(private-key") ||
+     keyData.startsWith("mceliece-") ||
      keyData.startsWith("ntru-private-key-"))
     {
     }
@@ -1493,7 +1497,10 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
   array.append(m_privateKey, static_cast<int> (m_privateKeyLength));
 
-  if(array.startsWith("ntru-private-key-"))
+  if(array.startsWith("mceliece-"))
+    {
+    }
+  else if(array.startsWith("ntru-private-key-"))
     {
       /*
       ** NTRU requires knowledge of the public key.
@@ -1762,6 +1769,7 @@ QByteArray spoton_crypt::publicKey(bool *ok)
     }
 
   if(data.contains("(public-key") ||
+     data.startsWith("mceliece-") ||
      data.startsWith("ntru-public-key-"))
     {
       if(ok)
@@ -1873,6 +1881,9 @@ void spoton_crypt::generatePrivatePublicKeys(const QString &keySize,
     genkey = QString("(genkey (elg (nbits %1:%2)))").
       arg(qFloor(log10(ks)) + 1).
       arg(ks);
+  else if(keyType.toLower() == "mceliece")
+    {
+    }
   else if(keyType.toLower() == "ntru")
     {
       bool ok = true;
@@ -2230,7 +2241,8 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
   array.append(m_privateKey, static_cast<int> (m_privateKeyLength));
 
-  if(array.startsWith("ntru-private-key-"))
+  if(array.startsWith("mceliece-") ||
+     array.startsWith("ntru-private-key-"))
     {
       if(ok)
 	*ok = true;
@@ -3692,6 +3704,7 @@ void spoton_crypt::reencodePrivatePublicKeys
 		  if(ok)
 		    {
 		      if(privateKey.contains("(private-key") ||
+			 privateKey.startsWith("mceliece-") ||
 			 privateKey.startsWith("ntru-private-key-"))
 			{
 			}
@@ -3708,6 +3721,7 @@ void spoton_crypt::reencodePrivatePublicKeys
 		  if(ok)
 		    {
 		      if(publicKey.contains("(public-key") ||
+			 publicKey.startsWith("mceliece") ||
 			 publicKey.startsWith("ntru-public-key-"))
 			{
 			}

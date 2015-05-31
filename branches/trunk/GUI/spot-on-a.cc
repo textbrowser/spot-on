@@ -328,9 +328,13 @@ spoton::spoton(void):QMainWindow()
     ("QToolButton {border: none;}"
      "QToolButton::menu-button {border: none;}");
 #endif
-#ifndef SPOTON_LINKED_WITH_LIBNTRU
+#ifndef SPOTON_LINKED_WITH_LIBBOTAN
   m_ui.encryptionKeyType->model()->setData
     (m_ui.encryptionKeyType->model()->index(1, 0), 0, Qt::UserRole - 1);
+#endif
+#ifndef SPOTON_LINKED_WITH_LIBNTRU
+  m_ui.encryptionKeyType->model()->setData
+    (m_ui.encryptionKeyType->model()->index(2, 0), 0, Qt::UserRole - 1);
 #endif
 #if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
   /*
@@ -5122,6 +5126,8 @@ void spoton::slotSetPassphrase(void)
 	      if(m_ui.encryptionKeyType->currentIndex() == 0)
 		encryptionKeyType = "elg";
 	      else if(m_ui.encryptionKeyType->currentIndex() == 1)
+		encryptionKeyType = "mceliece";
+	      else if(m_ui.encryptionKeyType->currentIndex() == 2)
 		encryptionKeyType = "ntru";
 	      else
 		encryptionKeyType = "rsa";

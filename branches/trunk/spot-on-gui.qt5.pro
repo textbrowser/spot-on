@@ -14,7 +14,8 @@ CONFIG		+= qt release warn_on
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.
 
-DEFINES	+= SPOTON_LINKED_WITH_LIBGEOIP \
+DEFINES	+= SPOTON_LINKED_WITH_LIBBOTAN \
+           SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
 	   SPOTON_SCTP_ENABLED
@@ -38,7 +39,7 @@ QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../../. GUI
 LIBS		+= -L../../libNTRU -L../../libSpotOn \
-		   -lGeoIP -lcrypto -lcurl -lgcrypt \
+		   -lGeoIP -lbotan-1.10 -lcrypto -lcurl -lgcrypt \
 		   -lgpg-error -lntru -lspoton -lssl
 PRE_TARGETDEPS = libntru.so libspoton.so
 OBJECTS_DIR = temp/obj

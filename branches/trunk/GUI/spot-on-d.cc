@@ -1902,12 +1902,14 @@ void spoton::slotEncryptionKeyTypeChanged(int index)
 {
   QStringList list;
 
-  if(index == 0 || index == 2)
+  if(index == 0 || index == 3)
     list << "3072"
 	 << "4096"
 	 << "7680"
 	 << "8192"
 	 << "15360";
+  else if(index == 1)
+    list << "n6624t15";
   else
     list << "EES1087EP2"
 	 << "EES1171EP1"
@@ -1935,7 +1937,7 @@ void spoton::slotNewKeys(bool state)
 {
   Q_UNUSED(state);
   m_ui.encryptionKeySize->setCurrentIndex(0);
-  m_ui.encryptionKeyType->setCurrentIndex(2);
+  m_ui.encryptionKeyType->setCurrentIndex(3);
   m_ui.keys->setCurrentIndex(0);
   m_ui.signatureKeySize->setCurrentIndex(0);
   m_ui.signatureKeyType->setCurrentIndex(4);
