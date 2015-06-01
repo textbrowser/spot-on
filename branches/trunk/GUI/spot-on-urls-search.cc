@@ -62,7 +62,7 @@ void spoton::discoverUrls(void)
 
   m_urlCurrentPage = 1;
   m_urlLimit = static_cast<quint64>
-    (m_settings.value("gui/searchResultsPerPage").toInt());
+    (m_settings.value("gui/searchResultsPerPage", 10).toInt());
   m_urlOffset = 0;
   m_urlPages = 0;
   m_urlQuery.clear();

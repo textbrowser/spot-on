@@ -738,9 +738,9 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotShowStatistics(void)));
   connect(m_ui.showUrlSettings,
-	  SIGNAL(clicked(void)),
+	  SIGNAL(toggled(bool)),
 	  this,
-	  SLOT(slotShowUrlSettings(void)));
+	  SLOT(slotShowUrlSettings(bool)));
   connect(m_ui.sendMail,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1566,6 +1566,9 @@ spoton::spoton(void):QMainWindow()
     m_ui.urls_db_type->setCurrentIndex(1);
 
   slotPostgreSQLDisconnect(m_ui.urls_db_type->currentIndex());
+
+  if(m_ui.urls_db_type->currentIndex() == 1)
+    m_ui.showUrlSettings->setChecked(false);
 #endif
   m_optionsUi.chatUpdateInterval->setValue
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());

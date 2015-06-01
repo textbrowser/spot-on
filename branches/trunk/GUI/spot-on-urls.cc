@@ -701,10 +701,10 @@ void spoton::displayUrlImportResults(const quint64 imported,
      arg(imported).arg(not_imported));
 }
 
-void spoton::slotShowUrlSettings(void)
+void spoton::slotShowUrlSettings(bool state)
 {
-  m_ui.urlSettings->setVisible(!m_ui.urlSettings->isVisible());
-  m_ui.urlsBox->setVisible(!m_ui.urlSettings->isVisible());
+  m_ui.urlSettings->setVisible(state);
+  m_ui.urlsBox->setVisible(!state);
 
 #if SPOTON_GOLDBUG == 0
   if(m_ui.urlsBox->isVisible())
