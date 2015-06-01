@@ -9,6 +9,7 @@
 <li>Assume zero pointer defaults in Qt::value().</li>
 <li>Bound size_t parameter of memcpy() in spoton_crypt::setHashKey(), spoton_misc::peerAddressAndPort(), spoton_sctp_server::setMaxPendingConnections(), spoton_sctp_socket::localAddressAndPort().</li>
 <li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
+<li>Completed linear URL distribution.</li>
 <li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
 <li>Corrected importing of public keys. Cannot assume that key pairs exist.</li>
 <li>Corrected re-encoding of listeners_accounts. Must include the listener_oid field in the where-clauses.</li>
@@ -32,6 +33,7 @@
 <li>Guard QList::removeAt().</li>
 <li>Log re-encoding errors.</li>
 <li>Many integer conversion corrections.</li>
+<li>McEliece encryption. Incomplete.</li>
 <li>Modified QFileInfo::lastModified() usage. It's possible that a less-than-or-equal to comparison will leave containers in unpleasant states.</li>
 <li>Notify the user of URL import statistics.</li>
 <li>Populate URL polarizers before performing an import.</li>

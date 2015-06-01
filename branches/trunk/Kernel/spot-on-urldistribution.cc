@@ -25,6 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QTimer>
+
 #include "../Common/spot-on-common.h"
 #include "spot-on-urldistribution.h"
 
@@ -36,5 +38,21 @@ spoton_urldistribution::spoton_urldistribution(QObject *parent):
 }
 
 spoton_urldistribution::~spoton_urldistribution()
+{
+}
+
+void spoton_urldistribution::run(void)
+{
+  QTimer timer;
+
+  connect(&timer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotTimeout(void)));
+  timer.start(30000);
+  exec();
+}
+
+void spoton_urldistribution::slotTimeout(void)
 {
 }
