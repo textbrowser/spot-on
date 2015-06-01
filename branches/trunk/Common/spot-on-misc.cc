@@ -1987,6 +1987,14 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 512;
 
   settings.insert("gui/saltLength", integer);
+  integer = qAbs(settings.value("gui/searchResultsPerPage", 10).toInt());
+
+  if(!ok)
+    integer = 10;
+  else if(integer < 10 || integer > 100)
+    integer = 10;
+
+  settings.insert("gui/searchResultsPerPage", integer);
   rational = qAbs(settings.value("kernel/cachePurgeInterval", 15.00).
 		  toDouble(&ok));
 
@@ -3399,7 +3407,8 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 		  query.bindValue(0, status.toLower());
 		else
 		  query.bindValue
-		    (0, status.mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
+		    (0, status.
+		     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
 
 		query.bindValue
 		  (1, QDateTime::currentDateTime().toString(Qt::ISODate));
@@ -3433,7 +3442,8 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 		  query.bindValue(1, status.toLower());
 		else
 		  query.bindValue
-		    (1, status.mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
+		    (1, status.
+		     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
 
 		query.bindValue
 		  (2, now.toString(Qt::ISODate));
@@ -3455,7 +3465,8 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 		  query.bindValue(0, status.toLower());
 		else
 		  query.bindValue
-		    (0, status.mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
+		    (0, status.
+		     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
 
 		query.bindValue
 		  (1, now.toString(Qt::ISODate));

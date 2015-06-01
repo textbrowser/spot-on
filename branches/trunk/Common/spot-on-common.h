@@ -49,10 +49,9 @@ namespace spoton_common
 						 ** base sixteen.
 						 */
   static const int CHAT_TIME_DELTA_MAXIMUM = 30;
-  static const int GUI_URLS_PER_PAGE = 10;
   static const int KERNEL_URLS_BATCH_SIZE = 50;
   static const int NAME_MAXIMUM_LENGTH = 64;
-  static const int STATUS_MAXIMUM_LENGTH = 64;
+  static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
     20971520; /*
 	      ** The buffer size must be greater than the content length.
