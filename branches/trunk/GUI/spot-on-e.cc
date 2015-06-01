@@ -1672,7 +1672,8 @@ void spoton::slotSaveStarBeamAutoVerify(bool state)
 void spoton::slotSaveCustomStatus(void)
 {
   QString text
-    (m_ui.custom->toPlainText().mid(0, spoton_common::STATUS_MAXIMUM_LENGTH));
+    (m_ui.custom->toPlainText().
+     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
 
   m_settings["gui/customStatus"] = text.trimmed().toUtf8();
 
@@ -1811,4 +1812,13 @@ void spoton::slotOntopChatDialogs(bool state)
   QSettings settings;
 
   settings.setValue("gui/ontopChatDialogs", state);
+}
+
+void spoton::slotSearchResultsPerPage(int value)
+{
+  m_settings["gui/searchResultsPerPage"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/searchResultsPerPage", value);
 }

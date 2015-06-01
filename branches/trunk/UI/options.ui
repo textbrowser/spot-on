@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>462</width>
-             <height>910</height>
+             <y>-331</y>
+             <width>458</width>
+             <height>926</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -631,6 +631,55 @@
              </widget>
             </item>
             <item>
+             <widget class="QGroupBox" name="groupBox_13">
+              <property name="title">
+               <string>Search</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_19">
+               <property name="margin">
+                <number>5</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_65">
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <item>
+                  <widget class="QSpinBox" name="searchResultsPerPage">
+                   <property name="minimum">
+                    <number>10</number>
+                   </property>
+                   <property name="maximum">
+                    <number>100</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_4">
+                   <property name="text">
+                    <string>results per page.</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_48">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
              <widget class="QGroupBox" name="groupBox_12">
               <property name="title">
                <string>Settings</string>
@@ -864,8 +913,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>581</width>
-             <height>949</height>
+             <width>653</width>
+             <height>912</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1506,7 +1555,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1559,6 +1608,7 @@
   <tabstop>listenersUpdateInterval</tabstop>
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>
+  <tabstop>searchResultsPerPage</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
   <tabstop>kernelCacheInterval</tabstop>
   <tabstop>starbeamAutoVerify</tabstop>

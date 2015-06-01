@@ -1365,6 +1365,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotOntopChatDialogs(bool)));
+  connect(m_optionsUi.searchResultsPerPage,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSearchResultsPerPage(int)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1571,6 +1575,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/neighborsUpdateTimer", 3.50).toDouble());
   m_optionsUi.starbeamUpdateInterval->setValue
     (m_settings.value("gui/starbeamUpdateTimer", 3.50).toDouble());
+  m_optionsUi.searchResultsPerPage->setValue
+    (m_settings.value("gui/searchResultsPerPage", 10).toInt());
   m_kernelUpdateTimer.start
     (static_cast<int> (1000 * m_optionsUi.kernelUpdateInterval->value()));
   m_listenersUpdateTimer.start
