@@ -699,6 +699,9 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   if(setting("gui/impersonate", false).toBool())
     m_impersonateTimer.start();
 
+  if(setting("gui/activeUrlDistribution", false).toBool())
+    m_urlDistribution->start();
+
   spoton_misc::prepareDatabases();
 }
 
@@ -1916,6 +1919,17 @@ void spoton_kernel::slotUpdateSettings(void)
 
   if(integer != m_messagingCachePurgeTimer.interval())
     m_messagingCachePurgeTimer.start(integer);
+
+  if(setting("gui/activeUrlDistribution", false).toBool())
+    {
+      if(!m_urlDistribution->isRunning())
+	m_urlDistribution->start();
+    }
+  else
+    {
+      m_urlDistribution->quit();
+      m_urlDistribution->wait();
+    }
 }
 
 void spoton_kernel::connectSignalsToNeighbor
@@ -1930,6 +1944,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	  neighbor,
 	  SLOT(slotSendMailFromPostOffice(const QByteArray &,
 					  const QPairByteArrayByteArray &)),
+	  Qt::UniqueConnection);
+  connect(m_urlDistribution,
+	  SIGNAL(sendURLs(const QByteArray &)),
+	  neighbor,
+	  SLOT(writeURLs(const QByteArray &)),
 	  Qt::UniqueConnection);
   connect(neighbor,
 	  SIGNAL(authenticationRequested(const QString &)),

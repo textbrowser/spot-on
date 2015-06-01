@@ -2226,6 +2226,11 @@ void spoton_neighbor::slotSendMessage
     }
 }
 
+void spoton_neighbor::writeURLs(const QByteArray &data)
+{
+  Q_UNUSED(data);
+}
+
 void spoton_neighbor::write
 (const QByteArray &data, const qint64 id,
  const QPairByteArrayByteArray &adaptiveEchoPair)

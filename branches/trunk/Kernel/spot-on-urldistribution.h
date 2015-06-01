@@ -28,6 +28,7 @@
 #ifndef _spoton_urldistribution_h_
 #define _spoton_urldistribution_h_
 
+#include <QReadWriteLock>
 #include <QThread>
 
 class spoton_urldistribution: public QThread
@@ -39,12 +40,20 @@ class spoton_urldistribution: public QThread
   ~spoton_urldistribution();
 
  private:
+  QReadWriteLock m_quitLocker;
+  bool m_quit;
   quint64 m_limit;
   quint64 m_offset;
   void run(void);
 
  private slots:
   void slotTimeout(void);
+
+ public slots:
+  void quit(void);
+
+ signals:
+  void sendURLs(const QByteArray &data);
 };
 
 #endif

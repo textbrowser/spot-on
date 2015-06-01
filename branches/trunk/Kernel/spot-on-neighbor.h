@@ -348,6 +348,7 @@ class spoton_neighbor: public QThread
   void slotTimeout(void);
   void write(const QByteArray &data, const qint64 id,
 	     const QPairByteArrayByteArray &adaptiveEchoPair);
+  void writeURLs(const QByteArray &data);
 
  public slots:
   void deleteLater(void);
