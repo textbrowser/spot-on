@@ -181,7 +181,13 @@ void spoton_urldistribution::slotTimeout(void)
 					    &ok);
 
 	      if(ok)
-		polarizers.append(QUrl::fromUserInput(domain));
+		{
+		  QUrl url(QUrl::fromUserInput(domain));
+
+		  if(!url.isEmpty())
+		    if(url.isValid())
+		      polarizers.append(url);
+		}
 	    }
       }
 
