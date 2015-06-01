@@ -102,7 +102,7 @@ void spoton::discoverUrls(void)
   else
     {
       QHash<QString, char> discovered;
-      QString keywordclause("");
+      QString keywordsearch("");
       QString searchfor(tr("Searched for... "));
       QStringList keywords
 	(search.toLower().split(QRegExp("\\W+"), QString::SkipEmptyParts));
@@ -128,13 +128,13 @@ void spoton::discoverUrls(void)
 	    continue;
 
 	  if(i == keywords.size() - 1)
-	    keywordclause.append
+	    keywordsearch.append
 	      (QString("SELECT url_hash FROM "
 		       "spot_on_keywords_%1 WHERE keyword_hash = '%2' ").
 	       arg(keywordHash.mid(0, 2).constData()).
 	       arg(keywordHash.constData()));
 	  else
-	    keywordclause.append
+	    keywordsearch.append
 	      (QString("SELECT url_hash FROM "
 		       "spot_on_keywords_%1 WHERE keyword_hash = '%2' UNION ").
 	       arg(keywordHash.mid(0, 2).constData()).
@@ -170,13 +170,13 @@ void spoton::discoverUrls(void)
 		(QString("SELECT title, url, description, date_time_inserted "
 			 "FROM spot_on_urls_%1%2 WHERE "
 			 "url_hash IN (%3) ").
-		 arg(c1).arg(c2).arg(keywordclause));
+		 arg(c1).arg(c2).arg(keywordsearch));
 	    else
 	      querystr.append
 		(QString("SELECT title, url, description, date_time_inserted "
 			 "FROM spot_on_urls_%1%2 WHERE "
 			 "url_hash IN (%3) UNION ").
-		 arg(c1).arg(c2).arg(keywordclause));
+		 arg(c1).arg(c2).arg(keywordsearch));
 	  }
 
       querystr.append(" ORDER BY 4 DESC ");

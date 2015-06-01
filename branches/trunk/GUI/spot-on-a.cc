@@ -420,6 +420,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotAbout(void)));
+  connect(m_ui.activeUrlDistribution,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotActiveUrlDistribution(bool)));
 #endif
   connect(m_ui.actionClear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
@@ -1546,6 +1550,8 @@ spoton::spoton(void):QMainWindow()
 
   spoton_misc::correctSettingsContainer(m_settings);
 #if SPOTON_GOLDBUG == 0
+  m_ui.activeUrlDistribution->setChecked
+    (m_settings.value("gui/activeUrlDistribution", false).toBool());
   m_ui.apply_polarizers->setChecked
     (m_settings.value("gui/applyPolarizers", true).toBool());
 

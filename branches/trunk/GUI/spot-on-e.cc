@@ -1822,3 +1822,12 @@ void spoton::slotSearchResultsPerPage(int value)
 
   settings.setValue("gui/searchResultsPerPage", value);
 }
+
+void spoton::slotActiveUrlDistribution(bool state)
+{
+  m_settings["gui/activeUrlDistribution"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/activeUrlDistribution", state);
+}

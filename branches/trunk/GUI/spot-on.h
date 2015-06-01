@@ -570,6 +570,7 @@ class spoton: public QMainWindow
   void slotAcceptPublicizedListeners(void);
   void slotAcceptUrlKeys(bool state);
   void slotActivateKernel(void);
+  void slotActiveUrlDistribution(bool state);
   void slotAddAEToken(void);
   void slotAddAcceptedIP(void);
   void slotAddAccount(void);
