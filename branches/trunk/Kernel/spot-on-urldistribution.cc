@@ -148,6 +148,49 @@ void spoton_urldistribution::slotTimeout(void)
     return;
 
   /*
+  ** Retrieve polarizers.
+  */
+
+  QList<QUrl> polarizers;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT domain FROM distillers WHERE "
+		      "LOWER(TRIM(direction)) = 'upload'");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QByteArray domain;
+	      bool ok = true;
+
+	      domain = s_crypt1->
+		decryptedAfterAuthenticated(QByteArray::
+					    fromBase64(query.
+						       value(0).
+						       toByteArray()),
+					    &ok);
+
+	      if(ok)
+		polarizers.append(QUrl::fromUserInput(domain));
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  /*
   ** Retrieve at most spoton_common::KERNEL_URLS_BATCH_SIZE URLs.
   */
 
