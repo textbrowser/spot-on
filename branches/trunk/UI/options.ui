@@ -53,7 +53,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-331</y>
+             <y>0</y>
              <width>458</width>
              <height>926</height>
             </rect>
@@ -912,9 +912,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-424</y>
              <width>653</width>
-             <height>912</height>
+             <height>938</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1520,6 +1520,13 @@
                  </property>
                  <property name="text">
                   <string>Accept shared public &amp;keys.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="autoImport">
+                 <property name="text">
+                  <string>&amp;Automatically import URLs. Kernel task.</string>
                  </property>
                 </widget>
                </item>

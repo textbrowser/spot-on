@@ -2081,6 +2081,17 @@ QSqlDatabase spoton_misc::database(QString &connectionName)
   return db;
 }
 
+QString spoton_misc::databaseName(void)
+{
+  quint64 dbId = 0;
+
+  QWriteLocker locker(&s_dbMutex);
+
+  dbId = s_dbId += 1;
+  locker.unlock();
+  return QString("spoton_database_%1").arg(dbId);
+}
+
 void spoton_misc::enableLog(const bool state)
 {
   QWriteLocker locker(&s_enableLogMutex);

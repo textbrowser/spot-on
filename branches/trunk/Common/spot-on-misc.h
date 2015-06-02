@@ -97,6 +97,7 @@ class spoton_misc
   static QString countryCodeFromIPAddress(const QString &ipAddress);
   static QString countryCodeFromName(const QString &country);
   static QString countryNameFromIPAddress(const QString &ipAddress);
+  static QString databaseName(void);
   static QString homePath(void);
   static QString massageIpForUi(const QString &ip, const QString &protocol);
   static bool allParticipantsHaveGeminis(void);

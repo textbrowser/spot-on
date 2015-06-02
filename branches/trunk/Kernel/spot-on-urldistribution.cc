@@ -202,12 +202,15 @@ void spoton_urldistribution::slotTimeout(void)
 
   QByteArray data;
 
+
   {
     QSqlDatabase db;
 
+    connectionName = spoton_misc::databaseName();
+
     if(spoton_kernel::setting("gui/sqliteSearch", true).toBool())
       {
-	db = QSqlDatabase::addDatabase("QSQLITE", "URLDatabase");
+	db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
 	db.setDatabaseName
 	  (spoton_misc::homePath() + QDir::separator() + "urls.db");
 	db.open();
@@ -239,7 +242,7 @@ void spoton_urldistribution::slotTimeout(void)
 	if(ssltls)
 	  str.append(";requiressl=1");
 
-	db = QSqlDatabase::addDatabase("QPSQL", "URLDatabase");
+	db = QSqlDatabase::addDatabase("QPSQL", connectionName);
 	db.setConnectOptions(str);
 	db.setHostName(host);
 	db.setDatabaseName(database);
@@ -300,7 +303,7 @@ void spoton_urldistribution::slotTimeout(void)
 
 		  if(ok)
 		    myPublicKeyHash = spoton_crypt::sha512Hash
-		      (publicKey, &ok);
+		      (myPublicKey, &ok);
 
 		  if(ok)
 		    stream << myPublicKeyHash;
@@ -350,7 +353,7 @@ void spoton_urldistribution::slotTimeout(void)
     db.close();
   }
 
-  QSqlDatabase::removeDatabase("URLDatabase");
+  QSqlDatabase::removeDatabase(connectionName);
 
   if(data.isEmpty())
     return;
