@@ -2477,75 +2477,14 @@ void spoton::slotUpdateSpinBoxChanged(double value)
 
 void spoton::prepareUrlContainers(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  spoton_crypt *crypt = spoton_misc::retrieveUrlCommonCredentials
+    (m_crypts.value("chat", 0));
 
   if(!crypt)
     return;
 
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "urls_key_information.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT cipher_type, encryption_key, "
-		      "hash_key, hash_type FROM "
-		      "remote_key_information") && query.next())
-	  {
-	    QByteArray encryptionKey;
-	    QByteArray hashKey;
-	    QString cipherType("");
-	    QString hashType("");
-	    bool ok = true;
-
-	    cipherType = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).toByteArray()),
-	       &ok).constData();
-
-	    if(ok)
-	      encryptionKey = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(1).toByteArray()),
-		 &ok);
-
-	    if(ok)
-	      hashKey = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(2).toByteArray()),
-		 &ok);
-
-	    if(ok)
-	      hashType = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(3).toByteArray()),
-		 &ok).constData();
-
-	    if(ok)
-	      {
-		delete m_urlCommonCrypt;
-		m_urlCommonCrypt = new spoton_crypt
-		  (cipherType,
-		   hashType,
-		   QByteArray(),
-		   encryptionKey,
-		   hashKey,
-		   0,
-		   0,
-		   QString(""));
-	      }
-	  }
-
-	db.close();
-      }
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
+  delete m_urlCommonCrypt;
+  m_urlCommonCrypt = crypt;
 }
 
 void spoton::slotPostgreSQLDisconnect(int index)

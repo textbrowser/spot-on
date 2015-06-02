@@ -1822,6 +1822,8 @@ void spoton_neighbor::processData(void)
 	    process0040a(length, data, symmetricKeys);
 	  else if(messageType == "0040b")
 	    process0040b(length, data, symmetricKeys);
+	  else if(messageType == "0080")
+	    process0080(length, data, symmetricKeys);
 	  else
 	    messageType.clear();
 
@@ -4260,6 +4262,149 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
        arg(m_port));
 }
 
+void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
+				  const QList<QByteArray> &symmetricKeys)
+{
+  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("url", 0);
+
+  if(!s_crypt)
+    return;
+
+  QByteArray data(dataIn);
+
+  if(length == data.length())
+    {
+      data = data.trimmed();
+
+      QByteArray originalData(data);
+      QList<QByteArray> list(data.split('\n'));
+
+      for(int i = 0; i < list.size(); i++)
+	list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+      if(list.size() != 4)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::process0080(): "
+		     "received irregular data. Expecting 4 "
+		     "entries, "
+		     "received %1.").arg(list.size()));
+	  return;
+	}
+
+      /*
+      ** symmetricKeys[0]: Encryption Key
+      ** symmetricKeys[1]: Encryption Type
+      ** symmetricKeys[2]: Hash Key
+      ** symmetricKeys[3]: Hash Type
+      */
+
+      QByteArray computedHash;
+      QByteArray keyInformation(list.value(0));
+      bool ok = true;
+
+      computedHash = spoton_crypt::keyedHash
+	(list.value(0) + list.value(1),
+	 symmetricKeys.value(2), symmetricKeys.value(3), &ok);
+
+      if(ok)
+	{
+	  QByteArray messageCode(list.value(2));
+
+	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+	     spoton_crypt::memcmp(computedHash, messageCode))
+	    {
+	      QByteArray data(list.value(1));
+	      bool ok = true;
+	      spoton_crypt crypt(symmetricKeys.value(1),
+				 symmetricKeys.value(3),
+				 QByteArray(),
+				 symmetricKeys.value(0),
+				 symmetricKeys.value(2),
+				 0,
+				 0,
+				 QString(""));
+
+	      data = crypt.decrypted(data, &ok);
+
+	      if(ok)
+		{
+		  QByteArray signature;
+		  QList<QByteArray> list;
+
+		  {
+		    QByteArray a;
+		    QDataStream stream(&data, QIODevice::ReadOnly);
+
+		    while(true)
+		      {
+			stream >> a;
+
+			if(stream.status() != QDataStream::Ok)
+			  break;
+			else
+			  list << a;
+		      }
+		  }
+
+		  signature = list.value(1);
+
+		  {
+		    QByteArray a;
+		    QByteArray data(qUncompress(list.value(0)));
+		    QDataStream stream(&data, QIODevice::ReadOnly);
+
+		    list.clear();
+
+		    while(true)
+		      {
+			stream >> a;
+
+			if(stream.status() != QDataStream::Ok)
+			  break;
+			else
+			  list << a;
+		      }
+		  }
+
+		  QByteArray publicKeyHash(list.value(0));
+		  QByteArray sum;
+
+		  for(int i = 1; i < list.size(); i++)
+		    sum.append(list.at(i));
+
+		  if(!spoton_misc::
+		     isValidSignature(keyInformation + sum,
+				      publicKeyHash,
+				      signature,
+				      spoton_kernel::s_crypts.
+				      value("url-signature", 0)))
+		    {
+		      spoton_misc::logError
+			("spoton_receive::"
+			 "process0080(): invalid "
+			 "signature.");
+		      return;
+		    }
+		}
+	    }
+	  else
+	    spoton_misc::logError("spoton_neighbor::"
+				  "process0080(): "
+				  "computed message code does "
+				  "not match provided code.");
+	}
+    }
+  else
+    spoton_misc::logError
+      (QString("spoton_neighbor::process0080(): 0080 "
+	       "Content-Length mismatch (advertised: %1, received: %2) "
+	       "for %3:%4.").
+       arg(length).arg(data.length()).
+       arg(m_address.toString()).
+       arg(m_port));
+}
+
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
 {
   if(readyToWrite())
@@ -5488,6 +5633,42 @@ QString spoton_neighbor::findMessageType
 	      goto done_label;
 	    }
 	}
+
+  if(list.size() == 4)
+    if((s_crypt = spoton_kernel::s_crypts.value("url", 0)))
+      {
+	QByteArray data;
+	bool ok = true;
+
+	data = s_crypt->publicKeyDecrypt
+	  (QByteArray::fromBase64(list.value(0)), &ok);
+
+	if(ok)
+	  {
+	    QByteArray a;
+	    QDataStream stream(&data, QIODevice::ReadOnly);
+
+	    stream >> a;
+	    type = a;
+
+	    if(type == "0080")
+	      {
+		QList<QByteArray> list;
+
+		for(int i = 0; i < 4; i++)
+		  {
+		    stream >> a;
+		    list.append(a);
+		  }
+
+		symmetricKeys.append(list.value(0));
+		symmetricKeys.append(list.value(2));
+		symmetricKeys.append(list.value(1));
+		symmetricKeys.append(list.value(3));
+		goto done_label;
+	      }
+	  }
+      }
 
  done_label:
   spoton_kernel::discoverAdaptiveEchoPair

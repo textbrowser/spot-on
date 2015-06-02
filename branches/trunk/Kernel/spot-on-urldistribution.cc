@@ -196,12 +196,17 @@ void spoton_urldistribution::slotTimeout(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
+  spoton_crypt *urlCommonCredentials =
+    spoton_misc::retrieveUrlCommonCredentials(s_crypt1);
+
+  if(!urlCommonCredentials)
+    return;
+
   /*
   ** Next, retrieve at most spoton_common::KERNEL_URLS_BATCH_SIZE URLs.
   */
 
   QByteArray data;
-
 
   {
     QSqlDatabase db;
@@ -313,7 +318,7 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      if(ok)
 		bytes.append
-		  (s_crypt1->
+		  (urlCommonCredentials->
 		   decryptedAfterAuthenticated(QByteArray::
 					       fromBase64(query.value(0).
 							  toByteArray()),
@@ -321,7 +326,7 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      if(ok)
 		bytes.append
-		  (s_crypt1->
+		  (urlCommonCredentials->
 		   decryptedAfterAuthenticated(QByteArray::
 					       fromBase64(query.value(1).
 							  toByteArray()),
@@ -329,7 +334,7 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      if(ok)
 		bytes.append
-		  (s_crypt1->
+		  (urlCommonCredentials->
 		   decryptedAfterAuthenticated(QByteArray::
 					       fromBase64(query.value(2).
 							  toByteArray()),
@@ -354,6 +359,7 @@ void spoton_urldistribution::slotTimeout(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  delete urlCommonCredentials;
 
   if(data.isEmpty())
     return;

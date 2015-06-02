@@ -3709,3 +3709,72 @@ QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)
 
   return iipp;
 }
+
+spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return 0;
+
+  QString connectionName("");
+  spoton_crypt *c = 0;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "urls_key_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT cipher_type, encryption_key, "
+		      "hash_key, hash_type FROM "
+		      "remote_key_information") && query.next())
+	  {
+	    QByteArray encryptionKey;
+	    QByteArray hashKey;
+	    QString cipherType("");
+	    QString hashType("");
+	    bool ok = true;
+
+	    cipherType = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()),
+	       &ok).constData();
+
+	    if(ok)
+	      encryptionKey = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(1).toByteArray()),
+		 &ok);
+
+	    if(ok)
+	      hashKey = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(2).toByteArray()),
+		 &ok);
+
+	    if(ok)
+	      hashType = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(3).toByteArray()),
+		 &ok).constData();
+
+	    if(ok)
+	      c = new spoton_crypt(cipherType,
+				   hashType,
+				   QByteArray(),
+				   encryptionKey,
+				   hashKey,
+				   0,
+				   0,
+				   QString(""));
+	  }
+
+	db.close();
+      }
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return c;
+}

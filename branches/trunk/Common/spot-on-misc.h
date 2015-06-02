@@ -142,6 +142,7 @@ class spoton_misc
 			 spoton_crypt *crypt);
   static qint64 participantCount(const QString &keyType,
 				 spoton_crypt *crypt);
+  static spoton_crypt *retrieveUrlCommonCredentials(spoton_crypt *crypt);
   static void cleanupDatabases(spoton_crypt *crypt);
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
   static void enableLog(const bool state);
