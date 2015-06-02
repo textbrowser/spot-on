@@ -1373,6 +1373,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotSearchResultsPerPage(int)));
+  connect(m_optionsUi.autoKernelUrlImport,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAutoKernelUrlImport(bool)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1910,6 +1914,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
   m_optionsUi.ontopChatDialogs->setChecked
     (m_settings.value("gui/ontopChatDialogs", false).toBool());
+  m_optionsUi.autoKernelUrlImport->setChecked
+    (m_settings.value("gui/autoKernelUrlImport", false).toBool());
 
   /*
   ** Please don't translate n/a.

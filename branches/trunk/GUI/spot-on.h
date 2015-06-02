@@ -591,6 +591,7 @@ class spoton: public QMainWindow
   void slotAuthenticate(void);
   void slotAuthenticationRequestButtonClicked(void);
   void slotAutoAddSharedSBMagnets(bool state);
+  void slotAutoKernelUrlImport(bool state);
   void slotAutoRetrieveEmail(bool state);
   void slotBlockNeighbor(void);
   void slotBuzzActionsActivated(int index);

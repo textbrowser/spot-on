@@ -1536,7 +1536,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="autoImport">
+                <widget class="QCheckBox" name="autoKernelUrlImport">
                  <property name="text">
                   <string>&amp;Automatically import URLs. Kernel task.</string>
                  </property>
