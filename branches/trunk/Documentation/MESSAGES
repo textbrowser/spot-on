@@ -470,3 +470,37 @@ Echoed? No
 
 Message Type ("0070")
 MOTD (Base-64)
+
+URL Distribution
+
+Message Type ("0080")
+
+Groups: 4
+Public Key
+{
+0 - 0080
+1 - Encryption Key
+2 - Digest Key
+3 - Encryption Algorithm
+4 - Digest Algorithm
+}
+EOL
+Encryption Key
+{
+0 - Dispatcher's SHA-512 Digest
+1 - URL
+2 - Title
+3 - Description
+...
+N - Signature (First Group and Previous N - 1 Items)
+}
+EOL
+{
+0 - Keyed Message Code of the First and Second Groups (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}

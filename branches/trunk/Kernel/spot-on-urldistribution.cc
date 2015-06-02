@@ -148,7 +148,7 @@ void spoton_urldistribution::slotTimeout(void)
     return;
 
   /*
-  ** Retrieve polarizers.
+  ** Now, retrieve polarizers.
   */
 
   QList<QUrl> polarizers;
@@ -197,7 +197,7 @@ void spoton_urldistribution::slotTimeout(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   /*
-  ** Retrieve at most spoton_common::KERNEL_URLS_BATCH_SIZE URLs.
+  ** Next, retrieve at most spoton_common::KERNEL_URLS_BATCH_SIZE URLs.
   */
 
   QByteArray data;
@@ -291,15 +291,30 @@ void spoton_urldistribution::slotTimeout(void)
 		  break;
 		}
 
-	      QList<QByteArray> bytes;
 	      bool ok = true;
 
-	      bytes.append
-		(s_crypt1->
-		 decryptedAfterAuthenticated(QByteArray::
-					     fromBase64(query.value(0).
-							toByteArray()),
-					     &ok));
+	      if(data.isEmpty())
+		{
+		  QByteArray myPublicKey(s_crypt1->publicKey(&ok));
+		  QByteArray myPublicKeyHash;
+
+		  if(ok)
+		    myPublicKeyHash = spoton_crypt::sha512Hash
+		      (publicKey, &ok);
+
+		  if(ok)
+		    stream << myPublicKeyHash;
+		}
+
+	      QList<QByteArray> bytes;
+
+	      if(ok)
+		bytes.append
+		  (s_crypt1->
+		   decryptedAfterAuthenticated(QByteArray::
+					       fromBase64(query.value(0).
+							  toByteArray()),
+					       &ok));
 
 	      if(ok)
 		bytes.append
@@ -318,9 +333,9 @@ void spoton_urldistribution::slotTimeout(void)
 					       &ok));
 
 	      if(ok)
-		stream << bytes.value(0)
-		       << bytes.value(1)
-		       << bytes.value(2);
+		stream << bytes.value(0)  // URL
+		       << bytes.value(1)  // Title
+		       << bytes.value(2); // Description
 
 	      QReadLocker locker(&m_quitLocker);
 
