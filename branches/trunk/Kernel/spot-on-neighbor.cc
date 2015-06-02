@@ -2228,7 +2228,28 @@ void spoton_neighbor::slotSendMessage
 
 void spoton_neighbor::writeURLs(const QByteArray &data)
 {
-  Q_UNUSED(data);
+  QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat")));
+
+  message = spoton_send::message0080(data, ae);
+
+  if(readyToWrite())
+    {
+      if(write(message.constData(), message.length()) != message.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::writeURLs(): write() error "
+		   "for %1:%2.").
+	   arg(m_address.toString()).
+	   arg(m_port));
+      else
+	{
+	  addToBytesWritten(message.length());
+	  spoton_kernel::messagingCacheAdd(message);
+	}
+    }
 }
 
 void spoton_neighbor::write

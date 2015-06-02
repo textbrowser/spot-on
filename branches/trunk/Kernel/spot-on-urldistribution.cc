@@ -365,9 +365,86 @@ void spoton_urldistribution::slotTimeout(void)
       return;
   }
 
+  QByteArray cipherType
+    (spoton_kernel::setting("gui/kernelCipherType",
+			    "aes256").toString().toLatin1());
+  QByteArray hashType
+    (spoton_kernel::setting("gui/kernelHashType",
+			    "sha512").toString().toLatin1());
+  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
+    (cipherType);
+
+  if(symmetricKeyLength <= 0)
+    {
+      spoton_misc::logError
+	("spoton_urldistribution::slotTimeout(): "
+	 "cipherKeyLength() failure.");
+      return;
+    }
+
   data = qCompress(data, 9);
 
   for(int i = 0; i < publicKeys.size(); i++)
     {
+      QByteArray hashKey;
+      QByteArray symmetricKey;
+
+      hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+      hashKey = spoton_crypt::strongRandomBytes
+	(static_cast<size_t> (hashKey.length()));
+      symmetricKey.resize(static_cast<int> (symmetricKeyLength));
+      symmetricKey = spoton_crypt::strongRandomBytes
+	(static_cast<size_t> (symmetricKey.length()));
+
+      QByteArray keyInformation;
+      QByteArray message;
+      QByteArray messageCode;
+      QByteArray signature;
+      QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+      bool ok = true;
+
+      stream << QByteArray("0080")
+	     << symmetricKey
+	     << hashKey
+	     << cipherType
+	     << hashType;
+      keyInformation = spoton_crypt::publicKeyEncrypt
+	(keyInformation, publicKeys.at(i), &ok);
+
+      if(ok)
+	signature = s_crypt2->digitalSignature(keyInformation + data, &ok);
+
+      if(ok)
+	{
+	  QByteArray bytes;
+	  QDataStream stream(&bytes, QIODevice::WriteOnly);
+	  spoton_crypt crypt(cipherType,
+			     hashType,
+			     QByteArray(),
+			     symmetricKey,
+			     hashKey,
+			     0,
+			     0,
+			     QString(""));
+
+	  stream << data
+		 << signature;
+	  message = crypt.encrypted(bytes, &ok);
+
+	  if(ok)
+	    messageCode = crypt.keyedHash(keyInformation + message, &ok);
+	}
+
+      if(ok)
+	message = keyInformation.toBase64() + "\n" +
+	  message.toBase64() + "\n" +
+	  messageCode.toBase64();
+
+      emit sendURLs(message);
+
+      QReadLocker locker(&m_quitLocker);
+
+      if(m_quit)
+	return;
     }
 }

@@ -99,6 +99,9 @@ class spoton_send
      const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
   static QByteArray message0065(const QByteArray &magnet);
   static QByteArray message0070(const QByteArray &motd);
+  static QByteArray message0080
+    (const QByteArray &data,
+     const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
 
  private:
   spoton_send(void);

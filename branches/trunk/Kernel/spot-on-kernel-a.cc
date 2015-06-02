@@ -2288,9 +2288,8 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		}
 
 	      QByteArray symmetricKey;
-	      QByteArray symmetricKeyAlgorithm(cipherType);
 	      size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
-		(symmetricKeyAlgorithm);
+		(cipherType);
 
 	      if(symmetricKeyLength > 0)
 		{
@@ -2298,11 +2297,6 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		  hashKey = spoton_crypt::strongRandomBytes
 		    (static_cast<size_t> (hashKey.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
-
-		  /*
-		  ** Status messages lack sensitive data.
-		  */
-
 		  symmetricKey = spoton_crypt::strongRandomBytes
 		    (static_cast<size_t> (symmetricKey.length()));
 		}
@@ -2321,7 +2315,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		  stream << QByteArray("0013")
 			 << symmetricKey
 			 << hashKey
-			 << symmetricKeyAlgorithm
+			 << cipherType
 			 << hashType;
 		  keyInformation = spoton_crypt::publicKeyEncrypt
 		    (keyInformation, publicKey, &ok);
@@ -2337,7 +2331,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 		    QByteArray signature;
 		    QDateTime dateTime(QDateTime::currentDateTime());
-		    spoton_crypt crypt(symmetricKeyAlgorithm,
+		    spoton_crypt crypt(cipherType,
 				       hashType,
 				       QByteArray(),
 				       symmetricKey,
@@ -2351,7 +2345,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			("0013" +
 			 symmetricKey +
 			 hashKey +
-			 symmetricKeyAlgorithm +
+			 cipherType +
 			 hashType +
 			 myPublicKeyHash +
 			 name +
@@ -2453,10 +2447,8 @@ void spoton_kernel::slotScramble(void)
   QByteArray message(qrand() % 1024 + 512, 0);
   QByteArray messageCode;
   QByteArray symmetricKey;
-  QByteArray symmetricKeyAlgorithm(cipherType);
   bool ok = true;
-  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
-    (symmetricKeyAlgorithm);
+  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
 
   if(symmetricKeyLength > 0)
     {
@@ -2469,7 +2461,7 @@ void spoton_kernel::slotScramble(void)
 
   if(ok)
     {
-      spoton_crypt crypt(symmetricKeyAlgorithm,
+      spoton_crypt crypt(cipherType,
 			 hashType,
 			 QByteArray(),
 			 symmetricKey,
@@ -2672,10 +2664,9 @@ void spoton_kernel::slotRetrieveMail(void)
 	      QByteArray publicKey;
 	      QByteArray signature;
 	      QByteArray symmetricKey;
-	      QByteArray symmetricKeyAlgorithm(cipherType);
 	      bool ok = true;
 	      size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
-		(symmetricKeyAlgorithm);
+		(cipherType);
 
 	      publicKey = s_crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -2703,7 +2694,7 @@ void spoton_kernel::slotRetrieveMail(void)
 		  (QByteArray("0002a").toBase64() + "\n" +
 		   symmetricKey.toBase64() + "\n" +
 		   hashKey.toBase64() + "\n" +
-		   symmetricKeyAlgorithm.toBase64() + "\n" +
+		   cipherType.toBase64() + "\n" +
 		   hashType.toBase64(),
 		   publicKey, &ok);
 
@@ -2723,7 +2714,7 @@ void spoton_kernel::slotRetrieveMail(void)
 		  ("0002a" +
 		   symmetricKey +
 		   hashKey +
-		   symmetricKeyAlgorithm +
+		   cipherType +
 		   hashType +
 		   myPublicKeyHash +
 		   message +
@@ -2732,7 +2723,7 @@ void spoton_kernel::slotRetrieveMail(void)
 
 	      if(ok)
 		{
-		  spoton_crypt crypt(symmetricKeyAlgorithm,
+		  spoton_crypt crypt(cipherType,
 				     hashType,
 				     QByteArray(),
 				     symmetricKey,
@@ -3128,10 +3119,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	      QByteArray messageCode2;
 	      QByteArray participantPublicKey;
 	      QByteArray symmetricKey;
-	      QByteArray symmetricKeyAlgorithm(cipherType);
 	      bool ok = true;
 	      size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
-		(symmetricKeyAlgorithm);
+		(cipherType);
 
 	      participantPublicKey = s_crypt1->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -3162,14 +3152,14 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		  (QByteArray("0001a").toBase64() + "\n" +
 		   symmetricKey.toBase64() + "\n" +
 		   hashKey1.toBase64() + "\n" +
-		   symmetricKeyAlgorithm.toBase64() + "\n" +
+		   cipherType.toBase64() + "\n" +
 		   hashType.toBase64(),
 		   participantPublicKey, &ok);
 
 	      if(ok)
 		{
 		  QByteArray signature;
-		  spoton_crypt crypt(symmetricKeyAlgorithm,
+		  spoton_crypt crypt(cipherType,
 				     hashType,
 				     QByteArray(),
 				     symmetricKey,
@@ -3183,7 +3173,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		      ("0001a" +
 		       symmetricKey +
 		       hashKey1 +
-		       symmetricKeyAlgorithm +
+		       cipherType +
 		       hashType +
 		       myPublicKeyHash +
 		       recipientHash, &ok);
@@ -3198,9 +3188,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	      if(!ok)
 		continue;
 
-	      symmetricKeyAlgorithm = cipherType;
-	      symmetricKeyLength = spoton_crypt::cipherKeyLength
-		(symmetricKeyAlgorithm);
+	      symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
 
 	      if(symmetricKeyLength > 0)
 		{
@@ -3228,7 +3216,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		(QByteArray("0001b").toBase64() + "\n" +
 		 symmetricKey.toBase64() + "\n" +
 		 hashKey2.toBase64() + "\n" +
-		 symmetricKeyAlgorithm.toBase64() + "\n" +
+		 cipherType.toBase64() + "\n" +
 		 hashType.toBase64(),
 		 publicKey, &ok);
 
@@ -3272,7 +3260,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	      if(ok)
 		{
 		  QByteArray signature;
-		  spoton_crypt crypt(symmetricKeyAlgorithm,
+		  spoton_crypt crypt(cipherType,
 				     hashType,
 				     QByteArray(),
 				     symmetricKey,
@@ -3286,7 +3274,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		      ("0001b" +
 		       symmetricKey +
 		       hashKey2 +
-		       symmetricKeyAlgorithm +
+		       cipherType +
 		       hashType +
 		       myPublicKeyHash +
 		       items.value(0) + // Name
