@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>458</width>
-             <height>926</height>
+             <y>-442</y>
+             <width>462</width>
+             <height>972</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -918,9 +918,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-424</y>
-             <width>653</width>
-             <height>938</height>
+             <y>-435</y>
+             <width>581</width>
+             <height>949</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1535,13 +1535,6 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QCheckBox" name="autoKernelUrlImport">
-                 <property name="text">
-                  <string>&amp;Automatically import URLs. Kernel task.</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
@@ -1574,7 +1567,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

@@ -1832,11 +1832,3 @@ void spoton::slotActiveUrlDistribution(bool state)
   settings.setValue("gui/activeUrlDistribution", state);
 }
 
-void spoton::slotAutoKernelUrlImport(bool state)
-{
-  m_settings["gui/autoKernelUrlImport"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/autoKernelUrlImport", state);
-}
