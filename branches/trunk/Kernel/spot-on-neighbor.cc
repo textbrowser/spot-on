@@ -6384,20 +6384,29 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
 
   for(int i = 0; i < urls.size(); i += 3)
     {
-      QByteArray description(urls.value(i + 2));
-      QByteArray title(urls.value(i + 1));
       QUrl url(QUrl::fromUserInput(urls.value(i)));
 
-      if((err = libspoton_save_url(url.
-				   toEncoded(QUrl::StripTrailingSlash).
-				   constData(),
-				   url.toEncoded(QUrl::StripTrailingSlash).
-				   length(),
-				   title.constData(),
-				   title.length(),
-				   description.constData(),
-				   description.length(),
-				   &libspotonHandle)) != LIBSPOTON_ERROR_NONE)
+      if(url.isEmpty())
+	continue;
+      else if(!url.isValid())
+	continue;
+
+      QByteArray description(urls.value(i + 2));
+      QByteArray title(urls.value(i + 1));
+
+      if((err =
+	  libspoton_save_url(url.
+			     toEncoded(QUrl::StripTrailingSlash).
+			     constData(),
+			     static_cast<size_t> (url.
+						  toEncoded(QUrl::
+							    StripTrailingSlash).
+						  length()),
+			     title.constData(),
+			     static_cast<size_t> (title.length()),
+			     description.constData(),
+			     static_cast<size_t> (description.length()),
+			     &libspotonHandle)) != LIBSPOTON_ERROR_NONE)
 	spoton_misc::logError
 	  (QString("spoton_neighbor::saveUrlsToShared(): "
 		   "libspoton_save_url() failure (%1).").
