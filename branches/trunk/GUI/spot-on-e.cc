@@ -845,27 +845,6 @@ void spoton::slotAcceptGeminis(bool state)
   settings.setValue("gui/acceptGeminis", state);
 }
 
-void spoton::slotUrlDistillersRadioButton(bool state)
-{
-  QRadioButton *radioButton = qobject_cast<QRadioButton *> (sender());
-
-  if(!radioButton)
-    return;
-
-  QSettings settings;
-
-  if(radioButton == m_ui.acceptlistDL)
-    {
-      m_settings["gui/acceptUrlDL"] = state;
-      settings.setValue("gui/acceptUrlDL", state);
-    }
-  else if(radioButton == m_ui.acceptlistUL)
-    {
-      m_settings["gui/acceptUrlUL"] = state;
-      settings.setValue("gui/acceptUrlUL", state);
-    }
-}
-
 void spoton::slotShareKeysWithKernel(const QString &link)
 {
   Q_UNUSED(link);

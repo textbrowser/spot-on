@@ -3515,6 +3515,7 @@ bool spoton_misc::prepareUrlDistillersDatabase(void)
 		       "domain_hash TEXT KEY NOT NULL, " /*
 							 ** Keyed hash.
 							 */
+		       "type TEXT NOT NULL DEFAULT 'accept', "
 		       "PRIMARY KEY (direction, domain_hash))"))
 	  ok = false;
 	else

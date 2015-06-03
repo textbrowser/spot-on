@@ -849,7 +849,7 @@ class spoton: public QMainWindow
   void slotUnblockNeighbor(void);
   void slotUpdateChatWindows(void);
   void slotUpdateSpinBoxChanged(double value);
-  void slotUrlDistillersRadioButton(bool state);
+  void slotUrlPolarizerTypeChange(int index);
   void slotValidatePassphrase(void);
   void slotVerify(void);
   void slotVerifySMPSecret(const QString &hash, const QString &keyType,

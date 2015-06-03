@@ -1522,6 +1522,8 @@ spoton::spoton(void):QMainWindow()
 
   QSettings settings;
 
+  settings.remove("gui/acceptUrlDL");
+  settings.remove("gui/acceptUrlUL");
   settings.remove("gui/acceptedIPs");
   settings.remove("gui/enableCongestionControl");
   settings.remove("gui/encryptionKey");
@@ -2003,16 +2005,6 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.saltLength->setValue(m_settings.value("gui/saltLength", 512).toInt());
 
-  if(m_settings.value("gui/acceptUrlDL", true).toBool())
-    m_ui.acceptlistDL->setChecked(true);
-  else
-    m_ui.denylistDL->setChecked(true);
-
-  if(m_settings.value("gui/acceptUrlUL", true).toBool())
-    m_ui.acceptlistUL->setChecked(true);
-  else
-    m_ui.denylistUL->setChecked(true);
-
   if(spoton_crypt::passphraseSet())
     {
       m_sb.frame->setEnabled(false);
@@ -2188,14 +2180,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRegenerateKey(void)));
-  connect(m_ui.acceptlistDL,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotUrlDistillersRadioButton(bool)));
-  connect(m_ui.acceptlistUL,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotUrlDistillersRadioButton(bool)));
   m_ui.emailParticipants->setColumnHidden(1, true); // OID
   m_ui.emailParticipants->setColumnHidden(2, true); // neighbor_oid
   m_ui.emailParticipants->setColumnHidden(3, true); // public_key_hash

@@ -622,10 +622,11 @@ void spoton::slotImportUrls(void)
 
 			  ok = false;
 
-			for(int i = 0; i < m_ui.downDistillers->count(); i++)
+			for(int i = 0;
+			    i < m_ui.downDistillers->rowCount(); i++)
 			  {
-			    QListWidgetItem *item = m_ui.downDistillers->
-			      item(i);
+			    QTableWidgetItem *item = m_ui.downDistillers->
+			      item(i, 0);
 
 			    if(!item)
 			      continue;
@@ -1295,20 +1296,23 @@ void spoton::populateUrlDistillers(void)
 
     if(db.open())
       {
-	m_ui.downDistillers->clear();
-	m_ui.upDistillers->clear();
+	m_ui.downDistillers->clearContents();
+	m_ui.downDistillers->setRowCount(0);
+	m_ui.upDistillers->clearContents();
+	m_ui.upDistillers->setRowCount(0);
 
 	QSqlQuery query(db);
+	int dCount = 0;
+	int uCount = 0;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT direction, domain FROM distillers");
+	query.prepare
+	  ("SELECT direction, domain, type, OID FROM distillers");
 
 	if(query.exec())
 	  while(query.next())
 	    {
 	      QByteArray domain;
-	      QString direction
-		(query.value(0).toString().toLower().trimmed());
 	      bool ok = true;
 
 	      domain = crypt->
@@ -1320,14 +1324,47 @@ void spoton::populateUrlDistillers(void)
 
 	      if(ok)
 		{
-		  if(direction == "download")
-		    m_ui.downDistillers->addItem
-		      (QString::fromUtf8(domain.constData()));
+		  QComboBox *box = new QComboBox();
+		  QString direction
+		    (query.value(0).toString().toLower().trimmed());
+		  QString type(query.value(2).toString().toLower().trimmed());
+		  QTableWidgetItem *item = new QTableWidgetItem
+		    (QString::fromUtf8(domain.constData()));
+
+		  box->addItem("accept");
+		  box->addItem("deny");
+		  box->setProperty
+		    ("oid", query.value(query.record().count() - 1));
+
+		  if(type == "accept")
+		    box->setCurrentIndex(0);
 		  else
-		    m_ui.upDistillers->addItem
-		      (QString::fromUtf8(domain.constData()));
+		    box->setCurrentIndex(1);
+
+		  connect(box,
+			  SIGNAL(currentIndexChanged(int)),
+			  this,
+			  SLOT(slotUrlPolarizerTypeChange(int)));
+
+		  if(direction == "download")
+		    {
+		      m_ui.downDistillers->setRowCount(dCount + 1);
+		      m_ui.downDistillers->setItem(dCount, 0, item);
+		      m_ui.downDistillers->setCellWidget(dCount, 1, box);
+		      dCount += 1;
+		    }
+		  else
+		    {
+		      m_ui.upDistillers->setRowCount(uCount + 1);
+		      m_ui.upDistillers->setItem(uCount, 0, item);
+		      m_ui.upDistillers->setCellWidget(uCount, 1, box);
+		      uCount += 1;
+		    }
 		}
 	    }
+
+	m_ui.downDistillers->sortItems(0);
+	m_ui.upDistillers->sortItems(0);
       }
 
     db.close();
@@ -1349,18 +1386,18 @@ void spoton::slotDeleteUrlDistillers(void)
   if(!crypt)
     return;
 
-  QList<QListWidgetItem *> list;
+  QModelIndexList list;
   QString direction("");
 
   if(m_ui.urlTab->currentIndex() == 0)
     {
       direction = "download";
-      list = m_ui.downDistillers->selectedItems();
+      list = m_ui.downDistillers->selectionModel()->selectedRows(0);
     }
   else
     {
       direction = "upload";
-      list = m_ui.upDistillers->selectedItems();
+      list = m_ui.upDistillers->selectionModel()->selectedRows(0);
     }
 
   if(list.isEmpty())
@@ -1379,19 +1416,15 @@ void spoton::slotDeleteUrlDistillers(void)
     if(db.open())
       while(!list.isEmpty())
 	{
-	  QListWidgetItem *item = list.takeFirst();
-
-	  if(!item)
-	    continue;
-
 	  QSqlQuery query(db);
+	  QString str(list.takeFirst().data().toString());
 	  bool ok = true;
 
 	  query.exec("PRAGMA secure_delete = ON");
 	  query.prepare("DELETE FROM distillers WHERE "
 			"direction = ? AND domain_hash = ?");
 	  query.bindValue(0, direction);
-	  query.bindValue(1, crypt->keyedHash(item->text().toUtf8(),
+	  query.bindValue(1, crypt->keyedHash(str.toUtf8(),
 					      &ok).toBase64());
 
 	  if(ok)
@@ -1566,4 +1599,41 @@ void spoton::slotDeleteLink(const QUrl &u)
   */
 
   discoverUrls();
+}
+
+void spoton::slotUrlPolarizerTypeChange(int index)
+{
+  QComboBox *box = qobject_cast<QComboBox *> (sender());
+
+  if(!box)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE distillers SET "
+		      "type = ? WHERE OID = ?");
+
+	if(index == 0)
+	  query.bindValue(0, "accept");
+	else
+	  query.bindValue(0, "deny");
+
+	query.bindValue(1, box->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
