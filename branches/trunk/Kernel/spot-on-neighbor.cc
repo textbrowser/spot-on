@@ -6358,7 +6358,7 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
   if(!cipherType.isEmpty() && !encryptionKey.isEmpty())
     err = libspoton_init_a
       ((spoton_misc::homePath() + QDir::separator() +
-	"shared-kernel.db").toStdString().c_str(),
+	"shared.db").toStdString().c_str(),
        cipherType.constData(),
        encryptionKey.constData(),
        static_cast<size_t> (encryptionKey.length()),
@@ -6367,7 +6367,7 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
   else
     err = libspoton_init_a
       ((spoton_misc::homePath() + QDir::separator() +
-	"shared-kernel.db").toStdString().c_str(),
+	"shared.db").toStdString().c_str(),
        0,
        0,
        0,

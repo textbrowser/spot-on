@@ -3770,11 +3770,41 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
 				   0,
 				   QString(""));
 	  }
-
-	db.close();
       }
+
+    db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
   return c;
+}
+
+quint64 spoton_misc::databaseAccesses(void)
+{
+  QReadLocker locker(&s_dbMutex);
+
+  return s_dbId;
+}
+
+void spoton_misc::deleteSharedUrls(const QString &path)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(path);
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM urls");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }

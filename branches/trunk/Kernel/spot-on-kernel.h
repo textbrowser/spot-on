@@ -119,6 +119,7 @@ class spoton_kernel: public QObject
   QFuture<void> m_poptasticPopFuture;
   QFuture<void> m_poptasticPostFuture;
   QFuture<void> m_statisticsFuture;
+  QFuture<void> m_urlImportFuture;
   QHash<qint64, QPointer<spoton_listener> > m_listeners;
   QHash<qint64, QPointer<spoton_neighbor> > m_neighbors;
   QHash<qint64, QPointer<spoton_starbeam_reader> > m_starbeamReaders;
@@ -133,6 +134,7 @@ class spoton_kernel: public QObject
   QTimer m_scramblerTimer;
   QTimer m_settingsTimer;
   QTimer m_statusTimer;
+  QTimer m_urlImportTimer;
   int m_activeListeners;
   int m_activeNeighbors;
   int m_activeStarbeams;
@@ -164,6 +166,7 @@ class spoton_kernel: public QObject
   void cleanupNeighborsDatabase(const QSqlDatabase &db);
   void cleanupStarbeamsDatabase(const QSqlDatabase &db);
   void connectSignalsToNeighbor(QPointer<spoton_neighbor> neighbor);
+  void importUrls(void);
   void popPoptastic(void);
   void postPoptastic(void);
   void postPoptasticMessage(const QByteArray &attachment,
@@ -252,6 +255,7 @@ class spoton_kernel: public QObject
 		    const qint64 mailOid);
   void slotSettingsChanged(const QString &path);
   void slotStatusTimerExpired(void);
+  void slotUrlImportTimerExpired(void);
   void slotUpdateSettings(void);
 
  signals:

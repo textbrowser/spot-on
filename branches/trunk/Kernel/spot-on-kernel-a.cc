@@ -532,6 +532,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotStatusTimerExpired(void)));
+  connect(&m_urlImportTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotUrlImportTimerExpired(void)));
   m_controlDatabaseTimer.start(2500);
   m_impersonateTimer.setInterval(2500);
   m_messagingCachePurgeTimer.setInterval
@@ -551,6 +555,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_scramblerTimer.setSingleShot(true);
   m_settingsTimer.setSingleShot(true);
   m_statusTimer.start(1000 * STATUS_INTERVAL);
+  m_urlImportTimer.start(15000);
   m_guiServer = new spoton_gui_server(this);
   m_mailer = new spoton_mailer(this);
   m_starbeamWriter = new spoton_starbeam_writer(this);
@@ -716,6 +721,7 @@ spoton_kernel::~spoton_kernel()
   m_scramblerTimer.stop();
   m_settingsTimer.stop();
   m_statusTimer.stop();
+  m_urlImportTimer.stop();
 
   QWriteLocker locker1(&s_messagingCacheMutex);
 
@@ -729,12 +735,14 @@ spoton_kernel::~spoton_kernel()
   m_future.cancel();
   m_poptasticPopFuture.cancel();
   m_poptasticPostFuture.cancel();
+  m_urlImportFuture.cancel();
   m_future.waitForFinished();
   m_poptasticPopFuture.waitForFinished();
   m_poptasticPostFuture.waitForFinished();
   m_statisticsFuture.waitForFinished();
   m_urlDistribution->quit();
   m_urlDistribution->wait();
+  m_urlImportFuture.waitForFinished();
   cleanup();
   spoton_misc::cleanupDatabases(s_crypts.value("chat", 0));
 
@@ -4348,6 +4356,11 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	   number(100.00 * static_cast<double> (v1) /
 		  static_cast<double> (v2), 'f', 2).
 	   append("%"));
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO KERNEL_STATISTICS "
+		      "(statistic, value) "
+		      "VALUES ('Database Accesses', ?)");
+	query.bindValue(0, spoton_misc::databaseAccesses());
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "

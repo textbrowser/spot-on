@@ -1378,3 +1378,27 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton_kernel::slotUrlImportTimerExpired(void)
+{
+  if(m_urlImportFuture.isFinished())
+    m_urlImportFuture = QtConcurrent::run(this, &spoton_kernel::importUrls);
+}
+
+void spoton_kernel::importUrls(void)
+{
+  spoton_crypt *crypt = 0;
+  spoton_crypt *s_crypt = s_crypts.value("url", 0);
+
+  crypt = spoton_misc::retrieveUrlCommonCredentials(s_crypt);
+
+  if(!crypt || !s_crypt)
+    {
+      delete crypt;
+      spoton_misc::deleteSharedUrls
+	(spoton_misc::homePath() + QDir::separator() + "shared-kernel.db");
+      return;
+    }
+
+  delete crypt;
+}
