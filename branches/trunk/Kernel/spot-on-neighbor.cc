@@ -47,6 +47,11 @@
 
 extern "C"
 {
+#include "libSpotOn/libspoton.h"
+}
+
+extern "C"
+{
 #ifdef Q_OS_WIN32
 #include <io.h>
 #else
@@ -4329,7 +4334,6 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 
 	      if(ok)
 		{
-		  QByteArray signature;
 		  QList<QByteArray> list;
 
 		  {
@@ -4347,7 +4351,9 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 		      }
 		  }
 
-		  signature = list.value(1);
+		  QByteArray dataForSignature
+		    (keyInformation + list.value(0));
+		  QByteArray signature(list.value(1));
 
 		  {
 		    QByteArray a;
@@ -4368,13 +4374,9 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 		  }
 
 		  QByteArray publicKeyHash(list.value(0));
-		  QByteArray sum;
-
-		  for(int i = 1; i < list.size(); i++)
-		    sum.append(list.at(i));
 
 		  if(!spoton_misc::
-		     isValidSignature(keyInformation + sum,
+		     isValidSignature(dataForSignature,
 				      publicKeyHash,
 				      signature,
 				      spoton_kernel::s_crypts.
@@ -4385,6 +4387,13 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 			 "process0080(): invalid "
 			 "signature.");
 		      return;
+		    }
+		  else
+		    {
+		      if(!list.isEmpty())
+			list.removeAt(0);
+
+		      saveUrlsToShared(list);
 		    }
 		}
 	    }
@@ -6290,4 +6299,110 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
   m_data.append(datagram);
   locker.unlock();
   emit newData();
+}
+
+void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
+{
+  if(urls.isEmpty())
+    return;
+
+  QByteArray cipherType;
+  QByteArray encryptionKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "urls_key_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT cipher_type, symmetric_key "
+		      "FROM import_key_information") &&
+	   query.next())
+	  {
+	    spoton_crypt *crypt = spoton_kernel::s_crypts.value
+	      ("url", 0);
+
+	    if(crypt)
+	      {
+		cipherType = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(0).
+					  toByteArray()),
+		   &ok);
+
+		if(ok)
+		  encryptionKey = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(1).
+					    toByteArray()),
+		     &ok);
+	      }
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
+  libspoton_handle_t libspotonHandle;
+
+  if(!cipherType.isEmpty() && !encryptionKey.isEmpty())
+    err = libspoton_init_a
+      ((spoton_misc::homePath() + QDir::separator() +
+	"shared.db").toStdString().c_str(),
+       cipherType.constData(),
+       encryptionKey.constData(),
+       static_cast<size_t> (encryptionKey.length()),
+       &libspotonHandle,
+       16384);
+  else
+    err = libspoton_init_a
+      ((spoton_misc::homePath() + QDir::separator() +
+	"shared.db").toStdString().c_str(),
+       0,
+       0,
+       0,
+       &libspotonHandle,
+       16384);
+
+  if(err != LIBSPOTON_ERROR_NONE)
+    {
+      spoton_misc::logError(QString("spoton_neighbor::saveUrlsToShared(): "
+				    "libspoton_init_a() failure (%1).").
+			    arg(libspoton_strerror(err)));
+      return;
+    }
+
+  for(int i = 0; i < urls.size(); i += 3)
+    {
+      QByteArray description(urls.value(i + 2));
+      QByteArray title(urls.value(i + 1));
+      QUrl url(QUrl::fromUserInput(urls.value(i)));
+
+      if((err = libspoton_save_url(url.
+				   toEncoded(QUrl::StripTrailingSlash).
+				   constData(),
+				   url.toEncoded(QUrl::StripTrailingSlash).
+				   length(),
+				   title.constData(),
+				   title.length(),
+				   description.constData(),
+				   description.length(),
+				   &libspotonHandle)) != LIBSPOTON_ERROR_NONE)
+	spoton_misc::logError
+	  (QString("spoton_neighbor::saveUrlsToShared(): "
+		   "libspoton_save_url() failure (%1).").
+	   arg(libspoton_strerror(err)));
+    }
+
+  libspoton_close(&libspotonHandle);
 }

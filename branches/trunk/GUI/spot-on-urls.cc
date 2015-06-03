@@ -707,7 +707,7 @@ void spoton::slotShowUrlSettings(bool state)
   m_ui.urlsBox->setVisible(!state);
 
 #if SPOTON_GOLDBUG == 0
-  if(m_ui.urlsBox->isVisible())
+  if(!state)
     {
       m_ui.urls_settings_layout->addWidget(m_ui.apply_polarizers);
       m_ui.urls_settings_layout->addWidget(m_ui.importUrls);

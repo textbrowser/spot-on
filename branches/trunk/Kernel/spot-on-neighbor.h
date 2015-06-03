@@ -286,6 +286,7 @@ class spoton_neighbor: public QThread
   void saveStatistics(const QSqlDatabase &db);
   void saveStatus(const QSqlDatabase &db, const QString &status);
   void saveStatus(const QString &status);
+  void saveUrlsToShared(const QList<QByteArray> &urls);
   void storeLetter(const QByteArray &symmetricKey,
 		   const QByteArray &symmetricKeyAlgorithm,
 		   const QByteArray &hashKey,
