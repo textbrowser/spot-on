@@ -1,7 +1,7 @@
 <html>
 2015.06.06
 <ol>
-<li>Added libspoton_delete_urls() to libspoton. Version updated to 0.10.</li>
+<li>Added libspoton_delete_urls() to libspoton. Version updated to 0.1.1.</li>
 <li>Allow adjustment of the iteration count in the file encryption tool.</li>
 <li>Allow configuration of alternating row colors of Chat, E-Mail, and URLs participants. Please see Options.</li>
 <li>Allow configuration of the kernel's cache purge timer.</li>
@@ -42,6 +42,7 @@
 <li>Removed duplicate QObject::connect() instance from spoton::slotConfigurePoptastic().</li>
 <li>Removed input masks from IPv6 fields.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
+<li>Replaced (rv == 0) with (rv == SQLITE_OK) in libspoton.c.</li>
 <li>Replaced the itemClicked() signal on the e-mail table with itemDoubleClicked() as itemClicked() and itemSelectionChanged() may cause duplicate dialog prompts.</li>
 <li>Require account salts to contain at least 512 bytes.</li>
 <li>Require the messages in 0002a and 0002b to contain at least 64 bytes.</li>

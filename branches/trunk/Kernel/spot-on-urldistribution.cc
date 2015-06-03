@@ -87,12 +87,88 @@ void spoton_urldistribution::slotTimeout(void)
   if(!s_crypt2)
     return;
 
+  QString connectionName("");
+  bool accept_url_ul = spoton_kernel::setting
+    ("gui/acceptUrlUL", true).toBool();
+
   /*
-  ** First, let's retrieve the public keys.
+  ** Now, retrieve polarizers.
+  */
+
+  QList<QUrl> polarizers;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT domain FROM distillers WHERE "
+		      "LOWER(TRIM(direction)) = 'upload'");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QByteArray domain;
+	      bool ok = true;
+
+	      domain = s_crypt1->
+		decryptedAfterAuthenticated(QByteArray::
+					    fromBase64(query.
+						       value(0).
+						       toByteArray()),
+					    &ok);
+
+	      if(ok)
+		{
+		  QUrl url(QUrl::fromUserInput(domain));
+
+		  if(!url.isEmpty())
+		    if(url.isValid())
+		      polarizers.append(url);
+		}
+
+	      QReadLocker locker(&m_quitLocker);
+
+	      if(m_quit)
+		break;
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(accept_url_ul)
+    /*
+    ** Accept List
+    */
+
+    if(polarizers.isEmpty())
+      /*
+      ** Do not share URLs.
+      */
+
+      return;
+
+  {
+    QReadLocker locker(&m_quitLocker);
+
+    if(m_quit)
+      return;
+  }
+
+  /*
+  ** Let's retrieve the public keys.
   */
 
   QList<QByteArray> publicKeys;
-  QString connectionName("");
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -146,55 +222,6 @@ void spoton_urldistribution::slotTimeout(void)
 
   if(publicKeys.isEmpty())
     return;
-
-  /*
-  ** Now, retrieve polarizers.
-  */
-
-  QList<QUrl> polarizers;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT domain FROM distillers WHERE "
-		      "LOWER(TRIM(direction)) = 'upload'");
-
-	if(query.exec())
-	  while(query.next())
-	    {
-	      QByteArray domain;
-	      bool ok = true;
-
-	      domain = s_crypt1->
-		decryptedAfterAuthenticated(QByteArray::
-					    fromBase64(query.
-						       value(0).
-						       toByteArray()),
-					    &ok);
-
-	      if(ok)
-		{
-		  QUrl url(QUrl::fromUserInput(domain));
-
-		  if(!url.isEmpty())
-		    if(url.isValid())
-		      polarizers.append(url);
-		}
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 
   spoton_crypt *urlCommonCredentials =
     spoton_misc::retrieveUrlCommonCredentials(s_crypt1);
@@ -326,9 +353,35 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      if(ok)
 		{
+		  if(accept_url_ul)
+		    ok = false;
+
 		  /*
 		  ** Apply polarizers.
 		  */
+
+		  for(int i = 0; i < polarizers.size(); i++)
+		    {
+		      QUrl u1(polarizers.at(i));
+		      QUrl u2(QUrl::fromUserInput(bytes.value(0)));
+
+		      if(accept_url_ul)
+			{
+			  if(u2.toEncoded().startsWith(u1.toEncoded()))
+			    {
+			      ok = true;
+			      break;
+			    }
+			}
+		      else
+			{
+			  if(u2.toEncoded().startsWith(u1.toEncoded()))
+			    {
+			      ok = false;
+			      break;
+			    }
+			}
+		    }
 		}
 
 	      if(ok)

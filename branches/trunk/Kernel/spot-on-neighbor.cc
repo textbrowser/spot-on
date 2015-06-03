@@ -6396,12 +6396,9 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
 
       if((err =
 	  libspoton_save_url(url.
-			     toEncoded(QUrl::StripTrailingSlash).
-			     constData(),
+			     toEncoded().constData(),
 			     static_cast<size_t> (url.
-						  toEncoded(QUrl::
-							    StripTrailingSlash).
-						  length()),
+						  toEncoded().length()),
 			     title.constData(),
 			     static_cast<size_t> (title.length()),
 			     description.constData(),
