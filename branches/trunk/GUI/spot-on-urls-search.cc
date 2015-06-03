@@ -251,7 +251,8 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 		}
 
 	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
-	      html.append("<a href=\"");
+	      html.append(QString::number(count + m_urlOffset + 1));
+	      html.append(" - <a href=\"");
 	      html.append(url.toEncoded().constData());
 	      html.append("\">");
 	      html.append(title);
