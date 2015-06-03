@@ -88,14 +88,12 @@ void spoton_urldistribution::slotTimeout(void)
     return;
 
   QString connectionName("");
-  bool accept_url_ul = spoton_kernel::setting
-    ("gui/acceptUrlUL", true).toBool();
 
   /*
   ** Now, retrieve polarizers.
   */
 
-  QList<QUrl> polarizers;
+  QList<QPair<QUrl, QString> > polarizers;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -108,7 +106,7 @@ void spoton_urldistribution::slotTimeout(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT domain FROM distillers WHERE "
+	query.prepare("SELECT domain, type FROM distillers WHERE "
 		      "LOWER(TRIM(direction)) = 'upload'");
 
 	if(query.exec())
@@ -130,7 +128,14 @@ void spoton_urldistribution::slotTimeout(void)
 
 		  if(!url.isEmpty())
 		    if(url.isValid())
-		      polarizers.append(url);
+		      {
+			QPair<QUrl, QString> pair;
+
+			pair.first = url;
+			pair.second =
+			  query.value(1).toString().toLower().trimmed();
+			polarizers.append(pair);
+		      }
 		}
 
 	      QReadLocker locker(&m_quitLocker);
@@ -144,18 +149,6 @@ void spoton_urldistribution::slotTimeout(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-
-  if(accept_url_ul)
-    /*
-    ** Accept List
-    */
-
-    if(polarizers.isEmpty())
-      /*
-      ** Do not share URLs.
-      */
-
-      return;
 
   {
     QReadLocker locker(&m_quitLocker);
@@ -353,19 +346,17 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      if(ok)
 		{
-		  if(accept_url_ul)
-		    ok = false;
-
 		  /*
 		  ** Apply polarizers.
 		  */
 
 		  for(int i = 0; i < polarizers.size(); i++)
 		    {
-		      QUrl u1(polarizers.at(i));
+		      QString type(polarizers.at(i).second);
+		      QUrl u1(polarizers.at(i).first);
 		      QUrl u2(QUrl::fromUserInput(bytes.value(0)));
 
-		      if(accept_url_ul)
+		      if(type == "accept")
 			{
 			  if(u2.toEncoded().startsWith(u1.toEncoded()))
 			    {
