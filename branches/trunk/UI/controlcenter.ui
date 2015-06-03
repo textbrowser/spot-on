@@ -4911,8 +4911,8 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>711</width>
+             <y>-583</y>
+             <width>762</width>
              <height>1081</height>
             </rect>
            </property>
@@ -5934,7 +5934,7 @@
                    <item row="0" column="3">
                     <widget class="QComboBox" name="encryptionKeyType">
                      <property name="currentIndex">
-                      <number>0</number>
+                      <number>3</number>
                      </property>
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
@@ -7065,8 +7065,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>576</width>
+             <height>482</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
