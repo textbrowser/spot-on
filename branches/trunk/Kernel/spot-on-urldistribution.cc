@@ -325,6 +325,13 @@ void spoton_urldistribution::slotTimeout(void)
 					       &ok));
 
 	      if(ok)
+		{
+		  /*
+		  ** Apply polarizers.
+		  */
+		}
+
+	      if(ok)
 		bytes.append
 		  (urlCommonCredentials->
 		   decryptedAfterAuthenticated(QByteArray::
