@@ -107,6 +107,11 @@ class spoton_misc
 				  const QByteArray &saltedCredentials,
 				  const QByteArray &salt,
 				  spoton_crypt *crypt);
+  static bool importUrl(const QByteArray &d, // Description
+			const QByteArray &t, // Title
+			const QByteArray &u, // URL
+			const QSqlDatabase &db,
+			spoton_crypt *crypt);
   static bool isAcceptedIP(const QHostAddress &address,
 			   const qint64 id,
 			   spoton_crypt *crypt);

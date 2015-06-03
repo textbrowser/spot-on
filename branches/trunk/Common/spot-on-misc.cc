@@ -36,6 +36,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QString>
+#include <QUrl>
 
 #include <limits>
 
@@ -3807,4 +3808,117 @@ void spoton_misc::deleteSharedUrls(const QString &path)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+bool spoton_misc::importUrl(const QByteArray &d, // Description
+			    const QByteArray &t, // Title
+			    const QByteArray &u, // URL
+			    const QSqlDatabase &db,
+			    spoton_crypt *crypt)
+{
+  if(!crypt)
+    return false;
+
+  if(!db.isOpen())
+    return false;
+
+  QUrl url(QUrl::fromUserInput(u));
+
+  if(url.isEmpty() || !url.isValid())
+    return false;
+
+  QByteArray all_keywords;
+  QByteArray description(d.trimmed());
+  QByteArray title(t.trimmed());
+  bool separate = true;
+
+  if(description.isEmpty())
+    description = url.toString().toUtf8();
+  else
+    all_keywords = description;
+
+  if(title.isEmpty())
+    title = url.toString().toUtf8();
+  else
+    all_keywords.append(" ").append(title);
+
+  QByteArray urlHash;
+  bool ok = true;
+
+  urlHash = crypt->keyedHash(url.toEncoded(), &ok).toHex();
+
+  if(!ok)
+    return ok;
+
+  QSqlQuery query(db);
+
+  query.prepare
+    (QString("INSERT INTO spot_on_urls_%1 ("
+	     "date_time_inserted, "
+	     "description, "
+	     "title, "
+	     "url, "
+	     "url_hash) VALUES (?, ?, ?, ?, ?)").
+     arg(urlHash.mid(0, 2).constData()));
+  query.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
+  query.bindValue
+    (1, crypt->encryptedThenHashed(description, &ok).
+     toBase64());
+
+  if(ok)
+    query.bindValue
+      (2, crypt->encryptedThenHashed(title, &ok).toBase64());
+
+  if(ok)
+    query.bindValue
+      (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+       toBase64());
+
+  if(ok)
+    query.bindValue(4, urlHash.constData());
+
+  /*
+  ** If a unique-constraint violation was raised, ignore it.
+  */
+
+  if(ok)
+    if(!query.exec())
+      if(!query.lastError().text().toLower().contains("unique"))
+	ok = false;
+
+  if(ok)
+    if(all_keywords.isEmpty())
+      separate = false;
+
+  if(ok && separate)
+    {
+      QStringList keywords
+	(QString::fromUtf8(all_keywords.toLower().constData()).
+	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
+
+      for(int i = 0; i < keywords.size(); i++)
+	{
+	  QByteArray keywordHash;
+	  QSqlQuery query(db);
+	  bool ok = true;
+
+	  keywordHash = crypt->keyedHash
+	    (keywords.at(i).toUtf8(), &ok).toHex();
+
+	  if(!ok)
+	    continue;
+
+	  query.prepare
+	    (QString("INSERT INTO spot_on_keywords_%1 ("
+		     "keyword_hash, "
+		     "url_hash) "
+		     "VALUES (?, ?)").arg(keywordHash.mid(0, 2).
+					  constData()));
+	  query.bindValue(0, keywordHash.constData());
+	  query.bindValue(1, urlHash.constData());
+	  query.exec();
+	}
+    }
+
+  return ok;
 }
