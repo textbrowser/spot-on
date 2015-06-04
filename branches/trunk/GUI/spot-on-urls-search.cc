@@ -325,7 +325,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
     if(i != m_urlCurrentPage)
       str.append(QString(" <a href=\"%1\">%1</a> ").arg(i));
     else
-      str.append(QString(" : %1 : ").arg(i));
+      str.append(QString(" | %1 | ").arg(i));
 
   if(count >= m_urlLimit)
     str.append(tr(" <a href=\">\">Next</a> "));

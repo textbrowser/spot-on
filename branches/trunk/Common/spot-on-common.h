@@ -26,6 +26,7 @@
 */
 
 #include <QHash>
+#include <QStringList>
 
 #ifndef _spoton_common_h_
 #define _spoton_common_h_
@@ -39,6 +40,8 @@ typedef QPair<QByteArray, QByteArray> QPairByteArrayByteArray;
 
 namespace spoton_common
 {
+  static const QStringList ACCEPTABLE_URL_SCHEMES =
+    QStringList() << "ftp" << "http" << "https";
   static const int BUZZ_MAXIMUM_ID_LENGTH = 256; /*
 						 ** Please use a number
 						 ** that's divisible by two.

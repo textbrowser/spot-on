@@ -1179,6 +1179,7 @@ void spoton::slotAddDistiller(void)
 
   QString connectionName("");
   QString error("");
+  QString scheme("");
   QUrl url(QUrl::fromUserInput(m_ui.domain->text().trimmed()));
   bool ok = true;
 
@@ -1191,6 +1192,15 @@ void spoton::slotAddDistiller(void)
   else if(url.isEmpty() || !url.isValid())
     {
       error = tr("Invalid domain.");
+      ok = false;
+      goto done_label;
+    }
+
+  scheme = url.scheme().toLower().trimmed();
+
+  if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
+    {
+      error = tr("Only ftp, http, and https schemes are allowed.");
       ok = false;
       goto done_label;
     }

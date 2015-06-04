@@ -3828,6 +3828,11 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
   if(url.isEmpty() || !url.isValid())
     return false;
 
+  QString scheme(url.scheme().toLower().trimmed());
+
+  if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
+    return false;
+
   QByteArray all_keywords;
   QByteArray description(d.trimmed());
   QByteArray title(t.trimmed());
