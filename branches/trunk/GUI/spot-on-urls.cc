@@ -1200,7 +1200,7 @@ void spoton::slotAddDistiller(void)
 
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
     {
-      error = tr("Only ftp, http, and https schemes are allowed.");
+      error = tr("Only ftp, gopher, http, and https schemes are allowed.");
       ok = false;
       goto done_label;
     }
