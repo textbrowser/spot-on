@@ -506,8 +506,6 @@ void spoton::slotImportUrls(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-
-  bool accept_url_dl = m_settings.value("gui/acceptUrlDL", true).toBool();
   bool apply_polarizers = m_settings.value
     ("gui/applyPolarizers", true).toBool();
   int readEncrypted = 1;
@@ -615,26 +613,27 @@ void spoton::slotImportUrls(void)
 		  {
 		    if(apply_polarizers)
 		      {
-			if(accept_url_dl)
-			  /*
-			  ** We will only accept listed entries.
-			  */
-
-			  ok = false;
-
 			for(int i = 0;
 			    i < m_ui.downDistillers->rowCount(); i++)
 			  {
+			    QComboBox *box = qobject_cast<QComboBox *>
+			      (m_ui.downDistillers->cellWidget(i, 1));
 			    QTableWidgetItem *item = m_ui.downDistillers->
 			      item(i, 0);
 
-			    if(!item)
+			    if(!box || !item)
 			      continue;
 
+			    QString type("");
 			    QUrl u1(QUrl::fromUserInput(item->text()));
 			    QUrl u2(QUrl::fromUserInput(url));
 
-			    if(accept_url_dl)
+			    if(box->currentIndex() == 0)
+			      type = "accept";
+			    else
+			      type = "deny";
+
+			    if(type == "accept")
 			      {
 				if(u2.toEncoded().startsWith(u1.toEncoded()))
 				  {

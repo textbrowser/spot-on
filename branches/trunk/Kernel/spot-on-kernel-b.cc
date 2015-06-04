@@ -1400,5 +1400,58 @@ void spoton_kernel::importUrls(void)
       return;
     }
 
+  QString connectionName("");
+
+  {
+    QSqlDatabase db;
+
+    connectionName = spoton_misc::databaseName();
+
+    if(setting("gui/sqliteSearch", true).toBool())
+      {
+	db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "urls.db");
+	db.open();
+      }
+    else
+      {
+	QByteArray password;
+	QString database
+	  (setting("gui/postgresql_database", "").
+	   toString().trimmed());
+	QString host
+	  (setting("gui/postgresql_host", "localhost").toString().trimmed());
+	QString name
+	  (setting("gui/postgresql_name", "").toString().trimmed());
+	QString str("connect_timeout=10");
+	bool ok = true;
+	bool ssltls = setting("gui/postgresql_ssltls", false).toBool();
+	int port = setting("gui/postgresql_port", 5432).toInt();
+
+	password = s_crypt->decryptedAfterAuthenticated
+	  (QByteArray::
+	   fromBase64(setting("gui/postgresql_password", "").
+		      toByteArray()), &ok);
+
+	if(ssltls)
+	  str.append(";requiressl=1");
+
+	db = QSqlDatabase::addDatabase("QPSQL", connectionName);
+	db.setConnectOptions(str);
+	db.setHostName(host);
+	db.setDatabaseName(database);
+	db.setPort(port);
+	db.open(name, password);
+      }
+
+    if(db.isOpen())
+      {
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   delete crypt;
 }
