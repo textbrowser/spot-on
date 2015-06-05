@@ -1801,4 +1801,3 @@ void spoton::slotActiveUrlDistribution(bool state)
 
   settings.setValue("gui/activeUrlDistribution", state);
 }
-
