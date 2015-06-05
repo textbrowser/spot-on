@@ -109,6 +109,7 @@ class spoton_kernel: public QObject
   bool processPotentialStarBeamData
     (const QByteArray &data,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
+  void saveUrls(const QList<QByteArray> &urls);
   void writeMessage0060(const QByteArray &data, bool *ok);
 
  private:
@@ -123,8 +124,10 @@ class spoton_kernel: public QObject
   QHash<qint64, QPointer<spoton_listener> > m_listeners;
   QHash<qint64, QPointer<spoton_neighbor> > m_neighbors;
   QHash<qint64, QPointer<spoton_starbeam_reader> > m_starbeamReaders;
+  QList<QByteArray> m_urlList;
   QQueue<QList<QVariant> > m_poptasticCache;
   QReadWriteLock m_poptasticCacheMutex;
+  QReadWriteLock m_urlListMutex;
   QTimer m_controlDatabaseTimer;
   QTimer m_impersonateTimer;
   QTimer m_messagingCachePurgeTimer;

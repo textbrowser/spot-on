@@ -151,7 +151,6 @@ class spoton_misc
   static spoton_crypt *retrieveUrlCommonCredentials(spoton_crypt *crypt);
   static void cleanupDatabases(spoton_crypt *crypt);
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
-  static void deleteSharedUrls(const QString &path);
   static void enableLog(const bool state);
   static void logError(const QString &error);
   static void moveSentMailToSentFolder(const QList<qint64> &oids,

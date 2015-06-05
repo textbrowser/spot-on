@@ -433,6 +433,7 @@ void spoton::slotGatherUrlStatistics(void)
 
 void spoton::slotImportUrls(void)
 {
+#if SPOTON_GOLDBUG == 0
   spoton_crypt *crypt = m_crypts.value("url", 0);
 
   if(!crypt)
@@ -691,6 +692,7 @@ void spoton::slotImportUrls(void)
   progress.close();
   update();
   displayUrlImportResults(imported, not_imported);
+#endif
 }
 
 void spoton::displayUrlImportResults(const quint64 imported,
@@ -1288,6 +1290,7 @@ void spoton::slotAddDistiller(void)
 
 void spoton::populateUrlDistillers(void)
 {
+#if SPOTON_GOLDBUG == 0
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
@@ -1381,6 +1384,7 @@ void spoton::populateUrlDistillers(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
+#endif
 }
 
 void spoton::slotRefreshUrlDistillers(void)

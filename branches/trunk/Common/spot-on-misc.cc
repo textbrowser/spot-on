@@ -3788,29 +3788,6 @@ quint64 spoton_misc::databaseAccesses(void)
   return s_dbId;
 }
 
-void spoton_misc::deleteSharedUrls(const QString &path)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(path);
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM urls");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
 bool spoton_misc::importUrl(const QByteArray &d, // Description
 			    const QByteArray &t, // Title
 			    const QByteArray &u, // URL

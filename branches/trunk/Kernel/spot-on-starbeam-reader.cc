@@ -463,7 +463,12 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 		    data = data.toBase64() + "\n" + messageCode.toBase64();
 
 		  if(ok)
-		    spoton_kernel::s_kernel->writeMessage0060(data, &ok);
+		    {
+		      if(spoton_kernel::s_kernel)
+			spoton_kernel::s_kernel->writeMessage0060(data, &ok);
+		      else
+			ok = false;
+		    }
 
 		  if(ok)
 		    {

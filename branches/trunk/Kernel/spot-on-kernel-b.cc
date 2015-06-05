@@ -1395,8 +1395,10 @@ void spoton_kernel::importUrls(void)
   if(!crypt || !s_crypt)
     {
       delete crypt;
-      spoton_misc::deleteSharedUrls
-	(spoton_misc::homePath() + QDir::separator() + "shared-kernel.db");
+
+      QWriteLocker locker(&m_urlListMutex);
+
+      m_urlList.clear();
       return;
     }
 
@@ -1459,6 +1461,10 @@ void spoton_kernel::importUrls(void)
   if(m_urlImportFuture.isCanceled())
     {
       delete crypt;
+
+      QWriteLocker locker(&m_urlListMutex);
+
+      m_urlList.clear();
       return;
     }
 
@@ -1509,6 +1515,21 @@ void spoton_kernel::importUrls(void)
 
     if(db.isOpen())
       {
+	do
+	  {
+	    QWriteLocker locker(&m_urlListMutex);
+
+	    if(m_urlImportFuture.isCanceled() || m_urlList.isEmpty())
+	      break;
+
+	    QList<QByteArray> urls(m_urlList.mid(0, 3));
+
+	    for(int i = 0; i < urls.size(); i++)
+	      m_urlList.removeAt(0);
+
+	    locker.unlock();
+	  }
+	while(true);
       }
 
     db.close();
@@ -1516,4 +1537,14 @@ void spoton_kernel::importUrls(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   delete crypt;
+}
+
+void spoton_kernel::saveUrls(const QList<QByteArray> &urls)
+{
+  if(urls.isEmpty())
+    return;
+
+  QWriteLocker locker(&m_urlListMutex);
+
+  m_urlList << urls;
 }

@@ -60,7 +60,8 @@ void spoton_listener_tcp_server::incomingConnection(int socketDescriptor)
       peerAddress = spoton_misc::peerAddressAndPort
 	(static_cast<int> (socketDescriptor), &peerPort);
 
-      if(!spoton_kernel::s_kernel->acceptRemoteConnection(serverAddress(),
+      if(spoton_kernel::s_kernel &&
+	 !spoton_kernel::s_kernel->acceptRemoteConnection(serverAddress(),
 							  peerAddress))
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
@@ -117,7 +118,8 @@ void spoton_listener_udp_server::slotReadyRead(void)
 					 pendingDatagramSize())));
   readDatagram(datagram.data(), datagram.size(), &peerAddress, &peerPort);
 
-  if(!spoton_kernel::s_kernel->acceptRemoteConnection(localAddress(),
+  if(spoton_kernel::s_kernel &&
+     !spoton_kernel::s_kernel->acceptRemoteConnection(localAddress(),
 						      peerAddress))
     {
     }

@@ -2206,8 +2206,10 @@ spoton::spoton(void):QMainWindow()
   m_ui.participants->setColumnHidden(5, true); // Last Status Change
 #endif
   m_ui.participants->resizeColumnsToContents();
+#if SPOTON_GOLDBUG == 0
   m_ui.downDistillers->horizontalHeader()->resizeSection(0, 600);
   m_ui.upDistillers->horizontalHeader()->resizeSection(0, 600);
+#endif
   m_ui.received->setColumnHidden(m_ui.received->columnCount() - 1,
 				 true); // OID
   m_ui.transmitted->setColumnHidden(m_ui.transmitted->columnCount() - 1,
