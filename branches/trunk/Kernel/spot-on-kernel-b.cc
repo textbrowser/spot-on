@@ -1564,13 +1564,15 @@ void spoton_kernel::importUrls(void)
 	      }
 
 	    if(ok)
-	      spoton_misc::importUrl(description,
-				     title,
-				     url,
-				     db,
-				     crypt);
+	      spoton_misc::importUrl(description, title, url, db, crypt);
 	  }
 	while(true);
+      }
+    else
+      {
+	QWriteLocker locker(&m_urlListMutex);
+
+	m_urlList.clear();
       }
 
     db.close();
