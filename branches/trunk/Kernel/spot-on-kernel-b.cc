@@ -1400,7 +1400,67 @@ void spoton_kernel::importUrls(void)
       return;
     }
 
+  QList<QPair<QUrl, QString> > polarizers;
   QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT domain, type FROM distillers WHERE "
+		      "LOWER(TRIM(direction)) = 'upload'");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QByteArray domain;
+	      bool ok = true;
+
+	      domain = s_crypt->
+		decryptedAfterAuthenticated(QByteArray::
+					    fromBase64(query.
+						       value(0).
+						       toByteArray()),
+					    &ok);
+
+	      if(ok)
+		{
+		  QUrl url(QUrl::fromUserInput(domain));
+
+		  if(!url.isEmpty())
+		    if(url.isValid())
+		      {
+			QPair<QUrl, QString> pair;
+
+			pair.first = url;
+			pair.second =
+			  query.value(1).toString().toLower().trimmed();
+			polarizers.append(pair);
+		      }
+		}
+
+	      if(m_urlImportFuture.isCanceled())
+		break;
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(m_urlImportFuture.isCanceled())
+    {
+      delete crypt;
+      return;
+    }
 
   {
     QSqlDatabase db;
