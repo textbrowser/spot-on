@@ -610,11 +610,11 @@ void spoton::slotImportUrls(void)
 		  {
 		    ok = false;
 
-		    for(int i = 0; i < m_ui.downDistillers->rowCount(); i++)
+		    for(int i = 0; i < m_ui.sharedDistillers->rowCount(); i++)
 		      {
 			QComboBox *box = qobject_cast<QComboBox *>
-			  (m_ui.downDistillers->cellWidget(i, 1));
-			QTableWidgetItem *item = m_ui.downDistillers->
+			  (m_ui.sharedDistillers->cellWidget(i, 1));
+			QTableWidgetItem *item = m_ui.sharedDistillers->
 			  item(i, 0);
 
 			if(!box || !item)
@@ -1172,7 +1172,9 @@ void spoton::slotAddDistiller(void)
   QUrl url(QUrl::fromUserInput(m_ui.domain->text().trimmed()));
   bool ok = true;
 
-  if(!(m_ui.downDist->isChecked() || m_ui.upDist->isChecked()))
+  if(!(m_ui.downDist->isChecked() ||
+       m_ui.sharedDist->isChecked() ||
+       m_ui.upDist->isChecked()))
     {
       error = tr("Please specify at least one direction.");
       ok = false;
@@ -1210,6 +1212,9 @@ void spoton::slotAddDistiller(void)
 
 	if(m_ui.downDist->isChecked())
 	  list << "download";
+
+	if(m_ui.sharedDist->isChecked())
+	  list << "shared";
 
 	if(m_ui.upDist->isChecked())
 	  list << "upload";
@@ -1298,11 +1303,14 @@ void spoton::populateUrlDistillers(void)
       {
 	m_ui.downDistillers->clearContents();
 	m_ui.downDistillers->setRowCount(0);
+	m_ui.sharedDistillers->clearContents();
+	m_ui.sharedDistillers->setRowCount(0);
 	m_ui.upDistillers->clearContents();
 	m_ui.upDistillers->setRowCount(0);
 
 	QSqlQuery query(db);
 	int dCount = 0;
+	int sCount = 0;
 	int uCount = 0;
 
 	query.setForwardOnly(true);
@@ -1353,6 +1361,13 @@ void spoton::populateUrlDistillers(void)
 		      m_ui.downDistillers->setCellWidget(dCount, 1, box);
 		      dCount += 1;
 		    }
+		  else if(direction == "shared")
+		    {
+		      m_ui.sharedDistillers->setRowCount(sCount + 1);
+		      m_ui.sharedDistillers->setItem(sCount, 0, item);
+		      m_ui.sharedDistillers->setCellWidget(sCount, 1, box);
+		      sCount += 1;
+		    }
 		  else
 		    {
 		      m_ui.upDistillers->setRowCount(uCount + 1);
@@ -1364,6 +1379,7 @@ void spoton::populateUrlDistillers(void)
 	    }
 
 	m_ui.downDistillers->sortItems(0);
+	m_ui.sharedDistillers->sortItems(0);
 	m_ui.upDistillers->sortItems(0);
       }
 
@@ -1394,6 +1410,11 @@ void spoton::slotDeleteUrlDistillers(void)
     {
       direction = "download";
       list = m_ui.downDistillers->selectionModel()->selectedRows(0);
+    }
+  else if(m_ui.urlTab->currentIndex() == 0)
+    {
+      direction = "shared";
+      list = m_ui.sharedDistillers->selectionModel()->selectedRows(0);
     }
   else
     {

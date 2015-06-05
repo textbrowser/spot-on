@@ -2205,6 +2205,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.participants->resizeColumnsToContents();
 #if SPOTON_GOLDBUG == 0
   m_ui.downDistillers->horizontalHeader()->resizeSection(0, 600);
+  m_ui.sharedDistillers->horizontalHeader()->resizeSection(0, 600);
   m_ui.upDistillers->horizontalHeader()->resizeSection(0, 600);
 #endif
   m_ui.received->setColumnHidden(m_ui.received->columnCount() - 1,
