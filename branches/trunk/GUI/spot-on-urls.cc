@@ -1411,7 +1411,7 @@ void spoton::slotDeleteUrlDistillers(void)
       direction = "download";
       list = m_ui.downDistillers->selectionModel()->selectedRows(0);
     }
-  else if(m_ui.urlTab->currentIndex() == 0)
+  else if(m_ui.urlTab->currentIndex() == 1)
     {
       direction = "shared";
       list = m_ui.sharedDistillers->selectionModel()->selectedRows(0);
