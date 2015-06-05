@@ -356,6 +356,8 @@ void spoton_urldistribution::slotTimeout(void)
 		  ** Apply polarizers.
 		  */
 
+		  ok = false;
+
 		  for(int i = 0; i < polarizers.size(); i++)
 		    {
 		      QString type(polarizers.at(i).second);
