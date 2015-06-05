@@ -4861,8 +4861,7 @@ void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
 
   QWriteLocker locker(&s_emailRequestCacheMutex);
 
-  s_emailRequestCache.insert
-    (hash, QDateTime::currentDateTime().toTime_t());
+  s_emailRequestCache.insert(hash, QDateTime::currentDateTime().toTime_t());
 }
 
 void spoton_kernel::geminisCacheAdd(const QByteArray &data)
@@ -4882,8 +4881,7 @@ void spoton_kernel::geminisCacheAdd(const QByteArray &data)
 
   QWriteLocker locker(&s_geminisCacheMutex);
 
-  s_geminisCache.insert
-    (hash, QDateTime::currentDateTime().toTime_t());
+  s_geminisCache.insert(hash, QDateTime::currentDateTime().toTime_t());
 }
 
 void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
