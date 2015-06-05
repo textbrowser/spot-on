@@ -1442,7 +1442,9 @@ void spoton_kernel::importUrls(void)
 	db.setHostName(host);
 	db.setDatabaseName(database);
 	db.setPort(port);
-	db.open(name, password);
+
+	if(ok)
+	  db.open(name, password);
       }
 
     if(db.isOpen())

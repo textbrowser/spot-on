@@ -272,7 +272,9 @@ void spoton_urldistribution::slotTimeout(void)
 	db.setHostName(host);
 	db.setDatabaseName(database);
 	db.setPort(port);
-	db.open(name, password);
+
+	if(ok)
+	  db.open(name, password);
       }
 
     if(db.isOpen())
