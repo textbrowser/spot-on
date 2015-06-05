@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>502</height>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>402</width>
-                <height>479</height>
+                <width>392</width>
+                <height>482</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -805,8 +805,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>777</width>
-             <height>554</height>
+             <width>739</width>
+             <height>560</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1858,8 +1858,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>765</width>
-             <height>379</height>
+             <width>724</width>
+             <height>405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2468,8 +2468,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>273</width>
-                     <height>1406</height>
+                     <width>249</width>
+                     <height>1433</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -2935,8 +2935,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>845</width>
-             <height>549</height>
+             <width>806</width>
+             <height>579</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -3971,8 +3971,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>359</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4047,9 +4047,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>696</width>
-                 <height>587</height>
+                 <y>-375</y>
+                 <width>752</width>
+                 <height>602</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4669,19 +4669,6 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="apply_polarizers">
-                       <property name="toolTip">
-                        <string>Apply polarizers during the import process.</string>
-                       </property>
-                       <property name="text">
-                        <string>&amp;Apply Polarizers</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
                       <widget class="QPushButton" name="importUrls">
                        <property name="toolTip">
                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Import URL data from the shared.db database.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -4902,8 +4889,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>794</width>
-             <height>1026</height>
+             <width>711</width>
+             <height>1081</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6044,8 +6031,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>514</width>
-             <height>526</height>
+             <width>476</width>
+             <height>544</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7055,8 +7042,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>502</height>
+             <width>576</width>
+             <height>431</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7518,8 +7505,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>263</width>
-             <height>147</height>
+             <width>241</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7737,7 +7724,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -8081,7 +8068,6 @@
   <tabstop>urlSalt</tabstop>
   <tabstop>verify</tabstop>
   <tabstop>saveUrlCredentials</tabstop>
-  <tabstop>apply_polarizers</tabstop>
   <tabstop>importUrls</tabstop>
   <tabstop>search</tabstop>
   <tabstop>discover</tabstop>

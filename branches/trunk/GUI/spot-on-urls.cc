@@ -507,8 +507,6 @@ void spoton::slotImportUrls(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  bool apply_polarizers = m_settings.value
-    ("gui/applyPolarizers", true).toBool();
   int readEncrypted = 1;
 
   if(cipherType.isEmpty() || symmetricKey.isEmpty())
@@ -531,9 +529,7 @@ void spoton::slotImportUrls(void)
   progress.raise();
   progress.activateWindow();
   progress.update();
-
-  if(apply_polarizers)
-    populateUrlDistillers();
+  populateUrlDistillers();
 
   quint64 imported = 0;
   quint64 not_imported = 0;
@@ -612,43 +608,41 @@ void spoton::slotImportUrls(void)
 
 		if(ok)
 		  {
-		    if(apply_polarizers)
+		    ok = false;
+
+		    for(int i = 0; i < m_ui.downDistillers->rowCount(); i++)
 		      {
-			for(int i = 0;
-			    i < m_ui.downDistillers->rowCount(); i++)
+			QComboBox *box = qobject_cast<QComboBox *>
+			  (m_ui.downDistillers->cellWidget(i, 1));
+			QTableWidgetItem *item = m_ui.downDistillers->
+			  item(i, 0);
+
+			if(!box || !item)
+			  continue;
+
+			QString type("");
+			QUrl u1(QUrl::fromUserInput(item->text()));
+			QUrl u2(QUrl::fromUserInput(url));
+
+			if(box->currentIndex() == 0)
+			  type = "accept";
+			else
+			  type = "deny";
+
+			if(type == "accept")
 			  {
-			    QComboBox *box = qobject_cast<QComboBox *>
-			      (m_ui.downDistillers->cellWidget(i, 1));
-			    QTableWidgetItem *item = m_ui.downDistillers->
-			      item(i, 0);
-
-			    if(!box || !item)
-			      continue;
-
-			    QString type("");
-			    QUrl u1(QUrl::fromUserInput(item->text()));
-			    QUrl u2(QUrl::fromUserInput(url));
-
-			    if(box->currentIndex() == 0)
-			      type = "accept";
-			    else
-			      type = "deny";
-
-			    if(type == "accept")
+			    if(u2.toEncoded().startsWith(u1.toEncoded()))
 			      {
-				if(u2.toEncoded().startsWith(u1.toEncoded()))
-				  {
-				    ok = true;
-				    break;
-				  }
+				ok = true;
+				break;
 			      }
-			    else
+			  }
+			else
+			  {
+			    if(u2.toEncoded().startsWith(u1.toEncoded()))
 			      {
-				if(u2.toEncoded().startsWith(u1.toEncoded()))
-				  {
-				    ok = false;
-				    break;
-				  }
+				ok = false;
+				break;
 			      }
 			  }
 		      }
@@ -714,15 +708,9 @@ void spoton::slotShowUrlSettings(bool state)
 
 #if SPOTON_GOLDBUG == 0
   if(!state)
-    {
-      m_ui.urls_settings_layout->addWidget(m_ui.apply_polarizers);
-      m_ui.urls_settings_layout->addWidget(m_ui.importUrls);
-    }
+    m_ui.urls_settings_layout->addWidget(m_ui.importUrls);
   else
-    {
-      m_ui.urls_import_layout->addWidget(m_ui.apply_polarizers);
-      m_ui.urls_import_layout->addWidget(m_ui.importUrls);
-    }
+    m_ui.urls_import_layout->addWidget(m_ui.importUrls);
 #endif
 }
 

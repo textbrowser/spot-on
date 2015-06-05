@@ -1312,8 +1312,6 @@ spoton::spoton(void):QMainWindow()
   connect(m_ui.url_pages, SIGNAL(linkActivated(const QString &)),
 	  this, SLOT(slotPageClicked(const QString &)));
 #if SPOTON_GOLDBUG == 0
-  connect(m_ui.apply_polarizers, SIGNAL(toggled(bool)),
-	  this, SLOT(slotApplyPolarizersToggled(bool)));
   connect(m_ui.urls_db_type, SIGNAL(currentIndexChanged(int)),
 	  this, SLOT(slotPostgreSQLDisconnect(int)));
 #endif
@@ -1525,6 +1523,7 @@ spoton::spoton(void):QMainWindow()
   settings.remove("gui/acceptUrlDL");
   settings.remove("gui/acceptUrlUL");
   settings.remove("gui/acceptedIPs");
+  settings.remove("gui/applyPolarizers");
   settings.remove("gui/enableCongestionControl");
   settings.remove("gui/encryptionKey");
   settings.remove("gui/geoipPath");
@@ -1554,8 +1553,6 @@ spoton::spoton(void):QMainWindow()
 #if SPOTON_GOLDBUG == 0
   m_ui.activeUrlDistribution->setChecked
     (m_settings.value("gui/activeUrlDistribution", false).toBool());
-  m_ui.apply_polarizers->setChecked
-    (m_settings.value("gui/applyPolarizers", true).toBool());
 
   if(m_ui.postgresqlConnect->isEnabled())
     {

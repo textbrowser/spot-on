@@ -52,7 +52,7 @@ namespace spoton_common
 						 ** base sixteen.
 						 */
   static const int CHAT_TIME_DELTA_MAXIMUM = 30;
-  static const int KERNEL_URLS_BATCH_SIZE = 50;
+  static const int KERNEL_URLS_BATCH_SIZE = 25;
   static const int NAME_MAXIMUM_LENGTH = 64;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =

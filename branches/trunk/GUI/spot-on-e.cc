@@ -1775,15 +1775,6 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
   saveGemini(gemini, item1->text());
 }
 
-void spoton::slotApplyPolarizersToggled(bool state)
-{
-  m_settings["gui/applyPolarizers"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/applyPolarizers", state);
-}
-
 void spoton::slotOntopChatDialogs(bool state)
 {
   m_settings["gui/ontopChatDialogs"] = state;

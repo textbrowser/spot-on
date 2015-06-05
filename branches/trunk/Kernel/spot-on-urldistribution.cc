@@ -312,12 +312,16 @@ void spoton_urldistribution::slotTimeout(void)
 	querystr.append(QString(" LIMIT %1 ").arg(m_limit));
 	querystr.append(QString(" OFFSET %1 ").arg(m_offset));
 
+	quint64 count = 0;
+
 	if(query.exec(querystr))
 	  do
 	    {
 	      if(!query.next())
 		{
-		  m_offset = 0;
+		  if(count != m_limit)
+		    m_offset = 0;
+
 		  break;
 		}
 
@@ -403,6 +407,7 @@ void spoton_urldistribution::slotTimeout(void)
 	      if(m_quit)
 		break;
 
+	      count += 1;
 	      m_offset += 1;
 	    }
 	  while(true);

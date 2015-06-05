@@ -1417,7 +1417,7 @@ void spoton_kernel::importUrls(void)
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT domain, type FROM distillers WHERE "
-		      "LOWER(TRIM(direction)) = 'upload'");
+		      "LOWER(TRIM(direction)) = 'download'");
 
 	if(query.exec())
 	  while(query.next())
@@ -1528,6 +1528,42 @@ void spoton_kernel::importUrls(void)
 	      m_urlList.removeAt(0);
 
 	    locker.unlock();
+
+	    QByteArray description(urls.value(2));
+	    QByteArray title(urls.value(1));
+	    QByteArray url(urls.value(0));
+	    bool ok = false;
+
+	    for(int i = 0; i < polarizers.size(); i++)
+	      {
+		QString type(polarizers.at(i).second);
+		QUrl u1(polarizers.at(i).first);
+		QUrl u2(QUrl::fromUserInput(url));
+
+		if(type == "accept")
+		  {
+		    if(u2.toEncoded().startsWith(u1.toEncoded()))
+		      {
+			ok = true;
+			break;
+		      }
+		  }
+		else
+		  {
+		    if(u2.toEncoded().startsWith(u1.toEncoded()))
+		      {
+			ok = false;
+			break;
+		      }
+		  }
+	      }
+
+	    if(ok)
+	      spoton_misc::importUrl(description,
+				     title,
+				     url,
+				     db,
+				     crypt);
 	  }
 	while(true);
       }
