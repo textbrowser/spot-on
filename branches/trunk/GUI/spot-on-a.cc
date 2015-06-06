@@ -1085,7 +1085,15 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSignatureCheckBoxToggled(bool)));
+  connect(m_optionsUi.urlSignMessages,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSignatureCheckBoxToggled(bool)));
   connect(m_optionsUi.coAcceptSigned,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSignatureCheckBoxToggled(bool)));
+  connect(m_optionsUi.urlAcceptSigned,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSignatureCheckBoxToggled(bool)));
@@ -1909,6 +1917,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
   m_optionsUi.ontopChatDialogs->setChecked
     (m_settings.value("gui/ontopChatDialogs", false).toBool());
+  m_optionsUi.urlSignMessages->setChecked
+    (m_settings.value("gui/urlSignMessages", true).toBool());
 
   /*
   ** Please don't translate n/a.
@@ -7552,12 +7562,16 @@ void spoton::slotSignatureCheckBoxToggled(bool state)
     str = "chatAcceptSignedMessagesOnly";
   else if(checkBox == m_optionsUi.chatSignMessages)
     str = "chatSignMessages";
+  else if(checkBox == m_optionsUi.coAcceptSigned)
+    str = "coAcceptSignedMessagesOnly";
   else if(checkBox == m_optionsUi.emailAcceptSigned)
     str = "emailAcceptSignedMessagesOnly";
   else if(checkBox == m_optionsUi.emailSignMessages)
     str = "emailSignMessages";
-  else if(checkBox == m_optionsUi.coAcceptSigned)
-    str = "coAcceptSignedMessagesOnly";
+  else if(checkBox == m_optionsUi.urlAcceptSigned)
+    str = "urlAcceptSignedMessageOnly";
+  else if(checkBox == m_optionsUi.urlSignMessages)
+    str = "urlSignMessages";
 
   if(!str.isEmpty())
     {

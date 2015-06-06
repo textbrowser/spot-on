@@ -912,9 +912,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-435</y>
+             <y>-489</y>
              <width>581</width>
-             <height>949</height>
+             <height>1003</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1511,6 +1511,16 @@
                 <number>5</number>
                </property>
                <item>
+                <widget class="QCheckBox" name="urlAcceptSigned">
+                 <property name="text">
+                  <string>&amp;Accept only signed URLs.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QCheckBox" name="acceptUrlKeys">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1520,6 +1530,16 @@
                  </property>
                  <property name="text">
                   <string>Accept shared public &amp;keys.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="urlSignMessages">
+                 <property name="text">
+                  <string>Sign &amp;URLs.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -1681,7 +1701,9 @@
   <tabstop>scrambler</tabstop>
   <tabstop>sharePrivateKeys</tabstop>
   <tabstop>superEcho</tabstop>
+  <tabstop>urlAcceptSigned</tabstop>
   <tabstop>acceptUrlKeys</tabstop>
+  <tabstop>urlSignMessages</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
