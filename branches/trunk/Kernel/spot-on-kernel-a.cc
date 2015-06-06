@@ -97,7 +97,6 @@ QMultiHash<qint64,
 	   QPointer<spoton_neighbor> > spoton_kernel::s_connectionCounts;
 QList<QList<QByteArray> > spoton_kernel::s_institutionKeys;
 QList<QPair<QByteArray, QByteArray> > spoton_kernel::s_adaptiveEchoPairs;
-QPointer<spoton_kernel> spoton_kernel::s_kernel = 0;
 QReadWriteLock spoton_kernel::s_adaptiveEchoPairsMutex;
 QReadWriteLock spoton_kernel::s_buzzKeysMutex;
 QReadWriteLock spoton_kernel::s_emailRequestCacheMutex;
@@ -106,6 +105,7 @@ QReadWriteLock spoton_kernel::s_institutionKeysMutex;
 QReadWriteLock spoton_kernel::s_institutionLastModificationTimeMutex;
 QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
+static QPointer<spoton_kernel> s_kernel = 0;
 
 #if QT_VERSION >= 0x050000
 static void qt_message_handler(QtMsgType type,
@@ -303,7 +303,7 @@ int main(int argc, char *argv[])
     {
       try
 	{
-	  spoton_kernel::s_kernel = new spoton_kernel();
+	  s_kernel = new spoton_kernel();
 
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
 	  QMainWindow window;
@@ -311,7 +311,7 @@ int main(int argc, char *argv[])
 	  window.showMinimized();
 	  QObject::connect(&qapplication,
 			   SIGNAL(lastWindowClosed(void)),
-			   spoton_kernel::s_kernel,
+			   s_kernel,
 			   SLOT(deleteLater(void)));
 #endif
 	  qapplication.exec();
@@ -3859,11 +3859,11 @@ void spoton_kernel::clearBuzzKeysContainer(void)
 
 int spoton_kernel::interfaces(void)
 {
-  if(s_kernel)
+  if(instance())
     {
       int count = 0;
 
-      foreach(QSslSocket *socket, s_kernel->m_guiServer->
+      foreach(QSslSocket *socket, instance()->m_guiServer->
 	      findChildren<QSslSocket *> ())
 	count += socket->isEncrypted();
 
@@ -5123,4 +5123,9 @@ QList<QPair<QByteArray, QByteArray> > spoton_kernel::adaptiveEchoTokens(void)
   QReadLocker locker(&s_adaptiveEchoPairsMutex);
 
   return s_adaptiveEchoPairs;
+}
+
+QPointer<spoton_kernel> spoton_kernel::instance(void)
+{
+  return s_kernel;
 }

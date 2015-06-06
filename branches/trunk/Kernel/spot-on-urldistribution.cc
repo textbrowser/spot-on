@@ -478,7 +478,8 @@ void spoton_urldistribution::slotTimeout(void)
 	(keyInformation, publicKeys.at(i), &ok);
 
       if(ok)
-	signature = s_crypt2->digitalSignature(keyInformation + data, &ok);
+	if(spoton_kernel::setting("gui/urlSignMessages", true).toBool())
+	  signature = s_crypt2->digitalSignature(keyInformation + data, &ok);
 
       if(ok)
 	{

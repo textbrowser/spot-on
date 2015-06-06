@@ -1903,6 +1903,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/emailSignMessages", true).toBool());
   m_optionsUi.coAcceptSigned->setChecked
     (m_settings.value("gui/coAcceptSignedMessagesOnly", true).toBool());
+  m_optionsUi.urlAcceptSigned->setChecked
+    (m_settings.value("gui/urlAcceptSignedMessagesOnly", true).toBool());
   m_ui.receivers->setChecked(m_settings.value("gui/etpReceivers",
 					      false).toBool());
   m_optionsUi.autoEmailRetrieve->setChecked
@@ -7569,7 +7571,7 @@ void spoton::slotSignatureCheckBoxToggled(bool state)
   else if(checkBox == m_optionsUi.emailSignMessages)
     str = "emailSignMessages";
   else if(checkBox == m_optionsUi.urlAcceptSigned)
-    str = "urlAcceptSignedMessageOnly";
+    str = "urlAcceptSignedMessagesOnly";
   else if(checkBox == m_optionsUi.urlSignMessages)
     str = "urlSignMessages";
 

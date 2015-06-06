@@ -71,7 +71,7 @@ class spoton_kernel: public QObject
   static QHash<QString, spoton_crypt *> s_crypts;
   static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QMultiHash<qint64, QPointer<spoton_neighbor> > s_connectionCounts;
-  static QPointer<spoton_kernel> s_kernel;
+  static QPointer<spoton_kernel> instance(void);
   static const int CACHE_TIME_DELTA_MAXIMUM = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM = 90;
   static const int MAIL_TIME_DELTA_MAXIMUM = 90;

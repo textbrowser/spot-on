@@ -1833,8 +1833,8 @@ void spoton_neighbor::processData(void)
 	    messageType.clear();
 
 	  if(messageType.isEmpty() && data.trimmed().split('\n').size() == 3)
-	    if(spoton_kernel::s_kernel &&
-	       spoton_kernel::s_kernel->
+	    if(spoton_kernel::instance() &&
+	       spoton_kernel::instance()->
 	       processPotentialStarBeamData(data, discoveredAdaptiveEchoPair))
 	      {
 		if(!discoveredAdaptiveEchoPair.first.isEmpty() &&
@@ -4374,28 +4374,30 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 		      }
 		  }
 
-		  QByteArray publicKeyHash(list.value(0));
-
-		  if(!spoton_misc::
-		     isValidSignature(dataForSignature,
-				      publicKeyHash,
-				      signature,
-				      spoton_kernel::s_crypts.
-				      value("url-signature", 0)))
+		  if(spoton_kernel::setting("gui/urlAcceptSignedMessagesOnly",
+					    true).toBool())
 		    {
-		      spoton_misc::logError
-			("spoton_receive::"
-			 "process0080(): invalid "
-			 "signature.");
-		      return;
-		    }
-		  else
-		    {
-		      if(!list.isEmpty())
-			list.removeAt(0);
+		      QByteArray publicKeyHash(list.value(0));
 
-		      saveUrlsToShared(list);
+		      if(!spoton_misc::
+			 isValidSignature(dataForSignature,
+					  publicKeyHash,
+					  signature,
+					  spoton_kernel::s_crypts.
+					  value("url-signature", 0)))
+			{
+			  spoton_misc::logError
+			    ("spoton_receive::"
+			     "process0080(): invalid "
+			     "signature.");
+			  return;
+			}
 		    }
+
+		  if(!list.isEmpty())
+		    list.removeAt(0);
+
+		  saveUrlsToShared(list);
 		}
 	    }
 	  else
@@ -6307,6 +6309,6 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
   if(urls.isEmpty())
     return;
 
-  if(spoton_kernel::s_kernel)
-    spoton_kernel::s_kernel->saveUrls(urls);
+  if(spoton_kernel::instance())
+    spoton_kernel::instance()->saveUrls(urls);
 }

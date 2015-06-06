@@ -464,8 +464,9 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 
 		  if(ok)
 		    {
-		      if(spoton_kernel::s_kernel)
-			spoton_kernel::s_kernel->writeMessage0060(data, &ok);
+		      if(spoton_kernel::instance())
+			spoton_kernel::instance()->
+			  writeMessage0060(data, &ok);
 		      else
 			ok = false;
 		    }
