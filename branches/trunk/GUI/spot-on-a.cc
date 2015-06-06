@@ -3153,10 +3153,10 @@ void spoton::slotPopulateListeners(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() < m_listenersLastModificationTime)
-	return;
-      else
+      if(fileInfo.lastModified() > m_listenersLastModificationTime)
 	m_listenersLastModificationTime = fileInfo.lastModified();
+      else
+	return;
     }
   else
     m_listenersLastModificationTime = QDateTime();
@@ -3618,10 +3618,10 @@ void spoton::slotPopulateNeighbors(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() < m_neighborsLastModificationTime)
-	return;
-      else
+      if(fileInfo.lastModified() > m_neighborsLastModificationTime)
 	m_neighborsLastModificationTime = fileInfo.lastModified();
+      else
+	return;
     }
   else
     m_neighborsLastModificationTime = QDateTime();
@@ -6657,10 +6657,10 @@ void spoton::slotPopulateParticipants(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() < m_participantsLastModificationTime)
-	return;
-      else
+      if(fileInfo.lastModified() > m_participantsLastModificationTime)
 	m_participantsLastModificationTime = fileInfo.lastModified();
+      else
+	return;
     }
   else
     m_participantsLastModificationTime = QDateTime();
@@ -8125,10 +8125,10 @@ void spoton::slotPopulateBuzzFavorites(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() < m_buzzFavoritesLastModificationTime)
-	return;
-      else
+      if(fileInfo.lastModified() > m_buzzFavoritesLastModificationTime)
 	m_buzzFavoritesLastModificationTime = fileInfo.lastModified();
+      else
+	return;
     }
   else
     m_buzzFavoritesLastModificationTime = QDateTime();

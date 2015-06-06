@@ -211,10 +211,10 @@ void spoton::slotPopulateEtpMagnets(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() < m_magnetsLastModificationTime)
-	return;
-      else
+      if(fileInfo.lastModified() > m_magnetsLastModificationTime)
 	m_magnetsLastModificationTime = fileInfo.lastModified();
+      else
+	return;
     }
   else
     m_magnetsLastModificationTime = QDateTime();
@@ -673,10 +673,10 @@ void spoton::slotPopulateKernelStatistics(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() < m_kernelStatisticsLastModificationTime)
-	return;
-      else
+      if(fileInfo.lastModified() > m_kernelStatisticsLastModificationTime)
 	m_kernelStatisticsLastModificationTime = fileInfo.lastModified();
+      else
+	return;
     }
   else
     m_kernelStatisticsLastModificationTime = QDateTime();
@@ -1153,10 +1153,10 @@ void spoton::slotPopulateStars(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() < m_starsLastModificationTime)
-	return;
-      else
+      if(fileInfo.lastModified() > m_starsLastModificationTime)
 	m_starsLastModificationTime = fileInfo.lastModified();
+      else
+	return;
     }
   else
     m_starsLastModificationTime = QDateTime();

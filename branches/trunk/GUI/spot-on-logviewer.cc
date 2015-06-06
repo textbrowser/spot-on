@@ -138,10 +138,10 @@ void spoton_logviewer::slotTimeout(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() < m_lastModificationTime)
-	return;
-      else
+      if(fileInfo.lastModified() > m_lastModificationTime)
 	m_lastModificationTime = fileInfo.lastModified();
+      else
+	return;
     }
   else
     m_lastModificationTime = QDateTime();
