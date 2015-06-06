@@ -1801,3 +1801,122 @@ void spoton::slotActiveUrlDistribution(bool state)
 
   settings.setValue("gui/activeUrlDistribution", state);
 }
+
+void spoton::initializeUrlDistillers(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QList<QList<QVariant> > list;
+	QList<QVariant> tuple;
+
+	tuple.append(QUrl::fromUserInput("ftp:"));
+	tuple.append("download");
+	tuple.append("deny");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("gopher:"));
+	tuple.append("download");
+	tuple.append("deny");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("http:"));
+	tuple.append("download");
+	tuple.append("deny");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("https:"));
+	tuple.append("download");
+	tuple.append("deny");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("ftp:"));
+	tuple.append("shared");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("gopher:"));
+	tuple.append("shared");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("http:"));
+	tuple.append("shared");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("https:"));
+	tuple.append("shared");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("ftp:"));
+	tuple.append("upload");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("gopher:"));
+	tuple.append("upload");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("http:"));
+	tuple.append("upload");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("https:"));
+	tuple.append("upload");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+
+	for(int i = 0; i < list.size(); i++)
+	  {
+	    QByteArray domain
+	      (list.at(i).value(0).toUrl().scheme().toLatin1() + "://" +
+	       list.at(i).value(0).toUrl().host().toUtf8() +
+	       list.at(i).value(0).toUrl().path().toUtf8());
+	    QSqlQuery query(db);
+	    bool ok;
+
+	    query.prepare("INSERT INTO distillers "
+			  "(direction, "
+			  "domain, "
+			  "domain_hash, "
+			  "type) "
+			  "VALUES "
+			  "(?, ?, ?, ?)");
+	    query.bindValue(0, list.at(i).value(1).toByteArray());
+	    query.bindValue
+	      (1,
+	       crypt->encryptedThenHashed(domain, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(2, crypt->keyedHash(domain, &ok).toBase64());
+
+	    query.bindValue(3, list.at(i).value(2).toString());
+
+	    if(ok)
+	      ok = query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}

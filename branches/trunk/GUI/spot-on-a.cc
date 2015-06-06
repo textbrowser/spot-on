@@ -5417,6 +5417,18 @@ void spoton::slotSetPassphrase(void)
       m_ui.nodeName->setText(m_ui.username->text());
       m_ui.urlName->setText(m_ui.username->text());
 
+      if(!m_settings.value("gui/initial_url_distillers_defined",
+			   false).toBool())
+	{
+	  initializeUrlDistillers();
+
+	  QSettings settings;
+
+	  settings.setValue("gui/initial_url_distillers_defined",
+			    true);
+	  m_settings["gui/initial_url_distillers_defined"] = true;
+	}
+
       if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
 			   false).toBool())
 	{
@@ -5620,6 +5632,18 @@ void spoton::slotValidatePassphrase(void)
 
 	    m_settings["gui/poptasticName"] =
 	      m_poptasticRetroPhoneSettingsUi.in_username->text().toUtf8();
+
+	    if(!m_settings.value("gui/initial_url_distillers_defined",
+				 false).toBool())
+	      {
+		initializeUrlDistillers();
+
+		QSettings settings;
+
+		settings.setValue("gui/initial_url_distillers_defined",
+				  true);
+		m_settings["gui/initial_url_distillers_defined"] = true;
+	      }
 
 	    if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
 				 false).toBool())

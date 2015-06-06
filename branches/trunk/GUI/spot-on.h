@@ -521,6 +521,7 @@ class spoton: public QMainWindow
   void importNeighbors(const QString &filePath);
   void initializeKernelSocket(void);
   void initializeSMP(const QString &hash);
+  void initializeUrlDistillers(void);
   void joinDefaultBuzzChannel(void);
   void magnetize(void);
   void playSong(const QString &name);
