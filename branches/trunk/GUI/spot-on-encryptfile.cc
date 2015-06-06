@@ -322,15 +322,6 @@ void spoton_encryptfile::decrypt(const QString &fileName,
       QByteArray hash(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES, 0);
       QByteArray hashes;
       qint64 rc = 0;
-      spoton_crypt crypt(credentials.value(0).toString(),
-			 credentials.value(1).toString(),
-			 QByteArray(),
-			 credentials.value(2).toByteArray(),
-			 credentials.value(3).toByteArray(),
-			 0,
-			 0,
-			 QString(""),
-			 modeOfOperation);
 
       rc = file1.read(bytes.data(), bytes.length());
 
@@ -373,6 +364,15 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 		}
 
 	      QByteArray data(bytes.mid(0, static_cast<int> (rc)));
+	      spoton_crypt crypt(credentials.value(0).toString(),
+				 credentials.value(1).toString(),
+				 QByteArray(),
+				 credentials.value(2).toByteArray(),
+				 credentials.value(3).toByteArray(),
+				 0,
+				 0,
+				 QString(""),
+				 modeOfOperation);
 
 	      {
 		QByteArray hash;
@@ -403,6 +403,15 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	  if(error.isEmpty())
 	    {
 	      bool ok = true;
+	      spoton_crypt crypt(credentials.value(0).toString(),
+				 credentials.value(1).toString(),
+				 QByteArray(),
+				 credentials.value(2).toByteArray(),
+				 credentials.value(3).toByteArray(),
+				 0,
+				 0,
+				 QString(""),
+				 modeOfOperation);
 
 	      hashes = crypt.keyedHash(hashes, &ok);
 
@@ -433,6 +442,8 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 
       emit status("Decrypting the file.");
 
+      QByteArray eKey(credentials.value(2).toByteArray());
+
       while((rc = file1.read(bytes.data(), bytes.length())) > 0)
 	{
 	  if(m_future.isCanceled())
@@ -443,6 +454,15 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 
 	  QByteArray data(bytes.mid(0, static_cast<int> (rc)));
 	  bool ok = true;
+	  spoton_crypt crypt(credentials.value(0).toString(),
+			     credentials.value(1).toString(),
+			     QByteArray(),
+			     eKey,
+			     credentials.value(3).toByteArray(),
+			     0,
+			     0,
+			     QString(""),
+			     modeOfOperation);
 
 	  data = crypt.decrypted(data, &ok);
 
@@ -453,21 +473,10 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	    }
 	  else
 	    {
-	      QByteArray bytes
-		(spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok));
+	      eKey = spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok);
 
 	      if(ok)
-		{
-		  crypt.setEncryptionKey(bytes, &ok);
-
-		  if(ok)
-		    rc = file2.write(data, data.length());
-		  else
-		    {
-		      error = tr("spoton_crypt::setEncryptionKey() error.");
-		      break;
-		    }
-		}
+		rc = file2.write(data, data.length());
 	      else
 		{
 		  error = tr("spoton_crypt::sha256Hash() error.");
@@ -523,15 +532,6 @@ void spoton_encryptfile::encrypt(const bool sign,
       QByteArray bytes;
       QByteArray hashes;
       qint64 rc = 0;
-      spoton_crypt crypt(credentials.value(0).toString(),
-			 credentials.value(1).toString(),
-			 QByteArray(),
-			 credentials.value(2).toByteArray(),
-			 credentials.value(3).toByteArray(),
-			 0,
-			 0,
-			 QString(""),
-			 modeOfOperation);
 
       bytes.append(QByteArray::number(sign));
       bytes.append(QByteArray(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES, 0));
@@ -547,6 +547,8 @@ void spoton_encryptfile::encrypt(const bool sign,
       bytes.resize(qMax(1024 / 8, credentials.value(4).toInt() / 8));
       emit status("Encrypting the file.");
 
+      QByteArray eKey(credentials.value(2).toByteArray());
+
       while((rc = file1.read(bytes.data(), bytes.length())) > 0)
 	{
 	  if(m_future.isCanceled())
@@ -557,6 +559,15 @@ void spoton_encryptfile::encrypt(const bool sign,
 
 	  QByteArray data(bytes.mid(0, static_cast<int> (rc)));
 	  bool ok = true;
+	  spoton_crypt crypt(credentials.value(0).toString(),
+			     credentials.value(1).toString(),
+			     QByteArray(),
+			     eKey,
+			     credentials.value(3).toByteArray(),
+			     0,
+			     0,
+			     QString(""),
+			     modeOfOperation);
 
 	  data = crypt.encrypted(data, &ok);
 
@@ -567,21 +578,10 @@ void spoton_encryptfile::encrypt(const bool sign,
 	    }
 	  else
 	    {
-	      QByteArray bytes
-		(spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok));
+	      eKey = spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok);
 
 	      if(ok)
-		{
-		  crypt.setEncryptionKey(bytes, &ok);
-
-		  if(ok)
-		    rc = file2.write(data, data.length());
-		  else
-		    {
-		      error = tr("spoton_crypt::setEncryptionKey() error.");
-		      break;
-		    }
-		}
+		rc = file2.write(data, data.length());
 	      else
 		{
 		  error = tr("spoton_crypt::sha256Hash() error.");
@@ -624,6 +624,15 @@ void spoton_encryptfile::encrypt(const bool sign,
       if(error.isEmpty() && !hashes.isEmpty())
 	{
 	  bool ok = true;
+	  spoton_crypt crypt(credentials.value(0).toString(),
+			     credentials.value(1).toString(),
+			     QByteArray(),
+			     credentials.value(2).toByteArray(),
+			     credentials.value(3).toByteArray(),
+			     0,
+			     0,
+			     QString(""),
+			     modeOfOperation);
 
 	  hashes = crypt.keyedHash(hashes, &ok);
 

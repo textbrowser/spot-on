@@ -1500,10 +1500,13 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
     {
       array.replace(0, array.length(), QByteArray(array.length(), 0));
       array.clear();
+      locker1.unlock();
       return publicKeyDecryptMcEliece(data, ok);
     }
   else if(array.startsWith("ntru-private-key-"))
     {
+      locker1.unlock();
+
       /*
       ** NTRU requires knowledge of the public key.
       */
@@ -3441,56 +3444,6 @@ QByteArray spoton_crypt::sha1FileHash(const QString &fileName,
 
   file.close();
   return hash.result();
-}
-
-void spoton_crypt::setEncryptionKey(const QByteArray &encryptionKey, bool *ok)
-{
-  QWriteLocker locker(&m_symmetricKeyMutex);
-
-  gcry_free(m_symmetricKey);
-  m_symmetricKey = 0;
-
-  if(m_symmetricKeyLength > 0 &&
-     (m_symmetricKey =
-      static_cast<char *> (gcry_calloc_secure(m_symmetricKeyLength,
-					      sizeof(char)))) != 0)
-    {
-      memcpy(m_symmetricKey,
-	     encryptionKey.constData(),
-	     qMin(m_symmetricKeyLength,
-		  static_cast<size_t> (encryptionKey.length())));
-
-      gcry_error_t err = 0;
-
-      if(!m_cipherHandle)
-	{
-	  if(ok)
-	    *ok = false;
-
-	  spoton_misc::logError("m_cipherHandle is zero!");
-	}
-      else if((err = gcry_cipher_setkey(m_cipherHandle,
-					m_symmetricKey,
-					m_symmetricKeyLength)) != 0)
-	{
-	  if(ok)
-	    *ok = false;
-
-	  QByteArray buffer(64, 0);
-
-	  gpg_strerror_r(err, buffer.data(),
-			 static_cast<size_t> (buffer.length()));
-	  spoton_misc::logError
-	    (QString("spoton_crypt::setEncryptionKey(): "
-		     "gcry_cipher_setkey() "
-		     "failure (%1).").
-	     arg(buffer.constData()));
-	}
-      else if(ok)
-	*ok = true;
-    }
-  else if(ok)
-    *ok = false;
 }
 
 void spoton_crypt::setHashKey(const QByteArray &hashKey)

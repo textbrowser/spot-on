@@ -301,14 +301,17 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      if(i == 15 && j == 15)
 		querystr.append
-		  (QString("SELECT url, title, description "
+		  (QString("SELECT url, title, description, "
+			   "date_time_inserted "
 			   "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
 	      else
 		querystr.append
-		  (QString("SELECT url, title, description "
+		  (QString("SELECT url, title, description, "
+			   "date_time_inserted "
 			   "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
 	    }
 
+	querystr.append(" ORDER BY 4 DESC ");
 	querystr.append(QString(" LIMIT %1 ").arg(m_limit));
 	querystr.append(QString(" OFFSET %1 ").arg(m_offset));
 
@@ -404,13 +407,13 @@ void spoton_urldistribution::slotTimeout(void)
 		       << bytes.value(1)  // Title
 		       << bytes.value(2); // Description
 
+	      count += 1;
+	      m_offset += 1;
+
 	      QReadLocker locker(&m_quitLocker);
 
 	      if(m_quit)
 		break;
-
-	      count += 1;
-	      m_offset += 1;
 	    }
 	  while(true);
       }

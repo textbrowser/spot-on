@@ -1837,7 +1837,7 @@ void spoton::initializeUrlDistillers(void)
 	tuple.append("deny");
 	list << tuple;
 	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https:"));
+	tuple.append(QUrl::fromUserInput("https://en.wikipedia.org"));
 	tuple.append("download");
 	tuple.append("deny");
 	list << tuple;
@@ -1857,7 +1857,7 @@ void spoton::initializeUrlDistillers(void)
 	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https:"));
+	tuple.append(QUrl::fromUserInput("https://en.wikipedia.org"));
 	tuple.append("shared");
 	tuple.append("accept");
 	list << tuple;
@@ -1877,7 +1877,7 @@ void spoton::initializeUrlDistillers(void)
 	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https:"));
+	tuple.append(QUrl::fromUserInput("https://en.wikipedia.org"));
 	tuple.append("upload");
 	tuple.append("accept");
 	list << tuple;

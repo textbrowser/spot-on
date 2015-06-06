@@ -1517,15 +1517,13 @@ void spoton_kernel::importUrls(void)
       {
 	do
 	  {
+	    if(m_urlImportFuture.isCanceled())
+	      break;
+
 	    QWriteLocker locker(&m_urlListMutex);
 
-	    if(m_urlImportFuture.isCanceled() || m_urlList.isEmpty())
-	      {
-		if(m_urlImportFuture.isCanceled())
-		  m_urlList.clear();
-
-		break;
-	      }
+	    if(m_urlList.isEmpty())
+	      break;
 
 	    QList<QByteArray> urls(m_urlList.mid(0, 3));
 
