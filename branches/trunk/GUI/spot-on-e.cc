@@ -1899,7 +1899,7 @@ void spoton::initializeUrlDistillers(void)
 			  "type) "
 			  "VALUES "
 			  "(?, ?, ?, ?)");
-	    query.bindValue(0, list.at(i).value(1).toByteArray());
+	    query.bindValue(0, list.at(i).value(1).toString());
 	    query.bindValue
 	      (1,
 	       crypt->encryptedThenHashed(domain, &ok).toBase64());
