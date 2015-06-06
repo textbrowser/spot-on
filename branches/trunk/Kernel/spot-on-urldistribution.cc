@@ -507,7 +507,8 @@ void spoton_urldistribution::slotTimeout(void)
 	  message.toBase64() + "\n" +
 	  messageCode.toBase64();
 
-      emit sendURLs(message);
+      if(ok)
+	emit sendURLs(message);
 
       QReadLocker locker(&m_quitLocker);
 
