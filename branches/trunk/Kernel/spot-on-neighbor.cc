@@ -5486,7 +5486,9 @@ QString spoton_neighbor::findMessageType
 	      QDataStream stream(&data, QIODevice::ReadOnly);
 
 	      stream >> a;
-	      type = a;
+
+	      if(stream.status() == QDataStream::Ok)
+		type = a;
 	    }
 
 	  if(!type.isEmpty())
@@ -5532,7 +5534,9 @@ QString spoton_neighbor::findMessageType
 	      QDataStream stream(&data, QIODevice::ReadOnly);
 
 	      stream >> a;
-	      type = a;
+
+	      if(stream.status() == QDataStream::Ok)
+		type = a;
 	    }
 
 	  if(!type.isEmpty())
@@ -5573,7 +5577,9 @@ QString spoton_neighbor::findMessageType
 	      QDataStream stream(&data, QIODevice::ReadOnly);
 
 	      stream >> a;
-	      type = a;
+
+	      if(stream.status() == QDataStream::Ok)
+		type = a;
 	    }
 
 	  if(!type.isEmpty())
@@ -5661,7 +5667,9 @@ QString spoton_neighbor::findMessageType
 	    QDataStream stream(&data, QIODevice::ReadOnly);
 
 	    stream >> a;
-	    type = a;
+
+	    if(stream.status() == QDataStream::Ok)
+	      type = a;
 
 	    if(type == "0080")
 	      {
@@ -5670,7 +5678,11 @@ QString spoton_neighbor::findMessageType
 		for(int i = 0; i < 4; i++)
 		  {
 		    stream >> a;
-		    list.append(a);
+
+		    if(stream.status() != QDataStream::Ok)
+		      break;
+		    else
+		      list.append(a);
 		  }
 
 		symmetricKeys.append(list.value(0));

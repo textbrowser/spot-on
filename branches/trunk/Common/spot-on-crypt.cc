@@ -1364,6 +1364,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
+
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "idiotes.db");
 
@@ -1686,7 +1687,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
   buffer = gcry_sexp_nth_data(decrypted_t, 1, &length);
 
-  if(!buffer)
+  if(!buffer || length <= 0)
     {
       if(ok)
 	*ok = false;
