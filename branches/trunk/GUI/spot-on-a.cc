@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
   int integer = settings.value("gui/gcryctl_init_secmem", 262144).
     toInt(&ok);
 
-  if(integer < 131072 || integer > 999999999 || !ok)
+  if(integer < 65536 || integer > 999999999 || !ok)
     integer = 262144;
 
   spoton_crypt::init(integer);

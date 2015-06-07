@@ -1876,7 +1876,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     integer = 262144;
-  else if(integer < 131072 || integer > 999999999)
+  else if(integer < 65536 || integer > 999999999)
     integer = 262144;
 
   settings.insert("gui/gcryctl_init_secmem", integer);
@@ -2010,7 +2010,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     integer = 262144;
-  else if(integer < 131072 || integer > 999999999)
+  else if(integer < 65536 || integer > 999999999)
     integer = 262144;
 
   settings.insert("kernel/gcryctl_init_secmem", integer);

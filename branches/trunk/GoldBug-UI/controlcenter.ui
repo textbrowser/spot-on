@@ -8851,7 +8851,7 @@ QPushButton:pressed {
              <item>
               <widget class="QSpinBox" name="kernelSecureMemoryPool">
                <property name="minimum">
-                <number>131072</number>
+                <number>65536</number>
                </property>
                <property name="maximum">
                 <number>999999999</number>
@@ -8871,7 +8871,7 @@ QPushButton:pressed {
              <item>
               <widget class="QSpinBox" name="guiSecureMemoryPool">
                <property name="minimum">
-                <number>131072</number>
+                <number>65536</number>
                </property>
                <property name="maximum">
                 <number>999999999</number>
