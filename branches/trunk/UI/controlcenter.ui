@@ -4953,7 +4953,7 @@
               <item>
                <widget class="QSpinBox" name="guiSecureMemoryPool">
                 <property name="minimum">
-                 <number>262144</number>
+                 <number>131072</number>
                 </property>
                 <property name="maximum">
                  <number>999999999</number>
@@ -5143,7 +5143,7 @@
                    <item>
                     <widget class="QSpinBox" name="kernelSecureMemoryPool">
                      <property name="minimum">
-                      <number>262144</number>
+                      <number>131072</number>
                      </property>
                      <property name="maximum">
                       <number>999999999</number>

@@ -1876,7 +1876,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     integer = 262144;
-  else if(integer < 262144 || integer > 999999999)
+  else if(integer < 131072 || integer > 999999999)
     integer = 262144;
 
   settings.insert("gui/gcryctl_init_secmem", integer);
@@ -2010,7 +2010,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     integer = 262144;
-  else if(integer < 262144 || integer > 999999999)
+  else if(integer < 131072 || integer > 999999999)
     integer = 262144;
 
   settings.insert("kernel/gcryctl_init_secmem", integer);
@@ -3792,6 +3792,7 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 			    const QByteArray &t, // Title
 			    const QByteArray &u, // URL
 			    const QSqlDatabase &db,
+			    const int maximum_keywords,
 			    spoton_crypt *crypt)
 {
   if(!crypt)
@@ -3875,12 +3876,19 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 
   if(ok && separate)
     {
+      QHash<QString, char> discovered;
       QStringList keywords
 	(QString::fromUtf8(all_keywords.toLower().constData()).
 	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
+      int count = 0;
 
       for(int i = 0; i < keywords.size(); i++)
 	{
+	  if(!discovered.contains(keywords.at(i)))
+	    discovered[keywords.at(i)] = '0';
+	  else
+	    continue;
+
 	  QByteArray keywordHash;
 	  QSqlQuery query(db);
 	  bool ok = true;
@@ -3899,7 +3907,12 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 					  constData()));
 	  query.bindValue(0, keywordHash.constData());
 	  query.bindValue(1, urlHash.constData());
-	  query.exec();
+
+	  if(query.exec())
+	    count += 1;
+
+	  if(count >= maximum_keywords)
+	    break;
 	}
     }
 

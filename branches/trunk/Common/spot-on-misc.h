@@ -111,6 +111,7 @@ class spoton_misc
 			const QByteArray &t, // Title
 			const QByteArray &u, // URL
 			const QSqlDatabase &db,
+			const int maximum_keywords,
 			spoton_crypt *crypt);
   static bool isAcceptedIP(const QHostAddress &address,
 			   const qint64 id,

@@ -1562,7 +1562,9 @@ void spoton_kernel::importUrls(void)
 	      }
 
 	    if(ok)
-	      spoton_misc::importUrl(description, title, url, db, crypt);
+	      spoton_misc::importUrl
+		(description, title, url, db,
+		 spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION, crypt);
 	  }
 	while(true);
       }
