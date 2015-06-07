@@ -5298,7 +5298,8 @@ void spoton::slotSetPassphrase(void)
 
 	      spoton_reencode reencode;
 
-	      reencode.reencode(m_sb, crypt.data(), m_crypts.value("chat"));
+	      reencode.reencode
+		(m_sb, crypt.data(), m_crypts.value("chat", 0));
 	    }
 
 	  QHashIterator<QString, spoton_crypt *> it(m_crypts);
@@ -7675,7 +7676,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 				     receiverName,
 				     cipherType,
 				     oid,
-				     m_crypts.value("email"),
+				     m_crypts.value("email", 0),
 				     &ok);
 
   if(!ok || publicKey.isEmpty() || symmetricKey.isEmpty())

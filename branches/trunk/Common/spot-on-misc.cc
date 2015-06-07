@@ -3510,13 +3510,16 @@ bool spoton_misc::prepareUrlDistillersDatabase(void)
 	QSqlQuery query(db);
 
 	if(!query.exec("CREATE TABLE IF NOT EXISTS distillers ("
-		       "direction TEXT NOT NULL DEFAULT 'download', "
+		       "direction TEXT NOT NULL, "
+		       "direction_hash TEXT NOT NULL, " /*
+							** Keyed hash.
+							*/
 		       "domain TEXT NOT NULL, "
 		       "domain_hash TEXT KEY NOT NULL, " /*
 							 ** Keyed hash.
 							 */
-		       "type TEXT NOT NULL DEFAULT 'accept', "
-		       "PRIMARY KEY (direction, domain_hash))"))
+		       "permission TEXT NOT NULL, "
+		       "PRIMARY KEY (direction_hash, domain_hash))"))
 	  ok = false;
 	else
 	  ok = true;

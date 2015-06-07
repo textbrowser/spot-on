@@ -959,7 +959,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	   list.value(2),                   // Status
 	   list.value(3),                   // Timestamp
 	   2.5 * POPTASTIC_STATUS_INTERVAL, // Seconds
-	   s_crypts.value("poptastic"));
+	   s_crypts.value("poptastic", 0));
     }
   else
     {
@@ -1388,7 +1388,7 @@ void spoton_kernel::slotUrlImportTimerExpired(void)
 void spoton_kernel::importUrls(void)
 {
   spoton_crypt *crypt = 0;
-  spoton_crypt *s_crypt = s_crypts.value("url", 0);
+  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
 
   crypt = spoton_misc::retrieveUrlCommonCredentials(s_crypt);
 
@@ -1414,15 +1414,18 @@ void spoton_kernel::importUrls(void)
     if(db.open())
       {
 	QSqlQuery query(db);
+	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT domain, type FROM distillers WHERE "
-		      "LOWER(TRIM(direction)) = 'download'");
+	query.prepare("SELECT domain, permission FROM distillers WHERE "
+		      "direction_hash = ?");
+	query.bindValue(0, s_crypt->keyedHash("upload", &ok).toBase64());
 
-	if(query.exec())
+	if(ok && query.exec())
 	  while(query.next())
 	    {
 	      QByteArray domain;
+	      QByteArray permission;
 	      bool ok = true;
 
 	      domain = s_crypt->
@@ -1431,6 +1434,14 @@ void spoton_kernel::importUrls(void)
 						       value(0).
 						       toByteArray()),
 					    &ok);
+
+	      if(ok)
+		permission = s_crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(1).
+							 toByteArray()),
+					      &ok);
 
 	      if(ok)
 		{
@@ -1442,8 +1453,7 @@ void spoton_kernel::importUrls(void)
 			QPair<QUrl, QString> pair;
 
 			pair.first = url;
-			pair.second =
-			  query.value(1).toString().toLower().trimmed();
+			pair.second = permission.constData();
 			polarizers.append(pair);
 		      }
 		}

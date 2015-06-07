@@ -1851,36 +1851,62 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	query.setForwardOnly(true);
 
 	if(query.exec("SELECT direction, domain, "
-		      "domain_hash FROM distillers"))
+		      "permission, OID FROM distillers"))
 	  while(query.next())
 	    {
+	      QByteArray direction;
 	      QByteArray domain;
+	      QByteArray permission;
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
 	      updateQuery.prepare("UPDATE distillers "
-				  "SET domain = ?, "
-				  "domain_hash = ? WHERE "
-				  "direction = ? AND "
-				  "domain_hash = ?");
-	      domain = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(1).toByteArray()),
+				  "SET direction = ?, "
+				  "direction_hash = ?, "
+				  "domain = ?, "
+				  "domain_hash = ?, "
+				  "permission = ? WHERE "
+				  "OID = ?");
+	      direction = oldCrypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
 		 &ok);
 
 	      if(ok)
 		updateQuery.bindValue
-		  (0, newCrypt->encryptedThenHashed(domain, &ok).toBase64());
+		  (0, newCrypt->
+		   encryptedThenHashed(direction, &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
 		  (1,
-		   newCrypt->keyedHash(domain,
+		   newCrypt->keyedHash(direction,
 				       &ok).toBase64());
 
+	      if(ok)
+		domain = oldCrypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		updateQuery.bindValue
+		  (2, newCrypt->encryptedThenHashed(domain, &ok).toBase64());
+
+	      if(ok)
+		updateQuery.bindValue
+		  (3, newCrypt->keyedHash(domain, &ok).toBase64());
+
+	      if(ok)
+		permission = oldCrypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		updateQuery.bindValue
+		  (4, newCrypt->encryptedThenHashed(permission, &ok).
+		   toBase64());
+
 	      updateQuery.bindValue
-		(2, query.value(0));
-	      updateQuery.bindValue
-		(3, query.value(2));
+		(5, query.value(query.record().count() - 1));
 
 	      if(ok)
 		updateQuery.exec();
@@ -1892,9 +1918,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM distillers WHERE "
-				      "direction = ? AND domain_hash = ?");
-		  deleteQuery.bindValue(0, query.value(0));
-		  deleteQuery.bindValue(1, query.value(2));
+				      "OID = ?");
+		  deleteQuery.bindValue
+		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
 		}
 	    }

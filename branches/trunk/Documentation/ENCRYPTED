@@ -132,7 +132,9 @@ magnet
 
 urls_distillers_information.db
 
+direction
 domain
+permission
 
 urls_key_information.db
 

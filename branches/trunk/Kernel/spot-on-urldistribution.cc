@@ -104,15 +104,19 @@ void spoton_urldistribution::slotTimeout(void)
     if(db.open())
       {
 	QSqlQuery query(db);
+	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT domain, type FROM distillers WHERE "
-		      "LOWER(TRIM(direction)) = 'upload'");
+	query.prepare("SELECT domain, permission FROM distillers WHERE "
+		      "direction_hash = ?");
+	query.bindValue(0, s_crypt1->keyedHash(QByteArray("upload"),
+					       &ok).toBase64());
 
-	if(query.exec())
+	if(ok && query.exec())
 	  while(query.next())
 	    {
 	      QByteArray domain;
+	      QByteArray permission;
 	      bool ok = true;
 
 	      domain = s_crypt1->
@@ -121,6 +125,14 @@ void spoton_urldistribution::slotTimeout(void)
 						       value(0).
 						       toByteArray()),
 					    &ok);
+
+	      if(ok)
+		permission = s_crypt1->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(1).
+							 toByteArray()),
+					      &ok);
 
 	      if(ok)
 		{
@@ -132,8 +144,7 @@ void spoton_urldistribution::slotTimeout(void)
 			QPair<QUrl, QString> pair;
 
 			pair.first = url;
-			pair.second =
-			  query.value(1).toString().toLower().trimmed();
+			pair.second = permission.constData();
 			polarizers.append(pair);
 		      }
 		}

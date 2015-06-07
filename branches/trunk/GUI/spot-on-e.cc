@@ -1885,30 +1885,44 @@ void spoton::initializeUrlDistillers(void)
 
 	for(int i = 0; i < list.size(); i++)
 	  {
+	    QByteArray direction(list.at(i).value(1).toByteArray());
 	    QByteArray domain
 	      (list.at(i).value(0).toUrl().scheme().toLatin1() + "://" +
 	       list.at(i).value(0).toUrl().host().toUtf8() +
 	       list.at(i).value(0).toUrl().path().toUtf8());
+	    QByteArray permission(list.at(i).value(2).toByteArray());
 	    QSqlQuery query(db);
-	    bool ok;
+	    bool ok = true;
 
 	    query.prepare("INSERT INTO distillers "
 			  "(direction, "
+			  "direction_hash, "
 			  "domain, "
 			  "domain_hash, "
-			  "type) "
+			  "permission) "
 			  "VALUES "
-			  "(?, ?, ?, ?)");
-	    query.bindValue(0, list.at(i).value(1).toString());
+			  "(?, ?, ?, ?, ?)");
 	    query.bindValue
-	      (1,
-	       crypt->encryptedThenHashed(domain, &ok).toBase64());
+	      (0,
+	       crypt->encryptedThenHashed(direction, &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(2, crypt->keyedHash(domain, &ok).toBase64());
+		(1,
+		 crypt->keyedHash(direction, &ok).toBase64());
 
-	    query.bindValue(3, list.at(i).value(2).toString());
+	    if(ok)
+	      query.bindValue
+		(2,
+		 crypt->encryptedThenHashed(domain, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(3, crypt->keyedHash(domain, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(4, crypt->encryptedThenHashed(permission, &ok).toBase64());
 
 	    if(ok)
 	      ok = query.exec();

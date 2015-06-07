@@ -434,7 +434,7 @@ void spoton::slotGatherUrlStatistics(void)
 void spoton::slotImportUrls(void)
 {
 #if SPOTON_GOLDBUG == 0
-  spoton_crypt *crypt = m_crypts.value("url", 0);
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -820,7 +820,7 @@ void spoton::slotSaveUrlCredentials(void)
     (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
   QPair<QByteArray, QByteArray> keys;
   QString error("");
-  spoton_crypt *crypt = m_crypts.value("url", 0);
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -928,7 +928,7 @@ void spoton::slotPostgreSQLConnect(void)
       return;
     }
 
-  spoton_crypt *crypt = m_crypts.value("url", 0);
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1052,7 +1052,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
 {
   QPair<QByteArray, QByteArray> keys;
   QString error("");
-  spoton_crypt *crypt = m_crypts.value("url", 0);
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1220,20 +1220,37 @@ void spoton::slotAddDistiller(void)
 
 	for(int i = 0; i < list.size(); i++)
 	  {
+	    QByteArray permission("deny");
+	    QString direction(list.at(i));
+	    bool ok = true;
+
 	    query.prepare("INSERT INTO distillers "
 			  "(direction, "
+			  "direction_hash, "
 			  "domain, "
-			  "domain_hash) "
+			  "domain_hash, "
+			  "permission) "
 			  "VALUES "
-			  "(?, ?, ?)");
-	    query.bindValue(0, list.at(i));
+			  "(?, ?, ?, ?, ?)");
 	    query.bindValue
-	      (1,
-	       crypt->encryptedThenHashed(domain, &ok).toBase64());
+	      (0, crypt->encryptedThenHashed(direction.toLatin1(),
+					     &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(2, crypt->keyedHash(domain, &ok).toBase64());
+		(1, crypt->keyedHash(direction.toLatin1(), &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(2, crypt->encryptedThenHashed(domain, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(3, crypt->keyedHash(domain, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(4, crypt->encryptedThenHashed(permission, &ok).toBase64());
 
 	    if(ok)
 	      ok = query.exec();
@@ -1314,27 +1331,40 @@ void spoton::populateUrlDistillers(void)
 
 	query.setForwardOnly(true);
 	query.prepare
-	  ("SELECT direction, domain, type, OID FROM distillers");
+	  ("SELECT direction, domain, permission, OID FROM distillers");
 
 	if(query.exec())
 	  while(query.next())
 	    {
+	      QByteArray direction;
 	      QByteArray domain;
+	      QByteArray permission;
 	      bool ok = true;
 
-	      domain = crypt->
+	      direction = crypt->
 		decryptedAfterAuthenticated(QByteArray::
-					    fromBase64(query.
-						       value(1).
+					    fromBase64(query.value(0).
 						       toByteArray()),
 					    &ok);
 
 	      if(ok)
+		domain = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(1).
+							 toByteArray()),
+					      &ok);
+
+	      if(ok)
+		permission = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.value(2).
+							 toByteArray()),
+					      &ok);
+
+	      if(ok)
 		{
 		  QComboBox *box = new QComboBox();
-		  QString direction
-		    (query.value(0).toString().toLower().trimmed());
-		  QString type(query.value(2).toString().toLower().trimmed());
 		  QTableWidgetItem *item = new QTableWidgetItem
 		    (QString::fromUtf8(domain.constData()));
 
@@ -1343,7 +1373,7 @@ void spoton::populateUrlDistillers(void)
 		  box->setProperty
 		    ("oid", query.value(query.record().count() - 1));
 
-		  if(type == "accept")
+		  if(permission == "accept")
 		    box->setCurrentIndex(0);
 		  else
 		    box->setCurrentIndex(1);
@@ -1443,10 +1473,14 @@ void spoton::slotDeleteUrlDistillers(void)
 
 	  query.exec("PRAGMA secure_delete = ON");
 	  query.prepare("DELETE FROM distillers WHERE "
-			"direction = ? AND domain_hash = ?");
-	  query.bindValue(0, direction);
-	  query.bindValue(1, crypt->keyedHash(str.toUtf8(),
-					      &ok).toBase64());
+			"direction_hash = ? AND domain_hash = ?");
+	  query.bindValue
+	    (0, crypt->keyedHash(direction.toLatin1(),
+				 &ok).toBase64());
+
+	  if(ok)
+	    query.bindValue(1, crypt->keyedHash(str.toUtf8(),
+						&ok).toBase64());
 
 	  if(ok)
 	    query.exec();
@@ -1501,7 +1535,7 @@ void spoton::slotDeleteLink(const QUrl &u)
       url.setScheme(scheme);
     }
 
-  spoton_crypt *crypt = m_crypts.value("url", 0);
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1624,6 +1658,11 @@ void spoton::slotDeleteLink(const QUrl &u)
 
 void spoton::slotUrlPolarizerTypeChange(int index)
 {
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
   QComboBox *box = qobject_cast<QComboBox *> (sender());
 
   if(!box)
@@ -1640,17 +1679,24 @@ void spoton::slotUrlPolarizerTypeChange(int index)
     if(db.open())
       {
 	QSqlQuery query(db);
+	bool ok = true;
 
 	query.prepare("UPDATE distillers SET "
-		      "type = ? WHERE OID = ?");
+		      "permission = ? WHERE OID = ?");
 
 	if(index == 0)
-	  query.bindValue(0, "accept");
+	  query.bindValue
+	    (0, crypt->encryptedThenHashed(QByteArray("accept"),
+					   &ok).toBase64());
 	else
-	  query.bindValue(0, "deny");
+	  query.bindValue
+	    (0, crypt->encryptedThenHashed(QByteArray("deny"),
+					   &ok).toBase64());
 
 	query.bindValue(1, box->property("oid"));
-	query.exec();
+
+	if(ok)
+	  query.exec();
       }
 
     db.close();
