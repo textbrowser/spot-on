@@ -1419,7 +1419,7 @@ void spoton_kernel::importUrls(void)
 	query.setForwardOnly(true);
 	query.prepare("SELECT domain, permission FROM distillers WHERE "
 		      "direction_hash = ?");
-	query.bindValue(0, s_crypt->keyedHash("upload", &ok).toBase64());
+	query.bindValue(0, s_crypt->keyedHash("download", &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())
