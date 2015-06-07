@@ -1872,12 +1872,12 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 5;
 
   settings.insert("gui/emailRetrievalInterval", integer);
-  integer = qAbs(settings.value("gui/gcryctl_init_secmem", 65536).toInt(&ok));
+  integer = qAbs(settings.value("gui/gcryctl_init_secmem", 262144).toInt(&ok));
 
   if(!ok)
-    integer = 65536;
-  else if(integer < 65536 || integer > 999999999)
-    integer = 65536;
+    integer = 262144;
+  else if(integer < 262144 || integer > 999999999)
+    integer = 262144;
 
   settings.insert("gui/gcryctl_init_secmem", integer);
   integer = settings.value("gui/guiExternalIpInterval", -1).toInt(&ok);
@@ -2006,12 +2006,12 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   settings.insert("kernel/cachePurgeInterval", rational);
   integer = qAbs(settings.value("kernel/gcryctl_init_secmem",
-				65536).toInt(&ok));
+				262144).toInt(&ok));
 
   if(!ok)
-    integer = 65536;
-  else if(integer < 65536 || integer > 999999999)
-    integer = 65536;
+    integer = 262144;
+  else if(integer < 262144 || integer > 999999999)
+    integer = 262144;
 
   settings.insert("kernel/gcryctl_init_secmem", integer);
   integer = qAbs

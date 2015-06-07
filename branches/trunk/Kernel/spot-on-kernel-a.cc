@@ -164,11 +164,11 @@ static void sig_handler(int signum)
 		      0,
 		      0,
 		      &libspotonHandle,
-		      65536) == LIBSPOTON_ERROR_NONE) /*
-						      ** We don't need
-						      ** the official secure
-						      ** memory size here.
-						      */
+		      262144) == LIBSPOTON_ERROR_NONE) /*
+						       ** We don't need
+						       ** the official secure
+						       ** memory size here.
+						       */
 #ifdef Q_OS_WIN32
     libspoton_deregister_kernel(_getpid(), &libspotonHandle);
 #else
@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
       spoton_misc::vacuumAllDatabases();
 
   if(!settings.contains("kernel/gcryctl_init_secmem"))
-    settings.setValue("kernel/gcryctl_init_secmem", 65536);
+    settings.setValue("kernel/gcryctl_init_secmem", 262144);
 
   if(!settings.contains("kernel/sctp_nodelay"))
     settings.setValue("kernel/sctp_nodelay", 1);
@@ -269,11 +269,11 @@ int main(int argc, char *argv[])
     settings.setValue("kernel/tcp_nodelay", 1);
 
   bool ok = true;
-  int integer = settings.value("kernel/gcryctl_init_secmem", 65536).
+  int integer = settings.value("kernel/gcryctl_init_secmem", 262144).
     toInt(&ok);
 
-  if(integer <= 0 || integer > 65536 || !ok)
-    integer = 65536;
+  if(integer <= 0 || integer > 999999999 || !ok)
+    integer = 262144;
 
   spoton_crypt::init(integer);
 
@@ -555,7 +555,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_scramblerTimer.setSingleShot(true);
   m_settingsTimer.setSingleShot(true);
   m_statusTimer.start(1000 * STATUS_INTERVAL);
-  m_urlImportTimer.start(15000);
+  m_urlImportTimer.start(5000);
   m_guiServer = new spoton_gui_server(this);
   m_mailer = new spoton_mailer(this);
   m_starbeamWriter = new spoton_starbeam_writer(this);
@@ -776,7 +776,7 @@ void spoton_kernel::cleanup(void)
 		      0,
 		      0,
 		      &libspotonHandle,
-		      setting("kernel/gcryctl_init_secmem", 65536).
+		      setting("kernel/gcryctl_init_secmem", 262144).
 		      toInt()) == LIBSPOTON_ERROR_NONE)
     libspoton_deregister_kernel
       (static_cast<pid_t> (QCoreApplication::applicationPid()),
@@ -1485,7 +1485,7 @@ void spoton_kernel::checkForTermination(void)
 				 0,
 				 &libspotonHandle,
 				 setting("kernel/gcryctl_init_secmem",
-					 65536).toInt())) ==
+					 262144).toInt())) ==
 	 LIBSPOTON_ERROR_NONE)
 	registered = QCoreApplication::applicationPid() ==
 	  libspoton_registered_kernel_pid(&libspotonHandle, &err);

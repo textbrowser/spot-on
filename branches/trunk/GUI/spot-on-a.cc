@@ -167,17 +167,17 @@ int main(int argc, char *argv[])
 #endif
 
   if(!settings.contains("gui/gcryctl_init_secmem"))
-    settings.setValue("gui/gcryctl_init_secmem", 65536);
+    settings.setValue("gui/gcryctl_init_secmem", 262144);
 
   if(!settings.contains("gui/tcp_nodelay"))
     settings.setValue("gui/tcp_nodelay", 1);
 
   bool ok = true;
-  int integer = settings.value("gui/gcryctl_init_secmem", 65536).
+  int integer = settings.value("gui/gcryctl_init_secmem", 262144).
     toInt(&ok);
 
-  if(integer <= 0 || integer > 65536 || !ok)
-    integer = 65536;
+  if(integer <= 0 || integer > 999999999 || !ok)
+    integer = 262144;
 
   spoton_crypt::init(integer);
 
@@ -2126,9 +2126,9 @@ spoton::spoton(void):QMainWindow()
   m_ui.destination->setText(m_settings.value("gui/etpDestinationPath", "").
 			    toString());
   m_ui.guiSecureMemoryPool->setValue
-    (m_settings.value("gui/gcryctl_init_secmem", 65536).toInt());
+    (m_settings.value("gui/gcryctl_init_secmem", 262144).toInt());
   m_ui.kernelSecureMemoryPool->setValue
-    (m_settings.value("kernel/gcryctl_init_secmem", 65536).toInt());
+    (m_settings.value("kernel/gcryctl_init_secmem", 262144).toInt());
   m_ui.destination->setToolTip(m_ui.destination->text());
   m_ui.emailParticipants->setAlternatingRowColors
     (m_optionsUi.emailAlternatingRowColors->isChecked());
@@ -4307,7 +4307,7 @@ void spoton::slotDeactivateKernel(void)
 		      0,
 		      &libspotonHandle,
 		      m_settings.value("gui/gcryctl_init_secmem",
-				       65536).
+				       262144).
 		      toInt()) == LIBSPOTON_ERROR_NONE)
     libspoton_deregister_kernel
       (libspoton_registered_kernel_pid(&libspotonHandle, 0),
@@ -4348,7 +4348,7 @@ void spoton::slotGeneralTimerTimeout(void)
 		      0,
 		      &libspotonHandle,
 		      m_settings.value("gui/gcryctl_init_secmem",
-				       65536).
+				       262144).
 		      toInt()) == LIBSPOTON_ERROR_NONE)
     {
       libspoton_error_t err = LIBSPOTON_ERROR_NONE;

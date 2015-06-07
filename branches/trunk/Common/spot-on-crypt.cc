@@ -961,8 +961,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
   gcry_md_hd_t hd;
 
   if((err = gcry_md_open(&hd, m_hashAlgorithm,
-			 GCRY_MD_FLAG_HMAC |
-			 GCRY_MD_FLAG_SECURE)) != 0 || !hd)
+			 GCRY_MD_FLAG_HMAC)) != 0 || !hd)
     {
       if(ok)
 	*ok = false;
@@ -2146,8 +2145,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
     }
 
   if((err = gcry_md_open(&hd, hashAlgorithm,
-			 GCRY_MD_FLAG_HMAC |
-			 GCRY_MD_FLAG_SECURE)) != 0 || !hd)
+			 GCRY_MD_FLAG_HMAC)) != 0 || !hd)
     {
       if(ok)
 	*ok = false;

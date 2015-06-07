@@ -32,6 +32,7 @@
 <li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>
 <li>Guard QList::last().</li>
 <li>Guard QList::removeAt().</li>
+<li>Increased minimum secure memory pool sizes to 262144 bytes.</li>
 <li>Log re-encoding errors.</li>
 <li>Many integer conversion corrections.</li>
 <li>McEliece encryption. Incomplete.</li>
@@ -41,6 +42,7 @@
 <li>Populate URL distillers before performing an import.</li>
 <li>Prompt before accessing a remote URL.</li>
 <li>Re-encode URL common and import credentials information.</li>
+<li>Removed GCRY_MD_FLAG_SECURE from all gcry_md_open() instances.</li>
 <li>Removed duplicate QObject::connect() instance from spoton::slotConfigurePoptastic().</li>
 <li>Removed input masks from IPv6 fields.</li>
 <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
