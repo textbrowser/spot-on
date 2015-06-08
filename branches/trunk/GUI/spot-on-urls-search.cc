@@ -55,7 +55,7 @@ void spoton::discoverUrls(void)
 
   m_ui.searchfor->clear();
   m_ui.urls->clear();
-  m_ui.url_pages->setText(": 1 :");
+  m_ui.url_pages->setText("| 1 |");
 
   QString querystr("");
   QString search(m_ui.search->text().trimmed());
