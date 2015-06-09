@@ -3857,27 +3857,10 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 	{
 	  ok = false;
 	  spoton_misc::logError
-	    ("spoton_misc::importUrl(): lastInsertId() is invalid.");
+	    (QString("spoton_misc::importUrl(): "
+		     "%1.").arg(query.lastError().text()));
 	  return ok;
  	}
-
-      if(query.exec("INSERT INTO sequence VALUES (NULL)"))
-	{
-	  if(query.lastInsertId().isValid())
-	    id = query.lastInsertId().toLongLong();
-	  else
-	    {
-	      ok = false;
-	      spoton_misc::logError
-		("spoton_misc::importUrl(): lastInsertId() is invalid.");
-	    }
-	}
-      else
-	{
-	  ok = false;
-	  spoton_misc::logError(QString("spoton_misc::importUrl(): "
-					"%1.").arg(query.lastError().text()));
-	}
     }
 
   if(!ok)
@@ -3944,8 +3927,9 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
       if(!query.lastError().text().toLower().contains("unique"))
 	{
 	  ok = false;
-	  spoton_misc::logError(QString("spoton_misc::importUrl(): "
-					"%1.").arg(query.lastError().text()));
+	  spoton_misc::logError
+	    (QString("spoton_misc::importUrl(): "
+		     "%1.").arg(query.lastError().text()));
 	}
 
   if(ok)

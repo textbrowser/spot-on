@@ -134,18 +134,6 @@ void spoton::slotPrepareUrlDatabases(void)
   if(created)
     created = spoton_misc::prepareUrlKeysDatabase();
 
-  if(created)
-    if(m_urlDatabase.driverName() == "QSQLITE")
-      {
-	QSqlQuery query(m_urlDatabase);
-
-	created = query.exec
-	  ("CREATE TABLE sequence			"		\
-	   "(						"		\
-	   "value INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT "		\
-	   ")");
-      }
-
   progress.update();
 
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
@@ -227,10 +215,10 @@ void spoton::slotPrepareUrlDatabases(void)
 				     "date_time_inserted TEXT NOT NULL, "
 				     "description BYTEA, "
 				     "title BYTEA NOT NULL, "
-				     "unique_id BIGINT NOT NULL, "
+				     "unique_id INTEGER NOT NULL "
+				     "PRIMARY KEY AUTOINCREMENT, "
 				     "url BYTEA NOT NULL, "
-				     "url_hash TEXT NOT NULL, "
-				     "PRIMARY KEY (unique_id, url_hash))").
+				     "url_hash TEXT NOT NULL)").
 			     arg(c1).arg(c2)))
 		created = false;
 	  }
