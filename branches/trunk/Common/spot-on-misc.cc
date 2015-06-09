@@ -3837,15 +3837,14 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
   if(!ok)
     return ok;
 
-  QSqlQuery query(db);
-  qint64 id = 0;
-
   if(db.driverName() == "QSQLITE")
     {
+      QSqlQuery query(db);
+
       query.prepare(QString("SELECT COUNT(*) FROM spot_on_urls_%1 WHERE "
 			    "url_hash = ?").
 		    arg(urlHash.mid(0, 2).constData()));
-      query.bindValue(0, urlHash);
+      query.bindValue(0, urlHash.constData());
 
       if(query.exec())
 	{
@@ -3866,26 +3865,16 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
   if(!ok)
     return ok;
 
-  if(db.driverName() == "QPSQL")
-    query.prepare
-      (QString("INSERT INTO spot_on_urls_%1 ("
-	       "date_time_inserted, "
-	       "description, "
-	       "title, "
-	       "url, "
-	       "url_hash) VALUES (?, ?, ?, ?, ?)").
-       arg(urlHash.mid(0, 2).constData()));
-  else
-    query.prepare
-      (QString("INSERT INTO spot_on_urls_%1 ("
-	       "date_time_inserted, "
-	       "description, "
-	       "title, "
-	       "unique_id, "
-	       "url, "
-	       "url_hash) VALUES (?, ?, ?, ?, ?, ?)").
-       arg(urlHash.mid(0, 2).constData()));
+  QSqlQuery query(db);
 
+  query.prepare
+    (QString("INSERT INTO spot_on_urls_%1 ("
+	     "date_time_inserted, "
+	     "description, "
+	     "title, "
+	     "url, "
+	     "url_hash) VALUES (?, ?, ?, ?, ?)").
+     arg(urlHash.mid(0, 2).constData()));
   query.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
 
   if(ok)
@@ -3897,26 +3886,12 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
     query.bindValue
       (2, crypt->encryptedThenHashed(title, &ok).toBase64());
 
-  if(db.driverName() == "QPSQL")
-    {
-      if(ok)
-	query.bindValue
-	  (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
-	   toBase64());
+  if(ok)
+    query.bindValue
+      (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+       toBase64());
 
-      query.bindValue(4, urlHash.constData());
-    }
-  else
-    {
-      query.bindValue(3, id);
-
-      if(ok)
-	query.bindValue
-	  (4, crypt->encryptedThenHashed(url.toEncoded(), &ok).
-	   toBase64());
-
-      query.bindValue(5, urlHash.constData());
-    }
+  query.bindValue(4, urlHash.constData());
 
   /*
   ** If a unique-constraint violation was raised, ignore it.
