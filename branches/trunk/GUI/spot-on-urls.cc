@@ -129,14 +129,22 @@ void spoton::slotPrepareUrlDatabases(void)
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.update();
-
-#if SPOTON_GOLDBUG == 0
-  slotPostgreSQLDisconnect(m_ui.urls_db_type->currentIndex());
-#endif
   created = spoton_misc::prepareUrlDistillersDatabase();
 
   if(created)
     created = spoton_misc::prepareUrlKeysDatabase();
+
+  if(created)
+    if(m_urlDatabase.driverName() == "QSQLITE")
+      {
+	QSqlQuery query(m_urlDatabase);
+
+	created = query.exec
+	  ("CREATE TABLE sequence			"		\
+	   "(						"		\
+	   "value INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT "		\
+	   ")");
+      }
 
   progress.update();
 
@@ -195,6 +203,7 @@ void spoton::slotPrepareUrlDatabases(void)
 				       "date_time_inserted TEXT NOT NULL, "
 				       "description BYTEA, "
 				       "title BYTEA NOT NULL, "
+				       "unique_id BIGSERIAL UNIQUE, "
 				       "url BYTEA NOT NULL, "
 				       "url_hash TEXT PRIMARY KEY NOT NULL)").
 			       arg(c1).arg(c2)))
@@ -205,6 +214,12 @@ void spoton::slotPrepareUrlDatabases(void)
 				       "spot_on_user").
 			       arg(c1).arg(c2)))
 		  created = false;
+
+		if(!query.exec(QString("GRANT SELECT, UPDATE, USAGE ON "
+				       "spot_on_urls_%1%2_unique_id_seq TO "
+				       "spot_on_user").
+			       arg(c1).arg(c2)))
+		  created = false;
 	      }
 	    else
 	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
@@ -212,8 +227,10 @@ void spoton::slotPrepareUrlDatabases(void)
 				     "date_time_inserted TEXT NOT NULL, "
 				     "description BYTEA, "
 				     "title BYTEA NOT NULL, "
+				     "unique_id BIGINT NOT NULL, "
 				     "url BYTEA NOT NULL, "
-				     "url_hash TEXT PRIMARY KEY NOT NULL)").
+				     "url_hash TEXT NOT NULL, "
+				     "PRIMARY KEY (unique_id, url_hash))").
 			     arg(c1).arg(c2)))
 		created = false;
 	  }

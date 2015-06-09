@@ -41,8 +41,8 @@ class spoton_urldistribution: public QThread
 
  private:
   QReadWriteLock m_quitLocker;
-  QString m_lastDateTime;
   bool m_quit;
+  qint64 m_lastUniqueId;
   quint64 m_limit;
   quint64 m_offset;
   void run(void);

@@ -3838,31 +3838,102 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
     return ok;
 
   QSqlQuery query(db);
+  qint64 id = 0;
 
-  query.prepare
-    (QString("INSERT INTO spot_on_urls_%1 ("
-	     "date_time_inserted, "
-	     "description, "
-	     "title, "
-	     "url, "
-	     "url_hash) VALUES (?, ?, ?, ?, ?)").
-     arg(urlHash.mid(0, 2).constData()));
+  if(db.driverName() == "QSQLITE")
+    {
+      query.prepare(QString("SELECT COUNT(*) FROM spot_on_urls_%1 WHERE "
+			    "url_hash = ?").
+		    arg(urlHash.mid(0, 2).constData()));
+      query.bindValue(0, urlHash);
+
+      if(query.exec())
+	{
+	  if(query.next())
+	    if(query.value(0).toLongLong() > 0)
+	      return ok;
+	}
+      else
+	{
+	  ok = false;
+	  spoton_misc::logError
+	    ("spoton_misc::importUrl(): lastInsertId() is invalid.");
+	  return ok;
+ 	}
+
+      if(query.exec("INSERT INTO sequence VALUES (NULL)"))
+	{
+	  if(query.lastInsertId().isValid())
+	    id = query.lastInsertId().toLongLong();
+	  else
+	    {
+	      ok = false;
+	      spoton_misc::logError
+		("spoton_misc::importUrl(): lastInsertId() is invalid.");
+	    }
+	}
+      else
+	{
+	  ok = false;
+	  spoton_misc::logError(QString("spoton_misc::importUrl(): "
+					"%1.").arg(query.lastError().text()));
+	}
+    }
+
+  if(!ok)
+    return ok;
+
+  if(db.driverName() == "QPSQL")
+    query.prepare
+      (QString("INSERT INTO spot_on_urls_%1 ("
+	       "date_time_inserted, "
+	       "description, "
+	       "title, "
+	       "url, "
+	       "url_hash) VALUES (?, ?, ?, ?, ?)").
+       arg(urlHash.mid(0, 2).constData()));
+  else
+    query.prepare
+      (QString("INSERT INTO spot_on_urls_%1 ("
+	       "date_time_inserted, "
+	       "description, "
+	       "title, "
+	       "unique_id, "
+	       "url, "
+	       "url_hash) VALUES (?, ?, ?, ?, ?, ?)").
+       arg(urlHash.mid(0, 2).constData()));
+
   query.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
-  query.bindValue
-    (1, crypt->encryptedThenHashed(description, &ok).
-     toBase64());
+
+  if(ok)
+    query.bindValue
+      (1, crypt->encryptedThenHashed(description, &ok).
+       toBase64());
 
   if(ok)
     query.bindValue
       (2, crypt->encryptedThenHashed(title, &ok).toBase64());
 
-  if(ok)
-    query.bindValue
-      (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
-       toBase64());
+  if(db.driverName() == "QPSQL")
+    {
+      if(ok)
+	query.bindValue
+	  (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	   toBase64());
 
-  if(ok)
-    query.bindValue(4, urlHash.constData());
+      query.bindValue(4, urlHash.constData());
+    }
+  else
+    {
+      query.bindValue(3, id);
+
+      if(ok)
+	query.bindValue
+	  (4, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	   toBase64());
+
+      query.bindValue(5, urlHash.constData());
+    }
 
   /*
   ** If a unique-constraint violation was raised, ignore it.
@@ -3871,7 +3942,11 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
   if(ok)
     if(!query.exec())
       if(!query.lastError().text().toLower().contains("unique"))
-	ok = false;
+	{
+	  ok = false;
+	  spoton_misc::logError(QString("spoton_misc::importUrl(): "
+					"%1.").arg(query.lastError().text()));
+	}
 
   if(ok)
     if(all_keywords.isEmpty())
@@ -3913,6 +3988,10 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 
 	  if(query.exec())
 	    count += 1;
+	  else
+	    spoton_misc::logError
+	      (QString("spoton_misc::importUrl(): "
+		       "%1.").arg(query.lastError().text()));
 
 	  if(count >= maximum_keywords)
 	    break;

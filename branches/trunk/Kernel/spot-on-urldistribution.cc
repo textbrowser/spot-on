@@ -38,7 +38,7 @@
 spoton_urldistribution::spoton_urldistribution(QObject *parent):
   QThread(parent)
 {
-  m_lastDateTime = "9999";
+  m_lastUniqueId = -1;
   m_limit = spoton_common::KERNEL_URLS_BATCH_SIZE;
   m_quit = false;
 }
@@ -313,20 +313,20 @@ void spoton_urldistribution::slotTimeout(void)
 	      if(i == 15 && j == 15)
 		querystr.append
 		  (QString("SELECT url, title, description, "
-			   "date_time_inserted "
+			   "date_time_inserted, unique_id "
 			   "FROM spot_on_urls_%1%2 "
-			   "WHERE date_time_inserted < '%3' ").
+			   "WHERE unique_id > %3 ").
 		   arg(c1).arg(c2).
-		   arg(m_lastDateTime));
+		   arg(m_lastUniqueId));
 	      else
 		querystr.append
 		  (QString("SELECT url, title, description, "
-			   "date_time_inserted "
+			   "date_time_inserted, unique_id "
 			   "FROM spot_on_urls_%1%2 "
-			   "WHERE date_time_inserted < '%3' "
+			   "WHERE unique_id > %3 "
 			   "UNION ").
 		   arg(c1).arg(c2).
-		   arg(m_lastDateTime));
+		   arg(m_lastUniqueId));
 	    }
 
 	querystr.append(" ORDER BY 4 DESC ");
@@ -340,7 +340,7 @@ void spoton_urldistribution::slotTimeout(void)
 	      if(!query.next())
 		{
 		  if(count != m_limit)
-		    m_lastDateTime = "9999";
+		    m_lastUniqueId = -1;
 
 		  break;
 		}
@@ -420,7 +420,7 @@ void spoton_urldistribution::slotTimeout(void)
 					       &ok));
 
 	      if(ok)
-		m_lastDateTime = query.value(3).toString();
+		m_lastUniqueId = query.value(4).toLongLong();
 
 	      if(ok)
 		stream << bytes.value(0)  // URL
