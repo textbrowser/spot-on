@@ -61,6 +61,9 @@
     </item>
     <item>
      <widget class="QTableWidget" name="table">
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
       <property name="horizontalScrollMode">
        <enum>QAbstractItemView::ScrollPerPixel</enum>
       </property>

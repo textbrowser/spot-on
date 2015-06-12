@@ -92,6 +92,10 @@ spoton_echo_key_share::spoton_echo_key_share(void):QMainWindow()
   menu->addAction(tr("&Remove Selected"),
 		  this,
 		  SLOT(slotMenuAction(void)));
+  menu->addSeparator();
+  menu->addAction(tr("&Reset Widgets"),
+		  this,
+		  SLOT(slotMenuAction(void)));
   ui.menu->setMenu(menu);
   connect(ui.menu,
 	  SIGNAL(clicked(void)),
@@ -196,8 +200,10 @@ void spoton_echo_key_share::slotMenuAction(void)
 	(ui.cipher->currentText(),
 	 ui.hash->currentText(),
 	 static_cast<unsigned long> (ui.iteration_count->value()),
-	 name.mid(0, 32),
-	 name.mid(32).toUtf8(),
+	 name.mid(0, 16),
+	 ui.cipher->currentText().toLatin1().toHex() +
+	 ui.hash->currentText().toLatin1().toHex() +
+	 name.mid(16).toLatin1(),
 	 spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
 	 error);
       QApplication::restoreOverrideCursor();
@@ -218,10 +224,17 @@ void spoton_echo_key_share::slotMenuAction(void)
 	showError(tr("An error occurred while attempting to save "
 		     "the generated keys."));
       else
-	populate();
+	{
+	  ui.name->clear();
+	  populate();
+	}
     }
   else if(index == 2) // Refresh Table
     populate();
+  else if(index == 10) // Remove Selected
+    deleteSelected();
+  else if(index == 12) // Reset Widgets
+    resetWidgets();
 }
 
 void spoton_echo_key_share::showError(const QString &error)
@@ -342,6 +355,7 @@ void spoton_echo_key_share::populate(void)
 	QSqlQuery query(db);
 	int row = 0;
 
+	query.setForwardOnly(true);
 	ui.table->clearContents();
 	ui.table->setRowCount(0);
 
@@ -397,4 +411,60 @@ void spoton_echo_key_share::populate(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_echo_key_share::deleteSelected(void)
+{
+  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
+    value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QModelIndexList list
+	  (ui.table->selectionModel()->
+	   selectedRows(ui.table->columnCount() - 1));
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+
+	while(!list.isEmpty())
+	  {
+	    QString name(list.takeFirst().data().toString());
+
+	    query.prepare("DELETE FROM echo_key_sharing_secrets "
+			  "WHERE name_hash = ?");
+	    query.bindValue
+	      (0, crypt->keyedHash(name.toUtf8(), 0).toBase64());
+	    query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+  populate();
+}
+
+void spoton_echo_key_share::resetWidgets(void)
+{
+  ui.cipher->setCurrentIndex(0);
+  ui.hash->setCurrentIndex(0);
+  ui.iteration_count->setValue(ui.iteration_count->minimum());
+  ui.name->clear();
 }

@@ -56,8 +56,10 @@ class spoton_echo_key_share: public QMainWindow
 	    const QString &hashType,
 	    const int iterationCount,
 	    const QString &name);
+  void deleteSelected(void);
   void keyPressEvent(QKeyEvent *event);
   void populate(void);
+  void resetWidgets(void);
   void showError(const QString &error);
 
  private slots:
