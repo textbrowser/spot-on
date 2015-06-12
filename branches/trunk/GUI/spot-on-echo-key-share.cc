@@ -73,19 +73,19 @@ spoton_echo_key_share::spoton_echo_key_share(void):QMainWindow()
 		  this,
 		  SLOT(slotMenuAction(void)));
   menu->addSeparator();
-  menu->addAction(tr("&Share Chat Key"),
+  menu->addAction(tr("Share &Chat Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
-  menu->addAction(tr("&Share E-Mail Key"),
+  menu->addAction(tr("Share &E-Mail Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
-  menu->addAction(tr("&Share Poptastic Key"),
+  menu->addAction(tr("Share &Poptastic Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
-  menu->addAction(tr("&Share Rosetta Key"),
+  menu->addAction(tr("Share &Rosetta Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
-  menu->addAction(tr("&Share URL Key"),
+  menu->addAction(tr("Share &URL Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
   menu->addSeparator();
@@ -364,12 +364,12 @@ void spoton_echo_key_share::populate(void)
 		      "cipher_type, "
 		      "hash_type, "
 		      "iteration_count, "
-		      "name FROM echo_key_sharing_secrets"))
+		      "name, OID FROM echo_key_sharing_secrets"))
 	  while(query.next())
 	    {
 	      ui.table->setRowCount(row + 1);
 
-	      for(int i = 0; i < query.record().count(); i++)
+	      for(int i = 0; i < query.record().count() - 1; i++)
 		{
 		  QByteArray bytes;
 		  QCheckBox *box = 0;
@@ -389,6 +389,12 @@ void spoton_echo_key_share::populate(void)
 		      else
 			box->setChecked(false);
 
+		      box->setProperty
+			("oid", query.value(query.record().count() - 1));
+		      connect(box,
+			      SIGNAL(toggled(bool)),
+			      this,
+			      SLOT(slotEnabled(bool)));
 		      ui.table->setCellWidget(row, i, box);
 		    }
 		  else
@@ -469,4 +475,56 @@ void spoton_echo_key_share::resetWidgets(void)
   ui.hash->setCurrentIndex(0);
   ui.iteration_count->setValue(ui.iteration_count->minimum());
   ui.name->clear();
+}
+
+void spoton_echo_key_share::slotEnabled(bool state)
+{
+  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
+    value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QCheckBox *box = qobject_cast<QCheckBox *> (sender());
+
+  if(!box)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare("UPDATE echo_key_sharing_secrets "
+		      "SET enabled = ? WHERE "
+		      "OID = ?");
+
+	if(state)
+	  query.bindValue
+	    (0, crypt->encryptedThenHashed(QByteArray("true"), &ok).
+	     toBase64());
+	else
+	  query.bindValue
+	    (0, crypt->encryptedThenHashed(QByteArray("false"), &ok).
+	     toBase64());
+
+	query.bindValue(1, box->property("oid"));
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }

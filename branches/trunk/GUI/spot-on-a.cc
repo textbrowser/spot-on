@@ -1482,23 +1482,23 @@ spoton::spoton(void):QMainWindow()
   QMenu *menu = new QMenu(this);
 
   connect
-    (menu->addAction(tr("Copy &Chat Public Keys")),
+    (menu->addAction(tr("Copy &Chat Public Key Pair")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyMyChatPublicKey(void)));
   connect
-    (menu->addAction(tr("Copy &E-Mail Public Keys")),
+    (menu->addAction(tr("Copy &E-Mail Public Key Pair")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyMyEmailPublicKey(void)));
   connect
-    (menu->addAction(tr("Copy &Poptastic Public Keys")),
+    (menu->addAction(tr("Copy &Poptastic Public Key Pair")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyMyPoptasticPublicKey(void)));
   connect
-    (menu->addAction(tr("Copy &Rosetta Public Keys")),
+    (menu->addAction(tr("Copy &Rosetta Public Key Pair")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyMyRosettaPublicKey(void)));
   connect
-    (menu->addAction(tr("Copy &URL Public Keys")),
+    (menu->addAction(tr("Copy &URL Public Key Pair")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyMyURLPublicKey(void)));
   menu->addSeparator();
   connect
-    (menu->addAction(tr("Copy &All Public Keys")),
+    (menu->addAction(tr("Copy &All Public Key Pairs")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyAllMyPublicKeys(void)));
   m_ui.commonBuzzChannels->setItemData
     (0,
@@ -5852,22 +5852,22 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addAction(QIcon(QString(":/%1/share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
-		     tr("Share &Chat Public Key"),
+		     tr("Share &Chat Public Key Pair"),
 		     this, SLOT(slotShareChatPublicKey(void)));
       menu.addAction(QIcon(QString(":/%1/share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
-		     tr("Share &E-Mail Public Key"),
+		     tr("Share &E-Mail Public Key Pair"),
 		     this, SLOT(slotShareEmailPublicKey(void)));
       menu.addAction(QIcon(QString(":/%1/share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
-		     tr("Share &Poptastic Public Key"),
+		     tr("Share &Poptastic Public Key Pair"),
 		     this, SLOT(slotSharePoptasticPublicKey(void)));
       menu.addAction(QIcon(QString(":%1//share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
-		     tr("Share &URL Public Key"),
+		     tr("Share &URL Public Key Pair"),
 		     this, SLOT(slotShareURLPublicKey(void)));
       menu.addSeparator();
       menu.addAction(tr("&Assign New Remote IP Information"),

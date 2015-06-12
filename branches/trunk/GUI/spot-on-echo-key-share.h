@@ -64,6 +64,7 @@ class spoton_echo_key_share: public QMainWindow
 
  private slots:
   void slotClose(void);
+  void slotEnabled(bool state);
   void slotMenuAction(void);
 };
 

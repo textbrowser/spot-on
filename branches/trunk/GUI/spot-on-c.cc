@@ -2759,22 +2759,22 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
-		      tr("Share &Chat Public Key"),
+		      tr("Share &Chat Public Key Pair"),
 		      this, SLOT(slotShareChatPublicKey(void)));
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
-		      tr("Share &E-Mail Public Key"),
+		      tr("Share &E-Mail Public Key Pair"),
 		      this, SLOT(slotShareEmailPublicKey(void)));
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
-		      tr("Share &Poptastic Public Key"),
+		      tr("Share &Poptastic Public Key Pair"),
 		      this, SLOT(slotSharePoptasticPublicKey(void)));
       menu->addAction(QIcon(QString(":%1//share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
-		      tr("Share &URL Public Key"),
+		      tr("Share &URL Public Key Pair"),
 		      this, SLOT(slotShareURLPublicKey(void)));
       menu->addSeparator();
       menu->addAction(tr("&Assign New Remote IP Information"),
@@ -3194,7 +3194,8 @@ void spoton::slotExportPublicKeys(void)
 			arg(SPOTON_APPLICATION_NAME));
       mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("The gathered public keys contain a lot (%1) of data. "
+      mb.setText(tr("The gathered public key pairs contain a lot (%1) "
+		    "of data. "
 		    "Are you sure that you wish to export the data?").
 		 arg(keys.length()));
 
