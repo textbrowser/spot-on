@@ -32,7 +32,7 @@
      <item>
       <widget class="QLabel" name="label_99">
        <property name="text">
-        <string>Query the incoming server every</string>
+        <string>&amp;Query the incoming server every</string>
        </property>
        <property name="buddy">
         <cstring>poptasticRefresh</cstring>
