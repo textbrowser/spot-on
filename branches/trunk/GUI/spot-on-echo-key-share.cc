@@ -398,6 +398,8 @@ void spoton_echo_key_share::populate(void)
 		      else
 			item = new QTableWidgetItem(tr("error"));
 
+		      item->setFlags(Qt::ItemIsEnabled |
+				     Qt::ItemIsSelectable);
 		      ui.table->setItem(row, i, item);
 		    }
 		}
