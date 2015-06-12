@@ -4932,15 +4932,8 @@ void spoton::slotJoinBuzzChannel(void)
   QString error("");
   bool found = false;
   spoton_buzzpage *page = 0;
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
   unsigned long iterationCount =
     static_cast<unsigned long> (m_ui.buzzIterationCount->value());
-
-  if(!crypt)
-    {
-      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
-      goto done_label;
-    }
 
   if(channel.isEmpty())
     {
@@ -5001,7 +4994,7 @@ void spoton::slotJoinBuzzChannel(void)
   m_ui.buzzHashType->setCurrentIndex(0);
   page = new spoton_buzzpage
     (&m_kernelSocket, channel, channelSalt, channelType,
-     id, iterationCount, hashKey, hashType, keys.first, crypt, this);
+     id, iterationCount, hashKey, hashType, keys.first, this);
   connect(&m_buzzStatusTimer,
 	  SIGNAL(timeout(void)),
 	  page,
@@ -5914,7 +5907,7 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 
   QPointer<spoton_chatwindow> chat = new spoton_chatwindow
     (icon, oid, keyType, participant, publicKeyHash, status, &m_kernelSocket,
-     m_crypts.value("chat", 0), 0);
+     0);
 
   connect(chat,
 	  SIGNAL(deriveGeminiPairViaSMP(const QString &, const QString &)),

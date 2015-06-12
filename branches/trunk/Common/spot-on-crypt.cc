@@ -239,6 +239,11 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
       goto done_label;
     }
 
+  /*
+  ** keys.first: encryption key.
+  ** keys.second: hash key.
+  */
+
   key.resize(static_cast<int> (cipherKeyLength) + hashKeySize);
   keys.first.resize(static_cast<int> (cipherKeyLength));
   keys.second.resize(key.length() - static_cast<int> (cipherKeyLength));

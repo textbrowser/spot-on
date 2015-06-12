@@ -5351,8 +5351,6 @@ void spoton::slotSetPassphrase(void)
 							    value()),
 				list.at(i)));
 
-	  m_rosetta.setCryptObjects(m_crypts.value("rosetta", 0),
-				    m_crypts.value("rosetta-signature", 0));
 	  askKernelToReadStarBeamKeys();
 	  populateNovas();
 	  sendBuzzKeysToKernel();
@@ -5582,9 +5580,6 @@ void spoton::slotValidatePassphrase(void)
 							      iterationCount->
 							      value()),
 				  list.at(i)));
-
-	    m_rosetta.setCryptObjects(m_crypts.value("rosetta", 0),
-				      m_crypts.value("rosetta-signature", 0));
 
 	    if(m_optionsUi.launchKernel->isChecked())
 	      slotActivateKernel();

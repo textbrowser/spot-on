@@ -6,7 +6,7 @@ data
 
 echo_key_sharing_secrets.db
 
-all fields save for id 
+all fields save for id_hash
 
 email.db:
 

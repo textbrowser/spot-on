@@ -115,7 +115,8 @@ void spoton_misc::prepareDatabases(void)
 		   "enabled TEXT NOT NULL, "
 		   "encryption_key TEXT NOT NULL, "
 		   "hash_type TEXT NOT NULL, "
-		   "id TEXT PRIMARY KEY NOT NULL)"); // Keyed hash.
+		   "id TEXT NOT NULL, "
+		   "id_hash TEXT PRIMARY KEY NOT NULL)"); // Keyed hash.
       }
 
     db.close();

@@ -27,6 +27,7 @@
 <li>Display URL database connection information within the Search panel.</li>
 <li>Do not delete URLs from shared.db unless they are properly loaded.<li>
 <li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
+<li>Do not distribute private spoton_crypt objects to child objects as the contents of the spoton_crypt objects may be modified by the re-encoding process. Instead, use spoton::instance()->crypts().</li>
 <li>Dual-purpose domain check boxes. Please see URLs.</li>
 <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
 <li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>

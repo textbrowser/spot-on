@@ -2533,10 +2533,7 @@ void spoton::slotRegenerateKey(void)
 
   if(error.isEmpty())
     {
-      if(m_ui.keys->currentText() == "Rosetta")
-	m_rosetta.setCryptObjects(m_crypts.value("rosetta", 0),
-				  m_crypts.value("rosetta-signature", 0));
-      else
+      if(m_ui.keys->currentText() != "Rosetta")
 	sendKeysToKernel();
     }
   else

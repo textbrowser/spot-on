@@ -48,10 +48,8 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &publicKeyHash,
 				     const QString &status,
 				     QSslSocket *kernelSocket,
-				     spoton_crypt *crypt,
 				     QWidget *parent):QMainWindow(parent)
 {
-  m_crypt = crypt;
   m_id = id;
   m_keyType = keyType.toLower();
 
@@ -492,8 +490,10 @@ void spoton_chatwindow::slotVerifySMPSecret(void)
 void spoton_chatwindow::slotShareStarBeam(void)
 {
   QString error("");
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
 
-  if(!m_crypt)
+  if(!crypt)
     {
       error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
       showError(error);
@@ -598,13 +598,13 @@ void spoton_chatwindow::slotShareStarBeam(void)
 		      "status_control, total_size) "
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, m_crypt->
+	  (0, crypt->
 	   encryptedThenHashed(fileInfo.absoluteFilePath().toUtf8(),
 			       &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (1, m_crypt->
+	    (1, crypt->
 	     encryptedThenHashed
 	     (spoton_crypt::
 	      sha1FileHash(fileInfo.absoluteFilePath()).toHex(),
@@ -612,12 +612,12 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
 	if(ok)
 	  query.bindValue
-	    (2, m_crypt->
+	    (2, crypt->
 	     encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  {
-	    encryptedMosaic = m_crypt->encryptedThenHashed(mosaic, &ok);
+	    encryptedMosaic = crypt->encryptedThenHashed(mosaic, &ok);
 
 	    if(ok)
 	      query.bindValue(3, encryptedMosaic.toBase64());
@@ -625,15 +625,15 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
 	if(ok)
 	  query.bindValue
-	    (4, m_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+	    (4, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (5, m_crypt->encryptedThenHashed("0", &ok).toBase64());
+	    (5, crypt->encryptedThenHashed("0", &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, m_crypt->
+	    (6, crypt->
 	     encryptedThenHashed(QByteArray::number(30000),
 				 &ok).toBase64());
 
@@ -642,7 +642,7 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
 	if(ok)
 	  query.bindValue
-	    (9, m_crypt->
+	    (9, crypt->
 	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
 				 &ok).toBase64());
 
@@ -656,12 +656,12 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
 	if(ok)
 	  query.bindValue
-	    (0, m_crypt->
+	    (0, crypt->
 	     encryptedThenHashed(magnet, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (1, m_crypt->keyedHash(magnet, &ok).toBase64());
+	    (1, crypt->keyedHash(magnet, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue(2, encryptedMosaic.toBase64());
@@ -688,11 +688,11 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
 void spoton_chatwindow::showError(const QString &error)
 {
-  if(error.isEmpty())
+  if(error.trimmed().isEmpty())
     return;
 
   QMessageBox::critical(this, tr("%1: Error").
-			arg(SPOTON_APPLICATION_NAME), error);
+			arg(SPOTON_APPLICATION_NAME), error.trimmed());
 }
 
 void spoton_chatwindow::showNormal(void)

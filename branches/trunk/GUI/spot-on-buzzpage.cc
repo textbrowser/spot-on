@@ -51,7 +51,6 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 				 const QByteArray &hashKey,
 				 const QByteArray &hashType,
 				 const QByteArray &key,
-				 spoton_crypt *crypt,
 				 QWidget *parent):QWidget(parent)
 {
   ui.setupUi(this);
@@ -70,7 +69,6 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   if(m_channelType.isEmpty())
     m_channelType = "aes256";
 
-  m_crypt = crypt;
   m_hashKey = hashKey;
 
   if(m_hashKey.isEmpty())
@@ -556,7 +554,10 @@ void spoton_buzzpage::slotBuzzNameChanged(const QByteArray &name)
 
 void spoton_buzzpage::slotSave(void)
 {
-  if(!m_crypt)
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
     {
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
@@ -598,10 +599,10 @@ void spoton_buzzpage::slotSave(void)
 		      "(data, data_hash) "
 		      "VALUES (?, ?)");
 	query.bindValue
-	  (0, m_crypt->encryptedThenHashed(data, &ok).toBase64());
+	  (0, crypt->encryptedThenHashed(data, &ok).toBase64());
 
 	if(ok)
-	  query.bindValue(1, m_crypt->keyedHash(data, &ok).toBase64());
+	  query.bindValue(1, crypt->keyedHash(data, &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -626,7 +627,10 @@ void spoton_buzzpage::slotSave(void)
 
 void spoton_buzzpage::slotRemove(void)
 {
-  if(!m_crypt)
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
     {
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
@@ -667,7 +671,7 @@ void spoton_buzzpage::slotRemove(void)
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM buzz_channels WHERE "
 		      "data_hash = ?");
-	query.bindValue(0, m_crypt->keyedHash(data, &ok).toBase64());
+	query.bindValue(0, crypt->keyedHash(data, &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();

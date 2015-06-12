@@ -36,13 +36,12 @@
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
+#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-rosetta.h"
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
-  m_eCrypt = 0;
-  m_sCrypt = 0;
   ui.setupUi(this);
   setWindowTitle
     (tr("%1: Rosetta").
@@ -268,16 +267,14 @@ void spoton_rosetta::slotSaveName(void)
   ui.name->selectAll();
 }
 
-void spoton_rosetta::setCryptObjects(spoton_crypt *eCrypt,
-				     spoton_crypt *sCrypt)
-{
-  m_eCrypt = eCrypt;
-  m_sCrypt = sCrypt;
-}
-
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 {
-  if(!m_eCrypt || !m_sCrypt)
+  spoton_crypt *eCrypt = spoton::instance() ? spoton::instance()->crypts().
+    value("rosetta", 0) : 0;
+  spoton_crypt *sCrypt = spoton::instance() ? spoton::instance()->crypts().
+    value("rosetta-signature", 0) : 0;
+
+  if(!eCrypt || !sCrypt)
     return QByteArray();
 
   QByteArray name;
@@ -289,16 +286,16 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
   bool ok = true;
 
   name = settings.value("gui/rosettaName", "unknown").toByteArray();
-  mPublicKey = m_eCrypt->publicKey(&ok);
+  mPublicKey = eCrypt->publicKey(&ok);
 
   if(ok)
-    mSignature = m_eCrypt->digitalSignature(mPublicKey, &ok);
+    mSignature = eCrypt->digitalSignature(mPublicKey, &ok);
 
   if(ok)
-    sPublicKey = m_sCrypt->publicKey(&ok);
+    sPublicKey = sCrypt->publicKey(&ok);
 
   if(ok)
-    sSignature = m_sCrypt->digitalSignature(sPublicKey, &ok);
+    sSignature = sCrypt->digitalSignature(sPublicKey, &ok);
 
   if(ok)
     return "K" + QByteArray("rosetta").toBase64() + "@" +
@@ -319,7 +316,12 @@ void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
 
 void spoton_rosetta::slotAddContact(void)
 {
-  if(!m_eCrypt || !m_sCrypt)
+  spoton_crypt *eCrypt = spoton::instance() ? spoton::instance()->crypts().
+    value("rosetta", 0) : 0;
+  spoton_crypt *sCrypt = spoton::instance() ? spoton::instance()->crypts().
+    value("rosetta-signature", 0) : 0;
+
+  if(!eCrypt || !sCrypt)
     {
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
@@ -381,7 +383,7 @@ void spoton_rosetta::slotAddContact(void)
   bool ok = true;
 
   mPublicKey = QByteArray::fromBase64(mPublicKey);
-  myPublicKey = m_eCrypt->publicKey(&ok);
+  myPublicKey = eCrypt->publicKey(&ok);
 
   if(!ok)
     {
@@ -405,7 +407,7 @@ void spoton_rosetta::slotAddContact(void)
 	return;
     }
 
-  mySPublicKey = m_sCrypt->publicKey(&ok);
+  mySPublicKey = sCrypt->publicKey(&ok);
 
   if(!ok)
     {
@@ -488,14 +490,14 @@ void spoton_rosetta::slotAddContact(void)
 						   sPublicKey,
 						   -1,
 						   db,
-						   m_eCrypt)))
+						   eCrypt)))
 	  if((ok = spoton_misc::saveFriendshipBundle(keyType + "-signature",
 						     name,
 						     sPublicKey,
 						     QByteArray(),
 						     -1,
 						     db,
-						     m_eCrypt)))
+						     eCrypt)))
 	    ui.newContact->selectAll();
       }
     else
@@ -545,14 +547,16 @@ void spoton_rosetta::populateContacts(void)
 	QMultiMap<QString, QByteArray> names;
 	QSqlQuery query(db);
 	bool ok = true;
+	spoton_crypt *eCrypt = spoton::instance() ?
+	  spoton::instance()->crypts().value("rosetta", 0) : 0;
 
 	ui.contacts->clear();
 	query.setForwardOnly(true);
 	query.prepare("SELECT name, public_key FROM friends_public_keys "
 		      "WHERE key_type_hash = ?");
 
-	if(m_eCrypt)
-	  query.bindValue(0, m_eCrypt->keyedHash(QByteArray("rosetta"), &ok).
+	if(eCrypt)
+	  query.bindValue(0, eCrypt->keyedHash(QByteArray("rosetta"), &ok).
 			  toBase64());
 
 	if(ok && query.exec())
@@ -562,8 +566,8 @@ void spoton_rosetta::populateContacts(void)
 	      QByteArray publicKey;
 	      bool ok = true;
 
-	      if(m_eCrypt)
-		name = m_eCrypt->decryptedAfterAuthenticated
+	      if(eCrypt)
+		name = eCrypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(0).
 					  toByteArray()),
 		   &ok);
@@ -572,8 +576,8 @@ void spoton_rosetta::populateContacts(void)
 
 	      if(ok)
 		{
-		  if(m_eCrypt)
-		    publicKey = m_eCrypt->decryptedAfterAuthenticated
+		  if(eCrypt)
+		    publicKey = eCrypt->decryptedAfterAuthenticated
 		      (QByteArray::fromBase64(query.value(1).
 					      toByteArray()),
 		       &ok);
@@ -611,6 +615,20 @@ void spoton_rosetta::populateContacts(void)
 
 void spoton_rosetta::slotConvert(void)
 {
+  spoton_crypt *eCrypt = spoton::instance() ? spoton::instance()->crypts().
+    value("rosetta", 0) : 0;
+  spoton_crypt *sCrypt = spoton::instance() ? spoton::instance()->crypts().
+    value("rosetta-signature", 0) : 0;
+
+  if(!eCrypt || !sCrypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object(s). This is "
+			       "a fatal flaw."));
+      return;
+    }
+
   if(ui.encrypt->isChecked())
     {
       QByteArray data;
@@ -685,13 +703,13 @@ void spoton_rosetta::slotConvert(void)
       if(ui.sign->isChecked())
 	{
 	  if(ok)
-	    myPublicKey = m_eCrypt->publicKey(&ok);
+	    myPublicKey = eCrypt->publicKey(&ok);
 
 	  if(ok)
 	    myPublicKeyHash = spoton_crypt::sha512Hash(myPublicKey, &ok);
 
 	  if(ok)
-	    signature = m_sCrypt->digitalSignature
+	    signature = sCrypt->digitalSignature
 	      (myPublicKeyHash + ui.input->toPlainText().toUtf8(),
 	       &ok);
 	}
@@ -766,7 +784,7 @@ void spoton_rosetta::slotConvert(void)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
 
       data = list.value(1);
-      keyInformation = m_eCrypt->publicKeyDecrypt(list.value(0), &ok);
+      keyInformation = eCrypt->publicKeyDecrypt(list.value(0), &ok);
 
       if(!ok)
 	{
@@ -885,7 +903,7 @@ void spoton_rosetta::slotConvert(void)
 	  else if(!spoton_misc::isValidSignature(publicKeyHash + data,
 						 publicKeyHash,
 						 signature,
-						 m_eCrypt))
+						 eCrypt))
 	    error = tr("Invalid signature. Perhaps your contacts are "
 		       "not current.");
 	}
@@ -965,7 +983,9 @@ void spoton_rosetta::slotDelete(void)
 	if(ok)
 	  ok = query.exec();
 
-	spoton_misc::purgeSignatureRelationships(db, m_eCrypt);
+	spoton_misc::purgeSignatureRelationships
+	  (db, spoton::instance() ? spoton::instance()->crypts().
+	   value("rosetta", 0) : 0);
       }
     else
       ok = false;
@@ -1030,7 +1050,10 @@ void spoton_rosetta::slotCopyOrPaste(void)
 
 void spoton_rosetta::slotRename(void)
 {
-  if(!m_eCrypt)
+  spoton_crypt *eCrypt = spoton::instance() ? spoton::instance()->crypts().
+    value("rosetta", 0) : 0;
+
+  if(!eCrypt)
     {
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
@@ -1078,7 +1101,7 @@ void spoton_rosetta::slotRename(void)
 		      "name_changed_by_user = 1 "
 		      "WHERE public_key_hash = ?");
 	query.bindValue
-	  (0, m_eCrypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
+	  (0, eCrypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue(1, spoton_crypt::sha512Hash(data, &ok).toBase64());

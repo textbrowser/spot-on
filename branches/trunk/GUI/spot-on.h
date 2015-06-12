@@ -402,6 +402,7 @@ class spoton: public QMainWindow
   ~spoton();
   QHash<QString, QVariant> m_settings;
   QHash<QString, quint64> m_chatSequenceNumbers;
+  QHash<QString, spoton_crypt *> crypts(void) const;
   QStandardItemModel *starbeamReceivedModel(void) const;
   Ui_spoton_mainwindow ui(void) const;
   static QList<QTableWidgetItem *> findItems(QTableWidget *table,

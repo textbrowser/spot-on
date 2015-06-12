@@ -48,7 +48,6 @@ class spoton_chatwindow: public QMainWindow
 		    const QString &publicKeyHash,
 		    const QString &status,
 		    QSslSocket *kernelSocket,
-		    spoton_crypt *crypt,
 		    QWidget *parent);
   ~spoton_chatwindow();
   QString id(void) const;
@@ -64,7 +63,6 @@ class spoton_chatwindow: public QMainWindow
   QString m_keyType;
   QString m_publicKeyHash;
   Ui_chatwindow ui;
-  spoton_crypt *m_crypt;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
   bool event(QEvent *event);

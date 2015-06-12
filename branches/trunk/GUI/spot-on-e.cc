@@ -1627,11 +1627,11 @@ void spoton::slotShareStarBeam(void)
 
 void spoton::showError(const QString &error)
 {
-  if(error.isEmpty())
+  if(error.trimmed().isEmpty())
     return;
 
   QMessageBox::critical(this, tr("%1: Error").
-			arg(SPOTON_APPLICATION_NAME), error);
+			arg(SPOTON_APPLICATION_NAME), error.trimmed());
 }
 
 QStandardItemModel *spoton::starbeamReceivedModel(void) const
@@ -1938,4 +1938,9 @@ void spoton::initializeUrlDistillers(void)
 void spoton::slotViewEchoKeyShare(void)
 {
   m_echoKeyShare.show(this);
+}
+
+QHash<QString, spoton_crypt *> spoton::crypts(void) const
+{
+  return m_crypts;
 }

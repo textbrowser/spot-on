@@ -33,6 +33,7 @@
 #include "ui_echo-key-share.h"
 
 class QKeyEvent;
+class spoton_crypt;
 
 class spoton_echo_key_share: public QMainWindow
 {
@@ -50,10 +51,16 @@ class spoton_echo_key_share: public QMainWindow
   bool event(QEvent *event);
 #endif
 #endif
+  bool save(const QPair<QByteArray, QByteArray> &keys,
+	    const QString &cipherType,
+	    const QString &hashType,
+	    const QString &name);
   void keyPressEvent(QKeyEvent *event);
+  void showError(const QString &error);
 
  private slots:
   void slotClose(void);
+  void slotMenuAction(void);
 };
 
 #endif

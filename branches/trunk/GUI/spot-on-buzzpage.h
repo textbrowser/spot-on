@@ -52,7 +52,6 @@ class spoton_buzzpage: public QWidget
 		  const QByteArray &hashKey,
 		  const QByteArray &hashType,
 		  const QByteArray &key,
-		  spoton_crypt *crypt,
 		  QWidget *parent);
   ~spoton_buzzpage();
   QByteArray channel(void) const;
@@ -74,7 +73,6 @@ class spoton_buzzpage: public QWidget
   QPointer<QSslSocket> m_kernelSocket;
   QTimer m_statusTimer;
   Ui_buzzPage ui;
-  spoton_crypt *m_crypt;
   unsigned long m_iterationCount;
 
  private slots:
