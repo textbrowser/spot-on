@@ -267,7 +267,7 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
 #else
   NtruRandGen rng_def = NTRU_RNG_DEVURANDOM;
 #endif
-  
+
   if(ntru_rand_init(&rand_ctx_def, &rng_def) != NTRU_SUCCESS)
     {
       spoton_misc::logError

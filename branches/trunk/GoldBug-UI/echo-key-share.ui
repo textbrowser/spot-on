@@ -74,7 +74,22 @@
       </column>
       <column>
        <property name="text">
-        <string>ID</string>
+        <string>Cipher Type</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Hash Type</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Iteration Count</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Community Name</string>
        </property>
       </column>
      </widget>

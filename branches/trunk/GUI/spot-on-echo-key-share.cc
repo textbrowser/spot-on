@@ -72,6 +72,7 @@ spoton_echo_key_share::spoton_echo_key_share(void):QMainWindow()
   menu->addAction(tr("&Refresh Table"),
 		  this,
 		  SLOT(slotMenuAction(void)));
+  menu->addSeparator();
   menu->addAction(tr("&Share Chat Key"),
 		  this,
 		  SLOT(slotMenuAction(void)));
@@ -109,6 +110,7 @@ void spoton_echo_key_share::slotClose(void)
 
 void spoton_echo_key_share::show(QWidget *parent)
 {
+  populate();
   QMainWindow::show();
   raise();
 
@@ -179,10 +181,10 @@ void spoton_echo_key_share::slotMenuAction(void)
     {
       QString name(ui.name->text().trimmed());
 
-      if(name.length() < 96)
+      if(name.length() < 16)
 	{
 	  showError(tr("Please provide a Community Name that contains "
-		       "at least ninety-six characters."));
+		       "at least sixteen characters."));
 	  return;
 	}
 
@@ -211,10 +213,15 @@ void spoton_echo_key_share::slotMenuAction(void)
       if(!save(keys,
 	       ui.cipher->currentText(),
 	       ui.hash->currentText(),
+	       ui.iteration_count->value(),
 	       name))
 	showError(tr("An error occurred while attempting to save "
 		     "the generated keys."));
+      else
+	populate();
     }
+  else if(index == 2) // Refresh Table
+    populate();
 }
 
 void spoton_echo_key_share::showError(const QString &error)
@@ -229,6 +236,7 @@ void spoton_echo_key_share::showError(const QString &error)
 bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 				 const QString &cipherType,
 				 const QString &hashType,
+				 const int iterationCount,
 				 const QString &name)
 {
   spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
@@ -257,9 +265,10 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 		      "enabled, "
 		      "encryption_key, "
 		      "hash_type, "
-		      "id, "
-		      "id_hash) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?)");
+		      "iteration_count, "
+		      "name, "
+		      "name_hash) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->encryptedThenHashed(keys.second, &ok).toBase64());
 
@@ -284,11 +293,17 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
+	    (5, crypt->encryptedThenHashed(QByteArray::number(iterationCount),
+					   &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->keyedHash(name.toUtf8(), &ok).toBase64());
+	    (6, crypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (7, crypt->keyedHash(name.toUtf8(), &ok).toBase64());
+
 
 	if(ok)
 	  ok = query.exec();
@@ -303,3 +318,83 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
   return ok;
 }
 
+void spoton_echo_key_share::populate(void)
+{
+  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
+    value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	int row = 0;
+
+	ui.table->clearContents();
+	ui.table->setRowCount(0);
+
+	if(query.exec("SELECT "
+		      "enabled, "
+		      "cipher_type, "
+		      "hash_type, "
+		      "iteration_count, "
+		      "name FROM echo_key_sharing_secrets"))
+	  while(query.next())
+	    {
+	      ui.table->setRowCount(row + 1);
+
+	      for(int i = 0; i < query.record().count(); i++)
+		{
+		  QByteArray bytes;
+		  QCheckBox *box = 0;
+		  QTableWidgetItem *item = 0;
+		  bool ok = true;
+
+		  bytes = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(i).toByteArray()),
+		     &ok);
+
+		  if(i == 0)
+		    {
+		      box = new QCheckBox();
+
+		      if(bytes == "true")
+			box->setChecked(true);
+		      else
+			box->setChecked(false);
+
+		      ui.table->setCellWidget(row, i, box);
+		    }
+		  else
+		    {
+		      if(ok)
+			item = new QTableWidgetItem(bytes.constData());
+		      else
+			item = new QTableWidgetItem(tr("error"));
+
+		      ui.table->setItem(row, i, item);
+		    }
+		}
+
+	      row += 1;
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
