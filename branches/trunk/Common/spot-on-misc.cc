@@ -112,6 +112,7 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS echo_key_sharing_secrets ("
 		   "authentication_key TEXT NOT NULL, "
 		   "cipher_type TEXT NOT NULL, "
+		   "enabled TEXT NOT NULL, "
 		   "encryption_key TEXT NOT NULL, "
 		   "hash_type TEXT NOT NULL, "
 		   "id TEXT PRIMARY KEY NOT NULL)"); // Keyed hash.
