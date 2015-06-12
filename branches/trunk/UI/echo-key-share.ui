@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>spoton_echokeyshare</class>
+ <widget class="QMainWindow" name="spoton_echokeyshare">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>510</width>
+    <height>247</height>
+   </rect>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../Icons/icons.qrc">
+    <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <property name="spacing">
+     <number>5</number>
+    </property>
+    <property name="margin">
+     <number>5</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_7">
+      <property name="spacing">
+       <number>5</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>&amp;Bookmarks</string>
+        </property>
+        <property name="buddy">
+         <cstring>bookmarks</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="bookmarks">
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToContents</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="remove">
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToContents</enum>
+        </property>
+        <item>
+         <property name="text">
+          <string>Remove</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Remove All</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>5</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>&amp;Secret</string>
+        </property>
+        <property name="buddy">
+         <cstring>password</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="password"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Minimum of 16 characters.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>P&amp;IN</string>
+        </property>
+        <property name="buddy">
+         <cstring>pin</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="pin"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <property name="spacing">
+       <number>5</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>&amp;Cipher Type</string>
+        </property>
+        <property name="buddy">
+         <cstring>cipher</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="cipher">
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToContents</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>&amp;Hash Type</string>
+        </property>
+        <property name="buddy">
+         <cstring>hash</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="hash">
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToContents</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>&amp;Iteration Count</string>
+        </property>
+        <property name="buddy">
+         <cstring>iteration_count</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="iteration_count">
+        <property name="minimum">
+         <number>15000</number>
+        </property>
+        <property name="maximum">
+         <number>999999999</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <property name="spacing">
+       <number>5</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="reset">
+        <property name="text">
+         <string>Reset</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox">
+        <item>
+         <property name="text">
+          <string>Chat</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>E-Mail</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Poptastic</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Rosetta</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>URL</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="share">
+        <property name="text">
+         <string>Share</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>510</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_Close"/>
+   </widget>
+   <addaction name="menu_File"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_Close">
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+  </action>
+  <action name="action_Empty_Log">
+   <property name="text">
+    <string>&amp;Empty Log</string>
+   </property>
+  </action>
+  <action name="actionEnable_Log">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>E&amp;nable Log</string>
+   </property>
+  </action>
+  <action name="action_Copy">
+   <property name="text">
+    <string>&amp;Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="action_Paste">
+   <property name="text">
+    <string>&amp;Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+ </widget>
+ <tabstops>
+  <tabstop>bookmarks</tabstop>
+  <tabstop>remove</tabstop>
+  <tabstop>password</tabstop>
+  <tabstop>pin</tabstop>
+  <tabstop>cipher</tabstop>
+  <tabstop>hash</tabstop>
+  <tabstop>iteration_count</tabstop>
+  <tabstop>reset</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>share</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../Icons/icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

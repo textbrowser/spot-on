@@ -63,7 +63,12 @@ void spoton_crypt::generateNTRUKeys(const QString &keySize,
   NtruRandGen rng_def = NTRU_RNG_DEVURANDOM;
 #endif
 
-  ntru_rand_init(&rand_ctx_def, &rng_def);
+  if(ntru_rand_init(&rand_ctx_def, &rng_def) != NTRU_SUCCESS)
+    {
+      spoton_misc::logError
+	("spoton_crypt::generateNTRUKeys(): ntru_rand_init() failure.");
+      return;
+    }
 
   if(ntru_gen_key_pair(&parameters[index], &kp,
 		       &rand_ctx_def) == NTRU_SUCCESS)
@@ -262,12 +267,19 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
 #else
   NtruRandGen rng_def = NTRU_RNG_DEVURANDOM;
 #endif
+  
+  if(ntru_rand_init(&rand_ctx_def, &rng_def) != NTRU_SUCCESS)
+    {
+      spoton_misc::logError
+	("spoton_crypt::publicKeyEncryptNTRU(): ntru_rand_init() failure.");
+      return QByteArray();
+    }
+
   QByteArray encrypted;
   uint8_t *data_array = 0;
   uint8_t *e = 0;
   uint8_t *publicKey_array = 0;
 
-  ntru_rand_init(&rand_ctx_def, &rng_def);
   data_array = new (std::nothrow) uint8_t[data.length()];
   publicKey_array = new (std::nothrow)
     uint8_t[publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).

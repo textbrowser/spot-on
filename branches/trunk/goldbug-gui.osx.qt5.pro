@@ -57,6 +57,7 @@ FORMS           = GoldBug-UI/adaptiveechoprompt.ui \
 		  GoldBug-UI/buzzpage.ui \
 		  GoldBug-UI/chatwindow.ui \
 		  GoldBug-UI/controlcenter.ui \
+		  GoldBug-UI/echo-key-share.ui \
 		  GoldBug-UI/encryptfile.ui \
 		  GoldBug-UI/ipinformation.ui \
 		  GoldBug-UI/keyboard.ui \

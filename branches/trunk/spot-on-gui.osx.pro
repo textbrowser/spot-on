@@ -53,6 +53,7 @@ FORMS           = UI/adaptiveechoprompt.ui \
 		  UI/buzzpage.ui \
 		  UI/chatwindow.ui \
 		  UI/controlcenter.ui \
+		  UI/echo-key-share.ui \
 		  UI/encryptfile.ui \
 		  UI/ipinformation.ui \
 		  UI/keyboard.ui \
