@@ -379,6 +379,7 @@ class spoton_lineedit: public QLineEdit
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-send.h"
 #include "spot-on-chatwindow.h"
+#include "spot-on-echo-key-share.h"
 #include "spot-on-encryptfile.h"
 #include "spot-on-logviewer.h"
 #include "spot-on-reencode.h"
@@ -466,6 +467,7 @@ class spoton: public QMainWindow
   quint64 m_urlOffset;
   quint64 m_urlPages;
   spoton_crypt *m_urlCommonCrypt;
+  spoton_echo_key_share m_echoKeyShare;
   spoton_encryptfile m_encryptFile;
   spoton_external_address m_externalAddress;
   spoton_logviewer m_logViewer;
@@ -855,6 +857,7 @@ class spoton: public QMainWindow
   void slotVerifySMPSecret(const QString &hash, const QString &keyType,
 			   const QString &oid);
   void slotVerifySMPSecret(void);
+  void slotViewEchoKeyShare(void);
   void slotViewLog(void);
   void slotViewRosetta(void);
 

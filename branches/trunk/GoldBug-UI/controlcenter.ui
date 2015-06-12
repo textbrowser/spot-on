@@ -7733,7 +7733,7 @@ QPushButton:pressed {
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>683</width>
+                     <width>709</width>
                      <height>245</height>
                     </rect>
                    </property>
@@ -11004,6 +11004,8 @@ QPushButton:pressed {
     <addaction name="separator"/>
     <addaction name="action_StarBeam_Analyzer"/>
     <addaction name="separator"/>
+    <addaction name="action_Echo_Key_Share"/>
+    <addaction name="separator"/>
     <addaction name="action_File_Encryption"/>
     <addaction name="separator"/>
     <addaction name="action_Rosetta"/>
@@ -11139,6 +11141,11 @@ QPushButton:pressed {
   <action name="action_Options">
    <property name="text">
     <string>&amp;Settings</string>
+   </property>
+  </action>
+  <action name="action_Echo_Key_Share">
+   <property name="text">
+    <string>&amp;Echo Key Share</string>
    </property>
   </action>
  </widget>

@@ -457,6 +457,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowOptions(void)));
+  connect(m_ui.action_Echo_Key_Share,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotViewEchoKeyShare(void)));
   connect(m_ui.action_Log_Viewer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1970,6 +1974,12 @@ spoton::spoton(void):QMainWindow()
   if(m_ui.hashType->count() == 0)
     m_ui.hashType->addItem("n/a");
 
+  if(m_ui.urlCipher->count() == 0)
+    m_ui.urlCipher->addItem("n/a");
+
+  if(m_ui.urlHash->count() == 0)
+    m_ui.urlHash->addItem("n/a");
+
   str = m_settings.value("gui/cipherType", "aes256").toString();
 
   if(m_ui.cipherType->findText(str) > -1)
@@ -2017,6 +2027,7 @@ spoton::spoton(void):QMainWindow()
   if(spoton_crypt::passphraseSet())
     {
       m_sb.frame->setEnabled(false);
+      m_ui.action_Echo_Key_Share->setEnabled(false);
       m_ui.action_Export_Listeners->setEnabled(false);
       m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Export_Public_Keys->setEnabled(false);
@@ -2051,6 +2062,7 @@ spoton::spoton(void):QMainWindow()
   else
     {
       m_sb.frame->setEnabled(false);
+      m_ui.action_Echo_Key_Share->setEnabled(false);
       m_ui.action_Export_Listeners->setEnabled(false);
       m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Export_Public_Keys->setEnabled(false);
@@ -5349,6 +5361,7 @@ void spoton::slotSetPassphrase(void)
 	}
 
       m_sb.frame->setEnabled(true);
+      m_ui.action_Echo_Key_Share->setEnabled(true);
       m_ui.action_Export_Listeners->setEnabled(true);
       m_ui.action_Import_Neighbors->setEnabled(true);
       m_ui.action_Export_Public_Keys->setEnabled(true);
@@ -5581,6 +5594,7 @@ void spoton::slotValidatePassphrase(void)
 	    sendBuzzKeysToKernel();
 	    m_sb.frame->setEnabled(true);
 	    m_ui.passphrase_rb_authenticate->setChecked(true);
+	    m_ui.action_Echo_Key_Share->setEnabled(true);
 	    m_ui.action_Export_Listeners->setEnabled(true);
 	    m_ui.action_Import_Neighbors->setEnabled(true);
 	    m_ui.action_Export_Public_Keys->setEnabled(true);

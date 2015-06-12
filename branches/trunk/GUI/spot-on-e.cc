@@ -1934,3 +1934,8 @@ void spoton::initializeUrlDistillers(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton::slotViewEchoKeyShare(void)
+{
+  m_echoKeyShare.show(this);
+}

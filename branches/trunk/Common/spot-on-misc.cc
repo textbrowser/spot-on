@@ -102,6 +102,29 @@ void spoton_misc::prepareDatabases(void)
   {
     QSqlDatabase db = database(connectionName);
 
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("CREATE TABLE IF NOT EXISTS echo_key_sharing_secrets ("
+		   "authentication_key TEXT NOT NULL, "
+		   "cipher_type TEXT NOT NULL, "
+		   "encryption_key TEXT NOT NULL, "
+		   "hash_type TEXT NOT NULL, "
+		   "id TEXT PRIMARY KEY NOT NULL)"); // Keyed hash.
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = database(connectionName);
+
     db.setDatabaseName(homePath() + QDir::separator() + "email.db");
 
     if(db.open())
