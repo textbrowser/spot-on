@@ -1961,6 +1961,11 @@ void spoton_kernel::connectSignalsToNeighbor
   if(!neighbor)
     return;
 
+  connect(m_guiServer,
+	  SIGNAL(echoKeyShare(const QByteArrayList &)),
+	  neighbor,
+	  SLOT(slotEchoKeyShare(const QByteArrayList &)),
+	  Qt::UniqueConnection);
   connect(m_mailer,
 	  SIGNAL(sendMailFromPostOffice(const QByteArray &,
 					const QPairByteArrayByteArray &)),
@@ -1971,7 +1976,7 @@ void spoton_kernel::connectSignalsToNeighbor
   connect(m_urlDistribution,
 	  SIGNAL(sendURLs(const QByteArray &)),
 	  neighbor,
-	  SLOT(writeURLs(const QByteArray &)),
+	  SLOT(slotWriteURLs(const QByteArray &)),
 	  Qt::UniqueConnection);
   connect(neighbor,
 	  SIGNAL(authenticationRequested(const QString &)),
@@ -2106,8 +2111,8 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SIGNAL(write(const QByteArray &, const qint64,
 		       const QPairByteArrayByteArray &)),
 	  neighbor,
-	  SLOT(write(const QByteArray &, const qint64,
-		     const QPairByteArrayByteArray &)),
+	  SLOT(slotWrite(const QByteArray &, const qint64,
+			 const QPairByteArrayByteArray &)),
 	  Qt::UniqueConnection);
 }
 

@@ -382,6 +382,11 @@ void spoton_gui_server::slotReadyRead(void)
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("echokeypair_")));
+
+	      QList<QByteArray> list(message.split('_'));
+
+	      if(list.size() == 2)
+		emit echoKeyShare(list);
 	    }
 	  else if(message.startsWith("keys_"))
 	    {

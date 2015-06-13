@@ -30,10 +30,10 @@
 
 #include <QIcon>
 #include <QPointer>
-#include <QSslSocket>
 
 #include "ui_chatwindow.h"
 
+class QSslSocket;
 class spoton_crypt;
 
 class spoton_chatwindow: public QMainWindow

@@ -2234,7 +2234,7 @@ void spoton_neighbor::slotSendMessage
     }
 }
 
-void spoton_neighbor::writeURLs(const QByteArray &data)
+void spoton_neighbor::slotWriteURLs(const QByteArray &data)
 {
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
@@ -2248,7 +2248,7 @@ void spoton_neighbor::writeURLs(const QByteArray &data)
     {
       if(write(message.constData(), message.length()) != message.length())
 	spoton_misc::logError
-	  (QString("spoton_neighbor::writeURLs(): write() error "
+	  (QString("spoton_neighbor::slotWriteURLs(): write() error "
 		   "for %1:%2.").
 	   arg(m_address.toString()).
 	   arg(m_port));
@@ -2260,7 +2260,7 @@ void spoton_neighbor::writeURLs(const QByteArray &data)
     }
 }
 
-void spoton_neighbor::write
+void spoton_neighbor::slotWrite
 (const QByteArray &data, const qint64 id,
  const QPairByteArrayByteArray &adaptiveEchoPair)
 {
@@ -2290,7 +2290,7 @@ void spoton_neighbor::write
       {
 	if(write(data.constData(), data.length()) != data.length())
 	  spoton_misc::logError
-	    (QString("spoton_neighbor::write(): write() "
+	    (QString("spoton_neighbor::slotWrite(): write() "
 		     "error for %1:%2.").
 	     arg(m_address.toString()).
 	     arg(m_port));
@@ -6320,4 +6320,30 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
 
   if(spoton_kernel::instance())
     spoton_kernel::instance()->saveUrls(urls);
+}
+
+void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
+{
+  Q_UNUSED(list);
+
+  QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat", 0)));
+
+  if(readyToWrite())
+    {
+      if(write(message.constData(), message.length()) != message.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotEchoKeyShare(): write() error "
+		   "for %1:%2.").
+	   arg(m_address.toString()).
+	   arg(m_port));
+      else
+	{
+	  addToBytesWritten(message.length());
+	  spoton_kernel::messagingCacheAdd(message);
+	}
+    }
 }

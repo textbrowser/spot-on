@@ -468,7 +468,7 @@ class spoton: public QMainWindow
   quint64 m_urlOffset;
   quint64 m_urlPages;
   spoton_crypt *m_urlCommonCrypt;
-  spoton_echo_key_share m_echoKeyShare;
+  spoton_echo_key_share *m_echoKeyShare;
   spoton_encryptfile m_encryptFile;
   spoton_external_address m_externalAddress;
   spoton_logviewer m_logViewer;

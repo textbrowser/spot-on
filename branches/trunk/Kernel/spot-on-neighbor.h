@@ -311,6 +311,7 @@ class spoton_neighbor: public QThread
   void slotConnected(void);
   void slotDisconnected(void);
   void slotDiscoverExternalAddress(void);
+  void slotEchoKeyShare(const QByteArrayList &list);
   void slotEncrypted(void);
   void slotError(QAbstractSocket::SocketError error);
   void slotError(const QString &method,
@@ -349,9 +350,9 @@ class spoton_neighbor: public QThread
   void slotSslErrors(const QList<QSslError> &errors);
   void slotStopTimer(QTimer *timer);
   void slotTimeout(void);
-  void write(const QByteArray &data, const qint64 id,
-	     const QPairByteArrayByteArray &adaptiveEchoPair);
-  void writeURLs(const QByteArray &data);
+  void slotWrite(const QByteArray &data, const qint64 id,
+		 const QPairByteArrayByteArray &adaptiveEchoPair);
+  void slotWriteURLs(const QByteArray &data);
 
  public slots:
   void deleteLater(void);

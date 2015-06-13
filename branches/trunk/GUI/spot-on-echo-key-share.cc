@@ -36,8 +36,10 @@
 #include "spot-on-defines.h"
 #include "spot-on-echo-key-share.h"
 
-spoton_echo_key_share::spoton_echo_key_share(void):QMainWindow()
+spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket):
+  QMainWindow()
 {
+  m_kernelSocket = kernelSocket;
   ui.setupUi(this);
   setWindowTitle
     (tr("%1: Echo Key Share").arg(SPOTON_APPLICATION_NAME));
@@ -548,12 +550,18 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 
   if(!eCrypt || !sCrypt)
     return;
-
-  QSslSocket kernelSocket;
-
-  if(kernelSocket.state() != QAbstractSocket::ConnectedState)
+  else if(!m_kernelSocket)
     return;
-  else if(!kernelSocket.isEncrypted())
+
+  if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket->isEncrypted())
+    return;
+
+  QModelIndexList list
+    (ui.table->selectionModel()->selectedRows(ui.table->columnCount() - 1));
+
+  if(list.isEmpty())
     return;
 
   QByteArray publicKey;
@@ -578,8 +586,6 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
     return;
 
   QByteArray name;
-  QModelIndexList list
-    (ui.table->selectionModel()->selectedRows(ui.table->columnCount() - 1));
   QSettings settings;
 
   if(keyType == "chat")
@@ -588,8 +594,6 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
     name = settings.value("gui/emailName", "unknown").toByteArray();
   else if(keyType == "poptastic")
     {
-      name = "";
-
       QHash<QString, QVariant> hash;
       bool ok = true;
 
@@ -599,8 +603,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	name = hash["in_username"].toString().trimmed().toUtf8();
     }
   else if(keyType == "rosetta")
-    name = settings.value("gui/rosettaName", "unknown").
-      toByteArray();
+    name = settings.value("gui/rosettaName", "unknown").toByteArray();
   else if(keyType == "url")
     name = settings.value("gui/urlName", "unknown").toByteArray();
 
@@ -622,7 +625,6 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	(spoton_misc::
 	 retrieveEchoShareInformation(list.takeFirst().data().toString(),
 				      eCrypt));
-      bool ok = true;
 
       if(!hash.isEmpty())
 	{
@@ -637,6 +639,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 			     0,
 			     0,
 			     QString(""));
+	  bool ok = true;
 
 	  stream << QByteArray("0090")
 		 << keyType.toLatin1()
@@ -660,14 +663,14 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	      message = "echokeypair_" + message.toBase64() + "_" +
 		messageCode.toBase64() + "\n";
 
-	      if(kernelSocket.write(message.constData(), message.length()) !=
-		 message.length())
+	      if(m_kernelSocket->write(message.constData(),
+				       message.length()) != message.length())
 		spoton_misc::logError
 		  (QString("spoton_echo_key_share::shareSelected():"
 			   "write() failure "
 			   "for %1:%2.").
-		   arg(kernelSocket.peerAddress().toString()).
-		   arg(kernelSocket.peerPort()));
+		   arg(m_kernelSocket->peerAddress().toString()).
+		   arg(m_kernelSocket->peerPort()));
 	    }
 	}
     }

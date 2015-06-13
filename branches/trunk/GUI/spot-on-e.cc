@@ -1937,7 +1937,7 @@ void spoton::initializeUrlDistillers(void)
 
 void spoton::slotViewEchoKeyShare(void)
 {
-  m_echoKeyShare.show(this);
+  m_echoKeyShare->show(this);
 }
 
 QHash<QString, spoton_crypt *> spoton::crypts(void) const
@@ -1958,3 +1958,4 @@ QByteArray spoton::poptasticName(void) const
 
   return name;
 }
+

@@ -209,6 +209,7 @@ spoton::spoton(void):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_neighborsLastModificationTime = QDateTime();
   m_participantsLastModificationTime = QDateTime();
+  m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket);
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(this);
   m_starbeamReceivedModel = new QStandardItemModel(this);
 

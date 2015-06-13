@@ -29,10 +29,12 @@
 #define _spoton_echo_key_share_h_
 
 #include <QMainWindow>
+#include <QPointer>
 
 #include "ui_echo-key-share.h"
 
 class QKeyEvent;
+class QSslSocket;
 class spoton_crypt;
 
 class spoton_echo_key_share: public QMainWindow
@@ -40,11 +42,12 @@ class spoton_echo_key_share: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton_echo_key_share(void);
+  spoton_echo_key_share(QSslSocket *kernelSocket);
   ~spoton_echo_key_share();
   void show(QWidget *parent);
 
  private:
+  QPointer<QSslSocket> m_kernelSocket;
   Ui_spoton_echokeyshare ui;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
