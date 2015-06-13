@@ -1635,8 +1635,13 @@ void spoton_kernel::slotMessageReceivedFromUI
 	 << hashKey
 	 << cipherType
 	 << hashType;
-  keyInformation = spoton_crypt::publicKeyEncrypt
-    (keyInformation, publicKey, &ok);
+
+  if(stream.status() != QDataStream::Ok)
+    ok = false;
+
+  if(ok)
+    keyInformation = spoton_crypt::publicKeyEncrypt
+      (keyInformation, publicKey, &ok);
 
   if(ok)
     {
@@ -1678,7 +1683,12 @@ void spoton_kernel::slotMessageReceivedFromUI
 		   << sequenceNumber
 		   << utcDate
 		   << signature;
-	    data = crypt.encrypted(data, &ok);
+
+	    if(stream.status() != QDataStream::Ok)
+	      ok = false;
+
+	    if(ok)
+	      data = crypt.encrypted(data, &ok);
 	  }
 
 	if(ok)
@@ -1711,7 +1721,12 @@ void spoton_kernel::slotMessageReceivedFromUI
 
 	    stream << QByteArray("0000")
 		   << data;
-	    data = crypt.encrypted(bytes, &ok);
+
+	    if(stream.status() != QDataStream::Ok)
+	      ok = false;
+
+	    if(ok)
+	      data = crypt.encrypted(bytes, &ok);
 
 	    if(ok)
 	      messageCode = crypt.keyedHash(data, &ok);
@@ -2325,8 +2340,13 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			 << hashKey
 			 << cipherType
 			 << hashType;
-		  keyInformation = spoton_crypt::publicKeyEncrypt
-		    (keyInformation, publicKey, &ok);
+
+		  if(stream.status() != QDataStream::Ok)
+		    ok = false;
+
+		  if(ok)
+		    keyInformation = spoton_crypt::publicKeyEncrypt
+		      (keyInformation, publicKey, &ok);
 		}
 
 	      if(ok)
@@ -2371,7 +2391,12 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
 			          toLatin1()
 			       << signature;
-			data = crypt.encrypted(data, &ok);
+
+			if(stream.status() != QDataStream::Ok)
+			  ok = false;
+
+			if(ok)
+			  data = crypt.encrypted(data, &ok);
 		      }
 
 		    if(ok)
@@ -2404,7 +2429,12 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 			stream << QByteArray("0013")
 			       << data;
-			data = crypt.encrypted(bytes, &ok);
+
+			if(stream.status() != QDataStream::Ok)
+			  ok = false;
+
+			if(ok)
+			  data = crypt.encrypted(bytes, &ok);
 
 			if(ok)
 			  messageCode = crypt.keyedHash(data, &ok);
@@ -3561,15 +3591,25 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 
   stream << messageType.toLatin1();
 
-  if(messageType == "0040a")
-    stream << name
-	   << id;
-  else
-    stream << name
-	   << id
-	   << message;
+  if(stream.status() != QDataStream::Ok)
+    ok = false;
 
-  data = crypt.encrypted(data, &ok);
+  if(ok)
+    {
+      if(messageType == "0040a")
+	stream << name
+	       << id;
+      else
+	stream << name
+	       << id
+	       << message;
+
+      if(stream.status() != QDataStream::Ok)
+	ok = false;
+    }
+
+  if(ok)
+    data = crypt.encrypted(data, &ok);
 
   if(ok)
     messageCode = crypt.keyedHash(data, &ok);
@@ -4009,8 +4049,13 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 			 << hashKey
 			 << symmetricKeyAlgorithm
 			 << hashType;
-		  keyInformation = spoton_crypt::publicKeyEncrypt
-		    (keyInformation, publicKey, &ok);
+
+		  if(stream.status() != QDataStream::Ok)
+		    ok = false;
+
+		  if(ok)
+		    keyInformation = spoton_crypt::publicKeyEncrypt
+		      (keyInformation, publicKey, &ok);
 		}
 
 	      if(ok)
@@ -4055,7 +4100,12 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
 			          toLatin1()
 			       << signature;
-			data = crypt.encrypted(data, &ok);
+
+			if(stream.status() != QDataStream::Ok)
+			  ok = false;
+
+			if(ok)
+			  data = crypt.encrypted(data, &ok);
 		      }
 
 		    if(ok)
@@ -4249,7 +4299,12 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
 			          toLatin1()
 			       << signature;
-			data = crypt.encrypted(data, &ok);
+
+			if(stream.status() != QDataStream::Ok)
+			  ok = false;
+
+			if(ok)
+			  data = crypt.encrypted(data, &ok);
 		      }
 
 		    if(ok)
@@ -5000,8 +5055,13 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 			 << hashKey
 			 << symmetricKeyAlgorithm
 			 << hashType;
-		  keyInformation = spoton_crypt::publicKeyEncrypt
-		    (keyInformation, publicKey, &ok);
+
+		  if(stream.status() != QDataStream::Ok)
+		    ok = false;
+
+		  if(ok)
+		    keyInformation = spoton_crypt::publicKeyEncrypt
+		      (keyInformation, publicKey, &ok);
 		}
 
 	      if(ok)
@@ -5046,7 +5106,12 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
 			          toLatin1()
 			       << signature;
-			data = crypt.encrypted(data, &ok);
+
+			if(stream.status() != QDataStream::Ok)
+			  ok = false;
+
+			if(ok)
+			  data = crypt.encrypted(data, &ok);
 		      }
 
 		    if(ok)

@@ -173,13 +173,14 @@ QList<QByteArray> spoton_receive::process0000
 	      QByteArray a;
 
 	      stream >> a;
-	      list << a;
 
 	      if(stream.status() != QDataStream::Ok)
 		{
 		  list.clear();
 		  break;
 		}
+	      else
+		list << a;
 	    }
 
 	  if(!list.isEmpty())
@@ -242,13 +243,14 @@ QList<QByteArray> spoton_receive::process0000
 			  QByteArray a;
 
 			  stream >> a;
-			  list << a;
 
 			  if(stream.status() != QDataStream::Ok)
 			    {
 			      list.clear();
 			      break;
 			    }
+			  else
+			    list << a;
 			}
 
 		      if(list.size() == 6)
@@ -378,13 +380,14 @@ QList<QByteArray> spoton_receive::process0000a
 	      QByteArray a;
 
 	      stream >> a;
-	      list << a;
 
 	      if(stream.status() != QDataStream::Ok)
 		{
 		  list.clear();
 		  break;
 		}
+	      else
+		list << a;
 	    }
 
 	  if(!list.isEmpty())
@@ -444,13 +447,14 @@ QList<QByteArray> spoton_receive::process0000a
 			  QByteArray a;
 
 			  stream >> a;
-			  list << a;
 
 			  if(stream.status() != QDataStream::Ok)
 			    {
 			      list.clear();
 			      break;
 			    }
+			  else
+			    list << a;
 			}
 
 		      if(list.size() == 5)
@@ -587,13 +591,14 @@ QList<QByteArray> spoton_receive::process0000b
 	      QByteArray a;
 
 	      stream >> a;
-	      list << a;
 
 	      if(stream.status() != QDataStream::Ok)
 		{
 		  list.clear();
 		  break;
 		}
+	      else
+		list << a;
 	    }
 
 	  if(list.size() == 6)
@@ -937,13 +942,14 @@ QList<QByteArray> spoton_receive::process0013
 	      QByteArray a;
 
 	      stream >> a;
-	      list << a;
 
 	      if(stream.status() != QDataStream::Ok)
 		{
 		  list.clear();
 		  break;
 		}
+	      else
+		list << a;
 	    }
 
 	  if(!list.isEmpty())
@@ -1003,13 +1009,14 @@ QList<QByteArray> spoton_receive::process0013
 			  QByteArray a;
 
 			  stream >> a;
-			  list << a;
 
 			  if(stream.status() != QDataStream::Ok)
 			    {
 			      list.clear();
 			      break;
 			    }
+			  else
+			    list << a;
 			}
 
 		      if(list.size() == 5)
@@ -1131,7 +1138,9 @@ QString spoton_receive::findMessageType
 	      QDataStream stream(&data, QIODevice::ReadOnly);
 
 	      stream >> a;
-	      type = a;
+
+	      if(stream.status() == QDataStream::Ok)
+		type = a;
 	    }
 
 	  if(!type.isEmpty())
@@ -1165,7 +1174,9 @@ QString spoton_receive::findMessageType
 	      QDataStream stream(&data, QIODevice::ReadOnly);
 
 	      stream >> a;
-	      type = a;
+
+	      if(stream.status() == QDataStream::Ok)
+		type = a;
 	    }
 
 	  if(!type.isEmpty())
@@ -1198,9 +1209,13 @@ QString spoton_receive::findMessageType
 		symmetricKeys.append(list.value(2));
 		symmetricKeys.append(list.value(4));
 	      }
+	    else
+	      symmetricKeys.clear();
 
 	    goto done_label;
 	  }
+	else
+	  symmetricKeys.clear();
       }
 
  done_label:

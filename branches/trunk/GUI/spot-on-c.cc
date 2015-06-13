@@ -2399,8 +2399,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 	name = m_settings.value("gui/emailName", "unknown").
 	  toByteArray();
       else if(keyType == "poptastic")
-	name = m_poptasticRetroPhoneSettingsUi.in_username->text().
-	  trimmed().toUtf8();
+	name = poptasticName();
       else if(keyType == "url")
 	name = name = m_settings.value("gui/urlName", "unknown").
 	  toByteArray();

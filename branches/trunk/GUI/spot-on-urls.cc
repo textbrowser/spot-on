@@ -160,7 +160,7 @@ void spoton::slotPrepareUrlDatabases(void)
 
 	    if(m_urlDatabase.driverName() == "QPSQL")
 	      {
-		if(!query.exec(QString("CREATE TABLE "
+		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
 				       "spot_on_keywords_%1%2 ("
 				       "keyword_hash TEXT NOT NULL, "
 				       "url_hash TEXT NOT NULL, "
@@ -186,12 +186,12 @@ void spoton::slotPrepareUrlDatabases(void)
 
 	    if(m_urlDatabase.driverName() == "QPSQL")
 	      {
-		if(!query.exec(QString("CREATE TABLE "
+		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
 				       "spot_on_urls_%1%2 ("
 				       "date_time_inserted TEXT NOT NULL, "
 				       "description BYTEA, "
 				       "title BYTEA NOT NULL, "
-				       "unique_id BIGSERIAL UNIQUE, "
+				       "unique_id BIGINT UNIQUE, "
 				       "url BYTEA NOT NULL, "
 				       "url_hash TEXT PRIMARY KEY NOT NULL)").
 			       arg(c1).arg(c2)))
@@ -199,12 +199,6 @@ void spoton::slotPrepareUrlDatabases(void)
 
 		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
 				       "spot_on_urls_%1%2 TO "
-				       "spot_on_user").
-			       arg(c1).arg(c2)))
-		  created = false;
-
-		if(!query.exec(QString("GRANT SELECT, UPDATE, USAGE ON "
-				       "spot_on_urls_%1%2_unique_id_seq TO "
 				       "spot_on_user").
 			       arg(c1).arg(c2)))
 		  created = false;
@@ -230,6 +224,19 @@ void spoton::slotPrepareUrlDatabases(void)
 #ifndef Q_OS_MAC
 	QApplication::processEvents();
 #endif
+      }
+
+  if(created)
+    if(m_urlDatabase.driverName() == "QPSQL")
+      {
+	QSqlQuery query(m_urlDatabase);
+
+	if(!query.exec("CREATE SEQUENCE serial START 1"))
+	  created = false;
+
+	if(!query.exec("GRANT SELECT, UPDATE, USAGE ON serial "
+		       "TO spot_on_user"))
+	  created = false;
       }
 
   progress.close();

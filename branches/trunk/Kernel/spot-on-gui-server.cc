@@ -378,6 +378,11 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(!message.isEmpty())
 		emit disconnectNeighbors(message.toLongLong());
 	    }
+	  else if(message.startsWith("echokeypair_"))
+	    {
+	      message.remove
+		(0, static_cast<int> (qstrlen("echokeypair_")));
+	    }
 	  else if(message.startsWith("keys_"))
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("keys_")));

@@ -1944,3 +1944,17 @@ QHash<QString, spoton_crypt *> spoton::crypts(void) const
 {
   return m_crypts;
 }
+
+QByteArray spoton::poptasticName(void) const
+{
+  QByteArray name;
+  QHash<QString, QVariant> hash;
+  bool ok = true;
+
+  hash = spoton_misc::poptasticSettings(m_crypts.value("chat", 0), &ok);
+
+  if(ok)
+    name = hash["in_username"].toString().trimmed().toUtf8();
+
+  return name;
+}

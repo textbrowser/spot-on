@@ -3750,11 +3750,10 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
   spoton_crypt *c = 0;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    QSqlDatabase db = database(connectionName);
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "urls_key_information.db");
+      (homePath() + QDir::separator() + "urls_key_information.db");
 
     if(db.open())
       {
@@ -3881,9 +3880,8 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
       else
 	{
 	  ok = false;
-	  spoton_misc::logError
-	    (QString("spoton_misc::importUrl(): "
-		     "%1.").arg(query.lastError().text()));
+	  logError(QString("spoton_misc::importUrl(): "
+			   "%1.").arg(query.lastError().text()));
 	  return ok;
  	}
     }
@@ -3893,31 +3891,64 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 
   QSqlQuery query(db);
 
-  query.prepare
-    (QString("INSERT INTO spot_on_urls_%1 ("
-	     "date_time_inserted, "
-	     "description, "
-	     "title, "
-	     "url, "
-	     "url_hash) VALUES (?, ?, ?, ?, ?)").
-     arg(urlHash.mid(0, 2).constData()));
-  query.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
+  if(db.driverName() == "QPSQL")
+    {
+      query.prepare
+	(QString("INSERT INTO spot_on_urls_%1 ("
+		 "date_time_inserted, "
+		 "description, "
+		 "title, "
+		 "unique_id, "
+		 "url, "
+		 "url_hash) VALUES (?, ?, ?, nextval('serial'), "
+		 "?, ?)").
+	 arg(urlHash.mid(0, 2).constData()));
+      query.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
 
-  if(ok)
-    query.bindValue
-      (1, crypt->encryptedThenHashed(description, &ok).
-       toBase64());
+      if(ok)
+	query.bindValue
+	  (1, crypt->encryptedThenHashed(description, &ok).
+	   toBase64());
 
-  if(ok)
-    query.bindValue
-      (2, crypt->encryptedThenHashed(title, &ok).toBase64());
+      if(ok)
+	query.bindValue
+	  (2, crypt->encryptedThenHashed(title, &ok).toBase64());
 
-  if(ok)
-    query.bindValue
-      (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
-       toBase64());
+      if(ok)
+	query.bindValue
+	  (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	   toBase64());
 
-  query.bindValue(4, urlHash.constData());
+      query.bindValue(4, urlHash.constData());
+    }
+  else
+    {
+      query.prepare
+	(QString("INSERT INTO spot_on_urls_%1 ("
+		 "date_time_inserted, "
+		 "description, "
+		 "title, "
+		 "url, "
+		 "url_hash) VALUES (?, ?, ?, ?, ?)").
+	 arg(urlHash.mid(0, 2).constData()));
+      query.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
+
+      if(ok)
+	query.bindValue
+	  (1, crypt->encryptedThenHashed(description, &ok).
+	   toBase64());
+
+      if(ok)
+	query.bindValue
+	  (2, crypt->encryptedThenHashed(title, &ok).toBase64());
+
+      if(ok)
+	query.bindValue
+	  (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	   toBase64());
+
+      query.bindValue(4, urlHash.constData());
+    }
 
   /*
   ** If a unique-constraint violation was raised, ignore it.
@@ -3928,9 +3959,8 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
       if(!query.lastError().text().toLower().contains("unique"))
 	{
 	  ok = false;
-	  spoton_misc::logError
-	    (QString("spoton_misc::importUrl(): "
-		     "%1.").arg(query.lastError().text()));
+	  logError(QString("spoton_misc::importUrl(): "
+			   "%1.").arg(query.lastError().text()));
 	}
 
   if(ok)
@@ -3974,9 +4004,8 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 	  if(query.exec())
 	    count += 1;
 	  else
-	    spoton_misc::logError
-	      (QString("spoton_misc::importUrl(): "
-		       "%1.").arg(query.lastError().text()));
+	    logError(QString("spoton_misc::importUrl(): "
+			     "%1.").arg(query.lastError().text()));
 
 	  if(count >= maximum_keywords)
 	    break;
@@ -3984,4 +4013,65 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
     }
 
   return ok;
+}
+
+QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
+(const QString &communityName, spoton_crypt *crypt)
+{
+  if(!crypt)
+    return QHash<QString, QByteArray> ();
+
+  QHash<QString, QByteArray> hash;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT authentication_key, "
+		      "cipher_type, "
+		      "enabled, "
+		      "encryption_key, "
+		      "hash_type "
+		      "FROM echo_key_sharing_secrets "
+		      "WHERE name_hash = ?");
+	query.bindValue
+	  (0, crypt->keyedHash(communityName.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  if(query.exec() && query.next())
+	    for(int i = 0; i < query.record().count(); i++)
+	      {
+		QByteArray bytes;
+		bool ok = true;
+
+		bytes = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.value(i).
+							 toByteArray()),
+					      &ok);
+
+		if(ok)
+		  hash[query.record().fieldName(i)] = bytes;
+		else
+		  {
+		    hash.clear();
+		    break;
+		  }
+	      }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return hash;
 }

@@ -44,7 +44,6 @@ class spoton_urldistribution: public QThread
   bool m_quit;
   qint64 m_lastUniqueId;
   quint64 m_limit;
-  quint64 m_offset;
   void run(void);
 
  private slots:

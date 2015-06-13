@@ -2759,8 +2759,7 @@ void spoton::slotSharePoptasticPublicKey(void)
   if(ok)
     {
       QByteArray message;
-      QByteArray name(m_poptasticRetroPhoneSettingsUi.in_username->text().
-		      trimmed().toUtf8());
+      QByteArray name(poptasticName());
 
       if(name.isEmpty())
 	name = "unknown@unknown.org";

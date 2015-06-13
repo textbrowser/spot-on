@@ -357,7 +357,15 @@ void spoton_urldistribution::slotTimeout(void)
 		      (myPublicKey, &ok);
 
 		  if(ok)
-		    stream << myPublicKeyHash;
+		    {
+		      stream << myPublicKeyHash;
+
+		      if(stream.status() != QDataStream::Ok)
+			{
+			  data.clear();
+			  ok = false;
+			}
+		    }
 		}
 
 	      QList<QByteArray> bytes;
@@ -420,12 +428,21 @@ void spoton_urldistribution::slotTimeout(void)
 					       &ok));
 
 	      if(ok)
-		m_lastUniqueId = query.value(4).toLongLong();
+		m_lastUniqueId = qMax
+		  (m_lastUniqueId, query.value(4).toLongLong());
 
 	      if(ok)
-		stream << bytes.value(0)  // URL
-		       << bytes.value(1)  // Title
-		       << bytes.value(2); // Description
+		{
+		  stream << bytes.value(0)  // URL
+			 << bytes.value(1)  // Title
+			 << bytes.value(2); // Description
+
+		  if(stream.status() != QDataStream::Ok)
+		    {
+		      data.clear();
+		      ok = false;
+		    }
+		}
 
 	      count += 1;
 
@@ -496,8 +513,13 @@ void spoton_urldistribution::slotTimeout(void)
 	     << hashKey
 	     << cipherType
 	     << hashType;
-      keyInformation = spoton_crypt::publicKeyEncrypt
-	(keyInformation, publicKeys.at(i), &ok);
+
+      if(stream.status() != QDataStream::Ok)
+	ok = false;
+
+      if(ok)
+	keyInformation = spoton_crypt::publicKeyEncrypt
+	  (keyInformation, publicKeys.at(i), &ok);
 
       if(ok)
 	if(spoton_kernel::setting("gui/urlSignMessages", true).toBool())
@@ -518,7 +540,12 @@ void spoton_urldistribution::slotTimeout(void)
 
 	  stream << data
 		 << signature;
-	  message = crypt.encrypted(bytes, &ok);
+
+	  if(stream.status() != QDataStream::Ok)
+	    ok = false;
+
+	  if(ok)
+	    message = crypt.encrypted(bytes, &ok);
 
 	  if(ok)
 	    messageCode = crypt.keyedHash(keyInformation + message, &ok);

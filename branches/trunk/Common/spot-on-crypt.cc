@@ -1749,8 +1749,7 @@ QByteArray spoton_crypt::publicKey(bool *ok)
 
 	if(ok && query.exec())
 	  if(query.next())
-	    data = QByteArray::fromBase64
-	      (query.value(0).toByteArray());
+	    data = QByteArray::fromBase64(query.value(0).toByteArray());
       }
 
     db.close();

@@ -472,6 +472,7 @@ Message Type ("0070")
 MOTD (Base-64)
 
 URL Distribution
+Echoed? Yes
 
 Message Type ("0080")
 
@@ -497,6 +498,31 @@ N - Signature (First Group and Previous N - 1 Items)
 EOL
 {
 0 - Keyed Message Code of the First and Second Groups (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
+Echo Public Key Share
+Echoed? Yes
+
+Groups: 3
+Symmetric Key
+{
+0 - 0090
+1 - Key Type
+2 - Dispatcher's Name
+3 - Dispatcher's Public Key
+4 - Dispatcher's Public Key Signature
+5 - Dispatcher's Signature Public Key
+6 - Dispatcher's Signature Public Key Signature
+}
+EOL
+{
+0 - Keyed Message Code (Base-64)
 }
 EOL
 {

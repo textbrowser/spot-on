@@ -108,8 +108,7 @@ void spoton::sendMessage(bool *ok)
 	    name = m_settings.value("gui/nodeName", "unknown").
 	      toByteArray();
 	  else
-	    name = m_poptasticRetroPhoneSettingsUi.in_username->text().
-	      trimmed().toUtf8();
+	    name = poptasticName();
 
 	  if(name.isEmpty())
 	    {
@@ -246,13 +245,14 @@ void spoton::slotReceivedKernelMessage(void)
 		      QByteArray a;
 
 		      stream >> a;
-		      list << a;
 
 		      if(stream.status() != QDataStream::Ok)
 			{
 			  list.clear();
 			  break;
 			}
+		      else
+			list << a;
 
 		      if(a == "0040a")
 			end = 3;
@@ -1377,8 +1377,7 @@ QByteArray spoton::copyMyPoptasticPublicKey(void) const
   QByteArray sSignature;
   bool ok = true;
 
-  name = m_poptasticRetroPhoneSettingsUi.in_username->
-    text().trimmed().toUtf8();
+  name = poptasticName();
 
   if(name.isEmpty())
     name = "unknown@unknown.org";
@@ -2652,8 +2651,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(keyType == "chat")
     myName = m_settings.value("gui/nodeName", "unknown").toByteArray();
   else
-    myName = m_poptasticRetroPhoneSettingsUi.in_username->text().
-      trimmed().toUtf8();
+    myName = poptasticName();
 
   if(myName.isEmpty())
     {

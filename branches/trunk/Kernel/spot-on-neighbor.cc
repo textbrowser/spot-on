@@ -5670,16 +5670,23 @@ QString spoton_neighbor::findMessageType
 		    stream >> a;
 
 		    if(stream.status() != QDataStream::Ok)
-		      break;
+		      {
+			list.clear();
+			type.clear();
+			break;
+		      }
 		    else
 		      list.append(a);
 		  }
 
-		symmetricKeys.append(list.value(0));
-		symmetricKeys.append(list.value(2));
-		symmetricKeys.append(list.value(1));
-		symmetricKeys.append(list.value(3));
-		goto done_label;
+		if(!type.isEmpty())
+		  {
+		    symmetricKeys.append(list.value(0));
+		    symmetricKeys.append(list.value(2));
+		    symmetricKeys.append(list.value(1));
+		    symmetricKeys.append(list.value(3));
+		    goto done_label;
+		  }
 	      }
 	  }
       }

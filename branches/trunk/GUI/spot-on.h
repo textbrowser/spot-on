@@ -479,6 +479,7 @@ class spoton: public QMainWindow
   QByteArray copyMyPoptasticPublicKey(void) const;
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray copyMyUrlPublicKey(void) const;
+  QByteArray poptasticName(void) const;
   QPixmap pixmapForCountry(const QString &country) const;
   QString currentTabName(void) const;
   QStringList parseAEMagnet(const QString &magnet) const;

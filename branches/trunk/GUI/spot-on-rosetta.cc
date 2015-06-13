@@ -681,13 +681,19 @@ void spoton_rosetta::slotConvert(void)
 	     << hashKey
 	     << ui.cipher->currentText().toLatin1()
 	     << ui.hash->currentText().toLatin1();
-      keyInformation = spoton_crypt::publicKeyEncrypt
-	(keyInformation, publicKey, &ok);
+
+      if(stream.status() != QDataStream::Ok)
+	ok = false;
+
+      if(ok)
+	keyInformation = spoton_crypt::publicKeyEncrypt
+	  (keyInformation, publicKey, &ok);
 
       if(!ok)
 	{
 	  QApplication::restoreOverrideCursor();
-	  error = tr("The method spoton_crypt::publicKeyEncrypt() failed.");
+	  error = tr("The method spoton_crypt::publicKeyEncrypt() failed or "
+		     "an error occurred with the QDataStream object.");
 	  goto done_label1;
 	}
 
@@ -721,7 +727,12 @@ void spoton_rosetta::slotConvert(void)
 	  stream << myPublicKeyHash
 		 << ui.input->toPlainText().toUtf8()
 		 << signature;
-	  data = crypt->encrypted(data, &ok);
+
+	  if(stream.status() != QDataStream::Ok)
+	    ok = false;
+
+	  if(ok)
+	    data = crypt->encrypted(data, &ok);
 	}
 
       if(ok)
@@ -805,13 +816,14 @@ void spoton_rosetta::slotConvert(void)
 	      QByteArray a;
 
 	      stream >> a;
-	      list << a;
 
 	      if(stream.status() != QDataStream::Ok)
 		{
 		  list.clear();
 		  break;
 		}
+	      else
+		list << a;
 	    }
 
 	  if(list.size() == 4)
@@ -872,13 +884,14 @@ void spoton_rosetta::slotConvert(void)
 	      QByteArray a;
 
 	      stream >> a;
-	      list << a;
 
 	      if(stream.status() != QDataStream::Ok)
 		{
 		  list.clear();
 		  break;
 		}
+	      else
+		list << a;
 	    }
 
 	  if(list.size() == 3)

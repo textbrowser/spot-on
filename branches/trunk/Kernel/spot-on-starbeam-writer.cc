@@ -142,13 +142,14 @@ void spoton_starbeam_writer::processData
 		  QByteArray a;
 
 		  stream >> a;
-		  list << a;
 
 		  if(stream.status() != QDataStream::Ok)
 		    {
 		      list.clear();
 		      break;
 		    }
+		  else
+		    list << a;
 		}
 
 	      break;
@@ -167,13 +168,14 @@ void spoton_starbeam_writer::processData
 	  QByteArray a;
 
 	  stream >> a;
-	  list << a;
 
 	  if(stream.status() != QDataStream::Ok)
 	    {
 	      list.clear();
 	      break;
 	    }
+	  else
+	    list << a;
 	}
     }
 

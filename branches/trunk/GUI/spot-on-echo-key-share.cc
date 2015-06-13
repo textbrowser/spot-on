@@ -231,6 +231,16 @@ void spoton_echo_key_share::slotMenuAction(void)
     }
   else if(index == 2) // Refresh Table
     populate();
+  else if(index == 4)
+    shareSelected("chat");
+  else if(index == 5)
+    shareSelected("email");
+  else if(index == 6)
+    shareSelected("poptastic");
+  else if(index == 7)
+    shareSelected("rosetta");
+  else if(index == 8)
+    shareSelected("url");
   else if(index == 10) // Remove Selected
     deleteSelected();
   else if(index == 12) // Reset Widgets
@@ -527,4 +537,138 @@ void spoton_echo_key_share::slotEnabled(bool state)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_echo_key_share::shareSelected(const QString &keyType)
+{
+  spoton_crypt *eCrypt = spoton::instance() ?
+    spoton::instance()->crypts().value(keyType, 0) : 0;
+  spoton_crypt *sCrypt = spoton::instance() ?
+    spoton::instance()->crypts().value(keyType + "-signature", 0) : 0;
+
+  if(!eCrypt || !sCrypt)
+    return;
+
+  QSslSocket kernelSocket;
+
+  if(kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!kernelSocket.isEncrypted())
+    return;
+
+  QByteArray publicKey;
+  QByteArray signature;
+  bool ok = true;
+
+  publicKey = eCrypt->publicKey(&ok);
+
+  if(ok)
+    signature = eCrypt->digitalSignature(publicKey, &ok);
+
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+
+  if(ok)
+    sPublicKey = sCrypt->publicKey(&ok);
+
+  if(ok)
+    sSignature = sCrypt->digitalSignature(sPublicKey, &ok);
+
+  if(!ok)
+    return;
+
+  QByteArray name;
+  QModelIndexList list
+    (ui.table->selectionModel()->selectedRows(ui.table->columnCount() - 1));
+  QSettings settings;
+
+  if(keyType == "chat")
+    name = settings.value("gui/nodeName", "unknown").toByteArray();
+  else if(keyType == "email")
+    name = settings.value("gui/emailName", "unknown").toByteArray();
+  else if(keyType == "poptastic")
+    {
+      name = "";
+
+      QHash<QString, QVariant> hash;
+      bool ok = true;
+
+      hash = spoton_misc::poptasticSettings(eCrypt, &ok);
+
+      if(ok)
+	name = hash["in_username"].toString().trimmed().toUtf8();
+    }
+  else if(keyType == "rosetta")
+    name = settings.value("gui/rosettaName", "unknown").
+      toByteArray();
+  else if(keyType == "url")
+    name = settings.value("gui/urlName", "unknown").toByteArray();
+
+  if(name.isEmpty())
+    {
+      if(keyType == "poptastic")
+	name = "unknown@unknown.org";
+      else
+	name = "unknown";
+    }
+
+  while(!list.isEmpty())
+    {
+      /*
+      ** Now retrieve the given community's information.
+      */
+
+      QHash<QString, QByteArray> hash
+	(spoton_misc::
+	 retrieveEchoShareInformation(list.takeFirst().data().toString(),
+				      eCrypt));
+      bool ok = true;
+
+      if(!hash.isEmpty())
+	{
+	  QByteArray message;
+	  QByteArray messageCode;
+	  QDataStream stream(&message, QIODevice::WriteOnly);
+	  spoton_crypt crypt(hash["cipher_type"].constData(),
+			     hash["hash_type"].constData(),
+			     QByteArray(),
+			     hash["encryption_key"],
+			     hash["authentication_key"],
+			     0,
+			     0,
+			     QString(""));
+
+	  stream << QByteArray("0090")
+		 << keyType.toLatin1()
+		 << name
+		 << publicKey
+		 << signature
+		 << sPublicKey
+		 << sSignature;
+
+	  if(stream.status() != QDataStream::Ok)
+	    ok = false;
+
+	  if(ok)
+	    message = crypt.encrypted(message, &ok);
+
+	  if(ok)
+	    messageCode = crypt.keyedHash(message, &ok);
+
+	  if(ok)
+	    {
+	      message = "echokeypair_" + message.toBase64() + "_" +
+		messageCode.toBase64() + "\n";
+
+	      if(kernelSocket.write(message.constData(), message.length()) !=
+		 message.length())
+		spoton_misc::logError
+		  (QString("spoton_echo_key_share::shareSelected():"
+			   "write() failure "
+			   "for %1:%2.").
+		   arg(kernelSocket.peerAddress().toString()).
+		   arg(kernelSocket.peerPort()));
+	    }
+	}
+    }
 }

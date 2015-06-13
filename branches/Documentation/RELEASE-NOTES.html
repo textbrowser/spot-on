@@ -25,6 +25,7 @@
 <li>Derive subsequent file encryption key from initially-derived key via SHA-256 (Key_(i + 1) = SHA-256(Key_i)).</li>
 <li>Digital signatures should vouch for private key information.</li>
 <li>Display URL database connection information within the Search panel.</li>
+<li>Do not assume that Poptastic values have been accepted by the user.</li>
 <li>Do not delete URLs from shared.db unless they are properly loaded.<li>
 <li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
 <li>Do not distribute private spoton_crypt objects to child objects as the contents of the spoton_crypt objects may be modified by the re-encoding process. Instead, use spoton::instance()->crypts().</li>
@@ -36,6 +37,7 @@
 <li>Impose a maximum number of keywords in received URLs. Currently set to 100.</li>
 <li>Increased congestion cost maximum to 65536.</li>
 <li>Increased default secure memory pool sizes to 262144 bytes. Increased minimum pool sizes to 131072.</li>
+<li>Inspect results of all QDataStream operations.</li>
 <li>Log re-encoding errors.</li>
 <li>Many integer conversion corrections.</li>
 <li>McEliece encryption. Incomplete.</li>

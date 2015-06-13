@@ -425,8 +425,14 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 			 << pulseSize.toLatin1()
 			 << hash;
 
+		  if(stream.status() != QDataStream::Ok)
+		    ok = false;
+
 		  if(nova.isEmpty())
-		    data = crypt.encrypted(bytes, &ok);
+		    {
+		      if(ok)
+			data = crypt.encrypted(bytes, &ok);
+		    }
 		  else
 		    {
 		      QPair<QByteArray, QByteArray> pair;
@@ -446,7 +452,8 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 					   0,
 					   QString(""));
 
-			data = crypt.encrypted(bytes, &ok);
+			if(ok)
+			  data = crypt.encrypted(bytes, &ok);
 
 			if(ok)
 			  data = data + crypt.keyedHash(data, &ok);

@@ -60,6 +60,7 @@ class spoton_echo_key_share: public QMainWindow
   void keyPressEvent(QKeyEvent *event);
   void populate(void);
   void resetWidgets(void);
+  void shareSelected(const QString &keyType);
   void showError(const QString &error);
 
  private slots:
