@@ -2091,22 +2091,26 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 				    const QByteArray &signature,
 				    const QByteArray &sPublicKey,
 				    const QByteArray &sSignature,
-				    const qint64 neighborOid)
+				    const qint64 neighborOid,
+				    const bool force)
 {
   if(keyType == "chat" || keyType == "poptastic")
     {
-      if(!spoton_kernel::setting("gui/acceptChatKeys", false).toBool())
-	return;
+      if(!force)
+	if(!spoton_kernel::setting("gui/acceptChatKeys", false).toBool())
+	  return;
     }
   else if(keyType == "email")
     {
-      if(!spoton_kernel::setting("gui/acceptEmailKeys", false).toBool())
-	return;
+      if(!force)
+	if(!spoton_kernel::setting("gui/acceptEmailKeys", false).toBool())
+	  return;
     }
   else if(keyType == "url")
     {
-      if(!spoton_kernel::setting("gui/acceptUrlKeys", false).toBool())
-	return;
+      if(!force)
+	if(!spoton_kernel::setting("gui/acceptUrlKeys", false).toBool())
+	  return;
     }
   else
     {
@@ -4412,9 +4416,96 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  Q_UNUSED(length);
-  Q_UNUSED(dataIn);
-  Q_UNUSED(symmetricKeys);
+  QByteArray data(dataIn);
+
+  if(length == data.length())
+    {
+      data = data.trimmed();
+
+      QByteArray originalData(data);
+      QList<QByteArray> list(data.split('\n'));
+
+      for(int i = 0; i < list.size(); i++)
+	list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+      if(list.size() != 3)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::process0090(): "
+		     "received irregular data. Expecting 3 "
+		     "entries, "
+		     "received %1.").arg(list.size()));
+	  return;
+	}
+
+      /*
+      ** symmetricKeys[0]: Encryption Key
+      ** symmetricKeys[1]: Encryption Type
+      ** symmetricKeys[2]: Hash Key
+      ** symmetricKeys[3]: Hash Type
+      */
+
+      bool ok = true;
+      spoton_crypt crypt(symmetricKeys.value(1).constData(),
+			 symmetricKeys.value(3).constData(),
+			 QByteArray(),
+			 symmetricKeys.value(0),
+			 symmetricKeys.value(2),
+			 0,
+			 0,
+			 QString(""));
+
+      data = crypt.decrypted(list.value(0), &ok);
+
+      if(ok)
+	{
+	  QDataStream stream(&data, QIODevice::ReadOnly);
+
+	  list.clear();
+
+	  for(int i = 0; i < 7; i++)
+	    {
+	      QByteArray a;
+
+	      stream >> a;
+
+	      if(stream.status() != QDataStream::Ok)
+		{
+		  list.clear();
+		  break;
+		}
+	      else
+		list << a;
+	    }
+
+	  if(list.size() != 7)
+	    {
+	      spoton_misc::logError
+		(QString("spoton_neighbor::process0090(): "
+			 "received irregular data. Expecting 7 "
+			 "entries, "
+			 "received %1.").arg(list.size()));
+	      return;
+	    }
+
+	  savePublicKey(list.value(1), // Key Type
+			list.value(2), // Name,
+			list.value(3), // Public Key
+			list.value(4), // Public Key Signature
+			list.value(5), // Signature Public Key
+			list.value(6), // Signature Public Key Signature
+			-1,
+			true);
+	}
+    }
+  else
+    spoton_misc::logError
+      (QString("spoton_neighbor::process0090(): 0090 "
+	       "Content-Length mismatch (advertised: %1, received: %2) "
+	       "for %3:%4.").
+       arg(length).arg(data.length()).
+       arg(m_address.toString()).
+       arg(m_port));
 }
 
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)

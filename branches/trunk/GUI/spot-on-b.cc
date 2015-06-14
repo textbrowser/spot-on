@@ -2392,7 +2392,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 				     list.value(1), // Name
 				     list.value(2), // Public Key
 				     list.value(4), // Signature
-				     // Public Key
+				                    // Public Key
 				     -1,            // Neighbor OID
 				     db,
 				     m_crypts.value("chat", 0))))
