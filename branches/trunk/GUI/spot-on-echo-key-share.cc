@@ -42,7 +42,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket):
   m_kernelSocket = kernelSocket;
   ui.setupUi(this);
   setWindowTitle
-    (tr("%1: Echo Key Share").arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Echo Public Key Share").arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   setAttribute(Qt::WA_MacMetalStyle, true);
@@ -202,7 +202,7 @@ void spoton_echo_key_share::slotMenuAction(void)
 	(ui.cipher->currentText(),
 	 ui.hash->currentText(),
 	 static_cast<unsigned long> (ui.iteration_count->value()),
-	 name.mid(0, 16),
+	 name.mid(0, 16).toLatin1(),
 	 ui.cipher->currentText().toLatin1().toHex() +
 	 ui.hash->currentText().toLatin1().toHex() +
 	 name.mid(16).toLatin1(),

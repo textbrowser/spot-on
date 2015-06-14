@@ -119,6 +119,7 @@ Completed Items
 85.    NTRU support.
 86.    Support ECC, or not. Signatures supported.
 87.    IMAP and POP3.
+88.    Optional OTR because it's so pretty. Partial SMP.
 
 Ignored Items
 
@@ -142,7 +143,8 @@ Ignored Items
 11.    Entering geminis is difficult.
 12.    Participant count may be possible based on asymmetric ciphertexts.
        Research?
-13.    Optional OTR because it's so pretty.
+13.    Create a commanding language. The language could be used to
+       navigate private Spot-On nodes remotely.
 14     Zero-knowledge passphrase authentication.
 15.    Add SRP for account verification. What is this, the NSA?
 16.    Gold Bugs and Novas should have separate hash keys. Not really.
@@ -216,9 +218,8 @@ Ignored Items
 59.    Allow programs such as netcat to feed data to Spot-On. Specific
        private listeners would be capable of transforming the data
        into StarBeam pulses.
-60.    Create a commanding language. The language could be used to
-       navigate private Spot-On nodes remotely.
 
 Remaining Items
 
 1.     C++11, unique_ptr and malloc().
+2.     gcry_md_setkey() does not impose minimum key lengths.

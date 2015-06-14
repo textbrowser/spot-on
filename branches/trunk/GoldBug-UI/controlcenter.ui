@@ -11145,7 +11145,7 @@ QPushButton:pressed {
   </action>
   <action name="action_Echo_Key_Share">
    <property name="text">
-    <string>&amp;Echo Key Share</string>
+    <string>&amp;Echo Public Key Share</string>
    </property>
   </action>
  </widget>

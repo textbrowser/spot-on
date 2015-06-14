@@ -3866,6 +3866,7 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
     {
       QSqlQuery query(db);
 
+      query.setForwardOnly(true);
       query.prepare(QString("SELECT COUNT(*) FROM spot_on_urls_%1 WHERE "
 			    "url_hash = ?").
 		    arg(urlHash.mid(0, 2).constData()));

@@ -4494,8 +4494,8 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 			list.value(4), // Public Key Signature
 			list.value(5), // Signature Public Key
 			list.value(6), // Signature Public Key Signature
-			-1,
-			true);
+			-1,            // Neighbor OID
+			true);         // Ignore Permissions (acceptChatKeys)
 	}
     }
   else
