@@ -2468,6 +2468,7 @@ void spoton::slotResetAll(void)
   QStringList list;
 
   list << "buzz_channels.db"
+       << "echo_key_sharing_secrets.db"
        << "email.db"
        << "error_log.dat"
        << "friends_public_keys.db"
