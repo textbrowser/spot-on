@@ -329,7 +329,6 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 	  query.bindValue
 	    (7, crypt->keyedHash(name.toUtf8(), &ok).toBase64());
 
-
 	if(ok)
 	  ok = query.exec();
       }
@@ -631,6 +630,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	  QByteArray message;
 	  QByteArray messageCode;
 	  QDataStream stream(&message, QIODevice::WriteOnly);
+	  bool ok = true;
 	  spoton_crypt crypt(hash["cipher_type"].constData(),
 			     hash["hash_type"].constData(),
 			     QByteArray(),
@@ -639,7 +639,6 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 			     0,
 			     0,
 			     QString(""));
-	  bool ok = true;
 
 	  stream << QByteArray("0090")
 		 << keyType.toLatin1()
