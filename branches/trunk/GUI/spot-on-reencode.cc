@@ -138,13 +138,15 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	query.setForwardOnly(true);
 
 	if(query.exec("SELECT "
+		      "accept, "
 		      "authentication_key, "
 		      "cipher_type, "
-		      "enabled, "
 		      "encryption_key, "
 		      "hash_type, "
 		      "iteration_count, "
-		      "name, OID FROM echo_key_sharing_secrets"))
+		      "name, "
+		      "share, "
+		      "OID FROM echo_key_sharing_secrets"))
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
@@ -172,13 +174,15 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		    updateQuery.prepare
 		      ("UPDATE echo_key_sharing_secrets "
-		       "SET authentication_key = ?, "
+		       "SET "
+		       "accept = ?, "
+		       "authentication_key = ?, "
 		       "cipher_type = ?, "
-		       "enabled = ?, "
 		       "encryption_key = ?, "
 		       "hash_type = ?, "
 		       "iteration_count = ?, "
 		       "name = ?, "
+		       "share = ?, "
 		       "name_hash = ? "
 		       "WHERE OID = ?");
 
@@ -191,10 +195,11 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		    if(ok)
 		      updateQuery.bindValue
-			(7, newCrypt->keyedHash(list.value(6), &ok).
+			(8, newCrypt->keyedHash(list.value(6), &ok).
 			 toBase64());
 
-		    updateQuery.bindValue(8, query.value(7));
+		    updateQuery.bindValue
+		      (9, query.value(query.record().count() - 1));
 
 		    if(ok)
 		      updateQuery.exec();
@@ -206,7 +211,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		  deleteQuery.prepare("DELETE FROM echo_key_sharing_secrets "
 				      "WHERE OID = ?");
-		  deleteQuery.bindValue(0, query.value(7));
+		  deleteQuery.bindValue
+		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
 		}
 	    }

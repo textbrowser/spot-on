@@ -4038,11 +4038,13 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT authentication_key, "
+	query.prepare("SELECT "
+		      "accept, "
+		      "authentication_key, "
 		      "cipher_type, "
-		      "enabled, "
 		      "encryption_key, "
-		      "hash_type "
+		      "hash_type, "
+		      "share "
 		      "FROM echo_key_sharing_secrets "
 		      "WHERE name_hash = ?");
 	query.bindValue
@@ -4105,11 +4107,12 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT authentication_key, "
-		      "cipher_type, "
-		      "enabled, "
-		      "encryption_key, "
-		      "hash_type "
+	query.prepare("SELECT "
+		      "accept, "              // 0
+		      "authentication_key, "  // 1
+		      "cipher_type, "         // 2
+		      "encryption_key, "      // 3
+		      "hash_type "            // 4
 		      "FROM echo_key_sharing_secrets");
 
 	if(query.exec())
@@ -4136,16 +4139,16 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 
 	      if(!ok)
 		continue;
-	      else if(list.value(2) != "true")
+	      else if(list.value(0) != "true")
 		continue;
 
 	      {
 		QByteArray computedHash;
-		spoton_crypt crypt(list.value(1).constData(),
+		spoton_crypt crypt(list.value(2).constData(),
 				   list.value(4).constData(),
 				   QByteArray(),
 				   list.value(3),
-				   list.value(0),
+				   list.value(1),
 				   0,
 				   0,
 				   QString(""));
@@ -4171,8 +4174,8 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 		      else
 			{
 			  echoKeys << list.value(3)
+				   << list.value(2)
 				   << list.value(1)
-				   << list.value(0)
 				   << list.value(4);
 			  type = a;
 			}
