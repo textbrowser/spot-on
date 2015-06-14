@@ -285,26 +285,27 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO echo_key_sharing_secrets "
-		      "(authentication_key, "
+		      "(accept, "
+		      "authentication_key, "
 		      "cipher_type, "
-		      "enabled, "
 		      "encryption_key, "
 		      "hash_type, "
 		      "iteration_count, "
 		      "name, "
-		      "name_hash) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+		      "name_hash, "
+		      "share) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(keys.second, &ok).toBase64());
+	  (0, crypt->encryptedThenHashed(QByteArray("false"), &ok).
+	   toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (1, crypt->encryptedThenHashed(cipherType.toLatin1(), &ok).
-	     toBase64());
+	    (1, crypt->encryptedThenHashed(keys.second, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->encryptedThenHashed(QByteArray("false"), &ok).
+	    (2, crypt->encryptedThenHashed(cipherType.toLatin1(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -328,6 +329,11 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 	if(ok)
 	  query.bindValue
 	    (7, crypt->keyedHash(name.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (8, crypt->encryptedThenHashed(QByteArray("false"),
+					   &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -371,11 +377,13 @@ void spoton_echo_key_share::populate(void)
 	ui.table->setRowCount(0);
 
 	if(query.exec("SELECT "
-		      "enabled, "
+		      "accept, "
+		      "share, "
 		      "cipher_type, "
 		      "hash_type, "
 		      "iteration_count, "
-		      "name, OID FROM echo_key_sharing_secrets"))
+		      "name, "
+		      "OID FROM echo_key_sharing_secrets"))
 	  while(query.next())
 	    {
 	      ui.table->setRowCount(row + 1);
@@ -391,7 +399,7 @@ void spoton_echo_key_share::populate(void)
 		    (QByteArray::fromBase64(query.value(i).toByteArray()),
 		     &ok);
 
-		  if(i == 0)
+		  if(i == 0 || i == 1)
 		    {
 		      box = new QCheckBox();
 
@@ -402,6 +410,8 @@ void spoton_echo_key_share::populate(void)
 
 		      box->setProperty
 			("oid", query.value(query.record().count() - 1));
+		      box->setProperty
+			("type", i == 0 ? "accept" : "share");
 		      connect(box,
 			      SIGNAL(toggled(bool)),
 			      this,
@@ -515,9 +525,14 @@ void spoton_echo_key_share::slotEnabled(bool state)
 	QSqlQuery query(db);
 	bool ok = true;
 
-	query.prepare("UPDATE echo_key_sharing_secrets "
-		      "SET enabled = ? WHERE "
-		      "OID = ?");
+	if(box->property("type").toString() == "accept")
+	  query.prepare("UPDATE echo_key_sharing_secrets "
+			"SET accept = ? WHERE "
+			"OID = ?");
+	else
+	  query.prepare("UPDATE echo_key_sharing_secrets "
+			"SET share = ? WHERE "
+			"OID = ?");
 
 	if(state)
 	  query.bindValue
@@ -557,8 +572,25 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
   else if(!m_kernelSocket->isEncrypted())
     return;
 
-  QModelIndexList list
-    (ui.table->selectionModel()->selectedRows(ui.table->columnCount() - 1));
+  QStringList list;
+
+  for(int i = 0; i < ui.table->rowCount(); i++)
+    {
+      QCheckBox *box = qobject_cast<QCheckBox *>
+	(ui.table->cellWidget(i, 1));
+
+      if(!box)
+	continue;
+
+      if(box->isChecked())
+	{
+	  QTableWidgetItem *item = ui.table->item
+	    (i, ui.table->columnCount() - 1);
+
+	  if(item)
+	    list.append(item->text());
+	}
+    }
 
   if(list.isEmpty())
     return;
@@ -621,9 +653,8 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
       */
 
       QHash<QString, QByteArray> hash
-	(spoton_misc::
-	 retrieveEchoShareInformation(list.takeFirst().data().toString(),
-				      eCrypt));
+	(spoton_misc::retrieveEchoShareInformation(list.takeFirst(),
+						   eCrypt));
 
       if(!hash.isEmpty())
 	{

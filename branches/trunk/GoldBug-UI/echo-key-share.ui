@@ -75,7 +75,12 @@
       </attribute>
       <column>
        <property name="text">
-        <string>Enabled</string>
+        <string>Accept</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Share</string>
        </property>
       </column>
       <column>
