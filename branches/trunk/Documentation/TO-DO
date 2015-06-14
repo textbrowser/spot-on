@@ -223,3 +223,5 @@ Remaining Items
 
 1.     C++11, unique_ptr and malloc().
 2.     gcry_md_setkey() does not impose minimum key lengths.
+3.     The method spoton_neighbor::savePublicKey() does not compare
+       personal keys with provided keys.
