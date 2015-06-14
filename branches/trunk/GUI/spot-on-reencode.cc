@@ -121,6 +121,102 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
   QSqlDatabase::removeDatabase(connectionName);
   sb.status->setText
+    (QObject::tr("Re-encoding echo_key_sharing_secrets.db."));
+  sb.status->repaint();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT "
+		      "authentication_key, "
+		      "cipher_type, "
+		      "enabled, "
+		      "encryption_key, "
+		      "hash_type, "
+		      "iteration_count, "
+		      "name, OID FROM echo_key_sharing_secrets"))
+	  while(query.next())
+	    {
+	      QList<QByteArray> list;
+	      bool ok = true;
+
+	      for(int i = 0; i < query.record().count() - 1; i++)
+		{
+		  QByteArray bytes;
+
+		  bytes = oldCrypt->decryptedAfterAuthenticated
+		    (QByteArray::
+		     fromBase64(query.value(i).
+				toByteArray()), &ok);
+
+		  if(ok)
+		    list.append(bytes);
+		  else
+		    break;
+		}
+
+	      if(ok)
+		if(!list.isEmpty())
+		  {
+		    QSqlQuery updateQuery(db);
+
+		    updateQuery.prepare
+		      ("UPDATE echo_key_sharing_secrets "
+		       "SET authentication_key = ?, "
+		       "cipher_type = ?, "
+		       "enabled = ?, "
+		       "encryption_key = ?, "
+		       "hash_type = ?, "
+		       "iteration_count = ?, "
+		       "name = ?, "
+		       "name_hash = ? "
+		       "WHERE OID = ?");
+
+		    for(int i = 0; i < list.size(); i++)
+		      if(ok)
+			updateQuery.bindValue
+			  (i, newCrypt->
+			   encryptedThenHashed(list.value(i), &ok).
+			   toBase64());
+
+		    if(ok)
+		      updateQuery.bindValue
+			(7, newCrypt->keyedHash(list.value(6), &ok).
+			 toBase64());
+
+		    updateQuery.bindValue(8, query.value(7));
+
+		    if(ok)
+		      updateQuery.exec();
+		  }
+
+	      if(!ok)
+		{
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.prepare("DELETE FROM echo_key_sharing_secrets "
+				      "WHERE OID = ?");
+		  deleteQuery.bindValue(0, query.value(7));
+		  deleteQuery.exec();
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  sb.status->setText
     (QObject::tr("Re-encoding email.db."));
   sb.status->repaint();
 

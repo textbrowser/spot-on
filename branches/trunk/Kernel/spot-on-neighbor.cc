@@ -1829,6 +1829,8 @@ void spoton_neighbor::processData(void)
 	    process0040b(length, data, symmetricKeys);
 	  else if(messageType == "0080")
 	    process0080(length, data, symmetricKeys);
+	  else if(messageType == "0090")
+	    process0090(length, data, symmetricKeys);
 	  else
 	    messageType.clear();
 
@@ -4407,6 +4409,14 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
        arg(m_port));
 }
 
+void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
+				  const QList<QByteArray> &symmetricKeys)
+{
+  Q_UNUSED(length);
+  Q_UNUSED(dataIn);
+  Q_UNUSED(symmetricKeys);
+}
+
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
 {
   if(readyToWrite())
@@ -5544,6 +5554,19 @@ QString spoton_neighbor::findMessageType
 	symmetricKeys.clear();
     }
 
+  if(list.size() == 3 && s_crypt)
+    {
+      symmetricKeys = 
+	spoton_misc::findEchoKeys(QByteArray::fromBase64(list.value(0)),
+				  QByteArray::fromBase64(list.value(1)),
+				  type, s_crypt);
+
+      if(type == "0090")
+	goto done_label;
+      else
+	symmetricKeys.clear();
+    }
+
   /*
   ** Finally, attempt to decipher the message via our private key.
   ** We would like to determine the message type only if we have at least
@@ -6324,13 +6347,14 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
 
 void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 {
-  Q_UNUSED(list);
-
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::s_crypts.
 					    value("chat", 0)));
+
+  message = spoton_send::message0090
+    (list.value(0) + "\n" + list.value(1), ae);
 
   if(readyToWrite())
     {

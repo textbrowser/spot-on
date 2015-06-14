@@ -4075,3 +4075,115 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
   QSqlDatabase::removeDatabase(connectionName);
   return hash;
 }
+
+QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
+					    const QByteArray &bytes2,
+					    QString &type,
+					    spoton_crypt *crypt)
+{
+  if(!crypt)
+    return QList<QByteArray> ();
+
+  /*
+  ** bytes1: encrypted portion.
+  ** bytes2: digest portion.
+  */
+
+  QList<QByteArray> echoKeys;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT authentication_key, "
+		      "cipher_type, "
+		      "enabled, "
+		      "encryption_key, "
+		      "hash_type "
+		      "FROM echo_key_sharing_secrets");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QList<QByteArray> list;
+	      bool ok = true;
+
+	      for(int i = 0; i < query.record().count(); i++)
+		{
+		  QByteArray bytes;
+
+		  bytes = crypt->
+		    decryptedAfterAuthenticated(QByteArray::
+						fromBase64(query.value(i).
+							   toByteArray()),
+						&ok);
+
+		  if(ok)
+		    list << bytes;
+		  else
+		    break;
+		}
+
+	      if(!ok)
+		continue;
+	      else if(list.value(2) != "true")
+		continue;
+
+	      {
+		QByteArray computedHash;
+		spoton_crypt crypt(list.value(1).constData(),
+				   list.value(4).constData(),
+				   QByteArray(),
+				   list.value(3),
+				   list.value(0),
+				   0,
+				   0,
+				   QString(""));
+
+		computedHash = crypt.keyedHash(bytes1, &ok);
+
+		if(ok)
+		  if(!computedHash.isEmpty() && !bytes2.isEmpty() &&
+		     spoton_crypt::memcmp(bytes2, computedHash))
+		    {
+		      QByteArray data(crypt.decrypted(bytes1, &ok));
+
+		      if(!ok)
+			continue;
+
+		      QByteArray a;
+		      QDataStream stream(&data, QIODevice::ReadOnly);
+
+		      stream >> a;
+
+		      if(stream.status() != QDataStream::Ok)
+			break;
+		      else
+			{
+			  echoKeys << list.value(3)
+				   << list.value(1)
+				   << list.value(0)
+				   << list.value(4);
+			  type = a;
+			}
+
+		      break;
+		    }
+	      }
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return echoKeys;
+}

@@ -260,6 +260,8 @@ class spoton_neighbor: public QThread
   void process0070(int length, const QByteArray &data);
   void process0080(int length, const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
+  void process0090(int length, const QByteArray &data,
+		   const QList<QByteArray> &symmetricKeys);
   void recordCertificateOrAbort(void);
   void run(void);
   void saveExternalAddress(const QHostAddress &address,

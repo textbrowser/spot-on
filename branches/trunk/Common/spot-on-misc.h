@@ -91,6 +91,10 @@ class spoton_misc
 						    bool *ok);
   static QHostAddress peerAddressAndPort(const int socketDescriptor,
 					 quint16 *port);
+  static QList<QByteArray> findEchoKeys(const QByteArray &bytes1,
+					const QByteArray &bytes2,
+					QString &type,
+					spoton_crypt *crypt);
   static QPair<QByteArray, QByteArray> decryptedAdaptiveEchoPair
     (const QPair<QByteArray, QByteArray>, spoton_crypt *crypt);
   static QPair<QByteArray, QByteArray> findGeminiInCosmos
