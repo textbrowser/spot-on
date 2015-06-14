@@ -1178,9 +1178,9 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 
       if(keyType == "elg")
 	err = gcry_sexp_build(&data_t, 0,
-			      "(data (value %b))",
-			      data.length(),
-			      data.constData());
+			      "(data (flags raw)(value %b))",
+			      data.toBase64().length(),
+			      data.toBase64().constData());
       else
 	{
 	  QByteArray random;
@@ -1644,7 +1644,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
   if(keyType == "elg")
     err = gcry_sexp_build(&data_t, 0,
-			  "(enc-val (flags) %S)",
+			  "(enc-val (flags raw) %S)",
 			  raw_t);
   else
     {
@@ -1700,6 +1700,9 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
     }
 
   decrypted = QByteArray(buffer, static_cast<int> (length));
+
+  if(keyType == "elg")
+    decrypted = QByteArray::fromBase64(decrypted);
 
   if(ok)
     *ok = true;
