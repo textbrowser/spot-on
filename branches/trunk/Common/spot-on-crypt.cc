@@ -1817,14 +1817,12 @@ QByteArray spoton_crypt::publicKeyHash(bool *ok)
 
   if(!m_publicKey.isEmpty())
     {
-      {
-	bool ok = true;
+      bool ok = true;
 
-	hash = shaXHash(m_hashAlgorithm, m_publicKey, &ok);
+      hash = shaXHash(m_hashAlgorithm, m_publicKey, &ok);
 
-	if(!ok)
+      if(!ok)
 	  hash.clear();
-      }
     }
 
   locker.unlock();
@@ -3565,7 +3563,7 @@ QByteArray spoton_crypt::encryptedThenHashed(const QByteArray &data,
       return QByteArray();
     }
   else
-    return bytes2 + bytes1;
+    return bytes2 + bytes1; // HMAC(E(Data)) || E(Data)
 }
 
 QByteArray spoton_crypt::decryptedAfterAuthenticated(const QByteArray &data,
