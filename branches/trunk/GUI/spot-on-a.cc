@@ -1724,12 +1724,6 @@ spoton::spoton(void):QMainWindow()
   else
     m_optionsUi.publishedKeySize->setCurrentIndex(0);
 
-  if(m_settings.value("gui/urlDistribution",
-		      "linear").toString().toLower() == "simple random")
-    m_ui.urlDistributionModel->setCurrentIndex(1);
-  else
-    m_ui.urlDistributionModel->setCurrentIndex(0);
-
   QByteArray status
     (m_settings.value("gui/my_status", "Online").toByteArray().toLower());
 
