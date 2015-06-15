@@ -324,11 +324,11 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
+	    (6, crypt->encryptedThenHashed(name.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (7, crypt->keyedHash(name.toUtf8(), &ok).toBase64());
+	    (7, crypt->keyedHash(name.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -379,10 +379,10 @@ void spoton_echo_key_share::populate(void)
 	if(query.exec("SELECT "
 		      "accept, "
 		      "share, "
+		      "name, "
 		      "cipher_type, "
 		      "hash_type, "
 		      "iteration_count, "
-		      "name, "
 		      "OID FROM echo_key_sharing_secrets"))
 	  while(query.next())
 	    {
@@ -463,9 +463,7 @@ void spoton_echo_key_share::deleteSelected(void)
 
     if(db.open())
       {
-	QModelIndexList list
-	  (ui.table->selectionModel()->
-	   selectedRows(ui.table->columnCount() - 1));
+	QModelIndexList list(ui.table->selectionModel()->selectedRows(2));
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
@@ -477,7 +475,7 @@ void spoton_echo_key_share::deleteSelected(void)
 	    query.prepare("DELETE FROM echo_key_sharing_secrets "
 			  "WHERE name_hash = ?");
 	    query.bindValue
-	      (0, crypt->keyedHash(name.toUtf8(), 0).toBase64());
+	      (0, crypt->keyedHash(name.toLatin1(), 0).toBase64());
 	    query.exec();
 	  }
       }
@@ -584,8 +582,8 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 
       if(box->isChecked())
 	{
-	  QTableWidgetItem *item = ui.table->item
-	    (i, ui.table->columnCount() - 1);
+	  QTableWidgetItem *item = ui.table->
+	    item(i, 2); // Community Name
 
 	  if(item)
 	    list.append(item->text());
