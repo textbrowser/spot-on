@@ -34,22 +34,22 @@ const NtruEncParams NTRU_IGF2_RAND_PARAMS = {\
 
 uint8_t ntru_rand_init(NtruRandContext *rand_ctx, struct NtruRandGen *rand_gen) {
     rand_ctx->rand_gen = rand_gen;
-    return rand_gen->init(rand_ctx, rand_gen);
+    return rand_gen->init(rand_ctx, rand_gen) ? NTRU_SUCCESS : NTRU_ERR_PRNG;
 }
 
 uint8_t ntru_rand_init_det(NtruRandContext *rand_ctx, struct NtruRandGen *rand_gen, uint8_t *seed, uint16_t seed_len) {
     rand_ctx->seed = seed;
     rand_ctx->seed_len = seed_len;
     rand_ctx->rand_gen = rand_gen;
-    return rand_gen->init(rand_ctx, rand_gen);
+    return rand_gen->init(rand_ctx, rand_gen) ? NTRU_SUCCESS : NTRU_ERR_PRNG;
 }
 
 uint8_t ntru_rand_generate(uint8_t rand_data[], uint16_t len, NtruRandContext *rand_ctx) {
-    return rand_ctx->rand_gen->generate(rand_data, len, rand_ctx);
+    return rand_ctx->rand_gen->generate(rand_data, len, rand_ctx) ? NTRU_SUCCESS : NTRU_ERR_PRNG;
 }
 
 uint8_t ntru_rand_release(NtruRandContext *rand_ctx) {
-    return rand_ctx->rand_gen->release(rand_ctx);
+    return rand_ctx->rand_gen->release(rand_ctx) ? NTRU_SUCCESS : NTRU_ERR_PRNG;
 }
 
 #ifdef WIN32
@@ -89,10 +89,8 @@ uint8_t ntru_rand_device_init(NtruRandContext *rand_ctx, struct NtruRandGen *ran
     if (rand_fd >= 0) {
         /* save rand_fd in rand_ctx->state */
         int *fd_ptr = malloc(sizeof(int));
-        if (fd_ptr == NULL) {
-	    close(rand_fd);
+        if (fd_ptr == NULL)
             return 0;
-	}
         *fd_ptr = rand_fd;
         rand_ctx->state = fd_ptr;
     }
