@@ -398,16 +398,14 @@ void spoton_gui_server::slotReadyRead(void)
 		{
 		  QStringList names;
 
-		  /*
-		  ** We do not need the rosetta keys in the kernel.
-		  */
-
 		  names << "chat"
 			<< "chat-signature"
 			<< "email"
 			<< "email-signature"
 			<< "poptastic"
 			<< "poptastic-signature"
+			<< "rosetta"
+			<< "rosetta-signature"
 			<< "url"
 			<< "url-signature";
 

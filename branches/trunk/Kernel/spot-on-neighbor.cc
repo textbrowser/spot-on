@@ -2106,6 +2106,15 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 	if(!spoton_kernel::setting("gui/acceptEmailKeys", false).toBool())
 	  return;
     }
+  else if(keyType == "rosetta")
+    {
+      if(!force)
+	/*
+	** Only echo key-share allows sharing of Rosetta key pairs.
+	*/
+
+	return;
+    }
   else if(keyType == "url")
     {
       if(!force)
