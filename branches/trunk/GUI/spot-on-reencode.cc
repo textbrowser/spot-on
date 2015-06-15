@@ -138,6 +138,53 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	query.setForwardOnly(true);
 
 	if(query.exec("SELECT "
+		      "category, OID "
+		      "FROM categories"))
+	  while(query.next())
+	    {
+	      QByteArray bytes;
+	      QSqlQuery updateQuery(db);
+	      bool ok = true;
+
+	      bytes = oldCrypt->decryptedAfterAuthenticated
+		(QByteArray::
+		 fromBase64(query.value(0).
+			    toByteArray()), &ok);
+
+	      updateQuery.prepare("UPDATE categories "
+				  "SET category = ?, "
+				  "category_hash = ? "
+				  "WHERE OID = ?");
+
+	      if(ok)
+		updateQuery.bindValue
+		  (0, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+	      if(ok)
+		updateQuery.bindValue
+		  (1, newCrypt->keyedHash(bytes, &ok).toBase64());
+
+	      updateQuery.bindValue
+		(2, query.value(query.record().count() - 1));
+
+	      if(ok)
+		updateQuery.exec();
+	      else
+		{
+		  spoton_misc::logError("Re-encoding categories error.");
+
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM categories "
+				      "WHERE OID = ?");
+		  deleteQuery.bindValue
+		    (0, query.value(query.record().count() - 1));
+		  deleteQuery.exec();
+		}
+	    }
+
+	if(query.exec("SELECT "
 		      "accept, "
 		      "authentication_key, "
 		      "cipher_type, "
@@ -146,13 +193,14 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		      "iteration_count, "
 		      "name, "
 		      "share, "
+		      "category_oid, "
 		      "OID FROM echo_key_sharing_secrets"))
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
 	      bool ok = true;
 
-	      for(int i = 0; i < query.record().count() - 1; i++)
+	      for(int i = 0; i < query.record().count() - 2; i++)
 		{
 		  QByteArray bytes;
 
@@ -207,12 +255,19 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 	      if(!ok)
 		{
+		  spoton_misc::logError
+		    ("Re-encoding echo_key_sharing_secrets error.");
+
 		  QSqlQuery deleteQuery(db);
 
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM echo_key_sharing_secrets "
-				      "WHERE OID = ?");
+				      "WHERE category_oid = ? AND "
+				      "OID = ?");
 		  deleteQuery.bindValue
-		    (0, query.value(query.record().count() - 1));
+		    (0, query.value(query.record().count() - 2));
+		  deleteQuery.bindValue
+		    (1, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
 		}
 	    }

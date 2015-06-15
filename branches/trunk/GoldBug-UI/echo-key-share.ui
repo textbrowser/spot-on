@@ -60,19 +60,30 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="table">
+     <widget class="QTreeWidget" name="tree">
+      <property name="tabKeyNavigation">
+       <bool>true</bool>
+      </property>
       <property name="selectionBehavior">
        <enum>QAbstractItemView::SelectRows</enum>
       </property>
       <property name="horizontalScrollMode">
        <enum>QAbstractItemView::ScrollPerPixel</enum>
       </property>
-      <attribute name="horizontalHeaderDefaultSectionSize">
+      <property name="uniformRowHeights">
+       <bool>true</bool>
+      </property>
+      <property name="animated">
+       <bool>true</bool>
+      </property>
+      <attribute name="headerDefaultSectionSize">
        <number>150</number>
       </attribute>
-      <attribute name="horizontalHeaderStretchLastSection">
-       <bool>true</bool>
-      </attribute>
+      <column>
+       <property name="text">
+        <string>Category</string>
+       </property>
+      </column>
       <column>
        <property name="text">
         <string>Accept</string>
@@ -207,7 +218,7 @@
      <x>0</x>
      <y>0</y>
      <width>585</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -256,7 +267,7 @@
  </widget>
  <tabstops>
   <tabstop>menu</tabstop>
-  <tabstop>table</tabstop>
+  <tabstop>tree</tabstop>
   <tabstop>name</tabstop>
   <tabstop>cipher</tabstop>
   <tabstop>hash</tabstop>

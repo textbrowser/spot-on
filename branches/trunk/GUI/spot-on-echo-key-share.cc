@@ -67,6 +67,10 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket):
 
   QMenu *menu = new QMenu(this);
 
+  menu->addAction(tr("&New Category"),
+		  this,
+		  SLOT(slotMenuAction(void)));
+  menu->addSeparator();
   menu->addAction(tr("&Generate"),
 		  this,
 		  SLOT(slotMenuAction(void)));
@@ -183,8 +187,18 @@ void spoton_echo_key_share::slotMenuAction(void)
 
   int index = ui.menu->menu()->actions().indexOf(action);
 
-  if(index == 0) // Generate
+  if(index == 0) // New Category
+    addCategory();
+  else if(index == 2) // Generate
     {
+      QTreeWidgetItem *item = ui.tree->selectedItems().value(0);
+
+      if(!item || item->parent())
+	{
+	  showError(tr("Please select a parent category."));
+	  return;
+	}
+
       QString name(ui.name->text().trimmed());
 
       if(name.length() < 16)
@@ -222,30 +236,31 @@ void spoton_echo_key_share::slotMenuAction(void)
 	       ui.cipher->currentText(),
 	       ui.hash->currentText(),
 	       ui.iteration_count->value(),
-	       name))
+	       name,
+	       item->data(0, Qt::UserRole)))
 	showError(tr("An error occurred while attempting to save "
 		     "the generated keys."));
       else
 	{
-	  ui.name->clear();
+	  resetWidgets();
 	  populate();
 	}
     }
-  else if(index == 2) // Refresh Table
+  else if(index == 4) // Refresh Table
     populate();
-  else if(index == 4)
-    shareSelected("chat");
-  else if(index == 5)
-    shareSelected("email");
   else if(index == 6)
-    shareSelected("poptastic");
+    shareSelected("chat");
   else if(index == 7)
-    shareSelected("rosetta");
+    shareSelected("email");
   else if(index == 8)
+    shareSelected("poptastic");
+  else if(index == 9)
+    shareSelected("rosetta");
+  else if(index == 10)
     shareSelected("url");
-  else if(index == 10) // Remove Selected
+  else if(index == 12) // Remove Selected
     deleteSelected();
-  else if(index == 12) // Reset Widgets
+  else if(index == 14) // Reset Widgets
     resetWidgets();
 }
 
@@ -262,7 +277,8 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 				 const QString &cipherType,
 				 const QString &hashType,
 				 const int iterationCount,
-				 const QString &name)
+				 const QString &name,
+				 const QVariant &category_oid)
 {
   spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
     value("chat", 0) : 0;
@@ -287,6 +303,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 	query.prepare("INSERT INTO echo_key_sharing_secrets "
 		      "(accept, "
 		      "authentication_key, "
+		      "category_oid, "
 		      "cipher_type, "
 		      "encryption_key, "
 		      "hash_type, "
@@ -294,7 +311,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 		      "name, "
 		      "name_hash, "
 		      "share) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->encryptedThenHashed(QByteArray("false"), &ok).
 	   toBase64());
@@ -303,36 +320,38 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 	  query.bindValue
 	    (1, crypt->encryptedThenHashed(keys.second, &ok).toBase64());
 
+	query.bindValue(2, category_oid);
+
 	if(ok)
 	  query.bindValue
-	    (2, crypt->encryptedThenHashed(cipherType.toLatin1(), &ok).
+	    (3, crypt->encryptedThenHashed(cipherType.toLatin1(), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (3, crypt->encryptedThenHashed(keys.first, &ok).toBase64());
+	    (4, crypt->encryptedThenHashed(keys.first, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (4, crypt->encryptedThenHashed(hashType.toLatin1(), &ok).
+	    (5, crypt->encryptedThenHashed(hashType.toLatin1(), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed(QByteArray::number(iterationCount),
+	    (6, crypt->encryptedThenHashed(QByteArray::number(iterationCount),
 					   &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->encryptedThenHashed(name.toLatin1(), &ok).toBase64());
+	    (7, crypt->encryptedThenHashed(name.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (7, crypt->keyedHash(name.toLatin1(), &ok).toBase64());
+	    (8, crypt->keyedHash(name.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (8, crypt->encryptedThenHashed(QByteArray("false"),
+	    (9, crypt->encryptedThenHashed(QByteArray("false"),
 					   &ok).toBase64());
 
 	if(ok)
@@ -357,6 +376,10 @@ void spoton_echo_key_share::populate(void)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  disconnect(ui.tree,
+	     SIGNAL(itemChanged(QTreeWidgetItem *, int)),
+	     this,
+	     SLOT(slotItemChanged(QTreeWidgetItem *, int)));
 
   QString connectionName("");
 
@@ -370,68 +393,93 @@ void spoton_echo_key_share::populate(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	int row = 0;
 
 	query.setForwardOnly(true);
-	ui.table->clearContents();
-	ui.table->setRowCount(0);
+	ui.tree->clear();
 
-	if(query.exec("SELECT "
-		      "accept, "
-		      "share, "
-		      "name, "
-		      "cipher_type, "
-		      "hash_type, "
-		      "iteration_count, "
-		      "OID FROM echo_key_sharing_secrets"))
+	if(query.exec("SELECT category, OID FROM categories"))
 	  while(query.next())
 	    {
-	      ui.table->setRowCount(row + 1);
+	      QByteArray bytes;
+	      QStringList strings;
+	      QTreeWidgetItem *parent = 0;
+	      bool ok = true;
 
-	      for(int i = 0; i < query.record().count() - 1; i++)
-		{
-		  QByteArray bytes;
-		  QCheckBox *box = 0;
-		  QTableWidgetItem *item = 0;
-		  bool ok = true;
+	      bytes = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
+		 &ok);
 
-		  bytes = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(i).toByteArray()),
-		     &ok);
+	      if(ok)
+		strings << bytes;
+	      else
+		strings << tr("error");
 
-		  if(i == 0 || i == 1)
-		    {
-		      box = new QCheckBox();
+	      parent = new QTreeWidgetItem(strings);
+	      parent->setData(0, Qt::UserRole, query.value(1));
+	      ui.tree->addTopLevelItem(parent);
 
-		      if(bytes == "true")
-			box->setChecked(true);
-		      else
-			box->setChecked(false);
+	      QSqlQuery q(db);
 
-		      box->setProperty
-			("oid", query.value(query.record().count() - 1));
-		      box->setProperty
-			("type", i == 0 ? "accept" : "share");
-		      connect(box,
-			      SIGNAL(toggled(bool)),
-			      this,
-			      SLOT(slotEnabled(bool)));
-		      ui.table->setCellWidget(row, i, box);
-		    }
-		  else
-		    {
-		      if(ok)
-			item = new QTableWidgetItem(bytes.constData());
-		      else
-			item = new QTableWidgetItem(tr("error"));
+	      q.setForwardOnly(true);
+	      q.prepare("SELECT "
+			"accept, "
+			"share, "
+			"name, "
+			"cipher_type, "
+			"hash_type, "
+			"iteration_count, "
+			"OID FROM echo_key_sharing_secrets "
+			"WHERE category_oid = ?");
+	      q.bindValue(0, query.value(query.record().count() - 1));
 
-		      item->setFlags(Qt::ItemIsEnabled |
-				     Qt::ItemIsSelectable);
-		      ui.table->setItem(row, i, item);
-		    }
-		}
+	      if(q.exec())
+		while(q.next())
+		  {
+		    QList<bool> checked;
+		    QStringList strings;
 
-	      row += 1;
+		    strings << ""; // Category
+
+		    for(int i = 0; i < q.record().count() - 1; i++)
+		      {
+			QByteArray bytes;
+			bool ok = true;
+
+			bytes = crypt->decryptedAfterAuthenticated
+			  (QByteArray::fromBase64(q.value(i).toByteArray()),
+			   &ok);
+
+			if(i == 0 || i == 1)
+			  {
+			    if(ok)
+			      checked << QVariant(bytes).toBool();
+			    else
+			      checked << false;
+
+			    strings << "";
+			  }
+			else
+			  {
+			    if(ok)
+			      strings << bytes;
+			    else
+			      strings << tr("error");
+			  }
+		      }
+
+		    QTreeWidgetItem *item = new QTreeWidgetItem
+		      (parent, strings);
+
+		    item->setData
+		      (0, Qt::UserRole, q.value(q.record().count() - 1));
+		    item->setFlags(Qt::ItemIsEnabled |
+				   Qt::ItemIsSelectable |
+				   Qt::ItemIsUserCheckable);
+		    item->setCheckState
+		      (1, checked.value(0) ? Qt::Checked : Qt::Unchecked);
+		    item->setCheckState
+		      (2, checked.value(1) ? Qt::Checked : Qt::Unchecked);
+		  }
 	    }
       }
 
@@ -439,6 +487,17 @@ void spoton_echo_key_share::populate(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  ui.tree->resizeColumnToContents(1);
+  ui.tree->resizeColumnToContents(2);
+  ui.tree->resizeColumnToContents(4);
+  ui.tree->resizeColumnToContents(5);
+  ui.tree->resizeColumnToContents(6);
+  ui.tree->sortItems(0, Qt::AscendingOrder);
+  ui.tree->expandAll();
+  connect(ui.tree,
+	  SIGNAL(itemChanged(QTreeWidgetItem *, int)),
+	  this,
+	  SLOT(slotItemChanged(QTreeWidgetItem *, int)));
   QApplication::restoreOverrideCursor();
 }
 
@@ -448,6 +507,11 @@ void spoton_echo_key_share::deleteSelected(void)
     value("chat", 0) : 0;
 
   if(!crypt)
+    return;
+
+  QTreeWidgetItem *item = ui.tree->selectedItems().value(0);
+
+  if(!item)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -463,20 +527,32 @@ void spoton_echo_key_share::deleteSelected(void)
 
     if(db.open())
       {
-	QModelIndexList list(ui.table->selectionModel()->selectedRows(2));
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
 
-	while(!list.isEmpty())
+	if(!item->parent())
 	  {
-	    QString name(list.takeFirst().data().toString());
-
-	    query.prepare("DELETE FROM echo_key_sharing_secrets "
-			  "WHERE name_hash = ?");
-	    query.bindValue
-	      (0, crypt->keyedHash(name.toLatin1(), 0).toBase64());
+	    query.prepare("DELETE FROM categories "
+			  "WHERE OID = ?");
+	    query.bindValue(0, item->data(0, Qt::UserRole));
 	    query.exec();
+	  }
+	else
+	  {
+	    QTreeWidgetItem *parent = item->parent();
+
+	    if(parent)
+	      {
+		query.prepare("DELETE FROM echo_key_sharing_secrets "
+			      "WHERE category_oid = ? AND name_hash = ?");
+		query.bindValue
+		  (0, parent->data(0, Qt::UserRole));
+		query.bindValue
+		  (1, crypt->keyedHash(item->text(3).toLatin1(), 0).
+		   toBase64());
+		query.exec();
+	      }
 	  }
       }
 
@@ -496,7 +572,8 @@ void spoton_echo_key_share::resetWidgets(void)
   ui.name->clear();
 }
 
-void spoton_echo_key_share::slotEnabled(bool state)
+void spoton_echo_key_share::slotItemChanged(QTreeWidgetItem *item,
+					    int column)
 {
   spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
     value("chat", 0) : 0;
@@ -504,9 +581,9 @@ void spoton_echo_key_share::slotEnabled(bool state)
   if(!crypt)
     return;
 
-  QCheckBox *box = qobject_cast<QCheckBox *> (sender());
-
-  if(!box)
+  if(!(column == 1 || column == 2))
+    return;
+  else if(!item)
     return;
 
   QString connectionName("");
@@ -523,7 +600,7 @@ void spoton_echo_key_share::slotEnabled(bool state)
 	QSqlQuery query(db);
 	bool ok = true;
 
-	if(box->property("type").toString() == "accept")
+	if(column == 1)
 	  query.prepare("UPDATE echo_key_sharing_secrets "
 			"SET accept = ? WHERE "
 			"OID = ?");
@@ -532,7 +609,7 @@ void spoton_echo_key_share::slotEnabled(bool state)
 			"SET share = ? WHERE "
 			"OID = ?");
 
-	if(state)
+	if(item->checkState(column) == Qt::Checked)
 	  query.bindValue
 	    (0, crypt->encryptedThenHashed(QByteArray("true"), &ok).
 	     toBase64());
@@ -541,7 +618,7 @@ void spoton_echo_key_share::slotEnabled(bool state)
 	    (0, crypt->encryptedThenHashed(QByteArray("false"), &ok).
 	     toBase64());
 
-	query.bindValue(1, box->property("oid"));
+	query.bindValue(1, item->data(0, Qt::UserRole));
 
 	if(ok)
 	  query.exec();
@@ -571,22 +648,26 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
     return;
 
   QStringList list;
+  int index = 0;
 
-  for(int i = 0; i < ui.table->rowCount(); i++)
+  while(true)
     {
-      QCheckBox *box = qobject_cast<QCheckBox *>
-	(ui.table->cellWidget(i, 1));
+      QTreeWidgetItem *item = ui.tree->topLevelItem(index);
 
-      if(!box)
-	continue;
+      if(!item)
+	break;
+      else
+	index += 1;
 
-      if(box->isChecked())
+      for(int i = 0; i < item->childCount(); i++)
 	{
-	  QTableWidgetItem *item = ui.table->
-	    item(i, 2); // Community Name
+	  QTreeWidgetItem *child = item->child(i);
 
-	  if(item)
-	    list.append(item->text());
+	  if(!child)
+	    continue;
+
+	  if(child->checkState(2) == Qt::Checked)
+	    list << child->text(3);
 	}
     }
 
@@ -702,4 +783,59 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	    }
 	}
     }
+}
+
+void spoton_echo_key_share::addCategory(void)
+{
+  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
+    value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QString category;
+  bool ok = true;
+
+  category = QInputDialog::getText
+    (this, tr("%1: New Category").arg(SPOTON_APPLICATION_NAME),
+     tr("&Category"), QLineEdit::Normal, QString(""), &ok).trimmed();
+
+  if(!ok)
+    return;
+  else if(category.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("INSERT INTO categories "
+		      "(category, category_hash) "
+		      "VALUES (?, ?)");
+	query.bindValue(0, crypt->encryptedThenHashed(category.toUtf8(),
+						      &ok).
+			toBase64());
+
+	if(ok)
+	  query.bindValue(1, crypt->keyedHash(category.toUtf8(), &ok).
+			  toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  populate();
 }

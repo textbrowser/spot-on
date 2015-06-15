@@ -58,7 +58,9 @@ class spoton_echo_key_share: public QMainWindow
 	    const QString &cipherType,
 	    const QString &hashType,
 	    const int iterationCount,
-	    const QString &name);
+	    const QString &name,
+	    const QVariant &category_oid);
+  void addCategory(void);
   void deleteSelected(void);
   void keyPressEvent(QKeyEvent *event);
   void populate(void);
@@ -68,7 +70,7 @@ class spoton_echo_key_share: public QMainWindow
 
  private slots:
   void slotClose(void);
-  void slotEnabled(bool state);
+  void slotItemChanged(QTreeWidgetItem *item, int column);
   void slotMenuAction(void);
 };
 
