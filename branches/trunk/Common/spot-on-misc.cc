@@ -109,16 +109,30 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+	query.exec("CREATE TABLE IF NOT EXISTS categories ("
+		   "category TEXT NOT NULL, "
+		   "category_hash TEXT PRIMARY KEY NOT NULL)"); /*
+								** Keyed
+								** hash.
+								*/
 	query.exec("CREATE TABLE IF NOT EXISTS echo_key_sharing_secrets ("
 		   "accept TEXT NOT NULL, "
 		   "authentication_key TEXT NOT NULL, "
+		   "category_oid INTEGER NOT NULL, "
 		   "cipher_type TEXT NOT NULL, "
 		   "encryption_key TEXT NOT NULL, "
 		   "hash_type TEXT NOT NULL, "
 		   "iteration_count TEXT NOT NULL, "
 		   "name TEXT NOT NULL, "
-		   "name_hash TEXT PRIMARY KEY NOT NULL, " // Keyed hash.
-		   "share TEXT NOT NULL)");
+		   "name_hash TEXT NOT NULL, " // Keyed hash.
+		   "share TEXT NOT NULL, "
+		   "PRIMARY KEY (category_oid, name_hash))");
+	query.exec("CREATE TRIGGER purge AFTER DELETE ON categories "
+		   "FOR EACH row "
+		   "BEGIN "
+		   "DELETE FROM echo_key_sharing_secrets "
+		   "WHERE category_oid = old.oid; "
+		   "END;");
       }
 
     db.close();
