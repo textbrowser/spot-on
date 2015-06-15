@@ -12,7 +12,7 @@
 <li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
 <li>Completed linear URL distribution. It is expected that Common Credentials are created. Items that cannot be imported will be discarded.</li>
 <li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
-<li>Convert ElGamal data to Base-64 before encrypting.</li>
+<li>Convert ElGamal data to Base-64 before encrypting. A previous release of Spot-On introduced the use of QDataStream objects. The serialized data appears to be incompatible with ElGamal. Padding? ElGamal appears to be an abandoned primitive. The signature portion does not yet require this special exception.</li>
 <li>Corrected importing of public keys. Cannot assume that key pairs exist.</li>
 <li>Corrected re-encoding of listeners_accounts. Must include the listener_oid field in the where-clauses.</li>
 <li>Corrected re-encoding of listeners_allowed_ips. Must include the listener_oid field in the where-clauses.</li>
