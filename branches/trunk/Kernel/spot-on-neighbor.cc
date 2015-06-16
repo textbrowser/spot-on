@@ -2092,23 +2092,23 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 				    const QByteArray &sPublicKey,
 				    const QByteArray &sSignature,
 				    const qint64 neighborOid,
-				    const bool force)
+				    const bool ignore_key_permissions)
 {
   if(keyType == "chat" || keyType == "poptastic")
     {
-      if(!force)
+      if(!ignore_key_permissions)
 	if(!spoton_kernel::setting("gui/acceptChatKeys", false).toBool())
 	  return;
     }
   else if(keyType == "email")
     {
-      if(!force)
+      if(!ignore_key_permissions)
 	if(!spoton_kernel::setting("gui/acceptEmailKeys", false).toBool())
 	  return;
     }
   else if(keyType == "rosetta")
     {
-      if(!force)
+      if(!ignore_key_permissions)
 	/*
 	** Only echo key-share allows sharing of Rosetta key pairs.
 	*/
@@ -2117,7 +2117,7 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
     }
   else if(keyType == "url")
     {
-      if(!force)
+      if(!ignore_key_permissions)
 	if(!spoton_kernel::setting("gui/acceptUrlKeys", false).toBool())
 	  return;
     }

@@ -804,7 +804,7 @@ void spoton_misc::populateUrlsDatabase(const QList<QList<QVariant> > &list,
 }
 
 bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
-				       const QByteArray &name,
+				       const QByteArray &n, // Name
 				       const QByteArray &publicKey,
 				       const QByteArray &sPublicKey,
 				       const qint64 neighborOid,
@@ -817,9 +817,20 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
   else if(!crypt)
     return false;
 
+  QByteArray name(n);
   QSqlQuery query(db);
   bool ok = true;
 
+  query.prepare("SELECT name FROM friends_public_keys WHERE "
+		"name_changed_by_user = 1 AND public_key_hash = ?");
+  query.bindValue(0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+
+  if(ok && query.exec())
+    if(query.next())
+      name = crypt->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+  ok = true;
   query.prepare("INSERT OR REPLACE INTO friends_public_keys "
 		"(gemini, gemini_hash_key, key_type, key_type_hash, "
 		"name, public_key, public_key_hash, "
