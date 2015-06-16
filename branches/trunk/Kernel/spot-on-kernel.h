@@ -38,6 +38,7 @@ extern "C"
 #include <QFuture>
 #include <QHash>
 #include <QHostAddress>
+#include <QMultiMap>
 #include <QPointer>
 #include <QQueue>
 #include <QReadWriteLock>
@@ -147,10 +148,11 @@ class spoton_kernel: public QObject
   spoton_urldistribution *m_urlDistribution;
   static QDateTime s_institutionLastModificationTime;
   static QHash<QByteArray, QList<QByteArray> > s_buzzKeys;
+  static QHash<QByteArray, char> s_messagingCache;
   static QHash<QByteArray, uint> s_emailRequestCache;
   static QHash<QByteArray, uint> s_geminisCache;
-  static QHash<QByteArray, uint> s_messagingCache;
   static QHash<QString, QVariant> s_settings;
+  static QMultiMap<uint, QByteArray> s_messagingCacheLookup;
   static QList<QList<QByteArray> > s_institutionKeys;
   static QReadWriteLock s_adaptiveEchoPairsMutex;
   static QReadWriteLock s_buzzKeysMutex;

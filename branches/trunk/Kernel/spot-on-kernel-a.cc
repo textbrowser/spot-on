@@ -88,13 +88,14 @@ extern "C"
 
 QDateTime spoton_kernel::s_institutionLastModificationTime;
 QHash<QByteArray, QList<QByteArray> > spoton_kernel::s_buzzKeys;
+QHash<QByteArray, char> spoton_kernel::s_messagingCache;
 QHash<QByteArray, uint> spoton_kernel::s_emailRequestCache;
 QHash<QByteArray, uint> spoton_kernel::s_geminisCache;
-QHash<QByteArray, uint> spoton_kernel::s_messagingCache;
 QHash<QString, QVariant> spoton_kernel::s_settings;
 QHash<QString, spoton_crypt *> spoton_kernel::s_crypts;
 QMultiHash<qint64,
 	   QPointer<spoton_neighbor> > spoton_kernel::s_connectionCounts;
+QMultiMap<uint, QByteArray> spoton_kernel::s_messagingCacheLookup;
 QList<QList<QByteArray> > spoton_kernel::s_institutionKeys;
 QList<QPair<QByteArray, QByteArray> > spoton_kernel::s_adaptiveEchoPairs;
 QReadWriteLock spoton_kernel::s_adaptiveEchoPairsMutex;
@@ -726,6 +727,7 @@ spoton_kernel::~spoton_kernel()
   QWriteLocker locker1(&s_messagingCacheMutex);
 
   s_messagingCache.clear();
+  s_messagingCacheLookup.clear();
   locker1.unlock();
 
   QWriteLocker locker2(&m_poptasticCacheMutex);
@@ -1349,6 +1351,7 @@ void spoton_kernel::prepareNeighbors(void)
       QWriteLocker locker(&s_messagingCacheMutex);
 
       s_messagingCache.clear();
+      s_messagingCacheLookup.clear();
       locker.unlock();
     }
 }
@@ -3700,9 +3703,9 @@ void spoton_kernel::purgeMessagingCache(void)
   */
 
   QWriteLocker locker3(&s_messagingCacheMutex);
-  QMutableHashIterator<QByteArray, uint> it3(s_messagingCache);
+  QMutableMapIterator<uint, QByteArray> it3(s_messagingCacheLookup);
   int i = 0;
-  int maximum = qMax(250, qCeil(0.15 * s_messagingCache.size()));
+  int maximum = qMax(250, qCeil(0.15 * s_messagingCacheLookup.size()));
 
   while(it3.hasNext())
     {
@@ -3715,9 +3718,22 @@ void spoton_kernel::purgeMessagingCache(void)
 
       uint now = QDateTime::currentDateTime().toTime_t();
 
-      if(now > it3.value())
-	if(now - it3.value() > static_cast<uint> (CACHE_TIME_DELTA_MAXIMUM))
-	  it3.remove();
+      if(now > it3.key())
+	if(now - it3.key() > static_cast<uint> (CACHE_TIME_DELTA_MAXIMUM))
+	  {
+	    QList<QByteArray> values
+	      (s_messagingCacheLookup.values(it3.key()));
+
+	    while(!values.isEmpty())
+	      {
+		s_messagingCache.remove(values.takeFirst());
+
+		if(m_future.isCanceled())
+		  return;
+	      }
+
+	    it3.remove();
+	  }
 
       if(m_future.isCanceled())
 	return;
@@ -3781,22 +3797,11 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
   if(!s_messagingCache.contains(hash))
     {
       if(cost <= s_messagingCache.size())
-	{
-	  /*
-	  ** Remove an old entry.
-	  */
+	return;
 
-	  QMutableHashIterator<QByteArray, uint> it(s_messagingCache);
-
-	  if(it.hasNext())
-	    {
-	      it.next();
-	      it.remove();
-	    }
-	}
-
-      s_messagingCache.insert
-	(hash, QDateTime::currentDateTime().addMSecs(add_msecs).toTime_t());
+      s_messagingCache.insert(hash, 0);
+      s_messagingCacheLookup.insert
+	(QDateTime::currentDateTime().addMSecs(add_msecs).toTime_t(), hash);
     }
 }
 
@@ -4407,9 +4412,9 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 
 	QReadLocker locker2(&s_messagingCacheMutex);
 
-	v1 = s_messagingCache.size();
+	v1 = s_messagingCache.size() + s_messagingCacheLookup.size();
 	locker2.unlock();
-	v2 = qMax(1, setting("gui/congestionCost", 10000).toInt());
+	v2 = 2 * qMax(1, setting("gui/congestionCost", 10000).toInt());
 	query.bindValue
 	  (0,
 	   QString::
