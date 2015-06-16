@@ -427,6 +427,8 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 
 		  if(stream.status() != QDataStream::Ok)
 		    ok = false;
+		  else
+		    ok = true;
 
 		  if(nova.isEmpty())
 		    {
