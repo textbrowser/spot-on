@@ -834,12 +834,14 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
   query.prepare("INSERT OR REPLACE INTO friends_public_keys "
 		"(gemini, gemini_hash_key, key_type, key_type_hash, "
 		"name, public_key, public_key_hash, "
-		"neighbor_oid, last_status_update) "
+		"neighbor_oid, last_status_update, name_changed_by_user) "
 		"VALUES ((SELECT gemini FROM friends_public_keys WHERE "
 		"public_key_hash = ?), "
 		"(SELECT gemini_hash_key FROM friends_public_keys WHERE "
 		"public_key_hash = ?), "
-		"?, ?, ?, ?, ?, ?, ?)");
+		"?, ?, ?, ?, ?, ?, ?, "
+		"(SELECT name_changed_by_user FROM friends_public_keys WHERE "
+		"public_key_hash = ?))");
   query.bindValue(0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
 
   if(ok)
@@ -899,6 +901,9 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
   query.bindValue(7, neighborOid);
   query.bindValue
     (8, QDateTime::currentDateTime().toString(Qt::ISODate));
+
+  if(ok)
+    query.bindValue(9, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
 
   if(ok)
     ok = query.exec();

@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>500</height>
+             <height>502</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -420,7 +420,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>766</width>
-                <height>490</height>
+                <height>492</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -805,7 +805,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>818</width>
+             <width>777</width>
              <height>554</height>
             </rect>
            </property>
@@ -1858,8 +1858,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>789</width>
-             <height>485</height>
+             <width>776</width>
+             <height>502</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2468,8 +2468,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>271</width>
-                     <height>1425</height>
+                     <width>263</width>
+                     <height>1406</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -2935,8 +2935,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>884</width>
-             <height>551</height>
+             <width>845</width>
+             <height>549</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -3972,7 +3972,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>500</height>
+             <height>502</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4048,8 +4048,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>751</width>
-                 <height>601</height>
+                 <width>748</width>
+                 <height>587</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4889,8 +4889,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>769</width>
-             <height>1039</height>
+             <width>758</width>
+             <height>1026</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6037,8 +6037,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>761</width>
-             <height>519</height>
+             <width>758</width>
+             <height>526</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7049,7 +7049,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>500</height>
+             <height>502</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7583,7 +7583,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>500</height>
+             <height>502</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7801,7 +7801,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -7879,6 +7879,9 @@
    <property name="text">
     <string>&amp;Rosetta</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
   <action name="action_Copy">
    <property name="text">
@@ -7933,6 +7936,9 @@
    <property name="text">
     <string>&amp;File Encryption</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
   </action>
   <action name="actionClear_Clipboard_Buffer">
    <property name="text">
@@ -7966,6 +7972,9 @@
   <action name="action_Echo_Key_Share">
    <property name="text">
     <string>&amp;Echo Public Key Share</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>
