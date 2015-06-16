@@ -445,7 +445,6 @@ void spoton::slotGatherUrlStatistics(void)
 
 void spoton::slotImportUrls(void)
 {
-#if SPOTON_GOLDBUG == 0
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
@@ -697,7 +696,6 @@ void spoton::slotImportUrls(void)
   progress.close();
   update();
   displayUrlImportResults(imported, not_imported);
-#endif
 }
 
 void spoton::displayUrlImportResults(const quint64 imported,
@@ -717,12 +715,10 @@ void spoton::slotShowUrlSettings(bool state)
   m_ui.urlSettings->setVisible(state);
   m_ui.urlsBox->setVisible(!state);
 
-#if SPOTON_GOLDBUG == 0
   if(!state)
     m_ui.urls_settings_layout->addWidget(m_ui.importUrls);
   else
     m_ui.urls_import_layout->addWidget(m_ui.importUrls);
-#endif
 }
 
 void spoton::slotSelectUrlIniPath(void)
@@ -928,9 +924,7 @@ void spoton::slotPostgreSQLConnect(void)
     {
       m_ui.postgresqlConnect->setProperty("user_text", "connect");
       m_ui.postgresqlConnect->setText(tr("PostgreSQL Connect"));
-#if SPOTON_GOLDBUG == 0
       m_ui.url_database_connection_information->clear();
-#endif
       m_urlDatabase.close();
       m_urlDatabase = QSqlDatabase();
 
@@ -986,9 +980,7 @@ void spoton::slotPostgreSQLConnect(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
-#if SPOTON_GOLDBUG == 0
       m_ui.url_database_connection_information->clear();
-#endif
       m_urlDatabase.close();
       m_urlDatabase = QSqlDatabase();
 
@@ -1010,9 +1002,7 @@ void spoton::slotPostgreSQLConnect(void)
 
       if(!m_urlDatabase.isOpen())
 	{
-#if SPOTON_GOLDBUG == 0
 	  m_ui.url_database_connection_information->clear();
-#endif
 
 	  QString str(m_urlDatabase.lastError().text().trimmed());
 
@@ -1031,13 +1021,11 @@ void spoton::slotPostgreSQLConnect(void)
 	{
 	  m_ui.postgresqlConnect->setProperty("user_text", "disconnect");
 	  m_ui.postgresqlConnect->setText(tr("PostgreSQL Disconnect"));
-#if SPOTON_GOLDBUG == 0
 	  m_ui.url_database_connection_information->setText
 	    (QString("%1@%2/%3").
 	     arg(ui.name->text()).
 	     arg(ui.host->text()).
 	     arg(ui.database->text()));
-#endif
 	  settings.setValue("gui/postgresql_database",
 			    ui.database->text());
 	  settings.setValue("gui/postgresql_host",
@@ -1167,7 +1155,6 @@ void spoton::slotSaveCommonUrlCredentials(void)
 
 void spoton::slotAddDistiller(void)
 {
-#if SPOTON_GOLDBUG == 0
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
@@ -1308,12 +1295,10 @@ void spoton::slotAddDistiller(void)
 			     "to add the specified URL domain. "
 			     "Please enable logging via the Log Viewer "
 			     "and try again.").arg(error));
-#endif
 }
 
 void spoton::populateUrlDistillers(void)
 {
-#if SPOTON_GOLDBUG == 0
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
@@ -1431,7 +1416,6 @@ void spoton::populateUrlDistillers(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
-#endif
 }
 
 void spoton::slotRefreshUrlDistillers(void)
@@ -1441,7 +1425,6 @@ void spoton::slotRefreshUrlDistillers(void)
 
 void spoton::slotDeleteUrlDistillers(void)
 {
-#if SPOTON_GOLDBUG == 0
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
@@ -1507,7 +1490,6 @@ void spoton::slotDeleteUrlDistillers(void)
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
   populateUrlDistillers();
-#endif
 }
 
 void spoton::slotDeleteLink(const QUrl &u)

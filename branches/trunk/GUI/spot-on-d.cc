@@ -544,7 +544,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.label_81->setHidden(state);
   m_ui.pid->setHidden(state);
   m_ui.label_17->setHidden(state);
-  m_ui.line_4->setHidden(state);
   m_ui.label_4->setHidden(state);
   m_ui.cipherType->setHidden(state);
   m_ui.hashType->setHidden(state);
@@ -568,9 +567,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.sslListener->setHidden(state);
   m_ui.listenerKeySize->setHidden(state);
   m_ui.listenersEchoMode->setHidden(state);
-  m_ui.deleteAllListeners->setHidden(state);
   m_ui.label_28->setHidden(state);
-  m_ui.publishedKeySize->setHidden(state);
   m_ui.recordIPAddress->setHidden(state);
   m_ui.permanentCertificate->setHidden(state);
   m_ui.groupBox_5->setHidden(state);
@@ -604,8 +601,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.buzzName->setHidden(state);
   m_ui.saveBuzzName->setHidden(state);
   m_ui.clearMessages->setHidden(state);
-  m_ui.copyrepleo_chat->setHidden(state);
-  m_ui.acceptChatKeys->setHidden(state);
   m_ui.participants->setColumnHidden(4, state);
   m_ui.participants->setColumnHidden(7, state);
   m_ui.mail->setColumnHidden(0, state);
@@ -614,7 +609,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.emailName->setHidden(state);
   m_ui.saveEmailName->setHidden(state);
   m_ui.saveCopy->setHidden(state);
-  m_ui.line_18->setHidden(state);
   m_ui.postoffice->setHidden(state);
   m_ui.label_79->setHidden(state);
   m_ui.label_80->setHidden(state);
@@ -2308,26 +2302,6 @@ QString spoton::currentTabName(void) const
   QString name("");
   int index = m_ui.tab->currentIndex();
 
-#if SPOTON_GOLDBUG == 1
-  if(index == 0)
-    name = "chat";
-  else if(index == 1)
-    name = "email";
-  else if(index == 2)
-    name = "buzz";
-  else if(index == 3)
-    name = "starbeam";
-  else if(index == 4)
-    name = "addfriend";
-  else if(index == 5)
-    name = "neighbors";
-  else if(index == 6)
-    name = "listeners";
-  else if(index == 7)
-    name = "settings";
-  else
-    name = "about";
-#else
   if(index == 0)
     name = "buzz";
   else if(index == 1)
@@ -2348,7 +2322,6 @@ QString spoton::currentTabName(void) const
     name = "urls";
   else
     name = "about";
-#endif
 
   return name;
 }
@@ -2491,9 +2464,7 @@ void spoton::slotPostgreSQLDisconnect(int index)
 {
   m_ui.postgresqlConnect->setProperty("user_text", "connect");
   m_ui.postgresqlConnect->setText(tr("PostgreSQL Connect"));
-#if SPOTON_GOLDBUG == 0
   m_ui.url_database_connection_information->clear();
-#endif
   m_urlDatabase.close();
   m_urlDatabase = QSqlDatabase();
 
@@ -2510,12 +2481,10 @@ void spoton::slotPostgreSQLDisconnect(int index)
 	(spoton_misc::homePath() + QDir::separator() + "urls.db");
       m_urlDatabase.open();
 
-#if SPOTON_GOLDBUG == 0
       if(m_urlDatabase.isOpen())
 	m_ui.url_database_connection_information->setText
 	  (QString("%1@%2/%3").arg("sqlite").arg("localhost").
 	   arg("urls.db"));
-#endif
     }
 
   m_settings["gui/sqliteSearch"] = index == 1;

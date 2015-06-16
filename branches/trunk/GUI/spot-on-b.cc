@@ -321,11 +321,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  m_ui.messages->verticalScrollBar()->setValue
 		    (m_ui.messages->verticalScrollBar()->maximum());
 
-#if SPOTON_GOLDBUG == 1
-		  if(m_ui.tab->currentIndex() != 0)
-#else
 		  if(m_ui.tab->currentIndex() != 1)
-#endif
 		    m_sb.chat->setVisible(true);
 
 		  playSong("receive.wav");
@@ -479,11 +475,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(ok)
 			sendSMPLinkToKernel(values, keyType, oid);
 
-#if SPOTON_GOLDBUG == 1
-		      if(m_ui.tab->currentIndex() != 0)
-#else
 		      if(m_ui.tab->currentIndex() != 1)
-#endif
 			m_sb.chat->setVisible(true);
 
 		      playSong("receive.wav");
@@ -690,11 +682,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  m_ui.messages->verticalScrollBar()->setValue
 		    (m_ui.messages->verticalScrollBar()->maximum());
 
-#if SPOTON_GOLDBUG == 1
-		  if(m_ui.tab->currentIndex() != 0)
-#else
 		  if(m_ui.tab->currentIndex() != 1)
-#endif
 		    m_sb.chat->setVisible(true);
 
 		  playSong("receive.wav");
@@ -4137,45 +4125,25 @@ void spoton::slotStatusButtonClicked(void)
   if(toolButton == m_sb.buzz)
     {
       m_sb.buzz->setVisible(false);
-#if SPOTON_GOLDBUG == 0
       m_ui.tab->setCurrentIndex(0);
-#else
-      m_ui.tab->setCurrentIndex(2);
-#endif
     }
   else if(toolButton == m_sb.chat)
     {
       m_sb.chat->setVisible(false);
-#if SPOTON_GOLDBUG == 1
-      m_ui.tab->setCurrentIndex(0);
-#else
       m_ui.tab->setCurrentIndex(1);
-#endif
     }
   else if(toolButton == m_sb.email)
     {
       m_sb.email->setVisible(false);
       m_ui.folder->setCurrentIndex(0);
       m_ui.mailTab->setCurrentIndex(0);
-#if SPOTON_GOLDBUG == 1
-      m_ui.tab->setCurrentIndex(1);
-#else
       m_ui.tab->setCurrentIndex(2);
-#endif
       slotRefreshMail();
     }
   else if(toolButton == m_sb.listeners)
-#if SPOTON_GOLDBUG == 0
     m_ui.tab->setCurrentIndex(3);
-#else
-    m_ui.tab->setCurrentIndex(6);
-#endif
   else if(toolButton == m_sb.neighbors)
-#if SPOTON_GOLDBUG == 0
     m_ui.tab->setCurrentIndex(4);
-#else
-    m_ui.tab->setCurrentIndex(5);
-#endif
 }
 
 bool spoton::updateMailStatus(const QString &oid, const QString &status)
@@ -4260,12 +4228,6 @@ void spoton::slotSetIcons(int index)
 
   // Chat
 
-#if SPOTON_GOLDBUG == 1
-  m_ui.copyrepleo_chat->setIcon(QIcon(QString(":/%1/repleo.png").
-				      arg(iconSet)));
-  m_ui.melodica->setIcon(QIcon(QString(":/%1/melodica.png").
-			       arg(iconSet)));
-#endif
   m_ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   m_ui.saveEmailName->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   m_ui.saveNodeName->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
@@ -4280,10 +4242,6 @@ void spoton::slotSetIcons(int index)
 
   // Email
 
-#if SPOTON_GOLDBUG == 1
-  m_ui.copyrepleo_email->setIcon(QIcon(QString(":/%1/repleo-email.png").
-				       arg(iconSet)));
-#endif
   m_ui.refreshMail->setIcon(QIcon(QString(":/%1/refresh.png").arg(iconSet)));
   m_ui.reply->setIcon(QIcon(QString(":/%1/reply.png").arg(iconSet)));
   m_ui.retrieveMail->setIcon(QIcon(QString(":/%1/down.png").arg(iconSet)));
@@ -4306,11 +4264,7 @@ void spoton::slotSetIcons(int index)
       (i, QIcon(QString(":/%1/%2").arg(iconSet).arg(list.at(i))));
 
   list.clear();
-#if SPOTON_GOLDBUG == 0
   list << "email.png" << "database.png";
-#else
-  list << "email.png";
-#endif
 
   for(int i = 0; i < list.size(); i++)
     m_ui.mailTab->setTabIcon
@@ -4344,13 +4298,8 @@ void spoton::slotSetIcons(int index)
 
   // Neighbors
 
-#if SPOTON_GOLDBUG == 0
   m_ui.toolButtonCopyToClipboard->setIcon
     (QIcon(QString(":/%1/copy.png").arg(iconSet)));
-#else
-  m_ui.toolButtonMakeFriends->setIcon
-    (QIcon(QString(":/%1/share.png").arg(iconSet)));
-#endif
   m_ui.shareBuzzMagnet->setIcon
     (QIcon(QString(":/%1/share.png").arg(iconSet)));
   m_ui.addNeighbor->setIcon(QIcon(QString(":/%1/add.png").arg(iconSet)));
@@ -4404,9 +4353,9 @@ void spoton::slotSetIcons(int index)
        << "add-listener.png" << "neighbors.png" << "search.png"
        << "settings.png" << "starbeam.png" << "urls.png";
 #else
-  list << "chat_t.png" << "email_t.png" << "buzz_t.png"
-       << "starbeam.png" << "key_t.png" << "connect_t.png"
-       << "server_t.png" << "settings_t.png" << "goldbug_t.png";
+  list << "buzz_t.png" << "chat_t.png" << "email_t.png"
+       << "server_t.png" << "connect_t.png" << "search.png"
+       << "settings_t.png" << "starbeam_t.png" << "urls.png";
 #endif
 
   for(int i = 0; i < list.size(); i++)
@@ -5141,11 +5090,7 @@ void spoton::initializeKernelSocket(void)
 
 void spoton::slotBuzzChanged(void)
 {
-#if SPOTON_GOLDBUG == 0
   if(m_ui.tab->currentIndex() != 0)
-#else
-  if(m_ui.tab->currentIndex() != 2)
-#endif
     m_sb.buzz->setVisible(true);
 
   playSong("buzz.wav");

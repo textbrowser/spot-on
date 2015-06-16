@@ -255,10 +255,8 @@ spoton::spoton(void):QMainWindow()
   m_ui.urlSettings->setVisible(true);
   m_ui.urlsBox->setVisible(false);
   m_ui.showUrlSettings->setChecked(true);
-#if SPOTON_GOLDBUG == 0
   m_ui.urls_db_type->model()->setData
     (m_ui.urls_db_type->model()->index(0, 0), 0, Qt::UserRole - 1);
-#endif
   m_ui.postgresqlConnect->setEnabled(false);
   m_ui.postgresqlConnect->setVisible(false);
 
@@ -266,11 +264,9 @@ spoton::spoton(void):QMainWindow()
     if(driver.toLower().contains("qpsql"))
       {
 	m_ui.postgresqlConnect->setEnabled(true);
-#if SPOTON_GOLDBUG == 0
 	m_ui.urls_db_type->model()->setData
 	  (m_ui.urls_db_type->model()->index(0, 0), QVariant(1 | 32),
 	   Qt::UserRole - 1);
-#endif
 	break;
       }
 
@@ -416,7 +412,6 @@ spoton::spoton(void):QMainWindow()
 			     "border: none; "
 			     "}");
   statusBar()->setMaximumHeight(m_sbWidget->height());
-#if SPOTON_GOLDBUG == 0
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -425,7 +420,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotActiveUrlDistribution(bool)));
-#endif
   connect(m_ui.actionClear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1324,10 +1318,8 @@ spoton::spoton(void):QMainWindow()
 	  SLOT(slotDiscover(void)));
   connect(m_ui.url_pages, SIGNAL(linkActivated(const QString &)),
 	  this, SLOT(slotPageClicked(const QString &)));
-#if SPOTON_GOLDBUG == 0
   connect(m_ui.urls_db_type, SIGNAL(currentIndexChanged(int)),
 	  this, SLOT(slotPostgreSQLDisconnect(int)));
-#endif
   connect(m_optionsUi.acceptGeminis, SIGNAL(toggled(bool)),
 	  this, SLOT(slotAcceptGeminis(bool)));
   connect(m_ui.action_Poptastic_Settings, SIGNAL(triggered(void)),
@@ -1452,16 +1444,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(sslErrors(const QList<QSslError> &)),
 	  this,
 	  SLOT(slotKernelSocketSslErrors(const QList<QSslError> &)));
-#if SPOTON_GOLDBUG == 1
-  connect(m_ui.deleteAllListeners,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotDeleteAllListeners(void)));
-  connect(m_ui.deleteAllNeighbors,
-          SIGNAL(clicked(void)),
-          this,
-          SLOT(slotDeleteAllNeighbors(void)));
-#endif
 #ifdef Q_OS_OS2
   m_ui.ipv6Listener->setEnabled(false);
   m_ui.ipv6Neighbor->setEnabled(false);
@@ -1562,7 +1544,6 @@ spoton::spoton(void):QMainWindow()
       (settings.allKeys().at(i));
 
   spoton_misc::correctSettingsContainer(m_settings);
-#if SPOTON_GOLDBUG == 0
   m_ui.activeUrlDistribution->setChecked
     (m_settings.value("gui/activeUrlDistribution", false).toBool());
 
@@ -1580,7 +1561,7 @@ spoton::spoton(void):QMainWindow()
 
   if(m_ui.urls_db_type->currentIndex() == 1)
     m_ui.showUrlSettings->setChecked(false);
-#endif
+
   m_optionsUi.chatUpdateInterval->setValue
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());
   m_emailRetrievalTimer.setInterval
@@ -2079,11 +2060,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.kernelBox->setEnabled(false);
 
       for(int i = 0; i < m_ui.tab->count(); i++)
-#if SPOTON_GOLDBUG == 0
 	if(i == 6) // Settings
-#else
-	if(i == 7) // Settings
-#endif
 	  {
 	    m_ui.tab->blockSignals(true);
 	    m_ui.tab->setCurrentIndex(i);
@@ -2101,11 +2078,11 @@ spoton::spoton(void):QMainWindow()
     m_ui.chatHorizontalSplitter->restoreState
       (m_settings.value("gui/chatHorizontalSplitter").toByteArray());
 
-#if SPOTON_GOLDBUG == 0
   if(m_settings.contains("gui/emailSplitter"))
     m_ui.emailSplitter->restoreState
       (m_settings.value("gui/emailSplitter").toByteArray());
-#else
+
+#if SPOTON_GOLDBUG == 1
   m_ui.action_Minimal_Display->setChecked(true);
 #endif
 
@@ -2221,11 +2198,9 @@ spoton::spoton(void):QMainWindow()
   m_ui.participants->setColumnHidden(5, true); // Last Status Change
 #endif
   m_ui.participants->resizeColumnsToContents();
-#if SPOTON_GOLDBUG == 0
   m_ui.downDistillers->horizontalHeader()->resizeSection(0, 600);
   m_ui.sharedDistillers->horizontalHeader()->resizeSection(0, 600);
   m_ui.upDistillers->horizontalHeader()->resizeSection(0, 600);
-#endif
   m_ui.received->setColumnHidden(m_ui.received->columnCount() - 1,
 				 true); // OID
   m_ui.transmitted->setColumnHidden(m_ui.transmitted->columnCount() - 1,
@@ -2261,10 +2236,8 @@ spoton::spoton(void):QMainWindow()
     (5, Qt::AscendingOrder);
   m_ui.urlParticipants->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
-#if SPOTON_GOLDBUG == 0
   m_ui.emailSplitter->setStretchFactor(0, 1);
   m_ui.emailSplitter->setStretchFactor(1, 0);
-#endif
   m_ui.listenersHorizontalSplitter->setStretchFactor(0, 1);
   m_ui.listenersHorizontalSplitter->setStretchFactor(1, 0);
   m_ui.neighborsVerticalSplitter->setStretchFactor(0, 1);
@@ -2432,9 +2405,7 @@ void spoton::cleanup(void)
   if(QSqlDatabase::contains("URLDatabase"))
     QSqlDatabase::removeDatabase("URLDatabase");
 
-#if SPOTON_GOLDBUG == 0
   m_ui.url_database_connection_information->clear();
-#endif
   saveSettings();
   delete m_urlCommonCrypt;
 
@@ -4591,10 +4562,8 @@ void spoton::saveSettings(void)
   settings.setValue("gui/chatHorizontalSplitter",
 		    m_ui.chatHorizontalSplitter->saveState());
   settings.setValue("gui/currentTabIndex", m_ui.tab->currentIndex());
-#if SPOTON_GOLDBUG == 0
   settings.setValue("gui/emailSplitter",
 		    m_ui.emailSplitter->saveState());
-#endif
   settings.setValue("gui/listenersHorizontalSplitter",
 		    m_ui.listenersHorizontalSplitter->saveState());
   settings.setValue("gui/neighborsVerticalSplitter",
