@@ -479,6 +479,10 @@ void spoton_echo_key_share::populate(void)
 		      (1, checked.value(0) ? Qt::Checked : Qt::Unchecked);
 		    item->setCheckState
 		      (2, checked.value(1) ? Qt::Checked : Qt::Unchecked);
+		    item->setToolTip(1, tr("If checked, public key pairs "
+					   "originating from the specified "
+					   "community will be saved in "
+					   "friends_public_keys.db."));
 		  }
 	    }
       }
