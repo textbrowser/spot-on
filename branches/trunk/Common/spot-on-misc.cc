@@ -812,9 +812,9 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 				       spoton_crypt *crypt,
 				       const bool useKeyTypeForName)
 {
-  if(!db.isOpen())
+  if(!crypt)
     return false;
-  else if(!crypt)
+  else if(!db.isOpen())
     return false;
 
   QByteArray name(n);
@@ -916,8 +916,10 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 	query.prepare("INSERT OR REPLACE INTO relationships_with_signatures "
 		      "(public_key_hash, signature_public_key_hash) "
 		      "VALUES (?, ?)");
-	query.bindValue
-	  (0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -1763,6 +1765,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	      {
 		QSettings settings;
 		QString error("");
+		bool ok = true;
 		int keySize = 2048;
 
 		keySize = settings.value
