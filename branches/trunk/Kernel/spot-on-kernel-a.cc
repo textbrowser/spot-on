@@ -3673,7 +3673,7 @@ void spoton_kernel::purgeMessagingCache(void)
   locker1.unlock();
 
   /*
-  ** Removed expired geminis.
+  ** Remove expired geminis.
   */
 
   QWriteLocker locker2(&s_geminisCacheMutex);

@@ -132,10 +132,9 @@ void spoton_starbeam_writer::processData
 	  if(ok)
 	    {
 	      found = true;
+	      list.clear();
 
 	      QDataStream stream(&bytes, QIODevice::ReadOnly);
-
-	      list.clear();
 
 	      for(int i = 0; i < 8; i++)
 		{
