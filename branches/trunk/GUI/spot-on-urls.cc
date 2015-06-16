@@ -1167,6 +1167,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
 
 void spoton::slotAddDistiller(void)
 {
+#if SPOTON_GOLDBUG == 0
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
@@ -1307,6 +1308,7 @@ void spoton::slotAddDistiller(void)
 			     "to add the specified URL domain. "
 			     "Please enable logging via the Log Viewer "
 			     "and try again.").arg(error));
+#endif
 }
 
 void spoton::populateUrlDistillers(void)
@@ -1439,6 +1441,7 @@ void spoton::slotRefreshUrlDistillers(void)
 
 void spoton::slotDeleteUrlDistillers(void)
 {
+#if SPOTON_GOLDBUG == 0
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
@@ -1504,6 +1507,7 @@ void spoton::slotDeleteUrlDistillers(void)
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
   populateUrlDistillers();
+#endif
 }
 
 void spoton::slotDeleteLink(const QUrl &u)
