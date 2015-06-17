@@ -2194,7 +2194,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.participants->setColumnHidden(1, true); // OID
   m_ui.participants->setColumnHidden(2, true); // neighbor_oid
   m_ui.participants->setColumnHidden(3, true); // public_key_hash
-  m_ui.participants->setColumnHidden(5, true); // Last Status Change
   m_ui.participants->resizeColumnsToContents();
   m_ui.downDistillers->horizontalHeader()->resizeSection(0, 600);
   m_ui.sharedDistillers->horizontalHeader()->resizeSection(0, 600);

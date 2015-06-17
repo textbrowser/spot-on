@@ -1,5 +1,5 @@
 <html>
-2015.06.19
+2015.06.17
 <ol>
 <li>Acceptable URL schemes: ftp, gopher, http, https.</li>
 <li>Added libspoton_delete_urls() to libspoton. Version updated to 0.1.1.</li>
@@ -7,10 +7,10 @@
 <li>Allow configuration of alternating row colors of Chat, E-Mail, and URLs participants. Please see Options.</li>
 <li>Allow configuration of the kernel's cache purge timer.</li>
 <li>Allow importing of URLs without Import Credentials. Only plaintext URLs will be imported.</li>
-<li>Assume zero pointer defaults in Qt::value().</li>
+<li>Assume zero pointer defaults in QHash::value(), QMap, etc.</li>
 <li>Bound size_t parameter of memcpy() in spoton_crypt::setHashKey(), spoton_misc::peerAddressAndPort(), spoton_sctp_server::setMaxPendingConnections(), spoton_sctp_socket::localAddressAndPort().</li>
 <li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
-<li>Completed linear URL distribution. It is expected that Common Credentials are created. Items that cannot be imported will be discarded.</li>
+<li>Completed linear URL distribution. It is expected that Common Credentials are created. Items that cannot be imported by the kernel will be discarded.</li>
 <li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
 <li>Convert ElGamal data to Base-64 before encrypting. A previous release of Spot-On introduced the use of QDataStream objects. The serialized data appears to be incompatible with ElGamal. Padding? ElGamal appears to be an abandoned primitive. The signature portion does not yet require this special exception.</li>
 <li>Corrected importing of public keys. Cannot assume that key pairs exist.</li>
@@ -27,9 +27,10 @@
 <li>Digital signatures should vouch for private key information.</li>
 <li>Display URL database connection information within the Search panel.</li>
 <li>Do not assume that Poptastic values have been accepted by the user. That is, query the necessary database in order to retrieve required values.</li>
-<li>Do not delete URLs from shared.db unless they are properly loaded.<li>
-<li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
+<li>Do not delete URLs from shared.db unless they are properly imported.<li>
 <li>Do not distribute private spoton_crypt objects to child objects as the contents of the spoton_crypt objects may be modified by the re-encoding process. Instead, use spoton::instance()->crypts().</li>
+<li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
+<li>Do not pass a zero pointer to memset().</li>
 <li>Dual-purpose domain check boxes. Please see URLs.</li>
 <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
 <li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>
@@ -39,18 +40,21 @@
 <li>Increased congestion cost maximum to 65536.</li>
 <li>Increased default secure memory pool sizes to 262144 bytes. Increased minimum pool sizes to 131072.</li>
 <li>Inspect results of all QDataStream operations.</li>
+<li>Limit DSA key sizes to 3072 bits.</li>
 <li>Log re-encoding errors.</li>
 <li>Many integer conversion corrections.</li>
 <li>McEliece public-key encryption. Incomplete.</li>
 <li>Modified QFileInfo::lastModified() usage. It's possible that a less-than-or-equal to comparison will leave containers in unpleasant states.</li>
+<li>New display in Settings pertaining to personal public keys.</li>
 <li>Notify the user of URL import statistics.</li>
 <li>Per Mr. Schmidt, allow distribution of public key pairs via established secrets. Pairs having NTRU keys may not be shared as they do not support signatures.</li>
 <li>Please remove urls_distillers_information.db before launching Spot-On.</li>
 <li>Populate URL distillers before performing an import.</li>
-<li>PostgreSQL administrators must recreate Spot-On databases.</li>
+<li>PostgreSQL administrators must recreate Spot-On URL databases.</li>
 <li>Prepare URL cipher and hash widgets if libgcrypt fails.</li>
 <li>Prompt before accessing a remote URL.</li>
 <li>Re-encode URL common and import credentials information.</li>
+<li>Release resources in spoton_crypt::spoton_crypt::publicKeyEncrypt().</li>
 <li>Removed GCRY_MD_FLAG_SECURE from all gcry_md_open() instances.</li>
 <li>Removed duplicate QObject::connect() instance from spoton::slotConfigurePoptastic().</li>
 <li>Removed input masks from IPv6 fields.</li>

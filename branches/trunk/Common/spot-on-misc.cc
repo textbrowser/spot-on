@@ -4202,9 +4202,7 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 
 		      stream >> a;
 
-		      if(stream.status() != QDataStream::Ok)
-			break;
-		      else
+		      if(stream.status() == QDataStream::Ok)
 			{
 			  echoKeys << list.value(3)
 				   << list.value(2)

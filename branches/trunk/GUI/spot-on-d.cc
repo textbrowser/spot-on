@@ -1468,11 +1468,7 @@ void spoton::slotSignatureKeyTypeChanged(int index)
   QStringList list;
 
   if(index == 0)
-    list << "3072"
-	 << "4096"
-	 << "7680"
-	 << "8192"
-	 << "15360";
+    list << "3072";
   else if(index == 1)
     list << "224"
 	 << "256"

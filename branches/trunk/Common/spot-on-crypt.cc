@@ -963,7 +963,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 
   QByteArray hash;
   gcry_error_t err = 0;
-  gcry_md_hd_t hd;
+  gcry_md_hd_t hd = 0;
 
   if((err = gcry_md_open(&hd, m_hashAlgorithm,
 			 GCRY_MD_FLAG_HMAC)) != 0 || !hd)
@@ -1259,7 +1259,9 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 			 "failure.");
 		    }
 
-		  memset(buffer, 0, length);
+		  if(buffer)
+		    memset(buffer, 0, length);
+
 		  free(buffer);
 		  buffer = 0;
 		}
@@ -1272,8 +1274,6 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 		    ("spoton_crypt()::publicKeyEncrypt(): "
 		     "gcry_sexp_sprint() failure.");
 		}
-
-	      gcry_sexp_release(encodedData_t);
 	    }
 	  else
 	    {
@@ -1296,9 +1296,6 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 		  ("spoton_crypt::publicKeyEncrypt(): "
 		   "gcry_pk_encrypt() failure.");
 	    }
-
-	  gcry_sexp_release(data_t);
-	  gcry_sexp_release(key_t);
 	}
       else
 	{
@@ -1325,6 +1322,9 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	      ("spoton_crypt()::publicKeyEncrypt(): gcry_sexp_build() "
 	       "failure.");
 	}
+
+      gcry_sexp_release(data_t);
+      gcry_sexp_release(encodedData_t);
     }
   else
     {
@@ -1346,6 +1346,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	  ("spoton_crypt::publicKeyEncrypt(): gcry_sexp_new() failure.");
     }
 
+  gcry_sexp_release(key_t);
   return encrypted;
 }
 
@@ -2131,7 +2132,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 {
   QByteArray hash;
   gcry_error_t err = 0;
-  gcry_md_hd_t hd;
+  gcry_md_hd_t hd = 0;
   int hashAlgorithm = gcry_md_map_name(hashType.constData());
 
   if(hashAlgorithm == 0)
@@ -2503,7 +2504,9 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 		     "failure.");
 		}
 
-	      memset(buffer, 0, length);
+	      if(buffer)
+		memset(buffer, 0, length);
+
 	      free(buffer);
 	      buffer = 0;
 	    }
@@ -3782,13 +3785,14 @@ void spoton_crypt::reencodePrivatePublicKeys
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-QString spoton_crypt::publicKeyAlgorithm(bool *ok)
+QString spoton_crypt::publicKeyAlgorithm(void)
 {
-  publicKey(ok);
+  bool ok = true;
 
-  if(ok)
-    if(!*ok)
-      return "";
+  publicKey(&ok);
+
+  if(!ok)
+    return "";
 
   QString keyType("");
   QStringList list;
@@ -3826,16 +3830,39 @@ QString spoton_crypt::publicKeyAlgorithm(bool *ok)
 	keyType = "NTRU";
     }
 
-  if(!keyType.isEmpty())
-    {
-      if(ok)
-	*ok = true;
-    }
+  return keyType;
+}
+
+QString spoton_crypt::publicKeySize(void)
+{
+  bool ok = true;
+
+  publicKey(&ok);
+
+  if(!ok)
+    return "";
+
+  QString algorithm(publicKeyAlgorithm().toLower().trimmed());
+
+  if(algorithm.isEmpty())
+    return "";
+
+  QString keySize("");
+
+  if(algorithm == "ntru")
+    keySize = publicKeySizeNTRU();
   else
     {
-      if(ok)
-	*ok = false;
+      gcry_sexp_t key_t = 0;
+
+      if(gcry_sexp_new(&key_t,
+		       m_publicKey.constData(),
+		       static_cast<size_t> (m_publicKey.length()),
+		       1) == 0 && key_t)
+	keySize = QString::number(gcry_pk_get_nbits(key_t));
+
+      gcry_sexp_release(key_t);
     }
 
-  return keyType;
+  return keySize;
 }

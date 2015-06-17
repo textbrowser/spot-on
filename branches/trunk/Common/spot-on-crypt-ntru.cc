@@ -368,3 +368,49 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
   return QByteArray();
 #endif
 }
+
+QString spoton_crypt::publicKeySizeNTRU(void)
+{
+  QString keySize("");
+
+#ifdef SPOTON_LINKED_WITH_LIBNTRU
+  bool ok = true;
+
+  publicKey(&ok);
+
+  if(!ok)
+    return keySize;
+
+  uint8_t *publicKey_array = new (std::nothrow)
+    uint8_t[m_publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
+	    length()];
+
+  if(publicKey_array)
+    {
+      NtruEncPubKey pk;
+
+      memcpy
+	(publicKey_array,
+	 m_publicKey.
+	 mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
+	 static_cast<size_t> (m_publicKey.length() -
+			      static_cast<int> (qstrlen("ntru-"
+							"public-key-"))));
+      ntru_import_pub(publicKey_array, &pk);
+
+      struct NtruEncParams parameters[] = {EES1087EP2,
+					   EES1171EP1,
+					   EES1499EP1};
+
+      if(pk.h.N == parameters[0].N)
+	keySize = "EES1087EP2";
+      else if(pk.h.N == parameters[1].N)
+	keySize = "EES1171EP1";
+      else if(pk.h.N == parameters[2].N)
+	keySize = "EES1499EP1";
+    }
+
+  delete []publicKey_array;
+#endif
+  return keySize;
+}

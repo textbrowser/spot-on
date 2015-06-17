@@ -3155,24 +3155,23 @@ void spoton::updatePublicKeysLabel(void)
       item = new QTableWidgetItem();
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
       m_ui.personal_public_keys->setItem(i, 1, item);
+      item->setText(crypt->publicKeyAlgorithm().trimmed());
+      item = new QTableWidgetItem();
+      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      item->setText(crypt->publicKeySize());
+      m_ui.personal_public_keys->setItem(i, 2, item);
       bytes = crypt->publicKey(&ok);
 
       if(ok)
-	{
-	  QString keyAlgorithm(crypt->publicKeyAlgorithm(&ok));
-
-	  if(ok)
-	    item->setText(keyAlgorithm);
-
-	  if(ok)
-	    bytes = spoton_crypt::sha512Hash(bytes, &ok).toHex();
-	}
+	bytes = spoton_crypt::sha512Hash(bytes, &ok).toHex();
 
       item = new QTableWidgetItem();
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
       item->setText(bytes.constData());
-      m_ui.personal_public_keys->setItem(i, 2, item);
+      m_ui.personal_public_keys->setItem(i, 3, item);
     }
+
+  m_ui.personal_public_keys->resizeColumnToContents(0);
 }
 
 void spoton::slotExportPublicKeys(void)

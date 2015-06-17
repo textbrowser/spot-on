@@ -498,7 +498,7 @@ color: rgb(255, 255, 255);
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>500</width>
+                <width>550</width>
                 <height>622</height>
                </rect>
               </property>
@@ -4145,6 +4145,34 @@ color: rgb(255, 255, 255);</string>
          <number>5</number>
         </property>
         <item>
+         <widget class="QLabel" name="label_119">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));
+color: rgb(255, 255, 255);
+</string>
+          </property>
+          <property name="text">
+           <string>URL Search</string>
+          </property>
+          <property name="indent">
+           <number>5</number>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QScrollArea" name="scrollArea_9">
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -4158,7 +4186,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>630</width>
-             <height>663</height>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4168,34 +4196,6 @@ color: rgb(255, 255, 255);</string>
             <property name="margin">
              <number>5</number>
             </property>
-            <item>
-             <widget class="QLabel" name="label_119">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));
-color: rgb(255, 255, 255);
-</string>
-              </property>
-              <property name="text">
-               <string>URL Search</string>
-              </property>
-              <property name="indent">
-               <number>5</number>
-              </property>
-             </widget>
-            </item>
             <item>
              <layout class="QHBoxLayout" name="urls_settings_layout">
               <property name="spacing">
@@ -5133,9 +5133,9 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-391</y>
              <width>676</width>
-             <height>1113</height>
+             <height>1164</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5720,6 +5720,12 @@ top: 5px;
                     </property>
                     <item>
                      <widget class="QTableWidget" name="kernelStatistics">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>150</height>
+                       </size>
+                      </property>
                       <property name="verticalScrollBarPolicy">
                        <enum>Qt::ScrollBarAlwaysOn</enum>
                       </property>
@@ -5998,13 +6004,45 @@ top: 5px;
                   <number>5</number>
                  </property>
                  <item>
-                  <widget class="QLabel" name="publicKeysInformation">
-                   <property name="text">
-                    <string>Information goes here.</string>
+                  <widget class="QTableWidget" name="personal_public_keys">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>150</height>
+                    </size>
                    </property>
-                   <property name="wordWrap">
+                   <property name="selectionMode">
+                    <enum>QAbstractItemView::SingleSelection</enum>
+                   </property>
+                   <property name="selectionBehavior">
+                    <enum>QAbstractItemView::SelectRows</enum>
+                   </property>
+                   <property name="horizontalScrollMode">
+                    <enum>QAbstractItemView::ScrollPerPixel</enum>
+                   </property>
+                   <attribute name="horizontalHeaderStretchLastSection">
                     <bool>true</bool>
-                   </property>
+                   </attribute>
+                   <column>
+                    <property name="text">
+                     <string>Key Type</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>Algorithm</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>Size</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>SHA-512 Hash</string>
+                    </property>
+                   </column>
                   </widget>
                  </item>
                  <item>
@@ -6336,7 +6374,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>510</width>
+             <width>560</width>
              <height>632</height>
             </rect>
            </property>
@@ -7924,7 +7962,7 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>510</width>
+             <width>560</width>
              <height>677</height>
             </rect>
            </property>
@@ -8156,7 +8194,7 @@ color: rgb(255, 255, 255);
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;A minimalistic &lt;br/&gt;desktop messenger GUI&lt;br/&gt;for the messaging library of&lt;br/&gt;http://spot-on.sf.net.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;GB v. 2.3&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;GB v. 2.5&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -8623,6 +8661,7 @@ color: rgb(255, 255, 255);
   <tabstop>question</tabstop>
   <tabstop>answer</tabstop>
   <tabstop>setPassphrase</tabstop>
+  <tabstop>personal_public_keys</tabstop>
   <tabstop>newKeys</tabstop>
   <tabstop>encryptionKeySize</tabstop>
   <tabstop>encryptionKeyType</tabstop>
