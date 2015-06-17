@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>502</height>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -420,7 +420,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>766</width>
-                <height>492</height>
+                <height>488</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -805,8 +805,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>777</width>
-             <height>554</height>
+             <width>762</width>
+             <height>560</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1859,7 +1859,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>502</height>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2468,8 +2468,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>263</width>
-                     <height>1406</height>
+                     <width>240</width>
+                     <height>1433</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -2935,8 +2935,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>845</width>
-             <height>549</height>
+             <width>806</width>
+             <height>579</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -3972,7 +3972,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>502</height>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4048,8 +4048,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>748</width>
-                 <height>587</height>
+                 <width>752</width>
+                 <height>602</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4888,9 +4888,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>758</width>
-             <height>1026</height>
+             <y>-490</y>
+             <width>762</width>
+             <height>1060</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5730,13 +5730,40 @@
                   <number>5</number>
                  </property>
                  <item>
-                  <widget class="QLabel" name="publicKeysInformation">
-                   <property name="text">
-                    <string>Information goes here.</string>
+                  <widget class="QTableWidget" name="personal_public_keys">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>150</height>
+                    </size>
                    </property>
-                   <property name="wordWrap">
+                   <property name="selectionMode">
+                    <enum>QAbstractItemView::SingleSelection</enum>
+                   </property>
+                   <property name="selectionBehavior">
+                    <enum>QAbstractItemView::SelectRows</enum>
+                   </property>
+                   <property name="horizontalScrollMode">
+                    <enum>QAbstractItemView::ScrollPerPixel</enum>
+                   </property>
+                   <attribute name="horizontalHeaderStretchLastSection">
                     <bool>true</bool>
-                   </property>
+                   </attribute>
+                   <column>
+                    <property name="text">
+                     <string>Key Type</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>Algorithm</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>SHA-512 Hash</string>
+                    </property>
+                   </column>
                   </widget>
                  </item>
                  <item>
@@ -6037,8 +6064,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>758</width>
-             <height>526</height>
+             <width>762</width>
+             <height>544</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7049,7 +7076,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>502</height>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7583,7 +7610,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>502</height>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7801,7 +7828,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -8201,6 +8228,7 @@
   <tabstop>question</tabstop>
   <tabstop>answer</tabstop>
   <tabstop>setPassphrase</tabstop>
+  <tabstop>personal_public_keys</tabstop>
   <tabstop>newKeys</tabstop>
   <tabstop>encryptionKeySize</tabstop>
   <tabstop>encryptionKeyType</tabstop>

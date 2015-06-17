@@ -5656,7 +5656,7 @@ QString spoton_neighbor::findMessageType
 
   if(list.size() == 3 && s_crypt)
     {
-      symmetricKeys = 
+      symmetricKeys =
 	spoton_misc::findEchoKeys(QByteArray::fromBase64(list.value(0)),
 				  QByteArray::fromBase64(list.value(1)),
 				  type, s_crypt);

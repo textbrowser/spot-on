@@ -3781,3 +3781,61 @@ void spoton_crypt::reencodePrivatePublicKeys
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+QString spoton_crypt::publicKeyAlgorithm(bool *ok)
+{
+  publicKey(ok);
+
+  if(ok)
+    if(!*ok)
+      return "";
+
+  QString keyType("");
+  QStringList list;
+
+  list << "dsa"
+       << "ecc"
+       << "elg"
+       << "rsa";
+
+  for(int i = 0; i < list.size(); i++)
+    if(m_publicKey.contains(QString("(%1").arg(list.at(i)).toLatin1()))
+      {
+	if(list.at(i) == "ecc")
+	  {
+	    if(!m_publicKey.contains("(flags eddsa)"))
+	      keyType = "ECDSA";
+	    else
+	      keyType = "EdDSA";
+
+	    break;
+	  }
+	else if(list.at(i) == "elg")
+	  {
+	    keyType = "ElGamal";
+	    break;
+	  }
+
+	keyType = list.at(i).toUpper();
+	break;
+      }
+
+  if(keyType.isEmpty())
+    {
+      if(m_publicKey.startsWith("ntru"))
+	keyType = "NTRU";
+    }
+
+  if(!keyType.isEmpty())
+    {
+      if(ok)
+	*ok = true;
+    }
+  else
+    {
+      if(ok)
+	*ok = false;
+    }
+
+  return keyType;
+}

@@ -3121,50 +3121,58 @@ void spoton::slotCopyOrPaste(void)
 
 void spoton::updatePublicKeysLabel(void)
 {
-  QString str
-    (tr("<b>Chat Key:</b> AAA, "
-	"<b>Chat Signature Key:</b> BBB, "
-	"<b>E-Mail Key:</b> CCC, "
-	"<b>E-Mail Signature Key:</b> DDD, "
-	"<b>Poptastic Key:</b> EEE, "
-	"<b>Poptastic Signature Key:</b>: FFF, "
-	"<b>Rosetta Key:</b> GGG, "
-	"<b>Rosetta Signature Key:</b> HHH, "
-	"<b>URL Key:</b> III, "
-	"<b>URL Signature Key:</b> JJJ."));
-  QStringList list1;
-  QStringList list2;
+  m_ui.personal_public_keys->clearContents();
+  m_ui.personal_public_keys->setRowCount(0);
 
-  list1 << "chat"
-	<< "chat-signature"
-	<< "email"
-	<< "email-signature"
-	<< "poptastic"
-	<< "poptastic-signature"
-	<< "rosetta"
-	<< "rosetta-signature"
-	<< "url"
-	<< "url-signature";
-  list2 << "AAA"
-	<< "BBB"
-	<< "CCC"
-	<< "DDD"
-	<< "EEE"
-	<< "FFF"
-	<< "GGG"
-	<< "HHH"
-	<< "III"
-	<< "JJJ";
+  QStringList list;
 
-  for(int i = 0; i < list1.size(); i++)
-    if(m_crypts.value(list1.at(i), 0))
-      str.replace
-	(list2.at(i),
-	 QString::number(m_crypts.value(list1.at(i))->publicKeyCount()));
-    else
-      str.replace(list2.at(i), "0");
+  list << "chat"
+       << "chat-signature"
+       << "email"
+       << "email-signature"
+       << "poptastic"
+       << "poptastic-signature"
+       << "rosetta"
+       << "rosetta-signature"
+       << "url"
+       << "url-signature";
+  m_ui.personal_public_keys->setRowCount(list.size());
 
-  m_ui.publicKeysInformation->setText(str);
+  for(int i = 0; i < list.size(); i++)
+    {
+      spoton_crypt *crypt = m_crypts.value(list.at(i), 0);
+
+      if(!crypt)
+	continue;
+
+      QByteArray bytes;
+      QTableWidgetItem *item = new QTableWidgetItem
+	(list.at(i));
+      bool ok = true;
+
+      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      m_ui.personal_public_keys->setItem(i, 0, item);
+      item = new QTableWidgetItem();
+      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      m_ui.personal_public_keys->setItem(i, 1, item);
+      bytes = crypt->publicKey(&ok);
+
+      if(ok)
+	{
+	  QString keyAlgorithm(crypt->publicKeyAlgorithm(&ok));
+
+	  if(ok)
+	    item->setText(keyAlgorithm);
+
+	  if(ok)
+	    bytes = spoton_crypt::sha512Hash(bytes, &ok).toHex();
+	}
+
+      item = new QTableWidgetItem();
+      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      item->setText(bytes.constData());
+      m_ui.personal_public_keys->setItem(i, 2, item);
+    }
 }
 
 void spoton::slotExportPublicKeys(void)
