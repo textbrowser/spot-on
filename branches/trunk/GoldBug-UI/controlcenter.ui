@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>650</width>
     <height>750</height>
    </rect>
   </property>
@@ -110,8 +110,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>710</width>
-             <height>635</height>
+             <width>560</width>
+             <height>632</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -498,8 +498,8 @@ color: rgb(255, 255, 255);
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>700</width>
-                <height>625</height>
+                <width>500</width>
+                <height>622</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -819,6 +819,13 @@ color: rgb(255, 255, 255);
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="styleSheet">
+                      <string notr="true">background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                   stop: 0 #ffffc3, stop: 1 #FFFFFF);
+
+
+</string>
+                     </property>
                      <property name="tabChangesFocus">
                       <bool>true</bool>
                      </property>
@@ -915,8 +922,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>777</width>
-             <height>617</height>
+             <width>739</width>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1999,8 +2006,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>765</width>
-             <height>617</height>
+             <width>724</width>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2609,8 +2616,8 @@ color: rgb(255, 255, 255);</string>
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>263</width>
-                     <height>1406</height>
+                     <width>240</width>
+                     <height>1433</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3107,8 +3114,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>845</width>
-             <height>617</height>
+             <width>806</width>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -4050,6 +4057,9 @@ color: rgb(255, 255, 255);</string>
                         <family>Monospace</family>
                        </font>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0.5, stop:0 rgba(183, 235, 255, 255), stop:1 rgba(255, 255, 255, 255)); </string>
+                      </property>
                       <property name="tabChangesFocus">
                        <bool>true</bool>
                       </property>
@@ -4147,8 +4157,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>710</width>
-             <height>680</height>
+             <width>630</width>
+             <height>663</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4158,6 +4168,34 @@ color: rgb(255, 255, 255);</string>
             <property name="margin">
              <number>5</number>
             </property>
+            <item>
+             <widget class="QLabel" name="label_119">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));
+color: rgb(255, 255, 255);
+</string>
+              </property>
+              <property name="text">
+               <string>URL Search</string>
+              </property>
+              <property name="indent">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
             <item>
              <layout class="QHBoxLayout" name="urls_settings_layout">
               <property name="spacing">
@@ -4224,8 +4262,8 @@ color: rgb(255, 255, 255);</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>682</width>
-                 <height>587</height>
+                 <width>609</width>
+                 <height>619</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5096,8 +5134,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>754</width>
-             <height>1026</height>
+             <width>676</width>
+             <height>1113</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5287,6 +5325,29 @@ color: rgb(255, 255, 255);</string>
               </property>
               <item>
                <widget class="QGroupBox" name="kernelBox">
+                <property name="styleSheet">
+                 <string notr="true">QGroupBox { 
+background-color:
+qlineargradient(spread:pad, 
+x1:0, y1:1, 
+x2:1, y2:0, 
+stop:0.05 rgba(218, 232, 255, 255), 
+stop:1 rgba(170, 85, 255, 255));
+color: rgb(255, 255, 255);
+
+border-style: outset;
+border-width: 2px;
+border-radius: 10px;
+border-color: white;
+padding: 15px;
+}
+
+QGroupBox::title
+{
+left: 5px;
+top: 5px;
+}</string>
+                </property>
                 <property name="title">
                  <string>Kernel</string>
                 </property>
@@ -6255,7 +6316,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
           </property>
           <property name="text">
-           <string>StarBeam FileSharing</string>
+           <string>StarBeam File Sharing</string>
           </property>
           <property name="indent">
            <number>5</number>
@@ -6275,8 +6336,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>710</width>
-             <height>635</height>
+             <width>510</width>
+             <height>632</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -6424,6 +6485,9 @@ color: rgb(255, 255, 255);</string>
                         <font>
                          <family>Monospace</family>
                         </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0.5, stop:0 rgba(183, 235, 255, 255), stop:1 rgba(255, 255, 255, 255)); </string>
                        </property>
                        <property name="tabChangesFocus">
                         <bool>true</bool>
@@ -6820,6 +6884,14 @@ color: rgb(255, 255, 255);</string>
                     </item>
                     <item>
                      <widget class="QTableWidget" name="received">
+                      <property name="styleSheet">
+                       <string notr="true">QTableWidget#received
+
+{
+   border-image: url(:/Logo/background.png) 0 0 0 0 stretch stretch;
+   border-width: 0px;
+}</string>
+                      </property>
                       <property name="verticalScrollBarPolicy">
                        <enum>Qt::ScrollBarAlwaysOn</enum>
                       </property>
@@ -7278,6 +7350,34 @@ color: rgb(255, 255, 255);</string>
          <number>5</number>
         </property>
         <item>
+         <widget class="QLabel" name="label_121">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));
+color: rgb(255, 255, 255);
+</string>
+          </property>
+          <property name="text">
+           <string>URL Distribution</string>
+          </property>
+          <property name="indent">
+           <number>5</number>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QScrollArea" name="scrollArea_10">
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -7290,8 +7390,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>710</width>
-             <height>680</height>
+             <width>653</width>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7824,8 +7924,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>710</width>
-             <height>680</height>
+             <width>510</width>
+             <height>677</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7888,6 +7988,34 @@ color: rgb(255, 255, 255);</string>
                  </spacer>
                 </item>
                </layout>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_26">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Secure E-Mail Client &amp; Instant Messenger</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_102">
+                <property name="text">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://goldbug.sourceforge.net&quot;&gt;&lt;span style=&quot; text-decoration: none; color: black;&quot;&gt;http://goldbug.sf.net&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="openExternalLinks">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_13">
@@ -8002,6 +8130,58 @@ color: rgb(255, 255, 255);</string>
                </widget>
               </item>
               <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_17">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <spacer name="horizontalSpacer_14">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>1</width>
+                    <height>1</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_103">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;A minimalistic &lt;br/&gt;desktop messenger GUI&lt;br/&gt;for the messaging library of&lt;br/&gt;http://spot-on.sf.net.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#666666;&quot;&gt;GB v. 2.3&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="openExternalLinks">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_16">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>1</width>
+                    <height>1</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
                <widget class="QLabel" name="buildInformation">
                 <property name="text">
                  <string>Build Information</string>
@@ -8042,8 +8222,8 @@ color: rgb(255, 255, 255);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>24</height>
+     <width>650</width>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
