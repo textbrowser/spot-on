@@ -4746,9 +4746,6 @@ void spoton::slotReply(void)
 	if(item->text() == receiverSenderHash)
 	  {
 	    m_ui.emailParticipants->selectRow(i);
-#if SPOTON_GOLDBUG == 1
-	    m_ui.mailTab->setCurrentIndex(1);
-#endif
 	    break;
 	  }
     }
