@@ -929,9 +929,9 @@ void spoton::slotSaveOpenLinks(bool state)
 void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
 					const QString &oid)
 {
-  QList<QTableWidgetItem *> list(spoton::findItems(m_ui.participants,
-						   oid,
-						   1));
+  QList<QTableWidgetItem *> list(findItems(m_ui.participants,
+					   oid,
+					   1));
 
   if(list.isEmpty())
     return;

@@ -1478,6 +1478,8 @@ void spoton_neighbor::slotReadyRead(void)
       locker2.unlock();
       emit newData();
     }
+  else
+    deleteLater();
 }
 
 void spoton_neighbor::processData(void)
@@ -6404,6 +6406,8 @@ void spoton_neighbor::abort(void)
 
 void spoton_neighbor::deleteLater(void)
 {
+  abort();
+
   QWriteLocker locker1(&m_abortThreadMutex);
 
   m_abortThread = true;

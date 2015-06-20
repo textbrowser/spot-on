@@ -3338,6 +3338,7 @@ void spoton::populateMail(void)
     m_ui.mail->horizontalHeaderItem(1)->setText(tr("From/To"));
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  slotPopulateParticipants();
 
   QString connectionName("");
 
