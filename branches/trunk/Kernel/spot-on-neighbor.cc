@@ -5769,52 +5769,53 @@ QString spoton_neighbor::findMessageType
 
   if(list.size() == 4)
     if((s_crypt = spoton_kernel::s_crypts.value("url", 0)))
-      {
-	QByteArray data;
-	bool ok = true;
+      if(spoton_misc::participantCount("url", s_crypt) > 0)
+	{
+	  QByteArray data;
+	  bool ok = true;
 
-	data = s_crypt->publicKeyDecrypt
-	  (QByteArray::fromBase64(list.value(0)), &ok);
+	  data = s_crypt->publicKeyDecrypt
+	    (QByteArray::fromBase64(list.value(0)), &ok);
 
-	if(ok)
-	  {
-	    QByteArray a;
-	    QDataStream stream(&data, QIODevice::ReadOnly);
+	  if(ok)
+	    {
+	      QByteArray a;
+	      QDataStream stream(&data, QIODevice::ReadOnly);
 
-	    stream >> a;
+	      stream >> a;
 
-	    if(stream.status() == QDataStream::Ok)
-	      type = a;
+	      if(stream.status() == QDataStream::Ok)
+		type = a;
 
-	    if(type == "0080")
-	      {
-		QList<QByteArray> list;
+	      if(type == "0080")
+		{
+		  QList<QByteArray> list;
 
-		for(int i = 0; i < 4; i++)
-		  {
-		    stream >> a;
+		  for(int i = 0; i < 4; i++)
+		    {
+		      stream >> a;
 
-		    if(stream.status() != QDataStream::Ok)
-		      {
-			list.clear();
-			type.clear();
-			break;
-		      }
-		    else
-		      list.append(a);
-		  }
+		      if(stream.status() != QDataStream::Ok)
+			{
+			  list.clear();
+			  type.clear();
+			  break;
+			}
+		      else
+			list.append(a);
+		    }
 
-		if(!type.isEmpty())
-		  {
-		    symmetricKeys.append(list.value(0));
-		    symmetricKeys.append(list.value(2));
-		    symmetricKeys.append(list.value(1));
-		    symmetricKeys.append(list.value(3));
-		    goto done_label;
-		  }
-	      }
-	  }
-      }
+		  if(!type.isEmpty())
+		    {
+		      symmetricKeys.append(list.value(0));
+		      symmetricKeys.append(list.value(2));
+		      symmetricKeys.append(list.value(1));
+		      symmetricKeys.append(list.value(3));
+		      goto done_label;
+		    }
+		}
+	    }
+	}
 
  done_label:
   spoton_kernel::discoverAdaptiveEchoPair
