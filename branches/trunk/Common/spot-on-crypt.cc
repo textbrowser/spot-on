@@ -1143,7 +1143,14 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 					  const QByteArray &publicKey,
 					  bool *ok)
 {
-  if(publicKey.startsWith("mceliece-"))
+  if(publicKey.isEmpty())
+    {
+      if(ok)
+	*ok = false;
+
+      return QByteArray();
+    }
+  else if(publicKey.startsWith("mceliece-"))
     return publicKeyEncryptMcEliece(data, publicKey, ok);
   else if(publicKey.startsWith("ntru-public-key-"))
     return publicKeyEncryptNTRU(data, publicKey, ok);
