@@ -1438,7 +1438,7 @@ void spoton::slotAutoAddSharedSBMagnets(bool state)
 
 bool spoton::promptBeforeExit(void)
 {
-  if(m_ui.pid->text().toInt() > 0)
+  if(m_ui.pid->text().toLongLong() > 0)
     {
       QMessageBox mb(this);
 

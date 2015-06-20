@@ -1306,7 +1306,7 @@ void spoton::slotKernelHashTypeChanged(int index)
 
 bool spoton::isKernelActive(void) const
 {
-  return m_ui.pid->text().toInt() > 0;
+  return m_ui.pid->text().toLongLong() > 0;
 }
 
 void spoton::slotCopyMyChatPublicKey(void)
