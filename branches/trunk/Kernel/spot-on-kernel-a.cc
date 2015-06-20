@@ -4403,6 +4403,17 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
+		      "VALUES ('Active Threads', ?)");
+
+	if(QThreadPool::globalInstance())
+	  query.bindValue(0, QThreadPool::globalInstance()->
+			  activeThreadCount());
+	else
+	  query.bindValue(0, -1);
+
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
 		      "VALUES ('Attached User Interfaces', ?)");
 	query.bindValue(0, interfaces);
 	query.exec();
