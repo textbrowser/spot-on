@@ -6845,6 +6845,7 @@ void spoton::slotPopulateParticipants(void)
 			  else
 			    item = new QTableWidgetItem(status);
 
+			  item->setToolTip(item->text());
 			  statusText = item->text();
 			}
 		      else if(i == 6 ||
