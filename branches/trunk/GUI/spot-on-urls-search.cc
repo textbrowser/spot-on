@@ -104,42 +104,66 @@ void spoton::discoverUrls(void)
       QHash<QString, char> discovered;
       QString keywordsearch("");
       QString searchfor(tr("Searched for... "));
-      QStringList keywords
-	(search.toLower().split(QRegExp("\\W+"), QString::SkipEmptyParts));
+      QStringList keywords;
       bool ok = true;
+      bool searchForUrl = false;
 
-      for(int i = 0; i < keywords.size(); i++)
+      if(search.endsWith("\"") && search.startsWith("\""))
 	{
-	  if(!discovered.contains(keywords.at(i)))
-	    discovered[keywords.at(i)] = '0';
-	  else
-	    continue;
+	  keywords << search.mid(1, search.length() - 2);
 
-	  searchfor.append(keywords.at(i));
+	  if(QUrl(search.mid(1, search.length() - 2)).isValid())
+	    searchForUrl = true;
+	}
+      else
+	keywords = search.toLower().
+	  split(QRegExp("\\W+"), QString::SkipEmptyParts);
 
-	  if(i != keywords.size() - 1)
-	    searchfor.append("... ");
-
+      if(searchForUrl)
+	{
 	  QByteArray keywordHash
-	    (m_urlCommonCrypt->keyedHash(keywords.at(i).toUtf8(), &ok).
+	    (m_urlCommonCrypt->keyedHash(keywords.value(0).toUtf8(), &ok).
 	     toHex());
 
-	  if(!ok)
-	    continue;
-
-	  if(i == keywords.size() - 1)
-	    keywordsearch.append
-	      (QString("SELECT url_hash FROM "
-		       "spot_on_keywords_%1 WHERE keyword_hash = '%2' ").
-	       arg(keywordHash.mid(0, 2).constData()).
-	       arg(keywordHash.constData()));
-	  else
-	    keywordsearch.append
-	      (QString("SELECT url_hash FROM "
-		       "spot_on_keywords_%1 WHERE keyword_hash = '%2' UNION ").
-	       arg(keywordHash.mid(0, 2).constData()).
-	       arg(keywordHash.constData()));
+	  keywordsearch = "'" + keywordHash + "'"; // For SQL.
+	  searchfor.append(search);
 	}
+      else
+	for(int i = 0; i < keywords.size(); i++)
+	  {
+	    if(!discovered.contains(keywords.at(i)))
+	      discovered[keywords.at(i)] = '0';
+	    else
+	      continue;
+
+	    searchfor.append(keywords.at(i));
+
+	    if(i != keywords.size() - 1)
+	      searchfor.append("... ");
+
+	    QByteArray keywordHash
+	      (m_urlCommonCrypt->keyedHash(keywords.at(i).toUtf8(), &ok));
+
+	    if(!ok)
+	      continue;
+
+	    QByteArray keywordHashHex(keywordHash.toHex());
+
+	    if(i == keywords.size() - 1)
+	      keywordsearch.append
+		(QString("SELECT url_hash FROM "
+			 "spot_on_keywords_%1 WHERE "
+			 "keyword_hash = '%2' ").
+		 arg(keywordHashHex.mid(0, 2).constData()).
+		 arg(keywordHashHex.constData()));
+	    else
+	      keywordsearch.append
+		(QString("SELECT url_hash FROM "
+			 "spot_on_keywords_%1 WHERE "
+			 "keyword_hash = '%2' UNION ").
+		 arg(keywordHashHex.mid(0, 2).constData()).
+		 arg(keywordHashHex.constData()));
+	  }
 
       searchfor.append(".");
       m_ui.searchfor->setText(searchfor);
