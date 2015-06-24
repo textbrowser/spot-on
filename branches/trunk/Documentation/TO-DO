@@ -224,3 +224,4 @@ Remaining Items
 3.     The method spoton_neighbor::savePublicKey() does not compare
        personal keys with provided keys.
 4.     Index the PostgreSQL tables.
+5.     Per-participant permissions.
