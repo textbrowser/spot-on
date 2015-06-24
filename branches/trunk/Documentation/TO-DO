@@ -120,102 +120,100 @@ Completed Items
 86.    Support ECC, or not. Signatures supported.
 87.    IMAP and POP3.
 88.    Optional OTR because it's so pretty. Partial SMP.
+89.    Provide GCM mode. libgcrypt 1.6.x is required. Authentication data is not included.
+90.    Use super-secure memory? Used here and there.
+91.    Include licenses of other software where applicable.
+       Satisfy the license soldiers.
+91.    Provide a total silent mode.
+92.    Entering geminis is difficult.
+93.    Notify user of potential replays.
+94.    Prioritize keep-alive messages. Not required.
+95.    Novas should have separate hash keys.
+96     Do something about whitespace. There are many input paths that
+       ought to be considered.
+97.    E-mail institutions require dispatcher signatures.
 
 Ignored Items
 
 1.     The kernel should fetch a node's external IP address. Not ideal for
        listeners that are connected on interfaces having different external
        addresses.
-2.     Use super-secure memory? Used here and there.
-3.     CGI for listeners.
-4.     Customize expiration timers.
-5.     Include licenses of other software where applicable.
-       Satisfy the license soldiers.
-6.     Provide a total silent mode. Cumbersome.
-7.     Introduce spoton_misc::findOptimalKeyLengthForPublicKey(). The method
+2.     CGI for listeners.
+3.     Customize expiration timers.
+4.     Introduce spoton_misc::findOptimalKeyLengthForPublicKey(). The method
        will allow Spot-On to select optimal lengths for digest keys based
        on provided content and public keys. Version 0.06 introduced
        digest keys that are restricted to 32 bytes.
-8.     Prioritize keep-alive messages.
-9.     Auto-clear textedit widgets that contain too much data.
-10.    Monitor kernel health from the UI. See
+5.     Auto-clear textedit widgets that contain too much data.
+6.     Monitor kernel health from the UI. See
        spoton::slotGeneralTimerTimeout().
-11.    Entering geminis is difficult.
-12.    Participant count may be possible based on asymmetric ciphertexts.
+7.     Participant count may be possible based on asymmetric ciphertexts.
        Research?
-13.    Create a commanding language. The language could be used to
+8.     Create a commanding language. The language could be used to
        navigate private Spot-On nodes remotely.
-14     Zero-knowledge passphrase authentication.
-15.    Add SRP for account verification. What is this, the NSA?
-16.    Gold Bugs and Novas should have separate hash keys. Not really.
-       The data that's encrypted by gold bugs exists within data that is
-       linked with authentication. Similarly for novas. This is too silly.
-17.    Allow for other ciphers besides AES for e-mail.
-18.    Introduce load balancing of echoes. We're not interested in real-time
+9.     Zero-knowledge passphrase authentication.
+10.    Add SRP for account verification. What is this, the NSA?
+11.    GoldBug keys should have separate hash keys.
+12.    Allow for other ciphers besides AES for e-mail.
+13.    Introduce load balancing of echoes. We're not interested in real-time
        responses. Congestion control is helpful, however, short graphs
        tend to be skewed.
-19.    Per request, provide an automatic StarBeam rewind mechanism with a
+14.    Per request, provide an automatic StarBeam rewind mechanism with a
        timer.
-20.    Account credentials should not be recorded via reversible encryption.
+15.    Account credentials should not be recorded via reversible encryption.
        Derive keys? I really like the two-step mutual authentication.
-21.    Enable SQLite foreign key support via PRAGMA foreign_keys = ON.
-22.    Database entries containing hashes can be maliciously twisted. Encrypt?
-23.    Artificial trust. All participants must play nicely. Zero-knowledge?
-24     Do something about whitespace. There are many input paths that
-       ought to be considered.
-25.    Scramblers are too periodic.
-26.    Hard kernel termination. Control session separation.
-27.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
-28.    Remote kernel termination.
-29.    An interface for custom functions. Such an interface could be used
+16.    Enable SQLite foreign key support via PRAGMA foreign_keys = ON.
+17.    Database entries containing hashes can be maliciously twisted. Encrypt?
+18.    Artificial trust. All participants must play nicely. Zero-knowledge?
+19.    Scramblers are too periodic.
+20.    Hard kernel termination. Control session separation.
+21.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
+22.    Remote kernel termination.
+23.    An interface for custom functions. Such an interface could be used
        to transform YouTube data into MP3s.
-30.    What to do about corrupt database values?
-31.    Implement a Qt class in support of DTLS.
-32.    Limit the number of entries that are allowed to be inserted into
+24.    What to do about corrupt database values?
+25.    Implement a Qt class in support of DTLS.
+26.    Limit the number of entries that are allowed to be inserted into
        a database.
-33.    Allow pass-through flow of non-Spot-On data.
-34.    Android build.
-35.    Derive keys from master GoldBug keys.
-36.    QFSFileEngine::open: No file name specified: created from
+27.    Allow pass-through flow of non-Spot-On data.
+28.    Android build.
+29.    QFSFileEngine::open: No file name specified: created from
        e-mail.
-37.    E-mail institutions do not require dispatcher signatures.
-38.    Notify user of potential replays.
-39.    Counting users is possible. Gathering message attributes is
+30.    Counting users is possible. Gathering message attributes is
        also possible. See group information in MESSAGES.
-40.    Add support for crypto++.
-41.    1-N SCTP support.
-42.    Add log filters.
-43.    Lots of kernel activity may cause libgcrypt fatigue.
-44.    There is some redundant deciphering of data: findMessageType()
+31.    Add support for crypto++.
+32.    1-N SCTP support.
+33.    Add log filters.
+34.    Lots of kernel activity may cause libgcrypt fatigue.
+35.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
-45.    Move the kernel off of the local machine. Review all Common and
+36.    Move the kernel off of the local machine. Review all Common and
        GUI source for local database access. libspoton may require
        changes with respect to kernel presence. Or, create an access library.
        Or, PostgreSQL!
-46.    The timers that support gathering of external IP addresses burden
+37.    The timers that support gathering of external IP addresses burden
        kernel objects with unnecessary work. If the machine's external IP
        address changes while connections are already established, the
        state timers will eventually cause objects to be reset and therefore
        new attempts will be made to capture the external IP addresses. Review!
-47.    Prevent inserts of own keys in friends_public_keys.db.
-48.    Wormholes for streamed data.
-49.    Sieve machine for better congestion control and less repetitive
+38.    Prevent inserts of own keys in friends_public_keys.db.
+39.    Wormholes for streamed data.
+40.    Sieve machine for better congestion control and less repetitive
        work.
-50.    User configuration files are not encrypted.
-51.    Artificial pauses. Suppose an inbound packet requires t0 time to
+41.    User configuration files are not encrypted.
+42.    Artificial pauses. Suppose an inbound packet requires t0 time to
        process. Pause the current thread for T - t0 seconds, where T is some
        reasonable time.
-52.    The libgcrypt library supports GCRY_KDF_SCRYPT.
-53.    Weather feeds.
-54.    Create a user's configuration database. Store key types too.
-55.    Hybrid group communications based on deterministic key pairs.
-56.    The data stored in shared.db is not authenticated. Uniqueness
+43.    The libgcrypt library supports GCRY_KDF_SCRYPT.
+44.    Weather feeds.
+45.    Create a user's configuration database. Store key types too.
+46.    Hybrid group communications based on deterministic key pairs.
+47.    The data stored in shared.db is not authenticated. Uniqueness
        is not properly defined.
-57.    Provide GCM mode. libgcrypt 1.6.x is required.
-58.    Allow user to bookmark search results. Also allow searching of
+48.    Allow user to bookmark search results. Also allow searching of
        bookmarked entries. Perhaps provide a means of searching the
        global databases as well as bookmarked entries.
-59.    Allow programs such as netcat to feed data to Spot-On. Specific
+49.    Allow programs such as netcat to feed data to Spot-On. Specific
        private listeners would be capable of transforming the data
        into StarBeam pulses.
 
@@ -225,3 +223,4 @@ Remaining Items
 2.     gcry_md_setkey() does not impose minimum key lengths.
 3.     The method spoton_neighbor::savePublicKey() does not compare
        personal keys with provided keys.
+4.     Index the PostgreSQL tables.
