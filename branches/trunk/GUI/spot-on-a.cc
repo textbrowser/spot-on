@@ -7332,7 +7332,7 @@ void spoton::slotModeChanged(QSslSocket::SslMode mode)
 		 "%1:%2.").
 	 arg(m_kernelSocket.peerAddress().toString()).
 	 arg(m_kernelSocket.peerPort()));
-      m_kernelSocket.abort();
+      m_kernelSocket.close();
     }
 }
 

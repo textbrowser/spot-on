@@ -930,6 +930,7 @@ spoton_neighbor::~spoton_neighbor()
       QSqlDatabase::removeDatabase(connectionName);
     }
 
+  close();
   quit();
   wait();
 }
@@ -1479,7 +1480,15 @@ void spoton_neighbor::slotReadyRead(void)
       emit newData();
     }
   else
-    deleteLater();
+    {
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotReadyRead(): "
+		 "Did not receive data. Closing connection for "
+		 "%1:%2.").
+	 arg(m_address.toString()).
+	 arg(m_port));
+      deleteLater();
+    }
 }
 
 void spoton_neighbor::processData(void)
@@ -6405,9 +6414,19 @@ void spoton_neighbor::abort(void)
     m_udpSocket->abort();
 }
 
+void spoton_neighbor::close(void)
+{
+  if(m_sctpSocket)
+    m_sctpSocket->close();
+  else if(m_tcpSocket)
+    m_tcpSocket->close();
+  else if(m_udpSocket)
+    m_udpSocket->close();
+}
+
 void spoton_neighbor::deleteLater(void)
 {
-  abort();
+  close();
 
   QWriteLocker locker1(&m_abortThreadMutex);
 

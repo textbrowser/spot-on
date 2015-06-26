@@ -160,6 +160,7 @@ class spoton_neighbor: public QThread
   quint16 peerPort(void) const;
   void abort(void);
   void addToBytesWritten(const int bytesWritten);
+  void close(void);
   void processData(void);
   void setId(const qint64 id);
 
