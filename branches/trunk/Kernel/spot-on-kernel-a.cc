@@ -4381,6 +4381,7 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 
     if(db.open())
       {
+	QLocale locale;
 	QSqlQuery query(db);
 	qint64 v1 = 0;
 	qint64 v2 = 0;
@@ -4436,7 +4437,8 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.prepare("INSERT OR REPLACE INTO KERNEL_STATISTICS "
 		      "(statistic, value) "
 		      "VALUES ('Database Accesses', ?)");
-	query.bindValue(0, spoton_misc::databaseAccesses());
+	query.bindValue
+	  (0, locale.toString(spoton_misc::databaseAccesses()));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
@@ -4454,7 +4456,7 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 
 	QReadLocker locker3(&m_urlListMutex);
 
-	query.bindValue(0, m_urlList.size());
+	query.bindValue(0, locale.toString(m_urlList.size()));
 	locker3.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "

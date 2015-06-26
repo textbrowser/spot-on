@@ -3727,6 +3727,7 @@ void spoton::slotPopulateNeighbors(void)
 		QByteArray certificate;
 		QByteArray certificateDigest;
 		QByteArray sslSessionCipher;
+		QLocale locale;
 		QString priority("");
 		QString tooltip("");
 		bool isEncrypted = query.value
@@ -3894,8 +3895,8 @@ void spoton::slotPopulateNeighbors(void)
 						  toLongLong()) /
 			     60.00, 'f', 1)).
 		  arg(query.value(21).toLongLong() ? "Yes" : "No").
-		  arg(query.value(22).toULongLong()).
-		  arg(query.value(23).toULongLong()).
+		  arg(locale.toString(query.value(22).toULongLong())).
+		  arg(locale.toString(query.value(23).toULongLong())).
 		  arg(sslSessionCipher.constData()).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
@@ -4049,9 +4050,15 @@ void spoton::slotPopulateNeighbors(void)
 				SLOT(slotNeighborMaximumChanged(int)));
 			m_ui.neighbors->setCellWidget(row, i, box);
 		      }
+		    else if(i == 19) // uptime
+		      item = new QTableWidgetItem
+			(locale.toString(query.value(i).toLongLong()));
 		    else if(i == 21) // Certificate Digest
 		      item = new QTableWidgetItem
 			(certificateDigest.constData());
+		    else if(i == 22 || i == 23) // bytes_read, bytes_written
+		      item = new QTableWidgetItem
+			(locale.toString(query.value(i).toLongLong()));
 		    else if(i == 24) // SSL Session Cipher
 		      item = new QTableWidgetItem
 			(sslSessionCipher.constData());
