@@ -602,6 +602,7 @@ void spoton_sctp_socket::close(void)
 {
 #ifdef SPOTON_SCTP_ENABLED
   QHostInfo::abortHostLookup(m_hostLookupId);
+  abort();
 #ifdef Q_OS_WIN32
   closesocket(m_socketDescriptor);
 #else

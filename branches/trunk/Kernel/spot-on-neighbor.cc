@@ -6419,9 +6419,29 @@ void spoton_neighbor::close(void)
   if(m_sctpSocket)
     m_sctpSocket->close();
   else if(m_tcpSocket)
-    m_tcpSocket->close();
+    {
+      int socketDescriptor = static_cast<int>
+	(m_tcpSocket->socketDescriptor());
+
+#ifdef Q_OS_WIN32
+      shutdown(socketDescriptor, SD_BOTH);
+#else
+      shutdown(socketDescriptor, SHUT_RDWR);
+#endif
+      m_tcpSocket->close();
+    }
   else if(m_udpSocket)
-    m_udpSocket->close();
+    {
+      int socketDescriptor = static_cast<int>
+	(m_udpSocket->socketDescriptor());
+
+#ifdef Q_OS_WIN32
+      shutdown(socketDescriptor, SD_BOTH);
+#else
+      shutdown(socketDescriptor, SHUT_RDWR);
+#endif
+      m_udpSocket->close();
+    }
 }
 
 void spoton_neighbor::deleteLater(void)
