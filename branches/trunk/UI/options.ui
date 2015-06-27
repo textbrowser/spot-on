@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-442</y>
              <width>462</width>
-             <height>972</height>
+             <height>999</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -851,6 +851,13 @@
                  </item>
                 </layout>
                </item>
+               <item>
+                <widget class="QCheckBox" name="remove_otm">
+                 <property name="text">
+                  <string>&amp;Remove one-time magnets upon exit.</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -912,7 +919,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-489</y>
+             <y>0</y>
              <width>581</width>
              <height>1003</height>
             </rect>
@@ -1633,6 +1640,7 @@
   <tabstop>kernelCacheInterval</tabstop>
   <tabstop>starbeamAutoVerify</tabstop>
   <tabstop>starbeamUpdateInterval</tabstop>
+  <tabstop>remove_otm</tabstop>
   <tabstop>urlsAlternatingRowColors</tabstop>
   <tabstop>scrollArea_2</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>
