@@ -930,9 +930,9 @@ spoton_neighbor::~spoton_neighbor()
       QSqlDatabase::removeDatabase(connectionName);
     }
 
-  close();
   quit();
   wait();
+  close();
 }
 
 void spoton_neighbor::slotTimeout(void)
@@ -6446,8 +6446,6 @@ void spoton_neighbor::close(void)
 
 void spoton_neighbor::deleteLater(void)
 {
-  close();
-
   QWriteLocker locker1(&m_abortThreadMutex);
 
   m_abortThread = true;
@@ -6459,6 +6457,7 @@ void spoton_neighbor::deleteLater(void)
   locker2.unlock();
   quit();
   wait();
+  close();
   QObject::deleteLater();
 }
 
