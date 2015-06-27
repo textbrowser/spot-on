@@ -1523,10 +1523,7 @@ void spoton_kernel::checkForTermination(void)
 	    (m_neighbors.keys().at(i));
 
 	  if(neighbor)
-	    {
-	      neighbor->abort();
-	      neighbor->deleteLater();
-	    }
+	    neighbor->deleteLater();
 	}
 
       for(int i = 0; i < m_starbeamReaders.keys().size(); i++)
