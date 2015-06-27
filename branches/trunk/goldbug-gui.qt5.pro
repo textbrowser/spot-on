@@ -55,6 +55,7 @@ FORMS           = GoldBug-UI/adaptiveechoprompt.ui \
 		  GoldBug-UI/encryptfile.ui \
 		  GoldBug-UI/ipinformation.ui \
 		  GoldBug-UI/keyboard.ui \
+		  GoldBug-UI/listener-socket-options.ui \
                   GoldBug-UI/logviewer.ui \
 		  GoldBug-UI/options.ui \
                   GoldBug-UI/passwordprompt.ui \
