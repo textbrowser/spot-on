@@ -766,6 +766,7 @@ class spoton: public QMainWindow
   void slotRefreshUrlDistillers(void);
   void slotRegenerateKey(void);
   void slotRemoveEmailParticipants(void);
+  void slotRemoveOtmOnExit(bool state);
   void slotRemoveParticipants(void);
   void slotRemoveUrlParticipants(void);
   void slotRenameParticipant(void);

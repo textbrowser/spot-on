@@ -1784,6 +1784,15 @@ void spoton::slotOntopChatDialogs(bool state)
   settings.setValue("gui/ontopChatDialogs", state);
 }
 
+void spoton::slotRemoveOtmOnExit(bool state)
+{
+  m_settings["gui/removeOtmOnExit"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/removeOtmOnExit", state);
+}
+
 void spoton::slotSearchResultsPerPage(int value)
 {
   m_settings["gui/searchResultsPerPage"] = value;

@@ -4223,3 +4223,27 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
   QSqlDatabase::removeDatabase(connectionName);
   return echoKeys;
 }
+
+void spoton_misc::removeOneTimeStarBeamMagnets(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM magnets WHERE "
+		   "one_time_magnet = 1");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}

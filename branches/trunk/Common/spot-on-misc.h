@@ -168,6 +168,7 @@ class spoton_misc
   static void prepareSignalHandler(void (*sig_handler) (int));
   static void purgeSignatureRelationships(const QSqlDatabase &db,
 					  spoton_crypt *crypt);
+  static void removeOneTimeStarBeamMagnets(void);
   static void retrieveSymmetricData(QPair<QByteArray, QByteArray> &gemini,
 				    QByteArray &publicKey,
 				    QByteArray &symmetricKey,

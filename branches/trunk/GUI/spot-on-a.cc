@@ -1374,6 +1374,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotOntopChatDialogs(bool)));
+  connect(m_optionsUi.remove_otm,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotRemoveOtmOnExit(bool)));
   connect(m_optionsUi.searchResultsPerPage,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1902,6 +1906,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/ontopChatDialogs", false).toBool());
   m_optionsUi.urlSignMessages->setChecked
     (m_settings.value("gui/urlSignMessages", true).toBool());
+  m_optionsUi.remove_otm->setChecked
+    (m_settings.value("gui/removeOtmOnExit", false).toBool());
 
   /*
   ** Please don't translate n/a.
@@ -2377,6 +2383,9 @@ void spoton::slotQuit(void)
 
 void spoton::cleanup(void)
 {
+  if(m_settings.value("gui/removeOtmOnExit", false).toBool())
+    spoton_misc::removeOneTimeStarBeamMagnets();
+
   m_starbeamDigestInterrupt.fetchAndAddRelaxed(1);
 
   while(!m_starbeamDigestFutures.isEmpty())
