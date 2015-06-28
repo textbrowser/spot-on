@@ -49,6 +49,7 @@ class spoton_external_address: public QNetworkAccessManager
  private slots:
   void slotError(QNetworkReply::NetworkError error);
   void slotFinished(void);
+  void slotSslErrors(const QList<QSslError> &errors);
 
  signals:
   void ipAddressDiscovered(const QHostAddress &ipAddress);

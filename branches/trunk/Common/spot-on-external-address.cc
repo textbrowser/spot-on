@@ -45,10 +45,8 @@ spoton_external_address::spoton_external_address(void):
 void spoton_external_address::discover(void)
 {
   QNetworkReply *reply = 0;
-  QNetworkRequest request;
 
-  request.setUrl(QUrl::fromUserInput("http://checkip.dyndns.org"));
-  reply = get(request);
+  reply = get(QNetworkRequest(QUrl::fromUserInput("https://api.ipify.org")));
   connect(reply,
 	  SIGNAL(error(QNetworkReply::NetworkError)),
 	  this,
@@ -57,6 +55,10 @@ void spoton_external_address::discover(void)
 	  SIGNAL(finished(void)),
 	  this,
 	  SLOT(slotFinished(void)));
+  connect(reply,
+	  SIGNAL(sslErrors(const QList<QSslError> &)),
+	  this,
+	  SLOT(slotSslErrors(const QList<QSslError> &)));
 }
 
 void spoton_external_address::slotFinished(void)
@@ -103,4 +105,14 @@ void spoton_external_address::slotError(QNetworkReply::NetworkError error)
 void spoton_external_address::clear(void)
 {
   m_address = QHostAddress();
+}
+
+void spoton_external_address::slotSslErrors(const QList<QSslError> &errors)
+{
+  Q_UNUSED(errors);
+
+  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+
+  if(reply)
+    reply->ignoreSslErrors();
 }
