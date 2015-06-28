@@ -1030,10 +1030,7 @@ void spoton::prepareSMP(const QString &hash)
     }
 
   if(smp)
-    {
-      smp->reset();
-      smp->setGuess(guess);
-    }
+    smp->setGuess(guess);
   else
     qDebug() << "spoton::prepareSMP(): smp is zero!";
 
@@ -1114,7 +1111,10 @@ void spoton::verifySMPSecret(const QString &hash, const QString &keyType,
   bool ok = true;
 
   if(smp)
-    list = smp->step1(&ok);
+    {
+      smp->initialize();
+      list = smp->step1(&ok);
+    }
   else
     {
       ok = false;

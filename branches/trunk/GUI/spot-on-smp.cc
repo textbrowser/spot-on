@@ -105,10 +105,15 @@ QList<QByteArray> spoton_smp::nextStep(const QList<QByteArray> &other,
 {
   /*
   ** A submits the first exchange and transitions to the first state.
+  ** If an error is encountered, A will enter a terminal state.
   ** B receives A's information and transitions to the second state.
+  ** If an error is encountered, B will enter a terminal state.
   ** A receives B's information and transitions to the third state.
+  ** If an error is encountered, A will enter a terminal state.
   ** B receives A's information and transitions to the fourth state.
+  ** If an error is encountered, B will enter a terminal state.
   ** A receives B's information and transitions to the fifth state.
+  ** If an error is encountered, A will enter a terminal state.
   */
 
   if(m_step == 0)
@@ -121,6 +126,8 @@ QList<QByteArray> spoton_smp::nextStep(const QList<QByteArray> &other,
     step5(other, ok, passed);
   else
     {
+      m_passed = false;
+
       if(ok)
 	*ok = false;
 
@@ -134,10 +141,14 @@ QList<QByteArray> spoton_smp::nextStep(const QList<QByteArray> &other,
 QList<QByteArray> spoton_smp::step1(bool *ok)
 {
   QList<QByteArray> list;
+  bool terminalState = true;
   gcry_mpi_t g2a = 0;
   gcry_mpi_t g3a = 0;
   size_t size = 0;
   unsigned char *buffer = 0;
+
+  if(m_step != 0)
+    GOTO_DONE_LABEL;
 
   /*
   ** Generate a2 and a3.
@@ -199,11 +210,16 @@ QList<QByteArray> spoton_smp::step1(bool *ok)
   gcry_free(buffer);
   buffer = 0;
   m_step = 1;
+  terminalState = false;
 
  done_label:
   gcry_free(buffer);
   gcry_mpi_release(g2a);
   gcry_mpi_release(g3a);
+
+  if(terminalState)
+    m_step = TERMINAL_STATE;
+
   return list;
 }
 
@@ -212,6 +228,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
 {
   QByteArray bytes;
   QList<QByteArray> list;
+  bool terminalState = true;
   gcry_mpi_t g2 = 0;
   gcry_mpi_t g2a = 0;
   gcry_mpi_t g2b = 0;
@@ -223,6 +240,9 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   gcry_mpi_t r = 0;
   size_t size = 0;
   unsigned char *buffer = 0;
+
+  if(m_step != 0)
+    GOTO_DONE_LABEL;
 
   /*
   ** Extract g2a and g3a.
@@ -371,6 +391,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   gcry_free(buffer);
   buffer = 0;
   m_step = 2;
+  terminalState = false;
 
  done_label:
   gcry_free(buffer);
@@ -383,6 +404,10 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   gcry_mpi_release(qb1);
   gcry_mpi_release(qb2);
   gcry_mpi_release(r);
+
+  if(terminalState)
+    m_step = TERMINAL_STATE;
+
   return list;
 }
 
@@ -391,6 +416,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
 {
   QByteArray bytes;
   QList<QByteArray> list;
+  bool terminalState = true;
   gcry_mpi_t g2 = 0;
   gcry_mpi_t g2b = 0;
   gcry_mpi_t g3 = 0;
@@ -405,6 +431,9 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   gcry_mpi_t s = 0;
   size_t size = 0;
   unsigned char *buffer = 0;
+
+  if(m_step != 1)
+    GOTO_DONE_LABEL;
 
   /*
   ** Extract g2b, g3b, pb, and qb.
@@ -544,6 +573,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   gcry_free(buffer);
   buffer = 0;
   m_step = 3;
+  terminalState = false;
 
  done_label:
   gcry_free(buffer);
@@ -559,6 +589,10 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   gcry_mpi_release(ra);
   gcry_mpi_release(ra1);
   gcry_mpi_release(s);
+
+  if(terminalState)
+    m_step = TERMINAL_STATE;
+
   return list;
 }
 
@@ -567,6 +601,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
 {
   QByteArray bytes;
   QList<QByteArray> list;
+  bool terminalState = true;
   gcry_mpi_t pa = 0;
   gcry_mpi_t papb = 0;
   gcry_mpi_t pbinv = 0;
@@ -583,6 +618,9 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
 
   if(passed)
     *passed = false;
+
+  if(m_step != 2)
+    GOTO_DONE_LABEL;
 
   /*
   ** Extract pa, qa, and ra.
@@ -693,6 +731,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
     }
 
   m_step = 4;
+  terminalState = false;
 
  done_label:
   gcry_free(buffer);
@@ -705,6 +744,10 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   gcry_mpi_release(rab);
   gcry_mpi_release(rb);
   gcry_mpi_release(rb1);
+
+  if(terminalState)
+    m_step = TERMINAL_STATE;
+
   return list;
 }
 
@@ -806,6 +849,8 @@ void spoton_smp::reset(void)
 
 void spoton_smp::setGuess(const QString &guess)
 {
+  reset();
+
   if(m_guess)
     {
       gcry_mpi_release(m_guess);
@@ -855,6 +900,7 @@ void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
 		       bool *passed)
 {
   QByteArray bytes;
+  bool terminalState = true;
   gcry_mpi_t papb = 0;
   gcry_mpi_t pbinv = 0;
   gcry_mpi_t rab = 0;
@@ -864,6 +910,9 @@ void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
 
   if(passed)
     *passed = false;
+
+  if(m_step != 3)
+    goto done_label;
 
   /*
   ** Extract rb.
@@ -973,15 +1022,19 @@ void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
     }
 
   m_step = 5;
+  terminalState = false;
 
  done_label:
   gcry_mpi_release(papb);
   gcry_mpi_release(pbinv);
   gcry_mpi_release(rab);
   gcry_mpi_release(rb);
+
+  if(terminalState)
+    m_step = TERMINAL_STATE;
 }
 
-void spoton_smp::test(void)
+void spoton_smp::test1(void)
 {
   QList<QByteArray> list;
   bool ok = true;
@@ -995,7 +1048,7 @@ void spoton_smp::test(void)
 
   if(!ok)
     {
-      qDebug() << "SMP step 1 failure.";
+      qDebug() << "test1: SMP step 1 failure.";
       return;
     }
 
@@ -1003,7 +1056,7 @@ void spoton_smp::test(void)
 
   if(!ok)
     {
-      qDebug() << "SMP step 2 failure.";
+      qDebug() << "test1: SMP step 2 failure.";
       return;
     }
 
@@ -1011,7 +1064,7 @@ void spoton_smp::test(void)
 
   if(!ok)
     {
-      qDebug() << "SMP step 3 failure.";
+      qDebug() << "test1: SMP step 3 failure.";
       return;
     }
 
@@ -1019,25 +1072,86 @@ void spoton_smp::test(void)
 
   if(!ok)
     {
-      qDebug() << "SMP step 4 failure.";
+      qDebug() << "test1: SMP step 4 failure.";
       return;
     }
 
   if(passed)
-    qDebug() << "Secrets are identical from b's perspective.";
+    qDebug() << "test1: Secrets are identical from b's perspective.";
   else
-    qDebug() << "Secrets are different from b's perspective.";
+    qDebug() << "test1: Secrets are different from b's perspective.";
 
   a.nextStep(list, &ok, &passed);
 
   if(!ok)
     {
-      qDebug() << "SMP step 5 failure.";
+      qDebug() << "test1: SMP step 5 failure.";
       return;
     }
 
   if(passed)
-    qDebug() << "Secrets are identical from a's perspective.";
+    qDebug() << "test1: Secrets are identical from a's perspective.";
   else
-    qDebug() << "Secrets are different from a's perspective.";
+    qDebug() << "test1: Secrets are different from a's perspective.";
+}
+
+void spoton_smp::test2(void)
+{
+  QList<QByteArray> list;
+  bool ok = true;
+  bool passed = false;
+  spoton_smp a;
+  spoton_smp b;
+
+  a.setGuess("This is not a test.");
+  b.setGuess("This is a test.");
+  list = a.step1(&ok);
+
+  if(!ok)
+    {
+      qDebug() << "test2: SMP step 1 failure.";
+      return;
+    }
+
+  list = b.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test2: SMP step 2 failure.";
+      return;
+    }
+
+  list = a.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test2: SMP step 3 failure.";
+      return;
+    }
+
+  list = b.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test2: SMP step 4 failure.";
+      return;
+    }
+
+  if(passed)
+    qDebug() << "test2: Secrets are identical from b's perspective.";
+  else
+    qDebug() << "test2: Secrets are different from b's perspective.";
+
+  a.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test2: SMP step 5 failure.";
+      return;
+    }
+
+  if(passed)
+    qDebug() << "test2: Secrets are identical from a's perspective.";
+  else
+    qDebug() << "test2: Secrets are different from a's perspective.";
 }

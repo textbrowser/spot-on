@@ -394,7 +394,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      m_ui.messages->verticalScrollBar()->setValue
 			(m_ui.messages->verticalScrollBar()->maximum());
 
-		      spoton_smp *smp = m_smps.value(hash.toBase64());
+		      spoton_smp *smp = m_smps.value(hash.toBase64(), 0);
 
 		      if(!smp)
 			continue;

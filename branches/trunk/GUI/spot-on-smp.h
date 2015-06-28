@@ -43,7 +43,8 @@ class spoton_smp
   spoton_smp(void);
   ~spoton_smp(void);
   static const unsigned int BITS = 1536;
-  static void test(void);
+  static void test1(void);
+  static void test2(void);
   QByteArray guessSha(void) const;
   QByteArray guessWhirlpool(void) const;
   QList<QByteArray> nextStep(const QList<QByteArray> &other,
@@ -52,7 +53,6 @@ class spoton_smp
   bool passed(void) const;
   int step(void) const;
   void initialize();
-  void reset(void);
   void setGuess(const QString &guess);
 
  private:
@@ -71,10 +71,12 @@ class spoton_smp
   gcry_mpi_t generateRandomExponent(bool *ok);
   int m_step;
   size_t m_guessWhirlLength;
+  static const int TERMINAL_STATE = -1;
   QList<QByteArray> step2(const QList<QByteArray> &other, bool *ok);
   QList<QByteArray> step3(const QList<QByteArray> &other, bool *ok);
   QList<QByteArray> step4(const QList<QByteArray> &other, bool *ok,
 			  bool *passed);
+  void reset(void);
   void step5(const QList<QByteArray> &other, bool *ok, bool *passed);
 };
 

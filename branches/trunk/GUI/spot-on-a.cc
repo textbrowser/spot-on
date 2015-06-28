@@ -199,6 +199,8 @@ int main(int argc, char *argv[])
 spoton::spoton(void):QMainWindow()
 {
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
+  spoton_smp::test1();
+  spoton_smp::test2();
   QDir().mkdir(spoton_misc::homePath());
   m_keysShared["buzz_channels_sent_to_kernel"] = "false";
   m_keysShared["keys_sent_to_kernel"] = "false";
