@@ -359,7 +359,6 @@ class spoton_neighbor: public QThread
   void slotWriteURLs(const QByteArray &data);
 
  public slots:
-  void deleteLater(void);
   void slotSharePublicKey(const QByteArray &keyType,
 			  const QByteArray &name,
 			  const QByteArray &publicKey,

@@ -834,10 +834,15 @@ spoton_neighbor::~spoton_neighbor()
 			arg(m_address.toString()).
 			arg(m_port));
 
-  QWriteLocker locker(&m_abortThreadMutex);
+  QWriteLocker locker1(&m_abortThreadMutex);
 
   m_abortThread = true;
-  locker.unlock();
+  locker1.unlock();
+
+  QWriteLocker locker2(&m_dataMutex);
+
+  m_data.clear();
+  locker2.unlock();
   m_accountTimer.stop();
   m_authenticationTimer.stop();
   m_externalAddressDiscovererTimer.stop();
@@ -930,9 +935,9 @@ spoton_neighbor::~spoton_neighbor()
       QSqlDatabase::removeDatabase(connectionName);
     }
 
+  close();
   quit();
   wait();
-  close();
 }
 
 void spoton_neighbor::slotTimeout(void)
@@ -6442,23 +6447,6 @@ void spoton_neighbor::close(void)
 #endif
       m_udpSocket->close();
     }
-}
-
-void spoton_neighbor::deleteLater(void)
-{
-  QWriteLocker locker1(&m_abortThreadMutex);
-
-  m_abortThread = true;
-  locker1.unlock();
-
-  QWriteLocker locker2(&m_dataMutex);
-
-  m_data.clear();
-  locker2.unlock();
-  quit();
-  wait();
-  close();
-  QObject::deleteLater();
 }
 
 void spoton_neighbor::slotStopTimer(QTimer *timer)
