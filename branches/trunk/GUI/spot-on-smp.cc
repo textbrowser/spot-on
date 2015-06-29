@@ -1103,8 +1103,8 @@ void spoton_smp::test2(void)
   spoton_smp a;
   spoton_smp b;
 
-  a.setGuess("This is not a test.");
-  b.setGuess("This is a test.");
+  a.setGuess("This is a test.");
+  b.setGuess("This is not a test.");
   list = a.step1(&ok);
 
   if(!ok)
