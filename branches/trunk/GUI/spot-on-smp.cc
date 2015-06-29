@@ -1155,3 +1155,52 @@ void spoton_smp::test2(void)
   else
     qDebug() << "test2: Secrets are different from a's perspective.";
 }
+
+void spoton_smp::test3(void)
+{
+  QList<QByteArray> list;
+  bool ok = true;
+  bool passed = false;
+  spoton_smp a;
+  spoton_smp b;
+
+  a.setGuess("This is a test.");
+  b.setGuess("This is a test.");
+  list = a.step1(&ok);
+
+  if(!ok)
+    {
+      qDebug() << "test3: SMP step 1 failure.";
+      return;
+    }
+
+  list = b.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test3: SMP step 2 failure.";
+      return;
+    }
+
+  list = a.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test3: SMP step 3 failure.";
+      return;
+    }
+
+  if(!list.isEmpty())
+    list.replace(0, spoton_crypt::weakRandomBytes(32));
+
+  list = b.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test3: SMP step 4 failure.";
+      return;
+    }
+
+  if(!passed)
+    qDebug() << "test3: Secrets are different from b's perspective.";
+}

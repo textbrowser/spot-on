@@ -45,6 +45,7 @@ class spoton_smp
   static const unsigned int BITS = 1536;
   static void test1(void);
   static void test2(void);
+  static void test3(void);
   QByteArray guessSha(void) const;
   QByteArray guessWhirlpool(void) const;
   QList<QByteArray> nextStep(const QList<QByteArray> &other,
