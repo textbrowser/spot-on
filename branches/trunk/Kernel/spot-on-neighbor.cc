@@ -1455,6 +1455,13 @@ void spoton_neighbor::slotReadyRead(void)
 
   m_bytesRead += static_cast<quint64> (data.length());
 
+  QReadLocker locker(&m_abortThreadMutex);
+
+  if(m_abortThread)
+    return;
+  else
+    locker.unlock();
+
   if(!data.isEmpty() && !isEncrypted() && m_useSsl)
     {
       data.clear();
@@ -1498,6 +1505,13 @@ void spoton_neighbor::slotReadyRead(void)
 
 void spoton_neighbor::processData(void)
 {
+  QReadLocker locker(&m_abortThreadMutex);
+
+  if(m_abortThread)
+    return;
+  else
+    locker.unlock();
+
   if(isRunning())
     {
       QReadLocker locker(&m_priorityMutex);
