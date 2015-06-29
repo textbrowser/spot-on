@@ -6450,17 +6450,7 @@ void spoton_neighbor::close(void)
       m_tcpSocket->close();
     }
   else if(m_udpSocket)
-    {
-      int socketDescriptor = static_cast<int>
-	(m_udpSocket->socketDescriptor());
-
-#ifdef Q_OS_WIN32
-      shutdown(socketDescriptor, SD_BOTH);
-#else
-      shutdown(socketDescriptor, SHUT_RDWR);
-#endif
-      m_udpSocket->close();
-    }
+    m_udpSocket->close();
 }
 
 void spoton_neighbor::slotStopTimer(QTimer *timer)
