@@ -225,3 +225,4 @@ Remaining Items
        personal keys with provided keys.
 4.     Index the PostgreSQL tables.
 5.     Per-participant permissions.
+6.     Allow custom addresses for spoton_external_address.

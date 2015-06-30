@@ -2288,14 +2288,22 @@ spoton::spoton(void):QMainWindow()
 	m_externalAddressDiscovererTimer.start(60000);
     }
 
+#if SPOTON_GOLDBUG == 0
   str = m_settings.value("gui/iconSet", "nouve").toString().toLower();
+#else
+  str = m_settings.value("gui/iconSet", "nuvola").toString().toLower();
+#endif
 
   if(str == "everaldo")
     m_optionsUi.icons->setCurrentIndex(0);
   else if(str == "nuvola")
     m_optionsUi.icons->setCurrentIndex(2);
   else
+#if SPOTON_GOLDBUG == 0
     m_optionsUi.icons->setCurrentIndex(1);
+#else
+    m_optionsUi.icons->setCurrentIndex(2);
+#endif
 
   slotSetIcons(m_optionsUi.icons->currentIndex());
 

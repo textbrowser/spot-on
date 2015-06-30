@@ -107,10 +107,7 @@ spoton_neighbor::spoton_neighbor
       m_sctpSocket->setReadBufferSize(m_maximumBufferSize);
       m_sctpSocket->setSocketDescriptor(socketDescriptor);
       m_sctpSocket->setSocketOption
-	(spoton_sctp_socket::KeepAliveOption, 0); /*
-						  ** We have our
-						  ** own mechanism.
-						  */
+	(spoton_sctp_socket::KeepAliveOption, 1);
       m_sctpSocket->setSocketOption
 	(spoton_sctp_socket::LowDelayOption,
 	 spoton_kernel::setting("kernel/sctp_nodelay", 1).
@@ -123,10 +120,7 @@ spoton_neighbor::spoton_neighbor
       m_tcpSocket->setReadBufferSize(m_maximumBufferSize);
       m_tcpSocket->setSocketDescriptor(socketDescriptor);
       m_tcpSocket->setSocketOption
-	(QAbstractSocket::KeepAliveOption, 0); /*
-					       ** We have our
-					       ** own mechanism.
-					       */
+	(QAbstractSocket::KeepAliveOption, 1);
       m_tcpSocket->setSocketOption
 	(QAbstractSocket::LowDelayOption,
 	 spoton_kernel::setting("kernel/tcp_nodelay", 1).
@@ -1924,10 +1918,7 @@ void spoton_neighbor::slotConnected(void)
   if(m_sctpSocket)
     {
       m_sctpSocket->setSocketOption
-	(spoton_sctp_socket::KeepAliveOption, 0); /*
-						  ** We have our
-						  ** own mechanism.
-						  */
+	(spoton_sctp_socket::KeepAliveOption, 1);
       m_sctpSocket->setSocketOption
 	(spoton_sctp_socket::LowDelayOption,
 	 spoton_kernel::setting("kernel/sctp_nodelay", 1).
@@ -1938,10 +1929,7 @@ void spoton_neighbor::slotConnected(void)
   else if(m_tcpSocket)
     {
       m_tcpSocket->setSocketOption
-	(QAbstractSocket::KeepAliveOption, 0); /*
-					       ** We have our
-					       ** own mechanism.
-					       */
+	(QAbstractSocket::KeepAliveOption, 1);
       m_tcpSocket->setSocketOption
 	(QAbstractSocket::LowDelayOption,
 	 spoton_kernel::setting("kernel/tcp_nodelay", 1).
@@ -6505,4 +6493,10 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 	  spoton_kernel::messagingCacheAdd(message);
 	}
     }
+}
+
+void spoton_neighbor::deleteLater(void)
+{
+  close();
+  QThread::deleteLater();
 }
