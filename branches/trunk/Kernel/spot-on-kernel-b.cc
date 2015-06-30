@@ -69,6 +69,8 @@ static size_t curl_payload_source
       upload_ctx->lines_read++;
       return length;
     }
+  else
+    qDebug() << "curl_payload_source(): data is zero!";
 
   return 0;
 }
@@ -90,7 +92,10 @@ static size_t curl_write_memory_callback(void *contents, size_t size,
     realloc(memory->memory, memory->size + realsize + 1);
 
   if(!memory->memory)
-    return 0;
+    {
+      qDebug() << "curl_write_memory_callback(): memory->memory is zero!";
+      return 0;
+    }
 
   memcpy(&(memory->memory[memory->size]), contents, realsize);
   memory->size += realsize;
@@ -265,7 +270,9 @@ void spoton_kernel::popPoptastic(void)
 	      curl_easy_setopt
 		(curl, CURLOPT_WRITEFUNCTION, curl_write_memory_callback);
 
-	      if(curl_easy_perform(curl) == CURLE_OK)
+	      CURLcode rc = CURLE_OK;
+
+	      if((rc = curl_easy_perform(curl)) == CURLE_OK)
 		{
 		  if(method == "IMAP")
 		    {
@@ -305,6 +312,9 @@ void spoton_kernel::popPoptastic(void)
 	      else
 		{
 		  free(chunk.memory);
+		  qDebug() << "spoton_kernel::popPoptastic(): "
+			   << "curl_easy_perform() failure ("
+			   << rc << ").";
 		  break;
 		}
 
@@ -327,11 +337,21 @@ void spoton_kernel::popPoptastic(void)
 		 QString("STORE %1 +Flags \\Deleted").
 		 arg(list.takeFirst()).toLatin1().constData());
 
-	      if(curl_easy_perform(curl) != CURLE_OK)
+	      CURLcode rc = CURLE_OK;
+
+	      if((rc = curl_easy_perform(curl)) != CURLE_OK)
 		{
+		  qDebug() << "spoton_kernel::popPoptastic(): "
+			   << "curl_easy_perform(STORE) failure ("
+			   << rc << ").";
 		  curl_easy_setopt
 		    (curl, CURLOPT_CUSTOMREQUEST, "EXPUNGE");
-		  curl_easy_perform(curl);
+		  rc = curl_easy_perform(curl);
+
+		  if(rc != CURLE_OK)
+		    qDebug() << "spoton_kernel::popPoptastic(): "
+			     << "curl_easy_perform(EXPUNGE) failure ("
+			     << rc << ").";
 		}
 
 	      if(m_poptasticPopFuture.isCanceled())
@@ -466,15 +486,15 @@ void spoton_kernel::postPoptastic(void)
 
 	  curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
 
-	  for(int i = 1; i <= 15; i++)
+	  for(int i = 1, j = 1; i <= 15;)
 	    {
 	      QList<QVariant> values;
-	      QWriteLocker locker(&m_poptasticCacheMutex);
+	      QReadLocker locker(&m_poptasticCacheMutex);
 
 	      if(m_poptasticCache.isEmpty())
 		break;
 	      else
-		values = m_poptasticCache.dequeue();
+		values = m_poptasticCache.head();
 
 	      locker.unlock();
 
@@ -619,8 +639,20 @@ void spoton_kernel::postPoptastic(void)
 
 	      curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 
-	      if(curl_easy_perform(curl) == CURLE_OK)
+	      CURLcode rc = CURLE_OK;
+
+	      if((rc = curl_easy_perform(curl)) == CURLE_OK)
 		{
+		  i += 1;
+		  j = 1;
+
+		  QWriteLocker locker(&m_poptasticCacheMutex);
+
+		  if(!m_poptasticCache.isEmpty())
+		    m_poptasticCache.dequeue();
+
+		  locker.unlock();
+
 		  qint64 mailOid = -1;
 
 		  if(!values.isEmpty())
@@ -629,6 +661,27 @@ void spoton_kernel::postPoptastic(void)
 		  if(mailOid > -1)
 		    spoton_misc::moveSentMailToSentFolder
 		      (QList<qint64> () << mailOid, s_crypt);
+		}
+	      else
+		{
+		  if(j >= spoton_common::MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST)
+		    {
+		      i += 1;
+		      j = 1;
+
+		      QWriteLocker locker(&m_poptasticCacheMutex);
+
+		      if(!m_poptasticCache.isEmpty())
+			m_poptasticCache.dequeue();
+
+		      locker.unlock();
+		    }
+		  else
+		    j += 1;
+
+		  qDebug() << "spoton_kernel::postPoptastic(): "
+			   << "curl_easy_perform() failure ("
+			   << rc << ").";
 		}
 
 	      curl_slist_free_all(recipients);
