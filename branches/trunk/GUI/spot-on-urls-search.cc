@@ -92,7 +92,8 @@ void spoton::discoverUrls(void)
 	    else
 	      querystr.append
 		(QString("SELECT title, url, description, date_time_inserted "
-			 "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
+			 "FROM spot_on_urls_%1%2 UNION ").
+		 arg(c1).arg(c2));
 	  }
 
       querystr.append(" ORDER BY 4 DESC ");
@@ -105,68 +106,164 @@ void spoton::discoverUrls(void)
       QString keywordsearch("");
       QString searchfor(tr("Searched for... "));
       QStringList keywords;
+      QStringList url_hashes;
+      bool intersect = false;
       bool ok = true;
-      bool searchForUrl = false;
 
-      if(search.endsWith("\"") && search.startsWith("\""))
+      do
 	{
-	  keywords << search.mid(1, search.length() - 2);
+	  int e = -1;
+	  int s = -1;
 
-	  if(QUrl(search.mid(1, search.length() - 2)).isValid())
-	    searchForUrl = true;
+	  s = search.indexOf('"');
+
+	  if(s < 0)
+	    break;
+
+	  e = search.indexOf('"', s + 1);
+
+	  if(e < 0)
+	    break;
+
+	  QString bundle(search.mid(s + 1, e - s - 1).trimmed());
+
+	  if(bundle.isEmpty())
+	    break;
+
+	  if(!keywords.isEmpty())
+	    searchfor.append(" <b>OR</b> ");
+
+	  search.remove(s, e - s + 1);
+	  discovered.clear();
+	  keywords = bundle.split(QRegExp("\\W+"), QString::SkipEmptyParts);
+	  keywordsearch.clear();
+
+	  if(!keywords.isEmpty())
+	    searchfor.append("(");
+
+	  for(int i = 0; i < keywords.size(); i++)
+	    {
+	      if(!discovered.contains(keywords.at(i)))
+		discovered[keywords.at(i)] = '0';
+	      else
+		continue;
+
+	      searchfor.append(keywords.at(i));
+
+	      if(i != keywords.size() - 1)
+		searchfor.append(" <b>AND</b> ");
+
+	      QByteArray keywordHash
+		(m_urlCommonCrypt->keyedHash(keywords.at(i).toUtf8(), &ok));
+
+	      if(!ok)
+		continue;
+
+	      QByteArray keywordHashHex(keywordHash.toHex());
+
+	      if(i == keywords.size() - 1)
+		keywordsearch.append
+		  (QString("SELECT url_hash FROM "
+			   "spot_on_keywords_%1 WHERE "
+			   "keyword_hash = '%2' ").
+		   arg(keywordHashHex.mid(0, 2).constData()).
+		   arg(keywordHashHex.constData()));
+	      else
+		keywordsearch.append
+		  (QString("SELECT url_hash FROM "
+			   "spot_on_keywords_%1 WHERE "
+			   "keyword_hash = '%2' INTERSECT ").
+		   arg(keywordHashHex.mid(0, 2).constData()).
+		   arg(keywordHashHex.constData()));
+	    }
+
+	  if(!keywords.isEmpty())
+	    {
+	      intersect = true;
+	      searchfor.append(")");
+	    }
+
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	  QSqlQuery query(m_urlDatabase);
+
+	  if(query.exec(keywordsearch))
+	    while(query.next())
+	      url_hashes << query.value(0).toString();
+
+	  QApplication::restoreOverrideCursor();
 	}
-      else
-	keywords = search.toLower().
-	  split(QRegExp("\\W+"), QString::SkipEmptyParts);
+      while(true);
 
-      if(searchForUrl)
+      discovered.clear();
+      keywords = search.toLower().trimmed().
+	split(QRegExp("\\W+"), QString::SkipEmptyParts);
+      keywordsearch.clear();
+
+      if(intersect)
+	if(!keywords.isEmpty())
+	  searchfor.append(" <b>OR</b> ");
+
+      for(int i = 0; i < keywords.size(); i++)
 	{
+	  if(!discovered.contains(keywords.at(i)))
+	    discovered[keywords.at(i)] = '0';
+	  else
+	    continue;
+
+	  searchfor.append(keywords.at(i));
+
+	  if(i != keywords.size() - 1)
+	    searchfor.append(" <b>OR</b> ");
+
 	  QByteArray keywordHash
-	    (m_urlCommonCrypt->keyedHash(keywords.value(0).toUtf8(), &ok).
-	     toHex());
+	    (m_urlCommonCrypt->keyedHash(keywords.at(i).toUtf8(), &ok));
 
-	  keywordsearch = "'" + keywordHash + "'"; // For SQL.
-	  searchfor.append(search);
+	  if(!ok)
+	    continue;
+
+	  QByteArray keywordHashHex(keywordHash.toHex());
+
+	  if(i == keywords.size() - 1)
+	    keywordsearch.append
+	      (QString("SELECT url_hash FROM "
+		       "spot_on_keywords_%1 WHERE "
+		       "keyword_hash = '%2' ").
+	       arg(keywordHashHex.mid(0, 2).constData()).
+	       arg(keywordHashHex.constData()));
+	  else
+	    keywordsearch.append
+	      (QString("SELECT url_hash FROM "
+		       "spot_on_keywords_%1 WHERE "
+		       "keyword_hash = '%2' UNION ").
+	       arg(keywordHashHex.mid(0, 2).constData()).
+	       arg(keywordHashHex.constData()));
 	}
-      else
-	for(int i = 0; i < keywords.size(); i++)
-	  {
-	    if(!discovered.contains(keywords.at(i)))
-	      discovered[keywords.at(i)] = '0';
-	    else
-	      continue;
 
-	    searchfor.append(keywords.at(i));
+      if(!keywords.isEmpty())
+	{
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-	    if(i != keywords.size() - 1)
-	      searchfor.append("... ");
+	  QSqlQuery query(m_urlDatabase);
 
-	    QByteArray keywordHash
-	      (m_urlCommonCrypt->keyedHash(keywords.at(i).toUtf8(), &ok));
+	  if(query.exec(keywordsearch))
+	    while(query.next())
+	      url_hashes << query.value(0).toString();
 
-	    if(!ok)
-	      continue;
-
-	    QByteArray keywordHashHex(keywordHash.toHex());
-
-	    if(i == keywords.size() - 1)
-	      keywordsearch.append
-		(QString("SELECT url_hash FROM "
-			 "spot_on_keywords_%1 WHERE "
-			 "keyword_hash = '%2' ").
-		 arg(keywordHashHex.mid(0, 2).constData()).
-		 arg(keywordHashHex.constData()));
-	    else
-	      keywordsearch.append
-		(QString("SELECT url_hash FROM "
-			 "spot_on_keywords_%1 WHERE "
-			 "keyword_hash = '%2' UNION ").
-		 arg(keywordHashHex.mid(0, 2).constData()).
-		 arg(keywordHashHex.constData()));
-	  }
+	  QApplication::restoreOverrideCursor();
+	}
 
       searchfor.append(".");
       m_ui.searchfor->setText(searchfor);
+      keywordsearch.clear();
+
+      for(int i = 0; i < url_hashes.size(); i++)
+	{
+	  keywordsearch.append(QString("'%1'").arg(url_hashes.at(i)));
+
+	  if(i != url_hashes.size() - 1)
+	    keywordsearch.append(", ");
+	}
 
       for(int i = 0; i < 10 + 6; i++)
 	for(int j = 0; j < 10 + 6; j++)
