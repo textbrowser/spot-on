@@ -606,7 +606,7 @@ void spoton_sctp_socket::close(void)
   shutdown(m_socketDescriptor, SD_BOTH);
   closesocket(m_socketDescriptor);
 #else
-  shutdown(m_socketDescriptor, SHUT_RDWR);  
+  shutdown(m_socketDescriptor, SHUT_RDWR);
   ::close(m_socketDescriptor);
 #endif
   m_connectToPeerName.clear();
