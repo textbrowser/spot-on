@@ -253,7 +253,11 @@ void spoton::discoverUrls(void)
 	  QApplication::restoreOverrideCursor();
 	}
 
-      searchfor.append(".");
+      searchfor = searchfor.trimmed();
+
+      if(!searchfor.endsWith('.'))
+	searchfor.append(".");
+
       m_ui.searchfor->setText(searchfor);
       keywordsearch.clear();
 
