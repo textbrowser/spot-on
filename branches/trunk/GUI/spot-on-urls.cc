@@ -1145,7 +1145,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
     {
       m_ui.commonUrlCipher->setCurrentIndex(0);
       m_ui.commonUrlHash->setCurrentIndex(0);
-      m_ui.commonUrlIterationCount->setValue(10000);
+      m_ui.commonUrlIterationCount->setValue(250000);
       m_ui.commonUrlPassphrase->clear();
       m_ui.commonUrlPin->clear();
       prepareUrlContainers();
