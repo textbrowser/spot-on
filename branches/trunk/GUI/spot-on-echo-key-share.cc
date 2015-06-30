@@ -208,6 +208,10 @@ void spoton_echo_key_share::slotMenuAction(void)
 	  return;
 	}
 
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+
       QPair<QByteArray, QByteArray> keys;
       QString error("");
 
