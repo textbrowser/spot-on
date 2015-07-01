@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>859</width>
-    <height>285</height>
+    <width>860</width>
+    <height>315</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -51,6 +51,53 @@ color: rgb(255, 255, 255);
        <number>5</number>
       </property>
      </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="directory">
+        <property name="text">
+         <string>&amp;Directory</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="single_file">
+        <property name="text">
+         <string>&amp;Single File</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -497,8 +544,8 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>859</width>
-     <height>24</height>
+     <width>860</width>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -546,6 +593,8 @@ QPushButton:pressed {
   </action>
  </widget>
  <tabstops>
+  <tabstop>directory</tabstop>
+  <tabstop>single_file</tabstop>
   <tabstop>destination</tabstop>
   <tabstop>selectDestination</tabstop>
   <tabstop>file</tabstop>
