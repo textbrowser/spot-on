@@ -23,6 +23,18 @@
      <number>5</number>
     </property>
     <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>The StarBeam Analyzer may be used to detect misplaced pulses. After having received a segmented mosaic, launch the StarBeam Analyzer by selecting the received mosaic and activating the context menu in the Received panel's lower-most table. If the selected mosaic is segmented, a magnet describing the segmentation points will be created. Copy the generated magnet and provide it to the party that produced the original StarBeam. The party must then inject the magnet into the Transmitted panel's Missing Links Magnet widget. It is assumed that the originator possesses the original StarBeam magnet(s). Once the misplaced pulses have arrived, re-compute the mosaic's digest.
+
+To re-analyze a mosaic, you must first delete the entry in the below table.</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QTableWidget" name="tableWidget">
       <property name="alternatingRowColors">
        <bool>true</bool>
@@ -137,7 +149,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
