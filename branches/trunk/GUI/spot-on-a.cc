@@ -4352,6 +4352,8 @@ void spoton::slotGeneralTimerTimeout(void)
 				       262144).
 		      toInt()) == LIBSPOTON_ERROR_NONE)
     {
+      libspoton_create_urls_table(&libspotonHandle);
+
       libspoton_error_t err = LIBSPOTON_ERROR_NONE;
       pid_t pid = 0;
 
