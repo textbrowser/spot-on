@@ -345,7 +345,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	     decryptedAfterAuthenticated(QByteArray::
 					 fromBase64(query.value(2).
 						    toByteArray()),
-					 &ok));
+					 &ok)).trimmed();
 
 	  if(ok)
 	    title = QString::fromUtf8
@@ -353,7 +353,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	       decryptedAfterAuthenticated(QByteArray::
 					   fromBase64(query.value(0).
 						      toByteArray()),
-					   &ok));
+					   &ok)).trimmed();
 
 	  if(ok)
 	    url = QUrl::fromUserInput
@@ -366,6 +366,9 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
 	  if(ok)
 	    {
+	      if(description.length() > 500)
+		description = description.mid(0, 500).trimmed() + "...";
+
 	      QString scheme(url.scheme().toLower().trimmed());
 	      QUrl deleteUrl(url);
 
