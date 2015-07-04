@@ -142,6 +142,11 @@ void spoton::slotPrepareUrlDatabases(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
+	progress.update();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
+
 	if(m_urlDatabase.isOpen())
 	  {
 	    QChar c1;
@@ -220,10 +225,6 @@ void spoton::slotPrepareUrlDatabases(void)
 	  created = false;
 
 	processed += 1;
-	progress.update();
-#ifndef Q_OS_MAC
-	QApplication::processEvents();
-#endif
       }
 
   if(created)
@@ -308,6 +309,11 @@ bool spoton::deleteAllUrls(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
+	progress.update();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
+
 	if(m_urlDatabase.isOpen())
 	  {
 	    QChar c1;
@@ -340,11 +346,7 @@ bool spoton::deleteAllUrls(void)
 	else
 	  deleted = false;
 
-	  processed += 1;
-	  progress.update();
-#ifndef Q_OS_MAC
-	  QApplication::processEvents();
-#endif
+	processed += 1;
       }
 
   QString connectionName("");
@@ -405,6 +407,11 @@ void spoton::slotGatherUrlStatistics(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
+	  progress.update();
+#ifndef Q_OS_MAC
+	  QApplication::processEvents();
+#endif
+
 	if(m_urlDatabase.isOpen())
 	  {
 	    QChar c1;
@@ -436,10 +443,6 @@ void spoton::slotGatherUrlStatistics(void)
 	  }
 
 	processed += 1;
-	progress.update();
-#ifndef Q_OS_MAC
-	QApplication::processEvents();
-#endif
       }
 }
 
@@ -576,6 +579,11 @@ void spoton::slotImportUrls(void)
 		if(processed <= progress.maximum())
 		  progress.setValue(processed);
 
+		progress.update();
+#ifndef Q_OS_MAC
+		QApplication::processEvents();
+#endif
+
 		QByteArray description;
 		QByteArray title;
 		QByteArray url;
@@ -681,10 +689,6 @@ void spoton::slotImportUrls(void)
 		  }
 
 		processed += 1;
-		progress.update();
-#ifndef Q_OS_MAC
-		QApplication::processEvents();
-#endif
 	      }
 	  }
       }
@@ -1617,6 +1621,11 @@ void spoton::slotDeleteLink(const QUrl &u)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
+	progress.update();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
+
 	QChar c1;
 	QChar c2;
 	QSqlQuery query(m_urlDatabase);
@@ -1641,10 +1650,6 @@ void spoton::slotDeleteLink(const QUrl &u)
 	query.bindValue(0, urlHash.constData());
 	query.exec();
 	processed += 1;
-	progress.update();
-#ifndef Q_OS_MAC
-	QApplication::processEvents();
-#endif
       }
 
   /*

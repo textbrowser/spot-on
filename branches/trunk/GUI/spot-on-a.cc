@@ -5189,6 +5189,11 @@ void spoton::slotSetPassphrase(void)
 		  if(i + 1<= progress.maximum())
 		    progress.setValue(i + 1);
 
+		  progress.update();
+#ifndef Q_OS_MAC
+		  QApplication::processEvents();
+#endif
+
 		  spoton_crypt crypt
 		    (m_ui.cipherType->currentText(),
 		     m_ui.hashType->currentText(),
@@ -5213,11 +5218,6 @@ void spoton::slotSetPassphrase(void)
 
 		  if(!error2.isEmpty())
 		    break;
-
-		  progress.update();
-#ifndef Q_OS_MAC
-		  QApplication::processEvents();
-#endif
 		}
 
 	      progress.close();

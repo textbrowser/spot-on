@@ -432,19 +432,6 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
   QApplication::restoreOverrideCursor();
 
-  if(!count)
-    {
-      if(link == ">")
-	{
-	  QString str(m_ui.url_pages->text());
-
-	  str.remove(tr("Next"));
-	  m_ui.url_pages->setText(str.trimmed());
-	}
-
-      return;
-    }
-
   QString str("");
   quint64 lower = 0;
   quint64 upper = 0;
