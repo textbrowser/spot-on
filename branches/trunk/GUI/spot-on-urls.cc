@@ -113,6 +113,12 @@ void spoton::prepareUrlLabels(void)
 
 void spoton::slotPrepareUrlDatabases(void)
 {
+  QMessageBox::information
+    (this, tr("%1: Information").
+     arg(SPOTON_APPLICATION_NAME),
+     tr("Please note that the database-preparation process may "
+	"require a considerable amount of time to complete."));
+
   QProgressDialog progress(this);
   bool created = true;
 
@@ -136,6 +142,8 @@ void spoton::slotPrepareUrlDatabases(void)
 
   progress.update();
 
+  QSqlQuery query(m_urlDatabase);
+
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
@@ -151,7 +159,6 @@ void spoton::slotPrepareUrlDatabases(void)
 	  {
 	    QChar c1;
 	    QChar c2;
-	    QSqlQuery query(m_urlDatabase);
 
 	    if(i <= 9)
 	      c1 = QChar(i + 48);
@@ -230,8 +237,6 @@ void spoton::slotPrepareUrlDatabases(void)
   if(created)
     if(m_urlDatabase.driverName() == "QPSQL")
       {
-	QSqlQuery query(m_urlDatabase);
-
 	if(!query.exec("CREATE SEQUENCE serial START 1"))
 	  created = false;
 
@@ -266,7 +271,9 @@ void spoton::slotDeleteAllUrls(void)
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to vacuum most of the "
 		"URL databases? Your credentials will also be removed. "
-		"The shared.db database will not be vacuumed."));
+		"The shared.db database will not be vacuumed. Please "
+		"note that the deletion process may require "
+		"a considerable amount of time to complete."));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -303,6 +310,8 @@ bool spoton::deleteAllUrls(void)
   progress.show();
   progress.update();
 
+  QSqlQuery query(m_urlDatabase);
+
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
@@ -318,7 +327,6 @@ bool spoton::deleteAllUrls(void)
 	  {
 	    QChar c1;
 	    QChar c2;
-	    QSqlQuery query(m_urlDatabase);
 
 	    if(i <= 9)
 	      c1 = QChar(i + 48);
@@ -476,6 +484,12 @@ void spoton::slotImportUrls(void)
 	 tr("Did you prepare common credentials?"));
       return;
     }
+
+  QMessageBox::information
+    (this, tr("%1: Information").
+     arg(SPOTON_APPLICATION_NAME),
+     tr("Please note that the URL-import process may "
+	"require a considerable amount of time to complete."));
 
   /*
   ** We need to determine the encryption key that was
