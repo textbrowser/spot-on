@@ -54,6 +54,7 @@ namespace spoton_common
   static const int CHAT_TIME_DELTA_MAXIMUM = 30;
   static const int KERNEL_URLS_BATCH_SIZE = 25;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 5;
+  static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
   static const int MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION = 100;
   static const int NAME_MAXIMUM_LENGTH = 64;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;

@@ -366,8 +366,23 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
 	  if(ok)
 	    {
-	      if(description.length() > 500)
-		description = description.mid(0, 500).trimmed() + "...";
+	      if(description.length() > spoton_common::
+		 MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS)
+		{
+		  description = description.mid
+		    (0, spoton_common::
+		     MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS).trimmed();
+
+		  if(description.endsWith("..."))
+		    {
+		    }
+		  else if(description.endsWith(".."))
+		    description.append(".");
+		  else if(description.endsWith("."))
+		    description.append("..");
+		  else
+		    description.append("...");
+		}
 
 	      QString scheme(url.scheme().toLower().trimmed());
 	      QUrl deleteUrl(url);
