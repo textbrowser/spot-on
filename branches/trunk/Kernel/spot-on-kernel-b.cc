@@ -1650,7 +1650,12 @@ void spoton_kernel::saveUrls(const QList<QByteArray> &urls)
   if(urls.isEmpty())
     return;
 
-  QWriteLocker locker(&m_urlListMutex);
+  QWriteLocker locker1(&m_urlListMutex);
 
   m_urlList << urls;
+  locker1.unlock();
+
+  QWriteLocker locker2(&m_urlsProcessedMutex);
+
+  m_urlsProcessed += urls.size();
 }

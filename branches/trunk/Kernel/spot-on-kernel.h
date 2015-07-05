@@ -129,6 +129,7 @@ class spoton_kernel: public QObject
   QQueue<QList<QVariant> > m_poptasticCache;
   QReadWriteLock m_poptasticCacheMutex;
   QReadWriteLock m_urlListMutex;
+  QReadWriteLock m_urlsProcessedMutex;
   QTimer m_controlDatabaseTimer;
   QTimer m_impersonateTimer;
   QTimer m_messagingCachePurgeTimer;
@@ -142,6 +143,7 @@ class spoton_kernel: public QObject
   int m_activeListeners;
   int m_activeNeighbors;
   int m_activeStarbeams;
+  quint64 m_urlsProcessed;
   spoton_gui_server *m_guiServer;
   spoton_mailer *m_mailer;
   spoton_starbeam_writer *m_starbeamWriter;

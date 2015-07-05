@@ -362,6 +362,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_guiServer = 0;
   m_mailer = 0;
   m_starbeamWriter = 0;
+  m_urlsProcessed = 0;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_uptime = QDateTime::currentDateTime();
   s_institutionLastModificationTime = QDateTime();
@@ -4449,12 +4450,21 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
+		      "VALUES ('Total URLs Processed', ?)");
+
+	QReadLocker locker3(&m_urlsProcessedMutex);
+
+	query.bindValue(0, locale.toString(m_urlsProcessed));
+	locker3.unlock();
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
 		      "VALUES ('URL Container Size', ?)");
 
-	QReadLocker locker3(&m_urlListMutex);
+	QReadLocker locker4(&m_urlListMutex);
 
 	query.bindValue(0, locale.toString(m_urlList.size()));
-	locker3.unlock();
+	locker4.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
