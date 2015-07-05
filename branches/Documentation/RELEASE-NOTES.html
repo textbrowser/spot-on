@@ -4,6 +4,8 @@
 <li>Attempt to post a Poptastic message at least five times before discarding it.</li>
 <li>Close neighbor connections if socket reads do not return data.</li>
 <li>Corrected CLOSE_WAIT socket states.</li>
+<li>Corrected ORDER BY clause in the URL distribution machine.</li>
+<li>Corrected SQLite URL database tables. A sequence is required. SQLite users must recreate their URL databases. Sorry!</li>
 <li>Corrected search pagination labels.</li>
 <li>Display the number of active kernel threads.</li>
 <li>Enable the SO_KEEPALIVE option on SCTP and TCP sockets.</li>
@@ -20,6 +22,7 @@
 <li>Test SMP during the launch of the UI. Results will be available in the log file.</li>
 <li>The SMP state machine will enter a terminal state if an error occurrs at stage 1, 2, 3, 4, or 5.</li>
 <li>The kernel process identifier may be a large value; consider toLongLong() instead of toInt().</li>
+<li>URL import futures! Allow the kernel to decide on the number of threads from available cores. Please consider using PostgreSQL so as to avoid avalanches.</li>
 <li>Updated libspoton to version 0.1.2. The encrypted field now has a default of 0.</li>
 <li>Use https://api.ipify.org to retrieve the external IP.</li>
 </ol>

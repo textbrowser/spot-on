@@ -221,8 +221,7 @@ void spoton::slotPrepareUrlDatabases(void)
 				     "date_time_inserted TEXT NOT NULL, "
 				     "description BYTEA, "
 				     "title BYTEA NOT NULL, "
-				     "unique_id INTEGER NOT NULL "
-				     "PRIMARY KEY AUTOINCREMENT, "
+				     "unique_id INTEGER NOT NULL, "
 				     "url BYTEA NOT NULL, "
 				     "url_hash TEXT NOT NULL)").
 			     arg(c1).arg(c2)))
@@ -235,15 +234,24 @@ void spoton::slotPrepareUrlDatabases(void)
       }
 
   if(created)
-    if(m_urlDatabase.driverName() == "QPSQL")
-      {
-	if(!query.exec("CREATE SEQUENCE serial START 1"))
-	  created = false;
+    {
+      if(m_urlDatabase.driverName() == "QPSQL")
+	{
+	  if(!query.exec("CREATE SEQUENCE serial START 1"))
+	    created = false;
 
-	if(!query.exec("GRANT SELECT, UPDATE, USAGE ON serial "
-		       "TO spot_on_user"))
-	  created = false;
-      }
+	  if(!query.exec("GRANT SELECT, UPDATE, USAGE ON serial "
+			 "TO spot_on_user"))
+	    created = false;
+	}
+      else
+	{
+	  if(!query.exec("CREATE TABLE sequence("
+			 "value INTEGER NOT NULL PRIMARY KEY "
+			 "AUTOINCREMENT)"))
+	    created = false;
+	}
+    }
 
   progress.close();
   update();

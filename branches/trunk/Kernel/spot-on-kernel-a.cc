@@ -557,7 +557,9 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_scramblerTimer.setSingleShot(true);
   m_settingsTimer.setSingleShot(true);
   m_statusTimer.start(1000 * STATUS_INTERVAL);
-  m_urlImportTimer.start(5000);
+  m_urlImportFutures.resize
+    (qCeil(2.5 * qMax(1, QThread::idealThreadCount())));
+  m_urlImportTimer.start(2500);
   m_guiServer = new spoton_gui_server(this);
   m_mailer = new spoton_mailer(this);
   m_starbeamWriter = new spoton_starbeam_writer(this);
@@ -738,14 +740,21 @@ spoton_kernel::~spoton_kernel()
   m_future.cancel();
   m_poptasticPopFuture.cancel();
   m_poptasticPostFuture.cancel();
-  m_urlImportFuture.cancel();
+  m_urlImportFutureInterrupt.fetchAndAddRelaxed(1);
+
+  for(int i = 0; i < m_urlImportFutures.size(); i++)
+    m_urlImportFutures[i].cancel();
+
   m_future.waitForFinished();
   m_poptasticPopFuture.waitForFinished();
   m_poptasticPostFuture.waitForFinished();
   m_statisticsFuture.waitForFinished();
   m_urlDistribution->quit();
   m_urlDistribution->wait();
-  m_urlImportFuture.waitForFinished();
+
+  for(int i = 0; i < m_urlImportFutures.size(); i++)
+    m_urlImportFutures[i].waitForFinished();
+
   cleanup();
   spoton_misc::cleanupDatabases(s_crypts.value("chat", 0));
 

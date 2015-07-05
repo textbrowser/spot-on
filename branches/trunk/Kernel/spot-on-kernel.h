@@ -33,6 +33,7 @@ extern "C"
 #include <curl/curl.h>
 }
 
+#include <QAtomicInt>
 #include <QDateTime>
 #include <QFileSystemWatcher>
 #include <QFuture>
@@ -114,6 +115,7 @@ class spoton_kernel: public QObject
   void writeMessage0060(const QByteArray &data, bool *ok);
 
  private:
+  QAtomicInt m_urlImportFutureInterrupt;
   QDateTime m_lastPoptasticStatus;
   QDateTime m_uptime;
   QFileSystemWatcher m_settingsWatcher;
@@ -121,7 +123,6 @@ class spoton_kernel: public QObject
   QFuture<void> m_poptasticPopFuture;
   QFuture<void> m_poptasticPostFuture;
   QFuture<void> m_statisticsFuture;
-  QFuture<void> m_urlImportFuture;
   QHash<qint64, QPointer<spoton_listener> > m_listeners;
   QHash<qint64, QPointer<spoton_neighbor> > m_neighbors;
   QHash<qint64, QPointer<spoton_starbeam_reader> > m_starbeamReaders;
@@ -140,6 +141,7 @@ class spoton_kernel: public QObject
   QTimer m_settingsTimer;
   QTimer m_statusTimer;
   QTimer m_urlImportTimer;
+  QVector<QFuture<void > > m_urlImportFutures;
   int m_activeListeners;
   int m_activeNeighbors;
   int m_activeStarbeams;

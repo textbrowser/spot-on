@@ -39,7 +39,7 @@ spoton_urldistribution::spoton_urldistribution(QObject *parent):
   QThread(parent)
 {
   m_lastUniqueId = -1;
-  m_limit = spoton_common::KERNEL_URLS_BATCH_SIZE;
+  m_limit = static_cast<quint64> (spoton_common::KERNEL_URLS_BATCH_SIZE);
   m_quit = false;
 }
 
@@ -329,7 +329,7 @@ void spoton_urldistribution::slotTimeout(void)
 		   arg(m_lastUniqueId));
 	    }
 
-	querystr.append(" ORDER BY 4 DESC ");
+	querystr.append(" ORDER BY 4 ");
 	querystr.append(QString(" LIMIT %1 ").arg(m_limit));
 
 	quint64 count = 0;

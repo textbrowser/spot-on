@@ -3958,13 +3958,21 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
     }
   else
     {
+      qint64 id = -1;
+
+      if(query.exec("INSERT INTO sequence VALUES (NULL)"))
+	if(query.exec("SELECT MAX(value) FROM sequence"))
+	  if(query.next())
+	    id = query.value(0).toLongLong();
+
       query.prepare
 	(QString("INSERT INTO spot_on_urls_%1 ("
 		 "date_time_inserted, "
 		 "description, "
 		 "title, "
+		 "unique_id, "
 		 "url, "
-		 "url_hash) VALUES (?, ?, ?, ?, ?)").
+		 "url_hash) VALUES (?, ?, ?, ?, ?, ?)").
 	 arg(urlHash.mid(0, 2).constData()));
       query.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
 
@@ -3977,12 +3985,15 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 	query.bindValue
 	  (2, crypt->encryptedThenHashed(title, &ok).toBase64());
 
+      if(id != -1)
+	query.bindValue(3, id);
+
       if(ok)
 	query.bindValue
-	  (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	  (4, crypt->encryptedThenHashed(url.toEncoded(), &ok).
 	   toBase64());
 
-      query.bindValue(4, urlHash.constData());
+      query.bindValue(5, urlHash.constData());
     }
 
   /*

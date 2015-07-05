@@ -1434,8 +1434,13 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
 
 void spoton_kernel::slotUrlImportTimerExpired(void)
 {
-  if(m_urlImportFuture.isFinished())
-    m_urlImportFuture = QtConcurrent::run(this, &spoton_kernel::importUrls);
+  for(int i = 0; i < m_urlImportFutures.size(); i++)
+    if(m_urlImportFutures.at(i).isFinished())
+      {
+	m_urlImportFutures.replace
+	  (i, QtConcurrent::run(this, &spoton_kernel::importUrls));
+	break;
+      }
 }
 
 void spoton_kernel::importUrls(void)
@@ -1511,7 +1516,7 @@ void spoton_kernel::importUrls(void)
 		      }
 		}
 
-	      if(m_urlImportFuture.isCanceled())
+	      if(m_urlImportFutureInterrupt.fetchAndAddRelaxed(0))
 		break;
 	    }
       }
@@ -1521,7 +1526,7 @@ void spoton_kernel::importUrls(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(m_urlImportFuture.isCanceled())
+  if(m_urlImportFutureInterrupt.fetchAndAddRelaxed(0))
     {
       delete crypt;
 
@@ -1580,7 +1585,7 @@ void spoton_kernel::importUrls(void)
       {
 	do
 	  {
-	    if(m_urlImportFuture.isCanceled())
+	    if(m_urlImportFutureInterrupt.fetchAndAddRelaxed(0))
 	      break;
 
 	    QWriteLocker locker(&m_urlListMutex);
