@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>502</height>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>766</width>
-                <height>492</height>
+                <width>392</width>
+                <height>482</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -805,8 +805,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>777</width>
-             <height>554</height>
+             <width>739</width>
+             <height>560</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1859,7 +1859,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>502</height>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2467,9 +2467,9 @@
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>0</y>
-                     <width>263</width>
-                     <height>1406</height>
+                     <y>-969</y>
+                     <width>240</width>
+                     <height>1433</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -2599,7 +2599,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QGroupBox" name="groupBox_11">
+                     <widget class="QGroupBox" name="aeBox">
                       <property name="title">
                        <string>Adaptive Echo Tokens</string>
                       </property>
@@ -2844,7 +2844,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QGroupBox" name="groupBox_10">
+                     <widget class="QGroupBox" name="motdBox">
                       <property name="title">
                        <string>Message of the Day</string>
                       </property>
@@ -2935,8 +2935,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>845</width>
-             <height>549</height>
+             <width>806</width>
+             <height>579</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -3971,8 +3971,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>502</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4047,9 +4047,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-120</y>
-                 <width>748</width>
-                 <height>587</height>
+                 <y>0</y>
+                 <width>635</width>
+                 <height>619</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4889,8 +4889,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>758</width>
-             <height>1078</height>
+             <width>711</width>
+             <height>1132</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5174,7 +5174,7 @@
                     <number>5</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_18">
+                    <widget class="QLabel" name="kernelPathLabel">
                      <property name="text">
                       <string>Spot-On-Kernel &amp;Executable</string>
                      </property>
@@ -5724,7 +5724,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="groupBox_3">
+               <widget class="QGroupBox" name="publicKeysBox">
                 <property name="title">
                  <string>Public Keys</string>
                 </property>
@@ -6075,8 +6075,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>758</width>
-             <height>526</height>
+             <width>476</width>
+             <height>544</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7086,8 +7086,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>502</height>
+             <width>653</width>
+             <height>453</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7620,8 +7620,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>502</height>
+             <width>307</width>
+             <height>413</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7839,7 +7839,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

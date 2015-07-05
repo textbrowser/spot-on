@@ -532,6 +532,23 @@ void spoton::slotCopyInstitution(void)
 
 void spoton::slotShowMinimalDisplay(bool state)
 {
+#if SPOTON_GOLDBUG == 1
+  m_ui.aeBox->setVisible(!state);
+  m_ui.approvedIPs->setVisible(!state);
+  m_ui.buildInformation->setVisible(!state);
+  m_ui.motdBox->setVisible(!state);
+  m_ui.publicKeysBox->setVisible(!state);
+  m_ui.settings_frame->setVisible(!state);
+
+  foreach(QObject *object, m_ui.kernelBox->children())
+    if(qobject_cast<QWidget *> (object))
+      qobject_cast<QWidget *> (object)->setVisible(!state);
+
+  m_ui.activateKernel->setVisible(true);
+  m_ui.deactivateKernel->setVisible(true);
+  m_ui.kernelPath->setVisible(true);
+  m_ui.kernelPathLabel->setVisible(true);
+#endif
   m_sb.errorlog->setHidden(state);
   m_ui.neighborSummary->setHidden(state);
 }

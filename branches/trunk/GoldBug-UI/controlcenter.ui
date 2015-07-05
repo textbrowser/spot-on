@@ -111,7 +111,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>560</width>
-             <height>635</height>
+             <height>632</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -498,8 +498,8 @@ color: rgb(255, 255, 255);
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>402</width>
-                <height>479</height>
+                <width>550</width>
+                <height>622</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -922,8 +922,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>777</width>
-             <height>554</height>
+             <width>739</width>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2004,10 +2004,10 @@ color: rgb(255, 255, 255);</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_7">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-164</x>
              <y>0</y>
-             <width>765</width>
-             <height>379</height>
+             <width>724</width>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2615,9 +2615,9 @@ color: rgb(255, 255, 255);</string>
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>0</y>
-                     <width>273</width>
-                     <height>1406</height>
+                     <y>-455</y>
+                     <width>240</width>
+                     <height>1433</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -2747,7 +2747,7 @@ color: rgb(255, 255, 255);</string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QGroupBox" name="groupBox_11">
+                     <widget class="QGroupBox" name="aeBox">
                       <property name="title">
                        <string>Adaptive Echo Tokens</string>
                       </property>
@@ -2992,7 +2992,7 @@ color: rgb(255, 255, 255);</string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QGroupBox" name="groupBox_10">
+                     <widget class="QGroupBox" name="motdBox">
                       <property name="title">
                        <string>Message of the Day</string>
                       </property>
@@ -3114,8 +3114,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>845</width>
-             <height>549</height>
+             <width>806</width>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -4186,7 +4186,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>630</width>
-             <height>617</height>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4261,9 +4261,9 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>666</width>
-                 <height>587</height>
+                 <y>-306</y>
+                 <width>609</width>
+                 <height>619</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5133,9 +5133,9 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>794</width>
-             <height>1110</height>
+             <y>-96</y>
+             <width>702</width>
+             <height>1212</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5146,177 +5146,189 @@ color: rgb(255, 255, 255);</string>
              <number>5</number>
             </property>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_65">
-              <property name="spacing">
-               <number>5</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_29">
-                <property name="text">
-                 <string>&amp;External IP Retrieval Interval</string>
-                </property>
-                <property name="buddy">
-                 <cstring>guiExternalIpFetch</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="guiExternalIpFetch">
-                <property name="currentIndex">
-                 <number>2</number>
-                </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
-                </property>
-                <item>
+             <widget class="QFrame" name="settings_frame">
+              <layout class="QVBoxLayout" name="verticalLayout_12">
+               <property name="spacing">
+                <number>5</number>
+               </property>
+               <property name="margin">
+                <number>5</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_29">
                  <property name="text">
-                  <string>30 Seconds</string>
+                  <string>&amp;External IP Retrieval Interval</string>
                  </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>60 Seconds</string>
+                 <property name="buddy">
+                  <cstring>guiExternalIpFetch</cstring>
                  </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Never</string>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_65">
+                 <property name="spacing">
+                  <number>5</number>
                  </property>
-                </item>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_60">
-                <property name="text">
-                 <string>&amp;Secure Memory Pool</string>
-                </property>
-                <property name="buddy">
-                 <cstring>guiSecureMemoryPool</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="guiSecureMemoryPool">
-                <property name="minimum">
-                 <number>131072</number>
-                </property>
-                <property name="maximum">
-                 <number>999999999</number>
-                </property>
-                <property name="value">
-                 <number>262144</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_52">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_46">
-              <property name="spacing">
-               <number>5</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_40">
-                <property name="text">
-                 <string>&amp;GeoIP Data Path IPv4</string>
-                </property>
-                <property name="buddy">
-                 <cstring>geoipPath4</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="geoipPath4"/>
-              </item>
-              <item>
-               <widget class="QPushButton" name="selectGeoIP4">
-                <property name="text">
-                 <string>Select</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_78">
-              <property name="spacing">
-               <number>5</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_81">
-                <property name="text">
-                 <string>&amp;GeoIP Data Path IPv6</string>
-                </property>
-                <property name="buddy">
-                 <cstring>geoipPath4</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="geoipPath6"/>
-              </item>
-              <item>
-               <widget class="QPushButton" name="selectGeoIP6">
-                <property name="text">
-                 <string>Select</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_50">
-              <property name="spacing">
-               <number>5</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_43">
-                <property name="text">
-                 <string>&amp;SSL Control String</string>
-                </property>
-                <property name="buddy">
-                 <cstring>sslControlString</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="sslControlString">
-                <property name="text">
-                 <string>HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="saveSslControlString">
-                <property name="text">
-                 <string>Save</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="testSslControlString">
-                <property name="toolTip">
-                 <string>Display a list of ciphers produced by the provided SSL Control String.</string>
-                </property>
-                <property name="text">
-                 <string>Test</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+                 <item>
+                  <widget class="QComboBox" name="guiExternalIpFetch">
+                   <property name="currentIndex">
+                    <number>2</number>
+                   </property>
+                   <property name="sizeAdjustPolicy">
+                    <enum>QComboBox::AdjustToContents</enum>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>30 Seconds</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>60 Seconds</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Never</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_60">
+                   <property name="text">
+                    <string>&amp;Secure Memory Pool</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>guiSecureMemoryPool</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="guiSecureMemoryPool">
+                   <property name="minimum">
+                    <number>131072</number>
+                   </property>
+                   <property name="maximum">
+                    <number>999999999</number>
+                   </property>
+                   <property name="value">
+                    <number>262144</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_52">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_46">
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label_40">
+                   <property name="text">
+                    <string>&amp;GeoIP Data Path IPv4</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>geoipPath4</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="geoipPath4"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="selectGeoIP4">
+                   <property name="text">
+                    <string>Select</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_78">
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label_81">
+                   <property name="text">
+                    <string>&amp;GeoIP Data Path IPv6</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>geoipPath4</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="geoipPath6"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="selectGeoIP6">
+                   <property name="text">
+                    <string>Select</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_50">
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label_43">
+                   <property name="text">
+                    <string>&amp;SSL Control String</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>sslControlString</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="sslControlString">
+                   <property name="text">
+                    <string>HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="saveSslControlString">
+                   <property name="text">
+                    <string>Save</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="testSslControlString">
+                   <property name="toolTip">
+                    <string>Display a list of ciphers produced by the provided SSL Control String.</string>
+                   </property>
+                   <property name="text">
+                    <string>Test</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -5442,7 +5454,7 @@ top: 5px;
                     <number>5</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_18">
+                    <widget class="QLabel" name="kernelPathLabel">
                      <property name="text">
                       <string>Spot-On-Kernel &amp;Executable</string>
                      </property>
@@ -5770,6 +5782,29 @@ top: 5px;
               </item>
               <item>
                <widget class="QGroupBox" name="passphraseGroupBox">
+                <property name="styleSheet">
+                 <string notr="true">QGroupBox { 
+background-color:
+qlineargradient(spread:pad, 
+x1:0, y1:1, 
+x2:1, y2:0, 
+stop:0.05 rgba(218, 232, 255, 255), 
+stop:1 rgba(170, 85, 255, 255));
+color: rgb(255, 255, 255);
+
+border-style: outset;
+border-width: 2px;
+border-radius: 10px;
+border-color: white;
+padding: 15px;
+}
+
+QGroupBox::title
+{
+left: 5px;
+top: 5px;
+}</string>
+                </property>
                 <property name="title">
                  <string>Passphrase</string>
                 </property>
@@ -5992,7 +6027,7 @@ top: 5px;
                </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="groupBox_3">
+               <widget class="QGroupBox" name="publicKeysBox">
                 <property name="title">
                  <string>Public Keys</string>
                 </property>
@@ -6374,8 +6409,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>514</width>
-             <height>526</height>
+             <width>560</width>
+             <height>632</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7428,8 +7463,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>667</width>
-             <height>454</height>
+             <width>653</width>
+             <height>618</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7932,6 +7967,14 @@ color: rgb(255, 255, 255);
        </layout>
       </widget>
       <widget class="QWidget" name="tab_login">
+       <property name="styleSheet">
+        <string notr="true">QWidget#tab_login 
+{
+   border-image: url(:/Logo/background.png) 0 0 0 0 stretch stretch;
+   border-width: 0px;
+}
+</string>
+       </property>
        <attribute name="icon">
         <iconset resource="../Icons/icons.qrc">
          <normaloff>:/everaldo/goldbug_t.png</normaloff>:/everaldo/goldbug_t.png</iconset>
@@ -7951,6 +7994,10 @@ color: rgb(255, 255, 255);
         </property>
         <item>
          <widget class="QScrollArea" name="scrollArea_11">
+          <property name="styleSheet">
+           <string notr="true">background-color: transparent;
+</string>
+          </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>
@@ -7962,8 +8009,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>330</width>
-             <height>215</height>
+             <width>560</width>
+             <height>677</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7998,9 +8045,6 @@ color: rgb(255, 255, 255);
                 </item>
                 <item>
                  <widget class="QLabel" name="label_31">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Image copyright http://www.dragoart.com.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -8097,13 +8141,6 @@ color: rgb(255, 255, 255);
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="passphraseButton">
-                  <property name="text">
-                   <string>Authenticate</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <spacer name="horizontalSpacer_9">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -8151,6 +8188,46 @@ color: rgb(255, 255, 255);
                 </item>
                 <item>
                  <widget class="spoton_lineedit" name="answer_authenticate"/>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="passphraseButton">
+                  <property name="styleSheet">
+                   <string notr="true">background-color: rgb(170, 170, 255);</string>
+                  </property>
+                  <property name="text">
+                   <string>Log In</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_15">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </item>
@@ -8261,7 +8338,7 @@ color: rgb(255, 255, 255);
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -8727,7 +8804,6 @@ color: rgb(255, 255, 255);
   <tabstop>scrollArea_11</tabstop>
   <tabstop>passphrase_rb_authenticate</tabstop>
   <tabstop>passphrase</tabstop>
-  <tabstop>passphraseButton</tabstop>
   <tabstop>question_rb_authenticate</tabstop>
   <tabstop>question_authenticate</tabstop>
   <tabstop>answer_authenticate</tabstop>
