@@ -1035,7 +1035,7 @@ void spoton::prepareSMP(const QString &hash)
   if(smp)
     smp->setGuess(guess);
   else
-    qDebug() << "spoton::prepareSMP(): smp is zero!";
+    spoton_misc::logError("spoton::prepareSMP(): smp is zero!");
 
   QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
 
@@ -1121,7 +1121,7 @@ void spoton::verifySMPSecret(const QString &hash, const QString &keyType,
   else
     {
       ok = false;
-      qDebug() << "spoton::verifySMPSecret(): smp is zero!";
+      spoton_misc::logError("spoton::verifySMPSecret(): smp is zero!");
     }
 
   if(ok)
@@ -1280,7 +1280,7 @@ void spoton::initializeSMP(const QString &hash)
   if(smp)
     smp->initialize();
   else
-    qDebug() << "spoton::initializeSMP(): smp is zero!";
+    spoton_misc::logError("spoton::initializeSMP(): smp is zero!");
 
   QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
 

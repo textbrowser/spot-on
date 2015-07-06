@@ -70,7 +70,7 @@ static size_t curl_payload_source
       return length;
     }
   else
-    qDebug() << "curl_payload_source(): data is zero!";
+    spoton_misc::logError("curl_payload_source(): data is zero!");
 
   return 0;
 }
@@ -93,7 +93,8 @@ static size_t curl_write_memory_callback(void *contents, size_t size,
 
   if(!memory->memory)
     {
-      qDebug() << "curl_write_memory_callback(): memory->memory is zero!";
+      spoton_misc::logError
+	("curl_write_memory_callback(): memory->memory is zero!");
       return 0;
     }
 
@@ -312,9 +313,9 @@ void spoton_kernel::popPoptastic(void)
 	      else
 		{
 		  free(chunk.memory);
-		  qDebug() << "spoton_kernel::popPoptastic(): "
-			   << "curl_easy_perform() failure ("
-			   << rc << ").";
+		  spoton_misc::logError
+		    (QString("spoton_kernel::popPoptastic(): "
+			     "curl_easy_perform() failure (%1).").arg(rc));
 		  break;
 		}
 
@@ -341,17 +342,19 @@ void spoton_kernel::popPoptastic(void)
 
 	      if((rc = curl_easy_perform(curl)) != CURLE_OK)
 		{
-		  qDebug() << "spoton_kernel::popPoptastic(): "
-			   << "curl_easy_perform(STORE) failure ("
-			   << rc << ").";
+		  spoton_misc::logError
+		    (QString("spoton_kernel::popPoptastic(): "
+			     "curl_easy_perform(STORE) failure (%1).").
+		     arg(rc));
 		  curl_easy_setopt
 		    (curl, CURLOPT_CUSTOMREQUEST, "EXPUNGE");
 		  rc = curl_easy_perform(curl);
 
 		  if(rc != CURLE_OK)
-		    qDebug() << "spoton_kernel::popPoptastic(): "
-			     << "curl_easy_perform(EXPUNGE) failure ("
-			     << rc << ").";
+		    spoton_misc::logError
+		      (QString("spoton_kernel::popPoptastic(): "
+			       "curl_easy_perform(EXPUNGE) failure (%1).").
+		       arg(rc));
 		}
 
 	      if(m_poptasticPopFuture.isCanceled())
@@ -679,9 +682,10 @@ void spoton_kernel::postPoptastic(void)
 		  else
 		    j += 1;
 
-		  qDebug() << "spoton_kernel::postPoptastic(): "
-			   << "curl_easy_perform() failure ("
-			   << rc << ").";
+		  spoton_misc::logError
+		    (QString("spoton_kernel::postPoptastic(): "
+			     "curl_easy_perform() failure (%1).").
+		     arg(rc));
 		}
 
 	      curl_slist_free_all(recipients);
