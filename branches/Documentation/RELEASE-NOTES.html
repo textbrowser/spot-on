@@ -1,19 +1,21 @@
 <html>
 2015.07.11
 <ol>
+<li>Allow duplication of StarBeam transmitted magnets.</li>
 <li>Attempt to post a Poptastic message at least five times before discarding it.</li>
 <li>Close neighbor connections if socket reads do not return data.</li>
 <li>Corrected CLOSE_WAIT socket states.</li>
-<li>Corrected ORDER BY clause in the URL distribution machine.</li>
+<li>Corrected ORDER BY clause in the URL-distribution machine.</li>
 <li>Corrected SQLite URL database tables. A sequence is required. SQLite users must recreate their URL databases. Sorry!</li>
 <li>Corrected search pagination labels.</li>
+<li>Decreased size of generated StarBeam magnets.</li>
 <li>Display the number of active kernel threads.</li>
 <li>Enable the SO_KEEPALIVE option on SCTP and TCP sockets.</li>
 <li>Ignore malformed public keys in spoton_crypt::publicKeyEncrypt().</li>
 <li>Increased the Gemini iteration count to 100,000.</li>
 <li>Increased the default Common Credentials iteration count to 250,000.</li>
 <li>Increased the default file encryption iteration count to 250,000.</li>
-<li>Increased the default key-share iteration count to 250,000.</li>
+<li>Increased the default public key distribution iteration count to 250,000.</li>
 <li>Log important cURL errors that are generated within the kernel.</li>
 <li>Modified Poptastic default Method values to Disable.</li>
 <li>Optionally delete StarBeam one-time magnets upon process exit.</li>
@@ -23,7 +25,7 @@
 <li>The SMP state machine will enter a terminal state if an error occurrs at stage 1, 2, 3, 4, or 5.</li>
 <li>The kernel process identifier may be a large value; consider toLongLong() instead of toInt().</li>
 <li>URL import futures! Allow the kernel to decide on the number of threads from available cores. Please consider using PostgreSQL so as to avoid avalanches.</li>
-<li>Updated libspoton to version 0.1.2. The encrypted field now has a default of 0.</li>
+<li>Updated libspoton to version 0.1.2. The encrypted field now has a default of zero.</li>
 <li>Use https://api.ipify.org to retrieve the external IP.</li>
 </ol>
 2015.06.17

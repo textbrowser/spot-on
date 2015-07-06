@@ -1973,4 +1973,3 @@ QByteArray spoton::poptasticName(void) const
 
   return name;
 }
-

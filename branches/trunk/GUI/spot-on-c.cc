@@ -64,10 +64,7 @@ void spoton::slotGenerateEtpKeys(int index)
 						    maxLength())).
 	     toBase64());
 	  m_ui.etpMacKey->setText
-	    (spoton_crypt::
-	     strongRandomBytes(static_cast<size_t> (m_ui.etpMacKey->
-						    maxLength())).
-	     toBase64());
+	    (spoton_crypt::strongRandomBytes(512).toBase64());
 	}
       else if(index == 2)
 	m_ui.etpEncryptionKey->setText
@@ -77,10 +74,7 @@ void spoton::slotGenerateEtpKeys(int index)
 	   toBase64());
       else if(index == 3)
 	m_ui.etpMacKey->setText
-	  (spoton_crypt::
-	   strongRandomBytes(static_cast<size_t> (m_ui.etpMacKey->
-						  maxLength())).
-	   toBase64());
+	  (spoton_crypt::strongRandomBytes(512).toBase64());
 
       disconnect(m_ui.generate,
 		 SIGNAL(activated(int)),
@@ -2933,6 +2927,8 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       menu->addAction(tr("Copy &Magnet"),
 		      this, SLOT(slotCopyTransmittedMagnet(void)));
+      menu->addAction(tr("&Duplicate Magnet"),
+		      this, SLOT(slotDuplicateTransmittedMagnet(void)));
       menu->addSeparator();
       menu->addAction(tr("Set &Pulse Size"), this,
 		      SLOT(slotSetSBPulseSize(void)));

@@ -6115,6 +6115,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 
       menu.addAction(tr("Copy &Magnet"),
 		     this, SLOT(slotCopyTransmittedMagnet(void)));
+      menu.addAction(tr("&Duplicate Magnet"),
+		     this, SLOT(slotDuplicateTransmittedMagnet(void)));
       menu.exec(m_ui.transmittedMagnets->mapToGlobal(point));
     }
   else if(m_ui.urlParticipants == sender())
