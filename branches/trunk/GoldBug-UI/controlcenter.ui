@@ -2004,7 +2004,7 @@ color: rgb(255, 255, 255);</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_7">
            <property name="geometry">
             <rect>
-             <x>-164</x>
+             <x>0</x>
              <y>0</y>
              <width>724</width>
              <height>618</height>
@@ -2615,7 +2615,7 @@ color: rgb(255, 255, 255);</string>
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>-455</y>
+                     <y>0</y>
                      <width>240</width>
                      <height>1433</height>
                     </rect>
@@ -4261,7 +4261,7 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-306</y>
+                 <y>0</y>
                  <width>609</width>
                  <height>619</height>
                 </rect>
@@ -4539,7 +4539,7 @@ color: rgb(255, 255, 255);
                      <item>
                       <widget class="QSpinBox" name="commonUrlIterationCount">
                        <property name="minimum">
-                        <number>250000</number>
+                        <number>10000</number>
                        </property>
                        <property name="maximum">
                         <number>999999999</number>
@@ -5133,8 +5133,8 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-96</y>
-             <width>702</width>
+             <y>0</y>
+             <width>737</width>
              <height>1212</height>
             </rect>
            </property>
