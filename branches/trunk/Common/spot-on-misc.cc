@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QDataStream>
 #include <QDateTime>
 #include <QDir>
 #include <QFile>

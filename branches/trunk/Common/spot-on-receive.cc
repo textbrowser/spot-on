@@ -25,6 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QDataStream>
+
 #include "spot-on-crypt.h"
 #include "spot-on-misc.h"
 #include "spot-on-receive.h"
