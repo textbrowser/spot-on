@@ -4017,10 +4017,14 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
   if(ok && separate)
     {
       QHash<QString, char> discovered;
+      QSqlQuery query(db);
       QStringList keywords
 	(QString::fromUtf8(all_keywords.toLower().constData()).
 	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
       int count = 0;
+
+      if(db.driverName() == "QSQLITE")
+	query.exec("PRAGMA synchronous = NORMAL");
 
       for(int i = 0; i < keywords.size(); i++)
 	{
@@ -4030,7 +4034,6 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 	    continue;
 
 	  QByteArray keywordHash;
-	  QSqlQuery query(db);
 	  bool ok = true;
 
 	  keywordHash = crypt->keyedHash
