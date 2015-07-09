@@ -5610,6 +5610,7 @@ void spoton::slotValidatePassphrase(void)
 	    for(int i = 0; i < m_ui.tab->count(); i++)
 	      m_ui.tab->setTabEnabled(i, true);
 
+	    populateUrlDistillers();
 	    prepareUrlContainers();
 	    prepareUrlLabels();
 	    m_ui.tab->setCurrentIndex
