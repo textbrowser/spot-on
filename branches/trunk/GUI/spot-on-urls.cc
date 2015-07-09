@@ -691,7 +691,7 @@ void spoton::slotImportUrls(void)
 		    if(ok)
 		      ok = spoton_misc::importUrl
 			(description, title, url, m_urlDatabase,
-			 std::numeric_limits<int>::max(),
+			 spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
 			 m_urlCommonCrypt);
 		  }
 
