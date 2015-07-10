@@ -121,7 +121,11 @@ void spoton_kernel::slotPoptasticPost(void)
 void spoton_kernel::popPoptastic(void)
 {
   if(setting("gui/disablePop3", false).toBool())
-    return;
+    {
+      spoton_misc::logError("spoton_kernel::popPoptastic(): IMAP/POP3 is "
+			    "disabled.");
+      return;
+    }
 
   spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
 
@@ -134,7 +138,11 @@ void spoton_kernel::popPoptastic(void)
   hash = spoton_misc::poptasticSettings(s_crypt, &ok);
 
   if(hash.isEmpty() || !ok)
-    return;
+    {
+      spoton_misc::logError("spoton_kernel::popPoptastic(): "
+			    "spoton_misc::poptasticSettings() failed.");
+      return;
+    }
 
   CURL *curl = 0;
   QHash<QByteArray, char> cache;

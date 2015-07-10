@@ -1653,7 +1653,7 @@ void spoton::slotSaveAttachment(void)
 			     "to extract the attachment."));
 }
 
-void spoton::applyGoldbugToAttachments(const QString &folderOid,
+void spoton::applyGoldBugToAttachments(const QString &folderOid,
 				       const QSqlDatabase &db,
 				       int *count,
 				       spoton_crypt *crypt1,

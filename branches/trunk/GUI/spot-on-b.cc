@@ -3655,7 +3655,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
   {
     QString goldbug("");
-    QTableWidgetItem *item = m_ui.mail->item(row, 5); // Goldbug
+    QTableWidgetItem *item = m_ui.mail->item(row, 5); // Gold Bug
 
     if(item)
       goldbug = item->text();
@@ -3665,14 +3665,14 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	bool ok = true;
 
 	goldbug = QInputDialog::getText
-	  (this, tr("%1: Goldbug").arg(SPOTON_APPLICATION_NAME),
-	   tr("&Goldbug"),
+	  (this, tr("%1: Gold Bug").arg(SPOTON_APPLICATION_NAME),
+	   tr("&Gold Bug"),
 	   QLineEdit::Password, QString(""), &ok);
 
 	if(!ok)
 	  return;
 
-	int rc = applyGoldbugToLetter(goldbug.toLatin1(), row);
+	int rc = applyGoldBugToLetter(goldbug.toLatin1(), row);
 
 	if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS)
 	  {
@@ -4379,7 +4379,7 @@ void spoton::slotSetIcons(int index)
   emit iconsChanged();
 }
 
-int spoton::applyGoldbugToLetter(const QByteArray &goldbug,
+int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 				 const int row)
 {
   if(!m_crypts.value("email", 0))
@@ -4487,7 +4487,7 @@ int spoton::applyGoldbugToLetter(const QByteArray &goldbug,
 		** Let's prepare the attachments.
 		*/
 
-		applyGoldbugToAttachments
+		applyGoldBugToAttachments
 		  (oid, db, &attachmentsCount, &crypt, &ok);
 
 		if(!ok)
@@ -4626,7 +4626,7 @@ int spoton::applyGoldbugToLetter(const QByteArray &goldbug,
 		item->setText("");
 	      }
 
-	    item = m_ui.mail->item(row, 5); // Goldbug
+	    item = m_ui.mail->item(row, 5); // Gold Bug
 
 	    if(item)
 	      item->setText("0");
@@ -4688,7 +4688,7 @@ void spoton::slotReply(void)
   if(row < 0)
     return;
 
-  QTableWidgetItem *item = m_ui.mail->item(row, 5); // Goldbug
+  QTableWidgetItem *item = m_ui.mail->item(row, 5); // Gold Bug
 
   if(!item)
     return;

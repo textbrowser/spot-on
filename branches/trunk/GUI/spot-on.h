@@ -497,10 +497,10 @@ class spoton: public QMainWindow
   bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 		  const QString &oid);
   bool updateMailStatus(const QString &oid, const QString &status);
-  int applyGoldbugToLetter(const QByteArray &goldbug,
+  int applyGoldBugToLetter(const QByteArray &goldbug,
 			   const int row);
   void addFriendsKey(const QByteArray &key, const QString &type);
-  void applyGoldbugToAttachments(const QString &folderOid,
+  void applyGoldBugToAttachments(const QString &folderOid,
 				 const QSqlDatabase &db,
 				 int *count,
 				 spoton_crypt *crypt,
