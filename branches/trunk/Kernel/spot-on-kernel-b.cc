@@ -1541,9 +1541,9 @@ void spoton_kernel::importUrls(void)
     }
 
   {
-    QSqlDatabase db;
-
     connectionName = spoton_misc::databaseName();
+
+    QSqlDatabase db;
 
     if(setting("gui/sqliteSearch", true).toBool())
       {

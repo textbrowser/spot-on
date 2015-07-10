@@ -240,9 +240,9 @@ void spoton_urldistribution::slotTimeout(void)
   QByteArray data;
 
   {
-    QSqlDatabase db;
-
     connectionName = spoton_misc::databaseName();
+
+    QSqlDatabase db;
 
     if(spoton_kernel::setting("gui/sqliteSearch", true).toBool())
       {
