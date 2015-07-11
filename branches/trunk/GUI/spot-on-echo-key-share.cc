@@ -847,3 +847,7 @@ void spoton_echo_key_share::addCategory(void)
   QSqlDatabase::removeDatabase(connectionName);
   populate();
 }
+
+void spoton_echo_key_share::createDefaultUrlCommunity(void)
+{
+}

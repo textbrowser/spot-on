@@ -44,6 +44,7 @@ class spoton_echo_key_share: public QMainWindow
  public:
   spoton_echo_key_share(QSslSocket *kernelSocket);
   ~spoton_echo_key_share();
+  static createDefaultUrlCommunity(void);
   void show(QWidget *parent);
 
  private:
