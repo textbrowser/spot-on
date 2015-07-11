@@ -375,6 +375,9 @@ void spoton_kernel::popPoptastic(void)
       if(m_poptasticPopFuture.isCanceled())
 	return;
     }
+  else
+    spoton_misc::logError("spoton_kernel::popPoptastic(): "
+			  "curl_easy_init() failure.");
 
   if(!list.isEmpty())
     goto begin_label;
@@ -704,6 +707,9 @@ void spoton_kernel::postPoptastic(void)
 
 	  curl_easy_cleanup(curl);
 	}
+      else
+	spoton_misc::logError("spoton_kernel::postPoptastic(): "
+			      "curl_easy_init() failure.");
     }
 }
 

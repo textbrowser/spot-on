@@ -695,11 +695,11 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  m_guiServer,
 	  SLOT(slotStatusMessageReceived(const QByteArray &,
 					 const QString &)));
-  m_settingsWatcher.addPath(settings.fileName());
   connect(&m_settingsWatcher,
 	  SIGNAL(fileChanged(const QString &)),
 	  this,
 	  SLOT(slotSettingsChanged(const QString &)));
+  m_settingsWatcher.addPath(settings.fileName());
   m_messagingCachePurgeTimer.start();
 
   if(setting("gui/etpReceivers", false).toBool())
@@ -1876,8 +1876,8 @@ void spoton_kernel::slotSettingsChanged(const QString &path)
   ** Method may be issued several times per each change.
   */
 
-  Q_UNUSED(path);
   m_settingsTimer.start();
+  m_settingsWatcher.addPath(path);
 }
 
 void spoton_kernel::slotUpdateSettings(void)
