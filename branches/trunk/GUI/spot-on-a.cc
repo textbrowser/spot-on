@@ -5342,6 +5342,7 @@ void spoton::slotSetPassphrase(void)
 
 	  askKernelToReadStarBeamKeys();
 	  populateNovas();
+	  populateUrlDistillers();
 	  sendBuzzKeysToKernel();
 	  sendKeysToKernel();
 	  updatePublicKeysLabel();
@@ -5580,9 +5581,6 @@ void spoton::slotValidatePassphrase(void)
 	    if(m_optionsUi.launchKernel->isChecked())
 	      slotActivateKernel();
 
-	    askKernelToReadStarBeamKeys();
-	    populateNovas();
-	    sendBuzzKeysToKernel();
 	    m_sb.frame->setEnabled(true);
 	    m_ui.passphrase_rb_authenticate->setChecked(true);
 	    m_ui.action_Echo_Key_Share->setEnabled(true);
@@ -5617,9 +5615,12 @@ void spoton::slotValidatePassphrase(void)
 	    for(int i = 0; i < m_ui.tab->count(); i++)
 	      m_ui.tab->setTabEnabled(i, true);
 
+	    askKernelToReadStarBeamKeys();
+	    populateNovas();
 	    populateUrlDistillers();
 	    prepareUrlContainers();
 	    prepareUrlLabels();
+	    sendBuzzKeysToKernel();
 	    m_ui.tab->setCurrentIndex
 	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
 	       toInt());

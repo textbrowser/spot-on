@@ -23,6 +23,16 @@
      <number>5</number>
     </property>
     <item>
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>The permissions assigned in this panel supersede the permissions defined in Options.</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_7">
       <property name="spacing">
        <number>5</number>
@@ -218,7 +228,7 @@
      <x>0</x>
      <y>0</y>
      <width>585</width>
-     <height>24</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
