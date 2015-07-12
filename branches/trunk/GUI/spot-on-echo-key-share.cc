@@ -36,9 +36,11 @@
 #include "spot-on-defines.h"
 #include "spot-on-echo-key-share.h"
 
-spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket):
-  QMainWindow()
+spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
+					     QWidget *parent):
+  QMainWindow(0)
 {
+  Q_UNUSED(parent);
   m_kernelSocket = kernelSocket;
   ui.setupUi(this);
   setWindowTitle
@@ -317,7 +319,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 		      "share) "
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(QByteArray("false"), &ok).
+	  (0, crypt->encryptedThenHashed(QByteArray("true"), &ok).
 	   toBase64());
 
 	if(ok)
@@ -355,7 +357,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 	if(ok)
 	  query.bindValue
-	    (9, crypt->encryptedThenHashed(QByteArray("false"),
+	    (9, crypt->encryptedThenHashed(QByteArray("true"),
 					   &ok).toBase64());
 
 	if(ok)
@@ -552,12 +554,14 @@ void spoton_echo_key_share::deleteSelected(void)
 
 	    if(parent)
 	      {
+		bool ok = true;
+
 		query.prepare("DELETE FROM echo_key_sharing_secrets "
 			      "WHERE category_oid = ? AND name_hash = ?");
 		query.bindValue
 		  (0, parent->data(0, Qt::UserRole));
 		query.bindValue
-		  (1, crypt->keyedHash(item->text(3).toLatin1(), 0).
+		  (1, crypt->keyedHash(item->text(3).toLatin1(), &ok).
 		   toBase64());
 		query.exec();
 	      }
@@ -850,4 +854,118 @@ void spoton_echo_key_share::addCategory(void)
 
 void spoton_echo_key_share::createDefaultUrlCommunity(void)
 {
+  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
+    value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QString category("Public Communities");
+  QString connectionName("");
+  QVariant id;
+  bool ok = false;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT OID FROM "
+		      "categories WHERE category_hash = ?");
+	query.bindValue(0, crypt->keyedHash(category.toUtf8(),
+					    &ok).toBase64());
+
+	if(query.exec())
+	  if(query.next())
+	    id = query.value(0);
+
+	if(!id.isValid())
+	  {
+	    query.prepare("INSERT INTO categories "
+			  "(category, category_hash) "
+			  "VALUES (?, ?)");
+	    query.bindValue(0, crypt->encryptedThenHashed(category.toUtf8(),
+							  &ok).
+			    toBase64());
+
+	    if(ok)
+	      query.bindValue(1, crypt->keyedHash(category.toUtf8(), &ok).
+			      toBase64());
+
+	    if(ok)
+	      ok = query.exec();
+
+	    if(ok)
+	      id = query.lastInsertId();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    return;
+
+  QString name("The Spot-On URL Community");
+  qint64 count = 0;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT COUNT(*) FROM "
+		      "echo_key_sharing_secrets WHERE "
+		      "category_oid = ? AND "
+		      "name_hash = ?");
+	query.bindValue(0, id);
+	query.bindValue
+	  (1, crypt->keyedHash(name.toLatin1(), &ok).toBase64());
+
+	if(query.exec())
+	  if(query.next())
+	    count = query.value(0).toLongLong();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(count > 0)
+    return;
+
+  QPair<QByteArray, QByteArray> keys;
+  QString error("");
+
+  keys = spoton_crypt::derivedKeys
+    ("aes256",
+     "sha512",
+     static_cast<unsigned long> (15000),
+     name.mid(0, 16).toLatin1(),
+     QByteArray("aes256").toHex() + QByteArray("sha512").toHex() +
+     name.mid(16).toLatin1(),
+     spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
+     error);
+
+  if(!error.isEmpty())
+    return;
+
+  save(keys, "aes256", "sha512", 15000, name, id);
 }

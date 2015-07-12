@@ -42,9 +42,9 @@ class spoton_echo_key_share: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton_echo_key_share(QSslSocket *kernelSocket);
+  spoton_echo_key_share(QSslSocket *kernelSocket, QWidget *parent);
   ~spoton_echo_key_share();
-  static createDefaultUrlCommunity(void);
+  void createDefaultUrlCommunity(void);
   void show(QWidget *parent);
 
  private:
@@ -55,12 +55,12 @@ class spoton_echo_key_share: public QMainWindow
   bool event(QEvent *event);
 #endif
 #endif
-  bool save(const QPair<QByteArray, QByteArray> &keys,
-	    const QString &cipherType,
-	    const QString &hashType,
-	    const int iterationCount,
-	    const QString &name,
-	    const QVariant &category_oid);
+  static bool save(const QPair<QByteArray, QByteArray> &keys,
+		   const QString &cipherType,
+		   const QString &hashType,
+		   const int iterationCount,
+		   const QString &name,
+		   const QVariant &category_oid);
   void addCategory(void);
   void deleteSelected(void);
   void keyPressEvent(QKeyEvent *event);

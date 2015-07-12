@@ -212,7 +212,7 @@ spoton::spoton(void):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_neighborsLastModificationTime = QDateTime();
   m_participantsLastModificationTime = QDateTime();
-  m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket);
+  m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, this);
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(this);
   m_starbeamReceivedModel = new QStandardItemModel(this);
 
@@ -5345,6 +5345,13 @@ void spoton::slotSetPassphrase(void)
 	  sendBuzzKeysToKernel();
 	  sendKeysToKernel();
 	  updatePublicKeysLabel();
+
+	  if(!reencode)
+	    {
+	      QApplication::setOverrideCursor(Qt::WaitCursor);
+	      m_echoKeyShare->createDefaultUrlCommunity();
+	      QApplication::restoreOverrideCursor();
+	    }
 	}
 
       m_sb.frame->setEnabled(true);
@@ -5662,6 +5669,10 @@ void spoton::slotValidatePassphrase(void)
 		populateMail();
 		refreshInstitutions();
 	      }
+
+	    QApplication::setOverrideCursor(Qt::WaitCursor);
+	    m_echoKeyShare->createDefaultUrlCommunity();
+	    QApplication::restoreOverrideCursor();
 	  }
       }
 
