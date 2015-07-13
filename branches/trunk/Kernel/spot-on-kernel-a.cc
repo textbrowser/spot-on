@@ -559,6 +559,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_statusTimer.start(1000 * STATUS_INTERVAL);
   m_urlImportFutures.resize
     (qCeil(2.5 * qMax(1, QThread::idealThreadCount())));
+
+  for(int i = 0; i < m_urlImportFutures.size(); i++)
+    m_urlImportFutures.replace(i, QFuture<void> ());
+
   m_urlImportTimer.start(2500);
   m_guiServer = new spoton_gui_server(this);
   m_mailer = new spoton_mailer(this);
