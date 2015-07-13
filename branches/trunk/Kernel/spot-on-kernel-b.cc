@@ -1591,8 +1591,8 @@ void spoton_kernel::importUrls(void)
 
 	db = QSqlDatabase::addDatabase("QPSQL", connectionName);
 	db.setConnectOptions(str);
-	db.setHostName(host);
 	db.setDatabaseName(database);
+	db.setHostName(host);
 	db.setPort(port);
 
 	if(ok)
