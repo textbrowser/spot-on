@@ -280,8 +280,8 @@ void spoton_urldistribution::slotTimeout(void)
 
 	db = QSqlDatabase::addDatabase("QPSQL", connectionName);
 	db.setConnectOptions(str);
-	db.setHostName(host);
 	db.setDatabaseName(database);
+	db.setHostName(host);
 	db.setPort(port);
 
 	if(ok)
