@@ -1,20 +1,24 @@
 <html>
-2015.07.12
+2015.07.17
+<br>
+<b>Corrections</b>
 <ol>
-<li>Allow duplication of StarBeam transmitted magnets.</li>
-<li>Attempt to post a Poptastic message a couple of times before discarding it.</li>
 <li>Close neighbor connections if socket reads do not return data.</li>
 <li>Corrected CLOSE_WAIT socket states.</li>
 <li>Corrected ORDER BY clause in the URL-distribution machine.</li>
 <li>Corrected SQLite URL database tables. A sequence is required. SQLite users must recreate their URL databases.</li>
 <li>Corrected an error with QFileSystemWatcher; re-add the monitored file in the slot that's connected to the fileChanged() signal.</li>
 <li>Corrected search pagination labels.</li>
-<li>Create a public URL community for exchanging URL key pairs. The community is created shortly after a new installation and a passphrase is validated.</li>
+<li>Ignore malformed public keys in spoton_crypt::publicKeyEncrypt().</li>
+<li>Process potential URL sets if and only if URL participants are defined.</li>
+<li>The kernel process identifier may be a large value; consider toLongLong() instead of toInt().</li>
+</ol>
+<b>Improvements</b>
+<ol>
+<li>Attempt to post a Poptastic message a couple of times before discarding it.</li>
 <li>Decreased the maximum keywords of received URLs to 50.</li>
 <li>Decreased the size of generated StarBeam magnets.</li>
-<li>Display the number of active kernel threads.</li>
 <li>Enable the SO_KEEPALIVE option on SCTP and TCP sockets.</li>
-<li>Ignore malformed public keys in spoton_crypt::publicKeyEncrypt().</li>
 <li>Impose a maximum number of keywords in imported URLs. Currently set to 50.</li>
 <li>Increased the Gemini iteration count to 100,000.</li>
 <li>Increased the default Common Credentials iteration count to 250,000.</li>
@@ -22,30 +26,26 @@
 <li>Increased the default public key distribution iteration count to 250,000.</li>
 <li>Log important cURL errors that are generated within the kernel.</li>
 <li>Modified Poptastic default Method values to Disable.</li>
-<li>Optionally delete StarBeam one-time magnets upon process exit.</li>
 <li>Populate URL filters upon password validation.</li>
-<li>Process potential URL sets if and only if URL participants are defined.</li>
-<li>Technicolor search!</li>
 <li>Test SMP during the launch of the UI. Results will be available in the log file.</li>
-<li>The SMP state machine will enter a terminal state if an error occurrs at stage 1, 2, 3, 4, or 5.</li>
-<li>The kernel process identifier may be a large value; consider toLongLong() instead of toInt().</li>
+<li>The SMP state machine will enter a terminal state if an error occurs at stage 1, 2, 3, 4, or 5.</li>
+</ol>
+<b>New</b>
+<ol>
+<li>Allow duplication of StarBeam transmitted magnets.</li>
+<li>Create a public URL community for exchanging URL key pairs. The community is created shortly after a new installation and a passphrase is validated.</li>
+<li>Display the number of active kernel threads.</li>
+<li>Optionally delete StarBeam one-time magnets upon process exit.</li>
+<li>Technicolor search!</li>
 <li>URL import futures! Allow the kernel to decide on the number of threads from available cores. Please consider using PostgreSQL so as to avoid avalanches.</li>
 <li>Updated libspoton to version 0.1.2. The encrypted field now has a default of zero.</li>
 <li>Use https://api.ipify.org to retrieve the external IP.</li>
 </ol>
 2015.06.17
+<br>
+<b>Corrections</b>
 <ol>
-<li>Acceptable URL schemes: ftp, gopher, http, https.</li>
-<li>Added libspoton_delete_urls() to libspoton. Version updated to 0.1.1.</li>
-<li>Allow adjustment of the iteration count in the file encryption tool.</li>
-<li>Allow configuration of alternating row colors of Chat, E-Mail, and URLs participants. Please see Options.</li>
-<li>Allow configuration of the kernel's cache purge timer.</li>
-<li>Allow importing of URLs without Import Credentials. Only plaintext URLs will be imported.</li>
-<li>Assume zero pointer defaults in QHash::value(), QMap, etc.</li>
 <li>Bound size_t parameter of memcpy() in spoton_crypt::setHashKey(), spoton_misc::peerAddressAndPort(), spoton_sctp_server::setMaxPendingConnections(), spoton_sctp_socket::localAddressAndPort().</li>
-<li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
-<li>Completed linear URL distribution. It is expected that Common Credentials are created. Items that cannot be imported by the kernel will be discarded.</li>
-<li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
 <li>Convert ElGamal data to Base-64 before encrypting. A previous release of Spot-On introduced the use of QDataStream objects. The serialized data appears to be incompatible with ElGamal. Padding? ElGamal appears to be an abandoned primitive. The signature portion does not yet require this special exception.</li>
 <li>Corrected importing of public keys. Cannot assume that key pairs exist.</li>
 <li>Corrected re-encoding of listeners_accounts. Must include the listener_oid field in the where-clauses.</li>
@@ -54,75 +54,99 @@
 <li>Corrected removal of URLs having special characters.</li>
 <li>Corrected setting of remote IP information. Please see Neighbors.</li>
 <li>Corrected use of spoton::addFriendsKey().</li>
-<li>Custom status messages. A maximum of 64 characters will be imposed.</li>
-<li>Decreased message size of Rosetta output.</li>
-<li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
-<li>Derive subsequent file encryption key from initially-derived key via SHA-256 (Key_(i + 1) = SHA-256(Key_i)).</li>
-<li>Digital signatures should vouch for private key information.</li>
-<li>Display URL database connection information within the Search panel.</li>
 <li>Do not assume that Poptastic values have been accepted by the user. That is, query the necessary database in order to retrieve required values.</li>
-<li>Do not delete URLs from shared.db unless they are properly imported.<li>
+<li>Do not delete URLs from shared.db unless they are properly imported.</li>
 <li>Do not distribute private spoton_crypt objects to child objects as the contents of the spoton_crypt objects may be modified by the re-encoding process. Instead, use spoton::instance()->crypts().</li>
 <li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
 <li>Do not pass a zero pointer to memset().</li>
-<li>Dual-purpose domain check boxes. Please see URLs.</li>
-<li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
-<li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>
 <li>Guard QList::last().</li>
 <li>Guard QList::removeAt().</li>
-<li>Impose a maximum number of keywords in received URLs. Currently set to 100.</li>
-<li>Increased congestion cost maximum to 65536.</li>
-<li>Increased default secure memory pool sizes to 262144 bytes. Increased minimum pool sizes to 131072 bytes.</li>
-<li>Inspect results of all QDataStream operations.</li>
 <li>Limit DSA key sizes to 3072 bits.</li>
-<li>Log re-encoding errors.</li>
 <li>Many integer conversion corrections.</li>
-<li>McEliece public-key encryption. Incomplete.</li>
+<li>Release resources in spoton_crypt::spoton_crypt::publicKeyEncrypt().</li>
+<li>Removed duplicate QObject::connect() instance from spoton::slotConfigurePoptastic().</li>
+<li>Replaced (rv == 0) with (rv == SQLITE_OK) in libspoton.c.</li>
+<li>Replaced the itemClicked() signal on the e-mail table with itemDoubleClicked() as itemClicked() and itemSelectionChanged() may cause duplicate dialog prompts.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+<li>Assume zero pointer defaults in QHash::value(), QMap, etc.</li>
+<li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
+<li>Decreased message size of Rosetta output.</li>
+<li>Inspect results of all QDataStream operations.</li>
 <li>Modified QFileInfo::lastModified() usage. It's possible that a less-than-or-equal-to comparison will leave containers in unpleasant states.</li>
-<li>New display in Settings pertaining to personal public keys.</li>
-<li>Notify the user of URL import statistics.</li>
-<li>Per Mr. Schmidt, allow distribution of public key pairs via established secrets. Pairs having NTRU keys may not be shared as they do not support signatures.</li>
-<li>Please remove urls_distillers_information.db before launching Spot-On.</li>
 <li>Populate URL distillers before performing an import.</li>
 <li>PostgreSQL administrators must recreate Spot-On URL databases.</li>
 <li>Prepare URL cipher and hash widgets if libgcrypt fails.</li>
-<li>Prompt before accessing a remote URL.</li>
-<li>Re-encode URL common and import credentials information.</li>
-<li>Release resources in spoton_crypt::spoton_crypt::publicKeyEncrypt().</li>
-<li>Removed GCRY_MD_FLAG_SECURE from all gcry_md_open() instances.</li>
-<li>Removed duplicate QObject::connect() instance from spoton::slotConfigurePoptastic().</li>
-<li>Removed input masks from IPv6 fields.</li>
-<li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
-<li>Replaced (rv == 0) with (rv == SQLITE_OK) in libspoton.c.</li>
-<li>Replaced the itemClicked() signal on the e-mail table with itemDoubleClicked() as itemClicked() and itemSelectionChanged() may cause duplicate dialog prompts.</li>
 <li>Require account salts to contain at least 512 bytes.</li>
 <li>Require the messages in 0002a and 0002b to contain at least 64 bytes.</li>
 <li>Simplified copying and exporting of public keys.</li>
 <li>The kernel's congestion cache requires a quick search that's based on the most current entries. The new implementation imposes an additional container.</li>
 <li>The method QTableWidget::findItems() may return items that are irrelevant to the query. Implemented a special column-based method.</li>
+<li>Prompt before accessing a remote URL.</li>
+<li>Verify a StarBeam's provided pulse size against some defined maximum.</li>
+<li>Verify results of ntru_rand_init(). Log errors.</li>
+</ol>
+<b>New</b>
+<ol>
+<li>Acceptable URL schemes: ftp, gopher, http, https.</li>
+<li>Added libspoton_delete_urls() to libspoton. Version updated to 0.1.1.</li>
+<li>Allow adjustment of the iteration count in the file encryption tool.</li>
+<li>Allow configuration of alternating row colors of Chat, E-Mail, and URLs participants. Please see Options.</li>
+<li>Allow configuration of the kernel's cache purge timer.</li>
+<li>Allow importing of URLs without Import Credentials. Only plaintext URLs will be imported.</li>
+<li>Completed linear URL distribution. It is expected that Common Credentials are created. Items that cannot be imported by the kernel will be discarded.</li>
+<li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
+<li>Custom status messages. A maximum of 64 characters will be imposed.</li>
+<li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
+<li>Derive subsequent file encryption key from initially-derived key via SHA-256 (Key_(i + 1) = SHA-256(Key_i)).</li>
+<li>Digital signatures should vouch for private key information.</li>
+<li>Display URL database connection information within the Search panel.</li>
+<li>Dual-purpose domain check boxes. Please see URLs.</li>
+<li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
+<li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>
+<li>Impose a maximum number of keywords in received URLs. Currently set to 100.</li>
+<li>Increased congestion cost maximum to 65536.</li>
+<li>Increased default secure memory pool sizes to 262144 bytes. Increased minimum pool sizes to 131072 bytes.</li>
+<li>Log re-encoding errors.</li>
+<li>McEliece public-key encryption. Incomplete.</li>
+<li>New display in Settings pertaining to personal public keys.</li>
+<li>Notify the user of URL import statistics.</li>
+<li>Per Mr. Schmidt, allow distribution of public key pairs via established secrets. Pairs having NTRU keys may not be shared as they do not support signatures.</li>
+<li>Please remove urls_distillers_information.db before launching Spot-On.</li>
+<li>Re-encode URL common and import credentials information.</li>
+<li>Removed GCRY_MD_FLAG_SECURE from all gcry_md_open() instances.</li>
+<li>Removed input masks from IPv6 fields.</li>
+<li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
 <li>Updated NTRU files (06/15/2015).</li>
 <li>Upgraded OpenSSL packages to version 1.0.2c on Windows.</li>
 <li>Upgraded Qt packages to version 4.8.7 on OS X and 5.4.2 on Windows.</li>
 <li>Upgraded SQLite to version 3.8.10.2 on Windows.</li>
-<li>Verify a StarBeam's provided pulse size against some defined maximum.</li>
-<li>Verify results of ntru_rand_init(). Log errors.</li>
 </ol>
 2015.04.09
+<br>
+<b>Corrections</b>
 <ol>
-<li>Added Documentation/Spot-On-Kernel.1.</li>
-<li>Added the option 65536 to the File Encryption's Read Size.</li>
-<li>Allow modification of StarBeam pulse sizes.</li>
-<li>Automatically verify StarBeams. Please see the Options panel.</li>
 <li>Corrected QSqlQuery preparation. QSqlQuery::exec() must not be used to prepare SQL statements. (spoton_listener::slotNewConnection(), spoton_misc::savePublishedNeighbo())</li>
 <li>Corrected Qt DLLs in the Windows bundle.</li>
 <li>Corrected inspection of QSqlQuery::exec() errors in various locations.</li>
 <li>Corrected server-side processing of UDP datagrams.</li>
 <li>Corrected spoton_misc::prepareUrlDistillersDatabase() and spoton_misc::prepareUrlKeysDatabase() with respect to the ok variables.</li>
-<li>Improved error messages in the UI.</li>
-<li>Include a file's digest within each StarBeam pulse.</li>
-<li>Issue QThread::wait() after QThread::quit().</li>
-<li>On Qt 5.x and Windows, assume a fusion style.</li>
 <li>QWidget::activateWindow() should only be used on Windows!</li>
+</ol>
+<b>Improvements</b>
+<ol>
+<li>Improved error messages in the UI.</li>
+<li>Issue QThread::wait() after QThread::quit().</li>
+</ol>
+<b>New</b>
+<ol>
+<li>Added Documentation/Spot-On-Kernel.1.</li>
+<li>Added the option 65536 to the File Encryption's Read Size.</li>
+<li>Allow modification of StarBeam pulse sizes.</li>
+<li>Automatically verify StarBeams. Please see the Options panel.</li>
+<li>Include a file's digest within each StarBeam pulse.</li>
+<li>On Qt 5.x and Windows, assume a fusion style.</li>
 <li>Updated SQLite to version 3.8.9, Windows.</li>
 </ol>
 
