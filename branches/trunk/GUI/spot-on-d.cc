@@ -545,9 +545,56 @@ void spoton::slotShowMinimalDisplay(bool state)
       qobject_cast<QWidget *> (object)->setVisible(!state);
 
   m_ui.activateKernel->setVisible(true);
+  m_ui.aeBox->setVisible(!state);
+  m_ui.buzzHashType->setVisible(!state);
+  m_ui.buzzIterationCount->setVisible(!state);
+  m_ui.buzzName->setVisible(!state);
+  m_ui.channelType->setVisible(!state);
+  m_ui.cipherType->setVisible(!state);
+  m_ui.commonUrlCipher->setVisible(!state);
+  m_ui.commonUrlHash->setVisible(!state);
+  m_ui.commonUrlIterationCount->setVisible(!state);
+  m_ui.days->setVisible(!state);
   m_ui.deactivateKernel->setVisible(true);
+  m_ui.hashType->setVisible(!state);
+  m_ui.iterationCount->setVisible(!state);
   m_ui.kernelPath->setVisible(true);
   m_ui.kernelPathLabel->setVisible(true);
+  m_ui.label->setVisible(!state);
+  m_ui.label_104->setVisible(!state);
+  m_ui.label_117->setVisible(!state);
+  m_ui.label_138->setVisible(!state);
+  m_ui.label_139->setVisible(!state);
+  m_ui.label_14->setVisible(!state);
+  m_ui.label_140->setVisible(!state);
+  m_ui.label_15->setVisible(!state);
+  m_ui.label_16->setVisible(!state);
+  m_ui.label_2->setVisible(!state);
+  m_ui.label_21->setVisible(!state);
+  m_ui.label_21->setVisible(!state);
+  m_ui.label_23->setVisible(!state);
+  m_ui.label_27->setVisible(!state);
+  m_ui.label_28->setVisible(!state);
+  m_ui.label_32->setVisible(!state);
+  m_ui.label_36->setVisible(!state);
+  m_ui.label_44->setVisible(!state);
+  m_ui.label_54->setVisible(!state);
+  m_ui.label_62->setVisible(!state);
+  m_ui.label_64->setVisible(!state);
+  m_ui.label_71->setVisible(!state);
+  m_ui.label_78->setVisible(!state);
+  m_ui.listenerOrientation->setVisible(!state);
+  m_ui.listenersSslControlString->setVisible(!state);
+  m_ui.neighborSummary->setVisible(!state);
+  m_ui.neighborsSslControlString->setVisible(!state);
+  m_ui.pulseSize->setVisible(!state);
+  m_ui.saltLength->setVisible(!state);
+  m_ui.saveBuzzName->setVisible(!state);
+  m_ui.saveCopy->setVisible(!state);
+  m_ui.searchfor->setVisible(!state);
+  m_ui.selectKernelPath->setVisible(true);
+  m_ui.shareBuzzMagnet->setVisible(!state);
+  m_ui.urlDistributionModel->setVisible(!state);
 #endif
   m_sb.errorlog->setHidden(state);
   m_ui.neighborSummary->setHidden(state);
@@ -1872,10 +1919,30 @@ void spoton::slotPassphraseAuthenticateRadioToggled(bool state)
   if(state)
     {
       m_ui.answer_authenticate->clear();
+#if SPOTON_GOLDBUG == 1
+      m_ui.answer_authenticate->setVisible(!state);
+      m_ui.label_103gb->setVisible(state);
+      m_ui.label_122gb->setVisible(state);
+      m_ui.label_124gb->setVisible(!state);
+      m_ui.passphrase->setVisible(state);
+#endif
       m_ui.question_authenticate->clear();
+#if SPOTON_GOLDBUG == 1
+      m_ui.question_authenticate->setVisible(!state);
+#endif
     }
   else
-    m_ui.passphrase->clear();
+    {
+#if SPOTON_GOLDBUG == 1
+      m_ui.answer_authenticate->setVisible(!state);
+      m_ui.label_103gb->setVisible(!state);
+      m_ui.label_122gb->setVisible(!state);
+      m_ui.label_124gb->setVisible(state);
+      m_ui.passphrase->setVisible(state);
+      m_ui.question_authenticate->setVisible(!state);
+#endif
+      m_ui.passphrase->clear();
+    }
 }
 
 void spoton::slotResendMail(void)
