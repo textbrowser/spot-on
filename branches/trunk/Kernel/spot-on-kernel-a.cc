@@ -51,6 +51,11 @@ extern "C"
 
 extern "C"
 {
+#include <libpq-fe.h>
+}
+
+extern "C"
+{
 #include <fcntl.h>
 #ifdef Q_OS_WIN32
 #include <process.h>
@@ -189,6 +194,8 @@ static void sig_handler(int signum)
 
 int main(int argc, char *argv[])
 {
+  PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
+
   for(int i = 1; i < argc; i++)
     if(argv[i] && qstrcmp(argv[i], "--version") == 0)
       {

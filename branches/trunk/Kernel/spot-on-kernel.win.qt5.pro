@@ -51,7 +51,7 @@ LIBS		+= -L..\\..\\..\\libNTRU -L..\\..\\..\\libSpotOn \
                    -L..\\..\\..\\libSCTP\\SctpDrv.win32\\lib \
                    -L..\\..\\..\\libcURL\\Win32.d\bin \
 		   -lGeoIP-1 -lcurl -leay32 -lgcrypt-20 -lgpg-error-0 \
-		   -lntru -lpthread -lsctpsp -lspoton -lssl32 -lws2_32
+		   -lntru -lpq -lpthread -lsctpsp -lspoton -lssl32 -lws2_32
 PRE_TARGETDEPS = libntru.dll libspoton.dll
 
 HEADERS		= ..\\Common\\spot-on-external-address.h \

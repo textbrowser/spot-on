@@ -41,7 +41,8 @@ QMAKE_EXTRA_TARGETS = libntru libspoton purge
 INCLUDEPATH	+= . ../. ../../../.
 LIBS		+= -L../../../libNTRU -L../../../libSpotOn \
 		   -L/usr/local/lib -lGeoIP \
-		   -lcrypto -lcurl -lgcrypt -lgpg-error -lntru -lspoton -lssl
+		   -lcrypto -lcurl -lgcrypt -lgpg-error -lntru -lpq \
+		   -lspoton -lssl
 PRE_TARGETDEPS = libntru.so libspoton.so purge
 OBJECTS_DIR = temp/obj
 UI_DIR = temp/ui
