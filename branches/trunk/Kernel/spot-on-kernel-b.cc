@@ -1463,6 +1463,13 @@ void spoton_kernel::slotUrlImportTimerExpired(void)
 
 void spoton_kernel::importUrls(void)
 {
+  {
+    QReadLocker locker(&m_urlListMutex);
+
+    if(m_urlList.isEmpty())
+      return;
+  }
+
   spoton_crypt *crypt = 0;
   spoton_crypt *s_crypt = s_crypts.value("chat", 0);
 

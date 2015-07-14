@@ -563,7 +563,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   for(int i = 0; i < m_urlImportFutures.size(); i++)
     m_urlImportFutures.replace(i, QFuture<void> ());
 
-  m_urlImportTimer.start(2500);
+  m_urlImportTimer.start(500);
   m_guiServer = new spoton_gui_server(this);
   m_mailer = new spoton_mailer(this);
   m_starbeamWriter = new spoton_starbeam_writer(this);
