@@ -9,6 +9,7 @@
 <li>Corrected SQLite URL database tables. A sequence is required. SQLite users must recreate their URL databases.</li>
 <li>Corrected an error with QFileSystemWatcher; re-add the monitored file in the slot that's connected to the fileChanged() signal.</li>
 <li>Corrected search pagination labels.</li>
+<li>Do not initialize OpenSSL and libcrypto via PostgreSQL within the kernel. (Please see PQinitOpenSSL().)</li>
 <li>Ignore malformed public keys in spoton_crypt::publicKeyEncrypt().</li>
 <li>Process potential URL sets if and only if URL participants are defined.</li>
 <li>The kernel process identifier may be a large value; consider toLongLong() instead of toInt().</li>
