@@ -2138,8 +2138,7 @@ QSqlDatabase spoton_misc::database(QString &connectionName)
   dbId = s_dbId += 1;
   locker.unlock();
   db = QSqlDatabase::addDatabase
-    ("QSQLITE", QString("%1_%2").arg(spoton_crypt::weakRandomBytes(8).
-				     toHex().constData()).arg(dbId));
+    ("QSQLITE", QString("spoton_database_%1_%2").arg(qrand()).arg(dbId));
   connectionName = db.connectionName();
   return db;
 }
@@ -2152,8 +2151,7 @@ QString spoton_misc::databaseName(void)
 
   dbId = s_dbId += 1;
   locker.unlock();
-  return QString("%1_%2").arg(spoton_crypt::weakRandomBytes(8).toHex().
-			      constData()).arg(dbId);
+  return QString("spoton_database_%1_%2").arg(qrand()).arg(dbId);
 }
 
 void spoton_misc::enableLog(const bool state)
