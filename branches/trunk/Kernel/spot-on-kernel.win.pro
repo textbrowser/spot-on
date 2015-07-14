@@ -43,7 +43,8 @@ INCLUDEPATH	+= . ..\\. ..\\..\\..\\. \
 		   ..\\..\\..\\libOpenSSL\\Include.win32 \
                    ..\\..\\..\\libSCTP\\SctpDrv.win32\\inc \
 		   ..\\..\\..\\libcURL\\Win32.d\include
-LIBS		+= -L..\\..\\..\\libNTRU -L..\\..\\..\\libSpotOn \
+LIBS		+= -L..\\..\\..\\PostgreSQL\\Libraries.win32 \
+		   -L..\\..\\..\\libNTRU -L..\\..\\..\\libSpotOn \
 		   -L..\\..\\..\\libSpotOn\\Libraries.win32 \
                    -L..\\..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\..\\libOpenSSL\\Libraries.win32 \
