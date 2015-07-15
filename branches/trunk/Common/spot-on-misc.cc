@@ -3966,6 +3966,7 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 	  if(query.next())
 	    id = query.value(0).toLongLong();
 
+      query.exec("PRAGMA synchronous = NORMAL");
       query.prepare
 	(QString("INSERT INTO spot_on_urls_%1 ("
 		 "date_time_inserted, "
