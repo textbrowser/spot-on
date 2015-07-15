@@ -5342,7 +5342,6 @@ void spoton::slotSetPassphrase(void)
 
 	  askKernelToReadStarBeamKeys();
 	  populateNovas();
-	  populateUrlDistillers();
 	  sendBuzzKeysToKernel();
 	  sendKeysToKernel();
 	  updatePublicKeysLabel();
@@ -5436,6 +5435,7 @@ void spoton::slotSetPassphrase(void)
 	  settings.setValue("gui/initial_url_distillers_defined",
 			    true);
 	  m_settings["gui/initial_url_distillers_defined"] = true;
+	  populateUrlDistillers();
 	}
 
       if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
