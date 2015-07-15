@@ -222,10 +222,10 @@ void spoton_echo_key_share::slotMenuAction(void)
 	(ui.cipher->currentText(),
 	 ui.hash->currentText(),
 	 static_cast<unsigned long> (ui.iteration_count->value()),
-	 name.mid(0, 16).toLatin1(),
+	 name.mid(0, 16).toUtf8(),
 	 ui.cipher->currentText().toLatin1().toHex() +
 	 ui.hash->currentText().toLatin1().toHex() +
-	 name.mid(16).toLatin1(),
+	 name.mid(16).toUtf8(),
 	 spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
 	 error);
       QApplication::restoreOverrideCursor();
@@ -349,11 +349,11 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 	if(ok)
 	  query.bindValue
-	    (7, crypt->encryptedThenHashed(name.toLatin1(), &ok).toBase64());
+	    (7, crypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (8, crypt->keyedHash(name.toLatin1(), &ok).toBase64());
+	    (8, crypt->keyedHash(name.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -416,7 +416,7 @@ void spoton_echo_key_share::populate(void)
 		 &ok);
 
 	      if(ok)
-		strings << bytes;
+		strings << QString::fromUtf8(bytes);
 	      else
 		strings << tr("error");
 
@@ -467,7 +467,12 @@ void spoton_echo_key_share::populate(void)
 			else
 			  {
 			    if(ok)
-			      strings << bytes;
+			      {
+				if(i == 2)
+				  strings << QString::fromUtf8(bytes);
+				else
+				  strings << bytes;
+			      }
 			    else
 			      strings << tr("error");
 			  }
@@ -561,7 +566,7 @@ void spoton_echo_key_share::deleteSelected(void)
 		query.bindValue
 		  (0, parent->data(0, Qt::UserRole));
 		query.bindValue
-		  (1, crypt->keyedHash(item->text(3).toLatin1(), &ok).
+		  (1, crypt->keyedHash(item->text(3).toUtf8(), &ok).
 		   toBase64());
 		query.exec();
 	      }
@@ -936,7 +941,7 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
 		      "name_hash = ?");
 	query.bindValue(0, id);
 	query.bindValue
-	  (1, crypt->keyedHash(name.toLatin1(), &ok).toBase64());
+	  (1, crypt->keyedHash(name.toUtf8(), &ok).toBase64());
 
 	if(query.exec())
 	  if(query.next())
@@ -958,9 +963,9 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
     ("aes256",
      "sha512",
      static_cast<unsigned long> (15000),
-     name.mid(0, 16).toLatin1(),
+     name.mid(0, 16).toUtf8(),
      QByteArray("aes256").toHex() + QByteArray("sha512").toHex() +
-     name.mid(16).toLatin1(),
+     name.mid(16).toUtf8(),
      spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
      error);
 
