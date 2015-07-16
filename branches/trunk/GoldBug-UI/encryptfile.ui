@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>860</width>
+    <width>885</width>
     <height>285</height>
    </rect>
   </property>
@@ -29,6 +29,13 @@
         <width>0</width>
         <height>40</height>
        </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
       <property name="autoFillBackground">
        <bool>false</bool>
@@ -497,8 +504,8 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>860</width>
-     <height>27</height>
+     <width>885</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

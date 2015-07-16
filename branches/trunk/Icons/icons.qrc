@@ -304,6 +304,7 @@
 	<file>everaldo/status-online.png</file>
 	<file>everaldo/up.png</file>
 	<file>everaldo/urls.png</file>
+	<file>everaldo/urls_t.png</file>
 	<file>everaldo/write.png</file>
 	<file>generic/AE.png</file>
 	<file>generic/attach.png</file>
@@ -376,6 +377,7 @@
 	<file>nouve/status-online.png</file>
 	<file>nouve/up.png</file>
 	<file>nouve/urls.png</file>
+	<file>nouve/urls_t.png</file>
 	<file>nouve/write.png</file>
 	<file>nuvola/activate.png</file>
 	<file>nuvola/add.png</file>
@@ -439,6 +441,7 @@
 	<file>nuvola/status-online.png</file>
 	<file>nuvola/up.png</file>
 	<file>nuvola/urls.png</file>
+	<file>nuvola/urls_t.png</file>
 	<file>nuvola/write.png</file>
     </qresource>
 </RCC>

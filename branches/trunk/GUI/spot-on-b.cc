@@ -4356,7 +4356,7 @@ void spoton::slotSetIcons(int index)
 #else
   list << "buzz_t.png" << "chat_t.png" << "email_t.png"
        << "server_t.png" << "connect_t.png" << "search.png"
-       << "settings_t.png" << "starbeam_t.png" << "urls.png";
+       << "settings_t.png" << "starbeam_t.png" << "urls_t.png";
 #endif
 
   for(int i = 0; i < list.size(); i++)
