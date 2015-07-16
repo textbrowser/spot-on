@@ -51,11 +51,7 @@ extern "C"
 
 extern "C"
 {
-#ifdef Q_OS_MAC
 #include <libpq-fe.h>
-#else
-#include <postgresql/libpq-fe.h>
-#endif
 }
 
 extern "C"

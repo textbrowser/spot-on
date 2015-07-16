@@ -38,7 +38,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Woverloaded-virtual -Wpointer-arith \
                           -Wstack-protector -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-INCLUDEPATH	+= . ../. ../../../.
+INCLUDEPATH	+= . ../. ../../../. /usr/local/include/postgresql
 LIBS		+= -L../../../libNTRU -L../../../libSpotOn \
 		   -L/usr/local/lib -lGeoIP \
 		   -lcrypto -lcurl -lgcrypt -lgpg-error -lntru -lpq \
