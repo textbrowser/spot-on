@@ -200,7 +200,6 @@ class spoton_misc
     static T readSharedResource(T *resource, QReadWriteLock &mutex)
     {
       QReadLocker locker(&mutex);
-
       T value = T();
 
       if(resource)
