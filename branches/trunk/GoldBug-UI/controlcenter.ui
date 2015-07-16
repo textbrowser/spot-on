@@ -118,7 +118,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>569</width>
-             <height>674</height>
+             <height>675</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -657,7 +657,7 @@ color: rgb(255, 255, 255);
                    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
@@ -723,51 +723,6 @@ QPushButton:pressed {
                     <property name="icon">
                      <iconset resource="../Icons/icons.qrc">
                       <normaloff>:/nuvola/clear.png</normaloff>:/nuvola/clear.png</iconset>
-                    </property>
-                    <property name="iconSize">
-                     <size>
-                      <width>40</width>
-                      <height>40</height>
-                     </size>
-                    </property>
-                    <property name="flat">
-                     <bool>false</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="copyrepleo_chat">
-                    <property name="toolTip">
-                     <string>Copy the Chat-Repleo of the selected friend.</string>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; } 
-
-QPushButton:pressed {
-     background-color: darkgrey;
-     border-style: inset;
- }</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="../Icons/icons.qrc">
-                      <normaloff>:/generic/repleo-chat.png</normaloff>:/generic/repleo-chat.png</iconset>
                     </property>
                     <property name="iconSize">
                      <size>
@@ -862,47 +817,6 @@ background-position: top center; } </string>
                        <normaloff>:/nuvola/online.png</normaloff>:/nuvola/online.png</iconset>
                      </property>
                     </item>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="melodica">
-                    <property name="toolTip">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; width=&quot;350&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;MELODICA: Call Friend with new Gemini&lt;br/&gt;(&lt;span style=&quot; text-decoration: underline;&quot;&gt;M&lt;/span&gt;ulti &lt;span style=&quot; text-decoration: underline;&quot;&gt;E&lt;/span&gt;ncrypted &lt;span style=&quot; text-decoration: underline;&quot;&gt;LO&lt;/span&gt;ng &lt;span style=&quot; text-decoration: underline;&quot;&gt;DI&lt;/span&gt;stance &lt;span style=&quot; text-decoration: underline;&quot;&gt;CA&lt;/span&gt;lling).&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;(Creates for selected friend an auto-Gemini at both sides for instant perfect forward secrecy (IPFS)). It is renewed whenever you click MELODICA and not only once per online session.&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; } 
-
-QPushButton:pressed {
-     background-color: darkgrey;
-     border-style: inset;
- }</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="../Icons/icons.qrc">
-                      <normaloff>:/nuvola/melodica.png</normaloff>:/nuvola/melodica.png</iconset>
-                    </property>
-                    <property name="iconSize">
-                     <size>
-                      <width>40</width>
-                      <height>40</height>
-                     </size>
-                    </property>
                    </widget>
                   </item>
                   <item>
@@ -1307,10 +1221,10 @@ color: rgb(255, 255, 255);</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_6">
            <property name="geometry">
             <rect>
-             <x>-82</x>
+             <x>0</x>
              <y>0</y>
-             <width>651</width>
-             <height>659</height>
+             <width>633</width>
+             <height>657</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2726,54 +2640,6 @@ QPushButton:pressed {
                      </layout>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_14">
-                      <property name="topMargin">
-                       <number>0</number>
-                      </property>
-                      <item>
-                       <widget class="QPushButton" name="copyrepleo_email">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy the E-Mail-Repleo of the selected friend.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="styleSheet">
-                         <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; } 
-
-QPushButton:pressed {
-     background-color: darkgrey;
-     border-style: inset;
- }</string>
-                        </property>
-                        <property name="text">
-                         <string/>
-                        </property>
-                        <property name="icon">
-                         <iconset resource="../Icons/icons.qrc">
-                          <normaloff>:/nuvola/repleo-email.png</normaloff>:/nuvola/repleo-email.png</iconset>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item>
                      <widget class="QLabel" name="label_10">
                       <property name="text">
                        <string>&amp;To</string>
@@ -2895,8 +2761,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>554</width>
-             <height>1782</height>
+             <width>551</width>
+             <height>1774</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4107,10 +3973,10 @@ color: rgb(255, 255, 255);</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>-74</x>
+             <x>0</x>
              <y>0</y>
-             <width>643</width>
-             <height>659</height>
+             <width>620</width>
+             <height>657</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5113,8 +4979,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>635</width>
-             <height>659</height>
+             <width>642</width>
+             <height>657</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5189,9 +5055,9 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-399</y>
-                 <width>647</width>
-                 <height>725</height>
+                 <y>0</y>
+                 <width>625</width>
+                 <height>706</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6336,8 +6202,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>873</width>
-             <height>1253</height>
+             <width>854</width>
+             <height>1246</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7754,8 +7620,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>554</width>
-             <height>749</height>
+             <width>551</width>
+             <height>758</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9028,7 +8894,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>569</width>
-             <height>674</height>
+             <height>675</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -9896,7 +9762,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="overwriteMode">
@@ -10296,9 +10162,6 @@ background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0
               </item>
               <item row="7" column="1">
                <widget class="spoton_lineedit" name="passphrase">
-                <property name="toolTip">
-                 <string>Passphrase</string>
-                </property>
                 <property name="styleSheet">
                  <string notr="true">QLineEdit#passphrase {
 background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0.5, stop:0 rgba(183, 235, 255, 255), stop:1 rgba(255, 255, 255, 255)); 
@@ -10609,7 +10472,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>659</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -10825,9 +10688,7 @@ QPushButton:pressed {
   <tabstop>messages</tabstop>
   <tabstop>message</tabstop>
   <tabstop>clearMessages</tabstop>
-  <tabstop>copyrepleo_chat</tabstop>
   <tabstop>status</tabstop>
-  <tabstop>melodica</tabstop>
   <tabstop>sendMessage</tabstop>
   <tabstop>custom</tabstop>
   <tabstop>participants</tabstop>
@@ -10863,7 +10724,6 @@ QPushButton:pressed {
   <tabstop>emailName</tabstop>
   <tabstop>saveEmailName</tabstop>
   <tabstop>clearOutgoing</tabstop>
-  <tabstop>copyrepleo_email</tabstop>
   <tabstop>emailWriteActionMenu</tabstop>
   <tabstop>emailParticipants</tabstop>
   <tabstop>outgoingSubject</tabstop>

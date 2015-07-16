@@ -1919,30 +1919,16 @@ void spoton::slotPassphraseAuthenticateRadioToggled(bool state)
   if(state)
     {
       m_ui.answer_authenticate->clear();
-#if SPOTON_GOLDBUG == 1
-      m_ui.answer_authenticate->setVisible(!state);
-      m_ui.label_103gb->setVisible(state);
-      m_ui.label_122gb->setVisible(state);
-      m_ui.label_124gb->setVisible(!state);
-      m_ui.passphrase->setVisible(state);
-#endif
       m_ui.question_authenticate->clear();
-#if SPOTON_GOLDBUG == 1
-      m_ui.question_authenticate->setVisible(!state);
-#endif
     }
   else
-    {
+    m_ui.passphrase->clear();
+
 #if SPOTON_GOLDBUG == 1
-      m_ui.answer_authenticate->setVisible(!state);
-      m_ui.label_103gb->setVisible(!state);
-      m_ui.label_122gb->setVisible(!state);
-      m_ui.label_124gb->setVisible(state);
-      m_ui.passphrase->setVisible(state);
-      m_ui.question_authenticate->setVisible(!state);
+  m_ui.answer_authenticate->setEnabled(!state);
+  m_ui.passphrase->setEnabled(state);
+  m_ui.question_authenticate->setEnabled(!state);
 #endif
-      m_ui.passphrase->clear();
-    }
 }
 
 void spoton::slotResendMail(void)
