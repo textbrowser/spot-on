@@ -24,6 +24,3 @@ Please copy the Documentation directory.
 Please copy the SQL directory.
 
 Please copy the Translations directory. Remove TS files.
-
-Afterwards, your release folder should appear similar to the folder
-in WINDOWS_FILES.png.
