@@ -138,6 +138,7 @@ void spoton::sendMessage(bool *ok)
 	  message.append(QDateTime::currentDateTime().toUTC().
 			 toString("MMddyyyyhhmmss").toLatin1().toBase64());
 	  message.append("\n");
+	  addMessageToQueue(msg, message, publicKeyHash);
 
 	  QPointer<spoton_chatwindow> chat = m_chatWindows.value
 	    (publicKeyHash, 0);
@@ -929,6 +930,8 @@ void spoton::slotRemoveParticipants(void)
 	       (QByteArray::fromBase64(hash.toByteArray())))
 	      m_receivedChatSequenceNumbers.
 		remove(QByteArray::fromBase64(hash.toByteArray()));
+
+	    m_chatQueues.remove(hash.toString());
 
 	    if(m_chatWindows.contains(hash.toString()))
 	      {

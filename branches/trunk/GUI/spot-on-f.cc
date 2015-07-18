@@ -76,3 +76,100 @@ void spoton::slotDuplicateTransmittedMagnet(void)
   if(ok)
     askKernelToReadStarBeamKeys();
 }
+
+void spoton::addMessageToQueue(const QString &message1,
+			       const QByteArray &message2,
+			       const QString &publicKeyHash)
+{
+  if(message1.isEmpty() || message2.isEmpty() || publicKeyHash.isEmpty())
+    return;
+
+  QPair<QQueue<QString>, QQueue<QByteArray> > pair
+    (m_chatQueues.value(publicKeyHash));
+
+  {
+    QQueue<QString> queue(pair.first);
+
+    if(queue.size() >= spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE)
+      if(!queue.isEmpty())
+	queue.dequeue();
+
+    queue.enqueue(message1);
+    pair.first = queue;
+  }
+
+  {
+    QQueue<QByteArray> queue(pair.second);
+
+    if(queue.size() >= spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE)
+      if(!queue.isEmpty())
+	queue.dequeue();
+
+    queue.enqueue(message2);
+    pair.second = queue;
+  }
+
+  m_chatQueues.insert(publicKeyHash, pair);
+}
+
+void spoton::slotReplayMessages(void)
+{
+  QTableWidgetItem *item = m_ui.participants->item
+    (m_ui.participants->currentRow(), 3); // public_key_hash
+
+  if(!item)
+    return;
+
+  if(!m_chatQueues.contains(item->text()))
+    return;
+
+  QDateTime now(QDateTime::currentDateTime());
+  QQueue<QString> queue1(m_chatQueues.value(item->text()).first);
+  QPointer<spoton_chatwindow> chat = m_chatWindows.value(item->text(), 0);
+  QString msg("");
+
+  msg.append
+    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+     arg(now.toString("MM")).
+     arg(now.toString("dd")).
+     arg(now.toString("yyyy")).
+     arg(now.toString("hh")).
+     arg(now.toString("mm")).
+     arg(now.toString("ss")));
+  msg.append(tr("<i>Replay activated.</i>"));
+  m_ui.messages->append(msg);
+
+  if(chat)
+    chat->append(msg);
+
+  while(!queue1.isEmpty())
+    {
+      QString msg(queue1.dequeue());
+
+      m_ui.messages->append(msg);
+      m_ui.messages->verticalScrollBar()->setValue
+	(m_ui.messages->verticalScrollBar()->maximum());
+
+      if(chat)
+	chat->append(msg);
+    }
+
+  QQueue<QByteArray> queue2(m_chatQueues.value(item->text()).second);
+
+  while(!queue2.isEmpty())
+    {
+      QByteArray message(queue2.dequeue());
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::slotReplayMessages(): write() failure for "
+		   "%1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+      else
+	m_chatInactivityTimer.start();
+    }
+
+  m_chatQueues.remove(item->text());
+}

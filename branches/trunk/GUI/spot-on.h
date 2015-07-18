@@ -400,6 +400,8 @@ class spoton: public QMainWindow
  public:
   spoton(void);
   ~spoton();
+  QHash<QString, QPair<QQueue<QString>, QQueue<QByteArray> > >
+    m_chatQueues;
   QHash<QString, QVariant> m_settings;
   QHash<QString, quint64> m_chatSequenceNumbers;
   QHash<QString, spoton_crypt *> crypts(void) const;
@@ -410,6 +412,9 @@ class spoton: public QMainWindow
 					     const int column);
   static QPointer<spoton> instance(void);
   static QString mapIconToEmoticon(const QString &content);
+  void addMessageToQueue(const QString &message1,
+			 const QByteArray &message2,
+			 const QString &publicKeyHash);
 
  private:
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS = 1;
@@ -771,6 +776,7 @@ class spoton: public QMainWindow
   void slotRemoveParticipants(void);
   void slotRemoveUrlParticipants(void);
   void slotRenameParticipant(void);
+  void slotReplayMessages(void);
   void slotReply(void);
   void slotResendMail(void);
   void slotResetAETokenInformation(void);

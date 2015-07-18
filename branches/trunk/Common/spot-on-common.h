@@ -31,7 +31,7 @@
 #ifndef _spoton_common_h_
 #define _spoton_common_h_
 
-#define SPOTON_VERSION_STR "2015.07.17"
+#define SPOTON_VERSION_STR "2015.07.18"
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
 typedef QList<QByteArray> QByteArrayList;
@@ -51,6 +51,7 @@ namespace spoton_common
 						 ** will be represented in
 						 ** base sixteen.
 						 */
+  static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM = 30;
   static const int KERNEL_URLS_BATCH_SIZE = 25;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;

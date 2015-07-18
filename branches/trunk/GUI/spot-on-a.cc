@@ -6065,6 +6065,10 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this,
 		     SLOT(slotVerifySMPSecret(void)));
       menu.addSeparator();
+      menu.addAction(tr("Replay &last %1 messages.").
+		     arg(spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE),
+		     this,
+		     SLOT(slotReplayMessages(void)));
       menu.addAction(tr("Share &StarBeam"),
 		     this,
 		     SLOT(slotShareStarBeam(void)));
