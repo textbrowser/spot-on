@@ -2605,7 +2605,7 @@ QPushButton:pressed {
                          </sizepolicy>
                         </property>
                         <property name="toolTip">
-                         <string>New Letter.</string>
+                         <string>New Letter</string>
                         </property>
                         <property name="styleSheet">
                          <string notr="true">QPushButton {
@@ -4588,7 +4588,7 @@ color: rgb(255, 255, 255);</string>
                          </sizepolicy>
                         </property>
                         <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spot-On will record peer certificates during initial connections. Subsequent connections will cause Spot-On to inspect peer certificates. If there are discrepancies between recorded certificates and transmitted certificates, Spot-On will sever the connections. Enable this option if you would like Spot-On to ignore discrepancies.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GoldBug will record peer certificates during initial connections. Subsequent connections will cause GoldBug to inspect peer certificates. If there are discrepancies between recorded certificates and transmitted certificates, GoldBug will sever the connections. Enable this option if you would like GoldBug to ignore discrepancies.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="text">
                          <string>&amp;Allow Exceptions</string>
@@ -4922,7 +4922,7 @@ QPushButton#addNeighbor:pressed {
         <string/>
        </attribute>
        <attribute name="toolTip">
-        <string>Websearch</string>
+        <string>Web Search</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
         <property name="spacing">
@@ -6146,7 +6146,7 @@ QPushButton:pressed {
         <string/>
        </attribute>
        <attribute name="toolTip">
-        <string>Kernel &amp; Settings</string>
+        <string>Kernel Settings</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_15">
         <property name="spacing">
@@ -7564,7 +7564,7 @@ QPushButton:pressed {
         <string/>
        </attribute>
        <attribute name="toolTip">
-        <string>StarBeam-Filetransfer</string>
+        <string>StarBeam File Transfer</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_39">
         <property name="spacing">
@@ -8836,7 +8836,7 @@ QPushButton:pressed {
         <string/>
        </attribute>
        <attribute name="toolTip">
-        <string>URL-Settings</string>
+        <string>URL Settings</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_10">
         <property name="spacing">
@@ -9514,7 +9514,7 @@ QPushButton:pressed {
         <string/>
        </attribute>
        <attribute name="toolTip">
-        <string>Add Friend.</string>
+        <string>Add Friend</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_22">
         <item>
@@ -9844,7 +9844,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QPushButton" name="clearFriend">
                  <property name="toolTip">
-                  <string>Clear.</string>
+                  <string>Clear</string>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QPushButton {
