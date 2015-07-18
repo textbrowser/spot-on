@@ -337,7 +337,7 @@ void spoton_mailer::slotRetrieveMail
 
   int secsTo = qAbs(now.secsTo(dateTime));
 
-  if(!(secsTo <= spoton_kernel::MAIL_TIME_DELTA_MAXIMUM))
+  if(!(secsTo <= spoton_common::MAIL_TIME_DELTA_MAXIMUM))
     {
       spoton_misc::logError
 	(QString("spoton_mailer::slotRetrieveMail(): "

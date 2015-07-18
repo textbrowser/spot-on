@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>860</width>
+    <width>883</width>
     <height>240</height>
    </rect>
   </property>
@@ -227,10 +227,13 @@
       <item>
        <widget class="QSpinBox" name="iteration_count">
         <property name="minimum">
-         <number>250000</number>
+         <number>15000</number>
         </property>
         <property name="maximum">
          <number>999999999</number>
+        </property>
+        <property name="value">
+         <number>250000</number>
         </property>
        </widget>
       </item>
@@ -352,8 +355,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>860</width>
-     <height>27</height>
+     <width>883</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

@@ -74,11 +74,6 @@ class spoton_kernel: public QObject
   static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QMultiHash<qint64, QPointer<spoton_neighbor> > s_connectionCounts;
   static QPointer<spoton_kernel> instance(void);
-  static const int CACHE_TIME_DELTA_MAXIMUM = 30;
-  static const int GEMINI_TIME_DELTA_MAXIMUM = 90;
-  static const int MAIL_TIME_DELTA_MAXIMUM = 90;
-  static const int POPTASTIC_STATUS_INTERVAL = 60;
-  static const int STATUS_INTERVAL = 15;
   static QList<QByteArray> findBuzzKey(const QByteArray &data,
 				       const QByteArray &hash);
   static QList<QByteArray> findInstitutionKey(const QByteArray &data,

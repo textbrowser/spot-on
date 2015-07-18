@@ -310,10 +310,13 @@ QPushButton:pressed {
       <item>
        <widget class="QSpinBox" name="iteration_count">
         <property name="minimum">
-         <number>250000</number>
+         <number>15000</number>
         </property>
         <property name="maximum">
          <number>999999999</number>
+        </property>
+        <property name="value">
+         <number>250000</number>
         </property>
        </widget>
       </item>

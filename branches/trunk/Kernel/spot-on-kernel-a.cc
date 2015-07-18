@@ -563,7 +563,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_settingsTimer.setInterval(1500);
   m_scramblerTimer.setSingleShot(true);
   m_settingsTimer.setSingleShot(true);
-  m_statusTimer.start(1000 * STATUS_INTERVAL);
+  m_statusTimer.start(1000 * spoton_common::STATUS_INTERVAL);
   m_urlImportFutures.resize
     (qCeil(2.5 * qMax(1, QThread::idealThreadCount())));
 
@@ -2182,9 +2182,11 @@ void spoton_kernel::slotStatusTimerExpired(void)
 	      (1, QDateTime::currentDateTime().toString(Qt::ISODate));
 
 	    if(i == 1)
-	      query.bindValue(2, 2.5 * STATUS_INTERVAL);
+	      query.bindValue
+		(2, 2.5 * spoton_common::STATUS_INTERVAL);
 	    else
-	      query.bindValue(2, 2.5 * POPTASTIC_STATUS_INTERVAL);
+	      query.bindValue
+		(2, 2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL);
 
 	    if(ok)
 	      query.exec();
@@ -2208,7 +2210,7 @@ void spoton_kernel::slotStatusTimerExpired(void)
   prepareStatus("chat");
 
   if(m_lastPoptasticStatus.secsTo(QDateTime::currentDateTime()) >=
-     POPTASTIC_STATUS_INTERVAL)
+     spoton_common::POPTASTIC_STATUS_INTERVAL)
     prepareStatus("poptastic");
 }
 
@@ -3684,7 +3686,8 @@ void spoton_kernel::purgeMessagingCache(void)
       uint now = QDateTime::currentDateTime().toTime_t();
 
       if(now > it1.value())
-	if(now - it1.value() > static_cast<uint> (MAIL_TIME_DELTA_MAXIMUM))
+	if(now - it1.value() > static_cast<uint> (spoton_common::
+						  MAIL_TIME_DELTA_MAXIMUM))
 	  it1.remove();
 
       if(m_future.isCanceled())
@@ -3707,7 +3710,8 @@ void spoton_kernel::purgeMessagingCache(void)
       uint now = QDateTime::currentDateTime().toTime_t();
 
       if(now > it2.value())
-	if(now - it2.value() > static_cast<uint> (GEMINI_TIME_DELTA_MAXIMUM))
+	if(now - it2.value() > static_cast<uint> (spoton_common::
+						  GEMINI_TIME_DELTA_MAXIMUM))
 	  it2.remove();
 
       if(m_future.isCanceled())
@@ -3737,7 +3741,8 @@ void spoton_kernel::purgeMessagingCache(void)
       uint now = QDateTime::currentDateTime().toTime_t();
 
       if(now > it3.key())
-	if(now - it3.key() > static_cast<uint> (CACHE_TIME_DELTA_MAXIMUM))
+	if(now - it3.key() > static_cast<uint> (spoton_common::
+						CACHE_TIME_DELTA_MAXIMUM))
 	  {
 	    QList<QByteArray> values
 	      (s_messagingCacheLookup.values(it3.key()));

@@ -759,13 +759,16 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
       if(!list.isEmpty())
 	{
 	  spoton_misc::saveParticipantStatus
-	    (list.value(1),                   // Name
-	     list.value(0),                   // Public Key Hash
-	     QByteArray(),                    // Status
+	    (list.value(1),                                  // Name
+	     list.value(0),                                  /*
+							     ** Public
+							     ** Key Hash
+							     */
+	     QByteArray(),                                   // Status
 	     QDateTime::currentDateTime().toUTC().
 	     toString("MMddyyyyhhmmss").
-	     toLatin1(),                      // Timestamp
-	     2.5 * POPTASTIC_STATUS_INTERVAL, // Seconds
+	     toLatin1(),                                     // Timestamp
+	     2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL, // Seconds
 	     s_crypts.value("poptastic", 0));
 	  emit receivedChatMessage
 	    ("message_" +
@@ -1025,11 +1028,11 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
       if(!list.isEmpty())
 	spoton_misc::saveParticipantStatus
-	  (list.value(1),                   // Name
-	   list.value(0),                   // Public Key Hash
-	   list.value(2),                   // Status
-	   list.value(3),                   // Timestamp
-	   2.5 * POPTASTIC_STATUS_INTERVAL, // Seconds
+	  (list.value(1),                                  // Name
+	   list.value(0),                                  // Public Key Hash
+	   list.value(2),                                  // Status
+	   list.value(3),                                  // Timestamp
+	   2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL, // Seconds
 	   s_crypts.value("poptastic", 0));
     }
   else
@@ -1346,7 +1349,7 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
 
   int secsTo = qAbs(now.secsTo(dateTime));
 
-  if(!(secsTo <= GEMINI_TIME_DELTA_MAXIMUM))
+  if(!(secsTo <= spoton_common::GEMINI_TIME_DELTA_MAXIMUM))
     {
       spoton_misc::logError
 	(QString("spoton_kernel::saveGemini(): "

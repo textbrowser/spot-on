@@ -1702,7 +1702,8 @@ void spoton_neighbor::processData(void)
 
 	  if(!spoton_misc::readSharedResource(&m_accountAuthenticated,
 					      m_accountAuthenticatedMutex))
-	    if(accountClientSentSalt.length() >= 512)
+	    if(accountClientSentSalt.length() >=
+	       spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE)
 	      process0051(length, data);
 
 	  if(!spoton_misc::readSharedResource(&m_accountAuthenticated,
@@ -3993,8 +3994,10 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 
       spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
-      if(accountClientSentSalt.length() >= 512 &&
-	 list.at(1).trimmed().length() >= 512 &&
+      if(accountClientSentSalt.length() >=
+	 spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE &&
+	 list.at(1).trimmed().length() >=
+	 spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE &&
 	 !spoton_crypt::memcmp(list.at(1).trimmed(), accountClientSentSalt))
 	{
 	  if(s_crypt)
@@ -4078,7 +4081,8 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	  spoton_misc::setSharedResource
 	    (&m_accountAuthenticated, false, m_accountAuthenticatedMutex);
 
-	  if(accountClientSentSalt.length() < 512)
+	  if(accountClientSentSalt.length() <
+	     spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE)
 	    spoton_misc::logError
 	      ("spoton_neighbor::process0051(): "
 	       "the server replied to an authentication message, however, "
@@ -4610,7 +4614,7 @@ void spoton_neighbor::saveParticipantStatus(const QByteArray &name,
 {
   spoton_misc::saveParticipantStatus
     (name, publicKeyHash, status, timestamp,
-     static_cast<int> (2.5 * spoton_kernel::STATUS_INTERVAL),
+     static_cast<int> (2.5 * spoton_common::STATUS_INTERVAL),
      spoton_kernel::s_crypts.value("chat", 0));
 }
 
@@ -5929,7 +5933,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 
   int secsTo = qAbs(now.secsTo(dateTime));
 
-  if(!(secsTo <= spoton_kernel::GEMINI_TIME_DELTA_MAXIMUM))
+  if(!(secsTo <= spoton_common::GEMINI_TIME_DELTA_MAXIMUM))
     {
       spoton_misc::logError
 	(QString("spoton_neighbor::saveGemini(): "
@@ -6172,7 +6176,9 @@ void spoton_neighbor::slotSendAccountInformation(void)
       {
 	QByteArray hash;
 	QByteArray message;
-	QByteArray salt(spoton_crypt::strongRandomBytes(512));
+	QByteArray salt
+	  (spoton_crypt::
+	   strongRandomBytes(spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE));
 
 	hash = spoton_crypt::keyedHash
 	  (QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmm").
@@ -6212,7 +6218,9 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &name,
 
   QByteArray hash;
   QByteArray message;
-  QByteArray salt(spoton_crypt::strongRandomBytes(512));
+  QByteArray salt(spoton_crypt::
+		  strongRandomBytes(spoton_common::
+				    ACCOUNTS_RANDOM_BUFFER_SIZE));
   bool ok = true;
 
   /*
