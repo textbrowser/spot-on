@@ -2278,7 +2278,7 @@ QString spoton::currentTabName(void) const
     name = "urls";
 #if SPOTON_GOLDBUG == 1
   else if(index == 9)
-    name = "add_friend"
+    name = "add_friend";
 #endif
   else
     name = "about";
