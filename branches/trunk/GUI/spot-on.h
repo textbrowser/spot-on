@@ -56,6 +56,7 @@
 #endif
 #include <QPointer>
 #include <QProcess>
+#include <QQueue>
 #include <QScrollBar>
 #include <QSettings>
 #include <QSqlDatabase>

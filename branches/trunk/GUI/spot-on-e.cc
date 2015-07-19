@@ -123,12 +123,12 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneSettingsUi.poptasticRefresh->setValue
     (m_settings.value("gui/poptasticRefreshInterval", 5.00).toDouble());
 
-  if(m_settings.value("gui/disablePop3", false).toBool())
+  if(m_settings.value("gui/disablePop3", true).toBool())
     m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
   else
     m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(2);
 
-  if(m_settings.value("gui/disableSmtp", false).toBool())
+  if(m_settings.value("gui/disableSmtp", true).toBool())
     m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
   else
     m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(1);
@@ -732,7 +732,7 @@ void spoton::slotPoptasticSettingsReset(bool state)
 void spoton::slotPoptasticSettingsReset(void)
 {
   m_poptasticRetroPhoneSettingsUi.capath->clear();
-  m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(2);
+  m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
   m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
   m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
@@ -740,7 +740,7 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.in_username->clear();
   m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked(false);
   m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked(false);
-  m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(1);
+  m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.out_password->clear();
   m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
   m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
