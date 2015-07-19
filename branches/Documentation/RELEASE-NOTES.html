@@ -1,5 +1,5 @@
 <html>
-2015.07.17
+2015.07.18
 <br>
 <b>Corrections</b>
 <ol>
@@ -13,7 +13,6 @@
 <li>Ignore malformed public keys in spoton_crypt::publicKeyEncrypt().</li>
 <li>Process potential URL sets if and only if URL participants are defined.</li>
 <li>The kernel process identifier may be a large value; consider toLongLong() instead of toInt().</li>
-<li>Upgraded PostgreSQL libraries to version 9.4.4-3 on Windows.</li>
 </ol>
 <b>Improvements</b>
 <ol>
@@ -46,6 +45,7 @@
 <li>URL import futures! Allow the kernel to decide on the number of threads from available cores. Please consider using PostgreSQL so as to avoid avalanches.</li>
 <li>Updated libspoton to version 0.1.2. The encrypted field now has a default of zero.</li>
 <li>Upgraded OpenSSL to version 1.0.2d, Windows.</li>
+<li>Upgraded PostgreSQL libraries to version 9.4.4-3 on Windows.</li>
 <li>Use https://api.ipify.org to retrieve the external IP.</li>
 </ol>
 2015.06.17
