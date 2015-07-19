@@ -463,7 +463,12 @@ void spoton::showUrls(const QString &link, const QString &querystr)
   if(m_urlCurrentPage != 1)
     str.prepend(tr(" <a href=\"<\">Previous</a> "));
 
-  m_ui.url_pages->setText(str.trimmed());
+  str = str.trimmed();
+
+  if(str.isEmpty())
+    m_ui.url_pages->setText("| 1 |");
+  else
+    m_ui.url_pages->setText(str);
 }
 
 void spoton::slotPageClicked(const QString &link)
