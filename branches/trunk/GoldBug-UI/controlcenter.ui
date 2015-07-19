@@ -4952,7 +4952,7 @@ color: rgb(255, 255, 255);
 </string>
           </property>
           <property name="text">
-           <string>Websearch</string>
+           <string>Web Search</string>
           </property>
           <property name="indent">
            <number>5</number>
@@ -9958,7 +9958,7 @@ QPushButton:pressed {
             </property>
             <property name="text">
              <string>E-Mail-Client. Instant Messenger. 
- Websearch. Filetransfer. 
+ Web Search. File Transfer.
  Secure.</string>
             </property>
             <property name="alignment">

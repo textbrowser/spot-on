@@ -2276,6 +2276,10 @@ QString spoton::currentTabName(void) const
     name = "starbeam";
   else if(index == 8)
     name = "urls";
+#if SPOTON_GOLDBUG == 1
+  else if(index == 9)
+    name = "add_friend"
+#endif
   else
     name = "about";
 
