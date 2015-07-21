@@ -74,7 +74,8 @@ QString spoton_misc::homePath(void)
     return QDir::homePath() + QDir::separator() + ".spot-on";
 #endif
   else
-    return homepath.constData();
+    return homepath.mid(0, spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH).
+      constData();
 }
 
 void spoton_misc::prepareDatabases(void)

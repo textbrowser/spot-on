@@ -63,6 +63,7 @@ namespace spoton_common
   static const int MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION = 50;
   static const int NAME_MAXIMUM_LENGTH = 64;
   static const int POPTASTIC_STATUS_INTERVAL = 60;
+  static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
   static const int STATUS_INTERVAL = 15;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
