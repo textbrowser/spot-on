@@ -3168,7 +3168,12 @@ void spoton::updatePublicKeysLabel(void)
 
       item = new QTableWidgetItem();
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-      item->setText(bytes.constData());
+
+      if(ok)
+	item->setText(bytes.constData());
+      else
+	item->setText(tr("error"));
+
       m_ui.personal_public_keys->setItem(i, 3, item);
     }
 
