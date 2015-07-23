@@ -1884,6 +1884,10 @@ void spoton_neighbor::processData(void)
 	  if(discoveredAdaptiveEchoPair == QPair<QByteArray, QByteArray> () &&
 	     spoton_kernel::setting("gui/superEcho", 1).toInt() != 1)
 	    {
+	      /*
+	      ** Super Echo!
+	      */
+
 	      if(messageType != "0060") // StarBeam
 		emit receivedMessage
 		  (originalData, m_id, QPair<QByteArray, QByteArray> ());
@@ -1894,7 +1898,9 @@ void spoton_neighbor::processData(void)
 		 data.trimmed().split('\n').size() == 7)
 		emit receivedMessage
 		  (originalData, m_id, discoveredAdaptiveEchoPair);
-	      else if(messageType.isEmpty() || messageType == "0002b")
+	      else if(messageType.isEmpty() ||
+		      messageType == "0002b" ||
+		      messageType == "0090")
 		emit receivedMessage
 		  (originalData, m_id, discoveredAdaptiveEchoPair);
 	      else if(messageType == "0040a" || messageType == "0040b")
