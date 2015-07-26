@@ -1,6 +1,0 @@
-Byte Offset			Value
-0				0 (Unsigned)
-				1 (Signed)
-1				Encrypted Data Block
-...
-N				Hash
