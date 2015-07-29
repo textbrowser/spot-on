@@ -307,7 +307,7 @@
     <message>
         <location filename="../UI/adaptiveechoprompt.ui" line="27"/>
         <source>Please provide the following information. The token must contain at least ninety-six characters.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bitte geben Sie folgende Informationen ein. Der Token muss mindestens 96 Zeichen enthalten.</translation>
     </message>
     <message>
         <location filename="../UI/adaptiveechoprompt.ui" line="55"/>
@@ -317,22 +317,22 @@
     <message>
         <location filename="../UI/adaptiveechoprompt.ui" line="129"/>
         <source>If the magnet is not properly defined, the Adaptive Echo token will not be accepted.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wenn der Magnet-URI nicht sauber definiert ist, wird das Adaptive Echo nicht funktionieren.</translation>
     </message>
     <message>
         <location filename="../UI/adaptiveechoprompt.ui" line="132"/>
         <source>&amp;Magnet</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Magnet</translation>
     </message>
     <message>
         <location filename="../UI/adaptiveechoprompt.ui" line="45"/>
         <source>Token &amp;Encryption Type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Token &amp;Encryption Type</translation>
     </message>
     <message>
         <location filename="../UI/adaptiveechoprompt.ui" line="119"/>
         <source>Token &amp;Hash Type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Token &amp;Hash Type</translation>
     </message>
     <message>
         <source>Token Encryption T&amp;ype</source>
@@ -371,7 +371,7 @@
     <message>
         <location filename="../UI/buzzpage.ui" line="31"/>
         <source>&amp;Magnet</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Magnet</translation>
     </message>
     <message>
         <location filename="../UI/buzzpage.ui" line="55"/>
@@ -459,27 +459,27 @@
     <message>
         <location filename="../UI/chatwindow.ui" line="173"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show all StarBeam mosaics.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zeige alle StarBeam mosaics.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../UI/chatwindow.ui" line="176"/>
         <source>&amp;StarBeam</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;StarBeam</translation>
     </message>
     <message>
         <location filename="../UI/chatwindow.ui" line="211"/>
         <source>&amp;Echo Magnets</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Echo die Magneten.</translation>
     </message>
     <message>
         <location filename="../UI/chatwindow.ui" line="218"/>
         <source>Share a StarBeam.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sende eine Datei über StarBeam.</translation>
     </message>
     <message>
         <location filename="../UI/chatwindow.ui" line="224"/>
         <source>Share</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Teilen</translation>
     </message>
 </context>
 <context>
@@ -510,7 +510,7 @@
     <message>
         <location filename="../UI/keyboard.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dialog</translation>
     </message>
     <message>
         <location filename="../UI/keyboard.ui" line="69"/>
@@ -520,12 +520,12 @@
     <message>
         <location filename="../UI/keyboard.ui" line="124"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zurück</translation>
     </message>
     <message>
         <location filename="../UI/keyboard.ui" line="138"/>
         <source>&amp;Show</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Zeige</translation>
     </message>
 </context>
 <context>
@@ -569,12 +569,12 @@
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="35"/>
         <source>&amp;Query the incoming server every</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Frage den eingehenden Server alle</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="45"/>
         <source> seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sekunden.</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="73"/>
@@ -585,7 +585,7 @@
         <location filename="../UI/poptastic-retrophone-settings.ui" line="91"/>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="576"/>
         <source>&amp;Username</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Nutzername</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="174"/>
@@ -596,24 +596,24 @@
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="184"/>
         <source>&amp;Type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Typ</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="194"/>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="317"/>
         <source>&amp;Server Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Server Addresse</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="204"/>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="406"/>
         <source>&amp;Password</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Password</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="229"/>
         <source>&amp;Certificate Authority Path</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Certificate Authority Path</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="242"/>
@@ -624,12 +624,12 @@
         <location filename="../UI/poptastic-retrophone-settings.ui" line="309"/>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="334"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Passwort</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="349"/>
         <source>&amp;Authentification</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Authentifizierung</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="426"/>
@@ -639,17 +639,17 @@
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="449"/>
         <source>&amp;Method</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Methode</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="462"/>
         <source>Outgoing Server</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ausgehender Server</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="475"/>
         <source>Incoming Server</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eingehender Server</translation>
     </message>
     <message>
         <location filename="../UI/poptastic-retrophone-settings.ui" line="528"/>
@@ -689,7 +689,7 @@
     <message>
         <location filename="../UI/postgresqlconnect.ui" line="27"/>
         <source>Please provide the following information.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bitte gebe die folgenden Informationen ein.</translation>
     </message>
     <message>
         <location filename="../UI/postgresqlconnect.ui" line="44"/>
@@ -699,7 +699,7 @@
     <message>
         <location filename="../UI/postgresqlconnect.ui" line="66"/>
         <source>&amp;Database Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Databank Name</translation>
     </message>
     <message>
         <location filename="../UI/postgresqlconnect.ui" line="79"/>
@@ -709,7 +709,7 @@
     <message>
         <location filename="../UI/postgresqlconnect.ui" line="92"/>
         <source>Account &amp;Password</source>
-        <translation type="unfinished">Account &amp;Password</translation>
+        <translation type="unfinished">Account &amp;Passwort</translation>
     </message>
     <message>
         <location filename="../UI/postgresqlconnect.ui" line="109"/>
@@ -3113,7 +3113,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="193"/>
         <source>The interface is not connected to the kernel.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Benutzeroberfläche ist nicht zum Kernel verbunden.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="255"/>
@@ -3170,28 +3170,28 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="139"/>
         <source>&amp;Reset the SMP machine&apos;s internal state to s0.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Setze den internen Status der SMP-Maschine auf Status 0.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="142"/>
         <source>&amp;Set an SMP secret.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Definiere ein SMP-Geheimnis (ein gemeinsames Passwort).</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="145"/>
         <source>&amp;Verify the SMP secret.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Lass das SMP-Geheimnis auf Richtigkeit an beiden Seiten überprüfen.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="149"/>
         <source>&amp;Derive Gemini pair from SMP secret.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Leite ein Gemini-Paar vom SMP-Geheimnis ab.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="225"/>
         <location filename="../GUI/spot-on-chatwindow.cc" line="509"/>
         <source>The interface is not connected to the kernel.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Benutzeroberfläche ist nicht mit dem Kernel verbunden.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="230"/>
@@ -3223,12 +3223,12 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="457"/>
         <source>The Socialist Millionaire Protocol failed on %1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Socialist-Millionaire-Protokol (SMP) stimmte nicht überein bei %1.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="465"/>
         <source>The Socialist Millionaire Protocol succeeded on %1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Socialist-Millionaire-Protocol war erfolgreich bei %1.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="498"/>
@@ -3238,7 +3238,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="526"/>
         <source>%1: Select StarBeam Transmit File</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1: Wähle ein StarBeam zur Datei-Übertragung</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="530"/>
@@ -3248,7 +3248,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="545"/>
         <source>The selected file is not readable.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ausgewählte Datei konnte nicht gelesen werden.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="682"/>
@@ -3289,62 +3289,62 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="72"/>
         <source>&amp;New Category</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Neue Kategorie</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="76"/>
         <source>&amp;Generate</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Erstellen</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="80"/>
         <source>&amp;Refresh Table</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp; Tabelle aktualisieren</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="84"/>
         <source>Share &amp;Chat Public Key Pair</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sende und teile den öffentlichen Schlüssel für &amp;Chat</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="87"/>
         <source>Share &amp;E-Mail Public Key Pair</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sende und teile den öffentlichen Schlüssel für &amp;E-Mail</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="90"/>
         <source>Share &amp;Poptastic Public Key Pair</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sende und teile den öffentlichen Schlüssel für &amp;Poptastic</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="93"/>
         <source>Share &amp;Rosetta Public Key Pair</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sende und teile den öffentlichen Schlüssel für &amp;Rosetta</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="96"/>
         <source>Share &amp;URL Public Key Pair</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sende und teile den öffentlichen Schlüssel für &amp;URLs</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="100"/>
         <source>&amp;Remove Selected</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Entferne die Auswahl</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="104"/>
         <source>&amp;Reset Widgets</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Setze die Einstellungen zurück auf Standardwerte.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="200"/>
         <source>Please select a parent category.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bitte wähle eine Ober-Kategorie aus.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="208"/>
         <source>Please provide a Community Name that contains at least sixteen characters.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bitte gebe einen Community-Namen ein, der mindestens sechzehn Buchstaben umfasst.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="236"/>
@@ -3375,12 +3375,12 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="817"/>
         <source>%1: New Category</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1: Neue Kategorie</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="818"/>
         <source>&amp;Category</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Kategorie</translation>
     </message>
 </context>
 <context>
@@ -3403,7 +3403,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../UI/echo-key-share.ui" line="109"/>
         <source>Community Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Community-Name</translation>
     </message>
     <message>
         <location filename="../UI/echo-key-share.ui" line="28"/>
@@ -3413,22 +3413,22 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../UI/echo-key-share.ui" line="94"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kategorie</translation>
     </message>
     <message>
         <location filename="../UI/echo-key-share.ui" line="99"/>
         <source>Accept</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Akzeptieren</translation>
     </message>
     <message>
         <location filename="../UI/echo-key-share.ui" line="104"/>
         <source>Share</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Teilen</translation>
     </message>
     <message>
         <location filename="../UI/echo-key-share.ui" line="137"/>
         <source>Community &amp;Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Community &amp;Name</translation>
     </message>
     <message>
         <location filename="../UI/echo-key-share.ui" line="157"/>
@@ -3468,7 +3468,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../UI/echo-key-share.ui" line="266"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Kopieren</translation>
     </message>
     <message>
         <location filename="../UI/echo-key-share.ui" line="269"/>
@@ -3782,12 +3782,12 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../GUI/spot-on-encryptfile.cc" line="720"/>
         <source>The conversion process completed successfully. A signature was not discovered.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Umwandlungsprozess wurde erfolgreich abgeschlossen. Eine Signatur wurde nicht verwandt.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-encryptfile.cc" line="726"/>
         <source>The conversion process completed successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Umwandlungsprozess wurde erfolgreich abgeschlossen.</translation>
     </message>
 </context>
 <context>
@@ -6394,23 +6394,23 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../UI/options.ui" line="208"/>
         <source>East</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Osten</translation>
     </message>
     <message>
         <location filename="../UI/options.ui" line="213"/>
         <source>North</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Norden</translation>
     </message>
     <message>
         <location filename="../UI/options.ui" line="218"/>
         <source>West</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Westen</translation>
     </message>
     <message>
         <location filename="../UI/options.ui" line="241"/>
         <location filename="../UI/options.ui" line="937"/>
         <source>Buzz</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Buzz-IRC</translation>
     </message>
     <message>
         <location filename="../UI/options.ui" line="259"/>
@@ -7180,12 +7180,12 @@ To re-analyze a mosaic, you must first delete the entry in the below table.</sou
     <message>
         <location filename="../UI/starbeamanalyzer.ui" line="62"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Abbrechen</translation>
     </message>
     <message>
         <location filename="../UI/starbeamanalyzer.ui" line="67"/>
         <source>Percent Analyzed</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Prozent analysiert</translation>
     </message>
     <message>
         <location filename="../UI/starbeamanalyzer.ui" line="72"/>
@@ -7200,12 +7200,12 @@ To re-analyze a mosaic, you must first delete the entry in the below table.</sou
     <message>
         <location filename="../UI/starbeamanalyzer.ui" line="82"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Datei</translation>
     </message>
     <message>
         <location filename="../UI/starbeamanalyzer.ui" line="87"/>
         <source>Results</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ergebnisse</translation>
     </message>
     <message>
         <location filename="../UI/starbeamanalyzer.ui" line="92"/>
