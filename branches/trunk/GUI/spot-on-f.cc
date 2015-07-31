@@ -173,3 +173,33 @@ void spoton::slotReplayMessages(void)
 
   m_chatQueues.remove(item->text());
 }
+
+void spoton::slotEstablishEmailForwardSecrecy(void)
+{
+  QModelIndexList publicKeyHashes
+    (m_ui.emailParticipants->selectionModel()->
+     selectedRows(3)); // public_key_hash
+  QString error("");
+
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    {
+      error = tr("The interface is not connected to the kernel.");
+      goto done_label;
+    }
+  else if(!m_kernelSocket.isEncrypted())
+    {
+      error = tr("The connection to the kernel is not encrypted.");
+      goto done_label;
+    }
+  else if(publicKeyHashes.isEmpty())
+    {
+      error = tr("Please select at least one participant.");
+      goto done_label;
+    }
+
+ done_label:
+
+  if(!error.isEmpty())
+    QMessageBox::critical
+      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+}

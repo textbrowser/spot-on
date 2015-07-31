@@ -5813,6 +5813,9 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action = menu.addAction(tr("&Rename participant."),
 			      this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
+      menu.addSeparator();
+      menu.addAction(tr("Establish Forward &Secrecy"),
+		     this, SLOT(slotEstablishEmailForwardSecrecy(void)));
       menu.exec(m_ui.emailParticipants->mapToGlobal(point));
     }
   else if(m_ui.listeners == sender())

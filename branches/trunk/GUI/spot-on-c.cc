@@ -2680,6 +2680,9 @@ void spoton::prepareContextMenuMirrors(void)
       action = menu->addAction(tr("&Rename participant."),
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
+      menu->addSeparator();
+      menu->addAction(tr("Establish Forward &Secrecy"),
+		      this, SLOT(slotEstablishEmailForwardSecrecy(void)));
       m_ui.emailWriteActionMenu->setMenu(menu);
       connect(m_ui.emailWriteActionMenu,
 	      SIGNAL(clicked(void)),
