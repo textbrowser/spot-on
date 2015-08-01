@@ -1536,7 +1536,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		      "out_server_port, out_username, "
 		      "proxy_enabled, proxy_password, "
 		      "proxy_server_address, proxy_server_port, "
-		      "proxy_username "
+		      "proxy_username, smtp_localname "
 		      "FROM poptastic"))
 	  while(query.next())
 	    {
@@ -1557,7 +1557,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				  "proxy_password = ?, "
 				  "proxy_server_address = ?, "
 				  "proxy_server_port = ?, "
-				  "proxy_username = ?");
+				  "proxy_username = ?, "
+				  "smtp_localname = ?");
 
 	      for(int i = 0; i < query.record().count(); i++)
 		{

@@ -31,6 +31,7 @@
 <li>Increased the default public key distribution iteration count to 250,000.</li>
 <li>Log important cURL errors that are generated within the kernel.</li>
 <li>Modified Poptastic default Method values to Disable.</li>
+<li>Per Mr. Fennel, provide a means of modifying the local host name for SMTP. New installations only. Please see the Poptastic configuration panel. Existing installations must remove poptastic.db because the new database field smtp_localname may not be NULL.</li>
 <li>Populate URL filters upon password validation.</li>
 <li>Test SMP during the launch of the UI. Results will be available in the log file.</li>
 <li>The SMP state machine will enter a terminal state if an error occurs at stage 1, 2, 3, 4, or 5.</li>

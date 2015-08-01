@@ -233,6 +233,8 @@ void spoton::slotConfigurePoptastic(void)
 
       m_poptasticRetroPhoneSettingsUi.proxy_username->setText
 	(hash["proxy_username"].toString());
+      m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
+	(hash.value("smtp_localname", "localhost").toString());
     }
 
   if(m_poptasticRetroPhoneDialog->exec() == QDialog::Accepted)
@@ -305,9 +307,9 @@ void spoton::slotConfigurePoptastic(void)
 	       "out_server_port, out_ssltls, out_username, "
 	       "proxy_enabled, "
 	       "proxy_password, proxy_server_address, proxy_server_port, "
-	       "proxy_type, proxy_username) "
+	       "proxy_type, proxy_username, smtp_localname) "
 	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-	       "?, ?, ?, ?, ?, ?)");
+	       "?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, m_poptasticRetroPhoneSettingsUi.in_authentication->
 	       currentText());
@@ -429,6 +431,13 @@ void spoton::slotConfigurePoptastic(void)
 				     proxy_username->
 				     text().trimmed().toUtf8(),
 				     &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(20, crypt->
+		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				     smtp_localname->text().
+				     toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      ok = query.exec();
@@ -653,19 +662,23 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 	  if(method == "SMTP")
 	    {
 	      if(index == 1) // SSL
-		url = QString("smtps://%1:%2/").
+		url = QString("smtps://%1:%2/%3").
 		  arg(m_poptasticRetroPhoneSettingsUi.
 		      out_server_address->text().
 		      trimmed()).
 		  arg(m_poptasticRetroPhoneSettingsUi.
-		      out_server_port->value());
+		      out_server_port->value()).
+		  arg(m_poptasticRetroPhoneSettingsUi.
+		      smtp_localname->text());
 	      else // TLS
-		url = QString("smtp://%1:%2/").
+		url = QString("smtp://%1:%2/%3").
 		  arg(m_poptasticRetroPhoneSettingsUi.
 		      out_server_address->text().
 		      trimmed()).
 		  arg(m_poptasticRetroPhoneSettingsUi.
-		      out_server_port->value());
+		      out_server_port->value()).
+		  arg(m_poptasticRetroPhoneSettingsUi.
+		      smtp_localname->text());
 	    }
 
 	  long verify = static_cast<long>
@@ -686,10 +699,11 @@ void spoton::slotTestPoptasticSmtpSettings(void)
       else
 	{
 	  if(method == "SMTP")
-	    url = QString("smtp://%1:%2/").
+	    url = QString("smtp://%1:%2/%3").
 	      arg(m_poptasticRetroPhoneSettingsUi.out_server_address->
 		  text().trimmed()).
-	      arg(m_poptasticRetroPhoneSettingsUi.out_server_port->value());
+	      arg(m_poptasticRetroPhoneSettingsUi.out_server_port->value()).
+	      arg(m_poptasticRetroPhoneSettingsUi.smtp_localname->text());
 	}
 
       curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "NOOP");
@@ -755,6 +769,7 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue(1);
   m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
+  m_poptasticRetroPhoneSettingsUi.smtp_localname->setText("localhost");
 }
 
 void spoton::slotSelectCAPath(void)

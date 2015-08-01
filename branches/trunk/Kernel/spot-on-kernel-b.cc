@@ -460,13 +460,17 @@ void spoton_kernel::postPoptastic(void)
 	  if(ssltls == "SSL" || ssltls == "TLS")
 	    {
 	      if(ssltls == "SSL")
-		url = QString("smtps://%1:%2/").
+		url = QString("smtps://%1:%2/%3").
 		  arg(hash["out_server_address"].toString().trimmed()).
-		  arg(hash["out_server_port"].toString().trimmed());
+		  arg(hash["out_server_port"].toString().trimmed()).
+		  arg(hash.value("smtp_localname", "localhost").
+		      toString());
 	      else
-		url = QString("smtp://%1:%2/").
+		url = QString("smtp://%1:%2/%3").
 		  arg(hash["out_server_address"].toString().trimmed()).
-		  arg(hash["out_server_port"].toString().trimmed());
+		  arg(hash["out_server_port"].toString().trimmed()).
+		  arg(hash.value("smtp_localname", "localhost").
+		      toString());
 
 	      long verify = static_cast<long>
 		(setting("gui/poptasticVerifySmtpHost", 0).toInt());
@@ -494,9 +498,11 @@ void spoton_kernel::postPoptastic(void)
 		}
 	    }
 	  else
-	    url = QString("smtp://%1:%2/").
+	    url = QString("smtp://%1:%2/%3").
 	      arg(hash["out_server_address"].toString().trimmed()).
-	      arg(hash["out_server_port"].toString().trimmed());
+	      arg(hash["out_server_port"].toString().trimmed()).
+	      arg(hash.value("smtp_localname", "localhost").
+		  toString());
 
 	  curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
 
