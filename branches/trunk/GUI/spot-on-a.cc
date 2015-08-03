@@ -223,12 +223,14 @@ spoton::spoton(void):QMainWindow()
   m_starsLastModificationTime = QDateTime();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
+#if SPOTON_GOLDBUG == 0
   m_ui.version->setText
     (QString("<html><head/><body><p><a href=\"https://github.com/textbrowser/"
 	     "spot-on/blob/master/branches/Documentation/RELEASE-NOTES.html\">"
 	     "<span style=\" text-decoration: underline; color:#0000ff;\">"
 	     "Spot-On Version %1</span></a></p></body></html>").
      arg(SPOTON_VERSION_STR));
+#endif
   setWindowTitle
     (tr("%1").arg(SPOTON_APPLICATION_NAME));
   m_ui.listenerOrientation->model()->setData
