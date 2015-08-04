@@ -366,7 +366,7 @@ int spoton_sctp_socket::socketDescriptor(void) const
 qint64 spoton_sctp_socket::read(char *data, const qint64 size)
 {
 #ifdef SPOTON_SCTP_ENABLED
-  if(m_socketDescriptor == -1 || m_state != ConnectedState)
+  if(m_socketDescriptor < 0 || m_state != ConnectedState)
     return -1;
   else if(!data || size < 0)
     return -1;
@@ -456,7 +456,7 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
 qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
 {
 #ifdef SPOTON_SCTP_ENABLED
-  if(m_socketDescriptor == -1 || m_state != ConnectedState)
+  if(m_socketDescriptor < 0 || m_state != ConnectedState)
     return -1;
   else if(!data || size < 0)
     return -1;
@@ -600,10 +600,9 @@ void spoton_sctp_socket::abort(void)
 
 void spoton_sctp_socket::close(void)
 {
-  if(m_state == UnconnectedState)
-    return;
-
 #ifdef SPOTON_SCTP_ENABLED
+  SocketState state = m_state;
+
   QHostInfo::abortHostLookup(m_hostLookupId);
 #ifdef Q_OS_WIN32
   shutdown(m_socketDescriptor, SD_BOTH);
@@ -620,7 +619,9 @@ void spoton_sctp_socket::close(void)
   m_socketDescriptor = -1;
   m_state = UnconnectedState;
   m_timer.stop();
-  emit disconnected();
+
+  if(state != UnconnectedState)
+    emit disconnected();
 #endif
 }
 
@@ -1000,7 +1001,7 @@ void spoton_sctp_socket::slotTimeout(void)
 	close();
     }
 
-  if(m_socketDescriptor == -1 || m_state != ConnectedState)
+  if(m_socketDescriptor < 0 || m_state != ConnectedState)
     return;
 
   QByteArray data(static_cast<int> (m_readBufferSize), 0);
