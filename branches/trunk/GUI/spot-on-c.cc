@@ -3174,8 +3174,6 @@ void spoton::updatePublicKeysLabel(void)
 
       if(ok)
 	item->setText(bytes.constData());
-      else
-	item->setText(tr("error"));
 
       m_ui.personal_public_keys->setItem(i, 3, item);
     }
