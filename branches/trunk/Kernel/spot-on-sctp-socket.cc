@@ -600,6 +600,9 @@ void spoton_sctp_socket::abort(void)
 
 void spoton_sctp_socket::close(void)
 {
+  if(m_state == UnconnectedState)
+    return;
+
 #ifdef SPOTON_SCTP_ENABLED
   QHostInfo::abortHostLookup(m_hostLookupId);
 #ifdef Q_OS_WIN32
