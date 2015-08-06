@@ -31,7 +31,7 @@
 #ifndef _spoton_common_h_
 #define _spoton_common_h_
 
-#define SPOTON_VERSION_STR "2015.08.01"
+#define SPOTON_VERSION_STR "2015.08.14"
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
 typedef QList<QByteArray> QByteArrayList;
