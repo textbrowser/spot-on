@@ -241,7 +241,10 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 			 QString(""));
 
       keys = crypt.generatePrivatePublicKeys
-	(s_crypt->publicKeySize(), s_crypt->publicKeyAlgorithm(), error);
+	(s_crypt->publicKeySize(),
+	 s_crypt->publicKeyAlgorithm(),
+	 error,
+	 false);
 
       if(!error.isEmpty())
 	break;
