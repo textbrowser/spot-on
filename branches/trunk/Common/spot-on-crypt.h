@@ -171,14 +171,16 @@ class spoton_crypt
   QByteArray publicKeyDecrypt(const QByteArray &data, bool *ok);
   QByteArray publicKeyHash(bool *ok);
   QByteArray symmetricKey(void);
+  QPair<QByteArray, QByteArray> generatePrivatePublicKeys
+    (const QString &keySize,
+     const QString &keyType,
+     QString &error,
+     const bool save_keys = true);
   QString cipherType(void) const;
   QString publicKeyAlgorithm(void);
   QString publicKeySize(void);
   QString publicKeySizeNTRU(void);
   qint64 publicKeyCount(void);
-  void generatePrivatePublicKeys(const QString &keySize,
-				 const QString &keyType,
-				 QString &error);
 
  private:
   QByteArray m_publicKey;

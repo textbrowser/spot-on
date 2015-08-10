@@ -25,6 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QProgressDialog>
+
 #include "spot-on.h"
 
 void spoton::slotDuplicateTransmittedMagnet(void)
@@ -179,9 +181,16 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
   QModelIndexList publicKeyHashes
     (m_ui.emailParticipants->selectionModel()->
      selectedRows(3)); // public_key_hash
+  QProgressDialog progress(this);
   QString error("");
+  spoton_crypt *s_crypt = m_crypts.value("email", 0);
 
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+  if(!s_crypt)
+    {
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      goto done_label;
+    }
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     {
       error = tr("The interface is not connected to the kernel.");
       goto done_label;
@@ -196,6 +205,49 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
       error = tr("Please select at least one participant.");
       goto done_label;
     }
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  progress.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  progress.setLabelText(tr("Generating key pairs..."));
+  progress.setMaximum(publicKeyHashes.size());
+  progress.setMinimum(0);
+  progress.setWindowModality(Qt::ApplicationModal);
+  progress.setWindowTitle(tr("%1: Generating Key Pairs").
+			  arg(SPOTON_APPLICATION_NAME));
+  progress.show();
+  progress.update();
+
+  for(int i = 0; i < publicKeyHashes.size() && !progress.wasCanceled(); i++)
+    {
+      if(i + 1<= progress.maximum())
+	progress.setValue(i + 1);
+
+      progress.update();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+
+      QPair<QByteArray, QByteArray> keys;
+      spoton_crypt crypt("aes256",
+			 "sha512",
+			 QByteArray(),
+			 QByteArray(),
+			 QByteArray(),
+			 0,
+			 0,
+			 QString(""));
+
+      keys = crypt.generatePrivatePublicKeys
+	(s_crypt->publicKeySize(), s_crypt->publicKeyAlgorithm(), error);
+
+      if(!error.isEmpty())
+	break;
+    }
+
+  progress.close();
 
  done_label:
 

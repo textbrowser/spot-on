@@ -1846,12 +1846,15 @@ QByteArray spoton_crypt::publicKeyHash(bool *ok)
   return hash;
 }
 
-void spoton_crypt::generatePrivatePublicKeys(const QString &keySize,
-					     const QString &keyType,
-					     QString &error)
+QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
+(const QString &keySize,
+ const QString &keyType,
+ QString &error,
+ const bool save_keys)
 {
   QByteArray privateKey;
   QByteArray publicKey;
+  QPair<QByteArray, QByteArray> keys;
   QString connectionName("");
   QString genkey("");
   char *buffer = 0;
@@ -2065,6 +2068,13 @@ void spoton_crypt::generatePrivatePublicKeys(const QString &keySize,
 
  save_keys_label:
 
+  if(!save_keys)
+    {
+      keys.first = privateKey;
+      keys.second = publicKey;
+      goto done_label;
+    }
+
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
@@ -2131,6 +2141,7 @@ void spoton_crypt::generatePrivatePublicKeys(const QString &keySize,
   gcry_free(key_t);
   gcry_free(keyPair_t);
   gcry_free(parameters_t);
+  return keys;
 }
 
 QByteArray spoton_crypt::keyedHash(const QByteArray &data,
