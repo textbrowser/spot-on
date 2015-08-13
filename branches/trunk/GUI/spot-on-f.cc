@@ -79,9 +79,9 @@ void spoton::slotDuplicateTransmittedMagnet(void)
     askKernelToReadStarBeamKeys();
 }
 
-void spoton::addMessageToQueue(const QString &message1,
-			       const QByteArray &message2,
-			       const QString &publicKeyHash)
+void spoton::addMessageToReplayQueue(const QString &message1,
+				     const QByteArray &message2,
+				     const QString &publicKeyHash)
 {
   if(message1.isEmpty() || message2.isEmpty() || publicKeyHash.isEmpty())
     return;
@@ -248,6 +248,28 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 
       if(!error.isEmpty())
 	break;
+      else
+	{
+	  QByteArray message;
+
+	  message.append("email_forward_secrecy_");
+	  message.append
+	    (publicKeyHashes.at(i).data().toByteArray().toBase64());
+	  message.append("_");
+	  message.append(keys.first.toBase64()); // Private Key
+	  message.append("_");
+	  message.append(keys.second.toBase64()); // Public Key
+	  message.append("\n");
+
+	  if(m_kernelSocket.write(message.constData(), message.length()) !=
+	     message.length())
+	    spoton_misc::logError
+	      (QString("spoton::slotEstablishEmailForwardSecrecy(): "
+		       "write() failure for "
+		       "%1:%2.").
+	       arg(m_kernelSocket.peerAddress().toString()).
+	       arg(m_kernelSocket.peerPort()));
+	}
     }
 
   progress.close();

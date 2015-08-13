@@ -413,9 +413,9 @@ class spoton: public QMainWindow
 					     const int column);
   static QPointer<spoton> instance(void);
   static QString mapIconToEmoticon(const QString &content);
-  void addMessageToQueue(const QString &message1,
-			 const QByteArray &message2,
-			 const QString &publicKeyHash);
+  void addMessageToReplayQueue(const QString &message1,
+			       const QByteArray &message2,
+			       const QString &publicKeyHash);
 
  private:
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS = 1;

@@ -138,7 +138,7 @@ void spoton::sendMessage(bool *ok)
 	  message.append(QDateTime::currentDateTime().toUTC().
 			 toString("MMddyyyyhhmmss").toLatin1().toBase64());
 	  message.append("\n");
-	  addMessageToQueue(msg, message, publicKeyHash);
+	  addMessageToReplayQueue(msg, message, publicKeyHash);
 
 	  QPointer<spoton_chatwindow> chat = m_chatWindows.value
 	    (publicKeyHash, 0);
