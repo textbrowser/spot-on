@@ -244,7 +244,19 @@ void spoton_misc::prepareDatabases(void)
 	   "status TEXT NOT NULL DEFAULT 'offline', "
 	   "last_status_update TEXT NOT NULL DEFAULT 'now', "
 	   "gemini_hash_key TEXT DEFAULT NULL, "
-	   "name_changed_by_user INTEGER NOT NULL DEFAULT 0)");
+	   "name_changed_by_user INTEGER NOT NULL DEFAULT 0, "
+	   "forward_secrecy_authentication_algorithm TEXT, "
+	   "forward_secrecy_authentication_key TEXT, "
+	   "forward_secrecy_encryption_algorithm TEXT, "
+	   "forward_secrecy_encryption_key TEXT)");
+	query.exec("ALTER TABLE friends_public_keys ADD "
+		   "forward_secrecy_authentication_algorithm TEXT");
+	query.exec("ALTER TABLE friends_public_keys ADD "
+		   "forward_secrecy_authentication_key TEXT");
+	query.exec("ALTER TABLE friends_public_keys ADD "
+		   "forward_secrecy_encryption_algorithm TEXT");
+	query.exec("ALTER TABLE friends_public_keys ADD "
+		   "forward_secrecy_encryption_key TEXT");
 	query.exec
 	  ("CREATE TABLE IF NOT EXISTS relationships_with_signatures ("
 	   "public_key_hash TEXT PRIMARY KEY NOT NULL, " /*
