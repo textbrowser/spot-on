@@ -486,6 +486,8 @@ class spoton: public QMainWindow
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray copyMyUrlPublicKey(void) const;
   QByteArray poptasticName(void) const;
+  QList<QByteArray> retrieveForwardSecrecyInformation
+    (const QSqlDatabase &db, const QString &oid, bool *ok) const;
   QPixmap pixmapForCountry(const QString &country) const;
   QString currentTabName(void) const;
   QStringList parseAEMagnet(const QString &magnet) const;

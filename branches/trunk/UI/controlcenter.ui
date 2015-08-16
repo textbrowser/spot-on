@@ -1261,7 +1261,7 @@
                          <bool>true</bool>
                         </property>
                         <attribute name="horizontalHeaderDefaultSectionSize">
-                         <number>150</number>
+                         <number>200</number>
                         </attribute>
                         <attribute name="horizontalHeaderStretchLastSection">
                          <bool>true</bool>
@@ -1284,6 +1284,11 @@
                         <column>
                          <property name="text">
                           <string>public_key_hash</string>
+                         </property>
+                        </column>
+                        <column>
+                         <property name="text">
+                          <string>Forward Secrecy Information</string>
                          </property>
                         </column>
                        </widget>
@@ -4047,7 +4052,7 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-227</y>
+                 <y>0</y>
                  <width>752</width>
                  <height>602</height>
                 </rect>
@@ -7620,8 +7625,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>764</width>
+             <height>538</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7656,9 +7661,6 @@
                 </item>
                 <item>
                  <widget class="QLabel" name="label_31">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Image copyright http://www.dragoart.com.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
                   <property name="text">
                    <string/>
                   </property>

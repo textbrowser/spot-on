@@ -295,3 +295,70 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
     QMessageBox::critical
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
 }
+
+QList<QByteArray> spoton::retrieveForwardSecrecyInformation
+(const QSqlDatabase &db, const QString &oid, bool *ok) const
+{
+  if(ok)
+    *ok = false;
+
+  QList<QByteArray> list;
+
+  if(db.isOpen())
+    return list;
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return list;
+
+  QSqlQuery query(db);
+
+  query.setForwardOnly(true);
+  query.prepare("SELECT forward_secrecy_authentication_algorithm, "
+		"forward_secrecy_authentication_key, "
+		"forward_secrecy_encryption_algorithm, "
+		"forward_secrecy_encryption_key FROM "
+		"friends_public_keys WHERE OID = ?");
+  query.bindValue(0, oid);
+
+  if(query.exec())
+    if(query.next())
+      {
+	QByteArray bytes;
+	bool ok = true;
+
+	bytes = crypt->decryptedAfterAuthenticated
+	  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	if(ok)
+	  list << bytes;
+
+	if(ok)
+	  bytes = crypt->decryptedAfterAuthenticated
+	    (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
+
+	if(ok)
+	  list << bytes;
+
+	if(ok)
+	  bytes = crypt->decryptedAfterAuthenticated
+	    (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
+
+	if(ok)
+	  list << bytes;
+
+	if(ok)
+	  bytes = crypt->decryptedAfterAuthenticated
+	    (QByteArray::fromBase64(query.value(3).toByteArray()), &ok);
+
+	if(ok)
+	  list << bytes;
+      }
+
+  if(list.size() == 4)
+    if(ok)
+      *ok = true;
+
+  return list;
+}

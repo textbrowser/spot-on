@@ -2271,15 +2271,15 @@ spoton::spoton(void):QMainWindow()
 
   foreach(QAbstractButton *button,
 	  m_ui.emailParticipants->findChildren<QAbstractButton *> ())
-    button->setToolTip(tr("Broadcast"));
+    button->setToolTip(tr("Select All"));
 
   foreach(QAbstractButton *button,
 	  m_ui.participants->findChildren<QAbstractButton *> ())
-    button->setToolTip(tr("Broadcast"));
+    button->setToolTip(tr("Select All"));
 
   foreach(QAbstractButton *button,
 	  m_ui.urlParticipants->findChildren<QAbstractButton *> ())
-    button->setToolTip(tr("Broadcast"));
+    button->setToolTip(tr("Select All"));
 
   connect(&m_externalAddressDiscovererTimer,
 	  SIGNAL(timeout(void)),
@@ -7181,7 +7181,7 @@ void spoton::slotPopulateParticipants(void)
 	m_ui.emailParticipants->setSelectionMode
 	  (QAbstractItemView::ExtendedSelection);
 	m_ui.emailParticipants->setSortingEnabled(true);
-	m_ui.emailParticipants->resizeColumnsToContents();
+	m_ui.emailParticipants->resizeColumnToContents(0);
 	m_ui.emailParticipants->horizontalHeader()->
 	  setStretchLastSection(true);
 	m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
