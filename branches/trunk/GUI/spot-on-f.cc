@@ -250,6 +250,21 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 	break;
       else
 	{
+	  bool ok = true;
+
+	  keys.first = s_crypt->encryptedThenHashed(keys.first, &ok);
+
+	  if(ok)
+	    keys.second = s_crypt->encryptedThenHashed(keys.second, &ok);
+
+	  if(!ok)
+	    {
+	      spoton_misc::logError
+		("spoton::slotEstablishEmailForwardSecrecy(): "
+		 "spoton_crypt::encryptedThenHashed() failure.");
+	      continue;
+	    }
+
 	  QByteArray message;
 
 	  message.append("email_forward_secrecy_");

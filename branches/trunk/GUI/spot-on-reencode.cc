@@ -625,10 +625,19 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 	if(query.exec("SELECT gemini, gemini_hash_key, "
 		      "public_key_hash, "
-		      "public_key, key_type, name FROM "
+		      "public_key, key_type, name, "
+		      "forward_secrecy_authentication_algorithm, "
+		      "forward_secrecy_authentication_key, "
+		      "forward_secrecy_encryption_algorithm, "
+		      "forward_secrecy_encryption_key "
+		      "FROM "
 		      "friends_public_keys WHERE neighbor_oid = -1"))
 	  while(query.next())
 	    {
+	      QByteArray fsAuthAlg;
+	      QByteArray fsAuthKey;
+	      QByteArray fsEncAlg;
+	      QByteArray fsEncKey;
 	      QByteArray gemini;
 	      QByteArray geminiHashKey;
 	      QByteArray keyType;
@@ -637,14 +646,19 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
-	      updateQuery.prepare("UPDATE friends_public_keys "
-				  "SET gemini = ?, "
-				  "gemini_hash_key = ?, "
-				  "public_key = ?, "
-				  "key_type = ?, "
-				  "key_type_hash = ?, "
-				  "name = ? "
-				  "WHERE public_key_hash = ?");
+	      updateQuery.prepare
+		("UPDATE friends_public_keys "
+		 "SET gemini = ?, "
+		 "gemini_hash_key = ?, "
+		 "public_key = ?, "
+		 "key_type = ?, "
+		 "key_type_hash = ?, "
+		 "name = ?, "
+		 "forward_secrecy_authentication_algorithm = ?, "
+		 "forward_secrecy_authentication_key = ?, "
+		 "forward_secrecy_encryption_algorithm = ?, "
+		 "forward_secrecy_encryption_key = ? "
+		 "WHERE public_key_hash = ?");
 
 	      if(!query.isNull(0))
 		gemini = oldCrypt->decryptedAfterAuthenticated
@@ -671,6 +685,30 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		name = oldCrypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(5).toByteArray()),
 		   &ok);
+
+	      if(ok)
+		if(!query.isNull(6))
+		  fsAuthAlg = oldCrypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(6).toByteArray()),
+		     &ok);
+
+	      if(ok)
+		if(!query.isNull(7))
+		  fsAuthKey = oldCrypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(7).toByteArray()),
+		     &ok);
+
+	      if(ok)
+		if(!query.isNull(8))
+		  fsEncAlg = oldCrypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(8).toByteArray()),
+		     &ok);
+
+	      if(ok)
+		if(!query.isNull(9))
+		  fsEncKey = oldCrypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(9).toByteArray()),
+		     &ok);
 
 	      if(ok)
 		{
@@ -714,8 +752,48 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		updateQuery.bindValue
 		  (5, newCrypt->encryptedThenHashed(name, &ok).toBase64());
 
+	      if(ok)
+		{
+		  if(query.isNull(6))
+		    updateQuery.bindValue(6, QVariant::String);
+		  else
+		    updateQuery.bindValue
+		      (6, newCrypt->encryptedThenHashed(fsAuthAlg, &ok).
+		       toBase64());
+		}
+
+	      if(ok)
+		{
+		  if(query.isNull(7))
+		    updateQuery.bindValue(7, QVariant::String);
+		  else
+		    updateQuery.bindValue
+		      (7, newCrypt->encryptedThenHashed(fsAuthKey, &ok).
+		       toBase64());
+		}
+
+	      if(ok)
+		{
+		  if(query.isNull(8))
+		    updateQuery.bindValue(8, QVariant::String);
+		  else
+		    updateQuery.bindValue
+		      (8, newCrypt->encryptedThenHashed(fsEncAlg, &ok).
+		       toBase64());
+		}
+
+	      if(ok)
+		{
+		  if(query.isNull(9))
+		    updateQuery.bindValue(9, QVariant::String);
+		  else
+		    updateQuery.bindValue
+		      (9, newCrypt->encryptedThenHashed(fsEncKey, &ok).
+		       toBase64());
+		}
+
 	      updateQuery.bindValue
-		(6, query.value(2));
+		(10, query.value(2));
 
 	      if(ok)
 		updateQuery.exec();

@@ -15,6 +15,10 @@ recipient_hash
 
 friends_public_keys.db:
 
+forward_secrecy_authentication_algorithm
+forward_secrecy_authentication_key
+forward_secrecy_encryption_algorithm
+forward_secrecy_encryption_key
 gemini
 gemini_hash_key
 key_type
