@@ -8534,13 +8534,14 @@ void spoton::slotBuzzTools(int index)
 
 void spoton::slotAbout(void)
 {
-  QMessageBox::information
-    (this, tr("%1: About").
-     arg(SPOTON_APPLICATION_NAME),
-     QString("Version %1\n"
-	     "%2").
-     arg(SPOTON_VERSION_STR).
-     arg(m_ui.buildInformation->text()));
+  QMessageBox mb(this);
+
+  mb.setIconPixmap(*m_ui.logo->pixmap());
+  mb.setStandardButtons(QMessageBox::Ok);
+  mb.setText(m_ui.buildInformation->text());
+  mb.setTextFormat(Qt::RichText);
+  mb.setWindowTitle(SPOTON_APPLICATION_NAME);
+  mb.exec();
 }
 
 QPointer<spoton> spoton::instance(void)
