@@ -79,6 +79,8 @@ class spoton_misc
 					       const QByteArray &hashKey,
 					       const QByteArray &haskType,
 					       spoton_crypt *crypt);
+  static QByteArray forwardSecrecyMagnetFromList
+    (const QList<QByteArray> &list);
   static QByteArray publicKeyFromHash(const QByteArray &publicKeyHash,
 				      spoton_crypt *crypt);
   static QByteArray publicKeyFromSignaturePublicKeyHash

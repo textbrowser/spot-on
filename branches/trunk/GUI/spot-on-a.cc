@@ -7075,10 +7075,9 @@ void spoton::slotPopulateParticipants(void)
 
 			  if(ok)
 			    item = new QTableWidgetItem
-			      ((list.value(0) + " | " +
-				list.value(1) + " | " +
-				list.value(2) + " | " +
-				list.value(3)).constData());
+			      (spoton_misc::
+			       forwardSecrecyMagnetFromList(list).
+			       constData());
 			  else
 			    item = new QTableWidgetItem(tr("error"));
 			}

@@ -4278,3 +4278,20 @@ void spoton_misc::removeOneTimeStarBeamMagnets(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+QByteArray spoton_misc::forwardSecrecyMagnetFromList
+(const QList<QByteArray> &list)
+{
+  QByteArray magnet;
+
+  magnet.append("magnet:?aa=");
+  magnet.append(list.value(0));
+  magnet.append("&ak=");
+  magnet.append(list.value(1));
+  magnet.append("&ea=");
+  magnet.append(list.value(2));
+  magnet.append("&ek=");
+  magnet.append(list.value(3));
+  magnet.append("&xt=urn:forward-secrecy");
+  return magnet;
+}

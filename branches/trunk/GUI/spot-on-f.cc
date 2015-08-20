@@ -297,10 +297,10 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 }
 
 QList<QByteArray> spoton::retrieveForwardSecrecyInformation
-(const QSqlDatabase &db, const QString &oid, bool *ok) const
+(const QSqlDatabase &db, const QString &oid, bool *ok1) const
 {
-  if(ok)
-    *ok = false;
+  if(ok1)
+    *ok1 = false;
 
   QList<QByteArray> list;
 
@@ -327,42 +327,54 @@ QList<QByteArray> spoton::retrieveForwardSecrecyInformation
       if(query.next())
 	{
 	  QByteArray bytes;
-	  bool ok = true;
+	  bool ok2 = true;
 
-	  bytes = crypt->decryptedAfterAuthenticated
-	    (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+	  if(!query.isNull(0))
+	    {
+	      bytes = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok2);
 
-	  if(ok)
-	    list << bytes;
+	      if(ok2)
+		list << bytes;
+	    }
 
-	  if(ok)
-	    bytes = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
+	  if(ok2)
+	    if(!query.isNull(1))
+	      {
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok2);
 
-	  if(ok)
-	    list << bytes;
+		if(ok2)
+		  list << bytes;
+	      }
 
-	  if(ok)
-	    bytes = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
+	  if(ok2)
+	    if(!query.isNull(2))
+	      {
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).toByteArray()), &ok2);
 
-	  if(ok)
-	    list << bytes;
+		if(ok2)
+		  list << bytes;
+	      }
 
-	  if(ok)
-	    bytes = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(3).toByteArray()), &ok);
+	  if(ok2)
+	    if(!query.isNull(3))
+	      {
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(3).toByteArray()), &ok2);
 
-	  if(ok)
-	    list << bytes;
+		if(ok2)
+		  list << bytes;
+	      }
+
+	  if(ok2)
+	    if(ok1)
+	      *ok1 = true;
 	}
-      else if(ok)
-	*ok = true;
+      else if(ok1)
+	*ok1 = true;
     }
-
-  if(list.size() == 4)
-    if(ok)
-      *ok = true;
 
   return list;
 }
