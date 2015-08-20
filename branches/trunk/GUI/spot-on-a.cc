@@ -6815,7 +6815,7 @@ void spoton::slotPopulateParticipants(void)
 	      QIcon icon;
 	      QString keyType("");
 	      QString name("");
-	      QString oid("");
+	      QString oid(query.value(1).toString());
 	      QString status(query.value(4).toString().toLower());
 	      QString statusText("");
 	      bool ok = true;
@@ -6935,13 +6935,8 @@ void spoton::slotPopulateParticipants(void)
 			    }
 			}
 		      else
-			{
-			  item = new QTableWidgetItem
-			    (query.value(i).toString());
-
-			  if(i == 1) // OID
-			    oid = item->text();
-			}
+			item = new QTableWidgetItem
+			  (query.value(i).toString());
 
 		      item->setFlags
 			(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -7070,6 +7065,23 @@ void spoton::slotPopulateParticipants(void)
 		      else if(i == 1 || i == 2 || i == 3)
 			item = new QTableWidgetItem
 			  (query.value(i).toString());
+		      else if(i == 4)
+			{
+			  QList<QByteArray> list;
+			  bool ok = true;
+
+			  list = retrieveForwardSecrecyInformation
+			    (db, oid, &ok);
+
+			  if(ok)
+			    item = new QTableWidgetItem
+			      ((list.value(0) + " | " +
+				list.value(1) + " | " +
+				list.value(2) + " | " +
+				list.value(3)).constData());
+			  else
+			    item = new QTableWidgetItem(tr("error"));
+			}
 		      else
 			item = new QTableWidgetItem();
 

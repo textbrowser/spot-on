@@ -304,7 +304,7 @@ QList<QByteArray> spoton::retrieveForwardSecrecyInformation
 
   QList<QByteArray> list;
 
-  if(db.isOpen())
+  if(!db.isOpen())
     return list;
 
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -323,38 +323,42 @@ QList<QByteArray> spoton::retrieveForwardSecrecyInformation
   query.bindValue(0, oid);
 
   if(query.exec())
-    if(query.next())
-      {
-	QByteArray bytes;
-	bool ok = true;
+    {
+      if(query.next())
+	{
+	  QByteArray bytes;
+	  bool ok = true;
 
-	bytes = crypt->decryptedAfterAuthenticated
-	  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
-
-	if(ok)
-	  list << bytes;
-
-	if(ok)
 	  bytes = crypt->decryptedAfterAuthenticated
-	    (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
+	    (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
-	if(ok)
-	  list << bytes;
+	  if(ok)
+	    list << bytes;
 
-	if(ok)
-	  bytes = crypt->decryptedAfterAuthenticated
-	    (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
+	  if(ok)
+	    bytes = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
 
-	if(ok)
-	  list << bytes;
+	  if(ok)
+	    list << bytes;
 
-	if(ok)
-	  bytes = crypt->decryptedAfterAuthenticated
-	    (QByteArray::fromBase64(query.value(3).toByteArray()), &ok);
+	  if(ok)
+	    bytes = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
 
-	if(ok)
-	  list << bytes;
-      }
+	  if(ok)
+	    list << bytes;
+
+	  if(ok)
+	    bytes = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(3).toByteArray()), &ok);
+
+	  if(ok)
+	    list << bytes;
+	}
+      else if(ok)
+	*ok = true;
+    }
 
   if(list.size() == 4)
     if(ok)
