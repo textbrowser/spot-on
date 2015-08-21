@@ -388,6 +388,13 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(list.size() == 2)
 		emit echoKeyShare(list);
 	    }
+	  else if(message.startsWith("email_forward_secrecy_"))
+	    {
+	      message.remove
+		(0, static_cast<int> (qstrlen("email_forward_secrecy_")));
+
+	      QList<QByteArray> list(message.split('_'));
+	    }
 	  else if(message.startsWith("keys_"))
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("keys_")));

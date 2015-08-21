@@ -26,8 +26,10 @@
 */
 
 #include <QProgressDialog>
+#include <QScopedPointer>
 
 #include "spot-on.h"
+#include "ui_forwardsecrecyalgorithmsselection.h"
 
 void spoton::slotDuplicateTransmittedMagnet(void)
 {
@@ -182,7 +184,11 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
     (m_ui.emailParticipants->selectionModel()->
      selectedRows(3)); // public_key_hash
   QProgressDialog progress(this);
+  QScopedPointer<QDialog> dialog;
   QString error("");
+  QStringList aTypes;
+  QStringList eTypes;
+  Ui_forwardsecrecyalgorithmsselection ui;
   spoton_crypt *s_crypt = m_crypts.value("email", 0);
 
   if(!s_crypt)
@@ -206,6 +212,40 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
       goto done_label;
     }
 
+  aTypes = spoton_crypt::cipherTypes();
+
+  if(aTypes.isEmpty())
+    {
+      error = tr("The method spoton_crypt::cipherTypes() has "
+		 "failed. "
+		 "This is a fatal flaw.");
+      goto done_label;
+    }
+
+  eTypes = spoton_crypt::hashTypes();
+
+  if(eTypes.isEmpty())
+    {
+      error = tr("The method spoton_crypt::hashTypes() has "
+		 "failed. "
+		 "This is a fatal flaw.");
+      goto done_label;
+    }
+
+  dialog.reset(new QDialog(this));
+  dialog->setWindowTitle
+    (tr("%1: Forward Secrecy Algorithms Selection").
+     arg(SPOTON_APPLICATION_NAME));
+  ui.setupUi(dialog.data());
+#ifdef Q_OS_MAC
+  dialog->setAttribute(Qt::WA_MacMetalStyle, false);
+#endif
+  ui.authentication_algorithm->addItems(aTypes);
+  ui.encryption_algorithm->addItems(eTypes);
+
+  if(dialog->exec() != QDialog::Accepted)
+    goto done_label;
+
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   progress.setAttribute(Qt::WA_MacMetalStyle, true);
@@ -222,7 +262,7 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 
   for(int i = 0; i < publicKeyHashes.size() && !progress.wasCanceled(); i++)
     {
-      if(i + 1<= progress.maximum())
+      if(i + 1 <= progress.maximum())
 	progress.setValue(i + 1);
 
       progress.update();
@@ -268,6 +308,12 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 	  QByteArray message;
 
 	  message.append("email_forward_secrecy_");
+	  message.append
+	    (ui.authentication_algorithm->currentText().toAscii().toBase64());
+	  message.append("_");
+	  message.append
+	    (ui.encryption_algorithm->currentText().toAscii().toBase64());
+	  message.append("_");
 	  message.append
 	    (publicKeyHashes.at(i).data().toByteArray().toBase64());
 	  message.append("_");

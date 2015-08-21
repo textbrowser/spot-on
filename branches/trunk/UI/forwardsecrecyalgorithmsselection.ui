@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>forwardsecrecyalgorithmselection</class>
- <widget class="QDialog" name="forwardsecrecyalgorithmselection">
+ <class>forwardsecrecyalgorithmsselection</class>
+ <widget class="QDialog" name="forwardsecrecyalgorithmsselection">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -126,7 +126,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>forwardsecrecyalgorithmselection</receiver>
+   <receiver>forwardsecrecyalgorithmsselection</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -142,7 +142,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>forwardsecrecyalgorithmselection</receiver>
+   <receiver>forwardsecrecyalgorithmsselection</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
