@@ -51,6 +51,7 @@ FORMS           = UI\\adaptiveechoprompt.ui \
 		  UI\\controlcenter.ui \
 		  UI\\echo-key-share.ui \
 		  UI\\encryptfile.ui \
+		  UI\\forwardsecrecyalgorithmsselection.ui \
 		  UI\\ipinformation.ui \
 		  UI\\keyboard.ui \
 		  UI\\listener-socket-options.ui \

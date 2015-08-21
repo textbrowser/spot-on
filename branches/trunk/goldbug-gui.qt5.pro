@@ -53,6 +53,7 @@ FORMS           = GoldBug-UI/adaptiveechoprompt.ui \
 		  GoldBug-UI/controlcenter.ui \
 		  GoldBug-UI/echo-key-share.ui \
 		  GoldBug-UI/encryptfile.ui \
+		  GoldBug-UI/forwardsecrecyalgorithmsselection.ui \
 		  GoldBug-UI/ipinformation.ui \
 		  GoldBug-UI/keyboard.ui \
 		  GoldBug-UI/listener-socket-options.ui \
