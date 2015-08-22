@@ -184,11 +184,7 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
     (m_ui.emailParticipants->selectionModel()->
      selectedRows(3)); // public_key_hash
   QProgressDialog progress(this);
-  QScopedPointer<QDialog> dialog;
   QString error("");
-  QStringList aTypes;
-  QStringList eTypes;
-  Ui_forwardsecrecyalgorithmsselection ui;
   spoton_crypt *s_crypt = m_crypts.value("email", 0);
 
   if(!s_crypt)
@@ -211,40 +207,6 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
       error = tr("Please select at least one participant.");
       goto done_label;
     }
-
-  aTypes = spoton_crypt::cipherTypes();
-
-  if(aTypes.isEmpty())
-    {
-      error = tr("The method spoton_crypt::cipherTypes() has "
-		 "failed. "
-		 "This is a fatal flaw.");
-      goto done_label;
-    }
-
-  eTypes = spoton_crypt::hashTypes();
-
-  if(eTypes.isEmpty())
-    {
-      error = tr("The method spoton_crypt::hashTypes() has "
-		 "failed. "
-		 "This is a fatal flaw.");
-      goto done_label;
-    }
-
-  dialog.reset(new QDialog(this));
-  dialog->setWindowTitle
-    (tr("%1: Forward Secrecy Algorithms Selection").
-     arg(SPOTON_APPLICATION_NAME));
-  ui.setupUi(dialog.data());
-#ifdef Q_OS_MAC
-  dialog->setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-  ui.authentication_algorithm->addItems(aTypes);
-  ui.encryption_algorithm->addItems(eTypes);
-
-  if(dialog->exec() != QDialog::Accepted)
-    goto done_label;
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -308,12 +270,6 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 	  QByteArray message;
 
 	  message.append("email_forward_secrecy_");
-	  message.append
-	    (ui.authentication_algorithm->currentText().toAscii().toBase64());
-	  message.append("_");
-	  message.append
-	    (ui.encryption_algorithm->currentText().toAscii().toBase64());
-	  message.append("_");
 	  message.append
 	    (publicKeyHashes.at(i).data().toByteArray().toBase64());
 	  message.append("_");
@@ -423,4 +379,53 @@ QList<QByteArray> spoton::retrieveForwardSecrecyInformation
     }
 
   return list;
+}
+
+void spoton::slotRespondToEmailForwardSecrecy(void)
+{
+  QScopedPointer<QDialog> dialog;
+  QString error("");
+  QStringList aTypes;
+  QStringList eTypes;
+  Ui_forwardsecrecyalgorithmsselection ui;
+
+  aTypes = spoton_crypt::cipherTypes();
+
+  if(aTypes.isEmpty())
+    {
+      error = tr("The method spoton_crypt::cipherTypes() has "
+		 "failed. "
+		 "This is a fatal flaw.");
+      goto done_label;
+    }
+
+  eTypes = spoton_crypt::hashTypes();
+
+  if(eTypes.isEmpty())
+    {
+      error = tr("The method spoton_crypt::hashTypes() has "
+		 "failed. "
+		 "This is a fatal flaw.");
+      goto done_label;
+    }
+
+  dialog.reset(new QDialog(this));
+  dialog->setWindowTitle
+    (tr("%1: Forward Secrecy Algorithms Selection").
+     arg(SPOTON_APPLICATION_NAME));
+  ui.setupUi(dialog.data());
+#ifdef Q_OS_MAC
+  dialog->setAttribute(Qt::WA_MacMetalStyle, false);
+#endif
+  ui.authentication_algorithm->addItems(aTypes);
+  ui.encryption_algorithm->addItems(eTypes);
+
+  if(dialog->exec() != QDialog::Accepted)
+    goto done_label;
+
+ done_label:
+
+  if(!error.isEmpty())
+    QMessageBox::critical
+      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
 }
