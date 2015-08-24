@@ -5830,6 +5830,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       menu.addAction(tr("Establish Forward &Secrecy"),
 		     this, SLOT(slotEstablishEmailForwardSecrecy(void)));
+      menu.addAction(tr("Reset Forward &Secrecy Information"),
+		     this, SLOT(slotResetForwardSecrecyInformation(void)));
       menu.exec(m_ui.emailParticipants->mapToGlobal(point));
     }
   else if(m_ui.listeners == sender())

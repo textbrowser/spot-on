@@ -2683,6 +2683,8 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       menu->addAction(tr("Establish Forward &Secrecy"),
 		      this, SLOT(slotEstablishEmailForwardSecrecy(void)));
+      menu->addAction(tr("Reset Forward &Secrecy Information"),
+		      this, SLOT(slotResetForwardSecrecyInformation(void)));
       m_ui.emailWriteActionMenu->setMenu(menu);
       connect(m_ui.emailWriteActionMenu,
 	      SIGNAL(clicked(void)),
