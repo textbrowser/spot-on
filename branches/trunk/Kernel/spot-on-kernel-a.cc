@@ -112,6 +112,7 @@ QReadWriteLock spoton_kernel::s_institutionLastModificationTimeMutex;
 QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
 static QPointer<spoton_kernel> s_kernel = 0;
+static int s_exit_code = EXIT_SUCCESS;
 
 #if QT_VERSION >= 0x050000
 static void qt_message_handler(QtMsgType type,
@@ -322,9 +323,11 @@ int main(int argc, char *argv[])
 			   s_kernel,
 			   SLOT(deleteLater(void)));
 #endif
-	  qapplication.exec();
+
+	  int rc = qapplication.exec();
+
 	  curl_global_cleanup();
-	  return EXIT_SUCCESS;
+	  return rc;
 	}
       catch(std::bad_alloc &exception)
 	{
@@ -411,6 +414,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
 	if(GetConsoleMode(hStdin, &mode) == 0)
 	  {
+	    s_exit_code = EXIT_FAILURE;
 	    std::cerr << "Unable to retrieve the terminal's mode. Exiting.\n";
 	    deleteLater();
 	    break;
@@ -424,6 +428,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
 	if(tcgetattr(STDIN_FILENO, &oldt) != 0)
 	  {
+	    s_exit_code = EXIT_FAILURE;
 	    std::cerr << "Unable to retrieve the terminal's mode. Exiting.\n";
 	    deleteLater();
 	    break;
@@ -474,6 +479,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
 	    if(!initializeSecurityContainers(input1, input2))
 	      {
+		s_exit_code = EXIT_FAILURE;
 		std::cerr << "Invalid input?\n";
 		deleteLater();
 	      }
@@ -487,8 +493,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  }
 	else
 	  {
+	    s_exit_code = EXIT_FAILURE;
 	    std::cerr << "Unable to silence the terminal's echo. Exiting.\n";
 	    deleteLater();
+	    break;
 	  }
       }
     else if(arguments.at(i) == "--vacuum")
@@ -496,9 +504,11 @@ spoton_kernel::spoton_kernel(void):QObject(0)
       }
     else
       {
+	s_exit_code = EXIT_FAILURE;
 	std::cerr << "Invalid option: " << arguments.at(i).constData()
 		  << ". Exiting.\n";
 	deleteLater();
+	break;
       }
 
   connect(this,
@@ -781,7 +791,7 @@ spoton_kernel::~spoton_kernel()
   spoton_misc::logError(QString("Kernel %1 about to exit.").
 			arg(QCoreApplication::applicationPid()));
   spoton_crypt::terminate();
-  QCoreApplication::instance()->quit();
+  QCoreApplication::exit(s_exit_code);
 }
 
 void spoton_kernel::cleanup(void)

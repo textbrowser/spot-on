@@ -1,4 +1,4 @@
-.TH Spot-On-Kernel 1 "April 29, 2015"
+.TH Spot-On-Kernel 1 "August 24, 2015"
 .SH NAME
 Spot-On-Kernel
 .SH SYNOPSIS
@@ -7,13 +7,17 @@ Spot-On-Kernel
 .B Spot-On-Kernel
 is the kernel program that's responsible for most of the networking tasks of Spot-On.
 .SH OPTIONS
-.IP "--passphrase"
-Disable echo and authenticate the provided input. If the input is correct, the Spot-On-Kernel process will generate the defined keys and prepare its appropriate containers. If the input is incorrect, the Spot-On-Kernel process will terminate with a successful return value.
-.IP "--question-answer"
+.TP
+.BR --passphrase
+Disable echo and authenticate the provided input. If the input is correct, the Spot-On-Kernel process will generate the defined keys and prepare its appropriate containers. If the input is incorrect, the Spot-On-Kernel process will terminate with a positive return value.
+.TP
+.BR --question-answer
 Please read the passphrase option's description.
-.IP "--vacuum"
+.TP
+.BR --vacuum
 Vacuum various databases. The process will be performed before the authentication procedure.
-.IP "--version"
+.TP
+.BR --version
 Display version information and exit.
 .SH NOTES
 The Spot-On-Kernel process does not become a daemon process.
