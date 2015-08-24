@@ -432,4 +432,41 @@ void spoton::slotRespondToEmailForwardSecrecy(void)
 
 void spoton::slotResetForwardSecrecyInformation(void)
 {
+  QModelIndexList publicKeyHashes
+    (m_ui.emailParticipants->selectionModel()->
+     selectedRows(3)); // public_key_hash
+
+  if(publicKeyHashes.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	for(int i = 0; i < publicKeyHashes.size(); i++)
+	  {
+	    query.prepare
+	      ("UPDATE friends_public_keys "
+	       "SET forward_secrecy_authentication_algorithm = NULL, "
+	       "forward_secrecy_authentication_key = NULL, "
+	       "forward_secrecy_encryption_algorithm = NULL, "
+	       "forward_secrecy_encryption_key = NULL WHERE "
+	       "public_key_hash = ?");
+	    query.bindValue(0, publicKeyHashes.at(i).data());
+	    query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
