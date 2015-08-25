@@ -269,7 +269,7 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 
 	  QByteArray message;
 
-	  message.append("email_forward_secrecy_");
+	  message.append("forward_secrecy_");
 	  message.append
 	    (publicKeyHashes.at(i).data().toByteArray().toBase64());
 	  message.append("_");
