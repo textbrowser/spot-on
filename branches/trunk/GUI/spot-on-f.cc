@@ -146,9 +146,9 @@ void spoton::slotReplayMessages(void)
   if(chat)
     chat->append(msg);
 
-  while(!queue1.isEmpty())
+  for(int i = 0; i < queue1.size(); i++)
     {
-      QString msg(queue1.dequeue());
+      QString msg(queue1.at(i));
 
       m_ui.messages->append(msg);
       m_ui.messages->verticalScrollBar()->setValue
@@ -160,9 +160,9 @@ void spoton::slotReplayMessages(void)
 
   QQueue<QByteArray> queue2(m_chatQueues.value(item->text()).second);
 
-  while(!queue2.isEmpty())
+  for(int i = 0; i < queue2.size(); i++)
     {
-      QByteArray message(queue2.dequeue());
+      QByteArray message(queue2.at(i));
 
       if(m_kernelSocket.write(message.constData(), message.length()) !=
 	 message.length())
@@ -174,8 +174,6 @@ void spoton::slotReplayMessages(void)
       else
 	m_chatInactivityTimer.start();
     }
-
-  m_chatQueues.remove(item->text());
 }
 
 void spoton::slotEstablishEmailForwardSecrecy(void)
