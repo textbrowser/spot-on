@@ -219,6 +219,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
   QDateTime now(QDateTime::currentDateTime());
   QSettings settings;
   QString error("");
+  QString msg("");
 
   if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
     {
@@ -243,7 +244,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
     name = spoton::instance()->m_settings.
       value("gui/poptasticName", "unknown@unknown.org").toByteArray();
 
-  message.append
+  msg.append
     (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
      arg(now.toString("MM")).
      arg(now.toString("dd")).
@@ -251,21 +252,20 @@ void spoton_chatwindow::sendMessage(bool *ok)
      arg(now.toString("hh")).
      arg(now.toString("mm")).
      arg(now.toString("ss")));
-  message.append(tr("<b>me:</b> "));
+  msg.append(tr("<b>me:</b> "));
 
   if(settings.value("gui/enableChatEmoticons", false).toBool())
-    message.append
+    msg.append
       (spoton::mapIconToEmoticon(ui.message->toPlainText()));
   else
-    message.append(ui.message->toPlainText());
+    msg.append(ui.message->toPlainText());
 
-  ui.messages->append(message);
+  ui.messages->append(msg);
   ui.messages->verticalScrollBar()->setValue
     (ui.messages->verticalScrollBar()->maximum());
-  spoton::instance()->ui().messages->append(message);
+  spoton::instance()->ui().messages->append(msg);
   spoton::instance()->ui().messages->verticalScrollBar()->setValue
     (spoton::instance()->ui().messages->verticalScrollBar()->maximum());
-  message.clear();
 
   if(name.isEmpty())
     {
@@ -294,6 +294,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
   message.append(QDateTime::currentDateTime().toUTC().
 		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
   message.append("\n");
+  spoton::instance()->addMessageToReplayQueue(msg, message, m_publicKeyHash);
 
   if(m_kernelSocket->write(message.constData(), message.length()) !=
      message.length())
