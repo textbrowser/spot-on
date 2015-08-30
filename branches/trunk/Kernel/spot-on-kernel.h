@@ -222,6 +222,8 @@ class spoton_kernel: public QObject
 				      const qint64 oid);
   void slotDetachNeighbors(const qint64 listenerOid);
   void slotDisconnectNeighbors(const qint64 listenerOid);
+  void slotForwardSecrecyInformationReceivedFromUI
+    (const QByteArrayList &list);
   void slotImpersonateTimeout(void);
   void slotMessagingCachePurge(void);
   void slotMessageReceivedFromUI(const qint64 oid,

@@ -1698,3 +1698,10 @@ void spoton_kernel::saveUrls(const QList<QByteArray> &urls)
 
   m_urlsProcessed += urls.size();
 }
+
+void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
+(const QByteArrayList &list)
+{
+  if(list.isEmpty())
+    return;
+}

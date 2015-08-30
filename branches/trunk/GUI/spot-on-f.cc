@@ -230,6 +230,15 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
       QApplication::processEvents();
 #endif
 
+      bool temporary = publicKeyHashes.at(i).data(Qt::UserRole).toBool();
+
+      if(temporary)
+	/*
+	** Ignore temporary participants.
+	*/
+
+	continue;
+
       QPair<QByteArray, QByteArray> keys;
       spoton_crypt crypt("aes256",
 			 "sha512",

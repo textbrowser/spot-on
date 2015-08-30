@@ -631,6 +631,12 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SIGNAL(disconnectNeighbors(const qint64)),
 	  this,
 	  SLOT(slotDisconnectNeighbors(const qint64)));
+  connect
+    (m_guiServer,
+     SIGNAL(forwardSecrecyInformationReceivedFromUI(const QByteArrayList &)),
+     this,
+     SLOT(slotForwardSecrecyInformationReceivedFromUI(const
+						      QByteArrayList &)));
   connect(m_guiServer,
 	  SIGNAL(messageReceivedFromUI(const qint64,
 				       const QByteArray &,
