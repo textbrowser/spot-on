@@ -4347,6 +4347,8 @@ void spoton::slotSetIcons(int index)
   m_sb.chat->setIcon(QIcon(QString(":/%1/chat.png").arg(iconSet)));
   m_sb.email->setIcon(QIcon(QString(":/%1/email.png").arg(iconSet)));
   m_sb.errorlog->setIcon(QIcon(QString(":/%1/information.png").arg(iconSet)));
+  m_sb.forward_secrecy_request->setIcon
+    (QIcon(QString(":/%1/lock.png").arg(iconSet)));
 
   // Tab
 
@@ -5959,4 +5961,6 @@ void spoton::slotAuthenticationRequestButtonClicked(void)
 		 value(m_sb.authentication_request->
 		       property("data").toByteArray()),
 		 m_sb.authentication_request->toolTip());
+
+  m_sb.authentication_request->setProperty("data", QVariant());
 }

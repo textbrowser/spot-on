@@ -788,7 +788,7 @@ class spoton: public QMainWindow
   void slotResetAll(void);
   void slotResetCertificate(void);
   void slotResetForwardSecrecyInformation(void);
-  void slotRespondToEmailForwardSecrecy(void);
+  void slotRespondToForwardSecrecy(void);
   void slotRetrieveMail(void);
   void slotRewindFile(void);
   void slotSaveAlternatingColors(bool state);

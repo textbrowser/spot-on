@@ -335,6 +335,7 @@ spoton::spoton(void):QMainWindow()
   m_sb.buzz->setVisible(false);
   m_sb.chat->setVisible(false);
   m_sb.email->setVisible(false);
+  m_sb.forward_secrecy_request->setVisible(false);
   m_sb.status->setTextFormat(Qt::RichText);
 #ifdef Q_OS_MAC
   foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
@@ -404,6 +405,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotStatusButtonClicked(void)));
+  connect(m_sb.forward_secrecy_request,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRespondToForwardSecrecy(void)));
   connect(m_sb.listeners,
 	  SIGNAL(clicked(void)),
 	  this,

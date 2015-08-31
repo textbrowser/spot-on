@@ -388,7 +388,7 @@ QList<QByteArray> spoton::retrieveForwardSecrecyInformation
   return list;
 }
 
-void spoton::slotRespondToEmailForwardSecrecy(void)
+void spoton::slotRespondToForwardSecrecy(void)
 {
   QScopedPointer<QDialog> dialog;
   QString error("");
