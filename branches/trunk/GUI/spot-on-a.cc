@@ -224,11 +224,6 @@ spoton::spoton(void):QMainWindow()
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
 #if SPOTON_GOLDBUG == 0
-  QPixmap pixmap(*m_ui.logo->pixmap());
-
-  pixmap = pixmap.scaled(QSize(250, 250), Qt::KeepAspectRatio,
-			 Qt::SmoothTransformation);
-  m_ui.logo->setPixmap(pixmap);
   m_ui.version->setText
     (QString("<html><head/><body><p><a href=\"https://github.com/textbrowser/"
 	     "spot-on/blob/master/branches/Documentation/RELEASE-NOTES.html\">"
@@ -8554,7 +8549,15 @@ void spoton::slotAbout(void)
 {
   QMessageBox mb(this);
 
+#if SPOTON_GOLDBUG == 0
+  QPixmap pixmap(":/Logo/spot-on-logo.png");
+
+  pixmap = pixmap.scaled
+    (QSize(250, 250), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  mb.setIconPixmap(pixmap);
+#else
   mb.setIconPixmap(*m_ui.logo->pixmap());
+#endif
   mb.setStandardButtons(QMessageBox::Ok);
   mb.setText(m_ui.buildInformation->text());
   mb.setTextFormat(Qt::RichText);
