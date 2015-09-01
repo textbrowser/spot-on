@@ -1704,4 +1704,14 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 {
   if(list.isEmpty())
     return;
+
+  spoton_crypt *crypt = s_crypts.value(list.value(3), 0);
+
+  if(!crypt)
+    return;
+
+  QByteArray publicKey(spoton_misc::publicKeyFromHash(list.value(0), crypt));
+
+  if(publicKey.isEmpty())
+    return;
 }

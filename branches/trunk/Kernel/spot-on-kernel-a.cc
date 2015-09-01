@@ -385,6 +385,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   */
 
   QSettings settings;
+  bool disable_ui_server = false;
 
   settings.remove("kernel/neighbor_thread_priority");
 
@@ -399,8 +400,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   QStringList arguments(QCoreApplication::arguments());
 
   for(int i = 1; i < arguments.size(); i++)
-    if(arguments.at(i) == "--passphrase" ||
-       arguments.at(i) == "--question-answer")
+    if(arguments.at(i) == "--disable-ui-server")
+      disable_ui_server = true;
+    else if(arguments.at(i) == "--passphrase" ||
+	  arguments.at(i) == "--question-answer")
       {
 	/*
 	** Attempt to disable input echo.
@@ -581,111 +584,120 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     m_urlImportFutures.replace(i, QFuture<void> ());
 
   m_urlImportTimer.start(500);
-  m_guiServer = new spoton_gui_server(this);
+
+  if(!disable_ui_server)
+    m_guiServer = new spoton_gui_server(this);
+
   m_mailer = new spoton_mailer(this);
   m_starbeamWriter = new spoton_starbeam_writer(this);
   m_urlDistribution = new spoton_urldistribution(this);
-  connect(m_guiServer,
-	  SIGNAL(buzzMagnetReceivedFromUI(const qint64,
-					  const QByteArray &)),
-	  this,
-	  SLOT(slotBuzzMagnetReceivedFromUI(const qint64,
-					    const QByteArray &)));
-  connect(m_guiServer,
-	  SIGNAL(buzzReceivedFromUI(const QByteArray &,
-				    const QByteArray &,
-				    const QByteArray &,
-				    const QByteArray &,
-				    const QByteArray &,
-				    const QByteArray &,
-				    const QString &,
-				    const QByteArray &,
-				    const QByteArray &)),
-	  this,
-	  SLOT(slotBuzzReceivedFromUI(const QByteArray &,
-				      const QByteArray &,
-				      const QByteArray &,
-				      const QByteArray &,
-				      const QByteArray &,
-				      const QByteArray &,
-				      const QString &,
-				      const QByteArray &,
-				      const QByteArray &)));
-  connect(m_guiServer,
-	  SIGNAL(callParticipant(const QByteArray &,
-				 const qint64)),
-	  this,
-	  SLOT(slotCallParticipant(const QByteArray &,
-				   const qint64)));
-  connect(m_guiServer,
-	  SIGNAL(callParticipantUsingGemini(const QByteArray &,
-					    const qint64)),
-	  this,
-	  SLOT(slotCallParticipantUsingGemini(const QByteArray &,
-					      const qint64)));
-  connect(m_guiServer,
-	  SIGNAL(detachNeighbors(const qint64)),
-	  this,
-	  SLOT(slotDetachNeighbors(const qint64)));
-  connect(m_guiServer,
-	  SIGNAL(disconnectNeighbors(const qint64)),
-	  this,
-	  SLOT(slotDisconnectNeighbors(const qint64)));
-  connect
-    (m_guiServer,
-     SIGNAL(forwardSecrecyInformationReceivedFromUI(const QByteArrayList &)),
-     this,
-     SLOT(slotForwardSecrecyInformationReceivedFromUI(const
-						      QByteArrayList &)));
-  connect(m_guiServer,
-	  SIGNAL(messageReceivedFromUI(const qint64,
-				       const QByteArray &,
-				       const QByteArray &,
-				       const QByteArray &,
-				       const QByteArray &,
-				       const QString &)),
-	  this,
-	  SLOT(slotMessageReceivedFromUI(const qint64,
-					 const QByteArray &,
-					 const QByteArray &,
-					 const QByteArray &,
-					 const QByteArray &,
-					 const QString &)));
-  connect
-    (m_guiServer,
-     SIGNAL(publicKeyReceivedFromUI(const qint64,
-				    const QByteArray &,
-				    const QByteArray &,
-				    const QByteArray &,
-				    const QByteArray &,
-				    const QByteArray &,
-				    const QByteArray &,
-				    const QString &)),
-     this,
-     SLOT(slotPublicKeyReceivedFromUI(const qint64,
-				      const QByteArray &,
-				      const QByteArray &,
-				      const QByteArray &,
-				      const QByteArray &,
-				      const QByteArray &,
-				      const QByteArray &,
-				      const QString &)));
-  connect(m_guiServer,
-	  SIGNAL(populateStarBeamKeys(void)),
-	  m_starbeamWriter,
-	  SLOT(slotReadKeys(void)));
-  connect(m_guiServer,
-	  SIGNAL(publicizeAllListenersPlaintext(void)),
-	  this,
-	  SLOT(slotPublicizeAllListenersPlaintext(void)));
-  connect(m_guiServer,
-	  SIGNAL(publicizeListenerPlaintext(const qint64)),
-	  this,
-	  SLOT(slotPublicizeListenerPlaintext(const qint64)));
-  connect(m_guiServer,
-	  SIGNAL(retrieveMail(void)),
-	  this,
-	  SLOT(slotRetrieveMail(void)));
+
+  if(m_guiServer)
+    {
+      connect(m_guiServer,
+	      SIGNAL(buzzMagnetReceivedFromUI(const qint64,
+					      const QByteArray &)),
+	      this,
+	      SLOT(slotBuzzMagnetReceivedFromUI(const qint64,
+						const QByteArray &)));
+      connect(m_guiServer,
+	      SIGNAL(buzzReceivedFromUI(const QByteArray &,
+					const QByteArray &,
+					const QByteArray &,
+					const QByteArray &,
+					const QByteArray &,
+					const QByteArray &,
+					const QString &,
+					const QByteArray &,
+					const QByteArray &)),
+	      this,
+	      SLOT(slotBuzzReceivedFromUI(const QByteArray &,
+					  const QByteArray &,
+					  const QByteArray &,
+					  const QByteArray &,
+					  const QByteArray &,
+					  const QByteArray &,
+					  const QString &,
+					  const QByteArray &,
+					  const QByteArray &)));
+      connect(m_guiServer,
+	      SIGNAL(callParticipant(const QByteArray &,
+				     const qint64)),
+	      this,
+	      SLOT(slotCallParticipant(const QByteArray &,
+				       const qint64)));
+      connect(m_guiServer,
+	      SIGNAL(callParticipantUsingGemini(const QByteArray &,
+						const qint64)),
+	      this,
+	      SLOT(slotCallParticipantUsingGemini(const QByteArray &,
+						  const qint64)));
+      connect(m_guiServer,
+	      SIGNAL(detachNeighbors(const qint64)),
+	      this,
+	      SLOT(slotDetachNeighbors(const qint64)));
+      connect(m_guiServer,
+	      SIGNAL(disconnectNeighbors(const qint64)),
+	      this,
+	      SLOT(slotDisconnectNeighbors(const qint64)));
+      connect
+	(m_guiServer,
+	 SIGNAL(forwardSecrecyInformationReceivedFromUI(const
+							QByteArrayList &)),
+	 this,
+	 SLOT(slotForwardSecrecyInformationReceivedFromUI(const
+							  QByteArrayList &)));
+      connect(m_guiServer,
+	      SIGNAL(messageReceivedFromUI(const qint64,
+					   const QByteArray &,
+					   const QByteArray &,
+					   const QByteArray &,
+					   const QByteArray &,
+					   const QString &)),
+	      this,
+	      SLOT(slotMessageReceivedFromUI(const qint64,
+					     const QByteArray &,
+					     const QByteArray &,
+					     const QByteArray &,
+					     const QByteArray &,
+					     const QString &)));
+      connect
+	(m_guiServer,
+	 SIGNAL(publicKeyReceivedFromUI(const qint64,
+					const QByteArray &,
+					const QByteArray &,
+					const QByteArray &,
+					const QByteArray &,
+					const QByteArray &,
+					const QByteArray &,
+					const QString &)),
+	 this,
+	 SLOT(slotPublicKeyReceivedFromUI(const qint64,
+					  const QByteArray &,
+					  const QByteArray &,
+					  const QByteArray &,
+					  const QByteArray &,
+					  const QByteArray &,
+					  const QByteArray &,
+					  const QString &)));
+      connect(m_guiServer,
+	      SIGNAL(populateStarBeamKeys(void)),
+	      m_starbeamWriter,
+	      SLOT(slotReadKeys(void)));
+      connect(m_guiServer,
+	      SIGNAL(publicizeAllListenersPlaintext(void)),
+	      this,
+	      SLOT(slotPublicizeAllListenersPlaintext(void)));
+      connect(m_guiServer,
+	      SIGNAL(publicizeListenerPlaintext(const qint64)),
+	      this,
+	      SLOT(slotPublicizeListenerPlaintext(const qint64)));
+      connect(m_guiServer,
+	      SIGNAL(retrieveMail(void)),
+	      this,
+	      SLOT(slotRetrieveMail(void)));
+    }
+
   connect(m_mailer,
 	  SIGNAL(sendMail(const QByteArray &,
 			  const QByteArray &,
@@ -708,20 +720,25 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 			    const QByteArray &,
 			    const QByteArray &,
 			    const qint64)));
-  connect(this,
-	  SIGNAL(newEMailArrived(void)),
-	  m_guiServer,
-	  SLOT(slotNewEMailArrived(void)));
-  connect(this,
-	  SIGNAL(receivedChatMessage(const QByteArray &)),
-	  m_guiServer,
-	  SLOT(slotReceivedChatMessage(const QByteArray &)));
-  connect(this,
-	  SIGNAL(statusMessageReceived(const QByteArray &,
-				       const QString &)),
-	  m_guiServer,
-	  SLOT(slotStatusMessageReceived(const QByteArray &,
-					 const QString &)));
+
+  if(m_guiServer)
+    {
+      connect(this,
+	      SIGNAL(newEMailArrived(void)),
+	      m_guiServer,
+	      SLOT(slotNewEMailArrived(void)));
+      connect(this,
+	      SIGNAL(receivedChatMessage(const QByteArray &)),
+	      m_guiServer,
+	      SLOT(slotReceivedChatMessage(const QByteArray &)));
+      connect(this,
+	      SIGNAL(statusMessageReceived(const QByteArray &,
+					   const QString &)),
+	      m_guiServer,
+	      SLOT(slotStatusMessageReceived(const QByteArray &,
+					     const QString &)));
+    }
+
   connect(&m_settingsWatcher,
 	  SIGNAL(fileChanged(const QString &)),
 	  this,
@@ -1998,11 +2015,13 @@ void spoton_kernel::connectSignalsToNeighbor
   if(!neighbor)
     return;
 
-  connect(m_guiServer,
-	  SIGNAL(echoKeyShare(const QByteArrayList &)),
-	  neighbor,
-	  SLOT(slotEchoKeyShare(const QByteArrayList &)),
-	  Qt::UniqueConnection);
+  if(m_guiServer)
+    connect(m_guiServer,
+	    SIGNAL(echoKeyShare(const QByteArrayList &)),
+	    neighbor,
+	    SLOT(slotEchoKeyShare(const QByteArrayList &)),
+	    Qt::UniqueConnection);
+
   connect(m_mailer,
 	  SIGNAL(sendMailFromPostOffice(const QByteArray &,
 					const QPairByteArrayByteArray &)),
@@ -2015,11 +2034,14 @@ void spoton_kernel::connectSignalsToNeighbor
 	  neighbor,
 	  SLOT(slotWriteURLs(const QByteArray &)),
 	  Qt::UniqueConnection);
-  connect(neighbor,
-	  SIGNAL(authenticationRequested(const QString &)),
-	  m_guiServer,
-	  SLOT(slotAuthenticationRequested(const QString &)),
-	  Qt::UniqueConnection);
+
+  if(m_guiServer)
+    connect(neighbor,
+	    SIGNAL(authenticationRequested(const QString &)),
+	    m_guiServer,
+	    SLOT(slotAuthenticationRequested(const QString &)),
+	    Qt::UniqueConnection);
+
   connect(neighbor,
 	  SIGNAL(callParticipant(const QByteArray &,
 				 const QByteArray &,
@@ -2029,24 +2051,29 @@ void spoton_kernel::connectSignalsToNeighbor
 				   const QByteArray &,
 				   const QByteArray &)),
 	  Qt::UniqueConnection);
-  connect(neighbor,
-	  SIGNAL(newEMailArrived(void)),
-	  m_guiServer,
-	  SLOT(slotNewEMailArrived(void)),
-	  Qt::UniqueConnection);
-  connect
-    (neighbor,
-     SIGNAL(receivedBuzzMessage(const QByteArrayList &,
-				const QByteArrayList &)),
-     m_guiServer,
-     SLOT(slotReceivedBuzzMessage(const QByteArrayList &,
-				  const QByteArrayList &)),
-     Qt::UniqueConnection);
-  connect(neighbor,
-	  SIGNAL(receivedChatMessage(const QByteArray &)),
-	  m_guiServer,
-	  SLOT(slotReceivedChatMessage(const QByteArray &)),
-	  Qt::UniqueConnection);
+
+  if(m_guiServer)
+    {
+      connect(neighbor,
+	      SIGNAL(newEMailArrived(void)),
+	      m_guiServer,
+	      SLOT(slotNewEMailArrived(void)),
+	      Qt::UniqueConnection);
+      connect
+	(neighbor,
+	 SIGNAL(receivedBuzzMessage(const QByteArrayList &,
+				    const QByteArrayList &)),
+	 m_guiServer,
+	 SLOT(slotReceivedBuzzMessage(const QByteArrayList &,
+				      const QByteArrayList &)),
+	 Qt::UniqueConnection);
+      connect(neighbor,
+	      SIGNAL(receivedChatMessage(const QByteArray &)),
+	      m_guiServer,
+	      SLOT(slotReceivedChatMessage(const QByteArray &)),
+	      Qt::UniqueConnection);
+    }
+
   connect(neighbor,
 	  SIGNAL(receivedMessage(const QByteArray &,
 				 const qint64,
@@ -2056,13 +2083,16 @@ void spoton_kernel::connectSignalsToNeighbor
 		       const qint64,
 		       const QPairByteArrayByteArray &)),
 	  Qt::UniqueConnection);
-  connect(neighbor,
-	  SIGNAL(statusMessageReceived(const QByteArray &,
-				       const QString &)),
-	  m_guiServer,
-	  SLOT(slotStatusMessageReceived(const QByteArray &,
+
+  if(m_guiServer)
+    connect(neighbor,
+	    SIGNAL(statusMessageReceived(const QByteArray &,
 					 const QString &)),
-	  Qt::UniqueConnection);
+	    m_guiServer,
+	    SLOT(slotStatusMessageReceived(const QByteArray &,
+					   const QString &)),
+	    Qt::UniqueConnection);
+
   connect(neighbor,
 	  SIGNAL(scrambleRequest(void)),
 	  this,
@@ -3950,6 +3980,9 @@ int spoton_kernel::interfaces(void)
 {
   if(instance())
     {
+      if(!instance()->m_guiServer)
+	return 0;
+
       int count = 0;
 
       foreach(QSslSocket *socket, instance()->m_guiServer->

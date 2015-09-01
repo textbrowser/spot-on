@@ -129,22 +129,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="errorlog">
-        <property name="toolTip">
-         <string>Log Viewer</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QToolButton" name="forward_secrecy_request">
         <property name="toolTip">
          <string>Log Viewer</string>
@@ -193,6 +177,29 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="errorlog">
+        <property name="toolTip">
+         <string>View Log</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -203,11 +210,11 @@
   <tabstop>buzz</tabstop>
   <tabstop>chat</tabstop>
   <tabstop>email</tabstop>
-  <tabstop>errorlog</tabstop>
   <tabstop>forward_secrecy_request</tabstop>
   <tabstop>kernelstatus</tabstop>
   <tabstop>listeners</tabstop>
   <tabstop>neighbors</tabstop>
+  <tabstop>errorlog</tabstop>
  </tabstops>
  <resources/>
  <connections/>

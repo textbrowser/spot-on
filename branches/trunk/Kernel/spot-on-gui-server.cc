@@ -395,7 +395,10 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      QList<QByteArray> list(message.split('_'));
 
-	      if(list.size() == 3)
+	      for(int i = 0; i < list.size(); i++)
+		list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+	      if(list.size() == 4)
 		emit forwardSecrecyInformationReceivedFromUI(list);
 	    }
 	  else if(message.startsWith("keys_"))

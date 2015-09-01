@@ -283,6 +283,8 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 	  message.append(keys.first.toBase64()); // Private Key
 	  message.append("_");
 	  message.append(keys.second.toBase64()); // Public Key
+	  message.append("_");
+	  message.append(QByteArray("email").toBase64());
 	  message.append("\n");
 
 	  if(m_kernelSocket.write(message.constData(), message.length()) !=
