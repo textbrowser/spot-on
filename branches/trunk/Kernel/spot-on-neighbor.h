@@ -190,7 +190,6 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_learnedAdaptiveEchoPairsMutex;
   QReadWriteLock m_maximumBufferSizeMutex;
   QReadWriteLock m_maximumContentLengthMutex;
-  QReadWriteLock m_priorityMutex;
   QReadWriteLock m_receivedUuidMutex;
   QReadWriteLock m_useAccountsMutex;
   QSslCertificate m_peerCertificate;
@@ -202,7 +201,6 @@ class spoton_neighbor: public QThread
   QString m_sslControlString;
   QString m_statusControl;
   QString m_transport;
-  Priority m_priority;
   QTimer m_accountTimer;
   QTimer m_authenticationTimer;
   QTimer m_externalAddressDiscovererTimer;

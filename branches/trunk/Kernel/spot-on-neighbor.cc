@@ -81,12 +81,6 @@ spoton_neighbor::spoton_neighbor
 {
   m_abortThread = false;
   m_kernelInterfaces = spoton_kernel::interfaces();
-
-  if(priority >= 0 && priority <= 7)
-    m_priority = priority;
-  else
-    m_priority = HighPriority;
-
   m_sctpSocket = 0;
   m_tcpSocket = 0;
   m_udpSocket = 0;
@@ -438,7 +432,7 @@ spoton_neighbor::spoton_neighbor
   m_keepAliveTimer.start(30000);
   m_lifetime.start(10 * 60 * 1000);
   m_timer.start(2500);
-  start();
+  start(priority);
 }
 
 spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
@@ -501,12 +495,6 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_orientation = orientation;
   m_peerCertificate = QSslCertificate(peerCertificate);
   m_port = port.toUShort();
-
-  if(priority >= 0 && priority <= 7)
-    m_priority = priority;
-  else
-    m_priority = HighPriority;
-
   m_protocol = protocol;
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_requireSsl = requireSsl;
@@ -819,7 +807,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_keepAliveTimer.setInterval(30000);
   m_lifetime.start(10 * 60 * 1000);
   m_timer.start(2500);
-  start();
+  start(priority);
 }
 
 spoton_neighbor::~spoton_neighbor()
@@ -1157,17 +1145,16 @@ void spoton_neighbor::slotTimeout(void)
 
 		    if(isRunning())
 		      {
-			Priority priority = HighPriority;
-			QWriteLocker locker(&m_priorityMutex);
+			Priority p = priority();
+			Priority q = HighPriority;
 
-			priority = m_priority;
-			m_priority = Priority(query.value(10).toInt());
+			q = Priority(query.value(10).toInt());
 
-			if(m_priority < 0 || m_priority > 7)
-			  m_priority = HighPriority;
+			if(q < 0 || q > 7)
+			  q = HighPriority;
 
-			if(isRunning() && m_priority != priority)
-			  setPriority(m_priority);
+			if(isRunning() && p != q)
+			  setPriority(q);
 		      }
 
 		    m_sslControlString = query.value(9).toString();
@@ -1425,11 +1412,6 @@ void spoton_neighbor::saveStatus(const QSqlDatabase &db,
 
 void spoton_neighbor::run(void)
 {
-  QReadLocker locker(&m_priorityMutex);
-
-  setPriority(m_priority);
-  locker.unlock();
-
   spoton_neighbor_worker worker(this);
 
   connect(this,
