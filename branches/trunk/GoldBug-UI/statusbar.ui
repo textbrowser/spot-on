@@ -178,13 +178,6 @@
        </widget>
       </item>
       <item>
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QToolButton" name="errorlog">
         <property name="toolTip">
          <string>View Log</string>

@@ -82,10 +82,15 @@ spoton_neighbor::spoton_neighbor
   m_abortThread = false;
   m_kernelInterfaces = spoton_kernel::interfaces();
 
+#ifdef QT_HAS_THREAD_PRIORITY_SCHEDULING
   if(priority >= 0 && priority <= 7)
     m_priority = priority;
   else
     m_priority = HighPriority;
+#else
+  Q_UNUSED(priority);
+  m_priority = InheritPriority;
+#endif
 
   m_sctpSocket = 0;
   m_tcpSocket = 0;
@@ -502,10 +507,15 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_peerCertificate = QSslCertificate(peerCertificate);
   m_port = port.toUShort();
 
+#ifdef QT_HAS_THREAD_PRIORITY_SCHEDULING
   if(priority >= 0 && priority <= 7)
     m_priority = priority;
   else
     m_priority = HighPriority;
+#else
+  Q_UNUSED(priority);
+  m_priority = InheritPriority;
+#endif
 
   m_protocol = protocol;
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
@@ -1159,12 +1169,18 @@ void spoton_neighbor::slotTimeout(void)
 		      {
 			QWriteLocker locker(&m_priorityMutex);
 
+#ifdef QT_HAS_THREAD_PRIORITY_SCHEDULING
 			m_priority = Priority(query.value(10).toInt());
 
 			if(m_priority < 0 || m_priority > 7)
 			  m_priority = HighPriority;
+#else
+			m_priority = InheritPriority;
+#endif
 
+#ifdef QT_HAS_THREAD_PRIORITY_SCHEDULING
 			setPriority(m_priority);
+#endif
 		      }
 
 		    m_sslControlString = query.value(9).toString();
@@ -1422,10 +1438,12 @@ void spoton_neighbor::saveStatus(const QSqlDatabase &db,
 
 void spoton_neighbor::run(void)
 {
+#ifdef QT_HAS_THREAD_PRIORITY_SCHEDULING
   QReadLocker locker(&m_priorityMutex);
 
   setPriority(m_priority);
   locker.unlock();
+#endif
 
   spoton_neighbor_worker worker(this);
 
@@ -1506,12 +1524,14 @@ void spoton_neighbor::processData(void)
   else
     locker.unlock();
 
+#ifdef QT_HAS_THREAD_PRIORITY_SCHEDULING
   if(isRunning())
     {
       QReadLocker locker(&m_priorityMutex);
 
       setPriority(m_priority);
     }
+#endif
 
   QByteArray data;
 
