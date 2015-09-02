@@ -2838,10 +2838,8 @@ void spoton::prepareContextMenuMirrors(void)
 		      this, SLOT(slotSetNeighborSSLControlString(void)));
       menu->addSeparator();
 
-      QMenu *subMenu = menu->addMenu(tr("Priority"));
-
-#ifdef QT_HAS_THREAD_PRIORITY_SCHEDULING
       QList<QPair<QString, QThread::Priority> > list;
+      QMenu *subMenu = menu->addMenu(tr("Priority"));
       QPair<QString, QThread::Priority> pair;
 
       pair.first = tr("High Priority");
@@ -2877,10 +2875,6 @@ void spoton::prepareContextMenuMirrors(void)
 	     SLOT(slotSetNeighborPriority(void)));
 	  action->setProperty("priority", list.at(i).second);
 	}
-#else
-      subMenu->setEnabled(false);
-      subMenu->setToolTip(tr("Thread scheduling is not supported."));
-#endif
 
       m_ui.neighborsActionMenu->setMenu(menu);
       connect(m_ui.neighborsActionMenu,

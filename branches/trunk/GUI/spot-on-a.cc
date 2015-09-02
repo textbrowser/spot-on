@@ -107,8 +107,6 @@ int main(int argc, char *argv[])
 #endif
 
   QApplication qapplication(argc, argv);
-
-#ifdef QT_HAS_THREAD_PRIORITY_SCHEDULING
   QThread *thread = qapplication.thread();
 
   if(!thread)
@@ -119,7 +117,6 @@ int main(int argc, char *argv[])
   else
     qDebug() << "Cannot set the main thread's priority because "
       "the main thread does not exist.";
-#endif
 
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000
@@ -3837,10 +3834,6 @@ void spoton::slotPopulateNeighbors(void)
 		else
 		  priority = "High Priority";
 
-#ifndef QT_HAS_THREAD_PRIORITY_SCHEDULING
-		priority = "Inherit Priority";
-#endif
-
 		tooltip =
 		  (tr("UUID: %1\n"
 		      "Status: %2\n"
@@ -5956,10 +5949,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this, SLOT(slotSetNeighborSSLControlString(void)));
       menu.addSeparator();
 
-      QMenu *subMenu = menu.addMenu(tr("Priority"));
-
-#ifdef QT_HAS_THREAD_PRIORITY_SCHEDULING
       QList<QPair<QString, QThread::Priority> > list;
+      QMenu *subMenu = menu.addMenu(tr("Priority"));
       QPair<QString, QThread::Priority> pair;
 
       pair.first = tr("High Priority");
@@ -5995,10 +5986,6 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	     SLOT(slotSetNeighborPriority(void)));
 	  action->setProperty("priority", list.at(i).second);
 	}
-#else
-      subMenu->setEnabled(false);
-      subMenu->setToolTip(tr("Thread scheduling is not supported."));
-#endif
 
       menu.exec(m_ui.neighbors->mapToGlobal(point));
     }
