@@ -1157,14 +1157,16 @@ void spoton_neighbor::slotTimeout(void)
 
 		    if(isRunning())
 		      {
+			Priority priority = HighPriority;
 			QWriteLocker locker(&m_priorityMutex);
 
+			priority = m_priority;
 			m_priority = Priority(query.value(10).toInt());
 
 			if(m_priority < 0 || m_priority > 7)
 			  m_priority = HighPriority;
 
-			if(isRunning())
+			if(isRunning() && m_priority != priority)
 			  setPriority(m_priority);
 		      }
 
@@ -1506,13 +1508,6 @@ void spoton_neighbor::processData(void)
     return;
   else
     locker.unlock();
-
-  if(isRunning())
-    {
-      QReadLocker locker(&m_priorityMutex);
-
-      setPriority(m_priority);
-    }
 
   QByteArray data;
 
