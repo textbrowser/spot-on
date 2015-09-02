@@ -66,7 +66,7 @@ Encryption Key (Base-64)
 0 - Dispatcher's SHA-512 Digest
 1 - Gemini Encryption Key
 2 - Gemini Digest Key
-3 - Timestamp
+3 - UTC Date
 4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
@@ -87,7 +87,7 @@ Gemini Encryption Key (Base-64)
 1 - Dispatcher's SHA-512 Digest
 2 - Gemini Encryption Key
 3 - Gemini Digest Key
-4 - Timestamp
+4 - UTC Date
 5 - Signature (Previous Five Items)
 }
 EOL
@@ -257,7 +257,7 @@ Encryption Key
 EOL
 1 - Random Message (Base-64)
 EOL
-2 - Timestamp (Base-64)
+2 - UTC Date (Base-64)
 EOL
 3 - Signature (First Group Items and Previous Three Items) (Base-64)
 }
@@ -284,7 +284,7 @@ EOL
 EOL
 3 - Random Message (Base-64)
 EOL
-4 - Timestamp (Base-64)
+4 - UTC Date (Base-64)
 EOL
 5 - Signature (Previous Five Items) (Base-64)
 }
@@ -550,7 +550,7 @@ Encryption Key (Base-64)
 {
 0 - Dispatcher's SHA-512 Digest
 1 - Dispatcher's Temporary Public Key
-2 - Timestamp
+2 - UTC Date
 3 - Signature (First Group Items and Previous Three Items)
 }
 EOL
@@ -581,7 +581,7 @@ Encryption Key (Base-64)
 2 - Forward Secrecy Authentication Key
 3 - Forward Secrecy Encryption Algorithm
 4 - Forward Secrecy Encryption Key
-5 - Timestamp
+5 - UTC Date
 6 - Signature (First Group Items and Previous Six Items)
 }
 EOL

@@ -1705,6 +1705,13 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   if(list.isEmpty())
     return;
 
+  /*
+  ** list[0]: Destination's Public Key Hash
+  ** list[1]: Temporary Private Key
+  ** list[2]: Temporary Public Key
+  ** list[3]: chat, email, etc.
+  */
+
   spoton_crypt *crypt = s_crypts.value(list.value(3), 0);
 
   if(!crypt)
@@ -1713,5 +1720,42 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   QByteArray publicKey(spoton_misc::publicKeyFromHash(list.value(0), crypt));
 
   if(publicKey.isEmpty())
+    return;
+
+  QByteArray symmetricKey;
+  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength("aes256");
+
+  if(symmetricKeyLength <= 0)
+    return;
+
+  QByteArray hashKey;
+
+  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+  hashKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (hashKey.length()));
+  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
+  symmetricKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (symmetricKey.length()));
+
+  QByteArray keyInformation;
+  bool ok = true;
+
+  {
+    QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+
+    stream << QByteArray("0091a")
+	   << symmetricKey
+	   << hashKey
+	   << QByteArray("aes256")
+	   << QByteArray("sha512");
+
+    if(stream.status() != QDataStream::Ok)
+      return;
+  }
+
+  keyInformation = spoton_crypt::publicKeyEncrypt
+    (keyInformation, publicKey, &ok);
+
+  if(!ok)
     return;
 }
