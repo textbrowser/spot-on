@@ -226,3 +226,4 @@ Remaining Items
 4.     Index the PostgreSQL tables.
 5.     Per-participant permissions.
 6.     Allow custom addresses for spoton_external_address.
+7.     An account system where the initiator provides both random arrays.
