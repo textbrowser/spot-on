@@ -1712,18 +1712,33 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   ** list[3]: chat, email, etc.
   */
 
-  spoton_crypt *crypt = s_crypts.value(list.value(3), 0);
+  QByteArray type(list.value(3));
+  bool ok = true;
+  spoton_crypt *s_crypt = s_crypts.value(type, 0);
 
-  if(!crypt)
+  if(!s_crypt)
     return;
 
-  QByteArray publicKey(spoton_misc::publicKeyFromHash(list.value(0), crypt));
+  QByteArray myPublicKey = s_crypt->publicKey(&ok);
+
+  if(!ok)
+    return;
+
+  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(myPublicKey, &ok));
+
+  if(!ok)
+    return;
+
+  QByteArray cipherType("aes256");
+  QByteArray hashType("sha512");
+  QByteArray publicKey
+    (spoton_misc::publicKeyFromHash(list.value(0), s_crypt));
 
   if(publicKey.isEmpty())
     return;
 
   QByteArray symmetricKey;
-  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength("aes256");
+  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
 
   if(symmetricKeyLength <= 0)
     return;
@@ -1738,7 +1753,6 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     (static_cast<size_t> (symmetricKey.length()));
 
   QByteArray keyInformation;
-  bool ok = true;
 
   {
     QDataStream stream(&keyInformation, QIODevice::WriteOnly);
@@ -1746,8 +1760,8 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     stream << QByteArray("0091a")
 	   << symmetricKey
 	   << hashKey
-	   << QByteArray("aes256")
-	   << QByteArray("sha512");
+	   << cipherType
+	   << hashType;
 
     if(stream.status() != QDataStream::Ok)
       return;
@@ -1758,4 +1772,68 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   if(!ok)
     return;
+
+  bool sign = false;
+
+  if((type == "chat" && setting("gui/chatSignMessages", true).toBool()) ||
+     (type == "email" && setting("gui/emailSignMessages", true).toBool()))
+    sign = true;
+
+  QByteArray signature;
+  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
+		     toString("MMddyyyyhhmmss").toLatin1());
+
+  if(sign)
+    {
+      signature = s_crypt->digitalSignature
+	("0091a" +
+	 symmetricKey +
+	 hashKey +
+	 cipherType +
+	 hashType +
+	 myPublicKeyHash +
+	 list.value(2) +
+	 utcDate, &ok);
+
+      if(!ok)
+	return;
+    }
+
+  QByteArray data;
+  spoton_crypt crypt(cipherType,
+		     hashType,
+		     QByteArray(),
+		     symmetricKey,
+		     hashKey,
+		     0,
+		     0,
+		     QString(""));
+
+  {
+    QDataStream stream(&data, QIODevice::WriteOnly);
+
+    stream << myPublicKeyHash
+	   << list.value(2)
+	   << utcDate
+	   << signature;
+
+    if(stream.status() != QDataStream::Ok)
+      ok = false;
+
+    if(ok)
+      data = crypt.encrypted(data, &ok);
+
+    if(!ok)
+      return;
+  }
+
+  QByteArray messageCode
+    (crypt.keyedHash(keyInformation + data, &ok));
+
+  if(!ok)
+    return;
+
+  data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
+    messageCode.toBase64();
+  emit sendForwardSecrecyPublicKey(data);
 }

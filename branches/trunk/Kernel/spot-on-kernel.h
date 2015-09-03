@@ -279,6 +279,7 @@ class spoton_kernel: public QObject
   void receivedChatMessage(const QByteArray &data);
   void retrieveMail(const QByteArrayList &list, const QString &messageType);
   void sendBuzz(const QByteArray &buzz);
+  void sendForwardSecrecyPublicKey(const QByteArray &data);
   void sendMessage(const QByteArray &message,
 		   const spoton_send::spoton_send_method sendMethod);
   void sendMail(const QPairByteArrayInt64List &mail,

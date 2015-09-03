@@ -6492,3 +6492,29 @@ void spoton_neighbor::deleteLater(void)
   close();
   QThread::deleteLater();
 }
+
+void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
+{
+  QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat", 0)));
+
+  message = spoton_send::message0091a(data, ae);
+
+  if(readyToWrite())
+    {
+      if(write(message.constData(), message.length()) != message.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotSendForwardSecrecyPublicKey(): "
+		   "write() error for %1:%2.").
+	   arg(m_address.toString()).
+	   arg(m_port));
+      else
+	{
+	  addToBytesWritten(message.length());
+	  spoton_kernel::messagingCacheAdd(message);
+	}
+    }
+}

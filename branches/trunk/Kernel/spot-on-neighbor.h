@@ -339,6 +339,7 @@ class spoton_neighbor: public QThread
   void slotSendAccountInformation(void);
   void slotSendAuthenticationRequest(void);
   void slotSendBuzz(const QByteArray &data);
+  void slotSendForwardSecrecyPublicKey(const QByteArray &data);
   void slotSendMOTD(void);
   void slotSendMail(const QPairByteArrayInt64List &list,
 		    const QString &messageType);
