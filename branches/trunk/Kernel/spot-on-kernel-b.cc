@@ -1729,8 +1729,8 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   if(!ok)
     return;
 
-  QByteArray cipherType("aes256");
-  QByteArray hashType("sha512");
+  QByteArray cipherType(s_settings.value("gui/fsCipherType").toByteArray());
+  QByteArray hashType(s_settings.value("gui/fsHashType").toByteArray());
   QByteArray publicKey
     (spoton_misc::publicKeyFromHash(list.value(0), s_crypt));
 

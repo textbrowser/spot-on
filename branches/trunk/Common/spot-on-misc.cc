@@ -1963,6 +1963,20 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = -1;
 
   settings.insert("gui/guiExternalIpInterval", integer);
+  str = settings.value("gui/fsCipherType").toString();
+
+  if(!(str == "aes256" || str == "camellia256" ||
+       str == "serpent256" || str == "twofish"))
+    str = "aes256";
+
+  settings.insert("gui/fsCipherType", str);
+  str = settings.value("gui/fsHashType").toString();
+
+  if(!(str == "sha512" || str == "stribog512" ||
+       str == "whirlpool"))
+    str = "sha512";
+
+  settings.insert("gui/fsHashType", str);
   str = settings.value("gui/hashType").toString();
 
   if(!(str == "sha512" || str == "stribog512" ||
