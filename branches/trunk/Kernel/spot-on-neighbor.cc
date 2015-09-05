@@ -1834,6 +1834,8 @@ void spoton_neighbor::processData(void)
 	    process0080(length, data, symmetricKeys);
 	  else if(messageType == "0090")
 	    process0090(length, data, symmetricKeys);
+	  else if(messageType == "0091a")
+	    process0091a(length, data, symmetricKeys);
 	  else
 	    messageType.clear();
 
@@ -4523,6 +4525,92 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
        arg(m_port));
 }
 
+void spoton_neighbor::process0091a(int length, const QByteArray &dataIn,
+				   const QList<QByteArray> &symmetricKeys)
+{
+  QByteArray data(dataIn);
+
+  if(length == data.length())
+    {
+      data = data.trimmed();
+
+      QByteArray originalData(data);
+      QList<QByteArray> list(data.split('\n'));
+
+      for(int i = 0; i < list.size(); i++)
+	list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+      if(list.size() != 4)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::process0091a(): "
+		     "received irregular data. Expecting 4 "
+		     "entries, "
+		     "received %1.").arg(list.size()));
+	  return;
+	}
+
+      /*
+      ** symmetricKeys[0]: Encryption Key
+      ** symmetricKeys[1]: Encryption Type
+      ** symmetricKeys[2]: Hash Key
+      ** symmetricKeys[3]: Hash Type
+      */
+
+      bool ok = true;
+      spoton_crypt crypt(symmetricKeys.value(1).constData(),
+			 symmetricKeys.value(3).constData(),
+			 QByteArray(),
+			 symmetricKeys.value(0),
+			 symmetricKeys.value(2),
+			 0,
+			 0,
+			 QString(""));
+
+      data = crypt.decrypted(list.value(0), &ok);
+
+      if(ok)
+	{
+	  QDataStream stream(&data, QIODevice::ReadOnly);
+
+	  list.clear();
+
+	  for(int i = 0; i < 4; i++)
+	    {
+	      QByteArray a;
+
+	      stream >> a;
+
+	      if(stream.status() != QDataStream::Ok)
+		{
+		  list.clear();
+		  break;
+		}
+	      else
+		list << a;
+	    }
+
+	  if(list.size() != 4)
+	    {
+	      spoton_misc::logError
+		(QString("spoton_neighbor::process0091a(): "
+			 "received irregular data. Expecting 4 "
+			 "entries, "
+			 "received %1.").arg(list.size()));
+	      return;
+	    }
+	}
+    }
+  else
+    spoton_misc::logError
+      (QString("spoton_neighbor::process0091a(): 0091a "
+	       "Content-Length mismatch (advertised: %1, received: %2) "
+	       "for %3:%4.").
+       arg(length).arg(data.length()).
+       arg(m_address.toString()).
+       arg(m_port));
+}
+
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
 {
   if(readyToWrite())
@@ -5820,6 +5908,24 @@ QString spoton_neighbor::findMessageType
 		}
 	    }
 	}
+
+  if(list.size() == 4)
+    {
+      QStringList types;
+
+      types << "chat" << "email";
+
+      for(int i = 0; i < types.size(); i++)
+	{
+	  s_crypt = spoton_kernel::s_crypts.value(types.at(i), 0);
+
+	  if(!s_crypt)
+	    continue;
+
+	  if(spoton_misc::participantCount(types.at(i), s_crypt) <= 0)
+	    continue;
+	}
+    }
 
  done_label:
   spoton_kernel::discoverAdaptiveEchoPair

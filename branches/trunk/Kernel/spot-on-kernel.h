@@ -118,7 +118,7 @@ class spoton_kernel: public QObject
   QFuture<void> m_poptasticPopFuture;
   QFuture<void> m_poptasticPostFuture;
   QFuture<void> m_statisticsFuture;
-  QHash<QByteArray, QPair<QByteArray, QByteArray> > m_emailForwardSecrecyKeys;
+  QHash<QByteArray, QPair<QByteArray, QByteArray> > m_forwardSecrecyKeys;
   QHash<qint64, QPointer<spoton_listener> > m_listeners;
   QHash<qint64, QPointer<spoton_neighbor> > m_neighbors;
   QHash<qint64, QPointer<spoton_starbeam_reader> > m_starbeamReaders;

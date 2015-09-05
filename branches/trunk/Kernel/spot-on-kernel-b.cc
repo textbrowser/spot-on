@@ -1835,5 +1835,8 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
     messageCode.toBase64();
+  m_forwardSecrecyKeys.insert
+    (list.value(0), QPair<QByteArray, QByteArray> (list.value(1),
+						   list.value(2)));
   emit sendForwardSecrecyPublicKey(data);
 }
