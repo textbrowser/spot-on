@@ -2571,17 +2571,16 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 	    (originalKeyInformation1 + data1 + keyInformation2 + data2,
 	     hashKey, hashKeyAlgorithm, &ok);
 
-	  if(ok)
-	    if(computedHash.isEmpty() || messageCode1.isEmpty() ||
-	       !spoton_crypt::memcmp(computedHash, messageCode1))
-	      {
-		spoton_misc::logError
-		  ("spoton_neighbor::"
-		   "process0001a(): "
-		   "computed message code 1 does "
-		   "not match provided code.");
-		return;
-	      }
+	  if(computedHash.isEmpty() || messageCode1.isEmpty() || !ok ||
+	     !spoton_crypt::memcmp(computedHash, messageCode1))
+	    {
+	      spoton_misc::logError
+		("spoton_neighbor::"
+		 "process0001a(): "
+		 "computed message code 1 does "
+		 "not match provided code.");
+	      return;
+	    }
 
 	  QByteArray data;
 	  QByteArray senderPublicKeyHash2;
@@ -2605,6 +2604,11 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 		    (list.value(0));
 		  recipientHash = QByteArray::fromBase64(list.value(1));
 		  signature = QByteArray::fromBase64(list.value(2));
+
+		  if(!spoton_misc::
+		     isAcceptedParticipant(senderPublicKeyHash1, "email",
+					   s_crypt))
+		    return;
 
 		  if(spoton_kernel::setting("gui/emailAcceptSigned"
 					    "MessagesOnly",
@@ -2687,17 +2691,17 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			(originalKeyInformation2 + data2,
 			 hashKey, hashKeyAlgorithm, &ok);
 
-		      if(ok)
-			if(computedHash.isEmpty() || messageCode2.isEmpty() ||
-			   !spoton_crypt::memcmp(computedHash, messageCode2))
-			  {
-			    spoton_misc::logError
-			      ("spoton_neighbor::"
-			       "process0001a(): "
-			       "computed message code 2 does "
-			       "not match provided code.");
-			    return;
-			  }
+		      if(computedHash.isEmpty() || messageCode2.isEmpty() ||
+			 !ok || !spoton_crypt::memcmp(computedHash,
+						      messageCode2))
+			{
+			  spoton_misc::logError
+			    ("spoton_neighbor::"
+			     "process0001a(): "
+			     "computed message code 2 does "
+			     "not match provided code.");
+			  return;
+			}
 
 		      QByteArray attachment;
 		      QByteArray attachmentName;
@@ -4387,25 +4391,29 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 		      }
 		  }
 
+		  QByteArray publicKeyHash(list.value(0));
+
+		  if(!spoton_misc::
+		     isAcceptedParticipant(publicKeyHash, "url",
+					   spoton_kernel::s_crypts.
+					   value("url", 0)))
+		    return;
+
 		  if(spoton_kernel::setting("gui/urlAcceptSignedMessagesOnly",
 					    true).toBool())
-		    {
-		      QByteArray publicKeyHash(list.value(0));
-
-		      if(!spoton_misc::
-			 isValidSignature(dataForSignature,
-					  publicKeyHash,
-					  signature,
-					  spoton_kernel::s_crypts.
-					  value("url-signature", 0)))
-			{
-			  spoton_misc::logError
-			    ("spoton_receive::"
-			     "process0080(): invalid "
-			     "signature.");
-			  return;
-			}
-		    }
+		    if(!spoton_misc::
+		       isValidSignature(dataForSignature,
+					publicKeyHash,
+					signature,
+					spoton_kernel::s_crypts.
+					value("url", 0)))
+		      {
+			spoton_misc::logError
+			  ("spoton_receive::"
+			   "process0080(): invalid "
+			   "signature.");
+			return;
+		      }
 
 		  if(!list.isEmpty())
 		    list.removeAt(0);
@@ -4528,6 +4536,11 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 void spoton_neighbor::process0091a(int length, const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
+  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+  if(!s_crypt)
+    return;
+
   QByteArray data(dataIn);
 
   if(length == data.length())
@@ -4557,6 +4570,7 @@ void spoton_neighbor::process0091a(int length, const QByteArray &dataIn,
       ** symmetricKeys[3]: Hash Type
       */
 
+      QByteArray computedHash;
       bool ok = true;
       spoton_crypt crypt(symmetricKeys.value(1).constData(),
 			 symmetricKeys.value(3).constData(),
@@ -4567,38 +4581,96 @@ void spoton_neighbor::process0091a(int length, const QByteArray &dataIn,
 			 0,
 			 QString(""));
 
-      data = crypt.decrypted(list.value(0), &ok);
+      computedHash = spoton_crypt::keyedHash
+	(list.value(0) + list.value(1),
+	 symmetricKeys.value(2), symmetricKeys.value(3), &ok);
 
       if(ok)
 	{
-	  QDataStream stream(&data, QIODevice::ReadOnly);
+	  QByteArray messageCode(list.value(2));
 
-	  list.clear();
-
-	  for(int i = 0; i < 4; i++)
-	    {
-	      QByteArray a;
-
-	      stream >> a;
-
-	      if(stream.status() != QDataStream::Ok)
-		{
-		  list.clear();
-		  break;
-		}
-	      else
-		list << a;
-	    }
-
-	  if(list.size() != 4)
+	  if(computedHash.isEmpty() || messageCode.isEmpty() ||
+	     !spoton_crypt::memcmp(computedHash, messageCode))
 	    {
 	      spoton_misc::logError
-		(QString("spoton_neighbor::process0091a(): "
-			 "received irregular data. Expecting 4 "
-			 "entries, "
-			 "received %1.").arg(list.size()));
+		("spoton_neighbor::"
+		 "process0091a(): "
+		 "computed message code does "
+		 "not match provided code.");
 	      return;
 	    }
+	}
+      else
+	return;
+
+      data = crypt.decrypted(list.value(1), &ok);
+
+      if(!ok)
+	return;
+
+      QDataStream stream(&data, QIODevice::ReadOnly);
+
+      list.clear();
+
+      for(int i = 0; i < 4; i++)
+	{
+	  QByteArray a;
+
+	  stream >> a;
+
+	  if(stream.status() != QDataStream::Ok)
+	    {
+	      list.clear();
+	      break;
+	    }
+	  else
+	    list << a;
+	}
+
+      if(list.size() != 4)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::process0091a(): "
+		     "received irregular data. Expecting 4 "
+		     "entries, "
+		     "received %1.").arg(list.size()));
+	  return;
+	}
+
+      QString keyType
+	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
+
+      if(!spoton_misc::isAcceptedParticipant(list.value(0), keyType,
+					     s_crypt))
+	return;
+
+      bool signatureRequired = true;
+
+      if((keyType == "chat" &&
+	  !spoton_kernel::setting("gui/chatAcceptSignedMessagesOnly",
+				  true).toBool()) ||
+	 (keyType == "email" &&
+	  !spoton_kernel::setting("gui/emailAcceptSignedMessagesOnly",
+				  true).toBool()))
+	signatureRequired = false;
+
+      if(signatureRequired &&
+	 !spoton_misc::isValidSignature("0091a" +
+					symmetricKeys.value(0) +
+					symmetricKeys.value(2) +
+					symmetricKeys.value(1) +
+					symmetricKeys.value(3) +
+					list.value(0) +
+					list.value(1) +
+					list.value(2),
+					list.value(0),
+					list.value(3), // Signature
+					spoton_kernel::s_crypts.
+					value(keyType, 0)))
+	{
+	  spoton_misc::logError
+	    ("spoton_neighbor::0091a(): invalid signature.");
+	  return;
 	}
     }
   else
@@ -4990,12 +5062,13 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
       return;
     }
 
-  Q_UNUSED(symmetricKey);
-  Q_UNUSED(symmetricKeyAlgorithm);
-
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
 
   if(!s_crypt)
+    return;
+
+  if(!spoton_misc::isAcceptedParticipant(senderPublicKeyHash, "email",
+					 s_crypt))
     return;
 
   if(spoton_kernel::setting("gui/emailAcceptSignedMessagesOnly",
@@ -5685,10 +5758,13 @@ QString spoton_neighbor::findMessageType
 		type = a;
 	    }
 
-	  if(!type.isEmpty())
+	  if(type == "0040a" || type == "0040b")
 	    goto done_label;
 	  else
-	    symmetricKeys.clear();
+	    {
+	      symmetricKeys.clear();
+	      type.clear();
+	    }
 	}
     }
 
@@ -5700,12 +5776,10 @@ QString spoton_neighbor::findMessageType
   if(interfaces > 0 && list.size() == 3 && s_crypt &&
      spoton_misc::participantCount("chat", s_crypt) > 0)
     {
-      QPair<QByteArray, QByteArray> gemini;
-
-      gemini = spoton_misc::findGeminiInCosmos
-	(QByteArray::fromBase64(list.value(0)),
-	 QByteArray::fromBase64(list.value(1)),
-	 s_crypt);
+      QPair<QByteArray, QByteArray> gemini
+	(spoton_misc::findGeminiInCosmos(QByteArray::fromBase64(list.value(0)),
+					 QByteArray::fromBase64(list.value(1)),
+					 s_crypt));
 
       if(!gemini.first.isEmpty())
 	{
@@ -5733,7 +5807,7 @@ QString spoton_neighbor::findMessageType
 		type = a;
 	    }
 
-	  if(!type.isEmpty())
+	  if(type == "0000" || type == "0000b" || type == "0013")
 	    {
 	      symmetricKeys.append(gemini.first);
 	      symmetricKeys.append("aes256");
@@ -5742,10 +5816,8 @@ QString spoton_neighbor::findMessageType
 	      goto done_label;
 	    }
 	  else
-	    symmetricKeys.clear();
+	    type.clear();
 	}
-      else
-	symmetricKeys.clear();
     }
 
   if(list.size() == 3 && s_crypt)
@@ -5765,7 +5837,7 @@ QString spoton_neighbor::findMessageType
     }
 
   /*
-  ** Finally, attempt to decipher the message via our private key.
+  ** Attempt to decipher the message via our private key.
   ** We would like to determine the message type only if we have at least
   ** one interface attached to the kernel or if we're processing
   ** a letter.
@@ -5792,8 +5864,11 @@ QString spoton_neighbor::findMessageType
 		type = a;
 	    }
 
-	  if(!type.isEmpty())
+	  if(type == "0000" || type == "0000a" ||
+	     type == "0000c" || type == "0013")
 	    goto done_label;
+	  else
+	    type.clear();
 	}
 
   if(list.size() == 3 || list.size() == 7)
@@ -5843,7 +5918,7 @@ QString spoton_neighbor::findMessageType
 	  if(ok)
 	    type = QByteArray::fromBase64(data.split('\n').value(0));
 
-	  if(type == "0001b")
+	  if(type == "0001a" || type == "0001b" || type == "0002a")
 	    {
 	      QList<QByteArray> list(data.split('\n'));
 
@@ -5856,6 +5931,8 @@ QString spoton_neighbor::findMessageType
 	      symmetricKeys.append(list.value(4));
 	      goto done_label;
 	    }
+	  else
+	    type.clear();
 	}
 
   if(list.size() == 4)
@@ -5906,10 +5983,7 @@ QString spoton_neighbor::findMessageType
 		    }
 		}
 	      else
-		{
-		  symmetricKeys.clear();
-		  type.clear();
-		}
+		type.clear();
 	    }
 	}
 
@@ -5945,7 +6019,7 @@ QString spoton_neighbor::findMessageType
 	      if(stream.status() == QDataStream::Ok)
 		type = a;
 
-	      if(type == "0091a")
+	      if(type == "0091a" || type == "0091b")
 		{
 		  QList<QByteArray> list;
 
@@ -5972,6 +6046,8 @@ QString spoton_neighbor::findMessageType
 		      goto done_label;
 		    }
 		}
+	      else
+		type.clear();
 	    }
 	}
     }
