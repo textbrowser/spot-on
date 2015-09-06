@@ -120,7 +120,7 @@ void spoton_kernel::slotPoptasticPost(void)
 
 void spoton_kernel::popPoptastic(void)
 {
-  if(setting("gui/disablePop3", false).toBool())
+  if(setting("gui/disablePop3", true).toBool())
     {
       spoton_misc::logError("spoton_kernel::popPoptastic(): IMAP/POP3 is "
 			    "disabled.");
@@ -385,7 +385,7 @@ void spoton_kernel::popPoptastic(void)
 
 void spoton_kernel::postPoptastic(void)
 {
-  if(setting("gui/disableSmtp", false).toBool())
+  if(setting("gui/disableSmtp", true).toBool())
     {
       QWriteLocker locker(&m_poptasticCacheMutex);
 
@@ -1714,12 +1714,13 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   QByteArray type(list.value(3));
   bool ok = true;
-  spoton_crypt *s_crypt = s_crypts.value(type, 0);
+  spoton_crypt *s_crypt1 = s_crypts.value(type, 0);
+  spoton_crypt *s_crypt2 = s_crypts.value(type + "-signature", 0);
 
-  if(!s_crypt)
+  if(!s_crypt1 || !s_crypt2)
     return;
 
-  QByteArray myPublicKey = s_crypt->publicKey(&ok);
+  QByteArray myPublicKey = s_crypt1->publicKey(&ok);
 
   if(!ok)
     return;
@@ -1734,7 +1735,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   QByteArray hashType(setting("gui/fsHashType", "sha512").
 		      toString().toLatin1());
   QByteArray publicKey
-    (spoton_misc::publicKeyFromHash(list.value(0), s_crypt));
+    (spoton_misc::publicKeyFromHash(list.value(0), s_crypt1));
 
   if(publicKey.isEmpty())
     return;
@@ -1787,7 +1788,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   if(sign)
     {
-      signature = s_crypt->digitalSignature
+      signature = s_crypt2->digitalSignature
 	("0091a" +
 	 symmetricKey +
 	 hashKey +
@@ -1837,8 +1838,15 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
     messageCode.toBase64();
-  m_forwardSecrecyKeys.insert
-    (list.value(0), QPair<QByteArray, QByteArray> (list.value(1),
-						   list.value(2)));
   emit sendForwardSecrecyPublicKey(data);
+
+  QPair<QByteArray, QByteArray> keys(list.value(1), list.value(2));
+
+  keys.first = s_crypt1->encryptedThenHashed(keys.first, &ok);
+
+  if(ok)
+    keys.second = s_crypt1->encryptedThenHashed(keys.second, &ok);
+
+  if(ok)
+    m_forwardSecrecyKeys.insert(list.value(0), keys);
 }
