@@ -5758,7 +5758,10 @@ QString spoton_neighbor::findMessageType
       if(type == "0090")
 	goto done_label;
       else
-	symmetricKeys.clear();
+	{
+	  symmetricKeys.clear();
+	  type.clear();
+	}
     }
 
   /*
@@ -5840,21 +5843,17 @@ QString spoton_neighbor::findMessageType
 	  if(ok)
 	    type = QByteArray::fromBase64(data.split('\n').value(0));
 
-	  if(!type.isEmpty())
+	  if(type == "0001b")
 	    {
-	      if(type == "0001b")
-		{
-		  QList<QByteArray> list(data.split('\n'));
+	      QList<QByteArray> list(data.split('\n'));
 
-		  for(int i = 0; i < list.size(); i++)
-		    list.replace(i, QByteArray::fromBase64(list.at(i)));
+	      for(int i = 0; i < list.size(); i++)
+		list.replace(i, QByteArray::fromBase64(list.at(i)));
 
-		  symmetricKeys.append(list.value(1));
-		  symmetricKeys.append(list.value(3));
-		  symmetricKeys.append(list.value(2));
-		  symmetricKeys.append(list.value(4));
-		}
-
+	      symmetricKeys.append(list.value(1));
+	      symmetricKeys.append(list.value(3));
+	      symmetricKeys.append(list.value(2));
+	      symmetricKeys.append(list.value(4));
 	      goto done_label;
 	    }
 	}
@@ -5906,6 +5905,11 @@ QString spoton_neighbor::findMessageType
 		      goto done_label;
 		    }
 		}
+	      else
+		{
+		  symmetricKeys.clear();
+		  type.clear();
+		}
 	    }
 	}
 
@@ -5924,6 +5928,51 @@ QString spoton_neighbor::findMessageType
 
 	  if(spoton_misc::participantCount(types.at(i), s_crypt) <= 0)
 	    continue;
+
+	  QByteArray data;
+	  bool ok = true;
+
+	  data = s_crypt->publicKeyDecrypt
+	    (QByteArray::fromBase64(list.value(0)), &ok);
+
+	  if(ok)
+	    {
+	      QByteArray a;
+	      QDataStream stream(&data, QIODevice::ReadOnly);
+
+	      stream >> a;
+
+	      if(stream.status() == QDataStream::Ok)
+		type = a;
+
+	      if(type == "0091a")
+		{
+		  QList<QByteArray> list;
+
+		  for(int i = 0; i < 4; i++)
+		    {
+		      stream >> a;
+
+		      if(stream.status() != QDataStream::Ok)
+			{
+			  list.clear();
+			  type.clear();
+			  break;
+			}
+		      else
+			list.append(a);
+		    }
+
+		  if(!type.isEmpty())
+		    {
+		      symmetricKeys.append(list.value(0));
+		      symmetricKeys.append(list.value(2));
+		      symmetricKeys.append(list.value(1));
+		      symmetricKeys.append(list.value(3));
+		      goto done_label;
+		    }
+		}
+	    }
 	}
     }
 
