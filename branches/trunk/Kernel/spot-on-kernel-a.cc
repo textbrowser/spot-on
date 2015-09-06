@@ -564,12 +564,12 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     (static_cast<int> (1000 * setting("kernel/cachePurgeInterval", 15.00).
 		       toDouble()));
 
-  if(!setting("gui/disablePop3", false).toBool())
+  if(!setting("gui/disablePop3", true).toBool())
     m_poptasticPopTimer.start
       (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
 					5.00).toDouble()));
 
-  if(!setting("gui/disableSmtp", false).toBool())
+  if(!setting("gui/disableSmtp", true).toBool())
     m_poptasticPostTimer.start(2500);
 
   m_publishAllListenersPlaintextTimer.setInterval(10 * 60 * 1000);
@@ -1959,7 +1959,7 @@ void spoton_kernel::slotUpdateSettings(void)
   int integer = static_cast<int>
     (1000 * setting("gui/poptasticRefreshInterval", 5.00).toDouble());
 
-  if(!setting("gui/disablePop3", false).toBool())
+  if(!setting("gui/disablePop3", true).toBool())
     {
       if(!m_poptasticPopTimer.isActive())
 	m_poptasticPopTimer.start(integer);
@@ -1969,7 +1969,7 @@ void spoton_kernel::slotUpdateSettings(void)
   else
     m_poptasticPopTimer.stop();
 
-  if(!setting("gui/disableSmtp", false).toBool())
+  if(!setting("gui/disableSmtp", true).toBool())
     {
       if(!m_poptasticPostTimer.isActive())
 	m_poptasticPostTimer.start(2500);
@@ -5257,7 +5257,7 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
 					 const QByteArray &message,
 					 const qint64 mailOid)
 {
-  if(setting("gui/disableSmtp", false).toBool())
+  if(setting("gui/disableSmtp", true).toBool())
     {
       QWriteLocker locker(&m_poptasticCacheMutex);
 
@@ -5281,7 +5281,7 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 					 const QByteArray &subject,
 					 const qint64 mailOid)
 {
-  if(setting("gui/disableSmtp", false).toBool())
+  if(setting("gui/disableSmtp", true).toBool())
     {
       QWriteLocker locker(&m_poptasticCacheMutex);
 
