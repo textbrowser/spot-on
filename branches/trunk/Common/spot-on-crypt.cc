@@ -1747,6 +1747,7 @@ QByteArray spoton_crypt::publicKey(bool *ok)
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
+
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "idiotes.db");
 
@@ -2077,6 +2078,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
+
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "idiotes.db");
 
@@ -3022,6 +3024,7 @@ void spoton_crypt::purgeDatabases(void)
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
+
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "idiotes.db");
 
@@ -3546,6 +3549,7 @@ qint64 spoton_crypt::publicKeyCount(void)
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
+
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "idiotes.db");
 
@@ -3660,6 +3664,7 @@ void spoton_crypt::reencodePrivatePublicKeys
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
+
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "idiotes.db");
 

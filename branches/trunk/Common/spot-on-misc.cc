@@ -4309,3 +4309,45 @@ QByteArray spoton_misc::forwardSecrecyMagnetFromList
   magnet.append("&xt=urn:forward-secrecy");
   return magnet;
 }
+
+QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
+					      spoton_crypt *crypt)
+{
+  if(!crypt)
+    return QString("");
+
+  QString connectionName("");
+  QString keyType("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT key_type FROM friends_public_keys "
+		      "WHERE neighbor_oid = -1 AND "
+		      "public_key_hash = ?");
+	query.bindValue(0, publicKeyHash.toBase64());
+
+	if(query.exec())
+	  if(query.next())
+	    keyType = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	if(!ok)
+	  keyType.clear();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return keyType;
+}

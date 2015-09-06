@@ -107,6 +107,8 @@ class spoton_misc
   static QString countryNameFromIPAddress(const QString &ipAddress);
   static QString databaseName(void);
   static QString homePath(void);
+  static QString keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
+					  spoton_crypt *crypt);
   static QString massageIpForUi(const QString &ip, const QString &protocol);
   static bool allParticipantsHaveGeminis(void);
   static bool authenticateAccount(QByteArray &name,
