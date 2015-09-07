@@ -377,13 +377,23 @@ QList<QByteArray> spoton::retrieveForwardSecrecyInformation
 
 void spoton::slotRespondToForwardSecrecy(void)
 {
+  QByteArray publicKeyHash
+    (m_sb.forward_secrecy_request->property("public_key_hash").toByteArray());
   QScopedPointer<QDialog> dialog;
+  QString connectionName("");
   QString error("");
   QStringList aTypes;
   QStringList eTypes;
   Ui_forwardsecrecyalgorithmsselection ui;
+  spoton_crypt *s_crypt = m_crypts.value("email", 0);
 
-  aTypes = spoton_crypt::cipherTypes();
+  if(!s_crypt)
+    {
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      goto done_label;
+    }
+
+  aTypes = spoton_crypt::hashTypes();
 
   if(aTypes.isEmpty())
     {
@@ -393,7 +403,7 @@ void spoton::slotRespondToForwardSecrecy(void)
       goto done_label;
     }
 
-  eTypes = spoton_crypt::hashTypes();
+  eTypes = spoton_crypt::cipherTypes();
 
   if(eTypes.isEmpty())
     {
@@ -416,6 +426,104 @@ void spoton::slotRespondToForwardSecrecy(void)
 
   if(dialog->exec() != QDialog::Accepted)
     goto done_label;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QByteArray hashKey;
+	QByteArray symmetricKey;
+	QSqlQuery query(db);
+	bool ok = true;
+	size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
+	  (ui.encryption_algorithm->currentText().toLatin1());
+
+	if(symmetricKeyLength <= 0)
+	  {
+	    db.close();
+	    error = tr("Peculiar spoton_crypt error.");
+	    goto remove_database_label;
+	  }
+
+	hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+	hashKey = spoton_crypt::strongRandomBytes
+	  (static_cast<size_t> (hashKey.length())).toHex();
+	symmetricKey.resize(static_cast<int> (symmetricKeyLength));
+	symmetricKey = spoton_crypt::strongRandomBytes
+	  (static_cast<size_t> (symmetricKey.length())).toHex();
+	query.prepare
+	  ("UPDATE friends_public_keys "
+	   "SET forward_secrecy_authentication_algorithm = ?, "
+	   "forward_secrecy_authentication_key = ?, "
+	   "forward_secrecy_encryption_algorithm = ?, "
+	   "forward_secrecy_encryption_key = ? WHERE "
+	   "public_key_hash = ?");
+	query.bindValue
+	  (0, s_crypt->encryptedThenHashed(ui.authentication_algorithm->
+					   currentText().toLatin1(), &ok).
+	   toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, s_crypt->encryptedThenHashed(hashKey, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, s_crypt->encryptedThenHashed(ui.encryption_algorithm->
+					     currentText().toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, s_crypt->encryptedThenHashed(symmetricKey, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(4, publicKeyHash.toBase64());
+
+	if(ok)
+	  ok = query.exec();
+
+	if(!ok)
+	  error = "Error recording credentials.";
+      }
+    else
+      error = tr("Unable to open a connection to friends_public_keys.db");
+
+    db.close();
+  }
+
+ remove_database_label:
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!error.isEmpty())
+    goto done_label;
+
+  m_forwardSecrecyRequests.remove(publicKeyHash);
+
+  if(m_forwardSecrecyRequests.isEmpty())
+    {
+      m_sb.forward_secrecy_request->setProperty("public_key_hash", QVariant());
+      m_sb.forward_secrecy_request->setToolTip("");
+      m_sb.forward_secrecy_request->setVisible(false);
+    }
+  else
+    {
+      publicKeyHash = m_forwardSecrecyRequests.keys().value(0);
+
+      QString str(publicKeyHash.toBase64().constData());
+
+      m_sb.forward_secrecy_request->setProperty
+	("public_key_hash", publicKeyHash);
+      m_sb.forward_secrecy_request->
+	setToolTip(tr("Participant %1 is requesting forward secrecy "
+		      "credentials.").arg(str.mid(0, 16) +
+					  "..." +
+					  str.right(16)));
+    }
 
  done_label:
 
@@ -469,8 +577,10 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 {
   if(list.size() != 2)
     return;
-  else if(!(list.value(0) == "chat" || list.value(0) == "email" ||
-	    list.value(0) == "poptastic"))
+
+  QString keyType(QByteArray::fromBase64(list.value(0)).constData());
+
+  if(!(keyType == "chat" || keyType == "email" || keyType == "poptastic"))
     return;
 
   QByteArray publicKeyHash(QByteArray::fromBase64(list.value(1)));
@@ -484,12 +594,10 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
     {
       spoton_forward_secrecy s;
 
-      s.key_type = list.value(0).constData();
+      s.key_type = keyType;
       s.public_key_hash = publicKeyHash;
       m_forwardSecrecyRequests.insert(publicKeyHash, s);
     }
-
-  QString keyType(list.value(0).constData());
 
   if(!m_sb.forward_secrecy_request->isVisible())
     {
