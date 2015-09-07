@@ -1724,6 +1724,11 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   */
 
   QByteArray keyType(list.value(4));
+
+  if(!(keyType == "chat" || keyType == "email" || keyType == "poptastic" ||
+       keyType == "url"))
+    return;
+
   QByteArray widgetType(list.value(5));
   bool ok = true;
   spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
@@ -1806,6 +1811,8 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
       sign = true; // Mandatory signatures!
     }
+  else if(keyType == "url" && !setting("gui/urlSignMessages", true).toBool())
+    sign = false;
 
   QByteArray signature;
   QByteArray utcDate(QDateTime::currentDateTime().toUTC().
@@ -1864,7 +1871,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
     messageCode.toBase64();
 
-  if(keyType == "chat" || keyType == "email")
+  if(keyType == "chat" || keyType == "email" || keyType == "url")
     emit sendForwardSecrecyPublicKey(data);
   else if(keyType == "poptastic")
     {

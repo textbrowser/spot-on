@@ -571,12 +571,10 @@ void spoton::slotResetForwardSecrecyInformation(void)
 
 void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 {
-  if(list.size() != 2)
-    return;
-
   QString keyType(QByteArray::fromBase64(list.value(0)).constData());
 
-  if(!(keyType == "chat" || keyType == "email" || keyType == "poptastic"))
+  if(!(keyType == "chat" || keyType == "email" ||
+       keyType == "poptastic" || keyType == "url"))
     return;
 
   QByteArray publicKeyHash(QByteArray::fromBase64(list.value(1)));

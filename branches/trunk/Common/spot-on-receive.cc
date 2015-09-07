@@ -1196,6 +1196,10 @@ QList<QByteArray> spoton_receive::process0091a
       QString keyType
 	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
 
+      if(!(keyType == "chat" || keyType == "email" ||
+	   keyType == "poptastic" || keyType == "url"))
+	return QList<QByteArray> ();
+
       if(!spoton_misc::isAcceptedParticipant(list.value(0), keyType,
 					     s_crypt))
 	return QList<QByteArray> ();
@@ -1203,7 +1207,7 @@ QList<QByteArray> spoton_receive::process0091a
       bool signatureRequired = true;
 
       /*
-      ** Poptastic messages?
+      ** Poptastic messages? Signatures are required!
       */
 
       if((keyType == "chat" &&
@@ -1211,6 +1215,9 @@ QList<QByteArray> spoton_receive::process0091a
 				  true).toBool()) ||
 	 (keyType == "email" &&
 	  !spoton_kernel::setting("gui/emailAcceptSignedMessagesOnly",
+				  true).toBool()) ||
+	 (keyType == "url" &&
+	  !spoton_kernel::setting("gui/urlAcceptSignedMessagesOnly",
 				  true).toBool()))
 	signatureRequired = false;
 
@@ -1243,7 +1250,7 @@ QList<QByteArray> spoton_receive::process0091a
       int secsTo = qAbs(now.secsTo(dateTime));
       int timeDelta = 0;
 
-      if(keyType == "email" || keyType == "email")
+      if(keyType == "email" || keyType == "email" || keyType == "url")
 	timeDelta = spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
       else
 	timeDelta =
