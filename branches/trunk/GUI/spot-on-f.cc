@@ -534,6 +534,8 @@ void spoton::slotResetForwardSecrecyInformation(void)
   if(publicKeyHashes.isEmpty())
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
 
   {
@@ -564,6 +566,7 @@ void spoton::slotResetForwardSecrecyInformation(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
