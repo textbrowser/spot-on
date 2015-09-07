@@ -1803,6 +1803,8 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
       else if(widgetType == "email" && !setting("gui/emailSignMessages",
 						true).toBool())
 	sign = false;
+
+      sign = true; // Mandatory signatures!
     }
 
   QByteArray signature;

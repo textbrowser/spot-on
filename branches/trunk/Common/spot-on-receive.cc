@@ -1202,6 +1202,10 @@ QList<QByteArray> spoton_receive::process0091a
 
       bool signatureRequired = true;
 
+      /*
+      ** Poptastic messages?
+      */
+
       if((keyType == "chat" &&
 	  !spoton_kernel::setting("gui/chatAcceptSignedMessagesOnly",
 				  true).toBool()) ||
