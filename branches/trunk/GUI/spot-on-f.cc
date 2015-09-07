@@ -473,14 +473,30 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 	    list.value(0) == "poptastic"))
     return;
 
+  QByteArray publicKeyHash(QByteArray::fromBase64(list.value(1)));
+
+  if(publicKeyHash.size() != spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES)
+    return;
+
+  if(m_forwardSecrecyRequests.contains(publicKeyHash))
+    return;
+  else
+    {
+      spoton_forward_secrecy s;
+
+      s.key_type = list.value(0).constData();
+      s.public_key_hash = publicKeyHash;
+      m_forwardSecrecyRequests.insert(publicKeyHash, s);
+    }
+
+  QString keyType(list.value(0).constData());
+
   if(!m_sb.forward_secrecy_request->isVisible())
     {
-      QString str(list.value(1).constData());
+      QString str(publicKeyHash.toBase64().constData());
 
       m_sb.forward_secrecy_request->setProperty
-	("key_type", list.value(0));
-      m_sb.forward_secrecy_request->setProperty
-	("public_key_hash", list.value(1));
+	("public_key_hash", publicKeyHash);
       m_sb.forward_secrecy_request->
 	setToolTip(tr("Participant %1 is requesting forward secrecy "
 		      "credentials.").arg(str.mid(0, 16) +

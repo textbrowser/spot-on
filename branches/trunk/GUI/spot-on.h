@@ -394,6 +394,13 @@ class spoton_lineedit: public QLineEdit
 
 class QProgressDialog;
 
+class spoton_forward_secrecy
+{
+ public:
+  QByteArray public_key_hash;
+  QString key_type;
+};
+
 class spoton: public QMainWindow
 {
   Q_OBJECT
@@ -434,6 +441,7 @@ class spoton: public QMainWindow
   QDialog *m_poptasticRetroPhoneDialog;
   QHash<QByteArray, QString> m_neighborToOidMap;
   QHash<QByteArray, quint64> m_receivedChatSequenceNumbers;
+  QHash<QByteArray, spoton_forward_secrecy> m_forwardSecrecyRequests;
   QHash<QString, QByteArray> m_buzzIds;
   QHash<QString, QPointer<spoton_chatwindow> > m_chatWindows;
   QHash<QString, QString> m_keysShared;
