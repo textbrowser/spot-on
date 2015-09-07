@@ -1233,6 +1233,30 @@ QList<QByteArray> spoton_receive::process0091a
 	  return QList<QByteArray> ();
 	}
 
+      QDateTime dateTime
+	(QDateTime::fromString(list.value(2).constData(), "MMddyyyyhhmmss"));
+      QDateTime now(QDateTime::currentDateTimeUtc());
+
+      dateTime.setTimeSpec(Qt::UTC);
+      now.setTimeSpec(Qt::UTC);
+
+      int secsTo = qAbs(now.secsTo(dateTime));
+      int timeDelta = 0;
+
+      if(keyType == "email" || keyType == "email")
+	timeDelta = spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
+      else
+	timeDelta =
+	  spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
+
+      if(!(secsTo <= timeDelta))
+	{
+	  spoton_misc::logError
+	    (QString("spoton_receive::process0091a(): "
+		     "large time delta (%1).").arg(secsTo));
+	  return QList<QByteArray> ();
+	}
+
       return QList<QByteArray> () << keyType.toLatin1() << list.value(0);
     }
   else
