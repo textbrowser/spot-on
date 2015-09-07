@@ -464,3 +464,28 @@ void spoton::slotResetForwardSecrecyInformation(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
+{
+  if(list.size() != 2)
+    return;
+  else if(!(list.value(0) == "chat" || list.value(0) == "email" ||
+	    list.value(0) == "poptastic"))
+    return;
+
+  if(!m_sb.forward_secrecy_request->isVisible())
+    {
+      QString str(list.value(1).constData());
+
+      m_sb.forward_secrecy_request->setProperty
+	("key_type", list.value(0));
+      m_sb.forward_secrecy_request->setProperty
+	("public_key_hash", list.value(1));
+      m_sb.forward_secrecy_request->
+	setToolTip(tr("Participant %1 is requesting forward secrecy "
+		      "credentials.").arg(str.mid(0, 16) +
+					  "..." +
+					  str.right(16)));
+      m_sb.forward_secrecy_request->setVisible(true);
+    }
+}

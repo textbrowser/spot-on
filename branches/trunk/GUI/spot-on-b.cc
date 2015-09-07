@@ -328,6 +328,13 @@ void spoton::slotReceivedKernelMessage(void)
 		  playSong("receive.wav");
 		}
 	    }
+	  else if(data.startsWith("forward_secrecy_request_"))
+	    {
+	      data.remove
+		(0, static_cast<int> (qstrlen("forward_secrecy_request_")));
+
+	      forwardSecrecyRequested(data.split('_'));
+	    }
 	  else if(data.startsWith("message_"))
 	    {
 	      data.remove

@@ -2055,6 +2055,11 @@ void spoton_kernel::connectSignalsToNeighbor
   if(m_guiServer)
     {
       connect(neighbor,
+	      SIGNAL(forwardSecrecyRequest(const QByteArrayList &)),
+	      m_guiServer,
+	      SLOT(slotForwardSecrecyRequest(const QByteArrayList &)),
+	      Qt::UniqueConnection);
+      connect(neighbor,
 	      SIGNAL(newEMailArrived(void)),
 	      m_guiServer,
 	      SLOT(slotNewEMailArrived(void)),

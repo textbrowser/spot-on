@@ -2424,7 +2424,6 @@ void spoton_neighbor::slotSharePublicKey(const QByteArray &keyType,
 void spoton_neighbor::process0000(int length, const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  QByteArray messageCode;
   QList<QByteArray> list
     (spoton_receive::process0000(length, dataIn, symmetricKeys,
 				 spoton_kernel::setting("gui/chatAccept"
@@ -4409,7 +4408,7 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 					value("url", 0)))
 		      {
 			spoton_misc::logError
-			  ("spoton_receive::"
+			  ("spoton_neighbor::"
 			   "process0080(): invalid "
 			   "signature.");
 			return;
@@ -4536,151 +4535,12 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 void spoton_neighbor::process0091a(int length, const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  QList<QByteArray> list
+    (spoton_receive::process0091a(length, dataIn, symmetricKeys,
+				  m_address, m_port));
 
-  if(!s_crypt)
-    return;
-
-  QByteArray data(dataIn);
-
-  if(length == data.length())
-    {
-      data = data.trimmed();
-
-      QByteArray originalData(data);
-      QList<QByteArray> list(data.split('\n'));
-
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-      if(list.size() != 4)
-	{
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::process0091a(): "
-		     "received irregular data. Expecting 4 "
-		     "entries, "
-		     "received %1.").arg(list.size()));
-	  return;
-	}
-
-      /*
-      ** symmetricKeys[0]: Encryption Key
-      ** symmetricKeys[1]: Encryption Type
-      ** symmetricKeys[2]: Hash Key
-      ** symmetricKeys[3]: Hash Type
-      */
-
-      QByteArray computedHash;
-      bool ok = true;
-      spoton_crypt crypt(symmetricKeys.value(1).constData(),
-			 symmetricKeys.value(3).constData(),
-			 QByteArray(),
-			 symmetricKeys.value(0),
-			 symmetricKeys.value(2),
-			 0,
-			 0,
-			 QString(""));
-
-      computedHash = spoton_crypt::keyedHash
-	(list.value(0) + list.value(1),
-	 symmetricKeys.value(2), symmetricKeys.value(3), &ok);
-
-      if(ok)
-	{
-	  QByteArray messageCode(list.value(2));
-
-	  if(computedHash.isEmpty() || messageCode.isEmpty() ||
-	     !spoton_crypt::memcmp(computedHash, messageCode))
-	    {
-	      spoton_misc::logError
-		("spoton_neighbor::"
-		 "process0091a(): "
-		 "computed message code does "
-		 "not match provided code.");
-	      return;
-	    }
-	}
-      else
-	return;
-
-      data = crypt.decrypted(list.value(1), &ok);
-
-      if(!ok)
-	return;
-
-      QDataStream stream(&data, QIODevice::ReadOnly);
-
-      list.clear();
-
-      for(int i = 0; i < 4; i++)
-	{
-	  QByteArray a;
-
-	  stream >> a;
-
-	  if(stream.status() != QDataStream::Ok)
-	    {
-	      list.clear();
-	      break;
-	    }
-	  else
-	    list << a;
-	}
-
-      if(list.size() != 4)
-	{
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::process0091a(): "
-		     "received irregular data. Expecting 4 "
-		     "entries, "
-		     "received %1.").arg(list.size()));
-	  return;
-	}
-
-      QString keyType
-	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
-
-      if(!spoton_misc::isAcceptedParticipant(list.value(0), keyType,
-					     s_crypt))
-	return;
-
-      bool signatureRequired = true;
-
-      if((keyType == "chat" &&
-	  !spoton_kernel::setting("gui/chatAcceptSignedMessagesOnly",
-				  true).toBool()) ||
-	 (keyType == "email" &&
-	  !spoton_kernel::setting("gui/emailAcceptSignedMessagesOnly",
-				  true).toBool()))
-	signatureRequired = false;
-
-      if(signatureRequired &&
-	 !spoton_misc::isValidSignature("0091a" +
-					symmetricKeys.value(0) +
-					symmetricKeys.value(2) +
-					symmetricKeys.value(1) +
-					symmetricKeys.value(3) +
-					list.value(0) +
-					list.value(1) +
-					list.value(2),
-					list.value(0),
-					list.value(3), // Signature
-					spoton_kernel::s_crypts.
-					value(keyType, 0)))
-	{
-	  spoton_misc::logError
-	    ("spoton_neighbor::0091a(): invalid signature.");
-	  return;
-	}
-    }
-  else
-    spoton_misc::logError
-      (QString("spoton_neighbor::process0091a(): 0091a "
-	       "Content-Length mismatch (advertised: %1, received: %2) "
-	       "for %3:%4.").
-       arg(length).arg(data.length()).
-       arg(m_address.toString()).
-       arg(m_port));
+  if(!list.isEmpty())
+    emit forwardSecrecyRequest(list);
 }
 
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
@@ -6019,7 +5879,7 @@ QString spoton_neighbor::findMessageType
 	      if(stream.status() == QDataStream::Ok)
 		type = a;
 
-	      if(type == "0091a" || type == "0091b")
+	      if((interfaces > 0 && type == "0091a") || type == "0091b")
 		{
 		  QList<QByteArray> list;
 

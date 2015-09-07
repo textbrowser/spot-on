@@ -129,7 +129,7 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
       socket.abort();
       spoton_misc::logError
 	(QString("spoton_gui_server_tcp_server::"
-		 "spoton_gui_server_tcp_server(): "
+		 "incomingConnection(): "
 		 "generateSslKeys() failure (%1).").arg(error));
     }
 }
@@ -839,7 +839,36 @@ void spoton_gui_server::slotStatusMessageReceived
       }
     else
       spoton_misc::logError
-	(QString("spoton_gui_server::spoton_gui_server(): "
+	(QString("spoton_gui_server::slotStatusMessageReceived(): "
+		 "socket %1:%2 is not encrypted. Ignoring write() request.").
+	 arg(socket->peerAddress().toString()).
+	 arg(socket->peerPort()));
+}
+
+void spoton_gui_server::slotForwardSecrecyRequest
+(const QByteArrayList &list)
+{
+  QByteArray message("forward_secrecy_request_");
+
+  message.append(list.value(0).toBase64()); // Key Type
+  message.append("_");
+  message.append(list.value(1).toBase64()); // Public Key Hash
+  message.append("\n");
+
+  foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
+    if(socket->isEncrypted())
+      {
+	if(socket->write(message.constData(),
+			 message.length()) != message.length())
+	  spoton_misc::logError
+	    (QString("spoton_gui_server::slotForwardSecrecyRequest(): "
+		     "write() failure for %1:%2.").
+	     arg(socket->peerAddress().toString()).
+	     arg(socket->peerPort()));
+      }
+    else
+      spoton_misc::logError
+	(QString("spoton_gui_server::slotForwardSecrecyRequest(): "
 		 "socket %1:%2 is not encrypted. Ignoring write() request.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));

@@ -528,6 +528,7 @@ class spoton: public QMainWindow
   void discoverUrls(void);
   void displayUrlImportResults(const quint64 imported,
 			       const quint64 not_imported);
+  void forwardSecrecyRequested(const QList<QByteArray> &list);
   void generateHalfGeminis(void);
   void highlightPaths(void);
   void importNeighbors(const QString &filePath);

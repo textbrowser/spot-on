@@ -376,6 +376,7 @@ class spoton_neighbor: public QThread
 		       const QByteArray &gemini,
 		       const QByteArray &geminiHashKey);
   void disconnected(void);
+  void forwardSecrecyRequest(const QByteArrayList &list);
   void newData(void);
   void newEMailArrived(void);
   void publicizeListenerPlaintext(const QByteArray &data, const qint64 id);
