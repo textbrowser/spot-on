@@ -555,7 +555,7 @@ void spoton::slotResetForwardSecrecyInformation(void)
 	       "forward_secrecy_encryption_algorithm = NULL, "
 	       "forward_secrecy_encryption_key = NULL WHERE "
 	       "public_key_hash = ?");
-	    query.bindValue(0, publicKeyHashes.at(i).data());
+	    query.bindValue(0, publicKeyHashes.at(i).data().toByteArray());
 	    query.exec();
 	  }
       }
