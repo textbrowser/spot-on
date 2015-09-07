@@ -73,8 +73,8 @@ QByteArray spoton_send::adaptiveEchoAuthentication
       spoton_crypt::weakRandomBytes(100).toBase64(); /*
 						     ** 64 (hash) +
 						     ** 14 (timestamp) +
-						     ** 2 (block size minimum)
-						     ** 4 (length) +
+						     ** 2  (block size minimum)
+						     ** 4  (length) +
 						     ** 16 (init. vector)
 						     */
 

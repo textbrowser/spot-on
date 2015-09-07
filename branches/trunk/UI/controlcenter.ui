@@ -805,7 +805,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>739</width>
+             <width>762</width>
              <height>560</height>
             </rect>
            </property>
@@ -4893,8 +4893,8 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>711</width>
+             <y>-579</y>
+             <width>762</width>
              <height>1132</height>
             </rect>
            </property>
@@ -5778,6 +5778,11 @@
                    <column>
                     <property name="text">
                      <string>SHA-512 Hash</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>Base-64</string>
                     </property>
                    </column>
                   </widget>
@@ -7625,8 +7630,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>241</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">

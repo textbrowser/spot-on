@@ -178,6 +178,9 @@ void spoton::slotReplayMessages(void)
 
 void spoton::slotEstablishEmailForwardSecrecy(void)
 {
+  QModelIndexList names
+    (m_ui.emailParticipants->selectionModel()->
+     selectedRows(0)); // Participant
   QModelIndexList publicKeyHashes
     (m_ui.emailParticipants->selectionModel()->
      selectedRows(3)); // public_key_hash
@@ -260,14 +263,22 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
       else
 	{
 	  QByteArray message;
+	  QString keyType
+	    (publicKeyHashes.at(i).data(Qt::ItemDataRole(Qt::UserRole + 1)).
+	     toString());
+	  QString name(names.at(i).data().toString());
 
 	  message.append("forward_secrecy_");
-	  message.append
-	    (publicKeyHashes.at(i).data().toByteArray().toBase64());
+	  message.append(name.toUtf8().toBase64());
+	  message.append("_");
+	  message.append(publicKeyHashes.at(i).data().toByteArray().
+			 toBase64());
 	  message.append("_");
 	  message.append(keys.first.toBase64()); // Private Key
 	  message.append("_");
 	  message.append(keys.second.toBase64()); // Public Key
+	  message.append("_");
+	  message.append(keyType.toLatin1().toBase64());
 	  message.append("_");
 	  message.append(QByteArray("email").toBase64());
 	  message.append("\n");

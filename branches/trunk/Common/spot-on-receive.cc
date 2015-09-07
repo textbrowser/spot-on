@@ -1337,6 +1337,33 @@ QString spoton_receive::findMessageType
 
 	      if(stream.status() == QDataStream::Ok)
 		type = a;
+
+	      if(type == "0091a" || type == "0091b")
+		{
+		  QList<QByteArray> list;
+
+		  for(int i = 0; i < 4; i++)
+		    {
+		      stream >> a;
+
+		      if(stream.status() != QDataStream::Ok)
+			{
+			  list.clear();
+			  type.clear();
+			  break;
+			}
+		      else
+			list.append(a);
+		    }
+
+		  if(!type.isEmpty())
+		    {
+		      symmetricKeys.append(list.value(0));
+		      symmetricKeys.append(list.value(2));
+		      symmetricKeys.append(list.value(1));
+		      symmetricKeys.append(list.value(3));
+		    }
+		}
 	    }
 
 	  if(!type.isEmpty())

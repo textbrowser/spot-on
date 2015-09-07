@@ -399,11 +399,11 @@ void spoton_gui_server::slotReadyRead(void)
 		{
 		  list.replace(i, QByteArray::fromBase64(list.at(i)));
 
-		  if(i == 0) // Public Key Hash
+		  if(i == 1) // Public Key Hash
 		    list.replace(i, QByteArray::fromBase64(list.at(i)));
 		}
 
-	      if(list.size() == 4)
+	      if(list.size() == 6)
 		emit forwardSecrecyInformationReceivedFromUI(list);
 	    }
 	  else if(message.startsWith("keys_"))

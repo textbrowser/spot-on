@@ -3151,6 +3151,7 @@ void spoton::updatePublicKeysLabel(void)
       if(!crypt)
 	continue;
 
+      QByteArray base64;
       QByteArray bytes;
       QTableWidgetItem *item = new QTableWidgetItem
 	(list.at(i));
@@ -3169,7 +3170,11 @@ void spoton::updatePublicKeysLabel(void)
       bytes = crypt->publicKey(&ok);
 
       if(ok)
-	bytes = spoton_crypt::sha512Hash(bytes, &ok).toHex();
+	{
+	  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+	  base64 = bytes.toBase64();
+	  bytes = bytes.toHex();
+	}
 
       item = new QTableWidgetItem();
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -3178,6 +3183,14 @@ void spoton::updatePublicKeysLabel(void)
 	item->setText(bytes.constData());
 
       m_ui.personal_public_keys->setItem(i, 3, item);
+      item = new QTableWidgetItem();
+      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      item->setText(base64.constData());
+
+      if(!base64.isEmpty())
+	item->setToolTip(base64.mid(0, 16) + "..." + base64.right(16));
+
+      m_ui.personal_public_keys->setItem(i, 4, item);
     }
 
   m_ui.personal_public_keys->resizeColumnToContents(0);

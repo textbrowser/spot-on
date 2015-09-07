@@ -1041,6 +1041,15 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	   2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL, // Seconds
 	   s_crypts.value("poptastic", 0));
     }
+  else if(messageType == "0091a")
+    {
+      QList<QByteArray> list
+	(spoton_receive::process0091a(data.length(), data, symmetricKeys,
+				      QHostAddress("127.0.0.1"), 0));
+
+      if(!list.isEmpty())
+	emit forwardSecrecyRequest(list);
+    }
   else
     {
       QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
@@ -1706,16 +1715,19 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     return;
 
   /*
-  ** list[0]: Destination's Public Key Hash
-  ** list[1]: Temporary Private Key
-  ** list[2]: Temporary Public Key
-  ** list[3]: chat, email, etc.
+  ** list[0]: Destination's Name
+  ** list[1]: Destination's Public Key Hash
+  ** list[2]: Temporary Private Key
+  ** list[3]: Temporary Public Key
+  ** list[4]: Key Type (chat, email, poptastic, etc.)
+  ** list[5]: Widget Type (chat, email)
   */
 
-  QByteArray type(list.value(3));
+  QByteArray keyType(list.value(4));
+  QByteArray widgetType(list.value(5));
   bool ok = true;
-  spoton_crypt *s_crypt1 = s_crypts.value(type, 0);
-  spoton_crypt *s_crypt2 = s_crypts.value(type + "-signature", 0);
+  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt2 = s_crypts.value(keyType + "-signature", 0);
 
   if(!s_crypt1 || !s_crypt2)
     return;
@@ -1735,7 +1747,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   QByteArray hashType(setting("gui/fsHashType", "sha512").
 		      toString().toLatin1());
   QByteArray publicKey
-    (spoton_misc::publicKeyFromHash(list.value(0), s_crypt1));
+    (spoton_misc::publicKeyFromHash(list.value(1), s_crypt1));
 
   if(publicKey.isEmpty())
     return;
@@ -1776,11 +1788,22 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   if(!ok)
     return;
 
-  bool sign = false;
+  bool sign = true;
 
-  if((type == "chat" && setting("gui/chatSignMessages", true).toBool()) ||
-     (type == "email" && setting("gui/emailSignMessages", true).toBool()))
-    sign = true;
+  if(keyType == "chat" && !setting("gui/chatSignMessages", true).toBool())
+    sign = false;
+  else if(keyType == "email" && !setting("gui/emailSignMessages", true).
+	  toBool())
+    sign = false;
+  else if(keyType == "poptastic")
+    {
+      if(widgetType == "chat" && !setting("gui/chatSignMessages", true).
+	 toBool())
+	sign = false;
+      else if(widgetType == "email" && !setting("gui/emailSignMessages",
+						true).toBool())
+	sign = false;
+    }
 
   QByteArray signature;
   QByteArray utcDate(QDateTime::currentDateTime().toUTC().
@@ -1795,7 +1818,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 	 cipherType +
 	 hashType +
 	 myPublicKeyHash +
-	 list.value(2) +
+	 list.value(3) +
 	 utcDate, &ok);
 
       if(!ok)
@@ -1816,7 +1839,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     QDataStream stream(&data, QIODevice::WriteOnly);
 
     stream << myPublicKeyHash
-	   << list.value(2)
+	   << list.value(3)
 	   << utcDate
 	   << signature;
 
@@ -1838,9 +1861,19 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
     messageCode.toBase64();
-  emit sendForwardSecrecyPublicKey(data);
 
-  QPair<QByteArray, QByteArray> keys(list.value(1), list.value(2));
+  if(keyType == "chat" || keyType == "email")
+    emit sendForwardSecrecyPublicKey(data);
+  else if(keyType == "poptastic")
+    {
+      QByteArray message
+	(spoton_send::message0091a(data, QPair<QByteArray, QByteArray> ()));
+      QString name(QString::fromUtf8(list.value(0).constData()));
+
+      postPoptasticMessage(name, message);
+    }
+
+  QPair<QByteArray, QByteArray> keys(list.value(2), list.value(3));
 
   keys.first = s_crypt1->encryptedThenHashed(keys.first, &ok);
 
@@ -1848,5 +1881,5 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     keys.second = s_crypt1->encryptedThenHashed(keys.second, &ok);
 
   if(ok)
-    m_forwardSecrecyKeys.insert(list.value(0), keys);
+    m_forwardSecrecyKeys.insert(list.value(1), keys);
 }
