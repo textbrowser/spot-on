@@ -436,7 +436,10 @@ void spoton::slotRespondToForwardSecrecy(void)
   ui.encryption_algorithm->addItems(eTypes);
 
   if(dialog->exec() != QDialog::Accepted)
-    goto done_label;
+    {
+      popForwardSecrecyRequest(publicKeyHash);
+      goto done_label;
+    }
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -499,7 +502,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 	  ok = query.exec();
 
 	if(!ok)
-	  error = "Error recording credentials.";
+	  error = tr("Error recording credentials.");
       }
     else
       error = tr("Unable to open a connection to friends_public_keys.db");
@@ -513,28 +516,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(!error.isEmpty())
     goto done_label;
 
-  m_forwardSecrecyRequests.remove(publicKeyHash);
-
-  if(m_forwardSecrecyRequests.isEmpty())
-    {
-      m_sb.forward_secrecy_request->setProperty("public_key_hash", QVariant());
-      m_sb.forward_secrecy_request->setToolTip("");
-      m_sb.forward_secrecy_request->setVisible(false);
-    }
-  else
-    {
-      publicKeyHash = m_forwardSecrecyRequests.keys().value(0);
-
-      QString str(publicKeyHash.toBase64().constData());
-
-      m_sb.forward_secrecy_request->setProperty
-	("public_key_hash", publicKeyHash);
-      m_sb.forward_secrecy_request->
-	setToolTip(tr("Participant %1 is requesting forward secrecy "
-		      "credentials.").arg(str.mid(0, 16) +
-					  "..." +
-					  str.right(16)));
-    }
+  popForwardSecrecyRequest(publicKeyHash);
 
  done_label:
 
@@ -622,5 +604,30 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 					  "..." +
 					  str.right(16)));
       m_sb.forward_secrecy_request->setVisible(true);
+    }
+}
+
+void spoton::popForwardSecrecyRequest(const QByteArray &publicKeyHash)
+{
+  m_forwardSecrecyRequests.remove(publicKeyHash);
+
+  if(m_forwardSecrecyRequests.isEmpty())
+    {
+      m_sb.forward_secrecy_request->setProperty("public_key_hash", QVariant());
+      m_sb.forward_secrecy_request->setToolTip("");
+      m_sb.forward_secrecy_request->setVisible(false);
+    }
+  else
+    {
+      QByteArray publicKeyHash(m_forwardSecrecyRequests.keys().value(0));
+      QString str(publicKeyHash.toBase64().constData());
+
+      m_sb.forward_secrecy_request->setProperty
+	("public_key_hash", publicKeyHash);
+      m_sb.forward_secrecy_request->
+	setToolTip(tr("Participant %1 is requesting forward secrecy "
+		      "credentials.").arg(str.mid(0, 16) +
+					  "..." +
+					  str.right(16)));
     }
 }

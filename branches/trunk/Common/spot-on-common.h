@@ -55,6 +55,7 @@ namespace spoton_common
   static const int CACHE_TIME_DELTA_MAXIMUM = 30;
   static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM = 30;
+  static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM = 90;
   static const int KERNEL_URLS_BATCH_SIZE = 25;
   static const int MAIL_TIME_DELTA_MAXIMUM = 90;
@@ -62,6 +63,7 @@ namespace spoton_common
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
   static const int MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION = 50;
   static const int NAME_MAXIMUM_LENGTH = 64;
+  static const int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM = 60;
   static const int POPTASTIC_STATUS_INTERVAL = 60;
   static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
   static const int STATUS_INTERVAL = 15;
