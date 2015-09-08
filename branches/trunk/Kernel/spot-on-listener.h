@@ -220,9 +220,9 @@ class spoton_listener: public QObject
   spoton_listener_tcp_server *m_tcpServer;
   spoton_listener_udp_server *m_udpServer;
   spoton_sctp_server *m_sctpServer;
-  qint64 id(void) const;
   QString errorString(void) const;
   int maxPendingConnections(void) const;
+  qint64 id(void) const;
   void prepareNetworkInterface(void);
   void saveExternalAddress(const QHostAddress &address,
 			   const QSqlDatabase &db);
