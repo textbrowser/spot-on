@@ -379,7 +379,11 @@ QString spoton_crypt::publicKeySizeNTRU(void)
   publicKey(&ok);
 
   if(!ok)
-    return keySize;
+    {
+      spoton_misc::logError
+	("spoton_crypt::publicKeySizeNTRU(): publicKey() failure.");
+      return keySize;
+    }
 
   uint8_t *publicKey_array = new (std::nothrow)
     uint8_t[m_publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
