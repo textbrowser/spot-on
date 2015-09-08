@@ -589,6 +589,7 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
       spoton_forward_secrecy s;
 
       s.key_type = keyType;
+      s.public_key = list.value(2);
       s.public_key_hash = publicKeyHash;
       m_forwardSecrecyRequests.insert(publicKeyHash, s);
     }

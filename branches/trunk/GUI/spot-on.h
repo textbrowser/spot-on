@@ -397,6 +397,7 @@ class QProgressDialog;
 class spoton_forward_secrecy
 {
  public:
+  QByteArray public_key;
   QByteArray public_key_hash;
   QString key_type;
 };

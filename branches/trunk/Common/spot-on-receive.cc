@@ -1294,7 +1294,9 @@ QList<QByteArray> spoton_receive::process0091a
 	  return QList<QByteArray> ();
 	}
 
-      return QList<QByteArray> () << keyType.toLatin1() << list.value(0);
+      return QList<QByteArray> () << keyType.toLatin1()
+				  << list.value(0)
+				  << list.value(1);
     }
   else
     spoton_misc::logError
