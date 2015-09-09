@@ -576,13 +576,16 @@ Public Key (Base-64)
 EOL
 Encryption Key (Base-64)
 {
-0 - Dispatcher's SHA-512 Digest
-1 - Forward Secrecy Authentication Algorithm
-2 - Forward Secrecy Authentication Key
-3 - Forward Secrecy Encryption Algorithm
-4 - Forward Secrecy Encryption Key
-5 - UTC Date
-6 - Signature (First Group Items and Previous Six Items)
+0 - Temporary Public Key
+    {
+    0 - Dispatcher's SHA-512 Digest
+    1 - Forward Secrecy Authentication Algorithm
+    2 - Forward Secrecy Authentication Key
+    3 - Forward Secrecy Encryption Algorithm
+    4 - Forward Secrecy Encryption Key
+    5 - UTC Date
+    }
+1 - Signature (First Group Items and Previous Item)
 }
 EOL
 {

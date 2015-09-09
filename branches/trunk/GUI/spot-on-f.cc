@@ -268,11 +268,10 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 	     toString());
 	  QString name(names.at(i).data().toString());
 
-	  message.append("forward_secrecy_");
+	  message.append("forward_secrecy_request_");
 	  message.append(name.toUtf8().toBase64());
 	  message.append("_");
-	  message.append(publicKeyHashes.at(i).data().toByteArray().
-			 toBase64());
+	  message.append(publicKeyHashes.at(i).data().toByteArray());
 	  message.append("_");
 	  message.append(keys.first.toBase64()); // Private Key
 	  message.append("_");
@@ -388,8 +387,11 @@ QList<QByteArray> spoton::retrieveForwardSecrecyInformation
 
 void spoton::slotRespondToForwardSecrecy(void)
 {
+  QByteArray hashKey;
+  QByteArray message;
   QByteArray publicKeyHash
     (m_sb.forward_secrecy_request->property("public_key_hash").toByteArray());
+  QByteArray symmetricKey;
   QScopedPointer<QDialog> dialog;
   QString connectionName("");
   QString error("");
@@ -397,10 +399,21 @@ void spoton::slotRespondToForwardSecrecy(void)
   QStringList eTypes;
   Ui_forwardsecrecyalgorithmsselection ui;
   spoton_crypt *s_crypt = m_crypts.value("email", 0);
+  spoton_forward_secrecy sfs = m_forwardSecrecyRequests.value(publicKeyHash);
 
   if(!s_crypt)
     {
       error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      goto done_label;
+    }
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    {
+      error = tr("The interface is not connected to the kernel.");
+      goto done_label;
+    }
+  else if(!m_kernelSocket.isEncrypted())
+    {
+      error = tr("The connection to the kernel is not encrypted.");
       goto done_label;
     }
 
@@ -449,8 +462,6 @@ void spoton::slotRespondToForwardSecrecy(void)
 
     if(db.open())
       {
-	QByteArray hashKey;
-	QByteArray symmetricKey;
 	QSqlQuery query(db);
 	bool ok = true;
 	size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
@@ -516,7 +527,34 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(!error.isEmpty())
     goto done_label;
 
-  popForwardSecrecyRequest(publicKeyHash);
+  message.append("forward_secrecy_response_");
+  message.append(publicKeyHash.toBase64());
+  message.append("_");
+  message.append(sfs.public_key.toBase64());
+  message.append("_");
+  message.append(sfs.key_type.toLatin1().toBase64());
+  message.append("_");
+  message.append(ui.authentication_algorithm->currentText().toLatin1().
+		 toBase64());
+  message.append("_");
+  message.append(hashKey.toBase64());
+  message.append("_");
+  message.append(ui.encryption_algorithm->currentText().toLatin1().
+		 toBase64());
+  message.append("_");
+  message.append(symmetricKey.toBase64());
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotRespondToForwardSecrecy(): "
+	       "write() failure for "
+	       "%1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
+  else
+    popForwardSecrecyRequest(publicKeyHash);
 
  done_label:
 

@@ -1892,3 +1892,10 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   if(ok)
     m_forwardSecrecyKeys.insert(list.value(1), keys);
 }
+
+void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
+(const QByteArrayList &list)
+{
+  if(list.isEmpty())
+    return;
+}

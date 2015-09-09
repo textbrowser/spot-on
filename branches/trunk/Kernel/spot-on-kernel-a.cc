@@ -647,6 +647,13 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	 this,
 	 SLOT(slotForwardSecrecyInformationReceivedFromUI(const
 							  QByteArrayList &)));
+      connect
+	(m_guiServer,
+	 SIGNAL(forwardSecrecyResponseReceivedFromUI(const
+						     QByteArrayList &)),
+	 this,
+	 SLOT(slotForwardSecrecyResponseReceivedFromUI(const
+						       QByteArrayList &)));
       connect(m_guiServer,
 	      SIGNAL(messageReceivedFromUI(const qint64,
 					   const QByteArray &,

@@ -129,6 +129,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   void disconnectNeighbors(const qint64 oid);
   void echoKeyShare(const QByteArrayList &list);
   void forwardSecrecyInformationReceivedFromUI(const QByteArrayList &list);
+  void forwardSecrecyResponseReceivedFromUI(const QByteArrayList &list);
   void messageReceivedFromUI(const qint64 oid,
 			     const QByteArray &name,
 			     const QByteArray &message,

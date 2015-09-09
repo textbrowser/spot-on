@@ -388,23 +388,31 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(list.size() == 2)
 		emit echoKeyShare(list);
 	    }
-	  else if(message.startsWith("forward_secrecy_"))
+	  else if(message.startsWith("forward_secrecy_request_"))
 	    {
 	      message.remove
-		(0, static_cast<int> (qstrlen("forward_secrecy_")));
+		(0, static_cast<int> (qstrlen("forward_secrecy_request_")));
 
 	      QList<QByteArray> list(message.split('_'));
 
 	      for(int i = 0; i < list.size(); i++)
-		{
-		  list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-		  if(i == 1) // Public Key Hash
-		    list.replace(i, QByteArray::fromBase64(list.at(i)));
-		}
+		list.replace(i, QByteArray::fromBase64(list.at(i)));
 
 	      if(list.size() == 6)
 		emit forwardSecrecyInformationReceivedFromUI(list);
+	    }
+	  else if(message.startsWith("forward_secrecy_response_"))
+	    {
+	      message.remove
+		(0, static_cast<int> (qstrlen("forward_secrecy_response_")));
+
+	      QList<QByteArray> list(message.split('_'));
+
+	      for(int i = 0; i < list.size(); i++)
+		list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+	      if(list.size() == 7)
+		emit forwardSecrecyResponseReceivedFromUI(list);
 	    }
 	  else if(message.startsWith("keys_"))
 	    {
