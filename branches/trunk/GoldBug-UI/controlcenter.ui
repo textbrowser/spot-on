@@ -1223,8 +1223,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>559</width>
-             <height>637</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2391,6 +2391,31 @@ QPushButton:pressed {
                     </item>
                     <item>
                      <widget class="QLineEdit" name="goldbug"/>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="email_fs_gb">
+                      <property name="currentIndex">
+                       <number>2</number>
+                      </property>
+                      <property name="sizeAdjustPolicy">
+                       <enum>QComboBox::AdjustToContents</enum>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>Forward Secrecy</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Gold Bug</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>None</string>
+                       </property>
+                      </item>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QCheckBox" name="saveCopy">
@@ -5061,8 +5086,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>571</width>
-                 <height>726</height>
+                 <width>610</width>
+                 <height>709</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6206,8 +6231,8 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-642</y>
-             <width>771</width>
+             <y>0</y>
+             <width>806</width>
              <height>1302</height>
             </rect>
            </property>
@@ -7630,7 +7655,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
+             <width>430</width>
              <height>771</height>
             </rect>
            </property>
@@ -8903,8 +8928,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>533</width>
+             <height>471</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10723,6 +10748,7 @@ border-style: inset;
   <tabstop>selectAttachment</tabstop>
   <tabstop>generateGoldBug</tabstop>
   <tabstop>goldbug</tabstop>
+  <tabstop>email_fs_gb</tabstop>
   <tabstop>saveCopy</tabstop>
   <tabstop>sendMail</tabstop>
   <tabstop>scrollArea_7</tabstop>

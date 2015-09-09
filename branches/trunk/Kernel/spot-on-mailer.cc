@@ -49,15 +49,11 @@ spoton_mailer::spoton_mailer(QObject *parent):QObject(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
-  m_reaperTimer.start(60000); /*
-			      ** Reap old letters from our post office
-			      ** once per minute.
-			      */
-  m_retrieveMailTimer.setInterval(5000); /*
-					 ** Harvest a letter from our post
-					 ** office every five seconds.
-					 */
-  m_timer.start(15000); // Send queued mail every fifteen seconds.
+  m_reaperTimer.start
+    (1000 * spoton_common::REAP_POST_OFFICE_LETTERS_INTERVAL);
+  m_retrieveMailTimer.setInterval
+    (1000 * spoton_common::HARVEST_POST_OFFICE_LETTERS_INTERVAL);
+  m_timer.start(1000 * spoton_common::SEND_QUEUED_EMAIL_INTERVAL);
 }
 
 spoton_mailer::~spoton_mailer()

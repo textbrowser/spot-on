@@ -2161,6 +2161,8 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
       if(ok)
 	*ok = false;
 
+      spoton_misc::logError
+	("spoton_crypt::keyedHash(): hashAlgorithm is zero.");
       return hash;
     }
   else if(key.isEmpty())
@@ -2168,6 +2170,8 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
       if(ok)
 	*ok = false;
 
+      spoton_misc::logError
+	("spoton_crypt::keyedHash(): key is empty.");
       return hash;
     }
 
@@ -3613,6 +3617,9 @@ QByteArray spoton_crypt::decryptedAfterAuthenticated(const QByteArray &data,
       if(ok)
 	*ok = false;
 
+      spoton_misc::logError
+	("spoton_crypt::decryptedAfterAuthenticated(): "
+	 "gcry_md_get_algo_dlen() failure.");
       return QByteArray();
     }
 
@@ -3816,7 +3823,11 @@ QString spoton_crypt::publicKeyAlgorithm(void)
   publicKey(&ok);
 
   if(!ok)
-    return "";
+    {
+      spoton_misc::logError
+	("spoton_crypt::publicKeyAlgorithm(): publicKey() failure.");
+      return "";
+    }
 
   QString keyType("");
   QStringList list;
@@ -3864,12 +3875,20 @@ QString spoton_crypt::publicKeySize(void)
   publicKey(&ok);
 
   if(!ok)
-    return "";
+    {
+      spoton_misc::logError
+	("spoton_crypt::publicKeySize(): publicKey() failure.");
+      return "";
+    }
 
   QString algorithm(publicKeyAlgorithm().toLower().trimmed());
 
   if(algorithm.isEmpty())
-    return "";
+    {
+      spoton_misc::logError
+	("spoton_crypt::publicKeySize(): publicKeyAlgorithm() failure.");
+      return "";
+    }
 
   QString keySize("");
 

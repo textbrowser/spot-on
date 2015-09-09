@@ -57,6 +57,7 @@ namespace spoton_common
   static const int CHAT_TIME_DELTA_MAXIMUM = 30;
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM = 90;
+  static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;
   static const int KERNEL_URLS_BATCH_SIZE = 25;
   static const int MAIL_TIME_DELTA_MAXIMUM = 90;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;
@@ -65,6 +66,8 @@ namespace spoton_common
   static const int NAME_MAXIMUM_LENGTH = 64;
   static const int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM = 60;
   static const int POPTASTIC_STATUS_INTERVAL = 60;
+  static const int REAP_POST_OFFICE_LETTERS_INTERVAL = 60;
+  static const int SEND_QUEUED_EMAIL_INTERVAL = 15;
   static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
   static const int STATUS_INTERVAL = 15;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;

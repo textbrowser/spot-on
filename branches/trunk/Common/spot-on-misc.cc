@@ -750,9 +750,17 @@ void spoton_misc::populateUrlsDatabase(const QList<QList<QVariant> > &list,
 				       spoton_crypt *crypt)
 {
   if(!crypt)
-    return;
+    {
+      logError
+	("spoton_misc::populateUrlsDatabase(): crypt is zero.");
+      return;
+    }
   else if(list.isEmpty())
-    return;
+    {
+      logError
+	("spoton_misc::populateUrlsDatabase(): list is empty.");
+      return;
+    }
 
   QString connectionName("");
 
@@ -828,9 +836,17 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 				       const bool useKeyTypeForName)
 {
   if(!crypt)
-    return false;
+    {
+      logError
+	("spoton_misc::saveFriendshipBundle(): crypt is zero.");
+      return false;
+    }
   else if(!db.isOpen())
-    return false;
+    {
+      logError
+	("spoton_misc::saveFriendshipBundle(): db is closed.");
+      return false;
+    }
 
   QByteArray name(n);
   QSqlQuery query(db);
@@ -969,6 +985,8 @@ void spoton_misc::retrieveSymmetricData
       if(ok)
 	*ok = false;
 
+      logError
+	("spoton_misc::retrieveSymmetricData(): crypt is zero.");
       return;
     }
 
@@ -1091,7 +1109,11 @@ bool spoton_misc::isAcceptedParticipant(const QByteArray &publicKeyHash,
 					spoton_crypt *crypt)
 {
   if(!crypt)
-    return false;
+    {
+      logError
+	("spoton_misc::isAcceptedParticipant(): crypt is zero.");
+      return false;
+    }
 
   QString connectionName("");
   qint64 count = 0;
@@ -1254,7 +1276,11 @@ void spoton_misc::moveSentMailToSentFolder(const QList<qint64> &oids,
 
   if(keep)
     if(!crypt)
-      return;
+      {
+	logError
+	  ("spoton_misc::moveSentMailToSentFolder(): crypt is zero.");
+	return;
+      }
 
   QString connectionName("");
 
@@ -1469,7 +1495,11 @@ QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
 					  spoton_crypt *crypt)
 {
   if(!crypt)
-    return QByteArray();
+    {
+      logError
+	("spoton_misc::publicKeyFromHash(): crypt is zero.");
+      return QByteArray();
+    }
 
   QByteArray publicKey;
   QString connectionName("");
@@ -1510,7 +1540,12 @@ QByteArray spoton_misc::publicKeyFromSignaturePublicKeyHash
 (const QByteArray &signaturePublicKeyHash, spoton_crypt *crypt)
 {
   if(!crypt)
-    return QByteArray();
+    {
+      logError
+	("spoton_misc::publicKeyFromSignaturePublicKeyHash(): crypt "
+	 "is zero.");
+      return QByteArray();
+    }
 
   /*
   ** Gather the public key that's associated with the provided
@@ -1558,7 +1593,12 @@ QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
 (const QByteArray &publicKeyHash, spoton_crypt *crypt)
 {
   if(!crypt)
-    return QByteArray();
+    {
+      logError
+	("spoton_misc::signaturePublicKeyFromPublicKeyHash(): crypt "
+	 "is zero.");
+      return QByteArray();
+    }
 
   /*
   ** Gather the signature public key that's associated with the
@@ -1611,9 +1651,18 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 					spoton_crypt *crypt)
 {
   if(address.isNull())
-    return;
+    {
+      logError
+	("spoton_misc::savePublishedNeighbor(): address is empty.");
+      return;
+    }
   else if(!crypt)
-    return;
+    {
+      logError
+	("spoton_misc::savePublishedNeighbor(): crypt "
+	 "is zero.");
+      return;
+    }
 
   QString connectionName("");
   QString transport(p_transport.toLower());
@@ -1865,9 +1914,18 @@ void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
 					      spoton_crypt *crypt)
 {
   if(!crypt)
-    return;
+    {
+      logError
+	("spoton_misc::purgeSignatureRelationships(): crypt "
+	 "is zero.");
+      return;
+    }
   else if(!db.isOpen())
-    return;
+    {
+      logError
+	("spoton_misc::purgeSignatureRelationships(): db is closed.");
+      return;
+    }
 
   QList<QByteArray> list;
 
@@ -2193,7 +2251,12 @@ qint64 spoton_misc::participantCount(const QString &keyType,
 				     spoton_crypt *crypt)
 {
   if(!crypt)
-    return 0;
+    {
+      logError
+	("spoton_misc::participantCount(): crypt "
+	 "is zero.");
+      return 0;
+    }
 
   QString connectionName("");
   qint64 count = 0;
@@ -2242,7 +2305,12 @@ bool spoton_misc::isValidSignature(const QByteArray &data,
     (signaturePublicKeyFromPublicKeyHash(publicKeyHash, crypt));
 
   if(publicKey.isEmpty())
-    return false;
+    {
+      logError
+	("spoton_misc::isValidSignature(): "
+	 "signaturePublicKeyFromPublicKeyHash() failure.");
+      return false;
+    }
 
   return spoton_crypt::isValidSignature(data, publicKey, signature);
 }
@@ -2252,9 +2320,18 @@ bool spoton_misc::isAcceptedIP(const QHostAddress &address,
 			       spoton_crypt *crypt)
 {
   if(address.isNull() || address.toString().isEmpty())
-    return false;
+    {
+      logError
+	("spoton_misc::isAcceptedIP(): address is empty.");
+      return false;
+    }
   else if(!crypt)
-    return false;
+    {
+      logError
+	("spoton_misc::isAcceptedIP(): crypt "
+	 "is zero.");
+      return false;
+    }
 
   QString connectionName("");
   qint64 count = 0;
@@ -2305,6 +2382,14 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 {
   if(!crypt || salt.length() < spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE)
     {
+      if(!crypt)
+	logError
+	  ("spoton_misc::authenticateAccount(): crypt "
+	   "is zero.");
+      else
+	logError
+	  ("spoton_misc::authenticateAccount(): salt is peculiar.");
+
       name.clear();
       password.clear();
       return false;
@@ -2984,7 +3069,12 @@ QByteArray spoton_misc::findPublicKeyHashGivenHash
   */
 
   if(!crypt)
-    return QByteArray();
+    {
+      logError
+	("spoton_misc::findPublicKeyHashGivenHash(): crypt "
+	 "is zero.");
+      return QByteArray();
+    }
 
   QByteArray publicKeyHash;
   QString connectionName("");
@@ -3153,9 +3243,18 @@ bool spoton_misc::isIpBlocked(const QHostAddress &address,
 			      spoton_crypt *crypt)
 {
   if(address.isNull() || address.toString().isEmpty())
-    return true;
+    {
+      logError
+	("spoton_misc::isIpBlocked(): address is empty.");
+      return true;
+    }
   else if(!crypt)
-    return true;
+    {
+      logError
+	("spoton_misc::isIpBlocked(): crypt "
+	 "is zero.");
+      return true;
+    }
 
   QString connectionName("");
   qint64 count = -1;
@@ -3195,7 +3294,12 @@ QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
 (const QPair<QByteArray, QByteArray> pair, spoton_crypt *crypt)
 {
   if(!crypt)
-    return QPair<QByteArray, QByteArray> ();
+    {
+      logError
+	("spoton_misc::decryptedAdaptiveEchoPair(): crypt "
+	 "is zero.");
+      return QPair<QByteArray, QByteArray> ();
+    }
 
   QByteArray t1(pair.first);
   QByteArray t2(pair.second);
@@ -3338,7 +3442,12 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
 							bool *ok)
 {
   if(!crypt)
-    return QHash<QString, QVariant> ();
+    {
+      logError
+	("spoton_misc::poptasticSettings(): crypt "
+	 "is zero.");
+      return QHash<QString, QVariant> ();
+    }
 
   QHash<QString, QVariant> hash;
   QString connectionName("");
@@ -3757,9 +3866,18 @@ void spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
 					   spoton_crypt *crypt)
 {
   if(!crypt)
-    return;
+    {
+      logError
+	("spoton_misc::saveReceivedStarBeamHash(): crypt "
+	 "is zero.");
+      return;
+    }
   else if(!db.isOpen())
-    return;
+    {
+      logError
+	("spoton_misc::saveReceivedStarBeamHash(): db is closed.");
+      return;
+    }
 
   QSqlQuery query(db);
   bool ok = true;
@@ -3808,7 +3926,12 @@ QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)
 spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
 {
   if(!crypt)
-    return 0;
+    {
+      logError
+	("spoton_misc::retrieveUrlCommonCredentials(): crypt "
+	 "is zero.");
+      return 0;
+    }
 
   QString connectionName("");
   spoton_crypt *c = 0;
@@ -3888,15 +4011,28 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 			    spoton_crypt *crypt)
 {
   if(!crypt)
-    return false;
+    {
+      logError
+	("spoton_misc::importUrl(): crypt "
+	 "is zero.");
+      return false;
+    }
 
   if(!db.isOpen())
-    return false;
+    {
+      logError
+	("spoton_misc::importUrl(): db is closed.");
+      return false;
+    }
 
   QUrl url(QUrl::fromUserInput(u));
 
   if(url.isEmpty() || !url.isValid())
-    return false;
+    {
+      logError
+	("spoton_misc::importUrl(): invalid URL.");
+      return false;
+    }
 
   QString scheme(url.scheme().toLower().trimmed());
 
@@ -3924,7 +4060,11 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
   urlHash = crypt->keyedHash(url.toEncoded(), &ok).toHex();
 
   if(!ok)
-    return ok;
+    {
+      logError
+	("spoton_misc::importUrl(): keyedHash() failure.");
+      return ok;
+    }
 
   if(db.driverName() == "QSQLITE")
     {
@@ -4099,7 +4239,12 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
 (const QString &communityName, spoton_crypt *crypt)
 {
   if(!crypt)
-    return QHash<QString, QByteArray> ();
+    {
+      logError
+	("spoton_misc::retrieveEchoShareInformation(): crypt "
+	 "is zero.");
+      return QHash<QString, QByteArray> ();
+    }
 
   QHash<QString, QByteArray> hash;
   QString connectionName("");
@@ -4164,7 +4309,12 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 					    spoton_crypt *crypt)
 {
   if(!crypt)
-    return QList<QByteArray> ();
+    {
+      logError
+	("spoton_misc::findEchoKeys(): crypt "
+	 "is zero.");
+      return QList<QByteArray> ();
+    }
 
   /*
   ** bytes1: encrypted portion.
@@ -4314,7 +4464,12 @@ QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
 					      spoton_crypt *crypt)
 {
   if(!crypt)
-    return QString("");
+    {
+      logError
+	("spoton_misc::keyTypeFromPublicKeyHash(): crypt "
+	 "is zero.");
+      return QString("");
+    }
 
   QString connectionName("");
   QString keyType("");

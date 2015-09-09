@@ -41,7 +41,12 @@ QList<QByteArray> spoton_receive::process0000
  spoton_crypt *s_crypt)
 {
   if(!s_crypt)
-    return QList<QByteArray> ();
+    {
+      spoton_misc::logError
+	("spoton_receive::process0000(): "
+	 "crypt is zero.");
+      return QList<QByteArray> ();
+    }
 
   QByteArray data(dataIn);
 
@@ -337,7 +342,12 @@ QList<QByteArray> spoton_receive::process0000a
  spoton_crypt *s_crypt)
 {
   if(!s_crypt)
-    return QList<QByteArray> ();
+    {
+      spoton_misc::logError
+	("spoton_receive::process0000a(): "
+	 "crypt is zero.");
+      return QList<QByteArray> ();
+    }
 
   QByteArray data(dataIn);
 
@@ -541,7 +551,12 @@ QList<QByteArray> spoton_receive::process0000b
  spoton_crypt *s_crypt)
 {
   if(!s_crypt)
-    return QList<QByteArray> ();
+    {
+      spoton_misc::logError
+	("spoton_receive::process0000b(): "
+	 "crypt is zero.");
+      return QList<QByteArray> ();
+    }
 
   QByteArray data(dataIn);
 
@@ -811,7 +826,12 @@ QList<QByteArray> spoton_receive::process0013
  spoton_crypt *s_crypt)
 {
   if(!s_crypt)
-    return QList<QByteArray> ();
+    {
+      spoton_misc::logError
+	("spoton_receive::process0013(): "
+	 "crypt is zero.");
+      return QList<QByteArray> ();
+    }
 
   QByteArray data(dataIn);
 
@@ -1095,7 +1115,12 @@ QList<QByteArray> spoton_receive::process0091a
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
   if(!s_crypt)
-    return QList<QByteArray> ();
+    {
+      spoton_misc::logError
+	("spoton_receive::process0091a(): "
+	 "crypt is zero.");
+      return QList<QByteArray> ();
+    }
 
   QByteArray data(dataIn);
 
@@ -1198,7 +1223,12 @@ QList<QByteArray> spoton_receive::process0091a
 
       if(!(keyType == "chat" || keyType == "email" ||
 	   keyType == "poptastic" || keyType == "url"))
-	return QList<QByteArray> ();
+	{
+	  spoton_misc::logError
+	    ("spoton_receive::process0091a(): "
+	     "unexpected key type.");
+	  return QList<QByteArray> ();
+	}
 
       if(!spoton_misc::isAcceptedParticipant(list.value(0), keyType,
 					     s_crypt))
@@ -1264,7 +1294,9 @@ QList<QByteArray> spoton_receive::process0091a
 	  return QList<QByteArray> ();
 	}
 
-      return QList<QByteArray> () << keyType.toLatin1() << list.value(0);
+      return QList<QByteArray> () << keyType.toLatin1()
+				  << list.value(0)
+				  << list.value(1);
     }
   else
     spoton_misc::logError
@@ -1286,7 +1318,12 @@ QString spoton_receive::findMessageType
  spoton_crypt *s_crypt)
 {
   if(!s_crypt)
-    return "";
+    {
+      spoton_misc::logError
+	("spoton_receive::findMessageType(): "
+	 "crypt is zero.");
+      return "";
+    }
 
   QList<QByteArray> list(data.trimmed().split('\n'));
   QString type("");

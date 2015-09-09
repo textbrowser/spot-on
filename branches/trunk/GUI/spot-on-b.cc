@@ -2432,6 +2432,7 @@ void spoton::slotClearOutgoingMessage(void)
 {
   m_ui.attachment->clear();
   m_ui.emailParticipants->selectionModel()->clear();
+  m_ui.email_fs_gb->setCurrentIndex(2);
   m_ui.goldbug->clear();
   m_ui.outgoingMessage->clear();
   m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
@@ -2806,9 +2807,17 @@ void spoton::slotSendMail(void)
     if(db.open())
       {
 	QModelIndexList list;
+	QStringList forwardSecrecyCredentials;
 	QStringList names;
 	QStringList oids;
 	QStringList publicKeyHashes;
+
+	list = m_ui.emailParticipants->selectionModel()->
+	  selectedRows(4); // Forward Secrecy Information
+
+	while(!list.isEmpty())
+	  forwardSecrecyCredentials.append
+	    (list.takeFirst().data().toString());
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(0); // Participant
@@ -2830,8 +2839,7 @@ void spoton::slotSendMail(void)
 
 	while(!oids.isEmpty())
 	  {
-	    QByteArray goldbug
-	      (m_ui.goldbug->text().toLatin1());
+	    QByteArray goldbug;
 	    QByteArray publicKeyHash(publicKeyHashes.takeFirst().toLatin1());
 	    QByteArray subject
 	      (m_ui.outgoingSubject->text().toUtf8());
@@ -2839,6 +2847,16 @@ void spoton::slotSendMail(void)
 	    QSqlQuery query(db);
 	    QString oid(oids.takeFirst());
 	    bool ok = true;
+
+	    if(m_ui.email_fs_gb->currentIndex() == 0)
+	      goldbug = forwardSecrecyCredentials.takeFirst().toLatin1();
+	    else if(m_ui.email_fs_gb->currentIndex() == 1)
+	      {
+		goldbug.append("magnet:?ea=aes256");
+		goldbug.append("&ek=");
+		goldbug.append(m_ui.goldbug->text().toLatin1());
+		goldbug.append("&xt=urn:goldbug");
+	      }
 
 	    query.prepare("INSERT INTO folders "
 			  "(date, folder_index, goldbug, hash, "
@@ -2927,6 +2945,7 @@ void spoton::slotSendMail(void)
 
 	m_ui.attachment->clear();
 	m_ui.emailParticipants->selectionModel()->clear();
+	m_ui.email_fs_gb->setCurrentIndex(2);
 	m_ui.goldbug->clear();
 	m_ui.outgoingMessage->clear();
 	m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
