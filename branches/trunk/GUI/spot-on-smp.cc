@@ -292,6 +292,13 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
+  ** Verify that g2a and g3a are not equal to one.
+  */
+
+  if(gcry_mpi_cmp_ui(g2a, 1) == 0 || gcry_mpi_cmp_ui(g3a, 1) == 0)
+    GOTO_DONE_LABEL;
+
+  /*
   ** Generate b2 and b3.
   */
 
@@ -458,6 +465,13 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
+  /*
+  ** Verify that g2b and g3b are not equal to one.
+  */
+
+  if(gcry_mpi_cmp_ui(g2b, 1) == 0 || gcry_mpi_cmp_ui(g3b, 1) == 0)
+    GOTO_DONE_LABEL;
+
   bytes = other.at(2).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&m_pb, GCRYMPI_FMT_USG,
@@ -524,6 +538,13 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   gcry_mpi_powm(qa1, m_generator, s, m_modulus);
   gcry_mpi_powm(qa2, g2, m_guess, m_modulus);
   gcry_mpi_mulm(qa, qa1, qa2, m_modulus);
+
+  /*
+  ** Verify that pa <> pb and qa <> qb.
+  */
+
+  if(gcry_mpi_cmp(m_pa, m_pb) == 0 || gcry_mpi_cmp(qa, qb) == 0)
+    GOTO_DONE_LABEL;
 
   if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, m_pa) != 0)
     GOTO_DONE_LABEL;
@@ -646,6 +667,13 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   bytes = other.at(2).mid(0, static_cast<int> (BITS / 8));
+
+  /*
+  ** Verify that pa <> pb and qa <> qb.
+  */
+
+  if(gcry_mpi_cmp(pa, m_pb) == 0 || gcry_mpi_cmp(qa, m_qb) == 0)
+    GOTO_DONE_LABEL;
 
   if(gcry_mpi_scan(&ra, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.
