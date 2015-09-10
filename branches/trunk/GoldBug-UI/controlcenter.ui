@@ -2355,42 +2355,11 @@ QPushButton:pressed {
                      <number>5</number>
                     </property>
                     <item>
-                     <widget class="QPushButton" name="generateGoldBug">
+                     <widget class="QLineEdit" name="goldbug">
                       <property name="toolTip">
                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail in an additional layer of AES-256 encryption. Do remember to notify all recipients of the key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
-                      <property name="styleSheet">
-                       <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
-
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; } 
-
-QPushButton:pressed {
-     background-color: darkgrey;
-     border-style: inset;
- }</string>
-                      </property>
-                      <property name="text">
-                       <string>GoldBug</string>
-                      </property>
-                      <property name="icon">
-                       <iconset resource="../Icons/icons.qrc">
-                        <normaloff>:/Logo/goldbug.png</normaloff>:/Logo/goldbug.png</iconset>
-                      </property>
                      </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="goldbug"/>
                     </item>
                     <item>
                      <widget class="QComboBox" name="email_fs_gb">
@@ -10746,7 +10715,6 @@ border-style: inset;
   <tabstop>outgoingMessage</tabstop>
   <tabstop>attachment</tabstop>
   <tabstop>selectAttachment</tabstop>
-  <tabstop>generateGoldBug</tabstop>
   <tabstop>goldbug</tabstop>
   <tabstop>email_fs_gb</tabstop>
   <tabstop>saveCopy</tabstop>

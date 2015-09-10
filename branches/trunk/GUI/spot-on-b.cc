@@ -2852,11 +2852,17 @@ void spoton::slotSendMail(void)
 	      goldbug = forwardSecrecyCredentials.takeFirst().toLatin1();
 	    else if(m_ui.email_fs_gb->currentIndex() == 1)
 	      {
+		QByteArray bytes(m_ui.goldbug->text().toLatin1().
+				 toBase64().toBase64().toBase64().
+				 toBase64().toBase64());
+		int size = static_cast<int>
+		  (spoton_crypt::cipherKeyLength("aes256"));
+
 		goldbug.append("magnet:?aa=sha512&ak=");
-		goldbug.append(m_ui.goldbug->text().toLatin1());
+		goldbug.append(bytes.mid(size));
 		goldbug.append("&ea=aes256");
 		goldbug.append("&ek=");
-		goldbug.append(m_ui.goldbug->text().toLatin1());
+		goldbug.append(bytes.mid(0, size));
 		goldbug.append("&xt=urn:goldbug");
 	      }
 
@@ -3703,7 +3709,21 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	if(!ok)
 	  return;
 
-	int rc = applyGoldBugToLetter(goldbug.toLatin1(), row);
+	QByteArray bytes(goldbug.toLatin1().
+			 toBase64().toBase64().toBase64().
+			 toBase64().toBase64());
+	QByteArray magnet;
+	int size = static_cast<int>
+	  (spoton_crypt::cipherKeyLength("aes256"));
+
+	magnet.append("magnet:?aa=sha512&ak=");
+	magnet.append(bytes.mid(size));
+	magnet.append("&ea=aes256");
+	magnet.append("&ek=");
+	magnet.append(bytes.mid(0, size));
+	magnet.append("&xt=urn:goldbug");
+
+	int rc = applyGoldBugToLetter(magnet, row);
 
 	if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS)
 	  {
@@ -4028,15 +4048,6 @@ bool spoton::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
   return spoton_misc::saveGemini(gemini, oid, m_crypts.value("chat", 0));
 }
 
-void spoton::slotGenerateGoldBug(void)
-{
-  QByteArray goldbug
-    (spoton_crypt::
-     strongRandomBytes(spoton_crypt::cipherKeyLength("aes256")));
-
-  m_ui.goldbug->setText(goldbug.toBase64());
-}
-
 void spoton::slotEmptyTrash(void)
 {
   QMessageBox mb(this);
@@ -4279,13 +4290,6 @@ void spoton::slotSetIcons(int index)
   m_ui.retrieveMail->setIcon(QIcon(QString(":/%1/down.png").arg(iconSet)));
   m_ui.emptyTrash->setIcon
     (QIcon(QString(":/%1/empty-trash.png").arg(iconSet)));
-#if SPOTON_GOLDBUG == 0
-  m_ui.generateGoldBug->setIcon
-    (QIcon(QString(":/%1/lock.png").arg(iconSet)));
-#else
-  m_ui.generateGoldBug->setIcon
-    (QIcon(QString(":/%1/goldbug.png").arg(iconSet)));
-#endif
   m_ui.resend->setIcon(QIcon(QString(":/%1/reply.png").arg(iconSet)));
   m_ui.sendMail->setIcon(QIcon(QString(":/%1/email.png").arg(iconSet)));
   list.clear();
@@ -4486,34 +4490,33 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 
 	if(ok)
 	  {
-	    spoton_crypt crypt("aes256",
-			       "sha512",
-			       QByteArray(),
-			       goldbug,
-			       0,
-			       0,
-			       QString(""));
+	    spoton_crypt *crypt =
+	      spoton_misc::cryptFromForwardSecrecyMagnet(goldbug);
 
-	    for(int i = 0; i < list.size(); i++)
-	      {
-		if(i == 0 || i == 2 || i == 4 || i == 6)
-		  /*
-		  ** Ignore the date, message_code,
-		  ** receiver_sender_hash, and attachment(s) count columns.
-		  */
+	    if(!crypt)
+	      ok = false;
+	    else
+	      for(int i = 0; i < list.size(); i++)
+		{
+		  if(i == 0 || i == 2 || i == 4 || i == 6)
+		    /*
+		    ** Ignore the date, message_code,
+		    ** receiver_sender_hash, and attachment(s) count columns.
+		    */
 
-		  continue;
+		    continue;
 
-		list.replace(i, crypt.decrypted(list.at(i), &ok));
+		  list.replace
+		    (i, crypt->decryptedAfterAuthenticated(list.at(i), &ok));
 
-		if(!ok)
-		  {
-		    if(rc == 0)
-		      rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
+		  if(!ok)
+		    {
+		      if(rc == 0)
+			rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
 
-		    break;
-		  }
-	      }
+		      break;
+		    }
+		}
 
 	    if(ok)
 	      {
@@ -4522,12 +4525,14 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 		*/
 
 		applyGoldBugToAttachments
-		  (oid, db, &attachmentsCount, &crypt, &ok);
+		  (oid, db, &attachmentsCount, crypt, &ok);
 
 		if(!ok)
 		  if(rc == 0)
 		    rc = APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS;
 	      }
+
+	    delete crypt;
 	  }
 
 	if(ok)

@@ -777,10 +777,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotCommonBuzzChannelsActivated(int)));
-  connect(m_ui.generateGoldBug,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotGenerateGoldBug(void)));
   connect(m_optionsUi.acceptPublishedConnected,
 	  SIGNAL(pressed(void)),
 	  this,
@@ -1789,8 +1785,6 @@ spoton::spoton(void):QMainWindow()
 		      "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH").
      toString());
   m_ui.etpEncryptionKey->setMaxLength
-    (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
-  m_ui.goldbug->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
   m_ui.institutionName->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));

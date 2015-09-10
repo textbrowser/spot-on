@@ -706,7 +706,6 @@ class spoton: public QMainWindow
   void slotGeminiChanged(QTableWidgetItem *item);
   void slotGenerateEtpKeys(int index);
   void slotGeneralTimerTimeout(void);
-  void slotGenerateGoldBug(void);
   void slotGenerateGeminiInChat(void);
   void slotGenerateNova(void);
   void slotKeepCopy(bool state);

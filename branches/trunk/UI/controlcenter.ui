@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>392</width>
-                <height>482</height>
+                <width>766</width>
+                <height>488</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -805,7 +805,7 @@
             <rect>
              <x>0</x>
              <y>-76</y>
-             <width>872</width>
+             <width>822</width>
              <height>560</height>
             </rect>
            </property>
@@ -1163,15 +1163,9 @@
                        <number>5</number>
                       </property>
                       <item>
-                       <widget class="QLineEdit" name="goldbug"/>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="generateGoldBug">
+                       <widget class="QLineEdit" name="goldbug">
                         <property name="toolTip">
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail in an additional layer of AES-256 encryption. Do remember to notify all recipients of the key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>Gold Bug</string>
                         </property>
                        </widget>
                       </item>
@@ -1204,6 +1198,9 @@
                        <spacer name="horizontalSpacer_3">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeType">
+                         <enum>QSizePolicy::MinimumExpanding</enum>
                         </property>
                         <property name="sizeHint" stdset="0">
                          <size>
@@ -1888,8 +1885,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>724</width>
-             <height>405</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2498,7 +2495,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>249</width>
+                     <width>240</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -4001,8 +3998,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>347</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4078,8 +4075,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>635</width>
-                 <height>619</height>
+                 <width>752</width>
+                 <height>602</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4919,7 +4916,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>711</width>
+             <width>762</width>
              <height>1132</height>
             </rect>
            </property>
@@ -6110,7 +6107,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>476</width>
+             <width>762</width>
              <height>544</height>
             </rect>
            </property>
@@ -7121,8 +7118,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>653</width>
-             <height>453</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7655,8 +7652,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>241</width>
-             <height>150</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8116,7 +8113,6 @@
   <tabstop>attachment</tabstop>
   <tabstop>selectAttachment</tabstop>
   <tabstop>goldbug</tabstop>
-  <tabstop>generateGoldBug</tabstop>
   <tabstop>email_fs_gb</tabstop>
   <tabstop>saveCopy</tabstop>
   <tabstop>sendMail</tabstop>

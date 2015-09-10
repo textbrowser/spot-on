@@ -132,6 +132,7 @@ Completed Items
 96     Do something about whitespace. There are many input paths that
        ought to be considered.
 97.    E-mail institutions require dispatcher signatures.
+98.    GoldBug keys should have separate hash keys.
 
 Ignored Items
 
@@ -153,7 +154,9 @@ Ignored Items
        navigate private Spot-On nodes remotely.
 9.     Zero-knowledge passphrase authentication.
 10.    Add SRP for account verification. What is this, the NSA?
-11.    GoldBug keys should have separate hash keys.
+11.    Allow programs such as netcat to feed data to Spot-On. Specific
+       private listeners would be capable of transforming the data
+       into StarBeam pulses.
 12.    Allow for other ciphers besides AES for e-mail.
 13.    Introduce load balancing of echoes. We're not interested in real-time
        responses. Congestion control is helpful, however, short graphs
@@ -213,9 +216,6 @@ Ignored Items
 48.    Allow user to bookmark search results. Also allow searching of
        bookmarked entries. Perhaps provide a means of searching the
        global databases as well as bookmarked entries.
-49.    Allow programs such as netcat to feed data to Spot-On. Specific
-       private listeners would be capable of transforming the data
-       into StarBeam pulses.
 
 Remaining Items
 
