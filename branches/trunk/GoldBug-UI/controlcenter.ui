@@ -2395,7 +2395,7 @@ QPushButton:pressed {
                     <item>
                      <widget class="QComboBox" name="email_fs_gb">
                       <property name="currentIndex">
-                       <number>2</number>
+                       <number>0</number>
                       </property>
                       <property name="sizeAdjustPolicy">
                        <enum>QComboBox::AdjustToContents</enum>
@@ -5086,8 +5086,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>610</width>
-                 <height>709</height>
+                 <width>571</width>
+                 <height>726</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
