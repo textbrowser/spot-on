@@ -2852,7 +2852,9 @@ void spoton::slotSendMail(void)
 	      goldbug = forwardSecrecyCredentials.takeFirst().toLatin1();
 	    else if(m_ui.email_fs_gb->currentIndex() == 1)
 	      {
-		goldbug.append("magnet:?ea=aes256");
+		goldbug.append("magnet:?aa=sha512&ak=");
+		goldbug.append(m_ui.goldbug->text().toLatin1());
+		goldbug.append("&ea=aes256");
 		goldbug.append("&ek=");
 		goldbug.append(m_ui.goldbug->text().toLatin1());
 		goldbug.append("&xt=urn:goldbug");

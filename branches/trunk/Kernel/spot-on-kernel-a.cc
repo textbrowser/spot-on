@@ -3098,20 +3098,17 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	      if(ok)
 		if(!goldbug.isEmpty())
 		  {
-		    spoton_crypt crypt("aes256",
-				       "sha512",
-				       QByteArray(),
-				       goldbug,
-				       0,
-				       0,
-				       QString(""));
+		    spoton_crypt *crypt = spoton_misc::
+		      cryptFromForwardSecrecyMagnet(goldbug);
 
-		    for(int i = 0; i < items.size(); i++)
-		      if(ok)
-			items.replace
-			  (i, crypt.encrypted(items.at(i), &ok));
-		      else
-			break;
+		    if(crypt)
+		      for(int i = 0; i < items.size(); i++)
+			if(ok)
+			  items.replace
+			    (i, crypt->encryptedThenHashed(items.at(i),
+							   &ok));
+			else
+			  break;
 		  }
 
 	      if(ok)
