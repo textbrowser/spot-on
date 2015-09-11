@@ -1898,4 +1898,185 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 {
   if(list.isEmpty())
     return;
+
+  /*
+  ** list[0]: Destination's Public Key Hash
+  ** list[1]: Temporary Public Key
+  ** list[2]: Key Type (chat, email, poptastic, etc.)
+  ** list[3]: Authentication Algorithm
+  ** list[4]: Authentication Key
+  ** list[5]: Encryption Algorithm
+  ** list[6]: Encryption Key
+  */
+
+  QByteArray keyType(list.value(2));
+
+  if(!(keyType == "chat" || keyType == "email" || keyType == "poptastic" ||
+       keyType == "url"))
+    return;
+
+  bool ok = true;
+  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt2 = s_crypts.value(keyType + "-signature", 0);
+
+  if(!s_crypt1 || !s_crypt2)
+    return;
+
+  QByteArray myPublicKey = s_crypt1->publicKey(&ok);
+
+  if(!ok)
+    return;
+
+  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(myPublicKey, &ok));
+
+  if(!ok)
+    return;
+
+  QByteArray cipherType(setting("gui/fsCipherType",
+				"aes256").toString().toLatin1());
+  QByteArray hashType(setting("gui/fsHashType", "sha512").
+		      toString().toLatin1());
+  QByteArray publicKey
+    (spoton_misc::publicKeyFromHash(list.value(0), s_crypt1));
+
+  if(publicKey.isEmpty())
+    return;
+
+  QByteArray symmetricKey;
+  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
+
+  if(symmetricKeyLength <= 0)
+    return;
+
+  QByteArray hashKey;
+
+  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+  hashKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (hashKey.length()));
+  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
+  symmetricKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (symmetricKey.length()));
+
+  QByteArray keyInformation;
+
+  {
+    QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+
+    stream << QByteArray("0091a")
+	   << symmetricKey
+	   << hashKey
+	   << cipherType
+	   << hashType;
+
+    if(stream.status() != QDataStream::Ok)
+      return;
+  }
+
+  keyInformation = spoton_crypt::publicKeyEncrypt
+    (keyInformation, publicKey, &ok);
+
+  if(!ok)
+    return;
+
+  QByteArray bundle;
+  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
+		     toString("MMddyyyyhhmmss").toLatin1());
+
+  {
+    QDataStream stream(&bundle, QIODevice::WriteOnly);
+
+    stream << list.value(0)
+	   << list.value(3)
+	   << list.value(4)
+	   << list.value(5)
+	   << list.value(6)
+	   << utcDate;
+
+    if(stream.status() != QDataStream::Ok)
+      return;
+
+    bundle = qCompress(bundle, 9);
+  }
+
+  bundle = spoton_crypt::publicKeyEncrypt
+    (bundle, list.value(1), &ok);
+
+  if(!ok)
+    return;
+
+  bool sign = true;
+
+  if(keyType == "chat" && !setting("gui/chatSignMessages", true).toBool())
+    sign = false;
+  else if(keyType == "email" && !setting("gui/emailSignMessages", true).
+	  toBool())
+    sign = false;
+  else if(keyType == "poptastic")
+    sign = true; // Mandatory signatures!
+  else if(keyType == "url" && !setting("gui/urlSignMessages", true).toBool())
+    sign = false;
+
+  QByteArray signature;
+
+  if(sign)
+    {
+      signature = s_crypt2->digitalSignature
+	("0091b" +
+	 symmetricKey +
+	 hashKey +
+	 cipherType +
+	 hashType +
+	 bundle,
+	 &ok);
+
+      if(!ok)
+	return;
+    }
+
+  QByteArray data;
+  spoton_crypt crypt(cipherType,
+		     hashType,
+		     QByteArray(),
+		     symmetricKey,
+		     hashKey,
+		     0,
+		     0,
+		     QString(""));
+
+  {
+    QDataStream stream(&data, QIODevice::WriteOnly);
+
+    stream << signature
+	   << bundle;
+
+    if(stream.status() != QDataStream::Ok)
+      ok = false;
+
+    if(ok)
+      data = crypt.encrypted(data, &ok);
+
+    if(!ok)
+      return;
+  }
+
+  QByteArray messageCode
+    (crypt.keyedHash(keyInformation + data, &ok));
+
+  if(!ok)
+    return;
+
+  data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
+    messageCode.toBase64();
+
+  if(keyType == "chat" || keyType == "email" || keyType == "url")
+    {
+    }
+  else if(keyType == "poptastic")
+    {
+      QByteArray message
+	(spoton_send::message0091a(data, QPair<QByteArray, QByteArray> ()));
+      QString name;
+
+      postPoptasticMessage(name, message);
+    }
 }
