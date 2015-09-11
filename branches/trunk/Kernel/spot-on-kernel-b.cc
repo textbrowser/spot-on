@@ -1044,8 +1044,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
   else if(messageType == "0091a")
     {
       QList<QByteArray> list
-	(spoton_receive::process0091a(data.length(), data, symmetricKeys,
-				      QHostAddress("127.0.0.1"), 0));
+	(spoton_receive::process0091(data.length(), data, symmetricKeys,
+				     QHostAddress("127.0.0.1"), 0,
+				     messageType));
 
       if(!list.isEmpty())
 	emit forwardSecrecyRequest(list);

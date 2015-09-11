@@ -1106,18 +1106,19 @@ QList<QByteArray> spoton_receive::process0013
   return QList<QByteArray> ();
 }
 
-QList<QByteArray> spoton_receive::process0091a
+QList<QByteArray> spoton_receive::process0091
 (int length, const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const QHostAddress &address,
- const quint16 port)
+ const quint16 port,
+ const QString &messageType)
 {
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
   if(!s_crypt)
     {
       spoton_misc::logError
-	("spoton_receive::process0091a(): "
+	("spoton_receive::process0091(): "
 	 "crypt is zero.");
       return QList<QByteArray> ();
     }
@@ -1137,7 +1138,7 @@ QList<QByteArray> spoton_receive::process0091a
       if(list.size() != 4)
 	{
 	  spoton_misc::logError
-	    (QString("spoton_receive::process0091a(): "
+	    (QString("spoton_receive::process0091(): "
 		     "received irregular data. Expecting 4 "
 		     "entries, "
 		     "received %1.").arg(list.size()));
@@ -1175,7 +1176,7 @@ QList<QByteArray> spoton_receive::process0091a
 	    {
 	      spoton_misc::logError
 		("spoton_receive::"
-		 "process0091a(): "
+		 "process0091(): "
 		 "computed message code does "
 		 "not match provided code.");
 	      return QList<QByteArray> ();
@@ -1211,7 +1212,7 @@ QList<QByteArray> spoton_receive::process0091a
       if(list.size() != 4)
 	{
 	  spoton_misc::logError
-	    (QString("spoton_receive::process0091a(): "
+	    (QString("spoton_receive::process0091(): "
 		     "received irregular data. Expecting 4 "
 		     "entries, "
 		     "received %1.").arg(list.size()));
@@ -1225,7 +1226,7 @@ QList<QByteArray> spoton_receive::process0091a
 	   keyType == "poptastic" || keyType == "url"))
 	{
 	  spoton_misc::logError
-	    ("spoton_receive::process0091a(): "
+	    ("spoton_receive::process0091(): "
 	     "unexpected key type.");
 	  return QList<QByteArray> ();
 	}
@@ -1251,23 +1252,28 @@ QList<QByteArray> spoton_receive::process0091a
 				  true).toBool()))
 	signatureRequired = false;
 
-      if(signatureRequired &&
-	 !spoton_misc::isValidSignature("0091a" +
-					symmetricKeys.value(0) +
-					symmetricKeys.value(2) +
-					symmetricKeys.value(1) +
-					symmetricKeys.value(3) +
-					list.value(0) +
-					list.value(1) +
-					list.value(2),
-					list.value(0),
-					list.value(3), // Signature
-					spoton_kernel::s_crypts.
-					value(keyType, 0)))
+      if(signatureRequired)
 	{
-	  spoton_misc::logError
-	    ("spoton_receive::0091a(): invalid signature.");
-	  return QList<QByteArray> ();
+	  if(messageType == "0091a")
+	    {
+	      if(!spoton_misc::isValidSignature("0091a" +
+						symmetricKeys.value(0) +
+						symmetricKeys.value(2) +
+						symmetricKeys.value(1) +
+						symmetricKeys.value(3) +
+						list.value(0) +
+						list.value(1) +
+						list.value(2),
+						list.value(0),
+						list.value(3), // Signature
+						spoton_kernel::s_crypts.
+						value(keyType, 0)))
+		{
+		  spoton_misc::logError
+		    ("spoton_receive::process0091(): invalid signature.");
+		  return QList<QByteArray> ();
+		}
+	    }
 	}
 
       QDateTime dateTime
@@ -1289,7 +1295,7 @@ QList<QByteArray> spoton_receive::process0091a
       if(!(secsTo <= timeDelta))
 	{
 	  spoton_misc::logError
-	    (QString("spoton_receive::process0091a(): "
+	    (QString("spoton_receive::process0091(): "
 		     "large time delta (%1).").arg(secsTo));
 	  return QList<QByteArray> ();
 	}
@@ -1300,9 +1306,10 @@ QList<QByteArray> spoton_receive::process0091a
     }
   else
     spoton_misc::logError
-      (QString("spoton_receive::process0091a(): 0091a "
-	       "Content-Length mismatch (advertised: %1, received: %2) "
-	       "for %3:%4.").
+      (QString("spoton_receive::process0091(): %1 "
+	       "Content-Length mismatch (advertised: %2, received: %3) "
+	       "for %4:%5.").
+       arg(messageType).
        arg(length).arg(data.length()).
        arg(address.toString()).
        arg(port));

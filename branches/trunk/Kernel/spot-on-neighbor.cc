@@ -1836,6 +1836,8 @@ void spoton_neighbor::processData(void)
 	    process0090(length, data, symmetricKeys);
 	  else if(messageType == "0091a")
 	    process0091a(length, data, symmetricKeys);
+	  else if(messageType == "0091b")
+	    process0091b(length, data, symmetricKeys);
 	  else
 	    messageType.clear();
 
@@ -4536,11 +4538,19 @@ void spoton_neighbor::process0091a(int length, const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
-    (spoton_receive::process0091a(length, dataIn, symmetricKeys,
-				  m_address, m_port));
+    (spoton_receive::process0091(length, dataIn, symmetricKeys,
+				 m_address, m_port, "0091a"));
 
   if(!list.isEmpty())
     emit forwardSecrecyRequest(list);
+}
+
+void spoton_neighbor::process0091b(int length, const QByteArray &dataIn,
+				   const QList<QByteArray> &symmetricKeys)
+{
+  QList<QByteArray> list
+    (spoton_receive::process0091(length, dataIn, symmetricKeys,
+				 m_address, m_port, "0091b"));
 }
 
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
