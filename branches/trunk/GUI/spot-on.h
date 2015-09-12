@@ -558,6 +558,7 @@ class spoton: public QMainWindow
   void prepareContextMenuMirrors(void);
   void prepareListenerIPCombo(void);
   void prepareSMP(const QString &hash);
+  void prepareTabIcons(void);
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
   void refreshInstitutions(void);

@@ -4398,21 +4398,7 @@ void spoton::slotSetIcons(int index)
   // Tab
 
   list.clear();
-
-#if SPOTON_GOLDBUG == 0
-  list << "buzz.png" << "chat.png" << "email.png"
-       << "add-listener.png" << "neighbors.png" << "search.png"
-       << "settings.png" << "starbeam.png" << "urls.png";
-#else
-  list << "buzz_t.png" << "chat_t.png" << "email_t.png"
-       << "server_t.png" << "connect_t.png" << "search.png"
-       << "settings_t.png" << "starbeam_t.png" << "urls_t.png"
-       << "key_t.png";
-#endif
-
-  for(int i = 0; i < list.size(); i++)
-    m_ui.tab->setTabIcon
-      (i, QIcon(QString(":/%1/%2").arg(iconSet).arg(list.at(i))));
+  prepareTabIcons();
 
   // URLs
 

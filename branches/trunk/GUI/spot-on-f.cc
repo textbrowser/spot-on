@@ -671,3 +671,42 @@ void spoton::popForwardSecrecyRequest(const QByteArray &publicKeyHash)
 					  str.right(16)));
     }
 }
+
+void spoton::prepareTabIcons(void)
+{
+  QString iconSet
+    (m_settings.value("gui/iconSet", "nouve").toString());
+  QStringList list;
+
+#if SPOTON_GOLDBUG == 0
+  list << "buzz.png" << "chat.png" << "email.png"
+       << "add-listener.png" << "neighbors.png" << "search.png"
+       << "settings.png" << "starbeam.png" << "urls.png"
+       << "spot-on-logo.png";
+#else
+  list << "buzz.png" << "chat.png" << "email.png"
+       << "server.png" << "connect.png" << "search.png"
+       << "settings.png" << "starbeam_t.png" << "urls.png"
+       << "key.png"
+       << "goldbug.png";
+#endif
+
+  for(int i = 0; i < list.size(); i++)
+    if(m_ui.tab->tabPosition() == QTabWidget::North ||
+       m_ui.tab->tabPosition() == QTabWidget::South)
+      m_ui.tab->setTabIcon
+	(i, QPixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i))));
+    else
+      {
+	QPixmap pixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
+	QTransform transform;
+
+	if(m_ui.tab->tabPosition() == QTabWidget::East)
+	  transform.rotate(-90);
+	else
+	  transform.rotate(90);
+
+	pixmap = pixmap.transformed(transform, Qt::SmoothTransformation);
+	m_ui.tab->setTabIcon(i, pixmap);
+      }
+}

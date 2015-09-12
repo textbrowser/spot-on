@@ -7983,6 +7983,8 @@ void spoton::slotChangeTabPosition(int index)
       m_ui.tab->setTabPosition(QTabWidget::North);
     }
 
+  prepareTabIcons();
+
   QSettings settings;
 
   settings.setValue("gui/tabPosition", m_settings.value("gui/tabPosition"));
