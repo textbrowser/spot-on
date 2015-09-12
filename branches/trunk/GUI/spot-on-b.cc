@@ -2783,6 +2783,19 @@ void spoton::slotSendMail(void)
       m_ui.outgoingMessage->setFocus();
       return;
     }
+  else if(m_ui.email_fs_gb->currentIndex() == 1)
+    {
+      if(m_ui.goldbug->text().size() < 16)
+	{
+	  QMessageBox::critical
+	    (this, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Please enter a Gold Bug having at least sixteen "
+		"characters."));
+	  m_ui.outgoingMessage->setFocus();
+	  return;
+	}
+    }
 
   QByteArray message;
 
@@ -3435,8 +3448,8 @@ void spoton::populateMail(void)
 							 toByteArray()),
 					      &ok);
 
-		if(!spoton_misc::isValidForwardSecrecyMagnet(goldbug))
-		  goldbug.clear();
+		if(goldbug.isEmpty())
+		  goldbug = "0";
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
@@ -3453,7 +3466,7 @@ void spoton::populateMail(void)
 		      {
 			if(i == 1 || i == 2 || i == 3 || i == 6)
 			  {
-			    if(goldbug.isEmpty())
+			    if(goldbug == "0")
 			      {
 				if(i == 3) // subject
 				  item = new QTableWidgetItem
@@ -3500,7 +3513,7 @@ void spoton::populateMail(void)
 			  }
 			else
 			  {
-			    if(goldbug.isEmpty())
+			    if(goldbug == "0")
 			      {
 				item = new QTableWidgetItem
 				  (m_crypts.value("email")->
@@ -3518,7 +3531,7 @@ void spoton::populateMail(void)
 		      }
 		    else if(i == 4) // attachment(s) count
 		      {
-			if(goldbug.isEmpty())
+			if(goldbug == "0")
 			  {
 			    if(query.value(i).toLongLong() > 0)
 			      {
@@ -3697,7 +3710,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
     if(item)
       goldbug = item->text();
 
-    if(!goldbug.isEmpty())
+    if(goldbug == "1")
       {
 	bool ok = true;
 

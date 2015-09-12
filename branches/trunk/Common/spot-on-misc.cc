@@ -154,7 +154,10 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS folders ("
 		   "date TEXT NOT NULL, "
 		   "folder_index INTEGER NOT NULL, "
-		   "goldbug TEXT NOT NULL, "
+		   "goldbug TEXT NOT NULL, " /*
+					     ** 0 or 1 for inbound.
+					     ** Magnet for outbound.
+					     */
 		   "hash TEXT NOT NULL, " /*
 					  ** Keyed hash of the message and
 					  ** the subject.

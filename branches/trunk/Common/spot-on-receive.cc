@@ -1348,6 +1348,8 @@ QString spoton_receive::findMessageType
  const QString &keyType,
  spoton_crypt *s_crypt)
 {
+  Q_UNUSED(interfaces);
+
   if(!s_crypt)
     {
       spoton_misc::logError
@@ -1369,9 +1371,8 @@ QString spoton_receive::findMessageType
   ** symmetricKeys[3]: Hash Type
   */
 
-  if(interfaces > 0 &&
-     list.size() == 3 && (spoton_misc::
-			  participantCount("poptastic", s_crypt) > 0))
+  if(list.size() == 3 && spoton_misc::participantCount("poptastic",
+						       s_crypt) > 0)
     {
       QPair<QByteArray, QByteArray> gemini;
 
@@ -1421,7 +1422,7 @@ QString spoton_receive::findMessageType
 	symmetricKeys.clear();
     }
 
-  if(interfaces > 0 && list.size() == 4)
+  if(list.size() == 4)
     if(!spoton_misc::allParticipantsHaveGeminis())
       if(spoton_misc::participantCount("poptastic", s_crypt) > 0)
 	{
@@ -1462,7 +1463,7 @@ QString spoton_receive::findMessageType
 
 	if(!type.isEmpty())
 	  {
-	    if(type == "0001b")
+	    if(type == "0001b" || type == "0091a" || type == "0091b")
 	      {
 		QList<QByteArray> list(data.split('\n'));
 

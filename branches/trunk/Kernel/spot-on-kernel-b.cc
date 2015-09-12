@@ -1051,6 +1051,16 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
       if(!list.isEmpty())
 	emit forwardSecrecyRequest(list);
     }
+  else if(messageType == "0091b")
+    {
+      QList<QByteArray> list
+	(spoton_receive::process0091(data.length(), data, symmetricKeys,
+				     QHostAddress("127.0.0.1"), 0,
+				     messageType));
+
+      if(!list.isEmpty())
+	slotSaveForwardSecrecySessionKeys(list);
+    }
   else
     {
       QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
