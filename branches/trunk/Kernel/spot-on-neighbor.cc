@@ -3866,8 +3866,9 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 	{
 	  spoton_misc::setSharedResource
 	    (&m_accountAuthenticated, false, m_accountAuthenticatedMutex);
-	  emit accountAuthenticated(spoton_crypt::weakRandomBytes(64),
-				    spoton_crypt::weakRandomBytes(64));
+	  emit accountAuthenticated
+	    (spoton_crypt::weakRandomBytes(64),
+	     spoton_crypt::weakRandomBytes(64));
 	}
 
       if(spoton_misc::readSharedResource(&m_accountAuthenticated,

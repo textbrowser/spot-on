@@ -2594,14 +2594,16 @@ void spoton_kernel::slotScramble(void)
 
   if(ok)
     {
-      spoton_crypt crypt(cipherType,
-			 hashType,
-			 QByteArray(),
-			 symmetricKey,
-			 spoton_crypt::strongRandomBytes(64),
-			 0,
-			 0,
-			 "");
+      spoton_crypt crypt
+	(cipherType,
+	 hashType,
+	 QByteArray(),
+	 symmetricKey,
+	 spoton_crypt::
+	 strongRandomBytes(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES),
+	 0,
+	 0,
+	 "");
 
       data = crypt.encrypted(message, &ok);
 
@@ -3031,9 +3033,11 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		{
 		  institutionCipherType = "aes256";
 		  institutionHashType = "sha512";
-		  institutionName = spoton_crypt::weakRandomBytes(32);
+		  institutionName = spoton_crypt::weakRandomBytes
+		    (spoton_crypt::cipherKeyLength("aes256"));
 		  institutionPostalAddress =
-		    spoton_crypt::weakRandomBytes(32);
+		    spoton_crypt::weakRandomBytes
+		    (spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
 		}
 
 	      if(!ok)

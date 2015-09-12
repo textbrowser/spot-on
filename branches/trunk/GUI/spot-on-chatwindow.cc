@@ -555,7 +555,9 @@ void spoton_chatwindow::slotShareStarBeam(void)
   QByteArray eKey(spoton_crypt::strongRandomBytes(spoton_crypt::
 						  cipherKeyLength("aes256")).
 		  toBase64());
-  QByteArray mKey(spoton_crypt::strongRandomBytes(512).toBase64());
+  QByteArray mKey(spoton_crypt::
+		  strongRandomBytes(spoton_crypt::
+				    SHA512_OUTPUT_SIZE_IN_BYTES).toBase64());
   QByteArray magnet;
   bool ok = true;
 
@@ -590,7 +592,9 @@ void spoton_chatwindow::slotShareStarBeam(void)
     if(db.open())
       {
 	QByteArray encryptedMosaic;
-	QByteArray mosaic(spoton_crypt::strongRandomBytes(64).toBase64());
+	QByteArray mosaic
+	  (spoton_crypt::strongRandomBytes(spoton_common::MOSAIC_SIZE).
+	   toBase64());
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO transmitted "

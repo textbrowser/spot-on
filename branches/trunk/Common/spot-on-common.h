@@ -63,6 +63,7 @@ namespace spoton_common
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
   static const int MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION = 50;
+  static const int MOSAIC_SIZE = 64;
   static const int NAME_MAXIMUM_LENGTH = 64;
   static const int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM = 60;
   static const int POPTASTIC_STATUS_INTERVAL = 60;

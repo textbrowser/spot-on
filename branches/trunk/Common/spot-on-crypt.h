@@ -109,6 +109,7 @@ class spoton_crypt
 			       const QByteArray &signature);
   static bool memcmp(const QByteArray &bytes1, const QByteArray &bytes);
   static bool passphraseSet(void);
+  static const int SHA384_OUTPUT_SIZE_IN_BYTES = 48;
   static const int SHA512_OUTPUT_SIZE_IN_BYTES = 64;
   static size_t cipherKeyLength(const QByteArray &cipherType);
   static void generateMcElieceKeys(const QString &keySize,

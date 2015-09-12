@@ -64,7 +64,9 @@ void spoton::slotGenerateEtpKeys(int index)
 						    maxLength())).
 	     toBase64());
 	  m_ui.etpMacKey->setText
-	    (spoton_crypt::strongRandomBytes(512).toBase64());
+	    (spoton_crypt::
+	     strongRandomBytes(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES).
+	     toBase64());
 	}
       else if(index == 2)
 	m_ui.etpEncryptionKey->setText
@@ -74,7 +76,9 @@ void spoton::slotGenerateEtpKeys(int index)
 	   toBase64());
       else if(index == 3)
 	m_ui.etpMacKey->setText
-	  (spoton_crypt::strongRandomBytes(512).toBase64());
+	  (spoton_crypt::
+	   strongRandomBytes(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES).
+	   toBase64());
 
       disconnect(m_ui.generate,
 		 SIGNAL(activated(int)),
@@ -493,7 +497,9 @@ void spoton::slotBuzzActionsActivated(int index)
       m_ui.channelSalt->setText
 	(spoton_crypt::strongRandomBytes(512).toBase64());
       m_ui.buzzHashKey->setText
-	(spoton_crypt::strongRandomBytes(512).toBase64());
+	(spoton_crypt::
+	 strongRandomBytes(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES).
+	 toBase64());
     }
 
   disconnect(m_ui.buzzActions,
@@ -925,7 +931,9 @@ void spoton::slotTransmit(void)
       {
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-	QByteArray mosaic(spoton_crypt::strongRandomBytes(64).toBase64());
+	QByteArray mosaic
+	  (spoton_crypt::strongRandomBytes(spoton_common::MOSAIC_SIZE).
+	   toBase64());
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO transmitted "

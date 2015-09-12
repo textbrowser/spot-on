@@ -1196,7 +1196,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 
 	  if(nbits == 2048) // We do not support 2048-bit keys.
 	    {
-	      random.resize(48);
+	      random.resize(SHA384_OUTPUT_SIZE_IN_BYTES);
 	      random = strongRandomBytes
 		(static_cast<size_t> (random.length()));
 	      err = gcry_sexp_build(&data_t, 0,
@@ -1209,7 +1209,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	    }
 	  else
 	    {
-	      random.resize(64);
+	      random.resize(SHA512_OUTPUT_SIZE_IN_BYTES);
 	      random = strongRandomBytes
 		(static_cast<size_t> (random.length()));
 	      err = gcry_sexp_build(&data_t, 0,
