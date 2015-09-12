@@ -1209,15 +1209,30 @@ QList<QByteArray> spoton_receive::process0091
 	    list << a;
 	}
 
-      if(list.size() != 4)
+      if(messageType == "0091a")
+	{
+	  if(list.size() != 4)
+	    {
+	      spoton_misc::logError
+		(QString("spoton_receive::process0091(): "
+			 "received irregular data. Expecting 4 "
+			 "entries, "
+			 "received %1.").arg(list.size()));
+	      return QList<QByteArray> ();
+	    }
+	}
+      else if(list.size() != 2)
 	{
 	  spoton_misc::logError
 	    (QString("spoton_receive::process0091(): "
-		     "received irregular data. Expecting 4 "
+		     "received irregular data. Expecting 2 "
 		     "entries, "
 		     "received %1.").arg(list.size()));
 	  return QList<QByteArray> ();
 	}
+
+      if(messageType == "0091b")
+	return QList<QByteArray> () << list.value(0) << list.value(1);
 
       QString keyType
 	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
