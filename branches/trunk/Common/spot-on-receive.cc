@@ -1371,8 +1371,58 @@ QString spoton_receive::findMessageType
   ** symmetricKeys[3]: Hash Type
   */
 
-  if(list.size() == 3 && spoton_misc::participantCount("poptastic",
-						       s_crypt) > 0)
+  if(list.size() == 4)
+    {
+      QByteArray data;
+      bool ok = true;
+
+      data = s_crypt->publicKeyDecrypt
+	(QByteArray::fromBase64(list.value(0)), &ok);
+
+      if(ok)
+	{
+	  QByteArray a;
+	  QDataStream stream(&data, QIODevice::ReadOnly);
+
+	  stream >> a;
+
+	  if(stream.status() == QDataStream::Ok)
+	    type = a;
+
+	  if(type == "0091a" || type == "0091b")
+	    {
+	      QList<QByteArray> list;
+
+	      for(int i = 0; i < 4; i++)
+		{
+		  stream >> a;
+
+		  if(stream.status() != QDataStream::Ok)
+		    {
+		      list.clear();
+		      type.clear();
+		      break;
+		    }
+		  else
+		    list.append(a);
+		}
+
+	      if(!type.isEmpty())
+		{
+		  symmetricKeys.append(list.value(0));
+		  symmetricKeys.append(list.value(2));
+		  symmetricKeys.append(list.value(1));
+		  symmetricKeys.append(list.value(3));
+		  goto done_label;
+		}
+	    }
+	  else
+	    type.clear();
+	}
+    }
+
+  if(list.size() == 3 &&
+     spoton_misc::participantCount("poptastic", s_crypt) > 0)
     {
       QPair<QByteArray, QByteArray> gemini;
 
@@ -1463,7 +1513,7 @@ QString spoton_receive::findMessageType
 
 	if(!type.isEmpty())
 	  {
-	    if(type == "0001b" || type == "0091a" || type == "0091b")
+	    if(type == "0001b")
 	      {
 		QList<QByteArray> list(data.split('\n'));
 

@@ -3757,7 +3757,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	  {
 	    QMessageBox::critical(this, tr("%1: Error").
 				  arg(SPOTON_APPLICATION_NAME),
-				  tr("The provided goldbug may be "
+				  tr("The provided Gold Bug may be "
 				     "incorrect."));
 	    return;
 	  }
