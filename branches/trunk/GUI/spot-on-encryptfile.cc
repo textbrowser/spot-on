@@ -371,7 +371,7 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 				 credentials.value(3).toByteArray(),
 				 0,
 				 0,
-				 QString(""),
+				 "",
 				 modeOfOperation);
 
 	      {
@@ -410,7 +410,7 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 				 credentials.value(3).toByteArray(),
 				 0,
 				 0,
-				 QString(""),
+				 "",
 				 modeOfOperation);
 
 	      hashes = crypt.keyedHash(hashes, &ok);
@@ -461,7 +461,7 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 			     credentials.value(3).toByteArray(),
 			     0,
 			     0,
-			     QString(""),
+			     "",
 			     modeOfOperation);
 
 	  data = crypt.decrypted(data, &ok);
@@ -566,7 +566,7 @@ void spoton_encryptfile::encrypt(const bool sign,
 			     credentials.value(3).toByteArray(),
 			     0,
 			     0,
-			     QString(""),
+			     "",
 			     modeOfOperation);
 
 	  data = crypt.encrypted(data, &ok);
@@ -631,7 +631,7 @@ void spoton_encryptfile::encrypt(const bool sign,
 			     credentials.value(3).toByteArray(),
 			     0,
 			     0,
-			     QString(""),
+			     "",
 			     modeOfOperation);
 
 	  hashes = crypt.keyedHash(hashes, &ok);

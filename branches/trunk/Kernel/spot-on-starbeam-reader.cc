@@ -412,7 +412,7 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 				     elements.value("mk"),
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  data = qCompress(data, 9);
 		  size = data.length();
@@ -452,7 +452,7 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 					   pair.second,
 					   0,
 					   0,
-					   QString(""));
+					   "");
 
 			if(ok)
 			  data = crypt.encrypted(bytes, &ok);

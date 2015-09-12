@@ -704,7 +704,7 @@ void spoton_rosetta::slotConvert(void)
 			       hashKey,
 			       0,
 			       0,
-			       QString(""));
+			       "");
 
       if(ui.sign->isChecked())
 	{
@@ -864,12 +864,12 @@ void spoton_rosetta::slotConvert(void)
 	}
 
       crypt = new spoton_crypt(cipherType,
-			       QString(""),
+			       "",
 			       QByteArray(),
 			       encryptionKey,
 			       0,
 			       0,
-			       QString(""));
+			       "");
 
       if(ok)
 	data = crypt->decrypted(data, &ok);
@@ -1089,7 +1089,7 @@ void spoton_rosetta::slotRename(void)
   name = QInputDialog::getText
     (this, tr("%1: New Name").
      arg(SPOTON_APPLICATION_NAME), tr("&Name"),
-     QLineEdit::Normal, QString(""), &ok);
+     QLineEdit::Normal, "", &ok);
   name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
 
   if(name.isEmpty() || !ok)

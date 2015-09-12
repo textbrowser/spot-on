@@ -536,7 +536,7 @@ void spoton_urldistribution::slotTimeout(void)
 			     hashKey,
 			     0,
 			     0,
-			     QString(""));
+			     "");
 
 	  stream << data
 		 << signature;

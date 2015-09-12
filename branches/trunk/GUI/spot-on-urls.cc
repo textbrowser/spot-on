@@ -622,12 +622,12 @@ void spoton::slotImportUrls(void)
 
 		    spoton_crypt crypt
 		      (cipherType,
-		       QString(""),
+		       "",
 		       QByteArray(),
 		       symmetricKey,
 		       0,
 		       0,
-		       QString(""));
+		       "");
 
 		    description = crypt.decrypted
 		      (query.value(0).toByteArray(), &ok);

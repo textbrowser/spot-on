@@ -3985,7 +3985,7 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
 				   hashKey,
 				   0,
 				   0,
-				   QString(""));
+				   "");
 	  }
       }
 
@@ -4379,7 +4379,7 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 				   list.value(1),
 				   0,
 				   0,
-				   QString(""));
+				   "");
 
 		computedHash = crypt.keyedHash(bytes1, &ok);
 
@@ -4468,7 +4468,7 @@ QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
       logError
 	("spoton_misc::keyTypeFromPublicKeyHash(): crypt "
 	 "is zero.");
-      return QString("");
+      return "";
     }
 
   QString connectionName("");
@@ -4598,7 +4598,59 @@ spoton_crypt *spoton_misc::cryptFromForwardSecrecyMagnet
 			     ak,
 			     0,
 			     0,
-			     QString(""));
+			     "");
 
   return crypt;
+}
+
+QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
+					   spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::nameFromPublicKeyHash(): crypt "
+	 "is zero.");
+      return "";
+    }
+
+  QString connectionName("");
+  QString name("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT name FROM friends_public_keys "
+		      "WHERE neighbor_oid = -1 AND "
+		      "public_key_hash = ?");
+	query.bindValue(0, publicKeyHash.toBase64());
+
+	if(query.exec())
+	  if(query.next())
+	    name = QString::fromUtf8
+	      (crypt->
+	       decryptedAfterAuthenticated(QByteArray::
+					   fromBase64(query.
+						      value(0).
+						      toByteArray()),
+					   &ok).constData());
+
+	if(!ok)
+	  name.clear();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return name;
 }

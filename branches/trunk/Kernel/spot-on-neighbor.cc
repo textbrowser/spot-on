@@ -2591,7 +2591,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			     symmetricKey,
 			     0,
 			     0,
-			     QString(""));
+			     "");
 
 	  data = crypt.decrypted(data1, &ok);
 
@@ -2717,7 +2717,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 					 symmetricKey,
 					 0,
 					 0,
-					 QString(""));
+					 "");
 
 		      if(ok)
 			data = crypt.decrypted(data2, &ok);
@@ -2923,7 +2923,7 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 					 symmetricKey,
 					 0,
 					 0,
-					 QString(""));
+					 "");
 
 		      data = crypt.decrypted(data, &ok);
 
@@ -3110,7 +3110,7 @@ void spoton_neighbor::process0002a
 				     symmetricKey,
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  data = crypt.decrypted(data, &ok);
 
@@ -3241,7 +3241,7 @@ void spoton_neighbor::process0002b
 				 symmetricKeys.value(0),
 				 0,
 				 0,
-				 QString(""));
+				 "");
 
 	      data = crypt.decrypted(data, &ok);
 
@@ -3689,7 +3689,7 @@ void spoton_neighbor::process0040a(int length, const QByteArray &dataIn,
 				 symmetricKeys.value(0),
 				 0,
 				 0,
-				 QString(""));
+				 "");
 
 	      data = crypt.decrypted(data, &ok);
 
@@ -3774,7 +3774,7 @@ void spoton_neighbor::process0040b(int length, const QByteArray &dataIn,
 				 symmetricKeys.value(0),
 				 0,
 				 0,
-				 QString(""));
+				 "");
 
 	      data = crypt.decrypted(data, &ok);
 
@@ -4347,7 +4347,7 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 				 symmetricKeys.value(2),
 				 0,
 				 0,
-				 QString(""));
+				 "");
 
 	      data = crypt.decrypted(data, &ok);
 
@@ -4479,7 +4479,7 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 			 symmetricKeys.value(2),
 			 0,
 			 0,
-			 QString(""));
+			 "");
 
       data = crypt.decrypted(list.value(0), &ok);
 
@@ -5613,7 +5613,7 @@ QString spoton_neighbor::findMessageType
 			     symmetricKeys.value(0),
 			     0,
 			     0,
-			     QString(""));
+			     "");
 
 	  data = crypt.decrypted(QByteArray::fromBase64(list.value(0)), &ok);
 
@@ -5661,7 +5661,7 @@ QString spoton_neighbor::findMessageType
 			     gemini.first,
 			     0,
 			     0,
-			     QString(""));
+			     "");
 
 	  data = crypt.decrypted
 	    (QByteArray::fromBase64(list.value(0)), &ok);

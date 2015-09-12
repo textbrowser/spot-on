@@ -91,7 +91,7 @@ QList<QByteArray> spoton_receive::process0000
 				 gemini.second,
 				 0,
 				 0,
-				 QString(""));
+				 "");
 
 	      computedHash = crypt.keyedHash(message, &ok);
 
@@ -237,7 +237,7 @@ QList<QByteArray> spoton_receive::process0000
 				     symmetricKey,
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  data = crypt.decrypted(data, &ok);
 
@@ -446,7 +446,7 @@ QList<QByteArray> spoton_receive::process0000a
 				     symmetricKey,
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  data = crypt.decrypted(data, &ok);
 
@@ -595,7 +595,7 @@ QList<QByteArray> spoton_receive::process0000b
 			 symmetricKeys.value(0),
 			 0,
 			 0,
-			 QString(""));
+			 "");
 
       data = crypt.decrypted(list.value(0), &ok);
 
@@ -766,7 +766,7 @@ QList<QByteArray> spoton_receive::process0001b
 				     symmetricKey,
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  data = crypt.decrypted(data, &ok);
 
@@ -875,7 +875,7 @@ QList<QByteArray> spoton_receive::process0013
 				 gemini.second,
 				 0,
 				 0,
-				 QString(""));
+				 "");
 
 	      computedHash = crypt.keyedHash(message, &ok);
 
@@ -1018,7 +1018,7 @@ QList<QByteArray> spoton_receive::process0013
 				     symmetricKey,
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  data = crypt.decrypted(data, &ok);
 
@@ -1161,7 +1161,7 @@ QList<QByteArray> spoton_receive::process0091
 			 symmetricKeys.value(2),
 			 0,
 			 0,
-			 QString(""));
+			 "");
 
       computedHash = spoton_crypt::keyedHash
 	(list.value(0) + list.value(1),
@@ -1366,7 +1366,7 @@ QString spoton_receive::findMessageType
 			     gemini.first,
 			     0,
 			     0,
-			     QString(""));
+			     "");
 
 	  data = crypt.decrypted
 	    (QByteArray::fromBase64(list.value(0)), &ok);

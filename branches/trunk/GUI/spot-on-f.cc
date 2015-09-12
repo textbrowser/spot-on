@@ -250,7 +250,7 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 			 QByteArray(),
 			 0,
 			 0,
-			 QString(""));
+			 "");
 
       keys = crypt.generatePrivatePublicKeys
 	(s_crypt->publicKeySize(),

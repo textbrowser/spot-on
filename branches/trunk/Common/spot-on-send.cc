@@ -55,7 +55,7 @@ QByteArray spoton_send::adaptiveEchoAuthentication
 			 adaptiveEchoPair.first.mid(length),
 			 0,
 			 0,
-			 QString(""));
+			 "");
 
       timestamp = crypt.encrypted(timestamp, &ok);
 

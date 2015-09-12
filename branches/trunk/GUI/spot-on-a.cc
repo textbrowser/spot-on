@@ -7786,7 +7786,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 		     hashKey,
 		     0,
 		     0,
-		     QString(""));
+		     "");
 
   data = crypt.encrypted(QByteArray("email").toBase64() + "@" +
 			 myName.toBase64() + "@" +

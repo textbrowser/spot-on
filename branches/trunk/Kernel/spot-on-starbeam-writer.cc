@@ -77,12 +77,12 @@ void spoton_starbeam_writer::processData
 
   bool ok = true;
   spoton_crypt crypt(magnet.value("ct").constData(),
-		     QString(""),
+		     "",
 		     QByteArray(),
 		     magnet.value("ek"),
 		     0,
 		     0,
-		     QString(""));
+		     "");
 
   data = crypt.decrypted(list.value(0), &ok);
 
@@ -117,7 +117,7 @@ void spoton_starbeam_writer::processData
 					   cipherKeyLength("aes256"))),
 	 0,
 	 0,
-	 QString(""));
+	 "");
 
       computedHash = crypt.keyedHash(d, &ok);
 

@@ -1723,7 +1723,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 			   hashKey,
 			   0,
 			   0,
-			   QString(""));
+			   "");
 
 	if(setting("gui/chatSignMessages", true).toBool())
 	  signature = s_crypt2->digitalSignature
@@ -1782,7 +1782,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 			       gemini.second,
 			       0,
 			       0,
-			       QString(""));
+			       "");
 
 	    stream << QByteArray("0000")
 		   << data;
@@ -2461,7 +2461,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 				       hashKey,
 				       0,
 				       0,
-				       QString(""));
+				       "");
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      signature = s_crypt2->digitalSignature
@@ -2520,7 +2520,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 					   gemini.second,
 					   0,
 					   0,
-					   QString(""));
+					   "");
 
 			stream << QByteArray("0013")
 			       << data;
@@ -2601,7 +2601,7 @@ void spoton_kernel::slotScramble(void)
 			 spoton_crypt::strongRandomBytes(64),
 			 0,
 			 0,
-			 QString(""));
+			 "");
 
       data = crypt.encrypted(message, &ok);
 
@@ -2730,7 +2730,7 @@ void spoton_kernel::slotRetrieveMail(void)
 				 institutionPostalAddress,
 				 0,
 				 0,
-				 QString(""));
+				 "");
 
 	      data = crypt.encrypted
 		(QByteArray("0002b").toBase64() + "\n" +
@@ -2863,7 +2863,7 @@ void spoton_kernel::slotRetrieveMail(void)
 				     hashKey,
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  data = crypt.encrypted
 		    (myPublicKeyHash.toBase64() + "\n" +
@@ -3127,7 +3127,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     hashKey,
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  if(setting("gui/emailSignMessages",
 			     true).toBool())
@@ -3302,7 +3302,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     symmetricKey,
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  if(setting("gui/emailSignMessages",
 			     true).toBool())
@@ -3404,7 +3404,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     symmetricKey,
 				     0,
 				     0,
-				     QString(""));
+				     "");
 
 		  if(setting("gui/emailSignMessages",
 			     true).toBool())
@@ -3687,7 +3687,7 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 		     hashKey,
 		     0,
 		     0,
-		     QString(""));
+		     "");
 
   stream << messageType.toLatin1();
 
@@ -4183,7 +4183,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 				       hashKey,
 				       0,
 				       0,
-				       QString(""));
+				       "");
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      signature = s_crypt2->digitalSignature
@@ -4388,7 +4388,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 				       gemini.second,
 				       0,
 				       0,
-				       QString(""));
+				       "");
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      signature = s_crypt2->digitalSignature
@@ -4896,7 +4896,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
 			 token.mid(length),
 			 0,
 			 0,
-			 QString(""));
+			 "");
 
       /*
       ** d = E(x)
@@ -5211,7 +5211,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 				       hashKey,
 				       0,
 				       0,
-				       QString(""));
+				       "");
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      signature = s_crypt2->digitalSignature

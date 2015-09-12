@@ -4026,7 +4026,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
 		     hashKey,
 		     0,
 		     0,
-		     QString(""));
+		     "");
 
   data = crypt.encrypted(QByteArray("url").toBase64() + "@" +
 			 myName.toBase64() + "@" +
@@ -4164,7 +4164,7 @@ void spoton::slotRenameParticipant(void)
 
   name = QInputDialog::getText
     (this, tr("%1: New Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
-     QLineEdit::Normal, QString(""), &ok);
+     QLineEdit::Normal, "", &ok);
   name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
 
   if(name.isEmpty() || !ok)

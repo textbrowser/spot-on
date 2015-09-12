@@ -2226,7 +2226,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 			 list.value(2), // Hash Key
 			 0,
 			 0,
-			 QString(""));
+			 "");
 
       computedHash = crypt.keyedHash(data, &ok);
 
@@ -2669,7 +2669,7 @@ void spoton::slotCopyFriendshipBundle(void)
 		     hashKey,
 		     0,
 		     0,
-		     QString(""));
+		     "");
 
   data = crypt.encrypted(keyType.toLatin1().toBase64() + "@" +
 			 myName.toBase64() + "@" +
@@ -3704,7 +3704,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	goldbug = QInputDialog::getText
 	  (this, tr("%1: Gold Bug").arg(SPOTON_APPLICATION_NAME),
 	   tr("&Gold Bug"),
-	   QLineEdit::Password, QString(""), &ok);
+	   QLineEdit::Password, "", &ok);
 
 	if(!ok)
 	  return;

@@ -765,7 +765,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 			     hash["authentication_key"],
 			     0,
 			     0,
-			     QString(""));
+			     "");
 
 	  stream << QByteArray("0090")
 		 << keyType.toLatin1()
@@ -815,7 +815,7 @@ void spoton_echo_key_share::addCategory(void)
 
   category = QInputDialog::getText
     (this, tr("%1: New Category").arg(SPOTON_APPLICATION_NAME),
-     tr("&Category"), QLineEdit::Normal, QString(""), &ok).trimmed();
+     tr("&Category"), QLineEdit::Normal, "", &ok).trimmed();
 
   if(!ok)
     return;

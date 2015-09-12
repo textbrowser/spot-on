@@ -1843,7 +1843,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 		     hashKey,
 		     0,
 		     0,
-		     QString(""));
+		     "");
 
   {
     QDataStream stream(&data, QIODevice::WriteOnly);
@@ -2042,7 +2042,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 		     hashKey,
 		     0,
 		     0,
-		     QString(""));
+		     "");
 
   {
     QDataStream stream(&data, QIODevice::WriteOnly);

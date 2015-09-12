@@ -524,7 +524,7 @@ class spoton: public QMainWindow
 				 bool *ok);
   void askKernelToReadStarBeamKeys(void);
   void authenticate(spoton_crypt *crypt, const QString &oid,
-		    const QString &message = QString(""));
+		    const QString &message = "");
   void authenticationRequested(const QByteArray &data);
   void changeEchoMode(const QString &mode, QTableWidget *tableWidget);
   void cleanup(void);
