@@ -1191,16 +1191,10 @@ QList<QByteArray> spoton_receive::process0091
 	return QList<QByteArray> ();
 
       QDataStream stream(&data, QIODevice::ReadOnly);
-      int limit = 0;
 
       list.clear();
 
-      if(messageType == "0091a")
-	limit = 4;
-      else
-	limit = 3;
-
-      for(int i = 0; i < limit; i++)
+      for(int i = 0; i < 4; i++)
 	{
 	  QByteArray a;
 
@@ -1215,31 +1209,15 @@ QList<QByteArray> spoton_receive::process0091
 	    list << a;
 	}
 
-      if(messageType == "0091a")
-	{
-	  if(list.size() != limit)
-	    {
-	      spoton_misc::logError
-		(QString("spoton_receive::process0091(): "
-			 "received irregular data. Expecting %1 "
-			 "entries, "
-			 "received %2.").arg(limit).arg(list.size()));
-	      return QList<QByteArray> ();
-	    }
-	}
-      else if(list.size() != limit)
+      if(list.size() != 4)
 	{
 	  spoton_misc::logError
 	    (QString("spoton_receive::process0091(): "
-		     "received irregular data. Expecting %1 "
+		     "received irregular data. Expecting 4 "
 		     "entries, "
-		     "received %2.").arg(limit).arg(list.size()));
+		     "received %1.").arg(list.size()));
 	  return QList<QByteArray> ();
 	}
-
-      if(messageType == "0091b")
-	return QList<QByteArray> () << list.value(0) << list.value(1)
-				    << list.value(2);
 
       QString keyType
 	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
@@ -1296,6 +1274,26 @@ QList<QByteArray> spoton_receive::process0091
 		  return QList<QByteArray> ();
 		}
 	    }
+	  else
+	    {
+	      if(!spoton_misc::isValidSignature("0091b" +
+						symmetricKeys.value(0) +
+						symmetricKeys.value(2) +
+						symmetricKeys.value(1) +
+						symmetricKeys.value(3) +
+						list.value(0) +
+						list.value(1) +
+						list.value(2),
+						list.value(0),
+						list.value(3), // Signature
+						spoton_kernel::s_crypts.
+						value(keyType, 0)))
+		{
+		  spoton_misc::logError
+		    ("spoton_receive::process0091(): invalid signature.");
+		  return QList<QByteArray> ();
+		}
+	    }
 	}
 
       QDateTime dateTime
@@ -1322,9 +1320,13 @@ QList<QByteArray> spoton_receive::process0091
 	  return QList<QByteArray> ();
 	}
 
-      return QList<QByteArray> () << keyType.toLatin1()
-				  << list.value(0)
-				  << list.value(1);
+      if(messageType == "0091a")
+	return QList<QByteArray> () << keyType.toLatin1()
+				    << list.value(0)
+				    << list.value(1);
+      else
+	return QList<QByteArray> () << list.value(0)
+				    << list.value(1);
     }
   else
     spoton_misc::logError

@@ -583,9 +583,9 @@ Encryption Key (Base-64)
     1 - Forward Secrecy Authentication Key
     2 - Forward Secrecy Encryption Algorithm
     3 - Forward Secrecy Encryption Key
-    4 - UTC Date
     }
-2 - Signature (First Group Items and Previous Two Items)
+2 - UTC Date
+3 - Signature (First Group Items and Previous Three Items)
 }
 EOL
 {

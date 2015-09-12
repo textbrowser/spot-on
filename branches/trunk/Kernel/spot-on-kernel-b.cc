@@ -1984,8 +1984,6 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
     return;
 
   QByteArray bundle;
-  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
-		     toString("MMddyyyyhhmmss").toLatin1());
 
   {
     QDataStream stream(&bundle, QIODevice::WriteOnly);
@@ -1993,8 +1991,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
     stream << list.value(3)
 	   << list.value(4)
 	   << list.value(5)
-	   << list.value(6)
-	   << utcDate;
+	   << list.value(6);
 
     if(stream.status() != QDataStream::Ok)
       return;
@@ -2020,6 +2017,8 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   else if(keyType == "url" && !setting("gui/urlSignMessages", true).toBool())
     sign = false;
 
+  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
+		     toString("MMddyyyyhhmmss").toLatin1());
   QByteArray signature;
 
   if(sign)
@@ -2030,8 +2029,9 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 	 hashKey +
 	 cipherType +
 	 hashType +
-	 list.value(0) +
-	 bundle,
+	 myPublicKeyHash +
+	 bundle +
+	 utcDate,
 	 &ok);
 
       if(!ok)
@@ -2051,8 +2051,9 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   {
     QDataStream stream(&data, QIODevice::WriteOnly);
 
-    stream << list.value(0)
+    stream << myPublicKeyHash
 	   << bundle
+	   << utcDate
 	   << signature;
 
     if(stream.status() != QDataStream::Ok)
@@ -2090,17 +2091,16 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 void spoton_kernel::slotSaveForwardSecrecySessionKeys
 (const QByteArrayList &list)
 {
+  if(list.isEmpty())
+    return;
+
   spoton_crypt *s_crypt = s_crypts.value("chat", 0);
 
   if(!s_crypt)
     return;
 
-  if(list.isEmpty())
-    return;
-
   QByteArray bundle(list.value(1));
   QByteArray data;
-  QByteArray signature(list.value(2));
   QReadLocker locker(&m_forwardSecrecyKeysMutex);
 
   for(int i = 0; i < m_forwardSecrecyKeys.values().size(); i++)
@@ -2131,4 +2131,78 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
 
   if(data.isEmpty())
     return;
+
+  data = qUncompress(data);
+
+  QDataStream stream(&data, QIODevice::ReadOnly);
+  QList<QByteArray> output;
+
+  for(int i = 0; i < 4; i++)
+    {
+      QByteArray a;
+
+      stream >> a;
+
+      if(stream.status() != QDataStream::Ok)
+	{
+	  output.clear();
+	  break;
+	}
+      else
+	output << a;
+    }
+
+  if(output.size() != 4)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare
+	  ("UPDATE friends_public_keys "
+	   "SET forward_secrecy_authentication_algorithm = ?, "
+	   "forward_secrecy_authentication_key = ?, "
+	   "forward_secrecy_encryption_algorithm = ?, "
+	   "forward_secrecy_encryption_key = ? WHERE "
+	   "public_key_hash = ?");
+	query.bindValue
+	  (0, s_crypt->encryptedThenHashed(output.value(0), &ok).
+	   toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, s_crypt->encryptedThenHashed(output.value(1),
+					     &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, s_crypt->encryptedThenHashed(output.value(2), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, s_crypt->encryptedThenHashed(output.value(3),
+					     &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(4, list.value(0).toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }

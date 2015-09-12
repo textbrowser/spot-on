@@ -4484,8 +4484,7 @@ QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT key_type FROM friends_public_keys "
-		      "WHERE neighbor_oid = -1 AND "
-		      "public_key_hash = ?");
+		      "WHERE public_key_hash = ?");
 	query.bindValue(0, publicKeyHash.toBase64());
 
 	if(query.exec())
@@ -4627,8 +4626,7 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT name FROM friends_public_keys "
-		      "WHERE neighbor_oid = -1 AND "
-		      "public_key_hash = ?");
+		      "WHERE public_key_hash = ?");
 	query.bindValue(0, publicKeyHash.toBase64());
 
 	if(query.exec())
