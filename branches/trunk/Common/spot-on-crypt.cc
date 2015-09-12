@@ -440,6 +440,31 @@ bool spoton_crypt::passphraseSet(void)
 		    "").toByteArray().isEmpty();
 }
 
+spoton_crypt::spoton_crypt(const QByteArray &privateKey,
+			   const QByteArray &publicKey)
+{
+  init("", "", QByteArray(), QByteArray(), QByteArray(), 0, 0, "", "cbc");
+  m_privateKeyLength = static_cast<size_t> (privateKey.length());
+
+  if(m_privateKeyLength <= 0 ||
+     (m_privateKey =
+      static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
+					      sizeof(char)))) == 0)
+    {
+      m_privateKeyLength = 0;
+      spoton_misc::logError
+	("spoton_crypt::spoton_crypt(): "
+	 "gcry_calloc_secure() "
+	 "failure or m_privateKeyLength is peculiar (%1).");
+    }
+  else
+    memcpy(m_privateKey,
+	   privateKey.constData(),
+	   m_privateKeyLength);
+
+  m_publicKey = publicKey;
+}
+
 spoton_crypt::spoton_crypt(const QString &cipherType,
 			   const QString &hashType,
 			   const QByteArray &passphrase,

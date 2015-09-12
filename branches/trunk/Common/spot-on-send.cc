@@ -732,3 +732,28 @@ QByteArray spoton_send::message0091a
     ("%2", authenticated);
   return results;
 }
+
+QByteArray spoton_send::message0091b
+(const QByteArray &message,
+ const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
+{
+  QByteArray authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
+  QByteArray results;
+
+  results.append
+    ("POST HTTP/1.1\r\n"
+     "Content-Type: application/x-www-form-urlencoded\r\n"
+     "Content-Length: %1\r\n"
+     "\r\n"
+     "content=%2\r\n"
+     "\r\n\r\n");
+  results.replace
+    ("%1",
+     QByteArray::number(authenticated.length() +
+			QString("content=\r\n\r\n\r\n").
+			length()));
+  results.replace
+    ("%2", authenticated);
+  return results;
+}

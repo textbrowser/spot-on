@@ -861,6 +861,8 @@ void spoton_gui_server::slotForwardSecrecyRequest
   message.append(list.value(0).toBase64()); // Key Type
   message.append("_");
   message.append(list.value(1).toBase64()); // Public Key Hash
+  message.append("_");
+  message.append(list.value(2).toBase64()); // Public Key
   message.append("\n");
 
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())

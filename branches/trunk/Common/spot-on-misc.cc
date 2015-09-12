@@ -154,10 +154,7 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS folders ("
 		   "date TEXT NOT NULL, "
 		   "folder_index INTEGER NOT NULL, "
-		   "goldbug TEXT NOT NULL, " /*
-					     ** "0" or "1" for inbound.
-					     ** Symmetric key for outbound.
-					     */
+		   "goldbug TEXT NOT NULL, "
 		   "hash TEXT NOT NULL, " /*
 					  ** Keyed hash of the message and
 					  ** the subject.
@@ -4653,4 +4650,90 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
 
   QSqlDatabase::removeDatabase(connectionName);
   return name;
+}
+
+bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet)
+{
+  if(magnet.isEmpty())
+    return false;
+
+  QByteArray ak;
+  QByteArray ek;
+  QList<QByteArray> list;
+  QString aa("");
+  QString ea("");
+  QStringList starts;
+
+  /*
+  ** Validate the magnet.
+  */
+
+  if(magnet.startsWith("magnet:?"))
+    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
+  else
+    return false;
+
+  starts << "aa="
+	 << "ak="
+	 << "ea="
+	 << "ek=";
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(starts.contains("aa=") && str.startsWith("aa="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::hashTypes().contains(str))
+	    break;
+	  else
+	    {
+	      starts.removeAll("aa=");
+	      aa = str;
+	    }
+	}
+      else if(starts.contains("ak=") && str.startsWith("ak="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    break;
+	  else
+	    {
+	      starts.removeAll("ak=");
+	      ak = str.toLatin1();
+	    }
+	}
+      else if(starts.contains("ea=") && str.startsWith("ea="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::cipherTypes().contains(str))
+	    break;
+	  else
+	    {
+	      starts.removeAll("ea=");
+	      ea = str;
+	    }
+	}
+      else if(starts.contains("ek=") && str.startsWith("ek="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    break;
+	  else
+	    {
+	      starts.removeAll("ek=");
+	      ek = str.toLatin1();
+	    }
+	}
+    }
+
+  if(!aa.isEmpty() && !ak.isEmpty() && !ea.isEmpty() && !ek.isEmpty())
+    return true;
+
+  return false;
 }

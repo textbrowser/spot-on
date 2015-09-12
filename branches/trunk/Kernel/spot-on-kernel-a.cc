@@ -2182,6 +2182,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SLOT(slotSendForwardSecrecyPublicKey(const QByteArray &)),
 	  Qt::UniqueConnection);
   connect(this,
+	  SIGNAL(sendForwardSecrecySessionKeys(const QByteArray &)),
+	  neighbor,
+	  SLOT(slotSendForwardSecrecySessionKeys(const QByteArray &)),
+	  Qt::UniqueConnection);
+  connect(this,
 	  SIGNAL(sendMail(const QPairByteArrayInt64List &,
 			  const QString &)),
 	  neighbor,

@@ -3425,7 +3425,7 @@ void spoton::populateMail(void)
 
 	    while(query.next())
 	      {
-		QString goldbug("");
+		QByteArray goldbug;
 		bool ok = true;
 
 		goldbug = m_crypts.value("email")->
@@ -3433,10 +3433,10 @@ void spoton::populateMail(void)
 					      fromBase64(query.
 							 value(5).
 							 toByteArray()),
-					      &ok).constData();
+					      &ok);
 
-		if(goldbug.isEmpty())
-		  goldbug = "0";
+		if(!spoton_misc::isValidForwardSecrecyMagnet(goldbug))
+		  goldbug.clear();
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
@@ -3453,7 +3453,7 @@ void spoton::populateMail(void)
 		      {
 			if(i == 1 || i == 2 || i == 3 || i == 6)
 			  {
-			    if(goldbug == "0")
+			    if(goldbug.isEmpty())
 			      {
 				if(i == 3) // subject
 				  item = new QTableWidgetItem
@@ -3500,7 +3500,7 @@ void spoton::populateMail(void)
 			  }
 			else
 			  {
-			    if(goldbug == "0")
+			    if(goldbug.isEmpty())
 			      {
 				item = new QTableWidgetItem
 				  (m_crypts.value("email")->
@@ -3518,7 +3518,7 @@ void spoton::populateMail(void)
 		      }
 		    else if(i == 4) // attachment(s) count
 		      {
-			if(goldbug == "0")
+			if(goldbug.isEmpty())
 			  {
 			    if(query.value(i).toLongLong() > 0)
 			      {
@@ -3539,7 +3539,7 @@ void spoton::populateMail(void)
 			  }
 		      }
 		    else if(i == 5) // goldbug
-		      item = new QTableWidgetItem(goldbug);
+		      item = new QTableWidgetItem(goldbug.constData());
 		    else
 		      item = new QTableWidgetItem(query.value(i).toString());
 
@@ -3697,7 +3697,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
     if(item)
       goldbug = item->text();
 
-    if(goldbug == "1")
+    if(!goldbug.isEmpty())
       {
 	bool ok = true;
 

@@ -125,6 +125,7 @@ class spoton_kernel: public QObject
   QList<QByteArray> m_urlList;
   QQueue<QList<QVariant> > m_poptasticCache;
   QReadWriteLock m_poptasticCacheMutex;
+  QReadWriteLock m_forwardSecrecyKeysMutex;
   QReadWriteLock m_urlListMutex;
   QReadWriteLock m_urlsProcessedMutex;
   QTimer m_controlDatabaseTimer;
@@ -283,6 +284,7 @@ class spoton_kernel: public QObject
   void retrieveMail(const QByteArrayList &list, const QString &messageType);
   void sendBuzz(const QByteArray &buzz);
   void sendForwardSecrecyPublicKey(const QByteArray &data);
+  void sendForwardSecrecySessionKeys(const QByteArray &data);
   void sendMessage(const QByteArray &message,
 		   const spoton_send::spoton_send_method sendMethod);
   void sendMail(const QPairByteArrayInt64List &mail,

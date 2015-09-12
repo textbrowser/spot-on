@@ -136,6 +136,8 @@ class spoton_crypt
 			    const QString &sslControlString,
 			    QSslConfiguration &configuration);
   static void terminate(void);
+  spoton_crypt(const QByteArray &privateKey,
+	       const QByteArray &publicKey);
   spoton_crypt(const QString &cipherType,
 	       const QString &hashType,
 	       const QByteArray &passphrase,

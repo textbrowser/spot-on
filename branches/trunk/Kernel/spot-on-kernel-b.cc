@@ -1891,7 +1891,11 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     keys.second = s_crypt1->encryptedThenHashed(keys.second, &ok);
 
   if(ok)
-    m_forwardSecrecyKeys.insert(list.value(1), keys);
+    {
+      QWriteLocker locker(&m_forwardSecrecyKeysMutex);
+
+      m_forwardSecrecyKeys.insert(list.value(1), keys);
+    }
 }
 
 void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
@@ -1963,7 +1967,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   {
     QDataStream stream(&keyInformation, QIODevice::WriteOnly);
 
-    stream << QByteArray("0091a")
+    stream << QByteArray("0091b")
 	   << symmetricKey
 	   << hashKey
 	   << cipherType
@@ -1986,8 +1990,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   {
     QDataStream stream(&bundle, QIODevice::WriteOnly);
 
-    stream << list.value(0)
-	   << list.value(3)
+    stream << list.value(3)
 	   << list.value(4)
 	   << list.value(5)
 	   << list.value(6)
@@ -2027,6 +2030,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 	 hashKey +
 	 cipherType +
 	 hashType +
+	 list.value(0) +
 	 bundle,
 	 &ok);
 
@@ -2047,8 +2051,9 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   {
     QDataStream stream(&data, QIODevice::WriteOnly);
 
-    stream << signature
-	   << bundle;
+    stream << list.value(0)
+	   << bundle
+	   << signature;
 
     if(stream.status() != QDataStream::Ok)
       ok = false;
@@ -2070,12 +2075,11 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
     messageCode.toBase64();
 
   if(keyType == "chat" || keyType == "email" || keyType == "url")
-    {
-    }
+    emit sendForwardSecrecySessionKeys(data);
   else if(keyType == "poptastic")
     {
       QByteArray message
-	(spoton_send::message0091a(data, QPair<QByteArray, QByteArray> ()));
+	(spoton_send::message0091b(data, QPair<QByteArray, QByteArray> ()));
       QString name
 	(spoton_misc::nameFromPublicKeyHash(list.value(0), s_crypt1));
 
@@ -2086,6 +2090,45 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 void spoton_kernel::slotSaveForwardSecrecySessionKeys
 (const QByteArrayList &list)
 {
+  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+
+  if(!s_crypt)
+    return;
+
   if(list.isEmpty())
+    return;
+
+  QByteArray bundle(list.value(1));
+  QByteArray data;
+  QByteArray signature(list.value(2));
+  QReadLocker locker(&m_forwardSecrecyKeysMutex);
+
+  for(int i = 0; i < m_forwardSecrecyKeys.values().size(); i++)
+    {
+      QPair<QByteArray, QByteArray> pair
+	(m_forwardSecrecyKeys.values().at(i));
+      bool ok = true;
+
+      pair.first = s_crypt->decryptedAfterAuthenticated(pair.first, &ok);
+
+      if(!ok)
+	continue;
+
+      pair.second = s_crypt->decryptedAfterAuthenticated(pair.second, &ok);
+
+      if(!ok)
+	continue;
+
+      spoton_crypt crypt(pair.first, pair.second);
+
+      data = crypt.publicKeyDecrypt(bundle, &ok);
+
+      if(ok)
+	break;
+    }
+
+  locker.unlock();
+
+  if(data.isEmpty())
     return;
 }

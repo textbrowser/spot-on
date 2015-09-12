@@ -1191,10 +1191,16 @@ QList<QByteArray> spoton_receive::process0091
 	return QList<QByteArray> ();
 
       QDataStream stream(&data, QIODevice::ReadOnly);
+      int limit = 0;
 
       list.clear();
 
-      for(int i = 0; i < 4; i++)
+      if(messageType == "0091a")
+	limit = 4;
+      else
+	limit = 3;
+
+      for(int i = 0; i < limit; i++)
 	{
 	  QByteArray a;
 
@@ -1211,28 +1217,29 @@ QList<QByteArray> spoton_receive::process0091
 
       if(messageType == "0091a")
 	{
-	  if(list.size() != 4)
+	  if(list.size() != limit)
 	    {
 	      spoton_misc::logError
 		(QString("spoton_receive::process0091(): "
-			 "received irregular data. Expecting 4 "
+			 "received irregular data. Expecting %1 "
 			 "entries, "
-			 "received %1.").arg(list.size()));
+			 "received %2.").arg(limit).arg(list.size()));
 	      return QList<QByteArray> ();
 	    }
 	}
-      else if(list.size() != 2)
+      else if(list.size() != limit)
 	{
 	  spoton_misc::logError
 	    (QString("spoton_receive::process0091(): "
-		     "received irregular data. Expecting 2 "
+		     "received irregular data. Expecting %1 "
 		     "entries, "
-		     "received %1.").arg(list.size()));
+		     "received %2.").arg(limit).arg(list.size()));
 	  return QList<QByteArray> ();
 	}
 
       if(messageType == "0091b")
-	return QList<QByteArray> () << list.value(0) << list.value(1);
+	return QList<QByteArray> () << list.value(0) << list.value(1)
+				    << list.value(2);
 
       QString keyType
 	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
@@ -1431,33 +1438,8 @@ QString spoton_receive::findMessageType
 
 	      if(stream.status() == QDataStream::Ok)
 		type = a;
-
-	      if(type == "0091a" || type == "0091b")
-		{
-		  QList<QByteArray> list;
-
-		  for(int i = 0; i < 4; i++)
-		    {
-		      stream >> a;
-
-		      if(stream.status() != QDataStream::Ok)
-			{
-			  list.clear();
-			  type.clear();
-			  break;
-			}
-		      else
-			list.append(a);
-		    }
-
-		  if(!type.isEmpty())
-		    {
-		      symmetricKeys.append(list.value(0));
-		      symmetricKeys.append(list.value(2));
-		      symmetricKeys.append(list.value(1));
-		      symmetricKeys.append(list.value(3));
-		    }
-		}
+	      else
+		type.clear();
 	    }
 
 	  if(!type.isEmpty())
