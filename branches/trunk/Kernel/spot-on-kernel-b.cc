@@ -2076,8 +2076,16 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
     {
       QByteArray message
 	(spoton_send::message0091a(data, QPair<QByteArray, QByteArray> ()));
-      QString name;
+      QString name
+	(spoton_misc::nameFromPublicKeyHash(list.value(0), s_crypt1));
 
       postPoptasticMessage(name, message);
     }
+}
+
+void spoton_kernel::slotSaveForwardSecrecySessionKeys
+(const QByteArrayList &list)
+{
+  if(list.isEmpty())
+    return;
 }

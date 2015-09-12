@@ -4552,6 +4552,9 @@ void spoton_neighbor::process0091b(int length, const QByteArray &dataIn,
   QList<QByteArray> list
     (spoton_receive::process0091(length, dataIn, symmetricKeys,
 				 m_address, m_port, "0091b"));
+
+  if(!list.isEmpty())
+    emit saveForwardSecrecySessionKeys(list);
 }
 
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)

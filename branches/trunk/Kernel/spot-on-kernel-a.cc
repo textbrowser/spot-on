@@ -2110,6 +2110,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	    Qt::UniqueConnection);
 
   connect(neighbor,
+	  SIGNAL(saveForwardSecrecySessionKeys(const QByteArrayList &)),
+	  this,
+	  SLOT(slotSaveForwardSecrecySessionKeys(const QByteArrayList &)),
+	  Qt::UniqueConnection);
+  connect(neighbor,
 	  SIGNAL(scrambleRequest(void)),
 	  this,
 	  SLOT(slotRequestScramble(void)),
@@ -5282,7 +5287,9 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
 					 const QByteArray &message,
 					 const qint64 mailOid)
 {
-  if(setting("gui/disableSmtp", true).toBool())
+  if(receiverName.isEmpty())
+    return;
+  else if(setting("gui/disableSmtp", true).toBool())
     {
       QWriteLocker locker(&m_poptasticCacheMutex);
 
@@ -5290,10 +5297,9 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
       return;
     }
 
-  m_lastPoptasticStatus = QDateTime::currentDateTime();
-
   QWriteLocker locker(&m_poptasticCacheMutex);
 
+  m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_poptasticCache.enqueue(QList<QVariant> () << receiverName
 			                      << message
 			                      << mailOid);
@@ -5314,10 +5320,9 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
       return;
     }
 
-  m_lastPoptasticStatus = QDateTime::currentDateTime();
-
   QWriteLocker locker(&m_poptasticCacheMutex);
 
+  m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_poptasticCache.enqueue(QList<QVariant> () << name
 			                      << message
 			                      << subject
