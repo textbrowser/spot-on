@@ -4982,7 +4982,117 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
   else
     saveParticipantStatus(name, senderPublicKeyHash);
 
+  QByteArray attachmentName_l(attachmentName);
+  QByteArray attachment_l(attachment);
+  QByteArray message_l(message);
+  QByteArray name_l(name);
+  QByteArray subject_l(subject);
   QString connectionName("");
+  bool goldbugUsed_l = goldbugUsed;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare
+	  ("SELECT forward_secrecy_authentication_algorithm, "
+	   "forward_secrecy_authentication_key, "
+	   "forward_secrecy_encryption_algorithm, "
+	   "forward_secrecy_encryption_key FROM "
+	   "friends_public_keys WHERE "
+	   "neighbor_oid = -1 AND "
+	   "public_key_hash = ?");
+	query.bindValue(0, senderPublicKeyHash.toBase64());
+
+	if(query.exec() && query.next())
+	  if(!query.isNull(0) && !query.isNull(1) &&
+	     !query.isNull(2) && !query.isNull(3))
+	    {
+	      QByteArray aa;
+	      QByteArray ak;
+	      QByteArray ea;
+	      QByteArray ek;
+	      QByteArray magnet;
+
+	      if(ok)
+		aa = s_crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(0).
+					  toByteArray()),
+		   &ok);
+
+	      if(ok)
+		ak = s_crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).
+					  toByteArray()),
+		   &ok);
+
+	      if(ok)
+		ea = s_crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).
+					  toByteArray()),
+		   &ok);
+
+	      if(ok)
+		ek = s_crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(3).
+					  toByteArray()),
+		   &ok);
+
+	      if(ok)
+		{
+		  magnet = spoton_misc::forwardSecrecyMagnetFromList
+		    (QList<QByteArray> () << aa << ak << ea << ek);
+
+		  spoton_crypt *crypt =
+		    spoton_misc::cryptFromForwardSecrecyMagnet
+		    (magnet);
+
+		  if(crypt)
+		    {
+		      attachmentName_l = crypt->
+			decryptedAfterAuthenticated(attachmentName_l,
+						    &ok);
+
+		      if(ok)
+			attachment_l = crypt->
+			  decryptedAfterAuthenticated
+			  (attachment_l, &ok);
+
+		      if(ok)
+			message_l = crypt->
+			  decryptedAfterAuthenticated
+			  (message_l, &ok);
+
+		      if(ok)
+			name_l = crypt->
+			  decryptedAfterAuthenticated(name_l, &ok);
+
+		      if(ok)
+			subject_l = crypt->
+			  decryptedAfterAuthenticated
+			  (subject_l, &ok);
+
+		      if(ok)
+			goldbugUsed_l = false;
+		    }
+
+		  delete crypt;
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -4992,12 +5102,6 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
     if(db.open())
       {
-	QByteArray attachmentName_l(attachmentName);
-	QByteArray attachment_l(attachment);
-	QByteArray message_l(message);
-	QByteArray name_l(name);
-	QByteArray subject_l(subject);
-	bool goldbugUsed_l = goldbugUsed;
 	bool ok = true;
 
 	if(goldbugUsed_l)
