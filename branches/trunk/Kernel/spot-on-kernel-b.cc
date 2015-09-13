@@ -906,6 +906,11 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 	    if(db.open())
 	      {
+		QByteArray attachmentName_l(attachmentName);
+		QByteArray attachment_l(attachment);
+		QByteArray message_l(message);
+		QByteArray name_l(name);
+		QByteArray subject_l(subject);
 		QSqlQuery query(db);
 		bool ok = true;
 
@@ -930,13 +935,13 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 		if(ok)
 		  query.bindValue
-		    (3, s_crypt->keyedHash(message + subject,
+		    (3, s_crypt->keyedHash(message_l + subject_l,
 					   &ok).toBase64());
 
 		if(ok)
 		  if(!message.isEmpty())
 		    query.bindValue
-		      (4, s_crypt->encryptedThenHashed(message,
+		      (4, s_crypt->encryptedThenHashed(message_l,
 						       &ok).toBase64());
 
 		if(ok)
@@ -947,7 +952,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		if(ok)
 		  if(!name.isEmpty())
 		    query.bindValue
-		      (6, s_crypt->encryptedThenHashed(name,
+		      (6, s_crypt->encryptedThenHashed(name_l,
 						       &ok).toBase64());
 
 		if(ok)
@@ -962,7 +967,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 		if(ok)
 		  query.bindValue
-		    (9, s_crypt->encryptedThenHashed(subject, &ok).
+		    (9, s_crypt->encryptedThenHashed(subject_l, &ok).
 		     toBase64());
 
 		if(ok)
@@ -974,7 +979,8 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		if(ok)
 		  if(query.exec())
 		    {
-		      if(!attachment.isEmpty() && !attachmentName.isEmpty())
+		      if(!attachment_l.isEmpty() &&
+			 !attachmentName_l.isEmpty())
 			{
 			  QVariant variant(query.lastInsertId());
 			  qint64 id = query.lastInsertId().toLongLong();
@@ -984,9 +990,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 			      QByteArray data;
 
 			      if(!goldbugUsed)
-				data = qUncompress(attachment);
+				data = qUncompress(attachment_l);
 			      else
-				data = attachment;
+				data = attachment_l;
 
 			      if(!data.isEmpty())
 				{
@@ -1003,7 +1009,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 				  if(ok)
 				    query.bindValue
 				      (2, s_crypt->
-				       encryptedThenHashed(attachmentName,
+				       encryptedThenHashed(attachmentName_l,
 							   &ok).toBase64());
 
 				  if(ok)

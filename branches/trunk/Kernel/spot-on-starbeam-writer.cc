@@ -567,11 +567,7 @@ bool spoton_starbeam_writer::append
   QReadLocker locker(&m_keyMutex);
 
   if(m_magnets.isEmpty())
-    {
-      spoton_misc::logError("spoton_starbeam_writer::append(): "
-			    "m_magnets is empty.");
-      return false;
-    }
+    return false;
 
   QHash<QString, QByteArray> magnet;
   QList<QByteArray> list(data.trimmed().split('\n'));

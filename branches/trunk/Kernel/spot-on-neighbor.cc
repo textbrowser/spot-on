@@ -4992,8 +4992,123 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
     if(db.open())
       {
-	QSqlQuery query(db);
+	QByteArray attachmentName_l(attachmentName);
+	QByteArray attachment_l(attachment);
+	QByteArray message_l(message);
+	QByteArray name_l(name);
+	QByteArray subject_l(subject);
+	bool goldbugUsed_l = goldbugUsed;
 	bool ok = true;
+
+	if(goldbugUsed_l)
+	  {
+	    QString connectionName("");
+
+	    {
+	      QSqlDatabase db = spoton_misc::database(connectionName);
+
+	      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+				 "friends_public_keys.db");
+
+	      if(db.open())
+		{
+		  QSqlQuery query(db);
+
+		  query.setForwardOnly(true);
+		  query.prepare
+		    ("SELECT forward_secrecy_authentication_algorithm, "
+		     "forward_secrecy_authentication_key, "
+		     "forward_secrecy_encryption_algorithm, "
+		     "forward_secrecy_encryption_key FROM "
+		     "friends_public_keys WHERE "
+		     "neighbor_oid = -1 AND "
+		     "public_key_hash = ?");
+		  query.bindValue(0, senderPublicKeyHash.toBase64());
+
+		  if(query.exec() && query.next())
+		    if(!query.isNull(0) && !query.isNull(1) &&
+		       !query.isNull(2) && !query.isNull(3))
+		      {
+			QByteArray aa;
+			QByteArray ak;
+			QByteArray ea;
+			QByteArray ek;
+			QByteArray magnet;
+
+			if(ok)
+			  aa = s_crypt->decryptedAfterAuthenticated
+			    (QByteArray::fromBase64(query.value(0).
+						    toByteArray()),
+			     &ok);
+
+			if(ok)
+			  ak = s_crypt->decryptedAfterAuthenticated
+			    (QByteArray::fromBase64(query.value(1).
+						    toByteArray()),
+			     &ok);
+
+			if(ok)
+			  ea = s_crypt->decryptedAfterAuthenticated
+			    (QByteArray::fromBase64(query.value(2).
+						    toByteArray()),
+			     &ok);
+
+			if(ok)
+			  ek = s_crypt->decryptedAfterAuthenticated
+			    (QByteArray::fromBase64(query.value(3).
+						    toByteArray()),
+			     &ok);
+
+			if(ok)
+			  {
+			    magnet = spoton_misc::forwardSecrecyMagnetFromList
+			      (QList<QByteArray> () << aa << ak << ea << ek);
+
+			    spoton_crypt *crypt =
+			      spoton_misc::cryptFromForwardSecrecyMagnet
+			      (magnet);
+
+			    if(crypt)
+			      {
+				attachmentName_l = crypt->
+				  decryptedAfterAuthenticated(attachmentName_l,
+							      &ok);
+
+				if(ok)
+				  attachment_l = crypt->
+				    decryptedAfterAuthenticated
+				    (attachment_l, &ok);
+
+				if(ok)
+				  message_l = crypt->
+				    decryptedAfterAuthenticated
+				    (message_l, &ok);
+
+				if(ok)
+				  name_l = crypt->
+				    decryptedAfterAuthenticated(name_l, &ok);
+
+				if(ok)
+				  subject_l = crypt->
+				    decryptedAfterAuthenticated
+				    (subject_l, &ok);
+
+				if(ok)
+				  goldbugUsed_l = false;
+			      }
+
+			    delete crypt;
+			  }
+		      }
+		}
+
+	      db.close();
+	    }
+
+	    QSqlDatabase::removeDatabase(connectionName);
+	  }
+
+	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO folders "
 		      "(date, folder_index, goldbug, hash, "
@@ -5001,28 +5116,31 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 		      "receiver_sender, receiver_sender_hash, "
 		      "status, subject, participant_oid) "
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	query.bindValue
-	  (0, s_crypt->
-	   encryptedThenHashed(QDateTime::currentDateTime().
-			       toString(Qt::ISODate).
-			       toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (0, s_crypt->
+	     encryptedThenHashed(QDateTime::currentDateTime().
+				 toString(Qt::ISODate).
+				 toLatin1(), &ok).toBase64());
+
 	query.bindValue(1, 0); // Inbox Folder
 
 	if(ok)
 	  query.bindValue
 	    (2, s_crypt->
-	     encryptedThenHashed(QByteArray::number(goldbugUsed), &ok).
+	     encryptedThenHashed(QByteArray::number(goldbugUsed_l), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (3, s_crypt->keyedHash(message + subject,
+	    (3, s_crypt->keyedHash(message_l + subject_l,
 				   &ok).toBase64());
 
 	if(ok)
 	  if(!message.isEmpty())
 	    query.bindValue
-	      (4, s_crypt->encryptedThenHashed(message,
+	      (4, s_crypt->encryptedThenHashed(message_l,
 					       &ok).toBase64());
 
 	if(ok)
@@ -5032,7 +5150,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	if(ok)
 	  if(!name.isEmpty())
 	    query.bindValue
-	      (6, s_crypt->encryptedThenHashed(name,
+	      (6, s_crypt->encryptedThenHashed(name_l,
 					       &ok).toBase64());
 
 	if(ok)
@@ -5046,7 +5164,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 	if(ok)
 	  query.bindValue
-	    (9, s_crypt->encryptedThenHashed(subject, &ok).toBase64());
+	    (9, s_crypt->encryptedThenHashed(subject_l, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -5057,7 +5175,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	if(ok)
 	  if(query.exec())
 	    {
-	      if(!attachment.isEmpty() && !attachmentName.isEmpty())
+	      if(!attachment_l.isEmpty() && !attachmentName_l.isEmpty())
 		{
 		  QVariant variant(query.lastInsertId());
 		  qint64 id = query.lastInsertId().toLongLong();
@@ -5066,10 +5184,10 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 		    {
 		      QByteArray data;
 
-		      if(!goldbugUsed)
-			data = qUncompress(attachment);
+		      if(!goldbugUsed_l)
+			data = qUncompress(attachment_l);
 		      else
-			data = attachment;
+			data = attachment_l;
 
 		      if(!data.isEmpty())
 			{
@@ -5084,7 +5202,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 			  if(ok)
 			    query.bindValue
 			      (2, s_crypt->
-			       encryptedThenHashed(attachmentName,
+			       encryptedThenHashed(attachmentName_l,
 						   &ok).toBase64());
 
 			  if(ok)
