@@ -64,7 +64,16 @@ void spoton_starbeam_writer::processData
  const QStringByteArrayHash &magnet)
 {
   if(dataIn.isEmpty() || magnet.isEmpty())
-    return;
+    {
+      if(dataIn.isEmpty())
+	spoton_misc::logError("spoton_starbeam_writer::processData(): "
+			      "dataIn is empty.");
+      else
+	spoton_misc::logError("spoton_starbeam_writer::processData(): "
+			      "magnet is empty.");
+
+      return;
+    }
 
   QByteArray data(dataIn.trimmed());
   QList<QByteArray> list(data.split('\n'));
@@ -314,6 +323,9 @@ void spoton_starbeam_writer::processData
 				"seek() failure.");
 	}
     }
+  else
+    spoton_misc::logError("spoton_starbeam_writer::processData(): "
+			  "QFile::open() failure.");
 
   file.close();
 
@@ -321,7 +333,11 @@ void spoton_starbeam_writer::processData
     return;
 
   if(!s_crypt)
-    return;
+    {
+      spoton_misc::logError("spoton_starbeam_writer::processData(): "
+			    "s_crypt is zero.");
+      return;
+    }
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -414,7 +430,11 @@ void spoton_starbeam_writer::slotReadKeys(void)
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
   if(!s_crypt)
-    return;
+    {
+      spoton_misc::logError("spoton_starbeam_writer::slotReadKeys(): "
+			    "s_crypt is zero.");
+      return;
+    }
 
   QString connectionName("");
 
@@ -526,12 +546,20 @@ bool spoton_starbeam_writer::append
  QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair)
 {
   if(data.isEmpty())
-    return false;
+    {
+      spoton_misc::logError("spoton_starbeam_writer::append(): "
+			    "data is empty.");
+      return false;
+    }
 
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
   if(!s_crypt)
-    return false;
+    {
+      spoton_misc::logError("spoton_starbeam_writer::append(): "
+			    "s_crypt is zero.");
+      return false;
+    }
 
   spoton_kernel::discoverAdaptiveEchoPair
     (data.trimmed(), discoveredAdaptiveEchoPair);
@@ -539,7 +567,11 @@ bool spoton_starbeam_writer::append
   QReadLocker locker(&m_keyMutex);
 
   if(m_magnets.isEmpty())
-    return false;
+    {
+      spoton_misc::logError("spoton_starbeam_writer::append(): "
+			    "m_magnets is empty.");
+      return false;
+    }
 
   QHash<QString, QByteArray> magnet;
   QList<QByteArray> list(data.trimmed().split('\n'));

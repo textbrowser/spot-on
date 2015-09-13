@@ -92,7 +92,7 @@ void spoton_starbeam_reader::slotTimeout(void)
   if(!s_crypt)
     {
       spoton_misc::logError
-	(QString("spoton_starbeam_reader:slotTimeout(): s_crypt is "
+	(QString("spoton_starbeam_reader::slotTimeout(): s_crypt is "
 		 "malformed for starbeam reader %1. Aborting.").
 	 arg(m_id));
       deleteLater();
@@ -276,7 +276,7 @@ void spoton_starbeam_reader::slotTimeout(void)
   if(shouldDelete)
     {
       spoton_misc::logError
-	(QString("spoton_starbeam_reader:slotTimeout(): instructed "
+	(QString("spoton_starbeam_reader::slotTimeout(): instructed "
 		 "to delete starbeam reader %1.").
 	 arg(m_id));
       deleteLater();
@@ -290,7 +290,11 @@ void spoton_starbeam_reader::slotTimeout(void)
 void spoton_starbeam_reader::populateMagnets(const QSqlDatabase &db)
 {
   if(!db.isOpen())
-    return;
+    {
+      spoton_misc::logError("spoton_starbeam_reader::populateMagnets(): "
+			    "db is closed.");
+      return;
+    }
   else if(!m_magnets.isEmpty())
     return;
 
@@ -378,12 +382,20 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
 				     spoton_crypt *s_crypt)
 {
   if(m_position < 0)
-    return;
+    {
+      spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
+			    "m_position is negative.");
+      return;
+    }
 
   QHash<QString, QByteArray> elements(elementsFromMagnet(magnet, s_crypt));
 
   if(elements.isEmpty())
-    return;
+    {
+      spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
+			    "elements is empty.");
+      return;
+    }
 
   QFile file(fileName);
   QString status("completed");
@@ -519,12 +531,22 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status,
 						   const QSqlDatabase &db)
 {
   if(!db.isOpen())
-    return;
+    {
+      spoton_misc::logError
+	("spoton_starbeam_reader::savePositionAndStatus(): "
+	 "db is closed.");
+      return;
+    }
 
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
   if(!s_crypt)
-    return;
+    {
+      spoton_misc::logError
+	("spoton_starbeam_reader::savePositionAndStatus(): "
+	 "s_crypt is zero.");
+      return;
+    }
 
   QSqlQuery query(db);
   bool ok = true;

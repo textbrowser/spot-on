@@ -80,12 +80,20 @@ void spoton_urldistribution::slotTimeout(void)
   spoton_crypt *s_crypt1 = spoton_kernel::s_crypts.value("url", 0);
 
   if(!s_crypt1)
-    return;
+    {
+      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+			    "s_crypt1 is zero.");
+      return;
+    }
 
   spoton_crypt *s_crypt2 = spoton_kernel::s_crypts.value("url-signature", 0);
 
   if(!s_crypt2)
-    return;
+    {
+      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+			    "s_crypt2 is zero.");
+      return;
+    }
 
   QString connectionName("");
 
@@ -225,13 +233,21 @@ void spoton_urldistribution::slotTimeout(void)
   }
 
   if(publicKeys.isEmpty())
-    return;
+    {
+      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+			    "publicKeys is empty.");
+      return;
+    }
 
   spoton_crypt *urlCommonCredentials =
     spoton_misc::retrieveUrlCommonCredentials(s_crypt1);
 
   if(!urlCommonCredentials)
-    return;
+    {
+      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+			    "urlCommonCredentials is zero.");
+      return;
+    }
 
   /*
   ** Next, retrieve at most spoton_common::KERNEL_URLS_BATCH_SIZE URLs.
@@ -461,7 +477,11 @@ void spoton_urldistribution::slotTimeout(void)
   delete urlCommonCredentials;
 
   if(data.isEmpty())
-    return;
+    {
+      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+			    "data is empty.");
+      return;
+    }
 
   {
     QReadLocker locker(&m_quitLocker);
