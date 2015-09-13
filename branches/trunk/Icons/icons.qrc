@@ -249,12 +249,9 @@
 	<file>everaldo/away.png</file>
 	<file>everaldo/busy.png</file>
 	<file>everaldo/buzz.png</file>
-	<file>everaldo/buzz_t.png</file>
 	<file>everaldo/chat.png</file>
-	<file>everaldo/chat_t.png</file>
 	<file>everaldo/clear.png</file>
 	<file>everaldo/connect.png</file>
-	<file>everaldo/connect_t.png</file>
 	<file>everaldo/copy.png</file>
 	<file>everaldo/database.png</file>
 	<file>everaldo/deactivate.png</file>
@@ -262,18 +259,15 @@
 	<file>everaldo/documentation.png</file>
 	<file>everaldo/down.png</file>
 	<file>everaldo/email.png</file>
-	<file>everaldo/email_t.png</file>
 	<file>everaldo/empty-trash.png</file>
 	<file>everaldo/full-trash.png</file>
 	<file>everaldo/gemini.png</file>
 	<file>everaldo/goldbug.png</file>
-	<file>everaldo/goldbug_t.png</file>
 	<file>everaldo/heart.png</file>
 	<file>everaldo/icons.png</file>
 	<file>everaldo/inbox.png</file>
 	<file>everaldo/information.png</file>
 	<file>everaldo/key.png</file>
-	<file>everaldo/key_t.png</file>
 	<file>everaldo/lock.png</file>
 	<file>everaldo/magnet.png</file>
 	<file>everaldo/melodica.png</file>
@@ -293,18 +287,14 @@
 	<file>everaldo/reply.png</file>
 	<file>everaldo/search.png</file>
 	<file>everaldo/server.png</file>
-	<file>everaldo/server_t.png</file>
 	<file>everaldo/settings.png</file>
-	<file>everaldo/settings_t.png</file>
 	<file>everaldo/share.png</file>
 	<file>everaldo/spot-on-logo.png</file>
 	<file>everaldo/starbeam.png</file>
-	<file>everaldo/starbeam_t.png</file>
 	<file>everaldo/status-offline.png</file>
 	<file>everaldo/status-online.png</file>
 	<file>everaldo/up.png</file>
 	<file>everaldo/urls.png</file>
-	<file>everaldo/urls_t.png</file>
 	<file>everaldo/write.png</file>
 	<file>generic/AE.png</file>
 	<file>generic/attach.png</file>
@@ -322,12 +312,9 @@
 	<file>nouve/away.png</file>
 	<file>nouve/busy.png</file>
 	<file>nouve/buzz.png</file>
-	<file>nouve/buzz_t.png</file>
 	<file>nouve/chat.png</file>
-	<file>nouve/chat_t.png</file>
 	<file>nouve/clear.png</file>
 	<file>nouve/connect.png</file>
-	<file>nouve/connect_t.png</file>
 	<file>nouve/copy.png</file>
 	<file>nouve/database.png</file>
 	<file>nouve/deactivate.png</file>
@@ -335,18 +322,15 @@
 	<file>nouve/documentation.png</file>
 	<file>nouve/down.png</file>
 	<file>nouve/email.png</file>
-	<file>nouve/email_t.png</file>
 	<file>nouve/empty-trash.png</file>
 	<file>nouve/full-trash.png</file>
 	<file>nouve/gemini.png</file>
 	<file>nouve/goldbug.png</file>
-	<file>nouve/goldbug_t.png</file>
 	<file>nouve/heart.png</file>
 	<file>nouve/icons.png</file>
 	<file>nouve/inbox.png</file>
 	<file>nouve/information.png</file>
 	<file>nouve/key.png</file>
-	<file>nouve/key_t.png</file>
 	<file>nouve/lock.png</file>
 	<file>nouve/magnet.png</file>
 	<file>nouve/melodica.png</file>
@@ -366,18 +350,14 @@
 	<file>nouve/reply.png</file>
 	<file>nouve/search.png</file>
 	<file>nouve/server.png</file>
-	<file>nouve/server_t.png</file>
 	<file>nouve/settings.png</file>
-	<file>nouve/settings_t.png</file>
 	<file>nouve/share.png</file>
 	<file>nouve/spot-on-logo.png</file>
 	<file>nouve/starbeam.png</file>
-	<file>nouve/starbeam_t.png</file>
 	<file>nouve/status-offline.png</file>
 	<file>nouve/status-online.png</file>
 	<file>nouve/up.png</file>
 	<file>nouve/urls.png</file>
-	<file>nouve/urls_t.png</file>
 	<file>nouve/write.png</file>
 	<file>nuvola/activate.png</file>
 	<file>nuvola/add.png</file>
@@ -386,12 +366,9 @@
 	<file>nuvola/away.png</file>
 	<file>nuvola/busy.png</file>
 	<file>nuvola/buzz.png</file>
-	<file>nuvola/buzz_t.png</file>
 	<file>nuvola/chat.png</file>
-	<file>nuvola/chat_t.png</file>
 	<file>nuvola/clear.png</file>
 	<file>nuvola/connect.png</file>
-	<file>nuvola/connect_t.png</file>
 	<file>nuvola/copy.png</file>
 	<file>nuvola/database.png</file>
 	<file>nuvola/deactivate.png</file>
@@ -399,18 +376,15 @@
 	<file>nuvola/documentation.png</file>
 	<file>nuvola/down.png</file>
 	<file>nuvola/email.png</file>
-	<file>nuvola/email_t.png</file>
 	<file>nuvola/empty-trash.png</file>
 	<file>nuvola/full-trash.png</file>
 	<file>nuvola/gemini.png</file>
 	<file>nuvola/goldbug.png</file>
-	<file>nuvola/goldbug_t.png</file>
 	<file>nuvola/heart.png</file>
 	<file>nuvola/icons.png</file>
 	<file>nuvola/inbox.png</file>
 	<file>nuvola/information.png</file>
 	<file>nuvola/key.png</file>
-	<file>nuvola/key_t.png</file>
 	<file>nuvola/lock.png</file>
 	<file>nuvola/magnet.png</file>
 	<file>nuvola/melodica.png</file>
@@ -430,18 +404,14 @@
 	<file>nuvola/reply.png</file>
 	<file>nuvola/search.png</file>
 	<file>nuvola/server.png</file>
-	<file>nuvola/server_t.png</file>
 	<file>nuvola/settings.png</file>
-	<file>nuvola/settings_t.png</file>
 	<file>nuvola/share.png</file>
 	<file>nuvola/spot-on-logo.png</file>
 	<file>nuvola/starbeam.png</file>
-	<file>nuvola/starbeam_t.png</file>
 	<file>nuvola/status-offline.png</file>
 	<file>nuvola/status-online.png</file>
 	<file>nuvola/up.png</file>
 	<file>nuvola/urls.png</file>
-	<file>nuvola/urls_t.png</file>
 	<file>nuvola/write.png</file>
     </qresource>
 </RCC>

@@ -686,7 +686,7 @@ void spoton::prepareTabIcons(void)
 #else
   list << "buzz.png" << "chat.png" << "email.png"
        << "server.png" << "connect.png" << "search.png"
-       << "settings.png" << "starbeam_t.png" << "urls.png"
+       << "settings.png" << "starbeam.png" << "urls.png"
        << "key.png"
        << "goldbug.png";
 #endif
