@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>145</height>
+    <height>160</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -23,6 +23,10 @@
    </property>
    <item>
     <widget class="QLabel" name="label">
+     <property name="text">
+      <string>1.
+2.</string>
+     </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>

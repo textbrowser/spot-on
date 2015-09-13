@@ -2369,6 +2369,9 @@ QPushButton:pressed {
                       <property name="sizeAdjustPolicy">
                        <enum>QComboBox::AdjustToContents</enum>
                       </property>
+                      <property name="minimumContentsLength">
+                       <number>25</number>
+                      </property>
                       <item>
                        <property name="text">
                         <string>Forward Secrecy</string>
@@ -2382,6 +2385,11 @@ QPushButton:pressed {
                       <item>
                        <property name="text">
                         <string>None</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Pure Forward Secrecy</string>
                        </property>
                       </item>
                      </widget>
@@ -2760,8 +2768,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>1817</height>
+             <width>468</width>
+             <height>1833</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3975,7 +3983,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>582</width>
-             <height>660</height>
+             <height>576</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -4975,7 +4983,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>634</width>
-             <height>660</height>
+             <height>352</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5051,8 +5059,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>610</width>
-                 <height>709</height>
+                 <width>571</width>
+                 <height>726</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6197,7 +6205,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>771</width>
+             <width>806</width>
              <height>1302</height>
             </rect>
            </property>
@@ -7620,7 +7628,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
+             <width>430</width>
              <height>771</height>
             </rect>
            </property>
@@ -8889,8 +8897,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>533</width>
+             <height>471</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
