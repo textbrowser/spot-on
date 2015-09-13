@@ -5830,9 +5830,9 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
       menu.addSeparator();
-      menu.addAction(tr("Establish Forward &Secrecy"),
+      menu.addAction(tr("Initiate Forward &Secrecy exchange."),
 		     this, SLOT(slotEstablishEmailForwardSecrecy(void)));
-      menu.addAction(tr("Reset Forward &Secrecy Information"),
+      menu.addAction(tr("Reset Forward &Secrecy information."),
 		     this, SLOT(slotResetForwardSecrecyInformation(void)));
       menu.exec(m_ui.emailParticipants->mapToGlobal(point));
     }
@@ -8567,18 +8567,25 @@ void spoton::slotBuzzTools(int index)
 void spoton::slotAbout(void)
 {
   QMessageBox mb(this);
+  QString str("");
 
 #if SPOTON_GOLDBUG == 0
   QPixmap pixmap(":/Logo/spot-on-logo.png");
 
   pixmap = pixmap.scaled
     (QSize(250, 250), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  str = "Please visit <a href=\"http://spot-on.sourceforge.net\">"
+    "spot-on.sourceforge.net</a> for more information.";
   mb.setIconPixmap(pixmap);
 #else
+  str = "Please visit <a href=\"http://goldbug.sourceforge.net\">"
+    "goldbug.sourceforge.net</a> for more information.";
   mb.setIconPixmap(*m_ui.logo->pixmap());
 #endif
+  str.append("<br><br>");
+  str.append(m_ui.buildInformation->text());
   mb.setStandardButtons(QMessageBox::Ok);
-  mb.setText(m_ui.buildInformation->text());
+  mb.setText(str);
   mb.setTextFormat(Qt::RichText);
   mb.setWindowTitle(SPOTON_APPLICATION_NAME);
   mb.exec();
