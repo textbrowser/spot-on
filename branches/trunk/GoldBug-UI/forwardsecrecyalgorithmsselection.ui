@@ -23,9 +23,6 @@
    </property>
    <item>
     <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Please provide the following information. The exchange will be terminated if you discard this dialog.</string>
-     </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>

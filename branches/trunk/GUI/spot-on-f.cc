@@ -395,6 +395,9 @@ void spoton::slotRespondToForwardSecrecy(void)
   QScopedPointer<QDialog> dialog;
   QString connectionName("");
   QString error("");
+  QString name("");
+  QString keyType("");
+  QString str(publicKeyHash.toBase64().constData());
   QStringList aTypes;
   QStringList eTypes;
   Ui_forwardsecrecyalgorithmsselection ui;
@@ -447,6 +450,22 @@ void spoton::slotRespondToForwardSecrecy(void)
 #endif
   ui.authentication_algorithm->addItems(aTypes);
   ui.encryption_algorithm->addItems(eTypes);
+  name = spoton_misc::nameFromPublicKeyHash(publicKeyHash, s_crypt);
+  keyType = spoton_misc::keyTypeFromPublicKeyHash(publicKeyHash, s_crypt);
+
+  if(name.isEmpty())
+    {
+      if(keyType == "poptastic")
+	name = "unknown@unknown.org";
+      else
+	name = "unknown";
+    }
+
+  ui.label->setText
+    (tr("The participant %1 (%2) is requesting "
+	"forward secrecy credentials. Please press the OK "
+	"button if you would like to complete the exchange.").
+     arg(name).arg(str.mid(0, 16) + "..." + str.right(16)));
 
   if(dialog->exec() != QDialog::Accepted)
     {
@@ -709,4 +728,15 @@ void spoton::prepareTabIcons(void)
 	pixmap = pixmap.transformed(transform, Qt::SmoothTransformation);
 	m_ui.tab->setTabIcon(i, pixmap);
       }
+}
+
+void spoton::slotEmailFsGb(int index)
+{
+  if(index == 1)
+    m_ui.goldbug->setEnabled(true);
+  else
+    {
+      m_ui.goldbug->clear();
+      m_ui.goldbug->setEnabled(false);
+    }
 }

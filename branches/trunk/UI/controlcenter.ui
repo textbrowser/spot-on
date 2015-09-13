@@ -805,7 +805,7 @@
             <rect>
              <x>0</x>
              <y>-76</y>
-             <width>822</width>
+             <width>832</width>
              <height>560</height>
             </rect>
            </property>
@@ -1193,6 +1193,11 @@
                         <item>
                          <property name="text">
                           <string>None</string>
+                         </property>
+                        </item>
+                        <item>
+                         <property name="text">
+                          <string>Pure Forward Secrecy</string>
                          </property>
                         </item>
                        </widget>

@@ -269,6 +269,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.showUrlSettings->setChecked(true);
   m_ui.urls_db_type->model()->setData
     (m_ui.urls_db_type->model()->index(0, 0), 0, Qt::UserRole - 1);
+  m_ui.goldbug->setEnabled(false);
   m_ui.postgresqlConnect->setEnabled(false);
   m_ui.postgresqlConnect->setVisible(false);
 
@@ -681,6 +682,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveEmailName(void)));
+  connect(m_ui.email_fs_gb,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotEmailFsGb(int)));
   connect(m_ui.urlName,
 	  SIGNAL(returnPressed(void)),
 	  this,

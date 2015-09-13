@@ -690,6 +690,7 @@ class spoton: public QMainWindow
   void slotDisplayPopups(bool state);
   void slotDoSearch(void);
   void slotDuplicateTransmittedMagnet(void);
+  void slotEmailFsGb(int index);
   void slotEmptyTrash(void);
   void slotEnableChatEmoticons(bool state);
   void slotEnableRetrieveMail(void);

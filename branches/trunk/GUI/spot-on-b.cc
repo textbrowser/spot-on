@@ -2861,7 +2861,8 @@ void spoton::slotSendMail(void)
 	    QString oid(oids.takeFirst());
 	    bool ok = true;
 
-	    if(m_ui.email_fs_gb->currentIndex() == 0)
+	    if(m_ui.email_fs_gb->currentIndex() == 0 ||
+	       m_ui.email_fs_gb->currentIndex() == 3)
 	      goldbug = forwardSecrecyCredentials.takeFirst().toLatin1();
 	    else if(m_ui.email_fs_gb->currentIndex() == 1)
 	      {
