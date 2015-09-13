@@ -236,7 +236,11 @@ void spoton_gui_server::slotReadyRead(void)
   QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
 
   if(!socket)
-    return;
+    {
+      spoton_misc::logError("spoton_gui_server::"
+			    "slotReadyRead(): empty socket object.");
+      return;
+    }
 
   if(!socket->isEncrypted())
     {
@@ -770,7 +774,11 @@ void spoton_gui_server::slotEncrypted(void)
   QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
 
   if(!socket)
-    return;
+    {
+      spoton_misc::logError("spoton_gui_server::"
+			    "slotEncrypted(): empty socket object.");
+      return;
+    }
 
   QSslCipher cipher(socket->sessionCipher());
 

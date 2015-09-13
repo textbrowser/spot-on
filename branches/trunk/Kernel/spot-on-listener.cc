@@ -590,7 +590,7 @@ void spoton_listener::slotTimeout(void)
   if(shouldDelete)
     {
       spoton_misc::logError
-	(QString("spoton_listener:slotTimeout(): instructed "
+	(QString("spoton_listener::slotTimeout(): instructed "
 		 "to delete listener %1:%2.").
 	 arg(m_address.toString()).
 	 arg(m_port));
@@ -632,7 +632,11 @@ void spoton_listener::slotTimeout(void)
 void spoton_listener::saveStatus(const QSqlDatabase &db)
 {
   if(!db.isOpen())
-    return;
+    {
+      spoton_misc::logError
+	("spoton_listener::saveStatus(): db is closed.");
+      return;
+    }
 
   QSqlQuery query(db);
   QString status("");
@@ -1194,7 +1198,11 @@ void spoton_listener::saveExternalAddress(const QHostAddress &address,
 					  const QSqlDatabase &db)
 {
   if(!db.isOpen())
-    return;
+    {
+      spoton_misc::logError("spoton_listener::saveExternalAddress(): "
+			    "db is closed.");
+      return;
+    }
 
   QSqlQuery query(db);
   bool ok = true;
