@@ -72,7 +72,11 @@ void spoton_mailer::slotTimeout(void)
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
 
   if(!s_crypt)
-    return;
+    {
+      spoton_misc::logError("spoton_mailer::slotTimeout(): "
+			    "s_crypt is zero.");
+      return;
+    }
 
   QList<QVector<QVariant> > list;
   QString connectionName1("");
@@ -322,7 +326,7 @@ void spoton_mailer::slotRetrieveMail
     {
       spoton_misc::logError
 	("spoton_mailer::slotRetrieveMail(): "
-	 "invalid date-time object.");
+	 "invalid dateTime object.");
       return;
     }
 
@@ -449,7 +453,11 @@ void spoton_mailer::slotReap(void)
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
 
   if(!s_crypt)
-    return;
+    {
+      spoton_misc::logError("spoton_mailer::slotReap(): "
+			    "s_crypt is zero.");
+      return;
+    }
 
   QString connectionName("");
 

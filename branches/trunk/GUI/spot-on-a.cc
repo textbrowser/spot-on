@@ -4342,6 +4342,10 @@ void spoton::slotDeactivateKernel(void)
 				     "min-width: 5em;"
 				     "padding: 6px");
 #endif
+  m_forwardSecrecyRequests.clear();
+  m_sb.forward_secrecy_request->setProperty("public_key_hash", QVariant());
+  m_sb.forward_secrecy_request->setToolTip("");
+  m_sb.forward_secrecy_request->setVisible(false);
 }
 
 void spoton::slotGeneralTimerTimeout(void)

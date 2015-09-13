@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>119</height>
+    <height>145</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -21,6 +21,16 @@
    <property name="margin">
     <number>5</number>
    </property>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Please provide the following information. The exchange will be terminated if you discard this dialog.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <property name="spacing">
