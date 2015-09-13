@@ -136,7 +136,8 @@ class spoton_misc
   static bool isPrivateNetwork(const QHostAddress &address);
   static bool isValidBuzzMagnet(const QByteArray &magnet);
   static bool isValidBuzzMagnetData(const QByteArray &data);
-  static bool isValidForwardSecrecyMagnet(const QByteArray &magnet);
+  static bool isValidForwardSecrecyMagnet(const QByteArray &magnet,
+					  QList<QByteArray> &values);
   static bool isValidInstitutionMagnet(const QByteArray &magnet);
   static bool isValidSignature(const QByteArray &data,
 			       const QByteArray &publicKeyHash,

@@ -1617,10 +1617,18 @@ spoton::spoton(void):QMainWindow()
 
   if(str == "east")
     m_optionsUi.position->setCurrentIndex(0);
-  else if(str == "west")
-    m_optionsUi.position->setCurrentIndex(2);
-  else
+  else if(str == "north")
     m_optionsUi.position->setCurrentIndex(1);
+  else if(str == "south")
+    m_optionsUi.position->setCurrentIndex(2);
+  else if(str == "west")
+    m_optionsUi.position->setCurrentIndex(3);
+  else
+#if SPOTON_GOLDBUG == 1
+    m_optionsUi.position->setCurrentIndex(0);
+#else
+    m_optionsUi.position->setCurrentIndex(1);
+#endif
 
   m_sb.errorlog->setIcon
     (QIcon(QString(":/%1/information.png").
@@ -7972,15 +7980,30 @@ void spoton::slotChangeTabPosition(int index)
       m_settings["gui/tabPosition"] = "east";
       m_ui.tab->setTabPosition(QTabWidget::East);
     }
+  else if(index == 1)
+    {
+      m_settings["gui/tabPosition"] = "north";
+      m_ui.tab->setTabPosition(QTabWidget::North);
+    }
   else if(index == 2)
+    {
+      m_settings["gui/tabPosition"] = "south";
+      m_ui.tab->setTabPosition(QTabWidget::South);
+    }
+  else if(index == 3)
     {
       m_settings["gui/tabPosition"] = "west";
       m_ui.tab->setTabPosition(QTabWidget::West);
     }
   else
     {
+#if SPOTON_GOLDBUG == 0
       m_settings["gui/tabPosition"] = "north";
       m_ui.tab->setTabPosition(QTabWidget::North);
+#else
+      m_settings["gui/tabPosition"] = "east";
+      m_ui.tab->setTabPosition(QTabWidget::East);
+#endif
     }
 
   prepareTabIcons();

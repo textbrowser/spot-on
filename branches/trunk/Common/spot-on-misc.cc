@@ -4509,97 +4509,19 @@ QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
 spoton_crypt *spoton_misc::cryptFromForwardSecrecyMagnet
 (const QByteArray &magnet)
 {
-  spoton_crypt *crypt = 0;
-
-  if(magnet.isEmpty())
-    return crypt;
-
-  QByteArray ak;
-  QByteArray ek;
   QList<QByteArray> list;
-  QString aa("");
-  QString ea("");
-  QStringList starts;
 
-  /*
-  ** Validate the magnet.
-  */
+  if(!isValidForwardSecrecyMagnet(magnet, list))
+    return 0;
 
-  if(magnet.startsWith("magnet:?"))
-    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
-  else
-    return crypt;
-
-  starts << "aa="
-	 << "ak="
-	 << "ea="
-	 << "ek=";
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(starts.contains("aa=") && str.startsWith("aa="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::hashTypes().contains(str))
-	    break;
-	  else
-	    {
-	      starts.removeAll("aa=");
-	      aa = str;
-	    }
-	}
-      else if(starts.contains("ak=") && str.startsWith("ak="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    break;
-	  else
-	    {
-	      starts.removeAll("ak=");
-	      ak = str.toLatin1();
-	    }
-	}
-      else if(starts.contains("ea=") && str.startsWith("ea="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::cipherTypes().contains(str))
-	    break;
-	  else
-	    {
-	      starts.removeAll("ea=");
-	      ea = str;
-	    }
-	}
-      else if(starts.contains("ek=") && str.startsWith("ek="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    break;
-	  else
-	    {
-	      starts.removeAll("ek=");
-	      ek = str.toLatin1();
-	    }
-	}
-    }
-
-  if(!aa.isEmpty() && !ak.isEmpty() && !ea.isEmpty() && !ek.isEmpty())
-    crypt = new spoton_crypt(ea,
-			     aa,
-			     QByteArray(),
-			     ek,
-			     ak,
-			     0,
-			     0,
-			     "");
-
-  return crypt;
+  return new spoton_crypt(list.value(2),
+			  list.value(0),
+			  QByteArray(),
+			  list.value(3),
+			  list.value(1),
+			  0,
+			  0,
+			  "");
 }
 
 QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
@@ -4653,16 +4575,19 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
   return name;
 }
 
-bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet)
+bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
+					      QList<QByteArray> &values)
 {
+  values.clear();
+
   if(magnet.isEmpty())
     return false;
 
+  QByteArray aa;
   QByteArray ak;
+  QByteArray ea;
   QByteArray ek;
   QList<QByteArray> list;
-  QString aa("");
-  QString ea("");
   QStringList starts;
 
   /*
@@ -4681,7 +4606,7 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet)
 
   while(!list.isEmpty())
     {
-      QString str(list.takeFirst());
+      QByteArray str(list.takeFirst());
 
       if(starts.contains("aa=") && str.startsWith("aa="))
 	{
@@ -4704,7 +4629,7 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet)
 	  else
 	    {
 	      starts.removeAll("ak=");
-	      ak = str.toLatin1();
+	      ak = str;
 	    }
 	}
       else if(starts.contains("ea=") && str.startsWith("ea="))
@@ -4728,13 +4653,16 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet)
 	  else
 	    {
 	      starts.removeAll("ek=");
-	      ek = str.toLatin1();
+	      ek = str;
 	    }
 	}
     }
 
   if(!aa.isEmpty() && !ak.isEmpty() && !ea.isEmpty() && !ek.isEmpty())
-    return true;
+    {
+      values << aa << ak << ea << ek;
+      return true;
+    }
 
   return false;
 }

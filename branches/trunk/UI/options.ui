@@ -53,7 +53,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-442</y>
+             <y>0</y>
              <width>462</width>
              <height>999</height>
             </rect>
@@ -211,6 +211,11 @@
                 <item>
                  <property name="text">
                   <string>North</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>South</string>
                  </property>
                 </item>
                 <item>

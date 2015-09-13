@@ -215,6 +215,11 @@
                 </item>
                 <item>
                  <property name="text">
+                  <string>South</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>West</string>
                  </property>
                 </item>
