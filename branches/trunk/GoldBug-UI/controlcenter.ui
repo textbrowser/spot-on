@@ -53,7 +53,7 @@
       </property>
       <widget class="QWidget" name="tab_irc">
        <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
+        <iconset>
          <normaloff>:/nuvola/buzz_t.png</normaloff>:/nuvola/buzz_t.png</iconset>
        </attribute>
        <attribute name="title">
@@ -535,7 +535,7 @@ QPushButton:pressed {
       </widget>
       <widget class="QWidget" name="tab_chat">
        <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
+        <iconset>
          <normaloff>:/nuvola/chat_t.png</normaloff>:/nuvola/chat_t.png</iconset>
        </attribute>
        <attribute name="title">
@@ -1160,7 +1160,7 @@ QPushButton:pressed {
       </widget>
       <widget class="QWidget" name="tab_email">
        <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
+        <iconset>
          <normaloff>:/nuvola/email_t.png</normaloff>:/nuvola/email_t.png</iconset>
        </attribute>
        <attribute name="title">
@@ -1223,8 +1223,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>559</width>
+             <height>637</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2697,7 +2697,7 @@ QPushButton:pressed {
       </widget>
       <widget class="QWidget" name="tab_createserver">
        <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
+        <iconset>
          <normaloff>:/nuvola/server_t.png</normaloff>:/nuvola/server_t.png</iconset>
        </attribute>
        <attribute name="title">
@@ -3911,7 +3911,7 @@ QPushButton:pressed {
       </widget>
       <widget class="QWidget" name="tab_neighbors">
        <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
+        <iconset>
          <normaloff>:/nuvola/connect_t.png</normaloff>:/nuvola/connect_t.png</iconset>
        </attribute>
        <attribute name="title">
@@ -4913,10 +4913,6 @@ QPushButton#addNeighbor:pressed {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_search">
-       <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
-         <normaloff>:/nuvola/search.png</normaloff>:/nuvola/search.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -4979,7 +4975,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>634</width>
-             <height>352</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5055,8 +5051,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>571</width>
-                 <height>726</height>
+                 <width>610</width>
+                 <height>709</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6138,7 +6134,7 @@ QPushButton:pressed {
       </widget>
       <widget class="QWidget" name="tab_settings">
        <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
+        <iconset>
          <normaloff>:/nuvola/settings_t.png</normaloff>:/nuvola/settings_t.png</iconset>
        </attribute>
        <attribute name="title">
@@ -7561,7 +7557,7 @@ QPushButton:pressed {
       </widget>
       <widget class="QWidget" name="tab_starbeam">
        <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
+        <iconset>
          <normaloff>:/nuvola/starbeam_t.png</normaloff>:/nuvola/starbeam_t.png</iconset>
        </attribute>
        <attribute name="title">
@@ -8832,10 +8828,6 @@ QPushButton:pressed {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_cultivation">
-       <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
-         <normaloff>:/nuvola/urls.png</normaloff>:/nuvola/urls.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -8897,8 +8889,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>533</width>
-             <height>471</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -9511,7 +9503,7 @@ QPushButton:pressed {
       </widget>
       <widget class="QWidget" name="tab_addkey">
        <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
+        <iconset>
          <normaloff>:/nuvola/key_t.png</normaloff>:/nuvola/key_t.png</iconset>
        </attribute>
        <attribute name="title">
@@ -9900,7 +9892,7 @@ QPushButton:pressed {
 </string>
        </property>
        <attribute name="icon">
-        <iconset resource="../Icons/icons.qrc">
+        <iconset>
          <normaloff>:/everaldo/goldbug_t.png</normaloff>:/everaldo/goldbug_t.png</iconset>
        </attribute>
        <attribute name="title">
