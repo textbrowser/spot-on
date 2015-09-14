@@ -715,6 +715,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 			  const QByteArray &,
 			  const QByteArray &,
 			  const QByteArray &,
+			  const QByteArray &,
 			  const qint64)),
 	  this,
 	  SLOT(slotSendMail(const QByteArray &,
@@ -726,6 +727,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 			    const QByteArray &,
 			    const QByteArray &,
 			    const QByteArray &,
+			    const QByteArray &
 			    const qint64)));
 
   if(m_guiServer)
@@ -2919,8 +2921,11 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				 const QByteArray &attachmentName,
 				 const QByteArray &keyType,
 				 const QByteArray &receiverName,
+				 const QByteArray &mode,
 				 const qint64 mailOid)
 {
+  Q_UNUSED(mode);
+
   if(keyType == "poptastic" && publicKey.contains("-poptastic"))
     {
       postPoptasticMessage
@@ -2940,14 +2945,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
     return;
 
   /*
-  ** goldbug
-  ** message
   ** name - my name
   ** publicKey - recipient's public key
-  ** subject
-  ** attachment
-  ** attachmentName
-  ** mailOid
+  ** mode - forward-secrecy, none, pure-forward-secrecy
   */
 
   QByteArray myPublicKey;

@@ -262,6 +262,7 @@ class spoton_kernel: public QObject
 		    const QByteArray &attachmentName,
 		    const QByteArray &keyType,
 		    const QByteArray &receiverName,
+		    const QByteArray &mode,
 		    const qint64 mailOid);
   void slotSettingsChanged(const QString &path);
   void slotStatusTimerExpired(void);

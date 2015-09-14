@@ -105,8 +105,8 @@ void spoton_mailer::slotTimeout(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT goldbug, message, participant_oid, status, "
-		      "subject, OID "
+	if(query.exec("SELECT goldbug, message, mode, "
+		      "participant_oid, status, subject, OID "
 		      "FROM folders WHERE folder_index = 1"))
 	  while(query.next())
 	    {
@@ -114,7 +114,7 @@ void spoton_mailer::slotTimeout(void)
 	      bool ok = true;
 
 	      status = s_crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(3).toByteArray()), &ok).
+		(QByteArray::fromBase64(query.value(4).toByteArray()), &ok).
 		constData();
 
 	      if(status.toLower() != "queued")
@@ -125,10 +125,11 @@ void spoton_mailer::slotTimeout(void)
 	      QByteArray goldbug;
 	      QByteArray keyType;
 	      QByteArray message;
+	      QByteArray mode;
 	      QByteArray publicKey;
 	      QByteArray receiverName;
 	      QByteArray subject;
-	      qint64 mailOid = query.value(5).toLongLong();
+	      qint64 mailOid = query.value(6).toLongLong();
 	      qint64 participantOid = -1;
 
 	      if(ok)
@@ -142,8 +143,14 @@ void spoton_mailer::slotTimeout(void)
 		   &ok);
 
 	      if(ok)
+		if(!query.isNull(2))
+		  mode = s_crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(2).toByteArray()),
+		     &ok);
+
+	      if(ok)
 		participantOid = s_crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(2).toByteArray()),
+		  (QByteArray::fromBase64(query.value(3).toByteArray()),
 		   &ok).toLongLong();
 
 	      if(ok)
@@ -185,7 +192,7 @@ void spoton_mailer::slotTimeout(void)
 	      if(ok)
 		subject = s_crypt->
 		  decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(4).toByteArray()),
+		  (QByteArray::fromBase64(query.value(5).toByteArray()),
 		   &ok);
 
 	      if(ok)
@@ -228,6 +235,7 @@ void spoton_mailer::slotTimeout(void)
 			 << attachmentName
 			 << keyType
 			 << receiverName
+			 << mode
 			 << mailOid;
 		  list.append(vector);
 		}
@@ -258,7 +266,8 @@ void spoton_mailer::slotTimeout(void)
 		    vector.value(6).toByteArray(),
 		    vector.value(7).toByteArray(),
 		    vector.value(8).toByteArray(),
-		    vector.value(9).toLongLong());
+		    vector.value(9).toByteArray(),
+		    vector.value(10).toLongLong());
     }
 }
 
