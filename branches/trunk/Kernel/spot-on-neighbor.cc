@@ -4307,7 +4307,7 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
 	    QSqlQuery query(db);
 
 	    query.prepare("UPDATE neighbors SET motd = ? WHERE OID = ?");
-	    query.bindValue(0, motd);
+	    query.bindValue(0, motd.trimmed());
 	    query.bindValue(1, m_id);
 	    query.exec();
 	  }
