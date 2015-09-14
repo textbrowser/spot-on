@@ -76,6 +76,7 @@ SOURCES		= ../Common/spot-on-crypt.cc \
 		  spot-on-gui-server.cc \
 		  spot-on-kernel-a.cc \
 		  spot-on-kernel-b.cc \
+		  spot-on-kernel-c.cc \
 		  spot-on-listener.cc \
 		  spot-on-mailer.cc \
 		  spot-on-neighbor.cc \
