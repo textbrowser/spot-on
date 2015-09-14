@@ -1243,6 +1243,12 @@ void spoton_neighbor::slotTimeout(void)
 
 		if(!m_udpSocket->waitForConnected(timeout))
 		  {
+		    spoton_misc::logError
+		      (QString("spoton_neighbor::slotTimeout(): "
+			       "waitForConnected() failure for "
+			       "%1:%2.").
+		       arg(m_address.toString()).
+		       arg(m_port));
 		    deleteLater();
 		    return;
 		  }
@@ -1298,9 +1304,17 @@ void spoton_neighbor::slotTimeout(void)
 void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 {
   if(!db.isOpen())
-    return;
+    {
+      spoton_misc::logError
+	("spoton_neighbor::saveStatistics(): db is closed.");
+      return;
+    }
   else if(m_id == -1)
-    return;
+    {
+      spoton_misc::logError
+	("spoton_neighbor::saveStatistics(): m_id is -1.");
+      return;
+    }
 
   QSqlQuery query(db);
   QSslCipher cipher;
@@ -1360,7 +1374,17 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 void spoton_neighbor::saveStatus(const QString &status)
 {
   if(m_id == -1)
-    return;
+    {
+      spoton_misc::logError
+	("spoton_neighbor::saveStatus(): m_id is -1.");
+      return;
+    }
+  else if(status.trimmed().isEmpty())
+    {
+      spoton_misc::logError
+	("spoton_neighbor::saveStatus(): status is empty.");
+      return;
+    }
 
   QString connectionName("");
 
@@ -1378,7 +1402,7 @@ void spoton_neighbor::saveStatus(const QString &status)
 	query.prepare("UPDATE neighbors SET is_encrypted = ?, status = ? "
 		      "WHERE OID = ? AND status_control <> 'deleted'");
 	query.bindValue(0, isEncrypted() ? 1 : 0);
-	query.bindValue(1, status);
+	query.bindValue(1, status.trimmed());
 	query.bindValue(2, m_id);
 	query.exec();
       }
@@ -1393,11 +1417,23 @@ void spoton_neighbor::saveStatus(const QSqlDatabase &db,
 				 const QString &status)
 {
   if(!db.isOpen())
-    return;
+    {
+      spoton_misc::logError
+	("spoton_neighbor::saveStatus(): db is closed.");
+      return;
+    }
   else if(m_id == -1)
-    return;
-  else if(status.isEmpty())
-    return;
+    {
+      spoton_misc::logError
+	("spoton_neighbor::saveStatus(): m_id is -1.");
+      return;
+    }
+  else if(status.trimmed().isEmpty())
+    {
+      spoton_misc::logError
+	("spoton_neighbor::saveStatus(): status is empty.");
+      return;
+    }
 
   QSqlQuery query(db);
 
@@ -1405,7 +1441,7 @@ void spoton_neighbor::saveStatus(const QSqlDatabase &db,
   query.prepare("UPDATE neighbors SET is_encrypted = ?, status = ? "
 		"WHERE OID = ? AND status_control <> 'deleted'");
   query.bindValue(0, isEncrypted() ? 1 : 0);
-  query.bindValue(1, status);
+  query.bindValue(1, status.trimmed());
   query.bindValue(2, m_id);
   query.exec();
 }
