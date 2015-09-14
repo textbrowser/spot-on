@@ -2820,10 +2820,20 @@ void spoton::slotSendMail(void)
     if(db.open())
       {
 	QModelIndexList list;
+	QString mode("forward-secrecy");
 	QStringList forwardSecrecyCredentials;
 	QStringList names;
 	QStringList oids;
 	QStringList publicKeyHashes;
+
+	if(m_ui.email_fs_gb->currentIndex() == 0)
+	  mode = "forward-secrecy";
+	else if(m_ui.email_fs_gb->currentIndex() == 1)
+	  mode = "forward-secrecy";
+	else if(m_ui.email_fs_gb->currentIndex() == 2)
+	  mode = "none";
+	else
+	  mode = "pure-forward-secrecy";
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(4); // Forward Secrecy Information
@@ -2880,12 +2890,19 @@ void spoton::slotSendMail(void)
 		goldbug.append("&xt=urn:forward-secrecy");
 	      }
 
+	    {
+	      QList<QByteArray> list;
+
+	      if(!spoton_misc::isValidForwardSecrecyMagnet(goldbug, list))
+		goldbug.clear();
+	    }
+
 	    query.prepare("INSERT INTO folders "
 			  "(date, folder_index, goldbug, hash, "
-			  "message, message_code, "
+			  "message, message_code, mode, "
 			  "receiver_sender, receiver_sender_hash, "
 			  "status, subject, participant_oid) "
-			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, crypt->
 	       encryptedThenHashed(now.toString(Qt::ISODate).
@@ -2914,27 +2931,32 @@ void spoton::slotSendMail(void)
 
 	    if(ok)
 	      query.bindValue
-		(6, crypt->
+		(6, crypt->encryptedThenHashed(mode.toLatin1(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(7, crypt->
 		 encryptedThenHashed(names.takeFirst().toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(7, publicKeyHash.toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(8, crypt->
-		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
+		(8, publicKeyHash.toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(9, crypt->
-		 encryptedThenHashed(subject, &ok).toBase64());
+		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(10, crypt->
+		 encryptedThenHashed(subject, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(11, crypt->
 		 encryptedThenHashed(oid.toLatin1(), &ok).toBase64());
 
 	    if(ok)

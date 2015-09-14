@@ -166,6 +166,11 @@ void spoton_misc::prepareDatabases(void)
 		   "message_code TEXT NOT NULL, " /*
 						  ** Not yet used.
 						  */
+		   "mode TEXT, " /*
+				 ** forward-secrecy
+				 ** none
+				 ** pure-forward-secrecy
+				 */
 		   "participant_oid TEXT NOT NULL, " // Encrypted?
 		   "receiver_sender TEXT NOT NULL, "
 		   "receiver_sender_hash TEXT NOT NULL, " /*
@@ -179,6 +184,7 @@ void spoton_misc::prepareDatabases(void)
 					    */
 		   "subject BLOB NOT NULL, "
 		   "PRIMARY KEY (folder_index, hash, receiver_sender_hash))");
+	query.exec("ALTER TABLE folders ADD mode TEXT");
 	query.exec("CREATE TABLE IF NOT EXISTS "
 		   "folders_attachment ("
 		   "data BLOB NOT NULL, "
@@ -4587,6 +4593,7 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
   QByteArray ak;
   QByteArray ea;
   QByteArray ek;
+  QByteArray urn;
   QList<QByteArray> list;
   QStringList starts;
 
@@ -4602,7 +4609,8 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
   starts << "aa="
 	 << "ak="
 	 << "ea="
-	 << "ek=";
+	 << "ek="
+	 << "xt=";
 
   while(!list.isEmpty())
     {
@@ -4656,9 +4664,22 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
 	      ek = str;
 	    }
 	}
+      else if(starts.contains("xt=") && str.startsWith("xt="))
+	{
+	  str.remove(0, 3);
+
+	  if(str != "urn:forward-secrecy")
+	    break;
+	  else
+	    {
+	      starts.removeAll("xt=");
+	      urn = str;
+	    }
+	}
     }
 
-  if(!aa.isEmpty() && !ak.isEmpty() && !ea.isEmpty() && !ek.isEmpty())
+  if(!aa.isEmpty() && !ak.isEmpty() && !ea.isEmpty() && !ek.isEmpty() &&
+     !urn.isEmpty())
     {
       values << aa << ak << ea << ek;
       return true;

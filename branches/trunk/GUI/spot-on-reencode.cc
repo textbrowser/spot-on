@@ -293,9 +293,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT date, goldbug, message, message_code, "
-		      "participant_oid, "
-		      "receiver_sender, status, subject, "
+	if(query.exec("SELECT date, goldbug, message, message_code, mode, "
+		      "participant_oid, receiver_sender, status, subject, "
 		      "OID FROM folders"))
 	  while(query.next())
 	    {
@@ -306,10 +305,11 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		{
 		  QByteArray bytes;
 
-		  bytes = oldCrypt->decryptedAfterAuthenticated
-		    (QByteArray::
-		     fromBase64(query.value(i).
-				toByteArray()), &ok);
+		  if(!query.isNull(i))
+		    bytes = oldCrypt->decryptedAfterAuthenticated
+		      (QByteArray::
+		       fromBase64(query.value(i).
+				  toByteArray()), &ok);
 
 		  if(ok)
 		    list.append(bytes);
@@ -323,16 +323,17 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		    QSqlQuery updateQuery(db);
 
 		    updateQuery.prepare("UPDATE folders SET "
-					"date = ?, "
-					"goldbug = ?, "
-					"message = ?, "
-					"message_code = ?, "
-					"participant_oid = ?, "
-					"receiver_sender = ?, "
-					"status = ?, "
-					"subject = ?, "
-					"hash = ? "
-					"WHERE OID = ?");
+					"date = ?, "            // 0
+					"goldbug = ?, "         // 1
+					"message = ?, "         // 2
+					"message_code = ?, "    // 3
+					"mode = ?, "            // 4
+					"participant_oid = ?, " // 5
+					"receiver_sender = ?, " // 6
+					"status = ?, "          // 7
+					"subject = ?, "         // 8
+					"hash = ? "             // 9
+					"WHERE OID = ?");       // 10
 
 		    for(int i = 0; i < list.size(); i++)
 		      if(ok)
@@ -345,14 +346,14 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		    if(ok)
 		      updateQuery.bindValue
-			(8, newCrypt->keyedHash(list.value(2) +
-						list.value(7), &ok).
+			(9, newCrypt->keyedHash(list.value(2) +
+						list.value(8), &ok).
 			 toBase64());
 
 		    if(ok)
 		      {
 			updateQuery.bindValue
-			  (9, query.value(query.record().count() - 1));
+			  (10, query.value(query.record().count() - 1));
 			updateQuery.exec();
 		      }
 		    else
