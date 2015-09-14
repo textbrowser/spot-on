@@ -2820,20 +2820,10 @@ void spoton::slotSendMail(void)
     if(db.open())
       {
 	QModelIndexList list;
-	QString mode("forward-secrecy");
 	QStringList forwardSecrecyCredentials;
 	QStringList names;
 	QStringList oids;
 	QStringList publicKeyHashes;
-
-	if(m_ui.email_fs_gb->currentIndex() == 0)
-	  mode = "forward-secrecy";
-	else if(m_ui.email_fs_gb->currentIndex() == 1)
-	  mode = "forward-secrecy";
-	else if(m_ui.email_fs_gb->currentIndex() == 2)
-	  mode = "none";
-	else
-	  mode = "pure-forward-secrecy";
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(4); // Forward Secrecy Information
@@ -2863,6 +2853,7 @@ void spoton::slotSendMail(void)
 	while(!oids.isEmpty())
 	  {
 	    QByteArray goldbug;
+	    QByteArray mode;
 	    QByteArray publicKeyHash(publicKeyHashes.takeFirst().toLatin1());
 	    QByteArray subject
 	      (m_ui.outgoingSubject->text().toUtf8());
@@ -2873,9 +2864,18 @@ void spoton::slotSendMail(void)
 
 	    if(m_ui.email_fs_gb->currentIndex() == 0 ||
 	       m_ui.email_fs_gb->currentIndex() == 3)
-	      goldbug = forwardSecrecyCredentials.takeFirst().toLatin1();
+	      {
+		if(m_ui.email_fs_gb->currentIndex() == 0)
+		  mode = "forward-secrecy";
+		else
+		  mode = "pure-forward-secrecy";
+
+		goldbug = forwardSecrecyCredentials.takeFirst().toLatin1();
+	      }
 	    else if(m_ui.email_fs_gb->currentIndex() == 1)
 	      {
+		mode = "forward-secrecy";
+
 		QByteArray bytes(m_ui.goldbug->text().toLatin1().
 				 toBase64().toBase64().toBase64().
 				 toBase64().toBase64());
@@ -2889,12 +2889,17 @@ void spoton::slotSendMail(void)
 		goldbug.append(bytes.mid(0, size));
 		goldbug.append("&xt=urn:forward-secrecy");
 	      }
+	    else
+	      mode = "none";
 
 	    {
 	      QList<QByteArray> list;
 
 	      if(!spoton_misc::isValidForwardSecrecyMagnet(goldbug, list))
-		goldbug.clear();
+		{
+		  goldbug.clear();
+		  mode = "none";
+		}
 	    }
 
 	    query.prepare("INSERT INTO folders "
@@ -2931,8 +2936,7 @@ void spoton::slotSendMail(void)
 
 	    if(ok)
 	      query.bindValue
-		(6, crypt->encryptedThenHashed(mode.toLatin1(), &ok).
-		 toBase64());
+		(6, crypt->encryptedThenHashed(mode, &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue

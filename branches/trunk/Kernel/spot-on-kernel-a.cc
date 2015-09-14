@@ -727,7 +727,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 			    const QByteArray &,
 			    const QByteArray &,
 			    const QByteArray &,
-			    const QByteArray &
+			    const QByteArray &,
 			    const qint64)));
 
   if(m_guiServer)
