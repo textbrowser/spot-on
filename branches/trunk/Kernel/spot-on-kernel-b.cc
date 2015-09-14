@@ -904,6 +904,10 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  QString connectionName("");
 	  bool goldbugUsed_l = goldbugUsed;
 
+	  /*
+	  ** Attempt to process the message regardless of goldbugUsed_l.
+	  */
+
 	  {
 	    QSqlDatabase db = spoton_misc::database(connectionName);
 
