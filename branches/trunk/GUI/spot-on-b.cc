@@ -2790,7 +2790,7 @@ void spoton::slotSendMail(void)
 	  QMessageBox::critical
 	    (this, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Please enter a Gold Bug having at least sixteen "
+	     tr("Please provide a Gold Bug that contains at least sixteen "
 		"characters."));
 	  m_ui.outgoingMessage->setFocus();
 	  return;
@@ -2877,7 +2877,7 @@ void spoton::slotSendMail(void)
 		goldbug.append("&ea=aes256");
 		goldbug.append("&ek=");
 		goldbug.append(bytes.mid(0, size));
-		goldbug.append("&xt=urn:goldbug");
+		goldbug.append("&xt=urn:forward-secrecy");
 	      }
 
 	    query.prepare("INSERT INTO folders "
@@ -3735,7 +3735,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	magnet.append("&ea=aes256");
 	magnet.append("&ek=");
 	magnet.append(bytes.mid(0, size));
-	magnet.append("&xt=urn:goldbug");
+	magnet.append("&xt=urn:forward-secrecy");
 
 	int rc = applyGoldBugToLetter(magnet, row);
 
