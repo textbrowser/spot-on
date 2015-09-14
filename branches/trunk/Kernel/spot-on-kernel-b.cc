@@ -904,113 +904,127 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  QString connectionName("");
 	  bool goldbugUsed_l = goldbugUsed;
 
-	  /*
-	  ** Attempt to process the message regardless of goldbugUsed_l.
-	  */
-
-	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
-
-	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			       "friends_public_keys.db");
-
-	    if(db.open())
+	  if(goldbugUsed_l)
+	    {
 	      {
-		QSqlQuery query(db);
-		bool ok = true;
+		QSqlDatabase db = spoton_misc::database(connectionName);
 
-		query.setForwardOnly(true);
-		query.prepare
-		  ("SELECT forward_secrecy_authentication_algorithm, "
-		   "forward_secrecy_authentication_key, "
-		   "forward_secrecy_encryption_algorithm, "
-		   "forward_secrecy_encryption_key FROM "
-		   "friends_public_keys WHERE "
-		   "neighbor_oid = -1 AND "
-		   "public_key_hash = ?");
-		query.bindValue(0, senderPublicKeyHash.toBase64());
+		db.setDatabaseName
+		  (spoton_misc::homePath() + QDir::separator() +
+		   "friends_public_keys.db");
 
-		if(query.exec() && query.next())
-		  if(!query.isNull(0) && !query.isNull(1) &&
-		     !query.isNull(2) && !query.isNull(3))
-		    {
-		      QByteArray aa;
-		      QByteArray ak;
-		      QByteArray ea;
-		      QByteArray ek;
-		      QByteArray magnet;
+		if(db.open())
+		  {
+		    QSqlQuery query(db);
+		    bool ok = true;
 
-		      if(ok)
-			aa = s_crypt->decryptedAfterAuthenticated
-			  (QByteArray::fromBase64(query.value(0).
-						  toByteArray()),
-			   &ok);
+		    query.setForwardOnly(true);
+		    query.prepare
+		      ("SELECT forward_secrecy_authentication_algorithm, "
+		       "forward_secrecy_authentication_key, "
+		       "forward_secrecy_encryption_algorithm, "
+		       "forward_secrecy_encryption_key FROM "
+		       "friends_public_keys WHERE "
+		       "neighbor_oid = -1 AND "
+		       "public_key_hash = ?");
+		    query.bindValue(0, senderPublicKeyHash.toBase64());
 
-		      if(ok)
-			ak = s_crypt->decryptedAfterAuthenticated
-			  (QByteArray::fromBase64(query.value(1).
-						  toByteArray()),
-			   &ok);
-
-		      if(ok)
-			ea = s_crypt->decryptedAfterAuthenticated
-			  (QByteArray::fromBase64(query.value(2).
-						  toByteArray()),
-			   &ok);
-
-		      if(ok)
-			ek = s_crypt->decryptedAfterAuthenticated
-			  (QByteArray::fromBase64(query.value(3).
-						  toByteArray()),
-			   &ok);
-
-		      if(ok)
+		    if(query.exec() && query.next())
+		      if(!query.isNull(0) && !query.isNull(1) &&
+			 !query.isNull(2) && !query.isNull(3))
 			{
-			  magnet = spoton_misc::forwardSecrecyMagnetFromList
-			    (QList<QByteArray> () << aa << ak << ea << ek);
+			  QByteArray aa;
+			  QByteArray ak;
+			  QByteArray ea;
+			  QByteArray ek;
+			  QByteArray magnet;
 
-			  spoton_crypt *crypt =
-			    spoton_misc::cryptFromForwardSecrecyMagnet
-			    (magnet);
+			  if(ok)
+			    aa = s_crypt->decryptedAfterAuthenticated
+			      (QByteArray::fromBase64(query.value(0).
+						      toByteArray()),
+			       &ok);
 
-			  if(crypt)
+			  if(ok)
+			    ak = s_crypt->decryptedAfterAuthenticated
+			      (QByteArray::fromBase64(query.value(1).
+						      toByteArray()),
+			       &ok);
+
+			  if(ok)
+			    ea = s_crypt->decryptedAfterAuthenticated
+			      (QByteArray::fromBase64(query.value(2).
+						      toByteArray()),
+			       &ok);
+
+			  if(ok)
+			    ek = s_crypt->decryptedAfterAuthenticated
+			      (QByteArray::fromBase64(query.value(3).
+						      toByteArray()),
+			       &ok);
+
+			  if(ok)
 			    {
-			      attachmentName_l = crypt->
-				decryptedAfterAuthenticated(attachmentName_l,
-							    &ok);
+			      magnet = spoton_misc::
+				forwardSecrecyMagnetFromList
+				(QList<QByteArray> () << aa << ak << ea << ek);
 
-			      if(ok)
-				attachment_l = crypt->
-				  decryptedAfterAuthenticated
-				  (attachment_l, &ok);
+			      spoton_crypt *crypt =
+				spoton_misc::cryptFromForwardSecrecyMagnet
+				(magnet);
 
-			      if(ok)
-				message_l = crypt->
-				  decryptedAfterAuthenticated
-				  (message_l, &ok);
+			      if(crypt)
+				{
+				  attachmentName_l = crypt->
+				    decryptedAfterAuthenticated
+				    (attachmentName_l, &ok);
 
-			      if(ok)
-				name_l = crypt->
-				  decryptedAfterAuthenticated(name_l, &ok);
+				  if(ok)
+				    attachment_l = crypt->
+				      decryptedAfterAuthenticated
+				      (attachment_l, &ok);
 
-			      if(ok)
-				subject_l = crypt->
-				  decryptedAfterAuthenticated
-				  (subject_l, &ok);
+				  if(ok)
+				    message_l = crypt->
+				      decryptedAfterAuthenticated
+				      (message_l, &ok);
 
-			      if(ok)
-				goldbugUsed_l = false;
+				  if(ok)
+				    name_l = crypt->
+				      decryptedAfterAuthenticated
+				      (name_l, &ok);
+
+				  if(ok)
+				    subject_l = crypt->
+				      decryptedAfterAuthenticated
+				      (subject_l, &ok);
+
+				  if(ok)
+				    goldbugUsed_l = false;
+				  else
+				    {
+				      /*
+				      ** Reset the local variables.
+				      */
+
+				      attachmentName_l = attachmentName;
+				      attachment_l = attachment;
+				      message_l = message;
+				      name_l = name;
+				      subject_l = subject;
+				    }
+				}
+
+			      delete crypt;
 			    }
-
-			  delete crypt;
 			}
-		    }
+		  }
+
+		db.close();
 	      }
 
-	    db.close();
-	  }
-
-	  QSqlDatabase::removeDatabase(connectionName);
+	      QSqlDatabase::removeDatabase(connectionName);
+	    }
 
 	  {
 	    QSqlDatabase db = spoton_misc::database(connectionName);
@@ -2229,10 +2243,14 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
   QByteArray data;
   QReadLocker locker(&m_forwardSecrecyKeysMutex);
 
-  for(int i = 0; i < m_forwardSecrecyKeys.values().size(); i++)
+  QMutableHashIterator<QByteArray, QPair<QByteArray, QByteArray> >
+    (m_forwardSecrecyKeys);
+
+  while(it.hasNext())
     {
-      QPair<QByteArray, QByteArray> pair
-	(m_forwardSecrecyKeys.values().at(i));
+      it.next();
+
+      QPair<QByteArray, QByteArray> pair(it.value());
       bool ok = true;
 
       pair.first = s_crypt->decryptedAfterAuthenticated(pair.first, &ok);
@@ -2250,7 +2268,10 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
       data = crypt.publicKeyDecrypt(bundle, &ok);
 
       if(ok)
-	break;
+	{
+	  it.remove();
+	  break;
+	}
     }
 
   locker.unlock();
