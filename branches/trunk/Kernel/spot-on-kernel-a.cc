@@ -3041,6 +3041,10 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		}
 	      else
 		{
+		  /*
+		  ** Artificial credentials.
+		  */
+
 		  institutionCipherType = "aes256";
 		  institutionHashType = "sha512";
 		  institutionName = spoton_crypt::weakRandomBytes
@@ -3239,8 +3243,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 	/*
 	** Use all of our participants, including the recipients,
-	** as mail carriers unless of course we're sending data
-	** to an institution.
+	** as mail carriers unless we're sending data
+	** to one or more institutions.
 	*/
 
 	query.setForwardOnly(true);
