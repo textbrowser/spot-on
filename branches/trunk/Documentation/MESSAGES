@@ -234,6 +234,28 @@ EOL
     Encrypted Timestamp (Base-64)
 }
 
+Groups: 3
+Symmetric Key (Base-64)
+{
+0 - 0001c
+1 - Dispatcher's SHA-512 Digest
+2 - Dispatcher's Name
+3 - Subject
+4 - Message
+5 - Attachment
+6 - Attachment Name
+}
+EOL
+{
+0 - Keyed Message Code (Base-64)
+}
+EOL
+{
+0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+    Preceding Data and Encrypted Timestamp,
+    Encrypted Timestamp (Base-64)
+}
+
 Retrieve Mail
 Echoed? Yes
 
