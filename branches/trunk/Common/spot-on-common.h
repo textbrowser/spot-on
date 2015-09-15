@@ -58,6 +58,7 @@ namespace spoton_common
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM = 90;
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;
+  static const int KERNEL_CERTIFICATE_DAYS_VALID = 7;
   static const int KERNEL_URLS_BATCH_SIZE = 25;
   static const int MAIL_TIME_DELTA_MAXIMUM = 90;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;

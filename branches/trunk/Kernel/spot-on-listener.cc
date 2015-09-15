@@ -687,7 +687,8 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	   privateKey,
 	   publicKey,
 	   m_externalAddress->address(),
-	   60 * 60 * 24 * 7, // Seven days.
+	   60L * 60L * 24L * static_cast<long> (spoton_common::
+						KERNEL_CERTIFICATE_DAYS_VALID),
 	   error);
     }
 
