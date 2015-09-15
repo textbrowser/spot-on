@@ -2768,8 +2768,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>1833</height>
+             <width>556</width>
+             <height>1817</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3335,6 +3335,29 @@ QPushButton#addListener:pressed {
                    <property name="spacing">
                     <number>5</number>
                    </property>
+                   <item>
+                    <widget class="QLabel" name="label_122">
+                     <property name="text">
+                      <string>&amp;Days Valid</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>days_valid</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="days_valid">
+                     <property name="minimum">
+                      <number>1</number>
+                     </property>
+                     <property name="maximum">
+                      <number>18250</number>
+                     </property>
+                     <property name="value">
+                      <number>365</number>
+                     </property>
+                    </widget>
+                   </item>
                    <item>
                     <widget class="QLabel" name="label_64">
                      <property name="text">
@@ -3983,7 +4006,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>582</width>
-             <height>576</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -10743,6 +10766,7 @@ border-style: inset;
   <tabstop>listenerPort</tabstop>
   <tabstop>listenerTransport</tabstop>
   <tabstop>addListener</tabstop>
+  <tabstop>days_valid</tabstop>
   <tabstop>listenersSslControlString</tabstop>
   <tabstop>listenerOrientation</tabstop>
   <tabstop>accounts</tabstop>

@@ -2497,7 +2497,7 @@ void spoton::slotAddListener(void)
 	 privateKey,
 	 publicKey,
 	 address,
-	 60 * 60 * 24 * 365 * 50, // Fifty years.
+	 60 * 60 * 24 * m_ui.days_valid->value(),
 	 error);
       m_sb.status->clear();
       QApplication::restoreOverrideCursor();

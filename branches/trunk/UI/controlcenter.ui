@@ -804,7 +804,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-76</y>
+             <y>0</y>
              <width>902</width>
              <height>560</height>
             </rect>
@@ -1893,8 +1893,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>724</width>
-             <height>405</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2405,6 +2405,29 @@
                       <number>5</number>
                      </property>
                      <item>
+                      <widget class="QLabel" name="label_18">
+                       <property name="text">
+                        <string>&amp;Days Valid</string>
+                       </property>
+                       <property name="buddy">
+                        <cstring>days_valid</cstring>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="days_valid">
+                       <property name="minimum">
+                        <number>1</number>
+                       </property>
+                       <property name="maximum">
+                        <number>18250</number>
+                       </property>
+                       <property name="value">
+                        <number>365</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QLabel" name="label_64">
                        <property name="text">
                         <string>&amp;SSL Control String</string>
@@ -2503,7 +2526,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>249</width>
+                     <width>240</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -8153,6 +8176,7 @@
   <tabstop>permanentCertificate</tabstop>
   <tabstop>sslListener</tabstop>
   <tabstop>listenerKeySize</tabstop>
+  <tabstop>days_valid</tabstop>
   <tabstop>listenersSslControlString</tabstop>
   <tabstop>listenerOrientation</tabstop>
   <tabstop>addListener</tabstop>
