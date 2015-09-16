@@ -704,6 +704,7 @@ class spoton: public QMainWindow
   void slotFetchMoreAlgo(void);
   void slotFetchMoreButton(void);
   void slotForceKernelRegistration(bool state);
+  void slotForwardSecrecyEncryptionKeyChanged(int index);
   void slotGatherUrlStatistics(void);
   void slotGeminiChanged(QTableWidgetItem *item);
   void slotGenerateEtpKeys(int index);

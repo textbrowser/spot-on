@@ -215,9 +215,7 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 #ifdef Q_OS_MAC
   dialog->setAttribute(Qt::WA_MacMetalStyle, false);
 #endif
-  ui.tab->setCurrentIndex(0);
-  ui.tab->setTabEnabled(1, false);
-  ui.text_1->setText(tr("Please make a selection."));
+  ui.encryptionKeySize->setObjectName("encryption_key_size");
 #ifndef SPOTON_LINKED_WITH_LIBBOTAN
   ui.encryptionKeyType->model()->setData
     (ui.encryptionKeyType->model()->index(1, 0), 0, Qt::UserRole - 1);
@@ -226,6 +224,13 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
   ui.encryptionKeyType->model()->setData
     (ui.encryptionKeyType->model()->index(2, 0), 0, Qt::UserRole - 1);
 #endif
+  ui.tab->setCurrentIndex(0);
+  ui.tab->setTabEnabled(1, false);
+  ui.text_1->setText(tr("Please make a selection."));
+  connect(ui.encryptionKeyType,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotForwardSecrecyEncryptionKeyChanged(int)));
 
   if(dialog->exec() != QDialog::Accepted)
     goto done_label;
@@ -238,6 +243,8 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
     algorithm = "ntru";
   else
     algorithm = "rsa";
+
+  keySize = ui.encryptionKeySize->currentText();
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -767,4 +774,51 @@ void spoton::slotEmailFsGb(int index)
       m_ui.goldbug->clear();
       m_ui.goldbug->setEnabled(false);
     }
+}
+
+void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
+{
+  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+
+  if(!comboBox)
+    return;
+
+  QWidget *parent = comboBox->parentWidget();
+
+  if(!parent)
+    return;
+
+  do
+    {
+      if(qobject_cast<QDialog *> (parent))
+	break;
+
+      if(parent)
+	parent = parent->parentWidget();
+    }
+  while(parent != 0);
+
+  if(!parent)
+    return;
+
+  comboBox = parent->findChild<QComboBox *> ("encryption_key_size");
+
+  if(!comboBox)
+    return;
+
+  QStringList list;
+
+  if(index == 0 || index == 3)
+    list << "3072"
+	 << "4096";
+  else if(index == 1)
+    list << "n6624t15";
+  else
+    list << "EES1087EP2"
+	 << "EES1171EP1"
+	 << "EES1499EP1";
+
+  comboBox->clear();
+  comboBox->addItems(list);
+  comboBox->setCurrentIndex(0);
 }

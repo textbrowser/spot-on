@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>216</height>
+    <height>250</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -100,21 +100,6 @@
            <item>
             <property name="text">
              <string>4096</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>7680</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>8192</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>15360</string>
             </property>
            </item>
           </widget>
