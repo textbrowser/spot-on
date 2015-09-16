@@ -28,7 +28,7 @@
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
-       <string>Page 1</string>
+       <string>Step 1</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
@@ -151,7 +151,7 @@
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Page 2</string>
+       <string>Step 2</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>

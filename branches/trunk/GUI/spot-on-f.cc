@@ -185,15 +185,13 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
     (m_ui.emailParticipants->selectionModel()->
      selectedRows(3)); // public_key_hash
   QProgressDialog progress(this);
+  QScopedPointer<QDialog> dialog;
+  QString algorithm("");
   QString error("");
-  spoton_crypt *s_crypt = m_crypts.value("email", 0);
+  QString keySize("");
+  Ui_forwardsecrecyalgorithmsselection ui;
 
-  if(!s_crypt)
-    {
-      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
-      goto done_label;
-    }
-  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     {
       error = tr("The interface is not connected to the kernel.");
       goto done_label;
@@ -208,6 +206,38 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
       error = tr("Please select at least one participant.");
       goto done_label;
     }
+
+  dialog.reset(new QDialog(this));
+  dialog->setWindowTitle
+    (tr("%1: Forward Secrecy Algorithms Selection").
+     arg(SPOTON_APPLICATION_NAME));
+  ui.setupUi(dialog.data());
+#ifdef Q_OS_MAC
+  dialog->setAttribute(Qt::WA_MacMetalStyle, false);
+#endif
+  ui.tab->setCurrentIndex(0);
+  ui.tab->setTabEnabled(1, false);
+  ui.text_1->setText(tr("Please make a selection."));
+#ifndef SPOTON_LINKED_WITH_LIBBOTAN
+  ui.encryptionKeyType->model()->setData
+    (ui.encryptionKeyType->model()->index(1, 0), 0, Qt::UserRole - 1);
+#endif
+#ifndef SPOTON_LINKED_WITH_LIBNTRU
+  ui.encryptionKeyType->model()->setData
+    (ui.encryptionKeyType->model()->index(2, 0), 0, Qt::UserRole - 1);
+#endif
+
+  if(dialog->exec() != QDialog::Accepted)
+    goto done_label;
+
+  if(ui.encryptionKeyType->currentIndex() == 0)
+    algorithm = "elg";
+  else if(ui.encryptionKeyType->currentIndex() == 1)
+    algorithm = "mceliece";
+  else if(ui.encryptionKeyType->currentIndex() == 2)
+    algorithm = "ntru";
+  else
+    algorithm = "rsa";
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -252,11 +282,7 @@ void spoton::slotEstablishEmailForwardSecrecy(void)
 			 0,
 			 "");
 
-      keys = crypt.generatePrivatePublicKeys
-	(s_crypt->publicKeySize(),
-	 s_crypt->publicKeyAlgorithm(),
-	 error,
-	 false);
+      keys = crypt.generatePrivatePublicKeys(keySize, algorithm, error, false);
 
       if(!error.isEmpty())
 	break;
@@ -451,6 +477,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   ui.authentication_algorithm->addItems(aTypes);
   ui.encryption_algorithm->addItems(eTypes);
   ui.tab->setCurrentIndex(1);
+  ui.tab->setTabEnabled(0, false);
   name = spoton_misc::nameFromPublicKeyHash(publicKeyHash, s_crypt);
   keyType = spoton_misc::keyTypeFromPublicKeyHash(publicKeyHash, s_crypt);
 
@@ -462,7 +489,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 	name = "unknown";
     }
 
-  ui.label_2->setText
+  ui.text_2->setText
     (tr("The participant %1 (%2) is requesting "
 	"forward secrecy credentials. Please press the OK "
 	"button if you would like to complete the exchange.").
