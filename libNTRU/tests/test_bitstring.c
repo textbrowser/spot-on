@@ -1,7 +1,6 @@
+#include <stdio.h>
 #include "test_util.h"
 #include "bitstring.h"
-
-#include <stdio.h>
 
 uint8_t test_append() {
     uint8_t c[5] = {0};
@@ -36,7 +35,6 @@ uint8_t test_append() {
     uint8_t exp4[] = {78, 251, 127, 0, 100};
     valid &= equals_arr(b4.buf, exp4, 5);
 
-    print_result("test_append", valid);
     return valid;
 }
 
@@ -77,7 +75,6 @@ uint8_t test_trailing() {
     uint8_t exp6[] = {78, 33};
     valid &= equals_arr(b1_trail.buf, exp6, 2);
 
-    print_result("test_trailing", valid);
     return valid;
 }
 
@@ -107,7 +104,6 @@ uint8_t test_leading() {
     ntru_append(&b1, (uint8_t*)&c2, 1);
     valid &= ntru_leading(&b1, 6) == 55;
 
-    print_result("test_leading", valid);
     return valid;
 }
 
@@ -115,6 +111,7 @@ uint8_t test_bitstring() {
     uint8_t valid = test_append();
     valid &= test_trailing();
     valid &= test_leading();
+    print_result("test_bitstring", valid);
 
     return valid;
 }
