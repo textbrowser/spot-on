@@ -369,24 +369,13 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
 #endif
 }
 
-QString spoton_crypt::publicKeySizeNTRU(void)
+QString spoton_crypt::publicKeySizeNTRU(const QByteArray &data)
 {
   QString keySize("");
 
 #ifdef SPOTON_LINKED_WITH_LIBNTRU
-  bool ok = true;
-
-  publicKey(&ok);
-
-  if(!ok)
-    {
-      spoton_misc::logError
-	("spoton_crypt::publicKeySizeNTRU(): publicKey() failure.");
-      return keySize;
-    }
-
   uint8_t *publicKey_array = new (std::nothrow)
-    uint8_t[m_publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
+    uint8_t[data.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
 	    length()];
 
   if(publicKey_array)
@@ -395,9 +384,9 @@ QString spoton_crypt::publicKeySizeNTRU(void)
 
       memcpy
 	(publicKey_array,
-	 m_publicKey.
+	 data.
 	 mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
-	 static_cast<size_t> (m_publicKey.length() -
+	 static_cast<size_t> (data.length() -
 			      static_cast<int> (qstrlen("ntru-"
 							"public-key-"))));
       ntru_import_pub(publicKey_array, &pk);
@@ -417,4 +406,24 @@ QString spoton_crypt::publicKeySizeNTRU(void)
   delete []publicKey_array;
 #endif
   return keySize;
+}
+
+QString spoton_crypt::publicKeySizeNTRU(void)
+{
+#ifdef SPOTON_LINKED_WITH_LIBNTRU
+  bool ok = true;
+
+  publicKey(&ok);
+
+  if(!ok)
+    {
+      spoton_misc::logError
+	("spoton_crypt::publicKeySizeNTRU(): publicKey() failure.");
+      return "";
+    }
+  
+  return publicKeySizeNTRU(m_publicKey);
+#else
+  return publicKeySizeNTRU(QByteArray());
+#endif
 }

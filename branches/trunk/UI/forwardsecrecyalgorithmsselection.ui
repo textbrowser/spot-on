@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>600</width>
     <height>250</height>
    </rect>
   </property>
@@ -43,79 +43,110 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_46">
+           <property name="text">
+            <string>Encryption Key &amp;Size</string>
+           </property>
+           <property name="buddy">
+            <cstring>encryptionKeySize</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
           <widget class="QLabel" name="label_45">
            <property name="text">
-            <string>&amp;Encryption</string>
+            <string>Encryption &amp;Algorithm</string>
            </property>
            <property name="buddy">
             <cstring>encryptionKeyType</cstring>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QComboBox" name="encryptionKeyType">
-           <property name="currentIndex">
-            <number>3</number>
-           </property>
-           <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContents</enum>
-           </property>
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <property name="text">
-             <string>ElGamal</string>
-            </property>
+            <widget class="QComboBox" name="encryptionKeyType">
+             <property name="currentIndex">
+              <number>3</number>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <item>
+              <property name="text">
+               <string>ElGamal</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>McEliece</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>NTRU</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>RSA</string>
+              </property>
+             </item>
+            </widget>
            </item>
            <item>
-            <property name="text">
-             <string>McEliece</string>
-            </property>
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
-           <item>
-            <property name="text">
-             <string>NTRU</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>RSA</string>
-            </property>
-           </item>
-          </widget>
+          </layout>
          </item>
-         <item>
-          <widget class="QComboBox" name="encryptionKeySize">
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContents</enum>
-           </property>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <property name="text">
-             <string>3072</string>
-            </property>
+            <widget class="QComboBox" name="encryptionKeySize">
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <item>
+              <property name="text">
+               <string>3072</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>4096</string>
+              </property>
+             </item>
+            </widget>
            </item>
            <item>
-            <property name="text">
-             <string>4096</string>
-            </property>
+            <spacer name="horizontalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
+          </layout>
          </item>
         </layout>
        </item>

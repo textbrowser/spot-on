@@ -3841,19 +3841,8 @@ void spoton_crypt::reencodePrivatePublicKeys
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-QString spoton_crypt::publicKeyAlgorithm(void)
+QString spoton_crypt::publicKeyAlgorithm(const QByteArray &data)
 {
-  bool ok = true;
-
-  publicKey(&ok);
-
-  if(!ok)
-    {
-      spoton_misc::logError
-	("spoton_crypt::publicKeyAlgorithm(): publicKey() failure.");
-      return "";
-    }
-
   QString keyType("");
   QStringList list;
 
@@ -3863,11 +3852,11 @@ QString spoton_crypt::publicKeyAlgorithm(void)
        << "rsa";
 
   for(int i = 0; i < list.size(); i++)
-    if(m_publicKey.contains(QString("(%1").arg(list.at(i)).toLatin1()))
+    if(data.contains(QString("(%1").arg(list.at(i)).toLatin1()))
       {
 	if(list.at(i) == "ecc")
 	  {
-	    if(!m_publicKey.contains("(flags eddsa)"))
+	    if(!data.contains("(flags eddsa)"))
 	      keyType = "ECDSA";
 	    else
 	      keyType = "EdDSA";
@@ -3886,11 +3875,58 @@ QString spoton_crypt::publicKeyAlgorithm(void)
 
   if(keyType.isEmpty())
     {
-      if(m_publicKey.startsWith("ntru"))
+      if(data.startsWith("ntru"))
 	keyType = "NTRU";
     }
 
   return keyType;
+}
+
+QString spoton_crypt::publicKeyAlgorithm(void)
+{
+  bool ok = true;
+
+  publicKey(&ok);
+
+  if(!ok)
+    {
+      spoton_misc::logError
+	("spoton_crypt::publicKeyAlgorithm(): publicKey() failure.");
+      return "";
+    }
+
+  return publicKeyAlgorithm(m_publicKey);
+}
+
+QString spoton_crypt::publicKeySize(const QByteArray &data)
+{
+  QString algorithm(publicKeyAlgorithm(data).toLower().trimmed());
+
+  if(algorithm.isEmpty())
+    {
+      spoton_misc::logError
+	("spoton_crypt::publicKeySize(): publicKeyAlgorithm() failure.");
+      return "";
+    }
+
+  QString keySize("");
+
+  if(algorithm == "ntru")
+    keySize = publicKeySizeNTRU(data);
+  else
+    {
+      gcry_sexp_t key_t = 0;
+
+      if(gcry_sexp_new(&key_t,
+		       data.constData(),
+		       static_cast<size_t> (data.length()),
+		       1) == 0 && key_t)
+	keySize = QString::number(gcry_pk_get_nbits(key_t));
+
+      gcry_sexp_release(key_t);
+    }
+
+  return keySize;
 }
 
 QString spoton_crypt::publicKeySize(void)
@@ -3906,31 +3942,5 @@ QString spoton_crypt::publicKeySize(void)
       return "";
     }
 
-  QString algorithm(publicKeyAlgorithm().toLower().trimmed());
-
-  if(algorithm.isEmpty())
-    {
-      spoton_misc::logError
-	("spoton_crypt::publicKeySize(): publicKeyAlgorithm() failure.");
-      return "";
-    }
-
-  QString keySize("");
-
-  if(algorithm == "ntru")
-    keySize = publicKeySizeNTRU();
-  else
-    {
-      gcry_sexp_t key_t = 0;
-
-      if(gcry_sexp_new(&key_t,
-		       m_publicKey.constData(),
-		       static_cast<size_t> (m_publicKey.length()),
-		       1) == 0 && key_t)
-	keySize = QString::number(gcry_pk_get_nbits(key_t));
-
-      gcry_sexp_release(key_t);
-    }
-
-  return keySize;
+  return publicKeySize(m_publicKey);
 }

@@ -234,7 +234,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 
   dialog.reset(new QDialog(this));
   dialog->setWindowTitle
-    (tr("%1: Forward Secrecy Algorithms Selection").
+    (tr("%1: Forward Secrecy Algorithm(s) Selection").
      arg(SPOTON_APPLICATION_NAME));
   ui.setupUi(dialog.data());
 #ifdef Q_OS_MAC
@@ -259,6 +259,9 @@ void spoton::slotEstablishForwardSecrecy(void)
 
   if(dialog->exec() != QDialog::Accepted)
     goto done_label;
+
+  dialog->close();
+  update();
 
   if(ui.encryptionKeyType->currentIndex() == 0)
     algorithm = "elg";
@@ -451,9 +454,11 @@ void spoton::slotRespondToForwardSecrecy(void)
     (m_sb.forward_secrecy_request->property("public_key_hash").toByteArray());
   QByteArray symmetricKey;
   QScopedPointer<QDialog> dialog;
+  QString aKey("");
   QString connectionName("");
   QString error("");
   QString name("");
+  QString keySize("");
   QString keyType("");
   QString str(publicKeyHash.toBase64().constData());
   QStringList aTypes;
@@ -500,7 +505,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 
   dialog.reset(new QDialog(this));
   dialog->setWindowTitle
-    (tr("%1: Forward Secrecy Algorithms Selection").
+    (tr("%1: Forward Secrecy Algorithm(s) Selection").
      arg(SPOTON_APPLICATION_NAME));
   ui.setupUi(dialog.data());
 #ifdef Q_OS_MAC
@@ -521,11 +526,24 @@ void spoton::slotRespondToForwardSecrecy(void)
 	name = "unknown";
     }
 
+  aKey = spoton_crypt::publicKeyAlgorithm(sfs.public_key);
+
+  if(aKey.isEmpty())
+    aKey = "unknown";
+
+  keySize = spoton_crypt::publicKeySize(sfs.public_key);
+
+  if(keySize.isEmpty())
+    keySize = "unknown";
+
   ui.text_2->setText
-    (tr("The participant %1 (%2) is requesting "
-	"forward secrecy credentials. Please press the OK "
+    (tr("The participant <b>%1</b> (%2) is requesting "
+	"forward secrecy credentials. The participant provided an "
+	"<b>%3:%4</b> "
+	"public key. Please press the OK "
 	"button if you would like to complete the exchange.").
-     arg(name).arg(str.mid(0, 16) + "..." + str.right(16)));
+     arg(name).arg(str.mid(0, 16) + "..." + str.right(16)).
+     arg(aKey).arg(keySize));
 
   if(dialog->exec() != QDialog::Accepted)
     {

@@ -102,6 +102,9 @@ class spoton_crypt
   static QByteArray whirlpoolHash(const QByteArray &data, bool *ok);
   static QList<QSslCipher> defaultSslCiphers
     (const QString &sslControlString);
+  static QString publicKeyAlgorithm(const QByteArray &data);
+  static QString publicKeySize(const QByteArray &data);
+  static QString publicKeySizeNTRU(const QByteArray &data);
   static QStringList cipherTypes(void);
   static QStringList hashTypes(void);
   static bool isValidSignature(const QByteArray &data,
