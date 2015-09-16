@@ -450,6 +450,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 #endif
   ui.authentication_algorithm->addItems(aTypes);
   ui.encryption_algorithm->addItems(eTypes);
+  ui.tab->setCurrentIndex(1);
   name = spoton_misc::nameFromPublicKeyHash(publicKeyHash, s_crypt);
   keyType = spoton_misc::keyTypeFromPublicKeyHash(publicKeyHash, s_crypt);
 
@@ -461,7 +462,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 	name = "unknown";
     }
 
-  ui.label->setText
+  ui.label_2->setText
     (tr("The participant %1 (%2) is requesting "
 	"forward secrecy credentials. Please press the OK "
 	"button if you would like to complete the exchange.").
