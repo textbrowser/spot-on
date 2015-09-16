@@ -1231,6 +1231,30 @@ QList<QByteArray> spoton_receive::process0091
 	  return QList<QByteArray> ();
 	}
 
+      if(messageType == "0091a")
+	{
+	  if(keyType == "chat")
+	    {
+	      if(!spoton_kernel::setting("gui/allowChatFSRequest",
+					 true).toBool())
+		return QList<QByteArray> ();
+	    }
+	  else if(keyType == "email")
+	    {
+	      if(!spoton_kernel::setting("gui/allowEmailFSRequest",
+					 true).toBool())
+		return QList<QByteArray> ();
+	    }
+	  else if(keyType == "poptastic")
+	    {
+	      if(!(spoton_kernel::setting("gui/allowChatFSRequest",
+					  true).toBool() ||
+		   spoton_kernel::setting("gui/allowEmailFSRequest",
+					  true).toBool()))
+		return QList<QByteArray> ();
+	    }
+	}
+
       if(!spoton_misc::isAcceptedParticipant(list.value(0), keyType,
 					     s_crypt))
 	return QList<QByteArray> ();

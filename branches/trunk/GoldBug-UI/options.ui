@@ -926,7 +926,7 @@
              <x>0</x>
              <y>0</y>
              <width>581</width>
-             <height>1003</height>
+             <height>1057</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1014,6 +1014,22 @@
                 </widget>
                </item>
                <item>
+                <widget class="QCheckBox" name="chat_fs_request">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Allow &amp;forward secrecy requrests.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QCheckBox" name="impersonate">
                  <property name="toolTip">
                   <string>Broadcast odd messages at odd times. Please note that this option will advertise your presence.</string>
@@ -1074,6 +1090,22 @@
                  </property>
                  <property name="text">
                   <string>Accept shared public &amp;keys.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="email_fs_request">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Allow &amp;forward secrecy requrests.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -1696,10 +1728,12 @@
   <tabstop>chatAcceptSigned</tabstop>
   <tabstop>scrambler</tabstop>
   <tabstop>acceptChatKeys</tabstop>
+  <tabstop>chat_fs_request</tabstop>
   <tabstop>impersonate</tabstop>
   <tabstop>chatSignMessages</tabstop>
   <tabstop>emailAcceptSigned</tabstop>
   <tabstop>acceptEmailKeys</tabstop>
+  <tabstop>email_fs_request</tabstop>
   <tabstop>maximumEmailFileSize</tabstop>
   <tabstop>coAcceptSigned</tabstop>
   <tabstop>emailSignMessages</tabstop>

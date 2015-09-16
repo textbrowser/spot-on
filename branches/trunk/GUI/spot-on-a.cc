@@ -1398,6 +1398,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotSearchResultsPerPage(int)));
+  connect(m_optionsUi.chat_fs_request,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAllowFSRequest(bool)));
+  connect(m_optionsUi.email_fs_request,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAllowFSRequest(bool)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1930,6 +1938,10 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/urlSignMessages", true).toBool());
   m_optionsUi.remove_otm->setChecked
     (m_settings.value("gui/removeOtmOnExit", false).toBool());
+  m_optionsUi.chat_fs_request->setChecked
+    (m_settings.value("gui/allowChatFSRequest", true).toBool());
+  m_optionsUi.email_fs_request->setChecked
+    (m_settings.value("gui/allowEmailFSRequest", true).toBool());
 
   /*
   ** Please don't translate n/a.

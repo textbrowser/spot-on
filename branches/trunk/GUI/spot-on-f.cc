@@ -882,3 +882,24 @@ void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
   comboBox->addItems(list);
   comboBox->setCurrentIndex(0);
 }
+
+void spoton::slotAllowFSRequest(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  QSettings settings;
+
+  if(checkBox == m_optionsUi.chat_fs_request)
+    {
+      m_settings["gui/allowChatFSRequest"] = state;
+      settings.setValue("gui/allowChatFSRequest", state);
+    }
+  else if(checkBox == m_optionsUi.email_fs_request)
+    {
+      m_settings["gui/allowEmailFSRequest"] = state;
+      settings.setValue("gui/allowEmailFSRequest", state);
+    }
+}

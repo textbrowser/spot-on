@@ -611,6 +611,7 @@ class spoton: public QMainWindow
   void slotAddMagnet(void);
   void slotAddNeighbor(void);
   void slotAddReceiveNova(void);
+  void slotAllowFSRequest(bool state);
   void slotAssignNewIPToNeighbor(void);
   void slotAuthenticate(void);
   void slotAuthenticationRequestButtonClicked(void);
