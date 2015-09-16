@@ -176,20 +176,45 @@ void spoton::slotReplayMessages(void)
     }
 }
 
-void spoton::slotEstablishEmailForwardSecrecy(void)
+void spoton::slotEstablishForwardSecrecy(void)
 {
-  QModelIndexList names
-    (m_ui.emailParticipants->selectionModel()->
-     selectedRows(0)); // Participant
-  QModelIndexList publicKeyHashes
-    (m_ui.emailParticipants->selectionModel()->
-     selectedRows(3)); // public_key_hash
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString type(action->property("type").toString());
+
+  if(!(type == "email" || type == "chat"))
+    return;
+
+  QModelIndexList names;
+  QModelIndexList publicKeyHashes;
   QProgressDialog progress(this);
   QScopedPointer<QDialog> dialog;
   QString algorithm("");
   QString error("");
   QString keySize("");
   Ui_forwardsecrecyalgorithmsselection ui;
+
+  if(type == "chat")
+    {
+      names =
+	m_ui.participants->selectionModel()->
+	selectedRows(0); // Participant
+      publicKeyHashes =
+	m_ui.participants->selectionModel()->
+	selectedRows(3); // public_key_hash
+    }
+  else
+    {
+      names =
+	m_ui.emailParticipants->selectionModel()->
+	selectedRows(0); // Participant
+      publicKeyHashes =
+	m_ui.emailParticipants->selectionModel()->
+	selectedRows(3); // public_key_hash
+    }
 
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     {
@@ -619,9 +644,26 @@ void spoton::slotRespondToForwardSecrecy(void)
 
 void spoton::slotResetForwardSecrecyInformation(void)
 {
-  QModelIndexList publicKeyHashes
-    (m_ui.emailParticipants->selectionModel()->
-     selectedRows(3)); // public_key_hash
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString type(action->property("type").toString());
+
+  if(!(type == "email" || type == "chat"))
+    return;
+
+  QModelIndexList publicKeyHashes;
+
+  if(type == "chat")
+    publicKeyHashes =
+      m_ui.participants->selectionModel()->
+      selectedRows(3); // public_key_hash
+  else
+    publicKeyHashes =
+      m_ui.emailParticipants->selectionModel()->
+      selectedRows(3); // public_key_hash
 
   if(publicKeyHashes.isEmpty())
     return;

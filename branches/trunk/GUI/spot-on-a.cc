@@ -5839,10 +5839,14 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
       menu.addSeparator();
-      menu.addAction(tr("Initiate Forward &Secrecy exchange."),
-		     this, SLOT(slotEstablishEmailForwardSecrecy(void)));
-      menu.addAction(tr("Reset Forward &Secrecy information."),
-		     this, SLOT(slotResetForwardSecrecyInformation(void)));
+      action = menu.addAction
+	(tr("Initiate a Forward &Secrecy exchange."),
+	 this, SLOT(slotEstablishForwardSecrecy(void)));
+      action->setProperty("type", "email");
+      action = menu.addAction
+	(tr("Reset Forward &Secrecy information."),
+	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+      action->setProperty("type", "email");
       menu.exec(m_ui.emailParticipants->mapToGlobal(point));
     }
   else if(m_ui.listeners == sender())
@@ -6099,9 +6103,18 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     arg(spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE),
 		     this,
 		     SLOT(slotReplayMessages(void)));
-      menu.addAction(tr("Share &StarBeam"),
+      menu.addAction(tr("Share a &StarBeam."),
 		     this,
 		     SLOT(slotShareStarBeam(void)));
+      menu.addSeparator();
+      action = menu.addAction
+	(tr("Initiate a Forward &Secrecy exchange."),
+	 this, SLOT(slotEstablishForwardSecrecy(void)));
+      action->setProperty("type", "chat");
+      action = menu.addAction
+	(tr("Reset Forward &Secrecy information."),
+	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+      action->setProperty("type", "chat");
       menu.exec(m_ui.participants->mapToGlobal(point));
     }
   else if(m_ui.received == sender())

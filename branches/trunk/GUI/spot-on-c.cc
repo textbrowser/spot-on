@@ -2648,9 +2648,17 @@ void spoton::prepareContextMenuMirrors(void)
 		      arg(spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE),
 		      this,
 		      SLOT(slotReplayMessages(void)));
-      menu->addAction(tr("Share &StarBeam"),
+      menu->addAction(tr("Share a &StarBeam."),
 		     this,
 		     SLOT(slotShareStarBeam(void)));
+      menu->addSeparator();
+      action = menu->addAction(tr("Initiate a Forward &Secrecy exchange."),
+			       this, SLOT(slotEstablishForwardSecrecy(void)));
+      action->setProperty("type", "chat");
+      action = menu->addAction
+	(tr("Reset Forward &Secrecy information."),
+	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+      action->setProperty("type", "chat");
       m_ui.chatActionMenu->setMenu(menu);
       connect(m_ui.chatActionMenu,
 	      SIGNAL(clicked(void)),
@@ -2689,10 +2697,13 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
       menu->addSeparator();
-      menu->addAction(tr("Initiate Forward &Secrecy exchange."),
-		      this, SLOT(slotEstablishEmailForwardSecrecy(void)));
-      menu->addAction(tr("Reset Forward &Secrecy information."),
-		      this, SLOT(slotResetForwardSecrecyInformation(void)));
+      action = menu->addAction(tr("Initiate a Forward &Secrecy exchange."),
+			       this, SLOT(slotEstablishForwardSecrecy(void)));
+      action->setProperty("type", "email");
+      action = menu->addAction
+	(tr("Reset Forward &Secrecy information."),
+	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+      action->setProperty("type", "email");
       m_ui.emailWriteActionMenu->setMenu(menu);
       connect(m_ui.emailWriteActionMenu,
 	      SIGNAL(clicked(void)),

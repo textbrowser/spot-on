@@ -696,7 +696,7 @@ class spoton: public QMainWindow
   void slotEnableRetrieveMail(void);
   void slotEnabledPostOffice(bool state);
   void slotEncryptionKeyTypeChanged(int index);
-  void slotEstablishEmailForwardSecrecy(void);
+  void slotEstablishForwardSecrecy(void);
   void slotExportListeners(void);
   void slotExportPublicKeys(void);
   void slotExternalIp(int index);
