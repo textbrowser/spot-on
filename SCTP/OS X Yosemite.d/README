@@ -14,6 +14,7 @@ Wait a couple of minutes and reboot.
 Get the kernel extension
 SCTP.kext.gz
 
+tar xvfz SCTP.kext.gz
 sudo cp -R SCTP.kext /System/Library/Extensions/
 sudo touch /System/Library/Extensions
 You can load it using
