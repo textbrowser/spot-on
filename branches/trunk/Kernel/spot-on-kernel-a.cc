@@ -111,6 +111,20 @@ QReadWriteLock spoton_kernel::s_institutionKeysMutex;
 QReadWriteLock spoton_kernel::s_institutionLastModificationTimeMutex;
 QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
+
+/*
+** Not pleasant!
+*/
+
+int spoton_common::CACHE_TIME_DELTA_MAXIMUM = CACHE_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::CHAT_TIME_DELTA_MAXIMUM = CHAT_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+  FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::GEMINI_TIME_DELTA_MAXIMUM =
+  GEMINI_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::MAIL_TIME_DELTA_MAXIMUM = MAIL_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+  POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 static QPointer<spoton_kernel> s_kernel = 0;
 static int s_exit_code = EXIT_SUCCESS;
 
