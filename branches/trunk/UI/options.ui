@@ -1618,6 +1618,13 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_23">
         <item>
+         <widget class="QLabel" name="label_12">
+          <property name="text">
+           <string>Values have units of seconds.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QScrollArea" name="scrollArea_3">
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -1631,7 +1638,7 @@
              <x>0</x>
              <y>0</y>
              <width>468</width>
-             <height>526</height>
+             <height>504</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
