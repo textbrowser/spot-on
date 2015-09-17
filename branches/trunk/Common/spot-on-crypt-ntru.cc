@@ -421,7 +421,7 @@ QString spoton_crypt::publicKeySizeNTRU(void)
 	("spoton_crypt::publicKeySizeNTRU(): publicKey() failure.");
       return "";
     }
-  
+
   return publicKeySizeNTRU(m_publicKey);
 #else
   return publicKeySizeNTRU(QByteArray());

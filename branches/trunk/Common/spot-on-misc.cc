@@ -858,6 +858,7 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
   QSqlQuery query(db);
   bool ok = true;
 
+  query.setForwardOnly(true);
   query.prepare("SELECT name FROM friends_public_keys WHERE "
 		"name_changed_by_user = 1 AND public_key_hash = ?");
   query.bindValue(0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
@@ -4690,4 +4691,45 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
     }
 
   return false;
+}
+
+void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
+{
+  /*
+  ** Issue as soon as possible!
+  */
+
+  QList<int> defaults;
+  QList<int> values;
+  QStringList keys;
+
+  defaults << spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::
+              POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
+  keys << "gui/chat_time_delta"
+       << "gui/forward_secrecy_time_delta"
+       << "gui/gemini_time_delta"
+       << "gui/kernel_cache_object_lifetime"
+       << "gui/poptastic_forward_secrecy_time_delta"
+       << "gui/retrieve_mail_time_delta";
+
+  for(int i = 0; i < keys.size(); i++)
+    values << settings.value(keys.at(i), defaults.at(i)).toInt();
+
+  spoton_common::CHAT_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(0), 600);
+  spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(1), 600);
+  spoton_common::GEMINI_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(2), 600);
+  spoton_common::CACHE_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(3), 600);
+  spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(4), 600);
+  spoton_common::MAIL_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(5), 600);
 }

@@ -408,6 +408,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 		      settings.value(settings.allKeys().at(i)));
 
   spoton_misc::correctSettingsContainer(s_settings);
+  spoton_misc::setTimeVariables(s_settings);
   spoton_misc::enableLog
     (setting("gui/kernelLogEvents", false).toBool());
 

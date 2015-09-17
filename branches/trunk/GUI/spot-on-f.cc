@@ -937,20 +937,49 @@ void spoton::slotTimeSliderValueChanged(int value)
   if(!slider)
     return;
 
+  QString str("");
+
   if(m_optionsUi.chat_time_delta == slider)
-    m_optionsUi.chat_time_delta_current->setText(QString::number(value));
+    {
+      m_optionsUi.chat_time_delta_current->setText(QString::number(value));
+      str = "gui/chat_time_delta";
+    }
   else if(m_optionsUi.forward_secrecy_time_delta == slider)
-    m_optionsUi.forward_secrecy_time_delta_current->setText
-      (QString::number(value));
+    {
+      m_optionsUi.forward_secrecy_time_delta_current->setText
+	(QString::number(value));
+      str = "gui/forward_secrecy_time_delta";
+    }
   else if(m_optionsUi.gemini_time_delta == slider)
-    m_optionsUi.gemini_time_delta_current->setText(QString::number(value));
+    {
+      m_optionsUi.gemini_time_delta_current->setText(QString::number(value));
+      str = "gui/gemini_time_delta";
+    }
   else if(m_optionsUi.kernel_cache_object_lifetime == slider)
-    m_optionsUi.kernel_cache_object_lifetime_current->setText
-      (QString::number(value));
+    {
+      m_optionsUi.kernel_cache_object_lifetime_current->setText
+	(QString::number(value));
+      str = "gui/kernel_cache_object_lifetime";
+    }
   else if(m_optionsUi.poptastic_forward_secrecy_time_delta == slider)
-    m_optionsUi.poptastic_forward_secrecy_time_delta_current->setText
-      (QString::number(value));
+    {
+      m_optionsUi.poptastic_forward_secrecy_time_delta_current->setText
+	(QString::number(value));
+      str = "gui/poptastic_forward_secrecy_time_delta";
+    }
   else if(m_optionsUi.retrieve_mail_time_delta == slider)
-    m_optionsUi.retrieve_mail_time_delta_current->setText
-      (QString::number(value));
+    {
+      m_optionsUi.retrieve_mail_time_delta_current->setText
+	(QString::number(value));
+      str = "gui/retrieve_mail_time_delta";
+    }
+
+  if(str.isEmpty())
+    return;
+
+  m_settings[str] = value;
+
+  QSettings settings;
+
+  settings.setValue(str, value);
 }

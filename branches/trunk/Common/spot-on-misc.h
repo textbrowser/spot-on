@@ -205,6 +205,7 @@ class spoton_misc
 				       const QByteArray &hash,
 				       const QString &oid,
 				       spoton_crypt *crypt);
+  static void setTimeVariables(const QHash<QString, QVariant> &settings);
   static void vacuumAllDatabases(void);
   template<typename T>
     static T readSharedResource(T *resource, QReadWriteLock &mutex)

@@ -1587,6 +1587,7 @@ spoton::spoton(void):QMainWindow()
       (settings.allKeys().at(i));
 
   spoton_misc::correctSettingsContainer(m_settings);
+  spoton_misc::setTimeVariables(m_settings);
   m_ui.activeUrlDistribution->setChecked
     (m_settings.value("gui/activeUrlDistribution", false).toBool());
 
