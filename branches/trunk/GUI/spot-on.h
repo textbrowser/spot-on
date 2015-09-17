@@ -875,6 +875,7 @@ class spoton: public QMainWindow
   void slotTestPoptasticPop3Settings(void);
   void slotTestPoptasticSmtpSettings(void);
   void slotTestSslControlString(void);
+  void slotTimeSliderDefaults(void);
   void slotTimeSliderValueChanged(int value);
   void slotTransmit(void);
   void slotTransmittedPaused(bool state);

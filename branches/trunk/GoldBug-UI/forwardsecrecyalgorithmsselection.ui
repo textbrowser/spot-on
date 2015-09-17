@@ -32,6 +32,13 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>&lt;b&gt;Initiate Forward Secrecy Key Exchange&lt;/b&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="text_1">
          <property name="text">
           <string>1.
@@ -170,6 +177,13 @@
        <string>Step 2</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>&lt;b&gt;Forward Secrecy Key Exchange Completion&lt;/b&gt;</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QLabel" name="text_2">
          <property name="text">

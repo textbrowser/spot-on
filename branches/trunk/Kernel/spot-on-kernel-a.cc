@@ -752,6 +752,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      m_guiServer,
 	      SLOT(slotForwardSecrecyRequest(const QByteArrayList &)));
       connect(this,
+	      SIGNAL(forwardSecrecyResponseReceived(const QByteArrayList &)),
+	      m_guiServer,
+	      SLOT(slotForwardSecrecyResponse(const QByteArrayList &)));
+      connect(this,
 	      SIGNAL(newEMailArrived(void)),
 	      m_guiServer,
 	      SLOT(slotNewEMailArrived(void)));

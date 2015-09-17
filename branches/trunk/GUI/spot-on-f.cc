@@ -27,6 +27,7 @@
 
 #include <QProgressDialog>
 #include <QScopedPointer>
+#include <QToolTip>
 
 #include "spot-on.h"
 #include "ui_forwardsecrecyalgorithmsselection.h"
@@ -748,7 +749,26 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 
   if(!m_sb.forward_secrecy_request->isVisible())
     {
+      QString name = spoton_misc::nameFromPublicKeyHash
+	(publicKeyHash, m_crypts.value("chat", 0));
+      QString keyType = spoton_misc::keyTypeFromPublicKeyHash
+	(publicKeyHash, m_crypts.value("chat", 0));
+
+      if(name.isEmpty())
+	{
+	  if(keyType == "poptastic")
+	    name = "unknown@unknown.org";
+	  else
+	    name = "unknown";
+	}
+
       QString str(publicKeyHash.toBase64().constData());
+      QString toolTip
+	(tr("<h2>Participant <i>%1</i> (%2) is requesting forward secrecy "
+	    "credentials. Please see the status bar.</h2>").arg(name).
+	 arg(str.mid(0, 16) +
+	     "..." +
+	     str.right(16)));
 
       m_sb.forward_secrecy_request->setProperty
 	("public_key_hash", publicKeyHash);
@@ -758,6 +778,7 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 					  "..." +
 					  str.right(16)));
       m_sb.forward_secrecy_request->setVisible(true);
+      QToolTip::showText(pos(), toolTip);
     }
 }
 
@@ -982,4 +1003,52 @@ void spoton::slotTimeSliderValueChanged(int value)
   QSettings settings;
 
   settings.setValue(str, value);
+}
+
+void spoton::slotTimeSliderDefaults(void)
+{
+  QList<int> defaults;
+  QStringList keys;
+
+  defaults << spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::
+              POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+	   << spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
+  keys << "gui/chat_time_delta"
+       << "gui/forward_secrecy_time_delta"
+       << "gui/gemini_time_delta"
+       << "gui/kernel_cache_object_lifetime"
+       << "gui/poptastic_forward_secrecy_time_delta"
+       << "gui/retrieve_mail_time_delta";
+
+  QSettings settings;
+
+  for(int i = 0; i < keys.size(); i++)
+    {
+      m_settings[keys.at(i)] = defaults.at(i);
+      settings.setValue(keys.at(i), defaults.at(i));
+    }
+
+  spoton_common::CHAT_TIME_DELTA_MAXIMUM = defaults.value(0);
+  spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM = defaults.value(1);
+  spoton_common::GEMINI_TIME_DELTA_MAXIMUM = defaults.value(2);
+  spoton_common::CACHE_TIME_DELTA_MAXIMUM = defaults.value(3);
+  spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+    defaults.value(4);
+  spoton_common::MAIL_TIME_DELTA_MAXIMUM = defaults.value(5);
+  m_optionsUi.chat_time_delta->setValue
+    (spoton_common::CHAT_TIME_DELTA_MAXIMUM);
+  m_optionsUi.forward_secrecy_time_delta->setValue
+    (spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.gemini_time_delta->setValue
+    (spoton_common::GEMINI_TIME_DELTA_MAXIMUM);
+  m_optionsUi.kernel_cache_object_lifetime->setValue
+    (spoton_common::CACHE_TIME_DELTA_MAXIMUM);
+  m_optionsUi.poptastic_forward_secrecy_time_delta->setValue
+    (spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.retrieve_mail_time_delta->setValue
+    (spoton_common::MAIL_TIME_DELTA_MAXIMUM);
 }

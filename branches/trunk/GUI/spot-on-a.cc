@@ -1419,6 +1419,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotAllowFSRequest(bool)));
+  connect(m_optionsUi.defaults,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotTimeSliderDefaults(void)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,

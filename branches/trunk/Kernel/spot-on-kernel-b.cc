@@ -2303,6 +2303,7 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
     return;
 
   QString connectionName("");
+  bool ok = false;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -2313,7 +2314,6 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
 
 	query.prepare
 	  ("UPDATE friends_public_keys "
@@ -2352,4 +2352,7 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    emit forwardSecrecyResponseReceived(list);
 }

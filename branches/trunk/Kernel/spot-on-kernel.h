@@ -273,6 +273,7 @@ class spoton_kernel: public QObject
   void callParticipant(const QByteArray &data,
 		       const QString &messageType);
   void forwardSecrecyRequest(const QByteArrayList &list);
+  void forwardSecrecyResponseReceived(const QByteArrayList &list);
   void newEMailArrived(void);
   void poppedMessage(const QByteArray &message);
   void publicizeListenerPlaintext(const QByteArray &data,

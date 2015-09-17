@@ -892,3 +892,30 @@ void spoton_gui_server::slotForwardSecrecyRequest
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }
+
+void spoton_gui_server::slotForwardSecrecyResponse
+(const QByteArrayList &list)
+{
+  QByteArray message("forward_secrecy_response_");
+
+  message.append(list.value(0).toBase64()); // Public Key Hash
+  message.append("\n");
+
+  foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
+    if(socket->isEncrypted())
+      {
+	if(socket->write(message.constData(),
+			 message.length()) != message.length())
+	  spoton_misc::logError
+	    (QString("spoton_gui_server::slotForwardSecrecyResponse(): "
+		     "write() failure for %1:%2.").
+	     arg(socket->peerAddress().toString()).
+	     arg(socket->peerPort()));
+      }
+    else
+      spoton_misc::logError
+	(QString("spoton_gui_server::slotForwardSecrecyResponse(): "
+		 "socket %1:%2 is not encrypted. Ignoring write() response.").
+	 arg(socket->peerAddress().toString()).
+	 arg(socket->peerPort()));
+}

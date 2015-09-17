@@ -99,6 +99,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   void slotEncrypted(void);
   void slotFileChanged(const QString &path);
   void slotForwardSecrecyRequest(const QByteArrayList &list);
+  void slotForwardSecrecyResponse(const QByteArrayList &list);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotNewEMailArrived(void);
   void slotReadyRead(void);

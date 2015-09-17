@@ -30,6 +30,7 @@
 #include "spot-on-defines.h"
 
 #include <QSslKey>
+#include <QToolTip>
 
 void spoton::slotSendMessage(void)
 {
@@ -334,6 +335,41 @@ void spoton::slotReceivedKernelMessage(void)
 		(0, static_cast<int> (qstrlen("forward_secrecy_request_")));
 
 	      forwardSecrecyRequested(data.split('_'));
+	    }
+	  else if(data.startsWith("forward_secrecy_response_"))
+	    {
+	      data.remove
+		(0, static_cast<int> (qstrlen("forward_secrecy_response_")));
+
+	      QList<QByteArray> list(data.split('_'));
+
+	      for(int i = 0; i < list.size(); i++)
+		list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+	      if(!list.isEmpty())
+		{
+		  QString name = spoton_misc::nameFromPublicKeyHash
+		    (list.value(0), m_crypts.value("chat", 0));
+		  QString keyType = spoton_misc::keyTypeFromPublicKeyHash
+		    (list.value(0), m_crypts.value("chat", 0));
+
+		  if(name.isEmpty())
+		    {
+		      if(keyType == "poptastic")
+			name = "unknown@unknown.org";
+		      else
+			name = "unknown";
+		    }
+
+		  QString str(list.value(0).toBase64().constData());
+		  QString toolTip
+		    (tr("<h2>Participant <i>%1</i> (%2) has completed a "
+			"forward secrecy exchange.").arg(name).
+		     arg(str.mid(0, 16) +
+			 "..." +
+			 str.right(16)));
+		  QToolTip::showText(pos(), toolTip);
+		}
 	    }
 	  else if(data.startsWith("message_"))
 	    {
