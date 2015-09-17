@@ -78,7 +78,7 @@ static void qt_message_handler(QtMsgType type, const char *msg)
 }
 #endif
 
-static void sig_handler(int signum)
+static void signal_handler(int signum)
 {
   static int fatal_error = 0;
 
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 {
   curl_global_init(CURL_GLOBAL_ALL);
   libspoton_enable_sqlite_cache();
-  spoton_misc::prepareSignalHandler(sig_handler);
+  spoton_misc::prepareSignalHandler(signal_handler);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
