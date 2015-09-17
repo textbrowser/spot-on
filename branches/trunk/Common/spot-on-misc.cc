@@ -2995,7 +2995,7 @@ bool spoton_misc::isValidStarBeamMissingLinksMagnet(const QByteArray &magnet)
   return valid;
 }
 
-void spoton_misc::prepareSignalHandler(void (*sig_handler) (int))
+void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
 {
   QList<int> list;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
@@ -3017,12 +3017,12 @@ void spoton_misc::prepareSignalHandler(void (*sig_handler) (int))
   while(!list.isEmpty())
     {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-      act.sa_handler = sig_handler;
+      act.sa_handler = signal_handler;
       sigemptyset(&act.sa_mask);
       act.sa_flags = 0;
       sigaction(list.takeFirst(), &act, 0);
 #else
-      signal(list.takeFirst(), sig_handler);
+      signal(list.takeFirst(), signal_handler);
 #endif
     }
 }
@@ -3032,14 +3032,18 @@ void spoton_misc::vacuumAllDatabases(void)
   QStringList list;
 
   list << "buzz_channels.db"
+       << "echo_key_sharing_secrets.db"
        << "email.db"
        << "friends_public_keys.db"
        << "idiotes.db"
        << "kernel.db"
        << "listeners.db"
        << "neighbors.db"
+       << "poptastic.db"
        << "shared.db"
-       << "starbeam.db";
+       << "starbeam.db"
+       << "urls_distillers_information.db"
+       << "urls_key_information.db";
 
   while(!list.isEmpty())
     {

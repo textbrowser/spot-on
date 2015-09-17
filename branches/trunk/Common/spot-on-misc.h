@@ -175,7 +175,7 @@ class spoton_misc
   static void populateUrlsDatabase(const QList<QList<QVariant> > &list,
 				   spoton_crypt *crypt);
   static void prepareDatabases(void);
-  static void prepareSignalHandler(void (*sig_handler) (int));
+  static void prepareSignalHandler(void (*signal_handler) (int));
   static void purgeSignatureRelationships(const QSqlDatabase &db,
 					  spoton_crypt *crypt);
   static void removeOneTimeStarBeamMagnets(void);
