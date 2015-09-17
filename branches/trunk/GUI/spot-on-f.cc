@@ -903,3 +903,54 @@ void spoton::slotAllowFSRequest(bool state)
       settings.setValue("gui/allowEmailFSRequest", state);
     }
 }
+
+void spoton::prepareTimeWidgets(void)
+{
+  if(!m_optionsWindow)
+    return;
+
+  foreach(QSlider *slider, m_optionsWindow->findChildren<QSlider *> ())
+    connect(slider,
+	    SIGNAL(valueChanged(int)),
+	    this,
+	    SLOT(slotTimeSliderValueChanged(int)),
+	    Qt::UniqueConnection);
+
+  m_optionsUi.chat_time_delta->setValue
+    (spoton_common::CHAT_TIME_DELTA_MAXIMUM);
+  m_optionsUi.forward_secrecy_time_delta->setValue
+    (spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.gemini_time_delta->setValue
+    (spoton_common::GEMINI_TIME_DELTA_MAXIMUM);
+  m_optionsUi.kernel_cache_object_lifetime->setValue
+    (spoton_common::CACHE_TIME_DELTA_MAXIMUM);
+  m_optionsUi.poptastic_forward_secrecy_time_delta->setValue
+    (spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.retrieve_mail_time_delta->setValue
+    (spoton_common::MAIL_TIME_DELTA_MAXIMUM);
+}
+
+void spoton::slotTimeSliderValueChanged(int value)
+{
+  QSlider *slider = qobject_cast<QSlider *> (sender());
+
+  if(!slider)
+    return;
+
+  if(m_optionsUi.chat_time_delta == slider)
+    m_optionsUi.chat_time_delta_current->setText(QString::number(value));
+  else if(m_optionsUi.forward_secrecy_time_delta == slider)
+    m_optionsUi.forward_secrecy_time_delta_current->setText
+      (QString::number(value));
+  else if(m_optionsUi.gemini_time_delta == slider)
+    m_optionsUi.gemini_time_delta_current->setText(QString::number(value));
+  else if(m_optionsUi.kernel_cache_object_lifetime == slider)
+    m_optionsUi.kernel_cache_object_lifetime_current->setText
+      (QString::number(value));
+  else if(m_optionsUi.poptastic_forward_secrecy_time_delta == slider)
+    m_optionsUi.poptastic_forward_secrecy_time_delta_current->setText
+      (QString::number(value));
+  else if(m_optionsUi.retrieve_mail_time_delta == slider)
+    m_optionsUi.retrieve_mail_time_delta_current->setText
+      (QString::number(value));
+}

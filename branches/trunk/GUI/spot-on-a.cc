@@ -46,6 +46,19 @@ extern "C"
 #include "spot-on-buzzpage.h"
 #include "ui_passwordprompt.h"
 
+/*
+** Not pleasant!
+*/
+
+int spoton_common::CACHE_TIME_DELTA_MAXIMUM = CACHE_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::CHAT_TIME_DELTA_MAXIMUM = CHAT_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+  FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::GEMINI_TIME_DELTA_MAXIMUM =
+  GEMINI_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::MAIL_TIME_DELTA_MAXIMUM = MAIL_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+  POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 static QPointer<spoton> s_gui = 0;
 
 #if QT_VERSION >= 0x050000
@@ -2367,6 +2380,7 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.tab->setIconSize(size);
   prepareContextMenuMirrors();
+  prepareTimeWidgets();
 
   QList<QWidget *> widgets;
 

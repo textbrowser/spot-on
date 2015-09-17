@@ -559,6 +559,7 @@ class spoton: public QMainWindow
   void prepareListenerIPCombo(void);
   void prepareSMP(const QString &hash);
   void prepareTabIcons(void);
+  void prepareTimeWidgets(void);
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
   void refreshInstitutions(void);
@@ -874,6 +875,7 @@ class spoton: public QMainWindow
   void slotTestPoptasticPop3Settings(void);
   void slotTestPoptasticSmtpSettings(void);
   void slotTestSslControlString(void);
+  void slotTimeSliderValueChanged(int value);
   void slotTransmit(void);
   void slotTransmittedPaused(bool state);
   void slotTransmittedSelected(void);
