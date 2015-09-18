@@ -3141,13 +3141,15 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 		    if(crypt)
 		      for(int i = 0; i < items.size(); i++)
-			if(ok)
-			  items.replace
-			    (i, crypt->encryptedThenHashed(items.at(i),
-							   &ok));
-			else
-			  break;
-
+			{
+			  if(ok)
+			    items.replace
+			      (i, crypt->encryptedThenHashed(items.at(i),
+							     &ok));
+			  else
+			    break;
+			}
+		    
 		    if(crypt && ok)
 		      goldbugUsed = true;
 
@@ -3420,12 +3422,15 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 		    if(crypt)
 		      for(int i = 0; i < items.size(); i++)
-			if(ok)
-			  items.replace
-			    (i, crypt->encryptedThenHashed(items.at(i), &ok));
-			else
-			  break;
-
+			{
+			  if(ok)
+			    items.replace
+			      (i,
+			       crypt->encryptedThenHashed(items.at(i), &ok));
+			  else
+			    break;
+			}
+		    
 		    if(crypt && ok)
 		      goldbugUsed = true;
 
