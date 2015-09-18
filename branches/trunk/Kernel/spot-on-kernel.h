@@ -180,6 +180,7 @@ class spoton_kernel: public QObject
 			    const QByteArray &message,
 			    const QByteArray &name,
 			    const QByteArray &subject,
+			    const QByteArray &mode,
 			    const qint64 mailOid);
   void postPoptasticMessage(const QString &receiverName,
 			    const QByteArray &message);

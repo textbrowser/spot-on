@@ -2944,12 +2944,11 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				 const QByteArray &mode,
 				 const qint64 mailOid)
 {
-  Q_UNUSED(mode);
-
   if(keyType == "poptastic" && publicKey.contains("-poptastic"))
     {
       postPoptasticMessage
-	(attachment, attachmentName, message, receiverName, subject, mailOid);
+	(attachment, attachmentName, message, receiverName, subject, mode,
+	 mailOid);
       return;
     }
 
@@ -2965,9 +2964,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
     return;
 
   /*
-  ** name - my name
-  ** publicKey - recipient's public key
-  ** mode - forward-secrecy, none, pure-forward-secrecy
+  ** name: my name
+  ** publicKey: recipient's public key
+  ** mode: forward-secrecy, none, pure-forward-secrecy
   */
 
   QByteArray myPublicKey;
@@ -5339,6 +5338,7 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 					 const QByteArray &message,
 					 const QByteArray &name,
 					 const QByteArray &subject,
+					 const QByteArray &mode,
 					 const qint64 mailOid)
 {
   if(setting("gui/disableSmtp", true).toBool())
@@ -5357,6 +5357,7 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 			                      << subject
 			                      << attachment
 			                      << attachmentName
+			                      << mode
 			                      << mailOid);
 }
 
