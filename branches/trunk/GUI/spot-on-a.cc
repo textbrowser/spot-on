@@ -995,6 +995,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  m_ui.listenersSslControlString,
 	  SLOT(setEnabled(bool)));
+  connect(m_ui.sslListener,
+	  SIGNAL(toggled(bool)),
+	  m_ui.days_valid,
+	  SLOT(setEnabled(bool)));
   connect(m_optionsUi.publishPeriodically,
 	  SIGNAL(toggled(bool)),
 	  this,
