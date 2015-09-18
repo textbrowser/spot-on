@@ -571,7 +571,7 @@ EOL
 Encryption Key (Base-64)
 {
 0 - Dispatcher's SHA-512 Digest
-1 - Dispatcher's Temporary Public Key
+1 - Dispatcher's Ephemeral Public Key
 2 - UTC Date
 3 - Signature (First Group Items and Previous Three Items)
 }
@@ -599,7 +599,7 @@ EOL
 Encryption Key (Base-64)
 {
 0 - Dispatcher's SHA-512 Digest
-1 - Temporary Public Key
+1 - Ephemeral Public Key
     {
     0 - Forward Secrecy Authentication Algorithm
     1 - Forward Secrecy Authentication Key
