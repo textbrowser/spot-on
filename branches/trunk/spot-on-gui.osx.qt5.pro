@@ -195,11 +195,11 @@ PROJECTNAME	= Spot-On
 
 QMAKE_STRIP	= echo
 
-spoton.path		= /Applications/Spot-On.d/Spot-On.app
+spoton.path		= /Applications/Spot-On_Qt5.d/Spot-On.app
 spoton.files		= Spot-On.app/*
-install1.path           = /Applications/Spot-On.d
+install1.path           = /Applications/Spot-On_Qt5.d
 install1.files          = spot-on-neighbors.txt
-libgeoip_data_install.path = /Applications/Spot-On.d/GeoIP
+libgeoip_data_install.path = /Applications/Spot-On_Qt5.d/GeoIP
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
 libntru_install.path  = .
 libntru_install.extra = cp ../../libNTRU/libntru.dylib ./Spot-On.app/Contents/Frameworks/libntru.dylib && install_name_tool -change ../../libNTRU/libntru.dylib @executable_path/../Frameworks/libntru.dylib ./Spot-On.app/Contents/MacOS/Spot-On
@@ -211,11 +211,11 @@ lupdate.extra           = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.osx.qt5.pro
 lupdate.path            = .
 macdeployqt.path        = ./Spot-On.app
 macdeployqt.extra       = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.app -verbose=0
-preinstall.path         = /Applications/Spot-On.d
-preinstall.extra        = rm -rf /Applications/Spot-On.d/Spot-On.app/*
-postinstall.path	= /Applications/Spot-On.d
-postinstall.extra	= find /Applications/Spot-On.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
-translations.path 	= /Applications/Spot-On.d/Translations
+preinstall.path         = /Applications/Spot-On_Qt5.d
+preinstall.extra        = rm -rf /Applications/Spot-On_Qt5.d/Spot-On.app/*
+postinstall.path	= /Applications/Spot-On_Qt5.d
+postinstall.extra	= find /Applications/Spot-On_Qt5.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
+translations.path 	= /Applications/Spot-On_Qt5.d/Translations
 translations.files	= Translations/*.qm
 
 # Prevent qmake from stripping everything.

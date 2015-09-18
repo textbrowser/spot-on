@@ -102,9 +102,9 @@ PROJECTNAME	= Spot-On-Kernel
 
 QMAKE_STRIP	= echo
 
-spoton.path		= /Applications/Spot-On.d/Spot-On-Kernel.app
+spoton.path		= /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app
 spoton.files		= ../Spot-On-Kernel.app/*
-libgeoip_data_install.path = /Applications/Spot-On.d/GeoIP
+libgeoip_data_install.path = /Applications/Spot-On_Qt5.d/GeoIP
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
 libntru_install.path  = .
 libntru_install.extra = cp ../../../libNTRU/libntru.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libntru.dylib && install_name_tool -change ../../../libNTRU/libntru.dylib @executable_path/../Frameworks/libntru.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
@@ -114,10 +114,10 @@ libspoton_install.path  = .
 libspoton_install.extra = cp ../../../libSpotOn/libspoton.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change ../../../libSpotOn/libspoton.dylib @executable_path/../Frameworks/libspoton.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 macdeployqt.path        = ../Spot-On-Kernel.app
 macdeployqt.extra       = $$[QT_INSTALL_BINS]/macdeployqt ../Spot-On-Kernel.app -verbose=0
-preinstall.path         = /Applications/Spot-On.d
-preinstall.extra        = rm -rf /Applications/Spot-On.d/Spot-On-Kernel.app/*
-postinstall.path	= /Applications/Spot-On.d
-postinstall.extra	= find /Applications/Spot-On.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
+preinstall.path         = /Applications/Spot-On_Qt5.d
+preinstall.extra        = rm -rf /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/*
+postinstall.path	= /Applications/Spot-On_Qt5.d
+postinstall.extra	= find /Applications/Spot-On_Qt5.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
 
 # Prevent qmake from stripping everything.
 
