@@ -7109,14 +7109,27 @@ void spoton::slotPopulateParticipants(void)
 
 			  item = new QTableWidgetItem(name);
 
-			  if(keyType == "poptastic")
+			  if(keyType == "email")
+			    item->setIcon
+			      (QIcon(QString(":/%1/key.png").
+				     arg(m_settings.
+					 value("gui/iconSet",
+					       "nouve").toString())));
+			  else if(keyType == "poptastic")
 			    {
 			      if(publicKey.contains("-poptastic"))
 				item->setBackground
 				  (QBrush(QColor(255, 255, 224)));
 			      else
-				item->setBackground
-				  (QBrush(QColor(137, 207, 240)));
+				{
+				  item->setBackground
+				    (QBrush(QColor(137, 207, 240)));
+				  item->setIcon
+				    (QIcon(QString(":/%1/key.png").
+					   arg(m_settings.
+					       value("gui/iconSet",
+						     "nouve").toString())));
+				}
 			    }
 			}
 		      else if(i == 1 || i == 2 || i == 3)
