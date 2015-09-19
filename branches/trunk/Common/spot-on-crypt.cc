@@ -3968,4 +3968,39 @@ QString spoton_crypt::publicKeySize(void)
 
 void spoton_crypt::purgePrivatePublicKeys(void)
 {
+  QWriteLocker locker1(&m_privateKeyMutex);
+
+  gcry_free(m_privateKey);
+  m_privateKey = 0;
+  m_privateKeyLength = 0;
+  locker1.unlock();
+
+  QWriteLocker locker2(&m_publicKeyMutex);
+
+  m_publicKey.clear();
+  locker2.unlock();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM idiotes WHERE id_hash = ?");
+	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
