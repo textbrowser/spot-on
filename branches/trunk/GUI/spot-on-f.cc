@@ -1148,6 +1148,21 @@ void spoton::slotLock(void)
       dialog.setWindowTitle
 	(tr("%1: Unlock").arg(SPOTON_APPLICATION_NAME));
       ui.setupUi(&dialog);
+      connect(ui.radio_1,
+	      SIGNAL(toggled(bool)),
+	      ui.passphrase,
+	      SLOT(setEnabled(bool)));
+      connect(ui.radio_2,
+	      SIGNAL(toggled(bool)),
+	      ui.answer,
+	      SLOT(setEnabled(bool)));
+      connect(ui.radio_2,
+	      SIGNAL(toggled(bool)),
+	      ui.question,
+	      SLOT(setEnabled(bool)));
+      ui.radio_2->setChecked(true);
+      ui.radio_1->setChecked(true);
+      ui.passphrase->setFocus();
 
       if(dialog.exec() != QDialog::Accepted)
 	return;
