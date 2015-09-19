@@ -31,6 +31,7 @@
 
 #include "spot-on.h"
 #include "ui_forwardsecrecyalgorithmsselection.h"
+#include "ui_unlock.h"
 
 void spoton::slotDuplicateTransmittedMagnet(void)
 {
@@ -1146,6 +1147,14 @@ void spoton::slotLock(void)
       /*
       ** Authenticate.
       */
+
+      QDialog dialog(this);
+      Ui_unlock ui;
+
+      ui.setupUi(&dialog);
+
+      if(dialog.exec() != QDialog::Accepted)
+	return;
 
       m_locked = !m_locked;
     }
