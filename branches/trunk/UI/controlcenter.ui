@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>485</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>766</width>
-                <height>488</height>
+                <width>752</width>
+                <height>482</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1901,7 +1901,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>466</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -4037,7 +4037,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>466</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4953,7 +4953,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-634</y>
+             <y>0</y>
              <width>762</width>
              <height>1132</height>
             </rect>
@@ -7164,7 +7164,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>466</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7698,7 +7698,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>498</height>
+             <height>466</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7962,6 +7962,23 @@
    <addaction name="menu_Edit"/>
    <addaction name="menu_Tools"/>
    <addaction name="menu_View"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>Spot-On: Tool Bar</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomToolBarArea|Qt::TopToolBarArea</set>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
   <action name="action_Quit">
    <property name="text">

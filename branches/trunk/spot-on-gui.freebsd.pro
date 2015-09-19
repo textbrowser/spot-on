@@ -61,7 +61,8 @@ FORMS           = UI/adaptiveechoprompt.ui \
 		  UI/postgresqlconnect.ui \
 		  UI/rosetta.ui \
                   UI/starbeamanalyzer.ui \
-		  UI/statusbar.ui
+		  UI/statusbar.ui \
+		  UI/unlock.ui
 
 UI_HEADERS_DIR  = GUI
 

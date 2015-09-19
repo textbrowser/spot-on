@@ -1109,3 +1109,68 @@ void spoton::slotDeleteKey(void)
 
   updatePublicKeysLabel();
 }
+
+void spoton::prepareToolBar(void)
+{
+  m_ui.toolBar->addAction(tr("Lock"),
+			  this,
+			  SLOT(slotLock(void)));
+}
+
+void spoton::slotLock(void)
+{
+  if(!m_locked)
+    {
+      QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setWindowTitle(tr("%1: Confirmation").
+			arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to lock the application? "
+		    "All other windows will be closed."));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+      else
+	m_locked = !m_locked;
+    }
+  else
+    {
+      /*
+      ** Authenticate.
+      */
+
+      m_locked = !m_locked;
+    }
+
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(action)
+    {
+      if(m_locked)
+	action->setText(tr("Unlock"));
+      else
+	action->setText(tr("Lock"));
+    }
+
+  m_echoKeyShare->close();
+  m_encryptFile.close();
+  m_optionsWindow->close();
+  m_rosetta.close();
+  m_starbeamAnalyzer->close();
+
+  /*
+  ** Lock everything!
+  */
+
+  m_sbWidget->setEnabled(!m_locked);
+  m_ui.menubar->setEnabled(!m_locked);
+  m_ui.tab->setEnabled(!m_locked);
+}

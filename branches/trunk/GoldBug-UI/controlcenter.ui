@@ -118,7 +118,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>570</width>
-             <height>674</height>
+             <height>661</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -1223,8 +1223,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>559</width>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -5089,8 +5089,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>610</width>
-                 <height>709</height>
+                 <width>571</width>
+                 <height>726</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6233,9 +6233,9 @@ color: rgb(255, 255, 255);</string>
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>-215</x>
-             <y>-642</y>
-             <width>771</width>
+             <x>0</x>
+             <y>0</y>
+             <width>806</width>
              <height>1302</height>
             </rect>
            </property>
@@ -7665,7 +7665,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
+             <width>430</width>
              <height>771</height>
             </rect>
            </property>
@@ -8934,8 +8934,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>533</width>
+             <height>471</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10552,6 +10552,23 @@ border-style: inset;
    <addaction name="menu_Edit"/>
    <addaction name="menu_Tools"/>
    <addaction name="menu_View"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomToolBarArea|Qt::TopToolBarArea</set>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
   <action name="action_Quit">
    <property name="text">

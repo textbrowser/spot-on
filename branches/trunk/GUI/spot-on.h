@@ -478,6 +478,7 @@ class spoton: public QMainWindow
   Ui_spoton_mainwindow m_ui;
   Ui_spoton_options m_optionsUi;
   Ui_statusbar m_sb;
+  bool m_locked;
   quint64 m_urlCurrentPage;
   quint64 m_urlLimit;
   quint64 m_urlOffset;
@@ -560,6 +561,7 @@ class spoton: public QMainWindow
   void prepareSMP(const QString &hash);
   void prepareTabIcons(void);
   void prepareTimeWidgets(void);
+  void prepareToolBar(void);
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
   void refreshInstitutions(void);
@@ -741,6 +743,7 @@ class spoton: public QMainWindow
   void slotListenerMaximumChanged(int value);
   void slotListenerSelected(void);
   void slotListenerUseAccounts(bool state);
+  void slotLock(void);
   void slotMagnetRadioToggled(bool state);
   void slotMailRetrievalIntervalChanged(int value);
   void slotMailSelected(QTableWidgetItem *item);

@@ -211,6 +211,7 @@ int main(int argc, char *argv[])
 
 spoton::spoton(void):QMainWindow()
 {
+  m_locked = false;
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
   spoton_smp::test1();
   spoton_smp::test2();
@@ -2394,6 +2395,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.tab->setIconSize(size);
   prepareContextMenuMirrors();
   prepareTimeWidgets();
+  prepareToolBar();
 
   QList<QWidget *> widgets;
 
