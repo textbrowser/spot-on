@@ -2232,6 +2232,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
+  connect(m_ui.delete_key,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeleteKey(void)));
   connect(m_ui.regenerate,
 	  SIGNAL(clicked(void)),
 	  this,

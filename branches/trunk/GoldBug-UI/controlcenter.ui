@@ -5089,8 +5089,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>571</width>
-                 <height>726</height>
+                 <width>610</width>
+                 <height>709</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6233,9 +6233,9 @@ color: rgb(255, 255, 255);</string>
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>806</width>
+             <x>-215</x>
+             <y>-642</y>
+             <width>771</width>
              <height>1302</height>
             </rect>
            </property>
@@ -7554,7 +7554,7 @@ QPushButton:pressed {
                      </property>
                     </widget>
                    </item>
-                   <item row="1" column="12">
+                   <item row="1" column="13">
                     <spacer name="horizontalSpacer_47">
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
@@ -7566,6 +7566,13 @@ QPushButton:pressed {
                       </size>
                      </property>
                     </spacer>
+                   </item>
+                   <item row="1" column="12">
+                    <widget class="QPushButton" name="delete_key">
+                     <property name="text">
+                      <string>Delete</string>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -7658,7 +7665,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>430</width>
+             <width>556</width>
              <height>771</height>
             </rect>
            </property>
@@ -8927,8 +8934,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>533</width>
-             <height>471</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10893,6 +10900,7 @@ border-style: inset;
   <tabstop>signatureKeyType</tabstop>
   <tabstop>keys</tabstop>
   <tabstop>regenerate</tabstop>
+  <tabstop>delete_key</tabstop>
   <tabstop>scrollArea_4</tabstop>
   <tabstop>etpTab</tabstop>
   <tabstop>magnetsActionMenu</tabstop>

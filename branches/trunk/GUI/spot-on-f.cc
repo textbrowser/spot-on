@@ -1052,3 +1052,60 @@ void spoton::slotTimeSliderDefaults(void)
   m_optionsUi.retrieve_mail_time_delta->setValue
     (spoton_common::MAIL_TIME_DELTA_MAXIMUM);
 }
+
+void spoton::slotDeleteKey(void)
+{
+  QString keyType("chat");
+
+  if(m_ui.keys->currentText() == "Chat")
+    keyType = "chat";
+  else if(m_ui.keys->currentText() == "E-Mail")
+    keyType = "email";
+  else if(m_ui.keys->currentText() == "Poptastic")
+    keyType = "poptastic";
+  else if(m_ui.keys->currentText() == "Rosetta")
+    keyType = "rosetta";
+  else if(m_ui.keys->currentText() == "URL")
+    keyType = "url";
+
+  spoton_crypt *crypt1 = m_crypts.value(keyType, 0);
+  spoton_crypt *crypt2 = m_crypts.value
+    (QString("%1-signature").arg(keyType), 0);
+
+  if(!(crypt1 && crypt2))
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt objects. This is "
+			       "a fatal flaw."));
+      return;
+    }
+
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to delete the selected "
+		"key pair? The kernel will be deactivated."));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+  else
+    slotDeactivateKernel();
+
+  if(crypt1)
+    crypt1->purgePrivatePublicKeys();
+
+  if(crypt2)
+    crypt2->purgePrivatePublicKeys();
+
+  updatePublicKeysLabel();
+}

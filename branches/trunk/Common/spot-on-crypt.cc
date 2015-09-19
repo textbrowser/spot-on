@@ -625,6 +625,7 @@ void spoton_crypt::init(const QString &cipherType,
 
 spoton_crypt::~spoton_crypt()
 {
+  m_publicKey.clear();
   gcry_cipher_close(m_cipherHandle);
   gcry_free(m_hashKey);
   gcry_free(m_privateKey);
@@ -1591,6 +1592,11 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       m_privateKeyLength = 0;
       locker2.unlock();
 
+      QWriteLocker locker3(&m_publicKeyMutex);
+
+      m_publicKey.clear();
+      locker3.unlock();
+
       if(err != 0)
 	{
 	  QByteArray buffer(64, 0);
@@ -1623,12 +1629,17 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 	(QString("spoton_crypt::publicKeyDecrypt(): gcry_pk_testkey() "
 		 "failure (%1).").arg(buffer.constData()));
 
-      QWriteLocker locker(&m_privateKeyMutex);
+      QWriteLocker locker1(&m_privateKeyMutex);
 
       gcry_free(m_privateKey);
       m_privateKey = 0;
       m_privateKeyLength = 0;
-      locker.unlock();
+      locker1.unlock();
+
+      QWriteLocker locker2(&m_publicKeyMutex);
+
+      m_publicKey.clear();
+      locker2.unlock();
       goto done_label;
     }
 
@@ -2357,6 +2368,11 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       m_privateKeyLength = 0;
       locker2.unlock();
 
+      QWriteLocker locker3(&m_publicKeyMutex);
+
+      m_publicKey.clear();
+      locker3.unlock();
+
       if(err != 0)
 	{
 	  QByteArray buffer(64, 0);
@@ -2395,6 +2411,11 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       m_privateKey = 0;
       m_privateKeyLength = 0;
       locker2.unlock();
+
+      QWriteLocker locker3(&m_publicKeyMutex);
+
+      m_publicKey.clear();
+      locker3.unlock();
       goto done_label;
     }
 
@@ -3943,4 +3964,8 @@ QString spoton_crypt::publicKeySize(void)
     }
 
   return publicKeySize(m_publicKey);
+}
+
+void spoton_crypt::purgePrivatePublicKeys(void)
+{
 }

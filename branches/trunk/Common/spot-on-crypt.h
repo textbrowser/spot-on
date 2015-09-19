@@ -187,6 +187,7 @@ class spoton_crypt
   QString publicKeySize(void);
   QString publicKeySizeNTRU(void);
   qint64 publicKeyCount(void);
+  void purgePrivatePublicKeys(void);
 
  private:
   QByteArray m_publicKey;

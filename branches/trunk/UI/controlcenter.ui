@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>392</width>
-                <height>482</height>
+                <width>766</width>
+                <height>488</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1900,8 +1900,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>724</width>
-             <height>405</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2533,7 +2533,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>249</width>
+                     <width>240</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -4036,8 +4036,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>347</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4113,8 +4113,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>635</width>
-                 <height>619</height>
+                 <width>752</width>
+                 <height>602</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4953,8 +4953,8 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>711</width>
+             <y>-634</y>
+             <width>762</width>
              <height>1132</height>
             </rect>
            </property>
@@ -6012,6 +6012,16 @@
                      </item>
                     </widget>
                    </item>
+                   <item row="0" column="0">
+                    <widget class="QCheckBox" name="newKeys">
+                     <property name="toolTip">
+                      <string>If checked, new key pairs will be generated whenever the passphrase or question/answer is/are updated.</string>
+                     </property>
+                     <property name="text">
+                      <string>&amp;Key Size</string>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="1" column="9">
                     <widget class="QLabel" name="label_69">
                      <property name="text">
@@ -6069,17 +6079,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="0">
-                    <widget class="QCheckBox" name="newKeys">
-                     <property name="toolTip">
-                      <string>If checked, new key pairs will be generated whenever the passphrase or question/answer is/are updated.</string>
-                     </property>
-                     <property name="text">
-                      <string>&amp;Key Size</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="12">
+                   <item row="1" column="13">
                     <spacer name="horizontalSpacer_47">
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
@@ -6091,6 +6091,13 @@
                       </size>
                      </property>
                     </spacer>
+                   </item>
+                   <item row="1" column="12">
+                    <widget class="QPushButton" name="delete_key">
+                     <property name="text">
+                      <string>Delete</string>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -6145,7 +6152,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>476</width>
+             <width>762</width>
              <height>544</height>
             </rect>
            </property>
@@ -7156,8 +7163,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>653</width>
-             <height>453</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7690,8 +7697,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>241</width>
-             <height>150</height>
+             <width>776</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8312,6 +8319,7 @@
   <tabstop>signatureKeyType</tabstop>
   <tabstop>keys</tabstop>
   <tabstop>regenerate</tabstop>
+  <tabstop>delete_key</tabstop>
   <tabstop>scrollArea_4</tabstop>
   <tabstop>etpTab</tabstop>
   <tabstop>magnetsActionMenu</tabstop>

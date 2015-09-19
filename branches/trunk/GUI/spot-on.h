@@ -669,6 +669,7 @@ class spoton: public QMainWindow
   void slotDeleteEtpAllMagnets(void);
   void slotDeleteEtpMagnet(void);
   void slotDeleteInstitution(void);
+  void slotDeleteKey(void);
   void slotDeleteLink(const QUrl &u);
   void slotDeleteListener(void);
   void slotDeleteMail(void);
