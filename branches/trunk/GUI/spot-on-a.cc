@@ -5567,7 +5567,7 @@ void spoton::slotValidatePassphrase(void)
     {
       bool ok = true;
 
-      computedHash= spoton_crypt::keyedHash
+      computedHash = spoton_crypt::keyedHash
 	(m_ui.question_authenticate->text().toUtf8(),
 	 m_ui.answer_authenticate->text().toUtf8(),
 	 m_ui.hashType->currentText().toLatin1(), &ok);

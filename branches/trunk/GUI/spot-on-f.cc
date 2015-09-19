@@ -29,6 +29,7 @@
 #include <QScopedPointer>
 #include <QToolTip>
 
+#include "Common/spot-on-crypt.h"
 #include "spot-on.h"
 #include "ui_forwardsecrecyalgorithmsselection.h"
 #include "ui_unlock.h"
@@ -1151,9 +1152,42 @@ void spoton::slotLock(void)
       QDialog dialog(this);
       Ui_unlock ui;
 
+      dialog.setWindowTitle
+	(tr("%1: Unlock").arg(SPOTON_APPLICATION_NAME));
       ui.setupUi(&dialog);
 
       if(dialog.exec() != QDialog::Accepted)
+	return;
+
+      QByteArray computedHash;
+      QByteArray hashType
+	(m_settings.value("gui/hashType", "sha512").toByteArray());
+      QByteArray salt(m_settings.value("gui/salt", "").toByteArray());
+      QByteArray saltedPassphraseHash
+	(m_settings.value("gui/saltedPassphraseHash", "").toByteArray());
+      QString error("");
+      bool authenticated = false;
+      bool ok = true;
+
+      if(ui.radio_1->isChecked())
+	computedHash = spoton_crypt::saltedPassphraseHash
+	  (hashType, ui.passphrase->text(), salt, error);
+      else
+	computedHash = spoton_crypt::keyedHash
+	  (ui.question->text().toUtf8(),
+	   ui.answer->text().toUtf8(),
+	   hashType,
+	   &ok);
+
+      if(!ok)
+	error = "keyed hash failure";
+
+      if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
+	 spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
+	if(error.isEmpty())
+	  authenticated = true;
+
+      if(!authenticated)
 	return;
 
       m_locked = !m_locked;
@@ -1169,11 +1203,23 @@ void spoton::slotLock(void)
 	action->setText(tr("Lock"));
     }
 
+  QHashIterator<QString, QPointer<spoton_chatwindow> > it
+    (m_chatWindows);
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value())
+	it.value().data()->close();
+    }
+
   m_echoKeyShare->close();
   m_encryptFile.close();
   m_optionsWindow->close();
   m_rosetta.close();
   m_starbeamAnalyzer->close();
+  m_ui.tab->setCurrentIndex(m_ui.tab->count() - 1);
 
   /*
   ** Lock everything!
