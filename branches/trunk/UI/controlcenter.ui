@@ -806,7 +806,7 @@
              <x>0</x>
              <y>0</y>
              <width>902</width>
-             <height>560</height>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1192,7 +1192,7 @@
                         </item>
                         <item>
                          <property name="text">
-                          <string>None</string>
+                          <string>Normal</string>
                          </property>
                         </item>
                         <item>
@@ -1494,6 +1494,13 @@
                 <property name="margin">
                  <number>5</number>
                 </property>
+                <item>
+                 <widget class="QLabel" name="label_26">
+                  <property name="text">
+                   <string>Mail sent via Pure Forward Secrecy shall not be archived.</string>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_19">
                   <property name="spacing">
@@ -1893,8 +1900,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>498</height>
+             <width>724</width>
+             <height>405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2526,7 +2533,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>240</width>
+                     <width>249</width>
                      <height>1433</height>
                     </rect>
                    </property>

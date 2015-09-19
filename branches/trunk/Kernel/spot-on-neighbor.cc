@@ -4869,8 +4869,10 @@ void spoton_neighbor::slotSendMail
 
 	if(messageType == "0001a")
 	  message = spoton_send::message0001a(pair.first, ae);
-	else
+	else if (messageType == "0001b")
 	  message = spoton_send::message0001b(pair.first, ae);
+	else
+	  message = spoton_send::message0001c(pair.first, ae);
 
 	if(write(message.constData(), message.length()) != message.length())
 	  spoton_misc::logError
@@ -4883,17 +4885,19 @@ void spoton_neighbor::slotSendMail
 	    /*
 	    ** We may need to store the letter that this node sent if
 	    ** the node is also a post office box.
+	    ** Almost-anonymous e-mail shall not be archived.
 	    */
 
-	    if(spoton_kernel::setting("gui/postoffice_enabled",
-				      false).toBool())
-	      {
-		QWriteLocker locker(&m_dataMutex);
+	    if(messageType != "0001c")
+	      if(spoton_kernel::setting("gui/postoffice_enabled",
+					false).toBool())
+		{
+		  QWriteLocker locker(&m_dataMutex);
 
-		m_data.append(message);
-		locker.unlock();
-		processData();
-	      }
+		  m_data.append(message);
+		  locker.unlock();
+		  processData();
+		}
 
 	    addToBytesWritten(message.length());
 	    oids.append(pair.second);

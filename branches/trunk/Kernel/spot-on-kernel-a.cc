@@ -2962,11 +2962,14 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     keyType,
 				     message,
 				     name,
-				     publicKey,
 				     receiverName,
 				     subject,
 				     data))
 	{
+	  QPair<QByteArray, qint64> pair(data, mailOid);
+
+	  emit sendMail
+	    (QList<QPair<QByteArray, qint64> > () << pair, "0001c");
 	  return;
 	}
     }
@@ -2985,7 +2988,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
   /*
   ** name: my name
   ** publicKey: recipient's public key
-  ** mode: forward-secrecy, none, pure-forward-secrecy
+  ** mode: forward-secrecy, normal, pure-forward-secrecy
   */
 
   QByteArray myPublicKey;

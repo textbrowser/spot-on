@@ -171,7 +171,6 @@ class spoton_kernel: public QObject
 				   const QByteArray &keyType,
 				   const QByteArray &message,
 				   const QByteArray &name,
-				   const QByteArray &publicKey,
 				   const QByteArray &receiverName,
 				   const QByteArray &subject,
 				   QByteArray &data);

@@ -2926,7 +2926,7 @@ void spoton::slotSendMail(void)
 		goldbug.append("&xt=urn:forward-secrecy");
 	      }
 	    else
-	      mode = "none";
+	      mode = "normal";
 
 	    {
 	      QList<QByteArray> list;
@@ -2934,7 +2934,7 @@ void spoton::slotSendMail(void)
 	      if(!spoton_misc::isValidForwardSecrecyMagnet(goldbug, list))
 		{
 		  goldbug.clear();
-		  mode = "none";
+		  mode = "normal";
 		}
 	    }
 

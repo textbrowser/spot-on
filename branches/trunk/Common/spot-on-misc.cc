@@ -168,7 +168,7 @@ void spoton_misc::prepareDatabases(void)
 						  */
 		   "mode TEXT, " /*
 				 ** forward-secrecy
-				 ** none
+				 ** normal
 				 ** pure-forward-secrecy
 				 */
 		   "participant_oid TEXT NOT NULL, " // Encrypted?

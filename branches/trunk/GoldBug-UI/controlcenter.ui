@@ -1839,6 +1839,13 @@ QPushButton:pressed {
                  </layout>
                 </item>
                 <item>
+                 <widget class="QLabel" name="label_123">
+                  <property name="text">
+                   <string>Mail sent via Pure Forward Secrecy shall not be archived.</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QTableWidget" name="postoffice">
                   <property name="alternatingRowColors">
                    <bool>true</bool>
@@ -2384,7 +2391,7 @@ QPushButton:pressed {
                       </item>
                       <item>
                        <property name="text">
-                        <string>None</string>
+                        <string>Normal</string>
                        </property>
                       </item>
                       <item>
@@ -2768,8 +2775,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>1817</height>
+             <width>468</width>
+             <height>1833</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4006,7 +4013,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>582</width>
-             <height>660</height>
+             <height>576</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">

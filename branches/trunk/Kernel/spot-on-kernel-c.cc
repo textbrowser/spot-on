@@ -36,13 +36,10 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
  const QByteArray &keyType,
  const QByteArray &message,
  const QByteArray &name,
- const QByteArray &publicKey,
  const QByteArray &receiverName,
  const QByteArray &subject,
  QByteArray &data)
 {
-  Q_UNUSED(publicKey);
-  Q_UNUSED(receiverName);
   data.clear();
 
   spoton_crypt *s_crypt = s_crypts.value(keyType, 0);
