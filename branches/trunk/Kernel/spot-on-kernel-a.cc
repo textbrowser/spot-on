@@ -2952,6 +2952,25 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
       return;
     }
 
+  if(mode == "pure-forward-secrecy")
+    {
+      QByteArray data;
+
+      if(prepareAlmostAnonymousEmail(attachment,
+				     attachmentName,
+				     goldbug,
+				     keyType,
+				     message,
+				     name,
+				     publicKey,
+				     receiverName,
+				     subject,
+				     data))
+	{
+	  return;
+	}
+    }
+
   spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
 
   if(!s_crypt1)
@@ -3149,7 +3168,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			  else
 			    break;
 			}
-		    
+
 		    if(crypt && ok)
 		      goldbugUsed = true;
 
@@ -3430,7 +3449,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			  else
 			    break;
 			}
-		    
+
 		    if(crypt && ok)
 		      goldbugUsed = true;
 

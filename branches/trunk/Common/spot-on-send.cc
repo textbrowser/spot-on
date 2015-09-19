@@ -258,6 +258,16 @@ QByteArray spoton_send::message0001b
   return results;
 }
 
+QByteArray spoton_send::message0001c(const QByteArray &message)
+{
+  QByteArray authenticated
+    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
+  QByteArray results("content=");
+
+  results.append(authenticated);
+  return results;
+}
+
 QByteArray spoton_send::message0002a
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)

@@ -165,6 +165,16 @@ class spoton_kernel: public QObject
   static QReadWriteLock s_settingsMutex;
   bool initializeSecurityContainers(const QString &passphrase,
 				    const QString &answer);
+  bool prepareAlmostAnonymousEmail(const QByteArray &attachment,
+				   const QByteArray &attachmentName,
+				   const QByteArray &goldbug,
+				   const QByteArray &keyType,
+				   const QByteArray &message,
+				   const QByteArray &name,
+				   const QByteArray &publicKey,
+				   const QByteArray &receiverName,
+				   const QByteArray &subject,
+				   QByteArray &data);
   void checkForTermination(void);
   void cleanup(void);
   void cleanupDatabases(void);

@@ -25,4 +25,96 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "Common/spot-on-crypt.h"
+#include "Common/spot-on-misc.h"
 #include "spot-on-kernel.h"
+
+bool spoton_kernel::prepareAlmostAnonymousEmail
+(const QByteArray &attachment,
+ const QByteArray &attachmentName,
+ const QByteArray &goldbug,
+ const QByteArray &keyType,
+ const QByteArray &message,
+ const QByteArray &name,
+ const QByteArray &publicKey,
+ const QByteArray &receiverName,
+ const QByteArray &subject,
+ QByteArray &data)
+{
+  Q_UNUSED(publicKey);
+  Q_UNUSED(receiverName);
+  data.clear();
+
+  spoton_crypt *s_crypt = s_crypts.value(keyType, 0);
+
+  if(!s_crypt)
+    return false;
+
+  QByteArray dispatcherPublicKey;
+  QByteArray dispatcherPublicKeyHash;
+  bool ok = true;
+
+  dispatcherPublicKey = s_crypt->publicKey(&ok);
+
+  if(!ok)
+    return false;
+
+  dispatcherPublicKeyHash = spoton_crypt::sha512Hash
+    (dispatcherPublicKey, &ok);
+
+  if(!ok)
+    return false;
+
+  spoton_crypt *crypt = spoton_misc::cryptFromForwardSecrecyMagnet(goldbug);
+
+  if(!crypt)
+    return false;
+
+  QByteArray group1;
+  QByteArray group2;
+  QDataStream stream(&data, QIODevice::WriteOnly);
+
+  if(!ok)
+    goto done_label;
+
+  stream << QByteArray("0001c")
+	 << dispatcherPublicKeyHash
+	 << name
+	 << subject
+	 << message
+	 << attachment
+	 << attachmentName;
+
+  if(stream.status() != QDataStream::Ok)
+    {
+      ok = false;
+      goto done_label;
+    }
+
+  group1 = crypt->encrypted(data, &ok);
+
+  if(!ok)
+    goto done_label;
+
+  group2 = crypt->keyedHash(group1, &ok);
+
+  if(!ok)
+    goto done_label;
+
+  data = group1.toBase64() + "\n" + group2.toBase64();
+
+  if(keyType == "poptastic")
+    {
+      QByteArray message(spoton_send::message0001c(data));
+
+      postPoptasticMessage(receiverName, message);
+    }
+
+ done_label:
+  delete crypt;
+
+  if(!ok)
+    data.clear();
+
+  return ok;
+}
