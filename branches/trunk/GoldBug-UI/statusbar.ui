@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>670</width>
+    <width>696</width>
     <height>35</height>
    </rect>
   </property>
@@ -32,6 +32,13 @@
    <property name="bottomMargin">
     <number>5</number>
    </property>
+   <item>
+    <widget class="QToolButton" name="lock">
+     <property name="text">
+      <string>Lock</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QLabel" name="status">
      <property name="minimumSize">
@@ -199,6 +206,7 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>lock</tabstop>
   <tabstop>authentication_request</tabstop>
   <tabstop>buzz</tabstop>
   <tabstop>chat</tabstop>

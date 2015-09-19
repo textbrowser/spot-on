@@ -1112,13 +1112,6 @@ void spoton::slotDeleteKey(void)
   updatePublicKeysLabel();
 }
 
-void spoton::prepareToolBar(void)
-{
-  m_ui.toolBar->addAction(tr("Lock"),
-			  this,
-			  SLOT(slotLock(void)));
-}
-
 void spoton::slotLock(void)
 {
   if(!m_locked)
@@ -1193,15 +1186,10 @@ void spoton::slotLock(void)
       m_locked = !m_locked;
     }
 
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(action)
-    {
-      if(m_locked)
-	action->setText(tr("Unlock"));
-      else
-	action->setText(tr("Lock"));
-    }
+  if(m_locked)
+    m_sb.lock->setText(tr("Unlock"));
+  else
+    m_sb.lock->setText(tr("Lock"));
 
   QHashIterator<QString, QPointer<spoton_chatwindow> > it
     (m_chatWindows);
@@ -1214,6 +1202,10 @@ void spoton::slotLock(void)
 	it.value().data()->close();
     }
 
+  foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
+    if(m_sb.lock != toolButton)
+      toolButton->setEnabled(!m_locked);
+
   m_echoKeyShare->close();
   m_encryptFile.close();
   m_optionsWindow->close();
@@ -1225,7 +1217,7 @@ void spoton::slotLock(void)
   ** Lock everything!
   */
 
-  m_sbWidget->setEnabled(!m_locked);
+  m_sb.status->setEnabled(!m_locked);
   m_ui.menubar->setEnabled(!m_locked);
   m_ui.tab->setEnabled(!m_locked);
 }

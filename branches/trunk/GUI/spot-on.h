@@ -561,7 +561,6 @@ class spoton: public QMainWindow
   void prepareSMP(const QString &hash);
   void prepareTabIcons(void);
   void prepareTimeWidgets(void);
-  void prepareToolBar(void);
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
   void refreshInstitutions(void);

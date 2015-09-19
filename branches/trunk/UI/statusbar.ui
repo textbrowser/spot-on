@@ -33,6 +33,13 @@
     <number>5</number>
    </property>
    <item>
+    <widget class="QToolButton" name="lock">
+     <property name="text">
+      <string>Lock</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="status">
      <property name="minimumSize">
       <size>
@@ -199,6 +206,7 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>lock</tabstop>
   <tabstop>authentication_request</tabstop>
   <tabstop>buzz</tabstop>
   <tabstop>chat</tabstop>

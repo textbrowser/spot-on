@@ -435,6 +435,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotKernelStatus(void)));
+  connect(m_sb.lock,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotLock(void)));
   connect(m_sb.status,
 	  SIGNAL(linkActivated(const QString &)),
 	  this,
@@ -2395,7 +2399,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.tab->setIconSize(size);
   prepareContextMenuMirrors();
   prepareTimeWidgets();
-  prepareToolBar();
 
   QList<QWidget *> widgets;
 

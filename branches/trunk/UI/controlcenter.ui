@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>485</height>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -419,7 +419,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>752</width>
+                <width>392</width>
                 <height>482</height>
                </rect>
               </property>
@@ -1900,8 +1900,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>466</height>
+             <width>724</width>
+             <height>405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2533,7 +2533,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>240</width>
+                     <width>249</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -4036,8 +4036,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>466</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4113,8 +4113,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>752</width>
-                 <height>602</height>
+                 <width>635</width>
+                 <height>619</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4954,7 +4954,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
+             <width>711</width>
              <height>1132</height>
             </rect>
            </property>
@@ -6152,7 +6152,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
+             <width>476</width>
              <height>544</height>
             </rect>
            </property>
@@ -7163,8 +7163,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>466</height>
+             <width>653</width>
+             <height>453</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7697,8 +7697,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>466</height>
+             <width>241</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7962,23 +7962,6 @@
    <addaction name="menu_Edit"/>
    <addaction name="menu_Tools"/>
    <addaction name="menu_View"/>
-  </widget>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>Spot-On: Tool Bar</string>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::BottomToolBarArea|Qt::TopToolBarArea</set>
-   </property>
-   <property name="floatable">
-    <bool>false</bool>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
   <action name="action_Quit">
    <property name="text">
