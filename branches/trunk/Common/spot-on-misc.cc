@@ -4736,6 +4736,7 @@ void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
 
 QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 						      const QByteArray &bytes2,
+						      const QString &keyType,
 						      spoton_crypt *crypt)
 {
   if(!crypt)
@@ -4763,6 +4764,7 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
     if(db.open())
       {
 	QSqlQuery query(db);
+	bool ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT "
@@ -4775,9 +4777,12 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 		      "AND "
 		      "forward_secrecy_authentication_key IS NOT NULL AND "
 		      "forward_secrecy_encryption_algorithm IS NOT NULL AND "
-		      "forward_secrecy_encryption_key IS NOT NULL");
+		      "forward_secrecy_encryption_key IS NOT NULL AND "
+		      "key_type_hash = ?");
+	query.bindValue(0, crypt->keyedHash(keyType.toLatin1(), &ok).
+			toBase64());
 
-	if(query.exec())
+	if(ok && query.exec())
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;

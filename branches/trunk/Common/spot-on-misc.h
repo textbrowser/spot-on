@@ -99,6 +99,7 @@ class spoton_misc
 					spoton_crypt *crypt);
   static QList<QByteArray> findForwardSecrecyKeys(const QByteArray &bytes1,
 						  const QByteArray &bytes2,
+						  const QString &keyType,
 						  spoton_crypt *crypt);
   static QPair<QByteArray, QByteArray> decryptedAdaptiveEchoPair
     (const QPair<QByteArray, QByteArray>, spoton_crypt *crypt);

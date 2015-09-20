@@ -826,6 +826,7 @@ QList<QByteArray> spoton_receive::process0001c
  const QList<QByteArray> &symmetricKeys,
  const QHostAddress &address,
  const quint16 port,
+ const QString &keyType,
  spoton_crypt *s_crypt)
 {
   if(!s_crypt)
@@ -913,7 +914,7 @@ QList<QByteArray> spoton_receive::process0001c
       if(list.isEmpty())
 	return QList<QByteArray> ();
 
-      if(!spoton_misc::isAcceptedParticipant(list.value(1), "email", s_crypt))
+      if(!spoton_misc::isAcceptedParticipant(list.value(1), keyType, s_crypt))
 	return QList<QByteArray> ();
 
       QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
@@ -1680,10 +1681,11 @@ QString spoton_receive::findMessageType
       symmetricKeys = spoton_misc::findForwardSecrecyKeys
 	(QByteArray::fromBase64(list.value(0)),
 	 QByteArray::fromBase64(list.value(1)),
+	 keyType,
 	 s_crypt);
 
       if(!symmetricKeys.isEmpty())
-	type == "0001c";
+	type = "0001c";
     }
 
  done_label:

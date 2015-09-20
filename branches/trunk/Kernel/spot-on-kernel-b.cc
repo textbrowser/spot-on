@@ -1157,6 +1157,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
       QList<QByteArray> list
 	(spoton_receive::process0001c(data.length(), data, symmetricKeys,
 				      QHostAddress("127.0.0.1"), 0,
+				      "poptastic",
 				      spoton_kernel::s_crypts.
 				      value("email", 0)));
 

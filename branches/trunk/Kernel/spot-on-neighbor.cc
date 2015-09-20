@@ -3056,7 +3056,7 @@ void spoton_neighbor::process0001c
 {
   QList<QByteArray> list
     (spoton_receive::process0001c(length, dataIn, symmetricKeys,
-				  m_address, m_port,
+				  m_address, m_port, "email",
 				  spoton_kernel::s_crypts.value("email", 0)));
 
   if(!list.isEmpty())
@@ -6106,6 +6106,7 @@ QString spoton_neighbor::findMessageType
       symmetricKeys = spoton_misc::findForwardSecrecyKeys
 	(QByteArray::fromBase64(list.value(0)),
 	 QByteArray::fromBase64(list.value(1)),
+	 "chat",
 	 s_crypt);
 
       if(!symmetricKeys.isEmpty())
