@@ -1223,6 +1223,7 @@ void spoton::slotLock(void)
 
   m_echoKeyShare->close();
   m_encryptFile.close();
+  m_logViewer.close();
   m_optionsWindow->close();
   m_rosetta.close();
   m_starbeamAnalyzer->close();

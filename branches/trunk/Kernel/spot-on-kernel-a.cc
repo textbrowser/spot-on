@@ -4603,6 +4603,15 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.bindValue
 	  (0, locale.toString(spoton_misc::databaseAccesses()));
 	query.exec();
+	query.prepare("INSERT OR REPLACE INTO KERNEL_STATISTICS "
+		      "(statistic, value) "
+		      "VALUES ('Ephemeral Key Pairs', ?)");
+
+	QReadLocker locker3(&m_forwardSecrecyKeysMutex);
+
+	query.bindValue(0, locale.toString(m_forwardSecrecyKeys.size()));
+	locker3.unlock();
+	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Live Listeners', ?)");
@@ -4617,19 +4626,19 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 		      "(statistic, value) "
 		      "VALUES ('Total URLs Processed', ?)");
 
-	QReadLocker locker3(&m_urlsProcessedMutex);
+	QReadLocker locker4(&m_urlsProcessedMutex);
 
 	query.bindValue(0, locale.toString(m_urlsProcessed));
-	locker3.unlock();
+	locker4.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('URL Container Size', ?)");
 
-	QReadLocker locker4(&m_urlListMutex);
+	QReadLocker locker5(&m_urlListMutex);
 
 	query.bindValue(0, locale.toString(m_urlList.size()));
-	locker4.unlock();
+	locker5.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
