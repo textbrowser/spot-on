@@ -1152,6 +1152,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  QSqlDatabase::removeDatabase(connectionName);
 	}
     }
+  else if(messageType == "0001c")
+    {
+    }
   else if(messageType == "0013")
     {
       QList<QByteArray> list

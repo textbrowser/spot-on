@@ -238,6 +238,8 @@ class spoton_neighbor: public QThread
   void process0001a(int length, const QByteArray &data);
   void process0001b(int length, const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
+  void process0001c(int length, const QByteArray &data,
+		    const QList<QByteArray> &symmetricKeys);
   void process0002a(int length, const QByteArray &data,
 		    const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
   void process0002b(int length, const QByteArray &data,

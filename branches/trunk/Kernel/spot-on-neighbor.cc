@@ -1855,6 +1855,8 @@ void spoton_neighbor::processData(void)
 	    process0001a(length, data);
 	  else if(messageType == "0001b")
 	    process0001b(length, data, symmetricKeys);
+	  else if(messageType == "0001c")
+	    process0001c(length, data, symmetricKeys);
 	  else if(messageType == "0002a")
 	    process0002a(length, data, discoveredAdaptiveEchoPair);
 	  else if(messageType == "0002b")
@@ -3047,6 +3049,15 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
        arg(length).arg(data.length()).
        arg(m_address.toString()).
        arg(m_port));
+}
+
+void spoton_neighbor::process0001c
+(int length, const QByteArray &dataIn,
+ const QList<QByteArray> &symmetricKeys)
+{
+  Q_UNUSED(dataIn);
+  Q_UNUSED(length);
+  Q_UNUSED(symmetricKeys);
 }
 
 void spoton_neighbor::process0002a

@@ -817,6 +817,22 @@ QList<QByteArray> spoton_receive::process0001b
   return QList<QByteArray> ();
 }
 
+QList<QByteArray> spoton_receive::process0001c
+(int length, const QByteArray &dataIn,
+ const QList<QByteArray> &symmetricKeys,
+ const QHostAddress &address,
+ const quint16 port,
+ spoton_crypt *s_crypt)
+{
+  Q_UNUSED(address);
+  Q_UNUSED(dataIn);
+  Q_UNUSED(length);
+  Q_UNUSED(port);
+  Q_UNUSED(s_crypt);
+  Q_UNUSED(symmetricKeys);
+  return QList<QByteArray> ();
+}
+
 QList<QByteArray> spoton_receive::process0013
 (int length, const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
