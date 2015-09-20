@@ -6101,12 +6101,12 @@ QString spoton_neighbor::findMessageType
 	}
     }
 
-  if(list.size() == 3 && (s_crypt = spoton_kernel::s_crypts.value("chat", 0)))
+  if(list.size() == 3 && (s_crypt = spoton_kernel::s_crypts.value("email", 0)))
     {
       symmetricKeys = spoton_misc::findForwardSecrecyKeys
 	(QByteArray::fromBase64(list.value(0)),
 	 QByteArray::fromBase64(list.value(1)),
-	 "chat",
+	 "email",
 	 s_crypt);
 
       if(!symmetricKeys.isEmpty())
