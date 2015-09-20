@@ -173,6 +173,7 @@ class spoton_kernel: public QObject
 				   const QByteArray &name,
 				   const QByteArray &receiverName,
 				   const QByteArray &subject,
+				   const qint64 mailOid,
 				   QByteArray &data);
   void checkForTermination(void);
   void cleanup(void);

@@ -2964,6 +2964,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     name,
 				     receiverName,
 				     subject,
+				     mailOid,
 				     data))
 	{
 	  QPair<QByteArray, qint64> pair(data, mailOid);
