@@ -1236,3 +1236,35 @@ void spoton::slotLock(void)
   m_ui.menubar->setEnabled(!m_locked);
   m_ui.tab->setEnabled(!m_locked);
 }
+
+void spoton::slotCallParticipantViaForwardSecrecy(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted())
+    return;
+
+  QString keyType("");
+  QString oid("");
+  bool temporary = true;
+  int row = -1;
+
+  if((row = m_ui.participants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.participants->item
+	(row, 1); // OID
+
+      if(item)
+	{
+	  keyType = item->data
+	    (Qt::ItemDataRole(Qt::UserRole + 1)).toString().toLower();
+	  oid = item->text();
+	  temporary = item->data(Qt::UserRole).toBool();
+	}
+    }
+
+  if(oid.isEmpty())
+    return;
+  else if(temporary) // Temporary friend?
+    return; // Not allowed!
+}

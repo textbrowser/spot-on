@@ -2652,6 +2652,9 @@ void spoton::prepareContextMenuMirrors(void)
 		     this,
 		     SLOT(slotShareStarBeam(void)));
       menu->addSeparator();
+      menu->addAction
+	(tr("Call via Forward &Secrecy credentials."),
+	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
       action = menu->addAction(tr("Initiate a Forward &Secrecy exchange."),
 			       this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "chat");

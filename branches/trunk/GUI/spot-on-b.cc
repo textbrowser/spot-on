@@ -2561,8 +2561,8 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!clipboard)
     return;
 
-  QString oid("");
   QString keyType("");
+  QString oid("");
   int row = -1;
 
   if((row = m_ui.participants->currentRow()) >= 0)

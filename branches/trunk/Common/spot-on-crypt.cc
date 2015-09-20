@@ -2343,8 +2343,8 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
   QByteArray hash(64, 0); // Output length of SHA-512 divided by 8.
   QByteArray random(20, 0);
   QByteArray signature;
-  QStringList list;
   QString keyType("");
+  QStringList list;
   gcry_error_t err = 0;
   gcry_mpi_t hash_t = 0;
   gcry_sexp_t data_t = 0;
@@ -2711,8 +2711,8 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 {
   QByteArray hash(64, 0); // Output length of SHA-512 divided by 8.
   QByteArray random(20, 0);
-  QStringList list;
   QString keyType("");
+  QStringList list;
   bool ok = true;
   gcry_error_t err = 0;
   gcry_mpi_t hash_t = 0;

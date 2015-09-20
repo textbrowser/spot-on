@@ -624,6 +624,7 @@ class spoton: public QMainWindow
   void slotBuzzChanged(void);
   void slotBuzzTools(int index);
   void slotCallParticipant(void);
+  void slotCallParticipantViaForwardSecrecy(void);
   void slotChangeTabPosition(int index);
   void slotChatInactivityTimeout(void);
   void slotChatPopup(void);

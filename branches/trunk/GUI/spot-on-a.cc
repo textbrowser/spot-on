@@ -6151,6 +6151,9 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this,
 		     SLOT(slotShareStarBeam(void)));
       menu.addSeparator();
+      menu.addAction
+	(tr("Call via Forward &Secrecy credentials."),
+	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
       action = menu.addAction
 	(tr("Initiate a Forward &Secrecy exchange."),
 	 this, SLOT(slotEstablishForwardSecrecy(void)));
@@ -7652,8 +7655,8 @@ void spoton::slotCallParticipant(void)
   if(!action)
     return;
 
-  QString oid("");
   QString keyType("");
+  QString oid("");
   QString type(action->property("type").toString().toLower());
   bool temporary = true;
   int row = -1;
