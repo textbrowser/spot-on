@@ -6094,6 +6094,17 @@ QString spoton_neighbor::findMessageType
 	}
     }
 
+  if(list.size() == 3 && (s_crypt = spoton_kernel::s_crypts.value("chat", 0)))
+    {
+      symmetricKeys = spoton_misc::findForwardSecrecyKeys
+	(QByteArray::fromBase64(list.value(0)),
+	 QByteArray::fromBase64(list.value(1)),
+	 s_crypt);
+
+      if(!symmetricKeys.isEmpty())
+	type == "0001c";
+    }
+
  done_label:
   spoton_kernel::discoverAdaptiveEchoPair
     (data.trimmed(), discoveredAdaptiveEchoPair);

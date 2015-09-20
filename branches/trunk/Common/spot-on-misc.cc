@@ -4401,7 +4401,7 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 		      QByteArray data(crypt.decrypted(bytes1, &ok));
 
 		      if(!ok)
-			continue;
+			break;
 
 		      QByteArray a;
 		      QDataStream stream(&data, QIODevice::ReadOnly);
@@ -4732,4 +4732,125 @@ void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
     qBound(5, values.value(4), 600);
   spoton_common::MAIL_TIME_DELTA_MAXIMUM =
     qBound(5, values.value(5), 600);
+}
+
+QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
+						      const QByteArray &bytes2,
+						      spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::findForwardSecrecyKeys(): crypt "
+	 "is zero.");
+      return QList<QByteArray> ();
+    }
+
+  /*
+  ** bytes1: encrypted portion.
+  ** bytes2: digest portion.
+  */
+
+  QList<QByteArray> forwardSecrecyKeys;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT "
+		      "forward_secrecy_authentication_algorithm, " // 0
+		      "forward_secrecy_authentication_key, "       // 1
+		      "forward_secrecy_encryption_algorithm, "     // 2
+		      "forward_secrecy_encryption_key "            // 3
+		      "FROM friends_public_keys WHERE "
+		      "forward_secrecy_authentication_algorithm IS NOT NULL "
+		      "AND "
+		      "forward_secrecy_authentication_key IS NOT NULL AND "
+		      "forward_secrecy_encryption_algorithm IS NOT NULL AND "
+		      "forward_secrecy_encryption_key IS NOT NULL");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QList<QByteArray> list;
+	      bool ok = true;
+
+	      for(int i = 0; i < query.record().count(); i++)
+		{
+		  QByteArray bytes;
+
+		  bytes = crypt->
+		    decryptedAfterAuthenticated(QByteArray::
+						fromBase64(query.value(i).
+							   toByteArray()),
+						&ok);
+
+		  if(ok)
+		    list << bytes;
+		  else
+		    break;
+		}
+
+	      if(!ok)
+		continue;
+
+	      {
+		QByteArray computedHash;
+		spoton_crypt crypt(list.value(2).constData(),
+				   list.value(0).constData(),
+				   QByteArray(),
+				   list.value(3),
+				   list.value(1),
+				   0,
+				   0,
+				   "");
+
+		computedHash = crypt.keyedHash(bytes1, &ok);
+
+		if(ok)
+		  if(!computedHash.isEmpty() && !bytes2.isEmpty() &&
+		     spoton_crypt::memcmp(bytes2, computedHash))
+		    {
+		      QByteArray data(crypt.decrypted(bytes1, &ok));
+
+		      if(!ok)
+			break;
+
+		      QByteArray a;
+		      QDataStream stream(&data, QIODevice::ReadOnly);
+
+		      stream >> a;
+
+		      if(stream.status() == QDataStream::Ok)
+			/*
+			** symmetricKeys[0]: Encryption Key
+			** symmetricKeys[1]: Encryption Type
+			** symmetricKeys[2]: Hash Key
+			** symmetricKeys[3]: Hash Type
+			*/
+
+			forwardSecrecyKeys << list.value(3)
+					   << list.value(2)
+					   << list.value(1)
+					   << list.value(0);
+
+		      break;
+		    }
+	      }
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return forwardSecrecyKeys;
 }

@@ -97,6 +97,9 @@ class spoton_misc
 					const QByteArray &bytes2,
 					QString &type,
 					spoton_crypt *crypt);
+  static QList<QByteArray> findForwardSecrecyKeys(const QByteArray &bytes1,
+						  const QByteArray &bytes2,
+						  spoton_crypt *crypt);
   static QPair<QByteArray, QByteArray> decryptedAdaptiveEchoPair
     (const QPair<QByteArray, QByteArray>, spoton_crypt *crypt);
   static QPair<QByteArray, QByteArray> findGeminiInCosmos
