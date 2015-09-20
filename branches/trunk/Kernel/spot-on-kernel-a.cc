@@ -4620,7 +4620,13 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Live Neighbors', ?)");
-	query.bindValue(0, neighbors);
+	query.bindValue(0, locale.toString(neighbors));
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
+		      "VALUES ('Open Database Connections', ?)");
+	query.bindValue
+	  (0, locale.toString(QSqlDatabase::connectionNames().size()));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
