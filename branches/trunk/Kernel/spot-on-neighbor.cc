@@ -2883,7 +2883,6 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       if(!(list.size() == 4 || list.size() == 7))
@@ -3055,9 +3054,13 @@ void spoton_neighbor::process0001c
 (int length, const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys)
 {
-  Q_UNUSED(dataIn);
-  Q_UNUSED(length);
-  Q_UNUSED(symmetricKeys);
+  QList<QByteArray> list
+    (spoton_receive::process0001c(length, dataIn, symmetricKeys,
+				  m_address, m_port,
+				  spoton_kernel::s_crypts.value("email", 0)));
+
+  if(!list.isEmpty())
+    emit newEMailArrived();
 }
 
 void spoton_neighbor::process0002a
@@ -3075,7 +3078,6 @@ void spoton_neighbor::process0002a
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       if(list.size() != 4)
@@ -3238,7 +3240,6 @@ void spoton_neighbor::process0002b
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       if(list.size() != 3)
@@ -3692,7 +3693,6 @@ void spoton_neighbor::process0040a(int length, const QByteArray &dataIn,
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
@@ -3777,7 +3777,6 @@ void spoton_neighbor::process0040b(int length, const QByteArray &dataIn,
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
@@ -4348,7 +4347,6 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
@@ -4496,7 +4494,6 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
@@ -5177,13 +5174,11 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 		      "receiver_sender, receiver_sender_hash, "
 		      "status, subject, participant_oid) "
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-	if(ok)
-	  query.bindValue
-	    (0, s_crypt->
-	     encryptedThenHashed(QDateTime::currentDateTime().
-				 toString(Qt::ISODate).
-				 toLatin1(), &ok).toBase64());
+	query.bindValue
+	  (0, s_crypt->
+	   encryptedThenHashed(QDateTime::currentDateTime().
+			       toString(Qt::ISODate).
+			       toLatin1(), &ok).toBase64());
 
 	query.bindValue(1, 0); // Inbox Folder
 
@@ -5257,7 +5252,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 					"VALUES (?, ?, ?)");
 			  query.bindValue
 			    (0, s_crypt->encryptedThenHashed(data,
-							     &ok).toBase64());
+							     &ok).
+			     toBase64());
 			  query.bindValue(1, id);
 
 			  if(ok)
@@ -6113,7 +6109,7 @@ QString spoton_neighbor::findMessageType
 	 s_crypt);
 
       if(!symmetricKeys.isEmpty())
-	type == "0001c";
+	type = "0001c";
     }
 
  done_label:

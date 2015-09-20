@@ -44,7 +44,7 @@ QList<QByteArray> spoton_receive::process0000
     {
       spoton_misc::logError
 	("spoton_receive::process0000(): "
-	 "crypt is zero.");
+	 "s_crypt is zero.");
       return QList<QByteArray> ();
     }
 
@@ -54,7 +54,6 @@ QList<QByteArray> spoton_receive::process0000
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
       bool ok = true;
 
@@ -345,7 +344,7 @@ QList<QByteArray> spoton_receive::process0000a
     {
       spoton_misc::logError
 	("spoton_receive::process0000a(): "
-	 "crypt is zero.");
+	 "s_crypt is zero.");
       return QList<QByteArray> ();
     }
 
@@ -355,7 +354,6 @@ QList<QByteArray> spoton_receive::process0000a
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       if(list.size() != 4)
@@ -554,7 +552,7 @@ QList<QByteArray> spoton_receive::process0000b
     {
       spoton_misc::logError
 	("spoton_receive::process0000b(): "
-	 "crypt is zero.");
+	 "s_crypt is zero.");
       return QList<QByteArray> ();
     }
 
@@ -564,7 +562,6 @@ QList<QByteArray> spoton_receive::process0000b
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       if(list.size() != 3)
@@ -685,13 +682,20 @@ QList<QByteArray> spoton_receive::process0001b
  const quint16 port,
  spoton_crypt *s_crypt)
 {
+  if(!s_crypt)
+    {
+      spoton_misc::logError
+	("spoton_receive::process0001b(): "
+	 "s_crypt is zero.");
+      return QList<QByteArray> ();
+    }
+
   QByteArray data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       if(list.size() != 7)
@@ -824,12 +828,110 @@ QList<QByteArray> spoton_receive::process0001c
  const quint16 port,
  spoton_crypt *s_crypt)
 {
-  Q_UNUSED(address);
-  Q_UNUSED(dataIn);
-  Q_UNUSED(length);
-  Q_UNUSED(port);
-  Q_UNUSED(s_crypt);
-  Q_UNUSED(symmetricKeys);
+  if(!s_crypt)
+    {
+      spoton_misc::logError
+	("spoton_receive::process0001c(): "
+	 "s_crypt is zero.");
+      return QList<QByteArray> ();
+    }
+
+  QByteArray data(dataIn);
+
+  if(length != data.length())
+    {
+      spoton_misc::logError
+      (QString("spoton_receive::process0001c(): 0001c "
+	       "Content-Length mismatch (advertised: %1, received: %2) "
+	       "for %3:%4.").
+       arg(length).arg(data.length()).
+       arg(address.toString()).
+       arg(port));
+      return QList<QByteArray> ();
+    }
+
+  data = data.trimmed();
+
+  QList<QByteArray> list(data.split('\n'));
+
+  if(list.size() != 3)
+    {
+      spoton_misc::logError
+	(QString("spoton_receivet::process0001c(): "
+		 "received irregular data. Expecting 3 "
+		 "entries, "
+		 "received %1.").arg(list.size()));
+      return QList<QByteArray> ();
+    }
+
+  for(int i = 0; i < list.size(); i++)
+    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+  /*
+  ** The message digest was verified.
+  */
+
+  /*
+  ** symmetricKeys[0]: Encryption Key
+  ** symmetricKeys[1]: Encryption Type
+  ** symmetricKeys[2]: Hash Key
+  ** symmetricKeys[3]: Hash Type
+  */
+
+  bool ok = true;
+  spoton_crypt crypt(symmetricKeys.value(1).constData(),
+		     symmetricKeys.value(3).constData(),
+		     QByteArray(),
+		     symmetricKeys.value(0),
+		     symmetricKeys.value(2),
+		     0,
+		     0,
+		     "");
+
+  data = crypt.decrypted(list.value(0), &ok);
+
+  if(ok)
+    {
+      QDataStream stream(&data, QIODevice::ReadOnly);
+      QList<QByteArray> list;
+
+      for(int i = 0; i < 7; i++)
+	{
+	  QByteArray a;
+
+	  stream >> a;
+
+	  if(stream.status() != QDataStream::Ok)
+	    {
+	      list.clear();
+	      break;
+	    }
+	  else
+	    list << a;
+	}
+
+      if(list.isEmpty())
+	return QList<QByteArray> ();
+
+      if(!spoton_misc::isAcceptedParticipant(list.value(1), "email", s_crypt))
+	return QList<QByteArray> ();
+
+      QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
+			 "email.db");
+      qint64 maximumSize = 1048576 * spoton_kernel::setting
+	("gui/maximumEmailFileSize", 100).toLongLong();
+
+      if(fileInfo.size() >= maximumSize)
+	{
+	  spoton_misc::logError("spoton_receive::process0001c(): "
+				"email.db has exceeded the specified limit.");
+	  return QList<QByteArray> ();
+	}
+
+      if(spoton_misc::storeAlmostAnonymousLetter(list, s_crypt))
+	return list;
+    }
+
   return QList<QByteArray> ();
 }
 
@@ -845,7 +947,7 @@ QList<QByteArray> spoton_receive::process0013
     {
       spoton_misc::logError
 	("spoton_receive::process0013(): "
-	 "crypt is zero.");
+	 "s_crypt is zero.");
       return QList<QByteArray> ();
     }
 
@@ -855,7 +957,6 @@ QList<QByteArray> spoton_receive::process0013
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
       bool ok = true;
 
@@ -1135,7 +1236,7 @@ QList<QByteArray> spoton_receive::process0091
     {
       spoton_misc::logError
 	("spoton_receive::process0091(): "
-	 "crypt is zero.");
+	 "s_crypt is zero.");
       return QList<QByteArray> ();
     }
 
@@ -1145,7 +1246,6 @@ QList<QByteArray> spoton_receive::process0091
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
       QList<QByteArray> list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
@@ -1394,7 +1494,7 @@ QString spoton_receive::findMessageType
     {
       spoton_misc::logError
 	("spoton_receive::findMessageType(): "
-	 "crypt is zero.");
+	 "s_crypt is zero.");
       return "";
     }
 
@@ -1573,6 +1673,18 @@ QString spoton_receive::findMessageType
 	else
 	  symmetricKeys.clear();
       }
+
+  if(list.size() == 3 && (s_crypt = spoton_kernel::
+			            s_crypts.value(keyType, 0)))
+    {
+      symmetricKeys = spoton_misc::findForwardSecrecyKeys
+	(QByteArray::fromBase64(list.value(0)),
+	 QByteArray::fromBase64(list.value(1)),
+	 s_crypt);
+
+      if(!symmetricKeys.isEmpty())
+	type == "0001c";
+    }
 
  done_label:
   return type;

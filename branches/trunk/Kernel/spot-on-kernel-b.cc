@@ -1154,6 +1154,14 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     }
   else if(messageType == "0001c")
     {
+      QList<QByteArray> list
+	(spoton_receive::process0001c(data.length(), data, symmetricKeys,
+				      QHostAddress("127.0.0.1"), 0,
+				      spoton_kernel::s_crypts.
+				      value("email", 0)));
+
+      if(!list.isEmpty())
+	emit newEMailArrived();
     }
   else if(messageType == "0013")
     {

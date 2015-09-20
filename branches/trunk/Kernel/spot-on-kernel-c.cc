@@ -74,13 +74,22 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
   if(!ok)
     goto done_label;
 
-  stream << QByteArray("0001c")
-	 << dispatcherPublicKeyHash
-	 << name
-	 << subject
-	 << message
-	 << attachment
-	 << attachmentName;
+  if(attachment.isEmpty() || attachmentName.isEmpty())
+    stream << QByteArray("0001c")
+	   << dispatcherPublicKeyHash
+	   << name
+	   << subject
+	   << message
+	   << QByteArray()
+	   << QByteArray();
+  else
+    stream << QByteArray("0001c")
+	   << dispatcherPublicKeyHash
+	   << name
+	   << subject
+	   << message
+	   << qCompress(attachment, 9)
+	   << attachmentName;
 
   if(stream.status() != QDataStream::Ok)
     {

@@ -4854,3 +4854,139 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
   QSqlDatabase::removeDatabase(connectionName);
   return forwardSecrecyKeys;
 }
+
+bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
+					     spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::storeAlmostAnonymousLetter(): crypt "
+	 "is zero.");
+      return false;
+    }
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "email.db");
+
+    if(db.open())
+      {
+	QByteArray attachment(list.value(5));
+	QByteArray attachmentName(list.value(6));
+	QByteArray message(list.value(4));
+	QByteArray name(list.value(2));
+	QByteArray senderPublicKeyHash(list.value(1));
+	QByteArray subject(list.value(3));
+	QSqlQuery query(db);
+
+	query.prepare("INSERT INTO folders "
+		      "(date, folder_index, goldbug, hash, "
+		      "message, message_code, "
+		      "receiver_sender, receiver_sender_hash, "
+		      "status, subject, participant_oid) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+	query.bindValue
+	  (0, crypt->
+	   encryptedThenHashed(QDateTime::currentDateTime().
+			       toString(Qt::ISODate).
+			       toLatin1(), &ok).toBase64());
+	query.bindValue(1, 0); // Inbox Folder
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->
+	     encryptedThenHashed(QByteArray::number(0), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, crypt->keyedHash(message + subject,
+				 &ok).toBase64());
+
+	if(ok)
+	  if(!message.isEmpty())
+	    query.bindValue
+	      (4, crypt->encryptedThenHashed(message,
+					     &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (5, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  if(!name.isEmpty())
+	    query.bindValue
+	      (6, crypt->encryptedThenHashed(name,
+					     &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (7, senderPublicKeyHash.toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (8, crypt->
+	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (9, crypt->encryptedThenHashed(subject, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (10, crypt->
+	     encryptedThenHashed(QByteArray::number(-1), &ok).
+	     toBase64());
+
+	if(ok)
+	  if((ok = query.exec()))
+	    {
+	      if(!attachment.isEmpty() && !attachmentName.isEmpty())
+		{
+		  QVariant variant(query.lastInsertId());
+		  qint64 id = query.lastInsertId().toLongLong();
+
+		  if(variant.isValid())
+		    {
+		      QByteArray data;
+
+		      data = qUncompress(attachment);
+
+		      if(!data.isEmpty())
+			{
+			  query.prepare("INSERT INTO folders_attachment "
+					"(data, folders_oid, name) "
+					"VALUES (?, ?, ?)");
+			  query.bindValue
+			    (0, crypt->encryptedThenHashed(data,
+							   &ok).toBase64());
+			  query.bindValue(1, id);
+
+			  if(ok)
+			    query.bindValue
+			      (2, crypt->
+			       encryptedThenHashed(attachmentName,
+						   &ok).toBase64());
+
+			  if(ok)
+			    ok = query.exec();
+			}
+		    }
+		}
+	    }
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return ok;
+}
