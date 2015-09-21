@@ -3485,6 +3485,12 @@ void spoton::populateMail(void)
 	m_ui.mailMessage->clear();
 	query.setForwardOnly(true);
 
+	if(query.exec(QString("SELECT COUNT(*) FROM folders WHERE "
+			      "folder_index = %1").
+		      arg(m_ui.folder->currentIndex())))
+	  if(query.next())
+	    m_ui.mail->setRowCount(query.value(0).toInt());
+
 	if(query.exec(QString("SELECT f.date, f.receiver_sender, f.status, "
 			      "f.subject, "
 			      "(SELECT COUNT(*) FROM folders_attachment a "
@@ -3519,10 +3525,7 @@ void spoton::populateMail(void)
 		    QTableWidgetItem *item = 0;
 
 		    if(i == 0)
-		      {
-			row += 1;
-			m_ui.mail->setRowCount(row);
-		      }
+		      row += 1;
 
 		    if(i == 0 || i == 1 || i == 2 ||
 		       i == 3 || i == 6 || i == 7)
@@ -3678,6 +3681,10 @@ void spoton::slotRefreshPostOffice(void)
 
 	query.setForwardOnly(true);
 
+	if(query.exec("SELECT COUNT(*) FROM post_office"))
+	  if(query.next())
+	    m_ui.postoffice->setRowCount(query.value(0).toInt());
+
 	if(query.exec("SELECT date_received, "
 		      "message_bundle, recipient_hash "
 		      "FROM post_office"))
@@ -3691,10 +3698,7 @@ void spoton::slotRefreshPostOffice(void)
 		  bool ok = true;
 
 		  if(i == 0)
-		    {
-		      row += 1;
-		      m_ui.postoffice->setRowCount(row);
-		    }
+		    row += 1;
 
 		  if(i == 0)
 		    {
