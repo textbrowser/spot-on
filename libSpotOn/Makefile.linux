@@ -1,11 +1,11 @@
 all:	libspoton.o
-	$(CC) $(LDFLAGS) -L/usr/local/lib -shared -Wl,-soname,libspoton.so \
+	$(CC) $(LDFLAGS) -shared -Wl,-soname,libspoton.so \
 	-o libspoton.so $? -lgcrypt -lpthread -lsqlite3
 	$(CC) $(CFLAGS) -Wall -Werror -Wextra \
 	test.c -o test -L. -lspoton -Wl,-rpath,.
 
 libspoton.o:	libspoton.c libspoton.h
-	$(CC) $(CFLAGS) -L/usr/local/lib -fPIC -fstack-protector-all \
+	$(CC) $(CFLAGS) -fPIC -fstack-protector-all \
 	-Wall -Wconversion -Werror -Wextra -Wpointer-arith \
 	-Wsign-conversion \
 	-Wstack-protector -Wstrict-overflow=5 -Wstrict-prototypes \
