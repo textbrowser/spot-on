@@ -248,6 +248,14 @@ void spoton::slotPopulateEtpMagnets(void)
 	query.setForwardOnly(true);
 	query.exec("PRAGMA read_uncommitted = True");
 
+	if(query.exec("SELECT COUNT(*) FROM magnets"))
+	  if(query.next())
+	    {
+	      m_ui.addTransmittedMagnets->setRowCount
+		(query.value(0).toInt());
+	      m_ui.etpMagnets->setRowCount(query.value(0).toInt());
+	    }
+
 	if(query.exec("SELECT magnet, one_time_magnet, "
 		      "OID FROM magnets"))
 	  {
@@ -270,7 +278,6 @@ void spoton::slotPopulateEtpMagnets(void)
 		  item = new QTableWidgetItem(tr("error"));
 
 		item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		m_ui.etpMagnets->setRowCount(row + 1);
 		m_ui.etpMagnets->setItem(row, 1, item);
 		checkBox->setChecked(query.value(1).toLongLong());
 		checkBox->setProperty
@@ -280,7 +287,6 @@ void spoton::slotPopulateEtpMagnets(void)
 			this,
 			SLOT(slotStarOTMCheckChange(bool)));
 		m_ui.etpMagnets->setCellWidget(row, 0, checkBox);
-		m_ui.addTransmittedMagnets->setRowCount(row + 1);
 		checkBox = new QCheckBox();
 
 		if(ok)
@@ -702,6 +708,10 @@ void spoton::slotPopulateKernelStatistics(void)
 	query.setForwardOnly(true);
 	query.exec("PRAGMA read_uncommitted = True");
 
+	if(query.exec("SELECT COUNT(*) FROM kernel_statistics"))
+	  if(query.next())
+	    m_ui.kernelStatistics->setRowCount(query.value(0).toInt());
+
 	if(query.exec("SELECT statistic, value FROM kernel_statistics "
 		      "ORDER BY statistic"))
 	  {
@@ -714,7 +724,6 @@ void spoton::slotPopulateKernelStatistics(void)
 
 		item->setFlags
 		  (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		m_ui.kernelStatistics->setRowCount(row + 1);
 		m_ui.kernelStatistics->setItem(row, 0, item);
 		item = new QTableWidgetItem(query.value(1).toString());
 		item->setFlags
@@ -1203,16 +1212,20 @@ void spoton::slotPopulateStars(void)
 	m_ui.received->setRowCount(0);
 	row = 0;
 	query.exec("PRAGMA read_uncommitted = True");
+
+	if(query.exec("SELECT COUNT(*) FROM received"))
+	  if(query.next())
+	    {
+	      m_starbeamReceivedModel->setRowCount(query.value(0).toInt());
+	      m_ui.received->setRowCount(query.value(0).toInt());
+	    }
+
 	query.prepare("SELECT locked, pulse_size, total_size, file, hash, "
-		      "expected_file_hash, "
-		      "OID FROM received");
+		      "expected_file_hash, OID FROM received");
 
 	if(query.exec())
 	  while(query.next())
 	    {
-	      m_ui.received->setRowCount(row + 1);
-	      m_starbeamReceivedModel->setRowCount(row + 1);
-
 	      QByteArray expectedFileHash;
 	      QByteArray hash;
 	      QCheckBox *check = 0;
@@ -1418,6 +1431,12 @@ void spoton::slotPopulateStars(void)
 	m_ui.transmitted->clearContents();
 	m_ui.transmitted->setRowCount(0);
 	row = 0;
+
+	if(query.exec("SELECT COUNT(*) FROM transmitted "
+		      "WHERE status_control <> 'deleted'"))
+	  if(query.next())
+	    m_ui.transmitted->setRowCount(query.value(0).toInt());
+
 	query.prepare("SELECT 0, position, pulse_size, total_size, "
 		      "status_control, file, mosaic, hash, read_interval, "
 		      "OID FROM transmitted "
@@ -1426,8 +1445,6 @@ void spoton::slotPopulateStars(void)
 	if(query.exec())
 	  while(query.next())
 	    {
-	      m_ui.transmitted->setRowCount(row + 1);
-
 	      QCheckBox *checkBox = new QCheckBox();
 	      QString fileName("");
 	      bool ok = true;
