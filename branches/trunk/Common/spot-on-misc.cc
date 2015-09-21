@@ -4736,9 +4736,11 @@ void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
 
 QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 						      const QByteArray &bytes2,
-						      const QString &keyType,
+						      QString &messageType,
 						      spoton_crypt *crypt)
 {
+  messageType.clear();
+
   if(!crypt)
     {
       logError
@@ -4777,10 +4779,7 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 		      "AND "
 		      "forward_secrecy_authentication_key IS NOT NULL AND "
 		      "forward_secrecy_encryption_algorithm IS NOT NULL AND "
-		      "forward_secrecy_encryption_key IS NOT NULL AND "
-		      "key_type_hash = ?");
-	query.bindValue(0, crypt->keyedHash(keyType.toLatin1(), &ok).
-			toBase64());
+		      "forward_secrecy_encryption_key IS NOT NULL");
 
 	if(ok && query.exec())
 	  while(query.next())
@@ -4832,20 +4831,24 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 		      QByteArray a;
 		      QDataStream stream(&data, QIODevice::ReadOnly);
 
-		      stream >> a;
+		      stream >> a; // Message Type
 
 		      if(stream.status() == QDataStream::Ok)
-			/*
-			** symmetricKeys[0]: Encryption Key
-			** symmetricKeys[1]: Encryption Type
-			** symmetricKeys[2]: Hash Key
-			** symmetricKeys[3]: Hash Type
-			*/
+			{
+			  messageType = a;
 
-			forwardSecrecyKeys << list.value(3)
-					   << list.value(2)
-					   << list.value(1)
-					   << list.value(0);
+			  /*
+			  ** symmetricKeys[0]: Encryption Key
+			  ** symmetricKeys[1]: Encryption Type
+			  ** symmetricKeys[2]: Hash Key
+			  ** symmetricKeys[3]: Hash Type
+			  */
+
+			  forwardSecrecyKeys << list.value(3)
+					     << list.value(2)
+					     << list.value(1)
+					     << list.value(0);
+			}
 
 		      break;
 		    }

@@ -1675,18 +1675,13 @@ QString spoton_receive::findMessageType
 	  symmetricKeys.clear();
       }
 
-  if(list.size() == 3 && (s_crypt = spoton_kernel::
-			            s_crypts.value(keyType, 0)))
-    {
-      symmetricKeys = spoton_misc::findForwardSecrecyKeys
-	(QByteArray::fromBase64(list.value(0)),
-	 QByteArray::fromBase64(list.value(1)),
-	 keyType,
-	 s_crypt);
-
-      if(!symmetricKeys.isEmpty())
-	type = "0001c";
-    }
+  if(list.size() == 3 && (s_crypt =
+			  spoton_kernel::s_crypts.value(keyType, 0)))
+    symmetricKeys = spoton_misc::findForwardSecrecyKeys
+      (QByteArray::fromBase64(list.value(0)),
+       QByteArray::fromBase64(list.value(1)),
+       type,
+       s_crypt);
 
  done_label:
   return type;
