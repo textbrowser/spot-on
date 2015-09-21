@@ -1145,9 +1145,9 @@ void spoton::slotLock(void)
       QDialog dialog(this);
       Ui_unlock ui;
 
+      ui.setupUi(&dialog);
       dialog.setWindowTitle
 	(tr("%1: Unlock").arg(SPOTON_APPLICATION_NAME));
-      ui.setupUi(&dialog);
       connect(ui.radio_1,
 	      SIGNAL(toggled(bool)),
 	      ui.passphrase,

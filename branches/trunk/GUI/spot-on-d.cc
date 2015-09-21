@@ -1314,10 +1314,10 @@ void spoton::slotSetAETokenInformation(void)
   QDialog dialog(this);
   Ui_adaptiveechoprompt ui;
 
+  ui.setupUi(&dialog);
   dialog.setWindowTitle
     (tr("%1: Adaptive Echo Information").
      arg(SPOTON_APPLICATION_NAME));
-  ui.setupUi(&dialog);
 #ifdef Q_OS_MAC
   dialog.setAttribute(Qt::WA_MacMetalStyle, false);
 #endif

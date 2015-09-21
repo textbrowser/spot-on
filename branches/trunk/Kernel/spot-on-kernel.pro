@@ -39,7 +39,7 @@ QMAKE_LFLAGS_RELEASE += -Wl,-rpath,/usr/local/spot-on/Lib
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../. ../../../. /usr/include/postgresql
-LIBS		+= -L../../../libNTRU -L../../../libSpotOn \
+LIBS		+= -L/usr/local/lib -L../../../libNTRU -L../../../libSpotOn \
 		   -lGeoIP \
 		   -lcrypto -lcurl -lgcrypt -lgpg-error \
 		   -lntru -lpq -lspoton -lssl
