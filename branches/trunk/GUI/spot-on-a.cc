@@ -3278,6 +3278,11 @@ void spoton::slotPopulateListeners(void)
 	query.setForwardOnly(true);
 	query.exec("PRAGMA read_uncommitted = True");
 
+	if(query.exec("SELECT COUNT(*) FROM listeners "
+		      "WHERE status_control <> 'deleted'"))
+	  if(query.next())
+	    m_ui.listeners->setRowCount(query.value(0).toInt());
+
 	if(query.exec("SELECT "
 		      "status_control, "
 		      "status, "
@@ -3306,8 +3311,6 @@ void spoton::slotPopulateListeners(void)
 
 	    while(query.next())
 	      {
-		m_ui.listeners->setRowCount(row + 1);
-
 		QByteArray certificateDigest;
 		QString tooltip("");
 		QString transport("");
@@ -3761,6 +3764,11 @@ void spoton::slotPopulateNeighbors(void)
 	query.setForwardOnly(true);
 	query.exec("PRAGMA read_uncommitted = True");
 
+	if(query.exec("SELECT COUNT(*) "
+		      "FROM neighbors WHERE status_control <> 'deleted'"))
+	  if(query.next())
+	    m_ui.neighbors->setRowCount(query.value(0).toInt());
+
 	if(query.exec("SELECT sticky, "
 		      "uuid, "
 		      "status, "
@@ -3807,8 +3815,6 @@ void spoton::slotPopulateNeighbors(void)
 
 	    while(query.next())
 	      {
-		m_ui.neighbors->setRowCount(row + 1);
-
 		QByteArray certificate;
 		QByteArray certificateDigest;
 		QByteArray sslSessionCipher;
