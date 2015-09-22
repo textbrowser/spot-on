@@ -217,16 +217,18 @@ void spoton::refreshInstitutions(void)
 	m_ui.institutions->setSortingEnabled(false);
 
 	QSqlQuery query(db);
+	int row = 0;
 
 	query.setForwardOnly(true);
+
+	if(query.exec("SELECT COUNT(*) FROM institutions"))
+	  if(query.next())
+	    m_ui.institutions->setRowCount(query.value(0).toInt());
 
 	if(query.exec("SELECT cipher_type, hash_type, "
 		      "name, postal_address FROM institutions"))
 	  while(query.next())
 	    {
-	      m_ui.institutions->setRowCount
-		(m_ui.institutions->rowCount() + 1);
-
 	      QByteArray cipherType;
 	      QByteArray hashType;
 	      QByteArray name;
@@ -260,8 +262,7 @@ void spoton::refreshInstitutions(void)
 		item = new QTableWidgetItem(tr("error"));
 
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.institutions->setItem
-		(m_ui.institutions->rowCount() - 1, 0, item);
+	      m_ui.institutions->setItem(row, 0, item);
 
 	      if(ok)
 		item = new QTableWidgetItem(cipherType.constData());
@@ -269,8 +270,7 @@ void spoton::refreshInstitutions(void)
 		item = new QTableWidgetItem(tr("error"));
 
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.institutions->setItem
-		(m_ui.institutions->rowCount() - 1, 1, item);
+	      m_ui.institutions->setItem(row, 1, item);
 
 	      if(ok)
 		item = new QTableWidgetItem(postalAddress.constData());
@@ -278,8 +278,7 @@ void spoton::refreshInstitutions(void)
 		item = new QTableWidgetItem(tr("error"));
 
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.institutions->setItem
-		(m_ui.institutions->rowCount() - 1, 2, item);
+	      m_ui.institutions->setItem(row, 2, item);
 
 	      if(ok)
 		item = new QTableWidgetItem(hashType.constData());
@@ -287,8 +286,8 @@ void spoton::refreshInstitutions(void)
 		item = new QTableWidgetItem(tr("error"));
 
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.institutions->setItem
-		(m_ui.institutions->rowCount() - 1, 3, item);
+	      m_ui.institutions->setItem(row, 3, item);
+	      row += 1;
 	    }
 
 	m_ui.institutions->setSortingEnabled(true);
@@ -1143,16 +1142,20 @@ void spoton::populateAETokens(void)
 	m_ui.ae_tokens->setRowCount(0);
 
 	QSqlQuery query(db);
+	int row = 0;
 
 	query.setForwardOnly(true);
+
+	if(query.exec("SELECT COUNT(*) FROM listeners_adaptive_echo_tokens"))
+	  if(query.next())
+	    m_ui.ae_tokens->setRowCount(query.value(0).toInt());
+
 	query.prepare
 	  ("SELECT token, token_type FROM listeners_adaptive_echo_tokens");
 
 	if(query.exec())
 	  while(query.next())
 	    {
-	      m_ui.ae_tokens->setRowCount(m_ui.ae_tokens->rowCount() + 1);
-
 	      QByteArray eType;
 	      QByteArray hType;
 	      QByteArray token;
@@ -1183,8 +1186,7 @@ void spoton::populateAETokens(void)
 
 	      item->setFlags
 		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.ae_tokens->setItem
-		(m_ui.ae_tokens->rowCount() - 1, 0, item);
+	      m_ui.ae_tokens->setItem(row, 0, item);
 
 	      if(ok)
 		item = new QTableWidgetItem(eType.constData());
@@ -1193,8 +1195,7 @@ void spoton::populateAETokens(void)
 
 	      item->setFlags
 		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.ae_tokens->setItem
-		(m_ui.ae_tokens->rowCount() - 1, 1, item);
+	      m_ui.ae_tokens->setItem(row, 1, item);
 
 	      if(ok)
 		item = new QTableWidgetItem(hType.constData());
@@ -1203,12 +1204,12 @@ void spoton::populateAETokens(void)
 
 	      item->setFlags
 		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.ae_tokens->setItem
-		(m_ui.ae_tokens->rowCount() - 1, 2, item);
+	      m_ui.ae_tokens->setItem(row, 2, item);
 
 	      if(bytes1 == token && bytes2 == eType && bytes3 == hType)
-		m_ui.ae_tokens->selectRow
-		  (m_ui.ae_tokens->rowCount() - 1);
+		m_ui.ae_tokens->selectRow(row);
+
+	      row += 1;
 	    }
 
 	m_ui.ae_tokens->setSortingEnabled(true);
