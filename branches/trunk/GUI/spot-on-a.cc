@@ -3274,6 +3274,7 @@ void spoton::slotPopulateListeners(void)
 	m_ui.listeners->setRowCount(0);
 
 	QSqlQuery query(db);
+	int totalRows = 0;
 
 	query.setForwardOnly(true);
 	query.exec("PRAGMA read_uncommitted = True");
@@ -3309,8 +3310,10 @@ void spoton::slotPopulateListeners(void)
 	  {
 	    row = 0;
 
-	    while(query.next())
+	    while(query.next() && totalRows < m_ui.listeners->rowCount())
 	      {
+		totalRows += 1;
+
 		QByteArray certificateDigest;
 		QString tooltip("");
 		QString transport("");
@@ -3641,6 +3644,7 @@ void spoton::slotPopulateListeners(void)
 	      }
 	  }
 
+	m_ui.listeners->setRowCount(totalRows);
 	m_ui.listeners->setSortingEnabled(true);
 
 	for(int i = 0; i < m_ui.listeners->columnCount() - 1; i++)
@@ -3760,6 +3764,7 @@ void spoton::slotPopulateNeighbors(void)
 	m_ui.neighbors->setRowCount(0);
 
 	QSqlQuery query(db);
+	int totalRows = 0;
 
 	query.setForwardOnly(true);
 	query.exec("PRAGMA read_uncommitted = True");
@@ -3813,8 +3818,10 @@ void spoton::slotPopulateNeighbors(void)
 
 	    row = 0;
 
-	    while(query.next())
+	    while(query.next() && totalRows < m_ui.neighbors->rowCount())
 	      {
+		totalRows += 1;
+
 		QByteArray certificate;
 		QByteArray certificateDigest;
 		QByteArray sslSessionCipher;
@@ -4310,6 +4317,7 @@ void spoton::slotPopulateNeighbors(void)
 	else
 	  m_ui.neighborSummary->clear();
 
+	m_ui.neighbors->setRowCount(totalRows);
 	m_ui.neighbors->setSortingEnabled(true);
 
 	for(int i = 0; i < m_ui.neighbors->columnCount() - 1; i++)

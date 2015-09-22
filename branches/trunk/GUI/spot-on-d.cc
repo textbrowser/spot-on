@@ -218,6 +218,7 @@ void spoton::refreshInstitutions(void)
 
 	QSqlQuery query(db);
 	int row = 0;
+	int totalRows = 0;
 
 	query.setForwardOnly(true);
 
@@ -227,8 +228,10 @@ void spoton::refreshInstitutions(void)
 
 	if(query.exec("SELECT cipher_type, hash_type, "
 		      "name, postal_address FROM institutions"))
-	  while(query.next())
+	  while(query.next() && totalRows < m_ui.institutions->rowCount())
 	    {
+	      totalRows += 1;
+
 	      QByteArray cipherType;
 	      QByteArray hashType;
 	      QByteArray name;
@@ -290,6 +293,7 @@ void spoton::refreshInstitutions(void)
 	      row += 1;
 	    }
 
+	m_ui.institutions->setRowCount(totalRows);
 	m_ui.institutions->setSortingEnabled(true);
       }
 
@@ -1143,6 +1147,7 @@ void spoton::populateAETokens(void)
 
 	QSqlQuery query(db);
 	int row = 0;
+	int totalRows = 0;
 
 	query.setForwardOnly(true);
 
@@ -1154,8 +1159,10 @@ void spoton::populateAETokens(void)
 	  ("SELECT token, token_type FROM listeners_adaptive_echo_tokens");
 
 	if(query.exec())
-	  while(query.next())
+	  while(query.next() && totalRows < m_ui.ae_tokens->rowCount())
 	    {
+	      totalRows += 1;
+
 	      QByteArray eType;
 	      QByteArray hType;
 	      QByteArray token;
@@ -1212,6 +1219,7 @@ void spoton::populateAETokens(void)
 	      row += 1;
 	    }
 
+	m_ui.ae_tokens->setRowCount(totalRows);
 	m_ui.ae_tokens->setSortingEnabled(true);
 	m_ui.neighbors->horizontalHeader()->setStretchLastSection(true);
       }

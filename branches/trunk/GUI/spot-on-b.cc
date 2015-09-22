@@ -3470,6 +3470,7 @@ void spoton::populateMail(void)
 	QString html(m_ui.mailMessage->toHtml());
 	QStringList hashes;
 	int cRow = m_ui.mail->currentRow();
+	int totalRows = 0;
 
 	while(!list.isEmpty())
 	  {
@@ -3505,8 +3506,10 @@ void spoton::populateMail(void)
 	  {
 	    int row = 0;
 
-	    while(query.next())
+	    while(query.next() && totalRows < m_ui.mail->rowCount())
 	      {
+		totalRows += 1;
+
 		QByteArray goldbug;
 		bool ok = true;
 
@@ -3633,6 +3636,7 @@ void spoton::populateMail(void)
 	      }
 	  }
 
+	m_ui.mail->setRowCount(totalRows);
 	m_ui.mail->setSortingEnabled(true);
 	m_ui.mail->setSelectionMode
 	  (QAbstractItemView::MultiSelection);
@@ -3678,6 +3682,7 @@ void spoton::slotRefreshPostOffice(void)
 	m_ui.postoffice->setSortingEnabled(false);
 
 	QSqlQuery query(db);
+	int totalRows = 0;
 
 	query.setForwardOnly(true);
 
@@ -3691,51 +3696,56 @@ void spoton::slotRefreshPostOffice(void)
 	  {
 	    int row = 0;
 
-	    while(query.next())
-	      for(int i = 0; i < query.record().count(); i++)
-		{
-		  QTableWidgetItem *item = 0;
-		  bool ok = true;
+	    while(query.next() && totalRows < m_ui.postoffice->rowCount())
+	      {
+		totalRows += 1;
 
-		  if(i == 0)
-		    row += 1;
+		for(int i = 0; i < query.record().count(); i++)
+		  {
+		    QTableWidgetItem *item = 0;
+		    bool ok = true;
 
-		  if(i == 0)
-		    {
-		      item = new QTableWidgetItem
-			(m_crypts.value("email")->
-			 decryptedAfterAuthenticated
-			 (QByteArray::fromBase64(query.value(i).
-						 toByteArray()),
-			  &ok).constData());
+		    if(i == 0)
+		      row += 1;
 
-		      if(!ok)
-			item->setText(tr("error"));
-		    }
-		  else if(i == 1)
-		    {
-		      QByteArray bytes
-			(m_crypts.value("email")->
-			 decryptedAfterAuthenticated
-			 (QByteArray::fromBase64(query.value(i).
-						 toByteArray()),
-			  &ok));
-
-		      if(ok)
+		    if(i == 0)
+		      {
 			item = new QTableWidgetItem
-			  (QString::number(bytes.length()));
-		      else
-			item = new QTableWidgetItem(tr("error"));
-		    }
-		  else
-		    item = new QTableWidgetItem(query.value(i).toString());
+			  (m_crypts.value("email")->
+			   decryptedAfterAuthenticated
+			   (QByteArray::fromBase64(query.value(i).
+						   toByteArray()),
+			    &ok).constData());
 
-		  item->setFlags
-		    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		  m_ui.postoffice->setItem(row - 1, i, item);
-		}
+			if(!ok)
+			  item->setText(tr("error"));
+		      }
+		    else if(i == 1)
+		      {
+			QByteArray bytes
+			  (m_crypts.value("email")->
+			   decryptedAfterAuthenticated
+			   (QByteArray::fromBase64(query.value(i).
+						   toByteArray()),
+			    &ok));
+
+			if(ok)
+			  item = new QTableWidgetItem
+			    (QString::number(bytes.length()));
+			else
+			  item = new QTableWidgetItem(tr("error"));
+		      }
+		    else
+		      item = new QTableWidgetItem(query.value(i).toString());
+
+		    item->setFlags
+		      (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		    m_ui.postoffice->setItem(row - 1, i, item);
+		  }
+	      }
 	  }
 
+	m_ui.postoffice->setRowCount(totalRows);
 	m_ui.postoffice->setSortingEnabled(true);
       }
 

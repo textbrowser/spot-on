@@ -229,6 +229,7 @@ void spoton::slotPopulateEtpMagnets(void)
 	QSqlQuery query(db);
 	QStringList checked;
 	QWidget *focusWidget = QApplication::focusWidget();
+	int totalRows = 0;
 
 	for(int i = 0; i < m_ui.addTransmittedMagnets->rowCount(); i++)
 	  {
@@ -261,8 +262,11 @@ void spoton::slotPopulateEtpMagnets(void)
 	  {
 	    int row = 0;
 
-	    while(query.next())
+	    while(query.next() &&
+		  totalRows < m_ui.addTransmittedMagnets->rowCount())
 	      {
+		totalRows += 1;
+
 		QByteArray bytes;
 		bool ok = true;
 
@@ -307,8 +311,10 @@ void spoton::slotPopulateEtpMagnets(void)
 	      }
 	  }
 
-	m_ui.etpMagnets->setSortingEnabled(true);
+	m_ui.addTransmittedMagnets->setRowCount(totalRows);
 	m_ui.addTransmittedMagnets->setSortingEnabled(true);
+	m_ui.etpMagnets->setRowCount(totalRows);
+	m_ui.etpMagnets->setSortingEnabled(true);
 
 	if(focusWidget)
 	  focusWidget->setFocus();
@@ -704,6 +710,7 @@ void spoton::slotPopulateKernelStatistics(void)
 
 	QSqlQuery query(db);
 	QWidget *focusWidget = QApplication::focusWidget();
+	int totalRows = 0;
 
 	query.setForwardOnly(true);
 	query.exec("PRAGMA read_uncommitted = True");
@@ -717,8 +724,11 @@ void spoton::slotPopulateKernelStatistics(void)
 	  {
 	    int row = 0;
 
-	    while(query.next())
+	    while(query.next() &&
+		  totalRows < m_ui.kernelStatistics->rowCount())
 	      {
+		totalRows += 1;
+
 		QTableWidgetItem *item = new QTableWidgetItem
 		  (query.value(0).toString());
 
@@ -751,6 +761,7 @@ void spoton::slotPopulateKernelStatistics(void)
 	      }
 	  }
 
+	m_ui.kernelStatistics->setRowCount(totalRows);
 	m_ui.kernelStatistics->setSortingEnabled(true);
 	m_ui.kernelStatistics->resizeColumnToContents(0);
 	m_ui.kernelStatistics->horizontalHeader()->
@@ -1189,6 +1200,7 @@ void spoton::slotPopulateStars(void)
 	QWidget *focusWidget = QApplication::focusWidget();
 	int hval = 0;
 	int row = -1;
+	int totalRows = 0;
 	int vval = 0;
 
 	m_starbeamReceivedModel->removeRows
@@ -1224,8 +1236,10 @@ void spoton::slotPopulateStars(void)
 		      "expected_file_hash, OID FROM received");
 
 	if(query.exec())
-	  while(query.next())
+	  while(query.next() && totalRows < m_ui.received->rowCount())
 	    {
+	      totalRows += 1;
+
 	      QByteArray expectedFileHash;
 	      QByteArray hash;
 	      QCheckBox *check = 0;
@@ -1392,6 +1406,7 @@ void spoton::slotPopulateStars(void)
 	      row += 1;
 	    }
 
+	m_ui.received->setRowCount(totalRows);
 	m_ui.received->setSortingEnabled(true);
 
 	for(int i = 0; i < m_ui.received->columnCount() - 1; i++)
@@ -1431,6 +1446,7 @@ void spoton::slotPopulateStars(void)
 	m_ui.transmitted->clearContents();
 	m_ui.transmitted->setRowCount(0);
 	row = 0;
+	totalRows = 0;
 
 	if(query.exec("SELECT COUNT(*) FROM transmitted "
 		      "WHERE status_control <> 'deleted'"))
@@ -1443,8 +1459,10 @@ void spoton::slotPopulateStars(void)
 		      "WHERE status_control <> 'deleted'");
 
 	if(query.exec())
-	  while(query.next())
+	  while(query.next() && totalRows < m_ui.transmitted->rowCount())
 	    {
+	      totalRows += 1;
+
 	      QCheckBox *checkBox = new QCheckBox();
 	      QString fileName("");
 	      bool ok = true;
@@ -1576,6 +1594,7 @@ void spoton::slotPopulateStars(void)
 	      row += 1;
 	    }
 
+	m_ui.transmitted->setRowCount(totalRows);
 	m_ui.transmitted->setSortingEnabled(true);
 
 	for(int i = 0; i < m_ui.transmitted->columnCount() - 1; i++)
