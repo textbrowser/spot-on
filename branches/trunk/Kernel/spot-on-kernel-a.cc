@@ -715,6 +715,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      this,
 	      SLOT(slotPublicizeListenerPlaintext(const qint64)));
       connect(m_guiServer,
+	      SIGNAL(purgeEphemeralKeys(void)),
+	      this,
+	      SLOT(slotPurgeEphemeralKeys(void)));
+      connect(m_guiServer,
 	      SIGNAL(retrieveMail(void)),
 	      this,
 	      SLOT(slotRetrieveMail(void)));

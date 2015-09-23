@@ -149,6 +149,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
 			       const QString &messageType);
   void publicizeAllListenersPlaintext(void);
   void publicizeListenerPlaintext(const qint64 oid);
+  void purgeEphemeralKeys(void);
   void retrieveMail(void);
 };
 

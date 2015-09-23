@@ -537,6 +537,8 @@ void spoton_gui_server::slotReadyRead(void)
 		emit publicizeListenerPlaintext
 		  (list.value(0).toLongLong());
 	    }
+	  else if(message.startsWith("purge_ephemeral_keys"))
+	    emit purgeEphemeralKeys();
 	  else if(message.startsWith("removebuzz_"))
 	    {
 	      message.remove

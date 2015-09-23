@@ -1272,4 +1272,18 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
 
 void spoton::slotPurgeEphemeralKeys(void)
 {
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted())
+    return;
+
+  QByteArray message("purge_ephemeral_keys\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotPurgeEphemeralKeys(): write() failure for "
+	       "%1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
 }

@@ -125,3 +125,10 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
 
   return ok;
 }
+
+void spoton_kernel::slotPurgeEphemeralKeys(void)
+{
+  QWriteLocker locker(&m_forwardSecrecyKeysMutex);
+
+  m_forwardSecrecyKeys.clear();
+}

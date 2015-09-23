@@ -260,6 +260,7 @@ class spoton_kernel: public QObject
 				   const QString &messageType);
   void slotPublicizeAllListenersPlaintext(void);
   void slotPublicizeListenerPlaintext(const qint64 oid);
+  void slotPurgeEphemeralKeys(void);
   void slotRequestScramble(void);
   void slotRetrieveMail(void);
   void slotSaveForwardSecrecySessionKeys(const QByteArrayList &list);
