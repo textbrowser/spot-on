@@ -5910,6 +5910,10 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	 this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "email");
       action = menu.addAction
+	(tr("Purge Forward &Secrecy key pair."),
+	 this, SLOT(slotPurgeEphemeralKeyPair(void)));
+      action->setProperty("type", "email");
+      action = menu.addAction
 	(tr("Reset Forward &Secrecy information."),
 	 this, SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "email");
@@ -6179,6 +6183,10 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action = menu.addAction
 	(tr("Initiate a Forward &Secrecy exchange."),
 	 this, SLOT(slotEstablishForwardSecrecy(void)));
+      action->setProperty("type", "chat");
+      action = menu.addAction
+	(tr("Purge Forward &Secrecy key pair."),
+	 this, SLOT(slotPurgeEphemeralKeyPair(void)));
       action->setProperty("type", "chat");
       action = menu.addAction
 	(tr("Reset Forward &Secrecy information."),

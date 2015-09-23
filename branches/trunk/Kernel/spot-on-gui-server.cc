@@ -537,6 +537,14 @@ void spoton_gui_server::slotReadyRead(void)
 		emit publicizeListenerPlaintext
 		  (list.value(0).toLongLong());
 	    }
+	  else if(message.startsWith("purge_ephemeral_key_pair_"))
+	    {
+	      message.remove
+		(0, static_cast<int> (qstrlen("purge_ephemeral_key_pair_")));
+
+	      if(!message.isEmpty())
+		emit purgeEphemeralKeyPair(QByteArray::fromBase64(message));
+	    }
 	  else if(message.startsWith("purge_ephemeral_keys"))
 	    emit purgeEphemeralKeys();
 	  else if(message.startsWith("removebuzz_"))

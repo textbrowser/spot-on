@@ -132,3 +132,10 @@ void spoton_kernel::slotPurgeEphemeralKeys(void)
 
   m_forwardSecrecyKeys.clear();
 }
+
+void spoton_kernel::slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash)
+{
+  QWriteLocker locker(&m_forwardSecrecyKeysMutex);
+
+  m_forwardSecrecyKeys.remove(publicKeyHash);
+}

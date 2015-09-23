@@ -1287,3 +1287,47 @@ void spoton::slotPurgeEphemeralKeys(void)
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
 }
+
+void spoton::slotPurgeEphemeralKeyPair(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString type(action->property("type").toString());
+
+  if(!(type == "email" || type == "chat"))
+    return;
+
+  QModelIndexList publicKeyHashes;
+
+  if(type == "chat")
+    publicKeyHashes =
+      m_ui.participants->selectionModel()->
+      selectedRows(3); // public_key_hash
+  else
+    publicKeyHashes =
+      m_ui.emailParticipants->selectionModel()->
+      selectedRows(3); // public_key_hash
+
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted())
+    return;
+  else if(publicKeyHashes.isEmpty())
+    return;
+
+  QByteArray message("purge_ephemeral_key_pair_");
+
+  message.append(publicKeyHashes.value(0).data().toByteArray());
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotPurgeEphemeralKeyPair(): write() failure for "
+	       "%1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
+}

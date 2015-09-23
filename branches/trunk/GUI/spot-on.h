@@ -787,6 +787,7 @@ class spoton: public QMainWindow
   void slotPublicizeListenerPlaintext(void);
   void slotPublishPeriodicallyToggled(bool sate);
   void slotPublishedKeySizeChanged(const QString &text);
+  void slotPurgeEphemeralKeyPair(void);
   void slotPurgeEphemeralKeys(void);
   void slotQuit(void);
   void slotReceivedKernelMessage(void);
