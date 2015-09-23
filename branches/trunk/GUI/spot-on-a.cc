@@ -472,6 +472,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotCopyOrPaste(void)));
+  connect(m_ui.action_Purge_Ephemeral_Keys,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotPurgeEphemeralKeys(void)));
   connect(m_ui.copyInstitution,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -2078,6 +2082,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Import_Public_Keys->setEnabled(false);
       m_ui.action_Options->setEnabled(false);
       m_ui.action_Poptastic_Settings->setEnabled(false);
+      m_ui.action_Purge_Ephemeral_Keys->setEnabled(false);
       m_ui.action_Rosetta->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.encryptionKeySize->setEnabled(false);
@@ -2113,6 +2118,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Import_Public_Keys->setEnabled(false);
       m_ui.action_Options->setEnabled(false);
       m_ui.action_Poptastic_Settings->setEnabled(false);
+      m_ui.action_Purge_Ephemeral_Keys->setEnabled(false);
       m_ui.action_Rosetta->setEnabled(false);
       m_ui.answer_authenticate->setEnabled(false);
       m_ui.encryptionKeySize->setEnabled(false);
@@ -5445,6 +5451,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.action_Import_Public_Keys->setEnabled(true);
       m_ui.action_Options->setEnabled(true);
       m_ui.action_Poptastic_Settings->setEnabled(true);
+      m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
       m_ui.action_Rosetta->setEnabled(true);
       m_ui.answer->clear();
       m_ui.encryptionKeyType->setEnabled(false);
@@ -5673,6 +5680,7 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.action_Import_Public_Keys->setEnabled(true);
 	    m_ui.action_Options->setEnabled(true);
 	    m_ui.action_Poptastic_Settings->setEnabled(true);
+	    m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
 	    m_ui.action_Rosetta->setEnabled(true);
 	    m_ui.answer->clear();
 	    m_ui.answer_authenticate->clear();

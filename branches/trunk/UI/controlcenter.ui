@@ -4954,7 +4954,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
+             <width>711</width>
              <height>1132</height>
             </rect>
            </property>
@@ -7958,7 +7958,7 @@
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
     <addaction name="separator"/>
-    <addaction name="actionPurge_Ephemeral_Keys"/>
+    <addaction name="action_Purge_Ephemeral_Keys"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -8088,7 +8088,7 @@
     <string>Ctrl+E</string>
    </property>
   </action>
-  <action name="actionPurge_Ephemeral_Keys">
+  <action name="action_Purge_Ephemeral_Keys">
    <property name="text">
     <string>Purge &amp;Ephemeral Keys</string>
    </property>

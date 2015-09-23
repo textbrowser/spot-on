@@ -10548,7 +10548,7 @@ border-style: inset;
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
     <addaction name="separator"/>
-    <addaction name="actionPurge_Ephemeral_Keys"/>
+    <addaction name="action_Purge_Ephemeral_Keys"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -10678,7 +10678,7 @@ border-style: inset;
     <string>Ctrl+E</string>
    </property>
   </action>
-  <action name="actionPurge_Ephemeral_Keys">
+  <action name="action_Purge_Ephemeral_Keys">
    <property name="text">
     <string>Purge &amp;Ephemeral Keys</string>
    </property>

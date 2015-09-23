@@ -91,6 +91,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   QFileSystemWatcher m_fileSystemWatcher;
   QHash<int, QByteArray> m_guiSocketData;
   QTimer m_generalTimer;
+  bool m_uiAuthenticated;
 
  private slots:
   void slotAuthenticationRequested(const QString &peerInformation);

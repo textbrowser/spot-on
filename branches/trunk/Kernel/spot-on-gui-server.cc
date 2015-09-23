@@ -138,6 +138,8 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 spoton_gui_server::spoton_gui_server(QObject *parent):
   spoton_gui_server_tcp_server(parent)
 {
+  m_uiAuthenticated = false;
+
   if(!listen(QHostAddress("127.0.0.1")))
     spoton_misc::logError("spoton_gui_server::spoton_gui_server(): "
 			  "listen() failure. This is a serious problem!");
