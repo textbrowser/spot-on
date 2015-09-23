@@ -78,12 +78,12 @@ static void qt_message_handler(QtMsgType type, const char *msg)
 }
 #endif
 
-static void signal_handler(int signum)
+static void signal_handler(int signal_number)
 {
   static int fatal_error = 0;
 
   if(fatal_error)
-    _Exit(signum);
+    _Exit(signal_number);
 
   fatal_error = 1;
   spoton_crypt::terminate();
@@ -92,7 +92,7 @@ static void signal_handler(int signum)
   ** _Exit() and _exit() may be safely called from signal handlers.
   */
 
-  _Exit(signum);
+  _Exit(signal_number);
 }
 
 int main(int argc, char *argv[])
