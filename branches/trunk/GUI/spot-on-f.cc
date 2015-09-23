@@ -1269,3 +1269,7 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
   else if(temporary) // Temporary friend?
     return; // Not allowed!
 }
+
+void spoton::slotPurgeEphemeralKeys(void)
+{
+}

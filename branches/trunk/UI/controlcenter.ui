@@ -4954,7 +4954,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>711</width>
+             <width>762</width>
              <height>1132</height>
             </rect>
            </property>
@@ -7957,6 +7957,8 @@
     <addaction name="actionClear_Clipboard_Buffer"/>
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
+    <addaction name="separator"/>
+    <addaction name="actionPurge_Ephemeral_Keys"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -8084,6 +8086,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionPurge_Ephemeral_Keys">
+   <property name="text">
+    <string>Purge &amp;Ephemeral Keys</string>
    </property>
   </action>
  </widget>
