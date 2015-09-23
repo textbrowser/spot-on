@@ -4998,3 +4998,24 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
   QSqlDatabase::removeDatabase(connectionName);
   return ok;
 }
+
+QString spoton_misc::htmlEncode(const QString &string)
+{
+  QString str("");
+
+  for(int i = 0; i < string.size(); i++)
+    if(string.at(i) == '%')
+      str.append("&amp;");
+    else if(string.at(i) == '<')
+      str.append("&lt;");
+    else if(string.at(i) == '>')
+      str.append("&gt;");
+    else if(string.at(i) == '\"')
+      str.append("&quot;");
+    else if(string.at(i) == '\'')
+      str.append("&apos;");
+    else
+      str.append(string.at(i));
+
+  return str;
+}

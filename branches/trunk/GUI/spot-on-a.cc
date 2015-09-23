@@ -7995,8 +7995,10 @@ void spoton::slotNeighborSelected(void)
 	  if(item)
 	    label.append
 	      (QString("<b>" +
-		       m_ui.neighbors->horizontalHeaderItem(i)->text() +
-		       ":</b> %1" + "<br>").arg(item->text()));
+		       m_ui.neighbors->horizontalHeaderItem(i)->
+		       text() +
+		       ":</b> %1" + "<br>").arg(spoton_misc::
+						htmlEncode(item->text())));
 	}
 
       int h = m_ui.neighborSummary->horizontalScrollBar()->value();
