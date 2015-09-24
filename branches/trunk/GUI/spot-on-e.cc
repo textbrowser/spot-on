@@ -1445,6 +1445,9 @@ void spoton::slotShareStarBeam(void)
     return;
   else if(item->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
+  else if(item->data(Qt::ItemDataRole(Qt::UserRole + 1)).
+	  toString() == "poptastic")
+    return;
 
   QString error("");
   spoton_crypt *crypt = m_crypts.value("chat", 0);
