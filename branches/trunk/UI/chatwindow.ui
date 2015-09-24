@@ -152,6 +152,19 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="share">
+          <property name="toolTip">
+           <string>Share a StarBeam.</string>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>Share</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -212,19 +225,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="share">
-        <property name="toolTip">
-         <string>Share a StarBeam.</string>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="text">
-         <string>Share</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>
@@ -271,9 +271,9 @@
   <tabstop>messages</tabstop>
   <tabstop>message</tabstop>
   <tabstop>sendMessage</tabstop>
+  <tabstop>share</tabstop>
   <tabstop>starbeam</tabstop>
   <tabstop>echo</tabstop>
-  <tabstop>share</tabstop>
   <tabstop>table</tabstop>
  </tabstops>
  <resources>

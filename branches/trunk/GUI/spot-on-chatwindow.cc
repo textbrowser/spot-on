@@ -99,10 +99,6 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 	  SLOT(setVisible(bool)));
   connect(ui.starbeam,
 	  SIGNAL(toggled(bool)),
-	  ui.share,
-	  SLOT(setVisible(bool)));
-  connect(ui.starbeam,
-	  SIGNAL(toggled(bool)),
 	  ui.table,
 	  SLOT(setVisible(bool)));
 
@@ -129,7 +125,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   else
     ui.name->setText(participant.trimmed());
 
-  ui.share->setVisible(false);
+  ui.share->setEnabled(m_keyType != "poptastic");
   ui.table->resizeColumnToContents(0);
   ui.table->setModel(spoton::instance()->starbeamReceivedModel());
   ui.table->setVisible(false);
