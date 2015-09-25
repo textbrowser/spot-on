@@ -642,6 +642,12 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      SLOT(slotCallParticipant(const QByteArray &,
 				       const qint64)));
       connect(m_guiServer,
+	      SIGNAL(callParticipantUsingForwardSecrecy(const QByteArray &,
+							const qint64)),
+	      this,
+	      SLOT(slotCallParticipantUsingForwardSecrecy(const QByteArray &,
+							  const qint64)));
+      connect(m_guiServer,
 	      SIGNAL(callParticipantUsingGemini(const QByteArray &,
 						const qint64)),
 	      this,

@@ -340,6 +340,20 @@ void spoton_gui_server::slotReadyRead(void)
 		   QByteArray::fromBase64(list.value(6)),
 		   QByteArray::fromBase64(list.value(7)));
 	    }
+	  else if(message.
+		  startsWith("call_participant_using_forward_secrecy_"))
+	    {
+	      message.remove
+		(0,
+		 static_cast<int> (qstrlen("call_participant_using_"
+					   "forward_secrecy_")));
+
+	      QList<QByteArray> list(message.split('_'));
+
+	      if(list.size() == 2)
+		emit callParticipantUsingForwardSecrecy
+		  (list.value(0), list.value(1).toLongLong());
+	    }
 	  else if(message.startsWith("call_participant_using_gemini_"))
 	    {
 	      message.remove

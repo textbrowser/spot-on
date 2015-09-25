@@ -230,6 +230,8 @@ class spoton_kernel: public QObject
 			   const QByteArray &geminiHashKey);
   void slotCallParticipant(const QByteArray &keyType,
 			   const qint64 oid);
+  void slotCallParticipantUsingForwardSecrecy(const QByteArray &keyType,
+					      const qint64 oid);
   void slotCallParticipantUsingGemini(const QByteArray &keyType,
 				      const qint64 oid);
   void slotDetachNeighbors(const qint64 listenerOid);

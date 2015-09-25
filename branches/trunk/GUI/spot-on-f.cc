@@ -1268,6 +1268,24 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
     return;
   else if(temporary) // Temporary friend?
     return; // Not allowed!
+
+  slotGenerateGeminiInChat();
+
+  QByteArray message;
+
+  message.append("call_participant_using_forward_secrecy_");
+  message.append(keyType);
+  message.append("_");
+  message.append(oid);
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotCallParticipantViaForwardSecrecy(): "
+	       "write() failure for %1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
 }
 
 void spoton::slotPurgeEphemeralKeys(void)
