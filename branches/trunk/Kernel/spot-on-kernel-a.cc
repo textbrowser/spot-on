@@ -343,7 +343,7 @@ int main(int argc, char *argv[])
 	  curl_global_cleanup();
 	  return rc;
 	}
-      catch(std::bad_alloc &exception)
+      catch(const std::bad_alloc &exception)
 	{
 	  std::cerr << "Critical memory failure. Exiting kernel.\n";
 	  curl_global_cleanup();
@@ -1097,7 +1097,7 @@ void spoton_kernel::prepareListeners(void)
 				 query.value(17).toString(),
 				 this);
 			    }
-			  catch(std::bad_alloc &exception)
+			  catch(const std::bad_alloc &exception)
 			    {
 			      listener = 0;
 			      spoton_misc::logError
@@ -1377,7 +1377,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 QThread::Priority(list.value(24).toInt()),
 				 this);
 			    }
-			  catch(std::bad_alloc &exception)
+			  catch(const std::bad_alloc &exception)
 			    {
 			      neighbor = 0;
 			      spoton_misc::logError

@@ -709,7 +709,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	     QThread::HighPriority,
 	     this);
 	}
-      catch(std::bad_alloc &exception)
+      catch(const std::bad_alloc &exception)
 	{
 	  error = "memory allocation failure";
 	  spoton_misc::logError("spoton_listener::slotNewConnection(): "
