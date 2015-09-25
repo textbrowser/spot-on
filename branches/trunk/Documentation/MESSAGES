@@ -105,11 +105,9 @@ Groups: 3
 Symmetric Key (Base-64)
 {
 0 - 0000d
-1 - Dispatcher's SHA-512 Digest
-2 - Gemini Encryption Key
-3 - Gemini Digest Key
-4 - UTC Date
-5 - Signature (First Group Items and Previous Five Items)
+1 - Gemini Encryption Key
+2 - Gemini Digest Key
+3 - UTC Date
 }
 EOL
 {
