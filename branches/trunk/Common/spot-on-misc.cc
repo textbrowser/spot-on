@@ -3989,14 +3989,14 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
 		 &ok).constData();
 
 	    if(ok)
-	      c = new spoton_crypt(cipherType,
-				   hashType,
-				   QByteArray(),
-				   encryptionKey,
-				   hashKey,
-				   0,
-				   0,
-				   "");
+	      c = new (std::nothrow) spoton_crypt(cipherType,
+						  hashType,
+						  QByteArray(),
+						  encryptionKey,
+						  hashKey,
+						  0,
+						  0,
+						  "");
 	  }
       }
 
@@ -4525,14 +4525,14 @@ spoton_crypt *spoton_misc::cryptFromForwardSecrecyMagnet
   if(!isValidForwardSecrecyMagnet(magnet, list))
     return 0;
 
-  return new spoton_crypt(list.value(2),
-			  list.value(0),
-			  QByteArray(),
-			  list.value(3),
-			  list.value(1),
-			  0,
-			  0,
-			  "");
+  return new (std::nothrow) spoton_crypt(list.value(2),
+					 list.value(0),
+					 QByteArray(),
+					 list.value(3),
+					 list.value(1),
+					 0,
+					 0,
+					 "");
 }
 
 QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
