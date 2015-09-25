@@ -766,11 +766,12 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 
       QString str(publicKeyHash.toBase64().constData());
       QString toolTip
-	(tr("<h2>Participant <i>%1</i> (%2) is requesting forward secrecy "
-	    "credentials. Please see the status bar.</h2>").arg(name).
-	 arg(str.mid(0, 16) +
-	     "..." +
-	     str.right(16)));
+	(tr("<h2>%1: Participant <i>%2</i> (%3) is "
+	    "requesting forward secrecy "
+	    "credentials. Please see the status bar.</h2>").
+	 arg(SPOTON_APPLICATION_NAME).
+	 arg(name).
+	 arg(str.mid(0, 16) + "..." + str.right(16)));
 
       m_sb.forward_secrecy_request->setProperty
 	("public_key_hash", publicKeyHash);
