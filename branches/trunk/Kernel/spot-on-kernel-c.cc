@@ -139,3 +139,10 @@ void spoton_kernel::slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash)
 
   m_forwardSecrecyKeys.remove(publicKeyHash);
 }
+
+void spoton_kernel::slotCallParticipantUsingForwardSecrecy
+(const QByteArray &keyType, const qint64 oid)
+{
+  Q_UNUSED(keyType);
+  Q_UNUSED(oid);
+}

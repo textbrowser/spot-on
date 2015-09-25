@@ -124,6 +124,8 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
 			  const QByteArray &hashType);
   void callParticipant(const QByteArray &keyType,
 		       const qint64 oid);
+  void callParticipantUsingForwardSecrecy(const QByteArray &keyType,
+					  const qint64 oid);
   void callParticipantUsingGemini(const QByteArray &keyType,
 				  const qint64 oid);
   void detachNeighbors(const qint64 oid);
