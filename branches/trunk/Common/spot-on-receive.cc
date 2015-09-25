@@ -877,6 +877,7 @@ QList<QByteArray> spoton_receive::process0001c
   ** symmetricKeys[1]: Encryption Type
   ** symmetricKeys[2]: Hash Key
   ** symmetricKeys[3]: Hash Type
+  ** symmetricKeys[4]: Owner's Digest
   */
 
   bool ok = true;
@@ -896,7 +897,7 @@ QList<QByteArray> spoton_receive::process0001c
       QDataStream stream(&data, QIODevice::ReadOnly);
       QList<QByteArray> list;
 
-      for(int i = 0; i < 7; i++)
+      for(int i = 0; i < 6; i++)
 	{
 	  QByteArray a;
 
@@ -914,7 +915,8 @@ QList<QByteArray> spoton_receive::process0001c
       if(list.isEmpty())
 	return QList<QByteArray> ();
 
-      if(!spoton_misc::isAcceptedParticipant(list.value(1), keyType, s_crypt))
+      if(!spoton_misc::isAcceptedParticipant(symmetricKeys.value(4),
+					     keyType, s_crypt))
 	return QList<QByteArray> ();
 
       QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
@@ -928,6 +930,10 @@ QList<QByteArray> spoton_receive::process0001c
 				"email.db has exceeded the specified limit.");
 	  return QList<QByteArray> ();
 	}
+
+      list.prepend(symmetricKeys.value(4)); /*
+					    ** The dispatcher's digest.
+					    */
 
       if(spoton_misc::storeAlmostAnonymousLetter(list, s_crypt))
 	return list;

@@ -48,21 +48,6 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
   if(!s_crypt)
     return false;
 
-  QByteArray dispatcherPublicKey;
-  QByteArray dispatcherPublicKeyHash;
-  bool ok = true;
-
-  dispatcherPublicKey = s_crypt->publicKey(&ok);
-
-  if(!ok)
-    return false;
-
-  dispatcherPublicKeyHash = spoton_crypt::sha512Hash
-    (dispatcherPublicKey, &ok);
-
-  if(!ok)
-    return false;
-
   spoton_crypt *crypt = spoton_misc::cryptFromForwardSecrecyMagnet(goldbug);
 
   if(!crypt)
@@ -71,13 +56,10 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
   QByteArray group1;
   QByteArray group2;
   QDataStream stream(&data, QIODevice::WriteOnly);
-
-  if(!ok)
-    goto done_label;
+  bool ok = true;
 
   if(attachment.isEmpty() || attachmentName.isEmpty())
     stream << QByteArray("0001c")
-	   << dispatcherPublicKeyHash
 	   << name
 	   << subject
 	   << message
@@ -85,7 +67,6 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
 	   << QByteArray();
   else
     stream << QByteArray("0001c")
-	   << dispatcherPublicKeyHash
 	   << name
 	   << subject
 	   << message

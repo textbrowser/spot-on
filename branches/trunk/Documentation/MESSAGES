@@ -259,12 +259,11 @@ Groups: 3
 Symmetric Key (Base-64)
 {
 0 - 0001c
-1 - Dispatcher's SHA-512 Digest
-2 - Dispatcher's Name
-3 - Subject
-4 - Message
-5 - Attachment
-6 - Attachment Name
+1 - Dispatcher's Name
+2 - Subject
+3 - Message
+4 - Attachment
+5 - Attachment Name
 }
 EOL
 {

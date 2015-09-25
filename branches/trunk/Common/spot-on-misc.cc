@@ -4773,7 +4773,8 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 		      "forward_secrecy_authentication_algorithm, " // 0
 		      "forward_secrecy_authentication_key, "       // 1
 		      "forward_secrecy_encryption_algorithm, "     // 2
-		      "forward_secrecy_encryption_key "            // 3
+		      "forward_secrecy_encryption_key, "           // 3
+		      "public_key_hash "                           // 4
 		      "FROM friends_public_keys WHERE "
 		      "forward_secrecy_authentication_algorithm IS NOT NULL "
 		      "AND "
@@ -4787,7 +4788,7 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 	      QList<QByteArray> list;
 	      bool ok = true;
 
-	      for(int i = 0; i < query.record().count(); i++)
+	      for(int i = 0; i < query.record().count() - 1; i++)
 		{
 		  QByteArray bytes;
 
@@ -4842,12 +4843,16 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 			  ** symmetricKeys[1]: Encryption Type
 			  ** symmetricKeys[2]: Hash Key
 			  ** symmetricKeys[3]: Hash Type
+			  ** symmetricKeys[4]: public_key_hash
 			  */
 
 			  forwardSecrecyKeys << list.value(3)
 					     << list.value(2)
 					     << list.value(1)
-					     << list.value(0);
+					     << list.value(0)
+					     << QByteArray::
+			                        fromBase64(query.value(4).
+							   toByteArray());
 			}
 
 		      break;
