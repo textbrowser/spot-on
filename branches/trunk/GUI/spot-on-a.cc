@@ -5906,7 +5906,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action->setProperty("type", "email");
       menu.addSeparator();
       action = menu.addAction
-	(tr("Initiate a Forward &Secrecy exchange."),
+	(tr("Initiate Forward &Secrecy exchange(s)."),
 	 this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "email");
       action = menu.addAction
@@ -6181,7 +6181,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	(tr("Call via Forward &Secrecy credentials."),
 	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
       action = menu.addAction
-	(tr("Initiate a Forward &Secrecy exchange."),
+	(tr("Initiate Forward &Secrecy exchange(s)."),
 	 this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "chat");
       action = menu.addAction

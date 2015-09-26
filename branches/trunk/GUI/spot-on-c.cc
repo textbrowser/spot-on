@@ -2691,7 +2691,7 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction
 	(tr("Call via Forward &Secrecy credentials."),
 	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
-      action = menu->addAction(tr("Initiate a Forward &Secrecy exchange."),
+      action = menu->addAction(tr("Initiate Forward &Secrecy exchange(s)."),
 			       this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "chat");
       action = menu->addAction(tr("Purge Forward &Secrecy key pair."),
@@ -2739,7 +2739,7 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
       menu->addSeparator();
-      action = menu->addAction(tr("Initiate a Forward &Secrecy exchange."),
+      action = menu->addAction(tr("Initiate Forward &Secrecy exchange(s)."),
 			       this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "email");
       action = menu->addAction(tr("Purge Forward &Secrecy key pair."),
