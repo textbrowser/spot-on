@@ -434,7 +434,8 @@ void spoton_listener::slotTimeout(void)
 		  qBound(spoton_common::MINIMUM_NEIGHBOR_CONTENT_LENGTH,
 			 query.value(5).toLongLong(),
 			 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
-		m_motd = query.value(6).toString();
+		m_motd = QString::fromUtf8
+		  (query.value(6).toByteArray()).trimmed();
 		m_sslControlString = query.value(7).toString().trimmed();
 
 		if(m_sslControlString.isEmpty())

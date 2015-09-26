@@ -541,11 +541,11 @@ void spoton::slotRespondToForwardSecrecy(void)
     keySize = "unknown";
 
   ui.text_2->setText
-    (tr("The participant <b>%1</b> (%2) is requesting "
+    (tr("<html>The participant <b>%1</b> (%2) is requesting "
 	"forward secrecy credentials. The participant provided an "
 	"<b>%3:%4</b> "
 	"public session key. Please press the OK "
-	"button if you would like to complete the exchange.").
+	"button if you would like to complete the exchange.</html>").
      arg(name).arg(str.mid(0, 16) + "..." + str.right(16)).
      arg(aKey).arg(keySize));
 

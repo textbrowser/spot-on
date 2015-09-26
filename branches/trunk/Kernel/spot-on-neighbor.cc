@@ -4314,7 +4314,7 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
     {
       data = QByteArray::fromBase64(data);
 
-      QString motd(QString::fromUtf8(data.constData()));
+      QString motd(QString::fromUtf8(data.constData()).trimmed());
 
       if(motd.isEmpty())
 	motd = "Welcome to Spot-On.";
@@ -4333,7 +4333,7 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
 	    QSqlQuery query(db);
 
 	    query.prepare("UPDATE neighbors SET motd = ? WHERE OID = ?");
-	    query.bindValue(0, motd.trimmed());
+	    query.bindValue(0, motd);
 	    query.bindValue(1, m_id);
 	    query.exec();
 	  }

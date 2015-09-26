@@ -1385,7 +1385,8 @@ void spoton::slotPopulateStars(void)
 			  point.setY(point.y() + 100);
 			  QToolTip::showText
 			    (point,
-			     tr("<h3>%1: StarBeam %2 has arrived!</h3>").
+			     tr("<html><h3>%1: StarBeam %2 has arrived!"
+				"</h3></html>").
 			     arg(SPOTON_APPLICATION_NAME).
 			     arg(spoton_misc::htmlEncode(fileName)));
 			}

@@ -946,25 +946,25 @@ void spoton_kernel::prepareListeners(void)
 	  }
 
 	if(query.exec("SELECT "
-		      "ip_address, "
-		      "port, "
-		      "scope_id, "
-		      "echo_mode, "
-		      "status_control, "
-		      "maximum_clients, "
-		      "ssl_key_size, "
-		      "certificate, "
-		      "private_key, "
-		      "public_key, "
-		      "use_accounts, "
-		      "maximum_buffer_size, "
-		      "maximum_content_length, "
-		      "transport, "
-		      "share_udp_address, "
-		      "orientation, "
-		      "motd, "
-		      "ssl_control_string, "
-		      "OID "
+		      "ip_address, "             // 0
+		      "port, "                   // 1
+		      "scope_id, "               // 2
+		      "echo_mode, "              // 3
+		      "status_control, "         // 4
+		      "maximum_clients, "        // 5
+		      "ssl_key_size, "           // 6
+		      "certificate, "            // 7
+		      "private_key, "            // 8
+		      "public_key, "             // 9
+		      "use_accounts, "           // 10
+		      "maximum_buffer_size, "    // 11
+		      "maximum_content_length, " // 12
+		      "transport, "              // 13
+		      "share_udp_address, "      // 14
+		      "orientation, "            // 15
+		      "motd, "                   // 16
+		      "ssl_control_string, "     // 17
+		      "OID "                     // 18
 		      "FROM listeners"))
 	  while(query.next())
 	    {
@@ -1093,7 +1093,8 @@ void spoton_kernel::prepareListeners(void)
 				 static_cast<int> (query.value(14).
 						   toLongLong()),
 				 orientation.constData(),
-				 query.value(16).toString(),
+				 QString::fromUtf8(query.value(16).
+						   toByteArray()).trimmed(),
 				 query.value(17).toString(),
 				 this);
 			    }
@@ -1262,7 +1263,9 @@ void spoton_kernel::prepareNeighbors(void)
 			  list.append(QByteArray::fromBase64(query.value(i).
 							     toByteArray()));
 			else if(i == 22) // motd
-			  list.append(query.value(i).toString());
+			  list.append
+			    (QString::fromUtf8(query.value(i).toByteArray()).
+			     trimmed());
 			else if(i == 23) // ssl_control_string
 			  list.append(query.value(i).toString());
 			else if(i == 24) // priority

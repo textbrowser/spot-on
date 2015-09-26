@@ -363,8 +363,9 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  QString str(list.value(0).toBase64().constData());
 		  QString toolTip
-		    (tr("<h2>%1: Participant <i>%2</i> (%3) has completed a "
-			"forward secrecy exchange.").
+		    (tr("<html><h2>%1: Participant <i>%2</i> (%3) "
+			"has completed a "
+			"forward secrecy exchange.</html>").
 		     arg(SPOTON_APPLICATION_NAME).
 		     arg(name).
 		     arg(str.mid(0, 16) + "..." + str.right(16)));
@@ -739,7 +740,7 @@ void spoton::slotReceivedKernelMessage(void)
 	      point.setX(point.x() - 150);
 	      point.setY(point.y() - 100);
 	      QToolTip::showText
-		(point, tr("<h3>%1: You have new e-mail!</h3>").
+		(point, tr("<html><h3>%1: You have new e-mail!</h3></html>").
 		 arg(SPOTON_APPLICATION_NAME));
 	      m_sb.email->setVisible(true);
 #if SPOTON_GOLDBUG == 1

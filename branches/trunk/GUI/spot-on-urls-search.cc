@@ -104,7 +104,7 @@ void spoton::discoverUrls(void)
     {
       QHash<QString, char> discovered;
       QString keywordsearch("");
-      QString searchfor(tr("Searched for... "));
+      QString searchfor(tr("<html>Searched for... "));
       QStringList keywords;
       QStringList url_hashes;
       bool intersect = false;
@@ -258,6 +258,7 @@ void spoton::discoverUrls(void)
       if(!searchfor.endsWith('.'))
 	searchfor.append(".");
 
+      searchfor.append("</html>");
       m_ui.searchfor->setText(searchfor);
       keywordsearch.clear();
 

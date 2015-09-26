@@ -634,14 +634,14 @@ void spoton::slotSaveMOTD(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString str(m_ui.motd->toPlainText());
+	QString str(m_ui.motd->toPlainText().trimmed());
 
 	if(str.isEmpty())
 	  str = QString("Welcome to %1.").
 	    arg(SPOTON_APPLICATION_NAME);
 
 	query.prepare("UPDATE listeners SET motd = ? WHERE OID = ?");
-	query.bindValue(0, str);
+	query.bindValue(0, str.toUtf8());
 	query.bindValue(1, oid);
 
 	if(!query.exec())
@@ -661,6 +661,8 @@ void spoton::slotSaveMOTD(void)
   if(!error.isEmpty())
     QMessageBox::critical(this, tr("%1: Error").
 			  arg(SPOTON_APPLICATION_NAME), error);
+  else
+    m_ui.motd->selectAll();
 }
 
 void spoton::populateMOTD(const QString &listenerOid)
@@ -686,7 +688,8 @@ void spoton::populateMOTD(const QString &listenerOid)
 
 	if(query.exec())
 	  if(query.next())
-	    m_ui.motd->setPlainText(query.value(0).toString().trimmed());
+	    m_ui.motd->setPlainText
+	      (QString::fromUtf8(query.value(0).toByteArray()).trimmed());
       }
 
     db.close();

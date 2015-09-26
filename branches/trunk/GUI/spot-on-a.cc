@@ -8003,7 +8003,7 @@ void spoton::slotNeighborSelected(void)
   if(item)
     {
       QSslCertificate certificate;
-      QString label("");
+      QString label("<html>");
       int row = item->row();
 
       if(m_ui.neighbors->item(row, 31)) // certificate
@@ -8103,6 +8103,7 @@ void spoton::slotNeighborSelected(void)
 	       value(0)).
 #endif
 	   arg(certificate.version().constData()));
+      label.append("</html>");
       m_ui.neighborSummary->setText(label);
       m_ui.neighborSummary->horizontalScrollBar()->setValue(h);
       m_ui.neighborSummary->verticalScrollBar()->setValue(v);
