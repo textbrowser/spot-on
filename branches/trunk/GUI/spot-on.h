@@ -873,6 +873,7 @@ class spoton: public QMainWindow
   void slotShowUrlSettings(bool state);
   void slotSignatureCheckBoxToggled(bool state);
   void slotSignatureKeyTypeChanged(int index);
+  void slotStarBeamReceivedAndVerified(const QString &fileName);
   void slotStarOTMCheckChange(bool state);
   void slotStatusButtonClicked(void);
   void slotStatusChanged(int index);
@@ -903,6 +904,7 @@ class spoton: public QMainWindow
  signals:
   void buzzNameChanged(const QByteArray &name);
   void iconsChanged(void);
+  void starBeamReceivedAndVerified(const QString &fileName);
   void statusChanged(const QIcon &icon,
 		     const QString &name,
 		     const QString &id,

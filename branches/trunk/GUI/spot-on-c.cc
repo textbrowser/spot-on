@@ -40,6 +40,7 @@
 #endif
 #include <QTableWidgetItem>
 #include <QThread>
+#include <QToolTip>
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
 #endif
@@ -1359,15 +1360,29 @@ void spoton::slotPopulateStars(void)
 
 		      if(m_settings.value("gui/starbeamAutoVerify",
 					  false).toBool())
-			if(hash.isEmpty())
-			  m_starbeamDigestFutures.append
-			    (QtConcurrent::run(this,
-					       &spoton::computeFileDigest,
-					       fileName,
-					       query.
-					       value(query.record().
-						     count() - 1).toString(),
-					       crypt));
+			{
+			  if(hash.isEmpty())
+			    m_starbeamDigestFutures.append
+			      (QtConcurrent::run(this,
+						 &spoton::computeFileDigest,
+						 fileName,
+						 query.
+						 value(query.record().
+						       count() - 1).toString(),
+						 crypt));
+			}
+		      else
+			{
+			  QPoint point(frameGeometry().topRight());
+
+			  point.setX(point.x() - 150);
+			  point.setY(point.y() + 100);
+			  QToolTip::showText
+			    (point,
+			     tr("<h3>%1: StarBeam %2 has arrived!</h3>").
+			     arg(spoton_misc::htmlEncode(fileName)).
+			     arg(SPOTON_APPLICATION_NAME));
+			}
 		    }
 		}
 

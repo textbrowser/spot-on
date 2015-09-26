@@ -165,6 +165,10 @@ class spoton_misc
   static bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 			 const QString &oid,
 			 spoton_crypt *crypt);
+  static bool saveReceivedStarBeamHash(const QSqlDatabase &db,
+				       const QByteArray &hash,
+				       const QString &oid,
+				       spoton_crypt *crypt);
   static bool storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 					 spoton_crypt *crypt);
   static qint64 participantCount(const QString &keyType,
@@ -208,10 +212,6 @@ class spoton_misc
 				    const QString &statusControl,
 				    const QString &orientation,
 				    spoton_crypt *crypt);
-  static void saveReceivedStarBeamHash(const QSqlDatabase &db,
-				       const QByteArray &hash,
-				       const QString &oid,
-				       spoton_crypt *crypt);
   static void setTimeVariables(const QHash<QString, QVariant> &settings);
   static void vacuumAllDatabases(void);
   template<typename T>

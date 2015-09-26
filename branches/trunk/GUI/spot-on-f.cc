@@ -1365,3 +1365,19 @@ void spoton::slotPurgeEphemeralKeyPair(void)
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
 }
+
+void spoton::slotStarBeamReceivedAndVerified(const QString &fileName)
+{
+  if(fileName.isEmpty())
+    return;
+
+  QPoint point(frameGeometry().topRight());
+
+  point.setX(point.x() - 150);
+  point.setY(point.y() + 100);
+  QToolTip::showText
+    (point,
+     tr("<h3>%1: StarBeam %2 has been verified!</h3>").
+     arg(spoton_misc::htmlEncode(fileName)).
+     arg(SPOTON_APPLICATION_NAME));
+}

@@ -3871,7 +3871,7 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
   return valid;
 }
 
-void spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
+bool spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
 					   const QByteArray &hash,
 					   const QString &oid,
 					   spoton_crypt *crypt)
@@ -3881,13 +3881,13 @@ void spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
       logError
 	("spoton_misc::saveReceivedStarBeamHash(): crypt "
 	 "is zero.");
-      return;
+      return false;
     }
   else if(!db.isOpen())
     {
       logError
 	("spoton_misc::saveReceivedStarBeamHash(): db is closed.");
-      return;
+      return false;
     }
 
   QSqlQuery query(db);
@@ -3906,7 +3906,9 @@ void spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
   query.bindValue(1, oid);
 
   if(ok)
-    query.exec();
+    ok = query.exec();
+
+  return ok;
 }
 
 QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)

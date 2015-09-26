@@ -1743,7 +1743,9 @@ void spoton::computeFileDigest(const QString &fileName,
 					  m_starbeamDigestInterrupt));
 
 	    if(!m_starbeamDigestInterrupt.fetchAndAddRelaxed(0))
-	      spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt);
+	      if(spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt))
+		if(!hash.isEmpty())
+		  emit starBeamReceivedAndVerified(fileName);
 	  }
 
 	db.close();
