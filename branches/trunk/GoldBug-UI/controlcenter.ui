@@ -1002,6 +1002,11 @@ QPushButton:pressed {
                     <string>SHA-512 Hash Key</string>
                    </property>
                   </column>
+                  <column>
+                   <property name="text">
+                    <string>Forward Secrecy Information</string>
+                   </property>
+                  </column>
                  </widget>
                  <widget class="QWidget" name="layoutWidget1_2">
                   <layout class="QVBoxLayout" name="verticalLayout_74">

@@ -47,7 +47,7 @@ extern "C"
 #include "ui_passwordprompt.h"
 
 /*
-** Not pleasant!
+** Not pleasant! Please avoid this solution!
 */
 
 int spoton_common::CACHE_TIME_DELTA_MAXIMUM = CACHE_TIME_DELTA_MAXIMUM_STATIC;
@@ -6884,16 +6884,16 @@ void spoton::slotPopulateParticipants(void)
 	query.setForwardOnly(true);
 	query.exec("PRAGMA read_uncommitted = True");
 	query.prepare("SELECT "
-		      "name, "
-		      "OID, "
-		      "neighbor_oid, "
-		      "public_key_hash, "
-		      "status, "
-		      "last_status_update, "
-		      "gemini, "
-		      "gemini_hash_key, "
-		      "key_type, "
-		      "public_key "
+		      "name, "               // 0
+		      "OID, "                // 1
+		      "neighbor_oid, "       // 2
+		      "public_key_hash, "    // 3
+		      "status, "             // 4
+		      "last_status_update, " // 5
+		      "gemini, "             // 6
+		      "gemini_hash_key, "    // 7
+		      "key_type, "           // 8
+		      "public_key "          // 9
 		      "FROM friends_public_keys "
 		      "WHERE key_type_hash IN (?, ?, ?, ?)");
 	query.bindValue
@@ -7108,6 +7108,26 @@ void spoton::slotPopulateParticipants(void)
 			    item->setFlags
 			      (item->flags() | Qt::ItemIsEditable);
 			}
+		      else if(i == 8)
+			{
+			  /*
+			  ** Forward Secrecy Information
+			  */
+
+			  QList<QByteArray> list;
+			  bool ok = true;
+
+			  list = retrieveForwardSecrecyInformation
+			    (db, oid, &ok);
+
+			  if(ok)
+			    item = new QTableWidgetItem
+			      (spoton_misc::
+			       forwardSecrecyMagnetFromList(list).
+			       constData());
+			  else
+			    item = new QTableWidgetItem(tr("error"));
+			}
 
 		      item->setData(Qt::UserRole, temporary);
 		      item->setData
@@ -7133,8 +7153,7 @@ void spoton::slotPopulateParticipants(void)
 			m_ui.participants->setItem(row - 1, i, item);
 		    }
 
-		  if(keyType == "email" ||
-		     keyType == "poptastic")
+		  if(keyType == "email" || keyType == "poptastic")
 		    {
 		      if(i == 0)
 			{
@@ -7319,9 +7338,9 @@ void spoton::slotPopulateParticipants(void)
 	m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
 	m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
 	m_ui.participants->resizeColumnToContents
-	  (m_ui.participants->columnCount() - 2); // Gemini Encryption Key.
+	  (m_ui.participants->columnCount() - 3); // Gemini Encryption Key.
 	m_ui.participants->resizeColumnToContents
-	  (m_ui.participants->columnCount() - 1); // Gemini Hash Key.
+	  (m_ui.participants->columnCount() - 2); // Gemini Hash Key.
 	m_ui.participants->setSelectionMode
 	  (QAbstractItemView::ExtendedSelection);
 	m_ui.participants->setSortingEnabled(true);
@@ -7693,8 +7712,7 @@ void spoton::slotCallParticipant(void)
 
   if((row = m_ui.participants->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.participants->item
-	(row, 1); // OID
+      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
 
       if(item)
 	{

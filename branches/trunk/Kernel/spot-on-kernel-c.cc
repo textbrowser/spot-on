@@ -25,6 +25,9 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QSqlQuery>
+#include <QSqlRecord>
+
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "spot-on-kernel.h"
@@ -124,6 +127,120 @@ void spoton_kernel::slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash)
 void spoton_kernel::slotCallParticipantUsingForwardSecrecy
 (const QByteArray &keyType, const qint64 oid)
 {
-  Q_UNUSED(keyType);
-  Q_UNUSED(oid);
+  spoton_crypt *s_crypt = s_crypts.value(keyType, 0);
+
+  if(!s_crypt)
+    return;
+
+  QByteArray data;
+  QString connectionName("");
+  QString receiverName("");
+  bool ok = false;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT "
+		      "forward_secrecy_authentication_algorithm, " // 0
+		      "forward_secrecy_authentication_key, "       // 1
+		      "forward_secrecy_encryption_algorithm, "     // 2
+		      "forward_secrecy_encryption_key, "           // 3
+		      "gemini, "                                   // 4
+		      "gemini_hash_key, "                          // 5
+		      "name "                                      // 6
+		      "FROM friends_public_keys WHERE "
+		      "key_type_hash IN (?, ?) AND neighbor_oid = -1 AND "
+		      "OID = ?");
+	query.bindValue(0, s_crypt->keyedHash(QByteArray("chat"),
+					      &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(1, s_crypt->keyedHash(QByteArray("poptastic"),
+						&ok).toBase64());
+
+	query.bindValue(2, oid);
+
+	if(ok && query.exec())
+	  if(query.next())
+	    {
+	      QList<QByteArray> list;
+
+	      for(int i = 0; i < query.record().count(); i++)
+		{
+		  QByteArray bytes
+		    (s_crypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.
+							    value(i).
+							    toByteArray()),
+						 &ok));
+
+		  if(!ok)
+		    break;
+
+		  list << bytes;
+
+		  if(i == 6)
+		    receiverName = bytes;
+		}
+
+	      QByteArray messageCode;
+	      QDataStream stream(&data, QIODevice::WriteOnly);
+	      QDateTime dateTime(QDateTime::currentDateTime());
+	      spoton_crypt crypt(list.value(2).constData(),
+				 list.value(0).constData(),
+				 QByteArray(),
+				 list.value(3),
+				 list.value(1),
+				 0,
+				 0,
+				 "");
+
+	      stream << QByteArray("0000d")
+		     << list.value(4)
+		     << list.value(5)
+		     << dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1();
+
+	      if(stream.status() != QDataStream::Ok)
+		ok = false;
+
+	      if(ok)
+		data = crypt.encrypted(data, &ok);
+
+	      if(ok)
+		messageCode = crypt.keyedHash(data, &ok);
+
+	      if(ok)
+		{
+		  data = data.toBase64();
+		  data.append("\n");
+		  data.append(messageCode.toBase64());
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    {
+      if(keyType == "poptastic")
+	{
+	  QByteArray message(spoton_send::message0000d(data));
+
+	  postPoptasticMessage(receiverName, message);
+	}
+      else
+	emit callParticipant(data, "0000d");
+    }
 }

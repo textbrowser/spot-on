@@ -4208,17 +4208,14 @@ void spoton::slotRenameParticipant(void)
 
   if(currentTabName() == "chat")
     if(type == "chat" || type == "poptastic")
-      list = m_ui.participants->selectionModel()->
-	selectedRows(1); // OID
+      list = m_ui.participants->selectionModel()->selectedRows(1); // OID
 
   if(currentTabName() == "email")
     if(type == "email" || type == "poptastic")
-      list = m_ui.emailParticipants->selectionModel()->
-	selectedRows(1); // OID
+      list = m_ui.emailParticipants->selectionModel()->selectedRows(1); // OID
 
   if(type == "url")
-    list = m_ui.urlParticipants->selectionModel()->
-      selectedRows(1); // OID
+    list = m_ui.urlParticipants->selectionModel()->selectedRows(1); // OID
 
   if(list.isEmpty())
     return;

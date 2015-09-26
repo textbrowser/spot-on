@@ -817,6 +817,19 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		   list.value(3), list.value(4),
 		   "0000b");
     }
+  else if(messageType == "0000d")
+    {
+      QList<QByteArray> list
+	(spoton_receive::
+	 process0000d(data.length(), data, symmetricKeys,
+		      QHostAddress("127.0.0.1"), 0,
+		      s_crypts.value("poptastic", 0)));
+
+      if(!list.isEmpty())
+	saveGemini(list.value(0), list.value(1),
+		   list.value(2), list.value(3),
+		   "0000d");
+    }
   else if(messageType == "0001b")
     {
       QList<QByteArray> list
@@ -1610,6 +1623,13 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
 		  (publicKeyHash,
 		   tr("The participant %1...%2 initiated a call "
 		      "within a call.").
+		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
+		   arg(publicKeyHash.toBase64().right(16).constData()));
+	      else if(messageType == "0000d")
+		emit statusMessageReceived
+		  (publicKeyHash,
+		   tr("The participant %1...%2 initiated a call "
+		      "via Forward Secrecy.").
 		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
 		   arg(publicKeyHash.toBase64().right(16).constData()));
 	    }

@@ -30,6 +30,7 @@
 #include <QToolTip>
 
 #include "Common/spot-on-crypt.h"
+#include "Common/spot-on-misc.h"
 #include "spot-on.h"
 #include "ui_forwardsecrecyalgorithmsselection.h"
 #include "ui_unlock.h"
@@ -1246,6 +1247,7 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
   else if(!m_kernelSocket.isEncrypted())
     return;
 
+  QString forwardSecrecyInformation("");
   QString keyType("");
   QString oid("");
   bool temporary = true;
@@ -1253,8 +1255,7 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
 
   if((row = m_ui.participants->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.participants->item
-	(row, 1); // OID
+      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
 
       if(item)
 	{
@@ -1263,12 +1264,26 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
 	  oid = item->text();
 	  temporary = item->data(Qt::UserRole).toBool();
 	}
+
+      item = m_ui.participants->item(row, 8); // Forward Secrecy Information
+
+      if(item)
+	forwardSecrecyInformation = item->text();
     }
 
-  if(oid.isEmpty())
+  QList<QByteArray> values;
+
+  if(!spoton_misc::isValidForwardSecrecyMagnet(forwardSecrecyInformation.
+					       toLatin1(), values))
+    return;
+  else if(oid.isEmpty())
     return;
   else if(temporary) // Temporary friend?
     return; // Not allowed!
+
+  /*
+  ** Do we have forward secrecy keys?
+  */
 
   slotGenerateGeminiInChat();
 

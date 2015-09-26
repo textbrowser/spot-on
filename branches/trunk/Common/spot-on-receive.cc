@@ -676,6 +676,124 @@ QList<QByteArray> spoton_receive::process0000b
   return QList<QByteArray> ();
 }
 
+QList<QByteArray> spoton_receive::process0000d
+(int length, const QByteArray &dataIn,
+ const QList<QByteArray> &symmetricKeys,
+ const QHostAddress &address,
+ const quint16 port,
+ spoton_crypt *s_crypt)
+{
+  if(!s_crypt)
+    {
+      spoton_misc::logError
+	("spoton_receive::process0000d(): "
+	 "s_crypt is zero.");
+      return QList<QByteArray> ();
+    }
+
+  QByteArray data(dataIn);
+
+  if(length == data.length())
+    {
+      data = data.trimmed();
+
+      QList<QByteArray> list(data.split('\n'));
+
+      if(list.size() != 3)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_receivet::process0000d(): "
+		     "received irregular data. Expecting 3 "
+		     "entries, "
+		     "received %1.").arg(list.size()));
+	  return QList<QByteArray> ();
+	}
+
+      for(int i = 0; i < list.size(); i++)
+	list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+      /*
+      ** The method findMessageType() verified that the computed
+      ** hash is identical to the provided hash during the
+      ** discovery of the forward secrecy pair. Other
+      ** process() methods perform redundant tests.
+      */
+
+      /*
+      ** symmetricKeys[0]: Encryption Key
+      ** symmetricKeys[1]: Encryption Type
+      ** symmetricKeys[2]: Hash Key
+      ** symmetricKeys[3]: Hash Type
+      ** symmetricKeys[4]: Dispatcher's Digest
+      */
+
+      bool ok = true;
+      spoton_crypt crypt(symmetricKeys.value(1).constData(),
+			 symmetricKeys.value(3).constData(),
+			 QByteArray(),
+			 symmetricKeys.value(0),
+			 symmetricKeys.value(2),
+			 0,
+			 0,
+			 "");
+
+      data = crypt.decrypted(list.value(0), &ok);
+
+      if(ok)
+	{
+	  QDataStream stream(&data, QIODevice::ReadOnly);
+	  QList<QByteArray> list;
+
+	  for(int i = 0; i < 4; i++)
+	    {
+	      QByteArray a;
+
+	      stream >> a;
+
+	      if(stream.status() != QDataStream::Ok)
+		{
+		  list.clear();
+		  break;
+		}
+	      else
+		list << a;
+	    }
+
+	  if(list.size() == 4)
+	    {
+	      if(spoton_misc::isAcceptedParticipant(symmetricKeys.value(4),
+						    "chat",
+						    s_crypt) ||
+		 spoton_misc::isAcceptedParticipant(symmetricKeys.value(4),
+						    "poptastic",
+						    s_crypt))
+		{
+		  list.removeAt(0); // Message Type
+		  list.prepend(symmetricKeys.value(4)); // public_key_hash
+		  return list;
+		}
+	    }
+	  else
+	    spoton_misc::logError
+	      (QString("spoton_receive::process0000d(): "
+		       "received irregular data. "
+		       "Expecting 4 "
+		       "entries, "
+		       "received %1.").arg(list.size()));
+	}
+    }
+  else
+    spoton_misc::logError
+      (QString("spoton_receive::process0000d(): 0000d "
+	       "Content-Length mismatch (advertised: %1, received: %2) "
+	       "for %3:%4.").
+       arg(length).arg(data.length()).
+       arg(address.toString()).
+       arg(port));
+
+  return QList<QByteArray> ();
+}
+
 QList<QByteArray> spoton_receive::process0001b
 (int length, const QByteArray &dataIn,
  const QHostAddress &address,

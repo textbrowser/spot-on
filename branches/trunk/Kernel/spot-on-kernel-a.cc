@@ -113,7 +113,7 @@ QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
 
 /*
-** Not pleasant!
+** Not pleasant! Please avoid this solution!
 */
 
 int spoton_common::CACHE_TIME_DELTA_MAXIMUM = CACHE_TIME_DELTA_MAXIMUM_STATIC;

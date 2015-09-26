@@ -1004,8 +1004,7 @@ void spoton::slotPrepareSMP(void)
 
   if((row = m_ui.participants->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.participants->item
-	(row, 1); // OID
+      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
 
       if(item)
 	temporary = item->data(Qt::UserRole).toBool();
@@ -1083,8 +1082,7 @@ void spoton::slotVerifySMPSecret(void)
 
   if((row = m_ui.participants->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.participants->item
-	(row, 1); // OID
+      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
 
       if(item)
 	{
@@ -1262,8 +1260,7 @@ void spoton::slotInitializeSMP(void)
 
   if((row = m_ui.participants->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.participants->item
-	(row, 1); // OID
+      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
 
       if(item)
 	temporary = item->data(Qt::UserRole).toBool();

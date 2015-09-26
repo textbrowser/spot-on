@@ -1851,6 +1851,8 @@ void spoton_neighbor::processData(void)
 	    process0000a(length, data, messageType);
 	  else if(messageType == "0000b")
 	    process0000b(length, data, symmetricKeys);
+	  else if(messageType == "0000d")
+	    process0000d(length, data, symmetricKeys);
 	  else if(messageType == "0001a")
 	    process0001a(length, data);
 	  else if(messageType == "0001b")
@@ -2528,6 +2530,20 @@ void spoton_neighbor::process0000b(int length, const QByteArray &dataIn,
     saveGemini(list.value(1), list.value(2),
 	       list.value(3), list.value(4),
 	       "0000b");
+}
+
+void spoton_neighbor::process0000d(int length, const QByteArray &dataIn,
+				   const QList<QByteArray> &symmetricKeys)
+{
+  QList<QByteArray> list
+    (spoton_receive::process0000d(length, dataIn, symmetricKeys,
+				  m_address, m_port,
+				  spoton_kernel::s_crypts.value("chat", 0)));
+
+  if(!list.isEmpty())
+    saveGemini(list.value(0), list.value(1),
+	       list.value(2), list.value(3),
+	       "0000d");
 }
 
 void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
@@ -6141,8 +6157,13 @@ void spoton_neighbor::slotCallParticipant(const QByteArray &data,
 					    spoton_send::
 					    ARTIFICIAL_GET,
 					    ae);
-      else
+      else if(messageType == "0000b")
 	message = spoton_send::message0000b(data,
+					    spoton_send::
+					    ARTIFICIAL_GET,
+					    ae);
+      else if(messageType == "0000d")
+	message = spoton_send::message0000d(data,
 					    spoton_send::
 					    ARTIFICIAL_GET,
 					    ae);
@@ -6154,14 +6175,19 @@ void spoton_neighbor::slotCallParticipant(const QByteArray &data,
 					    spoton_send::
 					    NORMAL_POST,
 					    ae);
-      else
+      else if(messageType == "0000b")
 	message = spoton_send::message0000b(data,
+					    spoton_send::
+					    NORMAL_POST,
+					    ae);
+      else if(messageType == "0000d")
+	message = spoton_send::message0000d(data,
 					    spoton_send::
 					    NORMAL_POST,
 					    ae);
     }
 
-  if(readyToWrite())
+  if(!message.isEmpty() && readyToWrite())
     {
       if(write(message.constData(),
 	       message.length()) != message.length())
@@ -6389,6 +6415,13 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 		  (publicKeyHash,
 		   tr("Received a two-way call response from "
 		      "participant %1...%2.").
+		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
+		   arg(publicKeyHash.toBase64().right(16).constData()));
+	      else if(messageType == "0000d")
+		emit statusMessageReceived
+		  (publicKeyHash,
+		   tr("The participant %1...%2 initiated a call via "
+		      "Forward Secrecy.").
 		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
 		   arg(publicKeyHash.toBase64().right(16).constData()));
 
