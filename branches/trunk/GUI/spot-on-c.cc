@@ -1371,7 +1371,7 @@ void spoton::slotPopulateStars(void)
 						       count() - 1).toString(),
 						 crypt));
 			}
-		      else
+		      else if(!fileName.isEmpty())
 			{
 			  QPoint point(frameGeometry().topRight());
 
@@ -1380,8 +1380,8 @@ void spoton::slotPopulateStars(void)
 			  QToolTip::showText
 			    (point,
 			     tr("<h3>%1: StarBeam %2 has arrived!</h3>").
-			     arg(spoton_misc::htmlEncode(fileName)).
-			     arg(SPOTON_APPLICATION_NAME));
+			     arg(SPOTON_APPLICATION_NAME).
+			     arg(spoton_misc::htmlEncode(fileName)));
 			}
 		    }
 		}

@@ -1378,6 +1378,6 @@ void spoton::slotStarBeamReceivedAndVerified(const QString &fileName)
   QToolTip::showText
     (point,
      tr("<h3>%1: StarBeam %2 has been verified!</h3>").
-     arg(spoton_misc::htmlEncode(fileName)).
-     arg(SPOTON_APPLICATION_NAME));
+     arg(SPOTON_APPLICATION_NAME).
+     arg(spoton_misc::htmlEncode(fileName)));
 }
