@@ -1280,7 +1280,13 @@ void spoton::slotPopulateStars(void)
 			   &ok);
 
 		      if(ok)
-			item = new QTableWidgetItem(bytes.constData());
+			{
+			  if(i == 3)
+			    item = new QTableWidgetItem
+			      (QString::fromUtf8(bytes));
+			  else
+			    item = new QTableWidgetItem(bytes.constData());
+			}
 		      else
 			item = new QTableWidgetItem(tr("error"));
 

@@ -144,14 +144,13 @@ void spoton_starbeam_reader::slotTimeout(void)
 		      QString pulseSize("");
 		      bool ok = true;
 
-		      fileName = s_crypt->
-			decryptedAfterAuthenticated
-			(QByteArray::
-			 fromBase64(query.
-				    value(0).
-				    toByteArray()),
-			 &ok).
-			constData();
+		      fileName = QString::fromUtf8
+			(s_crypt->
+			 decryptedAfterAuthenticated(QByteArray::
+						     fromBase64(query.
+								value(0).
+								toByteArray()),
+						     &ok));
 
 		      if(ok)
 			hash = s_crypt->
