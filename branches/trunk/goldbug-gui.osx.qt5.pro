@@ -219,9 +219,6 @@ postinstall.extra	= find /Applications/GoldBug.d -name .svn -exec rm -rf {} \\; 
 translations.path 	= /Applications/GoldBug.d/Translations
 translations.files	= Translations/*.qm
 
-# Prevent qmake from stripping everything.
-
-QMAKE_STRIP	= echo
 INSTALLS	= macdeployqt \
                   preinstall \
                   install1 \

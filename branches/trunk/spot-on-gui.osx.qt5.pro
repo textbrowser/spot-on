@@ -37,7 +37,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RELEASE =
 QMAKE_LFLAGS_RPATH =
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 INCLUDEPATH	+= . ../../. GUI \
                    /usr/local/include /usr/local/opt
 ICON		= Icons/Logo/spot-on-logo.icns
@@ -219,9 +219,6 @@ postinstall.extra	= find /Applications/Spot-On_Qt5.d -name .svn -exec rm -rf {} 
 translations.path 	= /Applications/Spot-On_Qt5.d/Translations
 translations.files	= Translations/*.qm
 
-# Prevent qmake from stripping everything.
-
-QMAKE_STRIP	= echo
 INSTALLS	= macdeployqt \
                   preinstall \
                   install1 \

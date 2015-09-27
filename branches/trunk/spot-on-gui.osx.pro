@@ -211,9 +211,6 @@ postinstall.extra	= find /Applications/Spot-On.d -name .svn -exec rm -rf {} \\; 
 translations.path 	= /Applications/Spot-On.d/Translations
 translations.files	= Translations/*.qm
 
-# Prevent qmake from stripping everything.
-
-QMAKE_STRIP	= echo
 INSTALLS	= macdeployqt \
                   preinstall \
                   install1 \

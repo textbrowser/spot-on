@@ -40,7 +40,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RELEASE =
 QMAKE_LFLAGS_RPATH =
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 INCLUDEPATH	+= . ../. ../../../. \
 		   ../../../libSCTP/Include.osx64 \
                    /usr/local/include /usr/local/opt
@@ -119,9 +119,6 @@ preinstall.extra        = rm -rf /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/
 postinstall.path	= /Applications/Spot-On_Qt5.d
 postinstall.extra	= find /Applications/Spot-On_Qt5.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
 
-# Prevent qmake from stripping everything.
-
-QMAKE_STRIP	= echo
 INSTALLS	= macdeployqt \
                   preinstall \
                   libgeoip_data_install \

@@ -112,9 +112,6 @@ preinstall.extra        = rm -rf /Applications/Spot-On.d/Spot-On-Kernel.app/*
 postinstall.path	= /Applications/Spot-On.d
 postinstall.extra	= find /Applications/Spot-On.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
 
-# Prevent qmake from stripping everything.
-
-QMAKE_STRIP	= echo
 INSTALLS	= macdeployqt \
                   preinstall \
                   libgeoip_data_install \
