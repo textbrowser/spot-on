@@ -121,7 +121,7 @@ QString spoton_sctp_server::errorString(void) const
 #ifdef SPOTON_SCTP_ENABLED
   return m_errorString;
 #else
-  return QString();
+  return "";
 #endif
 }
 

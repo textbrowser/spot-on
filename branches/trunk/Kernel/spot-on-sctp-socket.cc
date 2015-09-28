@@ -214,7 +214,7 @@ QString spoton_sctp_socket::peerName(void) const
 #ifdef SPOTON_SCTP_ENABLED
   return m_connectToPeerName;
 #else
-  return QString();
+  return "";
 #endif
 }
 

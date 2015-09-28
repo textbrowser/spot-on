@@ -1353,7 +1353,7 @@ QString spoton_listener::errorString(void) const
   else if(m_udpServer)
     return m_udpServer->errorString();
   else
-    return QString();
+    return "";
 }
 
 int spoton_listener::maxPendingConnections(void) const

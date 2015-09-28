@@ -604,10 +604,10 @@ class spoton: public QMainWindow
   void slotAddAttachment(void);
   void slotAddBootstrapper(void);
   void slotAddDistiller(void);
-  void slotAddEtpMagnet(const QString &text = QString(),
+  void slotAddEtpMagnet(const QString &text = "",
 			const bool displayError = true);
   void slotAddFriendsKey(void);
-  void slotAddInstitution(const QString &text = QString());
+  void slotAddInstitution(const QString &text = "");
   void slotAddInstitutionCheckBoxToggled(bool state);
   void slotAddListener(void);
   void slotAddMagnet(void);
