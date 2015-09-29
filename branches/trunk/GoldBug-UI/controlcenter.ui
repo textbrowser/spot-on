@@ -1228,8 +1228,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>559</width>
-             <height>660</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2325,6 +2325,9 @@ QPushButton:pressed {
                     </item>
                     <item>
                      <widget class="QCheckBox" name="plain">
+                      <property name="toolTip">
+                       <string>Click to disable rich text.</string>
+                      </property>
                       <property name="text">
                        <string>&amp;Plain</string>
                       </property>

@@ -1446,6 +1446,9 @@
                       </item>
                       <item>
                        <widget class="QCheckBox" name="plain">
+                        <property name="toolTip">
+                         <string>Click to disable rich text.</string>
+                        </property>
                         <property name="text">
                          <string>&amp;Plain</string>
                         </property>
