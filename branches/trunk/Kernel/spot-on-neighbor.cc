@@ -1617,6 +1617,8 @@ void spoton_neighbor::processData(void)
 	}
     }
 
+  data.clear();
+
   {
     QWriteLocker locker(&m_dataMutex);
 

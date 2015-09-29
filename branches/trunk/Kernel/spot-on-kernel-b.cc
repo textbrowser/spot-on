@@ -1296,7 +1296,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	      }
 	  }
 
-      if(hash == subject)
+      if(spoton_crypt::memcmp(hash, subject))
 	/*
 	** Ignore messages that we believe were created by other
 	** Spot-On participants.

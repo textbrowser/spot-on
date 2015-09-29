@@ -1718,7 +1718,8 @@ void spoton::slotSaveAlternatingColors(bool state)
     }
 }
 
-void spoton::computeFileDigest(const QString &fileName,
+void spoton::computeFileDigest(const QByteArray &expectedFileHash,
+			       const QString &fileName,
 			       const QString &oid,
 			       spoton_crypt *crypt)
 {
@@ -1744,7 +1745,8 @@ void spoton::computeFileDigest(const QString &fileName,
 
 	    if(!m_starbeamDigestInterrupt.fetchAndAddRelaxed(0))
 	      if(spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt))
-		if(!hash.isEmpty())
+		if(!hash.isEmpty() && spoton_crypt::memcmp(expectedFileHash,
+							   hash))
 		  emit starBeamReceivedAndVerified(fileName);
 	  }
 

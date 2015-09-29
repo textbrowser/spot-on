@@ -1371,6 +1371,7 @@ void spoton::slotPopulateStars(void)
 			    m_starbeamDigestFutures.append
 			      (QtConcurrent::run(this,
 						 &spoton::computeFileDigest,
+						 expectedFileHash,
 						 fileName,
 						 query.
 						 value(query.record().
@@ -1399,7 +1400,8 @@ void spoton::slotPopulateStars(void)
 
 	      if(item3 && item4)
 		{
-		  if(expectedFileHash == hash)
+		  if(!hash.isEmpty() && spoton_crypt::memcmp(expectedFileHash,
+							     hash))
 		    {
 		      item3->setBackground
 			(QBrush(QColor("lightgreen")));
