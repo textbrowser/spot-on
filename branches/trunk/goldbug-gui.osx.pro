@@ -13,7 +13,8 @@ CONFIG		+= app_bundle qt release warn_on
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.
 
-DEFINES += SPOTON_LINKED_WITH_LIBGEOIP \
+DEFINES += SPOTON_GOLDBUG \
+           SPOTON_LINKED_WITH_LIBGEOIP \
            SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_SCTP_ENABLED
@@ -21,7 +22,7 @@ DEFINES += SPOTON_LINKED_WITH_LIBGEOIP \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN     += Spot-On ../../libNTRU/*.dylib ../../libNTRU/src/*.o \
+QMAKE_CLEAN     += GoldBug ../../libNTRU/*.dylib ../../libNTRU/src/*.o \
                    ../../libNTRU/src/*.s \
                    ../../libSpotOn/*.dylib ../../libSpotOn/*.o \
 		   ../../libSpotOn/test
@@ -37,7 +38,7 @@ QMAKE_LFLAGS_RELEASE =
 QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../../. GUI \
                    /usr/local/include /usr/local/opt
-ICON		= Icons/Logo/spot-on-logo.icns
+ICON		= Icons/Logo/goldbug.icns
 LIBS		+= -L../../libNTRU -lntru \
                    -L../../libSpotOn -lspoton \
                    -L/usr/local/lib -L/usr/local/opt/curl/lib \
@@ -181,8 +182,8 @@ TRANSLATIONS    = Translations/spot-on_af.ts \
 RESOURCES	= Icons/icons.qrc \
 		  Translations/translations.qrc
 
-TARGET		= Spot-On
-PROJECTNAME	= Spot-On
+TARGET		= GoldBug
+PROJECTNAME	= GoldBug
 
 # Prevent qmake from stripping everything.
 
@@ -195,12 +196,12 @@ install1.files          = spot-on-neighbors.txt
 libgeoip_data_install.path = /Applications/GoldBug.d/GeoIP
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
 libntru_install.path  = .
-libntru_install.extra = cp ../../libNTRU/libntru.dylib ./GoldBug.app/Contents/Frameworks/libntru.dylib && install_name_tool -change ../../libNTRU/libntru.dylib @executable_path/../Frameworks/libntru.dylib ./GoldBug.app/Contents/MacOS/Spot-On
+libntru_install.extra = cp ../../libNTRU/libntru.dylib ./GoldBug.app/Contents/Frameworks/libntru.dylib && install_name_tool -change ../../libNTRU/libntru.dylib @executable_path/../Frameworks/libntru.dylib ./GoldBug.app/Contents/MacOS/GoldBug
 libspoton_install.path  = .
-libspoton_install.extra = cp ../../libSpotOn/libspoton.dylib ./GoldBug.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib ./GoldBug.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change ../../libSpotOn/libspoton.dylib @executable_path/../Frameworks/libspoton.dylib ./GoldBug.app/Contents/MacOS/Spot-On
-lrelease.extra          = $$[QT_INSTALL_BINS]/lrelease spot-on-gui.osx.pro
+libspoton_install.extra = cp ../../libSpotOn/libspoton.dylib ./GoldBug.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib ./GoldBug.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change ../../libSpotOn/libspoton.dylib @executable_path/../Frameworks/libspoton.dylib ./GoldBug.app/Contents/MacOS/GoldBug
+lrelease.extra          = $$[QT_INSTALL_BINS]/lrelease goldbug-gui.osx.pro
 lrelease.path           = .
-lupdate.extra           = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.osx.pro
+lupdate.extra           = $$[QT_INSTALL_BINS]/lupdate goldbug-gui.osx.pro
 lupdate.path            = .
 macdeployqt.path        = ./GoldBug.app
 macdeployqt.extra       = $$[QT_INSTALL_BINS]/macdeployqt ./GoldBug.app -verbose=0
