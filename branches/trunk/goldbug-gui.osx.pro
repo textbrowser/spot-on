@@ -50,25 +50,25 @@ UI_DIR = temp/ui
 MOC_DIR = temp/moc
 RCC_DIR = temp/rcc
 
-FORMS           = UI/adaptiveechoprompt.ui \
-		  UI/buzzpage.ui \
-		  UI/chatwindow.ui \
-		  UI/controlcenter.ui \
-		  UI/echo-key-share.ui \
-		  UI/encryptfile.ui \
-		  UI/forwardsecrecyalgorithmsselection.ui \
-		  UI/ipinformation.ui \
-		  UI/keyboard.ui \
-		  UI/listener-socket-options.ui \
-                  UI/logviewer.ui \
-		  UI/options.ui \
-                  UI/passwordprompt.ui \
-		  UI/poptastic-retrophone-settings.ui \
-		  UI/postgresqlconnect.ui \
-		  UI/rosetta.ui \
-                  UI/starbeamanalyzer.ui \
-		  UI/statusbar.ui \
-		  UI/unlock.ui
+FORMS           = GoldBug-UI/adaptiveechoprompt.ui \
+		  GoldBug-UI/buzzpage.ui \
+		  GoldBug-UI/chatwindow.ui \
+		  GoldBug-UI/controlcenter.ui \
+		  GoldBug-UI/echo-key-share.ui \
+		  GoldBug-UI/encryptfile.ui \
+		  GoldBug-UI/forwardsecrecyalgorithmsselection.ui \
+		  GoldBug-UI/ipinformation.ui \
+		  GoldBug-UI/keyboard.ui \
+		  GoldBug-UI/listener-socket-options.ui \
+                  GoldBug-UI/logviewer.ui \
+		  GoldBug-UI/options.ui \
+                  GoldBug-UI/passwordprompt.ui \
+		  GoldBug-UI/poptastic-retrophone-settings.ui \
+		  GoldBug-UI/postgresqlconnect.ui \
+		  GoldBug-UI/rosetta.ui \
+                  GoldBug-UI/starbeamanalyzer.ui \
+		  GoldBug-UI/statusbar.ui \
+		  GoldBug-UI/unlock.ui
 
 UI_HEADERS_DIR  = GUI
 
