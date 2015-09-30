@@ -5275,14 +5275,15 @@ void spoton::slotSetPassphrase(void)
 	      progress.setWindowTitle(tr("%1: Generating Key Pairs").
 				      arg(SPOTON_APPLICATION_NAME));
 	      progress.show();
-	      progress.update();
+#ifndef Q_OS_MAC
+	      QApplication::processEvents();
+#endif
 
 	      for(int i = 0; i < list.size() && !progress.wasCanceled(); i++)
 		{
 		  if(i + 1<= progress.maximum())
 		    progress.setValue(i + 1);
 
-		  progress.update();
 #ifndef Q_OS_MAC
 		  QApplication::processEvents();
 #endif

@@ -134,13 +134,17 @@ void spoton::slotPrepareUrlDatabases(void)
   progress.setWindowTitle(tr("%1: Creating URL Databases").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-  progress.update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
   created = spoton_misc::prepareUrlDistillersDatabase();
 
   if(created)
     created = spoton_misc::prepareUrlKeysDatabase();
 
-  progress.update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   QSqlQuery query(m_urlDatabase);
 
@@ -150,7 +154,6 @@ void spoton::slotPrepareUrlDatabases(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-	progress.update();
 #ifndef Q_OS_MAC
 	QApplication::processEvents();
 #endif
@@ -254,7 +257,9 @@ void spoton::slotPrepareUrlDatabases(void)
     }
 
   progress.close();
-  update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   if(!created)
     QMessageBox::critical(this, tr("%1: Error").
@@ -316,7 +321,9 @@ bool spoton::deleteAllUrls(void)
   progress.setWindowTitle(tr("%1: Vacuuming URL Databases").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-  progress.update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   QSqlQuery query(m_urlDatabase);
 
@@ -326,7 +333,6 @@ bool spoton::deleteAllUrls(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-	progress.update();
 #ifndef Q_OS_MAC
 	QApplication::processEvents();
 #endif
@@ -415,7 +421,9 @@ void spoton::slotGatherUrlStatistics(void)
   progress.setWindowTitle(tr("%1: Gathering URL Statistics").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-  progress.update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   for(int i = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
@@ -423,7 +431,6 @@ void spoton::slotGatherUrlStatistics(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-	  progress.update();
 #ifndef Q_OS_MAC
 	  QApplication::processEvents();
 #endif
@@ -564,7 +571,9 @@ void spoton::slotImportUrls(void)
   progress.show();
   progress.raise();
   progress.activateWindow();
-  progress.update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
   populateUrlDistillers();
 
   quint64 imported = 0;
@@ -601,7 +610,6 @@ void spoton::slotImportUrls(void)
 		if(processed <= progress.maximum())
 		  progress.setValue(processed);
 
-		progress.update();
 #ifndef Q_OS_MAC
 		QApplication::processEvents();
 #endif
@@ -720,7 +728,9 @@ void spoton::slotImportUrls(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   progress.close();
-  update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
   displayUrlImportResults(imported, not_imported);
 }
 
@@ -1635,7 +1645,9 @@ void spoton::slotDeleteLink(const QUrl &u)
   progress.setWindowTitle(tr("%1: Deleting URL Keywords").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-  progress.update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
@@ -1643,7 +1655,6 @@ void spoton::slotDeleteLink(const QUrl &u)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-	progress.update();
 #ifndef Q_OS_MAC
 	QApplication::processEvents();
 #endif

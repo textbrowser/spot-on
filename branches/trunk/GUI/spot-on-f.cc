@@ -265,7 +265,9 @@ void spoton::slotEstablishForwardSecrecy(void)
     goto done_label;
 
   dialog->close();
-  update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   if(ui.encryptionKeyType->currentIndex() == 0)
     algorithm = "elg";
@@ -290,14 +292,15 @@ void spoton::slotEstablishForwardSecrecy(void)
   progress.setWindowTitle(tr("%1: Generating Key Pairs").
 			  arg(SPOTON_APPLICATION_NAME));
   progress.show();
-  progress.update();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   for(int i = 0; i < publicKeyHashes.size() && !progress.wasCanceled(); i++)
     {
       if(i + 1 <= progress.maximum())
 	progress.setValue(i + 1);
 
-      progress.update();
 #ifndef Q_OS_MAC
       QApplication::processEvents();
 #endif
