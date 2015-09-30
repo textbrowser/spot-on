@@ -1,4 +1,3 @@
-cache()
 libntru.target = libntru.dylib
 libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
@@ -8,14 +7,13 @@ libspoton.depends =
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= concurrent core gui multimedia network sql widgets
+QT		+= network sql
 CONFIG		+= app_bundle qt release warn_on
 
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.
 
-DEFINES += SPOTON_GOLDBUG \
-           SPOTON_LINKED_WITH_LIBGEOIP \
+DEFINES += SPOTON_LINKED_WITH_LIBGEOIP \
            SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_SCTP_ENABLED
@@ -23,14 +21,13 @@ DEFINES += SPOTON_GOLDBUG \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN     += GoldBug ../../libNTRU/*.dylib ../../libNTRU/src/*.o \
+QMAKE_CLEAN     += Spot-On ../../libNTRU/*.dylib ../../libNTRU/src/*.o \
                    ../../libNTRU/src/*.s \
                    ../../libSpotOn/*.dylib ../../libSpotOn/*.o \
 		   ../../libSpotOn/test
-QMAKE_CXX = clang++
-QMAKE_DISTCLEAN += -r temp .qmake.cache .qmake.stash
+QMAKE_DISTCLEAN += -r temp
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-			  -mtune=generic \
+			  -mtune=generic -pie \
 			  -Wall -Wcast-align -Wcast-qual \
                           -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
@@ -40,38 +37,37 @@ QMAKE_LFLAGS_RELEASE =
 QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../../. GUI \
                    /usr/local/include /usr/local/opt
-ICON		= Icons/Logo/goldbug.icns
+ICON		= Icons/Logo/spot-on-logo.icns
 LIBS		+= -L../../libNTRU -lntru \
                    -L../../libSpotOn -lspoton \
                    -L/usr/local/lib -L/usr/local/opt/curl/lib \
                    -L/usr/local/opt/openssl/lib -lGeoIP \
-                   -lcrypto -lcurl -lgcrypt -lgpg-error -lssl \
-                   -framework AppKit -framework Cocoa
+                   -lcrypto -lcurl -lgcrypt -lgpg-error -lssl
 PRE_TARGETDEPS = libntru.dylib libspoton.dylib
 OBJECTS_DIR = temp/obj
 UI_DIR = temp/ui
 MOC_DIR = temp/moc
 RCC_DIR = temp/rcc
 
-FORMS           = GoldBug-UI/adaptiveechoprompt.ui \
-		  GoldBug-UI/buzzpage.ui \
-		  GoldBug-UI/chatwindow.ui \
-		  GoldBug-UI/controlcenter.ui \
-		  GoldBug-UI/echo-key-share.ui \
-		  GoldBug-UI/encryptfile.ui \
-		  GoldBug-UI/forwardsecrecyalgorithmsselection.ui \
-		  GoldBug-UI/ipinformation.ui \
-		  GoldBug-UI/keyboard.ui \
-		  GoldBug-UI/listener-socket-options.ui \
-                  GoldBug-UI/logviewer.ui \
-		  GoldBug-UI/options.ui \
-                  GoldBug-UI/passwordprompt.ui \
-		  GoldBug-UI/poptastic-retrophone-settings.ui \
-		  GoldBug-UI/postgresqlconnect.ui \
-		  GoldBug-UI/rosetta.ui \
-                  GoldBug-UI/starbeamanalyzer.ui \
-		  GoldBug-UI/statusbar.ui \
-		  GoldBug-UI/unlock.ui
+FORMS           = UI/adaptiveechoprompt.ui \
+		  UI/buzzpage.ui \
+		  UI/chatwindow.ui \
+		  UI/controlcenter.ui \
+		  UI/echo-key-share.ui \
+		  UI/encryptfile.ui \
+		  UI/forwardsecrecyalgorithmsselection.ui \
+		  UI/ipinformation.ui \
+		  UI/keyboard.ui \
+		  UI/listener-socket-options.ui \
+                  UI/logviewer.ui \
+		  UI/options.ui \
+                  UI/passwordprompt.ui \
+		  UI/poptastic-retrophone-settings.ui \
+		  UI/postgresqlconnect.ui \
+		  UI/rosetta.ui \
+                  UI/starbeamanalyzer.ui \
+		  UI/statusbar.ui \
+		  UI/unlock.ui
 
 UI_HEADERS_DIR  = GUI
 
@@ -111,9 +107,6 @@ SOURCES		= Common/spot-on-crypt.cc \
 		  GUI/spot-on-textedit.cc \
 		  GUI/spot-on-urls.cc \
 		  GUI/spot-on-urls-search.cc
-
-OBJECTIVE_HEADERS += Common/CocoaInitializer.h
-OBJECTIVE_SOURCES += Common/CocoaInitializer.mm
 
 TRANSLATIONS    = Translations/spot-on_af.ts \
                   Translations/spot-on_al.ts \
@@ -186,37 +179,36 @@ TRANSLATIONS    = Translations/spot-on_af.ts \
                   Translations/spot-on_zh_HK.ts
 
 RESOURCES	= Icons/icons.qrc \
-		  Sounds/sounds.qrc \
 		  Translations/translations.qrc
 
-TARGET		= GoldBug
-PROJECTNAME	= GoldBug
+TARGET		= Spot-On
+PROJECTNAME	= Spot-On
 
 # Prevent qmake from stripping everything.
 
 QMAKE_STRIP	= echo
 
-goldbug.path		= /Applications/GoldBug_Qt5.d/GoldBug.app
-goldbug.files		= GoldBug.app/*
-install1.path           = /Applications/GoldBug_Qt5.d
+spoton.path		= /Applications/GoldBug.d/GoldBug.app
+spoton.files		= GoldBug.app/*
+install1.path           = /Applications/GoldBug.d
 install1.files          = spot-on-neighbors.txt
-libgeoip_data_install.path = /Applications/GoldBug_Qt5.d/GeoIP
+libgeoip_data_install.path = /Applications/GoldBug.d/GeoIP
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
 libntru_install.path  = .
-libntru_install.extra = cp ../../libNTRU/libntru.dylib ./GoldBug.app/Contents/Frameworks/libntru.dylib && install_name_tool -change ../../libNTRU/libntru.dylib @executable_path/../Frameworks/libntru.dylib ./GoldBug.app/Contents/MacOS/GoldBug
+libntru_install.extra = cp ../../libNTRU/libntru.dylib ./GoldBug.app/Contents/Frameworks/libntru.dylib && install_name_tool -change ../../libNTRU/libntru.dylib @executable_path/../Frameworks/libntru.dylib ./GoldBug.app/Contents/MacOS/Spot-On
 libspoton_install.path  = .
-libspoton_install.extra = cp ../../libSpotOn/libspoton.dylib ./GoldBug.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib ./GoldBug.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change ../../libSpotOn/libspoton.dylib @executable_path/../Frameworks/libspoton.dylib ./GoldBug.app/Contents/MacOS/GoldBug
-lrelease.extra          = $$[QT_INSTALL_BINS]/lrelease goldbug-gui.osx.qt5.pro
+libspoton_install.extra = cp ../../libSpotOn/libspoton.dylib ./GoldBug.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib ./GoldBug.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change ../../libSpotOn/libspoton.dylib @executable_path/../Frameworks/libspoton.dylib ./GoldBug.app/Contents/MacOS/Spot-On
+lrelease.extra          = $$[QT_INSTALL_BINS]/lrelease spot-on-gui.osx.pro
 lrelease.path           = .
-lupdate.extra           = $$[QT_INSTALL_BINS]/lupdate goldbug-gui.osx.qt5.pro
+lupdate.extra           = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.osx.pro
 lupdate.path            = .
 macdeployqt.path        = ./GoldBug.app
 macdeployqt.extra       = $$[QT_INSTALL_BINS]/macdeployqt ./GoldBug.app -verbose=0
-preinstall.path         = /Applications/GoldBug_Qt5.d
-preinstall.extra        = rm -rf /Applications/GoldBug_Qt5.d/GoldBug.app/*
-postinstall.path	= /Applications/GoldBug_Qt5.d
-postinstall.extra	= find /Applications/GoldBug_Qt5.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
-translations.path 	= /Applications/GoldBug_Qt5.d/Translations
+preinstall.path         = /Applications/GoldBug.d
+preinstall.extra        = rm -rf /Applications/GoldBug.d/GoldBug.app/*
+postinstall.path	= /Applications/GoldBug.d
+postinstall.extra	= find /Applications/GoldBug.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
+translations.path 	= /Applications/GoldBug.d/Translations
 translations.files	= Translations/*.qm
 
 INSTALLS	= macdeployqt \
@@ -228,5 +220,5 @@ INSTALLS	= macdeployqt \
                   lupdate \
                   lrelease \
                   translations \
-                  goldbug \
+                  spoton \
                   postinstall
