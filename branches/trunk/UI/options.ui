@@ -54,8 +54,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>462</width>
-             <height>999</height>
+             <width>458</width>
+             <height>1006</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -131,7 +131,7 @@
                  <string>Tab Icon &amp;Size</string>
                 </property>
                 <property name="buddy">
-                 <cstring>icons</cstring>
+                 <cstring>iconsize</cstring>
                 </property>
                </widget>
               </item>
@@ -191,7 +191,7 @@
                  <string>Tab &amp;Position</string>
                 </property>
                 <property name="buddy">
-                 <cstring>icons</cstring>
+                 <cstring>position</cstring>
                 </property>
                </widget>
               </item>
@@ -645,6 +645,26 @@
                 <number>5</number>
                </property>
                <item>
+                <widget class="QCheckBox" name="disable_ui_synchronous_import">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the application aborts during an import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>&amp;Disable interface synchronous SQLite writes on import.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="disable_kernel_synchronous_import">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the application aborts during an import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>&amp;Disable kernel synchronous SQLite writes on import.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_65">
                  <property name="spacing">
                   <number>5</number>
@@ -753,7 +773,7 @@
                     <string>P&amp;urge cache container(s) every</string>
                    </property>
                    <property name="buddy">
-                    <cstring>kernelUpdateInterval</cstring>
+                    <cstring>kernelCacheInterval</cstring>
                    </property>
                   </widget>
                  </item>
@@ -927,9 +947,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>581</width>
-             <height>1057</height>
+             <y>-500</y>
+             <width>653</width>
+             <height>1016</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1638,7 +1658,7 @@
              <x>0</x>
              <y>0</y>
              <width>468</width>
-             <height>499</height>
+             <height>504</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -1875,7 +1895,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1928,6 +1948,8 @@
   <tabstop>listenersUpdateInterval</tabstop>
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>
+  <tabstop>disable_ui_synchronous_import</tabstop>
+  <tabstop>disable_kernel_synchronous_import</tabstop>
   <tabstop>searchResultsPerPage</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
   <tabstop>kernelCacheInterval</tabstop>
@@ -2014,6 +2036,7 @@
   <tabstop>kernel_cache_object_lifetime</tabstop>
   <tabstop>poptastic_forward_secrecy_time_delta</tabstop>
   <tabstop>retrieve_mail_time_delta</tabstop>
+  <tabstop>defaults</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
