@@ -23,6 +23,10 @@
 #include <endian.h>
 #endif
 
+#ifdef __FreeBSD__
+#include <sys/endian.h>
+#endif
+
 #define NTRU_SPARSE_THRESH 14
 #define NTRU_KARATSUBA_THRESH_16 40
 #define NTRU_KARATSUBA_THRESH_64 120
