@@ -1384,3 +1384,24 @@ void spoton::slotStarBeamReceivedAndVerified(const QString &fileName)
      arg(SPOTON_APPLICATION_NAME).
      arg(spoton_misc::htmlEncode(fileName)));
 }
+
+void spoton::slotDisableSynchronousUrlImport(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  QString str("");
+
+  if(checkBox == m_optionsUi.disable_kernel_synchronous_import)
+    str = "gui/disable_kernel_synchronous_sqlite_url_import";
+  else
+    str = "gui/disable_ui_synchronous_sqlite_url_import";
+
+  m_settings[str] = state;
+
+  QSettings settings;
+
+  settings.setValue(str, state);
+}

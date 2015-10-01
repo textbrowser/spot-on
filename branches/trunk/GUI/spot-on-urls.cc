@@ -700,6 +700,9 @@ void spoton::slotImportUrls(void)
 		      ok = spoton_misc::importUrl
 			(description, title, url, m_urlDatabase,
 			 spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
+			 m_settings.value("gui/disable_ui_synchronous_"
+					  "sqlite_url_import", false).
+			 toBool(),
 			 m_urlCommonCrypt);
 		  }
 

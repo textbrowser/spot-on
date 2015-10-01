@@ -4021,6 +4021,7 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 			    const QByteArray &u, // URL
 			    const QSqlDatabase &db,
 			    const int maximum_keywords,
+			    const bool disable_synchronous_sqlite_writes,
 			    spoton_crypt *crypt)
 {
   if(!crypt)
@@ -4148,7 +4149,11 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 	  if(query.next())
 	    id = query.value(0).toLongLong();
 
-      query.exec("PRAGMA synchronous = NORMAL");
+      if(disable_synchronous_sqlite_writes)
+	query.exec("PRAGMA synchronous = OFF");
+      else
+	query.exec("PRAGMA synchronous = NORMAL");
+
       query.prepare
 	(QString("INSERT INTO spot_on_urls_%1 ("
 		 "date_time_inserted, "
@@ -4207,7 +4212,12 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
       int count = 0;
 
       if(db.driverName() == "QSQLITE")
-	query.exec("PRAGMA synchronous = NORMAL");
+	{
+	  if(disable_synchronous_sqlite_writes)
+	    query.exec("PRAGMA synchronous = OFF");
+	  else
+	    query.exec("PRAGMA synchronous = NORMAL");
+	}
 
       for(int i = 0; i < keywords.size(); i++)
 	{

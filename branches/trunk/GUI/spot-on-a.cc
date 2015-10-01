@@ -1440,6 +1440,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotTimeSliderDefaults(void)));
+  connect(m_optionsUi.disable_kernel_synchronous_import,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotDisableSynchronousUrlImport(bool)));
+  connect(m_optionsUi.disable_ui_synchronous_import,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotDisableSynchronousUrlImport(bool)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1977,6 +1985,12 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/allowChatFSRequest", true).toBool());
   m_optionsUi.email_fs_request->setChecked
     (m_settings.value("gui/allowEmailFSRequest", true).toBool());
+  m_optionsUi.disable_kernel_synchronous_import->setChecked
+    (m_settings.value("gui/disable_kernel_synchronous_sqlite_url_import",
+		      false).toBool());
+  m_optionsUi.disable_ui_synchronous_import->setChecked
+    (m_settings.value("gui/disable_ui_synchronous_sqlite_url_import", false).
+     toBool());
 
   /*
   ** Please don't translate n/a.

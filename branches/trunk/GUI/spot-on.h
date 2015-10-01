@@ -686,6 +686,7 @@ class spoton: public QMainWindow
 				  const QString &oid);
   void slotDeriveGeminiPairViaSMP(void);
   void slotDetachListenerNeighbors(void);
+  void slotDisableSynchronousUrlImport(bool state);
   void slotDisconnectAllNeighbors(void);
   void slotDisconnectListenerNeighbors(void);
   void slotDisconnectNeighbor(void);
