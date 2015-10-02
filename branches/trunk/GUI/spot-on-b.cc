@@ -369,6 +369,7 @@ void spoton::slotReceivedKernelMessage(void)
 		     arg(SPOTON_APPLICATION_NAME).
 		     arg(name).
 		     arg(str.mid(0, 16) + "..." + str.right(16)));
+		  QToolTip::showText(pos(), "");
 		  QToolTip::showText(pos(), toolTip);
 		}
 	    }
@@ -739,6 +740,7 @@ void spoton::slotReceivedKernelMessage(void)
 
 	      point.setX(point.x() - 150);
 	      point.setY(point.y() - 100);
+	      QToolTip::showText(point, "");
 	      QToolTip::showText
 		(point, tr("<html><h3>%1: You have new e-mail!</h3></html>").
 		 arg(SPOTON_APPLICATION_NAME));

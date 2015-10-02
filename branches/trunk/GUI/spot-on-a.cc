@@ -333,6 +333,9 @@ spoton::spoton(void):QMainWindow()
   setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
+#if QT_VERSION >= 0x040700
+  m_ui.search->setPlaceholderText(tr("Search"));
+#endif
   m_optionsWindow = new QMainWindow(this);
   m_optionsUi.setupUi(m_optionsWindow);
   m_optionsWindow->setWindowTitle

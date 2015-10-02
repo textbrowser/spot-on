@@ -785,6 +785,7 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 					  "..." +
 					  str.right(16)));
       m_sb.forward_secrecy_request->setVisible(true);
+      QToolTip::showText(pos(), "");
       QToolTip::showText(pos(), toolTip);
     }
 }
@@ -1378,6 +1379,7 @@ void spoton::slotStarBeamReceivedAndVerified(const QString &fileName)
 
   point.setX(point.x() - 150);
   point.setY(point.y() + 100);
+  QToolTip::showText(point, "");
   QToolTip::showText
     (point,
      tr("<h3>%1: StarBeam %2 has been verified!</h3>").
