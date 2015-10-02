@@ -1045,7 +1045,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Allow &amp;forward secrecy requrests.</string>
+                  <string>Allow &amp;forward secrecy requests.</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -1125,7 +1125,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Allow &amp;forward secrecy requrests.</string>
+                  <string>Allow &amp;forward secrecy requests.</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
