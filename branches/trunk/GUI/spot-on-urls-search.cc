@@ -30,11 +30,10 @@
 
 void spoton::slotDiscover(void)
 {
-  discoverUrls();
-}
+  m_ui.searchfor->clear();
+  m_ui.urls->clear();
+  m_ui.url_pages->setText("| 1 |");
 
-void spoton::discoverUrls(void)
-{
   if(!m_urlCommonCrypt)
     {
       QMessageBox::critical
@@ -52,6 +51,17 @@ void spoton::discoverUrls(void)
 	 tr("Please connect to a URL database."));
       return;
     }
+
+  discoverUrls();
+}
+
+void spoton::discoverUrls(void)
+{
+  if(!m_urlCommonCrypt)
+    return;
+
+  if(!m_urlDatabase.isOpen())
+    return;
 
   m_ui.searchfor->clear();
   m_ui.urls->clear();

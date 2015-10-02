@@ -555,6 +555,7 @@ void spoton::slotImportUrls(void)
   if(cipherType.isEmpty() || symmetricKey.isEmpty())
     readEncrypted = 0;
 
+  QDateTime now(QDateTime::currentDateTime());
   QProgressDialog progress(this);
 
 #ifdef Q_OS_MAC
@@ -734,19 +735,24 @@ void spoton::slotImportUrls(void)
 #ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
-  displayUrlImportResults(imported, not_imported);
+  displayUrlImportResults(now, imported, not_imported);
 }
 
-void spoton::displayUrlImportResults(const quint64 imported,
+void spoton::displayUrlImportResults(const QDateTime &then,
+				     const quint64 imported,
 				     const quint64 not_imported)
 {
+  QLocale locale;
+
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
      tr("A total of %1 URL(s) was(were) imported and a total of %2 "
 	"URL(s) was(were) not "
-	"imported. URLs that were not imported will remain in shared.db.").
-     arg(imported).arg(not_imported));
+	"imported. URLs that were not imported will remain in shared.db. "
+	"The process completed in %3 second(s).").
+     arg(imported).arg(not_imported).
+     arg(locale.toString(qAbs(QDateTime::currentDateTime().secsTo(then)))));
 }
 
 void spoton::slotShowUrlSettings(bool state)

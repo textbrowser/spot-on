@@ -537,7 +537,8 @@ class spoton: public QMainWindow
   void demagnetize(void);
   void derivativeUpdates(void);
   void discoverUrls(void);
-  void displayUrlImportResults(const quint64 imported,
+  void displayUrlImportResults(const QDateTime &then,
+			       const quint64 imported,
 			       const quint64 not_imported);
   void forwardSecrecyRequested(const QList<QByteArray> &list);
   void generateHalfGeminis(void);
