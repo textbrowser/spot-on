@@ -97,11 +97,13 @@ void spoton::discoverUrls(void)
 
 	    if(i == 15 && j == 15)
 	      querystr.append
-		(QString("SELECT title, url, description, date_time_inserted "
+		(QString("SELECT title, url, description, "
+			 "date_time_inserted, url_hash "
 			 "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
 	    else
 	      querystr.append
-		(QString("SELECT title, url, description, date_time_inserted "
+		(QString("SELECT title, url, description, "
+			 "date_time_inserted, url_hash "
 			 "FROM spot_on_urls_%1%2 UNION ").
 		 arg(c1).arg(c2));
 	  }
@@ -303,13 +305,15 @@ void spoton::discoverUrls(void)
 
 	    if(i == 15 && j == 15)
 	      querystr.append
-		(QString("SELECT title, url, description, date_time_inserted "
+		(QString("SELECT title, url, description, "
+			 "date_time_inserted, url_hash "
 			 "FROM spot_on_urls_%1%2 WHERE "
 			 "url_hash IN (%3) ").
 		 arg(c1).arg(c2).arg(keywordsearch));
 	    else
 	      querystr.append
-		(QString("SELECT title, url, description, date_time_inserted "
+		(QString("SELECT title, url, description, "
+			 "date_time_inserted, url_hash "
 			 "FROM spot_on_urls_%1%2 WHERE "
 			 "url_hash IN (%3) UNION ").
 		 arg(c1).arg(c2).arg(keywordsearch));
@@ -346,6 +350,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	  if(!count)
 	    m_ui.urls->clear();
 
+	  QByteArray hash(query.value(4).toByteArray());
 	  QString description("");
 	  QString title("");
 	  QUrl url;
@@ -397,14 +402,17 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
 	      QString scheme(url.scheme().toLower().trimmed());
 	      QUrl deleteUrl(url);
+	      QUrl shareUrl(hash);
 
 	      if(scheme.contains("delete-"))
-		{
-		  scheme.remove("delete-");
-		  url.setScheme(scheme);
-		}
+		scheme.remove("delete-");
 
+	      if(scheme.contains("share-"))
+		scheme.remove("share-");
+
+	      url.setScheme(scheme);
 	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
+	      shareUrl.setScheme(QString("share-%1").arg(url.scheme()));
 	      html.append(QString::number(count + m_urlOffset + 1));
 	      html.append(" | <a href=\"");
 	      html.append(url.toEncoded().constData());
@@ -416,6 +424,11 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append(deleteUrl.toEncoded().constData());
 	      html.append("\">");
 	      html.append("Remove URL</a>");
+	      html.append(" | ");
+	      html.append("<a href=\"");
+	      html.append(shareUrl.toEncoded().constData());
+	      html.append("\">");
+	      html.append("Share URL</a>");
 	      html.append("<br>");
 	      html.append(QString("<font color=\"green\" size=3>%1</font>").
 			  arg(url.toEncoded().constData()));

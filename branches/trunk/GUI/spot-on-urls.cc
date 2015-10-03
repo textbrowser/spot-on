@@ -1542,7 +1542,31 @@ void spoton::slotDeleteLink(const QUrl &u)
   QString scheme(u.scheme().toLower().trimmed());
   QUrl url(u);
 
-  if(!scheme.startsWith("delete-"))
+  if(scheme.startsWith("share-"))
+    {
+      /*
+      ** Share the link!
+      */
+
+      QString error("");
+
+      if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+	error = tr("The interface is not connected to the kernel.");
+      else if(!m_kernelSocket.isEncrypted())
+	error = tr("The connection to the kernel is not encrypted.");
+
+      if(!error.isEmpty())
+	{
+	  QMessageBox::critical
+	    (this, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     error);
+	  return;
+	}
+
+      return;
+    }
+  else if(!scheme.startsWith("delete-"))
     {
       if(m_settings.value("gui/openLinks", false).toBool())
 	{
@@ -1576,6 +1600,27 @@ void spoton::slotDeleteLink(const QUrl &u)
     {
       scheme.remove("delete-");
       url.setScheme(scheme);
+
+      QMessageBox mb(this);
+      QString str(url.toEncoded().constData());
+
+      if(str.length() > 64)
+	str = str.mid(0, 24) + "..." + str.right(24);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setWindowTitle(tr("%1: Confirmation").
+			arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to remove %1?").arg(str));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
     }
 
   spoton_crypt *crypt = m_crypts.value("chat", 0);
