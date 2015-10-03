@@ -38,7 +38,6 @@
 spoton_urldistribution::spoton_urldistribution(QObject *parent):
   QThread(parent)
 {
-  m_fireShare = 0;
   m_lastUniqueId = -1;
   m_limit = static_cast<quint64> (spoton_common::KERNEL_URLS_BATCH_SIZE);
   m_quit = false;
@@ -60,34 +59,6 @@ void spoton_urldistribution::quit(void)
 }
 
 void spoton_urldistribution::run(void)
-{
-  if(m_fireShare == 1)
-    fireShare();
-  else
-    normalShare();
-
-  m_fireShare = 0;
-}
-
-void spoton_urldistribution::fireShare(void)
-{
-  QWriteLocker locker(&m_quitLocker);
-
-  m_quit = false;
-  locker.unlock();
-
-  QTimer timer;
-
-  connect(&timer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotTimeout(void)));
-  timer.setSingleShot(true);
-  timer.start(500);
-  exec();
-}
-
-void spoton_urldistribution::normalShare(void)
 {
   QWriteLocker locker(&m_quitLocker);
 
@@ -621,17 +592,4 @@ void spoton_urldistribution::slotShareLink(const QByteArray &link)
 
   m_sharedLinks.enqueue(link);
   locker.unlock();
-
-  /*
-  ** Let's preempt!
-  */
-
-  if(isRunning())
-    {
-      quit();
-      wait();
-    }
-
-  m_fireShare = 1;
-  start();
 }
