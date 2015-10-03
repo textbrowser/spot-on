@@ -134,7 +134,7 @@ void spoton::discoverUrls(void)
 
 	  e = search.indexOf('"', s + 1);
 
-	  if(e < 0)
+	  if(e < 0 || e - s - 1 <= 0)
 	    break;
 
 	  QString bundle(search.mid(s + 1, e - s - 1).trimmed());

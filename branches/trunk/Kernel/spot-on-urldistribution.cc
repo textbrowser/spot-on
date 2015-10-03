@@ -585,3 +585,8 @@ void spoton_urldistribution::slotTimeout(void)
 	return;
     }
 }
+
+void spoton_urldistribution::slotShareLink(const QByteArray &link)
+{
+  Q_UNUSED(link);
+}

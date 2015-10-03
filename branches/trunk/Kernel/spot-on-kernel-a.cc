@@ -732,6 +732,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      SIGNAL(retrieveMail(void)),
 	      this,
 	      SLOT(slotRetrieveMail(void)));
+      connect(m_guiServer,
+	      SIGNAL(shareLink(const QByteArray &)),
+	      m_urlDistribution,
+	      SLOT(slotShareLink(const QByteArray &)));
     }
 
   connect(m_mailer,

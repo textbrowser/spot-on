@@ -579,6 +579,14 @@ void spoton_gui_server::slotReadyRead(void)
 		  (list.value(0).toLongLong(),
 		   QByteArray::fromBase64(list.value(1)));
 	    }
+	  else if(message.startsWith("sharelink_"))
+	    {
+	      message.remove
+		(0, static_cast<int> (qstrlen("sharelink_")));
+
+	      if(!message.isEmpty())
+		emit shareLink(message);
+	    }
 	  else if(message.startsWith("sharepublickey_"))
 	    {
 	      message.remove

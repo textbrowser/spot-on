@@ -1564,6 +1564,19 @@ void spoton::slotDeleteLink(const QUrl &u)
 	  return;
 	}
 
+      QByteArray message("sharelink_");
+
+      message.append(url.toString());
+      message.append("\n");
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::slotDeleteLink(): write() failure for "
+		   "%1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+
       return;
     }
   else if(!scheme.startsWith("delete-"))

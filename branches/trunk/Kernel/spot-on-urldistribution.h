@@ -47,6 +47,7 @@ class spoton_urldistribution: public QThread
   void run(void);
 
  private slots:
+  void slotShareLink(const QByteArray &link);
   void slotTimeout(void);
 
  public slots:
