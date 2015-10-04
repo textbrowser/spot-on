@@ -577,6 +577,7 @@ void spoton::slotImportUrls(void)
 #endif
   populateUrlDistillers();
 
+  quint64 declined = 0;
   quint64 imported = 0;
   quint64 not_imported = 0;
 
@@ -697,6 +698,9 @@ void spoton::slotImportUrls(void)
 			  }
 		      }
 
+		    if(!ok)
+		      declined += 1;
+
 		    if(ok)
 		      ok = spoton_misc::importUrl
 			(description, title, url, m_urlDatabase,
@@ -735,12 +739,13 @@ void spoton::slotImportUrls(void)
 #ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
-  displayUrlImportResults(now, imported, not_imported);
+  displayUrlImportResults(now, imported, not_imported, declined);
 }
 
 void spoton::displayUrlImportResults(const QDateTime &then,
 				     const quint64 imported,
-				     const quint64 not_imported)
+				     const quint64 not_imported,
+				     const quint64 declined)
 {
   QLocale locale;
 
@@ -748,10 +753,11 @@ void spoton::displayUrlImportResults(const QDateTime &then,
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
      tr("A total of %1 URL(s) was(were) imported and a total of %2 "
-	"URL(s) was(were) not "
-	"imported. URLs that were not imported will remain in shared.db. "
-	"The process completed in %3 second(s).").
-     arg(imported).arg(not_imported).
+	"URL(s) was(were) not imported. "
+	"Some URLs (%3) may have been declined because of distiller rules. "
+	"URLs that were not imported will remain in shared.db. "
+	"The process completed in %4 second(s).").
+     arg(imported).arg(not_imported).arg(declined).
      arg(locale.toString(qAbs(QDateTime::currentDateTime().secsTo(then)))));
 }
 
@@ -1200,6 +1206,8 @@ void spoton::slotSaveCommonUrlCredentials(void)
 
 void spoton::slotAddDistiller(void)
 {
+  spoton_misc::prepareUrlDistillersDatabase();
+
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)

@@ -1842,6 +1842,8 @@ void spoton::slotActiveUrlDistribution(bool state)
 
 void spoton::initializeUrlDistillers(void)
 {
+  spoton_misc::prepareUrlDistillersDatabase();
+
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
