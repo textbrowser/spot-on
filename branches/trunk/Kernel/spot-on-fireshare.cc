@@ -321,7 +321,22 @@ void spoton_fireshare::slotTimeout(void)
 	      QWriteLocker locker(&m_sharedLinksMutex);
 
 	      if(!m_sharedLinks.isEmpty())
-		shareHash = m_sharedLinks.dequeue();
+		{
+		  shareHash = m_sharedLinks.dequeue();
+
+		  if(shareHash.startsWith("share-ftp:"))
+		    shareHash.remove
+		      (0, static_cast<int> (qstrlen("share-ftp:")));
+		  else if(shareHash.startsWith("share-gopher:"))
+		    shareHash.remove
+		      (0, static_cast<int> (qstrlen("share-gopher:")));
+		  else if(shareHash.startsWith("share-http:"))
+		    shareHash.remove
+		      (0, static_cast<int> (qstrlen("share-http:")));
+		  else if(shareHash.startsWith("share-https:"))
+		    shareHash.remove
+		      (0, static_cast<int> (qstrlen("share-https:")));
+		}
 	      else
 		break;
 	    }
@@ -330,12 +345,11 @@ void spoton_fireshare::slotTimeout(void)
 
 	    query.setForwardOnly(true);
 	    query.prepare
-	      (QString("SELECT url, title, description, "
-		       "date_time_inserted, unique_id "
+	      (QString("SELECT url, title, description "
 		       "FROM spot_on_urls_%1 "
 		       "WHERE url_hash = ?").arg(shareHash.mid(0, 2).
 						 constData()));
-	    query.bindValue(0, shareHash);
+	    query.bindValue(0, shareHash.constData());
 
 	    if(query.exec())
 	      if(query.next())
