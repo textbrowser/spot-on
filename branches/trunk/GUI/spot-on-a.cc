@@ -7238,36 +7238,37 @@ void spoton::slotPopulateParticipants(void)
 			  else
 			    item = new QTableWidgetItem(tr("error"));
 			}
-		      else
-			item = new QTableWidgetItem();
 
-		      if(i == 0)
+		      if(item)
 			{
-			  if(temporary)
+			  if(i == 0)
 			    {
-			      item->setIcon
-				(QIcon(QString(":/%1/add.png").
-				       arg(m_settings.value("gui/iconSet",
-							    "nouve").
-					   toString().toLower())));
-			      item->setToolTip
-				(tr("User %1 requests your friendship.").
-				 arg(item->text()));
+			      if(temporary)
+				{
+				  item->setIcon
+				    (QIcon(QString(":/%1/add.png").
+					   arg(m_settings.value("gui/iconSet",
+								"nouve").
+					       toString().toLower())));
+				  item->setToolTip
+				    (tr("User %1 requests your friendship.").
+				     arg(item->text()));
+				}
+			      else
+				item->setToolTip
+				  (query.value(3).toString().mid(0, 16) +
+				   "..." +
+				   query.value(3).toString().right(16));
 			    }
-			  else
-			    item->setToolTip
-			      (query.value(3).toString().mid(0, 16) +
-			       "..." +
-			       query.value(3).toString().right(16));
-			}
 
-		      item->setData(Qt::UserRole, temporary);
-		      item->setData
-			(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
-		      item->setFlags
-			(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		      m_ui.emailParticipants->setItem
-			(rowE - 1, i, item);
+			  item->setData(Qt::UserRole, temporary);
+			  item->setData
+			    (Qt::ItemDataRole(Qt::UserRole + 1), keyType);
+			  item->setFlags
+			    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+			  m_ui.emailParticipants->setItem
+			    (rowE - 1, i, item);
+			}
 		    }
 		  else if(keyType == "url")
 		    {
@@ -7287,34 +7288,35 @@ void spoton::slotPopulateParticipants(void)
 		      else if(i == 1 || i == 2 || i == 3)
 			item = new QTableWidgetItem
 			  (query.value(i).toString());
-		      else
-			item = new QTableWidgetItem();
 
-		      if(i == 0)
+		      if(item)
 			{
-			  if(temporary)
+			  if(i == 0)
 			    {
-			      item->setIcon
-				(QIcon(QString(":/%1/add.png").
-				       arg(m_settings.value("gui/iconSet",
-							    "nouve").
-					   toString().toLower())));
-			      item->setToolTip
-				(tr("User %1 requests your friendship.").
-				 arg(item->text()));
+			      if(temporary)
+				{
+				  item->setIcon
+				    (QIcon(QString(":/%1/add.png").
+					   arg(m_settings.value("gui/iconSet",
+								"nouve").
+					       toString().toLower())));
+				  item->setToolTip
+				    (tr("User %1 requests your friendship.").
+				     arg(item->text()));
+				}
+			      else
+				item->setToolTip
+				  (query.value(3).toString().mid(0, 16) +
+				   "..." +
+				   query.value(3).toString().right(16));
 			    }
-			  else
-			    item->setToolTip
-			      (query.value(3).toString().mid(0, 16) +
-			       "..." +
-			       query.value(3).toString().right(16));
-			}
 
-		      item->setData(Qt::UserRole, temporary);
-		      item->setFlags
-			(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		      m_ui.urlParticipants->setItem
-			(rowU - 1, i, item);
+			  item->setData(Qt::UserRole, temporary);
+			  item->setFlags
+			    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+			  m_ui.urlParticipants->setItem
+			    (rowU - 1, i, item);
+			}
 		    }
 		}
 
