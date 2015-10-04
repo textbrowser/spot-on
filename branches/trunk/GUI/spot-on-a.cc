@@ -1394,7 +1394,7 @@ spoton::spoton(void):QMainWindow()
   connect(m_ui.urls,
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
-	  SLOT(slotDeleteLink(const QUrl &)));
+	  SLOT(slotUrlLinkClicked(const QUrl &)));
   connect(m_ui.urlDistributionModel,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,

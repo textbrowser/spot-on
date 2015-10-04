@@ -30,6 +30,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QSqlDriver>
+#include <QToolTip>
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
 #endif
@@ -1557,7 +1558,7 @@ void spoton::slotDeleteUrlDistillers(void)
   populateUrlDistillers();
 }
 
-void spoton::slotDeleteLink(const QUrl &u)
+void spoton::slotUrlLinkClicked(const QUrl &u)
 {
   QString scheme(u.scheme().toLower().trimmed());
   QUrl url(u);
@@ -1585,17 +1586,33 @@ void spoton::slotDeleteLink(const QUrl &u)
 	}
 
       QByteArray message("sharelink_");
+      QUrl original(url.encodedQueryItemValue("url"));
 
-      message.append(url.toString());
+      url.removeEncodedQueryItem("url");
+      message.append
+	(url.toString().mid(0, url.toString().length() - 1)); /*
+							      ** Remove
+							      ** the
+							      ** question
+							      ** mark.
+							      */
       message.append("\n");
 
       if(m_kernelSocket.write(message.constData(), message.length()) !=
 	 message.length())
 	spoton_misc::logError
-	  (QString("spoton::slotDeleteLink(): write() failure for "
+	  (QString("spoton::slotUrlLinkClicked(): write() failure for "
 		   "%1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
+      else
+	{
+	  QToolTip::showText(pos(), "");
+	  QToolTip::showText
+	    (pos(),
+	     tr("<html><h4>Link %1 shared with the Universe.</h4></html>").
+	     arg(original.toEncoded().constData()));
+	}
 
       return;
     }
