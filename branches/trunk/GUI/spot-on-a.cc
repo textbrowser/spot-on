@@ -7143,12 +7143,12 @@ void spoton::slotPopulateParticipants(void)
 			    (db, oid, &ok);
 
 			  if(ok)
-			    item = new QTableWidgetItem
+			    item->setText
 			      (spoton_misc::
 			       forwardSecrecyMagnetFromList(list).
 			       constData());
 			  else
-			    item = new QTableWidgetItem(tr("error"));
+			    item->setText(tr("error"));
 			}
 
 		      item->setData(Qt::UserRole, temporary);
@@ -7165,12 +7165,15 @@ void spoton::slotPopulateParticipants(void)
 		      if((m_ui.hideOfflineParticipants->isChecked() &&
 			  status == "offline") ||
 			 publicKey.contains("-poptastic"))
-			/*
-			** This may be a plain Poptastic participant.
-			** It will only be displayed in the E-Mail tab.
-			*/
+			{
+			  /*
+			  ** This may be a plain Poptastic participant.
+			  ** It will only be displayed in the E-Mail tab.
+			  */
 
-			delete item;
+			  delete item;
+			  item = 0;
+			}
 		      else
 			m_ui.participants->setItem(row - 1, i, item);
 		    }
@@ -7237,6 +7240,18 @@ void spoton::slotPopulateParticipants(void)
 			       constData());
 			  else
 			    item = new QTableWidgetItem(tr("error"));
+			}
+		      else if(item)
+			{
+			  /*
+			  ** This item may have been created above
+			  ** as a result of poptastic keys.
+			  ** We do not need it here in the e-mail
+			  ** participants table.
+			  */
+
+			  delete item;
+			  item = 0;
 			}
 
 		      if(item)
@@ -7318,6 +7333,17 @@ void spoton::slotPopulateParticipants(void)
 			    (rowU - 1, i, item);
 			}
 		    }
+
+		  if(item)
+		    if(!item->tableWidget())
+		      {
+			spoton_misc::logError
+			  ("spoton::slotPopulateParticipants(): "
+			   "QTableWidgetItem does not have a parent "
+			   "table. Deleting.");
+			delete item;
+			item = 0;
+		      }
 		}
 
 	      if(keyType == "chat" || keyType == "poptastic")
