@@ -25,28 +25,30 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _spoton_urldistribution_h_
-#define _spoton_urldistribution_h_
+#ifndef _spoton_fireshare_h_
+#define _spoton_fireshare_h_
 
+#include <QQueue>
 #include <QReadWriteLock>
 #include <QThread>
 
-class spoton_urldistribution: public QThread
+class spoton_fireshare: public QThread
 {
   Q_OBJECT
 
  public:
-  spoton_urldistribution(QObject *parent);
-  ~spoton_urldistribution();
+  spoton_fireshare(QObject *parent);
+  ~spoton_fireshare();
 
  private:
+  QQueue<QByteArray> m_sharedLinks;
   QReadWriteLock m_quitLocker;
+  QReadWriteLock m_sharedLinksMutex;
   bool m_quit;
-  qint64 m_lastUniqueId;
-  quint64 m_limit;
   void run(void);
 
  private slots:
+  void slotShareLink(const QByteArray &link);
   void slotTimeout(void);
 
  public slots:

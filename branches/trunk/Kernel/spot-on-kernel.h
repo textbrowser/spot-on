@@ -55,6 +55,7 @@ extern "C"
 #include "Common/spot-on-send.h"
 
 class spoton_crypt;
+class spoton_fireshare;
 class spoton_gui_server;
 class spoton_listener;
 class spoton_mailer;
@@ -143,6 +144,7 @@ class spoton_kernel: public QObject
   int m_activeNeighbors;
   int m_activeStarbeams;
   quint64 m_urlsProcessed;
+  spoton_fireshare *m_fireShare;
   spoton_gui_server *m_guiServer;
   spoton_mailer *m_mailer;
   spoton_starbeam_writer *m_starbeamWriter;

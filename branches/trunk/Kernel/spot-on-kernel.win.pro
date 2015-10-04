@@ -55,6 +55,7 @@ LIBS		+= -L..\\..\\..\\PostgreSQL\\Libraries.win32 \
 PRE_TARGETDEPS = libntru.dll libspoton.dll
 
 HEADERS		= ..\\Common\\spot-on-external-address.h \
+		  spot-on-fireshare.h \
 		  spot-on-gui-server.h \
 		  spot-on-kernel.h \
 		  spot-on-listener.h \
@@ -73,6 +74,7 @@ SOURCES		= ..\\Common\\spot-on-crypt.cc \
 		  ..\\Common\\spot-on-misc.cc \
                   ..\\Common\\spot-on-receive.cc \
 		  ..\\Common\\spot-on-send.cc \
+		  spot-on-fireshare.cc \
 		  spot-on-gui-server.cc \
 		  spot-on-kernel-a.cc \
 		  spot-on-kernel-b.cc \

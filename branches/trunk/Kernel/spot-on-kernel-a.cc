@@ -76,6 +76,7 @@ extern "C"
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
+#include "spot-on-fireshare.h"
 #include "spot-on-gui-server.h"
 #include "spot-on-kernel.h"
 #include "spot-on-listener.h"
@@ -599,6 +600,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     m_urlImportFutures.replace(i, QFuture<void> ());
 
   m_urlImportTimer.start(500);
+  m_fireShare = new spoton_fireshare(this);
 
   if(!disable_ui_server)
     m_guiServer = new spoton_gui_server(this);
@@ -734,7 +736,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      SLOT(slotRetrieveMail(void)));
       connect(m_guiServer,
 	      SIGNAL(shareLink(const QByteArray &)),
-	      m_urlDistribution,
+	      m_fireShare,
 	      SLOT(slotShareLink(const QByteArray &)));
     }
 
@@ -794,6 +796,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  this,
 	  SLOT(slotSettingsChanged(const QString &)));
   m_settingsWatcher.addPath(settings.fileName());
+  m_fireShare->start();
   m_messagingCachePurgeTimer.start();
 
   if(setting("gui/etpReceivers", false).toBool())
@@ -843,6 +846,8 @@ spoton_kernel::~spoton_kernel()
   m_poptasticPopFuture.waitForFinished();
   m_poptasticPostFuture.waitForFinished();
   m_statisticsFuture.waitForFinished();
+  m_fireShare->quit();
+  m_fireShare->wait();
   m_urlDistribution->quit();
   m_urlDistribution->wait();
 
@@ -2068,6 +2073,12 @@ void spoton_kernel::connectSignalsToNeighbor
 {
   if(!neighbor)
     return;
+
+  connect(m_fireShare,
+	  SIGNAL(sendURLs(const QByteArray &)),
+	  neighbor,
+	  SLOT(slotWriteURLs(const QByteArray &)),
+	  Qt::UniqueConnection);
 
   if(m_guiServer)
     connect(m_guiServer,

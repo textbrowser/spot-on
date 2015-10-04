@@ -33,23 +33,21 @@
 #include "../Common/spot-on-crypt.h"
 #include "../Common/spot-on-misc.h"
 #include "spot-on-kernel.h"
-#include "spot-on-urldistribution.h"
+#include "spot-on-fireshare.h"
 
-spoton_urldistribution::spoton_urldistribution(QObject *parent):
+spoton_fireshare::spoton_fireshare(QObject *parent):
   QThread(parent)
 {
-  m_lastUniqueId = -1;
-  m_limit = static_cast<quint64> (spoton_common::KERNEL_URLS_BATCH_SIZE);
   m_quit = false;
 }
 
-spoton_urldistribution::~spoton_urldistribution()
+spoton_fireshare::~spoton_fireshare()
 {
   quit();
   wait();
 }
 
-void spoton_urldistribution::quit(void)
+void spoton_fireshare::quit(void)
 {
   QWriteLocker locker(&m_quitLocker);
 
@@ -58,7 +56,7 @@ void spoton_urldistribution::quit(void)
   QThread::quit();
 }
 
-void spoton_urldistribution::run(void)
+void spoton_fireshare::run(void)
 {
   QWriteLocker locker(&m_quitLocker);
 
@@ -71,17 +69,24 @@ void spoton_urldistribution::run(void)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
-  timer.start(30000);
+  timer.start(2500);
   exec();
 }
 
-void spoton_urldistribution::slotTimeout(void)
+void spoton_fireshare::slotTimeout(void)
 {
+  {
+    QReadLocker locker(&m_sharedLinksMutex);
+
+    if(m_sharedLinks.isEmpty())
+      return;
+  }
+
   spoton_crypt *s_crypt1 = spoton_kernel::s_crypts.value("url", 0);
 
   if(!s_crypt1)
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
 			    "s_crypt1 is zero.");
       return;
     }
@@ -90,7 +95,7 @@ void spoton_urldistribution::slotTimeout(void)
 
   if(!s_crypt2)
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
 			    "s_crypt2 is zero.");
       return;
     }
@@ -234,7 +239,7 @@ void spoton_urldistribution::slotTimeout(void)
 
   if(publicKeys.isEmpty())
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
 			    "publicKeys is empty.");
       return;
     }
@@ -244,7 +249,7 @@ void spoton_urldistribution::slotTimeout(void)
 
   if(!urlCommonCredentials)
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
 			    "urlCommonCredentials is zero.");
       return;
     }
@@ -306,63 +311,30 @@ void spoton_urldistribution::slotTimeout(void)
 
     if(db.isOpen())
       {
+	QByteArray shareHash;
+
+	{
+	  QWriteLocker locker(&m_sharedLinksMutex);
+
+	  if(!m_sharedLinks.isEmpty())
+	    shareHash = m_sharedLinks.dequeue();
+	}
+
 	QDataStream stream(&data, QIODevice::WriteOnly);
 	QSqlQuery query(db);
-	QString querystr("");
 
 	query.setForwardOnly(true);
+	query.prepare
+	  (QString("SELECT url, title, description, "
+		   "date_time_inserted, unique_id "
+		   "FROM spot_on_urls_%1 "
+		   "WHERE url_hash = ?").arg(shareHash.mid(0, 2).
+					     constData()));
+	query.bindValue(0, shareHash);
 
-	for(int i = 0; i < 10 + 6; i++)
-	  for(int j = 0; j < 10 + 6; j++)
-	    {
-	      QChar c1;
-	      QChar c2;
-
-	      if(i <= 9)
-		c1 = QChar(i + 48);
-	      else
-		c1 = QChar(i + 97 - 10);
-
-	      if(j <= 9)
-		c2 = QChar(j + 48);
-	      else
-		c2 = QChar(j + 97 - 10);
-
-	      if(i == 15 && j == 15)
-		querystr.append
-		  (QString("SELECT url, title, description, "
-			   "date_time_inserted, unique_id "
-			   "FROM spot_on_urls_%1%2 "
-			   "WHERE unique_id > %3 ").
-		   arg(c1).arg(c2).
-		   arg(m_lastUniqueId));
-	      else
-		querystr.append
-		  (QString("SELECT url, title, description, "
-			   "date_time_inserted, unique_id "
-			   "FROM spot_on_urls_%1%2 "
-			   "WHERE unique_id > %3 "
-			   "UNION ").
-		   arg(c1).arg(c2).
-		   arg(m_lastUniqueId));
-	    }
-
-	querystr.append(" ORDER BY 4 ");
-	querystr.append(QString(" LIMIT %1 ").arg(m_limit));
-
-	quint64 count = 0;
-
-	if(query.exec(querystr))
+	if(query.exec())
 	  do
 	    {
-	      if(!query.next())
-		{
-		  if(count != m_limit)
-		    m_lastUniqueId = -1;
-
-		  break;
-		}
-
 	      bool ok = true;
 
 	      if(data.isEmpty())
@@ -446,10 +418,6 @@ void spoton_urldistribution::slotTimeout(void)
 					       &ok));
 
 	      if(ok)
-		m_lastUniqueId = qMax
-		  (m_lastUniqueId, query.value(4).toLongLong());
-
-	      if(ok)
 		{
 		  stream << bytes.value(0)  // URL
 			 << bytes.value(1)  // Title
@@ -461,8 +429,6 @@ void spoton_urldistribution::slotTimeout(void)
 		      ok = false;
 		    }
 		}
-
-	      count += 1;
 
 	      QReadLocker locker(&m_quitLocker);
 
@@ -480,7 +446,7 @@ void spoton_urldistribution::slotTimeout(void)
 
   if(data.isEmpty())
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
 			    "data is empty.");
       return;
     }
@@ -504,7 +470,7 @@ void spoton_urldistribution::slotTimeout(void)
   if(symmetricKeyLength <= 0)
     {
       spoton_misc::logError
-	("spoton_urldistribution::slotTimeout(): "
+	("spoton_fireshare::slotTimeout(): "
 	 "cipherKeyLength() failure.");
       return;
     }
@@ -586,4 +552,11 @@ void spoton_urldistribution::slotTimeout(void)
       if(m_quit)
 	return;
     }
+}
+
+void spoton_fireshare::slotShareLink(const QByteArray &link)
+{
+  QWriteLocker locker(&m_sharedLinksMutex);
+
+  m_sharedLinks.enqueue(link);
 }
