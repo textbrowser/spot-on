@@ -227,3 +227,4 @@ Remaining Items
 5.     Per-participant permissions.
 6.     Allow custom addresses for spoton_external_address.
 7.     An account system where the initiator provides both random arrays.
+8      macdeployqt and Qt 5 do not produce correct bundles on OS X.
