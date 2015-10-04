@@ -311,44 +311,122 @@ void spoton_fireshare::slotTimeout(void)
 
     if(db.isOpen())
       {
-	QByteArray shareHash;
-
-	{
-	  QWriteLocker locker(&m_sharedLinksMutex);
-
-	  if(!m_sharedLinks.isEmpty())
-	    shareHash = m_sharedLinks.dequeue();
-	}
-
 	QDataStream stream(&data, QIODevice::WriteOnly);
-	QSqlQuery query(db);
 
-	query.setForwardOnly(true);
-	query.prepare
-	  (QString("SELECT url, title, description, "
-		   "date_time_inserted, unique_id "
-		   "FROM spot_on_urls_%1 "
-		   "WHERE url_hash = ?").arg(shareHash.mid(0, 2).
-					     constData()));
-	query.bindValue(0, shareHash);
+	while(true)
+	  {
+	    QByteArray shareHash;
 
-	if(query.exec())
-	  do
 	    {
-	      bool ok = true;
+	      QWriteLocker locker(&m_sharedLinksMutex);
 
-	      if(data.isEmpty())
+	      if(!m_sharedLinks.isEmpty())
+		shareHash = m_sharedLinks.dequeue();
+	      else
+		break;
+	    }
+
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+	    query.prepare
+	      (QString("SELECT url, title, description, "
+		       "date_time_inserted, unique_id "
+		       "FROM spot_on_urls_%1 "
+		       "WHERE url_hash = ?").arg(shareHash.mid(0, 2).
+						 constData()));
+	    query.bindValue(0, shareHash);
+
+	    if(query.exec())
+	      if(query.next())
 		{
-		  QByteArray myPublicKey(s_crypt1->publicKey(&ok));
-		  QByteArray myPublicKeyHash;
+		  bool ok = true;
+
+		  if(data.isEmpty())
+		    {
+		      QByteArray myPublicKey(s_crypt1->publicKey(&ok));
+		      QByteArray myPublicKeyHash;
+
+		      if(ok)
+			myPublicKeyHash = spoton_crypt::sha512Hash
+			  (myPublicKey, &ok);
+
+		      if(ok)
+			{
+			  stream << myPublicKeyHash;
+
+			  if(stream.status() != QDataStream::Ok)
+			    {
+			      data.clear();
+			      ok = false;
+			    }
+			}
+		    }
+
+		  QList<QByteArray> bytes;
 
 		  if(ok)
-		    myPublicKeyHash = spoton_crypt::sha512Hash
-		      (myPublicKey, &ok);
+		    bytes.append
+		      (urlCommonCredentials->
+		       decryptedAfterAuthenticated(QByteArray::
+						   fromBase64(query.value(0).
+							      toByteArray()),
+						   &ok));
 
 		  if(ok)
 		    {
-		      stream << myPublicKeyHash;
+		      /*
+		      ** Apply polarizers.
+		      */
+
+		      ok = false;
+
+		      for(int i = 0; i < polarizers.size(); i++)
+			{
+			  QString type(polarizers.at(i).second);
+			  QUrl u1(polarizers.at(i).first);
+			  QUrl u2(QUrl::fromUserInput(bytes.value(0)));
+
+			  if(type == "accept")
+			    {
+			      if(u2.toEncoded().startsWith(u1.toEncoded()))
+				{
+				  ok = true;
+				  break;
+				}
+			    }
+			  else
+			    {
+			      if(u2.toEncoded().startsWith(u1.toEncoded()))
+				{
+				  ok = false;
+				  break;
+				}
+			    }
+			}
+		    }
+
+		  if(ok)
+		    bytes.append
+		      (urlCommonCredentials->
+		       decryptedAfterAuthenticated(QByteArray::
+						   fromBase64(query.value(1).
+							      toByteArray()),
+						   &ok));
+
+		  if(ok)
+		    bytes.append
+		      (urlCommonCredentials->
+		       decryptedAfterAuthenticated(QByteArray::
+						   fromBase64(query.value(2).
+							      toByteArray()),
+						   &ok));
+
+		  if(ok)
+		    {
+		      stream << bytes.value(0)  // URL
+			     << bytes.value(1)  // Title
+			     << bytes.value(2); // Description
 
 		      if(stream.status() != QDataStream::Ok)
 			{
@@ -358,84 +436,13 @@ void spoton_fireshare::slotTimeout(void)
 		    }
 		}
 
-	      QList<QByteArray> bytes;
-
-	      if(ok)
-		bytes.append
-		  (urlCommonCredentials->
-		   decryptedAfterAuthenticated(QByteArray::
-					       fromBase64(query.value(0).
-							  toByteArray()),
-					       &ok));
-
-	      if(ok)
-		{
-		  /*
-		  ** Apply polarizers.
-		  */
-
-		  ok = false;
-
-		  for(int i = 0; i < polarizers.size(); i++)
-		    {
-		      QString type(polarizers.at(i).second);
-		      QUrl u1(polarizers.at(i).first);
-		      QUrl u2(QUrl::fromUserInput(bytes.value(0)));
-
-		      if(type == "accept")
-			{
-			  if(u2.toEncoded().startsWith(u1.toEncoded()))
-			    {
-			      ok = true;
-			      break;
-			    }
-			}
-		      else
-			{
-			  if(u2.toEncoded().startsWith(u1.toEncoded()))
-			    {
-			      ok = false;
-			      break;
-			    }
-			}
-		    }
-		}
-
-	      if(ok)
-		bytes.append
-		  (urlCommonCredentials->
-		   decryptedAfterAuthenticated(QByteArray::
-					       fromBase64(query.value(1).
-							  toByteArray()),
-					       &ok));
-
-	      if(ok)
-		bytes.append
-		  (urlCommonCredentials->
-		   decryptedAfterAuthenticated(QByteArray::
-					       fromBase64(query.value(2).
-							  toByteArray()),
-					       &ok));
-
-	      if(ok)
-		{
-		  stream << bytes.value(0)  // URL
-			 << bytes.value(1)  // Title
-			 << bytes.value(2); // Description
-
-		  if(stream.status() != QDataStream::Ok)
-		    {
-		      data.clear();
-		      ok = false;
-		    }
-		}
-
+	    {
 	      QReadLocker locker(&m_quitLocker);
 
 	      if(m_quit)
 		break;
 	    }
-	  while(true);
+	  }
       }
 
     db.close();
