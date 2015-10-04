@@ -312,9 +312,13 @@ void spoton_fireshare::slotTimeout(void)
     if(db.isOpen())
       {
 	QDataStream stream(&data, QIODevice::WriteOnly);
+	int count = 0;
 
 	while(true)
 	  {
+	    if(count > spoton_common::KERNEL_URLS_BATCH_SIZE)
+	      break;
+
 	    QByteArray shareHash;
 
 	    {
@@ -449,6 +453,8 @@ void spoton_fireshare::slotTimeout(void)
 			}
 		    }
 		}
+
+	    count += 1;
 
 	    {
 	      QReadLocker locker(&m_quitLocker);
