@@ -148,6 +148,9 @@ void spoton::slotPrepareUrlDatabases(void)
 
   QSqlQuery query(m_urlDatabase);
 
+  if(m_urlDatabase.driverName() == "QSQLITE")
+    query.exec("PRAGMA journal_mode = OFF");
+
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
@@ -172,6 +175,9 @@ void spoton::slotPrepareUrlDatabases(void)
 	      c2 = QChar(j + 48);
 	    else
 	      c2 = QChar(j + 97 - 10);
+
+	    progress.setLabelText
+	      (tr("Creating spot_on_keywords_%1%2...").arg(c1).arg(c2));
 
 	    if(m_urlDatabase.driverName() == "QPSQL")
 	      {
@@ -198,6 +204,9 @@ void spoton::slotPrepareUrlDatabases(void)
 				     "PRIMARY KEY (keyword_hash, url_hash))").
 			     arg(c1).arg(c2)))
 		created = false;
+
+	    progress.setLabelText
+	      (tr("Creating spot_on_urls_%1%2...").arg(c1).arg(c2));
 
 	    if(m_urlDatabase.driverName() == "QPSQL")
 	      {
@@ -255,6 +264,9 @@ void spoton::slotPrepareUrlDatabases(void)
 	    created = false;
 	}
     }
+
+  if(m_urlDatabase.driverName() == "QSQLITE")
+    query.exec("PRAGMA journal_mode = DELETE");
 
   progress.close();
 #ifndef Q_OS_MAC

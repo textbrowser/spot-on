@@ -10,6 +10,7 @@
 <ol>
 <li>Attempt to initialize urls_distillers_information.db before allowing new entries and before default entries are assigned.</li>
 <li>Confirm URL deletion.</li>
+<li>Disable the SQLite journal before preparing urls.db. The preparation is not performed under database transactions. The journal is enabled after the process completes.</li>
 </ol>
 <br>
 <b>New</b>
