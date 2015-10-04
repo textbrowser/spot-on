@@ -4145,9 +4145,25 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
       qint64 id = -1;
 
       if(query.exec("INSERT INTO sequence VALUES (NULL)"))
-	if(query.exec("SELECT MAX(value) FROM sequence"))
-	  if(query.next())
-	    id = query.value(0).toLongLong();
+	{
+	  if(query.exec("SELECT MAX(value) FROM sequence"))
+	    {
+	      if(query.next())
+		id = query.value(0).toLongLong();
+	    }
+	  else
+	    {
+	      ok = false;
+	      logError(QString("spoton_misc::importUrl(): "
+			       "%1.").arg(query.lastError().text()));
+	    }
+	}
+      else
+	{
+	  ok = false;
+	  logError(QString("spoton_misc::importUrl(): "
+			   "%1.").arg(query.lastError().text()));
+	}
 
       if(disable_synchronous_sqlite_writes)
 	query.exec("PRAGMA synchronous = OFF");

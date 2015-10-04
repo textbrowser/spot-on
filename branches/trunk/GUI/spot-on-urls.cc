@@ -513,6 +513,23 @@ void spoton::slotImportUrls(void)
       return;
     }
 
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Did you prepare your URL databases?"));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
