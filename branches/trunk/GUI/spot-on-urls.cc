@@ -525,7 +525,7 @@ void spoton::slotImportUrls(void)
 		    arg(SPOTON_APPLICATION_NAME));
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Did you prepare your URL databases?"));
+  mb.setText(tr("Did you prepare your databases?"));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
