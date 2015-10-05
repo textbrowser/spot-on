@@ -7241,20 +7241,8 @@ void spoton::slotPopulateParticipants(void)
 			  else
 			    item = new QTableWidgetItem(tr("error"));
 			}
-		      else if(item)
-			{
-			  /*
-			  ** This item may have been created above
-			  ** as a result of poptastic keys.
-			  ** We do not need it here in the e-mail
-			  ** participants table.
-			  */
 
-			  delete item;
-			  item = 0;
-			}
-
-		      if(item)
+		      if(i >= 0 && i <= 4)
 			{
 			  if(i == 0)
 			    {
