@@ -180,18 +180,13 @@ void spoton_starbeam_reader::slotTimeout(void)
 				  {
 				    try
 				      {
-					m_missingLinksIterator =
-					  new (std::nothrow)
+					m_missingLinksIterator = new
 					  QListIterator<QByteArray>
 					  (m_missingLinks);
-
-					if(m_missingLinksIterator)
-					  m_missingLinksIterator->toFront();
-					else
-					  spoton_misc::logError
-					    ("spoton_starbeam_reader::"
-					     "slotTimeout(): memory "
-					     "failure.");
+				      }
+				    catch(const std::bad_alloc &exception)
+				      {
+					m_missingLinksIterator = 0;
 				      }
 				    catch(...)
 				      {
@@ -204,6 +199,14 @@ void spoton_starbeam_reader::slotTimeout(void)
 					   "slotTimeout(): critical "
 					   "failure.");
 				      }
+
+				    if(m_missingLinksIterator)
+				      m_missingLinksIterator->toFront();
+				    else
+				      spoton_misc::logError
+					("spoton_starbeam_reader::"
+					 "slotTimeout(): memory "
+					 "failure.");
 				  }
 			      }
 			  }

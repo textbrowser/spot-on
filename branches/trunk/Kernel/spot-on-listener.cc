@@ -713,6 +713,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
       catch(const std::bad_alloc &exception)
 	{
 	  error = "memory allocation failure";
+	  neighbor = 0;
 	  spoton_misc::logError("spoton_listener::slotNewConnection(): "
 				"memory failure.");
 	}

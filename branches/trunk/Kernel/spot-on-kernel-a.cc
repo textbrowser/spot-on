@@ -1110,6 +1110,7 @@ void spoton_kernel::prepareListeners(void)
 			  catch(const std::bad_alloc &exception)
 			    {
 			      listener = 0;
+			      s_connectionCounts.remove(id);
 			      spoton_misc::logError
 				("spoton_kernel::prepareListeners(): "
 				 "memory failure.");
@@ -1505,25 +1506,31 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		    {
 		      try
 			{
-			  starbeam = new (std::nothrow) spoton_starbeam_reader
+			  starbeam = new spoton_starbeam_reader
 			    (id, readInterval, this);
-
-			  if(starbeam)
-			    m_starbeamReaders.insert(id, starbeam);
-			  else
-			    spoton_misc::logError
-			      ("spoton_misc::prepareStarbeamReaders(): "
-			       "memory failure.");
+			}
+		      catch(const std::bad_alloc &exception)
+			{
+			  starbeam = 0;
 			}
 		      catch(...)
 			{
 			  if(starbeam)
 			    starbeam->deleteLater();
 
-			  m_starbeamReaders.remove(id);
 			  spoton_misc::logError
 			    ("spoton_misc::prepareStarbeamReaders(): "
 			     "critical failure.");
+			}
+
+		      if(starbeam)
+			m_starbeamReaders.insert(id, starbeam);
+		      else
+			{
+			  m_starbeamReaders.remove(id);
+			  spoton_misc::logError
+			    ("spoton_misc::prepareStarbeamReaders(): "
+			     "memory failure.");
 			}
 		    }
 		  else
@@ -3630,7 +3637,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 
 		  try
 		    {
-		      crypt = new (std::nothrow) spoton_crypt
+		      crypt = new spoton_crypt
 			(setting("gui/cipherType",
 				 "aes256").toString(),
 			 setting("gui/hashType",
@@ -3644,15 +3651,24 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 							     10000).
 						     toInt()),
 			 list.at(i));
-		      s_crypts.insert(list.at(i), crypt);
+		    }
+		  catch(const std::bad_alloc &exception)
+		    {
+		      crypt = 0;
 		    }
 		  catch(...)
 		    {
 		      if(crypt)
-			delete crypt;
-
-		      s_crypts.remove(list.at(i));
+			{
+			  delete crypt;
+			  crypt = 0;
+			}
 		    }
+
+		  if(crypt)
+		    s_crypts.insert(list.at(i), crypt);
+		  else
+		    s_crypts.remove(list.at(i));
 		}
 
 	    for(int i = 0; i < list.size(); i++)

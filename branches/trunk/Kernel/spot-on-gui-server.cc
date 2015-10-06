@@ -461,7 +461,7 @@ void spoton_gui_server::slotReadyRead(void)
 
 			try
 			  {
-			    crypt = new (std::nothrow) spoton_crypt
+			    crypt = new spoton_crypt
 			      (spoton_kernel::
 			       setting("gui/cipherType",
 				       "aes256").
@@ -483,16 +483,25 @@ void spoton_gui_server::slotReadyRead(void)
 				      setting("gui/iterationCount",
 					      10000).toInt()),
 			       names.at(i));
-			    spoton_kernel::s_crypts.insert
-			      (names.at(i), crypt);
+			  }
+			catch(const std::bad_alloc &exception)
+			  {
+			    crypt = 0;
 			  }
 			catch(...)
 			  {
 			    if(crypt)
-			      delete crypt;
-
-			    spoton_kernel::s_crypts.remove(names.at(i));
+			      {
+				delete crypt;
+				crypt = 0;
+			      }
 			  }
+
+			if(crypt)
+			  spoton_kernel::s_crypts.insert
+			    (names.at(i), crypt);
+			else
+			  spoton_kernel::s_crypts.remove(names.at(i));
 		      }
 
 		  for(int i = 0; i < names.size(); i++)
