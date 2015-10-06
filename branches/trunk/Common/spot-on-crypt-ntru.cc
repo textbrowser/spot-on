@@ -154,9 +154,13 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
     static_cast<size_t> (qstrlen("ntru-private-key-"));
   length2 = static_cast<size_t>
     (static_cast<uint> (m_publicKey.length()) - qstrlen("ntru-public-key-"));
-  encrypted = new (std::nothrow) uint8_t[data.size()];
-  privateKey_array = new (std::nothrow) uint8_t[length1];
-  publicKey_array = new (std::nothrow) uint8_t[length2];
+
+  if(length1 > 0 && length2 > 0)
+    {
+      encrypted = new (std::nothrow) uint8_t[data.size()];
+      privateKey_array = new (std::nothrow) uint8_t[length1];
+      publicKey_array = new (std::nothrow) uint8_t[length2];
+    }
 
   if(encrypted && privateKey_array && publicKey_array)
     {
@@ -245,7 +249,8 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
     }
   else
     spoton_misc::logError
-      ("spoton_crypt::publicKeyDecryptNTRU(): memory failure.");
+      ("spoton_crypt::publicKeyDecryptNTRU(): incorrect lengths or "
+       "memory failure.");
 
  done_label:
   delete []d;
@@ -393,9 +398,13 @@ QString spoton_crypt::publicKeySizeNTRU(const QByteArray &data)
   QString keySize("");
 
 #ifdef SPOTON_LINKED_WITH_LIBNTRU
-  uint8_t *publicKey_array = new (std::nothrow)
-    uint8_t[data.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
-	    length()];
+  int length = data.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
+    length();
+
+  if(length <= 0)
+    return keySize;
+
+  uint8_t *publicKey_array = new (std::nothrow) uint8_t[length];
 
   if(publicKey_array)
     {
