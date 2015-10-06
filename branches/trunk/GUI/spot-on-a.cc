@@ -1443,7 +1443,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotTimeSliderDefaults(void)));
-  connect(m_optionsUi.disable_kernel_synchronous_import,
+  connect(m_optionsUi.disable_kernel_synchronous_download,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotDisableSynchronousUrlImport(bool)));
@@ -1593,6 +1593,7 @@ spoton::spoton(void):QMainWindow()
   settings.remove("gui/acceptUrlUL");
   settings.remove("gui/acceptedIPs");
   settings.remove("gui/applyPolarizers");
+  settings.remove("gui/disable_kernel_synchronous_sqlite_url_download");
   settings.remove("gui/enableCongestionControl");
   settings.remove("gui/encryptionKey");
   settings.remove("gui/geoipPath");
@@ -1988,8 +1989,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/allowChatFSRequest", true).toBool());
   m_optionsUi.email_fs_request->setChecked
     (m_settings.value("gui/allowEmailFSRequest", true).toBool());
-  m_optionsUi.disable_kernel_synchronous_import->setChecked
-    (m_settings.value("gui/disable_kernel_synchronous_sqlite_url_import",
+  m_optionsUi.disable_kernel_synchronous_download->setChecked
+    (m_settings.value("gui/disable_kernel_synchronous_sqlite_url_download",
 		      false).toBool());
   m_optionsUi.disable_ui_synchronous_import->setChecked
     (m_settings.value("gui/disable_ui_synchronous_sqlite_url_import", false).

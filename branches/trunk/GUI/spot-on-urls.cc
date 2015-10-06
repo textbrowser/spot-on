@@ -236,7 +236,7 @@ void spoton::slotPrepareUrlDatabases(void)
 				     "title BYTEA NOT NULL, "
 				     "unique_id INTEGER NOT NULL, "
 				     "url BYTEA NOT NULL, "
-				     "url_hash TEXT NOT NULL)").
+				     "url_hash TEXT PRIMARY KEY NOT NULL)").
 			     arg(c1).arg(c2)))
 		created = false;
 	  }
@@ -1270,6 +1270,7 @@ void spoton::slotAddDistiller(void)
     }
 
   scheme = url.scheme().toLower().trimmed();
+  url.setScheme(scheme);
 
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
     {
@@ -1464,6 +1465,7 @@ void spoton::populateUrlDistillers(void)
 			  SIGNAL(currentIndexChanged(int)),
 			  this,
 			  SLOT(slotUrlPolarizerTypeChange(int)));
+		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
 		  if(direction == "download")
 		    {

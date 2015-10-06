@@ -4039,7 +4039,7 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
       return false;
     }
 
-  QUrl url(QUrl::fromUserInput(u));
+  QUrl url(QUrl::fromUserInput(u.trimmed()));
 
   if(url.isEmpty() || !url.isValid())
     {
@@ -4052,6 +4052,8 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
     return false;
+
+  url.setScheme(scheme);
 
   QByteArray all_keywords;
   QByteArray description(d.trimmed());

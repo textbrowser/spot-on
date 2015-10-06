@@ -1402,8 +1402,8 @@ void spoton::slotDisableSynchronousUrlImport(bool state)
 
   QString str("");
 
-  if(checkBox == m_optionsUi.disable_kernel_synchronous_import)
-    str = "gui/disable_kernel_synchronous_sqlite_url_import";
+  if(checkBox == m_optionsUi.disable_kernel_synchronous_download)
+    str = "gui/disable_kernel_synchronous_sqlite_url_download";
   else
     str = "gui/disable_ui_synchronous_sqlite_url_import";
 
