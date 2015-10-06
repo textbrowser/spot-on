@@ -75,15 +75,30 @@ void spoton_crypt::generateNTRUKeys(const QString &keySize,
       uint16_t length1 = ntru_priv_len(&parameters[index]);
       uint16_t length2 = ntru_pub_len(&parameters[index]);
 
-      privateKey_array = new (std::nothrow) uint8_t[length1];
-      publicKey_array = new (std::nothrow) uint8_t[length2];
+      if(length1 > 0 && length2 > 0)
+	{
+	  privateKey_array = new (std::nothrow) uint8_t[length1];
+	  publicKey_array = new (std::nothrow) uint8_t[length2];
+	}
+      else
+	{
+	  if(length1 < 1)
+	    spoton_misc::logError
+	      ("spoton_crypt::generateNTRUKeys(): ntru_priv_len() failure.");
+
+	  if(length2 < 1)
+	    spoton_misc::logError
+	      ("spoton_crypt::generateNTRUKeys(): ntru_pub_len() failure.");
+	}
 
       if(privateKey_array && publicKey_array)
 	{
 	  if(ok)
 	    *ok = true;
 
-	  ntru_export_priv(&kp.priv, privateKey_array);
+	  ntru_export_priv(&kp.priv, privateKey_array); /*
+							** Returns a value.
+							*/
 	  ntru_export_pub(&kp.pub, publicKey_array);
 	  privateKey.resize(length1);
 	  memcpy(privateKey.data(), privateKey_array, length1);
@@ -161,7 +176,9 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
       publicKey.remove
 	(0, static_cast<int> (qstrlen("ntru-public-key-")));
       memcpy(publicKey_array, publicKey.constData(), length2);
-      ntru_import_pub(publicKey_array, &kp.pub);
+      ntru_import_pub(publicKey_array, &kp.pub); /*
+						 ** Returns a value.
+						 */
       publicKey.replace
 	(0, publicKey.length(), QByteArray(publicKey.length(), 0));
       memcpy(encrypted, data.constData(),
@@ -292,7 +309,9 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
 	 static_cast<size_t> (publicKey.length() -
 			      static_cast<int> (qstrlen("ntru-"
 							"public-key-"))));
-      ntru_import_pub(publicKey_array, &pk);
+      ntru_import_pub(publicKey_array, &pk); /*
+					     ** Returns a value.
+					     */
       memset
 	(publicKey_array, 0,
 	 static_cast<size_t> (publicKey.
@@ -389,7 +408,9 @@ QString spoton_crypt::publicKeySizeNTRU(const QByteArray &data)
 	 static_cast<size_t> (data.length() -
 			      static_cast<int> (qstrlen("ntru-"
 							"public-key-"))));
-      ntru_import_pub(publicKey_array, &pk);
+      ntru_import_pub(publicKey_array, &pk); /*
+					     ** Returns a value.
+					     */
 
       struct NtruEncParams parameters[] = {EES1087EP2,
 					   EES1171EP1,
