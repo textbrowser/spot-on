@@ -827,7 +827,7 @@ void spoton_smp::initialize(void)
   if(m_guessWhirl && m_guessWhirlLength > 0)
     bytes = QByteArray(m_guessWhirl, static_cast<int> (m_guessWhirlLength));
 
-  reset();
+  reset(); // Resets m_guessWhirl.
 
   if(g)
     m_guess = gcry_mpi_set(0, g);
@@ -877,7 +877,7 @@ void spoton_smp::reset(void)
 
 void spoton_smp::setGuess(const QString &guess)
 {
-  reset();
+  reset(); // Resets m_guessWhirl.
 
   if(m_guess)
     {
