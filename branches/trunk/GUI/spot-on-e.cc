@@ -1209,6 +1209,9 @@ void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
 
 void spoton::playSong(const QString &name)
 {
+  if(m_locked)
+    return;
+
 #if SPOTON_GOLDBUG == 1
 #if QT_VERSION >= 0x050000
   QMediaPlayer *player = 0;

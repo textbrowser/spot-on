@@ -1364,17 +1364,20 @@ void spoton::slotPopulateStars(void)
 			(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		      m_ui.received->setItem(row, 1, item);
 
-		      QPoint point(frameGeometry().topRight());
+		      if(!m_locked)
+			{
+			  QPoint point(frameGeometry().topRight());
 
-		      point.setX(point.x() - 150);
-		      point.setY(point.y() + 100);
-		      QToolTip::showText(point, "");
-		      QToolTip::showText
-			(point,
-			 tr("<html><h3>%1: StarBeam %2 has arrived!"
-			    "</h3></html>").
-			 arg(SPOTON_APPLICATION_NAME).
-			 arg(spoton_misc::htmlEncode(fileName)));
+			  point.setX(point.x() - 150);
+			  point.setY(point.y() + 100);
+			  QToolTip::showText(point, "");
+			  QToolTip::showText
+			    (point,
+			     tr("<html><h3>%1: StarBeam %2 has arrived!"
+				"</h3></html>").
+			     arg(SPOTON_APPLICATION_NAME).
+			     arg(spoton_misc::htmlEncode(fileName)));
+			}
 
 		      if(m_settings.value("gui/starbeamAutoVerify",
 					  false).toBool())

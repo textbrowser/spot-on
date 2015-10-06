@@ -785,8 +785,12 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 					  "..." +
 					  str.right(16)));
       m_sb.forward_secrecy_request->setVisible(true);
-      QToolTip::showText(pos(), "");
-      QToolTip::showText(pos(), toolTip);
+
+      if(!m_locked)
+	{
+	  QToolTip::showText(pos(), "");
+	  QToolTip::showText(pos(), toolTip);
+	}
     }
 }
 
@@ -1373,6 +1377,8 @@ void spoton::slotPurgeEphemeralKeyPair(void)
 void spoton::slotStarBeamReceivedAndVerified(const QString &fileName)
 {
   if(fileName.isEmpty())
+    return;
+  else if(m_locked)
     return;
 
   QPoint point(frameGeometry().topRight());

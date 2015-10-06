@@ -361,16 +361,19 @@ void spoton::slotReceivedKernelMessage(void)
 			name = "unknown";
 		    }
 
-		  QString str(list.value(0).toBase64().constData());
-		  QString toolTip
-		    (tr("<html><h2>%1: Participant <i>%2</i> (%3) "
-			"has completed a "
-			"forward secrecy exchange.</html>").
-		     arg(SPOTON_APPLICATION_NAME).
-		     arg(name).
-		     arg(str.mid(0, 16) + "..." + str.right(16)));
-		  QToolTip::showText(pos(), "");
-		  QToolTip::showText(pos(), toolTip);
+		  if(!m_locked)
+		    {
+		      QString str(list.value(0).toBase64().constData());
+		      QString toolTip
+			(tr("<html><h2>%1: Participant <i>%2</i> (%3) "
+			    "has completed a "
+			    "forward secrecy exchange.</html>").
+			 arg(SPOTON_APPLICATION_NAME).
+			 arg(name).
+			 arg(str.mid(0, 16) + "..." + str.right(16)));
+		      QToolTip::showText(pos(), "");
+		      QToolTip::showText(pos(), toolTip);
+		    }
 		}
 	    }
 	  else if(data.startsWith("message_"))
@@ -706,14 +709,15 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  msg.append(content);
 
-		  if(m_optionsUi.displayPopups->isChecked())
-		    if(first)
-		      if(!m_chatWindows.contains(hash.toBase64()))
-			{
-			  slotParticipantDoubleClicked(items.at(0));
-			  chat = m_chatWindows.value(list.value(0).
-						     toBase64(), 0);
-			}
+		  if(!m_locked)
+		    if(m_optionsUi.displayPopups->isChecked())
+		      if(first)
+			if(!m_chatWindows.contains(hash.toBase64()))
+			  {
+			    slotParticipantDoubleClicked(items.at(0));
+			    chat = m_chatWindows.value(list.value(0).
+						       toBase64(), 0);
+			  }
 
 		  if(chat)
 		    {
@@ -736,18 +740,24 @@ void spoton::slotReceivedKernelMessage(void)
 	    }
 	  else if(data == "newmail")
 	    {
-	      QPoint point(frameGeometry().bottomRight());
-
-	      point.setX(point.x() - 150);
-	      point.setY(point.y() - 100);
-	      QToolTip::showText(point, "");
-	      QToolTip::showText
-		(point, tr("<html><h3>%1: You have new e-mail!</h3></html>").
-		 arg(SPOTON_APPLICATION_NAME));
 	      m_sb.email->setVisible(true);
 #if SPOTON_GOLDBUG == 1
 	      populateMail();
 #endif
+
+	      if(!m_locked)
+		{
+		  QPoint point(frameGeometry().bottomRight());
+
+		  point.setX(point.x() - 150);
+		  point.setY(point.y() - 100);
+		  QToolTip::showText(point, "");
+		  QToolTip::showText
+		    (point,
+		     tr("<html><h3>%1: You have new e-mail!</h3></html>").
+		     arg(SPOTON_APPLICATION_NAME));
+		}
+
 	      playSong("echo.wav");
 	    }
 	}
