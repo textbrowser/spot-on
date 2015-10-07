@@ -1605,6 +1605,12 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	}
 
       QByteArray message("sharelink_");
+#if QT_VERSION >= 0x050000
+      QUrl original(url.path().mid(url.path().indexOf('?') + 1));
+
+      url.setPath(url.path().mid(0, url.path().indexOf('?') - 1));
+      message.append(url.toString());
+#else
       QUrl original(url.encodedQueryItemValue("url"));
 
       url.removeEncodedQueryItem("url");
@@ -1615,6 +1621,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 							      ** question
 							      ** mark.
 							      */
+#endif
       message.append("\n");
 
       if(m_kernelSocket.write(message.constData(), message.length()) !=
