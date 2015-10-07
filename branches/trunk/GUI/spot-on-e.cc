@@ -287,6 +287,8 @@ void spoton::slotConfigurePoptastic(void)
 	 m_poptasticRetroPhoneSettingsUi.out_verify_peer->
 	 isChecked() ? 1 : 0);
 
+      QString error("");
+
       {
 	QSqlDatabase db = spoton_misc::database(connectionName);
 
@@ -422,7 +424,7 @@ void spoton::slotConfigurePoptastic(void)
 					    value()), &ok).toBase64());
 
 	    query.bindValue(18, m_poptasticRetroPhoneSettingsUi.proxy_type->
-			    currentText().toLatin1());
+			    currentText());
 
 	    if(ok)
 	      query.bindValue
@@ -441,9 +443,15 @@ void spoton::slotConfigurePoptastic(void)
 
 	    if(ok)
 	      ok = query.exec();
+
+	    if(query.lastError().isValid())
+	      error = query.lastError().text();
 	  }
 	else
-	  ok = false;
+	  {
+	    error = "Unable to access poptastic.db.";
+	    ok = false;
+	  }
 
 	db.close();
       }
@@ -452,11 +460,19 @@ void spoton::slotConfigurePoptastic(void)
 
       if(!ok)
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("An error occurred while "
-				   "attempting to save the Poptastic "
-				   "information."));
+	  if(!error.isEmpty())
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error (%1) occurred while "
+				     "attempting to save the Poptastic "
+				     "information.").arg(error));
+	  else
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error occurred while "
+				     "attempting to save the Poptastic "
+				     "information."));
+
 	  return;
 	}
     }

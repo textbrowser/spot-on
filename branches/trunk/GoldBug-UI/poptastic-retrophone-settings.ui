@@ -306,7 +306,7 @@
          </property>
          <item>
           <property name="text">
-           <string>Password</string>
+           <string notr="true">Password</string>
           </property>
          </item>
         </widget>
@@ -331,7 +331,7 @@
          </property>
          <item>
           <property name="text">
-           <string>Password</string>
+           <string notr="true">Password</string>
           </property>
          </item>
         </widget>
@@ -423,7 +423,7 @@
          </property>
          <item>
           <property name="text">
-           <string>Disable</string>
+           <string notr="true">Disable</string>
           </property>
          </item>
          <item>

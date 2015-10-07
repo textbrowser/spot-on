@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>750</width>
-    <height>662</height>
+    <height>694</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -306,7 +306,7 @@
          </property>
          <item>
           <property name="text">
-           <string>Password</string>
+           <string notr="true">Password</string>
           </property>
          </item>
         </widget>
@@ -331,7 +331,7 @@
          </property>
          <item>
           <property name="text">
-           <string>Password</string>
+           <string notr="true">Password</string>
           </property>
          </item>
         </widget>
@@ -423,7 +423,7 @@
          </property>
          <item>
           <property name="text">
-           <string>Disable</string>
+           <string notr="true">Disable</string>
           </property>
          </item>
          <item>
