@@ -16,7 +16,9 @@
 <li>Confirm URL deletion.</li>
 <li>Disable the SQLite journal before preparing urls.db. The preparation is not performed under database transactions. The journal is enabled after the process completes.</li>
 <li>Inspect more NTRU function results.</li>
+<li>Inspect results of gcry_control() with respect to GCRYCTL_SET_THREAD_CBS. Report the failure and continue.</li>
 <li>SQLite CHECK constraints. New installations only.</li>
+<li>Set gcryctl_set_thread_cbs_set to true if gcry_control() was successful.</li>
 </ol>
 <br>
 <b>New</b>

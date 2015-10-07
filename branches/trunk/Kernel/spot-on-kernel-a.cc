@@ -346,13 +346,15 @@ int main(int argc, char *argv[])
 	}
       catch(const std::bad_alloc &exception)
 	{
-	  std::cerr << "Critical memory failure. Exiting kernel.\n";
+	  std::cerr << "Critical memory failure. Exiting kernel."
+		    << std::endl;
 	  curl_global_cleanup();
 	  return EXIT_FAILURE;
 	}
       catch(...)
 	{
-	  std::cerr << "Critical failure. Exiting kernel.\n";
+	  std::cerr << "Critical failure. Exiting kernel."
+		    << std::endl;
 	  curl_global_cleanup();
 	  return EXIT_FAILURE;
 	}
@@ -361,7 +363,8 @@ int main(int argc, char *argv[])
     {
       std::cerr << "Critical kernel error ("
 		<< libspoton_strerror(err)
-		<< ") with libspoton_init_b().\n";
+		<< ") with libspoton_init_b()."
+		<< std::endl;
       curl_global_cleanup();
       return EXIT_FAILURE;
     }
@@ -434,7 +437,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	if(GetConsoleMode(hStdin, &mode) == 0)
 	  {
 	    s_exit_code = EXIT_FAILURE;
-	    std::cerr << "Unable to retrieve the terminal's mode. Exiting.\n";
+	    std::cerr << "Unable to retrieve the terminal's mode. Exiting."
+		      << std::endl;
 	    deleteLater();
 	    break;
 	  }
@@ -448,7 +452,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	if(tcgetattr(STDIN_FILENO, &oldt) != 0)
 	  {
 	    s_exit_code = EXIT_FAILURE;
-	    std::cerr << "Unable to retrieve the terminal's mode. Exiting.\n";
+	    std::cerr << "Unable to retrieve the terminal's mode. Exiting."
+		      << std::endl;
 	    deleteLater();
 	    break;
 	  }
@@ -499,7 +504,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	    if(!initializeSecurityContainers(input1, input2))
 	      {
 		s_exit_code = EXIT_FAILURE;
-		std::cerr << "Invalid input?\n";
+		std::cerr << "Invalid input?" << std::endl;
 		deleteLater();
 	      }
 	    else
@@ -513,7 +518,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	else
 	  {
 	    s_exit_code = EXIT_FAILURE;
-	    std::cerr << "Unable to silence the terminal's echo. Exiting.\n";
+	    std::cerr << "Unable to silence the terminal's echo. Exiting."
+		      << std::endl;
 	    deleteLater();
 	    break;
 	  }
@@ -525,7 +531,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
       {
 	s_exit_code = EXIT_FAILURE;
 	std::cerr << "Invalid option: " << arguments.at(i).constData()
-		  << ". Exiting.\n";
+		  << ". Exiting." << std::endl;
 	deleteLater();
 	break;
       }
