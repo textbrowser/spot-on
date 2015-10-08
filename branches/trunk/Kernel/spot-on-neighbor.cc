@@ -6811,7 +6811,6 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 
 void spoton_neighbor::deleteLater(void)
 {
-  close();
   QThread::deleteLater();
 }
 
