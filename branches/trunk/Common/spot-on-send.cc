@@ -474,7 +474,7 @@ QByteArray spoton_send::message0013
   return results;
 }
 
-QByteArray spoton_send::message0014(const QByteArray &uuid)
+QByteArray spoton_send::message0014(const QByteArray &message)
 {
   QByteArray results;
 
@@ -487,10 +487,10 @@ QByteArray spoton_send::message0014(const QByteArray &uuid)
      "\r\n\r\n");
   results.replace
     ("%1",
-     QByteArray::number(uuid.toBase64().length() +
+     QByteArray::number(message.toBase64().length() +
 			QString("type=0014&content=\r\n\r\n\r\n").length()));
   results.replace
-    ("%2", uuid.toBase64());
+    ("%2", message.toBase64());
   return results;
 }
 

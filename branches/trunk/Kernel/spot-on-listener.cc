@@ -890,8 +890,9 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	       "transport, "
 	       "orientation, "
 	       "motd, "
-	       "ssl_control_string) "
-	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+	       "ssl_control_string, "
+	       "lane_width) "
+	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
 	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue(0, m_address.toString());
 	    query.bindValue(1, m_port);
@@ -1058,6 +1059,8 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	      }
 	    else
 	      query.bindValue(30, "N/A");
+
+	    query.bindValue(31, m_laneWidth);
 
 	    if(ok)
 	      if(query.exec())

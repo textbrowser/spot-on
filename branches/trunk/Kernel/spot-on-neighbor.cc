@@ -388,7 +388,7 @@ spoton_neighbor::spoton_neighbor
   connect(&m_keepAliveTimer,
 	  SIGNAL(timeout(void)),
 	  this,
-	  SLOT(slotSendUuid(void)));
+	  SLOT(slotSendCapabilities(void)));
   connect(&m_lifetime,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -433,7 +433,7 @@ spoton_neighbor::spoton_neighbor
       }
 
   QTimer::singleShot(30000, this, SLOT(slotSendMOTD(void)));
-  m_keepAliveTimer.start(30000);
+  m_keepAliveTimer.start(15000);
   m_lifetime.start(10 * 60 * 1000);
   m_timer.start(2500);
   start(priority);
@@ -788,7 +788,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   connect(&m_keepAliveTimer,
 	  SIGNAL(timeout(void)),
 	  this,
-	  SLOT(slotSendUuid(void)));
+	  SLOT(slotSendCapabilities(void)));
   connect(&m_lifetime,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -812,7 +812,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   else
     m_externalAddressDiscovererTimer.setInterval(30000);
 
-  m_keepAliveTimer.setInterval(30000);
+  m_keepAliveTimer.setInterval(15000);
   m_lifetime.start(10 * 60 * 1000);
   m_timer.start(2500);
   start(priority);
@@ -1004,7 +1004,7 @@ void spoton_neighbor::slotTimeout(void)
 		      "ae_token_type, "
 		      "ssl_control_string, "
 		      "priority, "
-		      "lane_width, "
+		      "lane_width "
 		      "FROM neighbors WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -3570,7 +3570,8 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
     {
       data = QByteArray::fromBase64(data);
 
-      QUuid uuid(data.constData());
+      QList<QByteArray> list(data.split('\n'));
+      QUuid uuid(list.value(0));
       QWriteLocker locker(&m_receivedUuidMutex);
 
       m_receivedUuid = uuid;
@@ -3598,12 +3599,38 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 		QSqlQuery query(db);
 		bool ok = true;
 
-		query.prepare("UPDATE neighbors SET uuid = ? "
-			      "WHERE OID = ?");
-		query.bindValue
-		  (0, s_crypt->encryptedThenHashed(uuid.toString().toLatin1(),
-						   &ok).toBase64());
-		query.bindValue(1, m_id);
+		if(m_isUserDefined)
+		  {
+		    QList<int> laneWidths(spoton_common::LANE_WIDTHS);
+
+		    laneWidths << spoton_common::NEIGHBOR_LANE_WIDTH_DEFAULT
+			       << spoton_common::NEIGHBOR_LANE_WIDTH_MAXIMUM
+			       << spoton_common::NEIGHBOR_LANE_WIDTH_MINIMUM;
+		    int laneWidth = list.value(1).toInt();
+
+		    if(!laneWidths.contains(laneWidth))
+		      laneWidth = spoton_common::NEIGHBOR_LANE_WIDTH_DEFAULT;
+
+		    query.prepare("UPDATE neighbors SET lane_width = ?, "
+				  "uuid = ? "
+				  "WHERE OID = ?");
+		    query.bindValue(0, laneWidth);
+		    query.bindValue
+		      (1, s_crypt->
+		       encryptedThenHashed(uuid.toString().toLatin1(),
+					   &ok).toBase64());
+		    query.bindValue(2, m_id);
+		  }
+		else
+		  {
+		    query.prepare("UPDATE neighbors SET uuid = ? "
+				  "WHERE OID = ?");
+		    query.bindValue
+		      (0, s_crypt->
+		       encryptedThenHashed(uuid.toString().toLatin1(),
+					   &ok).toBase64());
+		    query.bindValue(1, m_id);
+		  }
 
 		if(ok)
 		  query.exec();
@@ -4772,7 +4799,7 @@ void spoton_neighbor::slotError(const QString &method,
   deleteLater();
 }
 
-void spoton_neighbor::slotSendUuid(void)
+void spoton_neighbor::slotSendCapabilities(void)
 {
   if(!readyToWrite())
     return;
@@ -4782,11 +4809,14 @@ void spoton_neighbor::slotSendUuid(void)
 	     setting("gui/uuid",
 		     "{00000000-0000-0000-0000-000000000000}").toString());
 
-  message = spoton_send::message0014(uuid.toString().toLatin1());
+  message = spoton_send::message0014(uuid.toString().toLatin1() +
+				     "\n" +
+				     QByteArray::number(m_laneWidth));
 
   if(write(message.constData(), message.length()) != message.length())
     spoton_misc::logError
-      (QString("spoton_neighbor::slotSendUuid(): write() error for %1:%2.").
+      (QString("spoton_neighbor::slotSendCapabilities(): "
+	       "write() error for %1:%2.").
        arg(m_address.toString()).
        arg(m_port));
   else

@@ -350,6 +350,7 @@ class spoton_neighbor: public QThread
   void slotSendAccountInformation(void);
   void slotSendAuthenticationRequest(void);
   void slotSendBuzz(const QByteArray &data);
+  void slotSendCapabilities(void);
   void slotSendForwardSecrecyPublicKey(const QByteArray &data);
   void slotSendForwardSecrecySessionKeys(const QByteArray &data);
   void slotSendMOTD(void);
@@ -361,7 +362,6 @@ class spoton_neighbor: public QThread
   void slotSendMessage(const QByteArray &data,
 		       const spoton_send::spoton_send_method sendMethod);
   void slotSendStatus(const QByteArrayList &list);
-  void slotSendUuid(void);
   void slotSslErrors(const QList<QSslError> &errors);
   void slotStopTimer(QTimer *timer);
   void slotTimeout(void);
