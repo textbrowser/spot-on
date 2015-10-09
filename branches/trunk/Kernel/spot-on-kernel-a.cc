@@ -979,7 +979,8 @@ void spoton_kernel::prepareListeners(void)
 		      "orientation, "            // 15
 		      "motd, "                   // 16
 		      "ssl_control_string, "     // 17
-		      "OID "                     // 18
+		      "lane_width, "             // 18
+		      "OID "                     // 19
 		      "FROM listeners"))
 	  while(query.next())
 	    {
@@ -1111,6 +1112,7 @@ void spoton_kernel::prepareListeners(void)
 				 QString::fromUtf8(query.value(16).
 						   toByteArray()).trimmed(),
 				 query.value(17).toString(),
+				 query.value(18).toInt(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)

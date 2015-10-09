@@ -1413,3 +1413,36 @@ void spoton::slotDisableSynchronousUrlImport(bool state)
 
   settings.setValue(str, state);
 }
+
+void spoton::slotLaneWidthChanged(int index)
+{
+  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+
+  if(!comboBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE listeners SET "
+		      "lane_width = ? "
+		      "WHERE OID = ?");
+	query.bindValue(0, comboBox->itemText(index).toInt());
+	query.bindValue(1, comboBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}

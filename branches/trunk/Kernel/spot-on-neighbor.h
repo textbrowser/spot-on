@@ -146,6 +146,7 @@ class spoton_neighbor: public QThread
 		  const QString &motd,
 		  const QString &sslControlString,
 		  const Priority priority,
+		  const int laneWidth,
 		  QObject *parent);
   ~spoton_neighbor();
   QAbstractSocket::SocketState state(void) const;
@@ -217,6 +218,7 @@ class spoton_neighbor: public QThread
   bool m_useSsl;
   int m_kernelInterfaces;
   int m_keySize;
+  int m_laneWidth;
   qint64 m_id;
   qint64 m_listenerOid;
   qint64 m_maximumBufferSize;

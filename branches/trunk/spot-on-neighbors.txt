@@ -7,4 +7,5 @@
 
 echo_mode=full&ip_address=tulip-ipv4.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=0&transport=sctp
 echo_mode=full&ip_address=tulip-ipv4.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
+echo_mode=full&ip_address=tulip-ipv4.cloud.tilaa.com&orientation=packet&port=4715&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
 echo_mode=full&ip_address=tulip-ipv6.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp

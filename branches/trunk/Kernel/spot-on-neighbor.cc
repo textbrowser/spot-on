@@ -77,10 +77,14 @@ spoton_neighbor::spoton_neighbor
  const QString &motd,
  const QString &sslControlString,
  const Priority priority,
+ const int laneWidth,
  QObject *parent):QThread(parent)
 {
   m_abortThread = false;
   m_kernelInterfaces = spoton_kernel::interfaces();
+  m_laneWidth = qBound(spoton_common::LISTENER_LANE_WIDTH_MINIMUM,
+		       laneWidth,
+		       spoton_common::LISTENER_LANE_WIDTH_MAXIMUM);
   m_sctpSocket = 0;
   m_tcpSocket = 0;
   m_udpSocket = 0;
@@ -481,6 +485,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 	   m_keySize == 4096 || m_keySize == 8192))
 	m_keySize = 2048;
 
+  m_laneWidth = spoton_common::LISTENER_LANE_WIDTH_DEFAULT;
   m_lastReadTime = QDateTime::currentDateTime();
   m_listenerOid = -1;
   m_maximumBufferSize =
@@ -2328,6 +2333,10 @@ void spoton_neighbor::slotWrite
 (const QByteArray &data, const qint64 id,
  const QPairByteArrayByteArray &adaptiveEchoPair)
 {
+  if(!m_isUserDefined)
+    if(data.length() > m_laneWidth)
+      return;
+
   if(id == m_id)
     return;
 

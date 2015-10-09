@@ -3333,6 +3333,7 @@ void spoton::slotPopulateListeners(void)
 		      "certificate, "
 		      "orientation, "
 		      "ssl_control_string, "
+		      "lane_width, "
 		      "OID "
 		      "FROM listeners WHERE status_control <> 'deleted'"))
 	  {
@@ -3389,7 +3390,8 @@ void spoton::slotPopulateListeners(void)
 		      "Transport: %10\n"
 		      "Share Address: %11\n"
 		      "Orientation: %12\n"
-		      "SSL Control String: %13")).
+		      "SSL Control String: %13\n"
+		      "Lane Width: %14")).
 		  arg(query.value(1).toString().toLower()).
 		  arg(query.value(2).toString()).
 		  arg(crypt->
@@ -3438,17 +3440,16 @@ void spoton::slotPopulateListeners(void)
 							     toByteArray()),
 						  &ok).
 		      constData()).
-		  arg(query.value(19).toString());
+		  arg(query.value(19).toString()).
+		  arg(query.value(20).toInt());
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
-		    QCheckBox *check = 0;
-		    QComboBox *box = 0;
 		    QTableWidgetItem *item = 0;
 
 		    if(i == 0 || i == 12)
 		      {
-			check = new QCheckBox();
+			QCheckBox *check = new QCheckBox();
 
 			if(i == 0)
 			  {
@@ -3509,7 +3510,7 @@ void spoton::slotPopulateListeners(void)
 		      }
 		    else if(i == 10)
 		      {
-			box = new QComboBox();
+			QComboBox *box = new QComboBox();
 
 			if(transport != "UDP")
 			  {
@@ -3595,6 +3596,44 @@ void spoton::slotPopulateListeners(void)
 		    else if(i == 17) // Certificate Digest
 		      item = new QTableWidgetItem
 			(certificateDigest.constData());
+		    else if(i == 20) // Lane Width
+		      {
+			QComboBox *box = new QComboBox();
+			QStringList list;
+
+			list
+			  << QString::number(spoton_common::
+					     LISTENER_LANE_WIDTH_MINIMUM)
+			  << QString::number(spoton_common::
+					     LISTENER_LANE_WIDTH_DEFAULT)
+		          << "20000"
+			  << "25000"
+			  << "50000"
+			  << "75000"
+			  << QString::number(spoton_common::
+					     LISTENER_LANE_WIDTH_MAXIMUM);
+			qSort(list);
+			box->addItems(list);
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			m_ui.listeners->setCellWidget(row, i, box);
+
+			if(box->findText(QString::
+					 number(query.
+						value(i).
+						toInt())) >= 0)
+			  box->setCurrentIndex
+			    (box->findText(QString::number(query.
+							   value(i).
+							   toInt())));
+			else
+			  box->setCurrentIndex(0); // Default of 14500.
+
+			connect(box,
+				SIGNAL(currentIndexChanged(int)),
+				this,
+				SLOT(slotLaneWidthChanged(int)));
+		      }
 		    else
 		      {
 			if((i >= 3 && i <= 7) ||

@@ -169,6 +169,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				 const QString &orientation,
 				 const QString &motd,
 				 const QString &sslControlString,
+				 const int laneWidth,
 				 QObject *parent):QObject(parent)
 {
   m_sctpServer = 0;
@@ -196,6 +197,9 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 	m_keySize = 2048;
 
   m_id = id;
+  m_laneWidth = qBound(spoton_common::LISTENER_LANE_WIDTH_MINIMUM,
+		       laneWidth,
+		       spoton_common::LISTENER_LANE_WIDTH_MAXIMUM);
   m_maximumBufferSize =
     qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
 	   maximumBufferSize,
@@ -408,9 +412,15 @@ void spoton_listener::slotTimeout(void)
 	query.bindValue(1, 120);
 	query.bindValue(2, m_id);
 	query.exec();
-	query.prepare("SELECT status_control, maximum_clients, "
-		      "echo_mode, use_accounts, maximum_buffer_size, "
-		      "maximum_content_length, motd, ssl_control_string "
+	query.prepare("SELECT status_control, "
+		      "maximum_clients, "
+		      "echo_mode, "
+		      "use_accounts, "
+		      "maximum_buffer_size, "
+		      "maximum_content_length, "
+		      "motd, "
+		      "ssl_control_string, "
+		      "lane_width "
 		      "FROM listeners WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -424,8 +434,10 @@ void spoton_listener::slotTimeout(void)
 		spoton_crypt *s_crypt =
 		  spoton_kernel::s_crypts.value("chat", 0);
 
-		m_useAccounts = static_cast<int>
-		  (query.value(3).toLongLong());
+		m_laneWidth = 
+		  qBound(spoton_common::LISTENER_LANE_WIDTH_MINIMUM,
+			 query.value(8).toInt(),
+			 spoton_common::LISTENER_LANE_WIDTH_MAXIMUM);
 		m_maximumBufferSize =
 		  qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
 			 query.value(4).toLongLong(),
@@ -437,6 +449,8 @@ void spoton_listener::slotTimeout(void)
 		m_motd = QString::fromUtf8
 		  (query.value(6).toByteArray()).trimmed();
 		m_sslControlString = query.value(7).toString().trimmed();
+		m_useAccounts = static_cast<int>
+		  (query.value(3).toLongLong());
 
 		if(m_sslControlString.isEmpty())
 		  {
@@ -708,6 +722,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	     m_motd,
 	     m_sslControlString,
 	     QThread::HighPriority,
+	     m_laneWidth,
 	     this);
 	}
       catch(const std::bad_alloc &exception)
