@@ -82,9 +82,9 @@ spoton_neighbor::spoton_neighbor
 {
   m_abortThread = false;
   m_kernelInterfaces = spoton_kernel::interfaces();
-  m_laneWidth = qBound(spoton_common::LISTENER_LANE_WIDTH_MINIMUM,
+  m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
-		       spoton_common::LISTENER_LANE_WIDTH_MAXIMUM);
+		       spoton_common::LANE_WIDTH_MAXIMUM);
   m_sctpSocket = 0;
   m_tcpSocket = 0;
   m_udpSocket = 0;
@@ -486,9 +486,9 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 	   m_keySize == 4096 || m_keySize == 8192))
 	m_keySize = 2048;
 
-  m_laneWidth = qBound(spoton_common::NEIGHBOR_LANE_WIDTH_MINIMUM,
+  m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
-		       spoton_common::NEIGHBOR_LANE_WIDTH_MAXIMUM);
+		       spoton_common::LANE_WIDTH_MAXIMUM);
   m_lastReadTime = QDateTime::currentDateTime();
   m_listenerOid = -1;
   m_maximumBufferSize =
@@ -1137,9 +1137,9 @@ void spoton_neighbor::slotTimeout(void)
 		      }
 
 		    m_laneWidth = qBound
-		      (spoton_common::NEIGHBOR_LANE_WIDTH_MINIMUM,
+		      (spoton_common::LANE_WIDTH_MINIMUM,
 		       query.value(11).toInt(),
-		       spoton_common::NEIGHBOR_LANE_WIDTH_MAXIMUM);
+		       spoton_common::LANE_WIDTH_MAXIMUM);
 
 		    QWriteLocker locker1(&m_maximumBufferSizeMutex);
 
@@ -3599,17 +3599,17 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 		QSqlQuery query(db);
 		bool ok = true;
 
-		if(m_isUserDefined)
+		if(!m_isUserDefined)
 		  {
 		    QList<int> laneWidths(spoton_common::LANE_WIDTHS);
-
-		    laneWidths << spoton_common::NEIGHBOR_LANE_WIDTH_DEFAULT
-			       << spoton_common::NEIGHBOR_LANE_WIDTH_MAXIMUM
-			       << spoton_common::NEIGHBOR_LANE_WIDTH_MINIMUM;
 		    int laneWidth = list.value(1).toInt();
 
+		    laneWidths << spoton_common::LANE_WIDTH_DEFAULT
+			       << spoton_common::LANE_WIDTH_MAXIMUM
+			       << spoton_common::LANE_WIDTH_MINIMUM;
+
 		    if(!laneWidths.contains(laneWidth))
-		      laneWidth = spoton_common::NEIGHBOR_LANE_WIDTH_DEFAULT;
+		      laneWidth = spoton_common::LANE_WIDTH_DEFAULT;
 
 		    query.prepare("UPDATE neighbors SET lane_width = ?, "
 				  "uuid = ? "

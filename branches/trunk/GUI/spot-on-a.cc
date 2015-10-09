@@ -3602,9 +3602,9 @@ void spoton::slotPopulateListeners(void)
 			QList<int> list;
 
 			list << spoton_common::LANE_WIDTHS
-			     << spoton_common::LISTENER_LANE_WIDTH_MINIMUM
-			     << spoton_common::LISTENER_LANE_WIDTH_DEFAULT
-			     << spoton_common::LISTENER_LANE_WIDTH_MAXIMUM;
+			     << spoton_common::LANE_WIDTH_MINIMUM
+			     << spoton_common::LANE_WIDTH_DEFAULT
+			     << spoton_common::LANE_WIDTH_MAXIMUM;
 			qSort(list);
 
 			while(!list.isEmpty())
@@ -3612,6 +3612,7 @@ void spoton::slotPopulateListeners(void)
 
 			box->setProperty
 			  ("oid", query.value(query.record().count() - 1));
+			box->setProperty("table", "listeners");
 			m_ui.listeners->setCellWidget(row, i, box);
 
 			if(box->findText(QString::
@@ -4269,8 +4270,40 @@ void spoton::slotPopulateNeighbors(void)
 		    else if(i == 35) // Priority
 		      item = new QTableWidgetItem(priority);
 		    else if(i == 36) // Lane Width
-		      item = new QTableWidgetItem
-			(locale.toString(query.value(i).toInt()));
+		      {
+			QComboBox *box = new QComboBox();
+			QList<int> list;
+
+			list << spoton_common::LANE_WIDTHS
+			     << spoton_common::LANE_WIDTH_MINIMUM
+			     << spoton_common::LANE_WIDTH_DEFAULT
+			     << spoton_common::LANE_WIDTH_MAXIMUM;
+			qSort(list);
+
+			while(!list.isEmpty())
+			  box->addItem(QString::number(list.takeFirst()));
+
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			box->setProperty("table", "neighbors");
+			m_ui.neighbors->setCellWidget(row, i, box);
+
+			if(box->findText(QString::
+					 number(query.
+						value(i).
+						toInt())) >= 0)
+			  box->setCurrentIndex
+			    (box->findText(QString::number(query.
+							   value(i).
+							   toInt())));
+			else
+			  box->setCurrentIndex(0); // Default of 14500.
+
+			connect(box,
+				SIGNAL(currentIndexChanged(int)),
+				this,
+				SLOT(slotLaneWidthChanged(int)));
+		      }
 		    else
 		      item = new QTableWidgetItem
 			(query.value(i).toString());

@@ -65,24 +65,18 @@ namespace spoton_common
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;
   static const int KERNEL_CERTIFICATE_DAYS_VALID = 7;
   static const int KERNEL_URLS_BATCH_SIZE = 25;
-  static const int LISTENER_LANE_WIDTH_DEFAULT = 14500;
-  static const int LISTENER_LANE_WIDTH_MAXIMUM = 20971520;
-  static const int LISTENER_LANE_WIDTH_MINIMUM = 4096; /*
-						       ** Must be smaller
-						       ** than the default.
-						       */
+  static const int LANE_WIDTH_DEFAULT = 14500;
+  static const int LANE_WIDTH_MAXIMUM = 20971520;
+  static const int LANE_WIDTH_MINIMUM = 4096; /*
+					      ** Must be smaller
+					      ** than the default.
+					      */
   static const int MAIL_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
   static const int MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION = 50;
   static const int MOSAIC_SIZE = 64;
   static const int NAME_MAXIMUM_LENGTH = 64;
-  static const int NEIGHBOR_LANE_WIDTH_DEFAULT = 14500;
-  static const int NEIGHBOR_LANE_WIDTH_MAXIMUM = 20971520;
-  static const int NEIGHBOR_LANE_WIDTH_MINIMUM = 4096; /*
-						       ** Must be smaller
-						       ** than the default.
-						       */
   static const int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 60;
   static const int POPTASTIC_STATUS_INTERVAL = 60;
   static const int REAP_POST_OFFICE_LETTERS_INTERVAL = 60;
@@ -91,10 +85,10 @@ namespace spoton_common
   static const int STATUS_INTERVAL = 15;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
-    NEIGHBOR_LANE_WIDTH_MINIMUM; /*
-				 ** The buffer size must be greater
-				 ** than the content length.
-				 */
+    LANE_WIDTH_MINIMUM; /*
+			** The buffer size must be greater
+			** than the content length.
+			*/
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH = 10485760;
   static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 250000;
   static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH = 256;

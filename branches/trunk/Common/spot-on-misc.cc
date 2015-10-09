@@ -376,11 +376,11 @@ void spoton_misc::prepareDatabases(void)
 		   "motd TEXT NOT NULL DEFAULT 'Welcome to Spot-On.')").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
-	   arg(spoton_common::LISTENER_LANE_WIDTH_DEFAULT));
+	   arg(spoton_common::LANE_WIDTH_DEFAULT));
 	query.exec(QString("ALTER TABLE listeners "
 			   "ADD lane_width INTEGER NOT NULL DEFAULT %1 "
 			   "CHECK (lane_width > 0)").
-		   arg(spoton_common::LISTENER_LANE_WIDTH_DEFAULT));
+		   arg(spoton_common::LANE_WIDTH_DEFAULT));
 	query.exec("CREATE TABLE IF NOT EXISTS listeners_accounts ("
 		   "account_name TEXT NOT NULL, "
 		   "account_name_hash TEXT NOT NULL, " // Keyed hash.
@@ -518,11 +518,11 @@ void spoton_misc::prepareDatabases(void)
 							  */
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
-	   arg(spoton_common::NEIGHBOR_LANE_WIDTH_DEFAULT));
+	   arg(spoton_common::LANE_WIDTH_DEFAULT));
 	query.exec(QString("ALTER TABLE neighbors "
 			   "ADD lane_width INTEGER NOT NULL DEFAULT %1 "
 			   "CHECK (lane_width > 0)").
-		   arg(spoton_common::NEIGHBOR_LANE_WIDTH_DEFAULT));
+		   arg(spoton_common::LANE_WIDTH_DEFAULT));
       }
 
     db.close();

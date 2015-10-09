@@ -1426,16 +1426,26 @@ void spoton::slotLaneWidthChanged(int index)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    if(comboBox->property("table") == "listeners")
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "listeners.db");
+    else
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "neighbors.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
 
-	query.prepare("UPDATE listeners SET "
-		      "lane_width = ? "
-		      "WHERE OID = ?");
+	if(comboBox->property("table") == "listeners")
+	  query.prepare("UPDATE listeners SET "
+			"lane_width = ? "
+			"WHERE OID = ?");
+	else
+	  query.prepare("UPDATE neighbors SET "
+			"lane_width = ? "
+			"WHERE OID = ?");
+
 	query.bindValue(0, comboBox->itemText(index).toInt());
 	query.bindValue(1, comboBox->property("oid"));
 	query.exec();

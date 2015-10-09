@@ -1628,7 +1628,7 @@ void spoton::slotShareStarBeam(void)
 				 number(spoton_common::
 					FAST_STARBEAM_LANE_WIDTH_PERCENTAGE *
 					spoton_common::
-					NEIGHBOR_LANE_WIDTH_DEFAULT / 100),
+					LANE_WIDTH_DEFAULT / 100),
 				 &ok).toBase64());
 
 	query.bindValue(7, 2.500);

@@ -197,9 +197,9 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 	m_keySize = 2048;
 
   m_id = id;
-  m_laneWidth = qBound(spoton_common::LISTENER_LANE_WIDTH_MINIMUM,
+  m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
-		       spoton_common::LISTENER_LANE_WIDTH_MAXIMUM);
+		       spoton_common::LANE_WIDTH_MAXIMUM);
   m_maximumBufferSize =
     qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
 	   maximumBufferSize,
@@ -435,9 +435,9 @@ void spoton_listener::slotTimeout(void)
 		  spoton_kernel::s_crypts.value("chat", 0);
 
 		m_laneWidth = 
-		  qBound(spoton_common::LISTENER_LANE_WIDTH_MINIMUM,
+		  qBound(spoton_common::LANE_WIDTH_MINIMUM,
 			 query.value(8).toInt(),
-			 spoton_common::LISTENER_LANE_WIDTH_MAXIMUM);
+			 spoton_common::LANE_WIDTH_MAXIMUM);
 		m_maximumBufferSize =
 		  qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
 			 query.value(4).toLongLong(),
