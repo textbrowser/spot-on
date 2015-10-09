@@ -3599,21 +3599,21 @@ void spoton::slotPopulateListeners(void)
 		    else if(i == 20) // Lane Width
 		      {
 			QComboBox *box = new QComboBox();
-			QStringList list;
+			QList<int> list;
 
 			list
-			  << QString::number(spoton_common::
-					     LISTENER_LANE_WIDTH_MINIMUM)
-			  << QString::number(spoton_common::
-					     LISTENER_LANE_WIDTH_DEFAULT)
-		          << "20000"
-			  << "25000"
-			  << "50000"
-			  << "75000"
-			  << QString::number(spoton_common::
-					     LISTENER_LANE_WIDTH_MAXIMUM);
+			  << spoton_common::LISTENER_LANE_WIDTH_MINIMUM
+		          << spoton_common::LISTENER_LANE_WIDTH_DEFAULT
+		          << 20000
+			  << 25000
+			  << 50000
+			  << 75000
+			  << spoton_common::LISTENER_LANE_WIDTH_MAXIMUM;
 			qSort(list);
-			box->addItems(list);
+
+			while(!list.isEmpty())
+			  box->addItem(QString::number(list.takeFirst()));
+
 			box->setProperty
 			  ("oid", query.value(query.record().count() - 1));
 			m_ui.listeners->setCellWidget(row, i, box);
