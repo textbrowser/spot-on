@@ -494,6 +494,8 @@ void spoton_misc::prepareDatabases(void)
 		   "account_authenticated TEXT, "
 		   "transport TEXT NOT NULL, "
 		   "orientation TEXT NOT NULL, "
+		   "lane_width INTEGER NOT NULL DEFAULT %3 "
+		   "CHECK (lane_width > 0), "
 		   "motd TEXT NOT NULL DEFAULT 'Welcome to Spot-On.', "
 		   "ae_token TEXT, " /*
 				     ** Please
@@ -515,7 +517,12 @@ void spoton_misc::prepareDatabases(void)
 							  ** priority.
 							  */
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
-	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH));
+	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
+	   arg(spoton_common::NEIGHBOR_LANE_WIDTH_DEFAULT));
+	query.exec(QString("ALTER TABLE neighbors "
+			   "ADD lane_width INTEGER NOT NULL DEFAULT %1 "
+			   "CHECK (lane_width > 0)").
+		   arg(spoton_common::NEIGHBOR_LANE_WIDTH_DEFAULT));
       }
 
     db.close();

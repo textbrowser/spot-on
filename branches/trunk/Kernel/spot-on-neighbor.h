@@ -128,6 +128,7 @@ class spoton_neighbor: public QThread
 		  const QString &statusControl,
 		  const QString &sslControlString,
 		  const Priority priority,
+		  const int laneWidth,
 		  QObject *parent);
   spoton_neighbor(const int socketDescriptor,
 		  const QByteArray &certificate,

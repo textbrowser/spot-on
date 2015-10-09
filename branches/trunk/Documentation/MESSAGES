@@ -404,11 +404,13 @@ EOL
     Encrypted Timestamp (Base-64)
 }
 
-UUID Exchange
+Capabilities Exchange
 Echoed? No
 
 Message Type ("0014")
-UUID (Base-64)
+0 - UUID (Base-64)
+EOL
+1 - Lane Width (Base-64)
 
 Echo Listener Publication
 Echoed? Yes

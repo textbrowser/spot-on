@@ -461,6 +461,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 				 const QString &statusControl,
 				 const QString &sslControlString,
 				 const Priority priority,
+				 const int laneWidth,
 				 QObject *parent):QThread(parent)
 {
   m_abortThread = false;
@@ -485,7 +486,9 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 	   m_keySize == 4096 || m_keySize == 8192))
 	m_keySize = 2048;
 
-  m_laneWidth = spoton_common::LISTENER_LANE_WIDTH_DEFAULT;
+  m_laneWidth = qBound(spoton_common::NEIGHBOR_LANE_WIDTH_MINIMUM,
+		       laneWidth,
+		       spoton_common::NEIGHBOR_LANE_WIDTH_MAXIMUM);
   m_lastReadTime = QDateTime::currentDateTime();
   m_listenerOid = -1;
   m_maximumBufferSize =
@@ -1000,7 +1003,8 @@ void spoton_neighbor::slotTimeout(void)
 		      "ae_token, "
 		      "ae_token_type, "
 		      "ssl_control_string, "
-		      "priority "
+		      "priority, "
+		      "lane_width, "
 		      "FROM neighbors WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -1131,6 +1135,11 @@ void spoton_neighbor::slotTimeout(void)
 			      }
 			  }
 		      }
+
+		    m_laneWidth = qBound
+		      (spoton_common::NEIGHBOR_LANE_WIDTH_MINIMUM,
+		       query.value(11).toInt(),
+		       spoton_common::NEIGHBOR_LANE_WIDTH_MAXIMUM);
 
 		    QWriteLocker locker1(&m_maximumBufferSizeMutex);
 
@@ -2333,9 +2342,8 @@ void spoton_neighbor::slotWrite
 (const QByteArray &data, const qint64 id,
  const QPairByteArrayByteArray &adaptiveEchoPair)
 {
-  if(!m_isUserDefined)
-    if(data.length() > m_laneWidth)
-      return;
+  if(data.length() > m_laneWidth)
+    return;
 
   if(id == m_id)
     return;

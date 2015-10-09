@@ -3601,14 +3601,10 @@ void spoton::slotPopulateListeners(void)
 			QComboBox *box = new QComboBox();
 			QList<int> list;
 
-			list
-			  << spoton_common::LISTENER_LANE_WIDTH_MINIMUM
-		          << spoton_common::LISTENER_LANE_WIDTH_DEFAULT
-		          << 20000
-			  << 25000
-			  << 50000
-			  << 75000
-			  << spoton_common::LISTENER_LANE_WIDTH_MAXIMUM;
+			list << spoton_common::LANE_WIDTHS
+			     << spoton_common::LISTENER_LANE_WIDTH_MINIMUM
+			     << spoton_common::LISTENER_LANE_WIDTH_DEFAULT
+			     << spoton_common::LISTENER_LANE_WIDTH_MAXIMUM;
 			qSort(list);
 
 			while(!list.isEmpty())
@@ -3877,6 +3873,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "ae_token_type, "
 		      "ssl_control_string, "
 		      "priority, "
+		      "lane_width, "
 		      "OID "
 		      "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
@@ -3986,7 +3983,8 @@ void spoton::slotPopulateNeighbors(void)
 		      "Transport: %22\n"
 		      "Orientation: %23\n"
 		      "SSL Control String: %24\n"
-		      "Priority: %25")).
+		      "Priority: %25\n"
+		      "Lane Width: %26")).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
@@ -4093,7 +4091,8 @@ void spoton::slotPopulateNeighbors(void)
 						  &ok).
 		      constData()).
 		  arg(query.value(34).toString()).
-		  arg(priority);
+		  arg(priority).
+		  arg(locale.toString(query.value(36).toInt()));
 
 		QCheckBox *check = 0;
 
@@ -4269,6 +4268,9 @@ void spoton::slotPopulateNeighbors(void)
 		      item = new QTableWidgetItem(certificate.constData());
 		    else if(i == 35) // Priority
 		      item = new QTableWidgetItem(priority);
+		    else if(i == 36) // Lane Width
+		      item = new QTableWidgetItem
+			(locale.toString(query.value(i).toInt()));
 		    else
 		      item = new QTableWidgetItem
 			(query.value(i).toString());

@@ -1245,6 +1245,7 @@ void spoton_kernel::prepareNeighbors(void)
 		      "motd, "
 		      "ssl_control_string, "
 		      "priority, "
+		      "lane_width, "
 		      "OID FROM neighbors"))
 	  while(query.next())
 	    {
@@ -1287,6 +1288,8 @@ void spoton_kernel::prepareNeighbors(void)
 			else if(i == 23) // ssl_control_string
 			  list.append(query.value(i).toString());
 			else if(i == 24) // priority
+			  list.append(query.value(i).toInt());
+			else if(i == 25) // lane_width
 			  list.append(query.value(i).toInt());
 			else
 			  {
@@ -1396,6 +1399,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 list.value(3).toString(),
 				 list.value(23).toString(),
 				 QThread::Priority(list.value(24).toInt()),
+				 list.value(25).toInt(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)

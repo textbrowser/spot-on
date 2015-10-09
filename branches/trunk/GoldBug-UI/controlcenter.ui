@@ -4026,7 +4026,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>582</width>
-             <height>576</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -4311,6 +4311,11 @@ color: rgb(255, 255, 255);</string>
                     <column>
                      <property name="text">
                       <string>Priority</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>Lane Width</string>
                      </property>
                     </column>
                     <column>
