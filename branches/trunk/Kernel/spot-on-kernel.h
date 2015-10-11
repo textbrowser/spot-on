@@ -72,11 +72,8 @@ class spoton_kernel: public QObject
   spoton_kernel(void);
   ~spoton_kernel();
   static QHash<QString, spoton_crypt *> s_crypts;
-  static QMap<QByteArray, QByteArray> s_cache; // Neighbors cache.
   static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QMultiHash<qint64, QPointer<spoton_neighbor> > s_connectionCounts;
-  static QReadWriteLock s_cacheMutex; // Neighbors cache.
-  static quint64 s_cacheId; // Neighbors cache.
   static QList<QByteArray> findBuzzKey(const QByteArray &data,
 				       const QByteArray &hash);
   static QList<QByteArray> findInstitutionKey(const QByteArray &data,
@@ -119,7 +116,6 @@ class spoton_kernel: public QObject
   QDateTime m_uptime;
   QFileSystemWatcher m_settingsWatcher;
   QFuture<void> m_future;
-  QFuture<void> m_neighborsCacheFuture;
   QFuture<void> m_poptasticPopFuture;
   QFuture<void> m_poptasticPostFuture;
   QFuture<void> m_statisticsFuture;
@@ -136,7 +132,6 @@ class spoton_kernel: public QObject
   QTimer m_controlDatabaseTimer;
   QTimer m_impersonateTimer;
   QTimer m_messagingCachePurgeTimer;
-  QTimer m_neighborsCachePurgeTimer;
   QTimer m_poptasticPopTimer;
   QTimer m_poptasticPostTimer;
   QTimer m_publishAllListenersPlaintextTimer;
@@ -209,7 +204,6 @@ class spoton_kernel: public QObject
   void prepareStarbeamReaders(void);
   void prepareStatus(const QString &keyType);
   void purgeMessagingCache(void);
-  void purgeNeighborsCache(void);
   void saveGemini(const QByteArray &publicKeyHash,
 		  const QByteArray &gemini,
 		  const QByteArray &geminiHashKey,
@@ -272,7 +266,6 @@ class spoton_kernel: public QObject
   void slotPublicizeListenerPlaintext(const qint64 oid);
   void slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash);
   void slotPurgeEphemeralKeys(void);
-  void slotPurgeNeighborsCache(void);
   void slotRequestScramble(void);
   void slotRetrieveMail(void);
   void slotSaveForwardSecrecySessionKeys(const QByteArrayList &list);

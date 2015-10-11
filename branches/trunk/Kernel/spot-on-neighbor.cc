@@ -1927,102 +1927,32 @@ void spoton_neighbor::processData(void)
 	      */
 
 	      if(messageType != "0060") // StarBeam
-		{
-		  QByteArray bytes;
-		  QWriteLocker locker(&spoton_kernel::s_cacheMutex);
-		  quint64 id = 0;
-
-		  id = spoton_kernel::s_cacheId += 1;
-		  bytes.append
-		    (QByteArray::number(QDateTime::currentDateTime().
-					toTime_t()));
-		  bytes.append("-");
-		  bytes.append(QByteArray::number(id));
-		  spoton_kernel::s_cache.insert(bytes, originalData);
-		  locker.unlock();
-		  emit receivedMessage
-		    (bytes, m_id, QPair<QByteArray, QByteArray> ());
-		}
+		emit receivedMessage
+		  (originalData, m_id, QPair<QByteArray, QByteArray> ());
 	    }
 	  else if(echoMode == "full")
 	    {
 	      if(messageType == "0001b" &&
 		 data.trimmed().split('\n').size() == 7)
-		{
-		  QByteArray bytes;
-		  QWriteLocker locker(&spoton_kernel::s_cacheMutex);
-		  quint64 id = 0;
-
-		  id = spoton_kernel::s_cacheId += 1;
-		  bytes.append
-		    (QByteArray::number(QDateTime::currentDateTime().
-					toTime_t()));
-		  bytes.append("-");
-		  bytes.append(QByteArray::number(id));
-		  spoton_kernel::s_cache.insert(bytes, originalData);
-		  locker.unlock();
-		  emit receivedMessage
-		    (bytes, m_id, discoveredAdaptiveEchoPair);
-		}
+		emit receivedMessage
+		  (originalData, m_id, discoveredAdaptiveEchoPair);
 	      else if(messageType.isEmpty() ||
 		      messageType == "0002b" ||
 		      messageType == "0090")
-		{
-		  QByteArray bytes;
-		  QWriteLocker locker(&spoton_kernel::s_cacheMutex);
-		  quint64 id = 0;
-
-		  id = spoton_kernel::s_cacheId += 1;
-		  bytes.append
-		    (QByteArray::number(QDateTime::currentDateTime().
-					toTime_t()));
-		  bytes.append("-");
-		  bytes.append(QByteArray::number(id));
-		  spoton_kernel::s_cache.insert(bytes, originalData);
-		  locker.unlock();
-		  emit receivedMessage
-		    (bytes, m_id, discoveredAdaptiveEchoPair);
-		}
+		emit receivedMessage
+		  (originalData, m_id, discoveredAdaptiveEchoPair);
 	      else if(messageType == "0040a" || messageType == "0040b")
-		{
-		  /*
-		  ** Buzz.
-		  */
+		/*
+		** Buzz.
+		*/
 
-		  QByteArray bytes;
-		  QWriteLocker locker(&spoton_kernel::s_cacheMutex);
-		  quint64 id = 0;
-
-		  id = spoton_kernel::s_cacheId += 1;
-		  bytes.append
-		    (QByteArray::number(QDateTime::currentDateTime().
-					toTime_t()));
-		  bytes.append("-");
-		  bytes.append(QByteArray::number(id));
-		  spoton_kernel::s_cache.insert(bytes, originalData);
-		  locker.unlock();
-		  emit receivedMessage
-		    (bytes, m_id, QPair<QByteArray, QByteArray> ());
-		}
+		emit receivedMessage
+		  (originalData, m_id, QPair<QByteArray, QByteArray> ());
 	      else if(messageType == "0060" &&
 		      !discoveredAdaptiveEchoPair.first.isEmpty() &&
 		      !discoveredAdaptiveEchoPair.second.isEmpty())
-		{
-		  QByteArray bytes;
-		  QWriteLocker locker(&spoton_kernel::s_cacheMutex);
-		  quint64 id = 0;
-
-		  id = spoton_kernel::s_cacheId += 1;
-		  bytes.append
-		    (QByteArray::number(QDateTime::currentDateTime().
-					toTime_t()));
-		  bytes.append("-");
-		  bytes.append(QByteArray::number(id));
-		  spoton_kernel::s_cache.insert(bytes, originalData);
-		  locker.unlock();
-		  emit receivedMessage
-		    (bytes, m_id, discoveredAdaptiveEchoPair);
-		}
+		emit receivedMessage
+		  (originalData, m_id, discoveredAdaptiveEchoPair);
 	    }
 	}
     }
@@ -2418,21 +2348,6 @@ void spoton_neighbor::slotWrite
   if(id == m_id)
     return;
 
-  QByteArray bytes;
-
-  {
-    QReadLocker locker(&spoton_kernel::s_cacheMutex);
-
-    bytes = spoton_kernel::s_cache[data];
-  }
-
-  if(bytes.isEmpty())
-    {
-      spoton_misc::logError
-	("spoton_neighbor::slotWrite(): bytes is empty.");
-      return;
-    }
-
   /*
   ** A neighbor (id) received a message. The neighbor now needs
   ** to send the message to its peer.
@@ -2454,7 +2369,7 @@ void spoton_neighbor::slotWrite
   if(echoMode == "full")
     if(readyToWrite())
       {
-	if(write(bytes.constData(), bytes.length()) != bytes.length())
+	if(write(data.constData(), data.length()) != data.length())
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotWrite(): write() "
 		     "error for %1:%2.").
@@ -2462,8 +2377,8 @@ void spoton_neighbor::slotWrite
 	     arg(m_port));
 	else
 	  {
-	    addToBytesWritten(bytes.length());
-	    spoton_kernel::messagingCacheAdd(bytes);
+	    addToBytesWritten(data.length());
+	    spoton_kernel::messagingCacheAdd(data);
 	  }
     }
 }

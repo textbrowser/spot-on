@@ -77,7 +77,6 @@ namespace spoton_common
   static const int MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION = 50;
   static const int MOSAIC_SIZE = 64;
   static const int NAME_MAXIMUM_LENGTH = 64;
-  static const int NEIGHBORS_CACHE_TIME_DELTA = 5;
   static const int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 60;
   static const int POPTASTIC_STATUS_INTERVAL = 60;
   static const int REAP_POST_OFFICE_LETTERS_INTERVAL = 60;

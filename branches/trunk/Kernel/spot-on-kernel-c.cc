@@ -244,39 +244,3 @@ void spoton_kernel::slotCallParticipantUsingForwardSecrecy
 	emit callParticipant(data, "0000d");
     }
 }
-
-void spoton_kernel::slotPurgeNeighborsCache(void)
-{
-  if(m_neighborsCacheFuture.isFinished())
-    m_neighborsCacheFuture =
-      QtConcurrent::run(this, &spoton_kernel::purgeNeighborsCache);
-}
-
-void spoton_kernel::purgeNeighborsCache(void)
-{
-  QWriteLocker locker(&s_cacheMutex);
-  QMutableMapIterator<QByteArray, QByteArray> it(s_cache);
-  int i = 0;
-  int maximum = qMax(250, qCeil(0.15 * s_cache.size()));
-
-  while(it.hasNext())
-    {
-      i += 1;
-
-      if(i >= maximum)
-	break;
-
-      it.next();
-
-      uint now = QDateTime::currentDateTime().toTime_t();
-      uint then = it.key().mid(0, it.key().indexOf('-')).toUInt();
-
-      if(now > then)
-	if(now - then > static_cast<uint> (spoton_common::
-					   NEIGHBORS_CACHE_TIME_DELTA))
-	  it.remove();
-
-      if(m_neighborsCacheFuture.isCanceled())
-	return;
-    }
-}

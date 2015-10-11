@@ -99,7 +99,6 @@ QHash<QByteArray, uint> spoton_kernel::s_emailRequestCache;
 QHash<QByteArray, uint> spoton_kernel::s_geminisCache;
 QHash<QString, QVariant> spoton_kernel::s_settings;
 QHash<QString, spoton_crypt *> spoton_kernel::s_crypts;
-QMap<QByteArray, QByteArray> spoton_kernel::s_cache;
 QMultiHash<qint64,
 	   QPointer<spoton_neighbor> > spoton_kernel::s_connectionCounts;
 QMultiMap<uint, QByteArray> spoton_kernel::s_messagingCacheLookup;
@@ -107,14 +106,12 @@ QList<QList<QByteArray> > spoton_kernel::s_institutionKeys;
 QList<QPair<QByteArray, QByteArray> > spoton_kernel::s_adaptiveEchoPairs;
 QReadWriteLock spoton_kernel::s_adaptiveEchoPairsMutex;
 QReadWriteLock spoton_kernel::s_buzzKeysMutex;
-QReadWriteLock spoton_kernel::s_cacheMutex;
 QReadWriteLock spoton_kernel::s_emailRequestCacheMutex;
 QReadWriteLock spoton_kernel::s_geminisCacheMutex;
 QReadWriteLock spoton_kernel::s_institutionKeysMutex;
 QReadWriteLock spoton_kernel::s_institutionLastModificationTimeMutex;
 QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
-quint64 spoton_kernel::s_cacheId = 0;
 
 /*
 ** Not pleasant! Please avoid this solution!
@@ -555,10 +552,6 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotMessagingCachePurge(void)));
-  connect(&m_neighborsCachePurgeTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotPurgeNeighborsCache(void)));
   connect(&m_poptasticPopTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -592,7 +585,6 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_messagingCachePurgeTimer.setInterval
     (static_cast<int> (1000 * setting("kernel/cachePurgeInterval", 15.00).
 		       toDouble()));
-  m_neighborsCachePurgeTimer.start(1500);
 
   if(!setting("gui/disablePop3", true).toBool())
     m_poptasticPopTimer.start
@@ -830,7 +822,6 @@ spoton_kernel::~spoton_kernel()
   m_controlDatabaseTimer.stop();
   m_impersonateTimer.stop();
   m_messagingCachePurgeTimer.stop();
-  m_neighborsCachePurgeTimer.stop();
   m_poptasticPopTimer.stop();
   m_poptasticPostTimer.stop();
   m_publishAllListenersPlaintextTimer.stop();
@@ -839,23 +830,17 @@ spoton_kernel::~spoton_kernel()
   m_statusTimer.stop();
   m_urlImportTimer.stop();
 
-  QWriteLocker locker1(&s_cacheMutex);
-
-  s_cache.clear();
-  locker1.unlock();
-
-  QWriteLocker locker2(&s_messagingCacheMutex);
+  QWriteLocker locker1(&s_messagingCacheMutex);
 
   s_messagingCache.clear();
   s_messagingCacheLookup.clear();
-  locker2.unlock();
+  locker1.unlock();
 
-  QWriteLocker locker3(&m_poptasticCacheMutex);
+  QWriteLocker locker2(&m_poptasticCacheMutex);
 
   m_poptasticCache.clear();
-  locker3.unlock();
+  locker2.unlock();
   m_future.cancel();
-  m_neighborsCacheFuture.cancel();
   m_poptasticPopFuture.cancel();
   m_poptasticPostFuture.cancel();
   m_urlImportFutureInterrupt.fetchAndAddRelaxed(1);
@@ -864,7 +849,6 @@ spoton_kernel::~spoton_kernel()
     m_urlImportFutures[i].cancel();
 
   m_future.waitForFinished();
-  m_neighborsCacheFuture.waitForFinished();
   m_poptasticPopFuture.waitForFinished();
   m_poptasticPostFuture.waitForFinished();
   m_statisticsFuture.waitForFinished();
@@ -1489,17 +1473,11 @@ void spoton_kernel::prepareNeighbors(void)
 
   if(disconnected == m_neighbors.size() || m_neighbors.isEmpty())
     {
-      QWriteLocker locker1(&s_cacheMutex);
-
-      s_cache.clear();
-      s_cacheId = 0;
-      locker1.unlock();
-
-      QWriteLocker locker2(&s_messagingCacheMutex);
+      QWriteLocker locker(&s_messagingCacheMutex);
 
       s_messagingCache.clear();
       s_messagingCacheLookup.clear();
-      locker2.unlock();
+      locker.unlock();
     }
 }
 
@@ -4703,18 +4681,6 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 		      "(statistic, value) "
 		      "VALUES ('Live Neighbors', ?)");
 	query.bindValue(0, locale.toString(neighbors));
-	query.exec();
-	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
-		      "(statistic, value) "
-		      "VALUES ('Messaging Cache Size', ?)");
-
-	{
-	  QReadLocker locker(&s_cacheMutex);
-
-	  v1 = s_cache.size();
-	}
-
-	query.bindValue(0, v1);
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
