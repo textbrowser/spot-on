@@ -1636,7 +1636,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  QToolTip::showText(pos(), "");
 	  QToolTip::showText
 	    (pos(),
-	     tr("<html><h4>Link %1 shared with your friendly "
+	     tr("<html><h4>URL %1 shared with your friendly "
 		"participants.</h4></html>").
 	     arg(original.toEncoded().constData()));
 	}
