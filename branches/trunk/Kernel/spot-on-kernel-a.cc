@@ -811,7 +811,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   if(setting("gui/impersonate", false).toBool())
     m_impersonateTimer.start();
 
-  if(setting("gui/activeUrlDistribution", false).toBool())
+  if(setting("gui/activeUrlDistribution", true).toBool())
     m_urlDistribution->start();
 
   spoton_misc::prepareDatabases();
@@ -2075,7 +2075,7 @@ void spoton_kernel::slotUpdateSettings(void)
   if(integer != m_messagingCachePurgeTimer.interval())
     m_messagingCachePurgeTimer.start(integer);
 
-  if(setting("gui/activeUrlDistribution", false).toBool())
+  if(setting("gui/activeUrlDistribution", true).toBool())
     {
       if(!m_urlDistribution->isRunning())
 	m_urlDistribution->start();

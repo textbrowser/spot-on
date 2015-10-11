@@ -1622,7 +1622,7 @@ spoton::spoton(void):QMainWindow()
   spoton_misc::correctSettingsContainer(m_settings);
   spoton_misc::setTimeVariables(m_settings);
   m_ui.activeUrlDistribution->setChecked
-    (m_settings.value("gui/activeUrlDistribution", false).toBool());
+    (m_settings.value("gui/activeUrlDistribution", true).toBool());
 
   if(m_ui.postgresqlConnect->isEnabled())
     {
