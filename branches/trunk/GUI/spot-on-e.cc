@@ -1887,22 +1887,22 @@ void spoton::initializeUrlDistillers(void)
 
 	tuple.append(QUrl::fromUserInput("ftp:"));
 	tuple.append("download");
-	tuple.append("deny");
+	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
 	tuple.append(QUrl::fromUserInput("gopher:"));
 	tuple.append("download");
-	tuple.append("deny");
+	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
 	tuple.append(QUrl::fromUserInput("http:"));
 	tuple.append("download");
-	tuple.append("deny");
+	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https://en.wikipedia.org"));
+	tuple.append(QUrl::fromUserInput("https:"));
 	tuple.append("download");
-	tuple.append("deny");
+	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
 	tuple.append(QUrl::fromUserInput("ftp:"));
@@ -1920,7 +1920,7 @@ void spoton::initializeUrlDistillers(void)
 	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https://en.wikipedia.org"));
+	tuple.append(QUrl::fromUserInput("https:"));
 	tuple.append("shared");
 	tuple.append("accept");
 	list << tuple;
@@ -1940,7 +1940,7 @@ void spoton::initializeUrlDistillers(void)
 	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https://en.wikipedia.org"));
+	tuple.append(QUrl::fromUserInput("https:"));
 	tuple.append("upload");
 	tuple.append("accept");
 	list << tuple;

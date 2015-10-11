@@ -525,7 +525,7 @@ void spoton::slotImportUrls(void)
 		    arg(SPOTON_APPLICATION_NAME));
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Did you prepare your databases?"));
+  mb.setText(tr("Did you prepare your databases and distillers?"));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -1304,7 +1304,7 @@ void spoton::slotAddDistiller(void)
 
 	for(int i = 0; i < list.size(); i++)
 	  {
-	    QByteArray permission("deny");
+	    QByteArray permission("accept");
 	    QString direction(list.at(i));
 	    bool ok = true;
 
@@ -1492,8 +1492,11 @@ void spoton::populateUrlDistillers(void)
 	    }
 
 	m_ui.downDistillers->sortItems(0);
+	m_ui.downDistillers->resizeColumnToContents(1);
 	m_ui.sharedDistillers->sortItems(0);
+	m_ui.sharedDistillers->resizeColumnToContents(1);
 	m_ui.upDistillers->sortItems(0);
+	m_ui.upDistillers->resizeColumnToContents(1);
       }
 
     db.close();
