@@ -839,6 +839,7 @@ spoton_neighbor::~spoton_neighbor()
   m_keepAliveTimer.stop();
   m_lifetime.stop();
   m_timer.stop();
+  m_wait.wakeAll();
 
   if(m_id != -1)
     {
@@ -1462,12 +1463,7 @@ void spoton_neighbor::saveStatus(const QSqlDatabase &db,
 
 void spoton_neighbor::run(void)
 {
-  spoton_neighbor_worker worker(this);
-
-  connect(this,
-	  SIGNAL(newData(void)),
-	  &worker,
-	  SLOT(slotNewData(void)));
+  processData();
   exec();
 }
 
@@ -1518,7 +1514,7 @@ void spoton_neighbor::slotReadyRead(void)
 	m_data.append(data.mid(0, length));
 
       locker2.unlock();
-      emit newData();
+      m_wait.wakeAll();
     }
   else
     {
@@ -1534,12 +1530,22 @@ void spoton_neighbor::slotReadyRead(void)
 
 void spoton_neighbor::processData(void)
 {
-  QReadLocker locker(&m_abortThreadMutex);
+ repeat_label:
 
-  if(m_abortThread)
-    return;
-  else
-    locker.unlock();
+  {
+    QReadLocker locker(&m_abortThreadMutex);
+
+    if(m_abortThread)
+      return;
+    else
+      locker.unlock();
+  }
+
+  {
+    QMutexLocker locker(&m_waitMutex);
+
+    m_wait.wait(&m_waitMutex);
+  }
 
   QByteArray data;
 
@@ -1547,6 +1553,15 @@ void spoton_neighbor::processData(void)
     QReadLocker locker(&m_dataMutex);
 
     data = m_data;
+  }
+
+  {
+    QReadLocker locker(&m_abortThreadMutex);
+
+    if(m_abortThread)
+      return;
+    else
+      locker.unlock();
   }
 
   QByteArray accountClientSentSalt;
@@ -1956,6 +1971,8 @@ void spoton_neighbor::processData(void)
 	    }
 	}
     }
+
+  goto repeat_label;
 }
 
 void spoton_neighbor::slotConnected(void)
@@ -4969,7 +4986,7 @@ void spoton_neighbor::slotSendMail
 
 		  m_data.append(message);
 		  locker.unlock();
-		  processData();
+		  m_wait.wakeAll();
 		}
 
 	    addToBytesWritten(message.length());
@@ -6817,7 +6834,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
   m_data.append(datagram);
   locker.unlock();
-  emit newData();
+  m_wait.wakeAll();
 }
 
 void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
