@@ -434,10 +434,9 @@ void spoton_listener::slotTimeout(void)
 		spoton_crypt *s_crypt =
 		  spoton_kernel::s_crypts.value("chat", 0);
 
-		m_laneWidth = 
-		  qBound(spoton_common::LANE_WIDTH_MINIMUM,
-			 query.value(8).toInt(),
-			 spoton_common::LANE_WIDTH_MAXIMUM);
+		m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
+				     query.value(8).toInt(),
+				     spoton_common::LANE_WIDTH_MAXIMUM);
 		m_maximumBufferSize =
 		  qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
 			 query.value(4).toLongLong(),
