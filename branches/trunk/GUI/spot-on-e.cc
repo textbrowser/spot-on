@@ -75,13 +75,11 @@ void spoton::slotConfigurePoptastic(void)
   hash = spoton_misc::poptasticSettings(crypt, &ok);
 
   if(!ok)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("A failure occurred with "
-			       "spoton_misc::poptasticSettings()."));
-      return;
-    }
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("A failure occurred with "
+			     "spoton_misc::poptasticSettings(). "
+			     "Assuming default widget values."));
 
   QString connectionName("");
   QStringList protocols(curl_protocols());

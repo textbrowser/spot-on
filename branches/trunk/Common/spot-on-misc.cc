@@ -3485,6 +3485,9 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
 {
   if(!crypt)
     {
+      if(ok)
+	*ok = false;
+
       logError
 	("spoton_misc::poptasticSettings(): crypt "
 	 "is zero.");
@@ -3505,44 +3508,53 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT * FROM poptastic") && query.next())
+	if(query.exec("SELECT * FROM poptastic"))
 	  {
-	    QSqlRecord record(query.record());
-
-	    for(int i = 0; i < record.count(); i++)
+	    if(query.next())
 	      {
-		if(record.fieldName(i) == "proxy_enabled" ||
-		   record.fieldName(i) == "proxy_password" ||
-		   record.fieldName(i) == "proxy_server_address" ||
-		   record.fieldName(i) == "proxy_server_port" ||
-		   record.fieldName(i) == "proxy_username" ||
-		   record.fieldName(i).endsWith("_localname") ||
-		   record.fieldName(i).endsWith("_password") ||
-		   record.fieldName(i).endsWith("_server_address") ||
-		   record.fieldName(i).endsWith("_server_port") ||
-		   record.fieldName(i).endsWith("_username"))
+		QSqlRecord record(query.record());
+
+		for(int i = 0; i < record.count(); i++)
 		  {
-		    QByteArray bytes
-		      (QByteArray::fromBase64(record.value(i).
-					      toByteArray()));
-		    bool ok = true;
+		    if(record.fieldName(i) == "proxy_enabled" ||
+		       record.fieldName(i) == "proxy_password" ||
+		       record.fieldName(i) == "proxy_server_address" ||
+		       record.fieldName(i) == "proxy_server_port" ||
+		       record.fieldName(i) == "proxy_username" ||
+		       record.fieldName(i).endsWith("_localname") ||
+		       record.fieldName(i).endsWith("_password") ||
+		       record.fieldName(i).endsWith("_server_address") ||
+		       record.fieldName(i).endsWith("_server_port") ||
+		       record.fieldName(i).endsWith("_username"))
+		      {
+			QByteArray bytes
+			  (QByteArray::fromBase64(record.value(i).
+						  toByteArray()));
+			bool ok = true;
 
-		    bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
+			bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
 
-		    if(ok)
-		      hash.insert(record.fieldName(i), bytes);
+			if(ok)
+			  hash.insert(record.fieldName(i), bytes);
+			else
+			  break;
+		      }
 		    else
-		      break;
+		      hash.insert(record.fieldName(i), record.value(i));
 		  }
-		else
-		  hash.insert(record.fieldName(i), record.value(i));
-	      }
 
-	    if(hash.size() != record.count())
-	      if(ok)
-		*ok = false;
+		if(hash.size() != record.count())
+		  if(ok)
+		    *ok = false;
+	      }
+	    else if(ok)
+	      *ok = false;
 	  }
+	else if(ok)
+	  *ok = false;
       }
+    else if(ok)
+      *ok = false;
 
     db.close();
   }
