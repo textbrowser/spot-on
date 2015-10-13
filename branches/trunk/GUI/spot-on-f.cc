@@ -1402,8 +1402,8 @@ void spoton::slotDisableSynchronousUrlImport(bool state)
 
   QString str("");
 
-  if(checkBox == m_optionsUi.disable_kernel_synchronous_import)
-    str = "gui/disable_kernel_synchronous_sqlite_url_import";
+  if(checkBox == m_optionsUi.disable_kernel_synchronous_download)
+    str = "gui/disable_kernel_synchronous_sqlite_url_download";
   else
     str = "gui/disable_ui_synchronous_sqlite_url_import";
 
@@ -1412,4 +1412,47 @@ void spoton::slotDisableSynchronousUrlImport(bool state)
   QSettings settings;
 
   settings.setValue(str, state);
+}
+
+void spoton::slotLaneWidthChanged(int index)
+{
+  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+
+  if(!comboBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    if(comboBox->property("table") == "listeners")
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "listeners.db");
+    else
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(comboBox->property("table") == "listeners")
+	  query.prepare("UPDATE listeners SET "
+			"lane_width = ? "
+			"WHERE OID = ?");
+	else
+	  query.prepare("UPDATE neighbors SET "
+			"lane_width = ? "
+			"WHERE OID = ?");
+
+	query.bindValue(0, comboBox->itemText(index).toInt());
+	query.bindValue(1, comboBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }

@@ -153,7 +153,8 @@ void spoton_misc::prepareDatabases(void)
 
 	query.exec("CREATE TABLE IF NOT EXISTS folders ("
 		   "date TEXT NOT NULL, "
-		   "folder_index INTEGER NOT NULL, "
+		   "folder_index INTEGER NOT NULL "
+		   "CHECK (folder_index >= 0 AND folder_index <= 2), "
 		   "goldbug TEXT NOT NULL, " /*
 					     ** 0 or 1 for inbound.
 					     ** Magnet for outbound.
@@ -184,7 +185,6 @@ void spoton_misc::prepareDatabases(void)
 					    */
 		   "subject BLOB NOT NULL, "
 		   "PRIMARY KEY (folder_index, hash, receiver_sender_hash))");
-	query.exec("ALTER TABLE folders ADD mode TEXT");
 	query.exec("CREATE TABLE IF NOT EXISTS "
 		   "folders_attachment ("
 		   "data BLOB NOT NULL, "
@@ -255,14 +255,6 @@ void spoton_misc::prepareDatabases(void)
 	   "forward_secrecy_authentication_key TEXT, "
 	   "forward_secrecy_encryption_algorithm TEXT, "
 	   "forward_secrecy_encryption_key TEXT)");
-	query.exec("ALTER TABLE friends_public_keys ADD "
-		   "forward_secrecy_authentication_algorithm TEXT");
-	query.exec("ALTER TABLE friends_public_keys ADD "
-		   "forward_secrecy_authentication_key TEXT");
-	query.exec("ALTER TABLE friends_public_keys ADD "
-		   "forward_secrecy_encryption_algorithm TEXT");
-	query.exec("ALTER TABLE friends_public_keys ADD "
-		   "forward_secrecy_encryption_key TEXT");
 	query.exec
 	  ("CREATE TABLE IF NOT EXISTS relationships_with_signatures ("
 	   "public_key_hash TEXT PRIMARY KEY NOT NULL, " /*
@@ -295,8 +287,8 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS idiotes ("
 		   "id TEXT NOT NULL, "
 		   "id_hash TEXT PRIMARY KEY NOT NULL, " // Keyed hash.
-		   "public_key BLOB NOT NULL, "
-		   "private_key BLOB NOT NULL)");
+		   "private_key BLOB NOT NULL, "
+		   "public_key BLOB NOT NULL)");
       }
 
     db.close();
@@ -314,7 +306,8 @@ void spoton_misc::prepareDatabases(void)
 	QSqlQuery query(db);
 
 	query.exec("CREATE TABLE IF NOT EXISTS kernel_gui_server ("
-		   "port INTEGER PRIMARY KEY NOT NULL)");
+		   "port INTEGER PRIMARY KEY NOT NULL "
+		   "CHECK (port >= 0 AND port <= 65535))");
 	query.exec("CREATE TRIGGER IF NOT EXISTS kernel_gui_server_trigger "
 		   "BEFORE INSERT ON kernel_gui_server "
 		   "BEGIN "
@@ -345,10 +338,15 @@ void spoton_misc::prepareDatabases(void)
 		   "port TEXT NOT NULL, "
 		   "scope_id TEXT, "
 		   "protocol TEXT NOT NULL, "
-		   "status TEXT NOT NULL DEFAULT 'offline', "
-		   "status_control TEXT NOT NULL DEFAULT 'online', "
-		   "connections INTEGER NOT NULL DEFAULT 0, "
-		   "maximum_clients INTEGER NOT NULL DEFAULT 5, "
+		   "status TEXT NOT NULL DEFAULT 'offline' "
+		   "CHECK (status IN ('deleted', 'offline', 'online')), "
+		   "status_control TEXT NOT NULL DEFAULT 'online' "
+		   "CHECK (status_control IN ('deleted', 'offline', "
+		   "'online')), "
+		   "connections INTEGER NOT NULL DEFAULT 0 "
+		   "CHECK (connections >= 0), "
+		   "maximum_clients INTEGER NOT NULL DEFAULT 5 "
+		   "CHECK (maximum_clients > 0), "
 		   "external_ip_address TEXT, "
 		   "external_port TEXT, "
 		   "hash TEXT PRIMARY KEY NOT NULL, " /*
@@ -366,14 +364,23 @@ void spoton_misc::prepareDatabases(void)
 		   "private_key BLOB NOT NULL, "
 		   "public_key BLOB NOT NULL, "       // Not used.
 		   "use_accounts INTEGER NOT NULL DEFAULT 0, "
-		   "maximum_buffer_size INTEGER NOT NULL DEFAULT %1, "
-		   "maximum_content_length INTEGER NOT NULL DEFAULT %2, "
+		   "maximum_buffer_size INTEGER NOT NULL DEFAULT %1 "
+		   "CHECK (maximum_buffer_size > 0), "
+		   "maximum_content_length INTEGER NOT NULL DEFAULT %2 "
+		   "CHECK (maximum_content_length > 0), "
 		   "transport TEXT NOT NULL, "
 		   "share_udp_address INTEGER NOT NULL DEFAULT 0, "
 		   "orientation TEXT NOT NULL, "
+		   "lane_width INTEGER NOT NULL DEFAULT %3 "
+		   "CHECK (lane_width > 0), "
 		   "motd TEXT NOT NULL DEFAULT 'Welcome to Spot-On.')").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
-	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH));
+	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
+	   arg(spoton_common::LANE_WIDTH_DEFAULT));
+	query.exec(QString("ALTER TABLE listeners "
+			   "ADD lane_width INTEGER NOT NULL DEFAULT %1 "
+			   "CHECK (lane_width > 0)").
+		   arg(spoton_common::LANE_WIDTH_DEFAULT));
 	query.exec("CREATE TABLE IF NOT EXISTS listeners_accounts ("
 		   "account_name TEXT NOT NULL, "
 		   "account_name_hash TEXT NOT NULL, " // Keyed hash.
@@ -436,8 +443,12 @@ void spoton_misc::prepareDatabases(void)
 		   "remote_port TEXT NOT NULL, "
 		   "scope_id TEXT, "
 		   "protocol TEXT NOT NULL, "
-		   "status TEXT NOT NULL DEFAULT 'disconnected', "
-		   "status_control TEXT NOT NULL DEFAULT 'connected', "
+		   "status TEXT NOT NULL DEFAULT 'disconnected' CHECK "
+		   "(status IN ('blocked', 'connected', 'deleted', "
+		   "'disconnected')), "
+		   "status_control TEXT NOT NULL DEFAULT 'connected' CHECK "
+		   "(status_control IN ('blocked', 'connected', 'deleted', "
+		   "'disconnected')), "
 		   "sticky INTEGER NOT NULL DEFAULT 1, "
 		   "external_ip_address TEXT, "
 		   "external_port TEXT, "
@@ -461,15 +472,19 @@ void spoton_misc::prepareDatabases(void)
 		   "proxy_type TEXT NOT NULL, "
 		   "proxy_username TEXT NOT NULL, "
 		   "is_encrypted INTEGER NOT NULL DEFAULT 0, "
-		   "maximum_buffer_size INTEGER NOT NULL DEFAULT %1, "
-		   "maximum_content_length INTEGER NOT NULL DEFAULT %2, "
+		   "maximum_buffer_size INTEGER NOT NULL DEFAULT %1 "
+		   "CHECK (maximum_buffer_size > 0), "
+		   "maximum_content_length INTEGER NOT NULL DEFAULT %2 "
+		   "CHECK (maximum_content_length > 0), "
 		   "echo_mode TEXT NOT NULL, "
 		   "ssl_key_size INTEGER NOT NULL DEFAULT 2048, "
 		   "uptime INTEGER NOT NULL DEFAULT 0, "
 		   "certificate BLOB NOT NULL, "
 		   "allow_exceptions INTEGER NOT NULL DEFAULT 0, "
-		   "bytes_read INTEGER NOT NULL DEFAULT 0, "
-		   "bytes_written INTEGER NOT NULL DEFAULT 0, "
+		   "bytes_read INTEGER NOT NULL DEFAULT 0 "
+		   "CHECK (bytes_read >= 0), "
+		   "bytes_written INTEGER NOT NULL DEFAULT 0 "
+		   "CHECK (bytes_written >= 0), "
 		   "ssl_control_string TEXT NOT NULL DEFAULT "
 		   "'HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH', "
 		   "ssl_session_cipher TEXT, "
@@ -479,6 +494,8 @@ void spoton_misc::prepareDatabases(void)
 		   "account_authenticated TEXT, "
 		   "transport TEXT NOT NULL, "
 		   "orientation TEXT NOT NULL, "
+		   "lane_width INTEGER NOT NULL DEFAULT %3 "
+		   "CHECK (lane_width > 0), "
 		   "motd TEXT NOT NULL DEFAULT 'Welcome to Spot-On.', "
 		   "ae_token TEXT, " /*
 				     ** Please
@@ -494,12 +511,18 @@ void spoton_misc::prepareDatabases(void)
 					  ** both cipher and hash
 					  ** algorithm information.
 					  */
-		   "priority INTEGER NOT NULL DEFAULT 4)"). /*
-							    ** High
-							    ** priority.
-							    */
+		   "priority INTEGER NOT NULL DEFAULT 4 CHECK "
+		   "(priority >= 0 AND priority <= 7))"). /*
+							  ** High
+							  ** priority.
+							  */
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
-	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH));
+	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
+	   arg(spoton_common::LANE_WIDTH_DEFAULT));
+	query.exec(QString("ALTER TABLE neighbors "
+			   "ADD lane_width INTEGER NOT NULL DEFAULT %1 "
+			   "CHECK (lane_width > 0)").
+		   arg(spoton_common::LANE_WIDTH_DEFAULT));
       }
 
     db.close();
@@ -518,24 +541,29 @@ void spoton_misc::prepareDatabases(void)
 
 	query.exec("CREATE TABLE IF NOT EXISTS poptastic ("
 		   "in_authentication TEXT NOT NULL, "
-		   "in_method TEXT NOT NULL, "
+		   "in_method TEXT NOT NULL CHECK "
+		   "(in_method IN ('Disable', 'IMAP', 'POP3')), "
 		   "in_password TEXT NOT NULL, "
 		   "in_server_address TEXT NOT NULL, "
 		   "in_server_port TEXT NOT NULL, "
-		   "in_ssltls TEXT NOT NULL, "
+		   "in_ssltls TEXT NOT NULL CHECK "
+		   "(in_ssltls IN ('None', 'SSL', 'TLS')), "
 		   "in_username TEXT NOT NULL, "
 		   "out_authentication TEXT NOT NULL, "
-		   "out_method TEXT NOT NULL, "
+		   "out_method TEXT NOT NULL CHECK "
+		   "(out_method IN ('Disable', 'SMTP')), "
 		   "out_password TEXT NOT NULL, "
 		   "out_server_address TEXT NOT NULL, "
 		   "out_server_port TEXT NOT NULL, "
-		   "out_ssltls TEXT NOT NULL, "
+		   "out_ssltls TEXT NOT NULL CHECK "
+		   "(out_ssltls IN ('None', 'SSL', 'TLS')), "
 		   "out_username TEXT NOT NULL, "
 		   "proxy_enabled TEXT NOT NULL, "
 		   "proxy_password TEXT NOT NULL, "
 		   "proxy_server_address TEXT NOT NULL, "
 		   "proxy_server_port TEXT NOT NULL, "
-		   "proxy_type TEXT NOT NULL, "
+		   "proxy_type TEXT NOT NULL CHECK "
+		   "(proxy_type IN ('HTTP', 'SOCKS5')), "
 		   "proxy_username TEXT NOT NULL, "
 		   "smtp_localname TEXT NOT NULL)");
 	query.exec("CREATE TRIGGER IF NOT EXISTS "
@@ -606,8 +634,11 @@ void spoton_misc::prepareDatabases(void)
 					  */
 		   "position TEXT NOT NULL, "
 		   "pulse_size TEXT NOT NULL, "
-		   "read_interval REAL NOT NULL DEFAULT 1.500, "
-		   "status_control TEXT NOT NULL DEFAULT 'paused', "
+		   "read_interval REAL NOT NULL DEFAULT 1.500 "
+		   "CHECK (read_interval >= 0.100), "
+		   "status_control TEXT NOT NULL DEFAULT 'paused' CHECK "
+		   "(status_control IN ('completed', 'deleted', 'paused', "
+		   "'transmitting')), "
 		   "total_size TEXT NOT NULL)");
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted_magnets ("
 		   "magnet BLOB NOT NULL, "
@@ -3454,6 +3485,9 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
 {
   if(!crypt)
     {
+      if(ok)
+	*ok = false;
+
       logError
 	("spoton_misc::poptasticSettings(): crypt "
 	 "is zero.");
@@ -3474,44 +3508,53 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT * FROM poptastic") && query.next())
+	if(query.exec("SELECT * FROM poptastic"))
 	  {
-	    QSqlRecord record(query.record());
-
-	    for(int i = 0; i < record.count(); i++)
+	    if(query.next())
 	      {
-		if(record.fieldName(i) == "proxy_enabled" ||
-		   record.fieldName(i) == "proxy_password" ||
-		   record.fieldName(i) == "proxy_server_address" ||
-		   record.fieldName(i) == "proxy_server_port" ||
-		   record.fieldName(i) == "proxy_username" ||
-		   record.fieldName(i).endsWith("_localname") ||
-		   record.fieldName(i).endsWith("_password") ||
-		   record.fieldName(i).endsWith("_server_address") ||
-		   record.fieldName(i).endsWith("_server_port") ||
-		   record.fieldName(i).endsWith("_username"))
+		QSqlRecord record(query.record());
+
+		for(int i = 0; i < record.count(); i++)
 		  {
-		    QByteArray bytes
-		      (QByteArray::fromBase64(record.value(i).
-					      toByteArray()));
-		    bool ok = true;
+		    if(record.fieldName(i) == "proxy_enabled" ||
+		       record.fieldName(i) == "proxy_password" ||
+		       record.fieldName(i) == "proxy_server_address" ||
+		       record.fieldName(i) == "proxy_server_port" ||
+		       record.fieldName(i) == "proxy_username" ||
+		       record.fieldName(i).endsWith("_localname") ||
+		       record.fieldName(i).endsWith("_password") ||
+		       record.fieldName(i).endsWith("_server_address") ||
+		       record.fieldName(i).endsWith("_server_port") ||
+		       record.fieldName(i).endsWith("_username"))
+		      {
+			QByteArray bytes
+			  (QByteArray::fromBase64(record.value(i).
+						  toByteArray()));
+			bool ok = true;
 
-		    bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
+			bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
 
-		    if(ok)
-		      hash.insert(record.fieldName(i), bytes);
+			if(ok)
+			  hash.insert(record.fieldName(i), bytes);
+			else
+			  break;
+		      }
 		    else
-		      break;
+		      hash.insert(record.fieldName(i), record.value(i));
 		  }
-		else
-		  hash.insert(record.fieldName(i), record.value(i));
-	      }
 
-	    if(hash.size() != record.count())
-	      if(ok)
-		*ok = false;
+		if(hash.size() != record.count())
+		  if(ok)
+		    *ok = false;
+	      }
+	    else if(ok)
+	      *ok = false;
 	  }
+	else if(ok)
+	  *ok = false;
       }
+    else if(ok)
+      *ok = false;
 
     db.close();
   }
@@ -4039,7 +4082,7 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
       return false;
     }
 
-  QUrl url(QUrl::fromUserInput(u));
+  QUrl url(QUrl::fromUserInput(u.trimmed()));
 
   if(url.isEmpty() || !url.isValid())
     {
@@ -4052,6 +4095,8 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
     return false;
+
+  url.setScheme(scheme);
 
   QByteArray all_keywords;
   QByteArray description(d.trimmed());

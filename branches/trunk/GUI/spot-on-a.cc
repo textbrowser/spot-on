@@ -1443,7 +1443,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotTimeSliderDefaults(void)));
-  connect(m_optionsUi.disable_kernel_synchronous_import,
+  connect(m_optionsUi.disable_kernel_synchronous_download,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotDisableSynchronousUrlImport(bool)));
@@ -1593,6 +1593,7 @@ spoton::spoton(void):QMainWindow()
   settings.remove("gui/acceptUrlUL");
   settings.remove("gui/acceptedIPs");
   settings.remove("gui/applyPolarizers");
+  settings.remove("gui/disable_kernel_synchronous_sqlite_url_download");
   settings.remove("gui/enableCongestionControl");
   settings.remove("gui/encryptionKey");
   settings.remove("gui/geoipPath");
@@ -1621,7 +1622,7 @@ spoton::spoton(void):QMainWindow()
   spoton_misc::correctSettingsContainer(m_settings);
   spoton_misc::setTimeVariables(m_settings);
   m_ui.activeUrlDistribution->setChecked
-    (m_settings.value("gui/activeUrlDistribution", false).toBool());
+    (m_settings.value("gui/activeUrlDistribution", true).toBool());
 
   if(m_ui.postgresqlConnect->isEnabled())
     {
@@ -1988,8 +1989,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/allowChatFSRequest", true).toBool());
   m_optionsUi.email_fs_request->setChecked
     (m_settings.value("gui/allowEmailFSRequest", true).toBool());
-  m_optionsUi.disable_kernel_synchronous_import->setChecked
-    (m_settings.value("gui/disable_kernel_synchronous_sqlite_url_import",
+  m_optionsUi.disable_kernel_synchronous_download->setChecked
+    (m_settings.value("gui/disable_kernel_synchronous_sqlite_url_download",
 		      false).toBool());
   m_optionsUi.disable_ui_synchronous_import->setChecked
     (m_settings.value("gui/disable_ui_synchronous_sqlite_url_import", false).
@@ -3332,6 +3333,7 @@ void spoton::slotPopulateListeners(void)
 		      "certificate, "
 		      "orientation, "
 		      "ssl_control_string, "
+		      "lane_width, "
 		      "OID "
 		      "FROM listeners WHERE status_control <> 'deleted'"))
 	  {
@@ -3388,7 +3390,8 @@ void spoton::slotPopulateListeners(void)
 		      "Transport: %10\n"
 		      "Share Address: %11\n"
 		      "Orientation: %12\n"
-		      "SSL Control String: %13")).
+		      "SSL Control String: %13\n"
+		      "Lane Width: %14")).
 		  arg(query.value(1).toString().toLower()).
 		  arg(query.value(2).toString()).
 		  arg(crypt->
@@ -3437,17 +3440,16 @@ void spoton::slotPopulateListeners(void)
 							     toByteArray()),
 						  &ok).
 		      constData()).
-		  arg(query.value(19).toString());
+		  arg(query.value(19).toString()).
+		  arg(query.value(20).toInt());
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
-		    QCheckBox *check = 0;
-		    QComboBox *box = 0;
 		    QTableWidgetItem *item = 0;
 
 		    if(i == 0 || i == 12)
 		      {
-			check = new QCheckBox();
+			QCheckBox *check = new QCheckBox();
 
 			if(i == 0)
 			  {
@@ -3508,7 +3510,7 @@ void spoton::slotPopulateListeners(void)
 		      }
 		    else if(i == 10)
 		      {
-			box = new QComboBox();
+			QComboBox *box = new QComboBox();
 
 			if(transport != "UDP")
 			  {
@@ -3594,6 +3596,41 @@ void spoton::slotPopulateListeners(void)
 		    else if(i == 17) // Certificate Digest
 		      item = new QTableWidgetItem
 			(certificateDigest.constData());
+		    else if(i == 20) // Lane Width
+		      {
+			QComboBox *box = new QComboBox();
+			QList<int> list;
+
+			list << spoton_common::LANE_WIDTHS
+			     << spoton_common::LANE_WIDTH_MINIMUM
+			     << spoton_common::LANE_WIDTH_DEFAULT
+			     << spoton_common::LANE_WIDTH_MAXIMUM;
+			qSort(list);
+
+			while(!list.isEmpty())
+			  box->addItem(QString::number(list.takeFirst()));
+
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			box->setProperty("table", "listeners");
+			m_ui.listeners->setCellWidget(row, i, box);
+
+			if(box->findText(QString::
+					 number(query.
+						value(i).
+						toInt())) >= 0)
+			  box->setCurrentIndex
+			    (box->findText(QString::number(query.
+							   value(i).
+							   toInt())));
+			else
+			  box->setCurrentIndex(0); // Default of 14500.
+
+			connect(box,
+				SIGNAL(currentIndexChanged(int)),
+				this,
+				SLOT(slotLaneWidthChanged(int)));
+		      }
 		    else
 		      {
 			if((i >= 3 && i <= 7) ||
@@ -3837,6 +3874,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "ae_token_type, "
 		      "ssl_control_string, "
 		      "priority, "
+		      "lane_width, "
 		      "OID "
 		      "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
@@ -3946,7 +3984,8 @@ void spoton::slotPopulateNeighbors(void)
 		      "Transport: %22\n"
 		      "Orientation: %23\n"
 		      "SSL Control String: %24\n"
-		      "Priority: %25")).
+		      "Priority: %25\n"
+		      "Lane Width: %26")).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
@@ -4053,7 +4092,8 @@ void spoton::slotPopulateNeighbors(void)
 						  &ok).
 		      constData()).
 		  arg(query.value(34).toString()).
-		  arg(priority);
+		  arg(priority).
+		  arg(locale.toString(query.value(36).toInt()));
 
 		QCheckBox *check = 0;
 
@@ -4229,6 +4269,41 @@ void spoton::slotPopulateNeighbors(void)
 		      item = new QTableWidgetItem(certificate.constData());
 		    else if(i == 35) // Priority
 		      item = new QTableWidgetItem(priority);
+		    else if(i == 36) // Lane Width
+		      {
+			QComboBox *box = new QComboBox();
+			QList<int> list;
+
+			list << spoton_common::LANE_WIDTHS
+			     << spoton_common::LANE_WIDTH_MINIMUM
+			     << spoton_common::LANE_WIDTH_DEFAULT
+			     << spoton_common::LANE_WIDTH_MAXIMUM;
+			qSort(list);
+
+			while(!list.isEmpty())
+			  box->addItem(QString::number(list.takeFirst()));
+
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			box->setProperty("table", "neighbors");
+			m_ui.neighbors->setCellWidget(row, i, box);
+
+			if(box->findText(QString::
+					 number(query.
+						value(i).
+						toInt())) >= 0)
+			  box->setCurrentIndex
+			    (box->findText(QString::number(query.
+							   value(i).
+							   toInt())));
+			else
+			  box->setCurrentIndex(0); // Default of 14500.
+
+			connect(box,
+				SIGNAL(currentIndexChanged(int)),
+				this,
+				SLOT(slotLaneWidthChanged(int)));
+		      }
 		    else
 		      item = new QTableWidgetItem
 			(query.value(i).toString());

@@ -412,7 +412,11 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
 	      url.setScheme(scheme);
 	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
+#if QT_VERSION >= 0x050000
+	      shareUrl.setPath(hash + "?" + url.toEncoded());
+#else
 	      shareUrl.addEncodedQueryItem("url", url.toEncoded());
+#endif
 	      shareUrl.setScheme(QString("share-%1").arg(url.scheme()));
 	      html.append(QString::number(count + m_urlOffset + 1));
 	      html.append(" | <a href=\"");

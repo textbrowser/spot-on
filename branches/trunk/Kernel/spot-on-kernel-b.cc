@@ -1825,7 +1825,7 @@ void spoton_kernel::importUrls(void)
 	      {
 		QString type(polarizers.at(i).second);
 		QUrl u1(polarizers.at(i).first);
-		QUrl u2(QUrl::fromUserInput(url));
+		QUrl u2(QUrl::fromUserInput(url.trimmed()));
 
 		if(type == "accept")
 		  {
@@ -1849,7 +1849,7 @@ void spoton_kernel::importUrls(void)
 	      spoton_misc::importUrl
 		(description, title, url, db,
 		 spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
-		 setting("gui/disable_kernel_synchronous_sqlite_url_import",
+		 setting("gui/disable_kernel_synchronous_sqlite_url_download",
 			 false).toBool(),
 		 crypt);
 	  }

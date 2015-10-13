@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>458</width>
-             <height>1006</height>
+             <y>-525</y>
+             <width>462</width>
+             <height>1055</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -655,12 +655,12 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="disable_kernel_synchronous_import">
+                <widget class="QCheckBox" name="disable_kernel_synchronous_download">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the application aborts during an import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the kernel aborts during a download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
-                  <string>&amp;Disable kernel synchronous SQLite writes on import.</string>
+                  <string>&amp;Disable kernel synchronous SQLite writes on download.</string>
                  </property>
                 </widget>
                </item>
@@ -948,8 +948,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>653</width>
-             <height>1016</height>
+             <width>581</width>
+             <height>1057</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1657,8 +1657,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>316</width>
-             <height>215</height>
+             <width>468</width>
+             <height>499</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -1895,7 +1895,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1949,7 +1949,7 @@
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>
   <tabstop>disable_ui_synchronous_import</tabstop>
-  <tabstop>disable_kernel_synchronous_import</tabstop>
+  <tabstop>disable_kernel_synchronous_download</tabstop>
   <tabstop>searchResultsPerPage</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
   <tabstop>kernelCacheInterval</tabstop>

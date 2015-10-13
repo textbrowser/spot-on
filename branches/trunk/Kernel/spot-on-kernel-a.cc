@@ -346,13 +346,15 @@ int main(int argc, char *argv[])
 	}
       catch(const std::bad_alloc &exception)
 	{
-	  std::cerr << "Critical memory failure. Exiting kernel.\n";
+	  std::cerr << "Critical memory failure. Exiting kernel."
+		    << std::endl;
 	  curl_global_cleanup();
 	  return EXIT_FAILURE;
 	}
       catch(...)
 	{
-	  std::cerr << "Critical failure. Exiting kernel.\n";
+	  std::cerr << "Critical failure. Exiting kernel."
+		    << std::endl;
 	  curl_global_cleanup();
 	  return EXIT_FAILURE;
 	}
@@ -361,7 +363,8 @@ int main(int argc, char *argv[])
     {
       std::cerr << "Critical kernel error ("
 		<< libspoton_strerror(err)
-		<< ") with libspoton_init_b().\n";
+		<< ") with libspoton_init_b()."
+		<< std::endl;
       curl_global_cleanup();
       return EXIT_FAILURE;
     }
@@ -434,7 +437,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	if(GetConsoleMode(hStdin, &mode) == 0)
 	  {
 	    s_exit_code = EXIT_FAILURE;
-	    std::cerr << "Unable to retrieve the terminal's mode. Exiting.\n";
+	    std::cerr << "Unable to retrieve the terminal's mode. Exiting."
+		      << std::endl;
 	    deleteLater();
 	    break;
 	  }
@@ -448,7 +452,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	if(tcgetattr(STDIN_FILENO, &oldt) != 0)
 	  {
 	    s_exit_code = EXIT_FAILURE;
-	    std::cerr << "Unable to retrieve the terminal's mode. Exiting.\n";
+	    std::cerr << "Unable to retrieve the terminal's mode. Exiting."
+		      << std::endl;
 	    deleteLater();
 	    break;
 	  }
@@ -499,7 +504,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	    if(!initializeSecurityContainers(input1, input2))
 	      {
 		s_exit_code = EXIT_FAILURE;
-		std::cerr << "Invalid input?\n";
+		std::cerr << "Invalid input?" << std::endl;
 		deleteLater();
 	      }
 	    else
@@ -513,7 +518,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	else
 	  {
 	    s_exit_code = EXIT_FAILURE;
-	    std::cerr << "Unable to silence the terminal's echo. Exiting.\n";
+	    std::cerr << "Unable to silence the terminal's echo. Exiting."
+		      << std::endl;
 	    deleteLater();
 	    break;
 	  }
@@ -525,7 +531,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
       {
 	s_exit_code = EXIT_FAILURE;
 	std::cerr << "Invalid option: " << arguments.at(i).constData()
-		  << ". Exiting.\n";
+		  << ". Exiting." << std::endl;
 	deleteLater();
 	break;
       }
@@ -805,7 +811,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   if(setting("gui/impersonate", false).toBool())
     m_impersonateTimer.start();
 
-  if(setting("gui/activeUrlDistribution", false).toBool())
+  if(setting("gui/activeUrlDistribution", true).toBool())
     m_urlDistribution->start();
 
   spoton_misc::prepareDatabases();
@@ -973,7 +979,8 @@ void spoton_kernel::prepareListeners(void)
 		      "orientation, "            // 15
 		      "motd, "                   // 16
 		      "ssl_control_string, "     // 17
-		      "OID "                     // 18
+		      "lane_width, "             // 18
+		      "OID "                     // 19
 		      "FROM listeners"))
 	  while(query.next())
 	    {
@@ -1105,6 +1112,7 @@ void spoton_kernel::prepareListeners(void)
 				 QString::fromUtf8(query.value(16).
 						   toByteArray()).trimmed(),
 				 query.value(17).toString(),
+				 query.value(18).toInt(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)
@@ -1237,6 +1245,7 @@ void spoton_kernel::prepareNeighbors(void)
 		      "motd, "
 		      "ssl_control_string, "
 		      "priority, "
+		      "lane_width, "
 		      "OID FROM neighbors"))
 	  while(query.next())
 	    {
@@ -1279,6 +1288,8 @@ void spoton_kernel::prepareNeighbors(void)
 			else if(i == 23) // ssl_control_string
 			  list.append(query.value(i).toString());
 			else if(i == 24) // priority
+			  list.append(query.value(i).toInt());
+			else if(i == 25) // lane_width
 			  list.append(query.value(i).toInt());
 			else
 			  {
@@ -1388,6 +1399,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 list.value(3).toString(),
 				 list.value(23).toString(),
 				 QThread::Priority(list.value(24).toInt()),
+				 list.value(25).toInt(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)
@@ -2063,7 +2075,7 @@ void spoton_kernel::slotUpdateSettings(void)
   if(integer != m_messagingCachePurgeTimer.interval())
     m_messagingCachePurgeTimer.start(integer);
 
-  if(setting("gui/activeUrlDistribution", false).toBool())
+  if(setting("gui/activeUrlDistribution", true).toBool())
     {
       if(!m_urlDistribution->isRunning())
 	m_urlDistribution->start();

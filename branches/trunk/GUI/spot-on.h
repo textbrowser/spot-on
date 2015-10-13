@@ -737,6 +737,7 @@ class spoton: public QMainWindow
   void slotInitializeSMP(const QString &hash);
   void slotInitializeSMP(void);
   void slotJoinBuzzChannel(void);
+  void slotLaneWidthChanged(int index);
   void slotLaunchKernelAfterAuthentication(bool state);
   void slotLimitConnections(int value);
   void slotListenerCheckChange(bool state);

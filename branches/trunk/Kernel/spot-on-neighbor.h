@@ -31,6 +31,7 @@
 #include <QDateTime>
 #include <QHostAddress>
 #include <QHostInfo>
+#include <QMutex>
 #include <QNetworkProxy>
 #include <QPointer>
 #include <QReadWriteLock>
@@ -40,6 +41,7 @@
 #include <QTimer>
 #include <QUdpSocket>
 #include <QUuid>
+#include <QWaitCondition>
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-send.h"
@@ -128,6 +130,7 @@ class spoton_neighbor: public QThread
 		  const QString &statusControl,
 		  const QString &sslControlString,
 		  const Priority priority,
+		  const int laneWidth,
 		  QObject *parent);
   spoton_neighbor(const int socketDescriptor,
 		  const QByteArray &certificate,
@@ -146,6 +149,7 @@ class spoton_neighbor: public QThread
 		  const QString &motd,
 		  const QString &sslControlString,
 		  const Priority priority,
+		  const int laneWidth,
 		  QObject *parent);
   ~spoton_neighbor();
   QAbstractSocket::SocketState state(void) const;
@@ -161,7 +165,6 @@ class spoton_neighbor: public QThread
   void abort(void);
   void addToBytesWritten(const int bytesWritten);
   void close(void);
-  void processData(void);
   void setId(const qint64 id);
 
  private:
@@ -173,6 +176,7 @@ class spoton_neighbor: public QThread
   QDateTime m_startTime;
   QHostAddress m_address;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
+  QMutex m_waitMutex;
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
   QPointer<spoton_external_address> m_externalAddress;
   QPointer<spoton_neighbor_tcp_socket> m_tcpSocket;
@@ -208,6 +212,7 @@ class spoton_neighbor: public QThread
   QTimer m_lifetime;
   QTimer m_timer;
   QUuid m_receivedUuid;
+  QWaitCondition m_wait;
   bool m_abortThread;
   bool m_accountAuthenticated;
   bool m_allowExceptions;
@@ -217,6 +222,7 @@ class spoton_neighbor: public QThread
   bool m_useSsl;
   int m_kernelInterfaces;
   int m_keySize;
+  int m_laneWidth;
   qint64 m_id;
   qint64 m_listenerOid;
   qint64 m_maximumBufferSize;
@@ -269,6 +275,7 @@ class spoton_neighbor: public QThread
 		    const QList<QByteArray> &symmetricKeys);
   void process0091b(int length, const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
+  void processData(void);
   void recordCertificateOrAbort(void);
   void run(void);
   void saveExternalAddress(const QHostAddress &address,
@@ -347,6 +354,7 @@ class spoton_neighbor: public QThread
   void slotSendAccountInformation(void);
   void slotSendAuthenticationRequest(void);
   void slotSendBuzz(const QByteArray &data);
+  void slotSendCapabilities(void);
   void slotSendForwardSecrecyPublicKey(const QByteArray &data);
   void slotSendForwardSecrecySessionKeys(const QByteArray &data);
   void slotSendMOTD(void);
@@ -358,7 +366,6 @@ class spoton_neighbor: public QThread
   void slotSendMessage(const QByteArray &data,
 		       const spoton_send::spoton_send_method sendMethod);
   void slotSendStatus(const QByteArrayList &list);
-  void slotSendUuid(void);
   void slotSslErrors(const QList<QSslError> &errors);
   void slotStopTimer(QTimer *timer);
   void slotTimeout(void);
@@ -411,31 +418,6 @@ class spoton_neighbor: public QThread
   void statusMessageReceived(const QByteArray &publicKeyHash,
 			     const QString &status);
   void stopTimer(QTimer *timer);
-};
-
-class spoton_neighbor_worker: public QObject
-{
-  Q_OBJECT
-
- public:
-  spoton_neighbor_worker(spoton_neighbor *neighbor):QObject(0)
-  {
-    m_neighbor = neighbor;
-  }
-
-  ~spoton_neighbor_worker()
-  {
-  }
-
- private:
-  QPointer<spoton_neighbor> m_neighbor;
-
- private slots:
-  void slotNewData(void)
-  {
-    if(m_neighbor)
-      m_neighbor->processData();
-  }
 };
 
 #endif

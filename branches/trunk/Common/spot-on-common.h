@@ -31,7 +31,7 @@
 #ifndef _spoton_common_h_
 #define _spoton_common_h_
 
-#define SPOTON_VERSION_STR "2015.10.09"
+#define SPOTON_VERSION_STR "2015.10.18"
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
 typedef QList<QByteArray> QByteArrayList;
@@ -40,6 +40,10 @@ typedef QPair<QByteArray, QByteArray> QPairByteArrayByteArray;
 
 namespace spoton_common
 {
+  static const QList<int> LANE_WIDTHS = QList<int> () << 20000
+						      << 25000
+						      << 50000
+						      << 75000;
   static const QStringList ACCEPTABLE_URL_SCHEMES =
     QStringList() << "ftp" << "gopher" << "http" << "https";
   static const int ACCOUNTS_RANDOM_BUFFER_SIZE = 64;
@@ -55,11 +59,18 @@ namespace spoton_common
   static const int CACHE_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM_STATIC = 30;
+  static const int FAST_STARBEAM_LANE_WIDTH_PERCENTAGE = 85;
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;
   static const int KERNEL_CERTIFICATE_DAYS_VALID = 7;
   static const int KERNEL_URLS_BATCH_SIZE = 25;
+  static const int LANE_WIDTH_DEFAULT = 14500;
+  static const int LANE_WIDTH_MAXIMUM = 20971520;
+  static const int LANE_WIDTH_MINIMUM = 4096; /*
+					      ** Must be smaller
+					      ** than the default.
+					      */
   static const int MAIL_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
@@ -74,9 +85,10 @@ namespace spoton_common
   static const int STATUS_INTERVAL = 15;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
-    20971520; /*
-	      ** The buffer size must be greater than the content length.
-	      */
+    LANE_WIDTH_MINIMUM; /*
+			** The buffer size must be greater
+			** than the content length.
+			*/
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH = 10485760;
   static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 250000;
   static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH = 256;

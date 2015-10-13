@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>402</width>
-                <height>479</height>
+                <width>436</width>
+                <height>473</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -810,8 +810,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>986</width>
-             <height>575</height>
+             <width>1024</width>
+             <height>572</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1908,8 +1908,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>765</width>
-             <height>379</height>
+             <width>776</width>
+             <height>378</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2096,6 +2096,11 @@
                   <column>
                    <property name="text">
                     <string>SSL Control String</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Lane Width</string>
                    </property>
                   </column>
                   <column>
@@ -2541,8 +2546,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>273</width>
-                     <height>1406</height>
+                     <width>279</width>
+                     <height>1429</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3008,8 +3013,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>845</width>
-             <height>549</height>
+             <width>875</width>
+             <height>552</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -3298,6 +3303,11 @@
                     <column>
                      <property name="text">
                       <string>Priority</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>Lane Width</string>
                      </property>
                     </column>
                     <column>
@@ -4045,7 +4055,7 @@
              <x>0</x>
              <y>0</y>
              <width>630</width>
-             <height>359</height>
+             <height>343</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4121,8 +4131,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>696</width>
-                 <height>587</height>
+                 <width>695</width>
+                 <height>613</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4961,9 +4971,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-526</y>
-             <width>758</width>
-             <height>1078</height>
+             <y>0</y>
+             <width>799</width>
+             <height>1114</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6160,8 +6170,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>514</width>
-             <height>526</height>
+             <width>551</width>
+             <height>523</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7171,8 +7181,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>667</width>
-             <height>454</height>
+             <width>776</width>
+             <height>502</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7191,6 +7201,9 @@
                <widget class="QCheckBox" name="activeUrlDistribution">
                 <property name="text">
                  <string>&amp;Active</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -7705,8 +7718,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>263</width>
-             <height>147</height>
+             <width>304</width>
+             <height>155</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7918,7 +7931,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

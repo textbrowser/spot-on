@@ -118,7 +118,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>570</width>
-             <height>677</height>
+             <height>678</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -657,7 +657,7 @@ color: rgb(255, 255, 255);
                    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
@@ -1228,8 +1228,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>633</width>
-             <height>659</height>
+             <width>648</width>
+             <height>650</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2783,8 +2783,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>552</width>
-             <height>1774</height>
+             <width>557</width>
+             <height>1799</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -2926,6 +2926,11 @@ color: rgb(255, 255, 255);</string>
                 <column>
                  <property name="text">
                   <string>SSL Control String</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Lane Width</string>
                  </property>
                 </column>
                 <column>
@@ -4020,8 +4025,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>620</width>
-             <height>659</height>
+             <width>637</width>
+             <height>665</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -4306,6 +4311,11 @@ color: rgb(255, 255, 255);</string>
                     <column>
                      <property name="text">
                       <string>Priority</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>Lane Width</string>
                      </property>
                     </column>
                     <column>
@@ -5020,8 +5030,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>642</width>
-             <height>659</height>
+             <width>643</width>
+             <height>346</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5097,8 +5107,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>625</width>
-                 <height>706</height>
+                 <width>645</width>
+                 <height>737</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6243,8 +6253,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>854</width>
-             <height>1246</height>
+             <width>863</width>
+             <height>1280</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7673,8 +7683,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>552</width>
-             <height>758</height>
+             <width>557</width>
+             <height>749</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -8943,7 +8953,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>570</width>
-             <height>677</height>
+             <height>678</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8969,6 +8979,9 @@ color: rgb(255, 255, 255);
                 </property>
                 <property name="text">
                  <string>&amp;Active</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -9815,7 +9828,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="overwriteMode">
@@ -10508,7 +10521,7 @@ border-style: inset;
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>24</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

@@ -99,6 +99,7 @@ proxy_password
 proxy_server_address
 proxy_server_port
 proxy_username
+smtp_localname
 
 shared.db:
 

@@ -236,7 +236,7 @@ void spoton::slotPrepareUrlDatabases(void)
 				     "title BYTEA NOT NULL, "
 				     "unique_id INTEGER NOT NULL, "
 				     "url BYTEA NOT NULL, "
-				     "url_hash TEXT NOT NULL)").
+				     "url_hash TEXT PRIMARY KEY NOT NULL)").
 			     arg(c1).arg(c2)))
 		created = false;
 	  }
@@ -525,7 +525,7 @@ void spoton::slotImportUrls(void)
 		    arg(SPOTON_APPLICATION_NAME));
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Did you prepare your databases?"));
+  mb.setText(tr("Did you prepare your databases and distillers?"));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -1270,6 +1270,7 @@ void spoton::slotAddDistiller(void)
     }
 
   scheme = url.scheme().toLower().trimmed();
+  url.setScheme(scheme);
 
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
     {
@@ -1303,7 +1304,7 @@ void spoton::slotAddDistiller(void)
 
 	for(int i = 0; i < list.size(); i++)
 	  {
-	    QByteArray permission("deny");
+	    QByteArray permission("accept");
 	    QString direction(list.at(i));
 	    bool ok = true;
 
@@ -1464,6 +1465,7 @@ void spoton::populateUrlDistillers(void)
 			  SIGNAL(currentIndexChanged(int)),
 			  this,
 			  SLOT(slotUrlPolarizerTypeChange(int)));
+		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
 		  if(direction == "download")
 		    {
@@ -1490,8 +1492,11 @@ void spoton::populateUrlDistillers(void)
 	    }
 
 	m_ui.downDistillers->sortItems(0);
+	m_ui.downDistillers->resizeColumnToContents(1);
 	m_ui.sharedDistillers->sortItems(0);
+	m_ui.sharedDistillers->resizeColumnToContents(1);
 	m_ui.upDistillers->sortItems(0);
+	m_ui.upDistillers->resizeColumnToContents(1);
       }
 
     db.close();
@@ -1603,6 +1608,12 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	}
 
       QByteArray message("sharelink_");
+#if QT_VERSION >= 0x050000
+      QUrl original(url.path().mid(url.path().indexOf('?') + 1));
+
+      url.setPath(url.path().mid(0, url.path().indexOf('?') - 1));
+      message.append(url.toString());
+#else
       QUrl original(url.encodedQueryItemValue("url"));
 
       url.removeEncodedQueryItem("url");
@@ -1613,6 +1624,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 							      ** question
 							      ** mark.
 							      */
+#endif
       message.append("\n");
 
       if(m_kernelSocket.write(message.constData(), message.length()) !=
@@ -1627,7 +1639,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  QToolTip::showText(pos(), "");
 	  QToolTip::showText
 	    (pos(),
-	     tr("<html><h4>Link %1 shared with the Universe.</h4></html>").
+	     tr("<html><h4>URL %1 shared with your friendly "
+		"participants.</h4></html>").
 	     arg(original.toEncoded().constData()));
 	}
 

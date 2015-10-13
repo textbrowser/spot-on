@@ -76,11 +76,11 @@ void spoton::slotConfigurePoptastic(void)
 
   if(!ok)
     {
+      m_poptasticRetroPhoneDialog->show();
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("A failure occurred with "
 			       "spoton_misc::poptasticSettings()."));
-      return;
     }
 
   QString connectionName("");
@@ -287,6 +287,8 @@ void spoton::slotConfigurePoptastic(void)
 	 m_poptasticRetroPhoneSettingsUi.out_verify_peer->
 	 isChecked() ? 1 : 0);
 
+      QString error("");
+
       {
 	QSqlDatabase db = spoton_misc::database(connectionName);
 
@@ -422,7 +424,7 @@ void spoton::slotConfigurePoptastic(void)
 					    value()), &ok).toBase64());
 
 	    query.bindValue(18, m_poptasticRetroPhoneSettingsUi.proxy_type->
-			    currentText().toLatin1());
+			    currentText());
 
 	    if(ok)
 	      query.bindValue
@@ -441,9 +443,15 @@ void spoton::slotConfigurePoptastic(void)
 
 	    if(ok)
 	      ok = query.exec();
+
+	    if(query.lastError().isValid())
+	      error = query.lastError().text();
 	  }
 	else
-	  ok = false;
+	  {
+	    error = "Unable to access poptastic.db.";
+	    ok = false;
+	  }
 
 	db.close();
       }
@@ -452,11 +460,19 @@ void spoton::slotConfigurePoptastic(void)
 
       if(!ok)
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("An error occurred while "
-				   "attempting to save the Poptastic "
-				   "information."));
+	  if(!error.isEmpty())
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error (%1) occurred while "
+				     "attempting to save the Poptastic "
+				     "information.").arg(error));
+	  else
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error occurred while "
+				     "attempting to save the Poptastic "
+				     "information."));
+
 	  return;
 	}
     }
@@ -1608,7 +1624,11 @@ void spoton::slotShareStarBeam(void)
 	if(ok)
 	  query.bindValue
 	    (6, crypt->
-	     encryptedThenHashed(QByteArray::number(30000),
+	     encryptedThenHashed(QByteArray::
+				 number(spoton_common::
+					FAST_STARBEAM_LANE_WIDTH_PERCENTAGE *
+					spoton_common::
+					LANE_WIDTH_DEFAULT / 100),
 				 &ok).toBase64());
 
 	query.bindValue(7, 2.500);
@@ -1867,22 +1887,22 @@ void spoton::initializeUrlDistillers(void)
 
 	tuple.append(QUrl::fromUserInput("ftp:"));
 	tuple.append("download");
-	tuple.append("deny");
+	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
 	tuple.append(QUrl::fromUserInput("gopher:"));
 	tuple.append("download");
-	tuple.append("deny");
+	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
 	tuple.append(QUrl::fromUserInput("http:"));
 	tuple.append("download");
-	tuple.append("deny");
+	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https://en.wikipedia.org"));
+	tuple.append(QUrl::fromUserInput("https:"));
 	tuple.append("download");
-	tuple.append("deny");
+	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
 	tuple.append(QUrl::fromUserInput("ftp:"));
@@ -1900,7 +1920,7 @@ void spoton::initializeUrlDistillers(void)
 	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https://en.wikipedia.org"));
+	tuple.append(QUrl::fromUserInput("https:"));
 	tuple.append("shared");
 	tuple.append("accept");
 	list << tuple;
@@ -1920,7 +1940,7 @@ void spoton::initializeUrlDistillers(void)
 	tuple.append("accept");
 	list << tuple;
 	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https://en.wikipedia.org"));
+	tuple.append(QUrl::fromUserInput("https:"));
 	tuple.append("upload");
 	tuple.append("accept");
 	list << tuple;

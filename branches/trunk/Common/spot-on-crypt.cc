@@ -118,17 +118,25 @@ void spoton_crypt::init(const int secureMemorySize)
 {
   if(!gcryctl_set_thread_cbs_set)
     {
-      gcryctl_set_thread_cbs_set = true;
+      gcry_error_t err = 0;
+
 #ifdef SPOTON_LINKED_WITH_LIBPTHREAD
       /*
       ** libgcrypt 1.6.x compatibility.
       */
 #if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
-      gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread, 0);
+      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread, 0);
 #endif
 #else
-      gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_qt, 0);
+      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_qt, 0);
 #endif
+
+      if(err == 0)
+	gcryctl_set_thread_cbs_set = true;
+      else
+	std::cerr << "spoton_crypt::init(): gcry_control() "
+		  << "failed while initializing threads. Proceeding."
+		  << std::endl;
     }
 
   if(!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
@@ -139,7 +147,8 @@ void spoton_crypt::init(const int secureMemorySize)
 	{
 	  std::cerr << "spoton_crypt::init(): gcry_check_version() "
 		    << "failure. Perhaps you should verify some "
-		    << "settings.\n";
+		    << "settings."
+		    << std::endl;
 	  spoton_misc::logError
 	    ("spoton_crypt::init(): gcry_check_version() "
 	     "failure. Perhaps you should verify some "
@@ -178,7 +187,7 @@ void spoton_crypt::init(const int secureMemorySize)
   if(!ssl_library_initialized)
     {
       ssl_library_initialized = true;
-      SSL_library_init();
+      SSL_library_init(); // Always returns 1.
     }
 }
 
@@ -1871,7 +1880,7 @@ QByteArray spoton_crypt::publicKeyHash(bool *ok)
       hash = shaXHash(m_hashAlgorithm, m_publicKey, &ok);
 
       if(!ok)
-	  hash.clear();
+	hash.clear();
     }
 
   locker.unlock();
