@@ -133,7 +133,7 @@ void spoton_encryptfile::slotClose(void)
 
 void spoton_encryptfile::show(QWidget *parent)
 {
-  QMainWindow::show();
+  QMainWindow::showNormal();
   raise();
 
   if(parent)

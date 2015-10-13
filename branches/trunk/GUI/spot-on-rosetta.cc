@@ -153,7 +153,7 @@ void spoton_rosetta::slotClose(void)
 
 void spoton_rosetta::show(QWidget *parent)
 {
-  QMainWindow::show();
+  QMainWindow::showNormal();
   raise();
 
   if(parent)

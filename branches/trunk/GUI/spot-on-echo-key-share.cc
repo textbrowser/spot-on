@@ -123,7 +123,7 @@ void spoton_echo_key_share::slotClose(void)
 void spoton_echo_key_share::show(QWidget *parent)
 {
   populate();
-  QMainWindow::show();
+  QMainWindow::showNormal();
   raise();
 
   if(parent)

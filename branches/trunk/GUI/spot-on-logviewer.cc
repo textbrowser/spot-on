@@ -105,7 +105,7 @@ void spoton_logviewer::slotClear(void)
 
 void spoton_logviewer::show(QWidget *parent)
 {
-  QMainWindow::show();
+  QMainWindow::showNormal();
   raise();
 
   if(parent)
