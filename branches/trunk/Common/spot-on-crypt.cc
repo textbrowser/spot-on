@@ -1880,7 +1880,7 @@ QByteArray spoton_crypt::publicKeyHash(bool *ok)
       hash = shaXHash(m_hashAlgorithm, m_publicKey, &ok);
 
       if(!ok)
-	  hash.clear();
+	hash.clear();
     }
 
   locker.unlock();
