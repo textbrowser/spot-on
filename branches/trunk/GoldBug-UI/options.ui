@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-525</y>
-             <width>462</width>
-             <height>1055</height>
+             <y>-472</y>
+             <width>458</width>
+             <height>1081</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -748,6 +748,16 @@
                   </widget>
                  </item>
                  <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Increasing the timer value will impede current display statistics.</string>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <spacer name="horizontalSpacer_78">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
@@ -948,8 +958,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>581</width>
-             <height>1057</height>
+             <width>653</width>
+             <height>1016</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1658,7 +1668,7 @@
              <x>0</x>
              <y>0</y>
              <width>468</width>
-             <height>499</height>
+             <height>504</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -1895,7 +1905,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
