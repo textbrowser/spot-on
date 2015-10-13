@@ -940,7 +940,12 @@ void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
     *passed = false;
 
   if(m_step != 3)
-    goto done_label;
+    {
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
 
   /*
   ** Extract rb.
