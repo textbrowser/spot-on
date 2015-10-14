@@ -629,11 +629,7 @@ void spoton_sctp_socket::connectToHost(const QString &hostName,
 				       const quint16 port)
 {
 #ifdef SPOTON_SCTP_ENABLED
-  if(m_socketDescriptor > -1)
-    return;
-  else if(m_state != UnconnectedState)
-    return;
-
+  close();
   m_connectToPeerName = hostName;
   m_connectToPeerPort = port;
 
