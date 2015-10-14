@@ -17,9 +17,11 @@
 <li>Attempt to initialize urls_distillers_information.db before allowing new entries and before default entries are assigned.</li>
 <li>Avoid playing songs, showing tool tips, etc. if the application is locked. Status bar activity will persist.</li>
 <li>Confirm URL deletion.</li>
+<li>Decreased select() timeout to 25 milliseconds in spoton_sctp_socket::read().</li>
 <li>Disable the SQLite journal before preparing urls.db. The preparation is not performed under database transactions. The journal is enabled after the process completes.</li>
 <li>Inspect more NTRU function results.</li>
 <li>Inspect results of gcry_control() with respect to GCRYCTL_SET_THREAD_CBS. Report the failure and continue.</li>
+<li>Removed perpetual loop from spoton_sctp_socket::write().</li>
 <li>SQLite CHECK constraints. New installations only.</li>
 <li>Set gcryctl_set_thread_cbs_set to true if gcry_control() was successful.</li>
 <li>Signal-free data processing.</li>

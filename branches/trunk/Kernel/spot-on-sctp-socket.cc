@@ -384,7 +384,7 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
   FD_SET(m_socketDescriptor, &rfds);
   FD_SET(m_socketDescriptor, &wfds);
   tv.tv_sec = 0;
-  tv.tv_usec = 250000;
+  tv.tv_usec = 25000; // 25 milliseconds.
 
   if(select(m_socketDescriptor + 1, &rfds, &wfds, &efds, &tv) > 0)
     {
@@ -463,69 +463,32 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
   else if(size == 0)
     return 0;
 
-  qint64 written = -1;
-  ssize_t remaining = static_cast<ssize_t> (size);
+  qint64 writeSize = 4096;
   ssize_t sent = 0;
-  ssize_t writeSize = 65535;
 
   /*
   ** We'll send a fraction of the desired buffer size. Otherwise,
   ** our process may become exhausted.
   */
 
-  while(remaining > 0)
-    {
 #ifdef Q_OS_WIN32
-      sent = send
-	(m_socketDescriptor, data,
-	 static_cast<size_t> (qMin(remaining, writeSize)), 0);
+  sent = send
+    (m_socketDescriptor, data,
+     static_cast<size_t> (qMin(size, writeSize)), 0);
 #else
-      sent = send
-	(m_socketDescriptor, data,
-	 static_cast<size_t> (qMin(remaining, writeSize)), MSG_DONTWAIT);
+  sent = send
+    (m_socketDescriptor, data,
+     static_cast<size_t> (qMin(size, writeSize)), MSG_DONTWAIT);
 #endif
-
-      if(sent == -1)
-	{
+  
+  if(sent == -1)
 #ifdef Q_OS_WIN32
-	  if(WSAGetLastError() == WSAEWOULDBLOCK)
-#else
-	  if(errno == EAGAIN || errno == EWOULDBLOCK)
+    if(WSAGetLastError() == WSAEWOULDBLOCK)
+      sent = 0;
+ #else
+    if(errno == EAGAIN || errno == EWOULDBLOCK)
+      sent = 0;
 #endif
-	    sent = 0;
-#ifdef Q_OS_WIN32
-	  else if(WSAGetLastError() == WSAEMSGSIZE)
-#else
-	  else if(errno == EMSGSIZE)
-#endif
-	    {
-	      writeSize /= 2;
-
-	      if(writeSize <= 0)
-		break;
-	      else
-		sent = 0;
-	    }
-	  else
-	    break;
-	}
-      else if(sent > 0)
-	{
-	  if(written == -1)
-	    written = 0;
-
-	  data += sent;
-	  remaining -= sent;
-	  written += static_cast<qint64> (sent);
-	}
-      else
-	{
-	  if(written == -1)
-	    written = 0;
-
-	  break;
-	}
-    }
 
   if(sent == -1)
     {
@@ -554,7 +517,7 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
 #endif
     }
 
-  return written;
+  return static_cast<qint64> (sent);
 #else
   Q_UNUSED(data);
   Q_UNUSED(size);
