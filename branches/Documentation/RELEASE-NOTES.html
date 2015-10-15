@@ -7,6 +7,7 @@
 <li>Corrected double-initialization of QTableWidgetItem objects.</li>
 <li>Corrected flags on URL distiller items.</li>
 <li>Corrected uniqueness constraint on SQLite urls.db. Please remove the database. Apologies.</li>
+<li>Disable the URL distribution service if instructed to do so.
 <li>Display the Poptastic panel regardless of the outcome of spoton_misc::poptasticSettings().</li>
 <li>Removed recursive object deletion (spoton_neighbor::deleteLater() via close()).</li>
 <li>The method spoton_smp::step5() must prepare the provided error parameter under all failure conditions.</li>
@@ -15,6 +16,7 @@
 <b>Improvements</b>
 <ol>
 <li>Attempt to initialize urls_distillers_information.db before allowing new entries and before default entries are assigned.</li>
+<li>Avoid broadcasting status messages to offline participants.</li>
 <li>Avoid playing songs, showing tool tips, etc. if the application is locked. Status bar activity will persist.</li>
 <li>Confirm URL deletion.</li>
 <li>Decreased select() timeout to 25 milliseconds in spoton_sctp_socket::read().</li>

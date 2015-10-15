@@ -813,6 +813,11 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
   if(setting("gui/activeUrlDistribution", true).toBool())
     m_urlDistribution->start();
+  else
+    {
+      m_urlDistribution->quit();
+      m_urlDistribution->wait();
+    }
 
   spoton_misc::prepareDatabases();
 }
@@ -2420,9 +2425,21 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 	query.prepare("SELECT gemini, public_key, "
 		      "gemini_hash_key, name "
 		      "FROM friends_public_keys WHERE "
-		      "key_type_hash = ? AND neighbor_oid = -1");
+		      "key_type_hash = ? AND "
+		      "strftime('%s', ?) - "
+		      "strftime('%s', last_status_update) <= ? AND "
+		      "neighbor_oid = -1");
 	query.bindValue(0, s_crypt1->keyedHash(keyType.toLatin1(),
 					       &ok).toBase64());
+	query.bindValue
+	  (1, QDateTime::currentDateTime().toString(Qt::ISODate));
+
+	if(keyType == "chat")
+	  query.bindValue
+	    (2, 2.5 * spoton_common::STATUS_INTERVAL);
+	else
+	  query.bindValue
+	    (2, 2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL);
 
 	if(ok && query.exec())
 	  while(query.next())
