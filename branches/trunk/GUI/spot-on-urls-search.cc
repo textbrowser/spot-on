@@ -201,7 +201,23 @@ void spoton::discoverUrls(void)
 
 	  if(query.exec(keywordsearch))
 	    while(query.next())
-	      url_hashes << query.value(0).toString();
+	      {
+#if QT_VERSION < 0x050000
+		QRegExp re("^[0-9A-F]+$", Qt::CaseInsensitive);
+
+		if(re.exactMatch(query.value(0).toString()))
+		  url_hashes << query.value(0).toString();
+#else
+		QRegularExpression re
+		  ("^[0-9A-F]+$",
+		   QRegularExpression::CaseInsensitiveOption);
+		QRegularExpressionMatch match = re.match
+		  (query.value(0).toString());
+
+		if(match.hasMatch())
+		  url_hashes << query.value(0).toString();
+#endif
+	      }
 
 	  QApplication::restoreOverrideCursor();
 	}
@@ -260,7 +276,27 @@ void spoton::discoverUrls(void)
 
 	  if(query.exec(keywordsearch))
 	    while(query.next())
-	      url_hashes << query.value(0).toString();
+	      {
+		/*
+		** Is url_hash a HEX?
+		*/
+
+#if QT_VERSION < 0x050000
+		QRegExp re("^[0-9A-F]+$", Qt::CaseInsensitive);
+
+		if(re.exactMatch(query.value(0).toString()))
+		  url_hashes << query.value(0).toString();
+#else
+		QRegularExpression re
+		  ("^[0-9A-F]+$",
+		   QRegularExpression::CaseInsensitiveOption);
+		QRegularExpressionMatch match = re.match
+		  (query.value(0).toString());
+
+		if(match.hasMatch())
+		  url_hashes << query.value(0).toString();
+#endif
+	      }
 
 	  QApplication::restoreOverrideCursor();
 	}
