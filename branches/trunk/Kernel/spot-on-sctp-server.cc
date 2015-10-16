@@ -100,10 +100,6 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
 
 spoton_sctp_server::~spoton_sctp_server()
 {
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-#else
-  m_timer.stop();
-#endif
   close();
 }
 
@@ -204,28 +200,43 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 
   optval = m_bufferSize;
 #ifdef Q_OS_WIN32
-  setsockopt
+  rc = setsockopt
     (m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, (const char *) &optval,
      optlen);
 #else
-  setsockopt(m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, &optval, optlen);
+  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, &optval, optlen);
 #endif
+
+  if(rc != 0)
+    spoton_misc::logError
+      ("spoton_sctp_server::listen(): setsockopt() failure, SO_RCVBUF.");
+
   optval = 1;
 #ifdef Q_OS_WIN32
-  setsockopt
+  rc = setsockopt
     (m_socketDescriptor, SOL_SOCKET, SO_REUSEADDR, (const char *) &optval,
      optlen);
 #else
-  setsockopt(m_socketDescriptor, SOL_SOCKET, SO_REUSEADDR, &optval, optlen);
+  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_REUSEADDR,
+		  &optval, optlen);
 #endif
+  
+  if(rc != 0)
+    spoton_misc::logError
+      ("spoton_sctp_server::listen(): setsockopt() failure, SO_REUSEADDR.");
+
   optval = m_bufferSize;
 #ifdef Q_OS_WIN32
-  setsockopt
+  rc = setsockopt
     (m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, (const char *) &optval,
      optlen);
 #else
-  setsockopt(m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, &optval, optlen);
+  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, &optval, optlen);
 #endif
+
+  if(rc != 0)
+    spoton_misc::logError
+      ("spoton_sctp_server::listen(): setsockopt() failure, SO_SNDBUF.");
 
   /*
   ** Let's bind.

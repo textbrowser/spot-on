@@ -666,18 +666,29 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
   optval = m_bufferSize;
 #ifdef Q_OS_WIN32
-  setsockopt(m_socketDescriptor, SOL_SOCKET,
-	     SO_RCVBUF, (const char *) &optval, optlen);
+  rc = setsockopt(m_socketDescriptor, SOL_SOCKET,
+		  SO_RCVBUF, (const char *) &optval, optlen);
 #else
-  setsockopt(m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, &optval, optlen);
+  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, &optval, optlen);
 #endif
+
+  if(rc != 0)
+    spoton_misc::logError
+      ("spoton_sctp_socket::connectToHostImplementation(): "
+       "setsockopt() failure, SO_RCVBUF.");
+
   optval = m_bufferSize;
 #ifdef Q_OS_WIN32
-  setsockopt(m_socketDescriptor, SOL_SOCKET,
-	     SO_SNDBUF, (const char *) &optval, optlen);
+  rc = setsockopt(m_socketDescriptor, SOL_SOCKET,
+		  SO_SNDBUF, (const char *) &optval, optlen);
 #else
-  setsockopt(m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, &optval, optlen);
+  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, &optval, optlen);
 #endif
+
+  if(rc != 0)
+    spoton_misc::logError
+      ("spoton_sctp_socket::connectToHostImplementation(): "
+       "setsockopt() failure, SO_SNDBUF.");
 
   if(protocol == IPv4Protocol)
     {
@@ -849,31 +860,45 @@ void spoton_sctp_socket::setSocketOption(const SocketOption option,
     case KeepAliveOption:
       {
 	int optval = static_cast<int> (value.toLongLong());
+	int rc = 0;
 	socklen_t optlen = sizeof(optval);
 
 #ifdef Q_OS_WIN32
-	setsockopt
+	rc = setsockopt
 	  (m_socketDescriptor, SOL_SOCKET,
 	   SO_KEEPALIVE, (const char *) &optval, optlen);
 #else
-	setsockopt(m_socketDescriptor, SOL_SOCKET, SO_KEEPALIVE,
-		   &optval, optlen);
+	rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_KEEPALIVE,
+			&optval, optlen);
 #endif
+
+	if(rc != 0)
+	  spoton_misc::logError
+	    ("spoton_sctp_socket::setSocketOption(): "
+	     "setsockopt() failure, SO_KEEPALIVE.");
+
 	break;
       }
     case LowDelayOption:
       {
 	int optval = static_cast<int> (value.toLongLong());
+	int rc = 0;
 	socklen_t optlen = sizeof(optval);
 
 #ifdef Q_OS_WIN32
-	setsockopt
+	rc = setsockopt
 	  (m_socketDescriptor, IPPROTO_SCTP,
 	   SCTP_NODELAY, (const char *) &optval, optlen);
 #else
-	setsockopt(m_socketDescriptor, IPPROTO_SCTP, SCTP_NODELAY,
-		   &optval, optlen);
+	rc = setsockopt(m_socketDescriptor, IPPROTO_SCTP, SCTP_NODELAY,
+			&optval, optlen);
 #endif
+
+	if(rc != 0)
+	  spoton_misc::logError
+	    ("spoton_sctp_socket::setSocketOption(): "
+	     "setsockopt() failure, SCTP_NODELAY.");
+
 	break;
       }
     default:
