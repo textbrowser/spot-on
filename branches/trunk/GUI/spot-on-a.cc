@@ -5236,9 +5236,31 @@ void spoton::slotSetPassphrase(void)
   QApplication::restoreOverrideCursor();
 
   if(error1.isEmpty())
-    {
-      slotDeactivateKernel();
+    slotDeactivateKernel();
 
+  if(error1.isEmpty() && !reencode)
+    {
+      QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Would you like to also store your new "
+		    "credentials as URL credentials?"));
+
+      if(mb.exec() == QMessageBox::Yes)
+	{
+	  spoton_misc::prepareUrlKeysDatabase();
+	  prepareUrlLabels();
+	}
+    }
+
+  if(error1.isEmpty())
+    {
       if(!m_ui.newKeys->isChecked() && reencode)
 	{
 	  if(m_crypts.value("chat", 0))
