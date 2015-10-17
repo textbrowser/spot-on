@@ -665,20 +665,17 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
     return;
 
   QStringList list;
-  int index = 0;
 
-  while(true)
+  for(int i = 0; i < ui.tree->topLevelItemCount(); i++)
     {
-      QTreeWidgetItem *item = ui.tree->topLevelItem(index);
+      QTreeWidgetItem *item = ui.tree->topLevelItem(i);
 
       if(!item)
-	break;
-      else
-	index += 1;
+	continue;
 
-      for(int i = 0; i < item->childCount(); i++)
+      for(int j = 0; j < item->childCount(); j++)
 	{
-	  QTreeWidgetItem *child = item->child(i);
+	  QTreeWidgetItem *child = item->child(j);
 
 	  if(!child)
 	    continue;
