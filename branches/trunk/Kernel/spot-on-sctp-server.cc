@@ -220,7 +220,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_REUSEADDR,
 		  &optval, optlen);
 #endif
-  
+
   if(rc != 0)
     spoton_misc::logError
       ("spoton_sctp_server::listen(): setsockopt() failure, SO_REUSEADDR.");

@@ -480,7 +480,7 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
     (m_socketDescriptor, data,
      static_cast<size_t> (qMin(size, writeSize)), MSG_DONTWAIT);
 #endif
-  
+
   if(sent == -1)
 #ifdef Q_OS_WIN32
     if(WSAGetLastError() == WSAEWOULDBLOCK)
