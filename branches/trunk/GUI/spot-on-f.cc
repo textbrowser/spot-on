@@ -1456,3 +1456,72 @@ void spoton::slotLaneWidthChanged(int index)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+QString spoton::saveCommonUrlCredentials
+(const QPair<QByteArray, QByteArray> &keys,
+ const QString &cipherType, const QString &hashType,
+ spoton_crypt *crypt) const
+{
+  if(!crypt)
+    return tr("Invalid spoton_crypt object. This is a fatal flaw.");
+
+  QString connectionName("");
+  QString error("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "urls_key_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare
+	  ("INSERT OR REPLACE INTO remote_key_information "
+	   "(cipher_type, encryption_key, hash_key, hash_type) "
+	   "VALUES (?, ?, ?, ?)");
+	query.bindValue
+	  (0,
+	   crypt->encryptedThenHashed(cipherType.toLatin1(),
+				      &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->
+	     encryptedThenHashed(keys.first, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->
+	     encryptedThenHashed(keys.second, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, crypt->
+	     encryptedThenHashed(hashType.toLatin1(),
+				 &ok).toBase64());
+
+	if(ok)
+	  {
+	    if(!query.exec())
+	      error = tr
+		("Database write error. Is urls_key_information.db "
+		 "properly defined?");
+	  }
+	else
+	  error = tr("An error occurred with "
+		     "spoton_crypt::encryptedThenHashed().");
+      }
+    else
+      error = tr("Unable to access urls_key_information.db.");
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return error;
+}

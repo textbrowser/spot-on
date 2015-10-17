@@ -5236,31 +5236,9 @@ void spoton::slotSetPassphrase(void)
   QApplication::restoreOverrideCursor();
 
   if(error1.isEmpty())
-    slotDeactivateKernel();
-
-  if(error1.isEmpty() && !reencode)
     {
-      QMessageBox mb(this);
+      slotDeactivateKernel();
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
-      mb.setIcon(QMessageBox::Question);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Would you like to also store your new "
-		    "credentials as URL credentials?"));
-
-      if(mb.exec() == QMessageBox::Yes)
-	{
-	  spoton_misc::prepareUrlKeysDatabase();
-	  prepareUrlLabels();
-	}
-    }
-
-  if(error1.isEmpty())
-    {
       if(!m_ui.newKeys->isChecked() && reencode)
 	{
 	  if(m_crypts.value("chat", 0))
@@ -5547,6 +5525,36 @@ void spoton::slotSetPassphrase(void)
 							    iterationCount->
 							    value()),
 				list.at(i)));
+
+	  if(!reencode)
+	    {
+	      QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+	      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+	      mb.setIcon(QMessageBox::Question);
+	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	      mb.setText(tr("Would you like to use your new "
+			    "credentials as URL Common Credentials?"));
+
+	      if(mb.exec() == QMessageBox::Yes)
+		{
+		  spoton_misc::prepareUrlKeysDatabase();
+
+		  if(saveCommonUrlCredentials(derivedKeys,
+					      m_ui.cipherType->currentText(),
+					      m_ui.hashType->currentText(),
+					      m_crypts.value("chat", 0)).
+		     isEmpty())
+		    {
+		      prepareUrlContainers();
+		      prepareUrlLabels();
+		    }
+		}
+	    }
 
 	  askKernelToReadStarBeamKeys();
 	  populateNovas();

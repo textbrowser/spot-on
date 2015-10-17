@@ -1152,67 +1152,11 @@ void spoton::slotSaveCommonUrlCredentials(void)
   QApplication::restoreOverrideCursor();
 
   if(error.isEmpty())
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() +
-	   "urls_key_information.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-	    bool ok = true;
-
-	    query.prepare
-	      ("INSERT OR REPLACE INTO remote_key_information "
-	       "(cipher_type, encryption_key, hash_key, hash_type) "
-	       "VALUES (?, ?, ?, ?)");
-	    query.bindValue
-	      (0,
-	       crypt->encryptedThenHashed(m_ui.commonUrlCipher->currentText().
-					  toLatin1(),
-					  &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(1, crypt->
-		 encryptedThenHashed(keys.first, &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(2, crypt->
-		 encryptedThenHashed(keys.second, &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(3, crypt->
-		 encryptedThenHashed(m_ui.commonUrlHash->currentText().
-				     toLatin1(),
-				     &ok).toBase64());
-
-	    if(ok)
-	      {
-		if(!query.exec())
-		  error = tr
-		    ("Database write error. Is urls_key_information.db "
-		     "properly defined?");
-	      }
-	    else
-	      error = tr("An error occurred with "
-			 "spoton_crypt::encryptedThenHashed().");
-	  }
-	else
-	  error = tr("Unable to access urls_key_information.db.");
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
+    error = saveCommonUrlCredentials
+      (keys,
+       m_ui.commonUrlCipher->currentText(),
+       m_ui.commonUrlHash->currentText(),
+       crypt);
   else
     error = tr("Key generation failure.");
 

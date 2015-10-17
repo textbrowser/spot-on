@@ -500,6 +500,10 @@ class spoton: public QMainWindow
     (const QSqlDatabase &db, const QString &oid, bool *ok) const;
   QPixmap pixmapForCountry(const QString &country) const;
   QString currentTabName(void) const;
+  QString saveCommonUrlCredentials
+    (const QPair<QByteArray, QByteArray> &keys,
+     const QString &cipherType, const QString &hashType,
+     spoton_crypt *crypt) const;
   QStringList parseAEMagnet(const QString &magnet) const;
   bool deleteAllUrls(void);
 #ifdef Q_OS_MAC
