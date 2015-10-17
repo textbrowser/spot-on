@@ -434,6 +434,8 @@ QString spoton_crypt::publicKeySizeNTRU(const QByteArray &data)
     }
 
   delete []publicKey_array;
+#else
+  Q_UNUSED(data);
 #endif
   return keySize;
 }
