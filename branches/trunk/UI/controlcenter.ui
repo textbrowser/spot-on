@@ -809,7 +809,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-83</y>
              <width>1024</width>
              <height>572</height>
             </rect>
@@ -1177,7 +1177,7 @@
                       <item>
                        <widget class="QComboBox" name="email_fs_gb">
                         <property name="currentIndex">
-                         <number>0</number>
+                         <number>2</number>
                         </property>
                         <property name="sizeAdjustPolicy">
                          <enum>QComboBox::AdjustToContents</enum>
@@ -1908,7 +1908,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
+             <width>777</width>
              <height>378</height>
             </rect>
            </property>
@@ -7181,8 +7181,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>502</height>
+             <width>714</width>
+             <height>441</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">

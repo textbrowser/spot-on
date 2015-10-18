@@ -2488,7 +2488,7 @@ void spoton::slotClearOutgoingMessage(void)
 {
   m_ui.attachment->clear();
   m_ui.emailParticipants->selectionModel()->clear();
-  m_ui.email_fs_gb->setCurrentIndex(0);
+  m_ui.email_fs_gb->setCurrentIndex(2);
   m_ui.goldbug->clear();
   m_ui.outgoingMessage->clear();
   m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
@@ -3049,7 +3049,7 @@ void spoton::slotSendMail(void)
 
 	m_ui.attachment->clear();
 	m_ui.emailParticipants->selectionModel()->clear();
-	m_ui.email_fs_gb->setCurrentIndex(0);
+	m_ui.email_fs_gb->setCurrentIndex(2);
 	m_ui.goldbug->clear();
 	m_ui.outgoingMessage->clear();
 	m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
