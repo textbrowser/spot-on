@@ -5360,7 +5360,8 @@ void spoton::slotSetPassphrase(void)
 	      progress.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-	      progress.setLabelText(tr("Generating key pairs..."));
+	      progress.setLabelText(tr("Generating key pairs. "
+				       "Please be patient."));
 	      progress.setMaximum(list.size());
 	      progress.setMinimum(0);
 	      progress.setWindowModality(Qt::ApplicationModal);
