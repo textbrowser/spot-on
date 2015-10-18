@@ -839,7 +839,6 @@ spoton_neighbor::~spoton_neighbor()
   m_keepAliveTimer.stop();
   m_lifetime.stop();
   m_timer.stop();
-  m_wait.wakeAll();
 
   if(m_id != -1)
     {
@@ -1463,7 +1462,12 @@ void spoton_neighbor::saveStatus(const QSqlDatabase &db,
 
 void spoton_neighbor::run(void)
 {
-  processData();
+  spoton_neighbor_worker worker(this);
+
+  connect(this,
+	  SIGNAL(newData(void)),
+	  &worker,
+	  SLOT(slotNewData(void)));
   exec();
 }
 
@@ -1514,7 +1518,7 @@ void spoton_neighbor::slotReadyRead(void)
 	m_data.append(data.mid(0, length));
 
       locker2.unlock();
-      m_wait.wakeAll();
+      emit newData();
     }
   else
     {
@@ -1530,27 +1534,6 @@ void spoton_neighbor::slotReadyRead(void)
 
 void spoton_neighbor::processData(void)
 {
- repeat_label:
-
-  {
-    QReadLocker locker(&m_abortThreadMutex);
-
-    if(m_abortThread)
-      return;
-  }
-
-  {
-    QMutexLocker locker(&m_waitMutex);
-
-    /*
-    ** What if data is appended to m_data after the wait condition is
-    ** awakened?
-    ** What if the peer is malicious?
-    */
-
-    m_wait.wait(&m_waitMutex, 100);
-  }
-
   {
     QReadLocker locker(&m_abortThreadMutex);
 
@@ -1616,7 +1599,7 @@ void spoton_neighbor::processData(void)
 	  QReadLocker locker(&m_abortThreadMutex);
 
 	  if(m_abortThread)
-	    return;
+	    break;
 	  else
 	    locker.unlock();
 
@@ -1662,7 +1645,7 @@ void spoton_neighbor::processData(void)
       QReadLocker locker(&m_abortThreadMutex);
 
       if(m_abortThread)
-	return;
+	break;
       else
 	locker.unlock();
 
@@ -1973,8 +1956,6 @@ void spoton_neighbor::processData(void)
 	    }
 	}
     }
-
-  goto repeat_label;
 }
 
 void spoton_neighbor::slotConnected(void)
@@ -4988,7 +4969,7 @@ void spoton_neighbor::slotSendMail
 
 		  m_data.append(message);
 		  locker.unlock();
-		  m_wait.wakeAll();
+		  emit newData();
 		}
 
 	    addToBytesWritten(message.length());
@@ -6836,7 +6817,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
   m_data.append(datagram);
   locker.unlock();
-  m_wait.wakeAll();
+  emit newData();
 }
 
 void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
