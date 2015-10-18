@@ -536,19 +536,15 @@ void spoton::slotCopyInstitution(void)
 void spoton::slotShowMinimalDisplay(bool state)
 {
 #if SPOTON_GOLDBUG == 1
-  m_ui.aeBox->setVisible(!state);
-  m_ui.approvedIPs->setVisible(!state);
-  m_ui.buildInformation->setVisible(!state);
-  m_ui.motdBox->setVisible(!state);
-  m_ui.publicKeysBox->setVisible(!state);
-  m_ui.settings_frame->setVisible(!state);
-
   foreach(QObject *object, m_ui.kernelBox->children())
     if(qobject_cast<QWidget *> (object))
       qobject_cast<QWidget *> (object)->setVisible(!state);
 
   m_ui.activateKernel->setVisible(true);
   m_ui.aeBox->setVisible(!state);
+  m_ui.aeBox->setVisible(!state);
+  m_ui.approvedIPs->setVisible(!state);
+  m_ui.buildInformation->setVisible(!state);
   m_ui.buzzHashType->setVisible(!state);
   m_ui.buzzIterationCount->setVisible(!state);
   m_ui.buzzName->setVisible(!state);
@@ -558,6 +554,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.commonUrlHash->setVisible(!state);
   m_ui.commonUrlIterationCount->setVisible(!state);
   m_ui.days->setVisible(!state);
+  m_ui.days_valid->setVisible(!state);
   m_ui.deactivateKernel->setVisible(true);
   m_ui.hashType->setVisible(!state);
   m_ui.iterationCount->setVisible(!state);
@@ -588,14 +585,17 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.label_78->setVisible(!state);
   m_ui.listenerOrientation->setVisible(!state);
   m_ui.listenersSslControlString->setVisible(!state);
+  m_ui.motdBox->setVisible(!state);
   m_ui.neighborSummary->setVisible(!state);
   m_ui.neighborsSslControlString->setVisible(!state);
+  m_ui.publicKeysBox->setVisible(!state);
   m_ui.pulseSize->setVisible(!state);
   m_ui.saltLength->setVisible(!state);
   m_ui.saveBuzzName->setVisible(!state);
   m_ui.saveCopy->setVisible(!state);
   m_ui.searchfor->setVisible(!state);
   m_ui.selectKernelPath->setVisible(true);
+  m_ui.settings_frame->setVisible(!state);
   m_ui.shareBuzzMagnet->setVisible(!state);
   m_ui.urlDistributionModel->setVisible(!state);
 #endif
