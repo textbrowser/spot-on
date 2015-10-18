@@ -1539,26 +1539,31 @@ void spoton_neighbor::processData(void)
       return;
   }
 
-  QByteArray data;
-
   {
-    QReadLocker locker(&m_dataMutex);
+    QMutexLocker locker(&m_waitMutex);
 
-    data = m_data;
+    /*
+    ** What if data is appended to m_data after the wait condition is
+    ** awakened?
+    ** What if the peer is malicious?
+    */
+
+    m_wait.wait(&m_waitMutex, 100);
   }
-
-  if(data.isEmpty())
-    {
-      QMutexLocker locker(&m_waitMutex);
-
-      m_wait.wait(&m_waitMutex);
-    }
 
   {
     QReadLocker locker(&m_abortThreadMutex);
 
     if(m_abortThread)
       return;
+  }
+
+  QByteArray data;
+
+  {
+    QReadLocker locker(&m_dataMutex);
+
+    data = m_data;
   }
 
   QByteArray accountClientSentSalt;
