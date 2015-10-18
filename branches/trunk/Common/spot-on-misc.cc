@@ -3544,11 +3544,19 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
 		  }
 
 		if(hash.size() != record.count())
-		  if(ok)
-		    *ok = false;
+		  {
+		    if(ok)
+		      *ok = false;
+		  }
+		else if(ok)
+		  *ok = true;
 	      }
 	    else if(ok)
-	      *ok = false;
+	      /*
+	      ** We do not have an entry.
+	      */
+
+	      *ok = true;
 	  }
 	else if(ok)
 	  *ok = false;
