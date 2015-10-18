@@ -2341,7 +2341,7 @@
                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Record the current external IP address in the listener's certificate. Please do not use this option if you have a dynamic IP address.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
-                        <string>&amp;Ip Address</string>
+                        <string>&amp;IP Address</string>
                        </property>
                       </widget>
                      </item>
