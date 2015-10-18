@@ -4969,7 +4969,7 @@ void spoton_neighbor::slotSendMail
 
 		  m_data.append(message);
 		  locker.unlock();
-		  emit newData();
+		  processData();
 		}
 
 	    addToBytesWritten(message.length());
