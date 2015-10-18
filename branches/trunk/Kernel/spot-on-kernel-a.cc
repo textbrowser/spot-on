@@ -92,6 +92,7 @@ extern "C"
 #endif
 #endif
 
+QByteArray spoton_kernel::s_messagingCacheKey;
 QDateTime spoton_kernel::s_institutionLastModificationTime;
 QHash<QByteArray, QList<QByteArray> > spoton_kernel::s_buzzKeys;
 QHash<QByteArray, char> spoton_kernel::s_messagingCache;
@@ -394,6 +395,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_uptime = QDateTime::currentDateTime();
   s_institutionLastModificationTime = QDateTime();
+  s_messagingCacheKey = spoton_crypt::weakRandomBytes
+    (static_cast<size_t> (spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES));
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
   QDir().mkdir(spoton_misc::homePath());
 
@@ -3984,14 +3987,10 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
 
   if(!do_not_hash)
     {
-      spoton_crypt *s_crypt = s_crypts.value("chat", 0);
-
-      if(!s_crypt)
-	return false;
-
       bool ok = true;
 
-      hash = s_crypt->keyedHash(data, &ok);
+      hash = spoton_crypt::keyedHash
+	(data, s_messagingCacheKey, "sha512", &ok);
 
       if(!ok)
 	return false;
@@ -4012,14 +4011,10 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 
   if(!do_not_hash)
     {
-      spoton_crypt *s_crypt = s_crypts.value("chat", 0);
-
-      if(!s_crypt)
-	return;
-
       bool ok = true;
 
-      hash = s_crypt->keyedHash(data, &ok);
+      hash = spoton_crypt::keyedHash
+	(data, s_messagingCacheKey, "sha512", &ok);
 
       if(!ok)
 	return;
@@ -5157,15 +5152,9 @@ int spoton_kernel::buzzKeyCount(void)
 bool spoton_kernel::duplicateEmailRequests(const QByteArray &data)
 {
   QByteArray hash;
-
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
-
-  if(!s_crypt)
-    return false;
-
   bool ok = true;
 
-  hash = s_crypt->keyedHash(data, &ok);
+  hash = spoton_crypt::keyedHash(data, s_messagingCacheKey, "sha512", &ok);
 
   if(!ok)
     return false;
@@ -5177,15 +5166,10 @@ bool spoton_kernel::duplicateEmailRequests(const QByteArray &data)
 
 bool spoton_kernel::duplicateGeminis(const QByteArray &data)
 {
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
-
-  if(!s_crypt)
-    return false;
-
   QByteArray hash;
   bool ok = true;
 
-  hash = s_crypt->keyedHash(data, &ok);
+  hash = spoton_crypt::keyedHash(data, s_messagingCacheKey, "sha512", &ok);
 
   if(!ok)
     return false;
@@ -5197,15 +5181,10 @@ bool spoton_kernel::duplicateGeminis(const QByteArray &data)
 
 void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
 {
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
-
-  if(!s_crypt)
-    return;
-
   QByteArray hash;
   bool ok = true;
 
-  hash = s_crypt->keyedHash(data, &ok);
+  hash = spoton_crypt::keyedHash(data, s_messagingCacheKey, "sha512", &ok);
 
   if(!ok)
     return;
@@ -5217,15 +5196,10 @@ void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
 
 void spoton_kernel::geminisCacheAdd(const QByteArray &data)
 {
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
-
-  if(!s_crypt)
-    return;
-
   QByteArray hash;
   bool ok = true;
 
-  hash = s_crypt->keyedHash(data, &ok);
+  hash = spoton_crypt::keyedHash(data, s_messagingCacheKey, "sha512", &ok);
 
   if(!ok)
     return;

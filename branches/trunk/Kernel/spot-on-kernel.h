@@ -149,6 +149,7 @@ class spoton_kernel: public QObject
   spoton_mailer *m_mailer;
   spoton_starbeam_writer *m_starbeamWriter;
   spoton_urldistribution *m_urlDistribution;
+  static QByteArray s_messagingCacheKey;
   static QDateTime s_institutionLastModificationTime;
   static QHash<QByteArray, QList<QByteArray> > s_buzzKeys;
   static QHash<QByteArray, char> s_messagingCache;
