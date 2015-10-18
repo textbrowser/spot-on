@@ -1537,14 +1537,6 @@ void spoton_neighbor::processData(void)
 
     if(m_abortThread)
       return;
-    else
-      locker.unlock();
-  }
-
-  {
-    QMutexLocker locker(&m_waitMutex);
-
-    m_wait.wait(&m_waitMutex);
   }
 
   QByteArray data;
@@ -1555,13 +1547,18 @@ void spoton_neighbor::processData(void)
     data = m_data;
   }
 
+  if(data.isEmpty())
+    {
+      QMutexLocker locker(&m_waitMutex);
+
+      m_wait.wait(&m_waitMutex);
+    }
+
   {
     QReadLocker locker(&m_abortThreadMutex);
 
     if(m_abortThread)
       return;
-    else
-      locker.unlock();
   }
 
   QByteArray accountClientSentSalt;
@@ -1614,7 +1611,7 @@ void spoton_neighbor::processData(void)
 	  QReadLocker locker(&m_abortThreadMutex);
 
 	  if(m_abortThread)
-	    break;
+	    return;
 	  else
 	    locker.unlock();
 
@@ -1651,7 +1648,7 @@ void spoton_neighbor::processData(void)
   {
     QWriteLocker locker(&m_dataMutex);
 
-    if(m_data.length() >= maximumBufferSize)
+    if(m_data.length() > maximumBufferSize)
       m_data.clear();
   }
 
@@ -1660,7 +1657,7 @@ void spoton_neighbor::processData(void)
       QReadLocker locker(&m_abortThreadMutex);
 
       if(m_abortThread)
-	break;
+	return;
       else
 	locker.unlock();
 
