@@ -1229,7 +1229,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>648</width>
-             <height>665</height>
+             <height>650</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -5031,7 +5031,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>643</width>
-             <height>346</height>
+             <height>665</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6253,7 +6253,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>903</width>
+             <width>863</width>
              <height>1280</height>
             </rect>
            </property>
@@ -6542,7 +6542,7 @@ color: rgb(255, 255, 255);</string>
                    <item>
                     <widget class="QLabel" name="kernelPathLabel">
                      <property name="text">
-                      <string>Spot-On-Kernel &amp;Executable</string>
+                      <string>Spot-On-Kernel &amp;Executable Path</string>
                      </property>
                      <property name="buddy">
                       <cstring>kernelPath</cstring>
@@ -8952,8 +8952,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>569</width>
-             <height>459</height>
+             <width>570</width>
+             <height>678</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
