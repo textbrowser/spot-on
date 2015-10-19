@@ -2219,10 +2219,6 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 	("spoton_crypt::keyedHash(): key is empty.");
       return hash;
     }
-  else if(key.length() < SMALL_HASH_KEY)
-    spoton_misc::logError
-      (QString("spoton_crypt::keyedHash(): key is small (%1).").
-       arg(key.length()));
 
   if((err = gcry_md_open(&hd, hashAlgorithm,
 			 GCRY_MD_FLAG_HMAC)) != 0 || !hd)
@@ -3550,17 +3546,10 @@ void spoton_crypt::setHashKey(const QByteArray &hashKey)
      (m_hashKey =
       static_cast<char *> (gcry_calloc_secure(m_hashKeyLength,
 					      sizeof(char)))) != 0)
-    {
-      memcpy(m_hashKey,
-	     hashKey.constData(),
-	     qMin(m_hashKeyLength,
-		  static_cast<size_t> (hashKey.length())));
-
-      if(hashKey.length() < SMALL_HASH_KEY)
-	spoton_misc::logError
-	  (QString("spoton_crypt::setHashKey(): key is small (%1).").
-	   arg(hashKey.length()));
-    }
+    memcpy(m_hashKey,
+	   hashKey.constData(),
+	   qMin(m_hashKeyLength,
+		static_cast<size_t> (hashKey.length())));
   else
     m_hashKeyLength = 0;
 }

@@ -4969,6 +4969,14 @@ void spoton_neighbor::slotSendMail
 
 		  m_data.append(message);
 		  locker.unlock();
+
+		  /*
+		  ** A newData() signal may not be immediate. If
+		  ** message is stored in the messaging cache before
+		  ** the signal is emitted, processData() will
+		  ** discard the message.
+		  */
+
 		  processData();
 		}
 

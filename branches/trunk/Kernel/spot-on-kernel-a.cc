@@ -3990,7 +3990,9 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
       bool ok = true;
 
       hash = spoton_crypt::keyedHash
-	(data, s_messagingCacheKey, "sha512", &ok);
+	(data, s_messagingCacheKey,
+	 setting("kernel/messaging_cache_algorithm", "sha224").
+	 toString().toLatin1(), &ok);
 
       if(!ok)
 	return false;
@@ -4014,7 +4016,9 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
       bool ok = true;
 
       hash = spoton_crypt::keyedHash
-	(data, s_messagingCacheKey, "sha512", &ok);
+	(data, s_messagingCacheKey,
+	 setting("kernel/messaging_cache_algorithm", "sha224").
+	 toString().toLatin1(), &ok);
 
       if(!ok)
 	return;
@@ -4618,6 +4622,7 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
       {
 	QLocale locale;
 	QSqlQuery query(db);
+	int size = 0;
 	qint64 v1 = 0;
 	qint64 v2 = 0;
 
@@ -4653,21 +4658,30 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 		      "VALUES ('Attached User Interfaces', ?)");
 	query.bindValue(0, interfaces);
 	query.exec();
-	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
-		      "(statistic, value) "
-		      "VALUES ('Congestion Container Percent Used', ?)");
 
 	QReadLocker locker2(&s_messagingCacheMutex);
 
+	size = s_messagingCache.size() *
+	  (2 * s_messagingCache.keys().value(0).length() +
+	   static_cast<int> (sizeof(char)) +
+	   static_cast<int> (sizeof(uint)));
 	v1 = s_messagingCache.size() + s_messagingCacheLookup.size();
 	locker2.unlock();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
+		      "VALUES ('Congestion Container(s) Approximate "
+		      "MiB Consumed', ?)");
+	query.bindValue(0, locale.toString(size / 1024));
+	query.exec();
 	v2 = 2 * qMax(1, setting("gui/congestionCost", 10000).toInt());
+	query.prepare
+	  ("INSERT OR REPLACE INTO kernel_statistics "
+	   "(statistic, value) "
+	   "VALUES ('Congestion Container(s) Percent Consumed', ?)");
 	query.bindValue
 	  (0,
-	   QString::
-	   number(100.00 * static_cast<double> (v1) /
-		  static_cast<double> (v2), 'f', 2).
-	   append("%"));
+	   QString::number(100.00 * static_cast<double> (v1) /
+			   static_cast<double> (v2), 'f', 2).append("%"));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO KERNEL_STATISTICS "
 		      "(statistic, value) "
@@ -5154,7 +5168,10 @@ bool spoton_kernel::duplicateEmailRequests(const QByteArray &data)
   QByteArray hash;
   bool ok = true;
 
-  hash = spoton_crypt::keyedHash(data, s_messagingCacheKey, "sha512", &ok);
+  hash = spoton_crypt::keyedHash
+    (data, s_messagingCacheKey,
+     setting("kernel/messaging_cache_algorithm", "sha224").
+     toString().toLatin1(), &ok);
 
   if(!ok)
     return false;
@@ -5169,7 +5186,10 @@ bool spoton_kernel::duplicateGeminis(const QByteArray &data)
   QByteArray hash;
   bool ok = true;
 
-  hash = spoton_crypt::keyedHash(data, s_messagingCacheKey, "sha512", &ok);
+  hash = spoton_crypt::keyedHash
+    (data, s_messagingCacheKey,
+     setting("kernel/messaging_cache_algorithm", "sha224").
+     toString().toLatin1(), &ok);
 
   if(!ok)
     return false;
@@ -5184,7 +5204,10 @@ void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
   QByteArray hash;
   bool ok = true;
 
-  hash = spoton_crypt::keyedHash(data, s_messagingCacheKey, "sha512", &ok);
+  hash = spoton_crypt::keyedHash
+    (data, s_messagingCacheKey,
+     setting("kernel/messaging_cache_algorithm", "sha224").
+     toString().toLatin1(), &ok);
 
   if(!ok)
     return;
@@ -5199,7 +5222,10 @@ void spoton_kernel::geminisCacheAdd(const QByteArray &data)
   QByteArray hash;
   bool ok = true;
 
-  hash = spoton_crypt::keyedHash(data, s_messagingCacheKey, "sha512", &ok);
+  hash = spoton_crypt::keyedHash
+    (data, s_messagingCacheKey,
+     setting("kernel/messaging_cache_algorithm", "sha224").
+     toString().toLatin1(), &ok);
 
   if(!ok)
     return;

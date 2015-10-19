@@ -1,5 +1,5 @@
 <html>
-2015.10.18
+2015.10.25
 <br>
 <b>Corrections</b>
 <ol>
@@ -34,6 +34,7 @@
 <b>New</b>
 <ol>
 <li>Automatically enable URL distribution. New installations only.</li>
+<li>Do not log small-key errors.</li>
 <li>Fast Lanes.</li>
 <li>FireShare link sharing. Search. Click. Share.</li>
 <li>Modified the default e-mail mode from Forward Secrecy to Normal.</li>
@@ -41,7 +42,7 @@
 <li>New URL distillers will be enabled by default.</li>
 <li>New installations will include enabled default URL distillers.</li>
 <li>Per Mr. Fennel, automatically set URL Common Credentials during the initialization process.</li>
-<li>The congestion containers will now contain SHA-512 digests. The keyed digests will be calculated with a temporary key.</li>
+<li>The congestion containers will now contain SHA-224 digests. The keyed digests will be calculated with a temporary key. The SHA algorithm is configurable in the INI file via kernel/messaging_cache_algorithm. Acceptable values are sha224, sha384, and sha512.</li>
 <li>Upgraded SQLite products to version 3.9.1 on Windows.</li>
 <li>Upgraded libgcrypt to version 1.6.4 on Windows.</li>
 </ol>

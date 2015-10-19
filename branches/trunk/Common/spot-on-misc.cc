@@ -2199,6 +2199,13 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 262144;
 
   settings.insert("kernel/gcryctl_init_secmem", integer);
+  str = settings.value("kernel/messaging_cache_algorithm", "sha224").
+    toString().toLower().trimmed();
+
+  if(!(str == "sha224" || str == "sha384" || str == "sha512"))
+    str = "sha224";
+
+  settings.insert("kernel/messaging_cache_algorithm", str);
   integer = qAbs
     (settings.value("kernel/server_account_verification_window_msecs",
 		    15000).toInt(&ok));
