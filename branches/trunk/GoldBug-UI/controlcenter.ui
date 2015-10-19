@@ -2476,7 +2476,7 @@ QPushButton:pressed {
                     <item>
                      <widget class="QLabel" name="label_95">
                       <property name="text">
-                       <string>Maximum 10 MB, please.</string>
+                       <string>Maximum 10 MiB, please.</string>
                       </property>
                      </widget>
                     </item>
