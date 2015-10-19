@@ -4671,7 +4671,8 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 		      "(statistic, value) "
 		      "VALUES ('Congestion Container(s) Approximate "
 		      "MiB Consumed', ?)");
-	query.bindValue(0, locale.toString(size / 1024));
+	query.bindValue
+	  (0, QString("%1 MiB").arg(locale.toString(size / 1024)));
 	query.exec();
 	v2 = 2 * qMax(1, setting("gui/congestionCost", 10000).toInt());
 	query.prepare
@@ -4720,7 +4721,8 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 
 	QReadLocker locker4(&m_urlsProcessedMutex);
 
-	query.bindValue(0, locale.toString(m_urlsProcessed));
+	query.bindValue
+	  (0, QString("%1 URLs").arg(locale.toString(m_urlsProcessed)));
 	locker4.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
