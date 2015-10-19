@@ -128,7 +128,7 @@ void spoton::slotPrepareUrlDatabases(void)
   progress.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-  progress.setLabelText(tr("Creating URL databases..."));
+  progress.setLabelText(tr("Creating URL databases. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
   progress.setWindowModality(Qt::ApplicationModal);
@@ -178,7 +178,8 @@ void spoton::slotPrepareUrlDatabases(void)
 	      c2 = QChar(j + 97 - 10);
 
 	    progress.setLabelText
-	      (tr("Creating spot_on_keywords_%1%2...").arg(c1).arg(c2));
+	      (tr("Creating spot_on_keywords_%1%2. "
+		  "Please be patient.").arg(c1).arg(c2));
 
 	    if(m_urlDatabase.driverName() == "QPSQL")
 	      {
@@ -207,7 +208,8 @@ void spoton::slotPrepareUrlDatabases(void)
 		created = false;
 
 	    progress.setLabelText
-	      (tr("Creating spot_on_urls_%1%2...").arg(c1).arg(c2));
+	      (tr("Creating spot_on_urls_%1%2. "
+		  "Please be patient.").arg(c1).arg(c2));
 
 	    if(m_urlDatabase.driverName() == "QPSQL")
 	      {
@@ -327,7 +329,7 @@ bool spoton::deleteAllUrls(void)
   progress.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-  progress.setLabelText(tr("Vacuuming URL databases..."));
+  progress.setLabelText(tr("Vacuuming URL databases. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
   progress.setWindowModality(Qt::ApplicationModal);
@@ -427,7 +429,7 @@ void spoton::slotGatherUrlStatistics(void)
   progress.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-  progress.setLabelText(tr("Gathering URL statistics..."));
+  progress.setLabelText(tr("Gathering URL statistics. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
   progress.setWindowModality(Qt::ApplicationModal);
@@ -593,7 +595,7 @@ void spoton::slotImportUrls(void)
   progress.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-  progress.setLabelText(tr("Importing URLs..."));
+  progress.setLabelText(tr("Importing URLs. Please be patient."));
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setWindowModality(Qt::ApplicationModal);
@@ -1716,7 +1718,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   progress.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-  progress.setLabelText(tr("Deleting URL keywords..."));
+  progress.setLabelText(tr("Deleting URL keywords. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
   progress.setWindowModality(Qt::ApplicationModal);
