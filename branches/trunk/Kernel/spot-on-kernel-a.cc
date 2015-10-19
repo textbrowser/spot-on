@@ -2863,11 +2863,12 @@ void spoton_kernel::slotRetrieveMail(void)
     db.close();
   }
 
+  QSqlDatabase::removeDatabase(connectionName);
+
   if(!list.isEmpty())
     emit retrieveMail(list, "0002b");
 
   list.clear();
-  QSqlDatabase::removeDatabase(connectionName);
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -3329,6 +3330,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
     db.close();
   }
 
+  QSqlDatabase::removeDatabase(connectionName);
+
   if(!list.isEmpty())
     {
       if(keyType == "email")
@@ -3343,7 +3346,6 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
     }
 
   list.clear();
-  QSqlDatabase::removeDatabase(connectionName);
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
