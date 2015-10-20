@@ -730,7 +730,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
   if(data.isEmpty())
     return;
-  else if(data.length() > spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE)
+  else if(data.length() > spoton_common::POPTASTIC_MAXIMUM_EMAIL_SIZE)
     {
       spoton_misc::logError
 	(QString("spoton_kernel::slotPoppedMessage(): "
