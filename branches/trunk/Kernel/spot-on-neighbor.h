@@ -31,7 +31,9 @@
 #include <QDateTime>
 #include <QHostAddress>
 #include <QHostInfo>
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
 #include <QMutex>
+#endif
 #include <QNetworkProxy>
 #include <QPointer>
 #include <QReadWriteLock>
@@ -41,6 +43,9 @@
 #include <QTimer>
 #include <QUdpSocket>
 #include <QUuid>
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+#include <QWaitCondition>
+#endif
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-send.h"
@@ -176,6 +181,9 @@ class spoton_neighbor: public QThread
   QDateTime m_startTime;
   QHostAddress m_address;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+  QMutex m_waitMutex;
+#endif
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
   QPointer<spoton_external_address> m_externalAddress;
   QPointer<spoton_neighbor_tcp_socket> m_tcpSocket;
@@ -211,6 +219,9 @@ class spoton_neighbor: public QThread
   QTimer m_lifetime;
   QTimer m_timer;
   QUuid m_receivedUuid;
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+  QWaitCondition m_wait;
+#endif
   bool m_abortThread;
   bool m_accountAuthenticated;
   bool m_allowExceptions;
@@ -417,6 +428,7 @@ class spoton_neighbor: public QThread
   void stopTimer(QTimer *timer);
 };
 
+#ifndef SPOTON_NEIGHBOR_USE_WAITCONDITION
 class spoton_neighbor_worker: public QObject
 {
   Q_OBJECT
@@ -441,5 +453,6 @@ class spoton_neighbor_worker: public QObject
       m_neighbor->processData();
   }
 };
+#endif
 
 #endif

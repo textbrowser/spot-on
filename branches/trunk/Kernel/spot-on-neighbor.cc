@@ -839,6 +839,9 @@ spoton_neighbor::~spoton_neighbor()
   m_keepAliveTimer.stop();
   m_lifetime.stop();
   m_timer.stop();
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+  m_wait.wakeAll();
+#endif
 
   if(m_id != -1)
     {
@@ -1462,12 +1465,16 @@ void spoton_neighbor::saveStatus(const QSqlDatabase &db,
 
 void spoton_neighbor::run(void)
 {
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+  processData();
+#else
   spoton_neighbor_worker worker(this);
 
   connect(this,
 	  SIGNAL(newData(void)),
 	  &worker,
 	  SLOT(slotNewData(void)));
+#endif
   exec();
 }
 
@@ -1518,7 +1525,11 @@ void spoton_neighbor::slotReadyRead(void)
 	m_data.append(data.mid(0, length));
 
       locker2.unlock();
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+      m_wait.wakeAll();
+#else
       emit newData();
+#endif
     }
   else
     {
@@ -1534,6 +1545,10 @@ void spoton_neighbor::slotReadyRead(void)
 
 void spoton_neighbor::processData(void)
 {
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+ repeat_label:
+#endif
+
   {
     QReadLocker locker(&m_abortThreadMutex);
 
@@ -1548,6 +1563,15 @@ void spoton_neighbor::processData(void)
 
     data = m_data;
   }
+
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+  if(data.isEmpty())
+    {
+      QMutexLocker locker(&m_waitMutex);
+
+      m_wait.wait(&m_waitMutex);
+    }
+#endif
 
   QByteArray accountClientSentSalt;
   QString echoMode("");
@@ -1599,7 +1623,7 @@ void spoton_neighbor::processData(void)
 	  QReadLocker locker(&m_abortThreadMutex);
 
 	  if(m_abortThread)
-	    break;
+	    return;
 	  else
 	    locker.unlock();
 
@@ -1636,7 +1660,7 @@ void spoton_neighbor::processData(void)
   {
     QWriteLocker locker(&m_dataMutex);
 
-    if(m_data.length() > maximumBufferSize)
+    if(m_data.length() >= maximumBufferSize)
       m_data.clear();
   }
 
@@ -1645,7 +1669,7 @@ void spoton_neighbor::processData(void)
       QReadLocker locker(&m_abortThreadMutex);
 
       if(m_abortThread)
-	break;
+	return;
       else
 	locker.unlock();
 
@@ -1956,6 +1980,10 @@ void spoton_neighbor::processData(void)
 	    }
 	}
     }
+
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+  goto repeat_label;
+#endif
 }
 
 void spoton_neighbor::slotConnected(void)
@@ -4969,20 +4997,18 @@ void spoton_neighbor::slotSendMail
 
 		  m_data.append(message);
 		  locker.unlock();
-
-		  /*
-		  ** A newData() signal may not be immediate. If
-		  ** message is stored in the messaging cache before
-		  ** the signal is emitted, processData() will
-		  ** discard the message.
-		  */
-
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+		  m_wait.wakeAll();
+#else
 		  processData();
+#endif
 		}
 
 	    addToBytesWritten(message.length());
 	    oids.append(pair.second);
+#ifndef SPOTON_NEIGHBOR_USE_WAITCONDITION
 	    spoton_kernel::messagingCacheAdd(message);
+#endif
 	  }
       }
 
@@ -6825,7 +6851,11 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
   m_data.append(datagram);
   locker.unlock();
+#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
+  m_wait.wakeAll();
+#else
   emit newData();
+#endif
 }
 
 void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
