@@ -80,7 +80,7 @@ spoton_neighbor::spoton_neighbor
  const int laneWidth,
  QObject *parent):QThread(parent)
 {
-  m_abortThread = false;
+  m_abort = 0;
   m_kernelInterfaces = spoton_kernel::interfaces();
   m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
@@ -146,7 +146,7 @@ spoton_neighbor::spoton_neighbor
   else if(m_udpSocket)
     m_address = ipAddress;
 
-  m_accountAuthenticated = false;
+  m_accountAuthenticated = 0;
   m_allowExceptions = false;
   m_bytesRead = 0;
   m_bytesWritten = 0;
@@ -183,7 +183,7 @@ spoton_neighbor::spoton_neighbor
   m_statusControl = "connected";
   m_startTime = QDateTime::currentDateTime();
   m_transport = transport;
-  m_useAccounts = useAccounts;
+  m_useAccounts = useAccounts ? 1 : 0;
 
   if(m_transport == "tcp")
     m_requireSsl = true;
@@ -425,7 +425,7 @@ spoton_neighbor::spoton_neighbor
   else
     m_externalAddressDiscovererTimer.setInterval(30000);
 
-  if(m_useAccounts)
+  if(m_useAccounts.fetchAndAddRelaxed(0))
     if(!m_useSsl)
       {
 	m_accountTimer.start();
@@ -464,8 +464,8 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 				 const int laneWidth,
 				 QObject *parent):QThread(parent)
 {
-  m_abortThread = false;
-  m_accountAuthenticated = false;
+  m_abort = 0;
+  m_accountAuthenticated = 0;
   m_accountName = accountName;
   m_accountPassword = accountPassword;
   m_address = QHostAddress(ipAddress);
@@ -532,12 +532,12 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 	password = s_crypt->decryptedAfterAuthenticated(password, &ok);
 
       if(ok)
-	m_useAccounts = !name.isEmpty() && !password.isEmpty();
+	m_useAccounts = !name.isEmpty() && !password.isEmpty() ? 1 : 0;
       else
-	m_useAccounts = false;
+	m_useAccounts = 0;
     }
   else
-    m_useAccounts = false;
+    m_useAccounts = 0;
 
   if(m_transport == "tcp")
     {
@@ -823,25 +823,18 @@ spoton_neighbor::~spoton_neighbor()
   spoton_misc::logError(QString("Neighbor %1:%2 deallocated.").
 			arg(m_address.toString()).
 			arg(m_port));
+  m_abort.fetchAndStoreRelaxed(1);
 
-  QWriteLocker locker1(&m_abortThreadMutex);
-
-  m_abortThread = true;
-  locker1.unlock();
-
-  QWriteLocker locker2(&m_dataMutex);
+  QWriteLocker locker(&m_dataMutex);
 
   m_data.clear();
-  locker2.unlock();
+  locker.unlock();
   m_accountTimer.stop();
   m_authenticationTimer.stop();
   m_externalAddressDiscovererTimer.stop();
   m_keepAliveTimer.stop();
   m_lifetime.stop();
   m_timer.stop();
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-  m_wait.wakeAll();
-#endif
 
   if(m_id != -1)
     {
@@ -1061,9 +1054,7 @@ void spoton_neighbor::slotTimeout(void)
 			  }
 
 			if(m_isUserDefined &&
-			   !spoton_misc::readSharedResource
-			   (&m_accountAuthenticated,
-			    m_accountAuthenticatedMutex))
+			   !m_accountAuthenticated.fetchAndAddRelaxed(0))
 			  {
 			    QByteArray aName;
 			    QByteArray aPassword;
@@ -1113,19 +1104,18 @@ void spoton_neighbor::slotTimeout(void)
 				    decryptedAfterAuthenticated
 				    (password, &ok);
 
-				QWriteLocker locker(&m_useAccountsMutex);
-				bool useAccounts = false;
-
 				if(ok)
-				  m_useAccounts = !name.isEmpty() &&
-				    !password.isEmpty();
+				  {
+				    if(!name.isEmpty() &&
+				       !password.isEmpty())
+				      m_useAccounts.fetchAndStoreRelaxed(1);
+				    else
+				      m_useAccounts.fetchAndStoreRelaxed(0);
+				  }
 				else
-				  m_useAccounts = false;
+				  m_useAccounts.fetchAndStoreRelaxed(0);
 
-				useAccounts = m_useAccounts;
-				locker.unlock();
-
-				if(useAccounts)
+				if(m_useAccounts.fetchAndAddRelaxed(0))
 				  {
 				    m_accountTimer.start();
 				    m_authenticationTimer.start();
@@ -1465,16 +1455,12 @@ void spoton_neighbor::saveStatus(const QSqlDatabase &db,
 
 void spoton_neighbor::run(void)
 {
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-  processData();
-#else
   spoton_neighbor_worker worker(this);
 
   connect(this,
 	  SIGNAL(newData(void)),
 	  &worker,
 	  SLOT(slotNewData(void)));
-#endif
   exec();
 }
 
@@ -1491,12 +1477,8 @@ void spoton_neighbor::slotReadyRead(void)
 
   m_bytesRead += static_cast<quint64> (data.length());
 
-  QReadLocker locker(&m_abortThreadMutex);
-
-  if(m_abortThread)
+  if(m_abort.fetchAndAddRelaxed(0))
     return;
-  else
-    locker.unlock();
 
   if(!data.isEmpty() && !isEncrypted() && m_useSsl)
     {
@@ -1525,11 +1507,7 @@ void spoton_neighbor::slotReadyRead(void)
 	m_data.append(data.mid(0, length));
 
       locker2.unlock();
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-      m_wait.wakeAll();
-#else
       emit newData();
-#endif
     }
   else
     {
@@ -1545,16 +1523,8 @@ void spoton_neighbor::slotReadyRead(void)
 
 void spoton_neighbor::processData(void)
 {
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
- repeat_label:
-#endif
-
-  {
-    QReadLocker locker(&m_abortThreadMutex);
-
-    if(m_abortThread)
-      return;
-  }
+  if(m_abort.fetchAndAddRelaxed(0))
+    return;
 
   QByteArray data;
 
@@ -1563,15 +1533,6 @@ void spoton_neighbor::processData(void)
 
     data = m_data;
   }
-
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-  if(data.isEmpty())
-    {
-      QMutexLocker locker(&m_waitMutex);
-
-      m_wait.wait(&m_waitMutex);
-    }
-#endif
 
   QByteArray accountClientSentSalt;
   QString echoMode("");
@@ -1605,11 +1566,7 @@ void spoton_neighbor::processData(void)
 	maximumContentLength = m_maximumContentLength;
       }
     else if(i == 5)
-      {
-	QReadLocker locker(&m_useAccountsMutex);
-
-	useAccounts = m_useAccounts;
-      }
+      useAccounts = m_useAccounts.fetchAndAddRelaxed(0);
 
   QList<QByteArray> list;
 
@@ -1620,12 +1577,8 @@ void spoton_neighbor::processData(void)
 
       while(data.contains(spoton_send::EOM))
 	{
-	  QReadLocker locker(&m_abortThreadMutex);
-
-	  if(m_abortThread)
+	  if(m_abort.fetchAndAddRelaxed(0))
 	    return;
-	  else
-	    locker.unlock();
 
 	  QByteArray bytes
 	    (data.mid(0,
@@ -1666,12 +1619,8 @@ void spoton_neighbor::processData(void)
 
   while(!list.isEmpty())
     {
-      QReadLocker locker(&m_abortThreadMutex);
-
-      if(m_abortThread)
+      if(m_abort.fetchAndAddRelaxed(0))
 	return;
-      else
-	locker.unlock();
 
       QByteArray data(list.takeFirst());
       QByteArray originalData(data);
@@ -1730,14 +1679,10 @@ void spoton_neighbor::processData(void)
 	  if(useAccounts)
 	    {
 	      if(length > 0 && data.contains("type=0050&content="))
-		if(!spoton_misc::
-		   readSharedResource(&m_accountAuthenticated,
-				      m_accountAuthenticatedMutex))
+		if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
 		  process0050(length, data);
 
-	      if(!spoton_misc::
-		 readSharedResource(&m_accountAuthenticated,
-				    m_accountAuthenticatedMutex))
+	      if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
 		continue;
 	    }
 	  else if(length > 0 && (data.contains("type=0050&content=") ||
@@ -1754,20 +1699,17 @@ void spoton_neighbor::processData(void)
 	  ** without the client having requested the authentication?
 	  */
 
-	  if(!spoton_misc::readSharedResource(&m_accountAuthenticated,
-					      m_accountAuthenticatedMutex))
+	  if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
 	    if(accountClientSentSalt.length() >=
 	       spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE)
 	      process0051(length, data);
 
-	  if(!spoton_misc::readSharedResource(&m_accountAuthenticated,
-					      m_accountAuthenticatedMutex))
+	  if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
 	    continue;
 	}
       else if(length > 0 && data.contains("type=0052&content="))
 	{
-	  if(!spoton_misc::readSharedResource(&m_accountAuthenticated,
-					      m_accountAuthenticatedMutex))
+	  if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
 	    {
 	      if(m_sctpSocket)
 		{
@@ -1817,8 +1759,7 @@ void spoton_neighbor::processData(void)
       if(m_isUserDefined)
 	if(useAccounts)
 	  {
-	    if(!spoton_misc::readSharedResource(&m_accountAuthenticated,
-						m_accountAuthenticatedMutex))
+	    if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
 	      continue;
 	  }
 
@@ -1980,10 +1921,6 @@ void spoton_neighbor::processData(void)
 	    }
 	}
     }
-
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-  goto repeat_label;
-#endif
 }
 
 void spoton_neighbor::slotConnected(void)
@@ -2161,12 +2098,7 @@ void spoton_neighbor::slotConnected(void)
   if(!m_keepAliveTimer.isActive())
     m_keepAliveTimer.start();
 
-  QReadLocker locker(&m_useAccountsMutex);
-  bool useAccounts = m_useAccounts;
-
-  locker.unlock();
-
-  if(useAccounts)
+  if(m_useAccounts.fetchAndAddRelaxed(0))
     if(!m_useSsl)
       {
 	m_accountTimer.start();
@@ -3992,23 +3924,20 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 					  spoton_kernel::
 					  s_crypts.value("chat", 0)))
 	{
-	  spoton_misc::setSharedResource
-	    (&m_accountAuthenticated, true, m_accountAuthenticatedMutex);
+	  m_accountAuthenticated.fetchAndStoreRelaxed(1);
 	  emit stopTimer(&m_accountTimer);
 	  emit stopTimer(&m_authenticationTimer);
 	  emit accountAuthenticated(name, password);
 	}
       else
 	{
-	  spoton_misc::setSharedResource
-	    (&m_accountAuthenticated, false, m_accountAuthenticatedMutex);
+	  m_accountAuthenticated.fetchAndStoreRelaxed(0);
 	  emit accountAuthenticated
 	    (spoton_crypt::weakRandomBytes(64),
 	     spoton_crypt::weakRandomBytes(64));
 	}
 
-      if(spoton_misc::readSharedResource(&m_accountAuthenticated,
-					 m_accountAuthenticatedMutex))
+      if(m_accountAuthenticated.fetchAndAddRelaxed(0))
 	emit resetKeepAlive();
 
       spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
@@ -4036,9 +3965,7 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 			      "user_defined = 0");
 		query.bindValue
 		  (0,
-		   spoton_misc::
-		   readSharedResource(&m_accountAuthenticated,
-				      m_accountAuthenticatedMutex) ?
+		   m_accountAuthenticated.fetchAndAddRelaxed(0) ?
 		   s_crypt->encryptedThenHashed(QByteArray::number(1),
 						&ok).toBase64() :
 		   s_crypt->encryptedThenHashed(QByteArray::number(0),
@@ -4163,9 +4090,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 		  if(!hash.isEmpty() && !newHash.isEmpty() &&
 		     spoton_crypt::memcmp(hash, newHash))
 		    {
-		      spoton_misc::setSharedResource
-			(&m_accountAuthenticated, true,
-			 m_accountAuthenticatedMutex);
+		      m_accountAuthenticated.fetchAndStoreRelaxed(1);
 		      emit stopTimer(&m_accountTimer);
 		      emit stopTimer(&m_authenticationTimer);
 		    }
@@ -4181,33 +4106,24 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 			  if(!hash.isEmpty() && !newHash.isEmpty() &&
 			     spoton_crypt::memcmp(hash, newHash))
 			    {
-			      spoton_misc::setSharedResource
-				(&m_accountAuthenticated, true,
-				 m_accountAuthenticatedMutex);
+			      m_accountAuthenticated.fetchAndStoreRelaxed(1);
 			      emit stopTimer(&m_accountTimer);
 			      emit stopTimer(&m_authenticationTimer);
 			    }
 			}
 		      else
-			spoton_misc::setSharedResource
-			  (&m_accountAuthenticated, false,
-			   m_accountAuthenticatedMutex);
+			m_accountAuthenticated.fetchAndStoreRelaxed(0);
 		    }
 		}
 	      else
-		spoton_misc::setSharedResource
-		  (&m_accountAuthenticated, false,
-		   m_accountAuthenticatedMutex);
+		m_accountAuthenticated.fetchAndStoreRelaxed(0);
 	    }
 	  else
-	    spoton_misc::setSharedResource
-	      (&m_accountAuthenticated, false,
-	       m_accountAuthenticatedMutex);
+	    m_accountAuthenticated.fetchAndStoreRelaxed(0);
 	}
       else
 	{
-	  spoton_misc::setSharedResource
-	    (&m_accountAuthenticated, false, m_accountAuthenticatedMutex);
+	  m_accountAuthenticated.fetchAndStoreRelaxed(0);
 
 	  if(accountClientSentSalt.length() <
 	     spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE)
@@ -4222,8 +4138,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	       "The server may be devious.");
 	}
 
-      if(spoton_misc::readSharedResource(&m_accountAuthenticated,
-					 m_accountAuthenticatedMutex))
+      if(m_accountAuthenticated.fetchAndAddRelaxed(0))
 	emit resetKeepAlive();
 
       if(s_crypt)
@@ -4248,9 +4163,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 			      "user_defined = 1");
 		query.bindValue
 		  (0,
-		   spoton_misc::
-		   readSharedResource(&m_accountAuthenticated,
-				      m_accountAuthenticatedMutex) ?
+		   m_accountAuthenticated.fetchAndAddRelaxed(0) ?
 		   s_crypt->encryptedThenHashed(QByteArray::number(1),
 						&ok).toBase64() :
 		   s_crypt->encryptedThenHashed(QByteArray::number(0),
@@ -4997,18 +4910,12 @@ void spoton_neighbor::slotSendMail
 
 		  m_data.append(message);
 		  locker.unlock();
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-		  m_wait.wakeAll();
-#else
 		  processData();
-#endif
 		}
 
 	    addToBytesWritten(message.length());
 	    oids.append(pair.second);
-#ifndef SPOTON_NEIGHBOR_USE_WAITCONDITION
 	    spoton_kernel::messagingCacheAdd(message);
-#endif
 	  }
       }
 
@@ -5632,12 +5539,7 @@ void spoton_neighbor::slotModeChanged(QSslSocket::SslMode mode)
 	  return;
 	}
 
-      QReadLocker locker(&m_useAccountsMutex);
-      bool useAccounts = m_useAccounts;
-
-      locker.unlock();
-
-      if(useAccounts)
+      if(m_useAccounts.fetchAndAddRelaxed(0))
 	{
 	  m_accountTimer.start();
 	  m_authenticationTimer.start();
@@ -5797,24 +5699,17 @@ bool spoton_neighbor::readyToWrite(void)
   if(state() != QAbstractSocket::ConnectedState)
     return false;
 
-  QReadLocker locker(&m_useAccountsMutex);
-  bool useAccounts = m_useAccounts;
-
-  locker.unlock();
-
   if(isEncrypted() && m_useSsl)
     {
-      if(useAccounts)
-	return spoton_misc::readSharedResource(&m_accountAuthenticated,
-					       m_accountAuthenticatedMutex);
+      if(m_useAccounts.fetchAndAddRelaxed(0))
+	return m_accountAuthenticated.fetchAndAddRelaxed(0);
       else
 	return true;
     }
   else if(!isEncrypted() && !m_useSsl)
     {
-      if(useAccounts)
-	return spoton_misc::readSharedResource(&m_accountAuthenticated,
-					       m_accountAuthenticatedMutex);
+      if(m_useAccounts.fetchAndAddRelaxed(0))
+	return m_accountAuthenticated.fetchAndAddRelaxed(0);
       else
 	return true;
     }
@@ -6851,11 +6746,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
   m_data.append(datagram);
   locker.unlock();
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-  m_wait.wakeAll();
-#else
   emit newData();
-#endif
 }
 
 void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)

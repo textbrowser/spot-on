@@ -2488,7 +2488,7 @@ void spoton::cleanup(void)
   if(m_settings.value("gui/removeOtmOnExit", false).toBool())
     spoton_misc::removeOneTimeStarBeamMagnets();
 
-  m_starbeamDigestInterrupt.fetchAndAddRelaxed(1);
+  m_starbeamDigestInterrupt.fetchAndStoreRelaxed(1);
 
   while(!m_starbeamDigestFutures.isEmpty())
     {

@@ -28,12 +28,10 @@
 #ifndef _spoton_neighbor_h_
 #define _spoton_neighbor_h_
 
+#include <QAtomicInt>
 #include <QDateTime>
 #include <QHostAddress>
 #include <QHostInfo>
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-#include <QMutex>
-#endif
 #include <QNetworkProxy>
 #include <QPointer>
 #include <QReadWriteLock>
@@ -43,9 +41,6 @@
 #include <QTimer>
 #include <QUdpSocket>
 #include <QUuid>
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-#include <QWaitCondition>
-#endif
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-send.h"
@@ -173,6 +168,9 @@ class spoton_neighbor: public QThread
   void setId(const qint64 id);
 
  private:
+  QAtomicInt m_abort;
+  QAtomicInt m_accountAuthenticated;
+  QAtomicInt m_useAccounts;
   QByteArray m_accountName;
   QByteArray m_accountPassword;
   QByteArray m_accountClientSentSalt;
@@ -181,16 +179,11 @@ class spoton_neighbor: public QThread
   QDateTime m_startTime;
   QHostAddress m_address;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-  QMutex m_waitMutex;
-#endif
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
   QPointer<spoton_external_address> m_externalAddress;
   QPointer<spoton_neighbor_tcp_socket> m_tcpSocket;
   QPointer<spoton_neighbor_udp_socket> m_udpSocket;
   QPointer<spoton_sctp_socket> m_sctpSocket;
-  QReadWriteLock m_abortThreadMutex;
-  QReadWriteLock m_accountAuthenticatedMutex;
   QReadWriteLock m_accountClientSentSaltMutex;
   QReadWriteLock m_accountNameMutex;
   QReadWriteLock m_accountPasswordMutex;
@@ -202,7 +195,6 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_maximumBufferSizeMutex;
   QReadWriteLock m_maximumContentLengthMutex;
   QReadWriteLock m_receivedUuidMutex;
-  QReadWriteLock m_useAccountsMutex;
   QSslCertificate m_peerCertificate;
   QString m_echoMode;
   QString m_ipAddress;
@@ -219,15 +211,9 @@ class spoton_neighbor: public QThread
   QTimer m_lifetime;
   QTimer m_timer;
   QUuid m_receivedUuid;
-#ifdef SPOTON_NEIGHBOR_USE_WAITCONDITION
-  QWaitCondition m_wait;
-#endif
-  bool m_abortThread;
-  bool m_accountAuthenticated;
   bool m_allowExceptions;
   bool m_isUserDefined;
   bool m_requireSsl;
-  bool m_useAccounts;
   bool m_useSsl;
   int m_kernelInterfaces;
   int m_keySize;
@@ -428,7 +414,6 @@ class spoton_neighbor: public QThread
   void stopTimer(QTimer *timer);
 };
 
-#ifndef SPOTON_NEIGHBOR_USE_WAITCONDITION
 class spoton_neighbor_worker: public QObject
 {
   Q_OBJECT
@@ -453,6 +438,4 @@ class spoton_neighbor_worker: public QObject
       m_neighbor->processData();
   }
 };
-#endif
-
 #endif
