@@ -49,13 +49,13 @@ spoton_fireshare::~spoton_fireshare()
 
 void spoton_fireshare::quit(void)
 {
-  m_quit.fetchAndStoreRelaxed(1);
+  m_quit.fetchAndStoreOrdered(1);
   QThread::quit();
 }
 
 void spoton_fireshare::run(void)
 {
-  m_quit.fetchAndStoreRelaxed(0);
+  m_quit.fetchAndStoreOrdered(0);
 
   QTimer timer;
 

@@ -823,7 +823,7 @@ spoton_neighbor::~spoton_neighbor()
   spoton_misc::logError(QString("Neighbor %1:%2 deallocated.").
 			arg(m_address.toString()).
 			arg(m_port));
-  m_abort.fetchAndStoreRelaxed(1);
+  m_abort.fetchAndStoreOrdered(1);
 
   QWriteLocker locker(&m_dataMutex);
 
@@ -1108,12 +1108,12 @@ void spoton_neighbor::slotTimeout(void)
 				  {
 				    if(!name.isEmpty() &&
 				       !password.isEmpty())
-				      m_useAccounts.fetchAndStoreRelaxed(1);
+				      m_useAccounts.fetchAndStoreOrdered(1);
 				    else
-				      m_useAccounts.fetchAndStoreRelaxed(0);
+				      m_useAccounts.fetchAndStoreOrdered(0);
 				  }
 				else
-				  m_useAccounts.fetchAndStoreRelaxed(0);
+				  m_useAccounts.fetchAndStoreOrdered(0);
 
 				if(m_useAccounts.fetchAndAddRelaxed(0))
 				  {
@@ -1207,7 +1207,7 @@ void spoton_neighbor::slotTimeout(void)
       return;
     }
 
-  m_kernelInterfaces.fetchAndStoreRelaxed(spoton_kernel::interfaces());
+  m_kernelInterfaces.fetchAndStoreOrdered(spoton_kernel::interfaces());
 
   if(m_isUserDefined)
     if(status == "connected")
@@ -3921,14 +3921,14 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 					  spoton_kernel::
 					  s_crypts.value("chat", 0)))
 	{
-	  m_accountAuthenticated.fetchAndStoreRelaxed(1);
+	  m_accountAuthenticated.fetchAndStoreOrdered(1);
 	  emit stopTimer(&m_accountTimer);
 	  emit stopTimer(&m_authenticationTimer);
 	  emit accountAuthenticated(name, password);
 	}
       else
 	{
-	  m_accountAuthenticated.fetchAndStoreRelaxed(0);
+	  m_accountAuthenticated.fetchAndStoreOrdered(0);
 	  emit accountAuthenticated
 	    (spoton_crypt::weakRandomBytes(64),
 	     spoton_crypt::weakRandomBytes(64));
@@ -4087,7 +4087,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 		  if(!hash.isEmpty() && !newHash.isEmpty() &&
 		     spoton_crypt::memcmp(hash, newHash))
 		    {
-		      m_accountAuthenticated.fetchAndStoreRelaxed(1);
+		      m_accountAuthenticated.fetchAndStoreOrdered(1);
 		      emit stopTimer(&m_accountTimer);
 		      emit stopTimer(&m_authenticationTimer);
 		    }
@@ -4103,24 +4103,24 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 			  if(!hash.isEmpty() && !newHash.isEmpty() &&
 			     spoton_crypt::memcmp(hash, newHash))
 			    {
-			      m_accountAuthenticated.fetchAndStoreRelaxed(1);
+			      m_accountAuthenticated.fetchAndStoreOrdered(1);
 			      emit stopTimer(&m_accountTimer);
 			      emit stopTimer(&m_authenticationTimer);
 			    }
 			}
 		      else
-			m_accountAuthenticated.fetchAndStoreRelaxed(0);
+			m_accountAuthenticated.fetchAndStoreOrdered(0);
 		    }
 		}
 	      else
-		m_accountAuthenticated.fetchAndStoreRelaxed(0);
+		m_accountAuthenticated.fetchAndStoreOrdered(0);
 	    }
 	  else
-	    m_accountAuthenticated.fetchAndStoreRelaxed(0);
+	    m_accountAuthenticated.fetchAndStoreOrdered(0);
 	}
       else
 	{
-	  m_accountAuthenticated.fetchAndStoreRelaxed(0);
+	  m_accountAuthenticated.fetchAndStoreOrdered(0);
 
 	  if(accountClientSentSalt.length() <
 	     spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE)

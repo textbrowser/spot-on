@@ -51,13 +51,13 @@ spoton_urldistribution::~spoton_urldistribution()
 
 void spoton_urldistribution::quit(void)
 {
-  m_quit.fetchAndStoreRelaxed(1);
+  m_quit.fetchAndStoreOrdered(1);
   QThread::quit();
 }
 
 void spoton_urldistribution::run(void)
 {
-  m_quit.fetchAndStoreRelaxed(0);
+  m_quit.fetchAndStoreOrdered(0);
 
   QTimer timer;
 

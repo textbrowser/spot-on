@@ -851,7 +851,7 @@ spoton_kernel::~spoton_kernel()
   m_future.cancel();
   m_poptasticPopFuture.cancel();
   m_poptasticPostFuture.cancel();
-  m_urlImportFutureInterrupt.fetchAndStoreRelaxed(1);
+  m_urlImportFutureInterrupt.fetchAndStoreOrdered(1);
 
   for(int i = 0; i < m_urlImportFutures.size(); i++)
     m_urlImportFutures[i].cancel();

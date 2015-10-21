@@ -2282,7 +2282,7 @@ QString spoton_misc::databaseName(void)
 
 void spoton_misc::enableLog(const bool state)
 {
-  s_enableLog.fetchAndStoreRelaxed(state ? 1 : 0);
+  s_enableLog.fetchAndStoreOrdered(state ? 1 : 0);
 }
 
 qint64 spoton_misc::participantCount(const QString &keyType,
