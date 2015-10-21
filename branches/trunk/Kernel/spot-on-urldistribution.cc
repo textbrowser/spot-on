@@ -40,7 +40,7 @@ spoton_urldistribution::spoton_urldistribution(QObject *parent):
 {
   m_lastUniqueId = -1;
   m_limit = static_cast<quint64> (spoton_common::KERNEL_URLS_BATCH_SIZE);
-  m_quit = false;
+  m_quit = 0;
 }
 
 spoton_urldistribution::~spoton_urldistribution()
@@ -51,19 +51,13 @@ spoton_urldistribution::~spoton_urldistribution()
 
 void spoton_urldistribution::quit(void)
 {
-  QWriteLocker locker(&m_quitLocker);
-
-  m_quit = true;
-  locker.unlock();
+  m_quit.fetchAndStoreRelaxed(1);
   QThread::quit();
 }
 
 void spoton_urldistribution::run(void)
 {
-  QWriteLocker locker(&m_quitLocker);
-
-  m_quit = false;
-  locker.unlock();
+  m_quit.fetchAndStoreRelaxed(0);
 
   QTimer timer;
 
@@ -157,9 +151,7 @@ void spoton_urldistribution::slotTimeout(void)
 		      }
 		}
 
-	      QReadLocker locker(&m_quitLocker);
-
-	      if(m_quit)
+	      if(m_quit.fetchAndAddRelaxed(0))
 		break;
 	    }
       }
@@ -169,12 +161,8 @@ void spoton_urldistribution::slotTimeout(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  {
-    QReadLocker locker(&m_quitLocker);
-
-    if(m_quit)
-      return;
-  }
+  if(m_quit.fetchAndAddRelaxed(0))
+    return;
 
   /*
   ** Let's retrieve the public keys.
@@ -213,9 +201,7 @@ void spoton_urldistribution::slotTimeout(void)
 	      if(ok)
 		publicKeys.append(publicKey);
 
-	      QReadLocker locker(&m_quitLocker);
-
-	      if(m_quit)
+	      if(m_quit.fetchAndAddRelaxed(0))
 		break;
 	    }
       }
@@ -225,12 +211,8 @@ void spoton_urldistribution::slotTimeout(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  {
-    QReadLocker locker(&m_quitLocker);
-
-    if(m_quit)
-      return;
-  }
+  if(m_quit.fetchAndAddRelaxed(0))
+    return;
 
   if(publicKeys.isEmpty())
     {
@@ -464,9 +446,7 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      count += 1;
 
-	      QReadLocker locker(&m_quitLocker);
-
-	      if(m_quit)
+	      if(m_quit.fetchAndAddRelaxed(0))
 		break;
 	    }
 	  while(true);
@@ -485,12 +465,8 @@ void spoton_urldistribution::slotTimeout(void)
       return;
     }
 
-  {
-    QReadLocker locker(&m_quitLocker);
-
-    if(m_quit)
-      return;
-  }
+  if(m_quit.fetchAndAddRelaxed(0))
+    return;
 
   QByteArray cipherType
     (spoton_kernel::setting("gui/kernelCipherType",
@@ -581,9 +557,7 @@ void spoton_urldistribution::slotTimeout(void)
       if(ok)
 	emit sendURLs(message);
 
-      QReadLocker locker(&m_quitLocker);
-
-      if(m_quit)
+      if(m_quit.fetchAndAddRelaxed(0))
 	return;
     }
 }

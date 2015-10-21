@@ -28,6 +28,7 @@
 #ifndef _spoton_fireshare_h_
 #define _spoton_fireshare_h_
 
+#include <QAtomicInt>
 #include <QQueue>
 #include <QReadWriteLock>
 #include <QThread>
@@ -41,10 +42,9 @@ class spoton_fireshare: public QThread
   ~spoton_fireshare();
 
  private:
+  QAtomicInt m_quit;
   QQueue<QByteArray> m_sharedLinks;
-  QReadWriteLock m_quitLocker;
   QReadWriteLock m_sharedLinksMutex;
-  bool m_quit;
   void run(void);
 
  private slots:

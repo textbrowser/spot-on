@@ -58,9 +58,8 @@ extern "C"
 #include <signal.h>
 }
 
+QAtomicInt spoton_misc::s_enableLog = 0;
 QReadWriteLock spoton_misc::s_dbMutex;
-QReadWriteLock spoton_misc::s_enableLogMutex;
-bool spoton_misc::s_enableLog = false;
 quint64 spoton_misc::s_dbId = 0;
 
 QString spoton_misc::homePath(void)
@@ -664,12 +663,8 @@ void spoton_misc::prepareDatabases(void)
 
 void spoton_misc::logError(const QString &error)
 {
-  QReadLocker locker(&s_enableLogMutex);
-
-  if(!s_enableLog)
+  if(!s_enableLog.fetchAndAddRelaxed(0))
     return;
-
-  locker.unlock();
 
   if(error.trimmed().isEmpty())
     return;
@@ -2287,9 +2282,7 @@ QString spoton_misc::databaseName(void)
 
 void spoton_misc::enableLog(const bool state)
 {
-  QWriteLocker locker(&s_enableLogMutex);
-
-  s_enableLog = state;
+  s_enableLog.fetchAndStoreRelaxed(state ? 1 : 0);
 }
 
 qint64 spoton_misc::participantCount(const QString &keyType,

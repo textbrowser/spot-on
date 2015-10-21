@@ -29,7 +29,6 @@
 #define _spoton_misc_h_
 
 #include <QHostAddress>
-#include <QMutex>
 #include <QPair>
 #include <QReadWriteLock>
 #include <QSqlDatabase>
@@ -237,9 +236,8 @@ class spoton_misc
     }
 
  private:
+  static QAtomicInt s_enableLog;
   static QReadWriteLock s_dbMutex;
-  static QReadWriteLock s_enableLogMutex;
-  static bool s_enableLog;
   static quint64 s_dbId;
   spoton_misc(void);
 };

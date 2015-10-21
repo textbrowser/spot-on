@@ -28,7 +28,7 @@
 #ifndef _spoton_urldistribution_h_
 #define _spoton_urldistribution_h_
 
-#include <QReadWriteLock>
+#include <QAtomicInt>
 #include <QThread>
 
 class spoton_urldistribution: public QThread
@@ -40,8 +40,7 @@ class spoton_urldistribution: public QThread
   ~spoton_urldistribution();
 
  private:
-  QReadWriteLock m_quitLocker;
-  bool m_quit;
+  QAtomicInt m_quit;
   qint64 m_lastUniqueId;
   quint64 m_limit;
   void run(void);

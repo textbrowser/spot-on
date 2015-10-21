@@ -38,7 +38,7 @@
 spoton_fireshare::spoton_fireshare(QObject *parent):
   QThread(parent)
 {
-  m_quit = false;
+  m_quit = 0;
 }
 
 spoton_fireshare::~spoton_fireshare()
@@ -49,19 +49,13 @@ spoton_fireshare::~spoton_fireshare()
 
 void spoton_fireshare::quit(void)
 {
-  QWriteLocker locker(&m_quitLocker);
-
-  m_quit = true;
-  locker.unlock();
+  m_quit.fetchAndStoreRelaxed(1);
   QThread::quit();
 }
 
 void spoton_fireshare::run(void)
 {
-  QWriteLocker locker(&m_quitLocker);
-
-  m_quit = false;
-  locker.unlock();
+  m_quit.fetchAndStoreRelaxed(0);
 
   QTimer timer;
 
@@ -162,9 +156,7 @@ void spoton_fireshare::slotTimeout(void)
 		      }
 		}
 
-	      QReadLocker locker(&m_quitLocker);
-
-	      if(m_quit)
+	      if(m_quit.fetchAndAddRelaxed(0))
 		break;
 	    }
       }
@@ -174,12 +166,8 @@ void spoton_fireshare::slotTimeout(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  {
-    QReadLocker locker(&m_quitLocker);
-
-    if(m_quit)
-      return;
-  }
+  if(m_quit.fetchAndAddRelaxed(0))
+    return;
 
   /*
   ** Let's retrieve the public keys.
@@ -218,9 +206,7 @@ void spoton_fireshare::slotTimeout(void)
 	      if(ok)
 		publicKeys.append(publicKey);
 
-	      QReadLocker locker(&m_quitLocker);
-
-	      if(m_quit)
+	      if(m_quit.fetchAndAddRelaxed(0))
 		break;
 	    }
       }
@@ -230,12 +216,8 @@ void spoton_fireshare::slotTimeout(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  {
-    QReadLocker locker(&m_quitLocker);
-
-    if(m_quit)
-      return;
-  }
+  if(m_quit.fetchAndAddRelaxed(0))
+    return;
 
   if(publicKeys.isEmpty())
     {
@@ -456,12 +438,8 @@ void spoton_fireshare::slotTimeout(void)
 
 	    count += 1;
 
-	    {
-	      QReadLocker locker(&m_quitLocker);
-
-	      if(m_quit)
-		break;
-	    }
+	    if(m_quit.fetchAndAddRelaxed(0))
+	      break;
 	  }
       }
 
@@ -478,12 +456,8 @@ void spoton_fireshare::slotTimeout(void)
       return;
     }
 
-  {
-    QReadLocker locker(&m_quitLocker);
-
-    if(m_quit)
-      return;
-  }
+  if(m_quit.fetchAndAddRelaxed(0))
+    return;
 
   QByteArray cipherType
     (spoton_kernel::setting("gui/kernelCipherType",
@@ -574,9 +548,7 @@ void spoton_fireshare::slotTimeout(void)
       if(ok)
 	emit sendURLs(message);
 
-      QReadLocker locker(&m_quitLocker);
-
-      if(m_quit)
+      if(m_quit.fetchAndAddRelaxed(0))
 	return;
     }
 }

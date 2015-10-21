@@ -1207,10 +1207,7 @@ void spoton_neighbor::slotTimeout(void)
       return;
     }
 
-  QWriteLocker locker1(&m_kernelInterfacesMutex);
-
-  m_kernelInterfaces = spoton_kernel::interfaces();
-  locker1.unlock();
+  m_kernelInterfaces.fetchAndStoreRelaxed(spoton_kernel::interfaces());
 
   if(m_isUserDefined)
     if(status == "connected")
@@ -5747,13 +5744,8 @@ QString spoton_neighbor::findMessageType
 {
   QList<QByteArray> list(data.trimmed().split('\n'));
   QString type("");
-  int interfaces = 0;
+  int interfaces = m_kernelInterfaces.fetchAndAddRelaxed(0);
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-  QReadLocker locker(&m_kernelInterfacesMutex);
-
-  interfaces = m_kernelInterfaces;
-  locker.unlock();
 
   /*
   ** list[0]: Data

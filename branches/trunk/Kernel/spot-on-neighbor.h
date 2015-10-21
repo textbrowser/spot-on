@@ -170,6 +170,7 @@ class spoton_neighbor: public QThread
  private:
   QAtomicInt m_abort;
   QAtomicInt m_accountAuthenticated;
+  QAtomicInt m_kernelInterfaces;
   QAtomicInt m_useAccounts;
   QByteArray m_accountName;
   QByteArray m_accountPassword;
@@ -190,7 +191,6 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_bytesWrittenMutex;
   QReadWriteLock m_dataMutex;
   QReadWriteLock m_echoModeMutex;
-  QReadWriteLock m_kernelInterfacesMutex;
   QReadWriteLock m_learnedAdaptiveEchoPairsMutex;
   QReadWriteLock m_maximumBufferSizeMutex;
   QReadWriteLock m_maximumContentLengthMutex;
@@ -215,7 +215,6 @@ class spoton_neighbor: public QThread
   bool m_isUserDefined;
   bool m_requireSsl;
   bool m_useSsl;
-  int m_kernelInterfaces;
   int m_keySize;
   int m_laneWidth;
   qint64 m_id;
