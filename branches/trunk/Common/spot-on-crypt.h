@@ -106,6 +106,7 @@ class spoton_crypt
   static QString publicKeySize(const QByteArray &data);
   static QString publicKeySizeNTRU(const QByteArray &data);
   static QStringList cipherTypes(void);
+  static QStringList congestionHashAlgorithms(void);
   static QStringList hashTypes(void);
   static bool isValidSignature(const QByteArray &data,
 			       const QByteArray &publicKey,

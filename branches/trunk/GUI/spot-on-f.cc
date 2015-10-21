@@ -1525,3 +1525,19 @@ QString spoton::saveCommonUrlCredentials
   QSqlDatabase::removeDatabase(connectionName);
   return error;
 }
+
+void spoton::slotSaveCongestionAlgorithm(const QString &text)
+{
+  QString str("");
+
+  if(text == "n/a")
+    str = "sha224";
+  else
+    str = text;
+
+  m_settings["kernel/messaging_cache_algorithm"] = str;
+
+  QSettings settings;
+
+  settings.setValue("kernel/messaging_cache_algorithm", str);
+}

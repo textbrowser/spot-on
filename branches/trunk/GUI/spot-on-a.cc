@@ -1031,6 +1031,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(const QString &)),
 	  this,
 	  SLOT(slotPublishedKeySizeChanged(const QString &)));
+  connect(m_ui.congestionAlgorithm,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotSaveCongestionAlgorithm(const QString &)));
   connect(m_ui.kernelKeySize,
 	  SIGNAL(currentIndexChanged(const QString &)),
 	  this,
@@ -1859,9 +1863,14 @@ spoton::spoton(void):QMainWindow()
   m_ui.transmitNova->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")) + 512);
   m_ui.channelType->addItems(spoton_crypt::cipherTypes());
+  m_ui.cipherType->blockSignals(true);
   m_ui.cipherType->addItems(spoton_crypt::cipherTypes());
+  m_ui.cipherType->blockSignals(false);
   m_ui.commonUrlCipher->addItems(spoton_crypt::cipherTypes());
   m_ui.commonUrlHash->addItems(spoton_crypt::hashTypes());
+  m_ui.congestionAlgorithm->blockSignals(true);
+  m_ui.congestionAlgorithm->addItems(spoton_crypt::congestionHashAlgorithms());
+  m_ui.congestionAlgorithm->blockSignals(false);
   m_ui.etpCipherType->addItems(spoton_crypt::cipherTypes());
   m_ui.ae_e_type->addItems(spoton_crypt::cipherTypes());
   m_ui.ae_h_type->addItems(spoton_crypt::hashTypes());
@@ -1869,8 +1878,12 @@ spoton::spoton(void):QMainWindow()
   m_ui.buzzHashType->addItems(spoton_crypt::hashTypes());
   m_ui.institutionNameType->addItems(spoton_crypt::cipherTypes());
   m_ui.institutionPostalAddressType->addItems(spoton_crypt::hashTypes());
+  m_ui.kernelCipherType->blockSignals(true);
   m_ui.kernelCipherType->addItems(spoton_crypt::cipherTypes());
+  m_ui.kernelCipherType->blockSignals(false);
+  m_ui.kernelHashType->blockSignals(true);
   m_ui.kernelHashType->addItems(spoton_crypt::hashTypes());
+  m_ui.kernelHashType->blockSignals(false);
   m_ui.urlCipher->addItems(spoton_crypt::cipherTypes());
   m_ui.urlHash->addItems(spoton_crypt::hashTypes());
   m_ui.cost->setValue(m_settings.value("gui/congestionCost", 10000).toInt());
@@ -2018,6 +2031,9 @@ spoton::spoton(void):QMainWindow()
   if(m_ui.commonUrlHash->count() == 0)
     m_ui.commonUrlHash->addItem("n/a");
 
+  if(m_ui.congestionAlgorithm->count() == 0)
+    m_ui.congestionAlgorithm->addItem("n/a");
+
   if(m_ui.etpCipherType->count() == 0)
     m_ui.etpCipherType->addItem("n/a");
 
@@ -2039,7 +2055,9 @@ spoton::spoton(void):QMainWindow()
   if(m_ui.buzzHashType->count() == 0)
     m_ui.buzzHashType->addItem("n/a");
 
+  m_ui.hashType->blockSignals(true);
   m_ui.hashType->addItems(spoton_crypt::hashTypes());
+  m_ui.hashType->blockSignals(false);
 
   if(m_ui.hashType->count() == 0)
     m_ui.hashType->addItem("n/a");
@@ -2071,6 +2089,13 @@ spoton::spoton(void):QMainWindow()
 
   if(m_ui.hashType->findText(str) > -1)
     m_ui.hashType->setCurrentIndex(m_ui.hashType->findText(str));
+
+  str = m_settings.value("kernel/messaging_cache_algorithm",
+			 "sha224").toString();
+
+  if(m_ui.congestionAlgorithm->findText(str) > -1)
+    m_ui.congestionAlgorithm->setCurrentIndex
+      (m_ui.congestionAlgorithm->findText(str));
 
   m_ui.iterationCount->setValue(m_settings.value("gui/iterationCount",
 						 10000).toInt());

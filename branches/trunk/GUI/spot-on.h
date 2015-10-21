@@ -825,6 +825,7 @@ class spoton: public QMainWindow
   void slotSaveBuzzAutoJoin(bool state);
   void slotSaveBuzzName(void);
   void slotSaveCommonUrlCredentials(void);
+  void slotSaveCongestionAlgorithm(const QString &text);
   void slotSaveCustomStatus(void);
   void slotSaveDestination(void);
   void slotSaveEmailName(void);
