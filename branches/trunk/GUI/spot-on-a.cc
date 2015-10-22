@@ -3625,11 +3625,16 @@ void spoton::slotPopulateListeners(void)
 		      {
 			QComboBox *box = new QComboBox();
 			QList<int> list;
+			QSet<int> set;
 
-			list << spoton_common::LANE_WIDTHS
-			     << spoton_common::LANE_WIDTH_MINIMUM
-			     << spoton_common::LANE_WIDTH_DEFAULT
-			     << spoton_common::LANE_WIDTH_MAXIMUM;
+			for(int j = 0;
+			    j < spoton_common::LANE_WIDTHS.size(); j++)
+			  set << spoton_common::LANE_WIDTHS.at(j);
+
+			set << spoton_common::LANE_WIDTH_MINIMUM
+			    << spoton_common::LANE_WIDTH_DEFAULT
+			    << spoton_common::LANE_WIDTH_MAXIMUM;
+			list = set.toList();
 			qSort(list);
 
 			while(!list.isEmpty())
@@ -4298,11 +4303,16 @@ void spoton::slotPopulateNeighbors(void)
 		      {
 			QComboBox *box = new QComboBox();
 			QList<int> list;
+			QSet<int> set;
 
-			list << spoton_common::LANE_WIDTHS
-			     << spoton_common::LANE_WIDTH_MINIMUM
-			     << spoton_common::LANE_WIDTH_DEFAULT
-			     << spoton_common::LANE_WIDTH_MAXIMUM;
+			for(int j = 0;
+			    j < spoton_common::LANE_WIDTHS.size(); j++)
+			  set << spoton_common::LANE_WIDTHS.at(j);
+
+			set << spoton_common::LANE_WIDTH_MINIMUM
+			    << spoton_common::LANE_WIDTH_DEFAULT
+			    << spoton_common::LANE_WIDTH_MAXIMUM;
+			list = set.toList();
 			qSort(list);
 
 			while(!list.isEmpty())

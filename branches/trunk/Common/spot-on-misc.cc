@@ -2197,7 +2197,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   str = settings.value("kernel/messaging_cache_algorithm", "sha224").
     toString().toLower().trimmed();
 
-  if(!(str == "sha224" || str == "sha384" || str == "sha512"))
+  if(!spoton_crypt::congestionHashAlgorithms().contains(str))
     str = "sha224";
 
   settings.insert("kernel/messaging_cache_algorithm", str);

@@ -425,9 +425,15 @@ QStringList spoton_crypt::congestionHashAlgorithms(void)
 {
   QStringList types;
 
-  types << "sha224"
+  types << "sha1"
+	<< "sha224"
 	<< "sha384"
-	<< "sha512";
+	<< "sha512"
+	<< "stribog256"
+	<< "stribog512"
+	<< "tiger"
+	<< "tiger1"
+	<< "tiger2";
 
   for(int i = types.size() - 1; i >= 0; i--)
     {
