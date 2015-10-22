@@ -3649,7 +3649,7 @@ void spoton::slotPopulateListeners(void)
 							   value(i).
 							   toInt())));
 			else
-			  box->setCurrentIndex(0); // Default of 14500.
+			  box->setCurrentIndex(box->count() - 1); // Maximum.
 
 			connect(box,
 				SIGNAL(currentIndexChanged(int)),
@@ -4322,7 +4322,7 @@ void spoton::slotPopulateNeighbors(void)
 							   value(i).
 							   toInt())));
 			else
-			  box->setCurrentIndex(0); // Default of 14500.
+			  box->setCurrentIndex(box->count() - 1); // Maximum.
 
 			connect(box,
 				SIGNAL(currentIndexChanged(int)),
