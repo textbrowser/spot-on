@@ -59,6 +59,7 @@ namespace spoton_common
   static const int CACHE_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM_STATIC = 30;
+  static const int ELEGANT_STARBEAM_SIZE = 30000;
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;

@@ -5105,3 +5105,32 @@ QString spoton_misc::htmlEncode(const QString &string)
 
   return str;
 }
+
+int spoton_misc::minimumNeighborLaneWidth(void)
+{
+  QString connectionName("");
+  int laneWidth = spoton_common::LANE_WIDTH_MINIMUM;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT MIN(lane_width) FROM neighbors");
+
+	if(query.exec())
+	  if(query.next())
+	    laneWidth = query.value(0).toInt();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return laneWidth;
+}

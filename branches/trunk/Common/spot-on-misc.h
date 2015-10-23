@@ -171,6 +171,7 @@ class spoton_misc
 				       spoton_crypt *crypt);
   static bool storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 					 spoton_crypt *crypt);
+  static int minimumNeighborLaneWidth(void);
   static qint64 participantCount(const QString &keyType,
 				 spoton_crypt *crypt);
   static quint64 databaseAccesses(void);
