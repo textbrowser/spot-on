@@ -2102,6 +2102,9 @@ void spoton_neighbor::slotConnected(void)
 	m_authenticationTimer.start();
       }
 
+  if(!m_useSsl)
+    QTimer::singleShot(250, this, SLOT(slotSendCapabilities(void)));
+
   QTimer::singleShot(30000, this, SLOT(slotSendMOTD(void)));
 }
 
@@ -4743,12 +4746,11 @@ void spoton_neighbor::slotSendCapabilities(void)
     return;
 
   QByteArray message;
-  QUuid uuid(spoton_kernel::
-	     setting("gui/uuid",
-		     "{00000000-0000-0000-0000-000000000000}").toString());
+  QUuid uuid
+    (spoton_kernel::
+     setting("gui/uuid", "{00000000-0000-0000-0000-000000000000}").toString());
 
-  message = spoton_send::message0014(uuid.toString().toLatin1() +
-				     "\n" +
+  message = spoton_send::message0014(uuid.toString().toLatin1() + "\n" +
 				     QByteArray::number(m_laneWidth));
 
   if(write(message.constData(), message.length()) != message.length())
@@ -5578,6 +5580,7 @@ void spoton_neighbor::slotDisconnected(void)
 void spoton_neighbor::slotEncrypted(void)
 {
   recordCertificateOrAbort();
+  QTimer::singleShot(250, this, SLOT(slotSendCapabilities(void)));
 }
 
 void spoton_neighbor::recordCertificateOrAbort(void)
