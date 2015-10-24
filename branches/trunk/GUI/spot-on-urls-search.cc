@@ -199,6 +199,8 @@ void spoton::discoverUrls(void)
 
 	  QSqlQuery query(m_urlDatabase);
 
+	  query.setForwardOnly(true);
+
 	  if(query.exec(keywordsearch))
 	    while(query.next())
 	      {
@@ -273,6 +275,8 @@ void spoton::discoverUrls(void)
 	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
 	  QSqlQuery query(m_urlDatabase);
+
+	  query.setForwardOnly(true);
 
 	  if(query.exec(keywordsearch))
 	    while(query.next())
