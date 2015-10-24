@@ -490,6 +490,7 @@ class spoton: public QMainWindow
   spoton_logviewer m_logViewer;
   spoton_rosetta m_rosetta;
   spoton_starbeamanalyzer *m_starbeamAnalyzer;
+  QByteArray copiedPublicKeyPairToMagnet(const QByteArray &data) const;
   QByteArray copyMyChatPublicKey(void) const;
   QByteArray copyMyEmailPublicKey(void) const;
   QByteArray copyMyPoptasticPublicKey(void) const;

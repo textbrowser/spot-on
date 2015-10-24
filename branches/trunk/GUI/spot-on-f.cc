@@ -1541,3 +1541,23 @@ void spoton::slotSaveCongestionAlgorithm(const QString &text)
 
   settings.setValue("kernel/messaging_cache_algorithm", str);
 }
+
+QByteArray spoton::copiedPublicKeyPairToMagnet(const QByteArray &data) const
+{
+  QByteArray magnet;
+  QList<QByteArray> list(data.mid(1).split('@')); // Remove K.
+
+  magnet.append("magnet:?kt=");
+  magnet.append(list.value(0));
+  magnet.append("&n=");
+  magnet.append(list.value(1));
+  magnet.append("&ek=");
+  magnet.append(list.value(2));
+  magnet.append("&eks=");
+  magnet.append(list.value(3));
+  magnet.append("&sk=");
+  magnet.append(list.value(4));
+  magnet.append("&sks=");
+  magnet.append(list.value(5));
+  return magnet;
+}
