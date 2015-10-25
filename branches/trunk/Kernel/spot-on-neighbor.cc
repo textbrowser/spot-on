@@ -930,7 +930,7 @@ void spoton_neighbor::slotTimeout(void)
 {
   if(m_sctpSocket)
     {
-      if(m_lastReadTime.secsTo(QDateTime::currentDateTime()) >= 90)
+      if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
 	{
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotTimeout(): "
@@ -943,7 +943,7 @@ void spoton_neighbor::slotTimeout(void)
     }
   else if(m_tcpSocket)
     {
-      if(m_lastReadTime.secsTo(QDateTime::currentDateTime()) >= 90)
+      if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
 	{
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotTimeout(): "
@@ -956,7 +956,7 @@ void spoton_neighbor::slotTimeout(void)
     }
   else if(m_udpSocket)
     {
-      if(m_lastReadTime.secsTo(QDateTime::currentDateTime()) >= 90)
+      if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
 	{
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotTimeout(): "
@@ -1327,7 +1327,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
   if(m_tcpSocket)
     cipher = m_tcpSocket->sessionCipher();
 
-  int seconds = m_startTime.secsTo(QDateTime::currentDateTime());
+  int seconds = qAbs(m_startTime.secsTo(QDateTime::currentDateTime()));
 
   query.exec("PRAGMA synchronous = OFF");
   query.prepare("UPDATE neighbors SET "
@@ -1338,7 +1338,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 		"uptime = ? "
 		"WHERE OID = ? AND "
 		"status = 'connected' "
-		"AND ? - uptime >= 10");
+		"AND ABS(? - uptime) >= 10");
   query.bindValue(0, m_bytesRead);
 
   QReadLocker locker(&m_bytesWrittenMutex);

@@ -405,8 +405,8 @@ void spoton_listener::slotTimeout(void)
 	query.prepare
 	  ("DELETE FROM listeners_accounts_consumed_authentications "
 	   "WHERE "
-	   "strftime('%s', ?) - "
-	   "strftime('%s', insert_date) > ? AND listener_oid = ?");
+	   "ABS(strftime('%s', ?) - "
+	   "strftime('%s', insert_date)) > ? AND listener_oid = ?");
 	query.bindValue
 	  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
 	query.bindValue(1, 120);

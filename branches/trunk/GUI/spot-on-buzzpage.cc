@@ -505,7 +505,7 @@ void spoton_buzzpage::slotStatusTimeout(void)
 	  QDateTime dateTime
 	    (QDateTime::fromString(item->text(), Qt::ISODate));
 
-	  if(dateTime.secsTo(now) >= 60)
+	  if(qAbs(dateTime.secsTo(now)) >= 60)
 	    {
 	      QTableWidgetItem *item = ui.clients->item(i, 0);
 

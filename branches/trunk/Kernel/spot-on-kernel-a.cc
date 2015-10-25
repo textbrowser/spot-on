@@ -2325,8 +2325,8 @@ void spoton_kernel::slotStatusTimerExpired(void)
 			  "key_type_hash = ? AND "
 			  "neighbor_oid = -1 AND "
 			  "status <> 'offline' AND "
-			  "strftime('%s', ?) - "
-			  "strftime('%s', last_status_update) > ?");
+			  "ABS(strftime('%s', ?) - "
+			  "strftime('%s', last_status_update)) > ?");
 
 	    if(i == 1)
 	      query.bindValue
@@ -2367,7 +2367,7 @@ void spoton_kernel::slotStatusTimerExpired(void)
 
   prepareStatus("chat");
 
-  if(m_lastPoptasticStatus.secsTo(QDateTime::currentDateTime()) >=
+  if(qAbs(m_lastPoptasticStatus.secsTo(QDateTime::currentDateTime())) >=
      spoton_common::POPTASTIC_STATUS_INTERVAL)
     prepareStatus("poptastic");
 }
@@ -2429,8 +2429,8 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		      "gemini_hash_key, name "
 		      "FROM friends_public_keys WHERE "
 		      "key_type_hash = ? AND "
-		      "strftime('%s', ?) - "
-		      "strftime('%s', last_status_update) <= ? AND "
+		      "ABS(strftime('%s', ?) - "
+		      "strftime('%s', last_status_update)) <= ? AND "
 		      "neighbor_oid = -1");
 	query.bindValue(0, s_crypt1->keyedHash(keyType.toLatin1(),
 					       &ok).toBase64());
@@ -4741,8 +4741,9 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 		      "VALUES ('Uptime', ?)");
 	query.bindValue
 	  (0, QString("%1 Minutes").
-	   arg(QString::number(uptime.
-			       secsTo(QDateTime::currentDateTime()) / 60.0,
+	   arg(QString::number(qAbs(uptime.
+				    secsTo(QDateTime::
+					   currentDateTime()) / 60.0),
 			       'f', 1)));
 	query.exec();
       }
