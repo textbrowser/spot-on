@@ -1228,6 +1228,8 @@ void spoton::playSong(const QString &name)
   if(m_locked)
     return;
 
+  QApplication::beep();
+
 #if SPOTON_GOLDBUG == 1
 #if QT_VERSION >= 0x050000
   QMediaPlayer *player = 0;
