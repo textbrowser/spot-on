@@ -268,8 +268,15 @@ void spoton::discoverUrls(void)
 
 	  if(query.exec(keywordsearches.at(i)))
 	    while(query.next())
-	      prefixes << query.value(0).toString().mid(0, 2);
+	      {
+		prefixes << query.value(0).toString().mid(0, 2);
+
+		if(prefixes.size() >= 16 * 16)
+		  goto done_label;
+	      }
 	}
+
+    done_label:
 
       QApplication::restoreOverrideCursor();qDebug()<<prefixes<<prefixes.size();
 
