@@ -114,11 +114,11 @@ void spoton::discoverUrls(void)
     }
   else
     {
-      QHash<QString, char> discovered;
+      QSet<QString> discovered;
       QString keywordsearch("");
       QString searchfor(tr("<html>Searched for... "));
       QStringList keywords;
-      QStringList url_hashes;
+      QStringList keywordsearches;
       bool intersect = false;
       bool ok = true;
 
@@ -156,7 +156,7 @@ void spoton::discoverUrls(void)
 	  for(int i = 0; i < keywords.size(); i++)
 	    {
 	      if(!discovered.contains(keywords.at(i)))
-		discovered[keywords.at(i)] = '0';
+		discovered << keywords.at(i);
 	      else
 		continue;
 
@@ -195,33 +195,7 @@ void spoton::discoverUrls(void)
 	      searchfor.append(")");
 	    }
 
-	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-	  QSqlQuery query(m_urlDatabase);
-
-	  query.setForwardOnly(true);
-
-	  if(query.exec(keywordsearch))
-	    while(query.next())
-	      {
-#if QT_VERSION < 0x050000
-		QRegExp re("^[0-9A-F]+$", Qt::CaseInsensitive);
-
-		if(re.exactMatch(query.value(0).toString()))
-		  url_hashes << query.value(0).toString();
-#else
-		QRegularExpression re
-		  ("^[0-9A-F]+$",
-		   QRegularExpression::CaseInsensitiveOption);
-		QRegularExpressionMatch match = re.match
-		  (query.value(0).toString());
-
-		if(match.hasMatch())
-		  url_hashes << query.value(0).toString();
-#endif
-	      }
-
-	  QApplication::restoreOverrideCursor();
+	  keywordsearches << keywordsearch;
 	}
       while(true);
 
@@ -237,7 +211,7 @@ void spoton::discoverUrls(void)
       for(int i = 0; i < keywords.size(); i++)
 	{
 	  if(!discovered.contains(keywords.at(i)))
-	    discovered[keywords.at(i)] = '0';
+	    discovered << keywords.at(i);
 	  else
 	    continue;
 
@@ -271,39 +245,7 @@ void spoton::discoverUrls(void)
 	}
 
       if(!keywords.isEmpty())
-	{
-	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-	  QSqlQuery query(m_urlDatabase);
-
-	  query.setForwardOnly(true);
-
-	  if(query.exec(keywordsearch))
-	    while(query.next())
-	      {
-		/*
-		** Is url_hash a HEX?
-		*/
-
-#if QT_VERSION < 0x050000
-		QRegExp re("^[0-9A-F]+$", Qt::CaseInsensitive);
-
-		if(re.exactMatch(query.value(0).toString()))
-		  url_hashes << query.value(0).toString();
-#else
-		QRegularExpression re
-		  ("^[0-9A-F]+$",
-		   QRegularExpression::CaseInsensitiveOption);
-		QRegularExpressionMatch match = re.match
-		  (query.value(0).toString());
-
-		if(match.hasMatch())
-		  url_hashes << query.value(0).toString();
-#endif
-	      }
-
-	  QApplication::restoreOverrideCursor();
-	}
+	keywordsearches << keywordsearch;
 
       searchfor = searchfor.trimmed();
 
@@ -314,50 +256,54 @@ void spoton::discoverUrls(void)
       m_ui.searchfor->setText(searchfor);
       keywordsearch.clear();
 
-      for(int i = 0; i < url_hashes.size(); i++)
-	{
-	  keywordsearch.append(QString("'%1'").arg(url_hashes.at(i)));
+      QSet<QString> prefixes;
 
-	  if(i != url_hashes.size() - 1)
-	    keywordsearch.append(", ");
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      for(int i = 0; i < keywordsearches.size(); i++)
+	{
+	  QSqlQuery query(m_urlDatabase);
+
+	  query.setForwardOnly(true);
+
+	  if(query.exec(keywordsearches.at(i)))
+	    while(query.next())
+	      prefixes << query.value(0).toString().mid(0, 2);
 	}
 
-      for(int i = 0; i < 10 + 6; i++)
-	for(int j = 0; j < 10 + 6; j++)
-	  {
-	    QChar c1;
-	    QChar c2;
+      QApplication::restoreOverrideCursor();qDebug()<<prefixes<<prefixes.size();
 
-	    if(i <= 9)
-	      c1 = QChar(i + 48);
-	    else
-	      c1 = QChar(i + 97 - 10);
+      while(!keywordsearches.isEmpty())
+	{
+	  keywordsearch = keywordsearches.takeFirst();
 
-	    if(j <= 9)
-	      c2 = QChar(j + 48);
-	    else
-	      c2 = QChar(j + 97 - 10);
+	  int i = 0;
 
-	    /*
-	    ** For absolute correctness, we ought to use parameters in
-	    ** the SQL queries.
-	    */
+	  foreach(QString prefix, prefixes)
+	    {
+	      i += 1;
 
-	    if(i == 15 && j == 15)
-	      querystr.append
-		(QString("SELECT title, url, description, "
-			 "date_time_inserted, url_hash "
-			 "FROM spot_on_urls_%1%2 WHERE "
-			 "url_hash IN (%3) ").
-		 arg(c1).arg(c2).arg(keywordsearch));
-	    else
-	      querystr.append
-		(QString("SELECT title, url, description, "
-			 "date_time_inserted, url_hash "
-			 "FROM spot_on_urls_%1%2 WHERE "
-			 "url_hash IN (%3) UNION ").
-		 arg(c1).arg(c2).arg(keywordsearch));
-	  }
+	      /*
+	      ** For absolute correctness, we ought to use parameters in
+	      ** the SQL queries.
+	      */
+
+	      if(i == prefixes.size() && keywordsearches.isEmpty())
+		querystr.append
+		  (QString("SELECT title, url, description, "
+			   "date_time_inserted, url_hash "
+			   "FROM spot_on_urls_%1 WHERE "
+			   "url_hash IN (%2) ").
+		   arg(prefix).arg(keywordsearch));
+	      else
+		querystr.append
+		  (QString("SELECT title, url, description, "
+			   "date_time_inserted, url_hash "
+			   "FROM spot_on_urls_%1 WHERE "
+			   "url_hash IN (%2) UNION ").
+		   arg(prefix).arg(keywordsearch));
+	    }
+	}
 
       querystr.append(" ORDER BY 4 DESC ");
       querystr.append(QString(" LIMIT %1 ").arg(m_urlLimit));
