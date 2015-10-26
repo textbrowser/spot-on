@@ -1823,17 +1823,6 @@ void spoton::slotUrlPolarizerTypeChange(int index)
 
 void spoton::slotCorrectUrlDatabases(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
-      return;
-    }
-
   if(!m_urlDatabase.isOpen())
     {
       QMessageBox::critical
@@ -1843,12 +1832,123 @@ void spoton::slotCorrectUrlDatabases(void)
       return;
     }
 
-  if(!m_urlCommonCrypt)
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Did you prepare common credentials?"));
-      return;
-    }
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText
+    (tr("The kernel must be deactivated. Proceed?"));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+  else
+    slotDeactivateKernel();
+
+  QProgressDialog progress(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  progress.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  progress.setLabelText(tr("Deleting orphan URL keywords. "
+			   "Please be patient."));
+  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMinimum(0);
+  progress.setWindowModality(Qt::ApplicationModal);
+  progress.setWindowTitle(tr("%1: Deleting URL Keywords").
+    arg(SPOTON_APPLICATION_NAME));
+  progress.show();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  int deleted = 0;
+
+  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
+    for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
+      {
+	if(processed <= progress.maximum())
+	  progress.setValue(processed);
+
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
+
+	QChar c1;
+	QChar c2;
+	QSqlQuery query1(m_urlDatabase);
+
+	if(i <= 9)
+	  c1 = QChar(i + 48);
+	else
+	  c1 = QChar(i + 97 - 10);
+
+	if(j <= 9)
+	  c2 = QChar(j + 48);
+	else
+	  c2 = QChar(j + 97 - 10);
+
+	query1.setForwardOnly(true);
+	query1.prepare
+	  (QString("SELECT url_hash FROM "
+		   "spot_on_keywords_%1%2").arg(c1).arg(c2));
+
+	if(query1.exec())
+	  while(query1.next())
+	    {
+	      QSqlQuery query2(m_urlDatabase);
+
+	      query2.setForwardOnly(true);
+	      query2.prepare
+		(QString("SELECT COUNT(*) FROM "
+			 "spot_on_urls_%1 WHERE "
+			 "url_hash = ?").
+		 arg(query1.value(0).toString().mid(0, 2)));
+	      query2.bindValue(0, query1.value(0));
+
+	      if(query2.exec())
+		if(query2.next())
+		  if(query2.value(0).toLongLong() == 0)
+		    {
+		      QSqlQuery query3(m_urlDatabase);
+
+		      if(m_urlDatabase.driverName() != "QPSQL")
+			query3.exec("PRAGMA secure_delete = ON");
+
+		      query3.prepare
+			(QString("DELETE FROM "
+				 "spot_on_keywords_%1%2 WHERE "
+				 "url_hash = ?").
+			 arg(c1).arg(c2));
+		      query3.bindValue(0, query1.value(0));
+
+		      if(query3.exec())
+			deleted += 1;
+		    }
+	    }
+
+	processed += 1;
+      }
+
+  progress.close();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QLocale locale;
+
+  QMessageBox::information
+    (this, tr("%1: Information").
+     arg(SPOTON_APPLICATION_NAME),
+     tr("A total of %1 keyword(s) was(were) deleted.").
+     arg(locale.toString(deleted)));
 }
