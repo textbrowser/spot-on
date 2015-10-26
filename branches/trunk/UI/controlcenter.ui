@@ -4263,7 +4263,7 @@
                    <item>
                     <widget class="QPushButton" name="correctUrlDatabases">
                      <property name="toolTip">
-                      <string>Remove orphan database entries.</string>
+                      <string>Remove orphaned database entries.</string>
                      </property>
                      <property name="text">
                       <string>Correct Databases</string>

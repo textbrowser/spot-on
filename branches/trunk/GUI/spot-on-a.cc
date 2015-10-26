@@ -60,6 +60,9 @@ const int spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::LANE_WIDTH_DEFAULT;
+const int spoton_common::LANE_WIDTH_MAXIMUM;
+const int spoton_common::LANE_WIDTH_MINIMUM;
 const int spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::CACHE_TIME_DELTA_MAXIMUM =
