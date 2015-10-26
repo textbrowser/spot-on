@@ -56,15 +56,39 @@ QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 20000
                                                       << 75000;
 QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =
   QStringList() << "ftp" << "gopher" << "http" << "https";
+const int spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE;
+const int spoton_common::BUZZ_MAXIMUM_ID_LENGTH;
 const int spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE;
 const int spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::ELEGANT_STARBEAM_SIZE;
 const int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::HARVEST_POST_OFFICE_LETTERS_INTERVAL;
+const int spoton_common::KERNEL_CERTIFICATE_DAYS_VALID;
+const int spoton_common::KERNEL_URLS_BATCH_SIZE;
 const int spoton_common::LANE_WIDTH_DEFAULT;
 const int spoton_common::LANE_WIDTH_MAXIMUM;
 const int spoton_common::LANE_WIDTH_MINIMUM;
 const int spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST;
+const int spoton_common::MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS;
+const int spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION;
+const int spoton_common::MOSAIC_SIZE;
+const int spoton_common::NAME_MAXIMUM_LENGTH;
 const int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::POPTASTIC_MAXIMUM_EMAIL_SIZE;
+const int spoton_common::POPTASTIC_STATUS_INTERVAL;
+const int spoton_common::REAP_POST_OFFICE_LETTERS_INTERVAL;
+const int spoton_common::SEND_QUEUED_EMAIL_INTERVAL;
+const int spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH;
+const int spoton_common::STATUS_INTERVAL;
+const int spoton_common::STATUS_TEXT_MAXIMUM_LENGTH;
+const qint64 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
+const qint64 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
+const qint64 spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE;
+const qint64 spoton_common::MINIMUM_NEIGHBOR_CONTENT_LENGTH;
+const unsigned long spoton_common::GEMINI_ITERATION_COUNT;
 int spoton_common::CACHE_TIME_DELTA_MAXIMUM =
   spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::CHAT_TIME_DELTA_MAXIMUM =
