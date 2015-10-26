@@ -25,11 +25,11 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QHash>
-#include <QStringList>
-
 #ifndef _spoton_common_h_
 #define _spoton_common_h_
+
+#include <QHash>
+#include <QStringList>
 
 #define SPOTON_VERSION_STR "2015.11.01"
 
@@ -38,14 +38,11 @@ typedef QList<QByteArray> QByteArrayList;
 typedef QList<QPair<QByteArray, qint64> > QPairByteArrayInt64List;
 typedef QPair<QByteArray, QByteArray> QPairByteArrayByteArray;
 
-namespace spoton_common
+class spoton_common
 {
-  static const QList<int> LANE_WIDTHS = QList<int> () << 20000
-						      << 25000
-						      << 50000
-						      << 75000;
-  static const QStringList ACCEPTABLE_URL_SCHEMES =
-    QStringList() << "ftp" << "gopher" << "http" << "https";
+ public:
+  static QList<int> LANE_WIDTHS;
+  static QStringList ACCEPTABLE_URL_SCHEMES;
   static const int ACCOUNTS_RANDOM_BUFFER_SIZE = 64;
   static const int BUZZ_MAXIMUM_ID_LENGTH = 256; /*
 						 ** Please use a number
@@ -68,10 +65,11 @@ namespace spoton_common
   static const int LANE_WIDTH_DEFAULT = 20971520;
   static const int LANE_WIDTH_MAXIMUM = LANE_WIDTH_DEFAULT;
   static const int LANE_WIDTH_MINIMUM =
-    qMin(4096, LANE_WIDTH_DEFAULT); /*
-				    ** Must be smaller
-				    ** than the default.
-				    */
+    4096 < LANE_WIDTH_DEFAULT ? 4096 : LANE_WIDTH_DEFAULT; /*
+							   ** Must be smaller
+							   ** than the
+							   ** default.
+							   */
   static const int MAIL_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
@@ -92,22 +90,28 @@ namespace spoton_common
 					      ** than the content length.
 					      */
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH =
-    qMin(static_cast<qint64> (10485760), MAXIMUM_NEIGHBOR_BUFFER_SIZE);
+    10485760 < MAXIMUM_NEIGHBOR_BUFFER_SIZE ?
+    10485760 : MAXIMUM_NEIGHBOR_BUFFER_SIZE;
   static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 250000;
   static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH =
-    qMin(static_cast<qint64> (256), MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
+    256 < MAXIMUM_NEIGHBOR_CONTENT_LENGTH ?
+    256 : MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
   static const unsigned long GEMINI_ITERATION_COUNT = 100000;
 
   /*
   ** Dynamic values. Not a pleasant solution.
   */
 
-  extern int CACHE_TIME_DELTA_MAXIMUM;
-  extern int CHAT_TIME_DELTA_MAXIMUM;
-  extern int FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
-  extern int GEMINI_TIME_DELTA_MAXIMUM;
-  extern int MAIL_TIME_DELTA_MAXIMUM;
-  extern int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
-}
+  static int CACHE_TIME_DELTA_MAXIMUM;
+  static int CHAT_TIME_DELTA_MAXIMUM;
+  static int FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
+  static int GEMINI_TIME_DELTA_MAXIMUM;
+  static int MAIL_TIME_DELTA_MAXIMUM;
+  static int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
+
+ private:
+  spoton_common(void);
+  ~spoton_common();
+};
 
 #endif

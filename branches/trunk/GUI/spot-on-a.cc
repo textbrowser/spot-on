@@ -50,15 +50,30 @@ extern "C"
 ** Not pleasant! Please avoid this solution!
 */
 
-int spoton_common::CACHE_TIME_DELTA_MAXIMUM = CACHE_TIME_DELTA_MAXIMUM_STATIC;
-int spoton_common::CHAT_TIME_DELTA_MAXIMUM = CHAT_TIME_DELTA_MAXIMUM_STATIC;
+QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 20000
+                                                      << 25000
+                                                      << 50000
+                                                      << 75000;
+QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =
+  QStringList() << "ftp" << "gopher" << "http" << "https";
+const int spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::CACHE_TIME_DELTA_MAXIMUM =
+  spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::CHAT_TIME_DELTA_MAXIMUM =
+  spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
-  FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
+  spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::GEMINI_TIME_DELTA_MAXIMUM =
-  GEMINI_TIME_DELTA_MAXIMUM_STATIC;
-int spoton_common::MAIL_TIME_DELTA_MAXIMUM = MAIL_TIME_DELTA_MAXIMUM_STATIC;
+  spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::MAIL_TIME_DELTA_MAXIMUM =
+  spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
-  POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
+  spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 static QPointer<spoton> s_gui = 0;
 
 #if QT_VERSION >= 0x050000
