@@ -1859,7 +1859,7 @@ void spoton::slotCorrectUrlDatabases(void)
   progress.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-  progress.setLabelText(tr("Deleting orphan URL keywords. "
+  progress.setLabelText(tr("Deleting orphaned URL keywords. "
 			   "Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
@@ -1875,6 +1875,9 @@ void spoton::slotCorrectUrlDatabases(void)
   QSqlQuery query2(m_urlDatabase);
   QSqlQuery query3(m_urlDatabase);
   int deleted = 0;
+
+  query1.setForwardOnly(true);
+  query2.setForwardOnly(true);
 
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
@@ -1899,7 +1902,9 @@ void spoton::slotCorrectUrlDatabases(void)
 	else
 	  c2 = QChar(j + 97 - 10);
 
-	query1.setForwardOnly(true);
+	progress.setLabelText
+	  (tr("Reviewing spot_on_keywords_%1%2. "
+	      "Please be patient.").arg(c1).arg(c2));
 	query1.prepare
 	  (QString("SELECT url_hash FROM "
 		   "spot_on_keywords_%1%2").arg(c1).arg(c2));
@@ -1908,6 +1913,9 @@ void spoton::slotCorrectUrlDatabases(void)
 	  while(query1.next())
 	    if(!m_urlPrefixes.contains(query1.value(0).toString().mid(0, 2)))
 	      {
+		if(progress.wasCanceled())
+		  break;
+
 		if(m_urlDatabase.driverName() != "QPSQL")
 		  query2.exec("PRAGMA secure_delete = ON");
 
@@ -1923,7 +1931,9 @@ void spoton::slotCorrectUrlDatabases(void)
 	      }
 	    else
 	      {
-		query2.setForwardOnly(true);
+		if(progress.wasCanceled())
+		  break;
+
 		query2.prepare
 		  (QString("SELECT COUNT(*) FROM "
 			   "spot_on_urls_%1 WHERE "
@@ -1963,6 +1973,6 @@ void spoton::slotCorrectUrlDatabases(void)
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
-     tr("A total of %1 keyword(s) was(were) deleted.").
+     tr("A total of %1 keyword entries was deleted.").
      arg(locale.toString(deleted)));
 }
