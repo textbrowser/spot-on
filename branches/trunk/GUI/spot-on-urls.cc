@@ -1871,6 +1871,9 @@ void spoton::slotCorrectUrlDatabases(void)
   QApplication::processEvents();
 #endif
 
+  QSqlQuery query1(m_urlDatabase);
+  QSqlQuery query2(m_urlDatabase);
+  QSqlQuery query3(m_urlDatabase);
   int deleted = 0;
 
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
@@ -1885,7 +1888,6 @@ void spoton::slotCorrectUrlDatabases(void)
 
 	QChar c1;
 	QChar c2;
-	QSqlQuery query1(m_urlDatabase);
 
 	if(i <= 9)
 	  c1 = QChar(i + 48);
@@ -1906,8 +1908,6 @@ void spoton::slotCorrectUrlDatabases(void)
 	  while(query1.next())
 	    if(!m_urlPrefixes.contains(query1.value(0).toString().mid(0, 2)))
 	      {
-		QSqlQuery query2(m_urlDatabase);
-
 		if(m_urlDatabase.driverName() != "QPSQL")
 		  query2.exec("PRAGMA secure_delete = ON");
 
@@ -1923,8 +1923,6 @@ void spoton::slotCorrectUrlDatabases(void)
 	      }
 	    else
 	      {
-		QSqlQuery query2(m_urlDatabase);
-
 		query2.setForwardOnly(true);
 		query2.prepare
 		  (QString("SELECT COUNT(*) FROM "
@@ -1937,8 +1935,6 @@ void spoton::slotCorrectUrlDatabases(void)
 		  if(query2.next())
 		    if(query2.value(0).toLongLong() == 0)
 		      {
-			QSqlQuery query3(m_urlDatabase);
-
 			if(m_urlDatabase.driverName() != "QPSQL")
 			  query3.exec("PRAGMA secure_delete = ON");
 
