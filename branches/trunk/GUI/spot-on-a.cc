@@ -1403,6 +1403,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotSaveUrlDistribution(int)));
+  connect(m_ui.correctUrlDatabases,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotCorrectUrlDatabases(void)));
   connect(m_optionsUi.sharePrivateKeys,
 	  SIGNAL(toggled(bool)),
 	  this,

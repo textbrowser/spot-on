@@ -1820,3 +1820,35 @@ void spoton::slotUrlPolarizerTypeChange(int index)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton::slotCorrectUrlDatabases(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
+
+  if(!m_urlDatabase.isOpen())
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please connect to a URL database."));
+      return;
+    }
+
+  if(!m_urlCommonCrypt)
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Did you prepare common credentials?"));
+      return;
+    }
+}

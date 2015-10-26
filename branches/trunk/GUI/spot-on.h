@@ -663,6 +663,7 @@ class spoton: public QMainWindow
   void slotCopyOrPaste(void);
   void slotCopyTransmittedMagnet(void);
   void slotCopyUrlFriendshipBundle(void);
+  void slotCorrectUrlDatabases(void);
   void slotCostChanged(int value);
   void slotDaysChanged(int value);
   void slotDeactivateKernel(void);
