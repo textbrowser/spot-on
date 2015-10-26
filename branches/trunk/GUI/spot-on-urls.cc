@@ -1904,37 +1904,55 @@ void spoton::slotCorrectUrlDatabases(void)
 
 	if(query1.exec())
 	  while(query1.next())
-	    {
-	      QSqlQuery query2(m_urlDatabase);
+	    if(!m_urlPrefixes.contains(query1.value(0).toString().mid(0, 2)))
+	      {
+		QSqlQuery query2(m_urlDatabase);
 
-	      query2.setForwardOnly(true);
-	      query2.prepare
-		(QString("SELECT COUNT(*) FROM "
-			 "spot_on_urls_%1 WHERE "
-			 "url_hash = ?").
-		 arg(query1.value(0).toString().mid(0, 2)));
-	      query2.bindValue(0, query1.value(0));
+		if(m_urlDatabase.driverName() != "QPSQL")
+		  query2.exec("PRAGMA secure_delete = ON");
 
-	      if(query2.exec())
-		if(query2.next())
-		  if(query2.value(0).toLongLong() == 0)
-		    {
-		      QSqlQuery query3(m_urlDatabase);
+		query2.prepare
+		  (QString("DELETE FROM "
+			   "spot_on_keywords_%1%2 WHERE "
+			   "url_hash = ?").
+		   arg(c1).arg(c2));
+		query2.bindValue(0, query1.value(0));
 
-		      if(m_urlDatabase.driverName() != "QPSQL")
-			query3.exec("PRAGMA secure_delete = ON");
+		if(query2.exec())
+		  deleted += 1;
+	      }
+	    else
+	      {
+		QSqlQuery query2(m_urlDatabase);
 
-		      query3.prepare
-			(QString("DELETE FROM "
-				 "spot_on_keywords_%1%2 WHERE "
-				 "url_hash = ?").
-			 arg(c1).arg(c2));
-		      query3.bindValue(0, query1.value(0));
+		query2.setForwardOnly(true);
+		query2.prepare
+		  (QString("SELECT COUNT(*) FROM "
+			   "spot_on_urls_%1 WHERE "
+			   "url_hash = ?").
+		   arg(query1.value(0).toString().mid(0, 2)));
+		query2.bindValue(0, query1.value(0));
 
-		      if(query3.exec())
-			deleted += 1;
-		    }
-	    }
+		if(query2.exec())
+		  if(query2.next())
+		    if(query2.value(0).toLongLong() == 0)
+		      {
+			QSqlQuery query3(m_urlDatabase);
+
+			if(m_urlDatabase.driverName() != "QPSQL")
+			  query3.exec("PRAGMA secure_delete = ON");
+
+			query3.prepare
+			  (QString("DELETE FROM "
+				   "spot_on_keywords_%1%2 WHERE "
+				   "url_hash = ?").
+			   arg(c1).arg(c2));
+			query3.bindValue(0, query1.value(0));
+
+			if(query3.exec())
+			  deleted += 1;
+		      }
+	      }
 
 	processed += 1;
       }

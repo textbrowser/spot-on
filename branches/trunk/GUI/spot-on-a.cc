@@ -211,6 +211,25 @@ int main(int argc, char *argv[])
 
 spoton::spoton(void):QMainWindow()
 {
+  for(int i = 0; i < 10 + 6; i++)
+    for(int j = 0; j < 10 + 6; j++)
+      {
+	QChar c1;
+	QChar c2;
+
+	if(i <= 9)
+	  c1 = QChar(i + 48);
+	else
+	  c1 = QChar(i + 97 - 10);
+
+	if(j <= 9)
+	  c2 = QChar(j + 48);
+	else
+	  c2 = QChar(j + 97 - 10);
+
+	m_urlPrefixes << QString("%1%2").arg(c1).arg(c2);
+      }
+
   m_locked = false;
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
   spoton_smp::test1();

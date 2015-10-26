@@ -58,6 +58,7 @@
 #include <QProcess>
 #include <QQueue>
 #include <QScrollBar>
+#include <QSet>
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -457,6 +458,7 @@ class spoton: public QMainWindow
 				       */
   QList<QFuture<void> > m_starbeamDigestFutures;
   QMainWindow *m_optionsWindow;
+  QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
   QStandardItemModel *m_starbeamReceivedModel;
