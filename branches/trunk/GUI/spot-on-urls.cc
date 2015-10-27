@@ -784,8 +784,7 @@ void spoton::displayUrlImportResults(const QDateTime &then,
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
-     tr("A total of %1 URL(s) was(were) imported and a total of %2 "
-	"URL(s) was(were) not imported. "
+     tr("URLs imported: %1. URLs not imported: %2. "
 	"Some URLs (%3) may have been declined because of distiller rules. "
 	"URLs that were not imported will remain in shared.db. "
 	"The process completed in %4 second(s).").
@@ -1844,8 +1843,18 @@ void spoton::slotCorrectUrlDatabases(void)
 		    arg(SPOTON_APPLICATION_NAME));
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText
-    (tr("The kernel must be deactivated. Proceed?"));
+
+  if(m_urlDatabase.driverName() == "QPSQL")
+    mb.setText
+      (tr("The kernel must be deactivated. The database-correction process "
+	  "may require a considerable amount of time to complete. "
+	  "You may experience performance degradation upon completion. "
+	  "Proceed?"));
+  else
+    mb.setText
+      (tr("The kernel must be deactivated. The database-correction process "
+	  "may require a considerable amount of time to complete. "
+	  "Proceed?"));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -1874,10 +1883,16 @@ void spoton::slotCorrectUrlDatabases(void)
   QSqlQuery query1(m_urlDatabase);
   QSqlQuery query2(m_urlDatabase);
   QSqlQuery query3(m_urlDatabase);
-  int deleted = 0;
+  qint64 deleted = 0;
 
   query1.setForwardOnly(true);
   query2.setForwardOnly(true);
+
+  if(m_urlDatabase.driverName() != "QPSQL")
+    {
+      query2.exec("PRAGMA secure_delete = ON");
+      query3.exec("PRAGMA secure_delete = ON");
+    }
 
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
@@ -1916,15 +1931,12 @@ void spoton::slotCorrectUrlDatabases(void)
 		if(progress.wasCanceled())
 		  break;
 
-		if(m_urlDatabase.driverName() != "QPSQL")
-		  query2.exec("PRAGMA secure_delete = ON");
-
 		query2.prepare
 		  (QString("DELETE FROM "
 			   "spot_on_keywords_%1%2 WHERE "
 			   "url_hash = ?").
 		   arg(c1).arg(c2));
-		query2.bindValue(0, query1.value(0));
+		query2.bindValue(0, query1.value(0));qDebug()<<"Here.";
 
 		if(query2.exec())
 		  deleted += 1;
@@ -1945,9 +1957,6 @@ void spoton::slotCorrectUrlDatabases(void)
 		  if(query2.next())
 		    if(query2.value(0).toLongLong() == 0)
 		      {
-			if(m_urlDatabase.driverName() != "QPSQL")
-			  query3.exec("PRAGMA secure_delete = ON");
-
 			query3.prepare
 			  (QString("DELETE FROM "
 				   "spot_on_keywords_%1%2 WHERE "
@@ -1973,6 +1982,6 @@ void spoton::slotCorrectUrlDatabases(void)
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
-     tr("A total of %1 keyword entries was deleted.").
+     tr("Approximate keyword entries deleted: %1.").
      arg(locale.toString(deleted)));
 }
