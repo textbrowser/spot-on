@@ -1849,11 +1849,13 @@ void spoton::slotCorrectUrlDatabases(void)
       (tr("The kernel must be deactivated. The database-correction process "
 	  "may require a considerable amount of time to complete. "
 	  "You may experience performance degradation upon completion. "
+	  "A brief report will be displayed after the process completes. "
 	  "Proceed?"));
   else
     mb.setText
       (tr("The kernel must be deactivated. The database-correction process "
 	  "may require a considerable amount of time to complete. "
+	  "A brief report will be displayed after the process completes. "
 	  "Proceed?"));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -1873,7 +1875,7 @@ void spoton::slotCorrectUrlDatabases(void)
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
   progress.setWindowModality(Qt::ApplicationModal);
-  progress.setWindowTitle(tr("%1: Deleting URL Keywords").
+  progress.setWindowTitle(tr("%1: Deleting Orphaned URL Keywords").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
 #ifndef Q_OS_MAC
@@ -1918,7 +1920,7 @@ void spoton::slotCorrectUrlDatabases(void)
 	  c2 = QChar(j + 97 - 10);
 
 	progress.setLabelText
-	  (tr("Reviewing spot_on_keywords_%1%2. "
+	  (tr("Reviewing spot_on_keywords_%1%2 for orphaned entries. "
 	      "Please be patient.").arg(c1).arg(c2));
 	query1.prepare
 	  (QString("SELECT url_hash FROM "
@@ -1982,6 +1984,6 @@ void spoton::slotCorrectUrlDatabases(void)
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
-     tr("Approximate keyword entries deleted: %1.").
+     tr("Approximate orphaned keyword entries deleted: %1.").
      arg(locale.toString(deleted)));
 }
