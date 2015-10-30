@@ -1927,49 +1927,51 @@ void spoton::slotCorrectUrlDatabases(void)
 		   "spot_on_keywords_%1%2").arg(c1).arg(c2));
 
 	if(query1.exec())
-	  while(query1.next())
-	    if(!m_urlPrefixes.contains(query1.value(0).toString().mid(0, 2)))
-	      {
-		if(progress.wasCanceled())
-		  break;
+	  {
+	    while(query1.next())
+	      if(!m_urlPrefixes.contains(query1.value(0).toString().mid(0, 2)))
+		{
+		  if(progress.wasCanceled())
+		    break;
 
-		query2.prepare
-		  (QString("DELETE FROM "
-			   "spot_on_keywords_%1%2 WHERE "
-			   "url_hash = ?").
-		   arg(c1).arg(c2));
-		query2.bindValue(0, query1.value(0));qDebug()<<"Here.";
+		  query2.prepare
+		    (QString("DELETE FROM "
+			     "spot_on_keywords_%1%2 WHERE "
+			     "url_hash = ?").
+		     arg(c1).arg(c2));
+		  query2.bindValue(0, query1.value(0));qDebug()<<"Here.";
 
-		if(query2.exec())
-		  deleted += 1;
-	      }
-	    else
-	      {
-		if(progress.wasCanceled())
-		  break;
+		  if(query2.exec())
+		    deleted += 1;
+		}
+	      else
+		{
+		  if(progress.wasCanceled())
+		    break;
 
-		query2.prepare
-		  (QString("SELECT COUNT(*) FROM "
-			   "spot_on_urls_%1 WHERE "
-			   "url_hash = ?").
-		   arg(query1.value(0).toString().mid(0, 2)));
-		query2.bindValue(0, query1.value(0));
+		  query2.prepare
+		    (QString("SELECT COUNT(*) FROM "
+			     "spot_on_urls_%1 WHERE "
+			     "url_hash = ?").
+		     arg(query1.value(0).toString().mid(0, 2)));
+		  query2.bindValue(0, query1.value(0));
 
-		if(query2.exec())
-		  if(query2.next())
-		    if(query2.value(0).toLongLong() == 0)
-		      {
-			query3.prepare
-			  (QString("DELETE FROM "
-				   "spot_on_keywords_%1%2 WHERE "
-				   "url_hash = ?").
-			   arg(c1).arg(c2));
-			query3.bindValue(0, query1.value(0));
+		  if(query2.exec())
+		    if(query2.next())
+		      if(query2.value(0).toLongLong() == 0)
+			{
+			  query3.prepare
+			    (QString("DELETE FROM "
+				     "spot_on_keywords_%1%2 WHERE "
+				     "url_hash = ?").
+			     arg(c1).arg(c2));
+			  query3.bindValue(0, query1.value(0));
 
-			if(query3.exec())
-			  deleted += 1;
-		      }
-	      }
+			  if(query3.exec())
+			    deleted += 1;
+			}
+		}
+	  }
 
 	processed += 1;
       }
