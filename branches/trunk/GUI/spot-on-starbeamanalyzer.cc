@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QAtomicInt>
 #include <QCheckBox>
 #include <QClipboard>
 #include <QKeyEvent>

@@ -28,7 +28,6 @@
 #ifndef _spoton_starbeamanalyzer_h_
 #define _spoton_starbeamanalyzer_h_
 
-#include <QAtomicInt>
 #include <QFuture>
 #include <QHash>
 #include <QMainWindow>
@@ -38,6 +37,7 @@
 
 #include "ui_starbeamanalyzer.h"
 
+class QAtomicInt;
 class QKeyEvent;
 class QTableWidgetItem;
 

@@ -28,7 +28,6 @@
 #ifndef _spoton_buzzpage_h_
 #define _spoton_buzzpage_h_
 
-#include <QDateTime>
 #include <QPointer>
 #include <QSslSocket>
 #include <QTimer>

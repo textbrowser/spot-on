@@ -30,7 +30,6 @@
 
 #include <QHash>
 #include <QPointer>
-#include <QQueue>
 #include <QSqlDatabase>
 #include <QTcpServer>
 #include <QTimer>
