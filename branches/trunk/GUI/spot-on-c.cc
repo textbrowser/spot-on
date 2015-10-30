@@ -629,19 +629,22 @@ void spoton::slotTransportChanged(int index)
 {
   if(m_ui.listenerTransport == sender())
     {
-      m_ui.recordIPAddress->setEnabled(index == 1);
-      m_ui.permanentCertificate->setEnabled(index == 1);
-      m_ui.sslListener->setEnabled(index == 1);
+      m_ui.days_valid->setEnabled(index == 1);
       m_ui.listenerKeySize->setEnabled(index == 1);
       m_ui.listenerShareAddress->setEnabled(index == 2);
+      m_ui.listenersSslControlString->setEnabled(index == 1);
+      m_ui.permanentCertificate->setEnabled(index == 1);
+      m_ui.recordIPAddress->setEnabled(index == 1);
+      m_ui.sslListener->setEnabled(index == 1);
     }
   else if(m_ui.neighborTransport == sender())
     {
       m_ui.addException->setEnabled(index == 1);
+      m_ui.neighborKeySize->setEnabled(index == 1);
+      m_ui.neighborsSslControlString->setEnabled(index == 1);
+      m_ui.proxy->setEnabled(index != 0);
       m_ui.requireSsl->setEnabled(index == 1);
       m_ui.sslKeySizeLabel->setEnabled(index == 1);
-      m_ui.neighborKeySize->setEnabled(index == 1);
-      m_ui.proxy->setEnabled(index != 0);
     }
 }
 
