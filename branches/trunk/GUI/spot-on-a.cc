@@ -376,19 +376,6 @@ spoton::spoton(void):QMainWindow()
     (tr("%1 was configured without "
 	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
 #endif
-#ifndef SPOTON_LINKED_WITH_LIBPHONON
-#if 0
-  m_ui.buzzSound->setEnabled(false);
-  m_ui.buzzSound->setToolTip
-    (tr("%1 was configured without "
-	"libphoton.").arg(SPOTON_APPLICATION_NAME));
-  m_ui.chatSound->setEnabled(false);
-  m_ui.chatSound->setToolTip
-    (tr("%1 was configured without "
-	"libphoton.").arg(SPOTON_APPLICATION_NAME));
-#endif
-#else
-#endif
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   setAttribute(Qt::WA_MacMetalStyle, true);

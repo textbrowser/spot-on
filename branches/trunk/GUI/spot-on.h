@@ -70,10 +70,6 @@
 #include <QTranslator>
 #include <QUuid>
 #include <QtDebug>
-#ifdef SPOTON_LINKED_WITH_LIBPHONON
-#include <phonon/AudioOutput>
-#include <phonon/MediaObject>
-#endif
 
 #include <limits>
 
