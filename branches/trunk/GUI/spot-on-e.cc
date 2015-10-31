@@ -32,13 +32,11 @@ extern "C"
 
 #include <QThread>
 
-#if SPOTON_GOLDBUG == 1
 #if QT_VERSION >= 0x050000
 #include <QCoreApplication>
 #include <QMediaPlayer>
 #include <QtConcurrent>
 #include <QtCore>
-#endif
 #endif
 
 #include "spot-on.h"
@@ -1228,9 +1226,6 @@ void spoton::playSong(const QString &name)
   if(m_locked)
     return;
 
-  QApplication::beep();
-
-#if SPOTON_GOLDBUG == 1
 #if QT_VERSION >= 0x050000
   QMediaPlayer *player = 0;
   QString str
@@ -1241,17 +1236,20 @@ void spoton::playSong(const QString &name)
   player = findChild<QMediaPlayer *> (name);
 
   if(!player)
-    player = new QMediaPlayer(this);
+    player = new (std::nothrow) QMediaPlayer(this);
 
-  player->setMedia(QUrl::fromLocalFile(str));
-  player->setObjectName("login.wav");
-  player->setVolume(50);
-  player->play();
+  if(player)
+    {
+      player->setMedia(QUrl::fromLocalFile(str));
+      player->setObjectName("login.wav");
+      player->setVolume(100);
+      player->play();
+    }
+  else
+    QApplication::beep();
 #else
   Q_UNUSED(name);
-#endif
-#else
-  Q_UNUSED(name);
+  QApplication::beep();
 #endif
 }
 

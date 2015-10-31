@@ -31,10 +31,8 @@
 #include "spot-on-defines.h"
 
 #include <QDateTime>
-#if SPOTON_GOLDBUG == 1
 #if QT_VERSION >= 0x050000
 #include <QMediaPlayer>
-#endif
 #endif
 #include <QMessageBox>
 #include <QScrollBar>
@@ -311,7 +309,6 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
  done_label:
 
-#if SPOTON_GOLDBUG == 1
 #if QT_VERSION >= 0x050000
   if(error.isEmpty())
     {
@@ -324,14 +321,20 @@ void spoton_chatwindow::sendMessage(bool *ok)
       player = findChild<QMediaPlayer *> ("send.wav");
 
       if(!player)
-	player = new QMediaPlayer(this);
+	player = new (std::nothrow) QMediaPlayer(this);
 
-      player->setMedia(QUrl::fromLocalFile(str));
-      player->setObjectName("send.wav");
-      player->setVolume(50);
-      player->play();
+      if(player)
+	{
+	  player->setMedia(QUrl::fromLocalFile(str));
+	  player->setObjectName("send.wav");
+	  player->setVolume(100);
+	  player->play();
+	}
+      else
+	QApplication::beep();
     }
-#endif
+#else
+  QApplication::beep();
 #endif
 
   if(!error.isEmpty())
