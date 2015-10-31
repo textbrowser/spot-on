@@ -5990,13 +5990,15 @@ void spoton::slotValidatePassphrase(void)
 
   if(!authenticated)
     m_ui.passphrase->selectAll();
-
+  else
+    {
 #if SPOTON_GOLDBUG == 1
-  slotConnectAllNeighbors();
+      slotConnectAllNeighbors();
 #endif
-  playSong("login.wav");
-  m_ui.passphrase->setFocus();
-  updatePublicKeysLabel();
+      playSong("login.wav");
+      m_ui.passphrase->setFocus();
+      updatePublicKeysLabel();
+    }
 }
 
 void spoton::slotTabChanged(int index)

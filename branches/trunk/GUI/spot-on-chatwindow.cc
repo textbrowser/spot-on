@@ -313,10 +313,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
   if(error.isEmpty())
     {
       QMediaPlayer *player = 0;
-      QString str
-	(QDir::cleanPath(QCoreApplication::applicationDirPath() +
-			 QDir::separator() + "Sounds" + QDir::separator() +
-			 "send.wav"));
+      QString str("qrc:/send.wav");
 
       player = findChild<QMediaPlayer *> ("send.wav");
 
@@ -325,7 +322,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
       if(player)
 	{
-	  player->setMedia(QUrl::fromLocalFile(str));
+	  player->setMedia(QUrl(str));
 	  player->setObjectName("send.wav");
 	  player->setVolume(100);
 	  player->play();

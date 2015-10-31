@@ -1228,10 +1228,7 @@ void spoton::playSong(const QString &name)
 
 #if QT_VERSION >= 0x050000
   QMediaPlayer *player = 0;
-  QString str
-    (QDir::cleanPath(QCoreApplication::applicationDirPath() +
-		     QDir::separator() + "Sounds" + QDir::separator() +
-		     name));
+  QString str(QString("qrc:/%1").arg(name));
 
   player = findChild<QMediaPlayer *> (name);
 
@@ -1240,8 +1237,8 @@ void spoton::playSong(const QString &name)
 
   if(player)
     {
-      player->setMedia(QUrl::fromLocalFile(str));
-      player->setObjectName("login.wav");
+      player->setMedia(QUrl(str));
+      player->setObjectName(name);
       player->setVolume(100);
       player->play();
     }
