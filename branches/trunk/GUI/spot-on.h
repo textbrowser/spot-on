@@ -46,6 +46,9 @@
 #endif
 #endif
 #include <QMainWindow>
+#if QT_VERSION >= 0x050000
+#include <QMediaPlayer>
+#endif
 #include <QMessageBox>
 #include <QMouseEvent>
 #ifdef Q_OS_WIN32
@@ -760,6 +763,10 @@ class spoton: public QMainWindow
   void slotMaxMosaicSize(int value);
   void slotMaximumClientsChanged(int index);
   void slotMaximumEmailFileSizeChanged(int value);
+#if QT_VERSION >= 0x050000
+  void slotMediaError(QMediaPlayer::Error error);
+  void slotMediaStatusChanged(QMediaPlayer::MediaStatus status);
+#endif
   void slotMessagesAnchorClicked(const QUrl &url);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotMosaicLocked(bool state);

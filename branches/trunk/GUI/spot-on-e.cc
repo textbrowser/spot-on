@@ -34,7 +34,6 @@ extern "C"
 
 #if QT_VERSION >= 0x050000
 #include <QCoreApplication>
-#include <QMediaPlayer>
 #include <QtConcurrent>
 #include <QtCore>
 #endif
@@ -1227,22 +1226,23 @@ void spoton::playSong(const QString &name)
     return;
 
 #if QT_VERSION >= 0x050000
-  QMediaPlayer *player = 0;
-  QString str(QString("qrc:/%1").arg(name));
-
-  player = findChild<QMediaPlayer *> (name);
-
-  if(!player)
-    {
-      player = new (std::nothrow) QMediaPlayer(this);
-      player->setMedia(QUrl(str));
-      player->setObjectName(name);
-      player->setVolume(100);
-    }
+  QMediaPlayer *player = new (std::nothrow) QMediaPlayer(this);
 
   if(player)
     {
-      player->stop();
+      QString str(QString("qrc:/%1").arg(name));
+
+      connect(player,
+	      SIGNAL(error(QMediaPlayer::Error)),
+	      this,
+	      SLOT(slotMediaError(QMediaPlayer::Error)));
+      connect(player,
+	      SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
+	      this,
+	      SLOT(slotMediaStatusChanged(QMediaPlayer::MediaStatus)));
+      player->setMedia(QUrl(str));
+      player->setObjectName(name);
+      player->setVolume(100);
       player->play();
     }
   else
@@ -1252,6 +1252,34 @@ void spoton::playSong(const QString &name)
   QApplication::beep();
 #endif
 }
+
+#if QT_VERSION >= 0x050000
+void spoton::slotMediaError(QMediaPlayer::Error error)
+{
+  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
+
+  if(!player)
+    return;
+
+  if(error != QMediaPlayer::NoError)
+    player->deleteLater();
+}
+
+void spoton::slotMediaStatusChanged(QMediaPlayer::MediaStatus status)
+{
+  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
+
+  if(!player)
+    return;
+
+  if(status == QMediaPlayer::EndOfMedia ||
+     status == QMediaPlayer::InvalidMedia ||
+     status == QMediaPlayer::NoMedia ||
+     status == QMediaPlayer::StalledMedia ||
+     status == QMediaPlayer::UnknownMediaStatus)
+    player->deleteLater();
+}
+#endif
 
 void spoton::slotLaunchKernelAfterAuthentication(bool state)
 {
