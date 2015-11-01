@@ -312,34 +312,30 @@ void spoton_chatwindow::sendMessage(bool *ok)
 #if QT_VERSION >= 0x050000
   if(error.isEmpty())
     {
-      QMediaPlayer *player = 0;
-      QString str("qrc:/send.wav");
+      QMediaPlayer *player = findChild<QMediaPlayer *> ();
+      QString str
+	(QDir::cleanPath(QCoreApplication::applicationDirPath() +
+			 QDir::separator() + "Sounds" + QDir::separator() +
+			 "send.wav"));
 
-      player = findChild<QMediaPlayer *> ("send.wav");
+      if(player)
+	player->deleteLater();
 
-      if(!player)
+      player = new (std::nothrow) QMediaPlayer
+	(this, QMediaPlayer::LowLatency);
+
+      if(player)
 	{
-	  player = new (std::nothrow) QMediaPlayer(this);
-
-	  if(player)
-	    {
-	      player->setMedia(QUrl(str));
-	      player->setObjectName("send.wav");
-	      player->setVolume(100);
-	      player->play();
-	    }
-	  else
-	    QApplication::beep();
-	}
-      else
-	{
-	  player->stop();
-	  player->setPosition(0);
+	  player->setMedia(QUrl::fromLocalFile(str));
+	  player->setVolume(100);
 	  player->play();
 	}
+      else
+	QApplication::beep();
     }
 #else
-  QApplication::beep();
+  if(error.isEmpty())
+    QApplication::beep();
 #endif
 
   if(!error.isEmpty())

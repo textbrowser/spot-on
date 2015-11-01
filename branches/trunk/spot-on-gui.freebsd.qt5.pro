@@ -175,7 +175,6 @@ TRANSLATIONS    = Translations/spot-on_af.ts \
                   Translations/spot-on_zh_HK.ts
 
 RESOURCES	= Icons/icons.qrc \
-                  Sounds/sounds.qrc \
 		  Translations/translations.qrc
 
 TARGET		= Spot-On
