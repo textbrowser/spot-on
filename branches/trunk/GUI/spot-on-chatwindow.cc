@@ -318,17 +318,25 @@ void spoton_chatwindow::sendMessage(bool *ok)
       player = findChild<QMediaPlayer *> ("send.wav");
 
       if(!player)
-	player = new (std::nothrow) QMediaPlayer(this);
-
-      if(player)
 	{
-	  player->setMedia(QUrl(str));
-	  player->setObjectName("send.wav");
-	  player->setVolume(100);
-	  player->play();
+	  player = new (std::nothrow) QMediaPlayer(this);
+
+	  if(player)
+	    {
+	      player->setMedia(QUrl(str));
+	      player->setObjectName("send.wav");
+	      player->setVolume(100);
+	      player->play();
+	    }
+	  else
+	    QApplication::beep();
 	}
       else
-	QApplication::beep();
+	{
+	  player->stop();
+	  player->setPosition(0);
+	  player->play();
+	}
     }
 #else
   QApplication::beep();

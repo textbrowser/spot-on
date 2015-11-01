@@ -1226,27 +1226,38 @@ void spoton::playSong(const QString &name)
     return;
 
 #if QT_VERSION >= 0x050000
-  QMediaPlayer *player = new (std::nothrow) QMediaPlayer(this);
+  QMediaPlayer *player = findChild<QMediaPlayer *> (name);
 
-  if(player)
+  if(!player)
     {
-      QString str(QString("qrc:/%1").arg(name));
+      player = new (std::nothrow) QMediaPlayer(this);
 
-      connect(player,
-	      SIGNAL(error(QMediaPlayer::Error)),
-	      this,
-	      SLOT(slotMediaError(QMediaPlayer::Error)));
-      connect(player,
-	      SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
-	      this,
-	      SLOT(slotMediaStatusChanged(QMediaPlayer::MediaStatus)));
-      player->setMedia(QUrl(str));
-      player->setObjectName(name);
-      player->setVolume(100);
-      player->play();
+      if(player)
+	{
+	  QString str(QString("qrc:/%1").arg(name));
+
+	  connect(player,
+		  SIGNAL(error(QMediaPlayer::Error)),
+		  this,
+		  SLOT(slotMediaError(QMediaPlayer::Error)));
+	  connect(player,
+		  SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
+		  this,
+		  SLOT(slotMediaStatusChanged(QMediaPlayer::MediaStatus)));
+	  player->setMedia(QUrl(str));
+	  player->setObjectName(name);
+	  player->setVolume(100);
+	  player->play();
+	}
+      else
+	QApplication::beep();
     }
   else
-    QApplication::beep();
+    {
+      player->stop();
+      player->setPosition(0);
+      player->play();
+    }
 #else
   Q_UNUSED(name);
   QApplication::beep();
@@ -1272,12 +1283,9 @@ void spoton::slotMediaStatusChanged(QMediaPlayer::MediaStatus status)
   if(!player)
     return;
 
-  if(status == QMediaPlayer::EndOfMedia ||
-     status == QMediaPlayer::InvalidMedia ||
-     status == QMediaPlayer::NoMedia ||
-     status == QMediaPlayer::StalledMedia ||
-     status == QMediaPlayer::UnknownMediaStatus)
-    player->deleteLater();
+  if(status == QMediaPlayer::EndOfMedia)
+    if(player->objectName() == "login.wav")
+      player->deleteLater();
 }
 #endif
 
