@@ -541,7 +541,7 @@ void spoton::slotShowMinimalDisplay(bool state)
       qobject_cast<QWidget *> (object)->setVisible(!state);
 
   m_ui.activateKernel->setVisible(true);
-  m_ui.aeBox->setVisible(!state);
+  m_ui.addException->setVisible(!state);
   m_ui.aeBox->setVisible(!state);
   m_ui.approvedIPs->setVisible(!state);
   m_ui.buildInformation->setVisible(!state);
@@ -556,7 +556,10 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.days->setVisible(!state);
   m_ui.days_valid->setVisible(!state);
   m_ui.deactivateKernel->setVisible(true);
+  m_ui.dynamicdns->setVisible(!state);
   m_ui.hashType->setVisible(!state);
+  m_ui.ipv4Neighbor->setVisible(!state);
+  m_ui.ipv6Neighbor->setVisible(!state);
   m_ui.iterationCount->setVisible(!state);
   m_ui.kernelPath->setVisible(true);
   m_ui.kernelPathLabel->setVisible(true);
@@ -571,25 +574,36 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.label_16->setVisible(!state);
   m_ui.label_2->setVisible(!state);
   m_ui.label_21->setVisible(!state);
-  m_ui.label_21->setVisible(!state);
   m_ui.label_23->setVisible(!state);
   m_ui.label_27->setVisible(!state);
   m_ui.label_28->setVisible(!state);
   m_ui.label_32->setVisible(!state);
   m_ui.label_36->setVisible(!state);
+  m_ui.label_39->setVisible(!state);
   m_ui.label_44->setVisible(!state);
   m_ui.label_54->setVisible(!state);
   m_ui.label_62->setVisible(!state);
   m_ui.label_64->setVisible(!state);
+  m_ui.label_66->setVisible(!state);
+  m_ui.label_70->setVisible(!state);
   m_ui.label_71->setVisible(!state);
   m_ui.label_78->setVisible(!state);
   m_ui.listenerOrientation->setVisible(!state);
   m_ui.listenersSslControlString->setVisible(!state);
   m_ui.motdBox->setVisible(!state);
+  m_ui.neighborKeySize->setVisible(!state);
+  m_ui.neighborOrientation->setVisible(!state);
+  m_ui.neighborScopeId->setVisible(!state);
+  m_ui.neighborScopeIdLabel->setVisible(!state);
   m_ui.neighborSummary->setVisible(!state);
+  m_ui.neighborTransport->setVisible(!state);
+  m_ui.neighborsEchoMode->setVisible(!state);
   m_ui.neighborsSslControlString->setVisible(!state);
+  m_ui.neighborsSslControlString->setVisible(!state);
+  m_ui.proxy->setVisible(!state);
   m_ui.publicKeysBox->setVisible(!state);
   m_ui.pulseSize->setVisible(!state);
+  m_ui.requireSsl->setVisible(!state);
   m_ui.saltLength->setVisible(!state);
   m_ui.saveBuzzName->setVisible(!state);
   m_ui.saveCopy->setVisible(!state);
@@ -597,6 +611,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.selectKernelPath->setVisible(true);
   m_ui.settings_frame->setVisible(!state);
   m_ui.shareBuzzMagnet->setVisible(!state);
+  m_ui.sslKeySizeLabel->setVisible(!state);
   m_ui.urlDistributionModel->setVisible(!state);
 #endif
   m_sb.errorlog->setHidden(state);
