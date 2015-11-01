@@ -195,8 +195,6 @@ PROJECTNAME	= Spot-On
 
 QMAKE_STRIP	= echo
 
-spoton.path		= /Applications/Spot-On_Qt5.d/Spot-On.app
-spoton.files		= Spot-On.app/*
 install1.path           = /Applications/Spot-On_Qt5.d
 install1.files          = spot-on-neighbors.txt
 libgeoip_data_install.path = /Applications/Spot-On_Qt5.d/GeoIP
@@ -215,6 +213,10 @@ preinstall.path         = /Applications/Spot-On_Qt5.d
 preinstall.extra        = rm -rf /Applications/Spot-On_Qt5.d/Spot-On.app/*
 postinstall.path	= /Applications/Spot-On_Qt5.d
 postinstall.extra	= find /Applications/Spot-On_Qt5.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
+sounds.path             = /Applications/Spot-On_Qt5.d/Sounds
+sounds.files            = Sounds/*.wav
+spoton.path		= /Applications/Spot-On_Qt5.d/Spot-On.app
+spoton.files		= Spot-On.app/*
 translations.path 	= /Applications/Spot-On_Qt5.d/Translations
 translations.files	= Translations/*.qm
 
@@ -226,6 +228,7 @@ INSTALLS	= macdeployqt \
                   libspoton_install \
                   lupdate \
                   lrelease \
-                  translations \
+                  sounds \
                   spoton \
+                  translations \
                   postinstall
