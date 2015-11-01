@@ -1233,13 +1233,16 @@ void spoton::playSong(const QString &name)
   player = findChild<QMediaPlayer *> (name);
 
   if(!player)
-    player = new (std::nothrow) QMediaPlayer(this);
-
-  if(player)
     {
+      player = new (std::nothrow) QMediaPlayer(this);
       player->setMedia(QUrl(str));
       player->setObjectName(name);
       player->setVolume(100);
+    }
+
+  if(player)
+    {
+      player->stop();
       player->play();
     }
   else
