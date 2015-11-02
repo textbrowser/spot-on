@@ -3427,6 +3427,41 @@ QPushButton#addListener:pressed {
                     </widget>
                    </item>
                    <item>
+                    <widget class="QLabel" name="label_128">
+                     <property name="text">
+                      <string>&amp;UDP Scheme</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>listener_udp_scheme</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="listener_udp_scheme">
+                     <property name="currentIndex">
+                      <number>2</number>
+                     </property>
+                     <property name="sizeAdjustPolicy">
+                      <enum>QComboBox::AdjustToContents</enum>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string>Broadcast</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>Multicast</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>Unicast</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                   <item>
                     <spacer name="horizontalSpacer_61">
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
@@ -5031,7 +5066,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>642</width>
-             <height>659</height>
+             <height>364</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6284,7 +6319,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>854</width>
+             <width>894</width>
              <height>1246</height>
             </rect>
            </property>
@@ -7731,7 +7766,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>552</width>
+             <width>477</width>
              <height>758</height>
             </rect>
            </property>
@@ -9000,8 +9035,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>677</height>
+             <width>545</width>
+             <height>473</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10859,6 +10894,7 @@ border-style: inset;
   <tabstop>days_valid</tabstop>
   <tabstop>listenersSslControlString</tabstop>
   <tabstop>listenerOrientation</tabstop>
+  <tabstop>listener_udp_scheme</tabstop>
   <tabstop>accounts</tabstop>
   <tabstop>deleteAccount</tabstop>
   <tabstop>ota</tabstop>

@@ -419,7 +419,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>798</width>
+                <width>402</width>
                 <height>479</height>
                </rect>
               </property>
@@ -2274,6 +2274,41 @@
                         <number>5</number>
                        </property>
                        <item>
+                        <widget class="QLabel" name="label_35">
+                         <property name="text">
+                          <string>&amp;UDP Scheme</string>
+                         </property>
+                         <property name="buddy">
+                          <cstring>listener_udp_scheme</cstring>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="listener_udp_scheme">
+                         <property name="currentIndex">
+                          <number>2</number>
+                         </property>
+                         <property name="sizeAdjustPolicy">
+                          <enum>QComboBox::AdjustToContents</enum>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>Broadcast</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Multicast</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Unicast</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                       <item>
                         <widget class="QCheckBox" name="listenerShareAddress">
                          <property name="text">
                           <string>&amp;Share Address</string>
@@ -4067,8 +4102,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>452</height>
+             <width>630</width>
+             <height>359</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4144,7 +4179,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>798</width>
+                 <width>787</width>
                  <height>587</height>
                 </rect>
                </property>
@@ -4995,7 +5030,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>808</width>
+             <width>794</width>
              <height>1078</height>
             </rect>
            </property>
@@ -6210,7 +6245,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>808</width>
+             <width>514</width>
              <height>526</height>
             </rect>
            </property>
@@ -7221,7 +7256,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>808</width>
+             <width>667</width>
              <height>454</height>
             </rect>
            </property>
@@ -7758,8 +7793,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>452</height>
+             <width>263</width>
+             <height>147</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8252,6 +8287,7 @@
   <tabstop>listenerScopeId</tabstop>
   <tabstop>ipv6Listener</tabstop>
   <tabstop>listenerTransport</tabstop>
+  <tabstop>listener_udp_scheme</tabstop>
   <tabstop>listenerShareAddress</tabstop>
   <tabstop>listenersEchoMode</tabstop>
   <tabstop>recordIPAddress</tabstop>

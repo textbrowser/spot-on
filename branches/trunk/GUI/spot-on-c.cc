@@ -636,6 +636,7 @@ void spoton::slotTransportChanged(int index)
       m_ui.permanentCertificate->setEnabled(index == 1);
       m_ui.recordIPAddress->setEnabled(index == 1);
       m_ui.sslListener->setEnabled(index == 1);
+      m_ui.listener_udp_scheme->setEnabled(index == 2);
     }
   else if(m_ui.neighborTransport == sender())
     {

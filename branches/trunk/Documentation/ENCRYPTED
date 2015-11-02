@@ -44,6 +44,7 @@ protocol
 public_key
 transport
 scope_id
+udp_scheme
 
 listeners_accounts
 

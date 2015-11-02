@@ -1792,6 +1792,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.magnetRadio->setChecked(true);
   m_ui.generate->setEnabled(false);
   m_ui.pairFrame->setEnabled(false);
+  m_ui.listener_udp_scheme->setEnabled(false);
 
 #ifdef Q_OS_MAC
   if(m_settings.contains("gui/kernelPath") &&
