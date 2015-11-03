@@ -787,6 +787,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotListenerIPComboChanged(int)));
+  connect(m_ui.listener_udp_scheme,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotListenerUDPSchemeChanged(int)));
+  connect(m_ui.listenerTransport,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotListenerUDPSchemeChanged(int)));
   connect(m_ui.transmit,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -2689,6 +2697,7 @@ void spoton::slotAddListener(void)
 	QString sslCS(m_ui.listenersSslControlString->text().trimmed());
 	QString status("online");
 	QString transport("");
+	QString udpScheme("");
 	QSqlQuery query(db);
 
 	if(m_ui.ipv4Listener->isChecked())
@@ -2702,6 +2711,13 @@ void spoton::slotAddListener(void)
 	  transport = "tcp";
 	else
 	  transport = "udp";
+
+	if(m_ui.listener_udp_scheme->currentIndex() == 0)
+	  udpScheme = "broadcast";
+	else if(m_ui.listener_udp_scheme->currentIndex() == 1)
+	  udpScheme = "multicast";
+	else
+	  udpScheme = "unicast";
 
 	query.prepare("INSERT INTO listeners "
 		      "(ip_address, "
@@ -2718,9 +2734,10 @@ void spoton::slotAddListener(void)
 		      "transport, "
 		      "share_udp_address, "
 		      "orientation, "
-		      "ssl_control_string) "
+		      "ssl_control_string, "
+		      "udp_scheme) "
 		      "VALUES "
-		      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 	if(ip.isEmpty())
 	  query.bindValue
@@ -2845,6 +2862,18 @@ void spoton::slotAddListener(void)
 	  sslCS = "N/A";
 
 	query.bindValue(14, sslCS);
+
+	if(ok)
+	  {
+	    if(transport == "udp")
+	      query.bindValue(15, crypt->encryptedThenHashed(udpScheme.
+							     toLatin1(), &ok).
+			      toBase64());
+	    else
+	      query.bindValue(15, crypt->encryptedThenHashed(QByteArray(),
+							     &ok).
+			      toBase64());
+	  }
 
 	if(ok)
 	  ok = query.exec();
@@ -3250,6 +3279,10 @@ void spoton::slotProtocolRadioToggled(bool state)
   if(!radio)
     return;
 
+  m_ui.listener_udp_scheme->model()->setData
+    (m_ui.listener_udp_scheme->model()->index(0, 0), QVariant(1 | 32),
+     Qt::UserRole - 1);
+
   if(radio == m_ui.dynamicdns)
     {
       m_ui.neighborIP->clear();
@@ -3282,6 +3315,13 @@ void spoton::slotProtocolRadioToggled(bool state)
 	  m_ui.listenerIP->setInputMask("");
 	  m_ui.listenerScopeId->setEnabled(true);
 	  m_ui.listenerScopeIdLabel->setEnabled(true);
+
+	  if(m_ui.listener_udp_scheme->currentIndex() == 0)
+	    m_ui.listener_udp_scheme->setCurrentIndex(1);
+
+	  m_ui.listener_udp_scheme->model()->setData
+	    (m_ui.listener_udp_scheme->
+	     model()->index(0, 0), 0, Qt::UserRole - 1);
 	}
       else
 	{

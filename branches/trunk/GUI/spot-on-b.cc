@@ -1220,7 +1220,18 @@ void spoton::prepareListenerIPCombo(void)
   m_ui.listenerIPCombo->clear();
 
   QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
+  QString udpScheme("");
   QStringList list;
+
+  if(m_ui.listenerTransport->currentIndex() == 2)
+    {
+      if(m_ui.listener_udp_scheme->currentIndex() == 0)
+	udpScheme = "broadcast";
+      else if(m_ui.listener_udp_scheme->currentIndex() == 1)
+	udpScheme = "multicast";
+      else
+	udpScheme = "unicast";
+    }
 
   while(!interfaces.isEmpty())
     {
@@ -1234,12 +1245,21 @@ void spoton::prepareListenerIPCombo(void)
 
       while(!addresses.isEmpty())
 	{
-	  QHostAddress address(addresses.takeFirst().ip());
+	  QHostAddress address;
+	  QNetworkAddressEntry entry;
+
+	  entry = addresses.takeFirst();
+	  address = entry.ip();
 
 	  if(m_ui.ipv4Listener->isChecked())
 	    {
 	      if(address.protocol() == QAbstractSocket::IPv4Protocol)
-		list.append(address.toString());
+		{
+		  if(udpScheme != "broadcast")
+		    list.append(address.toString());
+		  else
+		    list.append(entry.broadcast().toString());
+		}
 	    }
 	  else
 	    {

@@ -170,6 +170,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				 const QString &motd,
 				 const QString &sslControlString,
 				 const int laneWidth,
+				 const QString &udpScheme,
 				 QObject *parent):QObject(parent)
 {
   m_sctpServer = 0;
@@ -221,6 +222,12 @@ spoton_listener::spoton_listener(const QString &ipAddress,
     m_sslControlString = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 
   m_transport = transport;
+  m_udpScheme = udpScheme;
+
+  if(!(m_udpScheme == "broadcast" || m_udpScheme == "multicast" ||
+       m_udpScheme == "unicast"))
+    m_udpScheme = "unicast";
+
   m_useAccounts = useAccounts;
 
   if(m_keySize <= 0 || m_transport != "tcp")

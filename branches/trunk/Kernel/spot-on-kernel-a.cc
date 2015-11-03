@@ -1030,7 +1030,8 @@ void spoton_kernel::prepareListeners(void)
 		      "motd, "                   // 16
 		      "ssl_control_string, "     // 17
 		      "lane_width, "             // 18
-		      "OID "                     // 19
+		      "udp_scheme, "             // 19
+		      "OID "                     // 20
 		      "FROM listeners"))
 	  while(query.next())
 	    {
@@ -1069,6 +1070,7 @@ void spoton_kernel::prepareListeners(void)
 		      QByteArray privateKey;
 		      QByteArray publicKey;
 		      QByteArray transport;
+		      QByteArray udpScheme;
 		      QList<QByteArray> list;
 		      bool ok = true;
 
@@ -1111,18 +1113,23 @@ void spoton_kernel::prepareListeners(void)
 			   &ok);
 
 		      if(ok)
-			transport =  s_crypt->decryptedAfterAuthenticated
+			transport = s_crypt->decryptedAfterAuthenticated
 			  (QByteArray::fromBase64(query.
 						  value(13).
 						  toByteArray()),
 			   &ok);
 
 		      if(ok)
-			orientation =  s_crypt->decryptedAfterAuthenticated
+			orientation = s_crypt->decryptedAfterAuthenticated
 			  (QByteArray::fromBase64(query.
 						  value(15).
 						  toByteArray()),
 			   &ok);
+
+		      if(ok)
+			udpScheme = s_crypt->decryptedAfterAuthenticated
+			  (QByteArray::fromBase64(query.value(19).
+						  toByteArray()), &ok);
 
 		      if(ok)
 			{
@@ -1163,6 +1170,7 @@ void spoton_kernel::prepareListeners(void)
 						   toByteArray()).trimmed(),
 				 query.value(17).toString(),
 				 query.value(18).toInt(),
+				 udpScheme.constData(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)

@@ -1561,3 +1561,19 @@ QByteArray spoton::copiedPublicKeyPairToMagnet(const QByteArray &data) const
   magnet.append(list.value(5));
   return magnet;
 }
+
+void spoton::slotListenerUDPSchemeChanged(int index)
+{
+  Q_UNUSED(index);
+  prepareListenerIPCombo();
+
+  if(m_ui.listenerTransport->currentIndex() == 2)
+    {
+      if(m_ui.listener_udp_scheme->currentIndex() == 1)
+	m_ui.listenerIPCombo->setEnabled(false);
+      else
+	m_ui.listenerIPCombo->setEnabled(true);
+    }
+  else
+    m_ui.listenerIPCombo->setEnabled(true);
+}

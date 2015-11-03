@@ -753,6 +753,7 @@ class spoton: public QMainWindow
   void slotListenerIPComboChanged(int index);
   void slotListenerMaximumChanged(int value);
   void slotListenerSelected(void);
+  void slotListenerUDPSchemeChanged(int index);
   void slotListenerUseAccounts(bool state);
   void slotLock(void);
   void slotMagnetRadioToggled(bool state);
