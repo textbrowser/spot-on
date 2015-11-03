@@ -60,7 +60,12 @@ extern "C"
 }
 
 spoton_neighbor::spoton_neighbor
-(const int socketDescriptor,
+(
+#if QT_VERSION < 0x050000
+ const int socketDescriptor,
+#else
+ const qintptr socketDescriptor,
+#endif
  const QByteArray &certificate,
  const QByteArray &privateKey,
  const QString &echoMode,
@@ -129,9 +134,11 @@ spoton_neighbor::spoton_neighbor
   else if(m_udpSocket)
     {
 #ifdef Q_OS_WIN32
-      m_udpSocket->setSocketDescriptor(_dup(socketDescriptor));
+      m_udpSocket->setSocketDescriptor
+	(_dup(static_cast<int> (socketDescriptor)));
 #else
-      m_udpSocket->setSocketDescriptor(dup(socketDescriptor));
+      m_udpSocket->setSocketDescriptor
+	(dup(static_cast<int> (socketDescriptor)));
 #endif
       m_udpSocket->setLocalAddress(QHostAddress(localIpAddress));
       m_udpSocket->setLocalPort(localPort.toUShort());
