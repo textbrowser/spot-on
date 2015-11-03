@@ -1939,7 +1939,7 @@ void spoton::slotCorrectUrlDatabases(void)
 			     "spot_on_keywords_%1%2 WHERE "
 			     "url_hash = ?").
 		     arg(c1).arg(c2));
-		  query2.bindValue(0, query1.value(0));qDebug()<<"Here.";
+		  query2.bindValue(0, query1.value(0));
 
 		  if(query2.exec())
 		    deleted += 1;

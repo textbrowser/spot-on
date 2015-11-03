@@ -278,7 +278,7 @@ void spoton::discoverUrls(void)
 
     done_label:
 
-      QApplication::restoreOverrideCursor();qDebug()<<prefixes<<prefixes.size();
+      QApplication::restoreOverrideCursor();
 
       while(!keywordsearches.isEmpty())
 	{
