@@ -1436,14 +1436,16 @@ bool spoton_listener::listen(const QHostAddress &address, const quint16 port)
     return m_tcpServer->listen(address, port);
   else if(m_udpServer)
     {
+      bool ok = true;
+
       if(m_shareAddress)
-	return m_udpServer->bind(address, port,
-				 QUdpSocket::ReuseAddressHint |
-				 QUdpSocket::ShareAddress);
+	ok = m_udpServer->bind(address, port,
+			       QUdpSocket::ReuseAddressHint |
+			       QUdpSocket::ShareAddress);
       else
-	return m_udpServer->bind(address, port,
-				 QUdpSocket::DontShareAddress |
-				 QUdpSocket::ReuseAddressHint);
+	ok = m_udpServer->bind(address, port,
+			       QUdpSocket::DontShareAddress |
+			       QUdpSocket::ReuseAddressHint);
 
 #if QT_VERSION >= 0x040800
       if(m_udpScheme == "multicast")
@@ -1453,6 +1455,8 @@ bool spoton_listener::listen(const QHostAddress &address, const quint16 port)
 	    (QAbstractSocket::MulticastLoopbackOption, 0);
 	}
 #endif
+
+      return ok;
     }
   else
     return false;
