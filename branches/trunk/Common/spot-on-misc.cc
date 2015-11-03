@@ -381,8 +381,6 @@ void spoton_misc::prepareDatabases(void)
 			   "ADD lane_width INTEGER NOT NULL DEFAULT %1 "
 			   "CHECK (lane_width > 0)").
 		   arg(spoton_common::LANE_WIDTH_DEFAULT));
-	query.exec("ALTER TABLE listeners "
-		   "ADD udp_scheme TEXT NOT NULL");
 	query.exec("CREATE TABLE IF NOT EXISTS listeners_accounts ("
 		   "account_name TEXT NOT NULL, "
 		   "account_name_hash TEXT NOT NULL, " // Keyed hash.
