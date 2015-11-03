@@ -12,6 +12,7 @@
 <li>Disable the URL distribution service if instructed to do so.
 <li>Display the Poptastic panel regardless of the outcome of spoton_misc::poptasticSettings().</li>
 <li>Removed recursive object deletion (spoton_neighbor::deleteLater() via close()).</li>
+<li>The method spoton_listener::listen() should set m_address and m_port.</li>
 <li>The method spoton_smp::step5() must prepare the provided error parameter under all failure conditions.</li>
 </ol>
 <br>
@@ -52,7 +53,7 @@
 <li>Pleasant songs! Qt 5.x is required.</li>
 <li>Poptastic messages are now limited to 50 MiB.</li>
 <li>Removed the option to copy all public key pairs.</li>
-<li>UDP broadcasting and multicasting.</li>
+<li>UDP broadcasting and multicasting. Qt 4.8.x and newer are required for multicasting support. Please remove listeners.db.</li>
 <li>Upgraded Qt to version 5.5.1 on Windows.</li>
 <li>Upgraded SQLite products to version 3.9.1 on Windows.</li>
 <li>Upgraded libgcrypt to version 1.6.4 on Windows.</li>

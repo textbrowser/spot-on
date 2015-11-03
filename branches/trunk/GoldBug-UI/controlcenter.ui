@@ -3427,16 +3427,6 @@ QPushButton#addListener:pressed {
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLabel" name="label_128">
-                     <property name="text">
-                      <string>&amp;UDP Scheme</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>listener_udp_scheme</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
                     <widget class="QComboBox" name="listener_udp_scheme">
                      <property name="currentIndex">
                       <number>2</number>
@@ -5066,7 +5056,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>642</width>
-             <height>364</height>
+             <height>659</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -7766,7 +7756,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>477</width>
+             <width>552</width>
              <height>758</height>
             </rect>
            </property>
@@ -9035,8 +9025,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>545</width>
-             <height>473</height>
+             <width>570</width>
+             <height>677</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
