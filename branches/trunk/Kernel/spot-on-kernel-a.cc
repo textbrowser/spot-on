@@ -1210,7 +1210,7 @@ void spoton_kernel::prepareListeners(void)
 		      /*
 		      ** We must also be careful if we've never listened
 		      ** before because serverAddress() and serverPort()
-		      ** may not be defined properly. Please notice
+		      ** may not be defined properly. Please note
 		      ** that both aforementioned methods return the values
 		      ** that were provided to the listener's constructor.
 		      */

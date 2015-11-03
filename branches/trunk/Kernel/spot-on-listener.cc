@@ -627,25 +627,14 @@ void spoton_listener::slotTimeout(void)
   prepareNetworkInterface();
 
   if(isListening())
-    if(!m_networkInterface || !(m_networkInterface->flags() &
-				QNetworkInterface::IsUp))
+    if(!m_networkInterface)
       {
-	if(m_networkInterface)
-	  spoton_misc::logError
-	    (QString("spoton_listener::slotTimeout(): "
-		     "network interface %1 for %2:%3 is not active. "
-		     "Aborting.").
-	     arg(m_networkInterface->name()).
-	     arg(m_address.toString()).
-	     arg(m_port));
-	else
-	  spoton_misc::logError
-	    (QString("spoton_listener::slotTimeout(): "
-		     "undefined network interface for %1:%2. "
-		     "Aborting.").
-	     arg(m_address.toString()).
-	     arg(m_port));
-
+	spoton_misc::logError
+	  (QString("spoton_listener::slotTimeout(): "
+		   "undefined network interface for %1:%2. "
+		   "Aborting.").
+	   arg(m_address.toString()).
+	   arg(m_port));
 	deleteLater();
       }
 }
@@ -1161,6 +1150,26 @@ void spoton_listener::prepareNetworkInterface(void)
       m_networkInterface = 0;
     }
 
+#if QT_VERSION >= 0x040800
+  if(m_udpScheme == "multicast")
+    {
+      if(m_udpServer)
+	m_networkInterface = new (std::nothrow) QNetworkInterface
+	  (m_udpServer->multicastInterface());
+
+      if(m_networkInterface)
+	if(!(m_networkInterface->flags() &
+	     (QNetworkInterface::CanMulticast | QNetworkInterface::IsUp)))
+	  {
+	    delete m_networkInterface;
+	    m_networkInterface = 0;
+	  }
+
+      if(m_networkInterface)
+	return;
+    }
+#endif
+
   QList<QNetworkInterface> list(QNetworkInterface::allInterfaces());
 
   for(int i = 0; i < list.size(); i++)
@@ -1176,7 +1185,16 @@ void spoton_listener::prepareNetworkInterface(void)
 		  QNetworkInterface(list.at(i));
 
 		if(m_networkInterface)
-		  break;
+		  {
+		    if(!(m_networkInterface->flags() &
+			 QNetworkInterface::IsUp))
+		      {
+			delete m_networkInterface;
+			m_networkInterface = 0;
+		      }
+		    else
+		      break;
+		  }
 		else
 		  spoton_misc::logError
 		    ("spoton_listener::prepareNetworkInterface(): "
@@ -1191,7 +1209,16 @@ void spoton_listener::prepareNetworkInterface(void)
 		  QNetworkInterface(list.at(i));
 
 		if(m_networkInterface)
-		  break;
+		  {
+		    if(!(m_networkInterface->flags() &
+			 QNetworkInterface::IsUp))
+		      {
+			delete m_networkInterface;
+			m_networkInterface = 0;
+		      }
+		    else
+		      break;
+		  }
 		else
 		  spoton_misc::logError
 		    ("spoton_listener::prepareNetworkInterface(): "
@@ -1200,13 +1227,49 @@ void spoton_listener::prepareNetworkInterface(void)
 	  }
 	else if(m_udpServer)
 	  {
-	    if(addresses.at(j).ip() == m_udpServer->localAddress())
+	    if(addresses.at(j).broadcast() == m_udpServer->localAddress() ||
+	       addresses.at(j).ip() == m_udpServer->localAddress())
 	      {
 		m_networkInterface = new (std::nothrow)
 		  QNetworkInterface(list.at(i));
 
 		if(m_networkInterface)
-		  break;
+		  {
+		    if(m_udpScheme == "broadcast")
+		      {
+			if(!(m_networkInterface->flags() &
+			     (QNetworkInterface::CanBroadcast |
+			      QNetworkInterface::IsUp)))
+			  {
+			    delete m_networkInterface;
+			    m_networkInterface = 0;
+			  }
+		      }
+#if QT_VERSION >= 0x040800
+		    else if(m_udpScheme == "multicast")
+		      {
+			if(!(m_networkInterface->flags() &
+			     (QNetworkInterface::CanMulticast |
+			      QNetworkInterface::IsUp)))
+			  {
+			    delete m_networkInterface;
+			    m_networkInterface = 0;
+			  }
+		      }
+#endif
+		    else if(m_udpScheme == "unicast")
+		      {
+			if(!(m_networkInterface->flags() &
+			     QNetworkInterface::IsUp))
+			  {
+			    delete m_networkInterface;
+			    m_networkInterface = 0;
+			  }
+		      }
+
+		    if(m_networkInterface)
+		      break;
+		  }
 		else
 		  spoton_misc::logError
 		    ("spoton_listener::prepareNetworkInterface(): "
@@ -1350,6 +1413,12 @@ bool spoton_listener::isListening(void) const
 
 bool spoton_listener::listen(const QHostAddress &address, const quint16 port)
 {
+  if(m_sctpServer || m_tcpServer || m_udpServer)
+    {
+      m_address = address;
+      m_port = port;
+    }
+
   if(m_sctpServer)
     return m_sctpServer->listen(address, port);
   else if(m_tcpServer)
@@ -1364,6 +1433,15 @@ bool spoton_listener::listen(const QHostAddress &address, const quint16 port)
 	return m_udpServer->bind(address, port,
 				 QUdpSocket::DontShareAddress |
 				 QUdpSocket::ReuseAddressHint);
+
+#if QT_VERSION >= 0x040800
+      if(m_udpScheme == "multicast")
+	{
+	  m_udpServer->joinMulticastGroup(address);
+	  m_udpServer->setSocketOption
+	    (QAbstractSocket::MulticastLoopbackOption, 0);
+	}
+#endif
     }
   else
     return false;

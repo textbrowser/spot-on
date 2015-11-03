@@ -131,7 +131,12 @@ class spoton_neighbor: public QThread
 		  const Priority priority,
 		  const int laneWidth,
 		  QObject *parent);
-  spoton_neighbor(const int socketDescriptor,
+  spoton_neighbor(
+#if QT_VERSION < 0x050000
+		  const int socketDescriptor,
+#else
+		  const qintptr socketDescriptor,
+#endif
 		  const QByteArray &certificate,
 		  const QByteArray &privateKey,
 		  const QString &echoMode,
