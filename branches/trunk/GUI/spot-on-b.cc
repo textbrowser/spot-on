@@ -1257,7 +1257,9 @@ void spoton::prepareListenerIPCombo(void)
 		{
 		  if(udpScheme != "broadcast")
 		    list.append(address.toString());
-		  else
+		  else if(interface.flags() &
+			  (QNetworkInterface::CanBroadcast |
+			   QNetworkInterface::IsUp))
 		    list.append(entry.broadcast().toString());
 		}
 	    }

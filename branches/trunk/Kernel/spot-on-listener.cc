@@ -1157,7 +1157,7 @@ void spoton_listener::prepareNetworkInterface(void)
 	m_networkInterface = new (std::nothrow) QNetworkInterface
 	  (m_udpServer->multicastInterface());
 
-      if(m_networkInterface)
+      if(m_networkInterface && m_networkInterface->isValid())
 	if(!(m_networkInterface->flags() &
 	     (QNetworkInterface::CanMulticast | QNetworkInterface::IsUp)))
 	  {
@@ -1248,13 +1248,14 @@ void spoton_listener::prepareNetworkInterface(void)
 #if QT_VERSION >= 0x040800
 		    else if(m_udpScheme == "multicast")
 		      {
-			if(!(m_networkInterface->flags() &
-			     (QNetworkInterface::CanMulticast |
-			      QNetworkInterface::IsUp)))
-			  {
-			    delete m_networkInterface;
-			    m_networkInterface = 0;
-			  }
+			if(m_networkInterface->isValid())
+			  if(!(m_networkInterface->flags() &
+			       (QNetworkInterface::CanMulticast |
+				QNetworkInterface::IsUp)))
+			    {
+			      delete m_networkInterface;
+			      m_networkInterface = 0;
+			    }
 		      }
 #endif
 		    else if(m_udpScheme == "unicast")

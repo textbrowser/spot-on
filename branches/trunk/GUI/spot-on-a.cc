@@ -1801,6 +1801,15 @@ spoton::spoton(void):QMainWindow()
   m_ui.generate->setEnabled(false);
   m_ui.pairFrame->setEnabled(false);
   m_ui.listener_udp_scheme->setEnabled(false);
+#if QT_VERSION < 0x040800
+  /*
+  ** Disable multicast.
+  */
+
+  m_ui.listener_udp_scheme->model()->setData
+    (m_ui.listener_udp_scheme->
+     model()->index(1, 0), 0, Qt::UserRole - 1);
+#endif
 
 #ifdef Q_OS_MAC
   if(m_settings.contains("gui/kernelPath") &&
@@ -3315,10 +3324,13 @@ void spoton::slotProtocolRadioToggled(bool state)
 	  m_ui.listenerIP->setInputMask("");
 	  m_ui.listenerScopeId->setEnabled(true);
 	  m_ui.listenerScopeIdLabel->setEnabled(true);
-
+#if QT_VERSION >= 0x040800
 	  if(m_ui.listener_udp_scheme->currentIndex() == 0)
 	    m_ui.listener_udp_scheme->setCurrentIndex(1);
-
+#else
+	  if(m_ui.listener_udp_scheme->currentIndex() == 0)
+	    m_ui.listener_udp_scheme->setCurrentIndex(2);
+#endif
 	  m_ui.listener_udp_scheme->model()->setData
 	    (m_ui.listener_udp_scheme->
 	     model()->index(0, 0), 0, Qt::UserRole - 1);
