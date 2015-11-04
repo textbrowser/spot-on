@@ -78,13 +78,14 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 #if QT_VERSION >= 0x040800
     if(address.protocol() == QAbstractSocket::IPv4Protocol)
       {
-	if(!(address.toString() == "224." || address.toString() == "239."))
+	if(!(address.toString().trimmed().startsWith("224.") ||
+	     address.toString().trimmed().startsWith("239.")))
 	  return;
       }
     else if(address.protocol() == QAbstractSocket::IPv6Protocol)
       {
-	if(!(address.toString() == "0:0:0:0:0:ffff:e0" ||
-	     address.toString() == "0:0:0:0:0:ffff:ef"))
+	if(!(address.toString().trimmed().startsWith("0:0:0:0:0:ffff:e0") ||
+	     address.toString().trimmed().startsWith("0:0:0:0:0:ffff:ef")))
 	  return;
       }
     else
