@@ -6626,8 +6626,11 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	sent = m_tcpSocket->write(data, remaining);
       else if(m_udpSocket)
 	{
-	  sent = m_udpSocket->writeDatagram
-	    (data, qMin(minimum, remaining), m_address, m_port);
+	  if(m_isUserDefined)
+	    sent = m_udpSocket->write(data, qMin(minimum, remaining));
+	  else
+	    sent = m_udpSocket->writeDatagram
+	      (data, qMin(minimum, remaining), m_address, m_port);
 
 	  if(sent == -1)
 	    {
