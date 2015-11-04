@@ -837,7 +837,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	if(query.exec("SELECT ip_address, port, scope_id, "
 		      "protocol, echo_mode, certificate, private_key, "
 		      "public_key, transport, orientation, "
-		      "hash, udp_scheme FROM listeners"))
+		      "hash FROM listeners"))
 	  while(query.next())
 	    {
 	      QByteArray certificate;
@@ -851,7 +851,6 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      QString protocol("");
 	      QString scopeId("");
 	      QString transport("");
-	      QString udpScheme("");
 	      bool ok = true;
 
 	      updateQuery.prepare("UPDATE listeners "
@@ -865,8 +864,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				  "private_key = ?, "
 				  "public_key = ?, "
 				  "transport = ?, "
-				  "orientation = ?, "
-				  "udp_scheme = ? "
+				  "orientation = ? "
 				  "WHERE hash = ?");
 	      ipAddress = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::
@@ -948,11 +946,6 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		   &ok).constData();
 
 	      if(ok)
-		udpScheme = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(11).toByteArray()),
-		   &ok).constData();
-
-	      if(ok)
 		updateQuery.bindValue
 		  (0, newCrypt->encryptedThenHashed
 		   (ipAddress.
@@ -1009,12 +1002,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  (10, newCrypt->encryptedThenHashed(orientation.toLatin1(),
 						     &ok).toBase64());
 
-	      if(ok)
-		updateQuery.bindValue
-		  (11, newCrypt->encryptedThenHashed(udpScheme.toLatin1(),
-						     &ok).toBase64());
-
-	      updateQuery.bindValue(12, query.value(10));
+	      updateQuery.bindValue(11, query.value(10));
 
 	      if(ok)
 		updateQuery.exec();

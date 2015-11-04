@@ -1477,7 +1477,40 @@ void spoton_neighbor::slotReadyRead(void)
   else if(m_tcpSocket)
     data = m_tcpSocket->readAll();
   else if(m_udpSocket)
-    data = m_udpSocket->readAll();
+    {
+      while(m_udpSocket->hasPendingDatagrams())
+	{
+	  QByteArray datagram;
+	  qint64 size = 0;
+
+	  datagram.resize
+	    (static_cast<int> (qMax(static_cast<qint64> (0),
+				    m_udpSocket->pendingDatagramSize())));
+	  size = m_udpSocket->readDatagram
+	    (datagram.data(), datagram.size(), 0, 0);
+
+	  if(size > 0)
+	    data.append(datagram.mid(0, static_cast<qint64> (size)));
+	}
+
+      while(m_udpSocket->multicastSocket() &&
+	    m_udpSocket->multicastSocket()->hasPendingDatagrams())
+	{
+	  QByteArray datagram;
+	  qint64 size = 0;
+
+	  datagram.resize
+	    (static_cast<int> (qMax(static_cast<qint64> (0),
+				    m_udpSocket->
+				    multicastSocket()->
+				    pendingDatagramSize())));
+	  size = m_udpSocket->multicastSocket()->readDatagram
+	    (datagram.data(), datagram.size(), 0, 0);
+
+	  if(size > 0)
+	    data.append(datagram.mid(0, static_cast<qint64> (size)));
+	}
+    }
 
   m_bytesRead += static_cast<quint64> (data.length());
 
@@ -1497,7 +1530,7 @@ void spoton_neighbor::slotReadyRead(void)
 	 arg(m_port));
     }
 
-  if(!data.isEmpty())
+  if(!data.isEmpty() || m_udpSocket)
     {
       QReadLocker locker1(&m_maximumBufferSizeMutex);
       qint64 maximumBufferSize = m_maximumBufferSize;
@@ -1950,6 +1983,20 @@ void spoton_neighbor::slotConnected(void)
 	 toInt()); /*
 		   ** Disable Nagle?
 		   */
+    }
+  else if(m_udpSocket)
+    {
+      if(m_isUserDefined)
+	{
+	  m_udpSocket->initializeMulticast(m_address, m_port);
+
+	  if(m_udpSocket->multicastSocket())
+	    connect(m_udpSocket->multicastSocket(),
+		    SIGNAL(readyRead(void)),
+		    this,
+		    SLOT(slotReadyRead(void)),
+		    Qt::UniqueConnection);
+	}
     }
 
   /*
@@ -4692,7 +4739,9 @@ void spoton_neighbor::saveParticipantStatus(const QByteArray &name,
 
 void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 {
-  if(error == QAbstractSocket::SslHandshakeFailedError)
+  if(error == QAbstractSocket::DatagramTooLargeError)
+    return;
+  else if(error == QAbstractSocket::SslHandshakeFailedError)
     {
       /*
       ** Do not use SSL.
@@ -6557,6 +6606,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
   else if(size == 0)
     return 0;
 
+  qint64 minimum = size;
   qint64 remaining = size;
   qint64 sent = 0;
 
@@ -6568,23 +6618,31 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	sent = m_tcpSocket->write(data, remaining);
       else if(m_udpSocket)
 	{
-	  if(m_isUserDefined)
-	    sent = m_udpSocket->write(data, remaining);
-	  else
-	    sent = m_udpSocket->writeDatagram
-	      (data, remaining, m_address, m_port);
+	  sent = m_udpSocket->writeDatagram
+	    (data, qMin(minimum, remaining), m_address, m_port);
 
 	  if(sent == -1)
-	    if(m_udpSocket->error() == QAbstractSocket::UnknownSocketError)
-	      {
-		/*
-		** If the end-point is absent, QIODevice::write() may
-		** return -1.
-		*/
+	    {
+	      if(m_udpSocket->error() ==
+		 QAbstractSocket::DatagramTooLargeError)
+		{
+		  minimum = minimum / 2;
 
-		deleteLater();
-		break;
-	      }
+		  if(minimum > 0)
+		    continue;
+		}
+	      else if(m_udpSocket->error() ==
+		      QAbstractSocket::UnknownSocketError)
+		{
+		  /*
+		  ** If the end-point is absent, QIODevice::write() may
+		  ** return -1.
+		  */
+
+		  deleteLater();
+		  break;
+		}
+	    }
 	}
       else
 	sent = 0;

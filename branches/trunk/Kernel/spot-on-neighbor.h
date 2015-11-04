@@ -70,6 +70,49 @@ class spoton_neighbor_udp_socket: public QUdpSocket
  public:
   spoton_neighbor_udp_socket(QObject *parent = 0):QUdpSocket(parent)
   {
+    m_multicastSocket = 0;
+  }
+
+  void initializeMulticast(const QHostAddress &address, const quint16 port)
+  {
+#if QT_VERSION >= 0x040800
+    if(address.protocol() == QAbstractSocket::IPv4Protocol)
+      {
+	if(!(address.toString() == "224." || address.toString() == "239."))
+	  return;
+      }
+    else if(address.protocol() == QAbstractSocket::IPv6Protocol)
+      {
+	if(!(address.toString() == "0:0:0:0:0:ffff:e0" ||
+	     address.toString() == "0:0:0:0:0:ffff:ef"))
+	  return;
+      }
+    else
+      return;
+
+    if(m_multicastSocket)
+      m_multicastSocket->deleteLater();
+
+    m_multicastSocket = new (std::nothrow) QUdpSocket(this);
+
+    if(m_multicastSocket)
+      {
+	m_multicastSocket->bind
+	  (address, port,
+	   QUdpSocket::ReuseAddressHint | QUdpSocket::ShareAddress);
+	m_multicastSocket->joinMulticastGroup(address);
+	m_multicastSocket->setSocketOption
+	  (QAbstractSocket::MulticastLoopbackOption, 0);
+      }
+#else
+    Q_UNUSED(address);
+    Q_UNUSED(port);
+#endif
+  }
+
+  QPointer<QUdpSocket> multicastSocket(void) const
+  {
+    return m_multicastSocket;
   }
 
   void setLocalAddress(const QHostAddress &address)
@@ -96,6 +139,9 @@ class spoton_neighbor_udp_socket: public QUdpSocket
   {
     QUdpSocket::setSocketState(state);
   }
+
+ private:
+  QPointer<QUdpSocket> m_multicastSocket;
 };
 
 class spoton_neighbor: public QThread

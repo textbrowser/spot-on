@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>452</height>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>798</width>
-                <height>479</height>
+                <width>392</width>
+                <height>482</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -810,8 +810,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>986</width>
-             <height>575</height>
+             <width>902</width>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1909,7 +1909,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>452</height>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2274,31 +2274,6 @@
                         <number>5</number>
                        </property>
                        <item>
-                        <widget class="QComboBox" name="listener_udp_scheme">
-                         <property name="currentIndex">
-                          <number>2</number>
-                         </property>
-                         <property name="sizeAdjustPolicy">
-                          <enum>QComboBox::AdjustToContents</enum>
-                         </property>
-                         <item>
-                          <property name="text">
-                           <string>Broadcast</string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>Multicast</string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>Unicast</string>
-                          </property>
-                         </item>
-                        </widget>
-                       </item>
-                       <item>
                         <widget class="QCheckBox" name="listenerShareAddress">
                          <property name="text">
                           <string>&amp;Share Address</string>
@@ -2571,8 +2546,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>263</width>
-                     <height>1406</height>
+                     <width>240</width>
+                     <height>1433</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3038,8 +3013,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>452</height>
+             <width>361</width>
+             <height>225</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3370,8 +3345,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>853</width>
-                  <height>424</height>
+                  <width>814</width>
+                  <height>458</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4092,8 +4067,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>452</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4169,8 +4144,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>798</width>
-                 <height>587</height>
+                 <width>713</width>
+                 <height>619</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5020,8 +4995,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>808</width>
-             <height>1078</height>
+             <width>711</width>
+             <height>1132</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6235,8 +6210,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>808</width>
-             <height>526</height>
+             <width>476</width>
+             <height>544</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7246,8 +7221,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>808</width>
-             <height>454</height>
+             <width>653</width>
+             <height>453</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7783,8 +7758,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>452</height>
+             <width>241</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -7996,7 +7971,7 @@
      <x>0</x>
      <y>0</y>
      <width>850</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -8277,7 +8252,6 @@
   <tabstop>listenerScopeId</tabstop>
   <tabstop>ipv6Listener</tabstop>
   <tabstop>listenerTransport</tabstop>
-  <tabstop>listener_udp_scheme</tabstop>
   <tabstop>listenerShareAddress</tabstop>
   <tabstop>listenersEchoMode</tabstop>
   <tabstop>recordIPAddress</tabstop>

@@ -110,44 +110,49 @@ void spoton_listener_udp_server::slotReadyRead(void)
   ** This unfortunately violates our multi-threaded approach for UDP sockets.
   */
 
-  QByteArray datagram;
-  QHostAddress peerAddress;
-  quint16 peerPort = 0;
-
-  datagram.resize(static_cast<int> (qMax(static_cast<qint64> (0),
-					 pendingDatagramSize())));
-  readDatagram(datagram.data(), datagram.size(), &peerAddress, &peerPort);
-
-  if(spoton_kernel::instance() &&
-     !spoton_kernel::instance()->acceptRemoteConnection(localAddress(),
-							peerAddress))
+  while(hasPendingDatagrams())
     {
-    }
-  else if(!spoton_misc::
-	  isAcceptedIP(peerAddress, m_id,
-		       spoton_kernel::s_crypts.value("chat", 0)))
-    spoton_misc::logError
-      (QString("spoton_listener_udp_server::incomingConnection(): "
-	       "connection from %1 denied for %2:%3.").
-       arg(peerAddress.toString()).
-       arg(localAddress().toString()).
-       arg(localPort()));
-  else if(spoton_misc::isIpBlocked(peerAddress,
-				   spoton_kernel::s_crypts.
-				   value("chat", 0)))
-    spoton_misc::logError
-      (QString("spoton_listener_udp_server::incomingConnection(): "
-	       "connection from %1 blocked for %2:%3.").
-       arg(peerAddress.toString()).
-       arg(localAddress().toString()).
-       arg(localPort()));
-  else
-    {
-      if(!clientExists(peerAddress, peerPort))
-	emit newConnection(socketDescriptor(), peerAddress, peerPort);
+      QByteArray datagram;
+      QHostAddress peerAddress;
+      qint64 size = 0;
+      quint16 peerPort = 0;
 
-      if(!datagram.isEmpty())
-	emit newDatagram(datagram);
+      datagram.resize(static_cast<int> (qMax(static_cast<qint64> (0),
+					     pendingDatagramSize())));
+      size = readDatagram
+	(datagram.data(), datagram.size(), &peerAddress, &peerPort);
+
+      if(spoton_kernel::instance() &&
+	 !spoton_kernel::instance()->acceptRemoteConnection(localAddress(),
+							    peerAddress))
+	{
+	}
+      else if(!spoton_misc::
+	      isAcceptedIP(peerAddress, m_id,
+			   spoton_kernel::s_crypts.value("chat", 0)))
+	spoton_misc::logError
+	  (QString("spoton_listener_udp_server::incomingConnection(): "
+		   "connection from %1 denied for %2:%3.").
+	   arg(peerAddress.toString()).
+	   arg(localAddress().toString()).
+	   arg(localPort()));
+      else if(spoton_misc::isIpBlocked(peerAddress,
+				       spoton_kernel::s_crypts.
+				       value("chat", 0)))
+	spoton_misc::logError
+	  (QString("spoton_listener_udp_server::incomingConnection(): "
+		   "connection from %1 blocked for %2:%3.").
+	   arg(peerAddress.toString()).
+	   arg(localAddress().toString()).
+	   arg(localPort()));
+      else
+	{
+	  if(!clientExists(peerAddress, peerPort))
+	    emit newConnection(socketDescriptor(), peerAddress, peerPort);
+
+	  if(!datagram.isEmpty() && size > 0)
+	    emit newDatagram(datagram.mid(0, static_cast<int> (size)));
+	}
     }
 }
 
@@ -170,7 +175,6 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				 const QString &motd,
 				 const QString &sslControlString,
 				 const int laneWidth,
-				 const QString &udpScheme,
 				 QObject *parent):QObject(parent)
 {
   m_sctpServer = 0;
@@ -222,12 +226,6 @@ spoton_listener::spoton_listener(const QString &ipAddress,
     m_sslControlString = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 
   m_transport = transport;
-  m_udpScheme = udpScheme;
-
-  if(!(m_udpScheme == "broadcast" || m_udpScheme == "multicast" ||
-       m_udpScheme == "unicast"))
-    m_udpScheme = "unicast";
-
   m_useAccounts = useAccounts;
 
   if(m_keySize <= 0 || m_transport != "tcp")
@@ -1150,26 +1148,6 @@ void spoton_listener::prepareNetworkInterface(void)
       m_networkInterface = 0;
     }
 
-#if QT_VERSION >= 0x040800
-  if(m_udpScheme == "multicast")
-    {
-      if(m_udpServer)
-	m_networkInterface = new (std::nothrow) QNetworkInterface
-	  (m_udpServer->multicastInterface());
-
-      if(m_networkInterface && m_networkInterface->isValid())
-	if(!(m_networkInterface->flags() &
-	     (QNetworkInterface::CanMulticast | QNetworkInterface::IsUp)))
-	  {
-	    delete m_networkInterface;
-	    m_networkInterface = 0;
-	  }
-
-      if(m_networkInterface)
-	return;
-    }
-#endif
-
   QList<QNetworkInterface> list(QNetworkInterface::allInterfaces());
 
   for(int i = 0; i < list.size(); i++)
@@ -1227,55 +1205,18 @@ void spoton_listener::prepareNetworkInterface(void)
 	  }
 	else if(m_udpServer)
 	  {
-	    if(addresses.at(j).broadcast() == m_udpServer->localAddress() ||
-	       addresses.at(j).ip() == m_udpServer->localAddress())
+	    if(addresses.at(j).ip() == m_udpServer->localAddress())
 	      {
 		m_networkInterface = new (std::nothrow)
 		  QNetworkInterface(list.at(i));
 
 		if(m_networkInterface)
 		  {
-		    if(m_udpScheme == "broadcast")
+		    if(!(m_networkInterface->flags() &
+			 QNetworkInterface::IsUp))
 		      {
-			if(!(m_networkInterface->flags() &
-			     (QNetworkInterface::CanBroadcast |
-			      QNetworkInterface::IsUp)))
-			  {
-			    delete m_networkInterface;
-			    m_networkInterface = 0;
-			  }
-		      }
-#if QT_VERSION >= 0x040800
-		    else if(m_udpScheme == "multicast")
-		      {
-			if(m_networkInterface->isValid())
-			  if(!(m_networkInterface->flags() &
-			       (QNetworkInterface::CanMulticast |
-				QNetworkInterface::IsUp)))
-			    {
-			      delete m_networkInterface;
-			      m_networkInterface = 0;
-			    }
-		      }
-#endif
-		    else if(m_udpScheme == "unicast")
-		      {
-			if(!(m_networkInterface->flags() &
-			     QNetworkInterface::IsUp))
-			  {
-			    delete m_networkInterface;
-			    m_networkInterface = 0;
-			  }
-		      }
-		    else
-		      {
-			/*
-			** Never?
-			*/
-
 			delete m_networkInterface;
 			m_networkInterface = 0;
-			break;
 		      }
 
 		    if(m_networkInterface)
@@ -1436,27 +1377,14 @@ bool spoton_listener::listen(const QHostAddress &address, const quint16 port)
     return m_tcpServer->listen(address, port);
   else if(m_udpServer)
     {
-      bool ok = true;
+      QUdpSocket::BindMode flags = QUdpSocket::ReuseAddressHint;
 
       if(m_shareAddress)
-	ok = m_udpServer->bind(address, port,
-			       QUdpSocket::ReuseAddressHint |
-			       QUdpSocket::ShareAddress);
+	flags |= QUdpSocket::ShareAddress;
       else
-	ok = m_udpServer->bind(address, port,
-			       QUdpSocket::DontShareAddress |
-			       QUdpSocket::ReuseAddressHint);
+	flags |= QUdpSocket::DontShareAddress;
 
-#if QT_VERSION >= 0x040800
-      if(m_udpScheme == "multicast")
-	{
-	  m_udpServer->joinMulticastGroup(address);
-	  m_udpServer->setSocketOption
-	    (QAbstractSocket::MulticastLoopbackOption, 0);
-	}
-#endif
-
-      return ok;
+      return m_udpServer->bind(address, port, flags);
     }
   else
     return false;
