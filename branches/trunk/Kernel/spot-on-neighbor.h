@@ -125,7 +125,7 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	    mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
 
 	    if(setsockopt
-	       (static_cast<int> (m_multicastSocket->socketDescriptor()),
+	       (m_multicastSocket->socketDescriptor(),
 		IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq4, sizeof(mreq4)) == -1)
 	      spoton_misc::logError
 		(QString("spoton_neighbor_udp_socket::initializeMulticast(): "
@@ -135,7 +135,7 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	    u_char option = 0;
 
 	    setsockopt
-	      (static_cast<int> (m_multicastSocket->socketDescriptor()),
+	      (m_multicastSocket->socketDescriptor(),
 	       IPPROTO_IP, IP_MULTICAST_LOOP, &option, sizeof(option));
 	  }
 #ifndef Q_OS_OS2
@@ -149,7 +149,7 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	    mreq6.ipv6mr_interface = 0;
 
 	    if(setsockopt
-	       (static_cast<int> (m_multicastSocket->socketDescriptor()),
+	       (m_multicastSocket->socketDescriptor(),
 		IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6, sizeof(mreq6)) == -1)
 	      spoton_misc::logError
 		(QString("spoton_neighbor_udp_socket::initializeMulticast(): "
@@ -159,7 +159,7 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	    u_int option = 0;
 
 	    setsockopt
-	      (static_cast<int> (m_multicastSocket->socketDescriptor()),
+	      (m_multicastSocket->socketDescriptor(),
 	       IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option, sizeof(option));
 	  }
 #endif
