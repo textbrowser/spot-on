@@ -43,6 +43,7 @@
 #include <QUuid>
 
 #include "Common/spot-on-common.h"
+#include "Common/spot-on-misc.h"
 #include "Common/spot-on-send.h"
 #include "spot-on-sctp-socket.h"
 
@@ -101,7 +102,13 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	m_multicastSocket->bind
 	  (address, port,
 	   QUdpSocket::ReuseAddressHint | QUdpSocket::ShareAddress);
-	m_multicastSocket->joinMulticastGroup(address);
+
+	if(!m_multicastSocket->joinMulticastGroup(address))
+	  spoton_misc::logError
+	    (QString("spoton_neighbor_udp_socket::initializeMulticast(): "
+		     "joinMulticastGroup() failure for %1:%2.").
+	     arg(address.toString()).arg(port));
+
 	m_multicastSocket->setSocketOption
 	  (QAbstractSocket::MulticastLoopbackOption, 0);
       }

@@ -1484,26 +1484,17 @@ void spoton_neighbor::slotReadyRead(void)
 	    m_udpSocket->multicastSocket()->hasPendingDatagrams())
 	{
 	  QByteArray datagram;
-	  QHostAddress peerAddress;
 	  qint64 size = 0;
-	  quint16 peerPort = 0;
 
 	  datagram.resize
 	    (static_cast<int> (qMax(static_cast<qint64> (0),
-				    m_udpSocket->
-				    multicastSocket()->
+				    m_udpSocket->multicastSocket()->
 				    pendingDatagramSize())));
 	  size = m_udpSocket->multicastSocket()->readDatagram
-	    (datagram.data(), datagram.size(), &peerAddress, &peerPort);
+	    (datagram.data(), datagram.size(), 0, 0);
 
 	  if(size > 0)
-	    if(m_udpSocket->localAddress() != peerAddress &&
-	       m_udpSocket->localPort() != peerPort)
-	      /*
-	      ** Foreign data only!
-	      */
-
-	      data.append(datagram.mid(0, static_cast<qint64> (size)));
+	    data.append(datagram.mid(0, static_cast<qint64> (size)));
 	}
     }
 
