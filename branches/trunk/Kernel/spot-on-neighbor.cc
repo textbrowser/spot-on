@@ -1478,20 +1478,7 @@ void spoton_neighbor::slotReadyRead(void)
     data = m_tcpSocket->readAll();
   else if(m_udpSocket)
     {
-      while(m_udpSocket->hasPendingDatagrams())
-	{
-	  QByteArray datagram;
-	  qint64 size = 0;
-
-	  datagram.resize
-	    (static_cast<int> (qMax(static_cast<qint64> (0),
-				    m_udpSocket->pendingDatagramSize())));
-	  size = m_udpSocket->readDatagram
-	    (datagram.data(), datagram.size(), 0, 0);
-
-	  if(size > 0)
-	    data.append(datagram.mid(0, static_cast<qint64> (size)));
-	}
+      data = m_udpSocket->readAll();
 
       while(m_udpSocket->multicastSocket() &&
 	    m_udpSocket->multicastSocket()->hasPendingDatagrams())
