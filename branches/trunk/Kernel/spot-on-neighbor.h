@@ -76,7 +76,6 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 
   void initializeMulticast(const QHostAddress &address, const quint16 port)
   {
-#if QT_VERSION >= 0x040800
     if(address.protocol() == QAbstractSocket::IPv4Protocol)
       {
 	if(!(address.toString().trimmed().startsWith("224.") ||
@@ -85,6 +84,10 @@ class spoton_neighbor_udp_socket: public QUdpSocket
       }
     else if(address.protocol() == QAbstractSocket::IPv6Protocol)
       {
+#ifdef Q_OS_OS2
+	return;
+#endif
+
 	if(!(address.toString().toLower().trimmed().startsWith("::ffff:e0") ||
 	     address.toString().toLower().trimmed().startsWith("::ffff:ef")))
 	  return;
@@ -103,6 +106,7 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	  (address, port,
 	   QUdpSocket::ReuseAddressHint | QUdpSocket::ShareAddress);
 
+#if QT_VERSION >= 0x040800
 	if(!m_multicastSocket->joinMulticastGroup(address))
 	  spoton_misc::logError
 	    (QString("spoton_neighbor_udp_socket::initializeMulticast(): "
@@ -111,11 +115,56 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 
 	m_multicastSocket->setSocketOption
 	  (QAbstractSocket::MulticastLoopbackOption, 0);
-      }
 #else
-    Q_UNUSED(address);
-    Q_UNUSED(port);
+	if(address.protocol() == QAbstractSocket::IPv4Protocol)
+	  {
+	    ip_mreq mreq4;
+
+	    memset(&mreq4, 0, sizeof(mreq4));
+	    mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
+	    mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
+
+	    if(setsockopt
+	       (static_cast<int> (m_multicastSocket->socketDescriptor()),
+		IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq4, sizeof(mreq4)) == -1)
+	      spoton_misc::logError
+		(QString("spoton_neighbor_udp_socket::initializeMulticast(): "
+			 "setsockopt() failure for %1:%2.").
+		 arg(address.toString()).arg(port));
+
+	    u_char option = 0;
+
+	    setsockopt
+	      (static_cast<int> (m_multicastSocket->socketDescriptor()),
+	       IPPROTO_IP, IP_MULTICAST_LOOP, &option, sizeof(option));
+	  }
+#ifndef Q_OS_OS2
+	else if(address.protocol() == QAbstractSocket::IPv6Protocol)
+	  {
+	    Q_IPV6ADDR ip6 = address.toIPv6Address();
+	    ipv6_mreq mreq6;
+
+	    memset(&mreq6, 0, sizeof(mreq6));
+	    memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
+	    mreq6.ipv6mr_interface = 0;
+
+	    if(setsockopt
+	       (static_cast<int> (m_multicastSocket->socketDescriptor()),
+		IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6, sizeof(mreq6)) == -1)
+	      spoton_misc::logError
+		(QString("spoton_neighbor_udp_socket::initializeMulticast(): "
+			 "setsockopt() failure for %1:%2.").
+		 arg(address.toString()).arg(port));
+
+	    u_int option = 0;
+
+	    setsockopt
+	      (static_cast<int> (m_multicastSocket->socketDescriptor()),
+	       IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option, sizeof(option));
+	  }
 #endif
+#endif
+      }
   }
 
   QPointer<QUdpSocket> multicastSocket(void) const
