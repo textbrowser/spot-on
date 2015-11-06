@@ -71,6 +71,7 @@ class spoton_kernel: public QObject
  public:
   spoton_kernel(void);
   ~spoton_kernel();
+  static QAtomicInt s_sendInitialStatus;
   static QHash<QString, spoton_crypt *> s_crypts;
   static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QMultiHash<qint64, QPointer<spoton_neighbor> > s_connectionCounts;

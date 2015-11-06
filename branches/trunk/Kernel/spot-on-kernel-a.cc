@@ -92,6 +92,7 @@ extern "C"
 #endif
 #endif
 
+QAtomicInt spoton_kernel::s_sendInitialStatus = 0;
 QByteArray spoton_kernel::s_messagingCacheKey;
 QDateTime spoton_kernel::s_institutionLastModificationTime;
 QHash<QByteArray, QList<QByteArray> > spoton_kernel::s_buzzKeys;
@@ -2416,6 +2417,9 @@ void spoton_kernel::slotStatusTimerExpired(void)
 
 void spoton_kernel::prepareStatus(const QString &keyType)
 {
+  if(s_sendInitialStatus == 0)
+    return;
+
   spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
 
   if(!s_crypt1)
@@ -2467,24 +2471,38 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT gemini, public_key, "
-		      "gemini_hash_key, name "
-		      "FROM friends_public_keys WHERE "
-		      "key_type_hash = ? AND "
-		      "ABS(strftime('%s', ?) - "
-		      "strftime('%s', last_status_update)) <= ? AND "
-		      "neighbor_oid = -1");
-	query.bindValue(0, s_crypt1->keyedHash(keyType.toLatin1(),
-					       &ok).toBase64());
-	query.bindValue
-	  (1, QDateTime::currentDateTime().toString(Qt::ISODate));
 
-	if(keyType == "chat")
-	  query.bindValue
-	    (2, 2.5 * spoton_common::STATUS_INTERVAL);
+	if(s_sendInitialStatus == 1)
+	  {
+	    query.prepare("SELECT gemini, public_key, "
+			  "gemini_hash_key, name "
+			  "FROM friends_public_keys WHERE "
+			  "key_type_hash = ? AND "
+			  "neighbor_oid = -1");
+	    query.bindValue(0, s_crypt1->keyedHash(keyType.toLatin1(),
+						   &ok).toBase64());
+	  }
 	else
-	  query.bindValue
-	    (2, 2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL);
+	  {
+	    query.prepare("SELECT gemini, public_key, "
+			  "gemini_hash_key, name "
+			  "FROM friends_public_keys WHERE "
+			  "key_type_hash = ? AND "
+			  "ABS(strftime('%s', ?) - "
+			  "strftime('%s', last_status_update)) <= ? AND "
+			  "neighbor_oid = -1");
+	    query.bindValue(0, s_crypt1->keyedHash(keyType.toLatin1(),
+						   &ok).toBase64());
+	    query.bindValue
+	      (1, QDateTime::currentDateTime().toString(Qt::ISODate));
+
+	    if(keyType == "chat")
+	      query.bindValue
+		(2, 2.5 * spoton_common::STATUS_INTERVAL);
+	    else
+	      query.bindValue
+		(2, 2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL);
+	  }
 
 	if(ok && query.exec())
 	  while(query.next())
@@ -2712,6 +2730,8 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 	    postPoptasticMessage(receiverNames.takeFirst(), message);
 	  }
+
+      s_sendInitialStatus = 2;
     }
 }
 
