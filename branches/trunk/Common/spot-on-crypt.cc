@@ -3077,7 +3077,9 @@ void spoton_crypt::generateSslKeys(const int rsaKeySize,
   memcpy(publicBuffer, bptr->data, bptr->length);
   publicBuffer[bptr->length] = 0;
   publicKey = publicBuffer;
-  generateCertificate(rsa, certificate, address, days, error);
+
+  if(days > 0)
+    generateCertificate(rsa, certificate, address, days, error);
 
  done_label:
 

@@ -5197,8 +5197,7 @@ void spoton::initializeKernelSocket(void)
      privateKey,
      publicKey,
      m_kernelSocket.peerAddress(),
-     60L * 60L * 24L * static_cast<long> (spoton_common::
-					  KERNEL_CERTIFICATE_DAYS_VALID),
+     0,
      error);
   m_sb.status->clear();
   QApplication::restoreOverrideCursor();

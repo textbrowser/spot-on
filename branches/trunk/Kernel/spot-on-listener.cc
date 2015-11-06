@@ -679,61 +679,40 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
   ** Record the IP address of the client as soon as possible.
   */
 
-  QByteArray certificate(m_certificate);
-  QByteArray privateKey(m_privateKey);
   QPointer<spoton_neighbor> neighbor = 0;
   QString error("");
 
-  if(m_keySize != 0)
+  try
     {
-      QByteArray publicKey;
-
-      if(certificate.isEmpty() || privateKey.isEmpty())
-	spoton_crypt::generateSslKeys
-	  (m_keySize,
-	   certificate,
-	   privateKey,
-	   publicKey,
-	   m_externalAddress->address(),
-	   60L * 60L * 24L * static_cast<long> (spoton_common::
-						KERNEL_CERTIFICATE_DAYS_VALID),
-	   error);
+      neighbor = new spoton_neighbor
+	(socketDescriptor, m_certificate, m_privateKey,
+	 m_echoMode, m_useAccounts, m_id, m_maximumBufferSize,
+	 m_maximumContentLength, m_transport, address.toString(),
+	 QString::number(port),
+	 m_address.toString(),
+	 QString::number(m_port),
+	 m_orientation,
+	 m_motd,
+	 m_sslControlString,
+	 QThread::HighPriority,
+	 m_laneWidth,
+	 this);
     }
-
-  if(error.isEmpty())
+  catch(const std::bad_alloc &exception)
     {
-      try
-	{
-	  neighbor = new spoton_neighbor
-	    (socketDescriptor, certificate, privateKey,
-	     m_echoMode, m_useAccounts, m_id, m_maximumBufferSize,
-	     m_maximumContentLength, m_transport, address.toString(),
-	     QString::number(port),
-	     m_address.toString(),
-	     QString::number(m_port),
-	     m_orientation,
-	     m_motd,
-	     m_sslControlString,
-	     QThread::HighPriority,
-	     m_laneWidth,
-	     this);
-	}
-      catch(const std::bad_alloc &exception)
-	{
-	  error = "memory allocation failure";
-	  neighbor = 0;
-	  spoton_misc::logError("spoton_listener::slotNewConnection(): "
-				"memory failure.");
-	}
-      catch(...)
-	{
-	  if(neighbor)
-	    neighbor->deleteLater();
+      error = "memory allocation failure";
+      neighbor = 0;
+      spoton_misc::logError("spoton_listener::slotNewConnection(): "
+			    "memory failure.");
+    }
+  catch(...)
+    {
+      if(neighbor)
+	neighbor->deleteLater();
 
-	  error = "irregular exception";
-	  spoton_misc::logError("spoton_listener::slotNewConnection(): "
-				"critical failure.");
-	}
+      error = "irregular exception";
+      spoton_misc::logError("spoton_listener::slotNewConnection(): "
+			    "critical failure.");
     }
 
   if(!error.isEmpty() || !neighbor)
