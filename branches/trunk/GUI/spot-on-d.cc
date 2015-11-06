@@ -566,6 +566,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.label->setVisible(!state);
   m_ui.label_104->setVisible(!state);
   m_ui.label_117->setVisible(!state);
+  m_ui.label_122->setVisible(!state);
   m_ui.label_138->setVisible(!state);
   m_ui.label_139->setVisible(!state);
   m_ui.label_14->setVisible(!state);

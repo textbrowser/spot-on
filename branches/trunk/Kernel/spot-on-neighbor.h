@@ -78,8 +78,9 @@ class spoton_neighbor_udp_socket: public QUdpSocket
   {
     if(address.protocol() == QAbstractSocket::IPv4Protocol)
       {
-	if(!(address.toString().trimmed().startsWith("224.") ||
-	     address.toString().trimmed().startsWith("239.")))
+	quint32 a = address.toIPv4Address();
+
+	if(!((a & 0xf0000000) == 0xe0000000))
 	  return;
       }
     else if(address.protocol() == QAbstractSocket::IPv6Protocol)
@@ -88,8 +89,9 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	return;
 #endif
 
-	if(!(address.toString().toLower().trimmed().startsWith("::ffff:e0") ||
-	     address.toString().toLower().trimmed().startsWith("::ffff:ef")))
+	Q_IPV6ADDR a6 = address.toIPv6Address();
+
+	if(a6.c[0] != 0xff)
 	  return;
       }
     else
