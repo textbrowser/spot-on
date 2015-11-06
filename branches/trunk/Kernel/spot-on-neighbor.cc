@@ -5780,7 +5780,7 @@ void spoton_neighbor::slotSendBuzz(const QByteArray &data)
 void spoton_neighbor::slotResetKeepAlive(void)
 {
   m_lastReadTime = QDateTime::currentDateTime();
-  spoton_kernel::s_sendInitialStatus = 1;
+  spoton_kernel::s_sendInitialStatus.testAndSetOrdered(0, 1);
 }
 
 QString spoton_neighbor::findMessageType
