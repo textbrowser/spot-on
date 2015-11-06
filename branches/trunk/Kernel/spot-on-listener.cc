@@ -1218,8 +1218,7 @@ void spoton_listener::prepareNetworkInterface(void)
 			delete m_networkInterface;
 			m_networkInterface = 0;
 		      }
-
-		    if(m_networkInterface)
+		    else
 		      break;
 		  }
 		else
