@@ -36,8 +36,6 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-QMAKE_LFLAGS_RELEASE =
-QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../../. GUI \
                    /usr/local/include /usr/local/opt
 ICON		= Icons/Logo/goldbug.icns
@@ -214,7 +212,9 @@ macdeployqt.extra       = $$[QT_INSTALL_BINS]/macdeployqt ./GoldBug.app -verbose
 preinstall.path         = /Applications/GoldBug_Qt5.d
 preinstall.extra        = rm -rf /Applications/GoldBug_Qt5.d/GoldBug.app/*
 postinstall.path	= /Applications/GoldBug_Qt5.d
-postinstall.extra	= find /Applications/GoldBug_Qt5.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
+postinstall.extra	= find /Applications/GoldBug_Qt5.d -name .svn -exec rm -rf {} \\ ; 2>/dev/null; echo
+sounds.path             = /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/MacOS/Sounds
+sounds.files            = Sounds/*.wav
 translations.path 	= /Applications/GoldBug_Qt5.d/Translations
 translations.files	= Translations/*.qm
 
@@ -226,6 +226,7 @@ INSTALLS	= macdeployqt \
                   libspoton_install \
                   lupdate \
                   lrelease \
+                  sounds \
                   translations \
                   goldbug \
                   postinstall
