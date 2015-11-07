@@ -8,7 +8,7 @@ libspoton.depends =
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= concurrent core gui multimedia network sql widgets
+QT		+= concurrent gui multimedia network sql widgets
 CONFIG		+= qt release warn_on
 CONFIG          -= debug
 

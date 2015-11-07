@@ -8,7 +8,7 @@ libspoton.depends =
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= concurrent core gui multimedia network sql widgets
+QT		+= concurrent multimedia network sql widgets
 CONFIG		+= app_bundle qt release warn_on
 
 # The function gcry_kdf_derive() is available in version
@@ -35,8 +35,6 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-QMAKE_LFLAGS_RELEASE =
-QMAKE_LFLAGS_RPATH =
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 INCLUDEPATH	+= . ../../. GUI \
                    /usr/local/include /usr/local/opt

@@ -9,7 +9,7 @@ purge.commands = rm -f *~
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= concurrent core network sql
+QT		+= concurrent network sql
 QT		-= gui
 CONFIG		+= qt release warn_on app_bundle
 
@@ -38,8 +38,6 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-QMAKE_LFLAGS_RELEASE =
-QMAKE_LFLAGS_RPATH =
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 INCLUDEPATH	+= . ../. ../../../. \
 		   ../../../libSCTP/Include.osx64 \
