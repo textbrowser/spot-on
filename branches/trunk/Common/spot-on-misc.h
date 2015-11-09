@@ -133,10 +133,15 @@ class spoton_misc
   static bool isAcceptedIP(const QHostAddress &address,
 			   const qint64 id,
 			   spoton_crypt *crypt);
+  static bool isAcceptedIP(const QString &address,
+			   const qint64 id,
+			   spoton_crypt *crypt);
   static bool isAcceptedParticipant(const QByteArray &publicKeyHash,
 				    const QString &keyType,
 				    spoton_crypt *crypt);
   static bool isIpBlocked(const QHostAddress &address,
+			  spoton_crypt *crypt);
+  static bool isIpBlocked(const QString &address,
 			  spoton_crypt *crypt);
   static bool isPrivateNetwork(const QHostAddress &address);
   static bool isValidBuzzMagnet(const QByteArray &magnet);
