@@ -89,6 +89,7 @@ class spoton_listener_bluetooth_server: public QObject
 #else
     Q_UNUSED(address);
     Q_UNUSED(port);
+    return false;
 #endif
   }
 
@@ -118,7 +119,7 @@ class spoton_listener_bluetooth_server: public QObject
   }
 
  private:
-#if QT_VERSION >= 0x0502
+#if QT_VERSION >= 0x050200
   QBluetoothServer *m_server;
 #endif
   qint64 m_id;
