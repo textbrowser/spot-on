@@ -703,16 +703,19 @@ QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
   const char *code = 0;
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  GeoIP *gi = 0;
-  QFileInfo fileInfo;
   QHostAddress address(ipAddress);
   QSettings settings;
   QString fileName("");
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
     fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
-  else
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
     fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+  else
+    return QString("Unknown");
+
+  GeoIP *gi = 0;
+  QFileInfo fileInfo;
 
   fileInfo.setFile(fileName);
 
@@ -743,16 +746,19 @@ QString spoton_misc::countryNameFromIPAddress(const QString &ipAddress)
   const char *country = 0;
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  GeoIP *gi = 0;
-  QFileInfo fileInfo;
   QHostAddress address(ipAddress);
   QSettings settings;
   QString fileName("");
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
     fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
-  else
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
     fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+  else
+    return QString("Unknown");
+
+  GeoIP *gi = 0;
+  QFileInfo fileInfo;
 
   fileInfo.setFile(fileName);
 
