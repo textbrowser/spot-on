@@ -177,19 +177,21 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				 const int laneWidth,
 				 QObject *parent):QObject(parent)
 {
+  m_bluetoothServer = 0;
   m_sctpServer = 0;
   m_tcpServer = 0;
   m_udpServer = 0;
 
-  if(transport == "sctp")
+  if(transport == "bluetooth")
+    m_bluetoothServer = new spoton_listener_bluetooth_server(id, this);
+  else if(transport == "sctp")
     m_sctpServer = new spoton_sctp_server(id, this);
   else if(transport == "tcp")
     m_tcpServer = new spoton_listener_tcp_server(id, this);
   else if(transport == "udp")
     m_udpServer = new spoton_listener_udp_server(id, this);
 
-  m_address = QHostAddress(ipAddress);
-  m_address.setScopeId(scopeId);
+  m_address = ipAddress;
   m_certificate = certificate;
   m_echoMode = echoMode;
   m_externalAddress = new spoton_external_address(this);
@@ -219,6 +221,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   m_port = m_externalPort = port.toUShort();
   m_privateKey = privateKey;
   m_publicKey = publicKey;
+  m_scopeId = scopeId;
   m_shareAddress = shareAddress;
   m_sslControlString = sslControlString.trimmed();
 
@@ -260,7 +263,12 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				   const QHostAddress &,
 				   const quint16)));
 #else
-  if(m_sctpServer)
+  if(m_bluetoothServer)
+    connect(m_bluetoothServer,
+	    SIGNAL(newConnection(void)),
+	    this,
+	    SLOT(slotNewConnection(void)));
+  else if(m_sctpServer)
     connect(m_sctpServer,
 	    SIGNAL(newConnection(const qintptr,
 				 const QHostAddress &,
@@ -297,7 +305,9 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   if(m_maximumClients <= 0)
     m_maximumClients = std::numeric_limits<int>::max();
 
-  if(m_sctpServer)
+  if(m_bluetoothServer)
+    m_bluetoothServer->setMaxPendingConnections(m_maximumClients);
+  else if(m_sctpServer)
     m_sctpServer->setMaxPendingConnections(m_maximumClients);
   else if(m_tcpServer)
     m_tcpServer->setMaxPendingConnections(m_maximumClients);
@@ -318,12 +328,14 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 spoton_listener::~spoton_listener()
 {
   spoton_misc::logError(QString("Listener %1:%2 deallocated.").
-			arg(m_address.toString()).
+			arg(m_address).
 			arg(m_port));
   m_externalAddressDiscovererTimer.stop();
   m_timer.stop();
 
-  if(m_sctpServer)
+  if(m_bluetoothServer)
+    m_bluetoothServer->close();
+  else if(m_sctpServer)
     m_sctpServer->close();
   else if(m_tcpServer)
     m_tcpServer->close();
@@ -493,7 +505,7 @@ void spoton_listener::slotTimeout(void)
 			    (QString("spoton_listener::slotTimeout(): "
 				     "listen() failure (%1) for %2:%3.").
 			     arg(errorString()).
-			     arg(m_address.toString()).
+			     arg(m_address).
 			     arg(m_port));
 			else
 			  {
@@ -528,7 +540,10 @@ void spoton_listener::slotTimeout(void)
 			    maximumPendingConnections =
 			      std::numeric_limits<int>::max();
 
-			  if(m_sctpServer)
+			  if(m_bluetoothServer)
+			    m_bluetoothServer->setMaxPendingConnections
+			      (maximumPendingConnections);
+			  else if(m_sctpServer)
 			    m_sctpServer->setMaxPendingConnections
 			      (maximumPendingConnections);
 			  else if(m_tcpServer)
@@ -611,7 +626,7 @@ void spoton_listener::slotTimeout(void)
       spoton_misc::logError
 	(QString("spoton_listener::slotTimeout(): instructed "
 		 "to delete listener %1:%2.").
-	 arg(m_address.toString()).
+	 arg(m_address).
 	 arg(m_port));
       deleteLater();
       return;
@@ -622,19 +637,22 @@ void spoton_listener::slotTimeout(void)
   ** If the interface disappears, destroy the listener.
   */
 
-  prepareNetworkInterface();
+  if(!m_bluetoothServer)
+    {
+      prepareNetworkInterface();
 
-  if(isListening())
-    if(!m_networkInterface)
-      {
-	spoton_misc::logError
-	  (QString("spoton_listener::slotTimeout(): "
-		   "undefined network interface for %1:%2. "
-		   "Aborting.").
-	   arg(m_address.toString()).
-	   arg(m_port));
-	deleteLater();
-      }
+      if(isListening())
+	if(!m_networkInterface)
+	  {
+            spoton_misc::logError
+	      (QString("spoton_listener::slotTimeout(): "
+		       "undefined network interface for %1:%2. "
+		       "Aborting.").
+	       arg(m_address).
+	       arg(m_port));
+	    deleteLater();
+	  }
+    }
 }
 
 void spoton_listener::saveStatus(const QSqlDatabase &db)
@@ -689,7 +707,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	 m_echoMode, m_useAccounts, m_id, m_maximumBufferSize,
 	 m_maximumContentLength, m_transport, address.toString(),
 	 QString::number(port),
-	 m_address.toString(),
+	 m_address,
 	 QString::number(m_port),
 	 m_orientation,
 	 m_motd,
@@ -730,7 +748,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		       "slotNewConnection(): "
 		       "generateSslKeys() failure (%1) for %2:%3.").
 	       arg(error).
-	       arg(m_address.toString()).
+	       arg(m_address).
 	       arg(m_port));
 	}
       else if(m_transport == "tcp")
@@ -746,7 +764,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		       "slotNewConnection(): "
 		       "generateSslKeys() failure (%1) for %2:%3.").
 	       arg(error).
-	       arg(m_address.toString()).
+	       arg(m_address).
 	       arg(m_port));
 	}
       else if(m_transport == "udp")
@@ -762,7 +780,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		       "slotNewConnection(): "
 		       "generateSslKeys() failure (%1) for %2:%3.").
 	       arg(error).
-	       arg(m_address.toString()).
+	       arg(m_address).
 	       arg(m_port));
 	}
     }
@@ -806,7 +824,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
       spoton_misc::logError
 	(QString("spoton_listener::slotNewConnection(): "
 		 "chat key is missing for %1:%2.").
-	 arg(m_address.toString()).arg(m_port));
+	 arg(m_address).arg(m_port));
       neighbor->deleteLater();
       return;
     }
@@ -866,17 +884,23 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	       "lane_width) "
 	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
 	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	    query.bindValue(0, m_address.toString());
+	    query.bindValue(0, m_address);
 	    query.bindValue(1, m_port);
 
-	    if(m_address.protocol() == QAbstractSocket::IPv4Protocol)
+	    if(QHostAddress(m_address).protocol() ==
+	       QAbstractSocket::IPv4Protocol)
 	      query.bindValue
 		(2, s_crypt->
 		 encryptedThenHashed("IPv4", &ok).toBase64());
-	    else
+	    else if(QHostAddress(m_address).protocol() ==
+		    QAbstractSocket::IPv6Protocol)
 	      query.bindValue
 		(2, s_crypt->
 		 encryptedThenHashed("IPv6", &ok).toBase64());
+	    else
+	      query.bindValue
+		(2, s_crypt->
+		 encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
@@ -1071,7 +1095,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	(QString("spoton_listener::slotNewConnection(): "
 		 "severe error(s). Purging neighbor "
 		 "object for %1:%2.").
-	 arg(m_address.toString()).
+	 arg(m_address).
 	 arg(m_port));
     }
 }
@@ -1309,7 +1333,7 @@ quint16 spoton_listener::externalPort(void) const
   return m_externalPort;
 }
 
-QHostAddress spoton_listener::serverAddress(void) const
+QString spoton_listener::serverAddress(void) const
 {
   return m_address;
 }
@@ -1321,7 +1345,9 @@ quint16 spoton_listener::serverPort(void) const
 
 void spoton_listener::close(void)
 {
-  if(m_sctpServer)
+  if(m_bluetoothServer)
+    m_bluetoothServer->close();
+  else if(m_sctpServer)
     m_sctpServer->close();
   else if(m_tcpServer)
     m_tcpServer->close();
@@ -1331,7 +1357,9 @@ void spoton_listener::close(void)
 
 bool spoton_listener::isListening(void) const
 {
-  if(m_sctpServer)
+  if(m_bluetoothServer)
+    return m_bluetoothServer->isListening();
+  else if(m_sctpServer)
     return m_sctpServer->isListening();
   else if(m_tcpServer)
     return m_tcpServer->isListening();
@@ -1341,18 +1369,20 @@ bool spoton_listener::isListening(void) const
     return false;
 }
 
-bool spoton_listener::listen(const QHostAddress &address, const quint16 port)
+bool spoton_listener::listen(const QString &address, const quint16 port)
 {
-  if(m_sctpServer || m_tcpServer || m_udpServer)
+  if(m_bluetoothServer || m_sctpServer || m_tcpServer || m_udpServer)
     {
       m_address = address;
       m_port = port;
     }
 
-  if(m_sctpServer)
-    return m_sctpServer->listen(address, port);
+  if(m_bluetoothServer)
+    return m_bluetoothServer->listen(address, port);
+  else if(m_sctpServer)
+    return m_sctpServer->listen(QHostAddress(address), port);
   else if(m_tcpServer)
-    return m_tcpServer->listen(address, port);
+    return m_tcpServer->listen(QHostAddress(address), port);
   else if(m_udpServer)
     {
       QUdpSocket::BindMode flags = QUdpSocket::ReuseAddressHint;
@@ -1362,7 +1392,7 @@ bool spoton_listener::listen(const QHostAddress &address, const quint16 port)
       else
 	flags |= QUdpSocket::DontShareAddress;
 
-      return m_udpServer->bind(address, port, flags);
+      return m_udpServer->bind(QHostAddress(address), port, flags);
     }
   else
     return false;
@@ -1370,7 +1400,9 @@ bool spoton_listener::listen(const QHostAddress &address, const quint16 port)
 
 QString spoton_listener::errorString(void) const
 {
-  if(m_sctpServer)
+  if(m_bluetoothServer)
+    return m_bluetoothServer->errorString();
+  else if(m_sctpServer)
     return m_sctpServer->errorString();
   else if(m_tcpServer)
     return m_tcpServer->errorString();
@@ -1382,7 +1414,9 @@ QString spoton_listener::errorString(void) const
 
 int spoton_listener::maxPendingConnections(void) const
 {
-  if(m_sctpServer)
+  if(m_bluetoothServer)
+    return m_bluetoothServer->maxPendingConnections();
+  else if(m_sctpServer)
     return m_sctpServer->maxPendingConnections();
   else if(m_tcpServer)
     return m_tcpServer->maxPendingConnections();

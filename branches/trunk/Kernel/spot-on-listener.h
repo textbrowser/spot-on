@@ -33,6 +33,9 @@
 #include <QSqlDatabase>
 #include <QTcpServer>
 #include <QTimer>
+#if QT_VERSION >= 0x050200
+#include <qbluetoothserver.h>
+#endif
 
 #include "Common/spot-on-misc.h"
 #include "spot-on-neighbor.h"
@@ -41,6 +44,88 @@ class QNetworkInterface;
 
 class spoton_external_address;
 class spoton_sctp_server;
+
+class spoton_listener_bluetooth_server: public QObject
+{
+  Q_OBJECT
+
+ public:
+  spoton_listener_bluetooth_server(const qint64 id,
+				   QObject *parent):QObject(parent)
+  {
+    m_id = id;
+#if QT_VERSION >= 0x050200
+    m_server = new QBluetoothServer
+      (QBluetoothServiceInfo::RfcommProtocol, this);
+#endif
+  }
+
+  ~spoton_listener_bluetooth_server()
+  {
+  }
+
+  QString errorString(void)
+  {
+#if QT_VERSION >= 0x050200
+    return QString("%1").arg(m_server->error());
+#else
+    return "";
+#endif
+  }
+
+  bool isListening(void) const
+  {
+#if QT_VERSION >= 0x050200
+    return m_server->isListening();
+#else
+    return false;
+#endif
+  }
+
+  bool listen(const QString &address, const quint16 port)
+  {
+#if QT_VERSION >= 0x050200
+    return m_server->listen(QBluetoothAddress(address), port);
+#else
+    Q_UNUSED(address);
+    Q_UNUSED(port);
+#endif
+  }
+
+  int maxPendingConnections(void) const
+  {
+#if QT_VERSION >= 0x050200
+    return m_server->maxPendingConnections();
+#else
+    return 0;
+#endif
+  }
+
+  void close(void)
+  {
+#if QT_VERSION >= 0x050200
+    m_server->close();
+#endif
+  }
+
+  void setMaxPendingConnections(const int maxPendingConnections)
+  {
+#if QT_VERSION >= 0x050200
+    m_server->setMaxPendingConnections(qMax(1, maxPendingConnections));
+#else
+    Q_UNUSED(maxPendingConnections);
+#endif
+  }
+
+ private:
+#if QT_VERSION >= 0x0502
+  QBluetoothServer *m_server;
+#endif
+  qint64 m_id;
+
+ signals:
+  void newConnection(void);
+};
 
 class spoton_listener_tcp_server: public QTcpServer
 {
@@ -184,11 +269,11 @@ class spoton_listener: public QObject
 		  QObject *parent);
   ~spoton_listener();
   QHostAddress externalAddress(void) const;
-  QHostAddress serverAddress(void) const;
   QString orientation(void) const;
+  QString serverAddress(void) const;
   QString transport(void) const;
   bool isListening(void) const;
-  bool listen(const QHostAddress &address, const quint16 port);
+  bool listen(const QString &address, const quint16 port);
   quint16 externalPort(void) const;
   quint16 serverPort(void) const;
   void close(void);
@@ -198,11 +283,12 @@ class spoton_listener: public QObject
   QByteArray m_certificate;
   QByteArray m_privateKey;
   QByteArray m_publicKey;
-  QHostAddress m_address;
   QNetworkInterface *m_networkInterface;
+  QString m_address;
   QString m_echoMode;
   QString m_motd;
   QString m_orientation;
+  QString m_scopeId;
   QString m_sslControlString;
   QString m_transport;
   QTimer m_externalAddressDiscovererTimer;
@@ -218,6 +304,7 @@ class spoton_listener: public QObject
   quint16 m_externalPort;
   quint16 m_port;
   spoton_external_address *m_externalAddress;
+  spoton_listener_bluetooth_server *m_bluetoothServer;
   spoton_listener_tcp_server *m_tcpServer;
   spoton_listener_udp_server *m_udpServer;
   spoton_sctp_server *m_sctpServer;

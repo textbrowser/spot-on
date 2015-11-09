@@ -629,6 +629,7 @@ void spoton::slotTransportChanged(int index)
 {
   if(m_ui.listenerTransport == sender())
     {
+      prepareListenerIPCombo();
       m_ui.days_valid->setEnabled(index == 2);
       m_ui.listenerKeySize->setEnabled(index == 2);
       m_ui.listenerShareAddress->setEnabled(index == 3);
