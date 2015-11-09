@@ -194,7 +194,12 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   m_address = ipAddress;
   m_certificate = certificate;
   m_echoMode = echoMode;
-  m_externalAddress = new spoton_external_address(this);
+
+  if(transport != "bluetooth")
+    m_externalAddress = new spoton_external_address(this);
+  else
+    m_externalAddress = 0;
+
   m_keySize = qAbs(keySize);
 
   if(transport == "tcp")
@@ -296,10 +301,13 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				   const QHostAddress &,
 				   const quint16)));
 #endif
-  connect(m_externalAddress,
-	  SIGNAL(ipAddressDiscovered(const QHostAddress &)),
-	  this,
-	  SLOT(slotExternalAddressDiscovered(const QHostAddress &)));
+
+  if(m_externalAddress)
+    connect(m_externalAddress,
+	    SIGNAL(ipAddressDiscovered(const QHostAddress &)),
+	    this,
+	    SLOT(slotExternalAddressDiscovered(const QHostAddress &)));
+
   m_maximumClients = maximumClients;
 
   if(m_maximumClients <= 0)
@@ -507,7 +515,7 @@ void spoton_listener::slotTimeout(void)
 			     arg(errorString()).
 			     arg(m_address).
 			     arg(m_port));
-			else
+			else if(m_externalAddress)
 			  {
 			    int v = spoton_kernel::setting
 			      ("gui/kernelExternalIpInterval", -1).toInt();
@@ -555,7 +563,7 @@ void spoton_listener::slotTimeout(void)
 			}
 		  }
 
-		if(isListening())
+		if(isListening() && m_externalAddress)
 		  {
 		    int v = 1000 * spoton_kernel::setting
 		      ("gui/kernelExternalIpInterval", -1).toInt();
@@ -957,12 +965,19 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		 keyedHash(country.remove(" ").toLatin1(), &ok).toBase64());
 
 	    if(ok)
-	      query.bindValue
-		(12,
-		 s_crypt->encryptedThenHashed(m_externalAddress->
-					      address().
-					      toString().toLatin1(),
-					      &ok).toBase64());
+	      {
+		if(m_externalAddress)
+		  query.bindValue
+		    (12,
+		     s_crypt->encryptedThenHashed(m_externalAddress->
+						  address().
+						  toString().toLatin1(),
+						  &ok).toBase64());
+		else
+		  query.bindValue
+		    (12, s_crypt->encryptedThenHashed(QByteArray(),
+						      &ok).toBase64());
+	      }
 
 	    if(ok)
 	      query.bindValue
@@ -1313,7 +1328,8 @@ void spoton_listener::slotExternalAddressDiscovered
 void spoton_listener::slotDiscoverExternalAddress(void)
 {
   if(isListening())
-    m_externalAddress->discover();
+    if(m_externalAddress)
+      m_externalAddress->discover();
 }
 
 QHostAddress spoton_listener::externalAddress(void) const
