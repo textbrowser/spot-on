@@ -3678,6 +3678,7 @@ void spoton::importNeighbors(const QString &filePath)
 		      {
 			token.remove
 			  (0, static_cast<int> (qstrlen("echo_mode=")));
+			token = token.trimmed();
 
 			if(!(token == "full" || token == "half"))
 			  fine = false;
@@ -3688,6 +3689,7 @@ void spoton::importNeighbors(const QString &filePath)
 		      {
 			token.remove
 			  (0, static_cast<int> (qstrlen("ip_address=")));
+			token = token.trimmed();
 
 			if(QHostAddress(token.constData()).isNull())
 			  {
@@ -3703,7 +3705,7 @@ void spoton::importNeighbors(const QString &filePath)
 		      {
 			token.remove
 			  (0, static_cast<int> (qstrlen("orientation=")));
-			token = token.toLower();
+			token = token.toLower().trimmed();
 
 			if(!(token == "packet" || token == "stream"))
 			  fine = false;
@@ -3714,6 +3716,7 @@ void spoton::importNeighbors(const QString &filePath)
 		      {
 			token.remove
 			  (0, static_cast<int> (qstrlen("port=")));
+			token = token.trimmed();
 
 			if(!(token.toInt() > 0 &&
 			     token.toInt() <= 65535))
@@ -3725,7 +3728,7 @@ void spoton::importNeighbors(const QString &filePath)
 		      {
 			token.remove
 			  (0, static_cast<int> (qstrlen("protocol=")));
-			token = token.toLower();
+			token = token.toLower().trimmed();
 
 			if(token == "dynamic dns")
 			  hash["protocol"] = "Dynamic DNS";
@@ -3742,12 +3745,14 @@ void spoton::importNeighbors(const QString &filePath)
 		      {
 			token.remove
 			  (0, static_cast<int> (qstrlen("scope_id=")));
+			token = token.trimmed();
 			hash["scope_id"] = token;
 		      }
 		    else if(token.startsWith("ssl_key_size="))
 		      {
 			token.remove
 			  (0, static_cast<int> (qstrlen("ssl_key_size=")));
+			token = token.trimmed();
 
 			if(!(token == "0" ||
 			     token == "2048" || token == "3072" ||
@@ -3760,7 +3765,7 @@ void spoton::importNeighbors(const QString &filePath)
 		      {
 			token.remove
 			  (0, static_cast<int> (qstrlen("transport=")));
-			token = token.toLower();
+			token = token.toLower().trimmed();
 
 			if(!(token == "bluetooth" ||
 			     token == "sctp" ||
