@@ -627,21 +627,41 @@ void spoton::slotResetCertificate(void)
 
 void spoton::slotTransportChanged(int index)
 {
+  /*
+  ** 0 - Bluetooth
+  ** 1 - SCTP
+  ** 2 - TCP
+  ** 3 - UDP
+  */
+
   if(m_ui.listenerTransport == sender())
     {
+      if(index == 0)
+	m_ui.ipv4Listener->setChecked(true);
+
       prepareListenerIPCombo();
       m_ui.days_valid->setEnabled(index == 2);
+      m_ui.ipv4Listener->setEnabled(index != 0);
+      m_ui.ipv6Listener->setEnabled(index != 0);
       m_ui.listenerKeySize->setEnabled(index == 2);
       m_ui.listenerShareAddress->setEnabled(index == 3);
       m_ui.listenersSslControlString->setEnabled(index == 2);
       m_ui.permanentCertificate->setEnabled(index == 2);
       m_ui.recordIPAddress->setEnabled(index == 2);
+      m_ui.listenerScopeId->setEnabled(index != 0);
       m_ui.sslListener->setEnabled(index == 2);
     }
   else if(m_ui.neighborTransport == sender())
     {
+      if(index == 0)
+	m_ui.ipv4Neighbor->setChecked(true);
+
       m_ui.addException->setEnabled(index == 2);
+      m_ui.dynamicdns->setEnabled(index != 0);
+      m_ui.ipv4Neighbor->setEnabled(index != 0);
+      m_ui.ipv6Neighbor->setEnabled(index != 0);
       m_ui.neighborKeySize->setEnabled(index == 2);
+      m_ui.neighborScopeId->setEnabled(index != 0);
       m_ui.neighborsSslControlString->setEnabled(index == 2);
 
       if(index == 0 || index == 1)
@@ -3713,6 +3733,8 @@ void spoton::importNeighbors(const QString &filePath)
 			  hash["protocol"] = "IPv4";
 			else if(token == "ipv6")
 			  hash["protocol"] = "IPv6";
+			else if(token.isEmpty())
+			  hash["protocol"] = "";
 			else
 			  fine = false;
 		      }
@@ -3740,7 +3762,8 @@ void spoton::importNeighbors(const QString &filePath)
 			  (0, static_cast<int> (qstrlen("transport=")));
 			token = token.toLower();
 
-			if(!(token == "sctp" ||
+			if(!(token == "bluetooth" ||
+			     token == "sctp" ||
 			     token == "tcp" ||
 			     token == "udp"))
 			  fine = false;
