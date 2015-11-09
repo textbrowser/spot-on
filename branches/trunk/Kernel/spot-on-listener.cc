@@ -99,6 +99,13 @@ void spoton_listener_tcp_server::incomingConnection(int socketDescriptor)
 	     arg(serverAddress().toString()).
 	     arg(serverPort()));
 	}
+      else if(!spoton_kernel::instance())
+	{
+	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
+
+	  socket.setSocketDescriptor(socketDescriptor);
+	  socket.abort();
+	}
       else
 	emit newConnection(socketDescriptor, peerAddress, peerPort);
     }
@@ -753,15 +760,6 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
 	  socket.setSocketDescriptor(socketDescriptor);
 	  socket.abort();
-
-	  if(!error.isEmpty())
-	    spoton_misc::logError
-	      (QString("spoton_listener::"
-		       "slotNewConnection(): "
-		       "generateSslKeys() failure (%1) for %2:%3.").
-	       arg(error).
-	       arg(m_address).
-	       arg(m_port));
 	}
       else if(m_transport == "tcp")
 	{
@@ -769,15 +767,6 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
 	  socket.setSocketDescriptor(socketDescriptor);
 	  socket.abort();
-
-	  if(!error.isEmpty())
-	    spoton_misc::logError
-	      (QString("spoton_listener::"
-		       "slotNewConnection(): "
-		       "generateSslKeys() failure (%1) for %2:%3.").
-	       arg(error).
-	       arg(m_address).
-	       arg(m_port));
 	}
       else if(m_transport == "udp")
 	{
@@ -785,15 +774,6 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
 	  socket.setSocketDescriptor(socketDescriptor);
 	  socket.abort();
-
-	  if(!error.isEmpty())
-	    spoton_misc::logError
-	      (QString("spoton_listener::"
-		       "slotNewConnection(): "
-		       "generateSslKeys() failure (%1) for %2:%3.").
-	       arg(error).
-	       arg(m_address).
-	       arg(m_port));
 	}
     }
 
@@ -1459,5 +1439,377 @@ QString spoton_listener::orientation(void) const
 #if QT_VERSION >= 0x050200
 void spoton_listener::slotNewConnection(void)
 {
+  if(!m_bluetoothServer)
+    return;
+
+  QBluetoothSocket *socket = m_bluetoothServer->nextPendingConnection();
+
+  if(!socket)
+    return;
+
+  if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
+    {
+      socket->deleteLater();
+      return;
+    }
+  else
+    {
+      if(spoton_kernel::instance() &&
+	 !spoton_kernel::instance()->
+	 acceptRemoteBluetoothConnection(serverAddress(),
+					 socket->peerAddress().toString()))
+	{
+	  socket->deleteLater();
+	  return;
+	}
+      else if(!spoton_misc::
+	      isAcceptedIP(socket->peerAddress().toString(), m_id,
+			   spoton_kernel::s_crypts.value("chat", 0)))
+	{
+	  spoton_misc::logError
+	    (QString("spoton_listener::slotNewConnection(): "
+		     "connection from %1 denied for %2:%3.").
+	     arg(socket->peerAddress().toString()).
+	     arg(serverAddress()).
+	     arg(serverPort()));
+	  socket->deleteLater();
+	  return;
+	}
+      else if(spoton_misc::isIpBlocked(socket->peerAddress().toString(),
+				       spoton_kernel::s_crypts.
+				       value("chat", 0)))
+	{
+	  spoton_misc::logError
+	    (QString("spoton_listener::slotNewConnection(): "
+		     "connection from %1 blocked for %2:%3.").
+	     arg(socket->peerAddress().toString()).
+	     arg(serverAddress()).
+	     arg(serverPort()));
+	  socket->deleteLater();
+	  return;
+	}
+    }
+
+  /*
+  ** Record the IP address of the client as soon as possible.
+  */
+
+  QPointer<spoton_neighbor> neighbor = 0;
+  QString error("");
+  int socketDescriptor = socket->socketDescriptor();
+
+  try
+    {
+      neighbor = new spoton_neighbor
+	(socketDescriptor, m_certificate, m_privateKey,
+	 m_echoMode, m_useAccounts, m_id, m_maximumBufferSize,
+	 m_maximumContentLength, m_transport,
+	 socket->peerAddress().toString(),
+	 QString::number(socket->peerPort()),
+	 m_address,
+	 QString::number(m_port),
+	 m_orientation,
+	 m_motd,
+	 m_sslControlString,
+	 QThread::HighPriority,
+	 m_laneWidth,
+	 this);
+    }
+  catch(const std::bad_alloc &exception)
+    {
+      error = "memory allocation failure";
+      neighbor = 0;
+      spoton_misc::logError("spoton_listener::slotNewConnection(): "
+			    "memory failure.");
+    }
+  catch(...)
+    {
+      if(neighbor)
+	neighbor->deleteLater();
+
+      error = "irregular exception";
+      spoton_misc::logError("spoton_listener::slotNewConnection(): "
+			    "critical failure.");
+    }
+
+  socket->deleteLater();
+
+  if(!neighbor)
+    return;
+
+  connect(neighbor,
+	  SIGNAL(destroyed(void)),
+	  this,
+	  SLOT(slotNeighborDisconnected(void)));
+  connect(neighbor,
+	  SIGNAL(disconnected(void)),
+	  neighbor,
+	  SLOT(deleteLater(void)));
+
+  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+  if(!s_crypt)
+    {
+      spoton_misc::logError
+	(QString("spoton_listener::slotNewConnection(): "
+		 "chat key is missing for %1:%2.").
+	 arg(m_address).arg(m_port));
+      neighbor->deleteLater();
+      return;
+    }
+
+  QString connectionName("");
+  QString country
+    (spoton_misc::
+     countryNameFromIPAddress(neighbor->peerAddress().toString()));
+  qint64 id = -1;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
+
+    if(db.open())
+      {
+	if(db.transaction() && neighbor)
+	  {
+	    QSqlQuery query(db);
+	    bool ok = true;
+
+	    query.prepare
+	      ("INSERT INTO neighbors "
+	       "(local_ip_address, "
+	       "local_port, "
+	       "protocol, "
+	       "remote_ip_address, "
+	       "remote_port, "
+	       "scope_id, "
+	       "status, "
+	       "hash, "
+	       "sticky, "
+	       "country, "
+	       "remote_ip_address_hash, "
+	       "qt_country_hash, "
+	       "external_ip_address, "
+	       "uuid, "
+	       "user_defined, "
+	       "proxy_hostname, "
+	       "proxy_password, "
+	       "proxy_port, "
+	       "proxy_type, "
+	       "proxy_username, "
+	       "echo_mode, "
+	       "ssl_key_size, "
+	       "certificate, "
+	       "account_name, "
+	       "account_password, "
+	       "maximum_buffer_size, "
+	       "maximum_content_length, "
+	       "transport, "
+	       "orientation, "
+	       "motd, "
+	       "ssl_control_string, "
+	       "lane_width) "
+	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	    query.bindValue(0, m_address);
+	    query.bindValue(1, m_port);
+	    query.bindValue
+	      (2, s_crypt->
+	       encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(3,
+		 s_crypt->encryptedThenHashed(neighbor->peerAddress().
+					      toString().toLatin1(),
+					      &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(4,
+		 s_crypt->
+		 encryptedThenHashed(QByteArray::number(neighbor->peerPort()),
+				     &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(5,
+		 s_crypt->encryptedThenHashed(neighbor->peerAddress().
+					      scopeId().toLatin1(),
+					      &ok).toBase64());
+
+	    query.bindValue(6, "connected");
+
+	    if(ok)
+	      /*
+	      ** We do not have proxy information.
+	      */
+
+	      query.bindValue
+		(7,
+		 s_crypt->keyedHash((neighbor->peerAddress().toString() +
+				     QString::number(neighbor->peerPort()) +
+				     neighbor->peerAddress().scopeId() +
+				     m_transport).
+				    toLatin1(), &ok).toBase64());
+
+	    query.bindValue(8, 1); // Sticky
+
+	    if(ok)
+	      query.bindValue
+		(9, s_crypt->encryptedThenHashed(country.toLatin1(),
+						 &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(10, s_crypt->
+		 keyedHash(neighbor->peerAddress().
+			   toString().toLatin1(), &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(11, s_crypt->
+		 keyedHash(country.remove(" ").toLatin1(), &ok).toBase64());
+
+	    if(ok)
+	      {
+		if(m_externalAddress)
+		  query.bindValue
+		    (12,
+		     s_crypt->encryptedThenHashed(m_externalAddress->
+						  address().
+						  toString().toLatin1(),
+						  &ok).toBase64());
+		else
+		  query.bindValue
+		    (12, s_crypt->encryptedThenHashed(QByteArray(),
+						      &ok).toBase64());
+	      }
+
+	    if(ok)
+	      query.bindValue
+		(13,
+		 s_crypt->encryptedThenHashed
+		 (neighbor->receivedUuid().toString().
+		  toLatin1(), &ok).toBase64());
+
+	    query.bindValue(14, 0);
+
+	    QString proxyHostName("");
+	    QString proxyPassword("");
+	    QString proxyPort("1");
+	    QString proxyType(QString::number(QNetworkProxy::NoProxy));
+	    QString proxyUsername("");
+
+	    if(ok)
+	      query.bindValue
+		(15, s_crypt->encryptedThenHashed
+		 (proxyHostName.toLatin1(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(16, s_crypt->encryptedThenHashed(proxyPassword.toUtf8(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(17, s_crypt->encryptedThenHashed(proxyPort.toLatin1(),
+						  &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(18, s_crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(19, s_crypt->encryptedThenHashed
+		 (proxyUsername.toUtf8(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(20, s_crypt->encryptedThenHashed(m_echoMode.toLatin1(),
+						  &ok).toBase64());
+
+	    query.bindValue(21, m_keySize);
+
+	    if(ok)
+	      query.bindValue
+		(22, s_crypt->encryptedThenHashed
+		 (QByteArray(), &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(23, s_crypt->encryptedThenHashed
+		 (QByteArray(), &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(24, s_crypt->encryptedThenHashed
+		 (QByteArray(), &ok).toBase64());
+
+	    query.bindValue(25, m_maximumBufferSize);
+	    query.bindValue(26, m_maximumContentLength);
+
+	    if(ok)
+	      query.bindValue
+		(27, s_crypt->encryptedThenHashed
+		 (m_transport.toLatin1(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(28, s_crypt->encryptedThenHashed
+		 (m_orientation.toLatin1(), &ok).
+		 toBase64());
+
+	    query.bindValue(29, m_motd);
+	    query.bindValue(30, "N/A");
+	    query.bindValue(31, m_laneWidth);
+
+	    if(ok)
+	      if(query.exec())
+		{
+		  QVariant variant(query.lastInsertId());
+
+		  if(variant.isValid())
+		    id = query.lastInsertId().toLongLong();
+		}
+
+	    query.clear();
+	  }
+
+	if(id == -1)
+	  db.rollback();
+	else
+	  db.commit();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(id != -1)
+    {
+      neighbor->setId(id);
+      emit newNeighbor(neighbor);
+      spoton_kernel::s_connectionCounts.insert(m_id, neighbor);
+      updateConnectionCount();
+    }
+  else
+    {
+      neighbor->deleteLater();
+      spoton_misc::logError
+	(QString("spoton_listener::slotNewConnection(): "
+		 "severe error(s). Purging neighbor "
+		 "object for %1:%2.").
+	 arg(m_address).
+	 arg(m_port));
+    }
 }
 #endif

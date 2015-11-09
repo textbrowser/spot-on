@@ -36,6 +36,7 @@
 #if QT_VERSION >= 0x050200
 #include <qbluetoothserver.h>
 #include <qbluetoothserviceinfo.h>
+#include <qbluetoothsocket.h>
 #endif
 
 #include "Common/spot-on-misc.h"
@@ -68,6 +69,13 @@ class spoton_listener_bluetooth_server: public QObject
   ~spoton_listener_bluetooth_server()
   {
   }
+
+#if QT_VERSION >= 0x050200
+  QBluetoothSocket *nextPendingConnection(void)
+  {
+    return m_server->nextPendingConnection();
+  }
+#endif
 
   QString errorString(void)
   {
