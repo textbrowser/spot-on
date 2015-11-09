@@ -35,6 +35,7 @@
 #include <QTimer>
 #if QT_VERSION >= 0x050200
 #include <qbluetoothserver.h>
+#include <qbluetoothserviceinfo.h>
 #endif
 
 #include "Common/spot-on-misc.h"
@@ -50,8 +51,8 @@ class spoton_listener_bluetooth_server: public QObject
   Q_OBJECT
 
  public:
-  spoton_listener_bluetooth_server(const qint64 id,
-				   QObject *parent):QObject(parent)
+  spoton_listener_bluetooth_server(const qint64 id, QObject *parent):
+  QObject(parent)
   {
     m_id = id;
 #if QT_VERSION >= 0x050200
@@ -80,7 +81,7 @@ class spoton_listener_bluetooth_server: public QObject
   bool isListening(void) const
   {
 #if QT_VERSION >= 0x050200
-    return m_server->isListening();
+    return m_server->isListening() && m_serviceInfo.isRegistered();
 #else
     return false;
 #endif
@@ -89,7 +90,29 @@ class spoton_listener_bluetooth_server: public QObject
   bool listen(const QString &address, const quint16 port)
   {
 #if QT_VERSION >= 0x050200
-    return m_server->listen(QBluetoothAddress(address), port);
+    bool ok = m_server->listen(QBluetoothAddress(address), port);
+
+    if(ok)
+      {
+	QBluetoothServiceInfo::Sequence protocol;
+	QBluetoothServiceInfo::Sequence protocolDescriptorList;
+
+	protocol << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))
+		 << QVariant::fromValue(quint8(m_server->serverPort()));
+	protocolDescriptorList.append(QVariant::fromValue(protocol));
+	m_serviceInfo.setAttribute
+	  (QBluetoothServiceInfo::ProtocolDescriptorList,
+	   protocolDescriptorList);
+	ok = m_serviceInfo.registerService(QBluetoothAddress(address));
+      }
+
+    if(!ok)
+      {
+	m_server->close();
+	m_serviceInfo.unregisterService();
+      }
+
+    return ok;
 #else
     Q_UNUSED(address);
     Q_UNUSED(port);
@@ -110,6 +133,7 @@ class spoton_listener_bluetooth_server: public QObject
   {
 #if QT_VERSION >= 0x050200
     m_server->close();
+    m_serviceInfo.unregisterService();
 #endif
   }
 
@@ -125,6 +149,7 @@ class spoton_listener_bluetooth_server: public QObject
  private:
 #if QT_VERSION >= 0x050200
   QBluetoothServer *m_server;
+  QBluetoothServiceInfo m_serviceInfo;
 #endif
   qint64 m_id;
 
@@ -333,6 +358,9 @@ class spoton_listener: public QObject
   void slotNewConnection(const qintptr socketDescriptor,
 			 const QHostAddress &address,
 			 const quint16 port);
+#endif
+#if QT_VERSION >= 0x050200
+  void slotNewConnection(void);
 #endif
   void slotTimeout(void);
 
