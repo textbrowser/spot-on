@@ -34,6 +34,7 @@
 #include <QTcpServer>
 #include <QTimer>
 #if QT_VERSION >= 0x050200
+#include <qbluetoothlocaldevice.h>
 #include <qbluetoothserver.h>
 #include <qbluetoothserviceinfo.h>
 #include <qbluetoothsocket.h>
@@ -95,38 +96,7 @@ class spoton_listener_bluetooth_server: public QObject
 #endif
   }
 
-  bool listen(const QString &address, const quint16 port)
-  {
-#if QT_VERSION >= 0x050200
-    bool ok = m_server->listen(QBluetoothAddress(address), port);
-
-    if(ok)
-      {
-	QBluetoothServiceInfo::Sequence protocol;
-	QBluetoothServiceInfo::Sequence protocolDescriptorList;
-
-	protocol << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))
-		 << QVariant::fromValue(quint8(m_server->serverPort()));
-	protocolDescriptorList.append(QVariant::fromValue(protocol));
-	m_serviceInfo.setAttribute
-	  (QBluetoothServiceInfo::ProtocolDescriptorList,
-	   protocolDescriptorList);
-	ok = m_serviceInfo.registerService(QBluetoothAddress(address));
-      }
-
-    if(!ok)
-      {
-	m_server->close();
-	m_serviceInfo.unregisterService();
-      }
-
-    return ok;
-#else
-    Q_UNUSED(address);
-    Q_UNUSED(port);
-    return false;
-#endif
-  }
+  bool listen(const QString &address, const quint16 port);
 
   int maxPendingConnections(void) const
   {

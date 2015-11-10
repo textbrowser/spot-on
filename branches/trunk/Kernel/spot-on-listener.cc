@@ -39,6 +39,72 @@
 #include "spot-on-listener.h"
 #include "spot-on-sctp-server.h"
 
+#if QT_VERSION >= 0x050200
+bool spoton_listener_bluetooth_server::listen
+(const QString &address, const quint16 port)
+{
+#if QT_VERSION >= 0x050200
+  QBluetoothLocalDevice adapter(QBluetoothAddress(address), this);
+  bool ok = true;
+
+  adapter.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
+  ok = m_server->listen(QBluetoothAddress(address), port);
+
+  if(ok)
+    {
+      QBluetoothServiceInfo::Sequence classId;
+      QUuid uuid(QUuid::createUuid());
+
+      classId << QVariant::fromValue
+	(QBluetoothUuid(QBluetoothUuid::SerialPort));
+      m_serviceInfo.setAttribute
+	(QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
+      classId.prepend(QVariant::fromValue(QBluetoothUuid(uuid)));
+      m_serviceInfo.setAttribute
+	(QBluetoothServiceInfo::ServiceClassIds, classId);
+      m_serviceInfo.setAttribute
+	(QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
+      m_serviceInfo.setServiceUuid(QBluetoothUuid(uuid));
+
+      QBluetoothServiceInfo::Sequence protocol;
+      QBluetoothServiceInfo::Sequence protocolDescriptorList;
+      QBluetoothServiceInfo::Sequence publicBrowse;
+
+      protocol << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))
+	       << QVariant::fromValue(quint8(m_server->serverPort()));
+      protocolDescriptorList.append(QVariant::fromValue(protocol));
+      publicBrowse << QVariant::fromValue
+	(QBluetoothUuid(QBluetoothUuid::PublicBrowseGroup));
+      m_serviceInfo.setAttribute(QBluetoothServiceInfo::BrowseGroupList,
+				 publicBrowse);
+      m_serviceInfo.setAttribute
+	(QBluetoothServiceInfo::ProtocolDescriptorList,
+	 protocolDescriptorList);
+      m_serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceDescription,
+				 tr("Spot-On Bluetooth Server"));
+      m_serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName,
+				 tr("Spot-On Bluetooth Server"));
+      m_serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceProvider,
+				 tr("spot-on.sf.net"));
+      m_serviceInfo.setServiceUuid(uuid);
+      ok = m_serviceInfo.registerService(QBluetoothAddress(address));
+    }
+
+  if(!ok)
+    {
+      m_server->close();
+      m_serviceInfo.unregisterService();
+    }
+
+  return ok;
+#else
+  Q_UNUSED(address);
+  Q_UNUSED(port);
+  return false;
+#endif
+}
+#endif
+
 #if QT_VERSION >= 0x050000
 void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
 #else

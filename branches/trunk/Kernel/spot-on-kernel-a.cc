@@ -5187,15 +5187,17 @@ void spoton_kernel::discoverAdaptiveEchoPair
 bool spoton_kernel::acceptRemoteBluetoothConnection
 (const QString &localAddress, const QString &peerAddress)
 {
-  if(peerAddress.isEmpty())
+  if(peerAddress.trimmed().isEmpty())
     return false;
   else if(localAddress == peerAddress)
     {
-      if(localAddress.isEmpty() || peerAddress.isEmpty())
+      if(localAddress.trimmed().isEmpty() || peerAddress.trimmed().isEmpty())
 	return false;
       else
 	return true;
     }
+  else
+    return false;
 }
 
 bool spoton_kernel::acceptRemoteConnection(const QHostAddress &localAddress,
