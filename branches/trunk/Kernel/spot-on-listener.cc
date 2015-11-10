@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QtCore>
 #if QT_VERSION >= 0x050200
 #ifdef Q_OS_LINUX
 #include <QDBusConnection>
@@ -44,7 +45,6 @@
 #include "spot-on-listener.h"
 #include "spot-on-sctp-server.h"
 
-#if QT_VERSION >= 0x050200
 spoton_listener_bluetooth_server::spoton_listener_bluetooth_server
 (const qint64 id, QObject *parent):QObject(parent)
 {
@@ -59,6 +59,8 @@ spoton_listener_bluetooth_server::spoton_listener_bluetooth_server
 	  SIGNAL(newConnection(void)),
 	  this,
 	  SIGNAL(newConnection(void)));
+#else
+  Q_UNUSED(id);
 #endif
 }
 
@@ -125,7 +127,6 @@ bool spoton_listener_bluetooth_server::listen
   return false;
 #endif
 }
-#endif
 
 #if QT_VERSION >= 0x050000
 void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
