@@ -9,7 +9,7 @@ purge.commands = rm -f *~
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= bluetooth concurrent core network sql
+QT		+= bluetooth concurrent core dbus network sql
 QT		-= gui
 CONFIG		+= qt release warn_on
 

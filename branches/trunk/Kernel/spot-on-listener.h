@@ -53,19 +53,7 @@ class spoton_listener_bluetooth_server: public QObject
   Q_OBJECT
 
  public:
-  spoton_listener_bluetooth_server(const qint64 id, QObject *parent):
-  QObject(parent)
-  {
-    m_id = id;
-#if QT_VERSION >= 0x050200
-    m_server = new QBluetoothServer
-      (QBluetoothServiceInfo::RfcommProtocol, this);
-    connect(m_server,
-	    SIGNAL(newConnection(void)),
-	    this,
-	    SIGNAL(newConnection(void)));
-#endif
-  }
+  spoton_listener_bluetooth_server(const qint64 id, QObject *parent);
 
   ~spoton_listener_bluetooth_server()
   {

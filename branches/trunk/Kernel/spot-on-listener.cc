@@ -25,6 +25,11 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if QT_VERSION >= 0x050200
+#ifdef Q_OS_LINUX
+#include <QDBusConnection>
+#endif
+#endif
 #include <QDir>
 #include <QNetworkInterface>
 #include <QSqlDatabase>
@@ -40,6 +45,23 @@
 #include "spot-on-sctp-server.h"
 
 #if QT_VERSION >= 0x050200
+spoton_listener_bluetooth_server::spoton_listener_bluetooth_server
+(const qint64 id, QObject *parent):QObject(parent)
+{
+  m_id = id;
+#if QT_VERSION >= 0x050200
+#ifdef Q_OS_LINUX
+  QDBusConnection::sessionBus().registerObject("/", this);
+#endif
+  m_server = new QBluetoothServer
+    (QBluetoothServiceInfo::RfcommProtocol, this);
+  connect(m_server,
+	  SIGNAL(newConnection(void)),
+	  this,
+	  SIGNAL(newConnection(void)));
+#endif
+}
+
 bool spoton_listener_bluetooth_server::listen
 (const QString &address, const quint16 port)
 {
