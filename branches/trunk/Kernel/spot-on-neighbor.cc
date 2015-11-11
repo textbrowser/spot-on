@@ -610,8 +610,8 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   if(m_transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050200
-      m_discoveryAgent = new QBluetoothServiceDiscoveryAgent
-	(QBluetoothAddress(m_address), this);
+      m_discoveryAgent = new QBluetoothServiceDiscoveryAgent(this);
+      m_discoveryAgent->setRemoteAddress(QBluetoothAddress(m_address));
       connect(m_discoveryAgent,
 	      SIGNAL(serviceDiscovered(const QBluetoothServiceInfo &)),
 	      this,
@@ -7060,15 +7060,21 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 #if QT_VERSION >= 0x050200
 void spoton_neighbor::slotServiceDiscovered(const QBluetoothServiceInfo &info)
 {
-  /*
-  ** We do not yet inspect the address and port.
-  */
-
-  if(info.serviceName() == tr("Spot-On Bluetooth Server"))
+  if(info.device().name() == m_address)
     {
-      m_discoveryAgent->stop();
-      m_bluetoothSocket->abort();
-      m_bluetoothSocket->connectToService(info);
+      QByteArray bytes;
+      QString serviceUuid;
+
+      bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
+      bytes = bytes.rightJustified(12, '0');
+      serviceUuid.append(bytes.mid(0, 8));
+      serviceUuid.append("-");
+      serviceUuid.append(bytes.mid(8));
+      serviceUuid.append("-0000-0000-");
+      serviceUuid.append(info.device().address().toString().remove(":"));
+
+      if(QBluetoothUuid(serviceUuid) == info.serviceUuid())
+	m_bluetoothSocket->connectToService(info);
     }
 }
 #endif
