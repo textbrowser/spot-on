@@ -1287,6 +1287,7 @@ void spoton_neighbor::slotTimeout(void)
 	       QBluetoothSocket::UnconnectedState)
 	      {
 		saveStatus("connecting");
+		m_bluetoothSocket->connectToService(QBluetoothServiceInfo());
 
 		if(!m_discoveryAgent->isActive())
 		  m_discoveryAgent->start
@@ -7064,8 +7065,7 @@ void spoton_neighbor::slotServiceDiscovered(const QBluetoothServiceInfo &info)
   ** We do not yet inspect the address and port.
   */
 
-  if(info.attribute(QBluetoothServiceInfo::ServiceName) ==
-     tr("Spot-On Bluetooth Server"))
+  if(info.serviceName() == tr("Spot-On Bluetooth Server"))
     {
       m_discoveryAgent->stop();
       m_bluetoothSocket->abort();
