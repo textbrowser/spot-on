@@ -106,7 +106,6 @@ bool spoton_listener_bluetooth_server::listen
 				 tr("Spot-On Bluetooth Server"));
       m_serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceProvider,
 				 tr("spot-on.sf.net"));
-      m_serviceInfo.setServiceUuid(uuid);
       ok = m_serviceInfo.registerService(QBluetoothAddress(address));
     }
 
