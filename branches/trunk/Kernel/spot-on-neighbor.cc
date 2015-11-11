@@ -7060,7 +7060,12 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 #if QT_VERSION >= 0x050200
 void spoton_neighbor::slotServiceDiscovered(const QBluetoothServiceInfo &info)
 {
-  if(info.device().address().toString() == m_address)
+  /*
+  ** We do not yet inspect the address and port.
+  */
+
+  if(info.attribute(QBluetoothServiceInfo::ServiceName) ==
+     tr("Spot-On Bluetooth Server"))
     {
       m_discoveryAgent->stop();
       m_bluetoothSocket->abort();
