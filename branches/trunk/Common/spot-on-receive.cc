@@ -36,7 +36,7 @@ QList<QByteArray> spoton_receive::process0000
 (int length, const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const bool acceptSignedMessagesOnly,
- const QHostAddress &address,
+ const QString &address,
  const quint16 port,
  spoton_crypt *s_crypt)
 {
@@ -326,7 +326,7 @@ QList<QByteArray> spoton_receive::process0000
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(address.toString()).
+       arg(address).
        arg(port));
 
   return QList<QByteArray> ();
@@ -335,7 +335,7 @@ QList<QByteArray> spoton_receive::process0000
 QList<QByteArray> spoton_receive::process0000a
 (int length, const QByteArray &dataIn,
  const bool acceptSignedMessagesOnly,
- const QHostAddress &address,
+ const QString &address,
  const quint16 port,
  const QString &messageType,
  spoton_crypt *s_crypt)
@@ -534,7 +534,7 @@ QList<QByteArray> spoton_receive::process0000a
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(address.toString()).
+       arg(address).
        arg(port));
 
   return QList<QByteArray> ();
@@ -544,7 +544,7 @@ QList<QByteArray> spoton_receive::process0000b
 (int length, const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const bool acceptSignedMessagesOnly,
- const QHostAddress &address,
+ const QString &address,
  const quint16 port,
  spoton_crypt *s_crypt)
 {
@@ -670,7 +670,7 @@ QList<QByteArray> spoton_receive::process0000b
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(address.toString()).
+       arg(address).
        arg(port));
 
   return QList<QByteArray> ();
@@ -679,7 +679,7 @@ QList<QByteArray> spoton_receive::process0000b
 QList<QByteArray> spoton_receive::process0000d
 (int length, const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
- const QHostAddress &address,
+ const QString &address,
  const quint16 port,
  spoton_crypt *s_crypt)
 {
@@ -788,7 +788,7 @@ QList<QByteArray> spoton_receive::process0000d
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(address.toString()).
+       arg(address).
        arg(port));
 
   return QList<QByteArray> ();
@@ -796,7 +796,7 @@ QList<QByteArray> spoton_receive::process0000d
 
 QList<QByteArray> spoton_receive::process0001b
 (int length, const QByteArray &dataIn,
- const QHostAddress &address,
+ const QString &address,
  const quint16 port,
  spoton_crypt *s_crypt)
 {
@@ -933,7 +933,7 @@ QList<QByteArray> spoton_receive::process0001b
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(address.toString()).
+       arg(address).
        arg(port));
 
   return QList<QByteArray> ();
@@ -942,7 +942,7 @@ QList<QByteArray> spoton_receive::process0001b
 QList<QByteArray> spoton_receive::process0001c
 (int length, const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
- const QHostAddress &address,
+ const QString &address,
  const quint16 port,
  const QString &keyType,
  spoton_crypt *s_crypt)
@@ -964,7 +964,7 @@ QList<QByteArray> spoton_receive::process0001c
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(address.toString()).
+       arg(address).
        arg(port));
       return QList<QByteArray> ();
     }
@@ -1064,7 +1064,7 @@ QList<QByteArray> spoton_receive::process0013
 (int length, const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const bool acceptSignedMessagesOnly,
- const QHostAddress &address,
+ const QString &address,
  const quint16 port,
  spoton_crypt *s_crypt)
 {
@@ -1342,7 +1342,7 @@ QList<QByteArray> spoton_receive::process0013
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(address.toString()).
+       arg(address).
        arg(port));
 
   return QList<QByteArray> ();
@@ -1351,7 +1351,7 @@ QList<QByteArray> spoton_receive::process0013
 QList<QByteArray> spoton_receive::process0091
 (int length, const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
- const QHostAddress &address,
+ const QString &address,
  const quint16 port,
  const QString &messageType)
 {
@@ -1600,7 +1600,7 @@ QList<QByteArray> spoton_receive::process0091
 	       "for %4:%5.").
        arg(messageType).
        arg(length).arg(data.length()).
-       arg(address.toString()).
+       arg(address).
        arg(port));
 
   return QList<QByteArray> ();

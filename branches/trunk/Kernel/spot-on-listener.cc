@@ -877,8 +877,8 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
   if(m_udpServer)
     {
       QString address(QString("%1:%2:%3").
-		      arg(neighbor->peerAddress().toString()).
-		      arg(neighbor->peerAddress().scopeId()).
+		      arg(neighbor->peerAddress()).
+		      arg(neighbor->scopeId()).
 		      arg(neighbor->peerPort()));
 
       neighbor->setProperty("address", address);
@@ -913,7 +913,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
   QString connectionName("");
   QString country
     (spoton_misc::
-     countryNameFromIPAddress(neighbor->peerAddress().toString()));
+     countryNameFromIPAddress(neighbor->peerAddress()));
   qint64 id = -1;
 
   {
@@ -987,7 +987,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	      query.bindValue
 		(3,
 		 s_crypt->encryptedThenHashed(neighbor->peerAddress().
-					      toString().toLatin1(),
+					      toLatin1(),
 					      &ok).toBase64());
 
 	    if(ok)
@@ -1000,8 +1000,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    if(ok)
 	      query.bindValue
 		(5,
-		 s_crypt->encryptedThenHashed(neighbor->peerAddress().
-					      scopeId().toLatin1(),
+		 s_crypt->encryptedThenHashed(neighbor->scopeId().toLatin1(),
 					      &ok).toBase64());
 
 	    query.bindValue(6, "connected");
@@ -1013,9 +1012,9 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
 	      query.bindValue
 		(7,
-		 s_crypt->keyedHash((neighbor->peerAddress().toString() +
+		 s_crypt->keyedHash((neighbor->peerAddress() +
 				     QString::number(neighbor->peerPort()) +
-				     neighbor->peerAddress().scopeId() +
+				     neighbor->scopeId() +
 				     m_transport).
 				    toLatin1(), &ok).toBase64());
 
@@ -1030,7 +1029,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	      query.bindValue
 		(10, s_crypt->
 		 keyedHash(neighbor->peerAddress().
-			   toString().toLatin1(), &ok).toBase64());
+			   toLatin1(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
@@ -1650,7 +1649,7 @@ void spoton_listener::slotNewConnection(void)
   QString connectionName("");
   QString country
     (spoton_misc::
-     countryNameFromIPAddress(neighbor->peerAddress().toString()));
+     countryNameFromIPAddress(neighbor->peerAddress()));
   qint64 id = -1;
 
   {
@@ -1712,7 +1711,7 @@ void spoton_listener::slotNewConnection(void)
 	      query.bindValue
 		(3,
 		 s_crypt->encryptedThenHashed(neighbor->peerAddress().
-					      toString().toLatin1(),
+					      toLatin1(),
 					      &ok).toBase64());
 
 	    if(ok)
@@ -1725,8 +1724,8 @@ void spoton_listener::slotNewConnection(void)
 	    if(ok)
 	      query.bindValue
 		(5,
-		 s_crypt->encryptedThenHashed(neighbor->peerAddress().
-					      scopeId().toLatin1(),
+		 s_crypt->encryptedThenHashed(neighbor->scopeId().
+					      toLatin1(),
 					      &ok).toBase64());
 
 	    query.bindValue(6, "connected");
@@ -1738,9 +1737,9 @@ void spoton_listener::slotNewConnection(void)
 
 	      query.bindValue
 		(7,
-		 s_crypt->keyedHash((neighbor->peerAddress().toString() +
+		 s_crypt->keyedHash((neighbor->peerAddress() +
 				     QString::number(neighbor->peerPort()) +
-				     neighbor->peerAddress().scopeId() +
+				     neighbor->scopeId() +
 				     m_transport).
 				    toLatin1(), &ok).toBase64());
 
@@ -1755,7 +1754,7 @@ void spoton_listener::slotNewConnection(void)
 	      query.bindValue
 		(10, s_crypt->
 		 keyedHash(neighbor->peerAddress().
-			   toString().toLatin1(), &ok).toBase64());
+			   toLatin1(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue

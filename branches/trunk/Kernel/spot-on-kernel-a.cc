@@ -1975,7 +1975,7 @@ void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
 	spoton_misc::logError
 	  (QString("spoton_kernel::slotPublicKeyReceivedFromUI(): "
 		   "write() failure for %1:%2.").
-	   arg(neighbor->peerAddress().toString()).
+	   arg(neighbor->peerAddress()).
 	   arg(neighbor->peerPort()));
       else
 	{
@@ -3841,10 +3841,11 @@ void spoton_kernel::slotPublicizeAllListenersPlaintext(void)
 
       if(listener)
 	if(!listener->externalAddress().isNull())
-	  emit publicizeListenerPlaintext(listener->externalAddress(),
-					  listener->externalPort(),
-					  listener->transport(),
-					  listener->orientation());
+	  if(listener->transport() != "bluetooth")
+	    emit publicizeListenerPlaintext(listener->externalAddress(),
+					    listener->externalPort(),
+					    listener->transport(),
+					    listener->orientation());
     }
 }
 
@@ -3854,10 +3855,11 @@ void spoton_kernel::slotPublicizeListenerPlaintext(const qint64 oid)
 
   if(listener)
     if(!listener->externalAddress().isNull())
-      emit publicizeListenerPlaintext(listener->externalAddress(),
-				      listener->externalPort(),
-				      listener->transport(),
-				      listener->orientation());
+      if(listener->transport() != "bluetooth")
+	emit publicizeListenerPlaintext(listener->externalAddress(),
+					listener->externalPort(),
+					listener->transport(),
+					listener->orientation());
 }
 
 void spoton_kernel::slotRequestScramble(void)
@@ -4845,7 +4847,7 @@ void spoton_kernel::slotBuzzMagnetReceivedFromUI(const qint64 oid,
     spoton_misc::logError
       (QString("spoton_kernel::slotBuzzMagnetReceivedFromUI(): "
 	       "write() failure for %1:%2.").
-       arg(neighbor->peerAddress().toString()).
+       arg(neighbor->peerAddress()).
        arg(neighbor->peerPort()));
   else
     neighbor->addToBytesWritten(data.length());
@@ -5228,8 +5230,14 @@ bool spoton_kernel::acceptRemoteConnection(const QHostAddress &localAddress,
 
 	  if(it.value() &&
 	     it.value()->state() == QAbstractSocket::ConnectedState)
-	    if(it.value()->peerAddress() == peerAddress)
-	      count += 1;
+	    {
+	      QHostAddress address(it.value()->peerAddress());
+
+	      address.setScopeId(it.value()->scopeId());
+
+	      if(address == peerAddress)
+		count += 1;
+	    }
 	}
 
       if(count >= value)

@@ -29,6 +29,9 @@
 #define _spoton_neighbor_h_
 
 #include <QAtomicInt>
+#if QT_VERSION >= 0x050200
+#include <qbluetoothsocket.h>
+#endif
 #include <QDateTime>
 #include <QHostAddress>
 #include <QHostInfo>
@@ -48,6 +51,25 @@
 #include "spot-on-sctp-socket.h"
 
 class spoton_external_address;
+
+#if QT_VERSION >= 0x050200
+class spoton_neighbor_bluetooth_socket: public QBluetoothSocket
+#else
+class spoton_neighbor_bluetooth_socket: public QObject
+#endif
+{
+  Q_OBJECT
+
+ public:
+  spoton_neighbor_bluetooth_socket(QObject *parent = 0):
+#if QT_VERSION >= 0x050200
+  QBluetoothSocket(parent)
+#else
+  QObject(parent)
+#endif
+  {
+  }
+};
 
 class spoton_neighbor_tcp_socket: public QSslSocket
 {
@@ -262,8 +284,14 @@ class spoton_neighbor: public QThread
 		  QObject *parent);
   ~spoton_neighbor();
   QAbstractSocket::SocketState state(void) const;
-  QHostAddress localAddress(void) const;
-  QHostAddress peerAddress(void) const;
+  QString localAddress(void) const;
+  QString peerAddress(void) const;
+
+  QString scopeId(void) const
+  {
+    return m_scopeId;
+  }
+
   QString transport(void) const;
   QUuid receivedUuid(void);
   bool isEncrypted(void) const;
@@ -288,10 +316,10 @@ class spoton_neighbor: public QThread
   QByteArray m_data;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
-  QHostAddress m_address;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
   QPointer<spoton_external_address> m_externalAddress;
+  QPointer<spoton_neighbor_bluetooth_socket> m_bluetoothSocket;
   QPointer<spoton_neighbor_tcp_socket> m_tcpSocket;
   QPointer<spoton_neighbor_udp_socket> m_udpSocket;
   QPointer<spoton_sctp_socket> m_sctpSocket;
@@ -306,11 +334,13 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_maximumContentLengthMutex;
   QReadWriteLock m_receivedUuidMutex;
   QSslCertificate m_peerCertificate;
+  QString m_address;
   QString m_echoMode;
   QString m_ipAddress;
   QString m_motd;
   QString m_orientation;
   QString m_protocol;
+  QString m_scopeId;
   QString m_sslControlString;
   QString m_statusControl;
   QString m_transport;
@@ -434,6 +464,9 @@ class spoton_neighbor: public QThread
   void slotEchoKeyShare(const QByteArrayList &list);
   void slotEncrypted(void);
   void slotError(QAbstractSocket::SocketError error);
+#if QT_VERSION >= 0x050200
+  void slotError(QBluetoothSocket::SocketError error);
+#endif
   void slotError(const QString &method,
 		 const spoton_sctp_socket::SocketError error);
   void slotExternalAddressDiscovered(const QHostAddress &address);

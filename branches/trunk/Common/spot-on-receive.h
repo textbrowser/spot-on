@@ -39,12 +39,12 @@ class spoton_receive
   static QList<QByteArray> process0000(int length, const QByteArray &dataIn,
 				       const QList<QByteArray> &symmetricKeys,
 				       const bool acceptSignedMessagesOnly,
-				       const QHostAddress &address,
+				       const QString &address,
 				       const quint16 port,
 				       spoton_crypt *s_crypt);
   static QList<QByteArray> process0000a(int length, const QByteArray &dataIn,
 					const bool acceptSignedMessagesOnly,
-					const QHostAddress &address,
+					const QString &address,
 					const quint16 port,
 					const QString &messageType,
 					spoton_crypt *s_crypt);
@@ -52,24 +52,24 @@ class spoton_receive
     (int length, const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
      const bool acceptSignedMessagesOnly,
-     const QHostAddress &address,
+     const QString &address,
      const quint16 port,
      spoton_crypt *s_crypt);
   static QList<QByteArray> process0000d
     (int length, const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
-     const QHostAddress &address,
+     const QString &address,
      const quint16 port,
      spoton_crypt *s_crypt);
   static QList<QByteArray> process0001b
     (int length, const QByteArray &dataIn,
-     const QHostAddress &address,
+     const QString &address,
      const quint16 port,
      spoton_crypt *s_crypt);
   static QList<QByteArray> process0001c
     (int length, const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
-     const QHostAddress &address,
+     const QString &address,
      const quint16 port,
      const QString &keyType,
      spoton_crypt *s_crypt);
@@ -77,13 +77,13 @@ class spoton_receive
     (int length, const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
      const bool acceptSignedMessagesOnly,
-     const QHostAddress &address,
+     const QString &address,
      const quint16 port,
      spoton_crypt *s_crypt);
   static QList<QByteArray> process0091
     (int length, const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
-     const QHostAddress &address,
+     const QString &address,
      const quint16 port,
      const QString &messageType);
   static QString findMessageType
