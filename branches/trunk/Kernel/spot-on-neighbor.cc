@@ -1287,9 +1287,10 @@ void spoton_neighbor::slotTimeout(void)
 	       QBluetoothSocket::UnconnectedState)
 	      {
 		saveStatus("connecting");
-		m_discoveryAgent->stop();
-		m_discoveryAgent->start
-		  (QBluetoothServiceDiscoveryAgent::FullDiscovery);
+
+		if(!m_discoveryAgent->isActive())
+		  m_discoveryAgent->start
+		    (QBluetoothServiceDiscoveryAgent::FullDiscovery);
 	      }
 #endif
 	  }
@@ -6906,6 +6907,7 @@ void spoton_neighbor::abort(void)
     {
 #if QT_VERSION >= 0x050200
       m_bluetoothSocket->abort();
+      m_discoveryAgent->stop();
 #endif
     }
   else if(m_sctpSocket)
@@ -6922,6 +6924,7 @@ void spoton_neighbor::close(void)
     {
 #if QT_VERSION >= 0x050200
       m_bluetoothSocket->close();
+      m_discoveryAgent->stop();
 #endif
     }
   else if(m_sctpSocket)
