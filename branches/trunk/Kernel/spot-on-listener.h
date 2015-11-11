@@ -98,8 +98,8 @@ class spoton_listener_bluetooth_server: public QObject
   void close(void)
   {
 #if QT_VERSION >= 0x050200
-    m_server->close();
     m_serviceInfo.unregisterService();
+    m_server->close();
 #endif
   }
 

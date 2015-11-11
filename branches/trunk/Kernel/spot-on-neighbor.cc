@@ -1287,7 +1287,6 @@ void spoton_neighbor::slotTimeout(void)
 	       QBluetoothSocket::UnconnectedState)
 	      {
 		saveStatus("connecting");
-		m_bluetoothSocket->connectToService(QBluetoothServiceInfo());
 
 		if(!m_discoveryAgent->isActive())
 		  m_discoveryAgent->start
