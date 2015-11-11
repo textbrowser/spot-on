@@ -4870,8 +4870,6 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
 	       "Aborting socket.").arg(m_bluetoothSocket->errorString()).
        arg(m_address).
        arg(m_port));
-
-  deleteLater();
 }
 #endif
 
