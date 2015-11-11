@@ -63,7 +63,7 @@ class spoton_neighbor_bluetooth_socket: public QObject
  public:
   spoton_neighbor_bluetooth_socket(QObject *parent = 0):
 #if QT_VERSION >= 0x050200
-  QBluetoothSocket(parent)
+  QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol, parent)
 #else
   QObject(parent)
 #endif

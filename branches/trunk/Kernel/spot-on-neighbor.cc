@@ -4866,8 +4866,8 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
   if(m_bluetoothSocket)
     spoton_misc::logError
       (QString("spoton_neighbor::slotError(): "
-	       "socket error (%1) for %2:%3. "
-	       "Aborting socket.").arg(m_bluetoothSocket->errorString()).
+	       "socket error (%1) for %2:%3.").
+       arg(m_bluetoothSocket->errorString()).
        arg(m_address).
        arg(m_port));
 }
