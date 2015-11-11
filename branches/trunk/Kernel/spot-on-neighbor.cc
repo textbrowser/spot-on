@@ -1278,7 +1278,8 @@ void spoton_neighbor::slotTimeout(void)
 	      {
 		saveStatus("connecting");
 		m_bluetoothSocket->connectToService
-		  (QBluetoothAddress(m_address), m_port);
+		  (QBluetoothAddress(m_address),
+		   QBluetoothUuid(QBluetoothUuid::SerialPort));
 	      }
 #endif
 	  }
