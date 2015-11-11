@@ -608,7 +608,17 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
     m_useSsl = false;
 
   if(m_transport == "bluetooth")
-    m_bluetoothSocket = new spoton_neighbor_bluetooth_socket(this);
+    {
+#if QT_VERSION >= 0x050200
+      m_discoveryAgent = new QBluetoothServiceDiscoveryAgent
+	(QBluetoothAddress(m_address), this);
+      connect(m_discoveryAgent,
+	      SIGNAL(serviceDiscovered(const QBluetoothServiceInfo &)),
+	      this,
+	      SLOT(slotServiceDiscovered(const QBluetoothServiceInfo &)));
+#endif
+      m_bluetoothSocket = new spoton_neighbor_bluetooth_socket(this);
+    }
   else if(m_transport == "sctp")
     m_sctpSocket = new spoton_sctp_socket(this);
   else if(m_transport == "tcp")
@@ -1277,8 +1287,9 @@ void spoton_neighbor::slotTimeout(void)
 	       QBluetoothSocket::UnconnectedState)
 	      {
 		saveStatus("connecting");
-		m_bluetoothSocket->connectToService
-		  (QBluetoothAddress(m_address), m_port);
+		m_discoveryAgent->stop();
+		m_discoveryAgent->start
+		  (QBluetoothServiceDiscoveryAgent::FullDiscovery);
 	      }
 #endif
 	  }
@@ -7042,3 +7053,15 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 	}
     }
 }
+
+#if QT_VERSION >= 0x050200
+void spoton_neighbor::slotServiceDiscovered(const QBluetoothServiceInfo &info)
+{
+  if(info.device().address().toString() == m_address)
+    {
+      m_discoveryAgent->stop();
+      m_bluetoothSocket->abort();
+      m_bluetoothSocket->connectToService(info);
+    }
+}
+#endif

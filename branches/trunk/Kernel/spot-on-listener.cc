@@ -112,8 +112,8 @@ bool spoton_listener_bluetooth_server::listen
 
   if(!ok)
     {
-      m_server->close();
       m_serviceInfo.unregisterService();
+      m_server->close();
     }
 
   return ok;
