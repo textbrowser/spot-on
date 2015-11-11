@@ -65,8 +65,16 @@ bool spoton_listener_bluetooth_server::listen
   if(ok)
     {
       QBluetoothServiceInfo::Sequence classId;
-      QString serviceUuid(QUuid::createUuid().toString());
+      QByteArray bytes;
+      QString serviceUuid;
 
+      bytes.append(QString("%1").arg(port).toLatin1().toHex());
+      bytes = bytes.rightJustified(12, '0');
+      serviceUuid.append(bytes.mid(0, 8));
+      serviceUuid.append("-");
+      serviceUuid.append(bytes.mid(8));
+      serviceUuid.append("-0000-0000-");
+      serviceUuid.append(QString(address).remove(":"));
       classId << QVariant::fromValue
 	(QBluetoothUuid(QBluetoothUuid::SerialPort));
       m_serviceInfo.setAttribute
@@ -78,11 +86,11 @@ bool spoton_listener_bluetooth_server::listen
       m_serviceInfo.setAttribute
 	(QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
       m_serviceInfo.setAttribute
-	(QBluetoothServiceInfo::ServiceName, tr("Spot-On Bluetooth Server"));
+	(QBluetoothServiceInfo::ServiceName, "Spot-On-Bluetooth-Server");
       m_serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceDescription,
-				 tr("Spot-On Bluetooth Server"));
+				 "Spot-On-Bluetooth-Server");
       m_serviceInfo.setAttribute
-	(QBluetoothServiceInfo::ServiceProvider, tr("spot-on.sf.net"));
+	(QBluetoothServiceInfo::ServiceProvider, "spot-on.sf.net");
       m_serviceInfo.setServiceUuid(QBluetoothUuid(serviceUuid));
 
       QBluetoothServiceInfo::Sequence publicBrowse;
