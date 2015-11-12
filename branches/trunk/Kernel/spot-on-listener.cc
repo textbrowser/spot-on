@@ -622,6 +622,9 @@ void spoton_listener::slotTimeout(void)
   ** If the interface disappears, destroy the listener.
   */
 
+  if(m_udpServer)
+    return;
+
   prepareNetworkInterface();
 
   if(isListening())
