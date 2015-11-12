@@ -5134,3 +5134,27 @@ int spoton_misc::minimumNeighborLaneWidth(void)
   QSqlDatabase::removeDatabase(connectionName);
   return laneWidth;
 }
+
+bool spoton_misc::isMulticastAddress(const QHostAddress &address)
+{
+  if(address.protocol() == QAbstractSocket::IPv4Protocol)
+    {
+      quint32 a = address.toIPv4Address();
+
+      if(!((a & 0xf0000000) == 0xe0000000))
+	return false;
+      else
+	return true;
+    }
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
+    {
+      Q_IPV6ADDR a6 = address.toIPv6Address();
+
+      if(a6.c[0] != 0xff)
+	return false;
+      else
+	return true;
+    }
+  else
+    return false;
+}

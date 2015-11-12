@@ -623,7 +623,8 @@ void spoton_listener::slotTimeout(void)
   */
 
   if(m_udpServer)
-    return;
+    if(spoton_misc::isMulticastAddress(m_address))
+      return;
 
   prepareNetworkInterface();
 

@@ -138,6 +138,7 @@ class spoton_misc
 				    spoton_crypt *crypt);
   static bool isIpBlocked(const QHostAddress &address,
 			  spoton_crypt *crypt);
+  static bool isMulticastAddress(const QHostAddress &address);
   static bool isPrivateNetwork(const QHostAddress &address);
   static bool isValidBuzzMagnet(const QByteArray &magnet);
   static bool isValidBuzzMagnetData(const QByteArray &data);
