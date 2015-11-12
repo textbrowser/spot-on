@@ -9,7 +9,7 @@ purge.commands = rm -f *~
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= concurrent core network sql
+QT		+= bluetooth concurrent core network sql
 QT		-= gui
 CONFIG		+= qt release warn_on
 
@@ -17,8 +17,8 @@ CONFIG		+= qt release warn_on
 # 1.5.0 of the gcrypt library.
 
 DEFINES += SPOTON_LINKED_WITH_LIBGEOIP \
-   	   SPOTON_LINKED_WITH_LIBNTRU \
-	   SPOTON_LINKED_WITH_LIBPTHREAD \
+           SPOTON_LINKED_WITH_LIBNTRU \
+           SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_SCTP_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -38,7 +38,6 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
                           -Wstack-protector -Wstrict-overflow=5
 QMAKE_LFLAGS_RELEASE += -Wl,-rpath,/usr/local/spot-on/Lib
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../. ../../../. /usr/include/postgresql
 LIBS		+= -L../../../libNTRU -L../../../libSpotOn \
 		   -lGeoIP \

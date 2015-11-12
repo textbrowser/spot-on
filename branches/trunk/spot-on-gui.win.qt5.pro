@@ -8,9 +8,9 @@ libspoton.depends =
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= concurrent gui multimedia network sql widgets
+QT		+= bluetooth concurrent gui multimedia network sql widgets
 CONFIG		+= qt release warn_on
-CONFIG          -= debug
+CONFIG		-= debug
 
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.

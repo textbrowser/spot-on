@@ -197,8 +197,8 @@ int main(int argc, char *argv[])
   myappTranslator.load("spot-on_" + QLocale::system().name(),
 		       "Translations");
   qapplication.installTranslator(&myappTranslator);
-  QCoreApplication::setApplicationName("Spot-On");
-  QCoreApplication::setOrganizationName("Spot-On");
+  QCoreApplication::setApplicationName("SpotOn");
+  QCoreApplication::setOrganizationName("SpotOn");
   QCoreApplication::setOrganizationDomain("spot-on.sf.net");
   QCoreApplication::setApplicationVersion(SPOTON_VERSION_STR);
   QSettings::setPath(QSettings::IniFormat, QSettings::UserScope,
@@ -422,11 +422,17 @@ spoton::spoton(void):QMainWindow()
   m_ui.signatureKeyType->model()->setData
     (m_ui.signatureKeyType->model()->index(2, 0), 0, Qt::UserRole - 1);
 #endif
-#ifndef SPOTON_SCTP_ENABLED
+#if QT_VERSION < 0x050200
   m_ui.listenerTransport->model()->setData
     (m_ui.listenerTransport->model()->index(0, 0), 0, Qt::UserRole - 1);
   m_ui.neighborTransport->model()->setData
     (m_ui.neighborTransport->model()->index(0, 0), 0, Qt::UserRole - 1);
+#endif
+#ifndef SPOTON_SCTP_ENABLED
+  m_ui.listenerTransport->model()->setData
+    (m_ui.listenerTransport->model()->index(1, 0), 0, Qt::UserRole - 1);
+  m_ui.neighborTransport->model()->setData
+    (m_ui.neighborTransport->model()->index(1, 0), 0, Qt::UserRole - 1);
 #endif
 #if SPOTON_GOLDBUG == 1
   m_optionsUi.position->model()->setData
@@ -1626,13 +1632,13 @@ spoton::spoton(void):QMainWindow()
   m_chatInactivityTimer.start(120000);
   m_updateChatWindowsTimer.start(3500);
   m_ui.ipv4Listener->setChecked(true);
-  m_ui.listenerIP->setInputMask("000.000.000.000; ");
+  m_ui.listenerIP->setInputMask("");
   m_ui.addInstitutionLineEdit->setEnabled(false);
   m_ui.listenerScopeId->setEnabled(false);
   m_ui.listenerScopeIdLabel->setEnabled(false);
   m_ui.listenerShareAddress->setEnabled(false);
   m_ui.missingLinks->setEnabled(false);
-  m_ui.neighborIP->setInputMask("000.000.000.000; ");
+  m_ui.neighborIP->setInputMask("");
   m_ui.neighborScopeId->setEnabled(false);
   m_ui.neighborScopeIdLabel->setEnabled(false);
 #ifdef Q_OS_WIN32
@@ -2628,7 +2634,7 @@ void spoton::slotAddListener(void)
   QByteArray publicKey;
   QString error("");
 
-  if(m_ui.listenerTransport->currentIndex() == 1 &&
+  if(m_ui.listenerTransport->currentIndex() == 2 &&
      m_ui.permanentCertificate->isChecked() &&
      m_ui.sslListener->isChecked())
     {
@@ -2690,14 +2696,21 @@ void spoton::slotAddListener(void)
 	QString transport("");
 	QSqlQuery query(db);
 
-	if(m_ui.ipv4Listener->isChecked())
-	  protocol = "IPv4";
+	if(m_ui.listenerTransport->currentIndex() == 0)
+	  scopeId = "";
 	else
-	  protocol = "IPv6";
+	  {
+	    if(m_ui.ipv4Listener->isChecked())
+	      protocol = "IPv4";
+	    else
+	      protocol = "IPv6";
+	  }
 
 	if(m_ui.listenerTransport->currentIndex() == 0)
-	  transport = "sctp";
+	  transport = "bluetooth";
 	else if(m_ui.listenerTransport->currentIndex() == 1)
+	  transport = "sctp";
+	else if(m_ui.listenerTransport->currentIndex() == 2)
 	  transport = "tcp";
 	else
 	  transport = "udp";
@@ -2725,7 +2738,7 @@ void spoton::slotAddListener(void)
 	  query.bindValue
 	    (0, crypt->
 	     encryptedThenHashed(QByteArray(), &ok).toBase64());
-	else
+	else if(transport != "bluetooth")
 	  {
 	    QStringList digits;
 	    QStringList list;
@@ -2756,6 +2769,13 @@ void spoton::slotAddListener(void)
 	      query.bindValue
 		(0, crypt->
 		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
+	  }
+	else
+	  {
+	    if(ok)
+	      query.bindValue
+		(0, crypt->encryptedThenHashed(ip.toLatin1(), &ok).
+		 toBase64());
 	  }
 
 	if(ok)
@@ -2794,7 +2814,7 @@ void spoton::slotAddListener(void)
 		(6, crypt->encryptedThenHashed("half", &ok).toBase64());
 	  }
 
-	if(m_ui.listenerTransport->currentIndex() == 1 &&
+	if(m_ui.listenerTransport->currentIndex() == 2 &&
 	   m_ui.sslListener->isChecked())
 	  query.bindValue(7, m_ui.listenerKeySize->currentText().toInt());
 	else
@@ -2817,8 +2837,11 @@ void spoton::slotAddListener(void)
 
 	if(m_ui.listenerTransport->currentIndex() == 0)
 	  query.bindValue
-	    (11, crypt->encryptedThenHashed("sctp", &ok).toBase64());
+	    (11, crypt->encryptedThenHashed("bluetooth", &ok).toBase64());
 	else if(m_ui.listenerTransport->currentIndex() == 1)
+	  query.bindValue
+	    (11, crypt->encryptedThenHashed("sctp", &ok).toBase64());
+	else if(m_ui.listenerTransport->currentIndex() == 2)
 	  query.bindValue
 	    (11, crypt->encryptedThenHashed("tcp", &ok).toBase64());
 	else
@@ -2947,16 +2970,23 @@ void spoton::slotAddNeighbor(void)
 	QString transport("");
 	QSqlQuery query(db);
 
-	if(m_ui.ipv4Neighbor->isChecked())
-	  protocol = "IPv4";
-	else if(m_ui.ipv6Neighbor->isChecked())
-	  protocol = "IPv6";
+	if(m_ui.neighborTransport->currentIndex() == 0)
+	  scopeId = "";
 	else
-	  protocol = "Dynamic DNS";
+	  {
+	    if(m_ui.ipv4Neighbor->isChecked())
+	      protocol = "IPv4";
+	    else if(m_ui.ipv6Neighbor->isChecked())
+	      protocol = "IPv6";
+	    else
+	      protocol = "Dynamic DNS";
+	  }
 
 	if(m_ui.neighborTransport->currentIndex() == 0)
-	  transport = "sctp";
+	  transport = "bluetooth";
 	else if(m_ui.neighborTransport->currentIndex() == 1)
+	  transport = "sctp";
+	else if(m_ui.neighborTransport->currentIndex() == 2)
 	  transport = "tcp";
 	else
 	  transport = "udp";
@@ -3004,10 +3034,17 @@ void spoton::slotAddNeighbor(void)
 	  query.bindValue
 	    (3, crypt->
 	     encryptedThenHashed(QByteArray(), &ok).toBase64());
-	else
+	else if(transport != "bluetooth")
 	  {
 	    ip = spoton_misc::massageIpForUi(ip, protocol);
 
+	    if(ok)
+	      query.bindValue
+		(3, crypt->
+		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
+	  }
+	else
+	  {
 	    if(ok)
 	      query.bindValue
 		(3, crypt->
@@ -3126,7 +3163,7 @@ void spoton::slotAddNeighbor(void)
 		 encryptedThenHashed("half", &ok).toBase64());
 	  }
 
-	if(m_ui.neighborTransport->currentIndex() == 1)
+	if(m_ui.neighborTransport->currentIndex() == 2)
 	  {
 	    if(m_ui.requireSsl->isChecked())
 	      query.bindValue
@@ -3138,7 +3175,7 @@ void spoton::slotAddNeighbor(void)
 	  query.bindValue(19, 0);
 
 	if(m_ui.addException->isChecked() &&
-	   m_ui.neighborTransport->currentIndex() == 1)
+	   m_ui.neighborTransport->currentIndex() == 2)
 	  query.bindValue(20, 1);
 	else
 	  query.bindValue(20, 0);
@@ -3148,7 +3185,7 @@ void spoton::slotAddNeighbor(void)
 	    (21, crypt->encryptedThenHashed(QByteArray(),
 					    &ok).toBase64());
 
-	if(m_ui.neighborTransport->currentIndex() == 1)
+	if(m_ui.neighborTransport->currentIndex() == 2)
 	  query.bindValue(22, m_ui.requireSsl->isChecked() ? 1 : 0);
 	else
 	  query.bindValue(22, 0);
@@ -3167,8 +3204,11 @@ void spoton::slotAddNeighbor(void)
 	  {
 	    if(m_ui.neighborTransport->currentIndex() == 0)
 	      query.bindValue
-		(25, crypt->encryptedThenHashed("sctp", &ok).toBase64());
+		(25, crypt->encryptedThenHashed("bluetooth", &ok).toBase64());
 	    else if(m_ui.neighborTransport->currentIndex() == 1)
+	      query.bindValue
+		(25, crypt->encryptedThenHashed("sctp", &ok).toBase64());
+	    else if(m_ui.neighborTransport->currentIndex() == 2)
 	      query.bindValue
 		(25, crypt->encryptedThenHashed("tcp", &ok).toBase64());
 	    else
@@ -3261,14 +3301,14 @@ void spoton::slotProtocolRadioToggled(bool state)
       if(radio == m_ui.ipv4Listener)
 	{
 	  m_ui.listenerIP->clear();
-	  m_ui.listenerIP->setInputMask("000.000.000.000; ");
+	  m_ui.listenerIP->setInputMask("");
 	  m_ui.listenerScopeId->setEnabled(false);
 	  m_ui.listenerScopeIdLabel->setEnabled(false);
 	}
       else
 	{
 	  m_ui.neighborIP->clear();
-	  m_ui.neighborIP->setInputMask("000.000.000.000; ");
+	  m_ui.neighborIP->setInputMask("");
 	  m_ui.neighborScopeId->setEnabled(false);
 	  m_ui.neighborScopeIdLabel->setEnabled(false);
 	}

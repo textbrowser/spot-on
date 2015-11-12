@@ -703,16 +703,19 @@ QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
   const char *code = 0;
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  GeoIP *gi = 0;
-  QFileInfo fileInfo;
   QHostAddress address(ipAddress);
   QSettings settings;
   QString fileName("");
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
     fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
-  else
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
     fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+  else
+    return QString("Unknown");
+
+  GeoIP *gi = 0;
+  QFileInfo fileInfo;
 
   fileInfo.setFile(fileName);
 
@@ -743,16 +746,19 @@ QString spoton_misc::countryNameFromIPAddress(const QString &ipAddress)
   const char *country = 0;
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  GeoIP *gi = 0;
-  QFileInfo fileInfo;
   QHostAddress address(ipAddress);
   QSettings settings;
   QString fileName("");
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
     fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
-  else
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
     fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+  else
+    return QString("Unknown");
+
+  GeoIP *gi = 0;
+  QFileInfo fileInfo;
 
   fileInfo.setFile(fileName);
 
@@ -2357,7 +2363,21 @@ bool spoton_misc::isAcceptedIP(const QHostAddress &address,
 			       const qint64 id,
 			       spoton_crypt *crypt)
 {
-  if(address.isNull() || address.toString().isEmpty())
+  if(address.isNull())
+    {
+      logError
+	("spoton_misc::isAcceptedIP(): address is empty.");
+      return false;
+    }
+  else
+    return isAcceptedIP(address.toString(), id, crypt);
+}
+
+bool spoton_misc::isAcceptedIP(const QString &address,
+			       const qint64 id,
+			       spoton_crypt *crypt)
+{
+  if(address.isEmpty())
     {
       logError
 	("spoton_misc::isAcceptedIP(): address is empty.");
@@ -2389,7 +2409,7 @@ bool spoton_misc::isAcceptedIP(const QHostAddress &address,
 	query.prepare("SELECT COUNT(*) FROM listeners_allowed_ips "
 		      "WHERE ip_address_hash IN (?, ?) AND "
 		      "listener_oid = ?");
-	query.bindValue(0, crypt->keyedHash(address.toString().
+	query.bindValue(0, crypt->keyedHash(address.
 					    toLatin1(), &ok).
 			toBase64());
 
@@ -3284,7 +3304,20 @@ bool spoton_misc::isValidInstitutionMagnet(const QByteArray &magnet)
 bool spoton_misc::isIpBlocked(const QHostAddress &address,
 			      spoton_crypt *crypt)
 {
-  if(address.isNull() || address.toString().isEmpty())
+  if(address.isNull())
+    {
+      logError
+	("spoton_misc::isIpBlocked(): address is empty.");
+      return true;
+    }
+  else
+    return isIpBlocked(address.toString(), crypt);
+}
+
+bool spoton_misc::isIpBlocked(const QString &address,
+			      spoton_crypt *crypt)
+{
+  if(address.isEmpty())
     {
       logError
 	("spoton_misc::isIpBlocked(): address is empty.");
@@ -3317,7 +3350,7 @@ bool spoton_misc::isIpBlocked(const QHostAddress &address,
 		      "status_control = 'blocked'");
 	query.bindValue
 	  (0, crypt->
-	   keyedHash(address.toString().toLatin1(), &ok).toBase64());
+	   keyedHash(address.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  if(query.exec())

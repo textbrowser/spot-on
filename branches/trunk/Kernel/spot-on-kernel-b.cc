@@ -759,7 +759,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	 process0000(data.length(), data, symmetricKeys,
 		     setting("gui/chatAcceptSignedMessagesOnly", true).
 		     toBool(),
-		     QHostAddress("127.0.0.1"), 0,
+		     "127.0.0.1", 0,
 		     s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
@@ -793,7 +793,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	 process0000a(data.length(), data,
 		      setting("gui/chatAcceptSignedMessagesOnly", true).
 		      toBool(),
-		      QHostAddress("127.0.0.1"), 0,
+		      "127.0.0.1", 0,
 		      messageType,
 		      s_crypts.value("poptastic", 0)));
 
@@ -809,7 +809,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	 process0000b(data.length(), data, symmetricKeys,
 		      setting("gui/chatAcceptSignedMessagesOnly", true).
 		      toBool(),
-		      QHostAddress("127.0.0.1"), 0,
+		      "127.0.0.1", 0,
 		      s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
@@ -822,7 +822,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
       QList<QByteArray> list
 	(spoton_receive::
 	 process0000d(data.length(), data, symmetricKeys,
-		      QHostAddress("127.0.0.1"), 0,
+		      "127.0.0.1", 0,
 		      s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
@@ -835,7 +835,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
       QList<QByteArray> list
 	(spoton_receive::
 	 process0001b(data.length(), data,
-		      QHostAddress("127.0.0.1"), 0,
+		      "127.0.0.1", 0,
 		      s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
@@ -1169,7 +1169,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     {
       QList<QByteArray> list
 	(spoton_receive::process0001c(data.length(), data, symmetricKeys,
-				      QHostAddress("127.0.0.1"), 0,
+				      "127.0.0.1", 0,
 				      "poptastic",
 				      spoton_kernel::s_crypts.
 				      value("email", 0)));
@@ -1184,7 +1184,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	 process0013(data.length(), data, symmetricKeys,
 		     setting("gui/chatAcceptSignedMessagesOnly", true).
 		     toBool(),
-		     QHostAddress("127.0.0.1"), 0,
+		     "127.0.0.1", 0,
 		     s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
@@ -1200,7 +1200,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     {
       QList<QByteArray> list
 	(spoton_receive::process0091(data.length(), data, symmetricKeys,
-				     QHostAddress("127.0.0.1"), 0,
+				     "127.0.0.1", 0,
 				     messageType));
 
       if(!list.isEmpty())
@@ -1210,7 +1210,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     {
       QList<QByteArray> list
 	(spoton_receive::process0091(data.length(), data, symmetricKeys,
-				     QHostAddress("127.0.0.1"), 0,
+				     "127.0.0.1", 0,
 				     messageType));
 
       if(!list.isEmpty())

@@ -8,7 +8,7 @@ libspoton.depends =
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= concurrent gui multimedia network sql widgets
+QT		+= bluetooth concurrent gui multimedia network sql widgets
 CONFIG		+= qt release warn_on
 
 # The function gcry_kdf_derive() is available in version
@@ -35,7 +35,6 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
                           -Wstack-protector -Wstrict-overflow=5
 QMAKE_LFLAGS_RELEASE += -Wl,-rpath,/usr/local/spot-on/Lib
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../../. GUI
 LIBS		+= -L../../libNTRU -L../../libSpotOn \
 		   -lGeoIP -lcrypto -lcurl -lgcrypt \
