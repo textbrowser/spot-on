@@ -2188,9 +2188,9 @@ void spoton::slotAssignNewIPToNeighbor(void)
     (tr("%1: Neighbor Remote IP Information").
      arg(SPOTON_APPLICATION_NAME));
 
-  if(protocol == "IPv4" || protocol.isEmpty())
+  if(protocol == "IPv4")
     {
-      ui.ip->setInputMask("");
+      ui.ip->setInputMask("000.000.000.000; ");
       ui.scope->setEnabled(false);
     }
 

@@ -90,7 +90,6 @@ spoton_neighbor::spoton_neighbor
   m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
 		       spoton_common::LANE_WIDTH_MAXIMUM);
-  m_bluetoothSocket = 0;
   m_sctpSocket = 0;
   m_tcpSocket = 0;
   m_udpSocket = 0;
@@ -99,30 +98,14 @@ spoton_neighbor::spoton_neighbor
 	   maximumBufferSize,
 	   spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
 
-  if(transport == "bluetooth")
-    m_bluetoothSocket = new spoton_neighbor_bluetooth_socket(this);
-  else if(transport == "sctp")
+  if(transport == "sctp")
     m_sctpSocket = new spoton_sctp_socket(this);
   else if(transport == "tcp")
     m_tcpSocket = new spoton_neighbor_tcp_socket(this);
   else if(transport == "udp")
     m_udpSocket = new spoton_neighbor_udp_socket(this);
 
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-#ifdef Q_OS_WIN32
-      m_bluetoothSocket->setSocketDescriptor
-	(_dup(static_cast<int> (socketDescriptor)),
-	 QBluetoothServiceInfo::RfcommProtocol);
-#else
-      m_bluetoothSocket->setSocketDescriptor
-	(dup(static_cast<int> (socketDescriptor)),
-	 QBluetoothServiceInfo::RfcommProtocol);
-#endif
-#endif
-    }
-  else if(m_sctpSocket)
+  if(m_sctpSocket)
     {
       m_sctpSocket->setReadBufferSize(m_maximumBufferSize);
       m_sctpSocket->setSocketDescriptor(socketDescriptor);
@@ -163,18 +146,12 @@ spoton_neighbor::spoton_neighbor
       m_udpSocket->setPeerPort(port.toUShort());
     }
 
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      m_address = m_bluetoothSocket->peerAddress().toString();
-#endif
-    }
-  else if(m_sctpSocket)
-    m_address = m_sctpSocket->peerAddress().toString();
+  if(m_sctpSocket)
+    m_address = m_sctpSocket->peerAddress();
   else if(m_tcpSocket)
-    m_address = m_tcpSocket->peerAddress().toString();
+    m_address = m_tcpSocket->peerAddress();
   else if(m_udpSocket)
-    m_address = ipAddress.trimmed();
+    m_address = ipAddress;
 
   m_accountAuthenticated = 0;
   m_allowExceptions = false;
@@ -186,7 +163,7 @@ spoton_neighbor::spoton_neighbor
 	     ** This neighbor was created by a listener. We must
 	     ** obtain a valid id at some point (setId())!
 	     */
-  m_ipAddress = m_address.trimmed();
+  m_ipAddress = m_address.toString();
   m_isUserDefined = false;
   m_lastReadTime = QDateTime::currentDateTime();
   m_listenerOid = listenerOid;
@@ -197,13 +174,7 @@ spoton_neighbor::spoton_neighbor
   m_motd = motd;
   m_orientation = orientation;
 
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      m_port = m_sctpSocket->peerPort();
-#endif
-    }
-  else if(m_sctpSocket)
+  if(m_sctpSocket)
     m_port = m_sctpSocket->peerPort();
   else if(m_tcpSocket)
     m_port = m_tcpSocket->peerPort();
@@ -278,7 +249,7 @@ spoton_neighbor::spoton_neighbor
 		  spoton_misc::logError
 		    (QString("spoton_neighbor::spoton_neighbor(): "
 			     "empty private key for %1:%2. SSL disabled.").
-		     arg(m_address).
+		     arg(m_address.toString()).
 		     arg(m_port));
 		}
 	    }
@@ -289,7 +260,7 @@ spoton_neighbor::spoton_neighbor
 		(QString("spoton_neighbor::spoton_neighbor(): "
 			 "invalid local certificate for %1:%2. "
 			 "SSL disabled.").
-		 arg(m_address).
+		 arg(m_address.toString()).
 		 arg(m_port));
 	    }
 	}
@@ -327,28 +298,7 @@ spoton_neighbor::spoton_neighbor
 	  this,
 	  SLOT(slotStopTimer(QTimer *)));
 
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      connect(m_bluetoothSocket,
-	      SIGNAL(disconnected(void)),
-	      this,
-	      SIGNAL(disconnected(void)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(disconnected(void)),
-	      this,
-	      SLOT(slotDisconnected(void)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(error(QBluetoothSocket::SocketError)),
-	      this,
-	      SLOT(slotError(QBluetoothSocket::SocketError)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(readyRead(void)),
-	      this,
-	      SLOT(slotReadyRead(void)));
-#endif
-    }
-  else if(m_sctpSocket)
+  if(m_sctpSocket)
     {
       connect(m_sctpSocket,
 	      SIGNAL(disconnected(void)),
@@ -525,9 +475,8 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_accountAuthenticated = 0;
   m_accountName = accountName;
   m_accountPassword = accountPassword;
-  m_address = ipAddress.trimmed();
+  m_address = QHostAddress(ipAddress);
   m_allowExceptions = allowExceptions;
-  m_bluetoothSocket = 0;
   m_bytesRead = 0;
   m_bytesWritten = 0;
   m_echoMode = echoMode;
@@ -607,19 +556,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   else
     m_useSsl = false;
 
-  if(m_transport == "bluetooth")
-    {
-#if QT_VERSION >= 0x050200
-      m_discoveryAgent = new QBluetoothServiceDiscoveryAgent(this);
-      m_discoveryAgent->setRemoteAddress(QBluetoothAddress(m_address));
-      connect(m_discoveryAgent,
-	      SIGNAL(serviceDiscovered(const QBluetoothServiceInfo &)),
-	      this,
-	      SLOT(slotServiceDiscovered(const QBluetoothServiceInfo &)));
-#endif
-      m_bluetoothSocket = new spoton_neighbor_bluetooth_socket(this);
-    }
-  else if(m_transport == "sctp")
+  if(m_transport == "sctp")
     m_sctpSocket = new spoton_sctp_socket(this);
   else if(m_transport == "tcp")
     m_tcpSocket = new spoton_neighbor_tcp_socket(this);
@@ -706,14 +643,12 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 	}
     }
 
-  if(m_transport != "bluetooth")
-    if(m_address.isEmpty())
-      if(!m_ipAddress.isEmpty())
-	QHostInfo::lookupHost(m_ipAddress,
-			      this, SLOT(slotHostFound(const QHostInfo &)));
+  if(m_address.isNull())
+    if(!m_ipAddress.isEmpty())
+      QHostInfo::lookupHost(m_ipAddress,
+			    this, SLOT(slotHostFound(const QHostInfo &)));
 
-  if(m_transport != "bluetooth")
-    m_scopeId = scopeId;
+  m_address.setScopeId(scopeId);
 
   if(!m_useSsl)
     m_sslControlString = "N/A";
@@ -741,32 +676,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 	  this,
 	  SLOT(slotStopTimer(QTimer *)));
 
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      connect(m_bluetoothSocket,
-	      SIGNAL(connected(void)),
-	      this,
-	      SLOT(slotConnected(void)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(disconnected(void)),
-	      this,
-	      SIGNAL(disconnected(void)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(disconnected(void)),
-	      this,
-	      SLOT(slotDisconnected(void)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(error(QBluetoothSocket::SocketError)),
-	      this,
-	      SLOT(slotError(QBluetoothSocket::SocketError)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(readyRead(void)),
-	      this,
-	      SLOT(slotReadyRead(void)));
-#endif
-    }
-  else if(m_sctpSocket)
+  if(m_sctpSocket)
     {
       connect(m_sctpSocket,
 	      SIGNAL(connected(void)),
@@ -918,7 +828,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 spoton_neighbor::~spoton_neighbor()
 {
   spoton_misc::logError(QString("Neighbor %1:%2 deallocated.").
-			arg(m_address).
+			arg(m_address.toString()).
 			arg(m_port));
   m_abort.fetchAndStoreOrdered(1);
 
@@ -1025,15 +935,44 @@ spoton_neighbor::~spoton_neighbor()
 
 void spoton_neighbor::slotTimeout(void)
 {
-  if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
+  if(m_sctpSocket)
     {
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotTimeout(): "
-		 "aborting because of silent connection for %1:%2.").
-	 arg(m_address).
-	 arg(m_port));
-      deleteLater();
-      return;
+      if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotTimeout(): "
+		     "aborting because of silent connection for %1:%2.").
+	     arg(m_address.toString()).
+	     arg(m_port));
+	  deleteLater();
+	  return;
+	}
+    }
+  else if(m_tcpSocket)
+    {
+      if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotTimeout(): "
+		     "aborting because of silent connection for %1:%2.").
+	     arg(m_address.toString()).
+	     arg(m_port));
+	  deleteLater();
+	  return;
+	}
+    }
+  else if(m_udpSocket)
+    {
+      if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotTimeout(): "
+		     "aborting because of silent connection for %1:%2.").
+	     arg(m_address.toString()).
+	     arg(m_port));
+	  deleteLater();
+	  return;
+	}
     }
 
   /*
@@ -1269,7 +1208,7 @@ void spoton_neighbor::slotTimeout(void)
       spoton_misc::logError
 	(QString("spoton_neighbor::slotTimeout(): instructed "
 		 "to delete neighbor for %1:%2.").
-	 arg(m_address).
+	 arg(m_address.toString()).
 	 arg(m_port));
       deleteLater();
       return;
@@ -1280,26 +1219,12 @@ void spoton_neighbor::slotTimeout(void)
   if(m_isUserDefined)
     if(status == "connected")
       {
-	if(m_bluetoothSocket)
-	  {
-#if QT_VERSION >= 0x050200
-	    if(m_bluetoothSocket->state() ==
-	       QBluetoothSocket::UnconnectedState)
-	      {
-		saveStatus("connecting");
-
-		if(!m_discoveryAgent->isActive())
-		  m_discoveryAgent->start
-		    (QBluetoothServiceDiscoveryAgent::FullDiscovery);
-	      }
-#endif
-	  }
-	else if(m_sctpSocket)
+	if(m_sctpSocket)
 	  {
 	    if(m_sctpSocket->state() == spoton_sctp_socket::UnconnectedState)
 	      {
 		saveStatus("connecting");
-		m_sctpSocket->connectToHost(m_address, m_port);
+		m_sctpSocket->connectToHost(m_address.toString(), m_port);
 	      }
 	  }
 	else if(m_tcpSocket)
@@ -1309,7 +1234,8 @@ void spoton_neighbor::slotTimeout(void)
 		saveStatus("connecting");
 
 		if(m_useSsl)
-		  m_tcpSocket->connectToHostEncrypted(m_address, m_port);
+		  m_tcpSocket->connectToHostEncrypted
+		    (m_address.toString(), m_port);
 		else
 		  m_tcpSocket->connectToHost(m_address, m_port);
 	      }
@@ -1332,7 +1258,7 @@ void spoton_neighbor::slotTimeout(void)
 		      (QString("spoton_neighbor::slotTimeout(): "
 			       "waitForConnected() failure for "
 			       "%1:%2.").
-		       arg(m_address).
+		       arg(m_address.toString()).
 		       arg(m_port));
 		    deleteLater();
 		    return;
@@ -1546,13 +1472,7 @@ void spoton_neighbor::slotReadyRead(void)
 {
   QByteArray data;
 
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      data = m_bluetoothSocket->readAll();
-#endif
-    }
-  else if(m_sctpSocket)
+  if(m_sctpSocket)
     data = m_sctpSocket->readAll();
   else if(m_tcpSocket)
     data = m_tcpSocket->readAll();
@@ -1592,7 +1512,7 @@ void spoton_neighbor::slotReadyRead(void)
 		 "is false "
 		 "for %1:%2. "
 		 "Purging read data.").
-	 arg(m_address).
+	 arg(m_address.toString()).
 	 arg(m_port));
     }
 
@@ -1618,7 +1538,7 @@ void spoton_neighbor::slotReadyRead(void)
 	(QString("spoton_neighbor::slotReadyRead(): "
 		 "Did not receive data. Closing connection for "
 		 "%1:%2.").
-	 arg(m_address).
+	 arg(m_address.toString()).
 	 arg(m_port));
       deleteLater();
     }
@@ -1753,7 +1673,7 @@ void spoton_neighbor::processData(void)
 	    (QString("spoton_neighbor::processData(): "
 		     "data does not contain Content-Length "
 		     "for %1:%2.").
-	     arg(m_address).
+	     arg(m_address.toString()).
 	     arg(m_port));
 	  continue;
 	}
@@ -1767,7 +1687,7 @@ void spoton_neighbor::processData(void)
 	    (QString("spoton_neighbor::processData(): "
 		     "the Content-Length header from node %1:%2 "
 		     "contains a lot of data (%3). Ignoring. ").
-	     arg(m_address).
+	     arg(m_address.toString()).
 	     arg(m_port).
 	     arg(length));
 	  continue;
@@ -1814,16 +1734,7 @@ void spoton_neighbor::processData(void)
 	{
 	  if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
 	    {
-	      if(m_bluetoothSocket)
-		{
-#if QT_VERSION >= 0x050200
-		  emit authenticationRequested
-		    (QString("%1:%2").
-		     arg(m_bluetoothSocket->peerAddress().toString()).
-		     arg(m_bluetoothSocket->peerPort()));
-#endif
-		}
-	      else if(m_sctpSocket)
+	      if(m_sctpSocket)
 		{
 		  if(m_sctpSocket->peerAddress().scopeId().isEmpty())
 		    emit authenticationRequested
@@ -2063,10 +1974,7 @@ void spoton_neighbor::slotConnected(void)
     {
       if(m_isUserDefined)
 	{
-	  QHostAddress address(m_address);
-
-	  address.setScopeId(m_scopeId);
-	  m_udpSocket->initializeMulticast(address, m_port);
+	  m_udpSocket->initializeMulticast(m_address, m_port);
 
 	  if(m_udpSocket->multicastSocket())
 	    connect(m_udpSocket->multicastSocket(),
@@ -2161,16 +2069,7 @@ void spoton_neighbor::slotConnected(void)
 		   encryptedThenHashed(country.toLatin1(), &ok).toBase64());
 		query.bindValue(1, isEncrypted() ? 1 : 0);
 
-		if(m_bluetoothSocket)
-		  {
-#if QT_VERSION >= 0x050200
-		    query.bindValue
-		      (2, m_bluetoothSocket->localAddress().toString());
-		    query.bindValue
-		      (3, m_bluetoothSocket->localPort());
-#endif
-		  }
-		else if(m_sctpSocket)
+		if(m_sctpSocket)
 		  {
 		    query.bindValue
 		      (2, m_sctpSocket->localAddress().toString());
@@ -2290,7 +2189,7 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
       spoton_misc::logError
 	(QString("spoton_neighbor::savePublicKey(): unexpected key type "
 		 "for %1:%2.").
-	 arg(m_address).
+	 arg(m_address.toString()).
 	 arg(m_port));
       return;
     }
@@ -2403,7 +2302,7 @@ void spoton_neighbor::slotSendMessage
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotSendMessage(): write() error "
 		   "for %1:%2.").
-	   arg(m_address).
+	   arg(m_address.toString()).
 	   arg(m_port));
       else
 	{
@@ -2429,7 +2328,7 @@ void spoton_neighbor::slotWriteURLs(const QByteArray &data)
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotWriteURLs(): write() error "
 		   "for %1:%2.").
-	   arg(m_address).
+	   arg(m_address.toString()).
 	   arg(m_port));
       else
 	{
@@ -2474,7 +2373,7 @@ void spoton_neighbor::slotWrite
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotWrite(): write() "
 		     "error for %1:%2.").
-	     arg(m_address).
+	     arg(m_address.toString()).
 	     arg(m_port));
 	else
 	  {
@@ -2489,7 +2388,7 @@ void spoton_neighbor::slotLifetimeExpired(void)
   spoton_misc::logError
     (QString("spoton_neighbor::slotLifetimeExpired(): "
 	     "expiration time reached for %1:%2. Aborting socket.").
-     arg(m_address).
+     arg(m_address.toString()).
      arg(m_port));
   deleteLater();
 }
@@ -2525,7 +2424,7 @@ void spoton_neighbor::slotSharePublicKey(const QByteArray &keyType,
     spoton_misc::logError
       (QString("spoton_neighbor::slotSharePublicKey(): "
 	       "write() failure for %1:%2.").
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
   else
     {
@@ -3001,7 +2900,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -3182,7 +3081,7 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -3356,7 +3255,7 @@ void spoton_neighbor::process0002a
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -3499,7 +3398,7 @@ void spoton_neighbor::process0002b
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -3561,7 +3460,7 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -3617,7 +3516,7 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -3751,7 +3650,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -3843,7 +3742,7 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -3922,7 +3821,7 @@ void spoton_neighbor::process0040a(int length, const QByteArray &dataIn,
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -4006,7 +3905,7 @@ void spoton_neighbor::process0040b(int length, const QByteArray &dataIn,
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -4134,7 +4033,7 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -4327,7 +4226,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -4408,7 +4307,7 @@ void spoton_neighbor::process0065(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -4478,7 +4377,7 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -4625,7 +4524,7 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -4719,7 +4618,7 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 }
 
@@ -4762,7 +4661,7 @@ void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotSendStatus(): write() "
 		     "error for %1:%2.").
-	     arg(m_address).
+	     arg(m_address.toString()).
 	     arg(m_port));
 	else
 	  {
@@ -4845,7 +4744,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 		       "(%1) for "
 		       "%2:%3. "
 		       "Disabling SSL.").arg(m_tcpSocket->errorString()).
-	       arg(m_address).arg(m_port));
+	       arg(m_address.toString()).arg(m_port));
 
 	  return;
 	}
@@ -4856,33 +4755,18 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
       (QString("spoton_neighbor::slotError(): "
 	       "socket error (%1) for %2:%3. "
 	       "Aborting socket.").arg(m_tcpSocket->errorString()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
   else if(m_udpSocket)
     spoton_misc::logError
       (QString("spoton_neighbor::slotError(): "
 	       "socket error (%1) for %2:%3. "
 	       "Aborting socket.").arg(m_udpSocket->errorString()).
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
 
   deleteLater();
 }
-
-#if QT_VERSION >= 0x050200
-void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
-{
-  Q_UNUSED(error);
-
-  if(m_bluetoothSocket)
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotError(): "
-	       "socket error (%1) for %2:%3.").
-       arg(m_bluetoothSocket->errorString()).
-       arg(m_address).
-       arg(m_port));
-}
-#endif
 
 void spoton_neighbor::slotError(const QString &method,
 				const spoton_sctp_socket::SocketError error)
@@ -4893,7 +4777,7 @@ void spoton_neighbor::slotError(const QString &method,
 	     "Aborting socket.").
      arg(method).
      arg(error).
-     arg(m_address).
+     arg(m_address.toString()).
      arg(m_port));
   deleteLater();
 }
@@ -4915,7 +4799,7 @@ void spoton_neighbor::slotSendCapabilities(void)
     spoton_misc::logError
       (QString("spoton_neighbor::slotSendCapabilities(): "
 	       "write() error for %1:%2.").
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
   else
     addToBytesWritten(message.length());
@@ -4931,7 +4815,7 @@ void spoton_neighbor::slotSendMOTD(void)
   if(write(message.constData(), message.length()) != message.length())
     spoton_misc::logError
       (QString("spoton_neighbor::slotSendMOTD(): write() error for %1:%2.").
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
   else
     addToBytesWritten(message.length());
@@ -5049,7 +4933,7 @@ void spoton_neighbor::slotSendMail
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotSendMail(): write() "
 		     "error for %1:%2.").
-	     arg(m_address).
+	     arg(m_address.toString()).
 	     arg(m_port));
 	else
 	  {
@@ -5112,7 +4996,7 @@ void spoton_neighbor::slotSendMailFromPostOffice
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotSendMailFromPostOffice(): write() "
 		   "error for %1:%2.").
-	   arg(m_address).
+	   arg(m_address.toString()).
 	   arg(m_port));
       else
 	{
@@ -5534,7 +5418,7 @@ void spoton_neighbor::slotRetrieveMail(const QByteArrayList &list,
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotRetrieveMail(): write() "
 		     "error for %1:%2.").
-	     arg(m_address).
+	     arg(m_address.toString()).
 	     arg(m_port));
 	else
 	  {
@@ -5549,8 +5433,8 @@ void spoton_neighbor::slotHostFound(const QHostInfo &hostInfo)
   foreach(const QHostAddress &address, hostInfo.addresses())
     if(!address.isNull())
       {
-	m_address = address.toString();
-	m_ipAddress = m_address;
+	m_address = address;
+	m_ipAddress = m_address.toString();
 	break;
       }
 }
@@ -5571,7 +5455,7 @@ void spoton_neighbor::slotPublicizeListenerPlaintext
 	    (QString("spoton_neighbor::slotPublicizeListenerPlaintext(): "
 		     "write() "
 		     "error for %1:%2.").
-	     arg(m_address).
+	     arg(m_address.toString()).
 	     arg(m_port));
 	else
 	  {
@@ -5608,7 +5492,7 @@ void spoton_neighbor::slotPublicizeListenerPlaintext(const QByteArray &data,
 			 "slotPublicizeListenerPlaintext(): "
 			 "write() "
 			 "error for %1:%2.").
-		 arg(m_address).
+		 arg(m_address.toString()).
 		 arg(m_port));
 	    else
 	      {
@@ -5625,7 +5509,7 @@ void spoton_neighbor::slotSslErrors(const QList<QSslError> &errors)
     spoton_misc::logError(QString("spoton_neighbor::slotSslErrors(): "
 				  "error (%1) occurred from %2:%3.").
 			  arg(errors.at(i).errorString()).
-			  arg(m_address).
+			  arg(m_address.toString()).
 			  arg(m_port));
 }
 
@@ -5647,7 +5531,7 @@ void spoton_neighbor::slotPeerVerifyError(const QSslError &error)
       spoton_misc::logError
 	(QString("spoton_neighbor::slotPeerVerifyError(): instructed "
 		 "to delete neighbor for %1:%2.").
-	 arg(m_address).
+	 arg(m_address.toString()).
 	 arg(m_port));
       deleteLater();
       return;
@@ -5668,7 +5552,7 @@ void spoton_neighbor::slotPeerVerifyError(const QSslError &error)
 			   "the stored certificate does not match "
 			   "the peer's certificate for %1:%2. This is a "
 			   "serious problem! Aborting.").
-		   arg(m_address).
+		   arg(m_address.toString()).
 		   arg(m_port));
 		deleteLater();
 	      }
@@ -5680,7 +5564,7 @@ void spoton_neighbor::slotModeChanged(QSslSocket::SslMode mode)
     (QString("spoton_neighbor::slotModeChanged(): "
 	     "the connection mode has changed to %1 for %2:%3.").
      arg(mode).
-     arg(m_address).
+     arg(m_address.toString()).
      arg(m_port));
 
   if(m_useSsl)
@@ -5690,7 +5574,7 @@ void spoton_neighbor::slotModeChanged(QSslSocket::SslMode mode)
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotModeChanged(): "
 		     "unencrypted connection mode for %1:%2. Aborting.").
-	     arg(m_address).
+	     arg(m_address.toString()).
 	     arg(m_port));
 	  deleteLater();
 	  return;
@@ -5721,7 +5605,7 @@ void spoton_neighbor::slotDisconnected(void)
 	      spoton_misc::logError
 		(QString("spoton_neighbor::slotDisconnected(): "
 			 "retrying %1 of %2 for %3:%4.").arg(attempts).arg(5).
-		 arg(m_address).
+		 arg(m_address.toString()).
 		 arg(m_port));
 	      return;
 	    }
@@ -5730,7 +5614,7 @@ void spoton_neighbor::slotDisconnected(void)
   spoton_misc::logError
     (QString("spoton_neighbor::slotDisconnected(): "
 	     "aborting socket for %1:%2!").
-     arg(m_address).
+     arg(m_address.toString()).
      arg(m_port));
   deleteLater();
 }
@@ -5763,7 +5647,7 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 		  spoton_misc::logError
 		    (QString("spoton_neighbor::recordCertificateOrAbort(): "
 			     "null peer certificate for %1:%2. Aborting.").
-		     arg(m_address).
+		     arg(m_address.toString()).
 		     arg(m_port));
 		  deleteLater();
 		  return;
@@ -5777,7 +5661,7 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 			     "the stored certificate does not match "
 			     "the peer's certificate for %1:%2. This is a "
 			     "serious problem! Aborting.").
-		     arg(m_address).
+		     arg(m_address.toString()).
 		     arg(m_port));
 		  deleteLater();
 		  return;
@@ -5883,7 +5767,7 @@ void spoton_neighbor::slotSendBuzz(const QByteArray &data)
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotSendBuzz(): write() error for "
 		   "%1:%2.").
-	   arg(m_address).
+	   arg(m_address.toString()).
 	   arg(m_port));
       else
 	{
@@ -6326,7 +6210,7 @@ void spoton_neighbor::slotCallParticipant(const QByteArray &data,
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotCallParticipant(): write() "
 		   "error for %1:%2.").
-	   arg(m_address).
+	   arg(m_address.toString()).
 	   arg(m_port));
       else
 	{
@@ -6630,7 +6514,7 @@ void spoton_neighbor::slotSendAccountInformation(void)
 	      spoton_misc::logError
 		(QString("spoton_neighbor::slotSendAccountInformation(): "
 			 "write() error for %1:%2.").
-		 arg(m_address).
+		 arg(m_address.toString()).
 		 arg(m_port));
 	    else
 	      {
@@ -6678,7 +6562,7 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &name,
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotAccountAuthenticated(): "
 		   "write() error for %1:%2.").
-	   arg(m_address).
+	   arg(m_address.toString()).
 	   arg(m_port));
       else
 	addToBytesWritten(message.length());
@@ -6696,7 +6580,7 @@ void spoton_neighbor::slotSendAuthenticationRequest(void)
     spoton_misc::logError
       (QString("spoton_neighbor::slotSendAuthenticationRequest(): "
 	       "write() error for %1:%2.").
-       arg(m_address).
+       arg(m_address.toString()).
        arg(m_port));
   else
     addToBytesWritten(message.length());
@@ -6715,13 +6599,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 
   while(remaining > 0)
     {
-      if(m_bluetoothSocket)
-	{
-#if QT_VERSION >= 0x050200
-	  sent = m_bluetoothSocket->write(data, remaining);
-#endif
-	}
-      else if(m_sctpSocket)
+      if(m_sctpSocket)
 	sent = m_sctpSocket->write(data, remaining);
       else if(m_tcpSocket)
 	sent = m_tcpSocket->write(data, remaining);
@@ -6730,13 +6608,8 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	  if(m_isUserDefined)
 	    sent = m_udpSocket->write(data, qMin(minimum, remaining));
 	  else
-	    {
-	      QHostAddress address(m_address);
-
-	      address.setScopeId(m_scopeId);
-	      sent = m_udpSocket->writeDatagram
-		(data, qMin(minimum, remaining), address, m_port);
-	    }
+	    sent = m_udpSocket->writeDatagram
+	      (data, qMin(minimum, remaining), m_address, m_port);
 
 	  if(sent == -1)
 	    {
@@ -6794,7 +6667,7 @@ bool spoton_neighbor::writeMessage0060(const QByteArray &data)
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::writeMessage0060(): write() error "
 		     "for %1:%2.").
-	     arg(m_address).
+	     arg(m_address.toString()).
 	     arg(m_port));
 	}
       else
@@ -6809,14 +6682,7 @@ bool spoton_neighbor::writeMessage0060(const QByteArray &data)
 
 QAbstractSocket::SocketState spoton_neighbor::state(void) const
 {
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      return QAbstractSocket::SocketState(m_bluetoothSocket->state());
-#endif
-      return QAbstractSocket::UnconnectedState;
-    }
-  else if(m_sctpSocket)
+  if(m_sctpSocket)
     return QAbstractSocket::SocketState(m_sctpSocket->state());
   else if(m_tcpSocket)
     return m_tcpSocket->state();
@@ -6826,44 +6692,28 @@ QAbstractSocket::SocketState spoton_neighbor::state(void) const
     return QAbstractSocket::UnconnectedState;
 }
 
-QString spoton_neighbor::localAddress(void) const
+QHostAddress spoton_neighbor::localAddress(void) const
 {
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      return m_bluetoothSocket->localAddress().toString();
-#else
-      return "";
-#endif
-    }
-  else if(m_sctpSocket)
-    return m_sctpSocket->localAddress().toString();
+  if(m_sctpSocket)
+    return m_sctpSocket->localAddress();
   else if(m_tcpSocket)
-    return m_tcpSocket->localAddress().toString();
+    return m_tcpSocket->localAddress();
   else if(m_udpSocket)
-    return m_udpSocket->localAddress().toString();
+    return m_udpSocket->localAddress();
   else
-    return "";
+    return QHostAddress();
 }
 
-QString spoton_neighbor::peerAddress(void) const
+QHostAddress spoton_neighbor::peerAddress(void) const
 {
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      return m_bluetoothSocket->peerAddress().toString();
-#else
-      return "";
-#endif
-    }
-  else if(m_sctpSocket)
-    return m_sctpSocket->peerAddress().toString();
+  if(m_sctpSocket)
+    return m_sctpSocket->peerAddress();
   else if(m_tcpSocket)
-    return m_tcpSocket->peerAddress().toString();
+    return m_tcpSocket->peerAddress();
   else if(m_udpSocket)
-    return m_udpSocket->peerAddress().toString();
+    return m_udpSocket->peerAddress();
   else
-    return "";
+    return QHostAddress();
 }
 
 quint16 spoton_neighbor::peerPort(void) const
@@ -6896,21 +6746,14 @@ void spoton_neighbor::slotAuthenticationTimerTimeout(void)
   spoton_misc::logError
     (QString("spoton_neighbor::slotAuthenticationTimerTimeout(): "
 	     "authentication timer expired for %1:%2. Aborting!").
-     arg(m_address).
+     arg(m_address.toString()).
      arg(m_port));
   deleteLater();
 }
 
 void spoton_neighbor::abort(void)
 {
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      m_bluetoothSocket->abort();
-      m_discoveryAgent->stop();
-#endif
-    }
-  else if(m_sctpSocket)
+  if(m_sctpSocket)
     m_sctpSocket->abort();
   else if(m_tcpSocket)
     m_tcpSocket->abort();
@@ -6920,14 +6763,7 @@ void spoton_neighbor::abort(void)
 
 void spoton_neighbor::close(void)
 {
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050200
-      m_bluetoothSocket->close();
-      m_discoveryAgent->stop();
-#endif
-    }
-  else if(m_sctpSocket)
+  if(m_sctpSocket)
     m_sctpSocket->close();
   else if(m_tcpSocket)
     {
@@ -6989,7 +6825,7 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotEchoKeyShare(): write() error "
 		   "for %1:%2.").
-	   arg(m_address).
+	   arg(m_address.toString()).
 	   arg(m_port));
       else
 	{
@@ -7020,7 +6856,7 @@ void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotSendForwardSecrecyPublicKey(): "
 		   "write() error for %1:%2.").
-	   arg(m_address).
+	   arg(m_address.toString()).
 	   arg(m_port));
       else
 	{
@@ -7047,7 +6883,7 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotSendForwardSecrecySessionKeys(): "
 		   "write() error for %1:%2.").
-	   arg(m_address).
+	   arg(m_address.toString()).
 	   arg(m_port));
       else
 	{
@@ -7056,25 +6892,3 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 	}
     }
 }
-
-#if QT_VERSION >= 0x050200
-void spoton_neighbor::slotServiceDiscovered(const QBluetoothServiceInfo &info)
-{
-  if(info.device().name() == m_address)
-    {
-      QByteArray bytes;
-      QString serviceUuid;
-
-      bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
-      bytes = bytes.rightJustified(12, '0');
-      serviceUuid.append(bytes.mid(0, 8));
-      serviceUuid.append("-");
-      serviceUuid.append(bytes.mid(8));
-      serviceUuid.append("-0000-0000-");
-      serviceUuid.append(info.device().address().toString().remove(":"));
-
-      if(QBluetoothUuid(serviceUuid) == info.serviceUuid())
-	m_bluetoothSocket->connectToService(info);
-    }
-}
-#endif

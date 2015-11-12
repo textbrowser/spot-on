@@ -1975,7 +1975,7 @@ void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
 	spoton_misc::logError
 	  (QString("spoton_kernel::slotPublicKeyReceivedFromUI(): "
 		   "write() failure for %1:%2.").
-	   arg(neighbor->peerAddress()).
+	   arg(neighbor->peerAddress().toString()).
 	   arg(neighbor->peerPort()));
       else
 	{
@@ -3841,11 +3841,10 @@ void spoton_kernel::slotPublicizeAllListenersPlaintext(void)
 
       if(listener)
 	if(!listener->externalAddress().isNull())
-	  if(listener->transport() != "bluetooth")
-	    emit publicizeListenerPlaintext(listener->externalAddress(),
-					    listener->externalPort(),
-					    listener->transport(),
-					    listener->orientation());
+	  emit publicizeListenerPlaintext(listener->externalAddress(),
+					  listener->externalPort(),
+					  listener->transport(),
+					  listener->orientation());
     }
 }
 
@@ -3855,11 +3854,10 @@ void spoton_kernel::slotPublicizeListenerPlaintext(const qint64 oid)
 
   if(listener)
     if(!listener->externalAddress().isNull())
-      if(listener->transport() != "bluetooth")
-	emit publicizeListenerPlaintext(listener->externalAddress(),
-					listener->externalPort(),
-					listener->transport(),
-					listener->orientation());
+      emit publicizeListenerPlaintext(listener->externalAddress(),
+				      listener->externalPort(),
+				      listener->transport(),
+				      listener->orientation());
 }
 
 void spoton_kernel::slotRequestScramble(void)
@@ -4847,7 +4845,7 @@ void spoton_kernel::slotBuzzMagnetReceivedFromUI(const qint64 oid,
     spoton_misc::logError
       (QString("spoton_kernel::slotBuzzMagnetReceivedFromUI(): "
 	       "write() failure for %1:%2.").
-       arg(neighbor->peerAddress()).
+       arg(neighbor->peerAddress().toString()).
        arg(neighbor->peerPort()));
   else
     neighbor->addToBytesWritten(data.length());
@@ -5186,22 +5184,6 @@ void spoton_kernel::discoverAdaptiveEchoPair
     }
 }
 
-bool spoton_kernel::acceptRemoteBluetoothConnection
-(const QString &localAddress, const QString &peerAddress)
-{
-  if(peerAddress.trimmed().isEmpty())
-    return false;
-  else if(localAddress == peerAddress)
-    {
-      if(localAddress.trimmed().isEmpty() || peerAddress.trimmed().isEmpty())
-	return false;
-      else
-	return true;
-    }
-  else
-    return false;
-}
-
 bool spoton_kernel::acceptRemoteConnection(const QHostAddress &localAddress,
 					   const QHostAddress &peerAddress)
 {
@@ -5230,14 +5212,8 @@ bool spoton_kernel::acceptRemoteConnection(const QHostAddress &localAddress,
 
 	  if(it.value() &&
 	     it.value()->state() == QAbstractSocket::ConnectedState)
-	    {
-	      QHostAddress address(it.value()->peerAddress());
-
-	      address.setScopeId(it.value()->scopeId());
-
-	      if(address == peerAddress)
-		count += 1;
-	    }
+	    if(it.value()->peerAddress() == peerAddress)
+	      count += 1;
 	}
 
       if(count >= value)

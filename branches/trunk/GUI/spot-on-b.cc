@@ -31,10 +31,6 @@
 
 #include <QSslKey>
 #include <QToolTip>
-#if QT_VERSION >= 0x050200
-#include <qbluetoothhostinfo.h>
-#include <qbluetoothlocaldevice.h>
-#endif
 
 void spoton::slotSendMessage(void)
 {
@@ -1223,54 +1219,36 @@ void spoton::prepareListenerIPCombo(void)
 {
   m_ui.listenerIPCombo->clear();
 
+  QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
   QStringList list;
 
-  if(m_ui.listenerTransport->currentIndex() == 0)
+  while(!interfaces.isEmpty())
     {
-#if QT_VERSION >= 0x050200
-      QList<QBluetoothHostInfo> devices(QBluetoothLocalDevice::allDevices());
+      QNetworkInterface interface(interfaces.takeFirst());
 
-      while(!devices.isEmpty())
+      if(!interface.isValid() || !(interface.flags() &
+				   QNetworkInterface::IsUp))
+	continue;
+
+      QList<QNetworkAddressEntry> addresses(interface.addressEntries());
+
+      while(!addresses.isEmpty())
 	{
-	  QBluetoothHostInfo hostInfo = devices.takeFirst();
+	  QHostAddress address;
+	  QNetworkAddressEntry entry;
 
-	  list.append(hostInfo.address().toString());
-	}
-#endif
-    }
-  else
-    {
-      QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
+	  entry = addresses.takeFirst();
+	  address = entry.ip();
 
-      while(!interfaces.isEmpty())
-	{
-	  QNetworkInterface interface(interfaces.takeFirst());
-
-	  if(!interface.isValid() || !(interface.flags() &
-				       QNetworkInterface::IsUp))
-	    continue;
-
-	  QList<QNetworkAddressEntry> addresses(interface.addressEntries());
-
-	  while(!addresses.isEmpty())
+	  if(m_ui.ipv4Listener->isChecked())
 	    {
-	      QHostAddress address;
-	      QNetworkAddressEntry entry;
-
-	      entry = addresses.takeFirst();
-	      address = entry.ip();
-
-	      if(m_ui.ipv4Listener->isChecked())
-		{
-		  if(address.protocol() == QAbstractSocket::IPv4Protocol)
-		    list.append(address.toString());
-		}
-	      else
-		{
-		  if(address.protocol() == QAbstractSocket::IPv6Protocol)
-		    list.append
-		      (QHostAddress(address.toIPv6Address()).toString());
-		}
+	      if(address.protocol() == QAbstractSocket::IPv4Protocol)
+		list.append(address.toString());
+	    }
+	  else
+	    {
+	      if(address.protocol() == QAbstractSocket::IPv6Protocol)
+		list.append(QHostAddress(address.toIPv6Address()).toString());
 	    }
 	}
     }
