@@ -53,25 +53,6 @@
 
 class spoton_external_address;
 
-#if QT_VERSION >= 0x050200
-class spoton_neighbor_bluetooth_socket: public QBluetoothSocket
-#else
-class spoton_neighbor_bluetooth_socket: public QObject
-#endif
-{
-  Q_OBJECT
-
- public:
-  spoton_neighbor_bluetooth_socket(QObject *parent = 0):
-#if QT_VERSION >= 0x050200
-  QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol, parent)
-#else
-  QObject(parent)
-#endif
-  {
-  }
-};
-
 class spoton_neighbor_tcp_socket: public QSslSocket
 {
   Q_OBJECT
@@ -322,8 +303,12 @@ class spoton_neighbor: public QThread
   QDateTime m_startTime;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
+#if QT_VERSION >= 0x050200
+  QPointer<QBluetoothSocket> m_bluetoothSocket;
+#else
+  QPointer<QObject> m_bluetoothSocket;
+#endif
   QPointer<spoton_external_address> m_externalAddress;
-  QPointer<spoton_neighbor_bluetooth_socket> m_bluetoothSocket;
   QPointer<spoton_neighbor_tcp_socket> m_tcpSocket;
   QPointer<spoton_neighbor_udp_socket> m_udpSocket;
   QPointer<spoton_sctp_socket> m_sctpSocket;
