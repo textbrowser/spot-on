@@ -614,11 +614,13 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 
   if(m_transport == "bluetooth")
     {
-      connect(&m_deviceDiscoveryAgent,
+      m_serviceDiscoveryAgent = new QBluetoothServiceDiscoveryAgent(this);
+      connect(m_serviceDiscoveryAgent,
 	      SIGNAL(finished(void)),
 	      this,
-	      SLOT(slotDeviceDiscoveryFinished(void)));
-      m_deviceDiscoveryAgent.start();
+	      SLOT(slotServiceDiscoveryFinished(void)));
+      m_serviceDiscoveryAgent->start
+	(QBluetoothServiceDiscoveryAgent::FullDiscovery);
     }
   else if(m_transport == "sctp")
     m_sctpSocket = new spoton_sctp_socket(this);
@@ -7025,7 +7027,7 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 }
 
 #if QT_VERSION >= 0x050200
-void spoton_neighbor::slotDeviceDiscoveryFinished(void)
+void spoton_neighbor::slotServiceDiscoveryFinished(void)
 {
   if(m_bluetoothSocket)
     return;
@@ -7033,9 +7035,9 @@ void spoton_neighbor::slotDeviceDiscoveryFinished(void)
 	  QBluetoothSocket::UnconnectedState)
     return;
 
-  QBluetoothUuid uuid;
-  QList<QBluetoothDeviceInfo> list(m_deviceDiscoveryAgent.
-				   discoveredDevices());
+  QBluetoothServiceInfo serviceInfo;
+  QList<QBluetoothServiceInfo> list(m_serviceDiscoveryAgent->
+				    discoveredServices());
 
   for(int i = 0; i < list.size(); i++)
     {
@@ -7048,51 +7050,46 @@ void spoton_neighbor::slotDeviceDiscoveryFinished(void)
       serviceUuid.append("-");
       serviceUuid.append(bytes.mid(8));
       serviceUuid.append("-0000-0000-");
-      serviceUuid.append(list.at(i).address().toString().remove(":"));
+      serviceUuid.append(list.at(i).device().address().toString().
+			 remove(":"));
 
-      QList<QBluetoothUuid> uuids(list.at(i).serviceUuids());
-
-      for(int j = 0; j < uuids.size(); j++)
-	if(QBluetoothUuid(serviceUuid) == uuids.at(j))
-	  {
-	    uuid = uuids.at(j);
-	    goto done_label;
-	  }
+      if(QBluetoothUuid(serviceUuid) == list.at(i).serviceUuid())
+	{
+	  serviceInfo = list.at(i);
+	  goto done_label;
+	}
     }
+
+  return;
 
  done_label:
 
-  if(!uuid.isNull())
-    {
-      m_bluetoothSocket = new (std::nothrow)
-	QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol,
-			 this);
+  m_bluetoothSocket = new (std::nothrow)
+    QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol, this);
 
-      if(m_bluetoothSocket)
-	{
-	  m_bluetoothSocket->connectToService
-	    (QBluetoothAddress(m_address), uuid);
-	  connect(m_bluetoothSocket,
-		  SIGNAL(connected(void)),
-		  this,
-		  SLOT(slotConnected(void)));
-	  connect(m_bluetoothSocket,
-		  SIGNAL(disconnected(void)),
-		  this,
-		  SIGNAL(disconnected(void)));
-	  connect(m_bluetoothSocket,
-		  SIGNAL(disconnected(void)),
-		  this,
-		  SLOT(slotDisconnected(void)));
-	  connect(m_bluetoothSocket,
-		  SIGNAL(error(QBluetoothSocket::SocketError)),
-		  this,
-		  SLOT(slotError(QBluetoothSocket::SocketError)));
-	  connect(m_bluetoothSocket,
-		  SIGNAL(readyRead(void)),
-		  this,
-		  SLOT(slotReadyRead(void)));
-	}
+  if(m_bluetoothSocket)
+    {
+      m_bluetoothSocket->connectToService(serviceInfo);
+      connect(m_bluetoothSocket,
+	      SIGNAL(connected(void)),
+	      this,
+	      SLOT(slotConnected(void)));
+      connect(m_bluetoothSocket,
+	      SIGNAL(disconnected(void)),
+	      this,
+	      SIGNAL(disconnected(void)));
+      connect(m_bluetoothSocket,
+	      SIGNAL(disconnected(void)),
+	      this,
+	      SLOT(slotDisconnected(void)));
+      connect(m_bluetoothSocket,
+	      SIGNAL(error(QBluetoothSocket::SocketError)),
+	      this,
+	      SLOT(slotError(QBluetoothSocket::SocketError)));
+      connect(m_bluetoothSocket,
+	      SIGNAL(readyRead(void)),
+	      this,
+	      SLOT(slotReadyRead(void)));
     }
 }
 #endif

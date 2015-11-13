@@ -30,7 +30,7 @@
 
 #include <QAtomicInt>
 #if QT_VERSION >= 0x050200
-#include <qbluetoothdevicediscoveryagent.h>
+#include <qbluetoothservicediscoveryagent.h>
 #include <qbluetoothsocket.h>
 #endif
 #include <QDateTime>
@@ -293,7 +293,7 @@ class spoton_neighbor: public QThread
   QAtomicInt m_kernelInterfaces;
   QAtomicInt m_useAccounts;
 #if QT_VERSION >= 0x050200
-  QBluetoothDeviceDiscoveryAgent m_deviceDiscoveryAgent;
+  QBluetoothServiceDiscoveryAgent *m_serviceDiscoveryAgent;
 #endif
   QByteArray m_accountName;
   QByteArray m_accountPassword;
@@ -448,9 +448,6 @@ class spoton_neighbor: public QThread
   void slotCallParticipant(const QByteArray &data,
 			   const QString &messageType);
   void slotConnected(void);
-#if QT_VERSION >= 0x050200
-  void slotDeviceDiscoveryFinished(void);
-#endif
   void slotDisconnected(void);
   void slotDiscoverExternalAddress(void);
   void slotEchoKeyShare(const QByteArrayList &list);
@@ -494,6 +491,9 @@ class spoton_neighbor: public QThread
   void slotSendMessage(const QByteArray &data,
 		       const spoton_send::spoton_send_method sendMethod);
   void slotSendStatus(const QByteArrayList &list);
+#if QT_VERSION >= 0x050200
+  void slotServiceDiscoveryFinished(void);
+#endif
   void slotSslErrors(const QList<QSslError> &errors);
   void slotStopTimer(QTimer *timer);
   void slotTimeout(void);
