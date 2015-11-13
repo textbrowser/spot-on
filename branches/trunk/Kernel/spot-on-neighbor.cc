@@ -614,6 +614,11 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 
   if(m_transport == "bluetooth")
     {
+      connect(&m_deviceDiscoveryAgent,
+	      SIGNAL(finished(void)),
+	      this,
+	      SLOT(slotDeviceDiscoveryFinished(void)));
+      m_deviceDiscoveryAgent.start();
     }
   else if(m_transport == "sctp")
     m_sctpSocket = new spoton_sctp_socket(this);
@@ -1252,55 +1257,7 @@ void spoton_neighbor::slotTimeout(void)
     if(status == "connected")
       {
 	if(m_transport == "bluetooth")
-	  {
-#if QT_VERSION >= 0x050200
-	    if(!m_bluetoothSocket)
-	      {
-		saveStatus("connecting");
-
-		m_bluetoothSocket = new (std::nothrow)
-		  QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol,
-				   this);
-
-		if(m_bluetoothSocket)
-		  {
-		    QByteArray bytes;
-		    QString serviceUuid;
-
-		    bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
-		    bytes = bytes.rightJustified(12, '0');
-		    serviceUuid.append(bytes.mid(0, 8));
-		    serviceUuid.append("-");
-		    serviceUuid.append(bytes.mid(8));
-		    serviceUuid.append("-0000-0000-");
-		    serviceUuid.append(QString(m_address).remove(":"));
-		    m_bluetoothSocket->connectToService
-		      (QBluetoothAddress(m_address),
-		       QBluetoothUuid(serviceUuid));
-		    connect(m_bluetoothSocket,
-			    SIGNAL(connected(void)),
-			    this,
-			    SLOT(slotConnected(void)));
-		    connect(m_bluetoothSocket,
-			    SIGNAL(disconnected(void)),
-			    this,
-			    SIGNAL(disconnected(void)));
-		    connect(m_bluetoothSocket,
-			    SIGNAL(disconnected(void)),
-			    this,
-			    SLOT(slotDisconnected(void)));
-		    connect(m_bluetoothSocket,
-			    SIGNAL(error(QBluetoothSocket::SocketError)),
-			    this,
-			    SLOT(slotError(QBluetoothSocket::SocketError)));
-		    connect(m_bluetoothSocket,
-			    SIGNAL(readyRead(void)),
-			    this,
-			    SLOT(slotReadyRead(void)));
-		  }
-	      }
-#endif
-	  }
+	  saveStatus("discovering");
 	else if(m_sctpSocket)
 	  {
 	    if(m_sctpSocket->state() == spoton_sctp_socket::UnconnectedState)
@@ -7066,3 +7023,76 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 	}
     }
 }
+
+#if QT_VERSION >= 0x050200
+void spoton_neighbor::slotDeviceDiscoveryFinished(void)
+{
+  if(m_bluetoothSocket)
+    return;
+  else if(m_bluetoothSocket && m_bluetoothSocket->state() !=
+	  QBluetoothSocket::UnconnectedState)
+    return;
+
+  QBluetoothUuid uuid;
+  QList<QBluetoothDeviceInfo> list(m_deviceDiscoveryAgent.
+				   discoveredDevices());
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      QByteArray bytes;
+      QString serviceUuid;
+
+      bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
+      bytes = bytes.rightJustified(12, '0');
+      serviceUuid.append(bytes.mid(0, 8));
+      serviceUuid.append("-");
+      serviceUuid.append(bytes.mid(8));
+      serviceUuid.append("-0000-0000-");
+      serviceUuid.append(list.at(i).address().toString().remove(":"));
+
+      QList<QBluetoothUuid> uuids(list.at(i).serviceUuids());
+
+      for(int j = 0; j < uuids.size(); j++)
+	if(QBluetoothUuid(serviceUuid) == uuids.at(j))
+	  {
+	    uuid = uuids.at(j);
+	    goto done_label;
+	  }
+    }
+
+ done_label:
+
+  if(!uuid.isNull())
+    {
+      m_bluetoothSocket = new (std::nothrow)
+	QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol,
+			 this);
+
+      if(m_bluetoothSocket)
+	{
+	  m_bluetoothSocket->connectToService
+	    (QBluetoothAddress(m_address), uuid);
+	  connect(m_bluetoothSocket,
+		  SIGNAL(connected(void)),
+		  this,
+		  SLOT(slotConnected(void)));
+	  connect(m_bluetoothSocket,
+		  SIGNAL(disconnected(void)),
+		  this,
+		  SIGNAL(disconnected(void)));
+	  connect(m_bluetoothSocket,
+		  SIGNAL(disconnected(void)),
+		  this,
+		  SLOT(slotDisconnected(void)));
+	  connect(m_bluetoothSocket,
+		  SIGNAL(error(QBluetoothSocket::SocketError)),
+		  this,
+		  SLOT(slotError(QBluetoothSocket::SocketError)));
+	  connect(m_bluetoothSocket,
+		  SIGNAL(readyRead(void)),
+		  this,
+		  SLOT(slotReadyRead(void)));
+	}
+    }
+}
+#endif
