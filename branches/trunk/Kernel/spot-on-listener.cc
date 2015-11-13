@@ -40,19 +40,14 @@
 #include "spot-on-sctp-server.h"
 
 spoton_listener_bluetooth_server::spoton_listener_bluetooth_server
-(const qint64 id, QObject *parent):QObject(parent)
+(const qint64 id, QObject *parent):
+#if QT_VERSION >= 0x050200
+  QBluetoothServer(QBluetoothServiceInfo::RfcommProtocol, parent)
+#else
+  QObject(parent)
+#endif
 {
   m_id = id;
-#if QT_VERSION >= 0x050200
-  m_server = new QBluetoothServer
-    (QBluetoothServiceInfo::RfcommProtocol, this);
-  connect(m_server,
-	  SIGNAL(newConnection(void)),
-	  this,
-	  SIGNAL(newConnection(void)));
-#else
-  Q_UNUSED(id);
-#endif
 }
 
 bool spoton_listener_bluetooth_server::listen
@@ -60,7 +55,7 @@ bool spoton_listener_bluetooth_server::listen
 {
 #if QT_VERSION >= 0x050200
   QBluetoothAddress localAdapter(address);
-  bool ok = m_server->listen(localAdapter);
+  bool ok = QBluetoothServer::listen(localAdapter);
 
   if(ok)
     {
@@ -107,7 +102,7 @@ bool spoton_listener_bluetooth_server::listen
       protocolDescriptorList.append(QVariant::fromValue(protocol));
       protocol.clear();
       protocol << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))
-	       << QVariant::fromValue(quint8(m_server->serverPort()));
+	       << QVariant::fromValue(quint8(serverPort()));
       protocolDescriptorList.append(QVariant::fromValue(protocol));
       m_serviceInfo.setAttribute(QBluetoothServiceInfo::ProtocolDescriptorList,
 				 protocolDescriptorList);
@@ -119,7 +114,7 @@ bool spoton_listener_bluetooth_server::listen
       if(m_serviceInfo.isRegistered())
 	m_serviceInfo.unregisterService();
 
-      m_server->close();
+      QBluetoothServer::close();
     }
 
   return ok;
@@ -281,7 +276,15 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   m_udpServer = 0;
 
   if(transport == "bluetooth")
-    m_bluetoothServer = new spoton_listener_bluetooth_server(id, this);
+    {
+      m_bluetoothServer = new spoton_listener_bluetooth_server(id, this);
+#if QT_VERSION >= 0x050200
+      connect(m_bluetoothServer,
+	      SIGNAL(newConnection(void)),
+	      this,
+	      SLOT(slotNewConnection(void)));
+#endif
+    }
   else if(transport == "sctp")
     m_sctpServer = new spoton_sctp_server(id, this);
   else if(transport == "tcp")
@@ -370,12 +373,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				   const QHostAddress &,
 				   const quint16)));
 #else
-  if(m_bluetoothServer)
-    connect(m_bluetoothServer,
-	    SIGNAL(newConnection(void)),
-	    this,
-	    SLOT(slotNewConnection(void)));
-  else if(m_sctpServer)
+  if(m_sctpServer)
     connect(m_sctpServer,
 	    SIGNAL(newConnection(const qintptr,
 				 const QHostAddress &,
@@ -1626,7 +1624,7 @@ void spoton_listener::slotNewConnection(void)
 			    "critical failure.");
     }
 
-  socket->deleteLater();
+  //socket->deleteLater();
 
   if(!neighbor)
     return;

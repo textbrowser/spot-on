@@ -48,7 +48,11 @@ class QNetworkInterface;
 class spoton_external_address;
 class spoton_sctp_server;
 
+#if QT_VERSION >= 0x050200
+class spoton_listener_bluetooth_server: public QBluetoothServer
+#else
 class spoton_listener_bluetooth_server: public QObject
+#endif
 {
   Q_OBJECT
 
@@ -57,19 +61,16 @@ class spoton_listener_bluetooth_server: public QObject
 
   ~spoton_listener_bluetooth_server()
   {
-  }
-
 #if QT_VERSION >= 0x050200
-  QBluetoothSocket *nextPendingConnection(void)
-  {
-    return m_server->nextPendingConnection();
-  }
+    if(m_serviceInfo.isRegistered())
+      m_serviceInfo.unregisterService();
 #endif
+  }
 
   QString errorString(void)
   {
 #if QT_VERSION >= 0x050200
-    return QString("%1").arg(m_server->error());
+    return QString("%1").arg(error());
 #else
     return "";
 #endif
@@ -78,7 +79,7 @@ class spoton_listener_bluetooth_server: public QObject
   bool isListening(void) const
   {
 #if QT_VERSION >= 0x050200
-    return m_server->isListening() && m_serviceInfo.isRegistered();
+    return QBluetoothServer::isListening() && m_serviceInfo.isRegistered();
 #else
     return false;
 #endif
@@ -89,7 +90,7 @@ class spoton_listener_bluetooth_server: public QObject
   int maxPendingConnections(void) const
   {
 #if QT_VERSION >= 0x050200
-    return m_server->maxPendingConnections();
+    return QBluetoothServer::maxPendingConnections();
 #else
     return 0;
 #endif
@@ -101,14 +102,15 @@ class spoton_listener_bluetooth_server: public QObject
     if(m_serviceInfo.isRegistered())
       m_serviceInfo.unregisterService();
 
-    m_server->close();
+    QBluetoothServer::close();
 #endif
   }
 
   void setMaxPendingConnections(const int maxPendingConnections)
   {
 #if QT_VERSION >= 0x050200
-    m_server->setMaxPendingConnections(qMax(1, maxPendingConnections));
+    QBluetoothServer::setMaxPendingConnections
+      (qMax(1, maxPendingConnections));
 #else
     Q_UNUSED(maxPendingConnections);
 #endif
@@ -116,13 +118,9 @@ class spoton_listener_bluetooth_server: public QObject
 
  private:
 #if QT_VERSION >= 0x050200
-  QBluetoothServer *m_server;
   QBluetoothServiceInfo m_serviceInfo;
 #endif
   qint64 m_id;
-
- signals:
-  void newConnection(void);
 };
 
 class spoton_listener_tcp_server: public QTcpServer

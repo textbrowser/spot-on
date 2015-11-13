@@ -5199,7 +5199,29 @@ bool spoton_kernel::acceptRemoteBluetoothConnection
 	return true;
     }
   else
-    return false;
+    {
+      QHashIterator<qint64, QPointer<spoton_neighbor> > it
+	(m_neighbors);
+      int count = 0;
+      int value = setting("gui/limitConnections", 10).toInt();
+
+      while(it.hasNext())
+	{
+	  it.next();
+
+	  if(it.value() &&
+	     it.value()->state() == QAbstractSocket::ConnectedState)
+	    {
+	      if(it.value()->peerAddress() == peerAddress)
+		count += 1;
+	    }
+	}
+
+      if(count >= value)
+	return false;
+      else
+	return true;
+    }
 }
 
 bool spoton_kernel::acceptRemoteConnection(const QHostAddress &localAddress,
