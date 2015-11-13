@@ -1264,6 +1264,19 @@ void spoton_neighbor::slotTimeout(void)
 
 		if(m_bluetoothSocket)
 		  {
+		    QByteArray bytes;
+		    QString serviceUuid;
+
+		    bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
+		    bytes = bytes.rightJustified(12, '0');
+		    serviceUuid.append(bytes.mid(0, 8));
+		    serviceUuid.append("-");
+		    serviceUuid.append(bytes.mid(8));
+		    serviceUuid.append("-0000-0000-");
+		    serviceUuid.append(QString(m_address).remove(":"));
+		    m_bluetoothSocket->connectToService
+		      (QBluetoothAddress(m_address),
+		       QBluetoothUuid(serviceUuid));
 		    connect(m_bluetoothSocket,
 			    SIGNAL(connected(void)),
 			    this,
@@ -1284,21 +1297,6 @@ void spoton_neighbor::slotTimeout(void)
 			    SIGNAL(readyRead(void)),
 			    this,
 			    SLOT(slotReadyRead(void)));
-
-		    QByteArray bytes;
-		    QString serviceUuid;
-
-		    bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
-		    bytes = bytes.rightJustified(12, '0');
-		    serviceUuid.append(bytes.mid(0, 8));
-		    serviceUuid.append("-");
-		    serviceUuid.append(bytes.mid(8));
-		    serviceUuid.append("-0000-0000-");
-		    serviceUuid.append(QString(m_address).remove(":"));
-
-		    m_bluetoothSocket->connectToService
-		      (QBluetoothAddress(m_address),
-		       QBluetoothUuid(serviceUuid));
 		  }
 	      }
 #endif
