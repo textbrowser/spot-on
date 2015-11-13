@@ -445,6 +445,9 @@ class spoton_neighbor: public QThread
   void slotAccountAuthenticated(const QByteArray &name,
 				const QByteArray &password);
   void slotAuthenticationTimerTimeout(void);
+#if QT_VERSION >= 0x050200
+  void slotBluetooth(const QBluetoothServiceInfo &serviceInfo);
+#endif
   void slotCallParticipant(const QByteArray &data,
 			   const QString &messageType);
   void slotConnected(void);
@@ -514,6 +517,9 @@ class spoton_neighbor: public QThread
   void accountAuthenticated(const QByteArray &name,
 			    const QByteArray &password);
   void authenticationRequested(const QString &peerInformation);
+#if QT_VERSION >= 0x050200
+  void bluetooth(const QBluetoothServiceInfo &serviceInfo);
+#endif
   void callParticipant(const QByteArray &publicKeyHash,
 		       const QByteArray &gemini,
 		       const QByteArray &geminiHashKey);

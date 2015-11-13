@@ -614,6 +614,11 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 
   if(m_transport == "bluetooth")
     {
+#if QT_VERSION >= 0x050200
+      connect(this,
+	      SIGNAL(bluetooth(const QBluetoothServiceInfo &)),
+	      this,
+	      SLOT(slotBluetooth(const QBluetoothServiceInfo &)));
       m_serviceDiscoveryAgent = new QBluetoothServiceDiscoveryAgent(this);
       connect(m_serviceDiscoveryAgent,
 	      SIGNAL(finished(void)),
@@ -621,6 +626,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 	      SLOT(slotServiceDiscoveryFinished(void)));
       m_serviceDiscoveryAgent->start
 	(QBluetoothServiceDiscoveryAgent::FullDiscovery);
+#endif
     }
   else if(m_transport == "sctp")
     m_sctpSocket = new spoton_sctp_socket(this);
@@ -1259,7 +1265,10 @@ void spoton_neighbor::slotTimeout(void)
     if(status == "connected")
       {
 	if(m_transport == "bluetooth")
-	  saveStatus("discovering");
+	  {
+	    if(!m_bluetoothSocket)
+	      saveStatus("discovering");
+	  }
 	else if(m_sctpSocket)
 	  {
 	    if(m_sctpSocket->state() == spoton_sctp_socket::UnconnectedState)
@@ -7053,7 +7062,8 @@ void spoton_neighbor::slotServiceDiscoveryFinished(void)
       serviceUuid.append(list.at(i).device().address().toString().
 			 remove(":"));
 
-      if(QBluetoothUuid(serviceUuid) == list.at(i).serviceUuid())
+      if(serviceUuid.toLower() == list.at(i).serviceUuid().
+	 toString().toLower().remove("{").remove("}"))
 	{
 	  serviceInfo = list.at(i);
 	  goto done_label;
@@ -7063,12 +7073,20 @@ void spoton_neighbor::slotServiceDiscoveryFinished(void)
   return;
 
  done_label:
+  emit bluetooth(serviceInfo);
+}
+
+void spoton_neighbor::slotBluetooth(const QBluetoothServiceInfo &serviceInfo)
+{
+  if(m_bluetoothSocket)
+    return;
 
   m_bluetoothSocket = new (std::nothrow)
     QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol, this);
 
   if(m_bluetoothSocket)
     {
+      saveStatus("connecting");
       m_bluetoothSocket->connectToService(serviceInfo);
       connect(m_bluetoothSocket,
 	      SIGNAL(connected(void)),
