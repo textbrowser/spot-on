@@ -614,10 +614,6 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 
   if(m_transport == "bluetooth")
     {
-#if QT_VERSION >= 0x050200
-      m_bluetoothSocket = new QBluetoothSocket
-	(QBluetoothServiceInfo::RfcommProtocol, this);
-#endif
     }
   else if(m_transport == "sctp")
     m_sctpSocket = new spoton_sctp_socket(this);
@@ -1257,38 +1253,49 @@ void spoton_neighbor::slotTimeout(void)
       {
 	if(m_transport == "bluetooth")
 	  {
-	    if(m_bluetoothSocket->state() ==
-	       QBluetoothSocket::UnconnectedState)
+	    if(!m_bluetoothSocket)
 	      {
-		saveStatus("connecting");
-		m_bluetoothSocket->disconnectFromService();
-		m_bluetoothSocket->connectToService
-		  (QBluetoothAddress(m_address), m_port);
-		connect(m_bluetoothSocket,
-			SIGNAL(connected(void)),
-			this,
-			SLOT(slotConnected(void)),
-			Qt::UniqueConnection);
-		connect(m_bluetoothSocket,
-			SIGNAL(disconnected(void)),
-			this,
-			SIGNAL(disconnected(void)),
-			Qt::UniqueConnection);
-		connect(m_bluetoothSocket,
-			SIGNAL(disconnected(void)),
-			this,
-			SLOT(slotDisconnected(void)),
-			Qt::UniqueConnection);
-		connect(m_bluetoothSocket,
-			SIGNAL(error(QBluetoothSocket::SocketError)),
-			this,
-			SLOT(slotError(QBluetoothSocket::SocketError)),
-			Qt::UniqueConnection);
-		connect(m_bluetoothSocket,
-			SIGNAL(readyRead(void)),
-			this,
-			SLOT(slotReadyRead(void)),
-			Qt::UniqueConnection);
+		m_bluetoothSocket = new (std::nothrow) QBluetoothSocket
+		  (QBluetoothServiceInfo::RfcommProtocol, this);
+
+		if(m_bluetoothSocket)
+		  {
+		    QByteArray bytes;
+		    QString serviceUuid;
+
+		    bytes.append(QString("%1").arg(m_port).
+				 toLatin1().toHex());
+		    bytes = bytes.rightJustified(12, '0');
+		    serviceUuid.append(bytes.mid(0, 8));
+		    serviceUuid.append("-");
+		    serviceUuid.append(bytes.mid(8));
+		    serviceUuid.append("-0000-0000-");
+		    serviceUuid.append(QString(m_address).remove(":"));
+		    saveStatus("connecting");
+		    m_bluetoothSocket->connectToService
+		      (QBluetoothAddress(m_address),
+		       QBluetoothUuid(serviceUuid));
+		    connect(m_bluetoothSocket,
+			    SIGNAL(connected(void)),
+			    this,
+			    SLOT(slotConnected(void)));
+		    connect(m_bluetoothSocket,
+			    SIGNAL(disconnected(void)),
+			    this,
+			    SIGNAL(disconnected(void)));
+		    connect(m_bluetoothSocket,
+			    SIGNAL(disconnected(void)),
+			    this,
+			    SLOT(slotDisconnected(void)));
+		    connect(m_bluetoothSocket,
+			    SIGNAL(error(QBluetoothSocket::SocketError)),
+			    this,
+			    SLOT(slotError(QBluetoothSocket::SocketError)));
+		    connect(m_bluetoothSocket,
+			    SIGNAL(readyRead(void)),
+			    this,
+			    SLOT(slotReadyRead(void)));
+		  }
 	      }
 	  }
 	else if(m_sctpSocket)
