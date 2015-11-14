@@ -54,6 +54,9 @@ bool spoton_listener_bluetooth_server::listen
 (const QString &address, const quint16 port)
 {
 #if QT_VERSION >= 0x050200
+  if(isListening())
+    return true;
+
   QBluetoothAddress localAdapter(address);
   bool ok = QBluetoothServer::listen(localAdapter);
 

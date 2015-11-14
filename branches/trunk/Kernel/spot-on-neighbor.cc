@@ -103,12 +103,28 @@ spoton_neighbor::spoton_neighbor
 	   spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
 
   if(transport == "bluetooth")
+    {
 #if QT_VERSION >= 0x050200
-    m_bluetoothSocket = new QBluetoothSocket
-      (QBluetoothServiceInfo::RfcommProtocol, this);
-#else
-    m_bluetoothSocket = 0;
+      m_bluetoothSocket = socket;
+      connect(m_bluetoothSocket,
+	      SIGNAL(disconnected(void)),
+	      this,
+	      SIGNAL(disconnected(void)));
+      connect(m_bluetoothSocket,
+	      SIGNAL(disconnected(void)),
+	      this,
+	      SLOT(slotDisconnected(void)));
+      connect(m_bluetoothSocket,
+	      SIGNAL(error(QBluetoothSocket::SocketError)),
+	      this,
+	      SLOT(slotError(QBluetoothSocket::SocketError)));
+      connect(m_bluetoothSocket,
+	      SIGNAL(readyRead(void)),
+	      this,
+	      SLOT(slotReadyRead(void)));
+      socket->setParent(this);
 #endif
+    }
   else if(transport == "sctp")
     m_sctpSocket = new spoton_sctp_socket(this);
   else if(transport == "tcp")
@@ -118,10 +134,6 @@ spoton_neighbor::spoton_neighbor
 
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
-      socket->setParent(this);
-      m_bluetoothSocket = socket;
-#endif
     }
   else if(m_sctpSocket)
     {
@@ -330,24 +342,6 @@ spoton_neighbor::spoton_neighbor
 
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
-      connect(m_bluetoothSocket,
-	      SIGNAL(disconnected(void)),
-	      this,
-	      SIGNAL(disconnected(void)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(disconnected(void)),
-	      this,
-	      SLOT(slotDisconnected(void)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(error(QBluetoothSocket::SocketError)),
-	      this,
-	      SLOT(slotError(QBluetoothSocket::SocketError)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(readyRead(void)),
-	      this,
-	      SLOT(slotReadyRead(void)));
-#endif
     }
   else if(m_sctpSocket)
     {
