@@ -213,7 +213,7 @@ spoton_neighbor::spoton_neighbor
   if(m_bluetoothSocket)
     {
 #if QT_VERSION >= 0x050200
-      m_port = m_sctpSocket->peerPort();
+      m_port = m_bluetoothSocket->peerPort();
 #endif
     }
   else if(m_sctpSocket)

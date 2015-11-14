@@ -25,10 +25,15 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QtCore>
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
 #include <QApplication>
 #else
+#if QT_VERSION >= 0x050200
+#include <QApplication>
+#else
 #include <QCoreApplication>
+#endif
 #endif
 #include <QDir>
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
@@ -297,7 +302,11 @@ int main(int argc, char *argv[])
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
   QApplication qapplication(argc, argv);
 #else
+#if QT_VERSION >= 0x050200
+  QApplication qapplication(argc, argv);
+#else
   QCoreApplication qapplication(argc, argv);
+#endif
 #endif
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000

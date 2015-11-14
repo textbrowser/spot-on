@@ -322,10 +322,6 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   if(m_maximumClients <= 0)
     m_maximumClients = std::numeric_limits<int>::max();
 
-#if QT_VERSION >= 0x050200
-  if(m_bluetoothServer)
-    m_bluetoothServer->setMaxPendingConnections(m_maximumClients);
-#endif
   if(m_sctpServer)
     m_sctpServer->setMaxPendingConnections(m_maximumClients);
   else if(m_tcpServer)
@@ -355,9 +351,6 @@ spoton_listener::~spoton_listener()
 #if QT_VERSION >= 0x050200
   if(m_bluetoothServiceInfo.isRegistered())
     m_bluetoothServiceInfo.unregisterService();
-
-  if(m_bluetoothServer)
-    m_bluetoothServer->close();
 #endif
   if(m_sctpServer)
     m_sctpServer->close();
@@ -1365,7 +1358,10 @@ void spoton_listener::close(void)
     m_bluetoothServiceInfo.unregisterService();
 
   if(m_bluetoothServer)
-    m_bluetoothServer->close();
+    {
+      m_bluetoothServer->deleteLater();
+      m_bluetoothServer = 0;
+    }
 #endif
   if(m_sctpServer)
     m_sctpServer->close();
@@ -1379,8 +1375,7 @@ bool spoton_listener::isListening(void) const
 {
 #if QT_VERSION >= 0x050200
   if(m_bluetoothServer)
-    return m_bluetoothServer->isListening() &&
-      m_bluetoothServiceInfo.isRegistered();
+    return true;
 #endif
   if(m_sctpServer)
     return m_sctpServer->isListening();
@@ -1394,13 +1389,6 @@ bool spoton_listener::isListening(void) const
 
 bool spoton_listener::listen(const QString &address, const quint16 port)
 {
-#if QT_VERSION >= 0x050200
-  if(m_bluetoothServer)
-    {
-      m_address = address;
-      m_port = port;
-    }
-#endif
   if(m_sctpServer || m_tcpServer || m_udpServer)
     {
       m_address = address;
@@ -1408,22 +1396,31 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
     }
 
 #if QT_VERSION >= 0x050200
-  if(!m_bluetoothServer)
+  if(m_transport == "bluetooth")
     {
-      m_bluetoothServer = new (std::nothrow) QBluetoothServer
-	(QBluetoothServiceInfo::RfcommProtocol, this);
-
       if(!m_bluetoothServer)
-	return false;
+	{
+	  m_bluetoothServer = new (std::nothrow) QBluetoothServer
+	    (QBluetoothServiceInfo::RfcommProtocol, this);
+
+	  if(m_bluetoothServer)
+	    {
+	      connect(m_bluetoothServer,
+		      SIGNAL(newConnection(void)),
+		      this,
+		      SLOT(slotNewConnection(void)));
+	      m_bluetoothServer->setMaxPendingConnections(m_maximumClients);
+	    }
+	  else
+	    return false;
+	}
+      else
+	return true;
 
       m_address = address;
       m_port = port;
-      connect(m_bluetoothServer,
-	      SIGNAL(newConnection(void)),
-	      this,
-	      SLOT(slotNewConnection(void)));
 
-      QBluetoothAddress localAdapter(address);
+      QBluetoothAddress localAdapter(m_address);
       bool ok = m_bluetoothServer->listen(localAdapter);
 
       if(ok)
@@ -1432,13 +1429,13 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  QByteArray bytes;
 	  QString serviceUuid;
 
-	  bytes.append(QString("%1").arg(port).toLatin1().toHex());
+	  bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
 	  bytes = bytes.rightJustified(12, '0');
 	  serviceUuid.append(bytes.mid(0, 8).constData());
 	  serviceUuid.append("-");
 	  serviceUuid.append(bytes.mid(8).constData());
 	  serviceUuid.append("-0000-0000-");
-	  serviceUuid.append(QString(address).remove(":"));
+	  serviceUuid.append(QString(m_address).remove(":"));
 	  classId << QVariant::fromValue
 	    (QBluetoothUuid(QBluetoothUuid::SerialPort));
 	  m_bluetoothServiceInfo.setAttribute
@@ -1488,7 +1485,8 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  if(m_bluetoothServiceInfo.isRegistered())
 	    m_bluetoothServiceInfo.unregisterService();
 
-	  m_bluetoothServer->close();
+	  m_bluetoothServer->deleteLater();
+	  m_bluetoothServer = 0;
 	}
 
       return ok;
