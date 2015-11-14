@@ -9,10 +9,9 @@ purge.commands = del /F *~
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= concurrent core network sql
-QT		-= gui
+QT		+= bluetooth concurrent core network sql widgets
+CONFIG		-= debug
 CONFIG		+= qt release warn_on
-CONFIG          -= debug
 
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.

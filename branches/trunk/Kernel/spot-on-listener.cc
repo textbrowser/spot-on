@@ -1410,6 +1410,8 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 		      this,
 		      SLOT(slotNewConnection(void)));
 	      m_bluetoothServer->setMaxPendingConnections(m_maximumClients);
+	      m_bluetoothServer->setSecurityFlags
+		(QBluetooth::Encryption | QBluetooth::Secure);
 	    }
 	  else
 	    return false;
