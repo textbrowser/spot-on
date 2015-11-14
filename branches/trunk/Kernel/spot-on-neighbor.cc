@@ -1257,9 +1257,9 @@ void spoton_neighbor::slotTimeout(void)
 		    bytes.append(QString("%1").arg(m_port).
 				 toLatin1().toHex());
 		    bytes = bytes.rightJustified(12, '0');
-		    serviceUuid.append(bytes.mid(0, 8));
+		    serviceUuid.append(bytes.mid(0, 8).constData());
 		    serviceUuid.append("-");
-		    serviceUuid.append(bytes.mid(8));
+		    serviceUuid.append(bytes.mid(8).constData());
 		    serviceUuid.append("-0000-0000-");
 		    serviceUuid.append(QString(m_address).remove(":"));
 		    saveStatus("connecting");
