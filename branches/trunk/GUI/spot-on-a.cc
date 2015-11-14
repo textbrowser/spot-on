@@ -3499,7 +3499,7 @@ void spoton::slotPopulateListeners(void)
 
 		tooltip = QString
 		  (tr("Status: %1\n"
-		      "SSL Key Size: %2\n"
+		      "Bluetooth Flags / SSL Key Size: %2\n"
 		      "Local IP: %3 Local Port: %4 Scope ID: %5\n"
 		      "External IP: %6\n"
 		      "Connections: %7\n"

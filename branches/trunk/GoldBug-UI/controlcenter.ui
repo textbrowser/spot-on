@@ -19,7 +19,16 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
      <number>5</number>
     </property>
     <item>
@@ -66,7 +75,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -118,14 +136,23 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>570</width>
-             <height>676</height>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -548,7 +575,16 @@ QPushButton:pressed {
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -563,7 +599,16 @@ QPushButton:pressed {
            <property name="spacing">
             <number>3</number>
            </property>
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -639,7 +684,16 @@ color: rgb(255, 255, 255);
                 <property name="spacing">
                  <number>3</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>3</number>
+                </property>
+                <property name="topMargin">
+                 <number>3</number>
+                </property>
+                <property name="rightMargin">
+                 <number>3</number>
+                </property>
+                <property name="bottomMargin">
                  <number>3</number>
                 </property>
                 <item>
@@ -657,7 +711,7 @@ color: rgb(255, 255, 255);
                    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
@@ -899,7 +953,16 @@ QPushButton:pressed {
                <property name="spacing">
                 <number>3</number>
                </property>
-               <property name="margin">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
                 <number>3</number>
                </property>
                <item>
@@ -1178,7 +1241,16 @@ QPushButton:pressed {
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -1228,15 +1300,24 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>651</width>
-             <height>634</height>
+             <width>586</width>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -1447,7 +1528,16 @@ QPushButton:pressed {
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -1899,7 +1989,16 @@ QPushButton:pressed {
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -2036,7 +2135,16 @@ QPushButton:pressed {
                       <property name="spacing">
                        <number>5</number>
                       </property>
-                      <property name="margin">
+                      <property name="leftMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="bottomMargin">
                        <number>5</number>
                       </property>
                       <item>
@@ -2048,7 +2156,16 @@ QPushButton:pressed {
                          <property name="spacing">
                           <number>5</number>
                          </property>
-                         <property name="margin">
+                         <property name="leftMargin">
+                          <number>5</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>5</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>5</number>
+                         </property>
+                         <property name="bottomMargin">
                           <number>5</number>
                          </property>
                          <item>
@@ -2733,7 +2850,16 @@ QPushButton:pressed {
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -2783,8 +2909,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>514</width>
-             <height>1799</height>
+             <width>556</width>
+             <height>1817</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -2840,7 +2966,7 @@ color: rgb(255, 255, 255);</string>
                 </column>
                 <column>
                  <property name="text">
-                  <string>SSL Key Size</string>
+                  <string>Bluetooth Flags / SSL Key Size</string>
                  </property>
                 </column>
                 <column>
@@ -2989,7 +3115,16 @@ color: rgb(255, 255, 255);</string>
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -3160,7 +3295,16 @@ color: rgb(255, 255, 255);</string>
                  </item>
                  <item>
                   <layout class="QGridLayout" name="gridLayout_12">
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>3</number>
                    </property>
                    <property name="spacing">
@@ -3172,11 +3316,16 @@ color: rgb(255, 255, 255);</string>
                    <item row="8" column="1" colspan="2">
                     <widget class="QComboBox" name="listenerTransport">
                      <property name="currentIndex">
-                      <number>1</number>
+                      <number>2</number>
                      </property>
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
                      </property>
+                     <item>
+                      <property name="text">
+                       <string>Bluetooth</string>
+                      </property>
+                     </item>
                      <item>
                       <property name="text">
                        <string>SCTP</string>
@@ -3453,7 +3602,16 @@ QPushButton#addListener:pressed {
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -3669,7 +3827,16 @@ QPushButton:pressed {
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -3738,7 +3905,16 @@ QPushButton:pressed {
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -3975,7 +4151,16 @@ QPushButton:pressed {
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -4025,15 +4210,24 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>643</width>
-             <height>551</height>
+             <width>597</width>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -4383,7 +4577,16 @@ color: rgb(255, 255, 255);</string>
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -4500,11 +4703,16 @@ color: rgb(255, 255, 255);</string>
                         <item>
                          <widget class="QComboBox" name="neighborTransport">
                           <property name="currentIndex">
-                           <number>1</number>
+                           <number>2</number>
                           </property>
                           <property name="sizeAdjustPolicy">
                            <enum>QComboBox::AdjustToContents</enum>
                           </property>
+                          <item>
+                           <property name="text">
+                            <string>Bluetooth</string>
+                           </property>
+                          </item>
                           <item>
                            <property name="text">
                             <string>SCTP</string>
@@ -4744,7 +4952,16 @@ color: rgb(255, 255, 255);</string>
                        <bool>false</bool>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_5">
-                       <property name="margin">
+                       <property name="leftMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="bottomMargin">
                         <number>5</number>
                        </property>
                        <property name="spacing">
@@ -4979,7 +5196,16 @@ QPushButton#addNeighbor:pressed {
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -5030,15 +5256,24 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>635</width>
-             <height>347</height>
+             <width>637</width>
+             <height>352</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -5107,15 +5342,24 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>783</width>
-                 <height>691</height>
+                 <width>715</width>
+                 <height>709</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -5140,7 +5384,16 @@ color: rgb(255, 255, 255);
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -5343,7 +5596,16 @@ QPushButton:pressed {
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -5573,7 +5835,16 @@ QPushButton:pressed {
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -6038,7 +6309,16 @@ QPushButton:pressed {
                <property name="spacing">
                 <number>5</number>
                </property>
-               <property name="margin">
+               <property name="leftMargin">
+                <number>5</number>
+               </property>
+               <property name="topMargin">
+                <number>5</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <property name="bottomMargin">
                 <number>5</number>
                </property>
                <item>
@@ -6234,7 +6514,16 @@ QPushButton:pressed {
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -6284,15 +6573,24 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>913</width>
-             <height>1253</height>
+             <width>835</width>
+             <height>1302</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -6301,7 +6599,16 @@ color: rgb(255, 255, 255);</string>
                <property name="spacing">
                 <number>5</number>
                </property>
-               <property name="margin">
+               <property name="leftMargin">
+                <number>5</number>
+               </property>
+               <property name="topMargin">
+                <number>5</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <property name="bottomMargin">
                 <number>5</number>
                </property>
                <item>
@@ -6497,7 +6804,16 @@ color: rgb(255, 255, 255);</string>
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -6990,7 +7306,16 @@ QPushButton:pressed {
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -7075,7 +7400,16 @@ top: 5px;
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -7338,7 +7672,16 @@ QPushButton:pressed {
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -7681,7 +8024,16 @@ QPushButton:pressed {
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -7731,15 +8083,24 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>554</width>
-             <height>743</height>
+             <width>448</width>
+             <height>771</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -7765,7 +8126,16 @@ color: rgb(255, 255, 255);</string>
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -7860,7 +8230,16 @@ color: rgb(255, 255, 255);</string>
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -7976,7 +8355,16 @@ color: rgb(255, 255, 255);</string>
                       <property name="spacing">
                        <number>5</number>
                       </property>
-                      <property name="margin">
+                      <property name="leftMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="bottomMargin">
                        <number>5</number>
                       </property>
                       <item>
@@ -8106,7 +8494,16 @@ QPushButton:pressed {
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -8237,7 +8634,16 @@ QPushButton:pressed {
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -8259,7 +8665,16 @@ QPushButton:pressed {
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -8459,7 +8874,16 @@ QPushButton:pressed {
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -8471,7 +8895,16 @@ QPushButton:pressed {
                    <property name="spacing">
                     <number>3</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>3</number>
                    </property>
                    <item>
@@ -8954,7 +9387,16 @@ QPushButton:pressed {
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -9005,15 +9447,24 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>548</width>
-             <height>451</height>
+             <width>536</width>
+             <height>471</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -9095,7 +9546,16 @@ color: rgb(255, 255, 255);
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -9251,7 +9711,16 @@ QPushButton:pressed {
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -9281,7 +9750,16 @@ QPushButton:pressed {
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -9330,7 +9808,16 @@ QPushButton:pressed {
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -9379,7 +9866,16 @@ QPushButton:pressed {
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -9447,7 +9943,16 @@ QPushButton:pressed {
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -9680,7 +10185,16 @@ color: rgb(255, 255, 255);</string>
              <property name="spacing">
               <number>3</number>
              </property>
-             <property name="margin">
+             <property name="leftMargin">
+              <number>3</number>
+             </property>
+             <property name="topMargin">
+              <number>3</number>
+             </property>
+             <property name="rightMargin">
+              <number>3</number>
+             </property>
+             <property name="bottomMargin">
               <number>3</number>
              </property>
              <item>
@@ -9881,7 +10395,7 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="overwriteMode">
@@ -10028,7 +10542,16 @@ QPushButton:pressed {
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -10574,7 +11097,7 @@ border-style: inset;
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
