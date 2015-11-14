@@ -1245,6 +1245,7 @@ void spoton_neighbor::slotTimeout(void)
 	  {
 	    if(!m_bluetoothSocket)
 	      {
+#if QT_VERSION >= 0x050200
 		m_bluetoothSocket = new (std::nothrow) QBluetoothSocket
 		  (QBluetoothServiceInfo::RfcommProtocol, this);
 
@@ -1286,6 +1287,7 @@ void spoton_neighbor::slotTimeout(void)
 			    this,
 			    SLOT(slotReadyRead(void)));
 		  }
+#endif
 	      }
 	  }
 	else if(m_sctpSocket)

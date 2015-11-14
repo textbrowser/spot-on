@@ -34,7 +34,6 @@
 #include <QTcpServer>
 #include <QTimer>
 #if QT_VERSION >= 0x050200
-#include <qbluetoothlocaldevice.h>
 #include <qbluetoothserver.h>
 #include <qbluetoothserviceinfo.h>
 #include <qbluetoothsocket.h>
@@ -47,81 +46,6 @@ class QNetworkInterface;
 
 class spoton_external_address;
 class spoton_sctp_server;
-
-#if QT_VERSION >= 0x050200
-class spoton_listener_bluetooth_server: public QBluetoothServer
-#else
-class spoton_listener_bluetooth_server: public QObject
-#endif
-{
-  Q_OBJECT
-
- public:
-  spoton_listener_bluetooth_server(const qint64 id, QObject *parent);
-
-  ~spoton_listener_bluetooth_server()
-  {
-#if QT_VERSION >= 0x050200
-    if(m_serviceInfo.isRegistered())
-      m_serviceInfo.unregisterService();
-#endif
-  }
-
-  QString errorString(void)
-  {
-#if QT_VERSION >= 0x050200
-    return QString("%1").arg(error());
-#else
-    return "";
-#endif
-  }
-
-  bool isListening(void) const
-  {
-#if QT_VERSION >= 0x050200
-    return QBluetoothServer::isListening() && m_serviceInfo.isRegistered();
-#else
-    return false;
-#endif
-  }
-
-  bool listen(const QString &address, const quint16 port);
-
-  int maxPendingConnections(void) const
-  {
-#if QT_VERSION >= 0x050200
-    return QBluetoothServer::maxPendingConnections();
-#else
-    return 0;
-#endif
-  }
-
-  void close(void)
-  {
-#if QT_VERSION >= 0x050200
-    if(m_serviceInfo.isRegistered())
-      m_serviceInfo.unregisterService();
-
-    QBluetoothServer::close();
-#endif
-  }
-
-  void setMaxPendingConnections(const int maxPendingConnections)
-  {
-#if QT_VERSION >= 0x050200
-    QBluetoothServer::setMaxPendingConnections
-      (qMax(1, maxPendingConnections));
-#else
-    Q_UNUSED(maxPendingConnections);
-#endif
-  }
-
- private:
-#if QT_VERSION >= 0x050200
-  QBluetoothServiceInfo m_serviceInfo;
-#endif
-  qint64 m_id;
-};
 
 class spoton_listener_tcp_server: public QTcpServer
 {
@@ -276,6 +200,10 @@ class spoton_listener: public QObject
   void updateConnectionCount(void);
 
  private:
+#if QT_VERSION >= 0x050200
+  QBluetoothServer *m_bluetoothServer;
+  QBluetoothServiceInfo m_bluetoothServiceInfo;
+#endif
   QByteArray m_certificate;
   QByteArray m_privateKey;
   QByteArray m_publicKey;
@@ -300,7 +228,6 @@ class spoton_listener: public QObject
   quint16 m_externalPort;
   quint16 m_port;
   spoton_external_address *m_externalAddress;
-  spoton_listener_bluetooth_server *m_bluetoothServer;
   spoton_listener_tcp_server *m_tcpServer;
   spoton_listener_udp_server *m_udpServer;
   spoton_sctp_server *m_sctpServer;
