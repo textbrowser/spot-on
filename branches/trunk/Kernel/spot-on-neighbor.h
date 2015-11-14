@@ -262,6 +262,9 @@ class spoton_neighbor: public QThread
 		  const QString &sslControlString,
 		  const Priority priority,
 		  const int laneWidth,
+#if QT_VERSION >= 0x050200
+		  QBluetoothSocket *socket,
+#endif
 		  QObject *parent);
   ~spoton_neighbor();
   QAbstractSocket::SocketState state(void) const;

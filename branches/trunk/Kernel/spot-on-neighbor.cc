@@ -83,6 +83,9 @@ spoton_neighbor::spoton_neighbor
  const QString &sslControlString,
  const Priority priority,
  const int laneWidth,
+#if QT_VERSION >= 0x050200
+ QBluetoothSocket *socket,
+#endif
  QObject *parent):QThread(parent)
 {
   m_abort = 0;
@@ -116,15 +119,8 @@ spoton_neighbor::spoton_neighbor
   if(m_bluetoothSocket)
     {
 #if QT_VERSION >= 0x050200
-#ifdef Q_OS_WIN32
-      m_bluetoothSocket->setSocketDescriptor
-	(_dup(static_cast<int> (socketDescriptor)),
-	 QBluetoothServiceInfo::RfcommProtocol);
-#else
-      m_bluetoothSocket->setSocketDescriptor
-	(dup(static_cast<int> (socketDescriptor)),
-	 QBluetoothServiceInfo::RfcommProtocol);
-#endif
+      socket->setParent(this);
+      m_bluetoothSocket = socket;
 #endif
     }
   else if(m_sctpSocket)

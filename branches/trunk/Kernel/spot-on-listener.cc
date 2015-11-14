@@ -826,6 +826,9 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	 m_sslControlString,
 	 QThread::HighPriority,
 	 m_laneWidth,
+#if QT_VERSION >= 0x050200
+	 0,
+#endif
 	 this);
     }
   catch(const std::bad_alloc &exception)
@@ -1588,12 +1591,11 @@ void spoton_listener::slotNewConnection(void)
 
   QPointer<spoton_neighbor> neighbor = 0;
   QString error("");
-  int socketDescriptor = socket->socketDescriptor();
 
   try
     {
       neighbor = new spoton_neighbor
-	(socketDescriptor, m_certificate, m_privateKey,
+	(-1, m_certificate, m_privateKey,
 	 m_echoMode, m_useAccounts, m_id, m_maximumBufferSize,
 	 m_maximumContentLength, m_transport,
 	 socket->peerAddress().toString(),
@@ -1605,6 +1607,7 @@ void spoton_listener::slotNewConnection(void)
 	 m_sslControlString,
 	 QThread::HighPriority,
 	 m_laneWidth,
+	 socket,
 	 this);
     }
   catch(const std::bad_alloc &exception)
@@ -1624,10 +1627,11 @@ void spoton_listener::slotNewConnection(void)
 			    "critical failure.");
     }
 
-  //socket->deleteLater();
-
   if(!neighbor)
-    return;
+    {
+      socket->deleteLater();
+      return;
+    }
 
   connect(neighbor,
 	  SIGNAL(destroyed(void)),
