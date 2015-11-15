@@ -29,7 +29,7 @@
 #define _spoton_neighbor_h_
 
 #include <QAtomicInt>
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetoothsocket.h>
 #endif
 #include <QDateTime>
@@ -262,7 +262,7 @@ class spoton_neighbor: public QThread
 		  const QString &sslControlString,
 		  const Priority priority,
 		  const int laneWidth,
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 		  QBluetoothSocket *socket,
 #endif
 		  QObject *parent);
@@ -302,7 +302,7 @@ class spoton_neighbor: public QThread
   QDateTime m_startTime;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
   QPointer<QBluetoothSocket> m_bluetoothSocket;
 #else
   QPointer<QObject> m_bluetoothSocket;
@@ -452,7 +452,7 @@ class spoton_neighbor: public QThread
   void slotEchoKeyShare(const QByteArrayList &list);
   void slotEncrypted(void);
   void slotError(QAbstractSocket::SocketError error);
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
   void slotError(QBluetoothSocket::SocketError error);
 #endif
   void slotError(const QString &method,
@@ -510,7 +510,7 @@ class spoton_neighbor: public QThread
   void accountAuthenticated(const QByteArray &name,
 			    const QByteArray &password);
   void authenticationRequested(const QString &peerInformation);
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
   void bluetooth(const QBluetoothServiceInfo &serviceInfo);
 #endif
   void callParticipant(const QByteArray &publicKeyHash,

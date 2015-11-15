@@ -29,7 +29,7 @@
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
 #include <QApplication>
 #else
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <QApplication>
 #else
 #include <QCoreApplication>
@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
   QApplication qapplication(argc, argv);
 #else
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
   QApplication qapplication(argc, argv);
 #else
   QCoreApplication qapplication(argc, argv);

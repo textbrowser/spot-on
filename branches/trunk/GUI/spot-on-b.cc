@@ -31,7 +31,7 @@
 
 #include <QSslKey>
 #include <QToolTip>
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothlocaldevice.h>
 #endif
@@ -1227,7 +1227,7 @@ void spoton::prepareListenerIPCombo(void)
 
   if(m_ui.listenerTransport->currentIndex() == 0)
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       QList<QBluetoothHostInfo> devices(QBluetoothLocalDevice::allDevices());
 
       while(!devices.isEmpty())

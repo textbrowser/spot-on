@@ -9,7 +9,8 @@ purge.commands = del /F *~
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= bluetooth concurrent core network sql widgets
+QT		+= concurrent core network sql
+QT              -= gui
 CONFIG		-= debug
 CONFIG		+= qt release warn_on
 

@@ -83,7 +83,7 @@ spoton_neighbor::spoton_neighbor
  const QString &sslControlString,
  const Priority priority,
  const int laneWidth,
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
  QBluetoothSocket *socket,
 #endif
  QObject *parent):QThread(parent)
@@ -104,7 +104,7 @@ spoton_neighbor::spoton_neighbor
 
   if(transport == "bluetooth")
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_bluetoothSocket = socket;
       connect(m_bluetoothSocket,
 	      SIGNAL(disconnected(void)),
@@ -178,7 +178,7 @@ spoton_neighbor::spoton_neighbor
 
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_address = m_bluetoothSocket->peerAddress().toString();
 #endif
     }
@@ -212,7 +212,7 @@ spoton_neighbor::spoton_neighbor
 
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_port = m_bluetoothSocket->peerPort();
 #endif
     }
@@ -1245,7 +1245,7 @@ void spoton_neighbor::slotTimeout(void)
 	  {
 	    if(!m_bluetoothSocket)
 	      {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 		m_bluetoothSocket = new (std::nothrow) QBluetoothSocket
 		  (QBluetoothServiceInfo::RfcommProtocol, this);
 
@@ -1544,7 +1544,7 @@ void spoton_neighbor::slotReadyRead(void)
 
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       data = m_bluetoothSocket->readAll();
 #endif
     }
@@ -1812,7 +1812,7 @@ void spoton_neighbor::processData(void)
 	    {
 	      if(m_bluetoothSocket)
 		{
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 		  emit authenticationRequested
 		    (QString("%1:%2").
 		     arg(m_bluetoothSocket->peerAddress().toString()).
@@ -2159,7 +2159,7 @@ void spoton_neighbor::slotConnected(void)
 
 		if(m_bluetoothSocket)
 		  {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 		    query.bindValue
 		      (2, m_bluetoothSocket->localAddress().toString());
 		    query.bindValue
@@ -4865,7 +4865,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
   deleteLater();
 }
 
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
 {
   if(m_bluetoothSocket)
@@ -6718,7 +6718,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
     {
       if(m_bluetoothSocket)
 	{
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 	  sent = m_bluetoothSocket->write(data, remaining);
 #endif
 	}
@@ -6812,7 +6812,7 @@ QAbstractSocket::SocketState spoton_neighbor::state(void) const
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       return QAbstractSocket::SocketState(m_bluetoothSocket->state());
 #endif
       return QAbstractSocket::UnconnectedState;
@@ -6831,7 +6831,7 @@ QString spoton_neighbor::localAddress(void) const
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       return m_bluetoothSocket->localAddress().toString();
 #else
       return "";
@@ -6851,7 +6851,7 @@ QString spoton_neighbor::peerAddress(void) const
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       return m_bluetoothSocket->peerAddress().toString();
 #else
       return "";
@@ -6906,7 +6906,7 @@ void spoton_neighbor::abort(void)
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_bluetoothSocket->abort();
 #endif
     }
@@ -6922,7 +6922,7 @@ void spoton_neighbor::close(void)
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_bluetoothSocket->close();
 #endif
     }
