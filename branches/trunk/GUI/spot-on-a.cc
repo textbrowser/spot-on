@@ -3649,7 +3649,7 @@ void spoton::slotPopulateListeners(void)
 				      possibilities.insert
 					((items.at(ii) |
 					  items.at(jj)),
-					 map[items.at(ii)] + "|" +
+					 map[items.at(ii)] + ", " +
 					 map[items.at(jj)]);
 
 				    for(int kk = 0; kk < items.size(); kk++)
@@ -3666,8 +3666,8 @@ void spoton::slotPopulateListeners(void)
 					    ((items.at(ii) |
 					      items.at(jj) |
 					      items.at(kk)),
-					     map[items.at(ii)] + "|" +
-					     map[items.at(jj)] + "|" +
+					     map[items.at(ii)] + ", " +
+					     map[items.at(jj)] + ", " +
 					     map[items.at(kk)]);
 
 					for(int ll = 0; ll < items.size();
@@ -3688,22 +3688,22 @@ void spoton::slotPopulateListeners(void)
 						  items.at(jj) |
 						  items.at(kk) |
 						  items.at(ll)),
-						 map[items.at(ii)] + "|" +
-						 map[items.at(jj)] + "|" +
-						 map[items.at(kk)] + "|" +
+						 map[items.at(ii)] + ", " +
+						 map[items.at(jj)] + ", " +
+						 map[items.at(kk)] + ", " +
 						 map[items.at(ll)]);
 					  }
 				      }
 				  }
 			      }
 
-			    values.insert("0", 0);
+			    values.insert(" 0", 0);
 
 			    for(int ii = 0; ii < possibilities.size(); ii++)
 			      values.insert
 				(QString::
 				 number(possibilities.keys().at(ii)).
-				 rightJustified(2, '0') + " " +
+				 rightJustified(2, ' ') + " " +
 				 possibilities.values().at(ii), 0);
 
 			    box->addItems(values.keys());
