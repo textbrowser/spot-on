@@ -40,7 +40,9 @@ extern "C"
 #include <QScopedPointer>
 #include <QStandardItemModel>
 #include <QThread>
-
+#if QT_VERSION >= 0x050200
+#include <qbluetooth.h>
+#endif
 #include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-buzzpage.h"
@@ -3613,17 +3615,89 @@ void spoton::slotPopulateListeners(void)
 		      }
 		    else if(i == 2)
 		      {
-			if(query.value(i).toLongLong() == 0)
+			if(transport.toLower() == "bluetooth")
 			  {
-			    item = new QTableWidgetItem("0");
-			    item->setBackground
-			      (QBrush(QColor(240, 128, 128)));
+#if QT_VERSION >= 0x050200
+			    QComboBox *box = new QComboBox();
+			    QList<QBluetooth::Security> items;
+			    QList<QBluetooth::SecurityFlags> possibilities;
+			    QMap<QString, char> values;
+
+			    items << QBluetooth::Authentication
+				  << QBluetooth::Authorization
+				  << QBluetooth::Encryption
+				  << QBluetooth::Secure;
+
+			    for(int ii = 0; ii < items.size(); ii++)
+			      {
+				possibilities << items.at(ii);
+
+				for(int jj = 0; jj < items.size(); jj++)
+				  {
+				    possibilities << (items.at(ii) |
+						      items.at(jj));
+
+				    for(int kk = 0; kk < items.size(); kk++)
+				      {
+					possibilities << (items.at(ii) |
+							  items.at(jj) |
+							  items.at(kk));
+
+					for(int ll = 0; ll < items.size(); ll++)
+					  possibilities << (items.at(ii) |
+							    items.at(jj) |
+							    items.at(kk) |
+							    items.at(ll));
+				      }
+				  }
+			      }
+
+			    values.insert("0", 0);
+
+			    for(int ii = 0; ii < possibilities.size(); ii++)
+			      values.insert(QString::number(possibilities.
+							    at(ii)), 0);
+
+			    box->addItems(values.keys());
+
+			    if(box->findText(query.value(i).toString()) > -1)
+			      box->setCurrentIndex
+				(box->findText(query.value(i).toString()));
+			    else
+			      box->setCurrentIndex(0);
+
+			    box->setProperty
+			      ("oid", query.value(query.record().count() - 1));
+			    connect(box,
+				    SIGNAL(valueChanged(int)),
+				    this,
+				    SLOT(slotBluetoothSecurityChanged(int)));
+			    m_ui.listeners->setCellWidget(row, i, box);
+#else
+			    item = new QTableWidgetItem
+			      (query.value(i).toString());
+
+			    if(item->text().toInt() == 0)
+			      item->setBackground
+				(QBrush(QColor(240, 128, 128)));
+			    else
+			      item->setBackground(QBrush());
+#endif
 			  }
 			else
 			  {
-			    item = new QTableWidgetItem
-			      (query.value(i).toString());
-			    item->setBackground(QBrush());
+			    if(query.value(i).toLongLong() == 0)
+			      {
+				item = new QTableWidgetItem("0");
+				item->setBackground
+				  (QBrush(QColor(240, 128, 128)));
+			      }
+			    else
+			      {
+				item = new QTableWidgetItem
+				  (query.value(i).toString());
+				item->setBackground(QBrush());
+			      }
 			  }
 		      }
 		    else if(i == 10)

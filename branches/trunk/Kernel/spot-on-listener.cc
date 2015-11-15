@@ -212,7 +212,17 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 
   m_keySize = qAbs(keySize);
 
-  if(transport == "tcp")
+  if(transport == "bluetooth")
+    {
+#if QT_VERSION >= 0x050200
+      if(m_keySize > (QBluetooth::Authentication |
+		      QBluetooth::Authorization |
+		      QBluetooth::Encryption |
+		      QBluetooth::Secure))
+	m_keySize = 0;
+#endif
+    }
+  else if(transport == "tcp")
     {
       if(m_keySize != 0)
 	if(!(m_keySize == 2048 || m_keySize == 3072 ||
@@ -1411,7 +1421,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 		      SLOT(slotNewConnection(void)));
 	      m_bluetoothServer->setMaxPendingConnections(m_maximumClients);
 	      m_bluetoothServer->setSecurityFlags
-		(QBluetooth::Encryption | QBluetooth::Secure);
+		(QBluetooth::SecurityFlags(m_keySize));
 	    }
 	  else
 	    return false;

@@ -1561,3 +1561,8 @@ QByteArray spoton::copiedPublicKeyPairToMagnet(const QByteArray &data) const
   magnet.append(list.value(5));
   return magnet;
 }
+
+void spoton::slotBluetoothSecurityChanged(int index)
+{
+  Q_UNUSED(index);
+}
