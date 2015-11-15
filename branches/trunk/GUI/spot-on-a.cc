@@ -3629,10 +3629,10 @@ void spoton::slotPopulateListeners(void)
 				  << QBluetooth::Authorization
 				  << QBluetooth::Encryption
 				  << QBluetooth::Secure;
-			    map[QBluetooth::Authentication] = "Authe.";
-			    map[QBluetooth::Authorization] = "Autho.";
-			    map[QBluetooth::Encryption] = "Encr.";
-			    map[QBluetooth::Secure] = "Secu.";
+			    map[QBluetooth::Authentication] = "Authentication";
+			    map[QBluetooth::Authorization] = "Authorization";
+			    map[QBluetooth::Encryption] = "Encryption";
+			    map[QBluetooth::Secure] = "Secure";
 
 			    for(int ii = 0; ii < items.size(); ii++)
 			      {
@@ -3641,33 +3641,58 @@ void spoton::slotPopulateListeners(void)
 
 				for(int jj = 0; jj < items.size(); jj++)
 				  {
-				    possibilities.insert
-				      ((items.at(ii) |
-					items.at(jj)),
-				       map[items.at(ii)] + "|" +
-				       map[items.at(jj)]);
+				    if(ii == jj)
+				      continue;
+
+				    if(!possibilities.
+				       contains((items.at(ii) | items.at(jj))))
+				      possibilities.insert
+					((items.at(ii) |
+					  items.at(jj)),
+					 map[items.at(ii)] + "|" +
+					 map[items.at(jj)]);
 
 				    for(int kk = 0; kk < items.size(); kk++)
 				      {
-					possibilities.insert
-					  ((items.at(ii) |
-					    items.at(jj) |
-					    items.at(kk)),
-					   map[items.at(ii)] + "|" +
-					   map[items.at(jj)] + "|" +
-					   map[items.at(kk)]);
+					if(ii == kk ||
+					   jj == kk)
+					  continue;
 
-					for(int ll = 0; ll < items.size();
-					    ll++)
+					if(!possibilities.
+					   contains((items.at(ii) |
+						     items.at(jj) |
+						     items.at(kk))))
 					  possibilities.insert
 					    ((items.at(ii) |
 					      items.at(jj) |
-					      items.at(kk) |
-					      items.at(ll)),
+					      items.at(kk)),
 					     map[items.at(ii)] + "|" +
 					     map[items.at(jj)] + "|" +
-					     map[items.at(kk)] + "|" +
-					     map[items.at(ll)]);
+					     map[items.at(kk)]);
+
+					for(int ll = 0; ll < items.size();
+					    ll++)
+					  {
+					    if(ii == ll ||
+					       jj == ll ||
+					       kk == ll)
+					      continue;
+
+					    if(!possibilities.
+					       contains((items.at(ii) |
+							 items.at(jj) |
+							 items.at(kk) |
+							 items.at(ll))))
+					      possibilities.insert
+						((items.at(ii) |
+						  items.at(jj) |
+						  items.at(kk) |
+						  items.at(ll)),
+						 map[items.at(ii)] + "|" +
+						 map[items.at(jj)] + "|" +
+						 map[items.at(kk)] + "|" +
+						 map[items.at(ll)]);
+					  }
 				      }
 				  }
 			      }
@@ -3677,21 +3702,21 @@ void spoton::slotPopulateListeners(void)
 			    for(int ii = 0; ii < possibilities.size(); ii++)
 			      values.insert
 				(QString::
-				 number(possibilities.keys().at(ii)) + " " +
+				 number(possibilities.keys().at(ii)).
+				 rightJustified(2, '0') + " " +
 				 possibilities.values().at(ii), 0);
 
 			    box->addItems(values.keys());
+			    box->setCurrentIndex
+			      (query.value(i).toInt());
 
-			    if(box->findText(query.value(i).toString()) > -1)
-			      box->setCurrentIndex
-				(box->findText(query.value(i).toString()));
-			    else
+			    if(box->currentIndex() < 0)
 			      box->setCurrentIndex(0);
 
 			    box->setProperty
 			      ("oid", query.value(query.record().count() - 1));
 			    connect(box,
-				    SIGNAL(valueChanged(int)),
+				    SIGNAL(currentIndexChanged(int)),
 				    this,
 				    SLOT(slotBluetoothSecurityChanged(int)));
 			    m_ui.listeners->setCellWidget(row, i, box);

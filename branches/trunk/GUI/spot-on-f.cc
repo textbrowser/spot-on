@@ -1562,7 +1562,7 @@ QByteArray spoton::copiedPublicKeyPairToMagnet(const QByteArray &data) const
   return magnet;
 }
 
-void spoton::slotBluetoothSecurityChanged(int value)
+void spoton::slotBluetoothSecurityChanged(int index)
 {
   QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
 
@@ -1584,7 +1584,7 @@ void spoton::slotBluetoothSecurityChanged(int value)
 	query.prepare("UPDATE listeners SET "
 		      "ssl_key_size = ? "
 		      "WHERE OID = ?");
-	query.bindValue(0, value);
+	query.bindValue(0, index);
 	query.bindValue(1, comboBox->property("oid"));
 	query.exec();
       }
