@@ -1562,7 +1562,35 @@ QByteArray spoton::copiedPublicKeyPairToMagnet(const QByteArray &data) const
   return magnet;
 }
 
-void spoton::slotBluetoothSecurityChanged(int index)
+void spoton::slotBluetoothSecurityChanged(int value)
 {
-  Q_UNUSED(index);
+  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+
+  if(!comboBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE listeners SET "
+		      "ssl_key_size = ? "
+		      "WHERE OID = ?");
+	query.bindValue(0, value);
+	query.bindValue(1, comboBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }

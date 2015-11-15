@@ -3620,34 +3620,54 @@ void spoton::slotPopulateListeners(void)
 #if QT_VERSION >= 0x050200
 			    QComboBox *box = new QComboBox();
 			    QList<QBluetooth::Security> items;
-			    QList<QBluetooth::SecurityFlags> possibilities;
+			    QMap<QBluetooth::Security, QString> map;
+			    QMap<QBluetooth::SecurityFlags,
+				 QString> possibilities;
 			    QMap<QString, char> values;
 
 			    items << QBluetooth::Authentication
 				  << QBluetooth::Authorization
 				  << QBluetooth::Encryption
 				  << QBluetooth::Secure;
+			    map[QBluetooth::Authentication] = "Authe.";
+			    map[QBluetooth::Authorization] = "Autho.";
+			    map[QBluetooth::Encryption] = "Encr.";
+			    map[QBluetooth::Secure] = "Secu.";
 
 			    for(int ii = 0; ii < items.size(); ii++)
 			      {
-				possibilities << items.at(ii);
+				possibilities.insert
+				  (items.at(ii), map[items.at(ii)]);
 
 				for(int jj = 0; jj < items.size(); jj++)
 				  {
-				    possibilities << (items.at(ii) |
-						      items.at(jj));
+				    possibilities.insert
+				      ((items.at(ii) |
+					items.at(jj)),
+				       map[items.at(ii)] + "|" +
+				       map[items.at(jj)]);
 
 				    for(int kk = 0; kk < items.size(); kk++)
 				      {
-					possibilities << (items.at(ii) |
-							  items.at(jj) |
-							  items.at(kk));
+					possibilities.insert
+					  ((items.at(ii) |
+					    items.at(jj) |
+					    items.at(kk)),
+					   map[items.at(ii)] + "|" +
+					   map[items.at(jj)] + "|" +
+					   map[items.at(kk)]);
 
-					for(int ll = 0; ll < items.size(); ll++)
-					  possibilities << (items.at(ii) |
-							    items.at(jj) |
-							    items.at(kk) |
-							    items.at(ll));
+					for(int ll = 0; ll < items.size();
+					    ll++)
+					  possibilities.insert
+					    ((items.at(ii) |
+					      items.at(jj) |
+					      items.at(kk) |
+					      items.at(ll)),
+					     map[items.at(ii)] + "|" +
+					     map[items.at(jj)] + "|" +
+					     map[items.at(kk)] + "|" +
+					     map[items.at(ll)]);
 				      }
 				  }
 			      }
@@ -3655,8 +3675,10 @@ void spoton::slotPopulateListeners(void)
 			    values.insert("0", 0);
 
 			    for(int ii = 0; ii < possibilities.size(); ii++)
-			      values.insert(QString::number(possibilities.
-							    at(ii)), 0);
+			      values.insert
+				(QString::
+				 number(possibilities.keys().at(ii)) + " " +
+				 possibilities.values().at(ii), 0);
 
 			    box->addItems(values.keys());
 
