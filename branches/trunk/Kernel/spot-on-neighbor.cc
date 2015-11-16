@@ -106,23 +106,27 @@ spoton_neighbor::spoton_neighbor
     {
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_bluetoothSocket = socket;
-      connect(m_bluetoothSocket,
-	      SIGNAL(disconnected(void)),
-	      this,
-	      SIGNAL(disconnected(void)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(disconnected(void)),
-	      this,
-	      SLOT(slotDisconnected(void)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(error(QBluetoothSocket::SocketError)),
-	      this,
-	      SLOT(slotError(QBluetoothSocket::SocketError)));
-      connect(m_bluetoothSocket,
-	      SIGNAL(readyRead(void)),
-	      this,
-	      SLOT(slotReadyRead(void)));
-      socket->setParent(this);
+
+      if(m_bluetoothSocket)
+	{
+	  connect(m_bluetoothSocket,
+		  SIGNAL(disconnected(void)),
+		  this,
+		  SIGNAL(disconnected(void)));
+	  connect(m_bluetoothSocket,
+		  SIGNAL(disconnected(void)),
+		  this,
+		  SLOT(slotDisconnected(void)));
+	  connect(m_bluetoothSocket,
+		  SIGNAL(error(QBluetoothSocket::SocketError)),
+		  this,
+		  SLOT(slotError(QBluetoothSocket::SocketError)));
+	  connect(m_bluetoothSocket,
+		  SIGNAL(readyRead(void)),
+		  this,
+		  SLOT(slotReadyRead(void)));
+	  socket->setParent(this);
+	}
 #endif
     }
   else if(transport == "sctp")
@@ -1576,7 +1580,7 @@ void spoton_neighbor::slotReadyRead(void)
 
   m_bytesRead += static_cast<quint64> (data.length());
 
-  if(m_abort.fetchAndAddRelaxed(0))
+  if(m_abort.fetchAndAddOrdered(0))
     return;
 
   if(!data.isEmpty() && !isEncrypted() && m_useSsl)
@@ -1622,7 +1626,7 @@ void spoton_neighbor::slotReadyRead(void)
 
 void spoton_neighbor::processData(void)
 {
-  if(m_abort.fetchAndAddRelaxed(0))
+  if(m_abort.fetchAndAddOrdered(0))
     return;
 
   QByteArray data;
@@ -1676,7 +1680,7 @@ void spoton_neighbor::processData(void)
 
       while(data.contains(spoton_send::EOM))
 	{
-	  if(m_abort.fetchAndAddRelaxed(0))
+	  if(m_abort.fetchAndAddOrdered(0))
 	    return;
 
 	  QByteArray bytes
@@ -1718,7 +1722,7 @@ void spoton_neighbor::processData(void)
 
   while(!list.isEmpty())
     {
-      if(m_abort.fetchAndAddRelaxed(0))
+      if(m_abort.fetchAndAddOrdered(0))
 	return;
 
       QByteArray data(list.takeFirst());
@@ -4882,6 +4886,9 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
      arg(error).
      arg(m_address).
      arg(m_port));
+
+  if(error != QBluetoothSocket::UnknownSocketError)
+    deleteLater();
 }
 #endif
 

@@ -1459,10 +1459,13 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  m_bluetoothServiceInfo.setAttribute
 	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
 	  m_bluetoothServiceInfo.setAttribute
-	    (QBluetoothServiceInfo::ServiceName, "Spot-On-Bluetooth-Server");
+	    (QBluetoothServiceInfo::ServiceName,
+	     QString("Spot-On-Bluetooth-Server-%1:%2").
+	     arg(m_address).arg(m_port));
 	  m_bluetoothServiceInfo.setAttribute
 	    (QBluetoothServiceInfo::ServiceDescription,
-	     "Spot-On-Bluetooth-Server");
+	     QString("Spot-On-Bluetooth-Server-%1:%2").
+	     arg(m_address).arg(m_port));
 	  m_bluetoothServiceInfo.setAttribute
 	    (QBluetoothServiceInfo::ServiceProvider, "spot-on.sf.net");
 	  m_bluetoothServiceInfo.setServiceUuid(QBluetoothUuid(serviceUuid));
