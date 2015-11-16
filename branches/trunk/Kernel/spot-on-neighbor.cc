@@ -481,7 +481,7 @@ spoton_neighbor::spoton_neighbor
   else
     m_externalAddressDiscovererTimer.setInterval(30000);
 
-  if(m_useAccounts.fetchAndAddRelaxed(0))
+  if(m_useAccounts.fetchAndAddOrdered(0))
     if(!m_useSsl)
       {
 	m_accountTimer.start();
@@ -1087,7 +1087,7 @@ void spoton_neighbor::slotTimeout(void)
 			  }
 
 			if(m_isUserDefined &&
-			   !m_accountAuthenticated.fetchAndAddRelaxed(0))
+			   !m_accountAuthenticated.fetchAndAddOrdered(0))
 			  {
 			    QByteArray aName;
 			    QByteArray aPassword;
@@ -1148,7 +1148,7 @@ void spoton_neighbor::slotTimeout(void)
 				else
 				  m_useAccounts.fetchAndStoreOrdered(0);
 
-				if(m_useAccounts.fetchAndAddRelaxed(0))
+				if(m_useAccounts.fetchAndAddOrdered(0))
 				  {
 				    m_accountTimer.start();
 				    m_authenticationTimer.start();
@@ -1669,7 +1669,7 @@ void spoton_neighbor::processData(void)
 	maximumContentLength = m_maximumContentLength;
       }
     else if(i == 5)
-      useAccounts = m_useAccounts.fetchAndAddRelaxed(0);
+      useAccounts = m_useAccounts.fetchAndAddOrdered(0);
 
   QList<QByteArray> list;
 
@@ -1782,10 +1782,10 @@ void spoton_neighbor::processData(void)
 	  if(useAccounts)
 	    {
 	      if(length > 0 && data.contains("type=0050&content="))
-		if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
+		if(!m_accountAuthenticated.fetchAndAddOrdered(0))
 		  process0050(length, data);
 
-	      if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
+	      if(!m_accountAuthenticated.fetchAndAddOrdered(0))
 		continue;
 	    }
 	  else if(length > 0 && (data.contains("type=0050&content=") ||
@@ -1802,17 +1802,17 @@ void spoton_neighbor::processData(void)
 	  ** without the client having requested the authentication?
 	  */
 
-	  if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
+	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
 	    if(accountClientSentSalt.length() >=
 	       spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE)
 	      process0051(length, data);
 
-	  if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
+	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
 	    continue;
 	}
       else if(length > 0 && data.contains("type=0052&content="))
 	{
-	  if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
+	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
 	    {
 	      if(m_bluetoothSocket)
 		{
@@ -1871,7 +1871,7 @@ void spoton_neighbor::processData(void)
       if(m_isUserDefined)
 	if(useAccounts)
 	  {
-	    if(!m_accountAuthenticated.fetchAndAddRelaxed(0))
+	    if(!m_accountAuthenticated.fetchAndAddOrdered(0))
 	      continue;
 	  }
 
@@ -2236,7 +2236,7 @@ void spoton_neighbor::slotConnected(void)
   if(!m_keepAliveTimer.isActive())
     m_keepAliveTimer.start();
 
-  if(m_useAccounts.fetchAndAddRelaxed(0))
+  if(m_useAccounts.fetchAndAddOrdered(0))
     if(!m_useSsl)
       {
 	m_accountTimer.start();
@@ -4078,7 +4078,7 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 	     spoton_crypt::weakRandomBytes(64));
 	}
 
-      if(m_accountAuthenticated.fetchAndAddRelaxed(0))
+      if(m_accountAuthenticated.fetchAndAddOrdered(0))
 	emit resetKeepAlive();
 
       spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
@@ -4106,7 +4106,7 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 			      "user_defined = 0");
 		query.bindValue
 		  (0,
-		   m_accountAuthenticated.fetchAndAddRelaxed(0) ?
+		   m_accountAuthenticated.fetchAndAddOrdered(0) ?
 		   s_crypt->encryptedThenHashed(QByteArray::number(1),
 						&ok).toBase64() :
 		   s_crypt->encryptedThenHashed(QByteArray::number(0),
@@ -4279,7 +4279,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	       "The server may be devious.");
 	}
 
-      if(m_accountAuthenticated.fetchAndAddRelaxed(0))
+      if(m_accountAuthenticated.fetchAndAddOrdered(0))
 	emit resetKeepAlive();
 
       if(s_crypt)
@@ -4304,7 +4304,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 			      "user_defined = 1");
 		query.bindValue
 		  (0,
-		   m_accountAuthenticated.fetchAndAddRelaxed(0) ?
+		   m_accountAuthenticated.fetchAndAddOrdered(0) ?
 		   s_crypt->encryptedThenHashed(QByteArray::number(1),
 						&ok).toBase64() :
 		   s_crypt->encryptedThenHashed(QByteArray::number(0),
@@ -5704,7 +5704,7 @@ void spoton_neighbor::slotModeChanged(QSslSocket::SslMode mode)
 	  return;
 	}
 
-      if(m_useAccounts.fetchAndAddRelaxed(0))
+      if(m_useAccounts.fetchAndAddOrdered(0))
 	{
 	  m_accountTimer.start();
 	  m_authenticationTimer.start();
@@ -5867,15 +5867,15 @@ bool spoton_neighbor::readyToWrite(void)
 
   if(isEncrypted() && m_useSsl)
     {
-      if(m_useAccounts.fetchAndAddRelaxed(0))
-	return m_accountAuthenticated.fetchAndAddRelaxed(0);
+      if(m_useAccounts.fetchAndAddOrdered(0))
+	return m_accountAuthenticated.fetchAndAddOrdered(0);
       else
 	return true;
     }
   else if(!isEncrypted() && !m_useSsl)
     {
-      if(m_useAccounts.fetchAndAddRelaxed(0))
-	return m_accountAuthenticated.fetchAndAddRelaxed(0);
+      if(m_useAccounts.fetchAndAddOrdered(0))
+	return m_accountAuthenticated.fetchAndAddOrdered(0);
       else
 	return true;
     }
@@ -5914,7 +5914,7 @@ QString spoton_neighbor::findMessageType
 {
   QList<QByteArray> list(data.trimmed().split('\n'));
   QString type("");
-  int interfaces = m_kernelInterfaces.fetchAndAddRelaxed(0);
+  int interfaces = m_kernelInterfaces.fetchAndAddOrdered(0);
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
   /*
