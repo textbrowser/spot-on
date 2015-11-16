@@ -6930,7 +6930,7 @@ void spoton_neighbor::close(void)
   if(m_bluetoothSocket)
     {
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
-      m_bluetoothSocket->close();
+      m_bluetoothSocket->disconnectFromService();
 #endif
     }
   else if(m_sctpSocket)
