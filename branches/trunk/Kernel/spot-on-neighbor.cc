@@ -992,6 +992,7 @@ void spoton_neighbor::slotTimeout(void)
 {
   if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
     {
+      m_abort.fetchAndStoreOrdered(1);
       spoton_misc::logError
 	(QString("spoton_neighbor::slotTimeout(): "
 		 "aborting because of silent connection for %1:%2.").
