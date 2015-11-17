@@ -885,6 +885,107 @@ spoton_neighbor::~spoton_neighbor()
   spoton_misc::logError(QString("Neighbor %1:%2 deallocated.").
 			arg(m_address).
 			arg(m_port));
+  m_abort.fetchAndStoreOrdered(1);
+
+  QWriteLocker locker(&m_dataMutex);
+
+  m_data.clear();
+  locker.unlock();
+  m_accountTimer.stop();
+  m_authenticationTimer.stop();
+  m_externalAddressDiscovererTimer.stop();
+  m_keepAliveTimer.stop();
+  m_lifetime.stop();
+  m_timer.stop();
+
+  if(m_id != -1)
+    {
+      /*
+      ** We must not delete accepted participants (neighbor_oid = -1).
+      */
+
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() +
+	   "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    /*
+	    ** Remove asymmetric keys that were not completely shared.
+	    */
+
+	    QSqlQuery query(db);
+
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.prepare("DELETE FROM friends_public_keys WHERE "
+			  "neighbor_oid = ?");
+	    query.bindValue(0, m_id);
+	    query.exec();
+	    spoton_misc::purgeSignatureRelationships
+	      (db, spoton_kernel::s_crypts.value("chat", 0));
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.prepare("DELETE FROM neighbors WHERE "
+			  "OID = ? AND status_control = 'deleted'");
+	    query.bindValue(0, m_id);
+	    query.exec();
+
+	    if(spoton_kernel::setting("gui/keepOnlyUserDefinedNeighbors",
+				      true).toBool())
+	      {
+		query.prepare("DELETE FROM neighbors WHERE "
+			      "OID = ? AND status_control <> 'blocked' AND "
+			      "user_defined = 0");
+		query.bindValue(0, m_id);
+		query.exec();
+	      }
+
+	    query.prepare("UPDATE neighbors SET "
+			  "account_authenticated = NULL, "
+			  "bytes_read = 0, "
+			  "bytes_written = 0, "
+			  "external_ip_address = NULL, "
+			  "is_encrypted = 0, "
+			  "local_ip_address = NULL, "
+			  "local_port = NULL, "
+			  "ssl_session_cipher = NULL, "
+			  "status = 'disconnected', "
+			  "uptime = 0 "
+			  "WHERE OID = ?");
+	    query.bindValue(0, m_id);
+	    query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+
+  close();
+  quit();
+  wait();
 }
 
 void spoton_neighbor::slotTimeout(void)
@@ -6906,107 +7007,6 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 
 void spoton_neighbor::deleteLater(void)
 {
-  m_abort.fetchAndStoreOrdered(1);
-
-  QWriteLocker locker(&m_dataMutex);
-
-  m_data.clear();
-  locker.unlock();
-  m_accountTimer.stop();
-  m_authenticationTimer.stop();
-  m_externalAddressDiscovererTimer.stop();
-  m_keepAliveTimer.stop();
-  m_lifetime.stop();
-  m_timer.stop();
-
-  if(m_id != -1)
-    {
-      /*
-      ** We must not delete accepted participants (neighbor_oid = -1).
-      */
-
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() +
-	   "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    /*
-	    ** Remove asymmetric keys that were not completely shared.
-	    */
-
-	    QSqlQuery query(db);
-
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.prepare("DELETE FROM friends_public_keys WHERE "
-			  "neighbor_oid = ?");
-	    query.bindValue(0, m_id);
-	    query.exec();
-	    spoton_misc::purgeSignatureRelationships
-	      (db, spoton_kernel::s_crypts.value("chat", 0));
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.prepare("DELETE FROM neighbors WHERE "
-			  "OID = ? AND status_control = 'deleted'");
-	    query.bindValue(0, m_id);
-	    query.exec();
-
-	    if(spoton_kernel::setting("gui/keepOnlyUserDefinedNeighbors",
-				      true).toBool())
-	      {
-		query.prepare("DELETE FROM neighbors WHERE "
-			      "OID = ? AND status_control <> 'blocked' AND "
-			      "user_defined = 0");
-		query.bindValue(0, m_id);
-		query.exec();
-	      }
-
-	    query.prepare("UPDATE neighbors SET "
-			  "account_authenticated = NULL, "
-			  "bytes_read = 0, "
-			  "bytes_written = 0, "
-			  "external_ip_address = NULL, "
-			  "is_encrypted = 0, "
-			  "local_ip_address = NULL, "
-			  "local_port = NULL, "
-			  "ssl_session_cipher = NULL, "
-			  "status = 'disconnected', "
-			  "uptime = 0 "
-			  "WHERE OID = ?");
-	    query.bindValue(0, m_id);
-	    query.exec();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-
-  close();
-  quit();
-  wait();
   QThread::deleteLater();
 }
 
