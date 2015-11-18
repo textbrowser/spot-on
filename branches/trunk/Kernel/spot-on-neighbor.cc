@@ -5933,11 +5933,12 @@ QString spoton_neighbor::findMessageType
   ** attached to the kernel.
   */
 
+  for(int i = 0; i < list.size(); i++)
+    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
   if(interfaces > 0 && list.size() == 2)
     {
-      symmetricKeys = spoton_kernel::findBuzzKey
-	(QByteArray::fromBase64(list.value(0)),
-	 QByteArray::fromBase64(list.value(1)));
+      symmetricKeys = spoton_kernel::findBuzzKey(list.value(0), list.value(1));
 
       if(!symmetricKeys.isEmpty())
 	{
@@ -5951,7 +5952,7 @@ QString spoton_neighbor::findMessageType
 			     0,
 			     "");
 
-	  data = crypt.decrypted(QByteArray::fromBase64(list.value(0)), &ok);
+	  data = crypt.decrypted(list.value(0), &ok);
 
 	  if(ok)
 	    {
@@ -5983,9 +5984,8 @@ QString spoton_neighbor::findMessageType
      spoton_misc::participantCount("chat", s_crypt) > 0)
     {
       QPair<QByteArray, QByteArray> gemini
-	(spoton_misc::findGeminiInCosmos(QByteArray::fromBase64(list.value(0)),
-					 QByteArray::fromBase64(list.value(1)),
-					 s_crypt));
+	(spoton_misc::
+	 findGeminiInCosmos(list.value(0), list.value(1), s_crypt));
 
       if(!gemini.first.isEmpty())
 	{
@@ -5999,8 +5999,7 @@ QString spoton_neighbor::findMessageType
 			     0,
 			     "");
 
-	  data = crypt.decrypted
-	    (QByteArray::fromBase64(list.value(0)), &ok);
+	  data = crypt.decrypted(list.value(0), &ok);
 
 	  if(ok)
 	    {
@@ -6028,10 +6027,8 @@ QString spoton_neighbor::findMessageType
 
   if(list.size() == 3 && s_crypt)
     {
-      symmetricKeys =
-	spoton_misc::findEchoKeys(QByteArray::fromBase64(list.value(0)),
-				  QByteArray::fromBase64(list.value(1)),
-				  type, s_crypt);
+      symmetricKeys = spoton_misc::findEchoKeys
+	(list.value(0), list.value(1), type, s_crypt);
 
       if(type == "0090")
 	goto done_label;
@@ -6056,8 +6053,7 @@ QString spoton_neighbor::findMessageType
 	  QByteArray data;
 	  bool ok = true;
 
-	  data = s_crypt->publicKeyDecrypt
-	    (QByteArray::fromBase64(list.value(0)), &ok);
+	  data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
 
 	  if(ok)
 	    {
@@ -6089,16 +6085,15 @@ QString spoton_neighbor::findMessageType
       {
 	if(list.size() == 3)
 	  symmetricKeys = spoton_kernel::findInstitutionKey
-	    (QByteArray::fromBase64(list.value(0)),
-	     QByteArray::fromBase64(list.value(1)));
+	    (list.value(0), list.value(1));
 	else
 	  symmetricKeys = spoton_kernel::findInstitutionKey
-	    (QByteArray::fromBase64(list.value(0)) +
-	     QByteArray::fromBase64(list.value(1)) +
-	     QByteArray::fromBase64(list.value(2)) +
-	     QByteArray::fromBase64(list.value(3)) +
-	     QByteArray::fromBase64(list.value(4)),
-	     QByteArray::fromBase64(list.value(5)));
+	    (list.value(0) +
+	     list.value(1) +
+	     list.value(2) +
+	     list.value(3) +
+	     list.value(4),
+	     list.value(5));
 
 	if(!symmetricKeys.isEmpty())
 	  {
@@ -6118,8 +6113,7 @@ QString spoton_neighbor::findMessageType
 	  QByteArray data;
 	  bool ok = true;
 
-	  data = s_crypt->publicKeyDecrypt
-	    (QByteArray::fromBase64(list.value(0)), &ok);
+	  data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
 
 	  if(ok)
 	    type = QByteArray::fromBase64(data.split('\n').value(0));
@@ -6148,8 +6142,7 @@ QString spoton_neighbor::findMessageType
 	  QByteArray data;
 	  bool ok = true;
 
-	  data = s_crypt->publicKeyDecrypt
-	    (QByteArray::fromBase64(list.value(0)), &ok);
+	  data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
 
 	  if(ok)
 	    {
@@ -6212,8 +6205,7 @@ QString spoton_neighbor::findMessageType
 	  QByteArray data;
 	  bool ok = true;
 
-	  data = s_crypt->publicKeyDecrypt
-	    (QByteArray::fromBase64(list.value(0)), &ok);
+	  data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
 
 	  if(ok)
 	    {
@@ -6260,8 +6252,8 @@ QString spoton_neighbor::findMessageType
 
   if(list.size() == 3 && (s_crypt = spoton_kernel::s_crypts.value("email", 0)))
     symmetricKeys = spoton_misc::findForwardSecrecyKeys
-      (QByteArray::fromBase64(list.value(0)),
-       QByteArray::fromBase64(list.value(1)),
+      (list.value(0),
+       list.value(1),
        type,
        s_crypt);
 
