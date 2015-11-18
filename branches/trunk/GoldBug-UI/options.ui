@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-472</y>
-             <width>458</width>
-             <height>1081</height>
+             <y>0</y>
+             <width>462</width>
+             <height>1144</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -415,6 +415,16 @@
                   </spacer>
                  </item>
                 </layout>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="chatTimestamps">
+                 <property name="text">
+                  <string>Timestamps.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -958,8 +968,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>653</width>
-             <height>1016</height>
+             <width>581</width>
+             <height>1084</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1069,6 +1079,13 @@
                  </property>
                  <property name="text">
                   <string>&amp;Impersonate me.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="chatOpenLinks">
+                 <property name="text">
+                  <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
                  </property>
                 </widget>
                </item>
@@ -1667,8 +1684,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>504</height>
+             <width>276</width>
+             <height>209</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -1905,7 +1922,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1951,6 +1968,7 @@
   <tabstop>ontopChatDialogs</tabstop>
   <tabstop>chatSendMethod</tabstop>
   <tabstop>chatUpdateInterval</tabstop>
+  <tabstop>chatTimestamps</tabstop>
   <tabstop>emailAlternatingRowColors</tabstop>
   <tabstop>refreshEmail</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
@@ -2018,6 +2036,7 @@
   <tabstop>acceptChatKeys</tabstop>
   <tabstop>chat_fs_request</tabstop>
   <tabstop>impersonate</tabstop>
+  <tabstop>chatOpenLinks</tabstop>
   <tabstop>chatSignMessages</tabstop>
   <tabstop>emailAcceptSigned</tabstop>
   <tabstop>acceptEmailKeys</tabstop>
