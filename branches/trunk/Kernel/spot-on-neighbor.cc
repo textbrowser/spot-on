@@ -5928,13 +5928,13 @@ QString spoton_neighbor::findMessageType
   ** symmetricKeys[3]: Hash Type
   */
 
+  for(int i = 0; i < list.size(); i++)
+    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
   /*
   ** Do not attempt to locate a Buzz key if an interface is not
   ** attached to the kernel.
   */
-
-  for(int i = 0; i < list.size(); i++)
-    list.replace(i, QByteArray::fromBase64(list.at(i)));
 
   if(interfaces > 0 && list.size() == 2)
     {
