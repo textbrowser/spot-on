@@ -2128,7 +2128,7 @@ void spoton_neighbor::slotConnected(void)
 	    if(db.open())
 	      {
 		QSqlQuery query(db);
-		QString country;
+		QString country("Unknown");
 
 		if(m_sctpSocket)
 		  country = spoton_misc::countryNameFromIPAddress
