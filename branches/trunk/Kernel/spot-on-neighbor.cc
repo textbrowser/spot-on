@@ -4889,7 +4889,15 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
      arg(m_port));
 
   if(error != QBluetoothSocket::UnknownSocketError)
-    deleteLater();
+    {
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotError(): "
+		 "socket error (%1) for %2:%3. Aborting.").
+	 arg(error).
+	 arg(m_address).
+	 arg(m_port));
+      deleteLater();
+    }
 }
 #endif
 
