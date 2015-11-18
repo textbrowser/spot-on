@@ -3080,7 +3080,10 @@ void spoton::slotAddNeighbor(void)
 
 	query.bindValue(8, status);
 
-	QString country(spoton_misc::countryNameFromIPAddress(ip));
+	QString country("Unknown");
+
+	if(transport != "bluetooth")
+	  country = spoton_misc::countryNameFromIPAddress(ip);
 
 	if(ok)
 	  query.bindValue
