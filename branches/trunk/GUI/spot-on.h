@@ -748,6 +748,7 @@ class spoton: public QMainWindow
   void slotLaneWidthChanged(int index);
   void slotLaunchKernelAfterAuthentication(bool state);
   void slotLimitConnections(int value);
+  void slotLinkClicked(const QUrl &url);
   void slotListenerCheckChange(bool state);
   void slotListenerFullEcho(void);
   void slotListenerHalfEcho(void);

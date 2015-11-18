@@ -1455,6 +1455,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
 	  SLOT(slotUrlLinkClicked(const QUrl &)));
+  connect(m_ui.messages,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotLinkClicked(const QUrl &)));
   connect(m_ui.urlDistributionModel,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,

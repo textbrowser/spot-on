@@ -99,6 +99,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 	  SIGNAL(toggled(bool)),
 	  ui.table,
 	  SLOT(setVisible(bool)));
+  connect(ui.messages,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotUrlLinkClicked(const QUrl &)));
 
   if(participant.trimmed().isEmpty())
     {
@@ -708,4 +712,9 @@ void spoton_chatwindow::showNormal(void)
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
   QMainWindow::showNormal();
+}
+
+void spoton_chatwindow::slotLinkClicked(const QUrl &url)
+{
+  Q_UNUSED(url);
 }

@@ -76,6 +76,7 @@ class spoton_chatwindow: public QMainWindow
  private slots:
   void slotDeriveGeminiPairViaSMP(void);
   void slotInitializeSMP(void);
+  void slotLinkClicked(const QUrl &url);
   void slotPrepareSMP(void);
   void slotSendMessage(void);
   void slotSetIcons(void);

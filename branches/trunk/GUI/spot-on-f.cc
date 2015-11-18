@@ -1594,3 +1594,8 @@ void spoton::slotBluetoothSecurityChanged(int index)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton::slotLinkClicked(const QUrl &url)
+{
+  Q_UNUSED(url);
+}
