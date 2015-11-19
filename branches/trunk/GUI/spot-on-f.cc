@@ -1597,7 +1597,33 @@ void spoton::slotBluetoothSecurityChanged(int index)
 
 void spoton::slotLinkClicked(const QUrl &url)
 {
+  QString scheme(url.scheme().toLower().trimmed());
+
+  if(!(scheme == "ftp" || scheme == "http" || scheme == "https"))
+    return;
+
   if(!m_settings.value("gui/openChatUrl", false).toBool())
+    return;
+
+  QMessageBox mb(this);
+  QString str(url.toEncoded().constData());
+
+  if(str.length() > 64)
+    str = str.mid(0, 24) + "..." + str.right(24);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to access %1?").arg(str));
+
+  if(mb.exec() != QMessageBox::Yes)
     return;
 
   QDesktopServices::openUrl(url);
