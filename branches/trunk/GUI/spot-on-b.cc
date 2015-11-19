@@ -297,14 +297,16 @@ void spoton::slotReceivedKernelMessage(void)
 		  QDateTime now(QDateTime::currentDateTime());
 		  QString msg("");
 
-		  msg.append
-		    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
-		     arg(now.toString("MM")).
-		     arg(now.toString("dd")).
-		     arg(now.toString("yyyy")).
-		     arg(now.toString("hh")).
-		     arg(now.toString("mm")).
-		     arg(now.toString("ss")));
+		  if(m_settings.value("gui/chatTimestamps", true).toBool())
+		    msg.append
+		      (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+		       arg(now.toString("MM")).
+		       arg(now.toString("dd")).
+		       arg(now.toString("yyyy")).
+		       arg(now.toString("hh")).
+		       arg(now.toString("mm")).
+		       arg(now.toString("ss")));
+
 		  msg.append(QString("<i>%1</i>").
 			     arg(list.at(1).constData()));
 
@@ -417,15 +419,17 @@ void spoton::slotReceivedKernelMessage(void)
 		      QString keyType("");
 		      QString msg("");
 
-		      msg.append
-			(QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
-				 "</font>] ").
-			 arg(now.toString("MM")).
-			 arg(now.toString("dd")).
-			 arg(now.toString("yyyy")).
-			 arg(now.toString("hh")).
-			 arg(now.toString("mm")).
-			 arg(now.toString("ss")));
+		      if(m_settings.value("gui/chatTimestamps", true).toBool())
+			msg.append
+			  (QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+				   "</font>] ").
+			   arg(now.toString("MM")).
+			   arg(now.toString("dd")).
+			   arg(now.toString("yyyy")).
+			   arg(now.toString("hh")).
+			   arg(now.toString("mm")).
+			   arg(now.toString("ss")));
+
 		      msg.append
 			(tr("<i>Received an SMP message "
 			    "from %2...%3.</i>").
@@ -479,15 +483,18 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(smp->step() == 4 || smp->step() == 5)
 			{
 			  msg.clear();
-			  msg.append
-			    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
-				     "</font>] ").
-			     arg(now.toString("MM")).
-			     arg(now.toString("dd")).
-			     arg(now.toString("yyyy")).
-			     arg(now.toString("hh")).
-			     arg(now.toString("mm")).
-			     arg(now.toString("ss")));
+
+			  if(m_settings.value("gui/chatTimestamps", true).
+			     toBool())
+			    msg.append
+			      (QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+				       "</font>] ").
+			       arg(now.toString("MM")).
+			       arg(now.toString("dd")).
+			       arg(now.toString("yyyy")).
+			       arg(now.toString("hh")).
+			       arg(now.toString("mm")).
+			       arg(now.toString("ss")));
 
 			  if(passed)
 			    msg.append
@@ -576,54 +583,58 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(!ok || sequenceNumber == "0")
 		    sequenceNumber = "1";
 
-		  msg.append
-		    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>]:").
-		     arg(now.toString("MM")).
-		     arg(now.toString("dd")).
-		     arg(now.toString("yyyy")).
-		     arg(now.toString("hh")).
-		     arg(now.toString("mm")).
-		     arg(now.toString("ss")));
+		  if(m_settings.value("gui/chatTimestamps", true).toBool())
+		    msg.append
+		      (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>]:").
+		       arg(now.toString("MM")).
+		       arg(now.toString("dd")).
+		       arg(now.toString("yyyy")).
+		       arg(now.toString("hh")).
+		       arg(now.toString("mm")).
+		       arg(now.toString("ss")));
 
-		  if(dateTime.isValid())
+		  if(m_settings.value("gui/chatTimestamps", true).toBool())
 		    {
-		      QDateTime d(dateTime);
-		      QDateTime n(now.toUTC());
-		      QString str("green");
+		      if(dateTime.isValid())
+			{
+			  QDateTime d(dateTime);
+			  QDateTime n(now.toUTC());
+			  QString str("green");
 
-		      d.setTimeSpec(Qt::UTC);
-		      n.setTimeSpec(Qt::UTC);
+			  d.setTimeSpec(Qt::UTC);
+			  n.setTimeSpec(Qt::UTC);
 
-		      if(qAbs(d.secsTo(n)) >
-			 spoton_common::CHAT_TIME_DELTA_MAXIMUM)
-			str = "#ff8c00";
+			  if(qAbs(d.secsTo(n)) >
+			     spoton_common::CHAT_TIME_DELTA_MAXIMUM)
+			    str = "#ff8c00";
 
-		      if(str == "green")
-			msg.append
-			  (QString("[%1/%2/%3 "
-				   "<font color=%4>%5:%6:%7</font>]").
-			   arg(dateTime.toString("MM")).
-			   arg(dateTime.toString("dd")).
-			   arg(dateTime.toString("yyyy")).
-			   arg(str).
-			   arg(dateTime.toString("hh")).
-			   arg(dateTime.toString("mm")).
-			   arg(dateTime.toString("ss")));
+			  if(str == "green")
+			    msg.append
+			      (QString("[%1/%2/%3 "
+				       "<font color=%4>%5:%6:%7</font>]").
+			       arg(dateTime.toString("MM")).
+			       arg(dateTime.toString("dd")).
+			       arg(dateTime.toString("yyyy")).
+			       arg(str).
+			       arg(dateTime.toString("hh")).
+			       arg(dateTime.toString("mm")).
+			       arg(dateTime.toString("ss")));
+			  else
+			    msg.append
+			      (QString("[<font color=%1>%2/%3/%4 "
+				       "%5:%6:%7</font>]").
+			       arg(str).
+			       arg(dateTime.toString("MM")).
+			       arg(dateTime.toString("dd")).
+			       arg(dateTime.toString("yyyy")).
+			       arg(dateTime.toString("hh")).
+			       arg(dateTime.toString("mm")).
+			       arg(dateTime.toString("ss")));
+			}
 		      else
 			msg.append
-			  (QString("[<font color=%1>%2/%3/%4 "
-				   "%5:%6:%7</font>]").
-			   arg(str).
-			   arg(dateTime.toString("MM")).
-			   arg(dateTime.toString("dd")).
-			   arg(dateTime.toString("yyyy")).
-			   arg(dateTime.toString("hh")).
-			   arg(dateTime.toString("mm")).
-			   arg(dateTime.toString("ss")));
+			  ("[00/00/0000 <font color=red>00:00:00</font>]");
 		    }
-		  else
-		    msg.append
-		      ("[00/00/0000 <font color=red>00:00:00</font>]");
 
 		  bool first = false;
 		  quint64 previousSequenceNumber = 1;

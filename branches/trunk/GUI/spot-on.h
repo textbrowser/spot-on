@@ -639,6 +639,7 @@ class spoton: public QMainWindow
   void slotChatInactivityTimeout(void);
   void slotChatPopup(void);
   void slotChatSendMethodChanged(int index);
+  void slotChatTimestamps(bool state);
   void slotChatWindowDestroyed(void);
   void slotChatWindowMessageSent(void);
   void slotClearClipboardBuffer(void);

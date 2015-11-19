@@ -1637,3 +1637,12 @@ void spoton::slotOpenChatUrlChecked(bool state)
 
   settings.setValue("gui/openChatUrl", state);
 }
+
+void spoton::slotChatTimestamps(bool state)
+{
+  m_settings["gui/chatTimestamps"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/chatTimestamps", state);
+}

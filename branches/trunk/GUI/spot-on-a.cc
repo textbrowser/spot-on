@@ -1523,6 +1523,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotOpenChatUrlChecked(bool)));
+  connect(m_optionsUi.chatTimestamps,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotChatTimestamps(bool)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -2077,6 +2081,10 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.disable_ui_synchronous_import->setChecked
     (m_settings.value("gui/disable_ui_synchronous_sqlite_url_import", false).
      toBool());
+  m_optionsUi.chatOpenLinks->setChecked
+    (m_settings.value("gui/openChatUrl", false).toBool());
+  m_optionsUi.chatTimestamps->setChecked
+    (m_settings.value("gui/chatTimestamps", true).toBool());
 
   /*
   ** Please don't translate n/a.
