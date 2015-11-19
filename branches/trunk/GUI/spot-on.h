@@ -779,6 +779,7 @@ class spoton: public QMainWindow
   void slotNeighborSelected(void);
   void slotNewKeys(bool state);
   void slotOntopChatDialogs(bool state);
+  void slotOpenChatUrlChecked(bool state);
   void slotPageClicked(const QString &link);
   void slotParticipantDoubleClicked(QTableWidgetItem *item);
   void slotPassphraseAuthenticateRadioToggled(bool state);

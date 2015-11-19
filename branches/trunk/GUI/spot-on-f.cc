@@ -1597,5 +1597,17 @@ void spoton::slotBluetoothSecurityChanged(int index)
 
 void spoton::slotLinkClicked(const QUrl &url)
 {
-  Q_UNUSED(url);
+  if(!m_settings.value("gui/openChatUrl", false).toBool())
+    return;
+
+  QDesktopServices::openUrl(url);
+}
+
+void spoton::slotOpenChatUrlChecked(bool state)
+{
+  m_settings["gui/openChatUrl"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/openChatUrl", state);
 }

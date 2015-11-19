@@ -1519,6 +1519,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotDisableSynchronousUrlImport(bool)));
+  connect(m_optionsUi.chatOpenLinks,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotOpenChatUrlChecked(bool)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,

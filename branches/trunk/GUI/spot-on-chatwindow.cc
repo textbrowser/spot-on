@@ -716,5 +716,10 @@ void spoton_chatwindow::showNormal(void)
 
 void spoton_chatwindow::slotLinkClicked(const QUrl &url)
 {
-  Q_UNUSED(url);
+  QSettings settings;
+
+  if(!settings.value("gui/openChatUrl", false).toBool())
+    return;
+
+  QDesktopServices::openUrl(url);
 }
