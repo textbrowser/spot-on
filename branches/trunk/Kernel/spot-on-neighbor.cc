@@ -999,6 +999,10 @@ void spoton_neighbor::slotTimeout(void)
 	 arg(m_address).
 	 arg(m_port));
       deleteLater();
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+      quit();
+      wait();
+#endif
       return;
     }
 
