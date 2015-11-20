@@ -7007,7 +7007,15 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 
 void spoton_neighbor::deleteLater(void)
 {
+#if QT_VERSION >= 0x050200 && defined(Q_OS_MAC) && \
+  defined(SPOTON_BLUETOOTH_ENABLED)
+  if(m_transport == "bluetooth")
+    delete this;
+  else
+    QThread::deleteLater();
+#else
   QThread::deleteLater();
+#endif
 }
 
 void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
