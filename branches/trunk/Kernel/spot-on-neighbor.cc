@@ -992,17 +992,12 @@ void spoton_neighbor::slotTimeout(void)
 {
   if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
     {
-      m_abort.fetchAndStoreOrdered(1);
       spoton_misc::logError
 	(QString("spoton_neighbor::slotTimeout(): "
 		 "aborting because of silent connection for %1:%2.").
 	 arg(m_address).
 	 arg(m_port));
       deleteLater();
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
-      quit();
-      wait();
-#endif
       return;
     }
 
