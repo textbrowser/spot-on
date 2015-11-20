@@ -7010,7 +7010,70 @@ void spoton_neighbor::deleteLater(void)
 #if QT_VERSION >= 0x050200 && defined(Q_OS_MAC) && \
   defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_transport == "bluetooth")
-    delete this;
+    {
+      /*
+      ** Deferred deletion does not function correctly on
+      ** OS X.
+      */
+
+      m_abort.fetchAndStoreOrdered(1);
+      disconnect(m_bluetoothSocket,
+		 SIGNAL(connected(void)),
+		 this,
+		 SLOT(slotConnected(void)));
+      disconnect(m_bluetoothSocket,
+		 SIGNAL(disconnected(void)),
+		 this,
+		 SIGNAL(disconnected(void)));
+      disconnect(m_bluetoothSocket,
+		 SIGNAL(disconnected(void)),
+		 this,
+		 SLOT(slotDisconnected(void)));
+      disconnect(m_bluetoothSocket,
+		 SIGNAL(error(QBluetoothSocket::SocketError)),
+		 this,
+		 SLOT(slotError(QBluetoothSocket::SocketError)));
+      disconnect(m_bluetoothSocket,
+		 SIGNAL(readyRead(void)),
+		 this,
+		 SLOT(slotReadyRead(void)));
+      disconnect(this,
+		 SIGNAL(accountAuthenticated(const QByteArray &,
+					     const QByteArray &)),
+		 this,
+		 SLOT(slotAccountAuthenticated(const QByteArray &,
+					       const QByteArray &)));
+      disconnect(this,
+		 SIGNAL(resetKeepAlive(void)),
+		 this,
+		 SLOT(slotResetKeepAlive(void)));
+      disconnect(this,
+		 SIGNAL(sharePublicKey(const QByteArray &,
+				       const QByteArray &,
+				       const QByteArray &,
+				       const QByteArray &,
+				       const QByteArray &,
+				       const QByteArray &)),
+		 this,
+		 SLOT(slotSharePublicKey(const QByteArray &,
+					 const QByteArray &,
+					 const QByteArray &,
+					 const QByteArray &,
+					 const QByteArray &,
+					 const QByteArray &)));
+      disconnect(this,
+		 SIGNAL(stopTimer(QTimer *)),
+		 this,
+		 SLOT(slotStopTimer(QTimer *)));
+      close();
+      m_accountTimer.stop();
+      m_authenticationTimer.stop();
+      m_externalAddressDiscovererTimer.stop();
+      m_keepAliveTimer.stop();
+      m_lifetime.stop();
+      m_timer.stop();
+      delete this;
+    }
   else
     QThread::deleteLater();
 #else
