@@ -2702,7 +2702,7 @@ void spoton::slotAddListener(void)
 	QString ip("");
 
 	if(m_ui.listenerIPCombo->currentIndex() == 0)
-	  ip = m_ui.listenerIP->text().trimmed();
+	  ip = m_ui.listenerIP->text().toLower().trimmed();
 	else
 	  ip = m_ui.listenerIPCombo->currentText();
 
@@ -2974,7 +2974,7 @@ void spoton::slotAddNeighbor(void)
 
     if(db.open())
       {
-	QString ip(m_ui.neighborIP->text().trimmed());
+	QString ip(m_ui.neighborIP->text().toLower().trimmed());
 	QString port(QString::number(m_ui.neighborPort->value()));
 	QString protocol("");
 	QString proxyHostName("");
