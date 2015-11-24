@@ -37,12 +37,12 @@
 class spoton_pacify
 {
  public:
-  pacify(const std::string &passphrase)
+  spoton_pacify(const std::string &passphrase)
   {
     m_passphrase = passphrase;
   }
 
-  ~pacify()
+  ~spoton_pacify()
   {
   }
 
