@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2011 - 10^10^10, Alexis Megas.
+** Copyright (c) 2011 - 10^10^10, Mattias Andrée, Alexis Megas.
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -36,22 +36,67 @@
 
 class spoton_pacify
 {
- public:
+public:
   spoton_pacify(const std::string &passphrase)
   {
-    m_passphrase = passphrase;
+    size_t n = passphrase.length();
+
+    m_passphrase_length = 0;
+
+    for(size_t i = 0; i < n; i++)
+      if((static_cast<int> (passphrase.at(i)) & 0xc0) != 0x80)
+	m_passphrase_length += 1;
+
+    m_passphrase = new long int[m_passphrase_length];
+
+    for(size_t i = 0, j = 0; i < n; j++)
+      {
+	int c = static_cast<int> (passphrase.at(i++));
+
+	if((c & 0x80) == 0)
+	  m_passphrase[j] = static_cast<long int> (c);
+	else if((c & 0xc0) == 0xc0)
+	  {
+	    int n = 0;
+
+	    while(c & 0x80)
+	      n++, c <<= 1;
+
+	    c = (c & 0xff) >> n--;
+	    m_passphrase[j] = static_cast<long int> (c);
+
+	    while(n--)
+	      {
+		c = static_cast<int> (passphrase.at(i++));
+
+		if((c & 0xc0) != 0x80)
+		  {
+		    m_passphrase[j] = 0; /* XXX invalid input. */
+		    break;
+		  }
+		else
+		  {
+		    m_passphrase[j] <<= 6;
+		    m_passphrase[j] |= static_cast<long int> (c & 0x3f);
+		  }
+	      }
+	  }
+	else
+	  m_passphrase[j] = 0; /* XXX invalid input. */
+      }
   }
 
   ~spoton_pacify()
   {
+    delete []m_passphrase;
   }
 
   double evaluate(void) const
   {
     double rc = 0.0;
-    std::map<char, int> used;
+    long int last = -1;
+    std::map<long int, int> used;
     std::map<double, int> classes;
-    std::string last("None");
 
     classes[2.5] = 0;
     classes[3.5] = 0;
@@ -59,10 +104,12 @@ class spoton_pacify
     for(int i = 1; i <= 10; i++)
       classes[i] = 0;
 
-    for(size_t i = 0; i < m_passphrase.length(); i++)
+    for(size_t i = 0; i < m_passphrase_length; i++)
       {
-	char c = m_passphrase.at(i);
-	double r = char_class(c);
+	double r = 0.0;
+	long int c = m_passphrase[i];
+
+	r = char_class(c);
 
 	if(used.end() == used.find(c))
 	  used[c] = 1;
@@ -86,9 +133,13 @@ class spoton_pacify
 
 	classes[r - 1.0] += 1;
 
-	if(last != "None")
+	if(i > 0)
 	  {
-	    r = distance(c, last.at(0));
+	    if(c > 127 || last > 127)
+	      r = distance('\0', '\0');
+	    else
+	      r = distance(static_cast<char> (c), static_cast<char> (last));
+
 	    rc += std::pow(r, 0.5);
 	  }
 
@@ -124,41 +175,42 @@ class spoton_pacify
 	double r = std::pow(a, 2) + std::pow(b, 2) + std::pow(c, 3) +
 	  std::pow(d, 2);
 
-	rc += 30.0 * static_cast<double> (m_passphrase.length()) /
+	rc += 30.0 * static_cast<double> (m_passphrase_length) /
 	  std::pow(r, 0.5);
       }
 
     return std::floor(rc + 0.5);
   }
 
- private:
-  std::string m_passphrase;
+private:
+  long int *m_passphrase;
+  size_t m_passphrase_length;
 
-  double char_class(const char c) const
+  double char_class(const long int c) const
   {
-    int _c_ = static_cast<int> (c);
-
-    if(static_cast<int> ('0') <= _c_ && _c_ <= static_cast<int> ('9'))
+    if(static_cast<long int> ('0') <= c && c <= static_cast<long int> ('9'))
       return 1.0;
-    else if(static_cast<int> ('a') <= _c_ && _c_ <= static_cast<int> ('z'))
+    else if(static_cast<long int> ('a') <= c &&
+	    c <= static_cast<long int> ('z'))
       return 2.0;
-    else if(static_cast<int> ('A') <= _c_ && _c_ <= static_cast<int> ('Z'))
+    else if(static_cast<long int> ('A') <= c &&
+	    c <= static_cast<long int> ('Z'))
       return 2.5;
-    else if(_c_ < (1 << 7))
+    else if(c < (1 << 7))
       return 3.0;
-    else if(_c_ < (1 << 8))
+    else if(c < (1 << 8))
       return 3.5;
-    else if(_c_ < (1 << 10))
+    else if(c < (1 << 10))
       return 4.0;
-    else if(_c_ < (1 << 14))
+    else if(c < (1 << 14))
       return 5.0;
-    else if(_c_ < (1 << 16))
+    else if(c < (1 << 16))
       return 6.0;
-    else if(_c_ < (1 << 18))
+    else if(c < (1 << 18))
       return 7.0;
-    else if(_c_ < (1 << 22))
+    else if(c < (1 << 22))
       return 8.0;
-    else if(_c_ < (1 << 26))
+    else if(c < (1 << 26))
       return 9.0;
     else
       return 10.0;
