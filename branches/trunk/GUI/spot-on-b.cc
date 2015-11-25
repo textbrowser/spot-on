@@ -297,16 +297,14 @@ void spoton::slotReceivedKernelMessage(void)
 		  QDateTime now(QDateTime::currentDateTime());
 		  QString msg("");
 
-		  if(m_settings.value("gui/chatTimestamps", true).toBool())
-		    msg.append
-		      (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
-		       arg(now.toString("MM")).
-		       arg(now.toString("dd")).
-		       arg(now.toString("yyyy")).
-		       arg(now.toString("hh")).
-		       arg(now.toString("mm")).
-		       arg(now.toString("ss")));
-
+		  msg.append
+		    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+		     arg(now.toString("MM")).
+		     arg(now.toString("dd")).
+		     arg(now.toString("yyyy")).
+		     arg(now.toString("hh")).
+		     arg(now.toString("mm")).
+		     arg(now.toString("ss")));
 		  msg.append(QString("<i>%1</i>").
 			     arg(list.at(1).constData()));
 
@@ -419,17 +417,15 @@ void spoton::slotReceivedKernelMessage(void)
 		      QString keyType("");
 		      QString msg("");
 
-		      if(m_settings.value("gui/chatTimestamps", true).toBool())
-			msg.append
-			  (QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
-				   "</font>] ").
-			   arg(now.toString("MM")).
-			   arg(now.toString("dd")).
-			   arg(now.toString("yyyy")).
-			   arg(now.toString("hh")).
-			   arg(now.toString("mm")).
-			   arg(now.toString("ss")));
-
+		      msg.append
+			(QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+				 "</font>] ").
+			 arg(now.toString("MM")).
+			 arg(now.toString("dd")).
+			 arg(now.toString("yyyy")).
+			 arg(now.toString("hh")).
+			 arg(now.toString("mm")).
+			 arg(now.toString("ss")));
 		      msg.append
 			(tr("<i>Received an SMP message "
 			    "from %2...%3.</i>").
@@ -483,18 +479,15 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(smp->step() == 4 || smp->step() == 5)
 			{
 			  msg.clear();
-
-			  if(m_settings.value("gui/chatTimestamps", true).
-			     toBool())
-			    msg.append
-			      (QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
-				       "</font>] ").
-			       arg(now.toString("MM")).
-			       arg(now.toString("dd")).
-			       arg(now.toString("yyyy")).
-			       arg(now.toString("hh")).
-			       arg(now.toString("mm")).
-			       arg(now.toString("ss")));
+			  msg.append
+			    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+				     "</font>] ").
+			     arg(now.toString("MM")).
+			     arg(now.toString("dd")).
+			     arg(now.toString("yyyy")).
+			     arg(now.toString("hh")).
+			     arg(now.toString("mm")).
+			     arg(now.toString("ss")));
 
 			  if(passed)
 			    msg.append
@@ -583,15 +576,14 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(!ok || sequenceNumber == "0")
 		    sequenceNumber = "1";
 
-		  if(m_settings.value("gui/chatTimestamps", true).toBool())
-		    msg.append
-		      (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>]:").
-		       arg(now.toString("MM")).
-		       arg(now.toString("dd")).
-		       arg(now.toString("yyyy")).
-		       arg(now.toString("hh")).
-		       arg(now.toString("mm")).
-		       arg(now.toString("ss")));
+		  msg.append
+		    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>]:").
+		     arg(now.toString("MM")).
+		     arg(now.toString("dd")).
+		     arg(now.toString("yyyy")).
+		     arg(now.toString("hh")).
+		     arg(now.toString("mm")).
+		     arg(now.toString("ss")));
 
 		  if(m_settings.value("gui/chatTimestamps", true).toBool())
 		    {
