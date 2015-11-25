@@ -40,12 +40,12 @@ public:
   spoton_pacify(const std::string &passphrase)
   {
     size_t n = passphrase.length();
-    
+
     // Convert from UTF-8 to UTF-32.
     //   Note this is not an attack-safe implementation,
     //   this implementation allows characters that are
     //   encoded with an excessive number of bytes.
-    
+
     // Count the number of characters.
     //   Byte      Datum
     //   0.......  Single-byte character                   (Count these.)
