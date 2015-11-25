@@ -40,6 +40,17 @@ public:
   spoton_pacify(const std::string &passphrase)
   {
     size_t n = passphrase.length();
+    
+    // Convert from UTF-8 to UTF-32.
+    //   Note this is not an attack-safe implementation,
+    //   this implementation allows characters that are
+    //   encoded with an excessive number of bytes.
+    
+    // Count the number of characters.
+    //   Byte      Datum
+    //   0.......  Single-byte character                   (Count these.)
+    //   11......  Initial byte in multibyte character     (Count these.)
+    //   10......  Non-initial byte in multibyte character (Do not count these.)
 
     m_passphrase_length = 0;
 
@@ -49,40 +60,91 @@ public:
 
     m_passphrase = new long int[m_passphrase_length];
 
+    // Covert.
+    //   0.......
+    //   110..... 10......
+    //   1110.... 10...... 10......
+    //   11110... 10...... 10...... 10......
+    //   111110.. 10...... 10...... 10...... 10......
+    //   1111110. 10...... 10...... 10...... 10...... 10......
+
     for(size_t i = 0, j = 0; i < n; j++)
       {
 	int c = static_cast<int> (passphrase.at(i++));
 
 	if((c & 0x80) == 0)
+	  // Single-byte character.
+
 	  m_passphrase[j] = static_cast<long int> (c);
 	else if((c & 0xc0) == 0xc0)
 	  {
-	    int n = 0;
+	    // Initial byte in multibyte-character.
+
+	    int b = 0;
+
+	    // Get width of character.
+	    //   110.....  2-byte character  11-bit character
+	    //   1110....  3-byte character  16-bit character
+	    //   11110...  4-byte character  21-bit character (New UTF-8 limit)
+	    //   111110..  5-byte character  26-bit character
+	    //   1111110.  6-byte character  31-bit character (Old UTF-8 limit)
 
 	    while(c & 0x80)
-	      n++, c <<= 1;
+	      b++, c <<= 1;
 
-	    c = (c & 0xff) >> n--;
+	    if(b > 6)
+	      {
+		m_passphrase[j] = 0; /* XXX invalid input. */
+		break;
+	      }
+
+	    // Get bits (represented by dots in the table above)
+	    // stored in the start byte.
+
+	    c = (c & 0xff) >> b;
 	    m_passphrase[j] = static_cast<long int> (c);
 
-	    while(n--)
+	    // We have read one of the bytes.
+
+	    b--;
+
+	    // Get bits stored in the continuation bytes.
+	    //   10......
+
+	    while(b--)
 	      {
+		if (i == n)
+		  {
+		    // Premature end of string.
+
+		    m_passphrase[j] = 0; /* XXX invalid input. */
+		    break;
+		  }
+		
 		c = static_cast<int> (passphrase.at(i++));
 
 		if((c & 0xc0) != 0x80)
 		  {
+		    // Premature end of multibyte-character byte sequence.
+
 		    m_passphrase[j] = 0; /* XXX invalid input. */
+		    i--;
 		    break;
 		  }
 		else
 		  {
+		    // Store the six lowest bits.
+
 		    m_passphrase[j] <<= 6;
 		    m_passphrase[j] |= static_cast<long int> (c & 0x3f);
 		  }
 	      }
 	  }
 	else
-	  m_passphrase[j] = 0; /* XXX invalid input. */
+	  // Non-initial byte in multibyte-character at begining of character.
+	  // (Unexpected continuation byte.)
+
+	  j--; /* XXX invalid input. */
       }
   }
 
