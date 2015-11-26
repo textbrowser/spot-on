@@ -5861,6 +5861,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.signatureKeyType->setEnabled(false);
       m_ui.keys->setEnabled(true);
       m_ui.newKeys->setEnabled(true);
+      m_ui.passphrase_strength_indicator->setVisible(false);
       m_ui.passphrase1->clear();
       m_ui.passphrase2->clear();
       m_ui.question->clear();
