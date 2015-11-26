@@ -30,7 +30,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <map>
 #include <string>
 
@@ -60,7 +59,7 @@ public:
 
     m_passphrase = new long int[m_passphrase_length];
 
-    // Covert.
+    // Convert.
     //   0.......
     //   110..... 10......
     //   1110.... 10...... 10......
