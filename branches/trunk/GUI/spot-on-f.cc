@@ -32,6 +32,7 @@
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "spot-on.h"
+#include "spot-on-pacify.h"
 #include "ui_forwardsecrecyalgorithmsselection.h"
 #include "ui_unlock.h"
 
@@ -1645,4 +1646,59 @@ void spoton::slotChatTimestamps(bool state)
   QSettings settings;
 
   settings.setValue("gui/chatTimestamps", state);
+}
+
+void spoton::slotPassphraseChanged(const QString &text)
+{
+  if(text.isEmpty())
+    {
+      m_ui.passphrase_strength_indicator->setVisible(false);
+      return;
+    }
+  else
+    m_ui.passphrase_strength_indicator->setVisible(true);
+
+  double maximum = 1000.00;
+  double result = 0.0;
+  spoton_pacify pacify(text.toStdString());
+
+  result = 100.00 * pacify.evaluate() / maximum;
+  m_ui.passphrase_strength_indicator->setValue(result);
+
+  if(result >= 0.00 && result <= 25.00)
+    m_ui.passphrase_strength_indicator->setStyleSheet
+      ("QProgressBar::chunk"
+       "{"
+       "background: red; "
+       "border-bottom-right-radius: 0px; "
+       "border-bottom-left-radius: 0px; "
+       "border: 1px solid black;"
+       "}");
+  else if(result > 25.00 && result <= 50.00)
+    m_ui.passphrase_strength_indicator->setStyleSheet
+      ("QProgressBar::chunk"
+       "{"
+       "background: yellow; "
+       "border-bottom-right-radius: 0px; "
+       "border-bottom-left-radius: 0px; "
+       "border: 1px solid black;"
+       "}");
+  else if(result > 50.00 && result <= 75.00)
+    m_ui.passphrase_strength_indicator->setStyleSheet
+      ("QProgressBar::chunk"
+       "{"
+       "background: orange; "
+       "border-bottom-right-radius: 0px; "
+       "border-bottom-left-radius: 0px; "
+       "border: 1px solid black;"
+       "}");
+  else
+    m_ui.passphrase_strength_indicator->setStyleSheet
+      ("QProgressBar::chunk"
+       "{"
+       "background: green; "
+       "border-bottom-right-radius: 0px; "
+       "border-bottom-left-radius: 0px; "
+       "border: 1px solid black;"
+       "}");
 }

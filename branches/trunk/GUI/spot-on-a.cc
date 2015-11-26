@@ -340,6 +340,7 @@ spoton::spoton(void):QMainWindow()
      arg(curl_version()).
      arg(GCRYPT_VERSION).
      arg(LIBSPOTON_VERSION_STR));
+  m_ui.passphrase_strength_indicator->setVisible(false);
   m_ui.statisticsBox->setVisible(false);
   m_ui.urlSettings->setVisible(true);
   m_ui.urlsBox->setVisible(false);
@@ -671,6 +672,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSetPassphrase(void)));
+  connect(m_ui.passphrase1,
+	  SIGNAL(textChanged(const QString &)),
+	  this,
+	  SLOT(slotPassphraseChanged(const QString &)));
   connect(m_ui.passphrase2,
 	  SIGNAL(returnPressed(void)),
 	  this,
