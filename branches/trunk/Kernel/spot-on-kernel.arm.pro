@@ -30,7 +30,8 @@ QMAKE_CLEAN     += ../Spot-On-Kernel ../../../libNTRU/*.so \
 QMAKE_DISTCLEAN += -r temp
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-			  -march=armv6 -mfloat-abi=hard -mfpu=vfp -pie -O3 \
+			  -march=armv6 -mfloat-abi=hard -mfpu=vfp \
+			  -mtune=native -pie -O3 \
 			  -Wall -Wcast-qual \
 			  -Wextra -Wl,-z,relro \
 			  -Woverloaded-virtual -Wpointer-arith \
