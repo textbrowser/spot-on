@@ -124,7 +124,8 @@ QReadWriteLock spoton_kernel::s_settingsMutex;
 ** Not pleasant! Please avoid this solution!
 */
 
-QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 20000
+QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
+						      << 20000
                                                       << 25000
                                                       << 50000
                                                       << 75000;
