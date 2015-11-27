@@ -1658,7 +1658,7 @@ void spoton::slotPassphraseChanged(const QString &text)
   else
     m_ui.passphrase_strength_indicator->setVisible(true);
 
-  double maximum = 1000.00;
+  double maximum = 500.00;
   double result = 0.0;
   spoton_pacify pacify(text.toStdString());
 
