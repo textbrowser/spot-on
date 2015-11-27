@@ -27,8 +27,8 @@ QMAKE_CLEAN     += Spot-On ../../libNTRU/*.so ../../libNTRU/src/*.o \
 		   ../../libSpotOn/test
 QMAKE_DISTCLEAN += -r temp
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-                          -pie \
-			  -Wall -Wcast-align -Wcast-qual \
+                          -march=armv6 -pie \
+			  -Wall -Wcast-qual \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
                           -Wstack-protector -Wstrict-overflow=5
