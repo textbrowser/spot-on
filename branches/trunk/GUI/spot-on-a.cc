@@ -5920,6 +5920,10 @@ void spoton::slotSetPassphrase(void)
       if(!m_settings.value("gui/initial_url_distillers_defined",
 			   false).toBool())
 	{
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	  m_sb.status->setText
+	    (tr("Initializing URL distillers. Please be patient."));
+	  m_sb.status->repaint();
 	  initializeUrlDistillers();
 
 	  QSettings settings;
@@ -5928,11 +5932,17 @@ void spoton::slotSetPassphrase(void)
 			    true);
 	  m_settings["gui/initial_url_distillers_defined"] = true;
 	  populateUrlDistillers();
+	  m_sb.status->clear();
+	  QApplication::restoreOverrideCursor();
 	}
 
       if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
 			   false).toBool())
 	{
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	  m_sb.status->setText
+	    (tr("Importing spot-on-neighbors.txt. Please be patient."));
+	  m_sb.status->repaint();
 	  importNeighbors("spot-on-neighbors.txt");
 
 	  QSettings settings;
@@ -5940,6 +5950,8 @@ void spoton::slotSetPassphrase(void)
 	  settings.setValue("gui/spot_on_neighbors_txt_processed",
 			    true);
 	  m_settings["gui/spot_on_neighbors_txt_processed"] = true;
+	  m_sb.status->clear();
+	  QApplication::restoreOverrideCursor();
 	}
 
       QMessageBox::information
