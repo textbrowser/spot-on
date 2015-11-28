@@ -1692,9 +1692,7 @@ void spoton_listener::slotNewConnection(void)
     }
 
   QString connectionName("");
-  QString country
-    (spoton_misc::
-     countryNameFromIPAddress(neighbor->peerAddress()));
+  QString country("Unknown");
   qint64 id = -1;
 
   {
