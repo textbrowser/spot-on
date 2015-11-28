@@ -13,7 +13,8 @@ CONFIG		+= qt release warn_on
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.
 
-DEFINES	+= SPOTON_LINKED_WITH_LIBGEOIP \
+DEFINES	+= SPOTON_GOLDBUG \
+	   SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
 	   SPOTON_SCTP_ENABLED
@@ -21,7 +22,7 @@ DEFINES	+= SPOTON_LINKED_WITH_LIBGEOIP \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN     += Spot-On ../../libNTRU/*.so ../../libNTRU/src/*.o \
+QMAKE_CLEAN     += GoldBug ../../libNTRU/*.so ../../libNTRU/src/*.o \
                    ../../libNTRU/src/*.s \
 		   ../../libSpotOn/*.o ../../libSpotOn/*.so \
 		   ../../libSpotOn/test
@@ -37,33 +38,33 @@ QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../../. GUI
 LIBS		+= -L../../libNTRU -L../../libSpotOn \
-		   -lGeoIP -lcrypto -lcurl \
-                   -lgcrypt -lgpg-error -lntru -lspoton -lssl
+		   -lGeoIP -lcrypto -lcurl -lgcrypt \
+		   -lgpg-error -lntru -lspoton -lssl
 PRE_TARGETDEPS = libntru.so libspoton.so
 OBJECTS_DIR = temp/obj
 UI_DIR = temp/ui
 MOC_DIR = temp/moc
 RCC_DIR = temp/rcc
 
-FORMS           = UI/adaptiveechoprompt.ui \
-		  UI/buzzpage.ui \
-		  UI/chatwindow.ui \
-		  UI/controlcenter.ui \
-		  UI/echo-key-share.ui \
-		  UI/encryptfile.ui \
-		  UI/forwardsecrecyalgorithmsselection.ui \
-		  UI/ipinformation.ui \
-		  UI/keyboard.ui \
-		  UI/listener-socket-options.ui \
-                  UI/logviewer.ui \
-		  UI/options.ui \
-                  UI/passwordprompt.ui \
-		  UI/poptastic-retrophone-settings.ui \
-		  UI/postgresqlconnect.ui \
-		  UI/rosetta.ui \
-                  UI/starbeamanalyzer.ui \
-		  UI/statusbar.ui \
-		  UI/unlock.ui
+FORMS           = GoldBug-UI/adaptiveechoprompt.ui \
+		  GoldBug-UI/buzzpage.ui \
+		  GoldBug-UI/chatwindow.ui \
+		  GoldBug-UI/controlcenter.ui \
+		  GoldBug-UI/echo-key-share.ui \
+		  GoldBug-UI/encryptfile.ui \
+		  GoldBug-UI/forwardsecrecyalgorithmsselection.ui \
+		  GoldBug-UI/ipinformation.ui \
+		  GoldBug-UI/keyboard.ui \
+		  GoldBug-UI/listener-socket-options.ui \
+                  GoldBug-UI/logviewer.ui \
+		  GoldBug-UI/options.ui \
+                  GoldBug-UI/passwordprompt.ui \
+		  GoldBug-UI/poptastic-retrophone-settings.ui \
+		  GoldBug-UI/postgresqlconnect.ui \
+		  GoldBug-UI/rosetta.ui \
+                  GoldBug-UI/starbeamanalyzer.ui \
+		  GoldBug-UI/statusbar.ui \
+		  GoldBug-UI/unlock.ui
 
 UI_HEADERS_DIR  = GUI
 
@@ -91,9 +92,9 @@ SOURCES		= Common/spot-on-crypt.cc \
 		  GUI/spot-on-chatwindow.cc \
 		  GUI/spot-on-d.cc \
 		  GUI/spot-on-e.cc \
-		  GUI/spot-on-f.cc \
 		  GUI/spot-on-echo-key-share.cc \
 		  GUI/spot-on-encryptfile.cc \
+		  GUI/spot-on-f.cc \
 		  GUI/spot-on-logviewer.cc \
 		  GUI/spot-on-reencode.cc \
 		  GUI/spot-on-rosetta.cc \
@@ -177,8 +178,8 @@ TRANSLATIONS    = Translations/spot-on_af.ts \
 RESOURCES	= Icons/icons.qrc \
 		  Translations/translations.qrc
 
-TARGET		= Spot-On
-PROJECTNAME	= Spot-On
+TARGET		= GoldBug
+PROJECTNAME	= GoldBug
 
 # Prevent qmake from stripping everything.
 
