@@ -112,14 +112,14 @@ public:
 
 	    while(b--)
 	      {
-		if (i == n)
+		if(i == n)
 		  {
 		    // Premature end of string.
 
 		    m_passphrase[j] = 0; /* XXX invalid input. */
 		    break;
 		  }
-		
+
 		c = static_cast<int> (passphrase.at(i++));
 
 		if((c & 0xc0) != 0x80)
