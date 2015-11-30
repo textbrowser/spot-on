@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>450</height>
+             <height>452</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>800</width>
-                <height>466</height>
+                <width>798</width>
+                <height>479</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -813,8 +813,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1027</width>
-             <height>570</height>
+             <width>986</width>
+             <height>575</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1912,7 +1912,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>450</height>
+             <height>452</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2554,8 +2554,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>271</width>
-                     <height>1425</height>
+                     <width>263</width>
+                     <height>1406</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3022,7 +3022,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>450</height>
+             <height>452</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3353,8 +3353,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>892</width>
-                  <height>434</height>
+                  <width>853</width>
+                  <height>424</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4081,7 +4081,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>450</height>
+             <height>452</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4157,8 +4157,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>813</width>
-                 <height>601</height>
+                 <width>798</width>
+                 <height>587</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5007,9 +5007,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-642</y>
-             <width>810</width>
-             <height>1092</height>
+             <y>-628</y>
+             <width>808</width>
+             <height>1080</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5949,16 +5949,6 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="label_92">
-                     <property name="text">
-                      <string>&amp;Key Size</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>signatureKeySize</cstring>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="0" column="1">
                     <widget class="QComboBox" name="encryptionKeySize">
                      <property name="currentIndex">
@@ -5994,6 +5984,75 @@
                      </item>
                     </widget>
                    </item>
+                   <item row="1" column="10">
+                    <widget class="QComboBox" name="keys">
+                     <property name="sizeAdjustPolicy">
+                      <enum>QComboBox::AdjustToContents</enum>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string notr="true">Chat</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string notr="true">E-Mail</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string notr="true">Poptastic</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string notr="true">Rosetta</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string notr="true">URL</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                   <item row="1" column="12">
+                    <widget class="QPushButton" name="delete_key">
+                     <property name="text">
+                      <string>Delete</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="2">
+                    <widget class="QLabel" name="label_46">
+                     <property name="text">
+                      <string>&amp;Signature</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>signatureKeyType</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="9">
+                    <widget class="QLabel" name="label_69">
+                     <property name="text">
+                      <string>Key &amp;Type</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>keys</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_92">
+                     <property name="text">
+                      <string>&amp;Key Size</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>signatureKeySize</cstring>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="1" column="3">
                     <widget class="QComboBox" name="signatureKeyType">
                      <property name="currentIndex">
@@ -6027,6 +6086,23 @@
                        <string>RSA</string>
                       </property>
                      </item>
+                    </widget>
+                   </item>
+                   <item row="0" column="2">
+                    <widget class="QLabel" name="label_45">
+                     <property name="text">
+                      <string>&amp;Encryption</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>encryptionKeyType</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="11">
+                    <widget class="QPushButton" name="regenerate">
+                     <property name="text">
+                      <string>Create</string>
+                     </property>
                     </widget>
                    </item>
                    <item row="1" column="1">
@@ -6067,68 +6143,6 @@
                      </item>
                     </widget>
                    </item>
-                   <item row="1" column="2">
-                    <widget class="QLabel" name="label_46">
-                     <property name="text">
-                      <string>&amp;Signature</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>signatureKeyType</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="10">
-                    <widget class="QComboBox" name="keys">
-                     <property name="sizeAdjustPolicy">
-                      <enum>QComboBox::AdjustToContents</enum>
-                     </property>
-                     <item>
-                      <property name="text">
-                       <string notr="true">Chat</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string notr="true">E-Mail</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string notr="true">Poptastic</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string notr="true">Rosetta</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string notr="true">URL</string>
-                      </property>
-                     </item>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QCheckBox" name="newKeys">
-                     <property name="toolTip">
-                      <string>If checked, new key pairs will be generated whenever the passphrase or question/answer is/are updated.</string>
-                     </property>
-                     <property name="text">
-                      <string>&amp;Key Size</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="9">
-                    <widget class="QLabel" name="label_69">
-                     <property name="text">
-                      <string>Key &amp;Type</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>keys</cstring>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="0" column="3">
                     <widget class="QComboBox" name="encryptionKeyType">
                      <property name="currentIndex">
@@ -6159,40 +6173,13 @@
                      </item>
                     </widget>
                    </item>
-                   <item row="0" column="2">
-                    <widget class="QLabel" name="label_45">
+                   <item row="0" column="0">
+                    <widget class="QCheckBox" name="newKeys">
+                     <property name="toolTip">
+                      <string>If checked, new key pairs will be generated whenever the passphrase or question/answer is/are updated.</string>
+                     </property>
                      <property name="text">
-                      <string>&amp;Encryption</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>encryptionKeyType</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="11">
-                    <widget class="QPushButton" name="regenerate">
-                     <property name="text">
-                      <string>Create</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="13">
-                    <spacer name="horizontalSpacer_47">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="1" column="12">
-                    <widget class="QPushButton" name="delete_key">
-                     <property name="text">
-                      <string>Delete</string>
+                      <string>&amp;Key Size</string>
                      </property>
                     </widget>
                    </item>
@@ -6249,8 +6236,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>810</width>
-             <height>516</height>
+             <width>808</width>
+             <height>526</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7260,8 +7247,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>450</height>
+             <width>808</width>
+             <height>454</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7798,7 +7785,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>450</height>
+             <height>452</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8010,7 +7997,7 @@
      <x>0</x>
      <y>0</y>
      <width>850</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

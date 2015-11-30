@@ -551,8 +551,8 @@ void spoton_kernel::postPoptastic(void)
 		{
 		  curl_payload_text.append
 		    (QString("Subject: %1\r\n").
-		     arg(spoton_crypt::sha512Hash(from.toLatin1(), &ok).toHex().
-			 constData()).toLatin1());
+		     arg(spoton_crypt::sha512Hash(bytes.simplified(), &ok).
+			 toHex().constData()).toLatin1());
 		  curl_payload_text.append("\r\n");
 		}
 	      else
@@ -1238,7 +1238,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
       QByteArray boundary;
       QByteArray from;
-      QByteArray hash;
+      QByteArray hash
+	(spoton_crypt::sha512Hash(message.mid(message.indexOf("content=")).
+				  simplified(), 0).toHex());
       QByteArray subject;
       QList<QByteArray> list(message.trimmed().split('\n'));
       QList<QByteArray> mList;
@@ -1263,10 +1265,6 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		    from = from.mid(from.lastIndexOf(" "));
 		    from = from.trimmed();
 		  }
-
-		bool ok = true;
-
-		hash = spoton_crypt::sha512Hash(from, &ok).toHex();
 	      }
 	  }
 	else if(list.value(i).toLower().startsWith("subject:"))
