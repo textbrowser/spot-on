@@ -609,7 +609,7 @@ void spoton::slotResetCertificate(void)
 
 	query.prepare("UPDATE neighbors SET "
 		      "certificate = ? "
-		      "WHERE OID = ? AND status = 'disconnected' AND "
+		      "WHERE OID = ? AND "
 		      "user_defined = 1");
 	query.bindValue
 	  (0, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
