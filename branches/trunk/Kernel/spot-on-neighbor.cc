@@ -2086,20 +2086,19 @@ void spoton_neighbor::slotConnected(void)
   else if(m_udpSocket)
     {
       if(m_isUserDefined)
-	if(!m_udpSocket->multicastSocket())
-	  {
-	    QHostAddress address(m_address);
+	{
+	  QHostAddress address(m_address);
 
-	    address.setScopeId(m_scopeId);
-	    m_udpSocket->initializeMulticast(address, m_port);
+	  address.setScopeId(m_scopeId);
+	  m_udpSocket->initializeMulticast(address, m_port);
 
-	    if(m_udpSocket->multicastSocket())
-	      connect(m_udpSocket->multicastSocket(),
-		      SIGNAL(readyRead(void)),
-		      this,
-		      SLOT(slotReadyRead(void)),
-		      Qt::UniqueConnection);
-	  }
+	  if(m_udpSocket->multicastSocket())
+	    connect(m_udpSocket->multicastSocket(),
+		    SIGNAL(readyRead(void)),
+		    this,
+		    SLOT(slotReadyRead(void)),
+		    Qt::UniqueConnection);
+	}
     }
 
   /*

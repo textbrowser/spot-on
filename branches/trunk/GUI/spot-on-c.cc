@@ -648,7 +648,12 @@ void spoton::slotTransportChanged(int index)
       m_ui.listenersSslControlString->setEnabled(index == 2);
       m_ui.permanentCertificate->setEnabled(index == 2);
       m_ui.recordIPAddress->setEnabled(index == 2);
-      m_ui.listenerScopeId->setEnabled(index != 0);
+
+      if(m_ui.ipv6Listener->isChecked())
+	m_ui.listenerScopeId->setEnabled(index != 0);
+      else
+	m_ui.listenerScopeId->setEnabled(false);
+
       m_ui.sslListener->setEnabled(index == 2);
     }
   else if(m_ui.neighborTransport == sender())
@@ -661,7 +666,12 @@ void spoton::slotTransportChanged(int index)
       m_ui.ipv4Neighbor->setEnabled(index != 0);
       m_ui.ipv6Neighbor->setEnabled(index != 0);
       m_ui.neighborKeySize->setEnabled(index == 2);
-      m_ui.neighborScopeId->setEnabled(index != 0);
+
+      if(m_ui.ipv6Neighbor->isChecked())
+	m_ui.neighborScopeId->setEnabled(index != 0);
+      else
+	m_ui.neighborScopeId->setEnabled(false);
+
       m_ui.neighborsSslControlString->setEnabled(index == 2);
 
       if(index == 0 || index == 1)
