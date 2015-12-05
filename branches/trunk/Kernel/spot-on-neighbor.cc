@@ -83,6 +83,7 @@ spoton_neighbor::spoton_neighbor
  const QString &sslControlString,
  const Priority priority,
  const int laneWidth,
+ const int passthrough,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
  QBluetoothSocket *socket,
 #endif
@@ -94,6 +95,7 @@ spoton_neighbor::spoton_neighbor
 		       laneWidth,
 		       spoton_common::LANE_WIDTH_MAXIMUM);
   m_bluetoothSocket = 0;
+  m_passthrough = passthrough;
   m_sctpSocket = 0;
   m_tcpSocket = 0;
   m_udpSocket = 0;
@@ -518,6 +520,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 				 const QString &sslControlString,
 				 const Priority priority,
 				 const int laneWidth,
+				 const int passthrough,
 				 QObject *parent):QThread(parent)
 {
   m_abort = 0;
@@ -558,6 +561,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 	   spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
   m_motd = motd;
   m_orientation = orientation;
+  m_passthrough = passthrough;
   m_peerCertificate = QSslCertificate(peerCertificate);
   m_port = port.toUShort();
   m_protocol = protocol;
@@ -1033,7 +1037,8 @@ void spoton_neighbor::slotTimeout(void)
 		      "ae_token_type, "
 		      "ssl_control_string, "
 		      "priority, "
-		      "lane_width "
+		      "lane_width, "
+		      "passthrough "
 		      "FROM neighbors WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -1197,6 +1202,7 @@ void spoton_neighbor::slotTimeout(void)
 			  setPriority(q);
 		      }
 
+		    m_passthrough = query.value(12).toInt();
 		    m_sslControlString = query.value(9).toString();
 
 		    if(m_sslControlString.isEmpty())
@@ -1596,7 +1602,25 @@ void spoton_neighbor::slotReadyRead(void)
 	 arg(m_port));
     }
 
-  if(!data.isEmpty() || m_udpSocket)
+  if(!data.isEmpty())
+    if(m_passthrough)
+      {
+	bool ok = true;
+
+	if(m_useAccounts.fetchAndAddOrdered(0))
+	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
+	    ok = false;
+
+	if(ok)
+	  {
+	    emit receivedMessage
+	      (data, m_id, QPair<QByteArray, QByteArray> ());
+	    emit resetKeepAlive();
+	    return;
+	  }
+      }
+
+  if(!data.isEmpty())
     {
       QReadLocker locker1(&m_maximumBufferSizeMutex);
       qint64 maximumBufferSize = m_maximumBufferSize;
@@ -2062,19 +2086,20 @@ void spoton_neighbor::slotConnected(void)
   else if(m_udpSocket)
     {
       if(m_isUserDefined)
-	{
-	  QHostAddress address(m_address);
+	if(!m_udpSocket->multicastSocket())
+	  {
+	    QHostAddress address(m_address);
 
-	  address.setScopeId(m_scopeId);
-	  m_udpSocket->initializeMulticast(address, m_port);
+	    address.setScopeId(m_scopeId);
+	    m_udpSocket->initializeMulticast(address, m_port);
 
-	  if(m_udpSocket->multicastSocket())
-	    connect(m_udpSocket->multicastSocket(),
-		    SIGNAL(readyRead(void)),
-		    this,
-		    SLOT(slotReadyRead(void)),
-		    Qt::UniqueConnection);
-	}
+	    if(m_udpSocket->multicastSocket())
+	      connect(m_udpSocket->multicastSocket(),
+		      SIGNAL(readyRead(void)),
+		      this,
+		      SLOT(slotReadyRead(void)),
+		      Qt::UniqueConnection);
+	  }
     }
 
   /*
@@ -4916,7 +4941,9 @@ void spoton_neighbor::slotError(const QString &method,
 
 void spoton_neighbor::slotSendCapabilities(void)
 {
-  if(!readyToWrite())
+  if(m_passthrough)
+    return;
+  else if(!readyToWrite())
     return;
 
   QByteArray message;
@@ -4939,7 +4966,9 @@ void spoton_neighbor::slotSendCapabilities(void)
 
 void spoton_neighbor::slotSendMOTD(void)
 {
-  if(state() != QAbstractSocket::ConnectedState)
+  if(m_passthrough)
+    return;
+  else if(state() != QAbstractSocket::ConnectedState)
     return;
 
   QByteArray message(spoton_send::message0070(m_motd.toUtf8()));
@@ -6962,10 +6991,35 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
   if(datagram.isEmpty())
     return;
 
-  QWriteLocker locker(&m_dataMutex);
+  if(m_passthrough)
+    {
+      bool ok = true;
 
-  m_data.append(datagram);
-  locker.unlock();
+      if(m_useAccounts.fetchAndAddOrdered(0))
+	if(!m_accountAuthenticated.fetchAndAddOrdered(0))
+	  ok = false;
+
+      if(ok)
+	{
+	  emit receivedMessage
+	    (datagram, m_id, QPair<QByteArray, QByteArray> ());
+	  emit resetKeepAlive();
+	  return;
+	}
+    }
+
+  QReadLocker locker1(&m_maximumBufferSizeMutex);
+  qint64 maximumBufferSize = m_maximumBufferSize;
+
+  locker1.unlock();
+
+  QWriteLocker locker2(&m_dataMutex);
+  int length = static_cast<int> (maximumBufferSize) - m_data.length();
+
+  if(length > 0)
+    m_data.append(datagram.mid(0, length));
+
+  locker2.unlock();
   emit newData();
 }
 

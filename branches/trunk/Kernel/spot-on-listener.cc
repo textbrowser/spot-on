@@ -182,6 +182,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				 const QString &motd,
 				 const QString &sslControlString,
 				 const int laneWidth,
+				 const int passthrough,
 				 QObject *parent):QObject(parent)
 {
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
@@ -247,6 +248,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   m_motd = motd;
   m_networkInterface = 0;
   m_orientation = orientation;
+  m_passthrough = passthrough;
   m_port = m_externalPort = port.toUShort();
   m_privateKey = privateKey;
   m_publicKey = publicKey;
@@ -464,7 +466,8 @@ void spoton_listener::slotTimeout(void)
 		      "maximum_content_length, "
 		      "motd, "
 		      "ssl_control_string, "
-		      "lane_width "
+		      "lane_width, "
+		      "passthrough "
 		      "FROM listeners WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -491,6 +494,7 @@ void spoton_listener::slotTimeout(void)
 			 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
 		m_motd = QString::fromUtf8
 		  (query.value(6).toByteArray()).trimmed();
+		m_passthrough = query.value(9).toInt();
 		m_sslControlString = query.value(7).toString().trimmed();
 		m_useAccounts = static_cast<int>
 		  (query.value(3).toLongLong());
@@ -749,6 +753,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	 m_sslControlString,
 	 QThread::HighPriority,
 	 m_laneWidth,
+	 m_passthrough,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 	 0,
 #endif
@@ -892,9 +897,10 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	       "orientation, "
 	       "motd, "
 	       "ssl_control_string, "
-	       "lane_width) "
+	       "lane_width, "
+	       "passthrough) "
 	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue(0, m_address);
 	    query.bindValue(1, m_port);
 
@@ -1074,6 +1080,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	      query.bindValue(30, "N/A");
 
 	    query.bindValue(31, m_laneWidth);
+	    query.bindValue(32, m_passthrough);
 
 	    if(ok)
 	      if(query.exec())
@@ -1644,6 +1651,7 @@ void spoton_listener::slotNewConnection(void)
 	 m_sslControlString,
 	 QThread::HighPriority,
 	 m_laneWidth,
+	 m_passthrough,
 	 socket,
 	 this);
     }
@@ -1741,9 +1749,10 @@ void spoton_listener::slotNewConnection(void)
 	       "orientation, "
 	       "motd, "
 	       "ssl_control_string, "
-	       "lane_width) "
+	       "lane_width, "
+	       "passthrough) "
 	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue(0, m_address);
 	    query.bindValue(1, m_port);
 	    query.bindValue
@@ -1901,6 +1910,7 @@ void spoton_listener::slotNewConnection(void)
 	    query.bindValue(29, m_motd);
 	    query.bindValue(30, "N/A");
 	    query.bindValue(31, m_laneWidth);
+	    query.bindValue(32, m_passthrough);
 
 	    if(ok)
 	      if(query.exec())

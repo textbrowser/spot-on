@@ -186,6 +186,7 @@ class spoton_listener: public QObject
 		  const QString &motd,
 		  const QString &sslControlString,
 		  const int laneWidth,
+		  const int passthrough,
 		  QObject *parent);
   ~spoton_listener();
   QHostAddress externalAddress(void) const;
@@ -222,6 +223,7 @@ class spoton_listener: public QObject
   int m_keySize;
   int m_laneWidth;
   int m_maximumClients;
+  int m_passthrough;
   qint64 m_id;
   qint64 m_maximumBufferSize;
   qint64 m_maximumContentLength;

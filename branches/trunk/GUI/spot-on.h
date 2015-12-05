@@ -786,6 +786,7 @@ class spoton: public QMainWindow
   void slotPassphraseAuthenticateRadioToggled(bool state);
   void slotPassphraseChanged(const QString &text);
   void slotPassphraseRadioToggled(bool state);
+  void slotPassthroughCheckChange(bool state);
   void slotPoptasticSettingsReset(bool state);
   void slotPoptasticSettingsReset(void);
   void slotPopulateBuzzFavorites(void);

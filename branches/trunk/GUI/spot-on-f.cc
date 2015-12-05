@@ -1702,3 +1702,46 @@ void spoton::slotPassphraseChanged(const QString &text)
        "border: 1px solid black;"
        "}");
 }
+
+void spoton::slotPassthroughCheckChange(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    if(checkBox->property("table") == "listeners")
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "listeners.db");
+    else
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(checkBox->property("table") == "listeners")
+	  query.prepare("UPDATE listeners SET "
+			"passthrough = ? "
+			"WHERE OID = ?");
+	else
+	  query.prepare("UPDATE neighbors SET "
+			"passthrough = ? "
+			"WHERE OID = ?");
+
+	query.bindValue(0, state ? 1 : 0);
+	query.bindValue(1, checkBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}

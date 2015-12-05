@@ -372,7 +372,8 @@ void spoton_misc::prepareDatabases(void)
 		   "orientation TEXT NOT NULL, "
 		   "lane_width INTEGER NOT NULL DEFAULT %3 "
 		   "CHECK (lane_width > 0), "
-		   "motd TEXT NOT NULL DEFAULT 'Welcome to Spot-On.')").
+		   "motd TEXT NOT NULL DEFAULT 'Welcome to Spot-On.', "
+		   "passthrough INTEGER NOT NULL DEFAULT 0)").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
 	   arg(spoton_common::LANE_WIDTH_DEFAULT));
@@ -380,6 +381,8 @@ void spoton_misc::prepareDatabases(void)
 			   "ADD lane_width INTEGER NOT NULL DEFAULT %1 "
 			   "CHECK (lane_width > 0)").
 		   arg(spoton_common::LANE_WIDTH_DEFAULT));
+	query.exec("ALTER TABLE listeners "
+		   "passthrough INTEGER NOT NULL DEFAULT 0");
 	query.exec("CREATE TABLE IF NOT EXISTS listeners_accounts ("
 		   "account_name TEXT NOT NULL, "
 		   "account_name_hash TEXT NOT NULL, " // Keyed hash.
@@ -510,6 +513,7 @@ void spoton_misc::prepareDatabases(void)
 					  ** both cipher and hash
 					  ** algorithm information.
 					  */
+		   "passthrough INTEGER NOT NULL DEFAULT 0, "
 		   "priority INTEGER NOT NULL DEFAULT 4 CHECK "
 		   "(priority >= 0 AND priority <= 7))"). /*
 							  ** High
@@ -522,6 +526,8 @@ void spoton_misc::prepareDatabases(void)
 			   "ADD lane_width INTEGER NOT NULL DEFAULT %1 "
 			   "CHECK (lane_width > 0)").
 		   arg(spoton_common::LANE_WIDTH_DEFAULT));
+	query.exec("ALTER TABLE neighbors "
+		   "ADD passthrough INTEGER NOT NULL DEFAULT 0");
       }
 
     db.close();

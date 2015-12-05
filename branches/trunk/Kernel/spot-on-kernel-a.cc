@@ -1041,7 +1041,8 @@ void spoton_kernel::prepareListeners(void)
 		      "motd, "                   // 16
 		      "ssl_control_string, "     // 17
 		      "lane_width, "             // 18
-		      "OID "                     // 19
+		      "passthrough, "            // 19
+		      "OID "                     // 20
 		      "FROM listeners"))
 	  while(query.next())
 	    {
@@ -1174,6 +1175,7 @@ void spoton_kernel::prepareListeners(void)
 						   toByteArray()).trimmed(),
 				 query.value(17).toString(),
 				 query.value(18).toInt(),
+				 query.value(19).toInt(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)
@@ -1307,6 +1309,7 @@ void spoton_kernel::prepareNeighbors(void)
 		      "ssl_control_string, "
 		      "priority, "
 		      "lane_width, "
+		      "passthrough, "
 		      "OID FROM neighbors"))
 	  while(query.next())
 	    {
@@ -1351,6 +1354,8 @@ void spoton_kernel::prepareNeighbors(void)
 			else if(i == 24) // priority
 			  list.append(query.value(i).toInt());
 			else if(i == 25) // lane_width
+			  list.append(query.value(i).toInt());
+			else if(i == 26) // passthrough
 			  list.append(query.value(i).toInt());
 			else
 			  {
@@ -1461,6 +1466,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 list.value(23).toString(),
 				 QThread::Priority(list.value(24).toInt()),
 				 list.value(25).toInt(),
+				 list.value(26).toInt(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)

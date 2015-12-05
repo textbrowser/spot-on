@@ -238,6 +238,7 @@ class spoton_neighbor: public QThread
 		  const QString &sslControlString,
 		  const Priority priority,
 		  const int laneWidth,
+		  const int passthrough,
 		  QObject *parent);
   spoton_neighbor(
 #if QT_VERSION < 0x050000
@@ -262,6 +263,7 @@ class spoton_neighbor: public QThread
 		  const QString &sslControlString,
 		  const Priority priority,
 		  const int laneWidth,
+		  const int passthrough,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 		  QBluetoothSocket *socket,
 #endif
@@ -293,6 +295,7 @@ class spoton_neighbor: public QThread
   QAtomicInt m_abort;
   QAtomicInt m_accountAuthenticated;
   QAtomicInt m_kernelInterfaces;
+  QAtomicInt m_passthrough;
   QAtomicInt m_useAccounts;
   QByteArray m_accountName;
   QByteArray m_accountPassword;

@@ -3479,6 +3479,7 @@ void spoton::slotPopulateListeners(void)
 		      "orientation, "
 		      "ssl_control_string, "
 		      "lane_width, "
+		      "passthrough, "
 		      "OID "
 		      "FROM listeners WHERE status_control <> 'deleted'"))
 	  {
@@ -3536,7 +3537,8 @@ void spoton::slotPopulateListeners(void)
 		      "Share Address: %11\n"
 		      "Orientation: %12\n"
 		      "SSL Control String: %13\n"
-		      "Lane Width: %14")).
+		      "Lane Width: %14\n"
+		      "Passthrough: %15")).
 		  arg(query.value(1).toString().toLower()).
 		  arg(query.value(2).toString()).
 		  arg(crypt->
@@ -3586,7 +3588,8 @@ void spoton::slotPopulateListeners(void)
 						  &ok).
 		      constData()).
 		  arg(query.value(19).toString()).
-		  arg(query.value(20).toInt());
+		  arg(query.value(20).toInt()).
+		  arg(query.value(21).toInt());
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
@@ -3900,6 +3903,24 @@ void spoton::slotPopulateListeners(void)
 				this,
 				SLOT(slotLaneWidthChanged(int)));
 		      }
+		    else if(i == 21) // Passthrough
+		      {
+			QCheckBox *check = new QCheckBox();
+
+			if(query.value(i).toLongLong())
+			  check->setChecked(true);
+			else
+			  check->setChecked(false);
+
+			check->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			check->setProperty("table", "listeners");
+			connect(check,
+				SIGNAL(toggled(bool)),
+				this,
+				SLOT(slotPassthroughCheckChange(bool)));
+			m_ui.listeners->setCellWidget(row, i, check);
+		      }
 		    else
 		      {
 			if((i >= 3 && i <= 7) ||
@@ -4144,6 +4165,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "ssl_control_string, "
 		      "priority, "
 		      "lane_width, "
+		      "passthrough, "
 		      "OID "
 		      "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
@@ -4254,7 +4276,8 @@ void spoton::slotPopulateNeighbors(void)
 		      "Orientation: %23\n"
 		      "SSL Control String: %24\n"
 		      "Priority: %25\n"
-		      "Lane Width: %26")).
+		      "Lane Width: %26\n"
+		      "Passthrough: %27")).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
@@ -4362,7 +4385,8 @@ void spoton::slotPopulateNeighbors(void)
 		      constData()).
 		  arg(query.value(34).toString()).
 		  arg(priority).
-		  arg(locale.toString(query.value(36).toInt()));
+		  arg(locale.toString(query.value(36).toInt())).
+		  arg(query.value(37).toInt());
 
 		QCheckBox *check = 0;
 
@@ -4386,6 +4410,13 @@ void spoton::slotPopulateNeighbors(void)
 			this,
 			SLOT(slotNeighborCheckChange(bool)));
 		m_ui.neighbors->setCellWidget(row, 0, check);
+
+		{
+		  QTableWidgetItem *item = new QTableWidgetItem
+		    (QString::number(query.value(0).toLongLong()));
+
+		  m_ui.neighbors->setItem(row, 0, item);
+		}
 
 		for(int i = 1; i < query.record().count(); i++)
 		  {
@@ -4483,6 +4514,11 @@ void spoton::slotPopulateNeighbors(void)
 				this,
 				SLOT(slotNeighborMaximumChanged(int)));
 			m_ui.neighbors->setCellWidget(row, i, box);
+
+			QTableWidgetItem *item = new QTableWidgetItem
+			  (QString::number(box->value()));
+
+			m_ui.neighbors->setItem(row, i, item);
 		      }
 		    else if(i == 19) // uptime
 		      item = new QTableWidgetItem
@@ -4577,6 +4613,34 @@ void spoton::slotPopulateNeighbors(void)
 				SIGNAL(currentIndexChanged(int)),
 				this,
 				SLOT(slotLaneWidthChanged(int)));
+
+			QTableWidgetItem *item = new QTableWidgetItem
+			  (box->currentText());
+
+			m_ui.neighbors->setItem(row, i, item);
+		      }
+		    else if(i == 37) // Passthrough
+		      {
+			QCheckBox *check = new QCheckBox();
+
+			if(query.value(i).toLongLong())
+			  check->setChecked(true);
+			else
+			  check->setChecked(false);
+
+			check->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			check->setProperty("table", "neighbors");
+			connect(check,
+				SIGNAL(toggled(bool)),
+				this,
+				SLOT(slotPassthroughCheckChange(bool)));
+			m_ui.neighbors->setCellWidget(row, i, check);
+
+			QTableWidgetItem *item = new QTableWidgetItem
+			  (QString::number(query.value(i).toLongLong()));
+
+			m_ui.neighbors->setItem(row, i, item);
 		      }
 		    else
 		      item = new QTableWidgetItem
