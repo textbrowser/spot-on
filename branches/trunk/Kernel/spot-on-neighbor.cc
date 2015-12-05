@@ -1620,7 +1620,7 @@ void spoton_neighbor::slotReadyRead(void)
 	  }
       }
 
-  if(!data.isEmpty())
+  if(!data.isEmpty() || m_udpSocket)
     {
       QReadLocker locker1(&m_maximumBufferSizeMutex);
       qint64 maximumBufferSize = m_maximumBufferSize;
