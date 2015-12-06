@@ -111,6 +111,8 @@ QMultiHash<qint64,
 QMultiMap<uint, QByteArray> spoton_kernel::s_messagingCacheLookup;
 QList<QList<QByteArray> > spoton_kernel::s_institutionKeys;
 QList<QPair<QByteArray, QByteArray> > spoton_kernel::s_adaptiveEchoPairs;
+QPair<quint64, quint64> spoton_kernel::s_totalBytesReadWritten =
+  QPair<quint64, quint64> (0, 0);
 QReadWriteLock spoton_kernel::s_adaptiveEchoPairsMutex;
 QReadWriteLock spoton_kernel::s_buzzKeysMutex;
 QReadWriteLock spoton_kernel::s_emailRequestCacheMutex;
@@ -119,6 +121,7 @@ QReadWriteLock spoton_kernel::s_institutionKeysMutex;
 QReadWriteLock spoton_kernel::s_institutionLastModificationTimeMutex;
 QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
+QReadWriteLock spoton_kernel::s_totalBytesReadWrittenMutex;
 
 /*
 ** Not pleasant! Please avoid this solution!
@@ -4754,7 +4757,7 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 		      "VALUES ('Congestion Container(s) Approximate "
 		      "MiB Consumed', ?)");
 	query.bindValue
-	  (0, QString("%1 MiB").arg(locale.toString(size / 1024)));
+	  (0, QString("%1 MiB").arg(locale.toString(size / (1024 * 1024))));
 	query.exec();
 	v2 = 2 * qMax(1, setting("gui/congestionCost", 10000).toInt());
 	query.prepare
@@ -4799,22 +4802,36 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
+		      "VALUES ('Total MiB Read / Written', ?)");
+
+	QReadLocker locker4(&s_totalBytesReadWrittenMutex);
+
+	query.bindValue
+	  (0, QString("%1 / %2 MiB").
+	   arg(locale.
+	       toString(s_totalBytesReadWritten.first / (1024 * 1024))).
+	   arg(locale.
+	       toString(s_totalBytesReadWritten.second / (1024 * 1024))));
+	locker4.unlock();
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
 		      "VALUES ('Total URLs Processed', ?)");
 
-	QReadLocker locker4(&m_urlsProcessedMutex);
+	QReadLocker locker5(&m_urlsProcessedMutex);
 
 	query.bindValue
 	  (0, QString("%1 URLs").arg(locale.toString(m_urlsProcessed)));
-	locker4.unlock();
+	locker5.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('URL Container Size', ?)");
 
-	QReadLocker locker5(&m_urlListMutex);
+	QReadLocker locker6(&m_urlListMutex);
 
 	query.bindValue(0, locale.toString(m_urlList.size()));
-	locker5.unlock();
+	locker6.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "

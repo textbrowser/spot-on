@@ -3662,7 +3662,7 @@ void spoton::importNeighbors(const QString &filePath)
 
 	if(file.open(QIODevice::ReadOnly))
 	  {
-	    QByteArray bytes(1024, 0);
+	    QByteArray bytes(2048, 0);
 	    qint64 rc = 0;
 
 	    while((rc = file.readLine(bytes.data(),

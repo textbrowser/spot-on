@@ -5224,7 +5224,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	}
       else
 	{
-	  u_char option = static_cast<u_char> (loop.toChar().toAscii());
+	  u_char option = static_cast<u_char> (loop.toChar().toLatin1());
 
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IP, IP_MULTICAST_LOOP, &option,

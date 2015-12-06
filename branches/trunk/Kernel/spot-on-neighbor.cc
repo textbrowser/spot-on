@@ -1586,6 +1586,13 @@ void spoton_neighbor::slotReadyRead(void)
 
   m_bytesRead += static_cast<quint64> (data.length());
 
+  {
+    QWriteLocker locker(&spoton_kernel::s_totalBytesReadWrittenMutex);
+
+    spoton_kernel::s_totalBytesReadWritten.first += static_cast<quint64>
+      (data.length());
+  }
+
   if(m_abort.fetchAndAddOrdered(0))
     return;
 
@@ -6613,6 +6620,14 @@ void spoton_neighbor::addToBytesWritten(const int bytesWritten)
   QWriteLocker locker(&m_bytesWrittenMutex);
 
   m_bytesWritten += static_cast<quint64> (qAbs(bytesWritten));
+  locker.unlock();
+
+  {
+    QWriteLocker locker(&spoton_kernel::s_totalBytesReadWrittenMutex);
+
+    spoton_kernel::s_totalBytesReadWritten.second +=
+      static_cast<quint64> (qAbs(bytesWritten));
+  }
 }
 
 void spoton_neighbor::slotSendAccountInformation(void)
