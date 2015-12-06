@@ -69,6 +69,7 @@ FORMS           = GoldBug-UI/adaptiveechoprompt.ui \
 		  GoldBug-UI/postgresqlconnect.ui \
 		  GoldBug-UI/rosetta.ui \
                   GoldBug-UI/starbeamanalyzer.ui \
+		  GoldBug-UI/statisticswindow.ui \
 		  GoldBug-UI/statusbar.ui \
 		  GoldBug-UI/unlock.ui
 

@@ -69,6 +69,7 @@ FORMS           = UI/adaptiveechoprompt.ui \
 		  UI/postgresqlconnect.ui \
 		  UI/rosetta.ui \
                   UI/starbeamanalyzer.ui \
+		  UI/statisticswindow.ui \
 		  UI/statusbar.ui \
 		  UI/unlock.ui
 
