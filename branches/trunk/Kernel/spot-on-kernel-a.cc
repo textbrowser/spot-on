@@ -4755,9 +4755,9 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Congestion Container(s) Approximate "
-		      "MiB Consumed', ?)");
+		      "KiB Consumed', ?)");
 	query.bindValue
-	  (0, QString("%1 MiB").arg(locale.toString(size / (1024 * 1024))));
+	  (0, QString("%1 KiB").arg(locale.toString(size / 1024)));
 	query.exec();
 	v2 = 2 * qMax(1, setting("gui/congestionCost", 10000).toInt());
 	query.prepare
