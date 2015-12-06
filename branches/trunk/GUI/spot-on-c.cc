@@ -743,20 +743,21 @@ void spoton::slotPopulateKernelStatistics(void)
 
     if(db.open())
       {
+	m_statisticsUi.view->setSortingEnabled(false);
 	m_ui.kernelStatistics->setSortingEnabled(false);
-	m_ui.kernelStatistics->clearContents();
-	m_ui.kernelStatistics->setRowCount(0);
 
 	QSqlQuery query(db);
 	QWidget *focusWidget = QApplication::focusWidget();
 	int totalRows = 0;
 
 	query.setForwardOnly(true);
+	m_statisticsModel->removeRows
+	  (0, m_statisticsModel->rowCount());
 	query.exec("PRAGMA read_uncommitted = True");
 
 	if(query.exec("SELECT COUNT(*) FROM kernel_statistics"))
 	  if(query.next())
-	    m_ui.kernelStatistics->setRowCount(query.value(0).toInt());
+	    m_statisticsModel->setRowCount(query.value(0).toInt());
 
 	if(query.exec("SELECT statistic, value FROM kernel_statistics "
 		      "ORDER BY statistic"))
@@ -764,20 +765,18 @@ void spoton::slotPopulateKernelStatistics(void)
 	    int row = 0;
 
 	    while(query.next() &&
-		  totalRows < m_ui.kernelStatistics->rowCount())
+		  totalRows < m_statisticsModel->rowCount())
 	      {
 		totalRows += 1;
 
-		QTableWidgetItem *item = new QTableWidgetItem
+		QStandardItem *item = new QStandardItem
 		  (query.value(0).toString());
 
-		item->setFlags
-		  (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		m_ui.kernelStatistics->setItem(row, 0, item);
-		item = new QTableWidgetItem(query.value(1).toString());
-		item->setFlags
-		  (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		m_ui.kernelStatistics->setItem(row, 1, item);
+		item->setEditable(false);
+		m_statisticsModel->setItem(row, 0, item);
+		item = new QStandardItem(query.value(1).toString());
+		item->setEditable(false);
+		m_statisticsModel->setItem(row, 1, item);
 
 		if(query.value(0).toString().toLower().
 		   contains("congestion container"))
@@ -800,7 +799,10 @@ void spoton::slotPopulateKernelStatistics(void)
 	      }
 	  }
 
-	m_ui.kernelStatistics->setRowCount(totalRows);
+	m_statisticsModel->setRowCount(totalRows);
+	m_statisticsUi.view->setSortingEnabled(true);
+	m_statisticsUi.view->resizeColumnToContents(0);
+	m_statisticsUi.view->horizontalHeader()->setStretchLastSection(true);
 	m_ui.kernelStatistics->setSortingEnabled(true);
 	m_ui.kernelStatistics->resizeColumnToContents(0);
 	m_ui.kernelStatistics->horizontalHeader()->
@@ -1456,6 +1458,7 @@ void spoton::slotPopulateStars(void)
 	      row += 1;
 	    }
 
+	m_starbeamReceivedModel->setRowCount(totalRows);
 	m_ui.received->setRowCount(totalRows);
 	m_ui.received->setSortingEnabled(true);
 

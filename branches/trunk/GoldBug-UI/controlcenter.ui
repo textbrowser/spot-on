@@ -5057,7 +5057,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>634</width>
-             <height>352</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6310,7 +6310,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>806</width>
+             <width>771</width>
              <height>1304</height>
             </rect>
            </property>
@@ -7020,7 +7020,7 @@ QPushButton:pressed {
                      <number>5</number>
                     </property>
                     <item>
-                     <widget class="QTableWidget" name="kernelStatistics">
+                     <widget class="QTableView" name="kernelStatistics">
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
@@ -7045,22 +7045,9 @@ QPushButton:pressed {
                       <property name="sortingEnabled">
                        <bool>true</bool>
                       </property>
-                      <attribute name="horizontalHeaderDefaultSectionSize">
+                      <attribute name="horizontalHeaderMinimumSectionSize">
                        <number>150</number>
                       </attribute>
-                      <attribute name="horizontalHeaderStretchLastSection">
-                       <bool>true</bool>
-                      </attribute>
-                      <column>
-                       <property name="text">
-                        <string>Statistic</string>
-                       </property>
-                      </column>
-                      <column>
-                       <property name="text">
-                        <string>Value</string>
-                       </property>
-                      </column>
                      </widget>
                     </item>
                    </layout>

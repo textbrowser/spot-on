@@ -293,12 +293,17 @@ spoton::spoton(void):QMainWindow()
   m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, this);
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(this);
   m_starbeamReceivedModel = new QStandardItemModel(this);
+  m_statisticsModel = new QStandardItemModel(this);
 
   QStringList list;
 
   list << tr("Percent Received") << tr("File");
   m_starbeamReceivedModel->setHorizontalHeaderLabels(list);
   m_starsLastModificationTime = QDateTime();
+  list.clear();
+  list << tr("Statistic") << tr("Value");
+  m_statisticsModel->setHorizontalHeaderLabels(list);
+  list.clear();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
 #if SPOTON_GOLDBUG == 0
@@ -391,6 +396,9 @@ spoton::spoton(void):QMainWindow()
   m_optionsWindow = new QMainWindow(this);
   m_statisticsWindow = new QMainWindow(this);
   m_optionsUi.setupUi(m_optionsWindow);
+  m_statisticsUi.setupUi(m_statisticsWindow);
+  m_statisticsUi.view->setModel(m_statisticsModel);
+  m_ui.kernelStatistics->setModel(m_statisticsModel);
   m_optionsWindow->setWindowTitle
     (tr("%1: Options").arg(SPOTON_APPLICATION_NAME));
   m_poptasticRetroPhoneDialog = new QDialog(this);

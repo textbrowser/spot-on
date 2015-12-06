@@ -463,6 +463,7 @@ class spoton: public QMainWindow
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
   QStandardItemModel *m_starbeamReceivedModel;
+  QStandardItemModel *m_statisticsModel;
   QString m_urlQuery;
   QTimer m_buzzStatusTimer;
   QTimer m_chatInactivityTimer;
