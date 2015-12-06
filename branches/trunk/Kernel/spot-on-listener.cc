@@ -1527,7 +1527,90 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
       else
 	flags |= QUdpSocket::DontShareAddress;
 
-      return m_udpServer->bind(QHostAddress(address), port, flags);
+      bool ok = m_udpServer->bind(QHostAddress(address), port, flags);
+
+      if(ok)
+	if(spoton_misc::isMulticastAddress(QHostAddress(address)))
+	  {
+#if QT_VERSION >= 0x040800
+	    if(!m_udpServer->joinMulticastGroup(QHostAddress(address)))
+	      {
+		ok = false;
+		spoton_misc::logError
+		  (QString("spoton_listener(): listen(): "
+			   "joinMulticastGroup() failure for %1:%2.").
+		   arg(address).arg(port));
+	      }
+	    else
+	      m_udpServer->setSocketOption
+		(QAbstractSocket::MulticastLoopbackOption, 0);
+#else
+	    if(QHostAddress(address).protocol() ==
+	       QAbstractSocket::IPv4Protocol)
+	      {
+		ip_mreq mreq4;
+
+		memset(&mreq4, 0, sizeof(mreq4));
+		mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
+		mreq4.imr_multiaddr.s_addr = htonl
+		  (QHostAddress(address).toIPv4Address());
+
+		if(setsockopt(m_udpServer->socketDescriptor(),
+			      IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq4,
+			      sizeof(mreq4)) == -1)
+		  {
+		    ok = false;
+		    spoton_misc::logError
+		      (QString("spoton_listener::listener(): "
+			       "setsockopt() failure for %1:%2.").
+		       arg(address).arg(port));
+		  }
+		else
+		  {
+		    u_char option = 0;
+
+		    setsockopt
+		      (m_udpServer->socketDescriptor(),
+		       IPPROTO_IP, IP_MULTICAST_LOOP, &option,
+		       sizeof(option));
+		  }
+	      }
+#ifndef Q_OS_OS2
+	    else if(QHostAddress(address).protocol() ==
+		    QAbstractSocket::IPv6Protocol)
+	      {
+		Q_IPV6ADDR ip6 = QHostAddress(address).toIPv6Address();
+		ipv6_mreq mreq6;
+
+		memset(&mreq6, 0, sizeof(mreq6));
+		memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
+		mreq6.ipv6mr_interface = 0;
+
+		if(setsockopt(m_udpServer->socketDescriptor(),
+			      IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6,
+			      sizeof(mreq6)) == -1)
+		  {
+		    ok = false;
+		    spoton_misc::logError
+		      (QString("spoton_listener::listener(): "
+			       "setsockopt() failure for %1:%2.").
+		       arg(address).arg(port));
+		  }
+		else
+		  {
+		    u_int option = 0;
+
+		    setsockopt
+		      (m_udpServer->socketDescriptor(),
+		       IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option,
+		       sizeof(option));
+		  }
+	      }
+#endif
+#endif
+	  }
+
+      return ok;
     }
   else
     return false;
