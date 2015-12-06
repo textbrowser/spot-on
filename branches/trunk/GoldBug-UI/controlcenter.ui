@@ -1234,8 +1234,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>559</width>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2789,8 +2789,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>1817</height>
+             <width>468</width>
+             <height>1833</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -10647,6 +10647,7 @@ border-style: inset;
     <addaction name="action_Minimal_Display"/>
     <addaction name="action_Options"/>
     <addaction name="action_Poptastic_Settings"/>
+    <addaction name="action_Statistics_Window"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -10807,6 +10808,14 @@ border-style: inset;
   <action name="action_Purge_Ephemeral_Keys">
    <property name="text">
     <string>Purge &amp;Ephemeral Keys</string>
+   </property>
+  </action>
+  <action name="action_Statistics_Window">
+   <property name="text">
+    <string>&amp;Statistics Window</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

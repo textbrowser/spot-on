@@ -419,7 +419,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>802</width>
+                <width>392</width>
                 <height>482</height>
                </rect>
               </property>
@@ -1911,8 +1911,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>640</width>
+             <height>405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2559,7 +2559,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>240</width>
+                     <width>249</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -3026,8 +3026,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>361</width>
+             <height>225</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3363,7 +3363,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>814</width>
+                  <width>732</width>
                   <height>458</height>
                  </rect>
                 </property>
@@ -4090,8 +4090,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4167,8 +4167,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>802</width>
-                 <height>602</height>
+                 <width>713</width>
+                 <height>619</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5018,7 +5018,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>711</width>
              <height>1134</height>
             </rect>
            </property>
@@ -6246,7 +6246,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>476</width>
              <height>544</height>
             </rect>
            </property>
@@ -7257,7 +7257,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>653</width>
              <height>453</height>
             </rect>
            </property>
@@ -7794,8 +7794,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>241</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8028,6 +8028,7 @@
     <addaction name="action_Minimal_Display"/>
     <addaction name="action_Options"/>
     <addaction name="action_Poptastic_Settings"/>
+    <addaction name="action_Statistics_Window"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -8188,6 +8189,14 @@
   <action name="action_Purge_Ephemeral_Keys">
    <property name="text">
     <string>Purge &amp;Ephemeral Keys</string>
+   </property>
+  </action>
+  <action name="action_Statistics_Window">
+   <property name="text">
+    <string>&amp;Statistics Window</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

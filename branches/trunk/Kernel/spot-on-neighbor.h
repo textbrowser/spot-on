@@ -121,16 +121,23 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 
 #if QT_VERSION >= 0x040800
 	if(!m_multicastSocket->joinMulticastGroup(address))
-	  spoton_misc::logError
-	    (QString("spoton_neighbor_udp_socket::initializeMulticast(): "
-		     "joinMulticastGroup() failure for %1:%2.").
-	     arg(address.toString()).arg(port));
+	  {
+	    m_multicastSocket->deleteLater();
+	    spoton_misc::logError
+	      (QString("spoton_neighbor_udp_socket::initializeMulticast(): "
+		       "joinMulticastGroup() failure for %1:%2.").
+	       arg(address.toString()).arg(port));
+	  }
 	else
 	  m_multicastSocket->setSocketOption
 	    (QAbstractSocket::MulticastLoopbackOption, 0);
 #else
-	spoton_misc::joinMulticastGroup
-	  (address, 0, m_multicastSocket->socketDescriptor(), port);
+	if(!spoton_misc::joinMulticastGroup(address,
+					    0, // Disable loopback.
+					    m_multicastSocket->
+					    socketDescriptor(),
+					    port))
+	  m_multicastSocket->deleteLater();
 #endif
       }
   }

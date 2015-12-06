@@ -5226,8 +5226,16 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	{
 	  u_char option = static_cast<u_char> (loop.toChar().toAscii());
 
-	  setsockopt(socketDescriptor,
-		     IPPROTO_IP, IP_MULTICAST_LOOP, &option, sizeof(option));
+	  if(setsockopt(socketDescriptor,
+			IPPROTO_IP, IP_MULTICAST_LOOP, &option,
+			sizeof(option)) == -1)
+	    {
+	      ok = false;
+	      spoton_misc::logError
+		(QString("spoton_misc::joinMulticastGroup(): "
+			 "setsockopt() failure for %1:%2.").
+		 arg(address.toString()).arg(port));
+	    }
 	}
     }
 #ifndef Q_OS_OS2
@@ -5253,9 +5261,16 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	{
 	  u_int option = loop.toUInt();
 
-	  setsockopt(socketDescriptor,
-		     IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option,
-		     sizeof(option));
+	  if(setsockopt(socketDescriptor,
+			IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option,
+			sizeof(option)) == -1)
+	    {
+	      ok = false;
+	      spoton_misc::logError
+		(QString("spoton_misc::joinMulticastGroup(): "
+			 "setsockopt() failure for %1:%2.").
+		 arg(address.toString()).arg(port));
+	    }
 	}
     }
 #endif

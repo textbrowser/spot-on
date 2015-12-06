@@ -390,6 +390,7 @@ class spoton_lineedit: public QLineEdit
 #include "ui_controlcenter.h"
 #include "ui_options.h"
 #include "ui_poptastic-retrophone-settings.h"
+#include "ui_statisticswindow.h"
 #include "ui_statusbar.h"
 
 class QProgressDialog;
@@ -457,6 +458,7 @@ class spoton: public QMainWindow
 				       */
   QList<QFuture<void> > m_starbeamDigestFutures;
   QMainWindow *m_optionsWindow;
+  QMainWindow *m_statisticsWindow;
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
@@ -478,6 +480,7 @@ class spoton: public QMainWindow
   Ui_poptasticretrophonesettings m_poptasticRetroPhoneSettingsUi;
   Ui_spoton_mainwindow m_ui;
   Ui_spoton_options m_optionsUi;
+  Ui_statistics_window m_statisticsUi;
   Ui_statusbar m_sb;
   bool m_locked;
   quint64 m_urlCurrentPage;
@@ -892,6 +895,7 @@ class spoton: public QMainWindow
   void slotShowOptions(void);
   void slotShowStarBeamAnalyzer(void);
   void slotShowStatistics(void);
+  void slotShowStatisticsWindow(void);
   void slotShowUrlSettings(bool state);
   void slotSignatureCheckBoxToggled(bool state);
   void slotSignatureKeyTypeChanged(int index);

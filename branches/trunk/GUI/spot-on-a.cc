@@ -389,6 +389,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.search->setPlaceholderText(tr("Search"));
 #endif
   m_optionsWindow = new QMainWindow(this);
+  m_statisticsWindow = new QMainWindow(this);
   m_optionsUi.setupUi(m_optionsWindow);
   m_optionsWindow->setWindowTitle
     (tr("%1: Options").arg(SPOTON_APPLICATION_NAME));
@@ -402,6 +403,19 @@ spoton::spoton(void):QMainWindow()
   m_sb.email->setVisible(false);
   m_sb.forward_secrecy_request->setVisible(false);
   m_sb.status->setTextFormat(Qt::RichText);
+  m_statisticsWindow->setWindowTitle
+    (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
+  m_statisticsWindow->setWindowFlags
+    (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  m_statisticsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#if QT_VERSION >= 0x050000
+  m_statisticsWindow->setWindowFlags
+    (m_statisticsWindow->windowFlags() & ~Qt::WindowFullscreenButtonHint);
+#endif
+#endif
 #ifdef Q_OS_MAC
   foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
     toolButton->setStyleSheet
@@ -1297,6 +1311,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowStarBeamAnalyzer(void)));
+  connect(m_ui.action_Statistics_Window,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowStatisticsWindow(void)));
   connect(m_ui.demagnetizeMissingLinks,
 	  SIGNAL(clicked(void)),
 	  this,

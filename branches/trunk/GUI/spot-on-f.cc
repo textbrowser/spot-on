@@ -1745,3 +1745,8 @@ void spoton::slotPassthroughCheckChange(bool state)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton::slotShowStatisticsWindow(void)
+{
+  m_statisticsWindow->show();
+}
