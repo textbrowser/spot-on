@@ -256,7 +256,6 @@ class spoton_neighbor: public QThread
   qint64 write(const char *data, qint64 size);
   quint16 peerPort(void) const;
   void abort(void);
-  void addToBytesWritten(const int bytesWritten);
   void close(void);
   void processData(void);
   void setId(const qint64 id);
@@ -330,6 +329,7 @@ class spoton_neighbor: public QThread
      QList<QByteArray> &symmetricKeys,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
   bool readyToWrite(void);
+  void addToBytesWritten(const qint64 bytesWritten);
   void process0000(int length, const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
   void process0000a(int length, const QByteArray &data,

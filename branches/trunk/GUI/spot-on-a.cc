@@ -412,7 +412,7 @@ spoton::spoton(void):QMainWindow()
   m_sb.forward_secrecy_request->setVisible(false);
   m_sb.status->setTextFormat(Qt::RichText);
   m_statisticsWindow->setWindowTitle
-    (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Kernel Statistics").arg(SPOTON_APPLICATION_NAME));
   m_statisticsWindow->setWindowFlags
     (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #ifdef Q_OS_MAC

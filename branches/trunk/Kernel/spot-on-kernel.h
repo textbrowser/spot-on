@@ -80,9 +80,11 @@ class spoton_kernel: public QObject
   static QList<QByteArray> findInstitutionKey(const QByteArray &data,
 					      const QByteArray &hash);
   static QList<QPair<QByteArray, QByteArray> > adaptiveEchoTokens(void);
-  static QPair<quint64, quint64> s_totalBytesReadWritten;
+  static QPair<quint64, quint64> s_totalNeighborsBytesReadWritten;
+  static QPair<quint64, quint64> s_totalUiBytesReadWritten;
   static QPointer<spoton_kernel> instance(void);
-  static QReadWriteLock s_totalBytesReadWrittenMutex;
+  static QReadWriteLock s_totalNeighborsBytesReadWrittenMutex;
+  static QReadWriteLock s_totalUiBytesReadWrittenMutex;
   static QVariant setting(const QString &name,
 			  const QVariant &defaultValue);
   static bool duplicateEmailRequests(const QByteArray &data);

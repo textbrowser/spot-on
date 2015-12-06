@@ -111,7 +111,9 @@ QMultiHash<qint64,
 QMultiMap<uint, QByteArray> spoton_kernel::s_messagingCacheLookup;
 QList<QList<QByteArray> > spoton_kernel::s_institutionKeys;
 QList<QPair<QByteArray, QByteArray> > spoton_kernel::s_adaptiveEchoPairs;
-QPair<quint64, quint64> spoton_kernel::s_totalBytesReadWritten =
+QPair<quint64, quint64> spoton_kernel::s_totalNeighborsBytesReadWritten =
+  QPair<quint64, quint64> (0, 0);
+QPair<quint64, quint64> spoton_kernel::s_totalUiBytesReadWritten =
   QPair<quint64, quint64> (0, 0);
 QReadWriteLock spoton_kernel::s_adaptiveEchoPairsMutex;
 QReadWriteLock spoton_kernel::s_buzzKeysMutex;
@@ -121,7 +123,8 @@ QReadWriteLock spoton_kernel::s_institutionKeysMutex;
 QReadWriteLock spoton_kernel::s_institutionLastModificationTimeMutex;
 QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
-QReadWriteLock spoton_kernel::s_totalBytesReadWrittenMutex;
+QReadWriteLock spoton_kernel::s_totalNeighborsBytesReadWrittenMutex;
+QReadWriteLock spoton_kernel::s_totalUiBytesReadWrittenMutex;
 
 /*
 ** Not pleasant! Please avoid this solution!
@@ -1998,8 +2001,6 @@ void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
 	   arg(neighbor->peerPort()));
       else
 	{
-	  neighbor->addToBytesWritten(data.length());
-
 	  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
 
 	  if(!s_crypt)
@@ -4802,36 +4803,52 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
-		      "VALUES ('Total MiB Read / Written', ?)");
+		      "VALUES ('Total Neighbors KiB Read / Written', ?)");
 
-	QReadLocker locker4(&s_totalBytesReadWrittenMutex);
+	QReadLocker locker4(&s_totalNeighborsBytesReadWrittenMutex);
 
 	query.bindValue
-	  (0, QString("%1 / %2 MiB").
+	  (0, QString("%1 KiB / %2 KiB").
 	   arg(locale.
-	       toString(s_totalBytesReadWritten.first / (1024 * 1024))).
+	       toString(s_totalNeighborsBytesReadWritten.
+			first / 1024)).
 	   arg(locale.
-	       toString(s_totalBytesReadWritten.second / (1024 * 1024))));
+	       toString(s_totalNeighborsBytesReadWritten.
+			second / 1024)));
 	locker4.unlock();
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
+		      "VALUES ('Total UI KiB Read / Written', ?)");
+
+	QReadLocker locker5(&s_totalUiBytesReadWrittenMutex);
+
+	query.bindValue
+	  (0, QString("%1 KiB / %2 KiB").
+	   arg(locale.
+	       toString(s_totalUiBytesReadWritten.first / 1024)).
+	   arg(locale.
+	       toString(s_totalUiBytesReadWritten.second / 1024)));
+	locker5.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Total URLs Processed', ?)");
 
-	QReadLocker locker5(&m_urlsProcessedMutex);
+	QReadLocker locker6(&m_urlsProcessedMutex);
 
 	query.bindValue
 	  (0, QString("%1 URLs").arg(locale.toString(m_urlsProcessed)));
-	locker5.unlock();
+	locker6.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('URL Container Size', ?)");
 
-	QReadLocker locker6(&m_urlListMutex);
+	QReadLocker locker7(&m_urlListMutex);
 
 	query.bindValue(0, locale.toString(m_urlList.size()));
-	locker6.unlock();
+	locker7.unlock();
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
@@ -4882,8 +4899,6 @@ void spoton_kernel::slotBuzzMagnetReceivedFromUI(const qint64 oid,
 	       "write() failure for %1:%2.").
        arg(neighbor->peerAddress()).
        arg(neighbor->peerPort()));
-  else
-    neighbor->addToBytesWritten(data.length());
 }
 
 void spoton_kernel::writeMessage0060(const QByteArray &data, bool *ok)

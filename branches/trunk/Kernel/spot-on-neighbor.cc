@@ -1587,10 +1587,11 @@ void spoton_neighbor::slotReadyRead(void)
   m_bytesRead += static_cast<quint64> (data.length());
 
   {
-    QWriteLocker locker(&spoton_kernel::s_totalBytesReadWrittenMutex);
+    QWriteLocker locker
+      (&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
 
-    spoton_kernel::s_totalBytesReadWritten.first += static_cast<quint64>
-      (data.length());
+    spoton_kernel::s_totalNeighborsBytesReadWritten.first +=
+      static_cast<quint64> (data.length());
   }
 
   if(m_abort.fetchAndAddOrdered(0))
@@ -2437,10 +2438,7 @@ void spoton_neighbor::slotSendMessage
 	   arg(m_address).
 	   arg(m_port));
       else
-	{
-	  addToBytesWritten(message.length());
-	  spoton_kernel::messagingCacheAdd(message);
-	}
+	spoton_kernel::messagingCacheAdd(message);
     }
 }
 
@@ -2463,10 +2461,7 @@ void spoton_neighbor::slotWriteURLs(const QByteArray &data)
 	   arg(m_address).
 	   arg(m_port));
       else
-	{
-	  addToBytesWritten(message.length());
-	  spoton_kernel::messagingCacheAdd(message);
-	}
+	spoton_kernel::messagingCacheAdd(message);
     }
 }
 
@@ -2508,10 +2503,7 @@ void spoton_neighbor::slotWrite
 	     arg(m_address).
 	     arg(m_port));
 	else
-	  {
-	    addToBytesWritten(data.length());
-	    spoton_kernel::messagingCacheAdd(data);
-	  }
+	  spoton_kernel::messagingCacheAdd(data);
     }
 }
 
@@ -2560,8 +2552,6 @@ void spoton_neighbor::slotSharePublicKey(const QByteArray &keyType,
        arg(m_port));
   else
     {
-      addToBytesWritten(message.length());
-
       spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
       if(!s_crypt)
@@ -4796,10 +4786,7 @@ void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
 	     arg(m_address).
 	     arg(m_port));
 	else
-	  {
-	    addToBytesWritten(message.length());
-	    spoton_kernel::messagingCacheAdd(message);
-	  }
+	  spoton_kernel::messagingCacheAdd(message);
       }
 }
 
@@ -4966,8 +4953,6 @@ void spoton_neighbor::slotSendCapabilities(void)
 	       "write() error for %1:%2.").
        arg(m_address).
        arg(m_port));
-  else
-    addToBytesWritten(message.length());
 }
 
 void spoton_neighbor::slotSendMOTD(void)
@@ -4984,8 +4969,6 @@ void spoton_neighbor::slotSendMOTD(void)
       (QString("spoton_neighbor::slotSendMOTD(): write() error for %1:%2.").
        arg(m_address).
        arg(m_port));
-  else
-    addToBytesWritten(message.length());
 }
 
 void spoton_neighbor::saveExternalAddress(const QHostAddress &address,
@@ -5121,7 +5104,6 @@ void spoton_neighbor::slotSendMail
 		  processData();
 		}
 
-	    addToBytesWritten(message.length());
 	    oids.append(pair.second);
 	    spoton_kernel::messagingCacheAdd(message);
 	  }
@@ -5166,10 +5148,7 @@ void spoton_neighbor::slotSendMailFromPostOffice
 	   arg(m_address).
 	   arg(m_port));
       else
-	{
-	  addToBytesWritten(message.length());
-	  spoton_kernel::messagingCacheAdd(data);
-	}
+	spoton_kernel::messagingCacheAdd(data);
     }
 }
 
@@ -5588,10 +5567,7 @@ void spoton_neighbor::slotRetrieveMail(const QByteArrayList &list,
 	     arg(m_address).
 	     arg(m_port));
 	else
-	  {
-	    addToBytesWritten(message.length());
-	    spoton_kernel::messagingCacheAdd(message);
-	  }
+	  spoton_kernel::messagingCacheAdd(message);
       }
 }
 
@@ -5625,10 +5601,7 @@ void spoton_neighbor::slotPublicizeListenerPlaintext
 	     arg(m_address).
 	     arg(m_port));
 	else
-	  {
-	    addToBytesWritten(message.length());
-	    spoton_kernel::messagingCacheAdd(message);
-	  }
+	  spoton_kernel::messagingCacheAdd(message);
       }
 }
 
@@ -5662,10 +5635,7 @@ void spoton_neighbor::slotPublicizeListenerPlaintext(const QByteArray &data,
 		 arg(m_address).
 		 arg(m_port));
 	    else
-	      {
-		addToBytesWritten(message.length());
-		spoton_kernel::messagingCacheAdd(message);
-	      }
+	      spoton_kernel::messagingCacheAdd(message);
 	  }
     }
 }
@@ -5937,10 +5907,7 @@ void spoton_neighbor::slotSendBuzz(const QByteArray &data)
 	   arg(m_address).
 	   arg(m_port));
       else
-	{
-	  addToBytesWritten(data.length());
-	  spoton_kernel::messagingCacheAdd(data);
-	}
+	spoton_kernel::messagingCacheAdd(data);
     }
 }
 
@@ -6372,10 +6339,7 @@ void spoton_neighbor::slotCallParticipant(const QByteArray &data,
 	   arg(m_address).
 	   arg(m_port));
       else
-	{
-	  addToBytesWritten(message.length());
-	  spoton_kernel::messagingCacheAdd(message);
-	}
+	spoton_kernel::messagingCacheAdd(message);
     }
 }
 
@@ -6615,7 +6579,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_neighbor::addToBytesWritten(const int bytesWritten)
+void spoton_neighbor::addToBytesWritten(const qint64 bytesWritten)
 {
   QWriteLocker locker(&m_bytesWrittenMutex);
 
@@ -6623,9 +6587,10 @@ void spoton_neighbor::addToBytesWritten(const int bytesWritten)
   locker.unlock();
 
   {
-    QWriteLocker locker(&spoton_kernel::s_totalBytesReadWrittenMutex);
+    QWriteLocker locker
+      (&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
 
-    spoton_kernel::s_totalBytesReadWritten.second +=
+    spoton_kernel::s_totalNeighborsBytesReadWritten.second +=
       static_cast<quint64> (qAbs(bytesWritten));
   }
 }
@@ -6688,8 +6653,6 @@ void spoton_neighbor::slotSendAccountInformation(void)
 		QWriteLocker locker(&m_accountClientSentSaltMutex);
 
 		m_accountClientSentSalt = salt;
-		locker.unlock();
-		addToBytesWritten(message.length());
 	      }
 	  }
       }
@@ -6731,8 +6694,6 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &name,
 		   "write() error for %1:%2.").
 	   arg(m_address).
 	   arg(m_port));
-      else
-	addToBytesWritten(message.length());
     }
 }
 
@@ -6749,8 +6710,6 @@ void spoton_neighbor::slotSendAuthenticationRequest(void)
 	       "write() error for %1:%2.").
        arg(m_address).
        arg(m_port));
-  else
-    addToBytesWritten(message.length());
 }
 
 qint64 spoton_neighbor::write(const char *data, const qint64 size)
@@ -6815,6 +6774,9 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
       else
 	sent = 0;
 
+      if(sent > 0)
+	addToBytesWritten(sent);
+
       if(sent <= 0 || sent > size)
 	break;
 
@@ -6849,10 +6811,7 @@ bool spoton_neighbor::writeMessage0060(const QByteArray &data)
 	     arg(m_port));
 	}
       else
-	{
-	  addToBytesWritten(message.length());
-	  spoton_kernel::messagingCacheAdd(message);
-	}
+	spoton_kernel::messagingCacheAdd(message);
     }
 
   return ok;
@@ -7066,10 +7025,7 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 	   arg(m_address).
 	   arg(m_port));
       else
-	{
-	  addToBytesWritten(message.length());
-	  spoton_kernel::messagingCacheAdd(message);
-	}
+	spoton_kernel::messagingCacheAdd(message);
     }
 }
 
@@ -7168,10 +7124,7 @@ void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
 	   arg(m_address).
 	   arg(m_port));
       else
-	{
-	  addToBytesWritten(message.length());
-	  spoton_kernel::messagingCacheAdd(message);
-	}
+	spoton_kernel::messagingCacheAdd(message);
     }
 }
 
@@ -7195,9 +7148,6 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 	   arg(m_address).
 	   arg(m_port));
       else
-	{
-	  addToBytesWritten(message.length());
-	  spoton_kernel::messagingCacheAdd(message);
-	}
+	spoton_kernel::messagingCacheAdd(message);
     }
 }

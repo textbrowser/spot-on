@@ -258,8 +258,17 @@ void spoton_gui_server::slotReadyRead(void)
   ** What if socketDescriptor() equals negative one?
   */
 
-  m_guiSocketData[socket->socketDescriptor()].append
-    (socket->readAll());
+  QByteArray data(socket->readAll());
+
+  if(data.length() > 0)
+    {
+      QWriteLocker locker(&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+      spoton_kernel::s_totalUiBytesReadWritten.first +=
+	static_cast<quint64> (data.length());
+    }
+
+  m_guiSocketData[socket->socketDescriptor()].append(data);
 
   if(m_guiSocketData[socket->socketDescriptor()].endsWith('\n'))
     {
@@ -701,13 +710,23 @@ void spoton_gui_server::slotReceivedBuzzMessage
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
     if(socket->isEncrypted())
       {
-	if(socket->write(message.constData(),
-			 message.length()) != message.length())
+	qint64 w = 0;
+
+	if((w = socket->write(message.constData(),
+			      message.length())) != message.length())
 	  spoton_misc::logError
 	    (QString("spoton_gui_server::slotReceivedBuzzMessage(): "
 		     "write() failure for %1:%2.").
 	     arg(socket->peerAddress().toString()).
 	     arg(socket->peerPort()));
+	else if(w > 0)
+	  {
+	    QWriteLocker locker
+	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	    spoton_kernel::s_totalUiBytesReadWritten.second +=
+	      static_cast<quint64> (w);
+	  }
       }
     else
       spoton_misc::logError
@@ -738,13 +757,23 @@ void spoton_gui_server::slotReceivedChatMessage(const QByteArray &message)
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
     if(socket->isEncrypted())
       {
-	if(socket->write(message.constData(),
-			 message.length()) != message.length())
+	qint64 w = 0;
+
+	if((w = socket->write(message.constData(),
+			      message.length())) != message.length())
 	  spoton_misc::logError
 	    (QString("spoton_gui_server::slotReceivedChatMessage(): "
 		     "write() failure for %1:%2.").
 	     arg(socket->peerAddress().toString()).
 	     arg(socket->peerPort()));
+	else if(w > 0)
+	  {
+	    QWriteLocker locker
+	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	    spoton_kernel::s_totalUiBytesReadWritten.second +=
+	      static_cast<quint64> (w);
+	  }
       }
     else
       spoton_misc::logError
@@ -761,13 +790,23 @@ void spoton_gui_server::slotNewEMailArrived(void)
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
     if(socket->isEncrypted())
       {
-	if(socket->write(message.constData(),
-			 message.length()) != message.length())
+	qint64 w = 0;
+
+	if((w = socket->write(message.constData(),
+			      message.length())) != message.length())
 	  spoton_misc::logError
 	    (QString("spoton_gui_server::slotNewEMailArrived(): "
 		     "write() failure for %1:%2.").
 	     arg(socket->peerAddress().toString()).
 	     arg(socket->peerPort()));
+	else if(w > 0)
+	  {
+	    QWriteLocker locker
+	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	    spoton_kernel::s_totalUiBytesReadWritten.second +=
+	      static_cast<quint64> (w);
+	  }
       }
     else
       spoton_misc::logError
@@ -858,13 +897,23 @@ void spoton_gui_server::slotAuthenticationRequested
 	message.append(peerInformation);
 	message.append("\n");
 
-	if(socket->write(message.constData(),
-			 message.length()) != message.length())
+	qint64 w = 0;
+
+	if((w = socket->write(message.constData(),
+			      message.length())) != message.length())
 	  spoton_misc::logError
 	    (QString("spoton_gui_server::slotAuthenticationRequested(): "
 		     "write() failure for %1:%2.").
 	     arg(socket->peerAddress().toString()).
 	     arg(socket->peerPort()));
+	else if(w > 0)
+	  {
+	    QWriteLocker locker
+	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	    spoton_kernel::s_totalUiBytesReadWritten.second +=
+	      static_cast<quint64> (w);
+	  }
       }
     else
       spoton_misc::logError
@@ -887,13 +936,23 @@ void spoton_gui_server::slotStatusMessageReceived
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
     if(socket->isEncrypted())
       {
-	if(socket->write(message.constData(),
-			 message.length()) != message.length())
+	qint64 w = 0;
+
+	if((w = socket->write(message.constData(),
+			      message.length())) != message.length())
 	  spoton_misc::logError
 	    (QString("spoton_gui_server::slotStatusMessageReceived(): "
 		     "write() failure for %1:%2.").
 	     arg(socket->peerAddress().toString()).
 	     arg(socket->peerPort()));
+	else if(w > 0)
+	  {
+	    QWriteLocker locker
+	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	    spoton_kernel::s_totalUiBytesReadWritten.second +=
+	      static_cast<quint64> (w);
+	  }
       }
     else
       spoton_misc::logError
@@ -918,13 +977,23 @@ void spoton_gui_server::slotForwardSecrecyRequest
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
     if(socket->isEncrypted())
       {
-	if(socket->write(message.constData(),
-			 message.length()) != message.length())
+	qint64 w = 0;
+
+	if((w = socket->write(message.constData(),
+			      message.length())) != message.length())
 	  spoton_misc::logError
 	    (QString("spoton_gui_server::slotForwardSecrecyRequest(): "
 		     "write() failure for %1:%2.").
 	     arg(socket->peerAddress().toString()).
 	     arg(socket->peerPort()));
+	else if(w > 0)
+	  {
+	    QWriteLocker locker
+	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	    spoton_kernel::s_totalUiBytesReadWritten.second +=
+	      static_cast<quint64> (w);
+	  }
       }
     else
       spoton_misc::logError
@@ -945,13 +1014,23 @@ void spoton_gui_server::slotForwardSecrecyResponse
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
     if(socket->isEncrypted())
       {
-	if(socket->write(message.constData(),
-			 message.length()) != message.length())
+	qint64 w = 0;
+
+	if((w = socket->write(message.constData(),
+			      message.length())) != message.length())
 	  spoton_misc::logError
 	    (QString("spoton_gui_server::slotForwardSecrecyResponse(): "
 		     "write() failure for %1:%2.").
 	     arg(socket->peerAddress().toString()).
 	     arg(socket->peerPort()));
+	else if(w > 0)
+	  {
+	    QWriteLocker locker
+	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	    spoton_kernel::s_totalUiBytesReadWritten.second +=
+	      static_cast<quint64> (w);
+	  }
       }
     else
       spoton_misc::logError
