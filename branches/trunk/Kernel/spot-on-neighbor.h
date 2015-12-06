@@ -112,6 +112,10 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 				    QUdpSocket::ShareAddress))
 	  {
 	    m_multicastSocket->deleteLater();
+	    spoton_misc::logError
+	      (QString("spoton_neighbor_udp_socket::initializeMulticast(): "
+		       "bind() failure for %1:%2.").
+	       arg(address.toString()).arg(port));
 	    return;
 	  }
 
@@ -125,58 +129,8 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	  m_multicastSocket->setSocketOption
 	    (QAbstractSocket::MulticastLoopbackOption, 0);
 #else
-	if(address.protocol() == QAbstractSocket::IPv4Protocol)
-	  {
-	    ip_mreq mreq4;
-
-	    memset(&mreq4, 0, sizeof(mreq4));
-	    mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
-	    mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
-
-	    if(setsockopt(m_multicastSocket->socketDescriptor(),
-			  IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq4,
-			  sizeof(mreq4)) == -1)
-	      spoton_misc::logError
-		(QString("spoton_neighbor_udp_socket::initializeMulticast(): "
-			 "setsockopt() failure for %1:%2.").
-		 arg(address.toString()).arg(port));
-	    else
-	      {
-		u_char option = 0;
-
-		setsockopt
-		  (m_multicastSocket->socketDescriptor(),
-		   IPPROTO_IP, IP_MULTICAST_LOOP, &option, sizeof(option));
-	      }
-	  }
-#ifndef Q_OS_OS2
-	else if(address.protocol() == QAbstractSocket::IPv6Protocol)
-	  {
-	    Q_IPV6ADDR ip6 = address.toIPv6Address();
-	    ipv6_mreq mreq6;
-
-	    memset(&mreq6, 0, sizeof(mreq6));
-	    memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
-	    mreq6.ipv6mr_interface = 0;
-
-	    if(setsockopt(m_multicastSocket->socketDescriptor(),
-			  IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6,
-			  sizeof(mreq6)) == -1)
-	      spoton_misc::logError
-		(QString("spoton_neighbor_udp_socket::initializeMulticast(): "
-			 "setsockopt() failure for %1:%2.").
-		 arg(address.toString()).arg(port));
-	    else
-	      {
-		u_int option = 0;
-
-		setsockopt
-		  (m_multicastSocket->socketDescriptor(),
-		   IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option,
-		   sizeof(option));
-	      }
-	  }
-#endif
+	spoton_misc::joinMulticastGroup
+	  (address, 0, m_multicastSocket->socketDescriptor(), port);
 #endif
       }
   }

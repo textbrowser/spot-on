@@ -158,6 +158,10 @@ class spoton_misc
 			       QList<QByteArray> &values);
   static bool isValidStarBeamMagnet(const QByteArray &magnet);
   static bool isValidStarBeamMissingLinksMagnet(const QByteArray &magnet);
+  static bool joinMulticastGroup(const QHostAddress &address,
+				 const QVariant &loop,
+				 const int socketDescriptor,
+				 const quint16 port);
   static bool prepareUrlDistillersDatabase(void);
   static bool prepareUrlKeysDatabase(void);
   static bool saveFriendshipBundle(const QByteArray &keyType,

@@ -5197,3 +5197,68 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
   else
     return false;
 }
+
+bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
+				     const QVariant &loop,
+				     const int socketDescriptor,
+				     const quint16 port)
+{
+  bool ok = true;
+
+  if(address.protocol() == QAbstractSocket::IPv4Protocol)
+    {
+      ip_mreq mreq4;
+
+      memset(&mreq4, 0, sizeof(mreq4));
+      mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
+      mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
+
+      if(setsockopt(socketDescriptor, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq4,
+		    sizeof(mreq4)) == -1)
+	{
+	  ok = false;
+	  spoton_misc::logError
+	    (QString("spoton_misc::joinMulticastGroup(): "
+		     "setsockopt() failure for %1:%2.").
+	     arg(address.toString()).arg(port));
+	}
+      else
+	{
+	  u_char option = static_cast<u_char> (loop.toChar().toAscii());
+
+	  setsockopt(socketDescriptor,
+		     IPPROTO_IP, IP_MULTICAST_LOOP, &option, sizeof(option));
+	}
+    }
+#ifndef Q_OS_OS2
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
+    {
+      Q_IPV6ADDR ip6 = address.toIPv6Address();
+      ipv6_mreq mreq6;
+
+      memset(&mreq6, 0, sizeof(mreq6));
+      memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
+      mreq6.ipv6mr_interface = 0;
+
+      if(setsockopt(socketDescriptor, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6,
+		    sizeof(mreq6)) == -1)
+	{
+	  ok = false;
+	  spoton_misc::logError
+	    (QString("spoton_misc::joinMulticastGroup(): "
+		     "setsockopt() failure for %1:%2.").
+	     arg(address.toString()).arg(port));
+	}
+      else
+	{
+	  u_int option = loop.toUInt();
+
+	  setsockopt(socketDescriptor,
+		     IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option,
+		     sizeof(option));
+	}
+    }
+#endif
+
+  return ok;
+}
