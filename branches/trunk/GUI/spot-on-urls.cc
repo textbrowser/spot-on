@@ -1729,7 +1729,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 #if QT_VERSION >= 0x050000
       QUrl original(url.path().mid(url.path().indexOf('?') + 1));
 
-      url.setPath(url.path().mid(0, url.path().indexOf('?') - 1));
+      url.setPath(url.path().mid(0, url.path().indexOf('?')));
       message.append(url.toString());
 #else
       QUrl original(url.encodedQueryItemValue("url"));
@@ -1788,7 +1788,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 #if QT_VERSION >= 0x050000
       QUrl original(url.path().mid(url.path().indexOf('?') + 1));
 
-      url.setPath(url.path().mid(0, url.path().indexOf('?') - 1));
+      url.setPath(url.path().mid(0, url.path().indexOf('?')));
       hash = url.toString();
 #else
       QUrl original(url.encodedQueryItemValue("url"));
