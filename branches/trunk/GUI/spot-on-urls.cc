@@ -1789,7 +1789,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       QUrl original(url.path().mid(url.path().indexOf('?') + 1));
 
       url.setPath(url.path().mid(0, url.path().indexOf('?') - 1));
-      hash = url.toString());
+      hash = url.toString();
 #else
       QUrl original(url.encodedQueryItemValue("url"));
 

@@ -393,6 +393,7 @@ class spoton_lineedit: public QLineEdit
 #include "ui_statisticswindow.h"
 #include "ui_statusbar.h"
 
+class QPrinter;
 class QProgressDialog;
 
 class spoton_forward_secrecy

@@ -8,7 +8,8 @@ libspoton.depends =
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= bluetooth concurrent multimedia network sql widgets
+QT		+= bluetooth concurrent multimedia network printsupport \
+		   sql widgets
 CONFIG		+= app_bundle qt release warn_on
 
 # The function gcry_kdf_derive() is available in version
