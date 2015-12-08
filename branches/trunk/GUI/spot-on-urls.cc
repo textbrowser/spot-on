@@ -225,13 +225,13 @@ void spoton::slotPrepareUrlDatabases(void)
 	      {
 		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
 				       "spot_on_urls_%1%2 ("
-				       "content TEXT NOT NULL, "
+				       "content BYTEA NOT NULL, "
 				       "date_time_inserted TEXT NOT NULL, "
-				       "description TEXT, "
-				       "title TEXT NOT NULL, "
+				       "description BYTEA, "
+				       "title BYTEA NOT NULL, "
 				       "unique_id BIGINT UNIQUE, "
-				       "url TEXT NOT NULL, "
-				       "url_hash TEXT PRIMARY KEY NOT NULL)").
+				       "url BYTEA NOT NULL, "
+				       "url_hash BYTEA PRIMARY KEY NOT NULL)").
 			       arg(c1).arg(c2)))
 		  created = false;
 
