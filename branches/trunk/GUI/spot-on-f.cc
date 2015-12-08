@@ -1748,7 +1748,9 @@ void spoton::slotPassthroughCheckChange(bool state)
 
 void spoton::slotShowStatisticsWindow(void)
 {
-  m_statisticsWindow->show();
+  m_statisticsWindow->showNormal();
+  m_statisticsWindow->raise();
+  centerWidget(m_statisticsWindow, this);
 }
 
 void spoton::centerWidget(QWidget *child, QWidget *parent)
