@@ -402,12 +402,16 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      QString scheme(url.scheme().toLower().trimmed());
 	      QUrl deleteUrl(url);
 	      QUrl shareUrl(hash);
+	      QUrl viewUrl(hash);
 
 	      if(scheme.contains("delete-"))
 		scheme.remove("delete-");
 
 	      if(scheme.contains("share-"))
 		scheme.remove("share-");
+
+	      if(scheme.contains("view-"))
+		scheme.remove("view-");
 
 	      url.setScheme(scheme);
 	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
@@ -417,6 +421,12 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      shareUrl.addEncodedQueryItem("url", url.toEncoded());
 #endif
 	      shareUrl.setScheme(QString("share-%1").arg(url.scheme()));
+#if QT_VERSION >= 0x050000
+	      viewUrl.setPath(hash + "?" + url.toEncoded());
+#else
+	      viewUrl.addEncodedQueryItem("url", url.toEncoded());
+#endif
+	      viewUrl.setScheme(QString("view-%1").arg(url.scheme()));
 	      html.append(QString::number(count + m_urlOffset + 1));
 	      html.append(" | <a href=\"");
 	      html.append(url.toEncoded().constData());
@@ -433,6 +443,11 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append(shareUrl.toEncoded().constData());
 	      html.append("\">");
 	      html.append("Share URL</a>");
+	      html.append(" | ");
+	      html.append("<a href=\"");
+	      html.append(viewUrl.toEncoded().constData());
+	      html.append("\">");
+	      html.append("View URL</a>");
 	      html.append("<br>");
 	      html.append(QString("<font color=\"green\" size=3>%1</font>").
 			  arg(url.toEncoded().constData()));

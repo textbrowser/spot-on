@@ -114,6 +114,15 @@ void spoton::prepareUrlLabels(void)
 
 void spoton::slotPrepareUrlDatabases(void)
 {
+  if(!m_urlDatabase.isOpen())
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please connect to a URL database."));
+      return;
+    }
+
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
@@ -215,6 +224,7 @@ void spoton::slotPrepareUrlDatabases(void)
 	      {
 		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
 				       "spot_on_urls_%1%2 ("
+				       "content BYTEA NOT NULL, "
 				       "date_time_inserted TEXT NOT NULL, "
 				       "description BYTEA, "
 				       "title BYTEA NOT NULL, "
@@ -233,6 +243,7 @@ void spoton::slotPrepareUrlDatabases(void)
 	    else
 	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
 				     "spot_on_urls_%1%2 ("
+				     "content BYTEA NOT NULL, "
 				     "date_time_inserted TEXT NOT NULL, "
 				     "description BYTEA, "
 				     "title BYTEA NOT NULL, "
@@ -285,6 +296,15 @@ void spoton::slotPrepareUrlDatabases(void)
 
 void spoton::slotDeleteAllUrls(void)
 {
+  if(!m_urlDatabase.isOpen())
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please connect to a URL database."));
+      return;
+    }
+
   QMessageBox mb(this);
 
 #ifdef Q_OS_MAC
@@ -317,6 +337,107 @@ void spoton::slotDeleteAllUrls(void)
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("One or more errors occurred while "
 			     "attempting to vacuum the URL databases."));
+}
+
+void spoton::slotDropUrlTables(void)
+{
+  if(!m_urlDatabase.isOpen())
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please connect to a URL database."));
+      return;
+    }
+
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to drop most of the "
+		"URL databases? Your credentials will not be removed. "
+		"The shared.db database will not be removed. Please "
+		"note that the process may require "
+		"a considerable amount of time to complete."));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QProgressDialog progress(this);
+  bool dropped = true;
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  progress.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  progress.setLabelText(tr("Dropping URL databases. Please be patient."));
+  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMinimum(0);
+  progress.setWindowModality(Qt::ApplicationModal);
+  progress.setWindowTitle(tr("%1: Dropping URL Databases").
+    arg(SPOTON_APPLICATION_NAME));
+  progress.show();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QSqlQuery query(m_urlDatabase);
+
+  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
+    for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
+      {
+	if(processed <= progress.maximum())
+	  progress.setValue(processed);
+
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
+
+	if(m_urlDatabase.isOpen())
+	  {
+	    QChar c1;
+	    QChar c2;
+
+	    if(i <= 9)
+	      c1 = QChar(i + 48);
+	    else
+	      c1 = QChar(i + 97 - 10);
+
+	    if(j <= 9)
+	      c2 = QChar(j + 48);
+	    else
+	      c2 = QChar(j + 97 - 10);
+
+	    if(!query.exec(QString("DROP TABLE IF EXISTS "
+				   "spot_on_keywords_%1%2").
+			   arg(c1).arg(c2)))
+	      dropped = false;
+
+	    if(!query.exec(QString("DROP TABLE IF EXISTS "
+				   "spot_on_urls_%1%2").
+			   arg(c1).arg(c2)))
+	      dropped = false;
+	  }
+	else
+	  dropped = false;
+
+	processed += 1;
+      }
+
+  if(!dropped)
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("One or more errors occurred while "
+			     "attempting to destroy the URL tables."));
 }
 
 bool spoton::deleteAllUrls(void)
@@ -1530,7 +1651,33 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   QString scheme(u.scheme().toLower().trimmed());
   QUrl url(u);
 
-  if(scheme.startsWith("share-"))
+  if(scheme.startsWith("delete-"))
+    {
+      scheme.remove("delete-");
+      url.setScheme(scheme);
+
+      QMessageBox mb(this);
+      QString str(url.toEncoded().constData());
+
+      if(str.length() > 64)
+	str = str.mid(0, 24) + "..." + str.right(24);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setWindowTitle(tr("%1: Confirmation").
+			arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to remove %1?").arg(str));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+    }
+  else if(scheme.startsWith("share-"))
     {
       /*
       ** Share the link!
@@ -1591,6 +1738,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
       return;
     }
+  else if(scheme.startsWith("view-"))
+    {
+    }
   else if(!scheme.startsWith("delete-"))
     {
       if(m_settings.value("gui/openLinks", false).toBool())
@@ -1620,32 +1770,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	}
 
       return;
-    }
-  else
-    {
-      scheme.remove("delete-");
-      url.setScheme(scheme);
-
-      QMessageBox mb(this);
-      QString str(url.toEncoded().constData());
-
-      if(str.length() > 64)
-	str = str.mid(0, 24) + "..." + str.right(24);
-
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
-      mb.setIcon(QMessageBox::Question);
-      mb.setWindowTitle(tr("%1: Confirmation").
-			arg(SPOTON_APPLICATION_NAME));
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Are you sure that you wish to remove %1?").arg(str));
-
-      if(mb.exec() != QMessageBox::Yes)
-	return;
     }
 
   spoton_crypt *crypt = m_crypts.value("chat", 0);

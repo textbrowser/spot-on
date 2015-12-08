@@ -2764,6 +2764,23 @@ void spoton::prepareContextMenuMirrors(void)
 	      SLOT(showMenu(void)));
     }
 
+  if(!m_ui.deleteAllUrls->menu())
+    {
+      QMenu *menu = new QMenu(this);
+
+      menu->addAction(tr("Drop Tables"),
+		      this,
+		      SLOT(slotDropUrlTables(void)));
+      menu->addAction(tr("Vacuum Databases"),
+		      this,
+		      SLOT(slotDeleteAllUrls(void)));
+      m_ui.deleteAllUrls->setMenu(menu);
+      connect(m_ui.deleteAllUrls,
+	      SIGNAL(clicked(void)),
+	      m_ui.deleteAllUrls,
+	      SLOT(showMenu(void)));
+    }
+
   if(!m_ui.emailWriteActionMenu->menu())
     {
       QAction *action = 0;
