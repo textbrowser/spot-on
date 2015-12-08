@@ -231,7 +231,7 @@ void spoton::slotPrepareUrlDatabases(void)
 				       "title BYTEA NOT NULL, "
 				       "unique_id BIGINT UNIQUE, "
 				       "url BYTEA NOT NULL, "
-				       "url_hash BYTEA PRIMARY KEY NOT NULL)").
+				       "url_hash TEXT PRIMARY KEY NOT NULL)").
 			       arg(c1).arg(c2)))
 		  created = false;
 
@@ -1804,7 +1804,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       Ui_pageviewer ui;
 
       ui.setupUi(mainWindow);
-      ui.textBrowser->append(original.toEncoded());
       connect(ui.action_Print_Preview,
 	      SIGNAL(triggered(void)),
 	      this,
