@@ -28,6 +28,8 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QPrintPreviewDialog>
+#include <QPrinter>
 #include <QProgressDialog>
 #include <QSqlDriver>
 #include <QToolTip>
@@ -38,6 +40,7 @@
 
 #include "spot-on.h"
 #include "spot-on-defines.h"
+#include "ui_pageviewer.h"
 #include "ui_postgresqlconnect.h"
 
 void spoton::prepareUrlLabels(void)
@@ -71,12 +74,10 @@ void spoton::prepareUrlLabels(void)
 	      if(query.exec(queries.at(i)) && query.next())
 		for(int j = 0; j < query.record().count(); j++)
 		  {
-		    QByteArray bytes;
-
-		    bytes = crypt->decryptedAfterAuthenticated
+		    crypt->decryptedAfterAuthenticated
 		      (QByteArray::fromBase64(query.value(j).
 					      toByteArray()),
-		       &ok).constData();
+		       &ok);
 
 		    if(ok)
 		      counts[i] = 1;
@@ -224,12 +225,12 @@ void spoton::slotPrepareUrlDatabases(void)
 	      {
 		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
 				       "spot_on_urls_%1%2 ("
-				       "content BYTEA NOT NULL, "
+				       "content TEXT NOT NULL, "
 				       "date_time_inserted TEXT NOT NULL, "
-				       "description BYTEA, "
-				       "title BYTEA NOT NULL, "
+				       "description TEXT, "
+				       "title TEXT NOT NULL, "
 				       "unique_id BIGINT UNIQUE, "
-				       "url BYTEA NOT NULL, "
+				       "url TEXT NOT NULL, "
 				       "url_hash TEXT PRIMARY KEY NOT NULL)").
 			       arg(c1).arg(c2)))
 		  created = false;
@@ -243,12 +244,12 @@ void spoton::slotPrepareUrlDatabases(void)
 	    else
 	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
 				     "spot_on_urls_%1%2 ("
-				     "content BYTEA NOT NULL, "
+				     "content BLOB NOT NULL, "
 				     "date_time_inserted TEXT NOT NULL, "
-				     "description BYTEA, "
-				     "title BYTEA NOT NULL, "
+				     "description BLOB, "
+				     "title BLOB NOT NULL, "
 				     "unique_id INTEGER NOT NULL, "
-				     "url BYTEA NOT NULL, "
+				     "url BLOB NOT NULL, "
 				     "url_hash TEXT PRIMARY KEY NOT NULL)").
 			     arg(c1).arg(c2)))
 		created = false;
@@ -272,7 +273,7 @@ void spoton::slotPrepareUrlDatabases(void)
 	}
       else
 	{
-	  if(!query.exec("CREATE TABLE sequence("
+	  if(!query.exec("CREATE TABLE IF NOT EXISTS sequence("
 			 "value INTEGER NOT NULL PRIMARY KEY "
 			 "AUTOINCREMENT)"))
 	    created = false;
@@ -391,6 +392,17 @@ void spoton::slotDropUrlTables(void)
 #endif
 
   QSqlQuery query(m_urlDatabase);
+
+  if(m_urlDatabase.driverName() == "QPSQL")
+    {
+      if(!query.exec("DROP SEQUENCE IF EXISTS serial"))
+	dropped = false;
+    }
+  else
+    {
+      if(!query.exec("DROP TABLE IF EXISTS sequence"))
+	dropped = false;
+    }
 
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
@@ -750,7 +762,7 @@ void spoton::slotImportUrls(void)
 	  if(query.next())
 	    progress.setMaximum(query.value(0).toInt());
 
-	query.prepare("SELECT description, encrypted, title, url "
+	query.prepare("SELECT content, description, encrypted, title, url "
 		      "FROM urls");
 
 	if(query.exec())
@@ -768,11 +780,11 @@ void spoton::slotImportUrls(void)
 #ifndef Q_OS_MAC
 		QApplication::processEvents();
 #endif
-
+		QByteArray content;
 		QByteArray description;
 		QByteArray title;
 		QByteArray url;
-		bool encrypted = query.value(1).toBool();
+		bool encrypted = query.value(2).toBool();
 		bool ok = true;
 
 		if(encrypted)
@@ -792,22 +804,27 @@ void spoton::slotImportUrls(void)
 		       0,
 		       "");
 
-		    description = crypt.decrypted
+		    content = crypt.decrypted
 		      (query.value(0).toByteArray(), &ok);
 
 		    if(ok)
+		      description = crypt.decrypted
+			(query.value(1).toByteArray(), &ok);
+
+		    if(ok)
 		      title = crypt.decrypted
-			(query.value(2).toByteArray(), &ok);
+			(query.value(3).toByteArray(), &ok);
 
 		    if(ok)
 		      url = crypt.decrypted
-			(query.value(3).toByteArray(), &ok);
+			(query.value(4).toByteArray(), &ok);
 		  }
 		else
 		  {
-		    description = query.value(0).toByteArray();
-		    title = query.value(2).toByteArray();
-		    url = query.value(3).toByteArray();
+		    content = query.value(0).toByteArray();
+		    description = query.value(1).toByteArray();
+		    title = query.value(3).toByteArray();
+		    url = query.value(4).toByteArray();
 		  }
 
 		if(ok)
@@ -856,7 +873,7 @@ void spoton::slotImportUrls(void)
 
 		    if(ok)
 		      ok = spoton_misc::importUrl
-			(description, title, url, m_urlDatabase,
+			(content, description, title, url, m_urlDatabase,
 			 spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
 			 m_settings.value("gui/disable_ui_synchronous_"
 					  "sqlite_url_import", false).
@@ -875,7 +892,7 @@ void spoton::slotImportUrls(void)
 
 		    deleteQuery.exec("PRAGMA secure_delete = ON");
 		    deleteQuery.prepare("DELETE FROM urls WHERE url = ?");
-		    deleteQuery.bindValue(0, query.value(3));
+		    deleteQuery.bindValue(0, query.value(4));
 		    deleteQuery.exec();
 		  }
 
@@ -1653,6 +1670,15 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
   if(scheme.startsWith("delete-"))
     {
+      if(!m_urlDatabase.isOpen())
+	{
+	  QMessageBox::critical
+	    (this,
+	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	     tr("Please connect to a URL database."));
+	  return;
+	}
+
       scheme.remove("delete-");
       url.setScheme(scheme);
 
@@ -1740,6 +1766,100 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
     }
   else if(scheme.startsWith("view-"))
     {
+      if(!m_urlDatabase.isOpen())
+	{
+	  QMessageBox::critical
+	    (this,
+	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	     tr("Please connect to a URL database."));
+	  return;
+	}
+      else if(!m_urlCommonCrypt)
+	{
+	  QMessageBox::critical
+	    (this, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid m_urlCommonCrypt object. This is a fatal flaw."));
+	  return;
+	}
+
+      QMainWindow *mainWindow = new QMainWindow(this);
+      QString hash("");
+#if QT_VERSION >= 0x050000
+      QUrl original(url.path().mid(url.path().indexOf('?') + 1));
+
+      url.setPath(url.path().mid(0, url.path().indexOf('?') - 1));
+      hash = url.toString());
+#else
+      QUrl original(url.encodedQueryItemValue("url"));
+
+      url.removeEncodedQueryItem("url");
+      hash = url.toString().mid(0, url.toString().length() - 1); /*
+								 ** Remove
+								 ** the
+								 ** question
+								 ** mark.
+								 */
+#endif
+      Ui_pageviewer ui;
+
+      ui.setupUi(mainWindow);
+      ui.textBrowser->append(original.toEncoded());
+      connect(ui.action_Print_Preview,
+	      SIGNAL(triggered(void)),
+	      this,
+	      SLOT(slotPagePrintPreview(void)));
+      mainWindow->setAttribute(Qt::WA_DeleteOnClose);
+      mainWindow->setWindowTitle(tr("%1: Page Viewer").
+				 arg(SPOTON_APPLICATION_NAME));
+
+      if(hash.startsWith("view-ftp:"))
+	hash.remove
+	  (0, static_cast<int> (qstrlen("view-ftp:")));
+      else if(hash.startsWith("view-gopher:"))
+	hash.remove
+	  (0, static_cast<int> (qstrlen("view-gopher:")));
+      else if(hash.startsWith("view-http:"))
+	hash.remove
+	  (0, static_cast<int> (qstrlen("view-http:")));
+      else if(hash.startsWith("view-https:"))
+	hash.remove
+	  (0, static_cast<int> (qstrlen("view-https:")));
+
+      if(!hash.isEmpty())
+	{
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	  QSqlQuery query(m_urlDatabase);
+
+	  query.setForwardOnly(true);
+	  query.prepare
+	    (QString("SELECT content FROM spot_on_urls_%1 WHERE "
+		     "url_hash = ?").
+	     arg(hash.mid(0, 2)));
+	  query.bindValue(0, hash);
+
+	  if(query.exec())
+	    if(query.next())
+	      {
+		QByteArray content;
+		bool ok = true;
+
+		content = m_urlCommonCrypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(0).toByteArray()),
+		   &ok);
+
+		if(ok)
+		  ui.textBrowser->setHtml
+		    (QString::fromUtf8(qUncompress(content).constData()));
+	      }
+
+	  QApplication::restoreOverrideCursor();
+	}
+
+      mainWindow->show();
+      centerWidget(mainWindow, this);
+      return;
     }
   else if(!scheme.startsWith("delete-"))
     {
@@ -2112,4 +2232,57 @@ void spoton::slotCorrectUrlDatabases(void)
      arg(SPOTON_APPLICATION_NAME),
      tr("Approximate orphaned keyword entries deleted: %1.").
      arg(locale.toString(deleted)));
+}
+
+void spoton::slotPagePrintPreview(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QWidget *parent = action->parentWidget();
+
+  while(parent)
+    {
+      if(qobject_cast<QMainWindow *> (parent))
+	break;
+
+      parent = parent->parentWidget();
+    }
+
+  if(!parent)
+    return;
+
+  QTextBrowser *textBrowser = parent->findChildren<QTextBrowser *> ().
+    value(0);
+
+  if(!textBrowser)
+    return;
+  else
+    m_pagePreviewPrintTextBrowser = textBrowser;
+
+  QPrinter printer(QPrinter::HighResolution);
+  QPrintPreviewDialog printDialog(&printer, parent);
+
+#ifdef Q_OS_MAC
+  printDialog.setAttribute(Qt::WA_MacMetalStyle, false);
+#endif
+  printDialog.setWindowModality(Qt::WindowModal);
+  connect(&printDialog,
+	  SIGNAL(paintRequested(QPrinter *)),
+	  this,
+	  SLOT(slotPrintTextbrowser(QPrinter *)));
+
+  if(printDialog.exec() == QDialog::Accepted)
+    textBrowser->print(&printer);
+}
+
+void spoton::slotPrintTextbrowser(QPrinter *printer)
+{
+  if(!printer)
+    return;
+
+  if(m_pagePreviewPrintTextBrowser)
+    m_pagePreviewPrintTextBrowser->print(printer);
 }

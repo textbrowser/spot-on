@@ -1807,13 +1807,14 @@ void spoton_kernel::importUrls(void)
 	    if(m_urlList.isEmpty())
 	      break;
 
-	    QList<QByteArray> urls(m_urlList.mid(0, 3));
+	    QList<QByteArray> urls(m_urlList.mid(0, 4));
 
 	    for(int i = 0; i < urls.size(); i++)
 	      m_urlList.removeAt(0);
 
 	    locker.unlock();
 
+	    QByteArray content(urls.value(3));
 	    QByteArray description(urls.value(2));
 	    QByteArray title(urls.value(1));
 	    QByteArray url(urls.value(0));
@@ -1845,7 +1846,7 @@ void spoton_kernel::importUrls(void)
 
 	    if(ok)
 	      spoton_misc::importUrl
-		(description, title, url, db,
+		(content, description, title, url, db,
 		 spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
 		 setting("gui/disable_kernel_synchronous_sqlite_url_download",
 			 false).toBool(),

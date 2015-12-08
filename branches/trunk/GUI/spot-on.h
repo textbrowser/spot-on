@@ -422,6 +422,7 @@ class spoton: public QMainWindow
 					     const int column);
   static QPointer<spoton> instance(void);
   static QString mapIconToEmoticon(const QString &content);
+  static void centerWidget(QWidget *child, QWidget *parent);
   void addMessageToReplayQueue(const QString &message1,
 			       const QByteArray &message2,
 			       const QString &publicKeyHash);
@@ -459,6 +460,7 @@ class spoton: public QMainWindow
   QList<QFuture<void> > m_starbeamDigestFutures;
   QMainWindow *m_optionsWindow;
   QMainWindow *m_statisticsWindow;
+  QPointer<QTextBrowser> m_pagePreviewPrintTextBrowser;
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
@@ -517,9 +519,6 @@ class spoton: public QMainWindow
   bool event(QEvent *event);
 #endif
 #endif
-  bool importUrl(const QByteArray &description,
-		 const QByteArray &title,
-		 const QByteArray &url);
   bool isKernelActive(void) const;
   bool promptBeforeExit(void);
   bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
@@ -787,6 +786,7 @@ class spoton: public QMainWindow
   void slotOntopChatDialogs(bool state);
   void slotOpenChatUrlChecked(bool state);
   void slotPageClicked(const QString &link);
+  void slotPagePrintPreview(void);
   void slotParticipantDoubleClicked(QTableWidgetItem *item);
   void slotPassphraseAuthenticateRadioToggled(bool state);
   void slotPassphraseChanged(const QString &text);
@@ -806,6 +806,7 @@ class spoton: public QMainWindow
   void slotPrepareSMP(const QString &hash);
   void slotPrepareSMP(void);
   void slotPrepareUrlDatabases(void);
+  void slotPrintTextbrowser(QPrinter *printer);
   void slotProtocolRadioToggled(bool state);
   void slotProxyChecked(bool state);
   void slotProxyTypeChanged(int index);

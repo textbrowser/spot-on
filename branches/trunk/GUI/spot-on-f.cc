@@ -1750,3 +1750,25 @@ void spoton::slotShowStatisticsWindow(void)
 {
   m_statisticsWindow->show();
 }
+
+void spoton::centerWidget(QWidget *child, QWidget *parent)
+{
+  if(!child || !parent)
+    return;
+
+  QPoint p(parent->pos());
+  int X = 0;
+  int Y = 0;
+
+  if(parent->width() >= child->width())
+    X = p.x() + (parent->width() - child->width()) / 2;
+  else
+    X = p.x() - (child->width() - parent->width()) / 2;
+
+  if(parent->height() >= child->height())
+    Y = p.y() + (parent->height() - child->height()) / 2;
+  else
+    Y = p.y() - (child->height() - parent->height()) / 2;
+
+  child->move(X, Y);
+}

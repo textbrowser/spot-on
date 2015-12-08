@@ -4106,7 +4106,8 @@ quint64 spoton_misc::databaseAccesses(void)
   return s_dbId;
 }
 
-bool spoton_misc::importUrl(const QByteArray &d, // Description
+bool spoton_misc::importUrl(const QByteArray &c, // Content
+			    const QByteArray &d, // Description
 			    const QByteArray &t, // Title
 			    const QByteArray &u, // URL
 			    const QSqlDatabase &db,
@@ -4146,6 +4147,7 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
   url.setScheme(scheme);
 
   QByteArray all_keywords;
+  QByteArray content(qCompress(c.trimmed(), 9));
   QByteArray description(d.trimmed());
   QByteArray title(t.trimmed());
   bool separate = true;
@@ -4206,31 +4208,33 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
     {
       query.prepare
 	(QString("INSERT INTO spot_on_urls_%1 ("
+		 "content, "
 		 "date_time_inserted, "
 		 "description, "
 		 "title, "
 		 "unique_id, "
 		 "url, "
-		 "url_hash) VALUES (?, ?, ?, nextval('serial'), "
+		 "url_hash) VALUES (?, ?, ?, ?, nextval('serial'), "
 		 "?, ?)").
 	 arg(urlHash.mid(0, 2).constData()));
-      query.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
+      query.bindValue(0, crypt->encryptedThenHashed(content, &ok).toBase64());
+      query.bindValue(1, QDateTime::currentDateTime().toString(Qt::ISODate));
 
       if(ok)
 	query.bindValue
-	  (1, crypt->encryptedThenHashed(description, &ok).
+	  (2, crypt->encryptedThenHashed(description, &ok).
 	   toBase64());
 
       if(ok)
 	query.bindValue
-	  (2, crypt->encryptedThenHashed(title, &ok).toBase64());
+	  (3, crypt->encryptedThenHashed(title, &ok).toBase64());
 
       if(ok)
 	query.bindValue
-	  (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	  (4, crypt->encryptedThenHashed(url.toEncoded(), &ok).
 	   toBase64());
 
-      query.bindValue(4, urlHash.constData());
+      query.bindValue(5, urlHash.constData());
     }
   else
     {
@@ -4264,33 +4268,39 @@ bool spoton_misc::importUrl(const QByteArray &d, // Description
 
       query.prepare
 	(QString("INSERT INTO spot_on_urls_%1 ("
+		 "content, "
 		 "date_time_inserted, "
 		 "description, "
 		 "title, "
 		 "unique_id, "
 		 "url, "
-		 "url_hash) VALUES (?, ?, ?, ?, ?, ?)").
+		 "url_hash) VALUES (?, ?, ?, ?, ?, ?, ?)").
 	 arg(urlHash.mid(0, 2).constData()));
-      query.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
 
       if(ok)
 	query.bindValue
-	  (1, crypt->encryptedThenHashed(description, &ok).
+	  (0, crypt->encryptedThenHashed(content, &ok).toBase64());
+
+      query.bindValue(1, QDateTime::currentDateTime().toString(Qt::ISODate));
+
+      if(ok)
+	query.bindValue
+	  (2, crypt->encryptedThenHashed(description, &ok).
 	   toBase64());
 
       if(ok)
 	query.bindValue
-	  (2, crypt->encryptedThenHashed(title, &ok).toBase64());
+	  (3, crypt->encryptedThenHashed(title, &ok).toBase64());
 
       if(id != -1)
-	query.bindValue(3, id);
+	query.bindValue(4, id);
 
       if(ok)
 	query.bindValue
-	  (4, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	  (5, crypt->encryptedThenHashed(url.toEncoded(), &ok).
 	   toBase64());
 
-      query.bindValue(5, urlHash.constData());
+      query.bindValue(6, urlHash.constData());
     }
 
   /*

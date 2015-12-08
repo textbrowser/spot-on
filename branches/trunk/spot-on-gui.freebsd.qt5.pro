@@ -57,6 +57,7 @@ FORMS           = UI/adaptiveechoprompt.ui \
 		  UI/listener-socket-options.ui \
                   UI/logviewer.ui \
 		  UI/options.ui \
+		  UI/pageviewer.ui \
                   UI/passwordprompt.ui \
 		  UI/poptastic-retrophone-settings.ui \
 		  UI/postgresqlconnect.ui \

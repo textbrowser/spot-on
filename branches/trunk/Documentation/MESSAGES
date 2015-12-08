@@ -536,6 +536,7 @@ Encryption Key (Base-64)
 1 - URL
 2 - Title
 3 - Description
+4 - Content
 ...
 N - Signature (First Group Items and Previous N - 1 Items)
 }

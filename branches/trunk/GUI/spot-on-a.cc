@@ -2446,6 +2446,8 @@ spoton::spoton(void):QMainWindow()
     (0, Qt::AscendingOrder);
   m_ui.institutions->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
+  m_statisticsUi.view->horizontalHeader()->setSortIndicator
+    (0, Qt::AscendingOrder);
   m_ui.kernelStatistics->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
   m_ui.mail->horizontalHeader()->setSortIndicator

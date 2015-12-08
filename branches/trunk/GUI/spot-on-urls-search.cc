@@ -447,7 +447,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append("<a href=\"");
 	      html.append(viewUrl.toEncoded().constData());
 	      html.append("\">");
-	      html.append("View URL</a>");
+	      html.append("View Locally</a>");
 	      html.append("<br>");
 	      html.append(QString("<font color=\"green\" size=3>%1</font>").
 			  arg(url.toEncoded().constData()));

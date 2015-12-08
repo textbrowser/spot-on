@@ -64,6 +64,7 @@ FORMS           = GoldBug-UI/adaptiveechoprompt.ui \
 		  GoldBug-UI/listener-socket-options.ui \
                   GoldBug-UI/logviewer.ui \
 		  GoldBug-UI/options.ui \
+		  GoldBug-UI/pageviewer.ui \
                   GoldBug-UI/passwordprompt.ui \
 		  GoldBug-UI/poptastic-retrophone-settings.ui \
 		  GoldBug-UI/postgresqlconnect.ui \

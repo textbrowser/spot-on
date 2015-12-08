@@ -123,7 +123,8 @@ class spoton_misc
 				  const QByteArray &saltedCredentials,
 				  const QByteArray &salt,
 				  spoton_crypt *crypt);
-  static bool importUrl(const QByteArray &d, // Description
+  static bool importUrl(const QByteArray &c, // Content
+			const QByteArray &d, // Description
 			const QByteArray &t, // Title
 			const QByteArray &u, // URL
 			const QSqlDatabase &db,

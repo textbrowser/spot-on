@@ -312,7 +312,7 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      if(i == 15 && j == 15)
 		querystr.append
-		  (QString("SELECT url, title, description, "
+		  (QString("SELECT url, title, description, content, "
 			   "date_time_inserted, unique_id "
 			   "FROM spot_on_urls_%1%2 "
 			   "WHERE unique_id > %3 ").
@@ -320,7 +320,7 @@ void spoton_urldistribution::slotTimeout(void)
 		   arg(m_lastUniqueId));
 	      else
 		querystr.append
-		  (QString("SELECT url, title, description, "
+		  (QString("SELECT url, title, description, content, "
 			   "date_time_inserted, unique_id "
 			   "FROM spot_on_urls_%1%2 "
 			   "WHERE unique_id > %3 "
@@ -329,7 +329,7 @@ void spoton_urldistribution::slotTimeout(void)
 		   arg(m_lastUniqueId));
 	    }
 
-	querystr.append(" ORDER BY 4 ");
+	querystr.append(" ORDER BY 5 "); // date_time_inserted
 	querystr.append(QString(" LIMIT %1 ").arg(m_limit));
 
 	quint64 count = 0;
@@ -428,14 +428,23 @@ void spoton_urldistribution::slotTimeout(void)
 					       &ok));
 
 	      if(ok)
+		bytes.append
+		  (urlCommonCredentials->
+		   decryptedAfterAuthenticated(QByteArray::
+					       fromBase64(query.value(3).
+							  toByteArray()),
+					       &ok));
+
+	      if(ok)
 		m_lastUniqueId = qMax
-		  (m_lastUniqueId, query.value(4).toLongLong());
+		  (m_lastUniqueId, query.value(5).toLongLong());
 
 	      if(ok)
 		{
 		  stream << bytes.value(0)  // URL
 			 << bytes.value(1)  // Title
-			 << bytes.value(2); // Description
+			 << bytes.value(2)  // Description
+			 << bytes.value(3); // Content
 
 		  if(stream.status() != QDataStream::Ok)
 		    {
