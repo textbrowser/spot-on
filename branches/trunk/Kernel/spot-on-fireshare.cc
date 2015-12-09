@@ -423,6 +423,14 @@ void spoton_fireshare::slotTimeout(void)
 						   &ok));
 
 		  if(ok)
+		    bytes.append
+		      (urlCommonCredentials->
+		       decryptedAfterAuthenticated(QByteArray::
+						   fromBase64(query.value(3).
+							      toByteArray()),
+						   &ok));
+
+		  if(ok)
 		    {
 		      stream << bytes.value(0)  // URL
 			     << bytes.value(1)  // Title
