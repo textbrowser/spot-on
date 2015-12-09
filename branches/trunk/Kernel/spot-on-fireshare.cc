@@ -331,7 +331,7 @@ void spoton_fireshare::slotTimeout(void)
 
 	    query.setForwardOnly(true);
 	    query.prepare
-	      (QString("SELECT url, title, description "
+	      (QString("SELECT url, title, description, content "
 		       "FROM spot_on_urls_%1 "
 		       "WHERE url_hash = ?").arg(shareHash.mid(0, 2).
 						 constData()));
@@ -426,7 +426,8 @@ void spoton_fireshare::slotTimeout(void)
 		    {
 		      stream << bytes.value(0)  // URL
 			     << bytes.value(1)  // Title
-			     << bytes.value(2); // Description
+			     << bytes.value(2)  // Description
+			     << bytes.value(3); // Content
 
 		      if(stream.status() != QDataStream::Ok)
 			{
