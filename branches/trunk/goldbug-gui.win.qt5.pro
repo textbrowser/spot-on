@@ -82,6 +82,7 @@ HEADERS		= Common\\spot-on-external-address.h \
 		  GUI\\spot-on-rosetta.h \
                   GUI\\spot-on-starbeamanalyzer.h \
                   GUI\\spot-on-tabwidget.h \
+		  GUI\\spot-on-textbrowser.h \
 		  GUI\\spot-on-textedit.h
 
 SOURCES		= Common\\spot-on-crypt.cc \
@@ -106,6 +107,7 @@ SOURCES		= Common\\spot-on-crypt.cc \
 		  GUI\\spot-on-smp.cc \
                   GUI\\spot-on-starbeamanalyzer.cc \
 		  GUI\\spot-on-tabwidget.cc \
+		  GUI\\spot-on-textbrowser.cc \
 		  GUI\\spot-on-textedit.cc \
 		  GUI\\spot-on-urls.cc \
 		  GUI\\spot-on-urls-search.cc

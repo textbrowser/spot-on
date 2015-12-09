@@ -17,7 +17,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTextBrowser" name="textBrowser">
+     <widget class="spoton_textbrowser" name="textBrowser">
       <property name="openLinks">
        <bool>false</bool>
       </property>
@@ -31,7 +31,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -61,6 +61,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../Icons/icons.qrc"/>
  </resources>

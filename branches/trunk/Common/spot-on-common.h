@@ -61,7 +61,7 @@ class spoton_common
   static const int GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;
   static const int KERNEL_CERTIFICATE_DAYS_VALID = 7;
-  static const int KERNEL_URLS_BATCH_SIZE = 25;
+  static const int KERNEL_URLS_BATCH_SIZE = 15;
   static const int LANE_WIDTH_DEFAULT = 20971520;
   static const int LANE_WIDTH_MAXIMUM = LANE_WIDTH_DEFAULT;
   static const int LANE_WIDTH_MINIMUM =
