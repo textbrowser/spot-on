@@ -5223,8 +5223,14 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
       mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
       mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
 
-      if(setsockopt(socketDescriptor, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq4,
-		    sizeof(mreq4)) == -1)
+#ifdef Q_OS_WIN32
+      if(setsockopt(m_socketDescriptor, IPPROTO_IP,
+		    IP_ADD_MEMBERSHIP, (char *) &mreq4, (int) sizeof(mreq4))
+         == -1)
+#else
+      if(setsockopt(socketDescriptor, IPPROTO_IP, IP_ADD_MEMBERSHIP,
+		    &mreq4, sizeof(mreq4)) == -1)
+#endif
 	{
 	  ok = false;
 	  spoton_misc::logError
