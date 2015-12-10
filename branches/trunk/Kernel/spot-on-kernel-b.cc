@@ -1880,7 +1880,7 @@ void spoton_kernel::saveUrls(const QList<QByteArray> &urls)
 
   QWriteLocker locker2(&m_urlsProcessedMutex);
 
-  m_urlsProcessed += urls.size();
+  m_urlsProcessed += static_cast<quint64> (urls.size());
 }
 
 void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI

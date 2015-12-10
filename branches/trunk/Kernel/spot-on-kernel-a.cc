@@ -521,7 +521,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  }
 
 	newt = oldt;
-	newt.c_lflag &= ~ECHO;
+	newt.c_lflag &= (tcflag_t) ~ECHO;
 
 	if(tcsetattr(STDIN_FILENO, TCSANOW, &newt) != 0)
 	  error = true;

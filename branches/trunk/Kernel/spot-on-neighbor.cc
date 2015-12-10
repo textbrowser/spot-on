@@ -1580,7 +1580,7 @@ void spoton_neighbor::slotReadyRead(void)
 	    (datagram.data(), datagram.size(), 0, 0);
 
 	  if(size > 0)
-	    data.append(datagram.mid(0, static_cast<qint64> (size)));
+	    data.append(datagram.mid(0, static_cast<int> (size)));
 	}
     }
 
