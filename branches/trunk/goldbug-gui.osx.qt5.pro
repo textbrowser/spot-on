@@ -57,9 +57,6 @@ RCC_DIR = temp/rcc
 OBJECTIVE_HEADERS += Common/CocoaInitializer.h
 OBJECTIVE_SOURCES += Common/CocoaInitializer.mm
 
-RESOURCES	= Icons/icons.qrc \
-		  Translations/translations.qrc
-
 TARGET		= GoldBug
 PROJECTNAME	= GoldBug
 

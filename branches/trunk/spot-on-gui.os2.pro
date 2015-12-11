@@ -35,9 +35,6 @@ LIBS		+= -L../../libSpotOn -L../../libSpotOn/Libraries.win32 \
 		   -lgpg-error -lmmap -lpthread -lspoton -lssl -lssp_s
 PRE_TARGETDEPS = libspotn.dll
 
-RESOURCES	= Icons/icons.qrc \
-                  Translations/translations.qrc
-
 win32:RC_FILE	= Icons/Resources/spot-on.rc
 
 TARGET		= Spot-On

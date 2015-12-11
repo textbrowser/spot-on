@@ -46,9 +46,6 @@ LIBS		+= -L..\\..\\libNTRU \
 		   -lntru -lpthread -lspoton -lssl32 -lws2_32
 PRE_TARGETDEPS = libntru.dll libspoton.dll
 
-RESOURCES	= Icons\\icons.qrc \
-                  Translations\\translations.qrc
-
 RC_FILE		= Icons\\Resources\\spot-on.rc
 
 TARGET		= Spot-On

@@ -50,9 +50,6 @@ UI_DIR = temp/ui
 MOC_DIR = temp/moc
 RCC_DIR = temp/rcc
 
-RESOURCES	= Icons/icons.qrc \
-		  Translations/translations.qrc
-
 TARGET		= GoldBug
 PROJECTNAME	= GoldBug
 
