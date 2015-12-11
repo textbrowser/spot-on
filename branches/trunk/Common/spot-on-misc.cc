@@ -5225,7 +5225,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
       mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
 
 #ifdef Q_OS_WIN32
-      if(setsockopt(m_socketDescriptor, IPPROTO_IP,
+      if(setsockopt(socketDescriptor, IPPROTO_IP,
 		    IP_ADD_MEMBERSHIP, (const char *) &mreq4, (int) length)
 	 == -1)
 #else
