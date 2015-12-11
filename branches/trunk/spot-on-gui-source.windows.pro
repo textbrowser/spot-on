@@ -20,8 +20,6 @@ FORMS           = UI\\adaptiveechoprompt.ui \
 		  UI\\statusbar.ui \
 		  UI\\unlock.ui
 
-UI_HEADERS_DIR  = GUI
-
 HEADERS		= Common\\spot-on-external-address.h \
 		  GUI\\spot-on.h \
 		  GUI\\spot-on-buzzpage.h \
@@ -131,3 +129,5 @@ TRANSLATIONS    = Translations\\spot-on_af.ts \
                   Translations\\spot-on_zh.ts \
                   Translations\\spot-on_zh_TW.ts \
                   Translations\\spot-on_zh_HK.ts
+
+UI_HEADERS_DIR  = GUI
