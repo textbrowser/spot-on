@@ -201,8 +201,8 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   optval = m_bufferSize;
 #ifdef Q_OS_WIN32
   rc = setsockopt
-    (m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, (const char *) &optval,
-     optlen);
+    (m_socketDescriptor, SOL_SOCKET,
+     SO_RCVBUF, (const char *) &optval, (int) optlen);
 #else
   rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, &optval, optlen);
 #endif
@@ -214,8 +214,8 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   optval = 1;
 #ifdef Q_OS_WIN32
   rc = setsockopt
-    (m_socketDescriptor, SOL_SOCKET, SO_REUSEADDR, (const char *) &optval,
-     optlen);
+    (m_socketDescriptor, SOL_SOCKET,
+     SO_REUSEADDR, (const char *) &optval, (int) optlen);
 #else
   rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_REUSEADDR,
 		  &optval, optlen);
@@ -228,8 +228,8 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   optval = m_bufferSize;
 #ifdef Q_OS_WIN32
   rc = setsockopt
-    (m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, (const char *) &optval,
-     optlen);
+    (m_socketDescriptor, SOL_SOCKET,
+     SO_SNDBUF, (const char *) &optval, (int) optlen);
 #else
   rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, &optval, optlen);
 #endif

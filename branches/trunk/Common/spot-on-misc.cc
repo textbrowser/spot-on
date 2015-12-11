@@ -5218,6 +5218,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
     {
       ip_mreq mreq4;
+      socklen_t length = sizeof(mreq4);
 
       memset(&mreq4, 0, sizeof(mreq4));
       mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
@@ -5225,11 +5226,11 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 
 #ifdef Q_OS_WIN32
       if(setsockopt(m_socketDescriptor, IPPROTO_IP,
-		    IP_ADD_MEMBERSHIP, (char *) &mreq4, (int) sizeof(mreq4))
-         == -1)
+		    IP_ADD_MEMBERSHIP, (const char *) &mreq4, (int) length)
+	 == -1)
 #else
       if(setsockopt(socketDescriptor, IPPROTO_IP, IP_ADD_MEMBERSHIP,
-		    &mreq4, sizeof(mreq4)) == -1)
+		    &mreq4, length) == -1)
 #endif
 	{
 	  ok = false;
@@ -5240,11 +5241,21 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	}
       else
 	{
+	  socklen_t length = 0;
 	  u_char option = static_cast<u_char> (loop.toChar().toLatin1());
 
+	  length = sizeof(option);
+
+#ifdef Q_OS_WIN32
+	  if(setsockopt(socketDescriptor,
+			IPPROTO_IP,
+			IP_MULTICAST_LOOP, (const char *) &option, (int) length)
+	     == -1)
+#else
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IP, IP_MULTICAST_LOOP, &option,
-			sizeof(option)) == -1)
+			length) == -1)
+#endif
 	    {
 	      ok = false;
 	      spoton_misc::logError
@@ -5259,13 +5270,20 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
     {
       Q_IPV6ADDR ip6 = address.toIPv6Address();
       ipv6_mreq mreq6;
+      socklen_t length = sizeof(mreq6);
 
       memset(&mreq6, 0, sizeof(mreq6));
       memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
       mreq6.ipv6mr_interface = 0;
 
+#ifdef Q_OS_WIN32
+      if(setsockopt(socketDescriptor, IPPROTO_IPV6,
+		    IPV6_JOIN_GROUP, (const char *) &mreq6,
+		    (int) length) == -1)
+#else
       if(setsockopt(socketDescriptor, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6,
-		    sizeof(mreq6)) == -1)
+		    length) == -1)
+#endif
 	{
 	  ok = false;
 	  spoton_misc::logError
@@ -5275,11 +5293,21 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	}
       else
 	{
+	  socklen_t length = 0;
 	  u_int option = loop.toUInt();
 
+	  length = sizeof(option);
+
+#ifdef Q_OS_WIN32
+	  if(setsockopt(socketDescriptor,
+			IPPROTO_IPV6,
+			IPV6_MULTICAST_LOOP, (const char *) &option,
+			(int) length) == -1)
+#else
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option,
-			sizeof(option)) == -1)
+			length) == -1)
+#endif
 	    {
 	      ok = false;
 	      spoton_misc::logError
