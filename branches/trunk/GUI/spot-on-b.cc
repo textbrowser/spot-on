@@ -2522,7 +2522,7 @@ void spoton::slotClearOutgoingMessage(void)
   m_ui.outgoingMessage->clear();
   m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
   m_ui.outgoingSubject->clear();
-  m_ui.plain->setChecked(false);
+  m_ui.richtext->setChecked(true);
   m_ui.outgoingSubject->setFocus();
 }
 
@@ -2884,7 +2884,7 @@ void spoton::slotSendMail(void)
 
   QByteArray message;
 
-  if(m_ui.plain->isChecked())
+  if(m_ui.richtext->isChecked())
     message = m_ui.outgoingMessage->toPlainText().toUtf8();
   else
     message = m_ui.outgoingMessage->toHtml().toUtf8();
@@ -3083,7 +3083,7 @@ void spoton::slotSendMail(void)
 	m_ui.outgoingMessage->clear();
 	m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
 	m_ui.outgoingSubject->clear();
-	m_ui.plain->setChecked(false);
+	m_ui.richtext->setChecked(true);
 
 #if SPOTON_GOLDBUG == 1
 	QMessageBox mb(this);
@@ -4889,7 +4889,7 @@ void spoton::slotReply(void)
 
   QString subject(item->text());
 
-  if(!m_ui.plain->isChecked())
+  if(!m_ui.richtext->isChecked())
     {
       message = "<br><span style=\"font-size:large;\">" +
 	message + "</span>";

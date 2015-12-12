@@ -813,7 +813,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>902</width>
+             <width>905</width>
              <height>582</height>
             </rect>
            </property>
@@ -1448,12 +1448,12 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QCheckBox" name="plain">
-                        <property name="toolTip">
-                         <string>Click to disable rich text.</string>
-                        </property>
+                       <widget class="QCheckBox" name="richtext">
                         <property name="text">
-                         <string>&amp;Plain</string>
+                         <string>&amp;Rich Text</string>
+                        </property>
+                        <property name="checked">
+                         <bool>true</bool>
                         </property>
                        </widget>
                       </item>
@@ -5022,7 +5022,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>711</width>
              <height>1134</height>
             </rect>
            </property>
@@ -8257,7 +8257,7 @@
   <tabstop>emailWriteActionMenu</tabstop>
   <tabstop>emailParticipants</tabstop>
   <tabstop>outgoingSubject</tabstop>
-  <tabstop>plain</tabstop>
+  <tabstop>richtext</tabstop>
   <tabstop>outgoingMessage</tabstop>
   <tabstop>attachment</tabstop>
   <tabstop>selectAttachment</tabstop>
