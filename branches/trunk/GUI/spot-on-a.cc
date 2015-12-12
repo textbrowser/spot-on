@@ -25,7 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifdef ANDROID
+#ifdef SPOTON_ANDROID
 extern void _Exit(int status);
 #endif
 
@@ -4917,7 +4917,7 @@ void spoton::slotGeneralTimerTimeout(void)
 	  if(pid == 0)
 	    m_ui.pid->setText("0");
 	  else
-	    m_ui.pid->setText("-1");
+	    m_ui.pid->setText("The shared.db database is locked.");
 	}
       else
 	{
