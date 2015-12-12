@@ -47,6 +47,8 @@ class spoton_pageviewer: public QMainWindow
   Ui_pageviewer m_ui;
 
  private slots:
+  void slotFind(void);
+  void slotFindInitialize(void);
   void slotPagePrintPreview(void);
   void slotPrint(QPrinter *printer);
 };

@@ -34,13 +34,23 @@
 spoton_pageviewer::spoton_pageviewer(QWidget *parent):QMainWindow(parent)
 {
   m_ui.setupUi(this);
+  connect(m_ui.action_Find,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotFindInitialize(void)));
   connect(m_ui.action_Print_Preview,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotPagePrintPreview(void)));
+  connect(m_ui.find,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotFind(void)));
+#if QT_VERSION >= 0x040700
+  m_ui.find->setPlaceholderText(tr("Find Text"));
+#endif
   setAttribute(Qt::WA_DeleteOnClose);
-  setWindowTitle(tr("%1: Page Viewer").
-		 arg(SPOTON_APPLICATION_NAME));
+  setWindowTitle(tr("%1: Page Viewer").arg(SPOTON_APPLICATION_NAME));
 }
 
 spoton_pageviewer::~spoton_pageviewer()
@@ -50,6 +60,18 @@ spoton_pageviewer::~spoton_pageviewer()
 void spoton_pageviewer::setHtml(const QString &text)
 {
   m_ui.textBrowser->setHtml(text);
+}
+
+void spoton_pageviewer::slotFind(void)
+{
+  if(!m_ui.textBrowser->find(m_ui.find->text()))
+    m_ui.textBrowser->moveCursor(QTextCursor::Start);
+}
+
+void spoton_pageviewer::slotFindInitialize(void)
+{
+  m_ui.find->selectAll();
+  m_ui.find->setFocus();
 }
 
 void spoton_pageviewer::slotPagePrintPreview(void)

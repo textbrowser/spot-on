@@ -1743,6 +1743,24 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 #endif
       message.append("\n");
 
+      QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setWindowTitle(tr("%1: Confirmation").
+			arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to share %1?").
+		 arg(original.toEncoded().constData()));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+
       if(m_kernelSocket.write(message.constData(), message.length()) !=
 	 message.length())
 	spoton_misc::logError
