@@ -4301,12 +4301,25 @@ void spoton::slotRenameParticipant(void)
   if(list.isEmpty())
     return;
 
+  QVariant data(list.value(0).data());
+
+  if(currentTabName() == "chat")
+    if(type == "chat" || type == "poptastic")
+      list = m_ui.participants->selectionModel()->selectedRows(0); // Name
+
+  if(currentTabName() == "email")
+    if(type == "email" || type == "poptastic")
+      list = m_ui.emailParticipants->selectionModel()->selectedRows(0); // Name
+
+  if(type == "url")
+    list = m_ui.urlParticipants->selectionModel()->selectedRows(0); // Name
+
   QString name("");
   bool ok = true;
 
   name = QInputDialog::getText
     (this, tr("%1: New Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
-     QLineEdit::Normal, "", &ok);
+     QLineEdit::Normal, list.value(0).data().toString(), &ok);
   name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
 
   if(name.isEmpty() || !ok)
@@ -4325,7 +4338,6 @@ void spoton::slotRenameParticipant(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	QVariant data(list.value(0).data());
 
 	if(!data.isNull() && data.isValid())
 	  {

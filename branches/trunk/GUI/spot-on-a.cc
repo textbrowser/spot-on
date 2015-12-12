@@ -1657,11 +1657,9 @@ spoton::spoton(void):QMainWindow()
   connect
     (menu->addAction(tr("Copy &URL Public Key Pair")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyMyURLPublicKey(void)));
-  /*
-  ** menu->addSeparator();
-  ** connect(menu->addAction(tr("Copy &All Public Key Pairs")),
-  ** SIGNAL(triggered(void)), this, SLOT(slotCopyAllMyPublicKeys(void)));
-  */
+  menu->addSeparator();
+  connect(menu->addAction(tr("Copy &All Public Key Pairs")),
+	  SIGNAL(triggered(void)), this, SLOT(slotCopyAllMyPublicKeys(void)));
   m_ui.commonBuzzChannels->setItemData
     (0,
      "magnet:?rn=Spot-On_Developer_Channel_Key&xf=10000&"
