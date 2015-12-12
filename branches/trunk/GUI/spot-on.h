@@ -393,7 +393,6 @@ class spoton_lineedit: public QLineEdit
 #include "ui_statisticswindow.h"
 #include "ui_statusbar.h"
 
-class QPrinter;
 class QProgressDialog;
 
 class spoton_forward_secrecy
@@ -461,7 +460,6 @@ class spoton: public QMainWindow
   QList<QFuture<void> > m_starbeamDigestFutures;
   QMainWindow *m_optionsWindow;
   QMainWindow *m_statisticsWindow;
-  QPointer<QTextBrowser> m_pagePreviewPrintTextBrowser;
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
@@ -787,7 +785,6 @@ class spoton: public QMainWindow
   void slotOntopChatDialogs(bool state);
   void slotOpenChatUrlChecked(bool state);
   void slotPageClicked(const QString &link);
-  void slotPagePrintPreview(void);
   void slotParticipantDoubleClicked(QTableWidgetItem *item);
   void slotPassphraseAuthenticateRadioToggled(bool state);
   void slotPassphraseChanged(const QString &text);
@@ -807,7 +804,6 @@ class spoton: public QMainWindow
   void slotPrepareSMP(const QString &hash);
   void slotPrepareSMP(void);
   void slotPrepareUrlDatabases(void);
-  void slotPrintTextbrowser(QPrinter *printer);
   void slotProtocolRadioToggled(bool state);
   void slotProxyChecked(bool state);
   void slotProxyTypeChanged(int index);

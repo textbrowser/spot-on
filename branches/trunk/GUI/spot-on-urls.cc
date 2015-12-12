@@ -28,8 +28,6 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
-#include <QPrintPreviewDialog>
-#include <QPrinter>
 #include <QProgressDialog>
 #include <QSqlDriver>
 #include <QToolTip>
@@ -40,7 +38,7 @@
 
 #include "spot-on.h"
 #include "spot-on-defines.h"
-#include "ui_pageviewer.h"
+#include "spot-on-pageviewer.h"
 #include "ui_postgresqlconnect.h"
 
 void spoton::prepareUrlLabels(void)
@@ -1783,7 +1781,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  return;
 	}
 
-      QMainWindow *mainWindow = new QMainWindow(this);
       QString hash("");
 #if QT_VERSION >= 0x050000
       QUrl original(url.path().mid(url.path().indexOf('?') + 1));
@@ -1801,16 +1798,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 								 ** mark.
 								 */
 #endif
-      Ui_pageviewer ui;
-
-      ui.setupUi(mainWindow);
-      connect(ui.action_Print_Preview,
-	      SIGNAL(triggered(void)),
-	      this,
-	      SLOT(slotPagePrintPreview(void)));
-      mainWindow->setAttribute(Qt::WA_DeleteOnClose);
-      mainWindow->setWindowTitle(tr("%1: Page Viewer").
-				 arg(SPOTON_APPLICATION_NAME));
+      spoton_pageviewer *pageViewer = new spoton_pageviewer(this);
 
       if(hash.startsWith("view-ftp:"))
 	hash.remove
@@ -1849,15 +1837,15 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 		   &ok);
 
 		if(ok)
-		  ui.textBrowser->setHtml
+		  pageViewer->setHtml
 		    (QString::fromUtf8(qUncompress(content).constData()));
 	      }
 
 	  QApplication::restoreOverrideCursor();
 	}
 
-      mainWindow->show();
-      centerWidget(mainWindow, this);
+      pageViewer->show();
+      centerWidget(pageViewer, this);
       return;
     }
   else if(!scheme.startsWith("delete-"))
@@ -2231,57 +2219,4 @@ void spoton::slotCorrectUrlDatabases(void)
      arg(SPOTON_APPLICATION_NAME),
      tr("Approximate orphaned keyword entries deleted: %1.").
      arg(locale.toString(deleted)));
-}
-
-void spoton::slotPagePrintPreview(void)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QWidget *parent = action->parentWidget();
-
-  while(parent)
-    {
-      if(qobject_cast<QMainWindow *> (parent))
-	break;
-
-      parent = parent->parentWidget();
-    }
-
-  if(!parent)
-    return;
-
-  QTextBrowser *textBrowser = parent->findChildren<QTextBrowser *> ().
-    value(0);
-
-  if(!textBrowser)
-    return;
-  else
-    m_pagePreviewPrintTextBrowser = textBrowser;
-
-  QPrinter printer(QPrinter::HighResolution);
-  QPrintPreviewDialog printDialog(&printer, parent);
-
-#ifdef Q_OS_MAC
-  printDialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-  printDialog.setWindowModality(Qt::WindowModal);
-  connect(&printDialog,
-	  SIGNAL(paintRequested(QPrinter *)),
-	  this,
-	  SLOT(slotPrintTextbrowser(QPrinter *)));
-
-  if(printDialog.exec() == QDialog::Accepted)
-    textBrowser->print(&printer);
-}
-
-void spoton::slotPrintTextbrowser(QPrinter *printer)
-{
-  if(!printer)
-    return;
-
-  if(m_pagePreviewPrintTextBrowser)
-    m_pagePreviewPrintTextBrowser->print(printer);
 }
