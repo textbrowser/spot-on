@@ -1839,7 +1839,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
 	  query.setForwardOnly(true);
 	  query.prepare
-	    (QString("SELECT content FROM spot_on_urls_%1 WHERE "
+	    (QString("SELECT content, url FROM spot_on_urls_%1 WHERE "
 		     "url_hash = ?").
 	     arg(hash.mid(0, 2)));
 	  query.bindValue(0, hash);
@@ -1848,6 +1848,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	    if(query.next())
 	      {
 		QByteArray content;
+		QUrl url;
 		bool ok = true;
 
 		content = m_urlCommonCrypt->decryptedAfterAuthenticated
@@ -1855,8 +1856,17 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 		   &ok);
 
 		if(ok)
-		  pageViewer->setHtml
-		    (QString::fromUtf8(qUncompress(content).constData()));
+		  url = QUrl::fromUserInput
+		    (m_urlCommonCrypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.value(1).
+							    toByteArray()),
+						 &ok));
+
+		if(ok)
+		  pageViewer->setPage
+		    (QString::fromUtf8(qUncompress(content).constData()),
+		     url, content.size());
 	      }
 
 	  QApplication::restoreOverrideCursor();

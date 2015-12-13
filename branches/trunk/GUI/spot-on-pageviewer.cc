@@ -57,11 +57,6 @@ spoton_pageviewer::~spoton_pageviewer()
 {
 }
 
-void spoton_pageviewer::setHtml(const QString &text)
-{
-  m_ui.textBrowser->setHtml(text);
-}
-
 void spoton_pageviewer::slotFind(void)
 {
   if(!m_ui.textBrowser->find(m_ui.find->text()))
@@ -72,6 +67,17 @@ void spoton_pageviewer::slotFindInitialize(void)
 {
   m_ui.find->selectAll();
   m_ui.find->setFocus();
+}
+
+void spoton_pageviewer::setPage(const QString &text,
+				const QUrl &url,
+				const int size)
+{
+  QLocale locale;
+
+  m_ui.size->setText(QString("%1 KiB").arg(locale.toString(size / 1024)));
+  m_ui.textBrowser->setHtml(text);
+  m_ui.url->setText(url.toString());
 }
 
 void spoton_pageviewer::slotPagePrintPreview(void)
