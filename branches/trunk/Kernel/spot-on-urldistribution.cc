@@ -441,10 +441,10 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      if(ok)
 		{
-		  stream << bytes.value(0)               // URL
-			 << bytes.value(1)               // Title
-			 << bytes.value(2)               // Description
-			 << qUncompress(bytes.value(3)); // Content
+		  stream << bytes.value(0)  // URL
+			 << bytes.value(1)  // Title
+			 << bytes.value(2)  // Description
+			 << bytes.value(3); // Content
 
 		  if(stream.status() != QDataStream::Ok)
 		    {

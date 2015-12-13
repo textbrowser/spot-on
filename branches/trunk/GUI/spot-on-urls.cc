@@ -1866,7 +1866,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 		if(ok)
 		  pageViewer->setPage
 		    (QString::fromUtf8(qUncompress(content).constData()),
-		     url, content.size());
+		     url);
 	      }
 
 	  QApplication::restoreOverrideCursor();

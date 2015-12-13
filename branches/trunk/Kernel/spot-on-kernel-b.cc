@@ -1814,7 +1814,7 @@ void spoton_kernel::importUrls(void)
 
 	    locker.unlock();
 
-	    QByteArray content(urls.value(3));
+	    QByteArray content(qUncompress(urls.value(3)));
 	    QByteArray description(urls.value(2));
 	    QByteArray title(urls.value(1));
 	    QByteArray url(urls.value(0));
