@@ -33,6 +33,7 @@
 #include "Common/spot-on-misc.h"
 #include "spot-on.h"
 #include "spot-on-pacify.h"
+#include "spot-on-pageviewer.h"
 #include "ui_forwardsecrecyalgorithmsselection.h"
 #include "ui_unlock.h"
 
@@ -1227,6 +1228,9 @@ void spoton::slotLock(void)
       if(it.value())
 	it.value().data()->close();
     }
+
+  foreach(spoton_pageviewer *pageViewer, findChildren<spoton_pageviewer *> ())
+    pageViewer->deleteLater();
 
   foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
     if(m_sb.lock != toolButton)
