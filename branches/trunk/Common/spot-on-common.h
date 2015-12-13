@@ -61,7 +61,7 @@ class spoton_common
   static const int GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;
   static const int KERNEL_CERTIFICATE_DAYS_VALID = 7;
-  static const int KERNEL_URLS_BATCH_SIZE = 15;
+  static const int KERNEL_URLS_BATCH_SIZE = 5;
   static const int LANE_WIDTH_DEFAULT = 104857600;
   static const int LANE_WIDTH_MAXIMUM = LANE_WIDTH_DEFAULT;
   static const int LANE_WIDTH_MINIMUM =
@@ -84,6 +84,7 @@ class spoton_common
   static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
   static const int STATUS_INTERVAL = 15;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
+  static const int URL_CONTENT_SHARE_MAXIMUM_SIZE = 1024 * 1024;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
     static_cast<qint64> (LANE_WIDTH_MAXIMUM); /*
 					      ** The buffer size must be greater

@@ -65,7 +65,7 @@ void spoton_urldistribution::run(void)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
-  timer.start(30000);
+  timer.start(15000);
   exec();
 }
 
@@ -315,17 +315,19 @@ void spoton_urldistribution::slotTimeout(void)
 		  (QString("SELECT url, title, description, content, "
 			   "date_time_inserted, unique_id "
 			   "FROM spot_on_urls_%1%2 "
-			   "WHERE unique_id > %3 ").
+			   "WHERE LENGTH(content) <= %3 AND unique_id > %4 ").
 		   arg(c1).arg(c2).
+		   arg(spoton_common::URL_CONTENT_SHARE_MAXIMUM_SIZE).
 		   arg(m_lastUniqueId));
 	      else
 		querystr.append
 		  (QString("SELECT url, title, description, content, "
 			   "date_time_inserted, unique_id "
 			   "FROM spot_on_urls_%1%2 "
-			   "WHERE unique_id > %3 "
+			   "WHERE LENGTH(content) <= %3 AND unique_id > %4 "
 			   "UNION ").
 		   arg(c1).arg(c2).
+		   arg(spoton_common::URL_CONTENT_SHARE_MAXIMUM_SIZE).
 		   arg(m_lastUniqueId));
 	    }
 
