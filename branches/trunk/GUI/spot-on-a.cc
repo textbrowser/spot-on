@@ -56,7 +56,8 @@ QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
 						      << 20000
                                                       << 25000
                                                       << 50000
-                                                      << 75000;
+                                                      << 75000
+						      << 20971520;
 QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =
   QStringList() << "ftp" << "gopher" << "http" << "https";
 const int spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE;
