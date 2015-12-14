@@ -1621,8 +1621,10 @@ void spoton_neighbor::slotReadyRead(void)
 
 	if(ok)
 	  {
-	    emit receivedMessage
-	      (data, m_id, QPair<QByteArray, QByteArray> ());
+	    if(!spoton_kernel::messagingCacheContains(data))
+	      emit receivedMessage
+		(data, m_id, QPair<QByteArray, QByteArray> ());
+
 	    emit resetKeepAlive();
 	    return;
 	  }
@@ -6974,8 +6976,10 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
       if(ok)
 	{
-	  emit receivedMessage
-	    (datagram, m_id, QPair<QByteArray, QByteArray> ());
+	  if(!spoton_kernel::messagingCacheContains(datagram))
+	    emit receivedMessage
+	      (datagram, m_id, QPair<QByteArray, QByteArray> ());
+
 	  emit resetKeepAlive();
 	  return;
 	}
