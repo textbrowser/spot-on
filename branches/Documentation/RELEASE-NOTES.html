@@ -4,7 +4,6 @@
 <b>Corrections</b>
 <ol>
 <li>Avoid creating surplus QTableWidgetItem objects.</li>
-<li>Conversion corrections.</li>
 <li>Corrected QSqlDatabase resource depletion with respect to Poptastic e-mail.</li>
 <li>Corrected double-initialization of QTableWidgetItem objects.</li>
 <li>Corrected flags on URL distiller items.</li>
@@ -13,6 +12,7 @@
 <li>Corrected uniqueness constraint on SQLite urls.db. Please remove the database. Apologies.</li>
 <li>Disable the URL distribution service if instructed to do so.
 <li>Display the Poptastic panel regardless of the outcome of spoton_misc::poptasticSettings().</li>
+<li>Integer conversion corrections.</li>
 <li>Removed recursive object deletion (spoton_neighbor::deleteLater() via close()).</li>
 <li>The method spoton_listener::listen() should set m_address and m_port.</li>
 <li>The method spoton_smp::step5() must prepare the provided error parameter under all failure conditions.</li>
