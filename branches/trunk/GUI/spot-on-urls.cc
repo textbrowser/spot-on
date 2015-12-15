@@ -1872,7 +1872,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  QApplication::restoreOverrideCursor();
 	}
 
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       pageViewer->show();
+      QApplication::restoreOverrideCursor();
       centerWidget(pageViewer, this);
       return;
     }
