@@ -92,6 +92,9 @@ void spoton_pageviewer::slotPagePrintPreview(void)
 	  SIGNAL(paintRequested(QPrinter *)),
 	  this,
 	  SLOT(slotPrint(QPrinter *)));
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  printDialog.show();
+  QApplication::restoreOverrideCursor();
 
   if(printDialog.exec() == QDialog::Accepted)
     m_ui.textBrowser->print(&printer);
