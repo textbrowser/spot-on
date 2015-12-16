@@ -69,12 +69,15 @@ void spoton_pageviewer::slotFindInitialize(void)
   m_ui.find->setFocus();
 }
 
-void spoton_pageviewer::setPage(const QString &text, const QUrl &url)
+void spoton_pageviewer::setPage(const QString &text, const QUrl &url,
+				const int compressedSize)
 {
   QLocale locale;
 
   m_ui.size->setText
-    (QString("%1 KiB").arg(locale.toString(text.length() / 1024)));
+    (QString("%1 KiB, Compressed %2 KiB").
+     arg(locale.toString(text.length() / 1024)).
+     arg(locale.toString(compressedSize / 1024)));
   m_ui.textBrowser->setHtml(text);
   m_ui.url->setText(url.toString());
 }

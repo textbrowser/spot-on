@@ -98,12 +98,12 @@ void spoton::discoverUrls(void)
 	    if(i == 15 && j == 15)
 	      querystr.append
 		(QString("SELECT title, url, description, "
-			 "date_time_inserted, url_hash "
+			 "date_time_inserted, LENGTH(content), url_hash "
 			 "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
 	    else
 	      querystr.append
 		(QString("SELECT title, url, description, "
-			 "date_time_inserted, url_hash "
+			 "date_time_inserted, LENGTH(content), url_hash "
 			 "FROM spot_on_urls_%1%2 UNION ").
 		 arg(c1).arg(c2));
 	  }
@@ -298,14 +298,14 @@ void spoton::discoverUrls(void)
 	      if(i == prefixes.size() && keywordsearches.isEmpty())
 		querystr.append
 		  (QString("SELECT title, url, description, "
-			   "date_time_inserted, url_hash "
+			   "date_time_inserted, LENGTH(content), url_hash "
 			   "FROM spot_on_urls_%1 WHERE "
 			   "url_hash IN (%2) ").
 		   arg(prefix).arg(keywordsearch));
 	      else
 		querystr.append
 		  (QString("SELECT title, url, description, "
-			   "date_time_inserted, url_hash "
+			   "date_time_inserted, LENGTH(content), url_hash "
 			   "FROM spot_on_urls_%1 WHERE "
 			   "url_hash IN (%2) UNION ").
 		   arg(prefix).arg(keywordsearch));
@@ -349,7 +349,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	  if(!count)
 	    m_ui.urls->clear();
 
-	  QByteArray hash(query.value(4).toByteArray());
+	  QByteArray hash(query.value(5).toByteArray());
 	  QString description("");
 	  QString title("");
 	  QUrl url;
@@ -399,6 +399,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 		    description.append("...");
 		}
 
+	      QLocale locale;
 	      QString scheme(url.scheme().toLower().trimmed());
 	      QUrl deleteUrl(url);
 	      QUrl shareUrl(hash);
@@ -455,8 +456,10 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append(QString("<font color=\"gray\" size=3>%1</font>").
 			  arg(description));
 	      html.append("<br>");
-	      html.append(QString("<font color=\"gray\" size=3>%1</font>").
-			  arg(query.value(3).toString()));
+	      html.append
+		(QString("<font color=\"gray\" size=3>%1 | %2 KiB</font>").
+		 arg(query.value(3).toString()).
+		 arg(locale.toString(query.value(4).toLongLong() / 1024)));
 	      html.append("<br><br>");
 	      count += 1;
 	    }

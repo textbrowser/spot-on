@@ -41,7 +41,7 @@ class spoton_pageviewer: public QMainWindow
  public:
   spoton_pageviewer(QWidget *parent);
   ~spoton_pageviewer();
-  void setPage(const QString &text, const QUrl &url);
+  void setPage(const QString &text, const QUrl &url, const int compressedSize);
 
  private:
   Ui_pageviewer m_ui;
