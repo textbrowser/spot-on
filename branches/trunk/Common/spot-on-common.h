@@ -85,7 +85,7 @@ class spoton_common
   static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
   static const int STATUS_INTERVAL = 15;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
-  static const int URL_CONTENT_SHARE_MAXIMUM_SIZE = 1024 * 1024;
+  static const int URL_CONTENT_SHARE_MAXIMUM_SIZE = 5 * 1024 * 1024;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
     static_cast<qint64> (LANE_WIDTH_MAXIMUM); /*
 					      ** The buffer size must be greater
