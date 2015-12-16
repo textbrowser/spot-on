@@ -119,7 +119,8 @@ void spoton_starbeamanalyzer::slotClose(void)
 
 void spoton_starbeamanalyzer::show(QWidget *parent)
 {
-  QMainWindow::showNormal();
+  showNormal();
+  activateWindow();
   raise();
 
   if(parent)

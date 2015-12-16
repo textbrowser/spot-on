@@ -6008,6 +6008,7 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 	    chat->setSMPVerified(smp->passed());
 
 	  chat->showNormal();
+	  chat->activateWindow();
 	  chat->raise();
 	  return;
 	}
@@ -6065,6 +6066,7 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
   m_chatWindows[publicKeyHash] = chat;
   m_starsLastModificationTime = QDateTime();
   chat->showNormal();
+  chat->activateWindow();
   chat->raise();
   chat->center(this);
 

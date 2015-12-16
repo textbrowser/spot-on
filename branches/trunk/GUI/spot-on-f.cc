@@ -1767,6 +1767,7 @@ void spoton::slotPassthroughCheckChange(bool state)
 void spoton::slotShowStatisticsWindow(void)
 {
   m_statisticsWindow->showNormal();
+  m_statisticsWindow->activateWindow();
   m_statisticsWindow->raise();
   centerWidget(m_statisticsWindow, this);
 }
