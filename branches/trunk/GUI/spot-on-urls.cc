@@ -1866,14 +1866,16 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 		if(ok)
 		  pageViewer->setPage
 		    (QString::fromUtf8(qUncompress(content).constData()),
-		     url, content.length());
+		     url, query.value(0).toByteArray().length());
 	      }
 
 	  QApplication::restoreOverrideCursor();
 	}
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      pageViewer->show();
+      pageViewer->showNormal();
+      pageViewer->activateWindow();
+      pageViewer->raise();
       QApplication::restoreOverrideCursor();
       centerWidget(pageViewer, this);
       return;
