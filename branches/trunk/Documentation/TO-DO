@@ -230,3 +230,4 @@ Remaining Items
 7.     An account system where the initiator provides both random arrays.
 8.     The kernel is susceptible to flooding as the newline character
        is mandatory.
+9.     Communications over telephones. Noise and text.
