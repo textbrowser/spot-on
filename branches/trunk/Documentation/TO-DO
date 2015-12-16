@@ -231,3 +231,4 @@ Remaining Items
 8.     The kernel is susceptible to flooding as the newline character
        is mandatory.
 9.     Communications over telephones. Noise and text.
+10.    Display information pertaining to unsigned documents.
