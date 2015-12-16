@@ -62,6 +62,7 @@ class spoton_common
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;
   static const int KERNEL_CERTIFICATE_DAYS_VALID = 7;
   static const int KERNEL_URLS_BATCH_SIZE = 5;
+  static const int KERNEL_URL_DISPATCHER_INTERVAL_STATIC = 15;
   static const int LANE_WIDTH_DEFAULT = 104857600;
   static const int LANE_WIDTH_MAXIMUM = LANE_WIDTH_DEFAULT;
   static const int LANE_WIDTH_MINIMUM =
@@ -107,6 +108,7 @@ class spoton_common
   static int CHAT_TIME_DELTA_MAXIMUM;
   static int FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
   static int GEMINI_TIME_DELTA_MAXIMUM;
+  static int KERNEL_URL_DISPATCHER_INTERVAL;
   static int MAIL_TIME_DELTA_MAXIMUM;
   static int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
 

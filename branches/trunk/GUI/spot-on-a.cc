@@ -71,6 +71,7 @@ const int spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::HARVEST_POST_OFFICE_LETTERS_INTERVAL;
 const int spoton_common::KERNEL_CERTIFICATE_DAYS_VALID;
 const int spoton_common::KERNEL_URLS_BATCH_SIZE;
+const int spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC;
 const int spoton_common::LANE_WIDTH_DEFAULT;
 const int spoton_common::LANE_WIDTH_MAXIMUM;
 const int spoton_common::LANE_WIDTH_MINIMUM;
@@ -101,6 +102,8 @@ int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::KERNEL_URL_DISPATCHER_INTERVAL =
+  spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC;
 int spoton_common::MAIL_TIME_DELTA_MAXIMUM =
   spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
@@ -337,16 +340,18 @@ spoton::spoton(void):QMainWindow()
 	     "Qt %4, %5-bit.\n"
 	     "%6.\n"
 	     "libgcrypt %7.\n"
-	     "libspoton %8.").
+	     "libspoton %8.\n"
+	     "Location of .spot-on: %9.").
      arg(__DATE__).
      arg(__TIME__).
      arg(sslSupported ?
 	 SSLeay_version(SSLEAY_VERSION) :
 	 "OpenSSL is not supported, according to Qt").
-     arg(QT_VERSION_STR).arg(sizeof(void *) * 8).
+     arg(QT_VERSION_STR).arg(8 * sizeof(void *)).
      arg(curl_version()).
      arg(GCRYPT_VERSION).
-     arg(LIBSPOTON_VERSION_STR));
+     arg(LIBSPOTON_VERSION_STR).
+     arg(spoton_misc::homePath()));
   m_ui.passphrase_strength_indicator->setVisible(false);
   m_ui.statisticsBox->setVisible(false);
   m_ui.urlSettings->setVisible(true);

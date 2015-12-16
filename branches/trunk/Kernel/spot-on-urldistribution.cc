@@ -65,12 +65,20 @@ void spoton_urldistribution::run(void)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
-  timer.start(15000);
+  timer.start(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
   exec();
 }
 
 void spoton_urldistribution::slotTimeout(void)
 {
+  QTimer *timer = qobject_cast<QTimer *> (sender());
+
+  if(timer)
+    if(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL !=
+       timer->interval())
+      timer->setInterval
+	(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
+
   spoton_crypt *s_crypt1 = spoton_kernel::s_crypts.value("url", 0);
 
   if(!s_crypt1)

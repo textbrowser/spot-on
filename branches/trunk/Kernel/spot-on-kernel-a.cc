@@ -149,6 +149,7 @@ const int spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::HARVEST_POST_OFFICE_LETTERS_INTERVAL;
 const int spoton_common::KERNEL_CERTIFICATE_DAYS_VALID;
 const int spoton_common::KERNEL_URLS_BATCH_SIZE;
+const int spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC;
 const int spoton_common::LANE_WIDTH_DEFAULT;
 const int spoton_common::LANE_WIDTH_MAXIMUM;
 const int spoton_common::LANE_WIDTH_MINIMUM;
@@ -179,6 +180,8 @@ int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::KERNEL_URL_DISPATCHER_INTERVAL =
+  spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC;
 int spoton_common::MAIL_TIME_DELTA_MAXIMUM =
   spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
@@ -2070,6 +2073,7 @@ void spoton_kernel::slotSettingsChanged(const QString &path)
   */
 
   m_settingsTimer.start();
+  m_settingsWatcher.removePath(path);
   m_settingsWatcher.addPath(path);
 }
 
