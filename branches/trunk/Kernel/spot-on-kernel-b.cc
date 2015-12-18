@@ -1845,12 +1845,19 @@ void spoton_kernel::importUrls(void)
 	      }
 
 	    if(ok)
-	      spoton_misc::importUrl
-		(content, description, title, url, db,
-		 spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
-		 setting("gui/disable_kernel_synchronous_sqlite_url_download",
-			 false).toBool(),
-		 crypt);
+	      if(spoton_misc::importUrl(content, description, title, url, db,
+					spoton_common::
+					MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
+					setting("gui/disable_kernel_"
+						"synchronous_sqlite_url_"
+						"download",
+						false).toBool(),
+					crypt))
+		{
+		  QWriteLocker locker(&m_urlsProcessedMutex);
+
+		  m_urlsProcessed += 1;
+		}
 	  }
 	while(true);
       }
@@ -1877,10 +1884,6 @@ void spoton_kernel::saveUrls(const QList<QByteArray> &urls)
 
   m_urlList << urls;
   locker1.unlock();
-
-  QWriteLocker locker2(&m_urlsProcessedMutex);
-
-  m_urlsProcessed += static_cast<quint64> (urls.size());
 }
 
 void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
