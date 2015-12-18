@@ -71,7 +71,7 @@ libntru_install.extra = cp ../../../libNTRU/libntru.dylib ../Spot-On-Kernel.app/
 libsctp_install.path  = .
 libsctp_install.extra = cp ../../../libSCTP/Libraries.osx64/libusrsctp.0.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libusrsctp.0.dylib && install_name_tool -change ../../../libSCTP/Libraries.osx64/libusrsctp.0.dylib @executable_path/../Frameworks/libusrsctp.0.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 libspoton_install.path  = .
-libspoton_install.extra = cp ../../../libSpotOn/libspoton.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change ../../../libSpotOn/libspoton.dylib @executable_path/../Frameworks/libspoton.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
+libspoton_install.extra = cp ../../../libSpotOn/libspoton.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/opt/libgcrypt/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change ../../../libSpotOn/libspoton.dylib @executable_path/../Frameworks/libspoton.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 macdeployqt.path        = ../Spot-On-Kernel.app
 macdeployqt.extra       = $$[QT_INSTALL_BINS]/macdeployqt ../Spot-On-Kernel.app -verbose=0
 preinstall.path         = /Applications/Spot-On.d
