@@ -1,5 +1,7 @@
-Requirements: Qt 4.8.x, libGeoIP, libcrypto, libeay, libgcrypt,
+Requirements: Qt 4.8.x, libGeoIP, libcURL, libcrypto, libeay, libgcrypt,
 libgpg-error, libssl. Qt 5.x is also supported.
+
+Homebrew is required for OS X.
 
 If header (h) or interface (ui) files have changed, please perform
 a distclean before building Spot-On.
