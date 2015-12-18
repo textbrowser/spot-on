@@ -133,6 +133,13 @@ Completed Items
        ought to be considered.
 97.    E-mail institutions require dispatcher signatures.
 98.    GoldBug keys should have separate hash keys.
+99.    The kernel is susceptible to flooding as the newline character
+       is mandatory.
+100.   macdeployqt and Qt 5 do not produce correct bundles on OS X.
+101.   Allow programs such as netcat to feed data to Spot-On. Specific
+       private listeners would be capable of transforming the data
+       into StarBeam pulses.
+102.   Allow pass-through flow of non-Spot-On data.
 
 Ignored Items
 
@@ -154,9 +161,9 @@ Ignored Items
        navigate private Spot-On nodes remotely.
 9.     Zero-knowledge passphrase authentication.
 10.    Add SRP for account verification. What is this, the NSA?
-11.    Allow programs such as netcat to feed data to Spot-On. Specific
-       private listeners would be capable of transforming the data
-       into StarBeam pulses.
+11.    Allow user to bookmark search results. Also allow searching of
+       bookmarked entries. Perhaps provide a means of searching the
+       global databases as well as bookmarked entries.
 12.    Allow for other ciphers besides AES for e-mail.
 13.    Introduce load balancing of echoes. We're not interested in real-time
        responses. Congestion control is helpful, however, short graphs
@@ -178,7 +185,8 @@ Ignored Items
 25.    Implement a Qt class in support of DTLS.
 26.    Limit the number of entries that are allowed to be inserted into
        a database.
-27.    Allow pass-through flow of non-Spot-On data.
+27.    The data stored in shared.db is not authenticated. Uniqueness
+       is not properly defined.
 28.    Android build.
 29.    QFSFileEngine::open: No file name specified: created from
        e-mail.
@@ -211,12 +219,6 @@ Ignored Items
 44.    Weather feeds.
 45.    Create a user's configuration database. Store key types too.
 46.    Hybrid group communications based on deterministic key pairs.
-47.    The data stored in shared.db is not authenticated. Uniqueness
-       is not properly defined.
-48.    Allow user to bookmark search results. Also allow searching of
-       bookmarked entries. Perhaps provide a means of searching the
-       global databases as well as bookmarked entries.
-49.    macdeployqt and Qt 5 do not produce correct bundles on OS X.
 
 Remaining Items
 
@@ -228,7 +230,5 @@ Remaining Items
 5.     Per-participant permissions.
 6.     Allow custom addresses for spoton_external_address.
 7.     An account system where the initiator provides both random arrays.
-8.     The kernel is susceptible to flooding as the newline character
-       is mandatory.
-9.     Communications over telephones. Noise and text.
-10.    Display information pertaining to unsigned documents.
+8.     Communications over telephones. Noise and text.
+9.     Display information pertaining to unsigned documents.

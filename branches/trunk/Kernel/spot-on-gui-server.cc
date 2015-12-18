@@ -270,7 +270,7 @@ void spoton_gui_server::slotReadyRead(void)
 
   m_guiSocketData[socket->socketDescriptor()].append(data);
 
-  if(m_guiSocketData[socket->socketDescriptor()].endsWith('\n'))
+  if(m_guiSocketData[socket->socketDescriptor()].contains('\n'))
     {
       QByteArray data(m_guiSocketData[socket->socketDescriptor()]);
       QList<QByteArray> messages(data.mid(0, data.lastIndexOf('\n')).
@@ -624,6 +624,18 @@ void spoton_gui_server::slotReadyRead(void)
 		   "0011");
 	    }
 	}
+    }
+
+  if(m_guiSocketData[socket->socketDescriptor()].size() >
+     spoton_common::MAXIMUM_KERNEL_GUI_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
+    {
+      m_guiSocketData[socket->socketDescriptor()].clear();
+      spoton_misc::logError
+	(QString("spoton_gui_server::slotReadyRead(): "
+		 "container for socket %1:%2 contains too much data. "
+		 "Discarding data.").
+	 arg(socket->localAddress().toString()).
+	 arg(socket->localPort()));
     }
 }
 
