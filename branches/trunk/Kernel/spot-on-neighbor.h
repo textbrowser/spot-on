@@ -378,6 +378,7 @@ class spoton_neighbor: public QThread
 		  const QByteArray &gemini,
 		  const QByteArray &geminiHashKey,
 		  const QByteArray &timestamp,
+		  const QByteArray &signature,
 		  const QString &messageType);
   void saveParticipantStatus(const QByteArray &publicKeyHash);
   void saveParticipantStatus(const QByteArray &name,

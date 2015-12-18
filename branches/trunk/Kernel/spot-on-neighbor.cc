@@ -2655,7 +2655,7 @@ void spoton_neighbor::process0000a(int length, const QByteArray &dataIn,
   if(!list.isEmpty())
     saveGemini(list.value(0), list.value(1),
 	       list.value(2), list.value(3),
-	       messageType);
+	       list.value(4), messageType);
 }
 
 void spoton_neighbor::process0000b(int length, const QByteArray &dataIn,
@@ -2673,7 +2673,7 @@ void spoton_neighbor::process0000b(int length, const QByteArray &dataIn,
   if(!list.isEmpty())
     saveGemini(list.value(1), list.value(2),
 	       list.value(3), list.value(4),
-	       "0000b");
+	       list.value(5), "0000b");
 }
 
 void spoton_neighbor::process0000d(int length, const QByteArray &dataIn,
@@ -2687,7 +2687,7 @@ void spoton_neighbor::process0000d(int length, const QByteArray &dataIn,
   if(!list.isEmpty())
     saveGemini(list.value(0), list.value(1),
 	       list.value(2), list.value(3),
-	       "0000d");
+	       QByteArray(), "0000d");
 }
 
 void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
@@ -6350,6 +6350,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 				 const QByteArray &gemini,
 				 const QByteArray &geminiHashKey,
 				 const QByteArray &timestamp,
+				 const QByteArray &signature,
 				 const QString &messageType)
 {
   if(!spoton_kernel::setting("gui/acceptGeminis", true).toBool())
@@ -6522,41 +6523,51 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 	if(ok)
 	  if(query.exec())
 	    {
+	      QString notsigned("");
+
+	      if(signature.isEmpty())
+		notsigned = " (unsigned)";
+
 	      if(geminis.first.isEmpty() ||
 		 geminis.second.isEmpty())
 		emit statusMessageReceived
 		  (publicKeyHash,
-		   tr("The participant %1...%2 terminated the call.").
+		   tr("The participant %1...%2 terminated%3 the call.").
 		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()));
+		   arg(publicKeyHash.toBase64().right(16).constData()).
+		   arg(notsigned));
 	      else if(messageType == "0000a")
 		{
 		  if(respond)
 		    emit statusMessageReceived
 		      (publicKeyHash,
 		       tr("The participant %1...%2 may have "
-			  "initiated a two-way call. Response dispatched.").
+			  "initiated a two-way call%3. Response dispatched.").
 		       arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		       arg(publicKeyHash.toBase64().right(16).constData()));
+		       arg(publicKeyHash.toBase64().right(16).constData()).
+		       arg(notsigned));
 		  else
 		    emit statusMessageReceived
 		      (publicKeyHash,
-		       tr("The participant %1...%2 initiated a call.").
+		       tr("The participant %1...%2 initiated a call%3.").
 		       arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		       arg(publicKeyHash.toBase64().right(16).constData()));
+		       arg(publicKeyHash.toBase64().right(16).constData()).
+		       arg(notsigned));
 		}
 	      else if(messageType == "0000b")
 		emit statusMessageReceived
 		  (publicKeyHash,
-		   tr("The participant %1...%2 initiated a call "
+		   tr("The participant %1...%2 initiated a call%3 "
 		      "within a call.").
 		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()));
+		   arg(publicKeyHash.toBase64().right(16).constData()).
+		   arg(notsigned));
 	      else if(messageType == "0000c")
 		emit statusMessageReceived
 		  (publicKeyHash,
-		   tr("Received a two-way call response from "
-		      "participant %1...%2.").
+		   tr("Received a two-way call response%1 from "
+		      "participant %2...%3.").
+		   arg(notsigned).
 		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
 		   arg(publicKeyHash.toBase64().right(16).constData()));
 	      else if(messageType == "0000d")
