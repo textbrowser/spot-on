@@ -2630,6 +2630,7 @@ void spoton_neighbor::process0000(int length, const QByteArray &dataIn,
 	 list.value(2).toBase64() + "_" +
 	 list.value(3).toBase64() + "_" +
 	 list.value(4).toBase64() + "_" +
+	 list.value(5).toBase64() + "_" +
 	 list.last().toBase64().append("\n"));
     }
 }

@@ -389,7 +389,7 @@ void spoton::slotReceivedKernelMessage(void)
 		{
 		  QList<QByteArray> list(data.split('_'));
 
-		  if(list.size() != 6)
+		  if(list.size() != 7)
 		    continue;
 
 		  for(int i = 0; i < list.size() - 1; i++)
@@ -402,6 +402,10 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  QList<QByteArray> values;
 		  QPointer<spoton_chatwindow> chat = 0;
+		  QString notsigned(" ");
+
+		  if(list.value(5).isEmpty())
+		    notsigned = " unsigned ";
 
 		  if(m_chatWindows.contains(list.value(0).toBase64()))
 		    chat = m_chatWindows.value(list.value(0).toBase64(), 0);
@@ -427,8 +431,9 @@ void spoton::slotReceivedKernelMessage(void)
 			 arg(now.toString("mm")).
 			 arg(now.toString("ss")));
 		      msg.append
-			(tr("<i>Received an SMP message "
+			(tr("<i>Received an%1SMP message "
 			    "from %2...%3.</i>").
+			 arg(notsigned).
 			 arg(hash.toBase64().mid(0, 16).
 			     constData()).
 			 arg(hash.toBase64().right(16).
@@ -656,6 +661,10 @@ void spoton::slotReceivedKernelMessage(void)
 		    (QString("<font color=blue>%1: </font>").
 		     arg(QString::fromUtf8(name.constData(),
 					   name.length())));
+
+		  if(notsigned != " ")
+		    msg.append
+		      ("<font color=orange>unsigned: </font>");
 
 		  if(spoton_misc::isValidBuzzMagnet(content.toLatin1()))
 		    {

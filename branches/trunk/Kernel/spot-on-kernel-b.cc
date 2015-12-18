@@ -783,6 +783,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	     list.value(2).toBase64() + "_" +
 	     list.value(3).toBase64() + "_" +
 	     list.value(4).toBase64() + "_" +
+	     list.value(5).toBase64() + "_" +
 	     list.last().toBase64().append("\n"));
 	}
     }
