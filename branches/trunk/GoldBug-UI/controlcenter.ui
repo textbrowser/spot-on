@@ -1433,7 +1433,7 @@ QPushButton:pressed {
                <enum>QTabWidget::Rounded</enum>
               </property>
               <property name="currentIndex">
-               <number>2</number>
+               <number>0</number>
               </property>
               <property name="iconSize">
                <size>
@@ -1848,13 +1848,6 @@ QPushButton:pressed {
                    </spacer>
                   </item>
                  </layout>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_123">
-                  <property name="text">
-                   <string>Mail sent via Pure Forward Secrecy shall not be archived.</string>
-                  </property>
-                 </widget>
                 </item>
                 <item>
                  <widget class="QTableWidget" name="postoffice">
@@ -2789,8 +2782,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>1833</height>
+             <width>556</width>
+             <height>1783</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3411,13 +3404,6 @@ QPushButton#addListener:pressed {
                      </property>
                     </widget>
                    </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_73">
-                   <property name="spacing">
-                    <number>5</number>
-                   </property>
                    <item>
                     <widget class="QLabel" name="label_71">
                      <property name="text">
@@ -3441,19 +3427,6 @@ QPushButton#addListener:pressed {
                       </property>
                      </item>
                     </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_61">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
                    </item>
                   </layout>
                  </item>
@@ -4042,7 +4015,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>582</width>
-             <height>576</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5054,10 +5027,10 @@ color: rgb(255, 255, 255);
           <widget class="QWidget" name="scrollAreaWidgetContents_9">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-64</x>
              <y>0</y>
              <width>634</width>
-             <height>352</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5132,7 +5105,7 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-325</y>
                  <width>622</width>
                  <height>710</height>
                 </rect>
@@ -6005,12 +5978,6 @@ QPushButton:pressed {
                      </item>
                      <item>
                       <widget class="QPushButton" name="importUrls">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
                        <property name="toolTip">
                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Import URL data from the shared.db database.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
@@ -6314,7 +6281,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>806</width>
+             <width>771</width>
              <height>1304</height>
             </rect>
            </property>
@@ -7771,7 +7738,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>430</width>
+             <width>556</width>
              <height>771</height>
             </rect>
            </property>
@@ -9045,8 +9012,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>533</width>
-             <height>471</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
