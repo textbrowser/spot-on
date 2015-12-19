@@ -6353,6 +6353,11 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 				 const QByteArray &signature,
 				 const QString &messageType)
 {
+  /*
+  ** Some of the following is similar to logic in
+  ** spot-on-kernel-b.cc.
+  */
+
   if(!spoton_kernel::setting("gui/acceptGeminis", true).toBool())
     return;
 
