@@ -216,6 +216,7 @@ class spoton_kernel: public QObject
 		  const QByteArray &gemini,
 		  const QByteArray &geminiHashKey,
 		  const QByteArray &timestamp,
+		  const QByteArray &signature,
 		  const QString &messageType);
   void updateStatistics(const QDateTime &uptime,
 			const int interfaces,
