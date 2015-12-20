@@ -251,6 +251,43 @@ void spoton::slotPrepareUrlDatabases(void)
 				     "url_hash TEXT PRIMARY KEY NOT NULL)").
 			     arg(c1).arg(c2)))
 		created = false;
+
+	    progress.setLabelText
+	      (tr("Creating spot_on_urls_revisions_%1%2. "
+		  "Please be patient.").arg(c1).arg(c2));
+
+	    if(m_urlDatabase.driverName() == "QPSQL")
+	      {
+		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
+				       "spot_on_urls_revisions_%1%2 ("
+				       "content BYTEA NOT NULL, "
+				       "content_hash TEXT NOT NULL, "
+				       "date_time_inserted TEXT NOT NULL, "
+				       "url_hash TEXT NOT NULL, "
+				       "PRIMARY KEY (content_hash, url_hash), "
+				       "FOREIGN KEY(url_hash) REFERENCES "
+				       "spot_on_urls_%1%2(url_hash) ON "
+				       "DELETE CASCADE)").
+			       arg(c1).arg(c2)))
+		  created = false;
+
+		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
+				       "spot_on_urls_revisions_%1%2 TO "
+				       "spot_on_user").
+			       arg(c1).arg(c2)))
+		  created = false;
+	      }
+	    else
+	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
+				     "spot_on_urls_revisions_%1%2 ("
+				     "content BYTEA NOT NULL, "
+				     "content_hash TEXT NOT NULL, "
+				     "date_time_inserted TEXT NOT NULL, "
+				     "url_hash TEXT NOT NULL, "
+				     "PRIMARY KEY "
+				     "(content_hash, url_hash))").
+			     arg(c1).arg(c2)))
+		created = false;
 	  }
 	else
 	  created = false;
@@ -436,6 +473,11 @@ void spoton::slotDropUrlTables(void)
 				   "spot_on_urls_%1%2").
 			   arg(c1).arg(c2)))
 	      dropped = false;
+
+	    if(!query.exec(QString("DROP TABLE IF EXISTS "
+				   "spot_on_urls_revisions_%1%2").
+			   arg(c1).arg(c2)))
+	      dropped = false;
 	  }
 	else
 	  dropped = false;
@@ -508,6 +550,11 @@ bool spoton::deleteAllUrls(void)
 
 	    if(!query.exec(QString("DELETE FROM "
 				   "spot_on_urls_%1%2").
+			   arg(c1).arg(c2)))
+	      deleted = false;
+
+	    if(!query.exec(QString("DELETE FROM "
+				   "spot_on_urls_revisions_%1%2").
 			   arg(c1).arg(c2)))
 	      deleted = false;
 	  }
@@ -1968,6 +2015,12 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 			      tr("Invalid permissions."));
 	return;
       }
+
+  query.prepare(QString("DELETE FROM spot_on_urls_revisions_%1 "
+			"WHERE url_hash = ?").
+		arg(urlHash.mid(0, 2).constData()));
+  query.bindValue(0, urlHash.constData());
+  query.exec();
 
   /*
   ** Now, we must remove the URL from all of the keywords tables.

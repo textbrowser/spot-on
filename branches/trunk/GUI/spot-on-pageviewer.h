@@ -44,6 +44,7 @@ class spoton_pageviewer: public QMainWindow
   void setPage(const QString &text, const QUrl &url, const int compressedSize);
 
  private:
+  QPalette m_originalFindPalette;
   Ui_pageviewer m_ui;
 
  private slots:

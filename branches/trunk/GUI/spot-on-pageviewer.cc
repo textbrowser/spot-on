@@ -46,6 +46,7 @@ spoton_pageviewer::spoton_pageviewer(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotFind(void)));
+  m_originalFindPalette = m_ui.find->palette();
 #if QT_VERSION >= 0x040700
   m_ui.find->setPlaceholderText(tr("Find Text"));
 #endif
