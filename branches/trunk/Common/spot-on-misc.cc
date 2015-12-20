@@ -4173,35 +4173,94 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       return ok;
     }
 
-  if(db.driverName() == "QSQLITE")
+  QSqlQuery query(db);
+
+  query.setForwardOnly(true);
+  query.prepare(QString("SELECT content FROM spot_on_urls_%1 WHERE "
+			"url_hash = ?").
+		arg(urlHash.mid(0, 2).constData()));
+  query.bindValue(0, urlHash.constData());
+
+  if(query.exec())
     {
-      QSqlQuery query(db);
+      /*
+      ** We will delegate the correctness of the content
+      ** to the reader process.
+      */
 
-      query.setForwardOnly(true);
-      query.prepare(QString("SELECT COUNT(*) FROM spot_on_urls_%1 WHERE "
-			    "url_hash = ?").
-		    arg(urlHash.mid(0, 2).constData()));
-      query.bindValue(0, urlHash.constData());
+      if(query.next())
+	if(!query.value(0).toByteArray().isEmpty())
+	  {
+	    QByteArray previous(query.value(0).toByteArray());
 
-      if(query.exec())
-	{
-	  if(query.next())
-	    if(query.value(0).toLongLong() > 0)
+	    /*
+	    ** Update the current content.
+	    */
+
+	    query.prepare(QString("UPDATE spot_on_urls_%1 "
+				  "SET content = ? "
+				  "WHERE url_hash = ?").
+			  arg(urlHash.mid(0, 2).constData()));
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(content, &ok).toBase64());
+	    query.bindValue(1, urlHash.constData());
+
+	    if(ok)
+	      ok = query.exec();
+
+	    if(!ok)
 	      return ok;
-	}
-      else
-	{
-	  ok = false;
-	  logError(QString("spoton_misc::importUrl(): "
-			   "%1.").arg(query.lastError().text()));
-	  return ok;
- 	}
+
+	    /*
+	    ** Create a new revision using the previous content.
+	    */
+
+	    QByteArray original(QByteArray::fromBase64(previous));
+
+	    original = crypt->decryptedAfterAuthenticated(original, &ok);
+	    original = qUncompress(original);
+
+	    query.prepare
+	      (QString("INSERT INTO spot_on_urls_revisions_%1 ("
+		       "content, "
+		       "content_hash, "
+		       "date_time_inserted, "
+		       "url_hash) "
+		       "VALUES (?, ?, ?, ?)").
+	       arg(urlHash.mid(0, 2).constData()));
+	    query.bindValue(0, previous);
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->keyedHash(original, &ok).toBase64());
+
+	    query.bindValue
+	      (2, QDateTime::currentDateTime().toString(Qt::ISODate));
+	    query.bindValue(3, urlHash.constData());
+
+	    if(ok)
+	      if(!query.exec())
+		if(!query.lastError().text().toLower().contains("unique"))
+		  ok = false;
+
+	    if(!ok)
+	      logError
+		("spoton_misc::importUrl(): an error occurred while "
+		 "attempting to create a URL revision.");
+
+	    return ok;
+	  }
+    }
+  else
+    {
+      ok = false;
+      logError(QString("spoton_misc::importUrl(): "
+		       "%1.").arg(query.lastError().text()));
+      return ok;
     }
 
   if(!ok)
     return ok;
-
-  QSqlQuery query(db);
 
   if(db.driverName() == "QPSQL")
     {
