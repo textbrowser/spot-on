@@ -29,29 +29,38 @@
 #define _spoton_pageviewer_h_
 
 #include <QMainWindow>
+#include <QSqlDatabase>
 
 #include "ui_pageviewer.h"
 
 class QPrinter;
+class spoton_crypt;
 
 class spoton_pageviewer: public QMainWindow
 {
   Q_OBJECT
 
  public:
-  spoton_pageviewer(QWidget *parent);
+  spoton_pageviewer(const QSqlDatabase &db,
+		    const QString &urlHash,
+		    spoton_crypt *crypt,
+		    QWidget *parent);
   ~spoton_pageviewer();
   void setPage(const QString &text, const QUrl &url, const int compressedSize);
 
  private:
   QPalette m_originalFindPalette;
+  QSqlDatabase m_database;
+  QString m_urlHash;
   Ui_pageviewer m_ui;
+  spoton_crypt *m_crypt;
 
  private slots:
   void slotFind(void);
   void slotFindInitialize(void);
   void slotPagePrintPreview(void);
   void slotPrint(QPrinter *printer);
+  void slotRevisionChanged(int index);
 };
 
 #endif

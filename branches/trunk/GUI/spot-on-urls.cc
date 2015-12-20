@@ -1863,8 +1863,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 								 ** mark.
 								 */
 #endif
-      spoton_pageviewer *pageViewer = new spoton_pageviewer(this);
-
       if(hash.startsWith("view-ftp:"))
 	hash.remove
 	  (0, static_cast<int> (qstrlen("view-ftp:")));
@@ -1877,6 +1875,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       else if(hash.startsWith("view-https:"))
 	hash.remove
 	  (0, static_cast<int> (qstrlen("view-https:")));
+
+      spoton_pageviewer *pageViewer = new spoton_pageviewer
+	(m_urlDatabase, hash, m_urlCommonCrypt, this);
 
       if(!hash.isEmpty())
 	{

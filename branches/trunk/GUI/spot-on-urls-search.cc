@@ -323,7 +323,9 @@ void spoton::discoverUrls(void)
 
 void spoton::showUrls(const QString &link, const QString &querystr)
 {
-  if(!m_urlDatabase.isOpen())
+  if(!m_urlCommonCrypt)
+    return;
+  else if(!m_urlDatabase.isOpen())
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));

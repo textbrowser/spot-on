@@ -27,13 +27,22 @@
 
 #include <QPrintPreviewDialog>
 #include <QPrinter>
+#include <QSqlQuery>
 #include <iostream>
+
+#include "../Common/spot-on-crypt.h"
 #include "spot-on-defines.h"
 #include "spot-on-pageviewer.h"
 
-spoton_pageviewer::spoton_pageviewer(QWidget *parent):QMainWindow(parent)
+spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
+				     const QString &urlHash,
+				     spoton_crypt *crypt,
+				     QWidget *parent):QMainWindow(parent)
 {
+  m_crypt = crypt;
+  m_database = db;
   m_ui.setupUi(this);
+  m_urlHash = urlHash;
   connect(m_ui.action_Find,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -50,6 +59,7 @@ spoton_pageviewer::spoton_pageviewer(QWidget *parent):QMainWindow(parent)
 #if QT_VERSION >= 0x040700
   m_ui.find->setPlaceholderText(tr("Find Text"));
 #endif
+  m_ui.revision->setEnabled(false);
   setAttribute(Qt::WA_DeleteOnClose);
   setWindowTitle(tr("%1: Page Viewer").arg(SPOTON_APPLICATION_NAME));
 }
@@ -73,6 +83,43 @@ void spoton_pageviewer::slotFindInitialize(void)
 void spoton_pageviewer::setPage(const QString &text, const QUrl &url,
 				const int compressedSize)
 {
+  disconnect(m_ui.revision,
+	     SIGNAL(activated(int)),
+	     this,
+	     SLOT(slotRevisionChanged(int)));
+  m_ui.revision->clear();
+
+  QSqlQuery query(m_database);
+
+  query.setForwardOnly(true);
+  query.prepare(QString("SELECT content_hash, date_time_inserted "
+			"FROM spot_on_urls_revisions_%1 WHERE url_hash = ? "
+			"ORDER BY 2 DESC").
+		arg(m_urlHash.mid(0, 2)));
+  query.bindValue(0, m_urlHash);
+
+  if(query.exec())
+    while(query.next())
+      m_ui.revision->addItem(query.value(1).toString(),
+			     query.value(0).toByteArray());
+
+  if(m_ui.revision->count() > 0)
+    {
+      m_ui.revision->insertItem(0, tr("Current"));
+      m_ui.revision->insertSeparator(1);
+      m_ui.revision->setCurrentIndex(0);
+      connect(m_ui.revision,
+	      SIGNAL(activated(int)),
+	      this,
+	      SLOT(slotRevisionChanged(int)));
+      m_ui.revision->setEnabled(true);
+    }
+  else
+    {
+      m_ui.revision->addItem(tr("Current"));
+      m_ui.revision->setEnabled(false);
+    }
+
   QLocale locale;
 
   m_ui.size->setText
@@ -110,4 +157,70 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
     return;
 
   m_ui.textBrowser->print(printer);
+}
+
+void spoton_pageviewer::slotRevisionChanged(int index)
+{
+  if(!m_crypt || !m_database.isOpen())
+    {
+      disconnect(m_ui.revision,
+		 SIGNAL(activated(int)),
+		 this,
+		 SLOT(slotRevisionChanged(int)));
+      m_ui.revision->setCurrentIndex(0);
+      m_ui.revision->setEnabled(false);
+      return;
+    }
+  else if(index == 1) // A separator.
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QSqlQuery query(m_database);
+  QString dateTime(m_ui.revision->itemText(index));
+
+  query.setForwardOnly(true);
+
+  if(index == 0)
+    {
+      query.prepare(QString("SELECT content "
+			    "FROM spot_on_urls_%1 WHERE url_hash = ?").
+		    arg(m_urlHash.mid(0, 2)));
+      query.bindValue(0, m_urlHash);
+    }
+  else
+    {
+      query.prepare(QString("SELECT content "
+			    "FROM spot_on_urls_revisions_%1 WHERE "
+			    "date_time_inserted = ? AND url_hash = ?").
+		    arg(m_urlHash.mid(0, 2)));
+      query.bindValue(0, dateTime);
+      query.bindValue(1, m_urlHash);
+    }
+
+  if(query.exec())
+    if(query.next())
+      {
+	QByteArray content;
+	bool ok = true;
+
+	content = m_crypt->decryptedAfterAuthenticated
+	  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	if(ok)
+	  {
+	    content = qUncompress(content);
+	    m_ui.textBrowser->setHtml(content.constData());
+
+	    QLocale locale;
+
+	    m_ui.size->setText
+	      (QString("%1 KiB, Compressed %2 KiB").
+	       arg(locale.toString(content.length() / 1024)).
+	       arg(locale.toString(query.value(0).
+				   toByteArray().length() / 1024)));
+	  }
+      }
+
+  QApplication::restoreOverrideCursor();
 }

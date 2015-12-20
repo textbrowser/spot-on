@@ -2654,6 +2654,7 @@ void spoton::cleanup(void)
   m_ui.url_database_connection_information->clear();
   saveSettings();
   delete m_urlCommonCrypt;
+  m_urlCommonCrypt = 0;
 
   QHashIterator<QString, spoton_crypt *> it(m_crypts);
 
