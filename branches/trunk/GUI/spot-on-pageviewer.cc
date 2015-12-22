@@ -55,6 +55,10 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotFind(void)));
+  connect(m_ui.find,
+	  SIGNAL(textChanged(const QString &)),
+	  this,
+	  SLOT(slotFind(void)));
   m_originalFindPalette = m_ui.find->palette();
 #if QT_VERSION >= 0x040700
   m_ui.find->setPlaceholderText(tr("Find Text"));
@@ -70,8 +74,19 @@ spoton_pageviewer::~spoton_pageviewer()
 
 void spoton_pageviewer::slotFind(void)
 {
-  if(!m_ui.textBrowser->find(m_ui.find->text()))
-    m_ui.textBrowser->moveCursor(QTextCursor::Start);
+  if(m_ui.find->text().isEmpty())
+    m_ui.find->setPalette(m_originalFindPalette);
+  else if(!m_ui.textBrowser->find(m_ui.find->text()))
+    {
+      QColor color(240, 128, 128); // Light Coral
+      QPalette palette(m_ui.find->palette());
+
+      palette.setColor(m_ui.find->backgroundRole(), color);
+      m_ui.find->setPalette(palette);
+      m_ui.textBrowser->moveCursor(QTextCursor::Start);
+    }
+  else
+    m_ui.find->setPalette(m_originalFindPalette);
 }
 
 void spoton_pageviewer::slotFindInitialize(void)
