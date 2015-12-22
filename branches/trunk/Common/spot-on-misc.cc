@@ -4212,7 +4212,8 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	      return ok;
 
 	    /*
-	    ** Create a new revision using the previous content.
+	    ** Create a new revision using the previous content if the
+	    ** content has not changed.
 	    */
 
 	    QByteArray original(QByteArray::fromBase64(previous));
@@ -4220,6 +4221,24 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	    original = crypt->decryptedAfterAuthenticated(original, &ok);
 	    original = qUncompress(original);
 
+	    QByteArray hash1;
+	    QByteArray hash2;
+
+	    if(ok)
+	      hash1 = crypt->keyedHash(c.trimmed(), &ok);
+
+	    if(ok)
+	      hash2 = crypt->keyedHash(original, &ok);
+
+	    /*
+	    ** Ignore digest errors.
+	    */
+
+	    if(!hash1.isEmpty() && !hash2.isEmpty())
+	      if(spoton_crypt::memcmp(hash1, hash2))
+		return true;
+
+	    ok = true;
 	    query.prepare
 	      (QString("INSERT INTO spot_on_urls_revisions_%1 ("
 		       "content, "
