@@ -2464,11 +2464,6 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-b.cc" line="3972"/>
-        <source>&lt;font color=#4F8A10&gt;&lt;b&gt;This message was signed.&lt;/b&gt;&lt;/font&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../GUI/spot-on-b.cc" line="5110"/>
         <source>Please provide a channel key.</source>
         <translation type="unfinished">Bitte geben einen Channel-Schlüssel ein.</translation>
@@ -2587,6 +2582,11 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     <message>
         <location filename="../GUI/spot-on-b.cc" line="3912"/>
         <source>A severe memory issue occurred.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../GUI/spot-on-b.cc" line="3972"/>
+        <source>&lt;font color=#4F8A10&gt;&lt;b&gt;This message appears to have been signed.&lt;/b&gt;&lt;/font&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
