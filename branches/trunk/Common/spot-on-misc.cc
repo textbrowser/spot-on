@@ -179,6 +179,7 @@ void spoton_misc::prepareDatabases(void)
 							  ** or the sender's
 							  ** public key.
 							  */
+		   "signature TEXT NOT NULL, "
 		   "status TEXT NOT NULL, " /*
 					    ** Deleted, read, etc.
 					    */
@@ -5109,11 +5110,19 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO folders "
-		      "(date, folder_index, goldbug, hash, "
-		      "message, message_code, "
-		      "receiver_sender, receiver_sender_hash, "
-		      "status, subject, participant_oid) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "(date, "
+		      "folder_index, "
+		      "goldbug, "
+		      "hash, "
+		      "message, "
+		      "message_code, "
+		      "receiver_sender, "
+		      "receiver_sender_hash, "
+		      "signature, "
+		      "status, "
+		      "subject, "
+		      "participant_oid) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 	query.bindValue
 	  (0, crypt->
@@ -5149,22 +5158,25 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	      (6, crypt->encryptedThenHashed(name,
 					     &ok).toBase64());
 
-	if(ok)
-	  query.bindValue
-	    (7, senderPublicKeyHash.toBase64());
+	query.bindValue
+	  (7, senderPublicKeyHash.toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (8, crypt->
+	    (8, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (9, crypt->
 	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (9, crypt->encryptedThenHashed(subject, &ok).toBase64());
+	    (10, crypt->encryptedThenHashed(subject, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (10, crypt->
+	    (11, crypt->
 	     encryptedThenHashed(QByteArray::number(-1), &ok).
 	     toBase64());
 

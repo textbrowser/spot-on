@@ -13,6 +13,7 @@
 <li>Corrected uniqueness constraint on SQLite urls.db. Please remove the database. Apologies.</li>
 <li>Disable the URL distribution service if instructed to do so.
 <li>Display the Poptastic panel regardless of the outcome of spoton_misc::poptasticSettings().</li>
+<li>E-mail signatures were not properly enveloped via Gold Bug credentials; messages 0001a and 0001b.</li>
 <li>Integer conversion corrections.</li>
 <li>Issue a QFileSystemWatcher::removePath() before an addPath() in spoton_kernel::slotSettingsChanged().</li>
 <li>Removed recursive object deletion (spoton_neighbor::deleteLater() via close()).</li>
@@ -57,7 +58,8 @@
 <li>Bluetooth clients and servers. Qt 5.2.x and newer are required. Linux and OS X only.</li>
 <li>Chat participants will be notified of messages that are not signed.</li>
 <li>Configurable congestion control digests.</li>
-<li>Decreased the kernel's URL batch size to 15.</li>
+<li>Decreased the kernel's URL batch size to 5.</li>
+<li>Denote whether or not e-mail letters were signed. Please purge e-mail.db or drop the folders table in email.db.</li>
 <li>Digital passthrough neighbors.</li>
 <li>Do not log small-key errors.</li>
 <li>FireShare link sharing. Search, click, share.</li>
@@ -66,14 +68,13 @@
 <li>New URL distillers will be enabled by default.</li>
 <li>New installations will include enabled default URL distillers.</li>
 <li>Option for removing orphaned URL keyword entries.</li>
-<li>Page revisions.</li>
+<li>Page revisions for URLs.</li>
 <li>Per Mr. Fennel, automatically set URL Common Credentials during the initialization process.</li>
 <li>Per Mr. Schmidt, optional link accessibility and timestamps.</li>
 <li>Pleasant songs! Qt 5.x is required.</li>
 <li>Please rename Spot-On/Spot-On.ini to SpotOn/SpotOn.ini prior to launching the new executables! This change is required in support of Bluetooth on Linux. Apologies.</li>
 <li>Poptastic messages are now limited to 50 MiB.</li>
 <li>Raspberry Pi support. Please see the ARM project files.</li>
-<li>Removed the option to copy all public key pairs.</li>
 <li>Simple implementation of https://github.com/maandree/passcheck.</li>
 <li>Total MiB read and written; kernel statistics.</li>
 <li>UDP multicasting.</li>

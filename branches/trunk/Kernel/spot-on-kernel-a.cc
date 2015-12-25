@@ -3316,31 +3316,78 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		}
 
 	      if(ok)
-		if(!goldbug.isEmpty())
-		  {
-		    spoton_crypt *crypt = spoton_misc::
-		      cryptFromForwardSecrecyMagnet(goldbug);
+		{
+		  if(!goldbug.isEmpty())
+		    {
+		      spoton_crypt *crypt = spoton_misc::
+			cryptFromForwardSecrecyMagnet(goldbug);
 
-		    if(crypt)
-		      for(int i = 0; i < items.size(); i++)
+		      if(crypt)
+			for(int i = 0; i < items.size(); i++)
+			  {
+			    if(ok)
+			      items.replace
+				(i, crypt->encryptedThenHashed(items.at(i),
+							       &ok));
+			    else
+			      break;
+			  }
+
+		      if(crypt && ok)
+			goldbugUsed = true;
+
+		      if(crypt && ok)
+			if(setting("gui/emailSignMessages", true).toBool())
+			  {
+			    QByteArray signature;
+
+			    signature = s_crypt2->digitalSignature
+			      ("0001b" +
+			       symmetricKey +
+			       hashKey +
+			       symmetricKeyAlgorithm +
+			       hashType +
+			       myPublicKeyHash +
+			       items.value(0) + // Name
+			       items.value(1) + // Subject
+			       items.value(2) + // Message
+			       items.value(3) + // Attachment
+			       items.value(4),  // Attachment Name
+			       &ok);
+
+			    if(ok)
+			      items << crypt->encryptedThenHashed
+				(signature, &ok);
+			  }
+
+		      delete crypt;
+		    }
+		  else
+		    {
+		      if(setting("gui/emailSignMessages", true).toBool())
 			{
-			  if(ok)
-			    items.replace
-			      (i, crypt->encryptedThenHashed(items.at(i),
-							     &ok));
-			  else
-			    break;
+			  QByteArray signature;
+
+			  signature = s_crypt2->digitalSignature
+			    ("0001b" +
+			     symmetricKey +
+			     hashKey +
+			     symmetricKeyAlgorithm +
+			     hashType +
+			     myPublicKeyHash +
+			     items.value(0) + // Name
+			     items.value(1) + // Subject
+			     items.value(2) + // Message
+			     items.value(3) + // Attachment
+			     items.value(4),  // Attachment Name
+			     &ok);
+			  items << signature;
 			}
-
-		    if(crypt && ok)
-		      goldbugUsed = true;
-
-		    delete crypt;
-		  }
+		    }
+		}
 
 	      if(ok)
 		{
-		  QByteArray signature;
 		  spoton_crypt crypt(symmetricKeyAlgorithm,
 				     hashType,
 				     QByteArray(),
@@ -3350,22 +3397,6 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     0,
 				     "");
 
-		  if(setting("gui/emailSignMessages",
-			     true).toBool())
-		    signature = s_crypt2->digitalSignature
-		      ("0001b" +
-		       symmetricKey +
-		       hashKey +
-		       symmetricKeyAlgorithm +
-		       hashType +
-		       myPublicKeyHash +
-		       items.value(0) + // Name
-		       items.value(1) + // Subject
-		       items.value(2) + // Message
-		       items.value(3) + // Attachment
-		       items.value(4),  // Attachment Name
-		       &ok);
-
 		  if(ok)
 		    data = crypt.encrypted
 		      (myPublicKeyHash.toBase64() + "\n" +
@@ -3374,7 +3405,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		       items.value(2).toBase64() + "\n" + // Message
 		       items.value(3).toBase64() + "\n" + // Attachment
 		       items.value(4).toBase64() + "\n" + // Attachment Name
-		       signature.toBase64() + "\n" +
+		       items.value(5).toBase64() + "\n" + // Signature
 		       QVariant(goldbugUsed).toByteArray().toBase64(),
 		       &ok);
 
@@ -3598,31 +3629,78 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		}
 
 	      if(ok)
-		if(!goldbug.isEmpty())
-		  {
-		    spoton_crypt *crypt = spoton_misc::
-		      cryptFromForwardSecrecyMagnet(goldbug);
+		{
+		  if(!goldbug.isEmpty())
+		    {
+		      spoton_crypt *crypt = spoton_misc::
+			cryptFromForwardSecrecyMagnet(goldbug);
 
-		    if(crypt)
-		      for(int i = 0; i < items.size(); i++)
+		      if(crypt)
+			for(int i = 0; i < items.size(); i++)
+			  {
+			    if(ok)
+			      items.replace
+				(i,
+				 crypt->encryptedThenHashed(items.at(i), &ok));
+			    else
+			      break;
+			  }
+
+		      if(crypt && ok)
+			goldbugUsed = true;
+
+		      if(crypt && ok)
+			if(setting("gui/emailSignMessages", true).toBool())
+			  {
+			    QByteArray signature;
+
+			    signature = s_crypt2->digitalSignature
+			      ("0001b" +
+			       symmetricKey +
+			       hashKey2 +
+			       cipherType +
+			       hashType +
+			       myPublicKeyHash +
+			       items.value(0) + // Name
+			       items.value(1) + // Subject
+			       items.value(2) + // Message
+			       items.value(3) + // Attachment
+			       items.value(4),  // Attachment Name
+			       &ok);
+
+			    if(ok)
+			      items << crypt->encryptedThenHashed
+				(signature, &ok);
+			  }
+
+		      delete crypt;
+		    }
+		  else
+		    {
+		      if(setting("gui/emailSignMessages", true).toBool())
 			{
-			  if(ok)
-			    items.replace
-			      (i,
-			       crypt->encryptedThenHashed(items.at(i), &ok));
-			  else
-			    break;
+			  QByteArray signature;
+
+			  signature = s_crypt2->digitalSignature
+			    ("0001b" +
+			     symmetricKey +
+			     hashKey2 +
+			     cipherType +
+			     hashType +
+			     myPublicKeyHash +
+			     items.value(0) + // Name
+			     items.value(1) + // Subject
+			     items.value(2) + // Message
+			     items.value(3) + // Attachment
+			     items.value(4),  // Attachment Name
+			     &ok);
+			  items << signature;
 			}
-
-		    if(crypt && ok)
-		      goldbugUsed = true;
-
-		    delete crypt;
-		  }
+		    }
+		}
 
 	      if(ok)
 		{
-		  QByteArray signature;
 		  spoton_crypt crypt(cipherType,
 				     hashType,
 				     QByteArray(),
@@ -3630,22 +3708,6 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     0,
 				     0,
 				     "");
-
-		  if(setting("gui/emailSignMessages",
-			     true).toBool())
-		    signature = s_crypt2->digitalSignature
-		      ("0001b" +
-		       symmetricKey +
-		       hashKey2 +
-		       cipherType +
-		       hashType +
-		       myPublicKeyHash +
-		       items.value(0) + // Name
-		       items.value(1) + // Subject
-		       items.value(2) + // Message
-		       items.value(3) + // Attachment
-		       items.value(4),  // Attachment Name
-		       &ok);
 
 		  if(ok)
 		    data2 = crypt.encrypted
@@ -3655,7 +3717,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		       items.value(2).toBase64() + "\n" + // Message
 		       items.value(3).toBase64() + "\n" + // Attachment
 		       items.value(4).toBase64() + "\n" + // Attachment Name
-		       signature.toBase64() + "\n" +
+		       items.value(5).toBase64() + "\n" + // Signature
 		       QVariant(goldbugUsed).toByteArray().toBase64(),
 		       &ok);
 

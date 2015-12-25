@@ -10,7 +10,7 @@ all fields save for id_hash
 
 email.db:
 
-all fields save for folder_index, hash, receiver_sender_hash, and
+all fields save for folder_index, hash, mode, receiver_sender_hash, and
 recipient_hash
 
 friends_public_keys.db:

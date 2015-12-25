@@ -294,7 +294,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	query.setForwardOnly(true);
 
 	if(query.exec("SELECT date, goldbug, message, message_code, mode, "
-		      "participant_oid, receiver_sender, status, subject, "
+		      "participant_oid, receiver_sender, signature, "
+		      "status, subject, "
 		      "OID FROM folders"))
 	  while(query.next())
 	    {
@@ -330,10 +331,11 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 					"mode = ?, "            // 4
 					"participant_oid = ?, " // 5
 					"receiver_sender = ?, " // 6
-					"status = ?, "          // 7
-					"subject = ?, "         // 8
-					"hash = ? "             // 9
-					"WHERE OID = ?");       // 10
+					"signature = ?, "       // 7
+					"status = ?, "          // 8
+					"subject = ?, "         // 9
+					"hash = ? "             // 10
+					"WHERE OID = ?");       // 11
 
 		    for(int i = 0; i < list.size(); i++)
 		      if(ok)
@@ -346,14 +348,17 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		    if(ok)
 		      updateQuery.bindValue
-			(9, newCrypt->keyedHash(list.value(2) +
-						list.value(8), &ok).
+			/*
+			** message + subject
+			*/
+			(10, newCrypt->keyedHash(list.value(2) +
+						 list.value(9), &ok).
 			 toBase64());
 
 		    if(ok)
 		      {
 			updateQuery.bindValue
-			  (10, query.value(query.record().count() - 1));
+			  (11, query.value(query.record().count() - 1));
 			updateQuery.exec();
 		      }
 		    else

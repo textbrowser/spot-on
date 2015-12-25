@@ -3000,8 +3000,9 @@ void spoton::slotSendMail(void)
 			  "(date, folder_index, goldbug, hash, "
 			  "message, message_code, mode, "
 			  "receiver_sender, receiver_sender_hash, "
+			  "signature, "
 			  "status, subject, participant_oid) "
-			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, crypt->
 	       encryptedThenHashed(now.toString(Qt::ISODate).
@@ -3038,23 +3039,26 @@ void spoton::slotSendMail(void)
 		 encryptedThenHashed(names.takeFirst().toUtf8(), &ok).
 		 toBase64());
 
-	    if(ok)
-	      query.bindValue
-		(8, publicKeyHash.toBase64());
+	    query.bindValue
+	      (8, publicKeyHash.toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(9, crypt->
-		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
+		(9, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(10, crypt->
-		 encryptedThenHashed(subject, &ok).toBase64());
+		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(11, crypt->
+		 encryptedThenHashed(subject, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(12, crypt->
 		 encryptedThenHashed(oid.toLatin1(), &ok).toBase64());
 
 	    if(ok)
@@ -3550,15 +3554,20 @@ void spoton::populateMail(void)
 	  if(query.next())
 	    m_ui.mail->setRowCount(query.value(0).toInt());
 
-	if(query.exec(QString("SELECT f.date, f.receiver_sender, f.status, "
-			      "f.subject, "
+	if(query.exec(QString("SELECT f.date, "          // 0
+			      "f.receiver_sender, "      // 1
+			      "f.status, "               // 2
+			      "f.subject, "              // 3
 			      "(SELECT COUNT(*) FROM folders_attachment a "
 			      "WHERE a.folders_oid = f.OID), "
-			      "f.goldbug, "
-			      "f.message, f.message_code, "
-			      "f.receiver_sender_hash, "
-			      "f.hash, "
-			      "f.OID FROM folders f WHERE "
+			      "f.goldbug, "              // 5
+			      "f.message, "              // 6
+			      "f.message_code, "         // 7
+			      "f.receiver_sender_hash, " // 8
+			      "f.hash, "                 // 9
+			      "f.signature, "            // 10
+			      "f.OID "                   // 11
+			      "FROM folders f WHERE "
 			      "f.folder_index = %1").
 		      arg(m_ui.folder->currentIndex())))
 	  {
@@ -3589,9 +3598,9 @@ void spoton::populateMail(void)
 		      row += 1;
 
 		    if(i == 0 || i == 1 || i == 2 ||
-		       i == 3 || i == 6 || i == 7)
+		       i == 3 || i == 6 || i == 7 || i == 10)
 		      {
-			if(i == 1 || i == 2 || i == 3 || i == 6)
+			if(i == 1 || i == 2 || i == 3 || i == 6 || i == 10)
 			  {
 			    if(goldbug == "0")
 			      {
@@ -3911,6 +3920,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
   QString date("");
   QString fromTo("");
   QString message("");
+  QString signature("");
   QString status("");
   QString subject("");
   QString text("");
@@ -3940,10 +3950,31 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
     if(item)
       message = item->text();
+
+    item = m_ui.mail->item(row, 10); // Signature
+
+    if(item)
+      signature = item->text();
   }
 
   if(m_ui.folder->currentIndex() == 0) // Inbox
     {
+      if(signature.isEmpty())
+	{
+	  text.append(tr("<font color=#9F6000><b>"
+			 "This message was not signed or signatures are "
+			 "not supported."
+			 "</b></font>"));
+	  text.append("<br><br>");
+	}
+      else
+	{
+	  text.append(tr("<font color=#4F8A10><b>"
+			 "This message was signed."
+			 "</b></font>"));
+	  text.append("<br><br>");
+	}
+
       text.append(tr("<b>From:</b> "));
       text.append(fromTo);
       text.append("<br>");
@@ -4581,11 +4612,15 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 	int attachmentsCount = 0;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT date, message, message_code, "
-		      "receiver_sender, receiver_sender_hash, "
-		      "subject, "
+	query.prepare("SELECT date, "          // 0
+		      "message, "              // 1
+		      "message_code, "         // 2
+		      "receiver_sender, "      // 3
+		      "receiver_sender_hash, " // 4
+		      "subject, "              // 5
 		      "(SELECT COUNT(*) FROM folders_attachment WHERE "
-		      "folders_oid = ?) "
+		      "folders_oid = ?), "     // 6
+		      "signature "             // 7
 		      "FROM folders "
 		      "WHERE OID = ?");
 	query.bindValue(0, oid);
@@ -4679,6 +4714,7 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 	    ** list[4]: receiver_sender_hash
 	    ** list[5]: subject
 	    ** list[6]: attachment(s) count
+	    ** list[7]: signature
 	    */
 
 	    QSqlQuery updateQuery(db);
@@ -4689,6 +4725,7 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 				"message = ?, "
 				"message_code = ?, "
 				"receiver_sender = ?, "
+				"signature = ?, "
 				"subject = ? "
 				"WHERE OID = ?");
 
@@ -4725,9 +4762,14 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 	    if(ok)
 	      updateQuery.bindValue
 		(5, m_crypts.value("email")->
+		 encryptedThenHashed(list.value(7), &ok).toBase64());
+
+	    if(ok)
+	      updateQuery.bindValue
+		(6, m_crypts.value("email")->
 		 encryptedThenHashed(list.value(5), &ok).toBase64());
 
-	    updateQuery.bindValue(6, oid);
+	    updateQuery.bindValue(7, oid);
 
 	    if(ok)
 	      {
@@ -4808,6 +4850,11 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 
 	    if(item)
 	      item->setText(list.value(1).constData());
+
+	    item = m_ui.mail->item(row, 10); // Signature
+
+	    if(item)
+	      item->setText(list.value(7).constData());
 
 	    m_ui.mail->setSortingEnabled(true);
 	  }

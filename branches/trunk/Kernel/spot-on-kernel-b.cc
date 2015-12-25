@@ -1055,8 +1055,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 			      "(date, folder_index, goldbug, hash, "
 			      "message, message_code, "
 			      "receiver_sender, receiver_sender_hash, "
+			      "signature, "
 			      "status, subject, participant_oid) "
-			      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		query.bindValue
 		  (0, s_crypt->
 		   encryptedThenHashed(QDateTime::currentDateTime().
@@ -1093,24 +1094,28 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		      (6, s_crypt->encryptedThenHashed(name_l,
 						       &ok).toBase64());
 
-		if(ok)
-		  query.bindValue
-		    (7, senderPublicKeyHash.toBase64());
+		query.bindValue
+		  (7, senderPublicKeyHash.toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (8, s_crypt->
+		    (8, s_crypt->encryptedThenHashed(signature,
+						     &ok).toBase64());
+
+		if(ok)
+		  query.bindValue
+		    (9, s_crypt->
 		     encryptedThenHashed(QByteArray("Unread"), &ok).
 		     toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (9, s_crypt->encryptedThenHashed(subject_l, &ok).
+		    (10, s_crypt->encryptedThenHashed(subject_l, &ok).
 		     toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (10, s_crypt->
+		    (11, s_crypt->
 		     encryptedThenHashed(QByteArray::number(-1), &ok).
 		     toBase64());
 
@@ -1387,8 +1392,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 			  "(date, folder_index, goldbug, hash, "
 			  "message, message_code, "
 			  "receiver_sender, receiver_sender_hash, "
+			  "signature, "
 			  "status, subject, participant_oid) "
-			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, s_crypt->
 	       encryptedThenHashed(QDateTime::currentDateTime().
@@ -1429,25 +1435,29 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		QByteArray senderPublicKeyHash
 		  (spoton_crypt::sha512Hash(from + "-poptastic", &ok));
 
-		if(ok)
-		  query.bindValue
-		    (7, senderPublicKeyHash.toBase64());
+		query.bindValue
+		  (7, senderPublicKeyHash.toBase64());
 	      }
 
 	    if(ok)
+	      query.bindValue(8, s_crypt->
+			      encryptedThenHashed(QByteArray(), &ok).
+			      toBase64());
+
+	    if(ok)
 	      query.bindValue
-		(8, s_crypt->
+		(9, s_crypt->
 		 encryptedThenHashed(QByteArray("Unread"), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(9, s_crypt->encryptedThenHashed(subject, &ok).
+		(10, s_crypt->encryptedThenHashed(subject, &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(10, s_crypt->
+		(11, s_crypt->
 		 encryptedThenHashed(QByteArray::number(-1), &ok).
 		 toBase64());
 
