@@ -3970,7 +3970,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
       else
 	{
 	  text.append(tr("<font color=#4F8A10><b>"
-			 "This message was signed."
+			 "This message appears to have been signed."
 			 "</b></font>"));
 	  text.append("<br><br>");
 	}
