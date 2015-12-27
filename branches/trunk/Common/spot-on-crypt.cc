@@ -34,8 +34,8 @@
 #include <QtCore/qmath.h>
 
 #include <bitset>
-#include <limits>
 #include <iostream>
+#include <limits>
 
 #include "spot-on-crypt.h"
 #include "spot-on-misc.h"
@@ -3608,17 +3608,11 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1,
 
   for(int i = 0; i < length; i++)
     {
-      std::bitset<8> ba1(static_cast<unsigned long> (a.at(i)));
-      std::bitset<8> ba2(static_cast<unsigned long> (b.at(i)));
+      std::bitset<CHAR_BIT> ba1(static_cast<unsigned long> (a.at(i)));
+      std::bitset<CHAR_BIT> ba2(static_cast<unsigned long> (b.at(i)));
 
-      rc |= ba1[0] ^ ba2[0];
-      rc |= ba1[1] ^ ba2[1];
-      rc |= ba1[2] ^ ba2[2];
-      rc |= ba1[3] ^ ba2[3];
-      rc |= ba1[4] ^ ba2[4];
-      rc |= ba1[5] ^ ba2[5];
-      rc |= ba1[6] ^ ba2[6];
-      rc |= ba1[7] ^ ba2[7];
+      for(size_t j = 0; j < ba1.size(); j++)
+	rc |= ba1[j] ^ ba2[j];
     }
 
   return rc == 0; /*

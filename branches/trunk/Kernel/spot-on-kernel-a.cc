@@ -46,8 +46,8 @@
 #include <QSqlRecord>
 #include <QtCore/qmath.h>
 
-#include <limits>
 #include <iostream>
+#include <limits>
 
 extern "C"
 {
@@ -71,10 +71,10 @@ extern "C"
 #include <termios.h>
 #include <unistd.h>
 #else
+#include <windows.h>
 #if QT_VERSION >= 0x050000
 #include <winsock2.h>
 #endif
-#include <windows.h>
 #endif
 }
 

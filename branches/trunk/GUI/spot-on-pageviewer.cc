@@ -28,7 +28,6 @@
 #include <QPrintPreviewDialog>
 #include <QPrinter>
 #include <QSqlQuery>
-#include <iostream>
 
 #include "../Common/spot-on-crypt.h"
 #include "spot-on-defines.h"

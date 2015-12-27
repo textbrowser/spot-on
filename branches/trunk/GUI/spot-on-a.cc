@@ -43,9 +43,9 @@ extern "C"
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetooth.h>
 #endif
-#include "spot-on.h"
-#include "spot-on-defines.h"
 #include "spot-on-buzzpage.h"
+#include "spot-on-defines.h"
+#include "spot-on.h"
 #include "ui_passwordprompt.h"
 
 /*
