@@ -488,7 +488,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     if(arguments.at(i) == "--disable-ui-server")
       disable_ui_server = true;
     else if(arguments.at(i) == "--passphrase" ||
-	  arguments.at(i) == "--question-answer")
+	    arguments.at(i) == "--question-answer")
       {
 	/*
 	** Attempt to disable input echo.
@@ -596,7 +596,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     else
       {
 	s_exit_code = EXIT_FAILURE;
-	std::cerr << "Invalid option: " << arguments.at(i).constData()
+	std::cerr << "Invalid option: " << arguments.at(i).toStdString()
 		  << ". Exiting." << std::endl;
 	deleteLater();
 	break;
