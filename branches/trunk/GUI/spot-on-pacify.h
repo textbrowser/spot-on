@@ -84,9 +84,9 @@ public:
 	    // Get width of character.
 	    //   110.....  2-byte character  11-bit character
 	    //   1110....  3-byte character  16-bit character
-	    //   11110...  4-byte character  21-bit character (New UTF-8 limit)
+	    //   11110...  4-byte character  21-bit character (New UTF-8 Limit)
 	    //   111110..  5-byte character  26-bit character
-	    //   1111110.  6-byte character  31-bit character (Old UTF-8 limit)
+	    //   1111110.  6-byte character  31-bit character (Old UTF-8 Limit)
 
 	    while(c & 0x80)
 	      b++, c <<= 1;
@@ -140,7 +140,7 @@ public:
 	      }
 	  }
 	else
-	  // Non-initial byte in multibyte-character at begining of character.
+	  // Non-initial byte in multibyte-character at beginning of character.
 	  // (Unexpected continuation byte.)
 
 	  j--; /* XXX invalid input. */
