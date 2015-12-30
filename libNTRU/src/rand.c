@@ -12,13 +12,14 @@
 #endif
 
 const NtruEncParams NTRU_IGF2_RAND_PARAMS = {\
-    "EES401EP1",   /* name */\
+    "IGF2_RNG",    /* name */\
     401,           /* N */\
     256,           /* q=256 because we want to generate bytes */\
     0,             /* prod_flag */\
     0,             /* df */\
     0,\
     0,\
+    0,             /* dg */\
     0,             /* dm0 */\
     0,             /* db */\
     11,            /* c */\
@@ -89,8 +90,10 @@ uint8_t ntru_rand_device_init(NtruRandContext *rand_ctx, struct NtruRandGen *ran
     if (rand_fd >= 0) {
         /* save rand_fd in rand_ctx->state */
         int *fd_ptr = malloc(sizeof(int));
-        if (fd_ptr == NULL)
+        if (fd_ptr == NULL) {
+            close(rand_fd);
             return 0;
+        }
         *fd_ptr = rand_fd;
         rand_ctx->state = fd_ptr;
     }
