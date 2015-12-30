@@ -1,6 +1,6 @@
 # C implementation of NTRUEncrypt
 
-An implementation of the public-key encryption scheme NTRUEncrypt in C.
+An implementation of the public-key encryption scheme NTRUEncrypt in C, following the IEEE P1363.1 standard.
 
 NTRU's main strengths are high performance and resistance to quantum computer
 attacks. Its main drawback is that it is patent encumbered. The patents expire
@@ -18,10 +18,11 @@ page at https://tbuktu.github.com/ntru/.
 ## Compiling
 
 Run ```make``` to build the library, or ```make test``` to run unit tests. ```make bench``` builds a benchmark program.
+On *BSD, use ```gmake``` instead of ```make```.
 
 The ```SSE``` environment variable enables SSSE3 support (```SSE=yes```)
 or disables it (```SSE=no```).
-Default on Linux and MacOS is to autodetect SSSE3 on the build host,
+Default on Linux, BSD, and MacOS is to autodetect SSSE3 on the build host,
 Windows default is no SSSE3.
 
 ## Usage
@@ -29,10 +30,11 @@ Windows default is no SSSE3.
     #include "ntru.h"
 
     /* key generation */
-    struct NtruEncParams params = EES449EP1; /*see encparams.h for more*/
+    struct NtruEncParams params = NTRU_DEFAULT_PARAMS_128_BITS; /*see encparams.h for more*/
     NtruRandGen rng_def = NTRU_RNG_DEFAULT;
     NtruRandContext rand_ctx_def;
-    ntru_rand_init(&rand_ctx_def, &rng_def);
+    if (ntru_rand_init(&rand_ctx_def, &rng_def) != NTRU_SUCCESS)
+        printf("rng fail\n");
     NtruEncKeyPair kp;
     if (ntru_gen_key_pair(&params, &kp, &rand_ctx_def) != NTRU_SUCCESS)
         printf("keygen fail\n");
@@ -42,7 +44,8 @@ Windows default is no SSSE3.
     strcpy(seed, "my test password");
     NtruRandGen rng_igf2 = NTRU_RNG_IGF2;
     NtruRandContext rand_ctx_igf2;
-    ntru_rand_init_det(&rand_ctx_igf2, &rng_igf2, seed, strlen(seed));
+    if (ntru_rand_init_det(&rand_ctx_igf2, &rng_igf2, seed, strlen(seed)) != NTRU_SUCCESS)
+        printf("rng fail\n");
     if (ntru_gen_key_pair(&params, &kp, &rand_ctx_igf2) != NTRU_SUCCESS)
         printf("keygen fail\n");
 
@@ -53,15 +56,22 @@ Windows default is no SSSE3.
     if (ntru_encrypt(msg, strlen(msg), &kp.pub, &params, &rand_ctx_def, enc) != NTRU_SUCCESS)
         printf("encrypt fail\n");
 
-    /* release RNG resources */
-    ntru_rand_release(&rand_ctx_def);
-    ntru_rand_release(&rand_ctx_igf2);
-
     /* decryption */
     uint8_t dec[ntru_max_msg_len(&params)];
     uint16_t dec_len;
     if (ntru_decrypt((uint8_t*)&enc, &kp, &params, (uint8_t*)&dec, &dec_len) != NTRU_SUCCESS)
         printf("decrypt fail\n");
+
+    /* generate another public key for the existing private key */
+    NtruEncPubKey pub2;
+    if (ntru_gen_pub(&params, &kp.priv, &pub2, &rand_ctx_def) != NTRU_SUCCESS)
+        printf("pub key generation fail\n");
+
+    /* release RNG resources */
+    if (ntru_rand_release(&rand_ctx_def) != NTRU_SUCCESS)
+        printf("rng fail\n");
+    if (ntru_rand_release(&rand_ctx_igf2) != NTRU_SUCCESS)
+        printf("rng fail\n");
 
     /* export key to uint8_t array */
     uint8_t pub_arr[ntru_pub_len(&params)];
@@ -75,7 +85,7 @@ For encryption of messages longer than `ntru_max_msg_len(...)`, see `src/hybrid.
 (requires OpenSSL lib+headers, use `make hybrid` to build).
 
 ## Supported Platforms
-  libntru has been tested on Linux, Mac OS X and Windows (MingW).
+  libntru has been tested on Linux, FreeBSD, OpenBSD, Mac OS X, and Windows (MingW).
 
 ## Further reading
 
