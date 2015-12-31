@@ -39,7 +39,7 @@
 #include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-pageviewer.h"
-#include "ui_postgresqlconnect.h"
+#include "ui_spot-on-postgresqlconnect.h"
 
 void spoton::prepareUrlLabels(void)
 {

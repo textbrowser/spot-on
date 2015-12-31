@@ -32,7 +32,7 @@
 #include <QMainWindow>
 #include <QTimer>
 
-#include "ui_logviewer.h"
+#include "ui_spot-on-logviewer.h"
 
 class QKeyEvent;
 

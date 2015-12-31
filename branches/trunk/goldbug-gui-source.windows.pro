@@ -1,24 +1,24 @@
-FORMS           = GoldBug-UI\\adaptiveechoprompt.ui \
-		  GoldBug-UI\\buzzpage.ui \
-		  GoldBug-UI\\chatwindow.ui \
-		  GoldBug-UI\\controlcenter.ui \
-		  GoldBug-UI\\echo-key-share.ui \
-		  GoldBug-UI\\encryptfile.ui \
-		  GoldBug-UI\\forwardsecrecyalgorithmsselection.ui \
-		  GoldBug-UI\\ipinformation.ui \
-		  GoldBug-UI\\keyboard.ui \
-		  GoldBug-UI\\listener-socket-options.ui \
-                  GoldBug-UI\\logviewer.ui \
-		  GoldBug-UI\\options.ui \
-		  GoldBug-UI\\pageviewer.ui \
-                  GoldBug-UI\\passwordprompt.ui \
-		  GoldBug-UI\\poptastic-retrophone-settings.ui \
-		  GoldBug-UI\\postgresqlconnect.ui \
-		  GoldBug-UI\\rosetta.ui \
-                  GoldBug-UI\\starbeamanalyzer.ui \
-		  GoldBug-UI\\statisticswindow.ui \
-		  GoldBug-UI\\statusbar.ui \
-		  GoldBug-UI\\unlock.ui
+FORMS           = GoldBug-UI\\spot-on-adaptiveechoprompt.ui \
+		  GoldBug-UI\\spot-on-buzzpage.ui \
+		  GoldBug-UI\\spot-on-chatwindow.ui \
+		  GoldBug-UI\\spot-on-controlcenter.ui \
+		  GoldBug-UI\\spot-on-echo-key-share.ui \
+		  GoldBug-UI\\spot-on-encryptfile.ui \
+		  GoldBug-UI\\spot-on-forwardsecrecyalgorithmsselection.ui \
+		  GoldBug-UI\\spot-on-ipinformation.ui \
+		  GoldBug-UI\\spot-on-keyboard.ui \
+		  GoldBug-UI\\spot-on-listener-socket-options.ui \
+                  GoldBug-UI\\spot-on-logviewer.ui \
+		  GoldBug-UI\\spot-on-options.ui \
+		  GoldBug-UI\\spot-on-pageviewer.ui \
+                  GoldBug-UI\\spot-on-passwordprompt.ui \
+		  GoldBug-UI\\spot-on-poptastic-retrophone-settings.ui \
+		  GoldBug-UI\\spot-on-postgresqlconnect.ui \
+		  GoldBug-UI\\spot-on-rosetta.ui \
+                  GoldBug-UI\\spot-on-starbeamanalyzer.ui \
+		  GoldBug-UI\\spot-on-statisticswindow.ui \
+		  GoldBug-UI\\spot-on-statusbar.ui \
+		  GoldBug-UI\\spot-on-unlock.ui
 
 HEADERS		= Common\\spot-on-external-address.h \
 		  GUI\\spot-on.h \

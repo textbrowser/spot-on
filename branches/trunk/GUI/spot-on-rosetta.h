@@ -30,7 +30,7 @@
 
 #include <QMainWindow>
 
-#include "ui_rosetta.h"
+#include "ui_spot-on-rosetta.h"
 
 class QKeyEvent;
 class spoton_crypt;

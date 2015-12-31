@@ -27,8 +27,8 @@
 
 #include "spot-on.h"
 #include "spot-on-defines.h"
-#include "ui_adaptiveechoprompt.h"
-#include "ui_ipinformation.h"
+#include "ui_spot-on-adaptiveechoprompt.h"
+#include "ui_spot-on-ipinformation.h"
 
 static bool lengthGreaterThan(const QString &string1, const QString &string2)
 {

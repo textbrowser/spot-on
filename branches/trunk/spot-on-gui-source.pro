@@ -1,24 +1,24 @@
-FORMS           = UI/adaptiveechoprompt.ui \
-		  UI/buzzpage.ui \
-		  UI/chatwindow.ui \
-		  UI/controlcenter.ui \
-		  UI/echo-key-share.ui \
-		  UI/encryptfile.ui \
-		  UI/forwardsecrecyalgorithmsselection.ui \
-		  UI/ipinformation.ui \
-		  UI/keyboard.ui \
-		  UI/listener-socket-options.ui \
-                  UI/logviewer.ui \
-		  UI/options.ui \
-		  UI/pageviewer.ui \
-                  UI/passwordprompt.ui \
-		  UI/poptastic-retrophone-settings.ui \
-		  UI/postgresqlconnect.ui \
-		  UI/rosetta.ui \
-                  UI/starbeamanalyzer.ui \
-		  UI/statisticswindow.ui \
-		  UI/statusbar.ui \
-		  UI/unlock.ui
+FORMS           = UI/spot-on-adaptiveechoprompt.ui \
+		  UI/spot-on-buzzpage.ui \
+		  UI/spot-on-chatwindow.ui \
+		  UI/spot-on-controlcenter.ui \
+		  UI/spot-on-echo-key-share.ui \
+		  UI/spot-on-encryptfile.ui \
+		  UI/spot-on-forwardsecrecyalgorithmsselection.ui \
+		  UI/spot-on-ipinformation.ui \
+		  UI/spot-on-keyboard.ui \
+		  UI/spot-on-listener-socket-options.ui \
+                  UI/spot-on-logviewer.ui \
+		  UI/spot-on-options.ui \
+		  UI/spot-on-pageviewer.ui \
+                  UI/spot-on-passwordprompt.ui \
+		  UI/spot-on-poptastic-retrophone-settings.ui \
+		  UI/spot-on-postgresqlconnect.ui \
+		  UI/spot-on-rosetta.ui \
+                  UI/spot-on-starbeamanalyzer.ui \
+		  UI/spot-on-statisticswindow.ui \
+		  UI/spot-on-statusbar.ui \
+		  UI/spot-on-unlock.ui
 
 HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on.h \

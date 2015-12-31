@@ -34,8 +34,8 @@
 #include "spot-on.h"
 #include "spot-on-pacify.h"
 #include "spot-on-pageviewer.h"
-#include "ui_forwardsecrecyalgorithmsselection.h"
-#include "ui_unlock.h"
+#include "ui_spot-on-forwardsecrecyalgorithmsselection.h"
+#include "ui_spot-on-unlock.h"
 
 void spoton::slotDuplicateTransmittedMagnet(void)
 {

@@ -31,7 +31,7 @@
 #include <QMainWindow>
 #include <QSqlDatabase>
 
-#include "ui_pageviewer.h"
+#include "ui_spot-on-pageviewer.h"
 
 class QPrinter;
 class spoton_crypt;
