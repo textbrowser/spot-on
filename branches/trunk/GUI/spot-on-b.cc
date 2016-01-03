@@ -4939,6 +4939,9 @@ void spoton::slotReply(void)
   if(!item)
     return;
 
+  if(m_ui.emailSplitter->sizes().at(1) == 0)
+    m_ui.emailSplitter->setSizes(QList<int> () << width() / 2 << width() / 2);
+
 #if SPOTON_GOLDBUG == 1
   m_ui.mailTab->setCurrentIndex(2); // Write panel.
 #endif
