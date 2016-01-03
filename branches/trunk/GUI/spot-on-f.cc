@@ -240,7 +240,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 
   dialog.reset(new QDialog(this));
   dialog->setWindowTitle
-    (tr("%1: Forward Secrecy Algorithm(s) Selection").
+    (tr("%1: Forward Secrecy Algorithms Selection").
      arg(SPOTON_APPLICATION_NAME));
   ui.setupUi(dialog.data());
 #ifdef Q_OS_MAC
@@ -514,7 +514,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 
   dialog.reset(new QDialog(this));
   dialog->setWindowTitle
-    (tr("%1: Forward Secrecy Algorithm(s) Selection").
+    (tr("%1: Forward Secrecy Algorithms Selection").
      arg(SPOTON_APPLICATION_NAME));
   ui.setupUi(dialog.data());
 #ifdef Q_OS_MAC
