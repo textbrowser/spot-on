@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
+    <width>594</width>
     <height>815</height>
    </rect>
   </property>
@@ -576,6 +576,12 @@ QPushButton:pressed {
             </item>
             <item>
              <widget class="QCheckBox" name="sign">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string>&amp;Sign message.</string>
               </property>
@@ -801,8 +807,8 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>580</width>
-     <height>27</height>
+     <width>594</width>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

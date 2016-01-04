@@ -212,6 +212,12 @@ QPushButton:pressed {
       </property>
       <item>
        <widget class="QRadioButton" name="decrypt">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>&amp;Decrypt</string>
         </property>
@@ -226,6 +232,12 @@ QPushButton:pressed {
       </item>
       <item>
        <widget class="QRadioButton" name="encrypt">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>&amp;Encrypt</string>
         </property>
@@ -268,6 +280,12 @@ QPushButton:pressed {
          </property>
          <item>
           <widget class="QRadioButton" name="cbc">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
             <string>&amp;CBC</string>
            </property>
@@ -278,6 +296,12 @@ QPushButton:pressed {
          </item>
          <item>
           <widget class="QRadioButton" name="gcm">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
             <string>&amp;GCM</string>
            </property>
@@ -436,6 +460,12 @@ QPushButton:pressed {
       </item>
       <item>
        <widget class="QCheckBox" name="sign">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>&amp;Sign file.</string>
         </property>
@@ -514,7 +544,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>885</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
