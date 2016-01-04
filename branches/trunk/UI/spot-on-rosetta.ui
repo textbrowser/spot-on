@@ -153,6 +153,12 @@
       </property>
       <item>
        <widget class="QRadioButton" name="decrypt">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>&amp;Decrypt</string>
         </property>
@@ -167,6 +173,12 @@
       </item>
       <item>
        <widget class="QRadioButton" name="encrypt">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>&amp;Encrypt</string>
         </property>
@@ -278,6 +290,12 @@
           </item>
           <item>
            <widget class="QCheckBox" name="sign">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>&amp;Sign message.</string>
             </property>
@@ -411,7 +429,7 @@
      <x>0</x>
      <y>0</y>
      <width>805</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
