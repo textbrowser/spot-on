@@ -15,7 +15,34 @@
     <normaloff>:/nouve/spot-on-logo.png</normaloff>:/nouve/spot-on-logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout"/>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tab">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_1">
+       <attribute name="title">
+        <string>&amp;Subscriptions</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>&amp;Timeline</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QTextBrowser" name="timeline">
+          <property name="openLinks">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -23,7 +50,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -59,6 +86,10 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>tab</tabstop>
+  <tabstop>timeline</tabstop>
+ </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
  </resources>
