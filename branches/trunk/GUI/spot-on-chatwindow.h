@@ -31,7 +31,7 @@
 #include <QIcon>
 #include <QPointer>
 
-#include "ui_chatwindow.h"
+#include "ui_spot-on-chatwindow.h"
 
 class QSslSocket;
 class spoton_crypt;

@@ -88,7 +88,7 @@ extern "C"
 #endif
 
 #include "spot-on-defines.h"
-#include "ui_keyboard.h"
+#include "ui_spot-on-keyboard.h"
 
 class QStandardItemModel;
 
@@ -387,11 +387,11 @@ class spoton_lineedit: public QLineEdit
 #include "spot-on-rosetta.h"
 #include "spot-on-smp.h"
 #include "spot-on-starbeamanalyzer.h"
-#include "ui_controlcenter.h"
-#include "ui_options.h"
-#include "ui_poptastic-retrophone-settings.h"
-#include "ui_statisticswindow.h"
-#include "ui_statusbar.h"
+#include "ui_spot-on-controlcenter.h"
+#include "ui_spot-on-options.h"
+#include "ui_spot-on-poptastic-retrophone-settings.h"
+#include "ui_spot-on-statisticswindow.h"
+#include "ui_spot-on-statusbar.h"
 
 class QProgressDialog;
 

@@ -4240,23 +4240,47 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 		return true;
 
 	    ok = true;
-	    query.prepare
-	      (QString("INSERT INTO spot_on_urls_revisions_%1 ("
-		       "content, "
-		       "content_hash, "
-		       "date_time_inserted, "
-		       "url_hash) "
-		       "VALUES (?, ?, ?, ?)").
-	       arg(urlHash.mid(0, 2).constData()));
-	    query.bindValue(0, previous);
 
-	    if(ok)
-	      query.bindValue
-		(1, crypt->keyedHash(original, &ok).toBase64());
+	    if(db.driverName() == "QPSQL")
+	      {
+		query.prepare
+		  (QString("INSERT INTO spot_on_urls_revisions_%1 ("
+			   "content, "
+			   "content_hash, "
+			   "date_time_inserted, "
+			   "url_hash) "
+			   "VALUES (?, ?, "
+			   "(SELECT TO_CHAR(NOW(), 'yyyy-mm-ddThh24:mi:ss')), "
+			   "?)").
+		   arg(urlHash.mid(0, 2).constData()));
+		query.bindValue(0, previous);
 
-	    query.bindValue
-	      (2, QDateTime::currentDateTime().toString(Qt::ISODate));
-	    query.bindValue(3, urlHash.constData());
+		if(ok)
+		  query.bindValue
+		    (1, crypt->keyedHash(original, &ok).toBase64());
+
+		query.bindValue(2, urlHash.constData());
+	      }
+	    else
+	      {
+		query.prepare
+		  (QString("INSERT INTO spot_on_urls_revisions_%1 ("
+			   "content, "
+			   "content_hash, "
+			   "date_time_inserted, "
+			   "url_hash) "
+			   "VALUES (?, ?, ?, ?)").
+		   arg(urlHash.mid(0, 2).constData()));
+		query.bindValue(0, previous);
+
+		if(ok)
+		  query.bindValue
+		    (1, crypt->keyedHash(original, &ok).toBase64());
+
+		query.bindValue
+		  (2, QDateTime::currentDateTime().toString(Qt::ISODate));
+		query.bindValue(3, urlHash.constData());
+	      }
 
 	    if(ok)
 	      if(!query.exec())
@@ -4292,27 +4316,28 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 		 "title, "
 		 "unique_id, "
 		 "url, "
-		 "url_hash) VALUES (?, ?, ?, ?, nextval('serial'), "
+		 "url_hash) VALUES (?, "
+		 "(SELECT TO_CHAR(now(), 'yyyy-mm-ddThh24:mi:ss')), "
+		 "?, ?, nextval('serial'), "
 		 "?, ?)").
 	 arg(urlHash.mid(0, 2).constData()));
       query.bindValue(0, crypt->encryptedThenHashed(content, &ok).toBase64());
-      query.bindValue(1, QDateTime::currentDateTime().toString(Qt::ISODate));
 
       if(ok)
 	query.bindValue
-	  (2, crypt->encryptedThenHashed(description, &ok).
+	  (1, crypt->encryptedThenHashed(description, &ok).
 	   toBase64());
 
       if(ok)
 	query.bindValue
-	  (3, crypt->encryptedThenHashed(title, &ok).toBase64());
+	  (2, crypt->encryptedThenHashed(title, &ok).toBase64());
 
       if(ok)
 	query.bindValue
-	  (4, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	  (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
 	   toBase64());
 
-      query.bindValue(5, urlHash.constData());
+      query.bindValue(4, urlHash.constData());
     }
   else
     {

@@ -35,7 +35,7 @@
 #include <QtConcurrent>
 #endif
 
-#include "ui_starbeamanalyzer.h"
+#include "ui_spot-on-starbeamanalyzer.h"
 
 class QAtomicInt;
 class QKeyEvent;

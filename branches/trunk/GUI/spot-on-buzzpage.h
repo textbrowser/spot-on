@@ -33,7 +33,7 @@
 #include <QTimer>
 #include <QWidget>
 
-#include "ui_buzzpage.h"
+#include "ui_spot-on-buzzpage.h"
 
 class spoton_crypt;
 

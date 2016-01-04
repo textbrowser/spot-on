@@ -31,7 +31,7 @@
 #include <QMainWindow>
 #include <QPointer>
 
-#include "ui_echo-key-share.h"
+#include "ui_spot-on-echo-key-share.h"
 
 class QKeyEvent;
 class QSslSocket;

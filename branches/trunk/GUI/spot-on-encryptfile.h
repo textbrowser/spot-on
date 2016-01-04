@@ -31,7 +31,7 @@
 #include <QFuture>
 #include <QMainWindow>
 
-#include "ui_encryptfile.h"
+#include "ui_spot-on-encryptfile.h"
 
 class QKeyEvent;
 
