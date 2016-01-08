@@ -1234,8 +1234,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>559</width>
+             <height>637</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2787,8 +2787,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>1783</height>
+             <width>468</width>
+             <height>1799</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4026,7 +4026,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>582</width>
-             <height>660</height>
+             <height>576</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5059,7 +5059,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>634</width>
-             <height>660</height>
+             <height>352</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6271,7 +6271,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>771</width>
+             <width>806</width>
              <height>1304</height>
             </rect>
            </property>
@@ -7740,7 +7740,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
+             <width>430</width>
              <height>771</height>
             </rect>
            </property>
@@ -9020,8 +9020,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>533</width>
+             <height>471</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10624,6 +10624,8 @@ border-style: inset;
     </property>
     <addaction name="action_About"/>
     <addaction name="separator"/>
+    <addaction name="action_Neighbor_Summary_Panel"/>
+    <addaction name="separator"/>
     <addaction name="action_Log_Viewer"/>
     <addaction name="action_Minimal_Display"/>
     <addaction name="action_Options"/>
@@ -10797,6 +10799,17 @@ border-style: inset;
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_Neighbor_Summary_Panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Neighbor Summary Panel</string>
    </property>
   </action>
  </widget>
