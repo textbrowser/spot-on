@@ -1793,3 +1793,13 @@ void spoton::centerWidget(QWidget *child, QWidget *parent)
 
   child->move(X, Y);
 }
+
+void spoton::slotShowNeighborSummaryPanel(bool state)
+{
+  m_settings["gui/show_neighbor_summary_panel"] = state;
+  m_ui.neighborSummary->setVisible(state);
+
+  QSettings settings;
+
+  settings.setValue("gui/show_neighbor_summary_panel", state);
+}

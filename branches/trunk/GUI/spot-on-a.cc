@@ -561,6 +561,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowEncryptFile(void)));
+  connect(m_ui.action_Neighbor_Summary_Panel,
+	  SIGNAL(triggered(bool)),
+	  this,
+	  SLOT(slotShowNeighborSummaryPanel(bool)));
   connect(m_ui.action_Paste,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1730,6 +1734,10 @@ spoton::spoton(void):QMainWindow()
 
   spoton_misc::correctSettingsContainer(m_settings);
   spoton_misc::setTimeVariables(m_settings);
+  m_ui.action_Neighbor_Summary_Panel->setChecked
+    (m_settings.value("gui/show_neighbor_summary_panel", true).toBool());
+  m_ui.neighborSummary->setVisible
+    (m_ui.action_Neighbor_Summary_Panel->isChecked());
   m_ui.activeUrlDistribution->setChecked
     (m_settings.value("gui/activeUrlDistribution", true).toBool());
 
