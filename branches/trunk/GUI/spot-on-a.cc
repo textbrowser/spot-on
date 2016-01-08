@@ -46,7 +46,7 @@ extern "C"
 #include "spot-on-buzzpage.h"
 #include "spot-on-defines.h"
 #include "spot-on.h"
-#include "ui_spot-on-passwordprompt.h"
+#include "ui_spot-on-password-prompt.h"
 
 /*
 ** Not pleasant! Please avoid this solution!

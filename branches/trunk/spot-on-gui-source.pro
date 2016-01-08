@@ -1,19 +1,19 @@
-FORMS           = UI/spot-on-adaptiveechoprompt.ui \
+FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
 		  UI/spot-on-buzzpage.ui \
 		  UI/spot-on-chatwindow.ui \
 		  UI/spot-on-controlcenter.ui \
 		  UI/spot-on-echo-key-share.ui \
 		  UI/spot-on-encryptfile.ui \
-		  UI/spot-on-forwardsecrecyalgorithmsselection.ui \
+		  UI/spot-on-forward-secrecy-algorithms-selection.ui \
 		  UI/spot-on-ipinformation.ui \
 		  UI/spot-on-keyboard.ui \
 		  UI/spot-on-listener-socket-options.ui \
                   UI/spot-on-logviewer.ui \
 		  UI/spot-on-options.ui \
 		  UI/spot-on-pageviewer.ui \
-                  UI/spot-on-passwordprompt.ui \
+                  UI/spot-on-password-prompt.ui \
 		  UI/spot-on-poptastic-retrophone-settings.ui \
-		  UI/spot-on-postgresqlconnect.ui \
+		  UI/spot-on-postgresql-connect.ui \
 		  UI/spot-on-rosetta.ui \
                   UI/spot-on-starbeamanalyzer.ui \
 		  UI/spot-on-statisticswindow.ui \

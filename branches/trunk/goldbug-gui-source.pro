@@ -1,19 +1,19 @@
-FORMS           = GoldBug-UI/spot-on-adaptiveechoprompt.ui \
+FORMS           = GoldBug-UI/spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI/spot-on-buzzpage.ui \
 		  GoldBug-UI/spot-on-chatwindow.ui \
 		  GoldBug-UI/spot-on-controlcenter.ui \
 		  GoldBug-UI/spot-on-echo-key-share.ui \
 		  GoldBug-UI/spot-on-encryptfile.ui \
-		  GoldBug-UI/spot-on-forwardsecrecyalgorithmsselection.ui \
+		  GoldBug-UI/spot-on-forward-secrecy-algorithms-selection.ui \
 		  GoldBug-UI/spot-on-ipinformation.ui \
 		  GoldBug-UI/spot-on-keyboard.ui \
 		  GoldBug-UI/spot-on-listener-socket-options.ui \
                   GoldBug-UI/spot-on-logviewer.ui \
 		  GoldBug-UI/spot-on-options.ui \
 		  GoldBug-UI/spot-on-pageviewer.ui \
-                  GoldBug-UI/spot-on-passwordprompt.ui \
+                  GoldBug-UI/spot-on-password-prompt.ui \
 		  GoldBug-UI/spot-on-poptastic-retrophone-settings.ui \
-		  GoldBug-UI/spot-on-postgresqlconnect.ui \
+		  GoldBug-UI/spot-on-postgresql-connect.ui \
 		  GoldBug-UI/spot-on-rosetta.ui \
                   GoldBug-UI/spot-on-starbeamanalyzer.ui \
 		  GoldBug-UI/spot-on-statisticswindow.ui \
