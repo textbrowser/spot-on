@@ -106,7 +106,6 @@ class spoton_misc
     (const QByteArray &data, const QByteArray &hash, spoton_crypt *crypt);
   static QSqlDatabase database(QString &connectionName);
   static QString countryCodeFromIPAddress(const QString &ipAddress);
-  static QString countryCodeFromName(const QString &country);
   static QString countryNameFromIPAddress(const QString &ipAddress);
   static QString databaseName(void);
   static QString homePath(void);

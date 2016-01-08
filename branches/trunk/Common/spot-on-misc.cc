@@ -1527,16 +1527,6 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-QString spoton_misc::countryCodeFromName(const QString &country)
-{
-  QString code("");
-
-  if(country == "United States")
-    code = "us";
-
-  return code;
-}
-
 QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
 					  spoton_crypt *crypt)
 {
