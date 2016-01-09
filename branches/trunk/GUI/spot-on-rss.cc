@@ -25,20 +25,31 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QSettings>
+
 #include "spot-on-rss.h"
 
 spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 {
   m_ui.setupUi(this);
+  connect(m_ui.tab,
+	  SIGNAL(currentChanged(int)),
+	  this,
+	  SLOT(slotTabChanged(int)));
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  prepareDatabases();
+
+  QSettings settings;
+  int index = qBound(0,
+		     settings.value("gui/rss_last_tab", 0).toInt(),
+		     m_ui.tab->count());
+
+  m_ui.tab->setCurrentIndex(index);
+  QApplication::restoreOverrideCursor();
 }
 
 spoton_rss::~spoton_rss()
 {
-}
-
-void spoton_rss::closeEvent(QCloseEvent *event)
-{
-  QMainWindow::closeEvent(event);
 }
 
 void spoton_rss::center(QWidget *parent)
@@ -63,6 +74,11 @@ void spoton_rss::center(QWidget *parent)
   move(X, Y);
 }
 
+void spoton_rss::closeEvent(QCloseEvent *event)
+{
+  QMainWindow::closeEvent(event);
+}
+
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
 bool spoton_rss::event(QEvent *event)
@@ -85,3 +101,14 @@ bool spoton_rss::event(QEvent *event)
 }
 #endif
 #endif
+
+void spoton_rss::prepareDatabases(void)
+{
+}
+
+void spoton_rss::slotTabChanged(int index)
+{
+  QSettings settings;
+
+  settings.setValue("gui/rss_last_tab", index);
+}

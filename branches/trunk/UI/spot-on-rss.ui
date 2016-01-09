@@ -214,6 +214,19 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="activate">
+            <property name="text">
+             <string>&amp;Activate</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -341,6 +354,7 @@
   <tabstop>proxyUsername</tabstop>
   <tabstop>proxyPassword</tabstop>
   <tabstop>download_interval</tabstop>
+  <tabstop>activate</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>
   <tabstop>add</tabstop>

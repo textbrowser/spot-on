@@ -47,6 +47,10 @@ class spoton_rss: public QMainWindow
 #endif
 #endif
   void closeEvent(QCloseEvent *event);
+  void prepareDatabases(void);
+
+ private slots:
+  void slotTabChanged(int index);
 };
 
 #endif
