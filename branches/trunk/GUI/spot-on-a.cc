@@ -295,6 +295,7 @@ spoton::spoton(void):QMainWindow()
   m_neighborsLastModificationTime = QDateTime();
   m_participantsLastModificationTime = QDateTime();
   m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, this);
+  m_rss = new spoton_rss(this);
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(this);
   m_starbeamReceivedModel = new QStandardItemModel(this);
   m_statisticsModel = new QStandardItemModel(this);
@@ -589,6 +590,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowOptions(void)));
+  connect(m_ui.action_RSS,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowRss(void)));
   connect(m_ui.action_Echo_Key_Share,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -2241,18 +2246,19 @@ spoton::spoton(void):QMainWindow()
       m_sb.frame->setEnabled(false);
       m_ui.action_Echo_Key_Share->setEnabled(false);
       m_ui.action_Export_Listeners->setEnabled(false);
-      m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Export_Public_Keys->setEnabled(false);
+      m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Import_Public_Keys->setEnabled(false);
       m_ui.action_Options->setEnabled(false);
       m_ui.action_Poptastic_Settings->setEnabled(false);
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(false);
+      m_ui.action_RSS->setEnabled(false);
       m_ui.action_Rosetta->setEnabled(false);
-      m_ui.encryptionKeyType->setEnabled(false);
       m_ui.encryptionKeySize->setEnabled(false);
-      m_ui.signatureKeySize->setEnabled(false);
+      m_ui.encryptionKeyType->setEnabled(false);
       m_ui.keys->setEnabled(true);
       m_ui.regenerate->setEnabled(true);
+      m_ui.signatureKeySize->setEnabled(false);
       m_ui.signatureKeyType->setEnabled(false);
 
       for(int i = 0; i < m_ui.tab->count(); i++)
@@ -2277,16 +2283,18 @@ spoton::spoton(void):QMainWindow()
       m_sb.frame->setEnabled(false);
       m_ui.action_Echo_Key_Share->setEnabled(false);
       m_ui.action_Export_Listeners->setEnabled(false);
-      m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Export_Public_Keys->setEnabled(false);
+      m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Import_Public_Keys->setEnabled(false);
       m_ui.action_Options->setEnabled(false);
       m_ui.action_Poptastic_Settings->setEnabled(false);
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(false);
+      m_ui.action_RSS->setEnabled(false);
       m_ui.action_Rosetta->setEnabled(false);
       m_ui.answer_authenticate->setEnabled(false);
       m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
+      m_ui.kernelBox->setEnabled(false);
       m_ui.keys->setEnabled(false);
       m_ui.newKeys->setEnabled(true);
       m_ui.passphrase->setEnabled(false);
@@ -2296,7 +2304,6 @@ spoton::spoton(void):QMainWindow()
       m_ui.regenerate->setEnabled(false);
       m_ui.signatureKeySize->setEnabled(false);
       m_ui.signatureKeyType->setEnabled(false);
-      m_ui.kernelBox->setEnabled(false);
 
       for(int i = 0; i < m_ui.tab->count(); i++)
 	if(i == 6) // Settings
@@ -5950,27 +5957,28 @@ void spoton::slotSetPassphrase(void)
       m_sb.frame->setEnabled(true);
       m_ui.action_Echo_Key_Share->setEnabled(true);
       m_ui.action_Export_Listeners->setEnabled(true);
-      m_ui.action_Import_Neighbors->setEnabled(true);
       m_ui.action_Export_Public_Keys->setEnabled(true);
+      m_ui.action_Import_Neighbors->setEnabled(true);
       m_ui.action_Import_Public_Keys->setEnabled(true);
       m_ui.action_Options->setEnabled(true);
       m_ui.action_Poptastic_Settings->setEnabled(true);
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
+      m_ui.action_RSS->setEnabled(true);
       m_ui.action_Rosetta->setEnabled(true);
       m_ui.answer->clear();
+      m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.kernelBox->setEnabled(true);
-      m_ui.encryptionKeySize->setEnabled(false);
-      m_ui.signatureKeyType->setEnabled(false);
       m_ui.keys->setEnabled(true);
+      m_ui.newKeys->setChecked(false);
       m_ui.newKeys->setEnabled(true);
-      m_ui.passphrase_strength_indicator->setVisible(false);
       m_ui.passphrase1->clear();
       m_ui.passphrase2->clear();
+      m_ui.passphrase_strength_indicator->setVisible(false);
       m_ui.question->clear();
       m_ui.regenerate->setEnabled(true);
       m_ui.signatureKeyType->setEnabled(false);
-      m_ui.newKeys->setChecked(false);
+      m_ui.signatureKeyType->setEnabled(false);
 
       for(int i = 0; i < m_ui.tab->count(); i++)
 	m_ui.tab->setTabEnabled(i, true);
@@ -6189,35 +6197,36 @@ void spoton::slotValidatePassphrase(void)
 	      slotActivateKernel();
 
 	    m_sb.frame->setEnabled(true);
-	    m_ui.passphrase_rb_authenticate->setChecked(true);
 	    m_ui.action_Echo_Key_Share->setEnabled(true);
 	    m_ui.action_Export_Listeners->setEnabled(true);
-	    m_ui.action_Import_Neighbors->setEnabled(true);
 	    m_ui.action_Export_Public_Keys->setEnabled(true);
+	    m_ui.action_Import_Neighbors->setEnabled(true);
 	    m_ui.action_Import_Public_Keys->setEnabled(true);
 	    m_ui.action_Options->setEnabled(true);
 	    m_ui.action_Poptastic_Settings->setEnabled(true);
 	    m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
+	    m_ui.action_RSS->setEnabled(true);
 	    m_ui.action_Rosetta->setEnabled(true);
 	    m_ui.answer->clear();
 	    m_ui.answer_authenticate->clear();
+	    m_ui.encryptionKeySize->setEnabled(false);
 	    m_ui.encryptionKeyType->setEnabled(false);
 	    m_ui.kernelBox->setEnabled(true);
-	    m_ui.encryptionKeySize->setEnabled(false);
-	    m_ui.signatureKeySize->setEnabled(false);
 	    m_ui.keys->setEnabled(true);
 	    m_ui.newKeys->setEnabled(true);
 	    m_ui.passphrase->clear();
 	    m_ui.passphrase->clear();
+	    m_ui.passphrase->setEnabled(false);
 	    m_ui.passphrase1->clear();
 	    m_ui.passphrase2->clear();
-	    m_ui.passphrase->setEnabled(false);
 	    m_ui.passphraseButton->setEnabled(false);
+	    m_ui.passphrase_rb_authenticate->setChecked(true);
 	    m_ui.passphrase_rb_authenticate->setEnabled(false);
 	    m_ui.question->clear();
 	    m_ui.question_authenticate->clear();
 	    m_ui.question_rb_authenticate->setEnabled(false);
 	    m_ui.regenerate->setEnabled(true);
+	    m_ui.signatureKeySize->setEnabled(false);
 	    m_ui.signatureKeyType->setEnabled(false);
 
 	    for(int i = 0; i < m_ui.tab->count(); i++)

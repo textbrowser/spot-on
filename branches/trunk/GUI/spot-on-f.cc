@@ -1803,3 +1803,11 @@ void spoton::slotShowNeighborSummaryPanel(bool state)
 
   settings.setValue("gui/show_neighbor_summary_panel", state);
 }
+
+void spoton::slotShowRss(void)
+{
+  m_rss->showNormal();
+  m_rss->activateWindow();
+  m_rss->raise();
+  m_rss->center(this);
+}

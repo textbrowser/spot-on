@@ -385,6 +385,7 @@ class spoton_lineedit: public QLineEdit
 #include "spot-on-logviewer.h"
 #include "spot-on-reencode.h"
 #include "spot-on-rosetta.h"
+#include "spot-on-rss.h"
 #include "spot-on-smp.h"
 #include "spot-on-starbeamanalyzer.h"
 #include "ui_spot-on-controlcenter.h"
@@ -495,6 +496,7 @@ class spoton: public QMainWindow
   spoton_external_address m_externalAddress;
   spoton_logviewer m_logViewer;
   spoton_rosetta m_rosetta;
+  spoton_rss *m_rss;
   spoton_starbeamanalyzer *m_starbeamAnalyzer;
   QByteArray copiedPublicKeyPairToMagnet(const QByteArray &data) const;
   QByteArray copyMyChatPublicKey(void) const;
@@ -894,6 +896,7 @@ class spoton: public QMainWindow
   void slotShowMinimalDisplay(bool state);
   void slotShowNeighborSummaryPanel(bool state);
   void slotShowOptions(void);
+  void slotShowRss(void);
   void slotShowStarBeamAnalyzer(void);
   void slotShowStatistics(void);
   void slotShowStatisticsWindow(void);
