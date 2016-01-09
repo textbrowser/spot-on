@@ -35,7 +35,7 @@
 
 class spoton_pacify
 {
-public:
+ public:
   spoton_pacify(const std::string &passphrase)
   {
     size_t n = passphrase.length();
@@ -51,13 +51,15 @@ public:
     //   11......  Initial byte in multibyte character     (Count these.)
     //   10......  Non-initial byte in multibyte character (Do not count these.)
 
+    m_passphrase = 0;
     m_passphrase_length = 0;
 
     for(size_t i = 0; i < n; i++)
       if((static_cast<int> (passphrase.at(i)) & 0xc0) != 0x80)
 	m_passphrase_length += 1;
 
-    m_passphrase = new long int[m_passphrase_length];
+    if(m_passphrase_length > 0)
+      m_passphrase = new long int[m_passphrase_length];
 
     // Convert.
     //   0.......
@@ -72,9 +74,12 @@ public:
 	int c = static_cast<int> (passphrase.at(i++));
 
 	if((c & 0x80) == 0)
-	  // Single-byte character.
+	  {
+	    // Single-byte character.
 
-	  m_passphrase[j] = static_cast<long int> (c);
+	    if(m_passphrase)
+	      m_passphrase[j] = static_cast<long int> (c);
+	  }
 	else if((c & 0xc0) == 0xc0)
 	  {
 	    // Initial byte in multibyte-character.
@@ -93,7 +98,9 @@ public:
 
 	    if(b > 6)
 	      {
-		m_passphrase[j] = 0; /* XXX invalid input. */
+		if(m_passphrase)
+		  m_passphrase[j] = 0; /* XXX invalid input. */
+
 		break;
 	      }
 
@@ -101,7 +108,9 @@ public:
 	    // stored in the start byte.
 
 	    c = (c & 0xff) >> b;
-	    m_passphrase[j] = static_cast<long int> (c);
+
+	    if(m_passphrase)
+	      m_passphrase[j] = static_cast<long int> (c);
 
 	    // We have read one of the bytes.
 
@@ -116,7 +125,9 @@ public:
 		  {
 		    // Premature end of string.
 
-		    m_passphrase[j] = 0; /* XXX invalid input. */
+		    if(m_passphrase)
+		      m_passphrase[j] = 0; /* XXX invalid input. */
+
 		    break;
 		  }
 
@@ -126,7 +137,9 @@ public:
 		  {
 		    // Premature end of multibyte-character byte sequence.
 
-		    m_passphrase[j] = 0; /* XXX invalid input. */
+		    if(m_passphrase)
+		      m_passphrase[j] = 0; /* XXX invalid input. */
+
 		    i--;
 		    break;
 		  }
@@ -134,8 +147,11 @@ public:
 		  {
 		    // Store the six lowest bits.
 
-		    m_passphrase[j] <<= 6;
-		    m_passphrase[j] |= static_cast<long int> (c & 0x3f);
+		    if(m_passphrase)
+		      {
+			m_passphrase[j] <<= 6;
+			m_passphrase[j] |= static_cast<long int> (c & 0x3f);
+		      }
 		  }
 	      }
 	  }
@@ -149,7 +165,8 @@ public:
 
   ~spoton_pacify()
   {
-    delete []m_passphrase;
+    if(m_passphrase)
+      delete []m_passphrase;
   }
 
   double evaluate(void) const
@@ -168,7 +185,7 @@ public:
     for(size_t i = 0; i < m_passphrase_length; i++)
       {
 	double r = 0.0;
-	long int c = m_passphrase[i];
+	long int c = m_passphrase ? m_passphrase[i] : 0;
 
 	r = char_class(c);
 
@@ -243,7 +260,7 @@ public:
     return std::floor(rc + 0.5);
   }
 
-private:
+ private:
   long int *m_passphrase;
   size_t m_passphrase_length;
 
