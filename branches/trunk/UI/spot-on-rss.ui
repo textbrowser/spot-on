@@ -239,6 +239,22 @@
             </property>
            </spacer>
           </item>
+          <item>
+           <widget class="QCheckBox" name="scroll_automatically">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&amp;Scroll Automatically</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -355,6 +371,7 @@
   <tabstop>proxyPassword</tabstop>
   <tabstop>download_interval</tabstop>
   <tabstop>activate</tabstop>
+  <tabstop>scroll_automatically</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>
   <tabstop>add</tabstop>

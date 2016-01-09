@@ -25,17 +25,17 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QDir>
 #include <QSettings>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
+#include "Common/spot-on-misc.h"
 #include "spot-on-rss.h"
 
 spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 {
   m_ui.setupUi(this);
-  connect(m_ui.tab,
-	  SIGNAL(currentChanged(int)),
-	  this,
-	  SLOT(slotTabChanged(int)));
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
 
@@ -46,6 +46,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 
   m_ui.tab->setCurrentIndex(index);
   QApplication::restoreOverrideCursor();
+  connect(m_ui.tab,
+	  SIGNAL(currentChanged(int)),
+	  this,
+	  SLOT(slotTabChanged(int)));
 }
 
 spoton_rss::~spoton_rss()
@@ -104,6 +108,32 @@ bool spoton_rss::event(QEvent *event)
 
 void spoton_rss::prepareDatabases(void)
 {
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds ("
+		   "feed TEXT NOT NULL, "
+		   "feed_hash TEXT NOT NULL PRIMARY KEY)");
+	query.exec("CREATE TABLE IF NOT EXISTS rss_proxy ("
+		   "hostname TEXT NOT NULL, "
+		   "password TEXT NOT NULL, "
+		   "port TEXT NOT NULL, "
+		   "type TEXT NOT NULL, "
+		   "username TEXT NOT NULL)");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_rss::slotTabChanged(int index)

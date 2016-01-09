@@ -43,7 +43,6 @@ class spoton_pageviewer: public QMainWindow
  public:
   spoton_pageviewer(const QSqlDatabase &db,
 		    const QString &urlHash,
-		    spoton_crypt *crypt,
 		    QWidget *parent);
   ~spoton_pageviewer();
   void setPage(const QString &text, const QUrl &url, const int compressedSize);
@@ -53,7 +52,6 @@ class spoton_pageviewer: public QMainWindow
   QSqlDatabase m_database;
   QString m_urlHash;
   Ui_pageviewer m_ui;
-  spoton_crypt *m_crypt;
 
  private slots:
   void slotFind(void);

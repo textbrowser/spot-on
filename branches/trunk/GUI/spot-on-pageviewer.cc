@@ -30,15 +30,14 @@
 #include <QSqlQuery>
 
 #include "../Common/spot-on-crypt.h"
+#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-pageviewer.h"
 
 spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 				     const QString &urlHash,
-				     spoton_crypt *crypt,
 				     QWidget *parent):QMainWindow(parent)
 {
-  m_crypt = crypt;
   m_database = db;
   m_ui.setupUi(this);
   m_urlHash = urlHash;
@@ -175,7 +174,10 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
 
 void spoton_pageviewer::slotRevisionChanged(int index)
 {
-  if(!m_crypt || !m_database.isOpen())
+  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
+    value("chat", 0) : 0;
+
+  if(!crypt || !m_database.isOpen())
     {
       disconnect(m_ui.revision,
 		 SIGNAL(activated(int)),
@@ -218,7 +220,7 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 	QByteArray content;
 	bool ok = true;
 
-	content = m_crypt->decryptedAfterAuthenticated
+	content = crypt->decryptedAfterAuthenticated
 	  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	if(ok)

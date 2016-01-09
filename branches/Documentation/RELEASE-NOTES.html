@@ -5,6 +5,7 @@
 <ol>
 <li>CHAR_BIT instead of 8.</li>
 <li>Corrected std::cerr parameter when reporting invalid Spot-On-Kernel options.</li>
+<li>Do not distribute private spoton_crypt objects to spoton_pageviewer objects as the contents of the spoton_crypt objects may be modified by the re-encoding process. Instead, use spoton::instance()->crypts().</li>
 <li>Use the server's date when importing URLs into PostgreSQL databases.</li>
 <li>Widget text corrections.</li>
 </ol>
