@@ -2681,6 +2681,7 @@ void spoton::cleanup(void)
     }
 
   m_crypts.clear();
+  m_rss->deleteLater();
   m_starbeamAnalyzer->deleteLater();
   spoton_crypt::terminate();
   QApplication::instance()->quit();
