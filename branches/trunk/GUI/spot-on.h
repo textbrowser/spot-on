@@ -418,6 +418,7 @@ class spoton: public QMainWindow
   QHash<QString, spoton_crypt *> crypts(void) const;
   QStandardItemModel *starbeamReceivedModel(void) const;
   Ui_spoton_mainwindow ui(void) const;
+  spoton_crypt *urlCommonCrypt(void) const;
   static QList<QTableWidgetItem *> findItems(QTableWidget *table,
 					     const QString &text,
 					     const int column);

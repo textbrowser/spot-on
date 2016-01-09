@@ -136,7 +136,7 @@ void spoton_pageviewer::setPage(const QString &text, const QUrl &url,
   QLocale locale;
 
   m_ui.size->setText
-    (QString("%1 KiB, Compressed %2 KiB").
+    (tr("%1 KiB, Compressed %2 KiB").
      arg(locale.toString(text.length() / 1024)).
      arg(locale.toString(compressedSize / 1024)));
   m_ui.textBrowser->setHtml(text);
@@ -174,8 +174,8 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
 
 void spoton_pageviewer::slotRevisionChanged(int index)
 {
-  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
-    value("chat", 0) : 0;
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->urlCommonCrypt() : 0;
 
   if(!crypt || !m_database.isOpen())
     {
@@ -231,7 +231,7 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 	    QLocale locale;
 
 	    m_ui.size->setText
-	      (QString("%1 KiB, Compressed %2 KiB").
+	      (tr("%1 KiB, Compressed %2 KiB").
 	       arg(locale.toString(content.length() / 1024)).
 	       arg(locale.toString(query.value(0).
 				   toByteArray().length() / 1024)));

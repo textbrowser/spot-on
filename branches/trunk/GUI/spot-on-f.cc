@@ -1811,3 +1811,8 @@ void spoton::slotShowRss(void)
   m_rss->raise();
   m_rss->center(this);
 }
+
+spoton_crypt *spoton::urlCommonCrypt(void) const
+{
+  return m_urlCommonCrypt;
+}

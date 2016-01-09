@@ -5953,6 +5953,8 @@ void spoton::slotSetPassphrase(void)
 	      m_echoKeyShare->createDefaultUrlCommunity();
 	      QApplication::restoreOverrideCursor();
 	    }
+	  else
+	    prepareUrlContainers();
 	}
 
       m_sb.frame->setEnabled(true);

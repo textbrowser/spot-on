@@ -1877,7 +1877,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  (0, static_cast<int> (qstrlen("view-https:")));
 
       spoton_pageviewer *pageViewer = new spoton_pageviewer
-	(m_urlDatabase, hash, m_urlCommonCrypt, this);
+	(m_urlDatabase, hash, this);
 
       if(!hash.isEmpty())
 	{
