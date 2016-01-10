@@ -106,6 +106,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(clicked(void)),
 	  m_ui.action_menu,
 	  SLOT(showMenu(void)));
+  setWindowTitle(tr("%1: RSS").arg(SPOTON_APPLICATION_NAME));
 }
 
 spoton_rss::~spoton_rss()
