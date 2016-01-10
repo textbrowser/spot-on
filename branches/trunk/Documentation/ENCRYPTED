@@ -1,6 +1,6 @@
-Some tables contain encrypted data.
+Some database fields contain encrypted data.
 
-buzz_channels.db:
+buzz_channels.db
 
 data
 
@@ -8,12 +8,12 @@ echo_key_sharing_secrets.db
 
 all fields save for id_hash
 
-email.db:
+email.db
 
 all fields save for folder_index, hash, receiver_sender_hash, and
 recipient_hash
 
-friends_public_keys.db:
+friends_public_keys.db
 
 forward_secrecy_authentication_algorithm
 forward_secrecy_authentication_key
@@ -25,11 +25,11 @@ key_type
 name
 public_key
 
-idiotes.db:
+idiotes.db
 
 all fields save for id_hash
 
-listeners.db:
+listeners.db
 
 listeners
 
@@ -60,7 +60,7 @@ listeners_allowed_ips
 
 ip_address
 
-neighbors.db:
+neighbors.db
 
 account_name
 account_password
@@ -85,7 +85,7 @@ ssl_session_cipher
 transport
 uuid
 
-poptastic.db:
+poptastic.db
 
 in_password
 in_server_address
@@ -102,13 +102,17 @@ proxy_server_port
 proxy_username
 smtp_localname
 
-shared.db:
+rss.db
+
+all fields save for feed_hash
+
+shared.db
 
 description
 title
 url
 
-starbeam.db:
+starbeam.db
 
 magnets
 
