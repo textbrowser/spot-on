@@ -41,6 +41,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   m_ui.setupUi(this);
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.feeds->setColumnHidden(2, true); // OID
+  m_ui.feeds->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.feeds->horizontalHeader()->setSortIndicator
     (1, Qt::AscendingOrder); // Feed
   prepareDatabases();
@@ -56,6 +57,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.feeds,
+	  SIGNAL(customContextMenuRequested(const QPoint &)),
+	  this,
+	  SLOT(slotShowContextMenu(const QPoint &)));
   connect(m_ui.new_feed,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -311,6 +316,19 @@ void spoton_rss::slotAddFeed(void)
       m_ui.new_feed->selectAll();
       populateFeeds();
     }
+}
+
+void spoton_rss::slotDeleteFeed(void)
+{
+}
+
+void spoton_rss::slotShowContextMenu(const QPoint &point)
+{
+  QMenu menu(this);
+
+  menu.addAction(tr("Delete selected feed."),
+		 this, SLOT(slotDeleteFeed(void)));
+  menu.exec(m_ui.feeds->mapToGlobal(point));
 }
 
 void spoton_rss::slotTabChanged(int index)
