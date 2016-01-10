@@ -28,6 +28,8 @@
 #ifndef _spoton_rss_h_
 #define _spoton_rss_h_
 
+#include <QTimer>
+
 #include "ui_spot-on-rss.h"
 
 class spoton_rss: public QMainWindow
@@ -41,6 +43,8 @@ class spoton_rss: public QMainWindow
   void show(void);
 
  private:
+  QTimer m_downloadTimer;
+  QTimer m_timelineTimer;
   Ui_rss m_ui;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
@@ -54,8 +58,10 @@ class spoton_rss: public QMainWindow
 
  private slots:
   void slotAddFeed(void);
+  void slotActivate(bool state);
   void slotDeleteAllFeeds(void);
   void slotDeleteFeed(void);
+  void slotDownloadIntervalChanged(double value);
   void slotPopulateFeeds(void);
   void slotSaveSettings(void);
   void slotShowContextMenu(const QPoint &point);

@@ -47,20 +47,35 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   prepareDatabases();
 
   QSettings settings;
-  int index = qBound(0,
-		     settings.value("gui/rss_last_tab", 0).toInt(),
-		     m_ui.tab->count());
+  bool state = false;
+  double value = 1.50;
 
-  m_ui.tab->setCurrentIndex(index);
+  state = settings.value("gui/rss_download_activate", false).toBool();
+  value = qBound(m_ui.download_interval->minimum(),
+		 settings.value("gui/rss_download_interval").toDouble(),
+		 m_ui.download_interval->maximum());
+  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
+
+  if(state)
+    m_downloadTimer.start();
+
   QApplication::restoreOverrideCursor();
   connect(m_ui.action_Save_Settings,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotSaveSettings(void)));
+  connect(m_ui.activate,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotActivate(bool)));
   connect(m_ui.add,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.download_interval,
+	  SIGNAL(valueChanged(double)),
+	  this,
+	  SLOT(slotDownloadIntervalChanged(double)));
   connect(m_ui.feeds,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
@@ -270,13 +285,19 @@ void spoton_rss::restoreWidgets(void)
 {
   QSettings settings;
   double value = 1.50;
+  int index = qBound(0,
+		     settings.value("gui/rss_last_tab", 0).toInt(),
+		     m_ui.tab->count());
 
-  m_ui.scroll_automatically->setChecked
-    (settings.value("gui/rss_scroll_automatically", true).toBool());
+  m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
+					   false).toBool());
   value = qBound(m_ui.download_interval->minimum(),
 		 settings.value("gui/rss_download_interval").toDouble(),
 		 m_ui.download_interval->maximum());
   m_ui.download_interval->setValue(value);
+  m_ui.scroll_automatically->setChecked
+    (settings.value("gui/rss_scroll_automatically", true).toBool());
+  m_ui.tab->setCurrentIndex(index);
 
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
@@ -368,6 +389,14 @@ void spoton_rss::show(void)
   restoreWidgets();
   QApplication::restoreOverrideCursor();
   QMainWindow::show();
+}
+
+void spoton_rss::slotActivate(bool state)
+{
+  if(state)
+    m_downloadTimer.start();
+  else
+    m_downloadTimer.stop();
 }
 
 void spoton_rss::slotAddFeed(void)
@@ -473,6 +502,11 @@ void spoton_rss::slotDeleteFeed(void)
 {
 }
 
+void spoton_rss::slotDownloadIntervalChanged(double value)
+{
+  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
+}
+
 void spoton_rss::slotPopulateFeeds(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -486,6 +520,8 @@ void spoton_rss::slotSaveSettings(void)
 
   QSettings settings;
 
+  settings.setValue("gui/rss_download_activate",
+		    m_ui.activate->isChecked());
   settings.setValue("gui/rss_download_interval",
 		    m_ui.download_interval->value());
   settings.setValue("gui/rss_scroll_automatically",

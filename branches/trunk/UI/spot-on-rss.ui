@@ -27,6 +27,27 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
+         <widget class="QLabel" name="label_4">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+ border: 1px solid gray;
+ background-color: lightgreen;
+ margin: 2px;
+ padding: 2px;
+ }</string>
+          </property>
+          <property name="text">
+           <string>Please save your changes.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="proxy">
           <property name="title">
            <string>Pro&amp;xy</string>
