@@ -38,6 +38,7 @@ class spoton_rss: public QMainWindow
   spoton_rss(QWidget *parent);
   ~spoton_rss();
   void center(QWidget *parent);
+  void show(void);
 
  private:
   Ui_rss m_ui;
@@ -47,9 +48,11 @@ class spoton_rss: public QMainWindow
 #endif
 #endif
   void closeEvent(QCloseEvent *event);
+  void populateFeeds(void);
   void prepareDatabases(void);
 
  private slots:
+  void slotAddFeed(void);
   void slotTabChanged(int index);
 };
 

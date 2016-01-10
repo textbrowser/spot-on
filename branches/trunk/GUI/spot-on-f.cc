@@ -1810,6 +1810,7 @@ void spoton::slotShowRss(void)
   m_rss->activateWindow();
   m_rss->raise();
   m_rss->center(this);
+  m_rss->show();
 }
 
 spoton_crypt *spoton::urlCommonCrypt(void) const

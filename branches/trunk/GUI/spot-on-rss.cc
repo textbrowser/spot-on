@@ -26,17 +26,21 @@
 */
 
 #include <QDir>
+#include <QMessageBox>
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
+#include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
+#include "spot-on.h"
 #include "spot-on-rss.h"
 
 spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 {
   m_ui.setupUi(this);
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_ui.feeds->setColumnHidden(2, true); // OID
   prepareDatabases();
 
   QSettings settings;
@@ -46,6 +50,14 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 
   m_ui.tab->setCurrentIndex(index);
   QApplication::restoreOverrideCursor();
+  connect(m_ui.add,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotAddFeed(void)));
+  connect(m_ui.new_feed,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotAddFeed(void)));
   connect(m_ui.tab,
 	  SIGNAL(currentChanged(int)),
 	  this,
@@ -106,6 +118,83 @@ bool spoton_rss::event(QEvent *event)
 #endif
 #endif
 
+void spoton_rss::populateFeeds(void)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	int row = 0;
+
+	m_ui.feeds->clearContents();
+	m_ui.feeds->setRowCount(0);
+	m_ui.feeds->setSortingEnabled(false);
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT COUNT(*) FROM rss_feeds"))
+	  if(query.next())
+	    m_ui.feeds->setRowCount(query.value(0).toInt());
+
+	if(query.exec("SELECT echo, feed, OID FROM rss_feeds"))
+	  while(query.next())
+	    {
+	      QByteArray echo;
+	      QByteArray feed;
+	      QString oid(query.value(2).toString());
+	      QTableWidgetItem *item = 0;
+	      bool ok = true;
+
+	      echo = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+	      item = new QTableWidgetItem();
+	      item->setFlags
+		(Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
+	      m_ui.feeds->setItem(row, 0, item);
+
+	      if(!ok)
+		item->setText(tr("error"));
+	      else if(item->text() == "true")
+		item->setCheckState(Qt::Checked);
+
+	      feed = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
+	      item = new QTableWidgetItem();
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      m_ui.feeds->setItem(row, 1, item);
+
+	      if(!ok)
+		item->setText(tr("error"));
+	      else
+		item->setText(feed.constData());
+
+	      item = new QTableWidgetItem(oid);
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      m_ui.feeds->setItem(row, 2, item);
+	      row += 1;
+	    }
+
+	m_ui.feeds->setRowCount(row);
+	m_ui.feeds->setSortingEnabled(true);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton_rss::prepareDatabases(void)
 {
   QString connectionName("");
@@ -120,6 +209,7 @@ void spoton_rss::prepareDatabases(void)
 	QSqlQuery query(db);
 
 	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds ("
+		   "echo TEXT NOT NULL, "
 		   "feed TEXT NOT NULL, "
 		   "feed_hash TEXT NOT NULL PRIMARY KEY)");
 	query.exec("CREATE TABLE IF NOT EXISTS rss_proxy ("
@@ -134,6 +224,81 @@ void spoton_rss::prepareDatabases(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_rss::show(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  populateFeeds();
+  QApplication::restoreOverrideCursor();
+  QMainWindow::show();
+}
+
+void spoton_rss::slotAddFeed(void)
+{
+  QString connectionName("");
+  QString error("");
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    {
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      goto done_label;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  prepareDatabases();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	QString new_feed(m_ui.new_feed->text().trimmed());
+	bool ok = true;
+
+	query.prepare("INSERT OR REPLACE INTO rss_feeds "
+		      "(echo, feed, feed_hash) VALUES (?, ?, ?)");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(QByteArray("false"), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->encryptedThenHashed(new_feed.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->keyedHash(new_feed.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  ok = query.exec();
+
+	if(!ok)
+	  error = tr("Unable to insert the specified feed.");
+      }
+    else
+      error = tr("Unable to access rss.db.");
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+
+ done_label:
+
+  if(!error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME), error.trimmed());
+  else
+    {
+      m_ui.new_feed->selectAll();
+      populateFeeds();
+    }
 }
 
 void spoton_rss::slotTabChanged(int index)

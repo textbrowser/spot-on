@@ -171,6 +171,9 @@ class spoton_pacify
 
   double evaluate(void) const
   {
+    if(!m_passphrase || m_passphrase_length <= 0)
+      return 0.0;
+
     double rc = 0.0;
     long int last = -1;
     std::map<long int, int> used;
