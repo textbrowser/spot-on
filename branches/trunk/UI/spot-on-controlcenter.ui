@@ -8135,9 +8135,6 @@
    <property name="text">
     <string>&amp;Rosetta</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
   </action>
   <action name="action_Copy">
    <property name="text">
@@ -8260,6 +8257,9 @@
   <action name="action_RSS">
    <property name="text">
     <string>&amp;RSS</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

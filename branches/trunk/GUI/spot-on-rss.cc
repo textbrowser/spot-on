@@ -266,10 +266,106 @@ void spoton_rss::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton_rss::restoreWidgets(void)
+{
+  QSettings settings;
+  double value = 1.50;
+
+  m_ui.scroll_automatically->setChecked
+    (settings.value("gui/rss_scroll_automatically", true).toBool());
+  value = qBound(m_ui.download_interval->minimum(),
+		 settings.value("gui/rss_download_interval").toDouble(),
+		 m_ui.download_interval->maximum());
+  m_ui.download_interval->setValue(value);
+
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(crypt)
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+	    query.prepare("SELECT enabled, hostname, password, port, type, "
+			  "username FROM rss_proxy");
+
+	    if(query.exec())
+	      if(query.next())
+		{
+		  QList<QByteArray> list;
+
+		  for(int i = 0; i < query.record().count(); i++)
+		    {
+		      QByteArray bytes;
+		      bool ok = true;
+
+		      bytes = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(i).
+						toByteArray()), &ok);
+
+		      if(ok)
+			list << bytes;
+		      else
+			break;
+		    }
+
+		  if(list.size() != query.record().count() ||
+		     list.value(0) == "false")
+		    {
+		      m_ui.proxy->setChecked(false);
+		      m_ui.proxyHostname->clear();
+		      m_ui.proxyPassword->clear();
+		      m_ui.proxyPort->setValue(1);
+		      m_ui.proxyType->setCurrentIndex(0);
+		      m_ui.proxyUsername->clear();
+		    }
+		  else
+		    {
+		      m_ui.proxy->setChecked(true);
+		      m_ui.proxyHostname->setText
+			(QString::fromUtf8(list.value(1).constData()));
+		      m_ui.proxyPassword->setText
+			(QString::fromUtf8(list.value(2).constData()));
+		      m_ui.proxyPort->setValue
+			(list.value(3).toInt());
+
+		      if(list.value(4) == "HTTP")
+			m_ui.proxyType->setCurrentIndex(0);
+		      else if(list.value(4) == "Socks5")
+			m_ui.proxyType->setCurrentIndex(1);
+		      else if(list.value(4) == "System")
+			m_ui.proxyType->setCurrentIndex(2);
+		      else
+			m_ui.proxyType->setCurrentIndex(0);
+
+		      m_ui.proxyUsername->setText
+			(QString::fromUtf8(list.value(5).constData()));
+		    }
+		}
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
+
 void spoton_rss::show(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   populateFeeds();
+  restoreWidgets();
   QApplication::restoreOverrideCursor();
   QMainWindow::show();
 }

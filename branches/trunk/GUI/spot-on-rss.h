@@ -50,6 +50,7 @@ class spoton_rss: public QMainWindow
   void closeEvent(QCloseEvent *event);
   void populateFeeds(void);
   void prepareDatabases(void);
+  void restoreWidgets(void);
 
  private slots:
   void slotAddFeed(void);
