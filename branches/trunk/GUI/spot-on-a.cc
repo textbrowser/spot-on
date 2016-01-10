@@ -36,6 +36,10 @@ extern "C"
 
 #include <iostream>
 
+#ifdef Q_OS_MAC
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#endif
 #include <QProgressDialog>
 #include <QScopedPointer>
 #include <QStandardItemModel>
@@ -260,6 +264,20 @@ int main(int argc, char *argv[])
 
 spoton::spoton(void):QMainWindow()
 {
+  {
+#ifdef Q_OS_MAC
+    /*
+    ** Anomaly.
+    */
+
+    QNetworkAccessManager manager;
+    QNetworkReply *reply = manager.get
+      (QNetworkRequest(QUrl::fromUserInput("http://0.0.0.0")));
+
+    reply->deleteLater();
+#endif
+  }
+
   for(int i = 0; i < 10 + 6; i++)
     for(int j = 0; j < 10 + 6; j++)
       {
