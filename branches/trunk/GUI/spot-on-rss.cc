@@ -423,6 +423,7 @@ void spoton_rss::slotAddFeed(void)
   QString connectionName("");
   QString error("");
   QString new_feed(m_ui.new_feed->text().trimmed());
+  QUrl url(QUrl::fromUserInput(new_feed));
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
@@ -431,9 +432,15 @@ void spoton_rss::slotAddFeed(void)
       error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
       goto done_label;
     }
-  else if(new_feed.isEmpty())
+  else if(url.isEmpty() || !url.isValid())
     {
       error = tr("Please provide a feed.");
+      goto done_label;
+    }
+  else if(!(url.scheme().toLower() == "http" ||
+	    url.scheme().toLower() == "https"))
+    {
+      error = tr("Invalid feed scheme; HTTP or HTTPS.");
       goto done_label;
     }
 
