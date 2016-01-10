@@ -53,7 +53,10 @@ class spoton_rss: public QMainWindow
 
  private slots:
   void slotAddFeed(void);
+  void slotDeleteAllFeeds(void);
   void slotDeleteFeed(void);
+  void slotPopulateFeeds(void);
+  void slotSaveSettings(void);
   void slotShowContextMenu(const QPoint &point);
   void slotTabChanged(int index);
 };

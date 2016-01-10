@@ -53,6 +53,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 
   m_ui.tab->setCurrentIndex(index);
   QApplication::restoreOverrideCursor();
+  connect(m_ui.action_Save_Settings,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotSaveSettings(void)));
   connect(m_ui.add,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -69,6 +73,24 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(currentChanged(int)),
 	  this,
 	  SLOT(slotTabChanged(int)));
+
+  QMenu *menu = new QMenu(this);
+
+  menu->addAction(tr("Delete all feeds."),
+		  this,
+		  SLOT(slotDeleteAllFeeds(void)));
+  menu->addAction(tr("Delete selected feed."),
+		  this,
+		  SLOT(slotDeleteFeed(void)));
+  menu->addSeparator();
+  menu->addAction(tr("Refresh table."),
+		  this,
+		  SLOT(slotPopulateFeeds(void)));
+  m_ui.action_menu->setMenu(menu);
+  connect(m_ui.action_menu,
+	  SIGNAL(clicked(void)),
+	  m_ui.action_menu,
+	  SLOT(showMenu(void)));
 }
 
 spoton_rss::~spoton_rss()
@@ -225,11 +247,17 @@ void spoton_rss::prepareDatabases(void)
 		   "feed TEXT NOT NULL, "
 		   "feed_hash TEXT NOT NULL PRIMARY KEY)");
 	query.exec("CREATE TABLE IF NOT EXISTS rss_proxy ("
+		   "enabled TEXT NOT NULL, "
 		   "hostname TEXT NOT NULL, "
 		   "password TEXT NOT NULL, "
 		   "port TEXT NOT NULL, "
 		   "type TEXT NOT NULL, "
 		   "username TEXT NOT NULL)");
+	query.exec("CREATE TRIGGER IF NOT EXISTS rss_proxy_trigger "
+		   "BEFORE INSERT ON rss_proxy "
+		   "BEGIN "
+		   "DELETE FROM rss_proxy; "
+		   "END");
       }
 
     db.close();
@@ -318,8 +346,143 @@ void spoton_rss::slotAddFeed(void)
     }
 }
 
+void spoton_rss::slotDeleteAllFeeds(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM rss_feeds");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  populateFeeds();
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton_rss::slotDeleteFeed(void)
 {
+}
+
+void spoton_rss::slotPopulateFeeds(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  populateFeeds();
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_rss::slotSaveSettings(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QSettings settings;
+
+  settings.setValue("gui/rss_download_interval",
+		    m_ui.download_interval->value());
+  settings.setValue("gui/rss_scroll_automatically",
+		    m_ui.scroll_automatically->isChecked());
+  prepareDatabases();
+
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(crypt)
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+	    QString enabled("false");
+	    QString hostname(m_ui.proxyHostname->text().trimmed());
+	    QString password(m_ui.proxyPassword->text());
+	    QString port(QString::number(m_ui.proxyPort->value()));
+	    QString type("");
+	    QString username(m_ui.proxyUsername->text());
+	    bool ok = true;
+
+	    if(!m_ui.proxy->isChecked())
+	      {
+		hostname.clear();
+		password.clear();
+		port.clear();
+		type.clear();
+		username.clear();
+	      }
+	    else
+	      {
+		enabled = "true";
+
+		if(m_ui.proxyType->currentIndex() == 0)
+		  type = "HTTP";
+		else if(m_ui.proxyType->currentIndex() == 1)
+		  type = "Socks5";
+		else
+		  type = "System";
+	      }
+
+	    query.prepare("INSERT OR REPLACE INTO rss_proxy ("
+			  "enabled, hostname, password, port, type, username) "
+			  "VALUES (?, ?, ?, ?, ?, ?)");
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(enabled.toLatin1(), &ok).
+	       toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->encryptedThenHashed(hostname.toUtf8(),
+					       &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(2, crypt->encryptedThenHashed(password.toUtf8(),
+					       &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(3, crypt->encryptedThenHashed(port.toLatin1(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(4, crypt->encryptedThenHashed(type.toLatin1(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(5, crypt->encryptedThenHashed(username.toUtf8(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::slotShowContextMenu(const QPoint &point)

@@ -188,6 +188,26 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
+           <widget class="QToolButton" name="action_menu">
+            <property name="toolTip">
+             <string>Context Menu</string>
+            </property>
+            <property name="text">
+             <string>Context Menu Reflection</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../Icons/icons.qrc">
+              <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+            </property>
+            <property name="popupMode">
+             <enum>QToolButton::MenuButtonPopup</enum>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLabel" name="label">
             <property name="text">
              <string>&amp;Download Interval</string>
