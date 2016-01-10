@@ -110,6 +110,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 
 spoton_rss::~spoton_rss()
 {
+  m_downloadTimer.stop();
 }
 
 void spoton_rss::center(QWidget *parent)
@@ -394,7 +395,10 @@ void spoton_rss::show(void)
 void spoton_rss::slotActivate(bool state)
 {
   if(state)
-    m_downloadTimer.start();
+    {
+      if(!m_downloadTimer.isActive()) // Signals.
+	m_downloadTimer.start();
+    }
   else
     m_downloadTimer.stop();
 }
