@@ -526,6 +526,41 @@ void spoton_rss::slotDeleteAllFeeds(void)
 
 void spoton_rss::slotDeleteFeed(void)
 {
+  QString oid("");
+  QTableWidgetItem *item = 0;
+  int row = m_ui.feeds->currentRow();
+
+  if((item = m_ui.feeds->item(row, 2)))
+    oid = item->text();
+  else
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM rss_feeds WHERE OID = ?");
+	query.bindValue(0, oid);
+
+	if(query.exec())
+	  m_ui.feeds->removeRow(row);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::slotDownloadIntervalChanged(double value)
@@ -647,8 +682,13 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 {
   QMenu menu(this);
 
+  menu.addAction(tr("Delete all feeds."),
+		 this, SLOT(slotDeleteAllFeeds(void)));
   menu.addAction(tr("Delete selected feed."),
 		 this, SLOT(slotDeleteFeed(void)));
+  menu.addSeparator();
+  menu.addAction(tr("Refresh table."),
+		 this, SLOT(slotPopulateFeeds(void)));
   menu.exec(m_ui.feeds->mapToGlobal(point));
 }
 
