@@ -292,6 +292,14 @@ void spoton_rss::restoreWidgets(void)
 
   m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
 					   false).toBool());
+
+  if(m_ui.activate->isChecked())
+    m_ui.activate->setStyleSheet
+      ("QPushButton {background-color: #4d4dff;}");
+  else
+    m_ui.activate->setStyleSheet
+      ("QPushButton {background-color: #fd5f00;}");
+
   value = qBound(m_ui.download_interval->minimum(),
 		 settings.value("gui/rss_download_interval").toDouble(),
 		 m_ui.download_interval->maximum());
@@ -398,9 +406,16 @@ void spoton_rss::slotActivate(bool state)
     {
       if(!m_downloadTimer.isActive()) // Signals.
 	m_downloadTimer.start();
+
+      m_ui.activate->setStyleSheet
+	("QPushButton {background-color: #4d4dff;}");
     }
   else
-    m_downloadTimer.stop();
+    {
+      m_downloadTimer.stop();
+      m_ui.activate->setStyleSheet
+	("QPushButton {background-color: #fd5f00;}");
+    }
 }
 
 void spoton_rss::slotAddFeed(void)
