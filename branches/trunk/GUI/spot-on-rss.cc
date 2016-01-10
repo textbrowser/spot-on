@@ -41,6 +41,8 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   m_ui.setupUi(this);
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.feeds->setColumnHidden(2, true); // OID
+  m_ui.feeds->horizontalHeader()->setSortIndicator
+    (1, Qt::AscendingOrder); // Feed
   prepareDatabases();
 
   QSettings settings;
@@ -165,8 +167,13 @@ void spoton_rss::populateFeeds(void)
 
 	      if(!ok)
 		item->setText(tr("error"));
-	      else if(item->text() == "true")
-		item->setCheckState(Qt::Checked);
+	      else
+		{
+		  if(item->text() == "true")
+		    item->setCheckState(Qt::Checked);
+		  else
+		    item->setCheckState(Qt::Unchecked);
+		}
 
 	      feed = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
@@ -238,12 +245,18 @@ void spoton_rss::slotAddFeed(void)
 {
   QString connectionName("");
   QString error("");
+  QString new_feed(m_ui.new_feed->text().trimmed());
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     {
       error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      goto done_label;
+    }
+  else if(new_feed.isEmpty())
+    {
+      error = tr("Please provide a feed.");
       goto done_label;
     }
 
@@ -258,7 +271,6 @@ void spoton_rss::slotAddFeed(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString new_feed(m_ui.new_feed->text().trimmed());
 	bool ok = true;
 
 	query.prepare("INSERT OR REPLACE INTO rss_feeds "
