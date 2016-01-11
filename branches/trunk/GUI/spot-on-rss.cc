@@ -174,6 +174,12 @@ bool spoton_rss::event(QEvent *event)
 #endif
 #endif
 
+void spoton_rss::parseXmlContent(const QByteArray &data)
+{
+  if(data.isEmpty())
+    return;
+}
+
 void spoton_rss::populateFeeds(void)
 {
   spoton_crypt *crypt = spoton::instance() ?
@@ -672,6 +678,11 @@ void spoton_rss::slotFeedReplyFinished(void)
 
   if(reply)
     reply->deleteLater();
+
+  if(!m_feedDownloadContent.isEmpty())
+    parseXmlContent(m_feedDownloadContent);
+
+  m_feedDownloadContent.clear();
 }
 
 void spoton_rss::slotFeedReplyReadyRead(void)
