@@ -60,10 +60,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
     m_downloadTimer.start();
 
   QApplication::restoreOverrideCursor();
-  connect(m_ui.action_Save_Settings,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotSaveSettings(void)));
   connect(m_ui.activate,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -84,6 +80,14 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.save_proxy_settings,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveProxy(void)));
+  connect(m_ui.scroll_automatically,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotScrollAutomatically(bool)));
   connect(m_ui.tab,
 	  SIGNAL(currentChanged(int)),
 	  this,
@@ -395,6 +399,10 @@ void spoton_rss::show(void)
 
 void spoton_rss::slotActivate(bool state)
 {
+  QSettings settings;
+
+  settings.setValue("gui/rss_download_activate", state);
+
   if(state)
     {
       if(!m_downloadTimer.isActive()) // Signals.
@@ -551,6 +559,9 @@ void spoton_rss::slotDeleteFeed(void)
 
 void spoton_rss::slotDownloadIntervalChanged(double value)
 {
+  QSettings settings;
+
+  settings.setValue("gui/rss_download_interval", value);
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
 }
 
@@ -561,18 +572,9 @@ void spoton_rss::slotPopulateFeeds(void)
   QApplication::restoreOverrideCursor();
 }
 
-void spoton_rss::slotSaveSettings(void)
+void spoton_rss::slotSaveProxy(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QSettings settings;
-
-  settings.setValue("gui/rss_download_activate",
-		    m_ui.activate->isChecked());
-  settings.setValue("gui/rss_download_interval",
-		    m_ui.download_interval->value());
-  settings.setValue("gui/rss_scroll_automatically",
-		    m_ui.scroll_automatically->isChecked());
   prepareDatabases();
 
   spoton_crypt *crypt = spoton::instance() ?
@@ -601,6 +603,11 @@ void spoton_rss::slotSaveSettings(void)
 
 	    if(!m_ui.proxy->isChecked())
 	      {
+		m_ui.proxyHostname->clear();
+		m_ui.proxyPassword->clear();
+		m_ui.proxyPort->setValue(m_ui.proxyPort->minimum());
+		m_ui.proxyType->setCurrentIndex(0);
+		m_ui.proxyUsername->clear();
 		hostname.clear();
 		password.clear();
 		port.clear();
@@ -662,6 +669,13 @@ void spoton_rss::slotSaveSettings(void)
     }
 
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_rss::slotScrollAutomatically(bool state)
+{
+  QSettings settings;
+
+  settings.setValue("gui/rss_scroll_automatically", state);
 }
 
 void spoton_rss::slotShowContextMenu(const QPoint &point)

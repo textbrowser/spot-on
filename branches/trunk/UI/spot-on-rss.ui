@@ -27,27 +27,6 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QLabel" name="label_4">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
- border: 1px solid gray;
- background-color: lightgreen;
- margin: 2px;
- padding: 2px;
- }</string>
-          </property>
-          <property name="text">
-           <string>Please save your changes.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QGroupBox" name="proxy">
           <property name="title">
            <string>Pro&amp;xy</string>
@@ -205,6 +184,30 @@
            </item>
           </layout>
          </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="save_proxy_settings">
+            <property name="text">
+             <string>Save Proxy Settings</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -393,15 +396,13 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="action_Save_Settings"/>
-    <addaction name="separator"/>
     <addaction name="action_Close"/>
    </widget>
    <addaction name="menu_File"/>
@@ -447,13 +448,15 @@
   <tabstop>proxyPort</tabstop>
   <tabstop>proxyUsername</tabstop>
   <tabstop>proxyPassword</tabstop>
+  <tabstop>save_proxy_settings</tabstop>
+  <tabstop>action_menu</tabstop>
   <tabstop>download_interval</tabstop>
   <tabstop>activate</tabstop>
-  <tabstop>scroll_automatically</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>
   <tabstop>add</tabstop>
   <tabstop>timeline</tabstop>
+  <tabstop>scroll_automatically</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
