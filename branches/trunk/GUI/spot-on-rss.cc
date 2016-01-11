@@ -31,6 +31,7 @@
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QXmlStreamReader>
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
@@ -178,6 +179,36 @@ void spoton_rss::parseXmlContent(const QByteArray &data)
 {
   if(data.isEmpty())
     return;
+
+  QString currentTag("");
+  QString description("");
+  QString title("");
+  QXmlStreamReader reader(data);
+
+  while(!reader.atEnd())
+    {
+      reader.readNext();
+
+      if(reader.isStartElement())
+	currentTag = reader.name().toString().toLower().trimmed();
+
+      if(currentTag == "description")
+	{
+	  currentTag.clear();
+	  reader.readNext();
+	  description = reader.text().toString().trimmed();
+	}
+
+      if(currentTag == "title")
+	{
+	  currentTag.clear();
+	  reader.readNext();
+	  title = reader.text().toString().trimmed();
+	}
+
+      if(!description.isEmpty() && !title.isEmpty())
+	break;
+    }
 }
 
 void spoton_rss::populateFeeds(void)
@@ -209,12 +240,13 @@ void spoton_rss::populateFeeds(void)
 	  if(query.next())
 	    m_ui.feeds->setRowCount(query.value(0).toInt());
 
-	if(query.exec("SELECT echo, feed, OID FROM rss_feeds"))
+	if(query.exec("SELECT echo, feed, feed_image, OID FROM rss_feeds"))
 	  while(query.next())
 	    {
 	      QByteArray echo;
 	      QByteArray feed;
-	      QString oid(query.value(2).toString());
+	      QString oid(query.value(query.record().count() - 1).
+			  toString());
 	      QTableWidgetItem *item = 0;
 	      bool ok = true;
 
@@ -278,7 +310,10 @@ void spoton_rss::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds ("
 		   "echo TEXT NOT NULL, "
 		   "feed TEXT NOT NULL, "
-		   "feed_hash TEXT NOT NULL PRIMARY KEY)");
+		   "feed_description TEXT NOT NULL, "
+		   "feed_hash TEXT NOT NULL PRIMARY KEY, "
+		   "feed_image BLOB NOT NULL, "
+		   "feed_title TEXT NOT NULL)");
 	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds_links ("
 		   "content TEXT NOT NULL, "
 		   "description TEXT NOT NULL, "
@@ -519,7 +554,9 @@ void spoton_rss::slotAddFeed(void)
 	bool ok = true;
 
 	query.prepare("INSERT OR REPLACE INTO rss_feeds "
-		      "(echo, feed, feed_hash) VALUES (?, ?, ?)");
+		      "(echo, feed, feed_description, feed_hash, "
+		      "feed_image, feed_title) "
+		      "VALUES (?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->encryptedThenHashed(QByteArray("false"), &ok).toBase64());
 
@@ -528,8 +565,20 @@ void spoton_rss::slotAddFeed(void)
 	    (1, crypt->encryptedThenHashed(new_feed.toUtf8(), &ok).toBase64());
 
 	if(ok)
+	  query.bindValue(2, crypt->encryptedThenHashed(QByteArray(),
+							&ok).toBase64());
+
+	if(ok)
 	  query.bindValue
-	    (2, crypt->keyedHash(new_feed.toUtf8(), &ok).toBase64());
+	    (3, crypt->keyedHash(new_feed.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(4, crypt->encryptedThenHashed(QByteArray(),
+							&ok).toBase64());
+
+	if(ok)
+	  query.bindValue(5, crypt->encryptedThenHashed(QByteArray(),
+							&ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -553,7 +602,7 @@ void spoton_rss::slotAddFeed(void)
 			  arg(SPOTON_APPLICATION_NAME), error.trimmed());
   else
     {
-      m_ui.new_feed->selectAll();
+      m_ui.new_feed->clear();
       populateFeeds();
     }
 }
