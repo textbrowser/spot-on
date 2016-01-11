@@ -56,10 +56,14 @@ class spoton_rss: public QMainWindow
 #endif
 #endif
   void closeEvent(QCloseEvent *event);
-  void parseXmlContent(const QByteArray &data);
+  void parseXmlContent(const QByteArray &data,
+		       const QUrl &url);
   void populateFeeds(void);
   void prepareDatabases(void);
   void restoreWidgets(void);
+  void saveFeedData(const QString &description,
+		    const QString &link,
+		    const QString &title);
 
  private slots:
   void slotAddFeed(void);

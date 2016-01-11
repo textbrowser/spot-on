@@ -175,13 +175,14 @@ bool spoton_rss::event(QEvent *event)
 #endif
 #endif
 
-void spoton_rss::parseXmlContent(const QByteArray &data)
+void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 {
   if(data.isEmpty())
     return;
 
   QString currentTag("");
   QString description("");
+  QString link(url.toString());
   QString title("");
   QXmlStreamReader reader(data);
 
@@ -209,6 +210,8 @@ void spoton_rss::parseXmlContent(const QByteArray &data)
       if(!description.isEmpty() && !title.isEmpty())
 	break;
     }
+
+  saveFeedData(description, link, title);
 }
 
 void spoton_rss::populateFeeds(void)
@@ -490,6 +493,54 @@ void spoton_rss::restoreWidgets(void)
     }
 }
 
+void spoton_rss::saveFeedData(const QString &description,
+			      const QString &link,
+			      const QString &title)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare("UPDATE rss_feeds "
+		      "SET feed_description = ?, "
+		      "feed_title = ? "
+		      "WHERE feed_hash = ?");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(description.toUtf8(),
+					 &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton_rss::show(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -724,12 +775,16 @@ void spoton_rss::slotDownloadTimeout(void)
 void spoton_rss::slotFeedReplyFinished(void)
 {
   QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+  QUrl url;
 
   if(reply)
-    reply->deleteLater();
+    {
+      url = reply->url();
+      reply->deleteLater();
+    }
 
   if(!m_feedDownloadContent.isEmpty())
-    parseXmlContent(m_feedDownloadContent);
+    parseXmlContent(m_feedDownloadContent, url);
 
   m_feedDownloadContent.clear();
 }
