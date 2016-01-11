@@ -44,6 +44,7 @@ class spoton_rss: public QMainWindow
   void show(void);
 
  private:
+  QByteArray m_feedDownloadContent;
   QNetworkAccessManager m_networkAccessManager;
   QTimer m_downloadTimer;
   QTimer m_timelineTimer;
@@ -66,6 +67,8 @@ class spoton_rss: public QMainWindow
   void slotDeleteFeed(void);
   void slotDownloadIntervalChanged(double value);
   void slotDownloadTimeout(void);
+  void slotFeedReplyFinished(void);
+  void slotFeedReplyReadyRead(void);
   void slotPopulateFeeds(void);
   void slotSaveProxy(void);
   void slotScrollAutomatically(bool state);

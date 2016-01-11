@@ -45,20 +45,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   m_ui.feeds->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.feeds->horizontalHeader()->setSortIndicator
     (1, Qt::AscendingOrder); // Feed
-
-  QSettings settings;
-  bool state = false;
-  double value = 1.50;
-
-  state = settings.value("gui/rss_download_activate", false).toBool();
-  value = qBound(m_ui.download_interval->minimum(),
-		 settings.value("gui/rss_download_interval").toDouble(),
-		 m_ui.download_interval->maximum());
-  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
-
-  if(state)
-    m_downloadTimer.start();
-
   connect(&m_downloadTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -114,6 +100,20 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  m_ui.action_menu,
 	  SLOT(showMenu(void)));
   setWindowTitle(tr("%1: RSS").arg(SPOTON_APPLICATION_NAME));
+
+  QSettings settings;
+  bool state = false;
+  double value = 1.50;
+
+  state = settings.value("gui/rss_download_activate", false).toBool();
+  value = qBound(m_ui.download_interval->minimum(),
+		 settings.value("gui/rss_download_interval").toDouble(),
+		 m_ui.download_interval->maximum());
+  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
+
+  if(state)
+    m_downloadTimer.start();
+
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
   QApplication::restoreOverrideCursor();
@@ -628,6 +628,8 @@ void spoton_rss::slotDownloadIntervalChanged(double value)
 
 void spoton_rss::slotDownloadTimeout(void)
 {
+  m_feedDownloadContent.clear();
+
   QNetworkReply *reply = m_networkAccessManager.findChild
     <QNetworkReply *> ();
 
@@ -653,6 +655,31 @@ void spoton_rss::slotDownloadTimeout(void)
     }
 
   reply = m_networkAccessManager.get(QNetworkRequest(item->text()));
+  reply->ignoreSslErrors();
+  connect(reply,
+	  SIGNAL(finished(void)),
+	  this,
+	  SLOT(slotFeedReplyFinished(void)));
+  connect(reply,
+	  SIGNAL(readyRead(void)),
+	  this,
+	  SLOT(slotFeedReplyReadyRead(void)));
+}
+
+void spoton_rss::slotFeedReplyFinished(void)
+{
+  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+
+  if(reply)
+    reply->deleteLater();
+}
+
+void spoton_rss::slotFeedReplyReadyRead(void)
+{
+  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+
+  if(reply)
+    m_feedDownloadContent.append(reply->readAll());
 }
 
 void spoton_rss::slotPopulateFeeds(void)
@@ -664,6 +691,10 @@ void spoton_rss::slotPopulateFeeds(void)
 
 void spoton_rss::slotSaveProxy(void)
 {
+  QNetworkProxy proxy;
+
+  proxy.setType(QNetworkProxy::NoProxy);
+  m_networkAccessManager.setProxy(proxy);
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
 
@@ -706,14 +737,51 @@ void spoton_rss::slotSaveProxy(void)
 	      }
 	    else
 	      {
+		QNetworkProxy proxy;
+
 		enabled = "true";
 
 		if(m_ui.proxyType->currentIndex() == 0)
-		  type = "HTTP";
+		  {
+		    proxy.setType(QNetworkProxy::HttpProxy);
+		    type = "HTTP";
+		  }
 		else if(m_ui.proxyType->currentIndex() == 1)
-		  type = "Socks5";
+		  {
+		    proxy.setType(QNetworkProxy::Socks5Proxy);
+		    type = "Socks5";
+		  }
 		else
-		  type = "System";
+		  {
+		    QNetworkProxyQuery proxyQuery;
+
+		    proxyQuery.setQueryType
+		      (QNetworkProxyQuery::UrlRequest);
+
+		    QList<QNetworkProxy> proxies
+		      (QNetworkProxyFactory::
+		       systemProxyForQuery(proxyQuery));
+
+		    if(!proxies.isEmpty())
+		      proxy = proxies.at(0);
+		    else
+		      proxy.setType(QNetworkProxy::NoProxy);
+
+		    type = "System";
+		  }
+
+		if(proxy.type() != QNetworkProxy::NoProxy)
+		  {
+		    proxy.setHostName
+		      (m_ui.proxyHostname->text());
+		    proxy.setPassword
+		      (m_ui.proxyPassword->text());
+		    proxy.setPort
+		      (static_cast<quint16> (m_ui.proxyPort->value()));
+		    proxy.setUser
+		      (m_ui.proxyUsername->text());
+		    m_networkAccessManager.setProxy(proxy);
+		  }
 	      }
 
 	    query.prepare("INSERT OR REPLACE INTO rss_proxy ("
