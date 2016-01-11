@@ -27,6 +27,7 @@
 
 #include <QDir>
 #include <QMessageBox>
+#include <QNetworkProxy>
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -38,13 +39,12 @@
 
 spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 {
+  m_currentFeedRow = -1;
   m_ui.setupUi(this);
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.feeds->setColumnHidden(2, true); // OID
   m_ui.feeds->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.feeds->horizontalHeader()->setSortIndicator
     (1, Qt::AscendingOrder); // Feed
-  prepareDatabases();
 
   QSettings settings;
   bool state = false;
@@ -59,7 +59,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   if(state)
     m_downloadTimer.start();
 
-  QApplication::restoreOverrideCursor();
+  connect(&m_downloadTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotDownloadTimeout(void)));
   connect(m_ui.activate,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -111,6 +114,9 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  m_ui.action_menu,
 	  SLOT(showMenu(void)));
   setWindowTitle(tr("%1: RSS").arg(SPOTON_APPLICATION_NAME));
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  prepareDatabases();
+  QApplication::restoreOverrideCursor();
 }
 
 spoton_rss::~spoton_rss()
@@ -267,6 +273,16 @@ void spoton_rss::prepareDatabases(void)
 		   "echo TEXT NOT NULL, "
 		   "feed TEXT NOT NULL, "
 		   "feed_hash TEXT NOT NULL PRIMARY KEY)");
+	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds_links ("
+		   "content TEXT NOT NULL, "
+		   "description TEXT NOT NULL, "
+		   "publication_date TEXT NOT NULL, "
+		   "rss_feeds_oid INTEGER NOT NULL, "
+		   "title TEXT NOT NULL, "
+		   "url TEXT NOT NULL, "
+		   "url_hash TEXT NOT NULL, "
+		   "visited INTEGER NOT NULL DEFAULT 0, "
+		   "PRIMARY KEY (rss_feeds_oid, url_hash))");
 	query.exec("CREATE TABLE IF NOT EXISTS rss_proxy ("
 		   "enabled TEXT NOT NULL, "
 		   "hostname TEXT NOT NULL, "
@@ -289,6 +305,11 @@ void spoton_rss::prepareDatabases(void)
 
 void spoton_rss::restoreWidgets(void)
 {
+  QNetworkProxy proxy;
+
+  proxy.setType(QNetworkProxy::NoProxy);
+  m_networkAccessManager.setProxy(proxy);
+
   QSettings settings;
   double value = 1.50;
   int index = qBound(0,
@@ -358,6 +379,8 @@ void spoton_rss::restoreWidgets(void)
 		    }
 		  else
 		    {
+		      QNetworkProxy proxy;
+
 		      m_ui.proxy->setChecked(true);
 		      m_ui.proxyHostname->setText
 			(QString::fromUtf8(list.value(1).constData()));
@@ -367,16 +390,54 @@ void spoton_rss::restoreWidgets(void)
 			(list.value(3).toInt());
 
 		      if(list.value(4) == "HTTP")
-			m_ui.proxyType->setCurrentIndex(0);
+			{
+			  m_ui.proxyType->setCurrentIndex(0);
+			  proxy.setType(QNetworkProxy::HttpProxy);
+			}
 		      else if(list.value(4) == "Socks5")
-			m_ui.proxyType->setCurrentIndex(1);
+			{
+			  m_ui.proxyType->setCurrentIndex(1);
+			  proxy.setType(QNetworkProxy::Socks5Proxy);
+			}
 		      else if(list.value(4) == "System")
-			m_ui.proxyType->setCurrentIndex(2);
+			{
+			  m_ui.proxyType->setCurrentIndex(2);
+
+			  QNetworkProxyQuery proxyQuery;
+
+			  proxyQuery.setQueryType
+			    (QNetworkProxyQuery::UrlRequest);
+
+			  QList<QNetworkProxy> proxies
+			    (QNetworkProxyFactory::
+			     systemProxyForQuery(proxyQuery));
+
+			  if(!proxies.isEmpty())
+			    proxy = proxies.at(0);
+			  else
+			    proxy.setType(QNetworkProxy::NoProxy);
+			}
 		      else
-			m_ui.proxyType->setCurrentIndex(0);
+			{
+			  m_ui.proxyType->setCurrentIndex(0);
+			  proxy.setType(QNetworkProxy::NoProxy);
+			}
 
 		      m_ui.proxyUsername->setText
 			(QString::fromUtf8(list.value(5).constData()));
+
+		      if(proxy.type() != QNetworkProxy::NoProxy)
+			{
+			  proxy.setHostName
+			    (m_ui.proxyHostname->text());
+			  proxy.setPassword
+			    (m_ui.proxyPassword->text());
+			  proxy.setPort
+			    (static_cast<quint16> (m_ui.proxyPort->value()));
+			  proxy.setUser
+			    (m_ui.proxyUsername->text());
+			  m_networkAccessManager.setProxy(proxy);
+			}
 		    }
 		}
 	  }
@@ -563,6 +624,35 @@ void spoton_rss::slotDownloadIntervalChanged(double value)
 
   settings.setValue("gui/rss_download_interval", value);
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
+}
+
+void spoton_rss::slotDownloadTimeout(void)
+{
+  QNetworkReply *reply = m_networkAccessManager.findChild
+    <QNetworkReply *> ();
+
+  if(reply)
+    reply->deleteLater();
+
+  if(m_ui.feeds->rowCount() == 0)
+    return;
+
+  m_currentFeedRow += 1;
+
+  if(m_currentFeedRow >= m_ui.feeds->rowCount())
+    m_currentFeedRow = 0;
+
+  m_ui.feeds->selectRow(m_currentFeedRow);
+
+  QTableWidgetItem *item = m_ui.feeds->item(m_currentFeedRow, 1);
+
+  if(!item)
+    {
+      m_currentFeedRow = 0;
+      return;
+    }
+
+  reply = m_networkAccessManager.get(QNetworkRequest(item->text()));
 }
 
 void spoton_rss::slotPopulateFeeds(void)

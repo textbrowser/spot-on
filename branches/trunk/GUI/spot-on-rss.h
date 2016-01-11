@@ -48,6 +48,7 @@ class spoton_rss: public QMainWindow
   QTimer m_downloadTimer;
   QTimer m_timelineTimer;
   Ui_rss m_ui;
+  int m_currentFeedRow;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
   bool event(QEvent *event);
@@ -64,6 +65,7 @@ class spoton_rss: public QMainWindow
   void slotDeleteAllFeeds(void);
   void slotDeleteFeed(void);
   void slotDownloadIntervalChanged(double value);
+  void slotDownloadTimeout(void);
   void slotPopulateFeeds(void);
   void slotSaveProxy(void);
   void slotScrollAutomatically(bool state);
