@@ -394,7 +394,7 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS "
 		   "listeners_accounts_consumed_authentications ("
 		   "data TEXT NOT NULL, "
-		   "insert_date TEXT NOT NULL DEFAULT 'now', "
+		   "insert_date TEXT NOT NULL, "
 		   "listener_oid INTEGER NOT NULL, "
 		   "PRIMARY KEY (listener_oid, data))");
 	query.exec("CREATE TABLE IF NOT EXISTS "

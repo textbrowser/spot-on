@@ -794,7 +794,7 @@ void spoton_rss::saveFeedLink(const QString &description,
 	    (2, crypt->keyedHash(url.toEncoded(), &ok).toBase64());
 
 	query.bindValue
-	  (3, QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss"));
+	  (3, QDateTime::currentDateTime().toString(Qt::ISODate));
 	query.bindValue(4, publicationDate);
 
 	if(ok)
