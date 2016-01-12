@@ -31,9 +31,6 @@
 #include <QProgressDialog>
 #include <QSqlDriver>
 #include <QToolTip>
-#if QT_VERSION >= 0x050000
-#include <QtConcurrent>
-#endif
 #include <QtCore>
 
 #include "spot-on.h"

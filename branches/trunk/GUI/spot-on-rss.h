@@ -65,12 +65,18 @@ class spoton_rss: public QMainWindow
 		    const QString &link,
 		    const QString &title);
   void saveFeedImage(const QByteArray &data, const QString &link);
+  void saveFeedLink(const QString &description,
+		    const QString &link,
+		    const QString &publicationDate,
+		    const QString &title,
+		    const QUrl &url);
 
  private slots:
   void slotAddFeed(void);
   void slotActivate(bool state);
   void slotDeleteAllFeeds(void);
   void slotDeleteFeed(void);
+  void slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url);
   void slotDownloadIntervalChanged(double value);
   void slotDownloadTimeout(void);
   void slotFeedImageReplyFinished(void);
@@ -81,6 +87,9 @@ class spoton_rss: public QMainWindow
   void slotScrollAutomatically(bool state);
   void slotShowContextMenu(const QPoint &point);
   void slotTabChanged(int index);
+
+ signals:
+  void downloadFeedImage(const QUrl &imageUrl, const QUrl &url);
 };
 
 #endif

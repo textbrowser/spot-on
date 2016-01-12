@@ -32,6 +32,10 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QXmlStreamReader>
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent>
+#endif
+#include <QtCore>
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
@@ -82,6 +86,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(currentChanged(int)),
 	  this,
 	  SLOT(slotTabChanged(int)));
+  connect(this,
+	  SIGNAL(downloadFeedImage(const QUrl &, const QUrl &)),
+	  this,
+	  SLOT(slotDownloadFeedImage(const QUrl &, const QUrl &)));
 
   QMenu *menu = new QMenu(this);
 
@@ -177,6 +185,10 @@ bool spoton_rss::event(QEvent *event)
 
 void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 {
+  /*
+  ** Only thread-safe logic please!
+  */
+
   if(data.isEmpty())
     return;
 
@@ -197,61 +209,135 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
       if(currentTag == "description")
 	{
 	  currentTag.clear();
-	  reader.readNext();
-	  description = reader.text().toString().trimmed();
+
+	  if(description.isEmpty())
+	    {
+	      reader.readNext();
+	      description = reader.text().toString().trimmed();
+	    }
 	}
       else if(currentTag == "image")
 	{
+	  currentTag.clear();
+
+	  if(imageUrl.isEmpty())
+	    {
+	      QString tag("");
+
+	      while(true)
+		{
+		  reader.readNext();
+
+		  if(reader.isEndElement())
+		    {
+		      if(reader.name().toString().toLower().
+			 trimmed() == "image")
+			break;
+		    }
+		  else if(reader.isStartElement())
+		    tag = reader.name().toString().toLower().trimmed();
+
+		  if(tag == "url")
+		    {
+		      reader.readNext();
+		      imageUrl = QUrl::fromUserInput
+			(reader.text().toString().trimmed());
+		      break;
+		    }
+
+		  if(reader.atEnd() || reader.hasError())
+		    break;
+		}
+	    }
+	}
+      else if(currentTag == "item")
+	{
+	  currentTag.clear();
+
+	  QString description("");
+	  QString link("");
+	  QString publicationDate("");
+	  QString tag("");
+	  QString title("");
+
 	  while(true)
 	    {
 	      reader.readNext();
 
-	      QString currentTag(reader.name().toString().toLower().trimmed());
-
-	      if(currentTag == "image")
-		break;
-	      else if(currentTag == "url")
+	      if(reader.isEndElement())
 		{
-		  reader.readNext();
-		  imageUrl = QUrl::fromUserInput
-		    (reader.text().toString().trimmed());
-		  break;
+		  if(reader.name().toString().toLower().trimmed() == "item")
+		    break;
+		}
+	      else if(reader.isStartElement())
+		tag = reader.name().toString().toLower().trimmed();
+
+	      if(tag == "description")
+		{
+		  tag.clear();
+
+		  if(description.isEmpty())
+		    {
+		      reader.readNext();
+		      description = reader.text().toString().trimmed();
+		    }
+		}
+	      else if(tag == "link")
+		{
+		  tag.clear();
+
+		  if(link.isEmpty())
+		    {
+		      reader.readNext();
+		      link = reader.text().toString().trimmed();
+		    }
+		}
+	      else if(tag == "pubdate")
+		{
+		  tag.clear();
+
+		  if(publicationDate.isEmpty())
+		    {
+		      reader.readNext();
+		      publicationDate = reader.text().toString().trimmed();
+		    }
+		}
+	      else if(tag == "title")
+		{
+		  tag.clear();
+
+		  if(title.isEmpty())
+		    {
+		      reader.readNext();
+		      title = reader.text().toString().trimmed();
+		    }
 		}
 
 	      if(reader.atEnd() || reader.hasError())
 		break;
 	    }
+
+	  saveFeedLink(description, link, publicationDate, title, url);
 	}
-      else if(currentTag == "item")
-	break;
       else if(currentTag == "title")
 	{
 	  currentTag.clear();
-	  reader.readNext();
-	  title = reader.text().toString().trimmed();
+
+	  if(title.isEmpty())
+	    {
+	      reader.readNext();
+	      title = reader.text().toString().trimmed();
+	    }
 	}
     }
 
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   saveFeedData(description, link, title);
-  QApplication::restoreOverrideCursor();
 
   if(!imageUrl.isEmpty() && imageUrl.isValid())
-    {
-      QNetworkReply *reply = m_networkAccessManager.get
-	(QNetworkRequest(imageUrl));
-
-      reply->ignoreSslErrors();
-      reply->setProperty("url", url);
-      connect(reply,
-	      SIGNAL(finished(void)),
-	      this,
-	      SLOT(slotFeedImageReplyFinished(void)));
-    }
+    emit downloadFeedImage(imageUrl, url);
 
   QSettings settings;
 
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   spoton_misc::importUrl
     (data, description.toUtf8(), title.toUtf8(), url.toEncoded(),
      spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
@@ -259,7 +345,6 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 		    false).toBool(),
      spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0);
-  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::populateFeeds(void)
@@ -384,13 +469,13 @@ void spoton_rss::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds_links ("
 		   "content TEXT NOT NULL, "
 		   "description TEXT NOT NULL, "
+		   "feed_hash TEXT NOT NULL, "
 		   "publication_date TEXT NOT NULL, "
-		   "rss_feeds_oid INTEGER NOT NULL, "
 		   "title TEXT NOT NULL, "
 		   "url TEXT NOT NULL, "
 		   "url_hash TEXT NOT NULL, "
 		   "visited INTEGER NOT NULL DEFAULT 0, "
-		   "PRIMARY KEY (rss_feeds_oid, url_hash))");
+		   "PRIMARY KEY (feed_hash, url_hash))");
 	query.exec("CREATE TABLE IF NOT EXISTS rss_proxy ("
 		   "enabled TEXT NOT NULL, "
 		   "hostname TEXT NOT NULL, "
@@ -645,6 +730,73 @@ void spoton_rss::saveFeedImage(const QByteArray &data, const QString &link)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton_rss::saveFeedLink(const QString &description,
+			      const QString &link,
+			      const QString &publicationDate,
+			      const QString &title,
+			      const QUrl &url)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare
+	  ("INSERT INTO rss_feeds_links ("
+	   "content, description, feed_hash, publication_date, "
+	   "title, url, url_hash) VALUES (?, ?, ?, ?, ?, ?, ?)");
+	query.bindValue(0, crypt->encryptedThenHashed(QByteArray(), &ok).
+			toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->encryptedThenHashed(description.toUtf8(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, crypt->encryptedThenHashed(publicationDate.toLatin1(),
+					   &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (4, crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (5, crypt->encryptedThenHashed(url.toEncoded(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (6, crypt->keyedHash(url.toEncoded(), &ok).toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton_rss::show(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -828,6 +980,22 @@ void spoton_rss::slotDeleteFeed(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
+{
+  if(!imageUrl.isEmpty() && imageUrl.isValid())
+    {
+      QNetworkReply *reply = m_networkAccessManager.get
+	(QNetworkRequest(imageUrl));
+
+      reply->ignoreSslErrors();
+      reply->setProperty("url", url);
+      connect(reply,
+	      SIGNAL(finished(void)),
+	      this,
+	      SLOT(slotFeedImageReplyFinished(void)));
+    }
+}
+
 void spoton_rss::slotDownloadIntervalChanged(double value)
 {
   QSettings settings;
@@ -913,7 +1081,8 @@ void spoton_rss::slotFeedReplyFinished(void)
     }
 
   if(!m_feedDownloadContent.isEmpty())
-    parseXmlContent(m_feedDownloadContent, url);
+    QtConcurrent::run
+      (this, &spoton_rss::parseXmlContent, m_feedDownloadContent, url);
 
   m_feedDownloadContent.clear();
 }
@@ -1028,9 +1197,10 @@ void spoton_rss::slotSaveProxy(void)
 		  }
 	      }
 
-	    query.prepare("INSERT OR REPLACE INTO rss_proxy ("
-			  "enabled, hostname, password, port, type, username) "
-			  "VALUES (?, ?, ?, ?, ?, ?)");
+	    query.prepare
+	      ("INSERT OR REPLACE INTO rss_proxy ("
+	       "enabled, hostname, password, port, type, username) "
+	       "VALUES (?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, crypt->encryptedThenHashed(enabled.toLatin1(), &ok).
 	       toBase64());
