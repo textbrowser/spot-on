@@ -64,6 +64,7 @@ class spoton_rss: public QMainWindow
   void saveFeedData(const QString &description,
 		    const QString &link,
 		    const QString &title);
+  void saveFeedImage(const QByteArray &data, const QString &link);
 
  private slots:
   void slotAddFeed(void);
@@ -72,6 +73,7 @@ class spoton_rss: public QMainWindow
   void slotDeleteFeed(void);
   void slotDownloadIntervalChanged(double value);
   void slotDownloadTimeout(void);
+  void slotFeedImageReplyFinished(void);
   void slotFeedReplyFinished(void);
   void slotFeedReplyReadyRead(void);
   void slotPopulateFeeds(void);

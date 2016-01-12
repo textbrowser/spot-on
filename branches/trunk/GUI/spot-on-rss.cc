@@ -184,9 +184,10 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   QString description("");
   QString link(url.toString());
   QString title("");
+  QUrl imageUrl;
   QXmlStreamReader reader(data);
 
-  while(!reader.atEnd())
+  while(!reader.atEnd() && !reader.hasError())
     {
       reader.readNext();
 
@@ -199,19 +200,52 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 	  reader.readNext();
 	  description = reader.text().toString().trimmed();
 	}
+      else if(currentTag == "image")
+	{
+	  while(true)
+	    {
+	      reader.readNext();
 
-      if(currentTag == "title")
+	      QString currentTag(reader.name().toString().toLower().trimmed());
+
+	      if(currentTag == "image")
+		break;
+	      else if(currentTag == "url")
+		{
+		  reader.readNext();
+		  imageUrl = QUrl::fromUserInput
+		    (reader.text().toString().trimmed());
+		  break;
+		}
+
+	      if(reader.atEnd() || reader.hasError())
+		break;
+	    }
+	}
+      else if(currentTag == "item")
+	break;
+      else if(currentTag == "title")
 	{
 	  currentTag.clear();
 	  reader.readNext();
 	  title = reader.text().toString().trimmed();
 	}
-
-      if(!description.isEmpty() && !title.isEmpty())
-	break;
     }
 
   saveFeedData(description, link, title);
+
+  if(!imageUrl.isEmpty() && imageUrl.isValid())
+    {
+      QNetworkReply *reply = m_networkAccessManager.get
+	(QNetworkRequest(imageUrl));
+
+      reply->ignoreSslErrors();
+      reply->setProperty("url", url);
+      connect(reply,
+	      SIGNAL(finished(void)),
+	      this,
+	      SLOT(slotFeedImageReplyFinished(void)));
+    }
 }
 
 void spoton_rss::populateFeeds(void)
@@ -250,6 +284,7 @@ void spoton_rss::populateFeeds(void)
 	      QByteArray feed;
 	      QString oid(query.value(query.record().count() - 1).
 			  toString());
+	      QByteArray image;
 	      QTableWidgetItem *item = 0;
 	      bool ok = true;
 
@@ -280,6 +315,21 @@ void spoton_rss::populateFeeds(void)
 		item->setText(tr("error"));
 	      else
 		item->setText(feed.constData());
+
+	      if(ok)
+		{
+		  image = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(2).toByteArray()),
+		     &ok);
+
+		  if(ok)
+		    {
+		      QPixmap pixmap;
+
+		      pixmap.loadFromData(image);
+		      item->setIcon(pixmap);
+		    }
+		}
 
 	      item = new QTableWidgetItem(oid);
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -541,6 +591,46 @@ void spoton_rss::saveFeedData(const QString &description,
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton_rss::saveFeedImage(const QByteArray &data, const QString &link)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare("UPDATE rss_feeds "
+		      "SET feed_image = ? "
+		      "WHERE feed_hash = ?");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(data, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton_rss::show(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -770,6 +860,29 @@ void spoton_rss::slotDownloadTimeout(void)
 	  SIGNAL(readyRead(void)),
 	  this,
 	  SLOT(slotFeedReplyReadyRead(void)));
+}
+
+void spoton_rss::slotFeedImageReplyFinished(void)
+{
+  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+
+  if(reply)
+    {
+      QByteArray data(reply->readAll());
+      QPixmap pixmap;
+      QUrl url(reply->property("url").toUrl());
+
+      pixmap.loadFromData(data);
+      reply->deleteLater();
+
+      QList<QTableWidgetItem *> list(m_ui.feeds->findItems(url.toString(),
+							   Qt::MatchExactly));
+
+      if(!list.isEmpty())
+	list.at(0)->setIcon(pixmap);
+
+      saveFeedImage(data, url.toString());
+    }
 }
 
 void spoton_rss::slotFeedReplyFinished(void)
