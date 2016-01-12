@@ -54,6 +54,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotDownloadTimeout(void)));
+  connect(m_ui.action_Find,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotFindInitialize(void)));
   connect(m_ui.activate,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -70,6 +74,14 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
+  connect(m_ui.find,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotFind(void)));
+  connect(m_ui.find,
+	  SIGNAL(textChanged(const QString &)),
+	  this,
+	  SLOT(slotFind(void)));
   connect(m_ui.new_feed,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -90,7 +102,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(downloadFeedImage(const QUrl &, const QUrl &)),
 	  this,
 	  SLOT(slotDownloadFeedImage(const QUrl &, const QUrl &)));
-
+  m_originalFindPalette = m_ui.find->palette();
+#if QT_VERSION >= 0x040700
+  m_ui.find->setPlaceholderText(tr("Find Text"));
+#endif
   QMenu *menu = new QMenu(this);
 
   menu->addAction(tr("Delete all feeds."),
@@ -1017,8 +1032,6 @@ void spoton_rss::slotDownloadTimeout(void)
   if(m_currentFeedRow >= m_ui.feeds->rowCount())
     m_currentFeedRow = 0;
 
-  m_ui.feeds->selectRow(m_currentFeedRow);
-
   QTableWidgetItem *item = m_ui.feeds->item(m_currentFeedRow, 1);
 
   if(!item)
@@ -1088,6 +1101,29 @@ void spoton_rss::slotFeedReplyReadyRead(void)
 
   if(reply)
     m_feedDownloadContent.append(reply->readAll());
+}
+
+void spoton_rss::slotFind(void)
+{
+  if(m_ui.find->text().isEmpty())
+    m_ui.find->setPalette(m_originalFindPalette);
+  else if(!m_ui.timeline->find(m_ui.find->text()))
+    {
+      QColor color(240, 128, 128); // Light Coral
+      QPalette palette(m_ui.find->palette());
+
+      palette.setColor(m_ui.find->backgroundRole(), color);
+      m_ui.find->setPalette(palette);
+      m_ui.timeline->moveCursor(QTextCursor::Start);
+    }
+  else
+    m_ui.find->setPalette(m_originalFindPalette);
+}
+
+void spoton_rss::slotFindInitialize(void)
+{
+  m_ui.find->selectAll();
+  m_ui.find->setFocus();
 }
 
 void spoton_rss::slotPopulateFeeds(void)
