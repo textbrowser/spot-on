@@ -561,35 +561,6 @@ QPushButton:pressed {
     <string>&amp;Close</string>
    </property>
   </action>
-  <action name="action_Empty_Log">
-   <property name="text">
-    <string>&amp;Empty Log</string>
-   </property>
-  </action>
-  <action name="actionEnable_Log">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>E&amp;nable Log</string>
-   </property>
-  </action>
-  <action name="action_Copy">
-   <property name="text">
-    <string>&amp;Copy</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
-   </property>
-  </action>
-  <action name="action_Paste">
-   <property name="text">
-    <string>&amp;Paste</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+V</string>
-   </property>
-  </action>
  </widget>
  <tabstops>
   <tabstop>destination</tabstop>
