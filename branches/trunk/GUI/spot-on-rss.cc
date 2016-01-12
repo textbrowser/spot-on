@@ -40,6 +40,7 @@
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "spot-on.h"
+#include "spot-on-pageviewer.h"
 #include "spot-on-rss.h"
 
 spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
@@ -86,6 +87,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
+  connect(m_ui.import,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotImport(void)));
   connect(m_ui.new_feed,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -102,6 +107,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(currentChanged(int)),
 	  this,
 	  SLOT(slotTabChanged(int)));
+  connect(m_ui.timeline,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotUrlLinkClicked(const QUrl &)));
   connect(this,
 	  SIGNAL(downloadFeedImage(const QUrl &, const QUrl &)),
 	  this,
@@ -972,7 +981,8 @@ void spoton_rss::slotContentReplyFinished(void)
 			  "SET content = ?, visited = 1 "
 			  "WHERE url_hash = ?");
 	    query.bindValue
-	      (0, crypt->encryptedThenHashed(data, &ok).toBase64());
+	      (0, crypt->encryptedThenHashed(qCompress(data, 9),
+					     &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
@@ -1274,6 +1284,10 @@ void spoton_rss::slotFindInitialize(void)
   m_ui.find->setFocus();
 }
 
+void spoton_rss::slotImport(void)
+{
+}
+
 void spoton_rss::slotPopulateFeeds(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -1543,4 +1557,66 @@ void spoton_rss::slotTabChanged(int index)
   QSettings settings;
 
   settings.setValue("gui/rss_last_tab", index);
+}
+
+void spoton_rss::slotUrlLinkClicked(const QUrl &url)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+  spoton_pageviewer *pageViewer = new spoton_pageviewer
+    (QSqlDatabase(), QString(), this);
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT content FROM rss_feeds_links WHERE "
+		      "url_hash = ?");
+	query.bindValue
+	  (0, crypt->keyedHash(url.toEncoded(), &ok).toBase64());
+
+	if(ok && query.exec())
+	  if(query.next())
+	    {
+	      QByteArray content;
+	      bool ok = true;
+
+	      content = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		pageViewer->setPage
+		  (QString::fromUtf8(qUncompress(content).constData()),
+		   url, query.value(0).toByteArray().length());
+	      else
+		pageViewer->setPage(0, QUrl("http:/127.0.0.1"), 0);
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  pageViewer->showNormal();
+  pageViewer->activateWindow();
+  pageViewer->raise();
+  QApplication::restoreOverrideCursor();
+  spoton::centerWidget(pageViewer, this);
 }

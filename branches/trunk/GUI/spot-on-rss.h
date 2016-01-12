@@ -87,11 +87,13 @@ class spoton_rss: public QMainWindow
   void slotFeedReplyReadyRead(void);
   void slotFind(void);
   void slotFindInitialize(void);
+  void slotImport(void);
   void slotPopulateFeeds(void);
   void slotRefreshTimeline(void);
   void slotSaveProxy(void);
   void slotShowContextMenu(const QPoint &point);
   void slotTabChanged(int index);
+  void slotUrlLinkClicked(const QUrl &url);
 
  signals:
   void downloadFeedImage(const QUrl &imageUrl, const QUrl &url);
