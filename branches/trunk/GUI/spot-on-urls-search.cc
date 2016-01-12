@@ -460,7 +460,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append("<br>");
 	      html.append
 		(QString("<font color=\"gray\" size=3>%1 | %2 KiB</font>").
-		 arg(query.value(3).toString()).
+		 arg(query.value(3).toString().trimmed()).
 		 arg(locale.toString(query.value(4).toLongLong() / 1024)));
 	      html.append("<br><br>");
 	      count += 1;

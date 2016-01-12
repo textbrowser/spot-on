@@ -74,6 +74,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.refresh_timeline,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRefreshTimeline(void)));
   connect(m_ui.save_proxy_settings,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -768,12 +772,9 @@ void spoton_rss::saveFeedLink(const QString &description,
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+	    (2, crypt->keyedHash(url.toEncoded(), &ok).toBase64());
 
-	if(ok)
-	  query.bindValue
-	    (3, crypt->encryptedThenHashed(publicationDate.toLatin1(),
-					   &ok).toBase64());
+	query.bindValue(3, publicationDate);
 
 	if(ok)
 	  query.bindValue
@@ -781,11 +782,11 @@ void spoton_rss::saveFeedLink(const QString &description,
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed(url.toEncoded(), &ok).toBase64());
+	    (5, crypt->encryptedThenHashed(link.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->keyedHash(url.toEncoded(), &ok).toBase64());
+	    (6, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.exec();
@@ -837,13 +838,13 @@ void spoton_rss::slotAddFeed(void)
     }
   else if(url.isEmpty() || !url.isValid())
     {
-      error = tr("Please provide a feed.");
+      error = tr("Please provide an RSS feed.");
       goto done_label;
     }
   else if(!(url.scheme().toLower() == "http" ||
 	    url.scheme().toLower() == "https"))
     {
-      error = tr("Invalid feed scheme; HTTP or HTTPS.");
+      error = tr("Invalid RSS feed scheme; HTTP or HTTPS.");
       goto done_label;
     }
 
@@ -1099,6 +1100,108 @@ void spoton_rss::slotPopulateFeeds(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   populateFeeds();
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_rss::slotRefreshTimeline(void)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT description, publication_date, "
+		      "title, url FROM rss_feeds_links ORDER BY "
+		      "publication_date DESC");
+
+	if(query.exec())
+	  {
+	    m_ui.timeline->clear();
+
+	    int row = 0;
+
+	    while(query.next())
+	      {
+		QByteArray bytes;
+		QList<QVariant> list;
+		bool ok = true;
+
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(0).toByteArray()),
+		   &ok);
+
+		if(ok)
+		  list << QString::fromUtf8(bytes).trimmed();
+
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).toByteArray()),
+		   &ok);
+
+		if(ok)
+		  list << QString::fromUtf8(bytes).trimmed();
+
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(3).toByteArray()),
+		   &ok);
+
+		if(ok)
+		  list << QUrl::fromEncoded(bytes);
+
+		if(list.size() == 3)
+		  {
+		    row += 1;
+
+		    QString html("");
+
+		    html.append(QString::number(row));
+		    html.append(" | <a href=\"");
+		    html.append(list.value(2).toUrl().toEncoded().constData());
+		    html.append("\">");
+		    html.append(list.value(1).toString());
+		    html.append("</a>");
+		    html.append("<br>");
+		    html.append
+		      (QString("<font color=\"green\" size=3>%1</font>").
+		       arg(list.value(2).toUrl().toEncoded().constData()));
+		    html.append("<br>");
+		    html.append
+		      (QString("<font color=\"gray\" size=3>%1</font>").
+		       arg(list.value(0).toString()));
+		    html.append("<br>");
+		    html.append
+		      (QString("<font color=\"gray\" size=3>%1</font>").
+		       arg(query.value(1).toString().trimmed()));
+		    html.append("<br>");
+		    m_ui.timeline->append(html);
+
+		    QTextCursor cursor = m_ui.timeline->textCursor();
+
+		    cursor.setPosition(0);
+		    m_ui.timeline->setTextCursor(cursor);
+		  }
+	      }
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
 }
 
