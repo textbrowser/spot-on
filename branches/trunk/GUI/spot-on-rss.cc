@@ -494,7 +494,7 @@ void spoton_rss::prepareDatabases(void)
 		   "content TEXT NOT NULL, "
 		   "description TEXT NOT NULL, "
 		   "feed_hash TEXT NOT NULL, "
-		   "insert_date TEXT NOT NULL DEFAULT 'now', "
+		   "insert_date TEXT NOT NULL, "
 		   "publication_date TEXT NOT NULL, "
 		   "title TEXT NOT NULL, "
 		   "url TEXT NOT NULL, "
@@ -779,8 +779,8 @@ void spoton_rss::saveFeedLink(const QString &description,
 
 	query.prepare
 	  ("INSERT INTO rss_feeds_links ("
-	   "content, description, feed_hash, publication_date, "
-	   "title, url, url_hash) VALUES (?, ?, ?, ?, ?, ?, ?)");
+	   "content, description, feed_hash, insert_date, publication_date, "
+	   "title, url, url_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue(0, crypt->encryptedThenHashed(QByteArray(), &ok).
 			toBase64());
 
@@ -793,19 +793,21 @@ void spoton_rss::saveFeedLink(const QString &description,
 	  query.bindValue
 	    (2, crypt->keyedHash(url.toEncoded(), &ok).toBase64());
 
-	query.bindValue(3, publicationDate);
+	query.bindValue
+	  (3, QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss"));
+	query.bindValue(4, publicationDate);
 
 	if(ok)
 	  query.bindValue
-	    (4, crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
+	    (5, crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed(link.toUtf8(), &ok).toBase64());
+	    (6, crypt->encryptedThenHashed(link.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+	    (7, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.exec();
