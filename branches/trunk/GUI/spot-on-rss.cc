@@ -232,7 +232,9 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 	}
     }
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   saveFeedData(description, link, title);
+  QApplication::restoreOverrideCursor();
 
   if(!imageUrl.isEmpty() && imageUrl.isValid())
     {
@@ -246,6 +248,18 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 	      this,
 	      SLOT(slotFeedImageReplyFinished(void)));
     }
+
+  QSettings settings;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  spoton_misc::importUrl
+    (data, description.toUtf8(), title.toUtf8(), url.toEncoded(),
+     spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
+     spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
+     settings.value("gui/disable_ui_synchronous_sqlite_url_import",
+		    false).toBool(),
+     spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::populateFeeds(void)
@@ -881,7 +895,9 @@ void spoton_rss::slotFeedImageReplyFinished(void)
       if(!list.isEmpty())
 	list.at(0)->setIcon(pixmap);
 
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       saveFeedImage(data, url.toString());
+      QApplication::restoreOverrideCursor();
     }
 }
 

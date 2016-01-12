@@ -1817,3 +1817,8 @@ spoton_crypt *spoton::urlCommonCrypt(void) const
 {
   return m_urlCommonCrypt;
 }
+
+QSqlDatabase spoton::urlDatabase(void) const
+{
+  return m_urlDatabase;
+}
