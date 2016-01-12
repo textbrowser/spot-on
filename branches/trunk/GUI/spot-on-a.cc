@@ -1739,6 +1739,7 @@ spoton::spoton(void):QMainWindow()
   settings.remove("gui/poptasticVerifyPopHostPeer");
   settings.remove("gui/poptasticVerifySmtpHostPeer");
   settings.remove("gui/rsaKeySize");
+  settings.remove("gui/rss_scroll_automatically");
   settings.remove("gui/signatureKey");
 
   if(!settings.contains("gui/saveCopy"))

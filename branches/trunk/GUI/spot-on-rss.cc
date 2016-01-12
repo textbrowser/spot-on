@@ -82,10 +82,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSaveProxy(void)));
-  connect(m_ui.scroll_automatically,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotScrollAutomatically(bool)));
   connect(m_ui.tab,
 	  SIGNAL(currentChanged(int)),
 	  this,
@@ -519,8 +515,6 @@ void spoton_rss::restoreWidgets(void)
 		 settings.value("gui/rss_download_interval").toDouble(),
 		 m_ui.download_interval->maximum());
   m_ui.download_interval->setValue(value);
-  m_ui.scroll_automatically->setChecked
-    (settings.value("gui/rss_scroll_automatically", true).toBool());
   m_ui.tab->setCurrentIndex(index);
 
   spoton_crypt *crypt = spoton::instance() ?
@@ -1344,13 +1338,6 @@ void spoton_rss::slotSaveProxy(void)
     }
 
   QApplication::restoreOverrideCursor();
-}
-
-void spoton_rss::slotScrollAutomatically(bool state)
-{
-  QSettings settings;
-
-  settings.setValue("gui/rss_scroll_automatically", state);
 }
 
 void spoton_rss::slotShowContextMenu(const QPoint &point)
