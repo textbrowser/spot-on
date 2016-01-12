@@ -485,6 +485,7 @@ void spoton_rss::prepareDatabases(void)
 		   "content TEXT NOT NULL, "
 		   "description TEXT NOT NULL, "
 		   "feed_hash TEXT NOT NULL, "
+		   "insert_date TEXT NOT NULL DEFAULT 'now', "
 		   "publication_date TEXT NOT NULL, "
 		   "title TEXT NOT NULL, "
 		   "url TEXT NOT NULL, "
