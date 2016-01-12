@@ -1573,6 +1573,8 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
   spoton_pageviewer *pageViewer = new spoton_pageviewer
     (QSqlDatabase(), QString(), this);
 
+  pageViewer->setPage(0, QUrl("http:/127.0.0.1"), 0);
+
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
@@ -1603,8 +1605,6 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
 		pageViewer->setPage
 		  (QString::fromUtf8(qUncompress(content).constData()),
 		   url, query.value(0).toByteArray().length());
-	      else
-		pageViewer->setPage(0, QUrl("http:/127.0.0.1"), 0);
 	    }
       }
 

@@ -1876,6 +1876,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       spoton_pageviewer *pageViewer = new spoton_pageviewer
 	(m_urlDatabase, hash, this);
 
+      pageViewer->setPage(0, QUrl("http:/127.0.0.1"), 0);
+
       if(!hash.isEmpty())
 	{
 	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -1912,8 +1914,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 		  pageViewer->setPage
 		    (QString::fromUtf8(qUncompress(content).constData()),
 		     url, query.value(0).toByteArray().length());
-		else
-		  pageViewer->setPage(0, QUrl("http:/127.0.0.1"), 0);
 	      }
 
 	  QApplication::restoreOverrideCursor();
