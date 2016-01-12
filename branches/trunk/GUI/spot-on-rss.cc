@@ -50,6 +50,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   m_ui.feeds->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.feeds->horizontalHeader()->setSortIndicator
     (1, Qt::AscendingOrder); // Feed
+  connect(&m_downloadContentTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotDownloadContent(void)));
   connect(&m_downloadTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -133,10 +137,14 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   value = qBound(m_ui.download_interval->minimum(),
 		 settings.value("gui/rss_download_interval").toDouble(),
 		 m_ui.download_interval->maximum());
+  m_downloadContentTimer.setInterval(5 * 1000); // Every five seconds.
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
 
   if(state)
-    m_downloadTimer.start();
+    {
+      m_downloadContentTimer.start();
+      m_downloadTimer.start();
+    }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
@@ -145,6 +153,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 
 spoton_rss::~spoton_rss()
 {
+  m_downloadContentTimer.stop();
   m_downloadTimer.stop();
 }
 
@@ -825,11 +834,17 @@ void spoton_rss::slotActivate(bool state)
 
   if(state)
     {
+      if(!m_downloadContentTimer.isActive()) // Signals.
+	m_downloadContentTimer.start();
+
       if(!m_downloadTimer.isActive()) // Signals.
 	m_downloadTimer.start();
     }
   else
-    m_downloadTimer.stop();
+    {
+      m_downloadContentTimer.stop();
+      m_downloadTimer.stop();
+    }
 }
 
 void spoton_rss::slotAddFeed(void)
@@ -925,6 +940,55 @@ void spoton_rss::slotAddFeed(void)
     }
 }
 
+void spoton_rss::slotContentReplyFinished(void)
+{
+  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+
+  if(reply && reply->error() == QNetworkReply::NoError)
+    {
+      spoton_crypt *crypt = spoton::instance() ?
+	spoton::instance()->crypts().value("chat", 0) : 0;
+
+      if(!crypt)
+	return;
+
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+	if(db.open())
+	  {
+	    QByteArray data(reply->readAll());
+	    QSqlQuery query(db);
+	    bool ok = true;
+
+	    query.prepare("UPDATE rss_feeds_links "
+			  "SET content = ?, visited = 1 "
+			  "WHERE url_hash = ?");
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(data, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->keyedHash(reply->url().toEncoded(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+      reply->deleteLater();
+    }
+}
+
 void spoton_rss::slotDeleteAllFeeds(void)
 {
   QMessageBox mb(this);
@@ -1008,6 +1072,69 @@ void spoton_rss::slotDeleteFeed(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton_rss::slotDownloadContent(void)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+  QUrl url;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT url FROM rss_feeds_links "
+		      "WHERE visited = 0");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QByteArray bytes;
+	      bool ok = true;
+
+	      bytes = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		{
+		  url = QUrl::fromEncoded(bytes);
+		  break;
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+
+  if(!url.isEmpty() && url.isValid())
+    {
+      QNetworkReply *reply = m_networkAccessManager.get(QNetworkRequest(url));
+
+      reply->ignoreSslErrors();
+      reply->setReadBufferSize(0);
+      connect(reply,
+	      SIGNAL(finished(void)),
+	      this,
+	      SLOT(slotContentReplyFinished(void)));
+    }
+}
+
 void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
 {
   if(!imageUrl.isEmpty() && imageUrl.isValid())
@@ -1074,7 +1201,7 @@ void spoton_rss::slotFeedImageReplyFinished(void)
 {
   QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
 
-  if(reply)
+  if(reply && reply->error() == QNetworkReply::NoError)
     {
       QByteArray data(reply->readAll());
       QPixmap pixmap;
@@ -1100,15 +1227,16 @@ void spoton_rss::slotFeedReplyFinished(void)
   QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
   QUrl url;
 
-  if(reply)
+  if(reply && reply->error() == QNetworkReply::NoError)
     {
       url = reply->url();
       reply->deleteLater();
     }
 
   if(!m_feedDownloadContent.isEmpty())
-    QtConcurrent::run
-      (this, &spoton_rss::parseXmlContent, m_feedDownloadContent, url);
+    if(!url.isEmpty() && url.isValid())
+      QtConcurrent::run
+	(this, &spoton_rss::parseXmlContent, m_feedDownloadContent, url);
 
   m_feedDownloadContent.clear();
 }
