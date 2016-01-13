@@ -32,10 +32,6 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QXmlStreamReader>
-#if QT_VERSION >= 0x050000
-#include <QtConcurrent>
-#endif
-#include <QtCore>
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
@@ -165,7 +161,7 @@ spoton_rss::~spoton_rss()
 {
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
-  m_importTimer.start();
+  m_importTimer.stop();
 }
 
 void spoton_rss::center(QWidget *parent)
@@ -217,6 +213,61 @@ bool spoton_rss::event(QEvent *event)
 }
 #endif
 #endif
+
+void spoton_rss::importUrl(const QList<QVariant> &list)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QSettings settings;
+  bool ok = true;
+
+  ok = spoton_misc::importUrl
+    (list.value(0).toByteArray(),       // Content
+     list.value(1).toString().toUtf8(), // Description
+     list.value(2).toString().toUtf8(), // Title
+     list.value(3).toUrl().toEncoded(), // URL
+     spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
+     spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
+     settings.value("gui/disable_ui_synchronous_sqlite_url_import",
+		    false).toBool(),
+     spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0);
+
+  if(ok)
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+	    bool ok = true;
+
+	    query.prepare("UPDATE rss_feeds_links "
+			  "SET imported = 1 "
+			  "WHERE url_hash = ?");
+	    query.bindValue
+	      (0, crypt->keyedHash(list.value(3).toUrl().toEncoded(), &ok).
+	       toBase64());
+
+	    if(ok)
+	      query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
 
 void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 {
@@ -1266,8 +1317,7 @@ void spoton_rss::slotFeedReplyFinished(void)
 
   if(!m_feedDownloadContent.isEmpty())
     if(!url.isEmpty() && url.isValid())
-      QtConcurrent::run
-	(this, &spoton_rss::parseXmlContent, m_feedDownloadContent, url);
+      parseXmlContent(m_feedDownloadContent, url);
 
   m_feedDownloadContent.clear();
 }
@@ -1326,8 +1376,8 @@ void spoton_rss::slotImport(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT content, description, publication_date, "
-		      "title, url FROM rss_feeds_links WHERE "
+	query.prepare("SELECT content, description, title, url "
+		      "FROM rss_feeds_links WHERE "
 		      "imported = 0 AND visited = 1");
 
 	if(query.exec())
@@ -1346,23 +1396,26 @@ void spoton_rss::slotImport(void)
 	      if(ok)
 		list << bytes;
 
-	      bytes = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(1).toByteArray()),
-		 &ok);
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()),
+		   &ok);
 
 	      if(ok)
 		list << QString::fromUtf8(bytes).trimmed();
 
-	      bytes = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(3).toByteArray()),
-		 &ok);
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).toByteArray()),
+		   &ok);
 
 	      if(ok)
 		list << QString::fromUtf8(bytes).trimmed();
 
-	      bytes = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(4).toByteArray()),
-		 &ok);
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(3).toByteArray()),
+		   &ok);
 
 	      if(ok)
 		list << QUrl::fromEncoded(bytes);
@@ -1379,6 +1432,9 @@ void spoton_rss::slotImport(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
+
+  if(!list.isEmpty())
+    importUrl(list);
 }
 
 void spoton_rss::slotPopulateFeeds(void)
@@ -1437,23 +1493,27 @@ void spoton_rss::slotRefreshTimeline(void)
 		    contentAvailable = true;
 
 		Q_UNUSED(contentAvailable);
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(1).toByteArray()),
-		   &ok);
+
+		if(ok)
+		  bytes = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(1).toByteArray()),
+		     &ok);
 
 		if(ok)
 		  list << QString::fromUtf8(bytes).trimmed();
 
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(3).toByteArray()),
-		   &ok);
+		if(ok)
+		  bytes = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(3).toByteArray()),
+		     &ok);
 
 		if(ok)
 		  list << QString::fromUtf8(bytes).trimmed();
 
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(4).toByteArray()),
-		   &ok);
+		if(ok)
+		  bytes = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(4).toByteArray()),
+		     &ok);
 
 		if(ok)
 		  list << QUrl::fromEncoded(bytes);
