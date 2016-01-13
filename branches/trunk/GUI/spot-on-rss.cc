@@ -964,7 +964,18 @@ void spoton_rss::slotContentReplyFinished(void)
 	spoton::instance()->crypts().value("chat", 0) : 0;
 
       if(!crypt)
-	return;
+	{
+	  reply->deleteLater();
+	  return;
+	}
+
+      QByteArray data(reply->readAll());
+
+      if(data.isEmpty())
+	{
+	  reply->deleteLater();
+	  return;
+	}
 
       QString connectionName("");
 
@@ -976,7 +987,6 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	if(db.open())
 	  {
-	    QByteArray data(reply->readAll());
 	    QSqlQuery query(db);
 	    bool ok = true;
 
@@ -1002,6 +1012,8 @@ void spoton_rss::slotContentReplyFinished(void)
       QSqlDatabase::removeDatabase(connectionName);
       reply->deleteLater();
     }
+  else if(reply)
+    reply->deleteLater();
 }
 
 void spoton_rss::slotDeleteAllFeeds(void)
@@ -1235,6 +1247,8 @@ void spoton_rss::slotFeedImageReplyFinished(void)
       saveFeedImage(data, url.toString());
       QApplication::restoreOverrideCursor();
     }
+  else if(reply)
+    reply->deleteLater();
 }
 
 void spoton_rss::slotFeedReplyFinished(void)
@@ -1247,6 +1261,8 @@ void spoton_rss::slotFeedReplyFinished(void)
       url = reply->url();
       reply->deleteLater();
     }
+  else if(reply)
+    reply->deleteLater();
 
   if(!m_feedDownloadContent.isEmpty())
     if(!url.isEmpty() && url.isValid())
