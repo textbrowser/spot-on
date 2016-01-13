@@ -1844,6 +1844,63 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  deleteQuery.exec();
 		}
 	    }
+
+	if(query.exec("SELECT enabled, hostname, password, port, "
+		      "type, username FROM rss_proxy"))
+	  while(query.next())
+	    {
+	      QList<QByteArray> list;
+	      bool ok = true;
+
+	      for(int i = 0; i < query.record().count(); i++)
+		{
+		  QByteArray bytes
+		    (oldCrypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.value(i).
+							    toByteArray()),
+						 &ok));
+
+		  if(ok)
+		    list << bytes;
+		  else
+		    break;
+		}
+
+	      if(ok)
+		{
+		  QSqlQuery updateQuery(query);
+
+		  updateQuery.prepare("UPDATE rss_proxy SET "
+				      "enabled = ?, "
+				      "hostname = ?, "
+				      "password = ?, "
+				      "port = ?, "
+				      "type = ?, "
+				      "username = ?");
+
+		  for(int i = 0; i < list.size(); i++)
+		    if(ok)
+		      updateQuery.bindValue
+			(i, newCrypt->encryptedThenHashed(list.value(i),
+							  &ok).toBase64());
+		    else
+		      break;
+
+		  if(ok)
+		    updateQuery.exec();
+		}
+
+	      if(!ok)
+		{
+		  spoton_misc::logError("Re-encoding rss_proxy error.");
+
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.exec("DELETE FROM rss_proxy");
+		}
+	    }
       }
 
     db.close();
