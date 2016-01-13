@@ -5893,8 +5893,10 @@ void spoton::slotSetPassphrase(void)
 
 	      spoton_reencode reencode;
 
+	      QApplication::setOverrideCursor(Qt::WaitCursor);
 	      reencode.reencode
 		(m_sb, crypt.data(), m_crypts.value("chat", 0));
+	      QApplication::restoreOverrideCursor();
 	    }
 
 	  QHashIterator<QString, spoton_crypt *> it(m_crypts);
