@@ -148,7 +148,6 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		(QByteArray::
 		 fromBase64(query.value(0).
 			    toByteArray()), &ok);
-
 	      updateQuery.prepare("UPDATE categories "
 				  "SET category = ?, "
 				  "category_hash = ? "
@@ -464,7 +463,6 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				  "hash = ? "
 				  "WHERE "
 				  "OID = ?");
-
 	      cipherType = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::
 		 fromBase64(query.value(0).toByteArray()),
@@ -549,7 +547,6 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				  "participant_hash = ? "
 				  "WHERE "
 				  "OID = ?");
-
 	      dateReceived = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::
 		 fromBase64(query.value(0).toByteArray()),
