@@ -210,6 +210,7 @@ void spoton_rss::closeEvent(QCloseEvent *event)
 void spoton_rss::deactivate(void)
 {
   m_ui.activate->setChecked(false);
+  m_ui.import->setChecked(false);
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
