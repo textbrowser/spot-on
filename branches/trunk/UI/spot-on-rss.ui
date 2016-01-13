@@ -38,16 +38,7 @@
            <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <property name="leftMargin">
-            <number>5</number>
-           </property>
-           <property name="topMargin">
-            <number>5</number>
-           </property>
-           <property name="rightMargin">
-            <number>5</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>5</number>
            </property>
            <property name="spacing">
@@ -443,6 +434,43 @@
            </spacer>
           </item>
           <item>
+           <widget class="QComboBox" name="timeline_filter">
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string>All</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Content Downloaded</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Content Downloaded and Imported</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Imported</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Not Imported</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Not Imported and Without Content</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="refresh_timeline">
             <property name="text">
              <string>&amp;Refresh</string>
@@ -524,6 +552,7 @@
   <tabstop>add</tabstop>
   <tabstop>timeline</tabstop>
   <tabstop>find</tabstop>
+  <tabstop>timeline_filter</tabstop>
   <tabstop>refresh_timeline</tabstop>
  </tabstops>
  <resources>

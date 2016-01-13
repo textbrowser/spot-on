@@ -116,6 +116,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
 	  SLOT(slotUrlLinkClicked(const QUrl &)));
+  connect(m_ui.timeline_filter,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotRefreshTimeline(void)));
   connect(this,
 	  SIGNAL(downloadFeedImage(const QUrl &, const QUrl &)),
 	  this,
@@ -1535,13 +1539,26 @@ void spoton_rss::slotRefreshTimeline(void)
     if(db.open())
       {
 	QSqlQuery query(db);
+	QString str("");
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT content, description, publication_date, "
-		      "title, url FROM rss_feeds_links ORDER BY "
-		      "publication_date DESC");
+	str = "SELECT content, description, publication_date, "
+	  "title, url FROM rss_feeds_links ";
 
-	if(query.exec())
+	if(m_ui.timeline_filter->currentIndex() == 1)
+	  str.append("WHERE visited = 1 ");
+	else if(m_ui.timeline_filter->currentIndex() == 2)
+	  str.append("WHERE imported = 1 AND visited = 1 ");
+	else if(m_ui.timeline_filter->currentIndex() == 3)
+	  str.append("WHERE imported = 1 ");
+	else if(m_ui.timeline_filter->currentIndex() == 4)
+	  str.append("WHERE imported = 0 ");
+	else if(m_ui.timeline_filter->currentIndex() == 5)
+	  str.append("WHERE imported = 0 AND visited = 0 ");
+
+	str.append("ORDER BY publication_date DESC");
+
+	if(query.exec(str))
 	  {
 	    m_ui.timeline->clear();
 
