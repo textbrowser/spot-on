@@ -198,6 +198,14 @@ void spoton_rss::closeEvent(QCloseEvent *event)
   QMainWindow::closeEvent(event);
 }
 
+void spoton_rss::deactivate(void)
+{
+  m_ui.activate->setChecked(false);
+  m_downloadContentTimer.stop();
+  m_downloadTimer.stop();
+  m_importTimer.stop();
+}
+
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
 bool spoton_rss::event(QEvent *event)

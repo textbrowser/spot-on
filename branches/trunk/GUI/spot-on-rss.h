@@ -41,6 +41,7 @@ class spoton_rss: public QMainWindow
   spoton_rss(QWidget *parent);
   ~spoton_rss();
   void center(QWidget *parent);
+  void deactivate(void);
   void show(void);
 
  private:

@@ -5582,13 +5582,15 @@ void spoton::slotSetPassphrase(void)
 	mb.setText(tr("Are you sure that you wish to replace the "
 		      "existing passphrase? Please note that URL data must "
 		      "be re-encoded via a separate tool. Please see "
-		      "the future Re-Encode URLs option."));
+		      "the future Re-Encode URLs option. The RSS mechanism "
+		      "will be deactivated."));
       else
 	mb.setText(tr("Are you sure that you wish to replace the "
 		      "existing answer/question? Please note that URL "
 		      "data must "
 		      "be re-encoded via a separate tool. Please see "
-		      "the future Re-Encode URLs option."));
+		      "the future Re-Encode URLs option. The RSS mechanism "
+		      "will be deactivated."));
 
       if(mb.exec() != QMessageBox::Yes)
 	{
@@ -5886,6 +5888,8 @@ void spoton::slotSetPassphrase(void)
 							  iterationCount->
 							  value()),
 			      "chat"));
+
+	      m_rss->deactivate();
 
 	      spoton_reencode reencode;
 
