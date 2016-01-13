@@ -4131,8 +4131,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>347</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4208,8 +4208,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>638</width>
-                 <height>620</height>
+                 <width>802</width>
+                 <height>603</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4967,7 +4967,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QTextBrowser" name="urls">
+                <widget class="spoton_textbrowser" name="urls">
                  <property name="font">
                   <font>
                    <family>Monospace</family>
@@ -8279,6 +8279,11 @@
    <class>spoton_lineedit</class>
    <extends>QLineEdit</extends>
    <header>spot-on.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

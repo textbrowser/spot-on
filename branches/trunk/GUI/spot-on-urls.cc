@@ -119,11 +119,30 @@ void spoton::slotPrepareUrlDatabases(void)
       return;
     }
 
-  QMessageBox::information
-    (this, tr("%1: Information").
-     arg(SPOTON_APPLICATION_NAME),
-     tr("Please note that the database-preparation process may "
-	"require a considerable amount of time to complete."));
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Please note that the database-preparation process may "
+		"require a considerable amount of time to complete. "
+		"The kernel and the RSS mechanism will be deactivated. "
+		"Proceed?"));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+  else
+    {
+      m_rss->deactivate();
+      slotDeactivateKernel();
+    }
 
   QProgressDialog progress(this);
   bool created = true;
@@ -354,10 +373,16 @@ void spoton::slotDeleteAllUrls(void)
 		"URL databases? Your credentials will also be removed. "
 		"The shared.db database will not be vacuumed. Please "
 		"note that the deletion process may require "
-		"a considerable amount of time to complete."));
+		"a considerable amount of time to complete. The kernel and "
+		"the RSS mechanism will be deactivated."));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
+  else
+    {
+      m_rss->deactivate();
+      slotDeactivateKernel();
+    }
 
   bool deleted = deleteAllUrls();
 
@@ -399,10 +424,16 @@ void spoton::slotDropUrlTables(void)
 		"URL databases? Your credentials will not be removed. "
 		"The shared.db database will not be removed. Please "
 		"note that the process may require "
-		"a considerable amount of time to complete."));
+		"a considerable amount of time to complete. The kernel "
+		"and the RSS mechanism will be deactivated."));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
+  else
+    {
+      m_rss->deactivate();
+      slotDeactivateKernel();
+    }
 
   QProgressDialog progress(this);
   bool dropped = true;
@@ -2165,19 +2196,24 @@ void spoton::slotCorrectUrlDatabases(void)
       (tr("The kernel must be deactivated. The database-correction process "
 	  "may require a considerable amount of time to complete. "
 	  "You may experience performance degradation upon completion. "
+	  "The RSS mechanism will also be deactivated. "
 	  "A brief report will be displayed after the process completes. "
 	  "Proceed?"));
   else
     mb.setText
       (tr("The kernel must be deactivated. The database-correction process "
 	  "may require a considerable amount of time to complete. "
+	  "The RSS mechanism will also be deactivated. "
 	  "A brief report will be displayed after the process completes. "
 	  "Proceed?"));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
   else
-    slotDeactivateKernel();
+    {
+      m_rss->deactivate();
+      slotDeactivateKernel();
+    }
 
   QProgressDialog progress(this);
 
