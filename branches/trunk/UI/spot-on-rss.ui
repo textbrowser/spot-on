@@ -468,6 +468,11 @@
               <string>Not Imported and Without Content</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Without Content</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item>

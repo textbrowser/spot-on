@@ -1555,6 +1555,8 @@ void spoton_rss::slotRefreshTimeline(void)
 	  str.append("WHERE imported = 0 ");
 	else if(m_ui.timeline_filter->currentIndex() == 5)
 	  str.append("WHERE imported = 0 AND visited = 0 ");
+	else if(m_ui.timeline_filter->currentIndex() == 6)
+	  str.append("WHERE visited = 0 ");
 
 	str.append("ORDER BY publication_date DESC");
 
