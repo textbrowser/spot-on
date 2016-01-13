@@ -232,19 +232,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="automatically_import">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>&amp;Automatically Import</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QLabel" name="label">
             <property name="text">
              <string>&amp;Download Interval</string>
@@ -280,13 +267,6 @@
             </property>
             <property name="checked">
              <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="import">
-            <property name="text">
-             <string>Import</string>
             </property>
            </widget>
           </item>
@@ -523,10 +503,8 @@
   <tabstop>proxyPassword</tabstop>
   <tabstop>save_proxy_settings</tabstop>
   <tabstop>action_menu</tabstop>
-  <tabstop>automatically_import</tabstop>
   <tabstop>download_interval</tabstop>
   <tabstop>activate</tabstop>
-  <tabstop>import</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>
   <tabstop>add</tabstop>

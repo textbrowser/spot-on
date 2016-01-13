@@ -49,6 +49,7 @@ class spoton_rss: public QMainWindow
   QPalette m_originalFindPalette;
   QTimer m_downloadTimer;
   QTimer m_downloadContentTimer;
+  QTimer m_importTimer;
   Ui_rss m_ui;
   int m_currentFeedRow;
 #ifdef Q_OS_MAC
@@ -57,6 +58,7 @@ class spoton_rss: public QMainWindow
 #endif
 #endif
   void closeEvent(QCloseEvent *event);
+  void importUrl(void);
   void parseXmlContent(const QByteArray &data,
 		       const QUrl &url);
   void populateFeeds(void);

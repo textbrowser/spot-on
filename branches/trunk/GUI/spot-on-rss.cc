@@ -59,6 +59,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotDownloadTimeout(void)));
+  connect(&m_importTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotImport(void)));
   connect(m_ui.action_Find,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -87,10 +91,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
-  connect(m_ui.import,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotImport(void)));
   connect(m_ui.new_feed,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -148,6 +148,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 		 m_ui.download_interval->maximum());
   m_downloadContentTimer.setInterval(5 * 1000); // Every five seconds.
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
+  m_importTimer.start(500);
 
   if(state)
     {
@@ -164,6 +165,7 @@ spoton_rss::~spoton_rss()
 {
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
+  m_importTimer.start();
 }
 
 void spoton_rss::center(QWidget *parent)
@@ -503,6 +505,7 @@ void spoton_rss::prepareDatabases(void)
 		   "content TEXT NOT NULL, "
 		   "description TEXT NOT NULL, "
 		   "feed_hash TEXT NOT NULL, "
+		   "imported INTEGER NOT NULL DEFAULT 0, "
 		   "insert_date TEXT NOT NULL, "
 		   "publication_date TEXT NOT NULL, "
 		   "title TEXT NOT NULL, "
@@ -1317,7 +1320,7 @@ void spoton_rss::slotRefreshTimeline(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT description, publication_date, "
+	query.prepare("SELECT content, description, publication_date, "
 		      "title, url FROM rss_feeds_links ORDER BY "
 		      "publication_date DESC");
 
@@ -1325,23 +1328,27 @@ void spoton_rss::slotRefreshTimeline(void)
 	  {
 	    m_ui.timeline->clear();
 
-	    int row = 0;
-
 	    while(query.next())
 	      {
 		QByteArray bytes;
 		QList<QVariant> list;
+		bool contentAvailable = false;
 		bool ok = true;
 
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(0).toByteArray()),
-		   &ok);
+		bytes = qUncompress
+		  (crypt->
+		   decryptedAfterAuthenticated(QByteArray::
+					       fromBase64(query.value(0).
+							  toByteArray()),
+					       &ok));
 
 		if(ok)
-		  list << QString::fromUtf8(bytes).trimmed();
+		  if(bytes.size() > 0)
+		    contentAvailable = true;
 
+		Q_UNUSED(contentAvailable);
 		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(2).toByteArray()),
+		  (QByteArray::fromBase64(query.value(1).toByteArray()),
 		   &ok);
 
 		if(ok)
@@ -1352,16 +1359,20 @@ void spoton_rss::slotRefreshTimeline(void)
 		   &ok);
 
 		if(ok)
+		  list << QString::fromUtf8(bytes).trimmed();
+
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(4).toByteArray()),
+		   &ok);
+
+		if(ok)
 		  list << QUrl::fromEncoded(bytes);
 
 		if(list.size() == 3)
 		  {
-		    row += 1;
-
 		    QString html("");
 
-		    html.append(QString::number(row));
-		    html.append(" | <a href=\"");
+		    html.append("<a href=\"");
 		    html.append(list.value(2).toUrl().toEncoded().constData());
 		    html.append("\">");
 		    html.append(list.value(1).toString());
@@ -1377,7 +1388,7 @@ void spoton_rss::slotRefreshTimeline(void)
 		    html.append("<br>");
 		    html.append
 		      (QString("<font color=\"gray\" size=3>%1</font>").
-		       arg(query.value(1).toString().trimmed()));
+		       arg(query.value(2).toString().trimmed()));
 		    html.append("<br>");
 		    m_ui.timeline->append(html);
 
