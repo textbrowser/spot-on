@@ -1305,6 +1305,80 @@ void spoton_rss::slotFindInitialize(void)
 
 void spoton_rss::slotImport(void)
 {
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QList<QVariant> list;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT content, description, publication_date, "
+		      "title, url FROM rss_feeds_links WHERE "
+		      "imported = 0 AND visited = 1");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QByteArray bytes;
+	      bool ok = true;
+
+	      bytes = qUncompress
+		(crypt->
+		 decryptedAfterAuthenticated(QByteArray::
+					     fromBase64(query.value(0).
+							toByteArray()),
+					     &ok));
+
+	      if(ok)
+		list << bytes;
+
+	      bytes = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(1).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		list << QString::fromUtf8(bytes).trimmed();
+
+	      bytes = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(3).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		list << QString::fromUtf8(bytes).trimmed();
+
+	      bytes = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(4).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		list << QUrl::fromEncoded(bytes);
+
+	      if(ok)
+		break;
+	      else
+		list.clear();
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::slotPopulateFeeds(void)
