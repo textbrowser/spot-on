@@ -38,7 +38,16 @@
            <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
             <number>5</number>
            </property>
            <property name="spacing">
@@ -271,7 +280,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="import">
+           <widget class="QCheckBox" name="import_periodically">
             <property name="text">
              <string>&amp;Import Periodically</string>
             </property>
@@ -375,16 +384,6 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QLabel" name="statistics">
-          <property name="text">
-           <string>TextLabel</string>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="spoton_textbrowser" name="timeline">
           <property name="font">
            <font>
@@ -482,6 +481,7 @@
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="action_Close">
    <property name="text">
     <string>&amp;Close</string>
@@ -518,7 +518,7 @@
   <tabstop>action_menu</tabstop>
   <tabstop>download_interval</tabstop>
   <tabstop>activate</tabstop>
-  <tabstop>import</tabstop>
+  <tabstop>import_periodically</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>
   <tabstop>add</tabstop>

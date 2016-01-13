@@ -92,10 +92,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
-  connect(m_ui.import,
+  connect(m_ui.import_periodically,
 	  SIGNAL(toggled(bool)),
 	  this,
-	  SLOT(slotActivateImport(void)));
+	  SLOT(slotActivateImport(bool)));
   connect(m_ui.new_feed,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -210,7 +210,7 @@ void spoton_rss::closeEvent(QCloseEvent *event)
 void spoton_rss::deactivate(void)
 {
   m_ui.activate->setChecked(false);
-  m_ui.import->setChecked(false);
+  m_ui.import_periodically->setChecked(false);
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
@@ -629,6 +629,8 @@ void spoton_rss::restoreWidgets(void)
 		 settings.value("gui/rss_download_interval", 1.50).toDouble(),
 		 m_ui.download_interval->maximum());
   m_ui.download_interval->setValue(value);
+  m_ui.import_periodically->setChecked
+    (settings.value("gui/rss_import_activate", false).toBool());
   m_ui.tab->setCurrentIndex(index);
 
   spoton_crypt *crypt = spoton::instance() ?
@@ -1785,12 +1787,12 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 void spoton_rss::slotStatisticsTimeout(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_ui.statistics->setText(tr("0 <b>RSS Feeds</b> / "
-			      "0 <b>Imported URLs</b> / "
-			      "0 <b>Not Imported URLs</b> / "
-			      "0 <b>Visited URLs</b> / "
-			      "0 <b>Not Visited URLs</b> / "
-			      "0 <b>Total URLs</b>"));
+  statusBar()->showMessage(tr("0 RSS Feeds | "
+			      "0 Imported URLs | "
+			      "0 Not Imported URLs | "
+			      "0 Visited URLs | "
+			      "0 Not Visited URLs | "
+			      "0 Total URLs"));
 
   QList<QVariant> list;
   QString connectionName("");
@@ -1829,13 +1831,13 @@ void spoton_rss::slotStatisticsTimeout(void)
 
 	QLocale locale;
 
-	m_ui.statistics->setText
-	  (tr("%1 <b>RSS Feeds</b> / "
-	      "%2 <b>Imported URLs</b> / "
-	      "%3 <b>Not Imported URLs</b> / "
-	      "%4 <b>Visited URLs</b> / "
-	      "%5 <b>Not Visited URLs</b> / "
-	      "%6 <b>Total URLs</b>").
+	statusBar()->showMessage
+	  (tr("%1 RSS Feeds | "
+	      "%2 Imported URLs | "
+	      "%3 Not Imported URLs | "
+	      "%4 Visited URLs | "
+	      "%5 Not Visited URLs | "
+	      "%6 Total URLs").
 	   arg(locale.toString(counts.value(0))).
 	   arg(locale.toString(counts.value(1))).
 	   arg(locale.toString(counts.value(2))).
