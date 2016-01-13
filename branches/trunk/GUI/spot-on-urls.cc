@@ -1876,7 +1876,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       spoton_pageviewer *pageViewer = new spoton_pageviewer
 	(m_urlDatabase, hash, this);
 
-      pageViewer->setPage(0, QUrl("http:/127.0.0.1"), 0);
+      pageViewer->setPage(0, QUrl("http://127.0.0.1"), 0);
 
       if(!hash.isEmpty())
 	{

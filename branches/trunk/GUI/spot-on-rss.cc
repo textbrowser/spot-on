@@ -144,7 +144,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 		 m_ui.download_interval->maximum());
   m_downloadContentTimer.setInterval(5 * 1000); // Every five seconds.
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
-  m_importTimer.start(500);
+  m_importTimer.start(2500);
 
   if(state)
     {
@@ -1362,6 +1362,11 @@ void spoton_rss::slotImport(void)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_ui.statistics->setText(tr("0 <b>Imported</b> / "
+			      "0 <b>Not Imported</b> / "
+			      "0 <b>Visited</b> / "
+			      "0 <b>Not Visited</b> / "
+			      "0 <b>Total</b>"));
 
   QList<QVariant> list;
   QString connectionName("");
@@ -1373,9 +1378,42 @@ void spoton_rss::slotImport(void)
 
     if(db.open())
       {
+	QList<int> counts;
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
+	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds_links "
+		      "WHERE imported <> 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
+		      "WHERE imported = 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'c' FROM rss_feeds_links "
+		      "WHERE visited <> 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
+		      "WHERE visited = 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
+		      "ORDER BY 2");
+
+	if(query.exec())
+	  while(query.next())
+	    counts << query.value(0).toInt();
+
+	QLocale locale;
+
+	m_ui.statistics->setText
+	  (tr("%1 <b>Imported</b> / "
+	      "%2 <b>Not Imported</b> / "
+	      "%3 <b>Visited</b> / "
+	      "%4 <b>Not Visited</b> / "
+	      "%5 <b>Total</b>").
+	   arg(locale.toString(counts.value(0))).
+	   arg(locale.toString(counts.value(1))).
+	   arg(locale.toString(counts.value(2))).
+	   arg(locale.toString(counts.value(3))).
+	   arg(locale.toString(counts.value(4))));
 	query.prepare("SELECT content, description, title, url "
 		      "FROM rss_feeds_links WHERE "
 		      "imported = 0 AND visited = 1");
@@ -1734,7 +1772,7 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
   spoton_pageviewer *pageViewer = new spoton_pageviewer
     (QSqlDatabase(), QString(), this);
 
-  pageViewer->setPage(0, QUrl("http:/127.0.0.1"), 0);
+  pageViewer->setPage(0, QUrl("http://127.0.0.1"), 0);
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
