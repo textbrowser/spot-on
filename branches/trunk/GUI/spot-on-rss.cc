@@ -745,9 +745,9 @@ void spoton_rss::restoreWidgets(void)
     }
 }
 
-void spoton_rss::saveFeedData(const QString &description,
+void spoton_rss::saveFeedData(const QString &d,
 			      const QString &link,
-			      const QString &title)
+			      const QString &t)
 {
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
@@ -765,7 +765,15 @@ void spoton_rss::saveFeedData(const QString &description,
     if(db.open())
       {
 	QSqlQuery query(db);
+	QString description(d);
+	QString title(t);
 	bool ok = true;
+
+	if(description.isEmpty())
+	  description = link;
+
+	if(title.isEmpty())
+	  title = link;
 
 	query.prepare("UPDATE rss_feeds "
 		      "SET feed_description = ?, "
@@ -833,10 +841,10 @@ void spoton_rss::saveFeedImage(const QByteArray &data, const QString &link)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_rss::saveFeedLink(const QString &description,
+void spoton_rss::saveFeedLink(const QString &d,
 			      const QString &link,
-			      const QString &publicationDate,
-			      const QString &title,
+			      const QString &p,
+			      const QString &t,
 			      const QUrl &url)
 {
   Q_UNUSED(url);
@@ -857,7 +865,19 @@ void spoton_rss::saveFeedLink(const QString &description,
     if(db.open())
       {
 	QSqlQuery query(db);
+	QString description(d);
+	QString publicationDate(p);
+	QString title(t);
 	bool ok = true;
+
+	if(description.isEmpty())
+	  description = link;
+
+	if(publicationDate.isEmpty())
+	  publicationDate = QDateTime::currentDateTime().toString(Qt::ISODate);
+
+	if(title.isEmpty())
+	  title = link;
 
 	query.prepare
 	  ("INSERT INTO rss_feeds_links ("
