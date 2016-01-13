@@ -1432,7 +1432,16 @@ void spoton_rss::slotImport(void)
 					     &ok));
 
 	      if(ok)
-		list << bytes;
+		{
+		  /*
+		  ** Do not import empty content.
+		  */
+
+		  if(bytes.isEmpty())
+		    ok = false;
+		  else
+		    list << bytes;
+		}
 
 	      if(ok)
 		bytes = crypt->decryptedAfterAuthenticated
