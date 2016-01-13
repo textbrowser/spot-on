@@ -55,8 +55,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
   QString connectionName("");
 
-  sb.status->setText
-    (QObject::tr("Re-encoding buzz_channels.db."));
+  sb.status->setText(QObject::tr("Re-encoding buzz_channels.db."));
   sb.status->repaint();
 
   {
@@ -120,8 +119,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  sb.status->setText
-    (QObject::tr("Re-encoding echo_key_sharing_secrets.db."));
+  sb.status->setText(QObject::tr("Re-encoding echo_key_sharing_secrets.db."));
   sb.status->repaint();
 
   {
@@ -277,8 +275,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  sb.status->setText
-    (QObject::tr("Re-encoding email.db."));
+  sb.status->setText(QObject::tr("Re-encoding email.db."));
   sb.status->repaint();
 
   {
@@ -613,8 +610,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  sb.status->setText
-    (QObject::tr("Re-encoding friends_public_keys.db."));
+  sb.status->setText(QObject::tr("Re-encoding friends_public_keys.db."));
   sb.status->repaint();
 
   {
@@ -823,8 +819,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  sb.status->setText
-    (QObject::tr("Re-encoding listeners.db."));
+  sb.status->setText(QObject::tr("Re-encoding listeners.db."));
   sb.status->repaint();
 
   {
@@ -1217,8 +1212,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  sb.status->setText
-    (QObject::tr("Re-encoding neighbors.db."));
+  sb.status->setText(QObject::tr("Re-encoding neighbors.db."));
   sb.status->repaint();
 
   {
@@ -1597,8 +1591,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  sb.status->setText
-    (QObject::tr("Re-encoding poptastic.db."));
+  sb.status->setText(QObject::tr("Re-encoding poptastic.db."));
   sb.status->repaint();
 
   {
@@ -1678,8 +1671,24 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  sb.status->setText
-    (QObject::tr("Re-encoding starbeam.db."));
+  sb.status->setText(QObject::tr("Re-encoding rss.db."));
+  sb.status->repaint();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "rss.db");
+
+    if(db.open())
+      {
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  sb.status->setText(QObject::tr("Re-encoding starbeam.db."));
   sb.status->repaint();
 
   {
@@ -2171,8 +2180,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  sb.status->setText
-    (QObject::tr("Re-encoding urls_key_information.db."));
+  sb.status->setText(QObject::tr("Re-encoding urls_key_information.db."));
   sb.status->repaint();
 
   {
