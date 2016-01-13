@@ -50,6 +50,7 @@ class spoton_rss: public QMainWindow
   QTimer m_downloadTimer;
   QTimer m_downloadContentTimer;
   QTimer m_importTimer;
+  QTimer m_statisticsTimer;
   Ui_rss m_ui;
   int m_currentFeedRow;
 #ifdef Q_OS_MAC
@@ -94,6 +95,7 @@ class spoton_rss: public QMainWindow
   void slotRefreshTimeline(void);
   void slotSaveProxy(void);
   void slotShowContextMenu(const QPoint &point);
+  void slotStatisticsTimeout(void);
   void slotTabChanged(int index);
   void slotUrlLinkClicked(const QUrl &url);
 

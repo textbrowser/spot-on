@@ -59,6 +59,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotImport(void)));
+  connect(&m_statisticsTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotStatisticsTimeout(void)));
   connect(m_ui.action_Find,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -144,12 +148,14 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 		 m_ui.download_interval->maximum());
   m_downloadContentTimer.setInterval(5 * 1000); // Every five seconds.
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
-  m_importTimer.start(2500);
+  m_importTimer.setInterval(2500);
+  m_statisticsTimer.start(2500);
 
   if(state)
     {
       m_downloadContentTimer.start();
       m_downloadTimer.start();
+      m_importTimer.start();
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -162,6 +168,7 @@ spoton_rss::~spoton_rss()
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
+  m_statisticsTimer.stop();
 }
 
 void spoton_rss::center(QWidget *parent)
@@ -555,15 +562,13 @@ void spoton_rss::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds_links ("
 		   "content TEXT NOT NULL, "
 		   "description TEXT NOT NULL, "
-		   "feed_hash TEXT NOT NULL, "
 		   "imported INTEGER NOT NULL DEFAULT 0, "
 		   "insert_date TEXT NOT NULL, "
 		   "publication_date TEXT NOT NULL, "
 		   "title TEXT NOT NULL, "
 		   "url TEXT NOT NULL, "
-		   "url_hash TEXT NOT NULL, "
-		   "visited INTEGER NOT NULL DEFAULT 0, "
-		   "PRIMARY KEY (feed_hash, url_hash))");
+		   "url_hash TEXT NOT NULL PRIMARY KEY, "
+		   "visited INTEGER NOT NULL DEFAULT 0)");
 	query.exec("CREATE TABLE IF NOT EXISTS rss_proxy ("
 		   "enabled TEXT NOT NULL, "
 		   "hostname TEXT NOT NULL, "
@@ -600,7 +605,7 @@ void spoton_rss::restoreWidgets(void)
   m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
 					   false).toBool());
   value = qBound(m_ui.download_interval->minimum(),
-		 settings.value("gui/rss_download_interval").toDouble(),
+		 settings.value("gui/rss_download_interval", 1.50).toDouble(),
 		 m_ui.download_interval->maximum());
   m_ui.download_interval->setValue(value);
   m_ui.tab->setCurrentIndex(index);
@@ -822,6 +827,8 @@ void spoton_rss::saveFeedLink(const QString &description,
 			      const QString &title,
 			      const QUrl &url)
 {
+  Q_UNUSED(url);
+
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
@@ -842,35 +849,32 @@ void spoton_rss::saveFeedLink(const QString &description,
 
 	query.prepare
 	  ("INSERT INTO rss_feeds_links ("
-	   "content, description, feed_hash, insert_date, publication_date, "
-	   "title, url, url_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-	query.bindValue(0, crypt->encryptedThenHashed(QByteArray(), &ok).
-			toBase64());
+	   "content, description, insert_date, publication_date, "
+	   "title, url, url_hash) VALUES (?, ?, ?, ?, ?, ?, ?)");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(qCompress(QByteArray(), 9), &ok).
+	   toBase64());
 
 	if(ok)
 	  query.bindValue
 	    (1, crypt->encryptedThenHashed(description.toUtf8(), &ok).
 	     toBase64());
 
-	if(ok)
-	  query.bindValue
-	    (2, crypt->keyedHash(url.toEncoded(), &ok).toBase64());
-
 	query.bindValue
-	  (3, QDateTime::currentDateTime().toString(Qt::ISODate));
-	query.bindValue(4, publicationDate);
+	  (2, QDateTime::currentDateTime().toString(Qt::ISODate));
+	query.bindValue(3, publicationDate);
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
+	    (4, crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->encryptedThenHashed(link.toUtf8(), &ok).toBase64());
+	    (5, crypt->encryptedThenHashed(link.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (7, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+	    (6, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.exec();
@@ -904,11 +908,15 @@ void spoton_rss::slotActivate(bool state)
 
       if(!m_downloadTimer.isActive()) // Signals.
 	m_downloadTimer.start();
+
+      if(!m_importTimer.isActive()) // Signals.
+	m_importTimer.start();
     }
   else
     {
       m_downloadContentTimer.stop();
       m_downloadTimer.stop();
+      m_importTimer.stop();
     }
 }
 
@@ -1362,12 +1370,6 @@ void spoton_rss::slotImport(void)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_ui.statistics->setText(tr("0 <b>RSS Feeds</b> / "
-			      "0 <b>Imported URLs</b> / "
-			      "0 <b>Not Imported URLs</b> / "
-			      "0 <b>Visited URLs</b> / "
-			      "0 <b>Not Visited URLs</b> / "
-			      "0 <b>Total URLs</b>"));
 
   QList<QVariant> list;
   QString connectionName("");
@@ -1379,46 +1381,9 @@ void spoton_rss::slotImport(void)
 
     if(db.open())
       {
-	QList<int> counts;
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds "
-		      "UNION "
-		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
-		      "WHERE imported <> 0 "
-		      "UNION "
-		      "SELECT COUNT(*), 'c' FROM rss_feeds_links "
-		      "WHERE imported = 0 "
-		      "UNION "
-		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
-		      "WHERE visited <> 0 "
-		      "UNION "
-		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
-		      "WHERE visited = 0 "
-		      "UNION "
-		      "SELECT COUNT(*), 'f' FROM rss_feeds_links "
-		      "ORDER BY 2");
-
-	if(query.exec())
-	  while(query.next())
-	    counts << query.value(0).toInt();
-
-	QLocale locale;
-
-	m_ui.statistics->setText
-	  (tr("%1 <b>RSS Feeds</b> / "
-	      "%2 <b>Imported URLs</b> / "
-	      "%3 <b>Not Imported URLs</b> / "
-	      "%4 <b>Visited URLs</b> / "
-	      "%5 <b>Not Visited URLs</b> / "
-	      "%6 <b>Total URLs</b>").
-	   arg(locale.toString(counts.value(0))).
-	   arg(locale.toString(counts.value(1))).
-	   arg(locale.toString(counts.value(2))).
-	   arg(locale.toString(counts.value(3))).
-	   arg(locale.toString(counts.value(4))).
-	   arg(locale.toString(counts.value(5))));
 	query.prepare("SELECT content, description, title, url "
 		      "FROM rss_feeds_links WHERE "
 		      "imported = 0 AND visited = 1");
@@ -1763,6 +1728,75 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
   menu.addAction(tr("Refresh table."),
 		 this, SLOT(slotPopulateFeeds(void)));
   menu.exec(m_ui.feeds->mapToGlobal(point));
+}
+
+void spoton_rss::slotStatisticsTimeout(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_ui.statistics->setText(tr("0 <b>RSS Feeds</b> / "
+			      "0 <b>Imported URLs</b> / "
+			      "0 <b>Not Imported URLs</b> / "
+			      "0 <b>Visited URLs</b> / "
+			      "0 <b>Not Visited URLs</b> / "
+			      "0 <b>Total URLs</b>"));
+
+  QList<QVariant> list;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QList<int> counts;
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds "
+		      "UNION "
+		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
+		      "WHERE imported <> 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'c' FROM rss_feeds_links "
+		      "WHERE imported = 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
+		      "WHERE visited <> 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
+		      "WHERE visited = 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'f' FROM rss_feeds_links "
+		      "ORDER BY 2");
+
+	if(query.exec())
+	  while(query.next())
+	    counts << query.value(0).toInt();
+
+	QLocale locale;
+
+	m_ui.statistics->setText
+	  (tr("%1 <b>RSS Feeds</b> / "
+	      "%2 <b>Imported URLs</b> / "
+	      "%3 <b>Not Imported URLs</b> / "
+	      "%4 <b>Visited URLs</b> / "
+	      "%5 <b>Not Visited URLs</b> / "
+	      "%6 <b>Total URLs</b>").
+	   arg(locale.toString(counts.value(0))).
+	   arg(locale.toString(counts.value(1))).
+	   arg(locale.toString(counts.value(2))).
+	   arg(locale.toString(counts.value(3))).
+	   arg(locale.toString(counts.value(4))).
+	   arg(locale.toString(counts.value(5))));
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::slotTabChanged(int index)

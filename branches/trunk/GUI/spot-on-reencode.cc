@@ -1679,6 +1679,79 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
     if(db.open())
       {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT echo, feed, feed_description, "
+		      "feed_image, feed_title, OID FROM rss_feeds"))
+	  while(query.next())
+	    {
+	      QList<QByteArray> list;
+	      bool ok = true;
+
+	      for(int i = 0; i < query.record().count() - 1; i++)
+		{
+		  QByteArray bytes
+		    (oldCrypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.value(i).
+							    toByteArray()),
+						 &ok));
+
+		  if(ok)
+		    list << bytes;
+		  else
+		    break;
+		}
+
+	      for(int i = 0; i < list.size(); i++)
+		if(ok)
+		  list.replace
+		    (i, newCrypt->encryptedThenHashed(list.at(i), &ok));
+		else
+		  break;
+
+	      if(ok)
+		{
+		  QSqlQuery updateQuery(query);
+
+		  updateQuery.prepare("UPDATE rss_feeds SET "
+				      "echo = ?, "
+				      "feed = ?, "
+				      "feed_description = ?, "
+				      "feed_hash = ?, "
+				      "feed_image = ?, "
+				      "feed_title = ? WHERE "
+				      "OID = ?");
+		  updateQuery.bindValue(0, list.value(0).toBase64());
+		  updateQuery.bindValue(1, list.value(1).toBase64());
+		  updateQuery.bindValue(2, list.value(2).toBase64());
+		  updateQuery.bindValue
+		    (3, newCrypt->keyedHash(list.value(1), &ok).toBase64());
+		  updateQuery.bindValue(4, list.value(3).toBase64());
+		  updateQuery.bindValue(5, list.value(4).toBase64());
+		  updateQuery.bindValue
+		    (6, query.value(query.record().count() - 1));
+
+		  if(ok)
+		    updateQuery.exec();
+		}
+
+	      if(!ok)
+		{
+		  spoton_misc::logError("Re-encoding rss_feeds error.");
+
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM rss_feeds WHERE "
+				      "OID = ?");
+		  deleteQuery.bindValue
+		    (0, query.value(query.record().count() - 1));
+		  deleteQuery.exec();
+		}
+	    }
       }
 
     db.close();
