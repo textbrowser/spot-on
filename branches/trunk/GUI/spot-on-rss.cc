@@ -92,6 +92,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
+  connect(m_ui.import,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotActivateImport(void)));
   connect(m_ui.new_feed,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -156,8 +160,12 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
     {
       m_downloadContentTimer.start();
       m_downloadTimer.start();
-      m_importTimer.start();
     }
+
+  state = settings.value("gui/rss_import_activate", false).toBool();
+
+  if(state)
+    m_importTimer.start();
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
@@ -940,16 +948,27 @@ void spoton_rss::slotActivate(bool state)
 
       if(!m_downloadTimer.isActive()) // Signals.
 	m_downloadTimer.start();
-
-      if(!m_importTimer.isActive()) // Signals.
-	m_importTimer.start();
     }
   else
     {
       m_downloadContentTimer.stop();
       m_downloadTimer.stop();
-      m_importTimer.stop();
     }
+}
+
+void spoton_rss::slotActivateImport(bool state)
+{
+  QSettings settings;
+
+  settings.setValue("gui/rss_import_activate", state);
+
+  if(state)
+    {
+      if(!m_importTimer.isActive()) // Signals;
+	m_importTimer.start();
+    }
+  else
+    m_importTimer.stop();
 }
 
 void spoton_rss::slotAddFeed(void)

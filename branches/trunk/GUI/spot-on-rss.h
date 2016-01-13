@@ -79,6 +79,7 @@ class spoton_rss: public QMainWindow
  private slots:
   void slotAddFeed(void);
   void slotActivate(bool state);
+  void slotActivateImport(bool state);
   void slotContentReplyFinished(void);
   void slotDeleteAllFeeds(void);
   void slotDeleteFeed(void);
