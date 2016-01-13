@@ -1362,11 +1362,12 @@ void spoton_rss::slotImport(void)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_ui.statistics->setText(tr("0 <b>Imported</b> / "
-			      "0 <b>Not Imported</b> / "
-			      "0 <b>Visited</b> / "
-			      "0 <b>Not Visited</b> / "
-			      "0 <b>Total</b>"));
+  m_ui.statistics->setText(tr("0 <b>RSS Feeds</b> / "
+			      "0 <b>Imported URLs</b> / "
+			      "0 <b>Not Imported URLs</b> / "
+			      "0 <b>Visited URLs</b> / "
+			      "0 <b>Not Visited URLs</b> / "
+			      "0 <b>Total URLs</b>"));
 
   QList<QVariant> list;
   QString connectionName("");
@@ -1382,19 +1383,21 @@ void spoton_rss::slotImport(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds_links "
-		      "WHERE imported <> 0 "
+	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds "
 		      "UNION "
 		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
-		      "WHERE imported = 0 "
+		      "WHERE imported <> 0 "
 		      "UNION "
 		      "SELECT COUNT(*), 'c' FROM rss_feeds_links "
-		      "WHERE visited <> 0 "
+		      "WHERE imported = 0 "
 		      "UNION "
 		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
-		      "WHERE visited = 0 "
+		      "WHERE visited <> 0 "
 		      "UNION "
 		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
+		      "WHERE visited = 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'f' FROM rss_feeds_links "
 		      "ORDER BY 2");
 
 	if(query.exec())
@@ -1404,16 +1407,18 @@ void spoton_rss::slotImport(void)
 	QLocale locale;
 
 	m_ui.statistics->setText
-	  (tr("%1 <b>Imported</b> / "
-	      "%2 <b>Not Imported</b> / "
-	      "%3 <b>Visited</b> / "
-	      "%4 <b>Not Visited</b> / "
-	      "%5 <b>Total</b>").
+	  (tr("%1 <b>RSS Feeds</b> / "
+	      "%2 <b>Imported URLs</b> / "
+	      "%3 <b>Not Imported URLs</b> / "
+	      "%4 <b>Visited URLs</b> / "
+	      "%5 <b>Not Visited URLs</b> / "
+	      "%6 <b>Total URLs</b>").
 	   arg(locale.toString(counts.value(0))).
 	   arg(locale.toString(counts.value(1))).
 	   arg(locale.toString(counts.value(2))).
 	   arg(locale.toString(counts.value(3))).
-	   arg(locale.toString(counts.value(4))));
+	   arg(locale.toString(counts.value(4))).
+	   arg(locale.toString(counts.value(5))));
 	query.prepare("SELECT content, description, title, url "
 		      "FROM rss_feeds_links WHERE "
 		      "imported = 0 AND visited = 1");
