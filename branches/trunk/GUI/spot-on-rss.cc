@@ -361,6 +361,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 	  QString publicationDate("");
 	  QString tag("");
 	  QString title("");
+	  bool endDescription = false;
 
 	  while(true)
 	    {
@@ -368,6 +369,10 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
 	      if(reader.isEndElement())
 		{
+		  if(reader.name().toString().toLower().trimmed() ==
+		     "description")
+		    endDescription = true;
+
 		  if(reader.name().toString().toLower().trimmed() == "item")
 		    break;
 		}
@@ -376,15 +381,13 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
 	      if(tag == "description")
 		{
-		  tag.clear();
-
-		  if(description.isEmpty())
-		    {
-		      reader.readNext();
-		      description = reader.text().toString().trimmed();
-		    }
+		  if(endDescription)
+		    tag.clear();
+		  else if(reader.isCharacters())
+		    description.append(reader.text().toString().trimmed());
 		}
-	      else if(tag == "link")
+
+	      if(tag == "link")
 		{
 		  tag.clear();
 

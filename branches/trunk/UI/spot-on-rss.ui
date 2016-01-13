@@ -258,7 +258,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="activate">
+           <widget class="QCheckBox" name="activate">
             <property name="text">
              <string>&amp;Activate</string>
             </property>
@@ -372,7 +372,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QTextBrowser" name="timeline">
+         <widget class="spoton_textbrowser" name="timeline">
           <property name="font">
            <font>
             <family>Monospace</family>
@@ -486,6 +486,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>tab</tabstop>
   <tabstop>proxy</tabstop>

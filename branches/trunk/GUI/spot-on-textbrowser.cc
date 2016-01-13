@@ -35,28 +35,41 @@ spoton_textbrowser::~spoton_textbrowser()
 {
 }
 
-void spoton_textbrowser::setHtml(const QString &text)
+QString spoton_textbrowser::removeSpecial(const QString &text)
 {
   /*
   ** Let's remove <img> tags.
   */
 
-  QRegExp rx
-    ("\\<img[^\\>]*\\s*=\\s*\"([^\"]*)\"[^\\>]*\\>", Qt::CaseInsensitive);
   QString html(text);
-  int pos = 0;
 
-  do
-    {
-      while((pos = rx.indexIn(html, pos)) != -1)
-	{
-	  html.remove(pos, rx.matchedLength());
-	  pos += rx.matchedLength();
-	}
+  {
+    QRegExp rx
+      ("\\<img[^\\>]*\\s*=\\s*\"([^\"]*)\"[^\\>]*\\>", Qt::CaseInsensitive);
+    int pos = 0;
 
-      pos = rx.indexIn(html, 0);
-    }
-  while(pos >= 0);
+    do
+      {
+	while((pos = rx.indexIn(html, pos)) != -1)
+	  {
+	    html.remove(pos, rx.matchedLength());
+	    pos += rx.matchedLength();
+	  }
 
-  QTextBrowser::setHtml(html);
+	pos = rx.indexIn(html, 0);
+      }
+    while(pos >= 0);
+  }
+
+  return html;
+}
+
+void spoton_textbrowser::append(const QString &text)
+{
+  QTextBrowser::append(removeSpecial(text));
+}
+
+void spoton_textbrowser::setHtml(const QString &text)
+{
+  QTextBrowser::setHtml(removeSpecial(text));
 }
