@@ -116,10 +116,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
 	  SLOT(slotUrlLinkClicked(const QUrl &)));
-  connect(m_ui.timeline_filter,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotRefreshTimeline(void)));
   connect(this,
 	  SIGNAL(downloadFeedImage(const QUrl &, const QUrl &)),
 	  this,
@@ -252,10 +248,10 @@ void spoton_rss::importUrl(const QList<QVariant> &list)
     return;
 
   QSettings settings;
-  bool ok = true;
+  bool imported = true;
 
-  ok = spoton_misc::importUrl
-    (list.value(0).toByteArray(),       // Content
+  imported = spoton_misc::importUrl
+    (list.value(0).toByteArray(),       // UTF-8 Content
      list.value(1).toString().toUtf8(), // Description
      list.value(2).toString().toUtf8(), // Title
      list.value(3).toUrl().toEncoded(), // URL
@@ -265,37 +261,42 @@ void spoton_rss::importUrl(const QList<QVariant> &list)
 		    false).toBool(),
      spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0);
 
-  if(ok)
+  {
+    QString connectionName("");
+
     {
-      QString connectionName("");
+      QSqlDatabase db = spoton_misc::database(connectionName);
 
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+      db.setDatabaseName
+	(spoton_misc::homePath() + QDir::separator() + "rss.db");
 
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
+      if(db.open())
+	{
+	  QSqlQuery query(db);
+	  bool ok = true;
 
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-	    bool ok = true;
+	  query.prepare("UPDATE rss_feeds_links "
+			"SET imported = ? "
+			"WHERE url_hash = ?");
 
-	    query.prepare("UPDATE rss_feeds_links "
-			  "SET imported = 1 "
-			  "WHERE url_hash = ?");
-	    query.bindValue
-	      (0, crypt->keyedHash(list.value(3).toUrl().toEncoded(), &ok).
-	       toBase64());
+	  if(imported)
+	    query.bindValue(0, 1);
+	  else
+	    query.bindValue(0, 2); // Import error.
 
-	    if(ok)
-	      query.exec();
-	  }
+	  query.bindValue
+	    (1, crypt->keyedHash(list.value(3).toUrl().toEncoded(), &ok).
+	     toBase64());
 
-	db.close();
-      }
+	  if(ok)
+	    query.exec();
+	}
 
-      QSqlDatabase::removeDatabase(connectionName);
+      db.close();
     }
+
+    QSqlDatabase::removeDatabase(connectionName);
+  }
 }
 
 void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
@@ -453,7 +454,10 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   QSettings settings;
 
   spoton_misc::importUrl
-    (data, description.toUtf8(), title.toUtf8(), url.toEncoded(),
+    (data,
+     description.toUtf8(),
+     title.toUtf8(),
+     url.toEncoded(),
      spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
      spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
@@ -1079,7 +1083,7 @@ void spoton_rss::slotContentReplyFinished(void)
 {
   QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
 
-  if(reply && reply->error() == QNetworkReply::NoError)
+  if(reply)
     {
       spoton_crypt *crypt = spoton::instance() ?
 	spoton::instance()->crypts().value("chat", 0) : 0;
@@ -1091,13 +1095,6 @@ void spoton_rss::slotContentReplyFinished(void)
 	}
 
       QByteArray data(reply->readAll());
-
-      if(data.isEmpty())
-	{
-	  reply->deleteLater();
-	  return;
-	}
-
       QString connectionName("");
 
       {
@@ -1112,15 +1109,20 @@ void spoton_rss::slotContentReplyFinished(void)
 	    bool ok = true;
 
 	    query.prepare("UPDATE rss_feeds_links "
-			  "SET content = ?, visited = 1 "
+			  "SET content = ?, visited = ? "
 			  "WHERE url_hash = ?");
 	    query.bindValue
 	      (0, crypt->encryptedThenHashed(qCompress(data, 9),
 					     &ok).toBase64());
 
+	    if(data.isEmpty() || reply->error() != QNetworkReply::NoError)
+	      query.bindValue(1, 2); // Error.
+	    else
+	      query.bindValue(1, 1);
+
 	    if(ok)
 	      query.bindValue
-		(1, crypt->keyedHash(reply->url().toEncoded(), &ok).
+		(2, crypt->keyedHash(reply->url().toEncoded(), &ok).
 		 toBase64());
 
 	    if(ok)
@@ -1133,8 +1135,6 @@ void spoton_rss::slotContentReplyFinished(void)
       QSqlDatabase::removeDatabase(connectionName);
       reply->deleteLater();
     }
-  else if(reply)
-    reply->deleteLater();
 }
 
 void spoton_rss::slotDeleteAllFeeds(void)
@@ -1464,16 +1464,7 @@ void spoton_rss::slotImport(void)
 					     &ok));
 
 	      if(ok)
-		{
-		  /*
-		  ** Do not import empty content.
-		  */
-
-		  if(bytes.isEmpty())
-		    ok = false;
-		  else
-		    list << bytes;
-		}
+		list << bytes;
 
 	      if(ok)
 		bytes = crypt->decryptedAfterAuthenticated
@@ -1547,22 +1538,8 @@ void spoton_rss::slotRefreshTimeline(void)
 
 	query.setForwardOnly(true);
 	str = "SELECT content, description, publication_date, "
-	  "title, url FROM rss_feeds_links ";
-
-	if(m_ui.timeline_filter->currentIndex() == 1)
-	  str.append("WHERE visited = 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 2)
-	  str.append("WHERE imported = 1 AND visited = 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 3)
-	  str.append("WHERE imported = 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 4)
-	  str.append("WHERE imported = 0 ");
-	else if(m_ui.timeline_filter->currentIndex() == 5)
-	  str.append("WHERE imported = 0 AND visited = 0 ");
-	else if(m_ui.timeline_filter->currentIndex() == 6)
-	  str.append("WHERE visited = 0 ");
-
-	str.append("ORDER BY publication_date DESC");
+	  "title, url FROM rss_feeds_links "
+	  "ORDER BY publication_date DESC";
 
 	if(query.exec(str))
 	  {
@@ -1585,8 +1562,6 @@ void spoton_rss::slotRefreshTimeline(void)
 		if(ok)
 		  if(bytes.size() > 0)
 		    contentAvailable = true;
-
-		Q_UNUSED(contentAvailable);
 
 		if(ok)
 		  bytes = crypt->decryptedAfterAuthenticated
@@ -1616,11 +1591,18 @@ void spoton_rss::slotRefreshTimeline(void)
 		  {
 		    QString html("");
 
-		    html.append("<a href=\"");
-		    html.append(list.value(2).toUrl().toEncoded().constData());
-		    html.append("\">");
-		    html.append(list.value(1).toString());
-		    html.append("</a>");
+		    if(contentAvailable)
+		      {
+			html.append("<a href=\"");
+			html.append(list.value(2).toUrl().toEncoded().
+				    constData());
+			html.append("\">");
+			html.append(list.value(1).toString());
+			html.append("</a>");
+		      }
+		    else
+		      html.append(list.value(1).toString());
+
 		    html.append("<br>");
 		    html.append
 		      (QString("<font color=\"green\" size=3>%1</font>").
@@ -1813,8 +1795,8 @@ void spoton_rss::slotStatisticsTimeout(void)
   statusBar()->showMessage(tr("0 RSS Feeds | "
 			      "0 Imported URLs | "
 			      "0 Not Imported URLs | "
-			      "0 Visited URLs | "
-			      "0 Not Visited URLs | "
+			      "0 Downloaded URLs | "
+			      "0 Not Downloaded URLs | "
 			      "0 Total URLs"));
 
   QList<QVariant> list;
@@ -1834,16 +1816,16 @@ void spoton_rss::slotStatisticsTimeout(void)
 	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds "
 		      "UNION "
 		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
-		      "WHERE imported <> 0 "
+		      "WHERE imported = 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'c' FROM rss_feeds_links "
-		      "WHERE imported = 0 "
+		      "WHERE imported <> 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
-		      "WHERE visited <> 0 "
+		      "WHERE visited = 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
-		      "WHERE visited = 0 "
+		      "WHERE visited <> 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'f' FROM rss_feeds_links "
 		      "ORDER BY 2");
@@ -1858,8 +1840,8 @@ void spoton_rss::slotStatisticsTimeout(void)
 	  (tr("%1 RSS Feeds | "
 	      "%2 Imported URLs | "
 	      "%3 Not Imported URLs | "
-	      "%4 Visited URLs | "
-	      "%5 Not Visited URLs | "
+	      "%4 Downloaded URLs | "
+	      "%5 Not Downloaded URLs | "
 	      "%6 Total URLs").
 	   arg(locale.toString(counts.value(0))).
 	   arg(locale.toString(counts.value(1))).
@@ -1927,7 +1909,7 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
 
 	      if(ok)
 		pageViewer->setPage
-		  (QString::fromUtf8(qUncompress(content).constData()),
+		  (QString::fromUtf8(qUncompress(content)),
 		   url, query.value(0).toByteArray().length());
 	    }
       }

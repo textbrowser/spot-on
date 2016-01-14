@@ -127,14 +127,13 @@ void spoton::slotPrepareUrlDatabases(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
-  mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Please note that the database-preparation process may "
 		"require a considerable amount of time to complete. "
-		"The kernel and the RSS mechanism will be deactivated. "
+		"The RSS mechanism and the kernel will be deactivated. "
 		"Proceed?"));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -365,16 +364,15 @@ void spoton::slotDeleteAllUrls(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
-  mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to vacuum most of the "
 		"URL databases? Your credentials will also be removed. "
 		"The shared.db database will not be vacuumed. Please "
 		"note that the deletion process may require "
-		"a considerable amount of time to complete. The kernel and "
-		"the RSS mechanism will be deactivated."));
+		"a considerable amount of time to complete. The "
+		"RSS mechanism and the kernel will be deactivated."));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -416,16 +414,15 @@ void spoton::slotDropUrlTables(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
-  mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to drop most of the "
 		"URL databases? Your credentials will not be removed. "
 		"The shared.db database will not be removed. Please "
 		"note that the process may require "
-		"a considerable amount of time to complete. The kernel "
-		"and the RSS mechanism will be deactivated."));
+		"a considerable amount of time to complete. The "
+		"RSS mechanism and the kernel will be deactivated."));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -729,11 +726,10 @@ void spoton::slotImportUrls(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
-  mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Did you prepare your databases and distillers?"));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -1605,7 +1601,7 @@ void spoton::populateUrlDistillers(void)
 		{
 		  QComboBox *box = new QComboBox();
 		  QTableWidgetItem *item = new QTableWidgetItem
-		    (QString::fromUtf8(domain.constData()));
+		    (QString::fromUtf8(domain));
 
 		  box->addItem("accept");
 		  box->addItem("deny");
@@ -1802,9 +1798,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       QString str(url.toString().mid(url.toString().indexOf("%") + 1));
       QUrl original;
 
-      if(str.startsWith("253"))
+      if(str.startsWith("253")) // Encoded "%3".
 	str.remove(0, 3);
-      else if(str.startsWith("3"))
+      else if(str.startsWith("3")) // %3.
 	str.remove(0, 1);
 
       original = QUrl(str);
@@ -1923,7 +1919,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
 		if(ok)
 		  pageViewer->setPage
-		    (QString::fromUtf8(qUncompress(content).constData()),
+		    (QString::fromUtf8(qUncompress(content)),
 		     url, query.value(0).toByteArray().length());
 	      }
 
@@ -2166,24 +2162,23 @@ void spoton::slotCorrectUrlDatabases(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
   if(m_urlDatabase.driverName() == "QPSQL")
     mb.setText
-      (tr("The kernel must be deactivated. The database-correction process "
+      (tr("The database-correction process "
 	  "may require a considerable amount of time to complete. "
 	  "You may experience performance degradation upon completion. "
-	  "The RSS mechanism will also be deactivated. "
+	  "The RSS mechanism and the kernel will be deactivated. "
 	  "A brief report will be displayed after the process completes. "
 	  "Proceed?"));
   else
     mb.setText
-      (tr("The kernel must be deactivated. The database-correction process "
+      (tr("The database-correction process "
 	  "may require a considerable amount of time to complete. "
-	  "The RSS mechanism will also be deactivated. "
+	  "The RSS mechanism and the kernel will be deactivated. "
 	  "A brief report will be displayed after the process completes. "
 	  "Proceed?"));
 

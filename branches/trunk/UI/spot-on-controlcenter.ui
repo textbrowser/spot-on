@@ -4131,8 +4131,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4208,8 +4208,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>802</width>
-                 <height>603</height>
+                 <width>638</width>
+                 <height>620</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -8255,6 +8255,10 @@
    </property>
   </action>
   <action name="action_RSS">
+   <property name="icon">
+    <iconset resource="../Icons/icons.qrc">
+     <normaloff>:/generic/rss.png</normaloff>:/generic/rss.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;RSS</string>
    </property>
@@ -8264,6 +8268,11 @@
   </action>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
+  </customwidget>
   <customwidget>
    <class>spoton_textedit</class>
    <extends>QTextEdit</extends>
@@ -8279,11 +8288,6 @@
    <class>spoton_lineedit</class>
    <extends>QLineEdit</extends>
    <header>spot-on.h</header>
-  </customwidget>
-  <customwidget>
-   <class>spoton_textbrowser</class>
-   <extends>QTextBrowser</extends>
-   <header>spot-on-textbrowser.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

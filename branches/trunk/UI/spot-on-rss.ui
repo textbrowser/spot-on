@@ -212,22 +212,15 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QToolButton" name="action_menu">
-            <property name="toolTip">
-             <string>Context Menu</string>
-            </property>
+           <widget class="QCheckBox" name="activate">
             <property name="text">
-             <string>Context Menu Reflection</string>
+             <string>&amp;Activate</string>
             </property>
-            <property name="icon">
-             <iconset resource="../Icons/icons.qrc">
-              <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
-            </property>
-            <property name="popupMode">
-             <enum>QToolButton::MenuButtonPopup</enum>
-            </property>
-            <property name="autoRaise">
+            <property name="checkable">
              <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -258,32 +251,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="activate">
-            <property name="text">
-             <string>&amp;Activate</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="import_periodically">
-            <property name="text">
-             <string>&amp;Import Periodically</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -295,6 +262,26 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QToolButton" name="action_menu">
+            <property name="toolTip">
+             <string>Context Menu</string>
+            </property>
+            <property name="text">
+             <string>Context Menu Reflection</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../Icons/icons.qrc">
+              <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+            </property>
+            <property name="popupMode">
+             <enum>QToolButton::MenuButtonPopup</enum>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -434,45 +421,16 @@
            </spacer>
           </item>
           <item>
-           <widget class="QComboBox" name="timeline_filter">
-            <property name="sizeAdjustPolicy">
-             <enum>QComboBox::AdjustToContents</enum>
+           <widget class="QCheckBox" name="import_periodically">
+            <property name="text">
+             <string>&amp;Import Periodically</string>
             </property>
-            <item>
-             <property name="text">
-              <string>All</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Content Downloaded</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Content Downloaded and Imported</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Imported</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Not Imported</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Not Imported and Without Content</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Without Content</string>
-             </property>
-            </item>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
            </widget>
           </item>
           <item>
@@ -548,16 +506,15 @@
   <tabstop>proxyUsername</tabstop>
   <tabstop>proxyPassword</tabstop>
   <tabstop>save_proxy_settings</tabstop>
-  <tabstop>action_menu</tabstop>
-  <tabstop>download_interval</tabstop>
   <tabstop>activate</tabstop>
-  <tabstop>import_periodically</tabstop>
+  <tabstop>download_interval</tabstop>
+  <tabstop>action_menu</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>
   <tabstop>add</tabstop>
   <tabstop>timeline</tabstop>
   <tabstop>find</tabstop>
-  <tabstop>timeline_filter</tabstop>
+  <tabstop>import_periodically</tabstop>
   <tabstop>refresh_timeline</tabstop>
  </tabstops>
  <resources>

@@ -1254,6 +1254,7 @@ void spoton::slotLock(void)
   m_logViewer.close();
   m_optionsWindow->close();
   m_rosetta.close();
+  m_rss->close();
   m_starbeamAnalyzer->close();
   m_statisticsWindow->close();
   m_ui.tab->setCurrentIndex(m_ui.tab->count() - 1);
