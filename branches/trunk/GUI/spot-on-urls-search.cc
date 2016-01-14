@@ -426,7 +426,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append(" | <a href=\"");
 	      html.append(url.toEncoded().constData());
 	      html.append("\">");
-	      html.append(title);
+	      html.append(spoton_misc::removeSpecialHtmlTags(title));
 	      html.append("</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
@@ -448,7 +448,8 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 			  arg(url.toEncoded().constData()));
 	      html.append("<br>");
 	      html.append(QString("<font color=\"gray\" size=3>%1</font>").
-			  arg(description));
+			  arg(spoton_misc::
+			      removeSpecialHtmlTags(description)));
 	      html.append("<br>");
 	      html.append
 		(QString("<font color=\"gray\" size=3>%1 | %2 KiB</font>").

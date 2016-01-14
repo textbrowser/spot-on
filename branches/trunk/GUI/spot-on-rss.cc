@@ -1597,11 +1597,15 @@ void spoton_rss::slotRefreshTimeline(void)
 			html.append(list.value(2).toUrl().toEncoded().
 				    constData());
 			html.append("\">");
-			html.append(list.value(1).toString());
+			html.append
+			  (spoton_misc::
+			   removeSpecialHtmlTags(list.value(1).toString()));
 			html.append("</a>");
 		      }
 		    else
-		      html.append(list.value(1).toString());
+		      html.append
+			(spoton_misc::
+			 removeSpecialHtmlTags(list.value(1).toString()));
 
 		    html.append("<br>");
 		    html.append
@@ -1610,7 +1614,8 @@ void spoton_rss::slotRefreshTimeline(void)
 		    html.append("<br>");
 		    html.append
 		      (QString("<font color=\"gray\" size=3>%1</font>").
-		       arg(list.value(0).toString()));
+		       arg(spoton_misc::
+			   removeSpecialHtmlTags(list.value(0).toString())));
 		    html.append("<br>");
 		    html.append
 		      (QString("<font color=\"gray\" size=3>%1</font>").
@@ -1795,8 +1800,8 @@ void spoton_rss::slotStatisticsTimeout(void)
   statusBar()->showMessage(tr("0 RSS Feeds | "
 			      "0 Imported URLs | "
 			      "0 Not Imported URLs | "
-			      "0 Downloaded URLs | "
-			      "0 Not Downloaded URLs | "
+			      "0 Indexed URLs | "
+			      "0 Not Indexed URLs | "
 			      "0 Total URLs"));
 
   QList<QVariant> list;
@@ -1840,8 +1845,8 @@ void spoton_rss::slotStatisticsTimeout(void)
 	  (tr("%1 RSS Feeds | "
 	      "%2 Imported URLs | "
 	      "%3 Not Imported URLs | "
-	      "%4 Downloaded URLs | "
-	      "%5 Not Downloaded URLs | "
+	      "%4 Indexed URLs | "
+	      "%5 Not Indexed URLs | "
 	      "%6 Total URLs").
 	   arg(locale.toString(counts.value(0))).
 	   arg(locale.toString(counts.value(1))).

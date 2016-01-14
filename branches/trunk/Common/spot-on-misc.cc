@@ -5435,3 +5435,22 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 
   return ok;
 }
+
+QString spoton_misc::removeSpecialHtmlTags(const QString &t)
+{
+  QString text(t);
+  QStringList tags;
+
+  tags << "<b>";
+  tags << "</b>";
+  tags << "<i>";
+  tags << "</i>";
+  tags << "<br>";
+  tags << "<p>";
+  tags << "</p>";
+
+  for(int i = 0; i < tags.size(); i++)
+    text.remove(tags.at(i), Qt::CaseInsensitive);
+
+  return text;
+}
