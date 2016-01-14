@@ -300,10 +300,6 @@ void spoton_rss::importUrl(const QList<QVariant> &list)
 
 void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 {
-  /*
-  ** Only thread-safe logic please!
-  */
-
   if(data.isEmpty())
     return;
 
@@ -544,8 +540,14 @@ void spoton_rss::populateFeeds(void)
 		      QPixmap pixmap;
 
 		      pixmap.loadFromData(image);
-		      item->setIcon(pixmap);
+
+		      if(!pixmap.isNull())
+			item->setIcon(pixmap);
+		      else
+			item->setIcon(QIcon(":/generic/rss.png"));
 		    }
+		  else
+		    item->setIcon(QIcon(":/generic/rss.png"));
 		}
 
 	      item = new QTableWidgetItem(oid);
@@ -554,6 +556,8 @@ void spoton_rss::populateFeeds(void)
 	      row += 1;
 	    }
 
+	m_ui.feeds->resizeColumnToContents(0);
+	m_ui.feeds->resizeRowsToContents();
 	m_ui.feeds->setRowCount(row);
 	m_ui.feeds->setSortingEnabled(true);
       }

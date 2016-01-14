@@ -61,6 +61,24 @@ QString spoton_textbrowser::removeSpecial(const QString &text)
     while(pos >= 0);
   }
 
+  {
+    QRegExp rx
+      ("\\<img[^\\>]*\\s*=\\s*\'([^\']*)\'[^\\>]*\\>", Qt::CaseInsensitive);
+    int pos = 0;
+
+    do
+      {
+	while((pos = rx.indexIn(html, pos)) != -1)
+	  {
+	    html.remove(pos, rx.matchedLength());
+	    pos += rx.matchedLength();
+	  }
+
+	pos = rx.indexIn(html, 0);
+      }
+    while(pos >= 0);
+  }
+
   return html;
 }
 

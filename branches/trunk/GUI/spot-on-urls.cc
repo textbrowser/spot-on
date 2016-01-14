@@ -1799,23 +1799,16 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	}
 
       QByteArray message("sharelink_");
-#if QT_VERSION >= 0x050000
-      QUrl original(url.path().mid(url.path().indexOf('?') + 1));
+      QString str(url.toString().mid(url.toString().indexOf("%") + 1));
+      QUrl original;
 
-      url.setPath(url.path().mid(0, url.path().indexOf('?')));
-      message.append(url.toString());
-#else
-      QUrl original(url.encodedQueryItemValue("url"));
+      if(str.startsWith("253"))
+	str.remove(0, 3);
+      else if(str.startsWith("3"))
+	str.remove(0, 1);
 
-      url.removeEncodedQueryItem("url");
-      message.append
-	(url.toString().mid(0, url.toString().length() - 1)); /*
-							      ** Remove
-							      ** the
-							      ** question
-							      ** mark.
-							      */
-#endif
+      original = QUrl(str);
+      message.append(url.toString().mid(0, url.toString().indexOf("%")));
       message.append("\n");
 
       QMessageBox mb(this);
@@ -1874,23 +1867,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  return;
 	}
 
-      QString hash("");
-#if QT_VERSION >= 0x050000
-      QUrl original(url.path().mid(url.path().indexOf('?') + 1));
+      QString hash(url.toString());
 
-      url.setPath(url.path().mid(0, url.path().indexOf('?')));
-      hash = url.toString();
-#else
-      QUrl original(url.encodedQueryItemValue("url"));
-
-      url.removeEncodedQueryItem("url");
-      hash = url.toString().mid(0, url.toString().length() - 1); /*
-								 ** Remove
-								 ** the
-								 ** question
-								 ** mark.
-								 */
-#endif
       if(hash.startsWith("view-ftp:"))
 	hash.remove
 	  (0, static_cast<int> (qstrlen("view-ftp:")));
@@ -1903,6 +1881,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       else if(hash.startsWith("view-https:"))
 	hash.remove
 	  (0, static_cast<int> (qstrlen("view-https:")));
+
+      hash = hash.mid(0, hash.indexOf("%"));
 
       spoton_pageviewer *pageViewer = new spoton_pageviewer
 	(m_urlDatabase, hash, this);
