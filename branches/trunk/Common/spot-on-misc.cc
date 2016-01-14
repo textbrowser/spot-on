@@ -4105,6 +4105,12 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 			    const bool disable_synchronous_sqlite_writes,
 			    spoton_crypt *crypt)
 {
+  if(c.trimmed().isEmpty())
+    {
+      logError("spoton_misc::importUrl(): empty content.");
+      return false;
+    }
+
   if(!crypt)
     {
       logError
