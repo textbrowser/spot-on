@@ -330,26 +330,43 @@
           <property name="title">
            <string>Add Feed</string>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>&amp;Feed</string>
+            <widget class="QLabel" name="label_5">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
              </property>
-             <property name="buddy">
-              <cstring>new_feed</cstring>
+             <property name="text">
+              <string>Only RSS 2.0 is supported.</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="new_feed"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="add">
-             <property name="text">
-              <string>Add</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>&amp;Feed</string>
+               </property>
+               <property name="buddy">
+                <cstring>new_feed</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="new_feed"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="add">
+               <property name="text">
+                <string>Add</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>

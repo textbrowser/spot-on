@@ -247,6 +247,13 @@ void spoton_rss::importUrl(const QList<QVariant> &list)
   if(!crypt)
     return;
 
+  if(!(spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0))
+    return;
+
+  if(!(spoton::instance() ? spoton::instance()->urlDatabase() :
+       QSqlDatabase()).isOpen())
+    return;
+
   QSettings settings;
   bool imported = true;
 
