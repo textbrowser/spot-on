@@ -138,6 +138,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 #endif
   QMenu *menu = new QMenu(this);
 
+  menu->addAction(tr("Copy selected link."),
+		  this,
+		  SLOT(slotCopyFeedLink(void)));
+  menu->addSeparator();
   menu->addAction(tr("Delete all feeds."),
 		  this,
 		  SLOT(slotDeleteAllFeeds(void)));
@@ -1179,6 +1183,21 @@ void spoton_rss::slotContentReplyFinished(void)
     }
 }
 
+void spoton_rss::slotCopyFeedLink(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  QTableWidgetItem *item = m_ui.feeds->item(m_ui.feeds->currentRow(), 1);
+
+  if(!item)
+    return;
+
+  clipboard->setText(item->text());
+}
+
 void spoton_rss::slotDeleteAllFeeds(void)
 {
   QMessageBox mb(this);
@@ -1885,6 +1904,9 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 {
   QMenu menu(this);
 
+  menu.addAction(tr("Copy selected link."),
+		 this, SLOT(slotCopyFeedLink(void)));
+  menu.addSeparator();
   menu.addAction(tr("Delete all feeds."),
 		 this, SLOT(slotDeleteAllFeeds(void)));
   menu.addAction(tr("Delete selected feed."),
