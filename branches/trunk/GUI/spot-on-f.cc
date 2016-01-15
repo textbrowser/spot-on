@@ -925,15 +925,17 @@ void spoton::slotAllowFSRequest(bool state)
   if(!checkBox)
     return;
 
-  QSettings settings;
-
   if(checkBox == m_optionsUi.chat_fs_request)
     {
+      QSettings settings;
+
       m_settings["gui/allowChatFSRequest"] = state;
       settings.setValue("gui/allowChatFSRequest", state);
     }
   else if(checkBox == m_optionsUi.email_fs_request)
     {
+      QSettings settings;
+
       m_settings["gui/allowEmailFSRequest"] = state;
       settings.setValue("gui/allowEmailFSRequest", state);
     }
@@ -1811,6 +1813,7 @@ void spoton::slotShowRss(void)
   m_rss->activateWindow();
   m_rss->raise();
   m_rss->center(this);
+  m_rss->show();
 }
 
 spoton_crypt *spoton::urlCommonCrypt(void) const
@@ -1821,4 +1824,27 @@ spoton_crypt *spoton::urlCommonCrypt(void) const
 QSqlDatabase spoton::urlDatabase(void) const
 {
   return m_urlDatabase;
+}
+
+void spoton::slotMaximumUrlKeywordsChanged(int value)
+{
+  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
+
+  if(!spinBox)
+    return;
+
+  if(spinBox == m_optionsUi.maximum_url_keywords_interface)
+    {
+      QSettings settings;
+
+      m_settings["gui/maximum_url_keywords_import_interface"] = value;
+      settings.setValue("gui/maximum_url_keywords_import_interface", value);
+    }
+  else if(spinBox == m_optionsUi.maximum_url_keywords_kernel)
+    {
+      QSettings settings;
+
+      m_settings["gui/maximum_url_keywords_import_kernel"] = value;
+      settings.setValue("gui/maximum_url_keywords_import_kernel", value);
+    }
 }

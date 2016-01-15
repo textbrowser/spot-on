@@ -3365,7 +3365,6 @@ void spoton_crypt::generateCertificate(RSA *rsa,
 QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 {
   QList<QSslCipher> list;
-  QSettings settings;
   QString controlString(scs.trimmed());
   QStringList protocols;
   SSL *ssl = 0;
@@ -3374,10 +3373,14 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
   int index = 0;
 
   if(controlString.isEmpty())
-    controlString = settings.value
-      ("gui/sslControlString",
-       "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH").
-      toString().trimmed();
+    {
+      QSettings settings;
+
+      controlString = settings.value
+	("gui/sslControlString",
+	 "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH").
+	toString().trimmed();
+    }
 
   protocols << "TlsV1_2"
 	    << "TlsV1_1"

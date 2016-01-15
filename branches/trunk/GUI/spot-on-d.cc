@@ -2393,19 +2393,25 @@ void spoton::slotMosaicLocked(bool state)
 void spoton::slotUpdateSpinBoxChanged(double value)
 {
   QDoubleSpinBox *doubleSpinBox = qobject_cast<QDoubleSpinBox *> (sender());
-  QSettings settings;
+
+  if(!doubleSpinBox)
+    return;
 
   if(value < 0.50)
     value = 3.50;
 
   if(doubleSpinBox == m_optionsUi.chatUpdateInterval)
     {
+      QSettings settings;
+
       m_participantsUpdateTimer.setInterval(static_cast<int> (1000 * value));
       m_settings["gui/participantsUpdateTimer"] = value;
       settings.setValue("gui/participantsUpdateTimer", value);
     }
   else if(doubleSpinBox == m_optionsUi.kernelCacheInterval)
     {
+      QSettings settings;
+
       if(value < 5.00)
 	value = 15.00;
 
@@ -2414,24 +2420,32 @@ void spoton::slotUpdateSpinBoxChanged(double value)
     }
   else if(doubleSpinBox == m_optionsUi.kernelUpdateInterval)
     {
+      QSettings settings;
+
       m_kernelUpdateTimer.setInterval(static_cast<int> (1000 * value));
       m_settings["gui/kernelUpdateTimer"] = value;
       settings.setValue("gui/kernelUpdateTimer", value);
     }
   else if(doubleSpinBox == m_optionsUi.listenersUpdateInterval)
     {
+      QSettings settings;
+
       m_listenersUpdateTimer.setInterval(static_cast<int> (1000 * value));
       m_settings["gui/listenersUpdateTimer"] = value;
       settings.setValue("gui/listenersUpdateTimer", value);
     }
   else if(doubleSpinBox == m_optionsUi.neighborsUpdateInterval)
     {
+      QSettings settings;
+
       m_neighborsUpdateTimer.setInterval(static_cast<int> (1000 * value));
       m_settings["gui/neighborsUpdateTimer"] = value;
       settings.setValue("gui/neighborsUpdateTimer", value);
     }
   else if(doubleSpinBox == m_optionsUi.starbeamUpdateInterval)
     {
+      QSettings settings;
+
       m_starbeamUpdateTimer.setInterval(static_cast<int> (1000 * value));
       m_settings["gui/starbeamUpdateTimer"] = value;
       settings.setValue("gui/starbeamUpdateTimer", value);

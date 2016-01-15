@@ -1865,9 +1865,14 @@ void spoton_kernel::importUrls(void)
 	      }
 
 	    if(ok)
-	      if(spoton_misc::importUrl(content, description, title, url, db,
-					spoton_common::
-					MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
+	      if(spoton_misc::importUrl(content,
+					description,
+					title,
+					url,
+					db,
+					setting("gui/maximum_url_keywords_"
+						"import_kernel",
+						50).toInt(),
 					setting("gui/disable_kernel_"
 						"synchronous_sqlite_url_"
 						"download",

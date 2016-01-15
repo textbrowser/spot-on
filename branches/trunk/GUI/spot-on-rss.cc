@@ -76,6 +76,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.clear_errors,
+	  SIGNAL(clicked(void)),
+	  m_ui.errors,
+	  SLOT(clear(void)));
   connect(m_ui.download_interval,
 	  SIGNAL(valueChanged(double)),
 	  this,
@@ -96,6 +100,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotActivateImport(bool)));
+  connect(m_ui.maximum_keywords,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotMaximumKeywordsChanged(int)));
   connect(m_ui.new_feed,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -144,27 +152,38 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   setWindowTitle(tr("%1: RSS").arg(SPOTON_APPLICATION_NAME));
 
   QSettings settings;
-  bool state = false;
-  double value = 1.50;
+  double dvalue = 0.0;
+  int index = qBound(0,
+		     settings.value("gui/rss_last_tab", 0).toInt(),
+		     m_ui.tab->count());
+  int ivalue = 0;
 
-  state = settings.value("gui/rss_download_activate", false).toBool();
-  value = qBound(m_ui.download_interval->minimum(),
-		 settings.value("gui/rss_download_interval").toDouble(),
-		 m_ui.download_interval->maximum());
+  m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
+					   false).toBool());
+  dvalue = qBound
+    (m_ui.download_interval->minimum(),
+     settings.value("gui/rss_download_interval", 1.50).toDouble(),
+     m_ui.download_interval->maximum());
+  m_ui.download_interval->setValue(dvalue);
+  m_ui.import_periodically->setChecked
+    (settings.value("gui/rss_import_activate", false).toBool());
+  ivalue = qBound(m_ui.maximum_keywords->minimum(),
+		  settings.value("gui/rss_maximum_keywords", 50).toInt(),
+		  m_ui.maximum_keywords->maximum());
+  m_ui.maximum_keywords->setValue(ivalue);
+  m_ui.tab->setCurrentIndex(index);
   m_downloadContentTimer.setInterval(5 * 1000); // Every five seconds.
-  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
+  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * ivalue));
   m_importTimer.setInterval(2500);
   m_statisticsTimer.start(2500);
 
-  if(state)
+  if(m_ui.activate->isChecked())
     {
       m_downloadContentTimer.start();
       m_downloadTimer.start();
     }
 
-  state = settings.value("gui/rss_import_activate", false).toBool();
-
-  if(state)
+  if(m_ui.import_periodically->isChecked())
     m_importTimer.start();
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -263,7 +282,7 @@ void spoton_rss::importUrl(const QList<QVariant> &list)
      list.value(2).toString().toUtf8(), // Title
      list.value(3).toUrl().toEncoded(), // URL
      spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
-     spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
+     m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 		    false).toBool(),
      spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0);
@@ -466,7 +485,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
      title.toUtf8(),
      url.toEncoded(),
      spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
-     spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION,
+     m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 		    false).toBool(),
      spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0);
@@ -629,29 +648,8 @@ void spoton_rss::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_rss::restoreWidgets(void)
+void spoton_rss::prepareProxy(void)
 {
-  QNetworkProxy proxy;
-
-  proxy.setType(QNetworkProxy::NoProxy);
-  m_networkAccessManager.setProxy(proxy);
-
-  QSettings settings;
-  double value = 1.50;
-  int index = qBound(0,
-		     settings.value("gui/rss_last_tab", 0).toInt(),
-		     m_ui.tab->count());
-
-  m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
-					   false).toBool());
-  value = qBound(m_ui.download_interval->minimum(),
-		 settings.value("gui/rss_download_interval", 1.50).toDouble(),
-		 m_ui.download_interval->maximum());
-  m_ui.download_interval->setValue(value);
-  m_ui.import_periodically->setChecked
-    (settings.value("gui/rss_import_activate", false).toBool());
-  m_ui.tab->setCurrentIndex(index);
-
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
@@ -952,7 +950,6 @@ void spoton_rss::show(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   populateFeeds();
-  restoreWidgets();
   QApplication::restoreOverrideCursor();
   QMainWindow::show();
 }
@@ -1123,7 +1120,34 @@ void spoton_rss::slotContentReplyFinished(void)
 					     &ok).toBase64());
 
 	    if(data.isEmpty() || reply->error() != QNetworkReply::NoError)
-	      query.bindValue(1, 2); // Error.
+	      {
+		query.bindValue(1, 2); // Error.
+
+		if(data.isEmpty())
+		  {
+		    QString error
+		      (QString("The URL %1 does not have data.").
+		       arg(reply->url().toEncoded().constData()));
+
+		    m_ui.errors->append
+		      (QDateTime::currentDateTime().toString(Qt::ISODate));
+		    m_ui.errors->append(error);
+		    spoton_misc::logError(error);
+		  }
+		else
+		  {
+		    QString error
+		      (QString("The URL %1 cannot be indexed "
+			       "(%2).").
+		       arg(reply->url().toEncoded().constData()).
+		       arg(reply->errorString()));
+
+		    m_ui.errors->append
+		      (QDateTime::currentDateTime().toString(Qt::ISODate));
+		    m_ui.errors->append(error);
+		    spoton_misc::logError(error);
+		  }
+	      }
 	    else
 	      query.bindValue(1, 1);
 
@@ -1390,7 +1414,16 @@ void spoton_rss::slotFeedReplyFinished(void)
       reply->deleteLater();
     }
   else if(reply)
-    reply->deleteLater();
+    {
+      QString error
+	(QString("The URL %1 could not be accessed correctly (%2).").
+	 arg(reply->url().toEncoded().constData()).arg(reply->errorString()));
+
+      m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
+      m_ui.errors->append(error);
+      reply->deleteLater();
+      spoton_misc::logError(error);
+    }
 
   if(!m_feedDownloadContent.isEmpty())
     if(!url.isEmpty() && url.isValid())
@@ -1512,6 +1545,13 @@ void spoton_rss::slotImport(void)
 
   if(!list.isEmpty())
     importUrl(list);
+}
+
+void spoton_rss::slotMaximumKeywordsChanged(int value)
+{
+  QSettings settings;
+
+  settings.setValue("gui/rss_maximum_keywords", value);
 }
 
 void spoton_rss::slotPopulateFeeds(void)

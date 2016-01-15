@@ -42,6 +42,7 @@ class spoton_rss: public QMainWindow
   ~spoton_rss();
   void center(QWidget *parent);
   void deactivate(void);
+  void prepareProxy(void);
   void show(void);
 
  private:
@@ -66,7 +67,6 @@ class spoton_rss: public QMainWindow
 		       const QUrl &url);
   void populateFeeds(void);
   void prepareDatabases(void);
-  void restoreWidgets(void);
   void saveFeedData(const QString &description,
 		    const QString &link,
 		    const QString &title);
@@ -94,6 +94,7 @@ class spoton_rss: public QMainWindow
   void slotFind(void);
   void slotFindInitialize(void);
   void slotImport(void);
+  void slotMaximumKeywordsChanged(int value);
   void slotPopulateFeeds(void);
   void slotRefreshTimeline(void);
   void slotSaveProxy(void);

@@ -773,6 +773,7 @@ class spoton: public QMainWindow
   void slotMaxMosaicSize(int value);
   void slotMaximumClientsChanged(int index);
   void slotMaximumEmailFileSizeChanged(int value);
+  void slotMaximumUrlKeywordsChanged(int value);
 #if QT_VERSION >= 0x050000
   void slotMediaError(QMediaPlayer::Error error);
   void slotMediaStatusChanged(QMediaPlayer::MediaStatus status);

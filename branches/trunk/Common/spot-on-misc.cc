@@ -711,13 +711,20 @@ QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
   QHostAddress address(ipAddress);
-  QSettings settings;
   QString fileName("");
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
-    fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
+    {
+      QSettings settings;
+
+      fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
+    }
   else if(address.protocol() == QAbstractSocket::IPv6Protocol)
-    fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+    {
+      QSettings settings;
+
+      fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+    }
   else
     return QString("Unknown");
 
@@ -754,13 +761,20 @@ QString spoton_misc::countryNameFromIPAddress(const QString &ipAddress)
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
   QHostAddress address(ipAddress);
-  QSettings settings;
   QString fileName("");
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
-    fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
+    {
+      QSettings settings;
+
+      fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
+    }
   else if(address.protocol() == QAbstractSocket::IPv6Protocol)
-    fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+    {
+      QSettings settings;
+
+      fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+    }
   else
     return QString("Unknown");
 
@@ -2130,6 +2144,24 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 10;
 
   settings.insert("gui/limitConnections", integer);
+  integer = qAbs(settings.value("gui/maximum_url_keywords_import_interface",
+				50).toInt(&ok));
+
+  if(!ok)
+    integer = 50;
+  else if(integer < 50 || integer > 65535)
+    integer = 50;
+
+  settings.insert("gui/maximum_url_keywords_import_interface", integer);
+  integer = qAbs(settings.value("gui/maximum_url_keywords_import_kernel",
+				50).toInt(&ok));
+
+  if(!ok)
+    integer = 50;
+  else if(integer < 50 || integer > 65535)
+    integer = 50;
+
+  settings.insert("gui/maximum_url_keywords_import_kernel", integer);
   integer = qAbs(settings.value("gui/maximumEmailFileSize", 100).toInt(&ok));
 
   if(!ok)
@@ -4424,7 +4456,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       QHash<QString, char> discovered;
       QSqlQuery query(db);
       QStringList keywords
-	(QString::fromUtf8(all_keywords.toLower().constData()).
+	(QString::fromUtf8(all_keywords.toLower()).
 	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
       int count = 0;
 

@@ -82,7 +82,6 @@ const int spoton_common::LANE_WIDTH_MINIMUM;
 const int spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST;
 const int spoton_common::MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS;
-const int spoton_common::MAXIMUM_KEYWORDS_IN_URL_DESCRIPTION;
 const int spoton_common::MOSAIC_SIZE;
 const int spoton_common::NAME_MAXIMUM_LENGTH;
 const int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
@@ -1588,6 +1587,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotChatTimestamps(bool)));
+  connect(m_optionsUi.maximum_url_keywords_interface,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotMaximumUrlKeywordsChanged(int)));
+  connect(m_optionsUi.maximum_url_keywords_kernel,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotMaximumUrlKeywordsChanged(int)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1796,6 +1803,11 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/starbeamUpdateTimer", 3.50).toDouble());
   m_optionsUi.searchResultsPerPage->setValue
     (m_settings.value("gui/searchResultsPerPage", 10).toInt());
+  m_optionsUi.maximum_url_keywords_interface->setValue
+    (m_settings.value("gui/maximum_url_keywords_import_interface", 50).
+     toInt());
+  m_optionsUi.maximum_url_keywords_kernel->setValue
+    (m_settings.value("gui/maximum_url_keywords_import_kernel", 50).toInt());
   m_kernelUpdateTimer.start
     (static_cast<int> (1000 * m_optionsUi.kernelUpdateInterval->value()));
   m_listenersUpdateTimer.start
@@ -6266,6 +6278,7 @@ void spoton::slotValidatePassphrase(void)
 	    prepareUrlContainers();
 	    prepareUrlLabels();
 	    sendBuzzKeysToKernel();
+	    m_rss->prepareProxy();
 	    m_ui.tab->setCurrentIndex
 	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
 	       toInt());
