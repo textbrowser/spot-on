@@ -112,6 +112,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.purge_days,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotPurgeDaysChanged(int)));
   connect(m_ui.refresh_timeline,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -184,6 +188,11 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
      settings.value("gui/rss_download_interval", 1.50).toDouble(),
      m_ui.download_interval->maximum());
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * dvalue));
+  ivalue = qBound
+    (m_ui.purge_days->minimum(),
+     settings.value("gui/rss_purge_days", 1).toInt(),
+     m_ui.purge_days->maximum());
+  m_ui.purge_days->setValue(ivalue);
   m_importTimer.setInterval(2500);
   m_statisticsTimer.start(2500);
 
@@ -1674,6 +1683,32 @@ void spoton_rss::slotPopulateFeeds(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   populateFeeds();
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_rss::slotPurge(void)
+{
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to purge links?"))
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+}
+
+void spoton_rss::slotPurgeDaysChanged(int value)
+{
+  QSettings settings;
+
+  settings.setValue("gui/rss_purge_days", value);
 }
 
 void spoton_rss::slotRefreshTimeline(void)
