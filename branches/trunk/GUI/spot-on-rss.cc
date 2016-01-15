@@ -1696,7 +1696,7 @@ void spoton_rss::slotPurge(void)
 #endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to purge links?"))
+  mb.setText(tr("Are you sure that you wish to purge links?"));
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
