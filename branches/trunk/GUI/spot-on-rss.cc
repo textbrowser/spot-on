@@ -331,6 +331,17 @@ void spoton_rss::importUrl(const QList<QVariant> &list)
   }
 }
 
+void spoton_rss::logError(const QString &error)
+{
+  if(error.trimmed().isEmpty())
+    return;
+
+  m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
+  m_ui.errors->append(error.trimmed());
+  m_ui.errors->append("");
+  spoton_misc::logError(error);
+}
+
 void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 {
   if(data.isEmpty())
@@ -1135,11 +1146,7 @@ void spoton_rss::slotContentReplyFinished(void)
 		      (QString("The URL %1 does not have data.").
 		       arg(reply->url().toEncoded().constData()));
 
-		    m_ui.errors->append
-		      (QDateTime::currentDateTime().toString(Qt::ISODate));
-		    m_ui.errors->append(error);
-		    m_ui.errors->append("");
-		    spoton_misc::logError(error);
+		    logError(error);
 		  }
 		else
 		  {
@@ -1149,11 +1156,7 @@ void spoton_rss::slotContentReplyFinished(void)
 		       arg(reply->url().toEncoded().constData()).
 		       arg(reply->errorString()));
 
-		    m_ui.errors->append
-		      (QDateTime::currentDateTime().toString(Qt::ISODate));
-		    m_ui.errors->append(error);
-		    m_ui.errors->append("");
-		    spoton_misc::logError(error);
+		    logError(error);
 		  }
 	      }
 	    else
@@ -1426,10 +1429,7 @@ void spoton_rss::slotFeedReplyError(QNetworkReply::NetworkError code)
   else
     error = QString("A QNetworkReply error (%1) occurred.").arg(code);
 
-  m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
-  m_ui.errors->append(error);
-  m_ui.errors->append("");
-  spoton_misc::logError(error);
+  logError(error);
 }
 
 void spoton_rss::slotFeedReplyFinished(void)
@@ -1455,11 +1455,7 @@ void spoton_rss::slotFeedReplyFinished(void)
 	       arg(url.toEncoded().constData()).
 	       arg(redirectUrl.toEncoded().constData()));
 
-	    m_ui.errors->append(QDateTime::currentDateTime().
-				toString(Qt::ISODate));
-	    m_ui.errors->append(error);
-	    m_ui.errors->append("");
-	    spoton_misc::logError(error);
+	    logError(error);
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
 	    reply->ignoreSslErrors();
 	    connect(reply,
@@ -1479,11 +1475,8 @@ void spoton_rss::slotFeedReplyFinished(void)
 	(QString("The URL %1 could not be accessed correctly (%2).").
 	 arg(reply->url().toEncoded().constData()).arg(reply->errorString()));
 
-      m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
-      m_ui.errors->append(error);
-      m_ui.errors->append("");
+      logError(error);
       reply->deleteLater();
-      spoton_misc::logError(error);
     }
 
   if(!m_feedDownloadContent.isEmpty())
