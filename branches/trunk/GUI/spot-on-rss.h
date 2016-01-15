@@ -29,6 +29,7 @@
 #define _spoton_rss_h_
 
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QTimer>
 
 #include "ui_spot-on-rss.h"
@@ -89,6 +90,7 @@ class spoton_rss: public QMainWindow
   void slotDownloadIntervalChanged(double value);
   void slotDownloadTimeout(void);
   void slotFeedImageReplyFinished(void);
+  void slotFeedReplyError(QNetworkReply::NetworkError code);
   void slotFeedReplyFinished(void);
   void slotFeedReplyReadyRead(void);
   void slotFind(void);

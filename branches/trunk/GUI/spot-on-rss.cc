@@ -98,6 +98,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SLOT(slotFind(void)));
   connect(m_ui.import_periodically,
 	  SIGNAL(toggled(bool)),
+	  m_ui.import,
+	  SLOT(setDisabled(bool)));
+  connect(m_ui.import_periodically,
+	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotActivateImport(bool)));
   connect(m_ui.maximum_keywords,
@@ -153,27 +157,29 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 
   QSettings settings;
   double dvalue = 0.0;
-  int index = qBound(0,
-		     settings.value("gui/rss_last_tab", 0).toInt(),
-		     m_ui.tab->count());
+  int index = 0;
   int ivalue = 0;
 
   m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
 					   false).toBool());
-  dvalue = qBound
-    (m_ui.download_interval->minimum(),
-     settings.value("gui/rss_download_interval", 1.50).toDouble(),
-     m_ui.download_interval->maximum());
   m_ui.download_interval->setValue(dvalue);
   m_ui.import_periodically->setChecked
     (settings.value("gui/rss_import_activate", false).toBool());
+  m_ui.import->setEnabled(!m_ui.import_periodically->isChecked());
   ivalue = qBound(m_ui.maximum_keywords->minimum(),
 		  settings.value("gui/rss_maximum_keywords", 50).toInt(),
 		  m_ui.maximum_keywords->maximum());
   m_ui.maximum_keywords->setValue(ivalue);
+  index = qBound(0,
+		 settings.value("gui/rss_last_tab", 0).toInt(),
+		 m_ui.tab->count());
   m_ui.tab->setCurrentIndex(index);
   m_downloadContentTimer.setInterval(5 * 1000); // Every five seconds.
-  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * ivalue));
+  dvalue = qBound
+    (m_ui.download_interval->minimum(),
+     settings.value("gui/rss_download_interval", 1.50).toDouble(),
+     m_ui.download_interval->maximum());
+  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * dvalue));
   m_importTimer.setInterval(2500);
   m_statisticsTimer.start(2500);
 
@@ -1132,6 +1138,7 @@ void spoton_rss::slotContentReplyFinished(void)
 		    m_ui.errors->append
 		      (QDateTime::currentDateTime().toString(Qt::ISODate));
 		    m_ui.errors->append(error);
+		    m_ui.errors->append("");
 		    spoton_misc::logError(error);
 		  }
 		else
@@ -1145,6 +1152,7 @@ void spoton_rss::slotContentReplyFinished(void)
 		    m_ui.errors->append
 		      (QDateTime::currentDateTime().toString(Qt::ISODate));
 		    m_ui.errors->append(error);
+		    m_ui.errors->append("");
 		    spoton_misc::logError(error);
 		  }
 	      }
@@ -1342,12 +1350,6 @@ void spoton_rss::slotDownloadTimeout(void)
 {
   m_feedDownloadContent.clear();
 
-  QNetworkReply *reply = m_networkAccessManager.findChild
-    <QNetworkReply *> ();
-
-  if(reply)
-    reply->deleteLater();
-
   if(m_ui.feeds->rowCount() == 0)
     return;
 
@@ -1364,8 +1366,14 @@ void spoton_rss::slotDownloadTimeout(void)
       return;
     }
 
-  reply = m_networkAccessManager.get(QNetworkRequest(item->text()));
+  QNetworkReply *reply = m_networkAccessManager.get
+    (QNetworkRequest(item->text()));
+
   reply->ignoreSslErrors();
+  connect(reply,
+	  SIGNAL(error(QNetworkReply::NetworkError)),
+	  this,
+	  SLOT(slotFeedReplyError(QNetworkReply::NetworkError)));
   connect(reply,
 	  SIGNAL(finished(void)),
 	  this,
@@ -1403,6 +1411,27 @@ void spoton_rss::slotFeedImageReplyFinished(void)
     reply->deleteLater();
 }
 
+void spoton_rss::slotFeedReplyError(QNetworkReply::NetworkError code)
+{
+  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+  QString error("");
+
+  if(reply)
+    {
+      error = QString("The URL %1 generated an error (%2).").
+	arg(reply->url().toEncoded().constData()).
+	arg(reply->errorString());
+      reply->deleteLater();
+    }
+  else
+    error = QString("A QNetworkReply error (%1) occurred.").arg(code);
+
+  m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
+  m_ui.errors->append(error);
+  m_ui.errors->append("");
+  spoton_misc::logError(error);
+}
+
 void spoton_rss::slotFeedReplyFinished(void)
 {
   QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
@@ -1411,7 +1440,38 @@ void spoton_rss::slotFeedReplyFinished(void)
   if(reply && reply->error() == QNetworkReply::NoError)
     {
       url = reply->url();
+
+      QUrl redirectUrl
+	(reply->attribute(QNetworkRequest::RedirectionTargetAttribute).
+	 toUrl());
+
       reply->deleteLater();
+
+      if(!redirectUrl.isEmpty())
+	if(redirectUrl.isValid())
+	  {
+	    QString error
+	      (QString("The URL %1 is being forwarded to %2.").
+	       arg(url.toEncoded().constData()).
+	       arg(redirectUrl.toEncoded().constData()));
+
+	    m_ui.errors->append(QDateTime::currentDateTime().
+				toString(Qt::ISODate));
+	    m_ui.errors->append(error);
+	    m_ui.errors->append("");
+	    spoton_misc::logError(error);
+	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
+	    reply->ignoreSslErrors();
+	    connect(reply,
+		    SIGNAL(finished(void)),
+		    this,
+		    SLOT(slotFeedReplyFinished(void)));
+	    connect(reply,
+		    SIGNAL(readyRead(void)),
+		    this,
+		    SLOT(slotFeedReplyReadyRead(void)));
+	    url = QUrl();
+	  }
     }
   else if(reply)
     {
@@ -1421,6 +1481,7 @@ void spoton_rss::slotFeedReplyFinished(void)
 
       m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
       m_ui.errors->append(error);
+      m_ui.errors->append("");
       reply->deleteLater();
       spoton_misc::logError(error);
     }
@@ -1929,7 +1990,7 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
 
   QString connectionName("");
   spoton_pageviewer *pageViewer = new spoton_pageviewer
-    (QSqlDatabase(), QString(), this);
+    (QSqlDatabase(), QString(), 0);
 
   pageViewer->setPage(0, QUrl("http://127.0.0.1"), 0);
 

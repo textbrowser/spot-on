@@ -486,7 +486,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="import_2">
+           <widget class="QPushButton" name="import">
             <property name="text">
              <string>Import</string>
             </property>
@@ -613,7 +613,7 @@
   <tabstop>find</tabstop>
   <tabstop>import_periodically</tabstop>
   <tabstop>maximum_keywords</tabstop>
-  <tabstop>import_2</tabstop>
+  <tabstop>import</tabstop>
   <tabstop>refresh_timeline</tabstop>
   <tabstop>errors</tabstop>
   <tabstop>clear_errors</tabstop>

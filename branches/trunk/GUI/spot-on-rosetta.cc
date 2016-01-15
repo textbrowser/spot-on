@@ -642,10 +642,10 @@ void spoton_rosetta::slotConvert(void)
       QByteArray publicKey;
       QByteArray signature;
       QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+      QScopedPointer<spoton_crypt> crypt;
       QString error("");
       bool ok = true;
       size_t encryptionKeyLength = 0;
-      spoton_crypt *crypt = 0;
 
       if(ui.contacts->itemData(ui.contacts->currentIndex()).isNull())
 	{
@@ -698,14 +698,14 @@ void spoton_rosetta::slotConvert(void)
 	  goto done_label1;
 	}
 
-      crypt = new spoton_crypt(ui.cipher->currentText(),
-			       ui.hash->currentText(),
-			       QByteArray(),
-			       encryptionKey,
-			       hashKey,
-			       0,
-			       0,
-			       "");
+      crypt.reset(new spoton_crypt(ui.cipher->currentText(),
+				   ui.hash->currentText(),
+				   QByteArray(),
+				   encryptionKey,
+				   hashKey,
+				   0,
+				   0,
+				   ""));
 
       if(ui.sign->isChecked())
 	{
@@ -745,7 +745,7 @@ void spoton_rosetta::slotConvert(void)
 	  messageCode.toBase64();
 
       QApplication::restoreOverrideCursor();
-      delete crypt;
+      crypt.reset();
 
       if(!ok)
 	if(error.isEmpty())
@@ -780,9 +780,9 @@ void spoton_rosetta::slotConvert(void)
       QByteArray signature;
       QDataStream stream(&keyInformation, QIODevice::ReadOnly);
       QList<QByteArray> list;
+      QScopedPointer<spoton_crypt> crypt;
       QString error("");
       bool ok = true;
-      spoton_crypt *crypt = 0;
 
       if(data.isEmpty())
 	{
@@ -864,13 +864,13 @@ void spoton_rosetta::slotConvert(void)
 	    }
 	}
 
-      crypt = new spoton_crypt(cipherType,
-			       "",
-			       QByteArray(),
-			       encryptionKey,
-			       0,
-			       0,
-			       "");
+      crypt.reset(new spoton_crypt(cipherType,
+				   "",
+				   QByteArray(),
+				   encryptionKey,
+				   0,
+				   0,
+				   ""));
 
       if(ok)
 	data = crypt->decrypted(data, &ok);
@@ -908,7 +908,7 @@ void spoton_rosetta::slotConvert(void)
 	    }
 	}
 
-      delete crypt;
+      crypt.reset();
 
       if(ok)
 	{

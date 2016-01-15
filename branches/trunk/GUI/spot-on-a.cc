@@ -311,9 +311,9 @@ spoton::spoton(void):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_neighborsLastModificationTime = QDateTime();
   m_participantsLastModificationTime = QDateTime();
-  m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, this);
-  m_rss = new spoton_rss(this);
-  m_starbeamAnalyzer = new spoton_starbeamanalyzer(this);
+  m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, 0);
+  m_rss = new spoton_rss(0);
+  m_starbeamAnalyzer = new spoton_starbeamanalyzer(0);
   m_starbeamReceivedModel = new QStandardItemModel(this);
   m_statisticsModel = new QStandardItemModel(this);
 
@@ -417,8 +417,8 @@ spoton::spoton(void):QMainWindow()
 #if QT_VERSION >= 0x040700
   m_ui.search->setPlaceholderText(tr("Search"));
 #endif
-  m_optionsWindow = new QMainWindow(this);
-  m_statisticsWindow = new QMainWindow(this);
+  m_optionsWindow = new QMainWindow(0);
+  m_statisticsWindow = new QMainWindow(0);
   m_optionsUi.setupUi(m_optionsWindow);
   m_statisticsUi.setupUi(m_statisticsWindow);
   m_statisticsUi.view->setModel(m_statisticsModel);
@@ -2712,8 +2712,11 @@ void spoton::cleanup(void)
     }
 
   m_crypts.clear();
+  m_echoKeyShare->deleteLater();
+  m_optionsWindow->deleteLater();
   m_rss->deleteLater();
   m_starbeamAnalyzer->deleteLater();
+  m_statisticsWindow->deleteLater();
   spoton_crypt::terminate();
   QApplication::instance()->quit();
 }
