@@ -619,58 +619,11 @@ void spoton_rss::populateFeeds(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_rss::prepareDatabases(void)
+void spoton_rss::prepareAfterAuthentication(void)
 {
-  QString connectionName("");
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  populateFeeds();
 
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds ("
-		   "echo TEXT NOT NULL, "
-		   "feed TEXT NOT NULL, "
-		   "feed_description TEXT NOT NULL, "
-		   "feed_hash TEXT NOT NULL PRIMARY KEY, "
-		   "feed_image BLOB NOT NULL, "
-		   "feed_title TEXT NOT NULL)");
-	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds_links ("
-		   "content TEXT NOT NULL, "
-		   "description TEXT NOT NULL, "
-		   "imported INTEGER NOT NULL DEFAULT 0, "
-		   "insert_date TEXT NOT NULL, "
-		   "publication_date TEXT NOT NULL, "
-		   "title TEXT NOT NULL, "
-		   "url TEXT NOT NULL, "
-		   "url_hash TEXT NOT NULL PRIMARY KEY, "
-		   "visited INTEGER NOT NULL DEFAULT 0)");
-	query.exec("CREATE TABLE IF NOT EXISTS rss_proxy ("
-		   "enabled TEXT NOT NULL, "
-		   "hostname TEXT NOT NULL, "
-		   "password TEXT NOT NULL, "
-		   "port TEXT NOT NULL, "
-		   "type TEXT NOT NULL, "
-		   "username TEXT NOT NULL)");
-	query.exec("CREATE TRIGGER IF NOT EXISTS rss_proxy_trigger "
-		   "BEFORE INSERT ON rss_proxy "
-		   "BEGIN "
-		   "DELETE FROM rss_proxy; "
-		   "END");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_rss::prepareProxy(void)
-{
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
@@ -792,6 +745,58 @@ void spoton_rss::prepareProxy(void)
 
       QSqlDatabase::removeDatabase(connectionName);
     }
+
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_rss::prepareDatabases(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds ("
+		   "echo TEXT NOT NULL, "
+		   "feed TEXT NOT NULL, "
+		   "feed_description TEXT NOT NULL, "
+		   "feed_hash TEXT NOT NULL PRIMARY KEY, "
+		   "feed_image BLOB NOT NULL, "
+		   "feed_title TEXT NOT NULL)");
+	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds_links ("
+		   "content TEXT NOT NULL, "
+		   "description TEXT NOT NULL, "
+		   "imported INTEGER NOT NULL DEFAULT 0, "
+		   "insert_date TEXT NOT NULL, "
+		   "publication_date TEXT NOT NULL, "
+		   "title TEXT NOT NULL, "
+		   "url TEXT NOT NULL, "
+		   "url_hash TEXT NOT NULL PRIMARY KEY, "
+		   "visited INTEGER NOT NULL DEFAULT 0)");
+	query.exec("CREATE TABLE IF NOT EXISTS rss_proxy ("
+		   "enabled TEXT NOT NULL, "
+		   "hostname TEXT NOT NULL, "
+		   "password TEXT NOT NULL, "
+		   "port TEXT NOT NULL, "
+		   "type TEXT NOT NULL, "
+		   "username TEXT NOT NULL)");
+	query.exec("CREATE TRIGGER IF NOT EXISTS rss_proxy_trigger "
+		   "BEFORE INSERT ON rss_proxy "
+		   "BEGIN "
+		   "DELETE FROM rss_proxy; "
+		   "END");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_rss::saveFeedData(const QString &d,
@@ -969,9 +974,6 @@ void spoton_rss::saveFeedLink(const QString &d,
 
 void spoton_rss::show(void)
 {
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  populateFeeds();
-  QApplication::restoreOverrideCursor();
   QMainWindow::show();
 }
 
@@ -1108,6 +1110,39 @@ void spoton_rss::slotContentReplyFinished(void)
 {
   QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
 
+  if(reply && reply->error() == QNetworkReply::NoError)
+    {
+      QUrl redirectUrl
+	(reply->attribute(QNetworkRequest::RedirectionTargetAttribute).
+	 toUrl());
+
+      if(!reply->attribute(QNetworkRequest::RedirectionTargetAttribute).
+	 isNull())
+	if(redirectUrl.isRelative())
+	  redirectUrl = reply->url().resolved(redirectUrl);
+
+      if(!redirectUrl.isEmpty())
+	if(redirectUrl.isValid())
+	  {
+	    QString error
+	      (QString("The URL %1 is being redirected to %2.").
+	       arg(reply->url().toEncoded().constData()).
+	       arg(redirectUrl.toEncoded().constData()));
+	    QUrl originalUrl(reply->property("original-url").toUrl());
+
+	    logError(error);
+	    reply->deleteLater();
+	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
+	    reply->ignoreSslErrors();
+	    reply->setProperty("original-url", originalUrl);
+	    connect(reply,
+		    SIGNAL(finished(void)),
+		    this,
+		    SLOT(slotContentReplyFinished(void)));
+	    return;
+	  }
+    }
+
   if(reply)
     {
       spoton_crypt *crypt = spoton::instance() ?
@@ -1168,8 +1203,9 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	    if(ok)
 	      query.bindValue
-		(2, crypt->keyedHash(reply->url().toEncoded(), &ok).
-		 toBase64());
+		(2, crypt->
+		 keyedHash(reply->property("original-url").toUrl().
+			   toEncoded(), &ok).toBase64());
 
 	    if(ok)
 	      query.exec();
@@ -1336,6 +1372,7 @@ void spoton_rss::slotDownloadContent(void)
       QNetworkReply *reply = m_networkAccessManager.get(QNetworkRequest(url));
 
       reply->ignoreSslErrors();
+      reply->setProperty("original-url", url);
       reply->setReadBufferSize(0);
       connect(reply,
 	      SIGNAL(finished(void)),
@@ -1464,13 +1501,18 @@ void spoton_rss::slotFeedReplyFinished(void)
 	(reply->attribute(QNetworkRequest::RedirectionTargetAttribute).
 	 toUrl());
 
+      if(!reply->attribute(QNetworkRequest::RedirectionTargetAttribute).
+	 isNull())
+	if(redirectUrl.isRelative())
+	  redirectUrl = url.resolved(redirectUrl);
+
       reply->deleteLater();
 
       if(!redirectUrl.isEmpty())
 	if(redirectUrl.isValid())
 	  {
 	    QString error
-	      (QString("The URL %1 is being forwarded to %2.").
+	      (QString("The feed URL %1 is being redirected to %2.").
 	       arg(url.toEncoded().constData()).
 	       arg(redirectUrl.toEncoded().constData()));
 

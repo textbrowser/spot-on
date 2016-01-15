@@ -6281,7 +6281,7 @@ void spoton::slotValidatePassphrase(void)
 	    prepareUrlContainers();
 	    prepareUrlLabels();
 	    sendBuzzKeysToKernel();
-	    m_rss->prepareProxy();
+	    m_rss->prepareAfterAuthentication();
 	    m_ui.tab->setCurrentIndex
 	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
 	       toInt());

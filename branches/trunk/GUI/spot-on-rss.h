@@ -43,7 +43,7 @@ class spoton_rss: public QMainWindow
   ~spoton_rss();
   void center(QWidget *parent);
   void deactivate(void);
-  void prepareProxy(void);
+  void prepareAfterAuthentication(void);
   void show(void);
 
  private:
