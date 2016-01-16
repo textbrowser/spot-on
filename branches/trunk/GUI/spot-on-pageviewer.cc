@@ -28,6 +28,7 @@
 #include <QPrintPreviewDialog>
 #include <QPrinter>
 #include <QSqlQuery>
+#include <QWebHitTestResult>
 
 #include "../Common/spot-on-crypt.h"
 #include "spot-on.h"
@@ -45,6 +46,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
   m_webView->page()->networkAccessManager()->deleteLater();
   m_webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
   m_webView->page()->setNetworkAccessManager(0);
+  m_webView->setContextMenuPolicy(Qt::CustomContextMenu);
   m_webView->setRenderHints(QPainter::Antialiasing |
 			    QPainter::HighQualityAntialiasing |
 			    QPainter::SmoothPixmapTransform |
@@ -67,6 +69,10 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
+  connect(m_webView,
+	  SIGNAL(customContextMenuRequested(const QPoint &)),
+	  this,
+	  SLOT(slotCustomContextMenuRequested(const QPoint &)));
   m_originalFindPalette = m_ui.find->palette();
 #if QT_VERSION >= 0x040700
   m_ui.find->setPlaceholderText(tr("Find Text"));
@@ -78,6 +84,27 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 
 spoton_pageviewer::~spoton_pageviewer()
 {
+}
+
+void spoton_pageviewer::slotCopyLinkLocation(void)
+{
+  m_webView->triggerPageAction(QWebPage::CopyLinkToClipboard);
+}
+
+void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
+{
+  QWebHitTestResult result = m_webView->page()->currentFrame()->
+    hitTestContent(point);
+
+  if(!result.linkUrl().isEmpty())
+    {
+      QMenu menu(this);
+
+      menu.addAction(tr("Copy &Link Location"),
+		     this,
+		     SLOT(slotCopyLinkLocation(void)));
+      menu.exec(m_webView->mapToGlobal(point));
+    }
 }
 
 void spoton_pageviewer::slotFind(void)

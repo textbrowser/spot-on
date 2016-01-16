@@ -58,6 +58,8 @@ class spoton_pageviewer: public QMainWindow
   Ui_pageviewer m_ui;
 
  private slots:
+  void slotCopyLinkLocation(void);
+  void slotCustomContextMenuRequested(const QPoint &point);
   void slotFind(void);
   void slotFindInitialize(void);
   void slotPagePrintPreview(void);
