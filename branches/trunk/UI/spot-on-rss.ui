@@ -346,7 +346,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Only RSS 2.0 is supported.</string>
+              <string>Only RSS 2.0 links are supported.</string>
              </property>
             </widget>
            </item>
@@ -563,6 +563,9 @@
          <widget class="QTextBrowser" name="errors">
           <property name="tabChangesFocus">
            <bool>true</bool>
+          </property>
+          <property name="openLinks">
+           <bool>false</bool>
           </property>
          </widget>
         </item>

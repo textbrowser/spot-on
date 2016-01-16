@@ -30,6 +30,7 @@
 
 #include <QMainWindow>
 #include <QSqlDatabase>
+#include <QWebView>
 
 #include "ui_spot-on-pageviewer.h"
 
@@ -45,12 +46,15 @@ class spoton_pageviewer: public QMainWindow
 		    const QString &urlHash,
 		    QWidget *parent);
   ~spoton_pageviewer();
-  void setPage(const QString &text, const QUrl &url, const int compressedSize);
+  void setPage(const QByteArray &data,
+	       const QUrl &url,
+	       const int compressedSize);
 
  private:
   QPalette m_originalFindPalette;
   QSqlDatabase m_database;
   QString m_urlHash;
+  QWebView *m_webView;
   Ui_pageviewer m_ui;
 
  private slots:

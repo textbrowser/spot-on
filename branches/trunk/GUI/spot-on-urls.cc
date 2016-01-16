@@ -1886,7 +1886,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       spoton_pageviewer *pageViewer = new spoton_pageviewer
 	(m_urlDatabase, hash, 0);
 
-      pageViewer->setPage(0, QUrl("http://127.0.0.1"), 0);
+      pageViewer->setPage(QByteArray(), QUrl("http://127.0.0.1"), 0);
 
       if(!hash.isEmpty())
 	{
@@ -1923,26 +1923,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 		if(ok)
 		  {
 		    content = qUncompress(content);
-
-		    /*
-		    ** Fuzzy Wuzzy was a bear,
-		    ** Fuzzy Wuzzy had no hair,
-		    ** Fuzzy Wuzzy wasn't fuzzy,
-		    ** was he?
-		    */
-
-		    if(content.toLower().simplified().replace(" ", "").
-		       contains("metahttp-equiv=\"content-type\""
-				"content=\"text/html;charset=iso-8859-1\""))
-		      pageViewer->setPage
-			(QString::fromLatin1(content.constData(),
-					     content.length()),
-			 url, query.value(0).toByteArray().length());
-		    else
-		      pageViewer->setPage
-			(QString::fromUtf8(content.constData(),
-					   content.length()),
-			 url, query.value(0).toByteArray().length());
+		    pageViewer->setPage
+		      (content, url, query.value(0).toByteArray().length());
 		  }
 	      }
 

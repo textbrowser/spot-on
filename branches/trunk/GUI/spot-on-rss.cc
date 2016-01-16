@@ -1141,7 +1141,8 @@ void spoton_rss::slotContentReplyFinished(void)
 	if(redirectUrl.isValid())
 	  {
 	    QString error
-	      (QString("The URL %1 is being redirected to %2.").
+	      (QString("The URL <a href=\"%1\">%1</a> is being "
+		       "redirected to <a href=\"%2\">%2</a>.").
 	       arg(reply->url().toEncoded().constData()).
 	       arg(redirectUrl.toEncoded().constData()));
 	    QUrl originalUrl(reply->property("original-url").toUrl());
@@ -1198,7 +1199,8 @@ void spoton_rss::slotContentReplyFinished(void)
 		if(data.isEmpty())
 		  {
 		    QString error
-		      (QString("The URL %1 does not have data.").
+		      (QString("The URL <a href=\"%1\">%1</a> "
+			       "does not have data.").
 		       arg(reply->url().toEncoded().constData()));
 
 		    logError(error);
@@ -1206,7 +1208,8 @@ void spoton_rss::slotContentReplyFinished(void)
 		else
 		  {
 		    QString error
-		      (QString("The URL %1 cannot be indexed "
+		      (QString("The URL <a href=\"%1\">%1</a> "
+			       "cannot be indexed "
 			       "(%2).").
 		       arg(reply->url().toEncoded().constData()).
 		       arg(reply->errorString()));
@@ -1493,7 +1496,8 @@ void spoton_rss::slotFeedReplyError(QNetworkReply::NetworkError code)
 
   if(reply)
     {
-      error = QString("The URL %1 generated an error (%2).").
+      error = QString("The URL <a href=\"%1\">%1</a> "
+		      "generated an error (%2).").
 	arg(reply->url().toEncoded().constData()).
 	arg(reply->errorString());
       reply->deleteLater();
@@ -1528,7 +1532,8 @@ void spoton_rss::slotFeedReplyFinished(void)
 	if(redirectUrl.isValid())
 	  {
 	    QString error
-	      (QString("The feed URL %1 is being redirected to %2.").
+	      (QString("The feed URL <a href=\"%1\">%1</a> "
+		       "is being redirected to <a href=\"%2\">%2</a>.").
 	       arg(url.toEncoded().constData()).
 	       arg(redirectUrl.toEncoded().constData()));
 
@@ -1549,7 +1554,8 @@ void spoton_rss::slotFeedReplyFinished(void)
   else if(reply)
     {
       QString error
-	(QString("The URL %1 could not be accessed correctly (%2).").
+	(QString("The URL <a href=\"%1\">%1</a> "
+		 "could not be accessed correctly (%2).").
 	 arg(reply->url().toEncoded().constData()).arg(reply->errorString()));
 
       logError(error);
@@ -2125,7 +2131,7 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
   spoton_pageviewer *pageViewer = new spoton_pageviewer
     (QSqlDatabase(), QString(), 0);
 
-  pageViewer->setPage(0, QUrl("http://127.0.0.1"), 0);
+  pageViewer->setPage(QByteArray(), QUrl("http://127.0.0.1"), 0);
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -2156,26 +2162,8 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
 	      if(ok)
 		{
 		  content = qUncompress(content);
-
-		  /*
-		  ** Fuzzy Wuzzy was a bear,
-		  ** Fuzzy Wuzzy had no hair,
-		  ** Fuzzy Wuzzy wasn't fuzzy,
-		  ** was he?
-		  */
-
-		  if(content.toLower().simplified().replace(" ", "").
-		     contains("metahttp-equiv=\"content-type\""
-			      "content=\"text/html;charset=iso-8859-1\""))
-		    pageViewer->setPage
-		      (QString::fromLatin1(content.constData(),
-					   content.length()),
-		       url, query.value(0).toByteArray().length());
-		  else
-		    pageViewer->setPage
-		      (QString::fromUtf8(content.constData(),
-					 content.length()),
-		       url, query.value(0).toByteArray().length());
+		  pageViewer->setPage
+		    (content, url, query.value(0).toByteArray().length());
 		}
 	    }
       }

@@ -41,6 +41,16 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
   m_database = db;
   m_ui.setupUi(this);
   m_urlHash = urlHash;
+  m_webView = new QWebView(this);
+  m_webView->page()->networkAccessManager()->deleteLater();
+  m_webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+  m_webView->page()->setNetworkAccessManager(0);
+  m_webView->setRenderHints(QPainter::Antialiasing |
+			    QPainter::HighQualityAntialiasing |
+			    QPainter::SmoothPixmapTransform |
+			    QPainter::TextAntialiasing);
+  m_webView->settings()->setAttribute(QWebSettings::JavascriptEnabled, false);
+  m_ui.frame->layout()->addWidget(m_webView);
   connect(m_ui.action_Find,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -72,16 +82,20 @@ spoton_pageviewer::~spoton_pageviewer()
 
 void spoton_pageviewer::slotFind(void)
 {
-  if(m_ui.find->text().isEmpty())
-    m_ui.find->setPalette(m_originalFindPalette);
-  else if(!m_ui.textBrowser->find(m_ui.find->text()))
-    {
-      QColor color(240, 128, 128); // Light Coral
-      QPalette palette(m_ui.find->palette());
+  QString text(m_ui.find->text());
 
-      palette.setColor(m_ui.find->backgroundRole(), color);
-      m_ui.find->setPalette(palette);
-      m_ui.textBrowser->moveCursor(QTextCursor::Start);
+  if(!m_webView->findText(text, QWebPage::FindWrapsAroundDocument))
+    {
+      if(!text.isEmpty())
+	{
+	  QColor color(240, 128, 128); // Light Coral
+	  QPalette palette(m_ui.find->palette());
+
+	  palette.setColor(m_ui.find->backgroundRole(), color);
+	  m_ui.find->setPalette(palette);
+	}
+      else
+	m_ui.find->setPalette(m_originalFindPalette);
     }
   else
     m_ui.find->setPalette(m_originalFindPalette);
@@ -93,7 +107,7 @@ void spoton_pageviewer::slotFindInitialize(void)
   m_ui.find->setFocus();
 }
 
-void spoton_pageviewer::setPage(const QString &text, const QUrl &url,
+void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
 				const int compressedSize)
 {
   disconnect(m_ui.revision,
@@ -104,6 +118,8 @@ void spoton_pageviewer::setPage(const QString &text, const QUrl &url,
 
   if(m_database.isOpen())
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QSqlQuery query(m_database);
 
       query.setForwardOnly(true);
@@ -118,6 +134,8 @@ void spoton_pageviewer::setPage(const QString &text, const QUrl &url,
 	while(query.next())
 	  m_ui.revision->addItem(query.value(1).toString(),
 				 query.value(0).toByteArray());
+
+      QApplication::restoreOverrideCursor();
     }
 
   if(m_ui.revision->count() > 0)
@@ -137,13 +155,21 @@ void spoton_pageviewer::setPage(const QString &text, const QUrl &url,
       m_ui.revision->setEnabled(false);
     }
 
+  /*
+  ** Fuzzy Wuzzy was a bear,
+  ** Fuzzy Wuzzy had no hair,
+  ** Fuzzy Wuzzy wasn't fuzzy,
+  ** was he?
+  */
+
   QLocale locale;
 
   m_ui.size->setText
     (tr("%1 KiB, Compressed %2 KiB").
-     arg(locale.toString(text.length() / 1024)).
+     arg(locale.toString(data.length() / 1024)).
      arg(locale.toString(compressedSize / 1024)));
-  m_ui.textBrowser->setHtml(text);
+  m_webView->setContent(data);
+  m_webView->setFocus();
   m_ui.url->setText(url.toString());
 }
 
@@ -165,7 +191,7 @@ void spoton_pageviewer::slotPagePrintPreview(void)
   QApplication::restoreOverrideCursor();
 
   if(printDialog.exec() == QDialog::Accepted)
-    m_ui.textBrowser->print(&printer);
+    m_webView->print(&printer);
 }
 
 void spoton_pageviewer::slotPrint(QPrinter *printer)
@@ -173,7 +199,7 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
   if(!printer)
     return;
 
-  m_ui.textBrowser->print(printer);
+  m_webView->print(printer);
 }
 
 void spoton_pageviewer::slotRevisionChanged(int index)
@@ -230,7 +256,7 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 	if(ok)
 	  {
 	    content = qUncompress(content);
-	    m_ui.textBrowser->setHtml(content.constData());
+	    m_webView->setContent(content);
 
 	    QLocale locale;
 
