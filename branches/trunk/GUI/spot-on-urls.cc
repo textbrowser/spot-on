@@ -1924,9 +1924,16 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 		  {
 		    content = qUncompress(content);
 
-		    if(content.toLower().simplified().
-		       contains("http-equiv=\"content-type\" "
-				"content=\"text/html; charset=iso-8859-1\""))
+		    /*
+		    ** Fuzzy Wuzzy was a bear,
+		    ** Fuzzy Wuzzy had no hair,
+		    ** Fuzzy Wuzzy wasn't fuzzy,
+		    ** was he?
+		    */
+
+		    if(content.toLower().simplified().replace(" ", "").
+		       contains("metahttp-equiv=\"content-type\""
+				"content=\"text/html;charset=iso-8859-1\""))
 		      pageViewer->setPage
 			(QString::fromLatin1(content.constData(),
 					     content.length()),
