@@ -43,15 +43,21 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
   m_ui.setupUi(this);
   m_urlHash = urlHash;
   m_webView = new QWebView(this);
-  m_webView->page()->networkAccessManager()->deleteLater();
+  m_webView->page()->networkAccessManager()->
+    setNetworkAccessible(QNetworkAccessManager::NotAccessible);
   m_webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-  m_webView->page()->setNetworkAccessManager(0);
   m_webView->setContextMenuPolicy(Qt::CustomContextMenu);
   m_webView->setRenderHints(QPainter::Antialiasing |
 			    QPainter::HighQualityAntialiasing |
 			    QPainter::SmoothPixmapTransform |
 			    QPainter::TextAntialiasing);
+  m_webView->settings()->setAttribute(QWebSettings::AutoLoadImages, false);
   m_webView->settings()->setAttribute(QWebSettings::JavascriptEnabled, false);
+  m_webView->settings()->setAttribute
+    (QWebSettings::LocalContentCanAccessFileUrls, false);
+  m_webView->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
+  m_webView->settings()->setAttribute
+    (QWebSettings::PrivateBrowsingEnabled, true);
   m_ui.frame->layout()->addWidget(m_webView);
   connect(m_ui.action_Find,
 	  SIGNAL(triggered(void)),
