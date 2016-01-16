@@ -297,13 +297,17 @@ void spoton_rss::importUrl(const QList<QVariant> &list)
     return;
 
   QSettings settings;
+  QUrl url(list.value(4).toUrl());
   bool imported = true;
+
+  if(url.isEmpty() || !url.isValid())
+    url = list.value(3).toUrl();
 
   imported = spoton_misc::importUrl
     (list.value(0).toByteArray(),       // UTF-8 Content
      list.value(1).toString().toUtf8(), // Description
      list.value(2).toString().toUtf8(), // Title
-     list.value(3).toUrl().toEncoded(), // URL
+     url.toEncoded(),                   // URL
      spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
      m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
@@ -953,7 +957,8 @@ void spoton_rss::saveFeedLink(const QString &d,
 	query.prepare
 	  ("INSERT INTO rss_feeds_links ("
 	   "content, description, insert_date, publication_date, "
-	   "title, url, url_hash) VALUES (?, ?, ?, ?, ?, ?, ?)");
+	   "title, url, url_hash, url_redirected) "
+	   "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->encryptedThenHashed(qCompress(QByteArray(), 9), &ok).
 	   toBase64());
@@ -978,6 +983,11 @@ void spoton_rss::saveFeedLink(const QString &d,
 	if(ok)
 	  query.bindValue
 	    (6, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (7, crypt->encryptedThenHashed(QByteArray(), &ok).
+	     toBase64());
 
 	if(ok)
 	  query.exec();
@@ -1187,15 +1197,20 @@ void spoton_rss::slotContentReplyFinished(void)
 	    bool ok = true;
 
 	    query.prepare("UPDATE rss_feeds_links "
-			  "SET content = ?, visited = ? "
+			  "SET content = ?, url_redirected = ?, visited = ? "
 			  "WHERE url_hash = ?");
 	    query.bindValue
 	      (0, crypt->
 	       encryptedThenHashed(qCompress(data, 9), &ok).toBase64());
 
+	    if(ok)
+	      query.bindValue
+		(1, crypt->encryptedThenHashed(reply->url().toEncoded(),
+					       &ok).toBase64());
+
 	    if(data.isEmpty() || reply->error() != QNetworkReply::NoError)
 	      {
-		query.bindValue(1, 2); // Error.
+		query.bindValue(2, 2); // Error.
 
 		if(data.isEmpty())
 		  {
@@ -1219,11 +1234,11 @@ void spoton_rss::slotContentReplyFinished(void)
 		  }
 	      }
 	    else
-	      query.bindValue(1, 1);
+	      query.bindValue(2, 1);
 
 	    if(ok)
 	      query.bindValue
-		(2, crypt->
+		(3, crypt->
 		 keyedHash(reply->property("original-url").toUrl().
 			   toEncoded(), &ok).toBase64());
 
@@ -1624,9 +1639,10 @@ void spoton_rss::slotImport(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT content, description, title, url "
-		      "FROM rss_feeds_links WHERE "
-		      "imported = 0 AND visited = 1");
+	query.prepare
+	  ("SELECT content, description, title, url, url_redirected "
+	   "FROM rss_feeds_links WHERE "
+	   "imported = 0 AND visited = 1");
 
 	if(query.exec())
 	  while(query.next())
@@ -1669,6 +1685,19 @@ void spoton_rss::slotImport(void)
 
 	      if(ok)
 		list << QUrl::fromEncoded(bytes);
+
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(4).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		{
+		  QUrl url(QUrl::fromEncoded(bytes));
+
+		  if(!url.isEmpty() && url.isValid())
+		    list << url;
+		}
 
 	      if(ok)
 		break;
@@ -1781,7 +1810,7 @@ void spoton_rss::slotRefreshTimeline(void)
 
 	query.setForwardOnly(true);
 	str = "SELECT content, description, publication_date, "
-	  "title, url FROM rss_feeds_links "
+	  "title, url, url_redirected FROM rss_feeds_links "
 	  "ORDER BY publication_date DESC";
 
 	if(query.exec(str))
@@ -1832,15 +1861,34 @@ void spoton_rss::slotRefreshTimeline(void)
 		if(ok)
 		  list << QUrl::fromEncoded(bytes);
 
-		if(list.size() == 3)
+		if(ok)
+		  bytes = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(5).toByteArray()),
+		     &ok);
+
+		if(ok)
+		  list << QUrl::fromEncoded(bytes);
+
+		if(list.size() == 4)
 		  {
+		    /*
+		    ** 0 - description
+		    ** 1 - title
+		    ** 2 - url
+		    ** 3 - url_redirected
+		    */
+
 		    QString html("");
+		    QUrl url(list.value(3).toUrl());
+
+		    if(url.isEmpty() || !url.isValid())
+		      url = list.value(2).toUrl();
 
 		    if(contentAvailable)
 		      {
 			html.append("<a href=\"");
-			html.append(list.value(2).toUrl().toEncoded().
-				    constData());
+			html.append(list.value(2).toUrl().
+				    toEncoded().constData());
 			html.append("\">");
 			html.append
 			  (spoton_misc::
@@ -1855,7 +1903,7 @@ void spoton_rss::slotRefreshTimeline(void)
 		    html.append("<br>");
 		    html.append
 		      (QString("<font color=\"green\" size=3>%1</font>").
-		       arg(list.value(2).toUrl().toEncoded().constData()));
+		       arg(url.toEncoded().constData()));
 		    html.append("<br>");
 		    html.append
 		      (QString("<font color=\"gray\" size=3>%1</font>").
@@ -2145,7 +2193,8 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT content FROM rss_feeds_links WHERE "
+	query.prepare("SELECT content, url_redirected "
+		      "FROM rss_feeds_links WHERE "
 		      "url_hash = ?");
 	query.bindValue
 	  (0, crypt->keyedHash(url.toEncoded(), &ok).toBase64());
@@ -2154,11 +2203,24 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
 	  if(query.next())
 	    {
 	      QByteArray content;
+	      QUrl url;
 	      bool ok = true;
 
 	      content = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
 		 &ok);
+
+	      if(ok)
+		{
+		  QByteArray bytes
+		    (crypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.value(1).
+							    toByteArray()),
+						 &ok));
+
+		  url = QUrl::fromEncoded(bytes);
+		}
 
 	      if(ok)
 		{

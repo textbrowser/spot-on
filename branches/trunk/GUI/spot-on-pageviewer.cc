@@ -194,7 +194,12 @@ void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
     (tr("%1 KiB, Compressed %2 KiB").
      arg(locale.toString(data.length() / 1024)).
      arg(locale.toString(compressedSize / 1024)));
-  m_webView->setContent(data);
+
+  if(data.trimmed().isEmpty())
+    m_webView->setContent("Malformed content. Enjoy!");
+  else
+    m_webView->setContent(data);
+
   m_webView->setFocus();
   m_ui.url->setText(url.toString());
 }
@@ -282,7 +287,11 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 	if(ok)
 	  {
 	    content = qUncompress(content);
-	    m_webView->setContent(content);
+
+	    if(content.trimmed().isEmpty())
+	      m_webView->setContent("Malformed content. Enjoy!");
+	    else
+	      m_webView->setContent(content);
 
 	    QLocale locale;
 
