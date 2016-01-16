@@ -62,8 +62,9 @@ class spoton_rss: public QMainWindow
   bool event(QEvent *event);
 #endif
 #endif
+  bool importUrl(const QList<QVariant> &list,
+		 const bool batch);
   void closeEvent(QCloseEvent *event);
-  void importUrl(const QList<QVariant> &list);
   void logError(const QString &error);
   void parseXmlContent(const QByteArray &data,
 		       const QUrl &url);

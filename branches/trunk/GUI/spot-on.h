@@ -429,6 +429,7 @@ class spoton: public QMainWindow
   void addMessageToReplayQueue(const QString &message1,
 			       const QByteArray &message2,
 			       const QString &publicKeyHash);
+  void populateUrlDistillers();
 
  private:
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS = 1;
@@ -570,7 +571,6 @@ class spoton: public QMainWindow
   void populateMOTD(const QString &listenerOid);
   void populateMail(void);
   void populateNovas(void);
-  void populateUrlDistillers(void);
   void prepareContextMenuMirrors(void);
   void prepareListenerIPCombo(void);
   void prepareSMP(const QString &hash);
