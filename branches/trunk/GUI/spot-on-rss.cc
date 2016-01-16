@@ -112,6 +112,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.purge,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotPurge(void)));
   connect(m_ui.purge_days,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1696,12 +1700,42 @@ void spoton_rss::slotPurge(void)
 #endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to purge links?"));
+  mb.setText(tr("Are you sure that you wish to purge obsolete links?"));
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare
+	  ("DELETE FROM rss_feeds_links WHERE "
+	   "ABS(strftime('%s', ?) - strftime('%s', insert_date)) > ?");
+	query.bindValue
+	  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
+	query.bindValue(1, 60 * 60 * 24 * m_ui.purge_days->value());
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+  slotRefreshTimeline();
 }
 
 void spoton_rss::slotPurgeDaysChanged(int value)
