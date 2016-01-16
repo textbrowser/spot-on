@@ -102,19 +102,23 @@ void spoton_pageviewer::setPage(const QString &text, const QUrl &url,
 	     SLOT(slotRevisionChanged(int)));
   m_ui.revision->clear();
 
-  QSqlQuery query(m_database);
+  if(m_database.isOpen())
+    {
+      QSqlQuery query(m_database);
 
-  query.setForwardOnly(true);
-  query.prepare(QString("SELECT content_hash, date_time_inserted "
-			"FROM spot_on_urls_revisions_%1 WHERE url_hash = ? "
-			"ORDER BY 2 DESC").
-		arg(m_urlHash.mid(0, 2)));
-  query.bindValue(0, m_urlHash);
+      query.setForwardOnly(true);
+      query.prepare
+	(QString("SELECT content_hash, date_time_inserted "
+		 "FROM spot_on_urls_revisions_%1 WHERE url_hash = ? "
+		 "ORDER BY 2 DESC").
+	 arg(m_urlHash.mid(0, 2)));
+      query.bindValue(0, m_urlHash);
 
-  if(query.exec())
-    while(query.next())
-      m_ui.revision->addItem(query.value(1).toString(),
-			     query.value(0).toByteArray());
+      if(query.exec())
+	while(query.next())
+	  m_ui.revision->addItem(query.value(1).toString(),
+				 query.value(0).toByteArray());
+    }
 
   if(m_ui.revision->count() > 0)
     {

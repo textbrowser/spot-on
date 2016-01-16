@@ -1181,8 +1181,8 @@ void spoton_rss::slotContentReplyFinished(void)
 			  "SET content = ?, visited = ? "
 			  "WHERE url_hash = ?");
 	    query.bindValue
-	      (0, crypt->encryptedThenHashed(qCompress(data, 9),
-					     &ok).toBase64());
+	      (0, crypt->
+	       encryptedThenHashed(qCompress(data, 9), &ok).toBase64());
 
 	    if(data.isEmpty() || reply->error() != QNetworkReply::NoError)
 	      {
@@ -2113,9 +2113,22 @@ void spoton_rss::slotUrlLinkClicked(const QUrl &url)
 		 &ok);
 
 	      if(ok)
-		pageViewer->setPage
-		  (QString::fromUtf8(qUncompress(content)),
-		   url, query.value(0).toByteArray().length());
+		{
+		  content = qUncompress(content);
+
+		  if(content.toLower().simplified().
+		     contains("http-equiv=\"content-type\" "
+			      "content=\"text/html; charset=iso-8859-1\""))
+		    pageViewer->setPage
+		      (QString::fromLatin1(content.constData(),
+					   content.length()),
+		       url, query.value(0).toByteArray().length());
+		  else
+		    pageViewer->setPage
+		      (QString::fromUtf8(content.constData(),
+					 content.length()),
+		       url, query.value(0).toByteArray().length());
+		}
 	    }
       }
 
