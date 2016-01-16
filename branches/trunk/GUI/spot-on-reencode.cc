@@ -1768,7 +1768,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	    }
 
 	if(query.exec("SELECT content, description, title, url, "
-		      "OID FROM rss_feeds_links"))
+		      "url_redirected, OID FROM rss_feeds_links"))
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
@@ -1798,8 +1798,9 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				      "description = ?, "
 				      "title = ?, "
 				      "url = ?, "
-				      "url_hash = ? WHERE "
-				      "OID = ?");
+				      "url_hash = ?, "
+				      "url_redirected = ? "
+				      "WHERE OID = ?");
 		  updateQuery.bindValue
 		    (0, newCrypt->encryptedThenHashed(list.value(0),
 						      &ok).toBase64());
@@ -1823,8 +1824,13 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		    updateQuery.bindValue
 		      (4, newCrypt->keyedHash(list.value(3), &ok).toBase64());
 
+		  if(ok)
+		    updateQuery.bindValue
+		      (5, newCrypt->encryptedThenHashed(list.value(4), &ok).
+		       toBase64());
+
 		  updateQuery.bindValue
-		    (5, query.value(query.record().count() - 1));
+		    (6, query.value(query.record().count() - 1));
 
 		  if(ok)
 		    updateQuery.exec();

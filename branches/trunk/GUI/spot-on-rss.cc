@@ -794,6 +794,7 @@ void spoton_rss::prepareDatabases(void)
 		   "title TEXT NOT NULL, "
 		   "url TEXT NOT NULL, "
 		   "url_hash TEXT NOT NULL PRIMARY KEY, "
+		   "url_redirected TEXT NOT NULL, "
 		   "visited INTEGER NOT NULL DEFAULT 0)");
 	query.exec("CREATE TABLE IF NOT EXISTS rss_proxy ("
 		   "enabled TEXT NOT NULL, "
