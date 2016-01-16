@@ -180,7 +180,9 @@ void spoton_rosetta::show(QWidget *parent)
 
   ui.name->setText
     (QString::fromUtf8(settings.value("gui/rosettaName", "unknown").
-		       toByteArray()).trimmed());
+		       toByteArray().constData(),
+		       settings.value("gui/rosettaName", "unknown").
+		       toByteArray().length()).trimmed());
   populateContacts();
 }
 
@@ -931,7 +933,8 @@ void spoton_rosetta::slotConvert(void)
 	}
       else
 	{
-	  ui.output->setText(QString::fromUtf8(data.constData()));
+	  ui.output->setText(QString::fromUtf8(data.constData(),
+					       data.length()));
 	  ui.output->selectAll();
 	}
 

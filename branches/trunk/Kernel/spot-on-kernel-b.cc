@@ -2080,7 +2080,8 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     {
       QByteArray message
 	(spoton_send::message0091a(data, QPair<QByteArray, QByteArray> ()));
-      QString name(QString::fromUtf8(list.value(0).constData()));
+      QString name(QString::fromUtf8(list.value(0).constData(),
+				     list.value(0).length()));
 
       postPoptasticMessage(name, message);
     }

@@ -493,7 +493,8 @@ void spoton_listener::slotTimeout(void)
 			 query.value(5).toLongLong(),
 			 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
 		m_motd = QString::fromUtf8
-		  (query.value(6).toByteArray()).trimmed();
+		  (query.value(6).toByteArray().constData(),
+		   query.value(6).toByteArray().length()).trimmed();
 		m_passthrough = query.value(9).toInt();
 		m_sslControlString = query.value(7).toString().trimmed();
 		m_useAccounts = static_cast<int>

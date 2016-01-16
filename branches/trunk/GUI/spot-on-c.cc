@@ -1326,7 +1326,8 @@ void spoton::slotPopulateStars(void)
 			{
 			  if(i == 3)
 			    item = new QTableWidgetItem
-			      (QString::fromUtf8(bytes));
+			      (QString::fromUtf8(bytes.constData(),
+						 bytes.length()));
 			  else
 			    item = new QTableWidgetItem(bytes.constData());
 			}
@@ -1552,7 +1553,9 @@ void spoton::slotPopulateStars(void)
 			{
 			  if(i == 5)
 			    {
-			      fileName = QString::fromUtf8(bytes.constData());
+			      fileName = QString::fromUtf8
+				(bytes.constData(),
+				 bytes.length());
 			      item = new QTableWidgetItem(fileName);
 			    }
 			  else

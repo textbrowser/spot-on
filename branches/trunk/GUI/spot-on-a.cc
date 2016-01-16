@@ -1948,7 +1948,9 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.custom->setText
     (QString::fromUtf8(m_settings.value("gui/customStatus", "").
-		       toByteArray().trimmed()));
+		       toByteArray().constData(),
+		       m_settings.value("gui/customStatus", "").
+		       toByteArray().length()).trimmed());
   m_ui.custom->setVisible(false);
 
   if(status == "away")
@@ -1982,22 +1984,30 @@ spoton::spoton(void):QMainWindow()
   m_ui.buzzName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.buzzName->setText
     (QString::fromUtf8(m_settings.value("gui/buzzName", "unknown").
-		       toByteArray()).trimmed());
+		       toByteArray().constData(),
+		       m_settings.value("gui/buzzName", "unknown").
+		       toByteArray().length()).trimmed());
   m_ui.channel->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
   m_ui.emailName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.emailName->setText
     (QString::fromUtf8(m_settings.value("gui/emailName", "unknown").
-		       toByteArray()).trimmed());
+		       toByteArray().constData(),
+		       m_settings.value("gui/emailName", "unknown").
+		       toByteArray().length()).trimmed());
   m_ui.nodeName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.nodeName->setText
     (QString::fromUtf8(m_settings.value("gui/nodeName", "unknown").
-		       toByteArray()).trimmed());
+		       toByteArray().constData(),
+		       m_settings.value("gui/nodeName", "unknown").
+		       toByteArray().length()).trimmed());
   m_ui.pulseSize->setMaximum(spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE);
   m_ui.urlName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.urlName->setText
     (QString::fromUtf8(m_settings.value("gui/urlName", "unknown").
-		       toByteArray()).trimmed());
+		       toByteArray().constData(),
+		       m_settings.value("gui/urlName", "unknown").
+		       toByteArray().length()).trimmed());
   m_ui.username->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.receiveNova->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")) + 512);
@@ -7502,13 +7512,19 @@ void spoton::slotPopulateParticipants(void)
 		 &ok).constData();
 
 	      if(ok)
-		name = QString::fromUtf8
-		  (crypt->
-		   decryptedAfterAuthenticated(QByteArray::
-					       fromBase64(query.
-							  value(0).
-							  toByteArray()),
-					       &ok).constData());
+		{
+		  QByteArray bytes
+		    (crypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.
+							    value(0).
+							    toByteArray()),
+						 &ok));
+
+		  if(ok)
+		    name = QString::fromUtf8
+		      (bytes.constData(), bytes.length());
+		}
 
 	      if(!ok)
 		name = "";

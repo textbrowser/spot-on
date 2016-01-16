@@ -3605,23 +3605,34 @@ void spoton::populateMail(void)
 			    if(goldbug == "0")
 			      {
 				if(i == 3) // subject
-				  item = new QTableWidgetItem
-				    (QString::
-				     fromUtf8(m_crypts.value("email")->
-					      decryptedAfterAuthenticated
-					      (QByteArray::
-					       fromBase64
-					       (query.value(i).toByteArray()),
-					       &ok).constData()).trimmed());
+				  {
+				    QByteArray bytes
+				      (m_crypts.value("email")->
+				       decryptedAfterAuthenticated
+				       (QByteArray::fromBase64
+					(query.value(i).toByteArray()),
+					&ok));
+
+				    item = new QTableWidgetItem
+				      (QString::fromUtf8(bytes.constData(),
+							 bytes.length()).
+				       trimmed());
+				  }
 				else
-				  item = new QTableWidgetItem
-				    (QString::
-				     fromUtf8(m_crypts.value("email")->
-					      decryptedAfterAuthenticated
-					      (QByteArray::
-					       fromBase64
-					       (query.value(i).toByteArray()),
-					       &ok).constData()));
+				  {
+				    QByteArray bytes
+				      (m_crypts.value("email")->
+				       decryptedAfterAuthenticated
+				       (QByteArray::
+					fromBase64
+					(query.value(i).toByteArray()),
+					&ok));
+
+				    item = new QTableWidgetItem
+				      (QString::fromUtf8(bytes.constData(),
+							 bytes.length()).
+				       trimmed());
+				  }
 
 				if(!ok)
 				  item->setText(tr("error"));

@@ -4456,7 +4456,8 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       QHash<QString, char> discovered;
       QSqlQuery query(db);
       QStringList keywords
-	(QString::fromUtf8(all_keywords.toLower()).
+	(QString::fromUtf8(all_keywords.toLower().constData(),
+			   all_keywords.length()).
 	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
       int count = 0;
 
@@ -4828,13 +4829,18 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
 
 	if(query.exec())
 	  if(query.next())
-	    name = QString::fromUtf8
-	      (crypt->
-	       decryptedAfterAuthenticated(QByteArray::
-					   fromBase64(query.
-						      value(0).
-						      toByteArray()),
-					   &ok).constData());
+	    {
+	      QByteArray bytes
+		(crypt->
+		 decryptedAfterAuthenticated(QByteArray::
+					     fromBase64(query.
+							value(0).
+							toByteArray()),
+					     &ok));
+
+	      if(ok)
+		name = QString::fromUtf8(bytes.constData(), bytes.length());
+	    }
 
 	if(!ok)
 	  name.clear();

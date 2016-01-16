@@ -1604,7 +1604,7 @@ void spoton::populateUrlDistillers(void)
 		{
 		  QComboBox *box = new QComboBox();
 		  QTableWidgetItem *item = new QTableWidgetItem
-		    (QString::fromUtf8(domain));
+		    (QString::fromUtf8(domain.constData(), domain.length()));
 
 		  box->addItem("accept");
 		  box->addItem("deny");

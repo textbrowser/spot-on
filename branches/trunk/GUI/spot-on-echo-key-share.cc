@@ -417,7 +417,8 @@ void spoton_echo_key_share::populate(void)
 		 &ok);
 
 	      if(ok)
-		strings << QString::fromUtf8(bytes);
+		strings << QString::fromUtf8(bytes.constData(),
+					     bytes.length());
 	      else
 		strings << tr("error");
 
@@ -470,7 +471,8 @@ void spoton_echo_key_share::populate(void)
 			    if(ok)
 			      {
 				if(i == 2)
-				  strings << QString::fromUtf8(bytes);
+				  strings << QString::fromUtf8
+				    (bytes.constData(), bytes.length());
 				else
 				  strings << bytes;
 			      }

@@ -351,35 +351,45 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	  if(!count)
 	    m_ui.urls->clear();
 
+	  QByteArray bytes;
 	  QByteArray hash(query.value(5).toByteArray());
 	  QString description("");
 	  QString title("");
 	  QUrl url;
 	  bool ok = true;
 
-	  description = QString::fromUtf8
-	    (m_urlCommonCrypt->
-	     decryptedAfterAuthenticated(QByteArray::
-					 fromBase64(query.value(2).
-						    toByteArray()),
-					 &ok)).trimmed();
+	  bytes =
+	    m_urlCommonCrypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query.value(2).
+						   toByteArray()),
+					&ok);
+	  description = QString::fromUtf8(bytes.constData(),
+					  bytes.length()).trimmed();
 
 	  if(ok)
-	    title = QString::fromUtf8
-	      (m_urlCommonCrypt->
-	       decryptedAfterAuthenticated(QByteArray::
-					   fromBase64(query.value(0).
-						      toByteArray()),
-					   &ok)).trimmed();
+	    {
+	      bytes =
+		m_urlCommonCrypt->
+		decryptedAfterAuthenticated(QByteArray::
+					    fromBase64(query.value(0).
+						       toByteArray()),
+					    &ok);
+	      title = QString::fromUtf8(bytes.constData(),
+					bytes.length()).trimmed();
+	    }
 
 	  if(ok)
-	    url = QUrl::fromUserInput
-	      (QString::
-	       fromUtf8(m_urlCommonCrypt->
-			decryptedAfterAuthenticated(QByteArray::
-						    fromBase64(query.value(1).
-							       toByteArray()),
-						    &ok)));
+	    {
+	      bytes =
+		m_urlCommonCrypt->
+		decryptedAfterAuthenticated(QByteArray::
+					    fromBase64(query.value(1).
+						       toByteArray()),
+					    &ok);
+	      url = QUrl::fromUserInput(QString::fromUtf8(bytes.constData(),
+							  bytes.length()));
+	    }
 
 	  if(ok)
 	    {

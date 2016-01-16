@@ -694,9 +694,11 @@ void spoton_rss::prepareAfterAuthentication(void)
 
 		      m_ui.proxy->setChecked(true);
 		      m_ui.proxyHostname->setText
-			(QString::fromUtf8(list.value(1).constData()));
+			(QString::fromUtf8(list.value(1).constData(),
+					   list.value(1).length()));
 		      m_ui.proxyPassword->setText
-			(QString::fromUtf8(list.value(2).constData()));
+			(QString::fromUtf8(list.value(2).constData(),
+					   list.value(2).length()));
 		      m_ui.proxyPort->setValue
 			(list.value(3).toInt());
 
@@ -735,7 +737,8 @@ void spoton_rss::prepareAfterAuthentication(void)
 			}
 
 		      m_ui.proxyUsername->setText
-			(QString::fromUtf8(list.value(5).constData()));
+			(QString::fromUtf8(list.value(5).constData(),
+					   list.value(5).length()));
 
 		      if(proxy.type() != QNetworkProxy::NoProxy)
 			{
@@ -1640,7 +1643,8 @@ void spoton_rss::slotImport(void)
 		   &ok);
 
 	      if(ok)
-		list << QString::fromUtf8(bytes).trimmed();
+		list << QString::fromUtf8(bytes.constData(),
+					  bytes.length()).trimmed();
 
 	      if(ok)
 		bytes = crypt->decryptedAfterAuthenticated
@@ -1648,7 +1652,8 @@ void spoton_rss::slotImport(void)
 		   &ok);
 
 	      if(ok)
-		list << QString::fromUtf8(bytes).trimmed();
+		list << QString::fromUtf8(bytes.constData(),
+					  bytes.length()).trimmed();
 
 	      if(ok)
 		bytes = crypt->decryptedAfterAuthenticated
@@ -1800,7 +1805,8 @@ void spoton_rss::slotRefreshTimeline(void)
 		     &ok);
 
 		if(ok)
-		  list << QString::fromUtf8(bytes).trimmed();
+		  list << QString::fromUtf8(bytes.constData(),
+					    bytes.length()).trimmed();
 
 		if(ok)
 		  bytes = crypt->decryptedAfterAuthenticated
@@ -1808,7 +1814,8 @@ void spoton_rss::slotRefreshTimeline(void)
 		     &ok);
 
 		if(ok)
-		  list << QString::fromUtf8(bytes).trimmed();
+		  list << QString::fromUtf8(bytes.constData(),
+					    bytes.length()).trimmed();
 
 		if(ok)
 		  bytes = crypt->decryptedAfterAuthenticated

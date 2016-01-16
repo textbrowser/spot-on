@@ -1181,7 +1181,10 @@ void spoton_kernel::prepareListeners(void)
 						   toLongLong()),
 				 orientation.constData(),
 				 QString::fromUtf8(query.value(16).
-						   toByteArray()).trimmed(),
+						   toByteArray().constData(),
+						   query.value(16).
+						   toByteArray().length()).
+				 trimmed(),
 				 query.value(17).toString(),
 				 query.value(18).toInt(),
 				 query.value(19).toInt(),
@@ -1356,7 +1359,10 @@ void spoton_kernel::prepareNeighbors(void)
 							     toByteArray()));
 			else if(i == 22) // motd
 			  list.append
-			    (QString::fromUtf8(query.value(i).toByteArray()).
+			    (QString::fromUtf8(query.value(i).
+					       toByteArray().constData(),
+					       query.value(i).
+					       toByteArray().length()).
 			     trimmed());
 			else if(i == 23) // ssl_control_string
 			  list.append(query.value(i).toString());

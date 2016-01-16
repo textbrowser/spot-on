@@ -194,7 +194,8 @@ void spoton_starbeam_writer::processData
   QString fileName
     (spoton_kernel::setting("gui/etpDestinationPath", QDir::homePath()).
      toString() + QDir::separator() +
-     QString::fromUtf8(list.value(1)).replace(" ", "-"));
+     QString::fromUtf8(list.value(1).constData(),
+		       list.value(1).length()).replace(" ", "-"));
   int locked = 0;
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 

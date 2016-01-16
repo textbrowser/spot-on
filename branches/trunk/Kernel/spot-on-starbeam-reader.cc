@@ -137,6 +137,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 		    shouldDelete = true;
 		  else if(m_position >= 0 && status == "transmitting")
 		    {
+		      QByteArray bytes;
 		      QByteArray hash;
 		      QByteArray nova;
 		      QString fileName("");
@@ -144,13 +145,16 @@ void spoton_starbeam_reader::slotTimeout(void)
 		      QString pulseSize("");
 		      bool ok = true;
 
-		      fileName = QString::fromUtf8
-			(s_crypt->
-			 decryptedAfterAuthenticated(QByteArray::
-						     fromBase64(query.
-								value(0).
-								toByteArray()),
-						     &ok));
+		      bytes = s_crypt->
+			decryptedAfterAuthenticated(QByteArray::
+						    fromBase64(query.
+							       value(0).
+							       toByteArray()),
+						    &ok);
+
+		      if(ok)
+			fileName = QString::fromUtf8
+			  (bytes.constData(), bytes.length());
 
 		      if(ok)
 			hash = s_crypt->

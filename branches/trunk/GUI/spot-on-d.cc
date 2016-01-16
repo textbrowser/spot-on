@@ -705,7 +705,9 @@ void spoton::populateMOTD(const QString &listenerOid)
 	if(query.exec())
 	  if(query.next())
 	    m_ui.motd->setPlainText
-	      (QString::fromUtf8(query.value(0).toByteArray()).trimmed());
+	      (QString::fromUtf8(query.value(0).toByteArray().constData(),
+				 query.value(0).toByteArray().length()).
+	       trimmed());
       }
 
     db.close();
@@ -1678,12 +1680,18 @@ void spoton::slotSaveAttachment(void)
 		   &ok);
 
 		if(ok)
-		  attachmentName = QString::fromUtf8
-		    (crypt->
-		     decryptedAfterAuthenticated(QByteArray::
-						 fromBase64(query.value(1).
-							    toByteArray()),
-						 &ok));
+		  {
+		    QByteArray bytes
+		      (crypt->
+		       decryptedAfterAuthenticated(QByteArray::
+						   fromBase64(query.value(1).
+							      toByteArray()),
+						   &ok));
+
+		    if(ok)
+		      attachmentName = QString::fromUtf8(bytes.constData(),
+							 bytes.length());
+		  }
 	      }
 	}
 
