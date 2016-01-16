@@ -174,6 +174,16 @@ int main(int argc, char *argv[])
 
   QApplication qapplication(argc, argv);
 
+  QWebSettings::globalSettings()->setAttribute
+    (QWebSettings::AutoLoadImages, false);
+  QWebSettings::globalSettings()->setAttribute
+    (QWebSettings::JavascriptEnabled, false);
+  QWebSettings::globalSettings()->setAttribute
+    (QWebSettings::LocalContentCanAccessFileUrls, false);
+  QWebSettings::globalSettings()->setAttribute
+    (QWebSettings::PluginsEnabled, false);
+  QWebSettings::globalSettings()->setAttribute
+    (QWebSettings::PrivateBrowsingEnabled, true);
   QWebSettings::globalSettings()->setIconDatabasePath("");
   QWebSettings::globalSettings()->setMaximumPagesInCache(0);
   QWebSettings::globalSettings()->setOfflineStorageDefaultQuota(0);

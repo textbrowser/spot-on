@@ -51,13 +51,6 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 			    QPainter::HighQualityAntialiasing |
 			    QPainter::SmoothPixmapTransform |
 			    QPainter::TextAntialiasing);
-  m_webView->settings()->setAttribute(QWebSettings::AutoLoadImages, false);
-  m_webView->settings()->setAttribute(QWebSettings::JavascriptEnabled, false);
-  m_webView->settings()->setAttribute
-    (QWebSettings::LocalContentCanAccessFileUrls, false);
-  m_webView->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
-  m_webView->settings()->setAttribute
-    (QWebSettings::PrivateBrowsingEnabled, true);
   m_ui.frame->layout()->addWidget(m_webView);
   connect(m_ui.action_Find,
 	  SIGNAL(triggered(void)),
