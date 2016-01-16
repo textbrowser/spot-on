@@ -44,6 +44,7 @@ extern "C"
 #include <QScopedPointer>
 #include <QStandardItemModel>
 #include <QThread>
+#include <QWebSettings>
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetooth.h>
 #endif
@@ -172,6 +173,18 @@ int main(int argc, char *argv[])
 #endif
 
   QApplication qapplication(argc, argv);
+
+  QWebSettings::globalSettings()->setIconDatabasePath("");
+  QWebSettings::globalSettings()->setMaximumPagesInCache(0);
+  QWebSettings::globalSettings()->setOfflineStorageDefaultQuota(0);
+  QWebSettings::globalSettings()->setOfflineStoragePath("");
+  QWebSettings::globalSettings()->setOfflineWebApplicationCachePath("");
+  QWebSettings::globalSettings()->setOfflineWebApplicationCacheQuota(0);
+  QWebSettings::globalSettings()->setWebGraphic
+    (QWebSettings::MissingImageGraphic, QPixmap());
+  QWebSettings::globalSettings()->setWebGraphic
+    (QWebSettings::MissingPluginGraphic, QPixmap());
+
   QThread *thread = qapplication.thread();
 
   if(!thread)
