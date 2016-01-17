@@ -4,14 +4,20 @@ buzz_channels.db
 
 data
 
+-----
+
 echo_key_sharing_secrets.db
 
 all fields save for id_hash
+
+-----
 
 email.db
 
 all fields save for folder_index, hash, receiver_sender_hash, and
 recipient_hash
+
+-----
 
 friends_public_keys.db
 
@@ -25,9 +31,13 @@ key_type
 name
 public_key
 
+-----
+
 idiotes.db
 
 all fields save for id_hash
+
+-----
 
 listeners.db
 
@@ -60,6 +70,8 @@ listeners_allowed_ips
 
 ip_address
 
+-----
+
 neighbors.db
 
 account_name
@@ -85,6 +97,8 @@ ssl_session_cipher
 transport
 uuid
 
+-----
+
 poptastic.db
 
 in_password
@@ -102,16 +116,22 @@ proxy_server_port
 proxy_username
 smtp_localname
 
+-----
+
 rss.db
 
 all fields save for feed_hash, imported, insert_date,
 publication_date, url_hash, visited
+
+-----
 
 shared.db
 
 description
 title
 url
+
+-----
 
 starbeam.db
 
@@ -145,11 +165,15 @@ transmitted_magnets
 
 magnet
 
+-----
+
 urls_distillers_information.db
 
 direction
 domain
 permission
+
+-----
 
 urls_key_information.db
 
