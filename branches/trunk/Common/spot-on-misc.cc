@@ -5493,5 +5493,9 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 
 QString spoton_misc::removeSpecialHtmlTags(const QString &text)
 {
+  /*
+  ** We cannot trust the source.
+  */
+
   return QString(text).remove(QRegExp("<[^>]*>"));
 }
