@@ -155,18 +155,18 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 #endif
   QMenu *menu = new QMenu(this);
 
-  menu->addAction(tr("Copy selected link."),
+  menu->addAction(tr("Copy selected &link."),
 		  this,
 		  SLOT(slotCopyFeedLink(void)));
   menu->addSeparator();
-  menu->addAction(tr("Delete all feeds."),
+  menu->addAction(tr("Delete &all feeds."),
 		  this,
 		  SLOT(slotDeleteAllFeeds(void)));
-  menu->addAction(tr("Delete selected feed."),
+  menu->addAction(tr("Delete &selected feed."),
 		  this,
 		  SLOT(slotDeleteFeed(void)));
   menu->addSeparator();
-  menu->addAction(tr("Refresh table."),
+  menu->addAction(tr("&Refresh table."),
 		  this,
 		  SLOT(slotPopulateFeeds(void)));
   m_ui.action_menu->setMenu(menu);
@@ -354,6 +354,9 @@ void spoton_rss::center(QWidget *parent)
 
 void spoton_rss::closeEvent(QCloseEvent *event)
 {
+  QSettings settings;
+
+  settings.setValue("rss_window_geometry", saveGeometry());
   QMainWindow::closeEvent(event);
 }
 
@@ -1015,6 +1018,9 @@ void spoton_rss::saveFeedLink(const QString &d,
 
 void spoton_rss::show(void)
 {
+  QSettings settings;
+
+  restoreGeometry(settings.value("gui/rss_window_geometry").toByteArray());
   QMainWindow::show();
 }
 
@@ -2251,15 +2257,15 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 {
   QMenu menu(this);
 
-  menu.addAction(tr("Copy selected link."),
+  menu.addAction(tr("Copy selected &link."),
 		 this, SLOT(slotCopyFeedLink(void)));
   menu.addSeparator();
-  menu.addAction(tr("Delete all feeds."),
+  menu.addAction(tr("Delete &all feeds."),
 		 this, SLOT(slotDeleteAllFeeds(void)));
-  menu.addAction(tr("Delete selected feed."),
+  menu.addAction(tr("Delete &selected feed."),
 		 this, SLOT(slotDeleteFeed(void)));
   menu.addSeparator();
-  menu.addAction(tr("Refresh table."),
+  menu.addAction(tr("&Refresh table."),
 		 this, SLOT(slotPopulateFeeds(void)));
   menu.exec(m_ui.feeds->mapToGlobal(point));
 }
