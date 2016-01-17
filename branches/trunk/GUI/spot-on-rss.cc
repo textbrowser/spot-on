@@ -179,7 +179,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 
   m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
 					   false).toBool());
-  m_ui.download_interval->setValue(dvalue);
   m_ui.import_periodically->setChecked
     (settings.value("gui/rss_import_activate", false).toBool());
   m_ui.import->setEnabled(!m_ui.import_periodically->isChecked());
@@ -197,6 +196,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
      settings.value("gui/rss_download_interval", 1.50).toDouble(),
      m_ui.download_interval->maximum());
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * dvalue));
+  m_ui.download_interval->setValue(dvalue);
   ivalue = qBound
     (m_ui.purge_days->minimum(),
      settings.value("gui/rss_purge_days", 1).toInt(),
