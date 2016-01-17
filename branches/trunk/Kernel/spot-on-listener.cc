@@ -220,7 +220,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 		      QBluetooth::Authorization |
 		      QBluetooth::Encryption |
 		      QBluetooth::Secure))
-	m_keySize = 0;
+	m_keySize = QBluetooth::NoSecurity;
 #endif
     }
   else if(transport == "tcp")
