@@ -141,6 +141,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
 	  SLOT(slotUrlLinkClicked(const QUrl &)));
+  connect(m_ui.timeline_filter,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotRefreshTimeline(void)));
   connect(this,
 	  SIGNAL(downloadFeedImage(const QUrl &, const QUrl &)),
 	  this,
@@ -1724,6 +1728,7 @@ void spoton_rss::slotImport(void)
       progress->raise();
       progress->activateWindow();
 #ifndef Q_OS_MAC
+      progress->repaint();
       QApplication::processEvents();
 #endif
     }
@@ -1973,8 +1978,14 @@ void spoton_rss::slotRefreshTimeline(void)
 
 	query.setForwardOnly(true);
 	str = "SELECT content, description, publication_date, "
-	  "title, url, url_redirected FROM rss_feeds_links "
-	  "ORDER BY publication_date DESC";
+	  "title, url, url_redirected FROM rss_feeds_links ";
+
+	if(m_ui.timeline_filter->currentIndex() == 1)
+	  str.append(" WHERE imported = 1 ");
+	else if(m_ui.timeline_filter->currentIndex() == 2)
+	  str.append(" WHERE visited = 1 ");
+
+	str.append("ORDER BY publication_date DESC");
 
 	if(query.exec(str))
 	  {

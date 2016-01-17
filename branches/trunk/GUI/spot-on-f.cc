@@ -295,6 +295,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 			  arg(SPOTON_APPLICATION_NAME));
   progress.show();
 #ifndef Q_OS_MAC
+  progress.repaint();
   QApplication::processEvents();
 #endif
 

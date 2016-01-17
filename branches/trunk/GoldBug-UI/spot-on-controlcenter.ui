@@ -1234,8 +1234,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>559</width>
-             <height>637</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1818,7 +1818,10 @@ QPushButton:pressed {
                   <item>
                    <widget class="QLabel" name="label_28">
                     <property name="text">
-                     <string>&amp;day(s) will be purged automatically.</string>
+                     <string>&amp;day(s) will be purged automatically by the kernel..</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
                     </property>
                     <property name="buddy">
                      <cstring>days</cstring>
@@ -2787,8 +2790,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>1799</height>
+             <width>556</width>
+             <height>1783</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4026,7 +4029,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>582</width>
-             <height>576</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5059,7 +5062,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>634</width>
-             <height>352</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6271,7 +6274,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>806</width>
+             <width>771</width>
              <height>1304</height>
             </rect>
            </property>
@@ -7740,7 +7743,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>430</width>
+             <width>556</width>
              <height>771</height>
             </rect>
            </property>
@@ -9020,8 +9023,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>533</width>
-             <height>471</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10630,6 +10633,7 @@ border-style: inset;
     <addaction name="action_Minimal_Display"/>
     <addaction name="action_Options"/>
     <addaction name="action_Poptastic_Settings"/>
+    <addaction name="action_RSS"/>
     <addaction name="action_Statistics_Window"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
@@ -10689,9 +10693,6 @@ border-style: inset;
   <action name="action_Rosetta">
    <property name="text">
     <string>&amp;Rosetta</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="action_Copy">
@@ -10810,6 +10811,18 @@ border-style: inset;
    </property>
    <property name="text">
     <string>&amp;Neighbor Summary Panel</string>
+   </property>
+  </action>
+  <action name="action_RSS">
+   <property name="icon">
+    <iconset resource="../Icons/icons.qrc">
+     <normaloff>:/generic/rss.png</normaloff>:/generic/rss.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;RSS</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>
