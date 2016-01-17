@@ -221,6 +221,8 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
   QApplication::restoreOverrideCursor();
+  restoreGeometry(settings.value("gui/rss_window_geometry").toByteArray());
+  restoreState(settings.value("gui/rss_window_state").toByteArray());
 }
 
 spoton_rss::~spoton_rss()
@@ -356,8 +358,8 @@ void spoton_rss::closeEvent(QCloseEvent *event)
 {
   QSettings settings;
 
-  settings.setValue("rss_window_geometry", saveGeometry());
-  settings.setValue("rss_window_state", saveState());
+  settings.setValue("gui/rss_window_geometry", saveGeometry());
+  settings.setValue("gui/rss_window_state", saveState());
   QMainWindow::closeEvent(event);
 }
 
@@ -635,6 +637,8 @@ void spoton_rss::populateFeeds(void)
 		  else
 		    item->setIcon(QIcon(":/generic/rss.png"));
 		}
+	      else
+		item->setIcon(QIcon(":/generic/rss.png"));
 
 	      item = new QTableWidgetItem(oid);
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -643,7 +647,6 @@ void spoton_rss::populateFeeds(void)
 	    }
 
 	m_ui.feeds->resizeColumnToContents(0);
-	m_ui.feeds->resizeRowsToContents();
 	m_ui.feeds->setRowCount(row);
 	m_ui.feeds->setSortingEnabled(true);
       }
@@ -1019,10 +1022,6 @@ void spoton_rss::saveFeedLink(const QString &d,
 
 void spoton_rss::show(void)
 {
-  QSettings settings;
-
-  restoreGeometry(settings.value("gui/rss_window_geometry").toByteArray());
-  restoreState(settings.value("gui/rss_window_state").toByteArray());
   QMainWindow::show();
 }
 
