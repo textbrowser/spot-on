@@ -1873,7 +1873,10 @@ void spoton_rss::slotImport(void)
     }
 
   if(progress)
-    progress->deleteLater();
+    {
+      progress->close();
+      progress->deleteLater();
+    }
 }
 
 void spoton_rss::slotMaximumKeywordsChanged(int value)

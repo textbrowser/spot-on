@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>841</width>
     <height>600</height>
    </rect>
   </property>
@@ -38,7 +38,16 @@
            <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
             <number>5</number>
            </property>
            <property name="spacing">
@@ -403,7 +412,7 @@
           <item>
            <widget class="QSpinBox" name="purge_days">
             <property name="minimum">
-             <number>1</number>
+             <number>0</number>
             </property>
             <property name="maximum">
              <number>30</number>
@@ -604,8 +613,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>27</height>
+     <width>841</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
