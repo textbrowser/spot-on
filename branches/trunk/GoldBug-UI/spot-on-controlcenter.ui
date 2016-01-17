@@ -1234,8 +1234,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>537</width>
+             <height>637</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2790,8 +2790,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>1783</height>
+             <width>468</width>
+             <height>1799</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -6140,7 +6140,7 @@ QPushButton:pressed {
                 </widget>
                </item>
                <item>
-                <widget class="QTextBrowser" name="urls">
+                <widget class="spoton_textbrowser" name="urls">
                  <property name="font">
                   <font>
                    <family>Monospace</family>
@@ -6274,7 +6274,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>771</width>
+             <width>806</width>
              <height>1304</height>
             </rect>
            </property>
@@ -7743,7 +7743,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
+             <width>430</width>
              <height>771</height>
             </rect>
            </property>
@@ -9023,8 +9023,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>533</width>
+             <height>471</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10842,6 +10842,11 @@ border-style: inset;
    <class>spoton_lineedit</class>
    <extends>QLineEdit</extends>
    <header>spot-on.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
