@@ -2207,7 +2207,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     integer = 10;
-  else if(integer < 10 || integer > 100)
+  else if(integer < 10 || integer > 1000)
     integer = 10;
 
   settings.insert("gui/searchResultsPerPage", integer);

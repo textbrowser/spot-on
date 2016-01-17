@@ -774,9 +774,9 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 
       QString str(publicKeyHash.toBase64().constData());
       QString toolTip
-	(tr("<h2>%1: Participant <i>%2</i> (%3) is "
+	(tr("<html><h2>%1: Participant <i>%2</i> (%3) is "
 	    "requesting forward secrecy "
-	    "credentials. Please see the status bar.</h2>").
+	    "credentials. Please see the status bar.</h2></html>").
 	 arg(SPOTON_APPLICATION_NAME).
 	 arg(name).
 	 arg(str.mid(0, 16) + "..." + str.right(16)));
@@ -1412,7 +1412,7 @@ void spoton::slotStarBeamReceivedAndVerified(const QString &fileName)
   QToolTip::showText(point, "");
   QToolTip::showText
     (point,
-     tr("<h3>%1: StarBeam %2 has been verified!</h3>").
+     tr("<html><h2>%1: StarBeam %2 has been verified!</h2></html>").
      arg(SPOTON_APPLICATION_NAME).
      arg(spoton_misc::htmlEncode(fileName)));
 }

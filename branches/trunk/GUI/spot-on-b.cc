@@ -371,7 +371,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      QString toolTip
 			(tr("<html><h2>%1: Participant <i>%2</i> (%3) "
 			    "has completed a "
-			    "forward secrecy exchange.</html>").
+			    "forward secrecy exchange.</h2></html>").
 			 arg(SPOTON_APPLICATION_NAME).
 			 arg(name).
 			 arg(str.mid(0, 16) + "..." + str.right(16)));

@@ -30,7 +30,6 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QSqlDriver>
-#include <QToolTip>
 #include <QtCore>
 
 #include "spot-on.h"
@@ -1847,12 +1846,10 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	   arg(m_kernelSocket.peerPort()));
       else
 	{
-	  QToolTip::showText(pos(), "");
-	  QToolTip::showText
-	    (pos(),
-	     tr("<html><h4>URL %1 shared with your friendly "
-		"participants.</h4></html>").
-	     arg(original.toEncoded().constData()));
+	  m_sb.status->setText(tr("URL %1 shared with your friendly "
+				  "participants.").
+			       arg(original.toEncoded().constData()));
+	  m_sb.status->repaint();
 	}
 
       return;

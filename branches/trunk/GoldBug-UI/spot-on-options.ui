@@ -53,7 +53,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-530</y>
              <width>462</width>
              <height>1226</height>
             </rect>
@@ -771,7 +771,7 @@
                     <number>10</number>
                    </property>
                    <property name="maximum">
-                    <number>100</number>
+                    <number>1000</number>
                    </property>
                   </widget>
                  </item>
@@ -1773,8 +1773,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>276</width>
-             <height>235</height>
+             <width>468</width>
+             <height>499</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
