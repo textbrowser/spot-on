@@ -1609,7 +1609,7 @@
                   <item>
                    <widget class="QLabel" name="label_28">
                     <property name="text">
-                     <string>&amp;day(s) will be purged automatically.</string>
+                     <string>&amp;day(s) will be purged automatically by the kernel.</string>
                     </property>
                     <property name="buddy">
                      <cstring>days</cstring>
