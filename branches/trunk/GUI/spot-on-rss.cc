@@ -357,6 +357,7 @@ void spoton_rss::closeEvent(QCloseEvent *event)
   QSettings settings;
 
   settings.setValue("rss_window_geometry", saveGeometry());
+  settings.setValue("rss_window_state", saveState());
   QMainWindow::closeEvent(event);
 }
 
@@ -1021,6 +1022,7 @@ void spoton_rss::show(void)
   QSettings settings;
 
   restoreGeometry(settings.value("gui/rss_window_geometry").toByteArray());
+  restoreState(settings.value("gui/rss_window_state").toByteArray());
   QMainWindow::show();
 }
 
