@@ -4163,14 +4163,22 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   if(url.isEmpty() || !url.isValid())
     {
       logError
-	("spoton_misc::importUrl(): invalid URL.");
+	("spoton_misc::importUrl(): empty or invalid URL.");
       return false;
     }
 
   QString scheme(url.scheme().toLower().trimmed());
 
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
-    return false;
+    {
+      if(!scheme.isEmpty())
+	logError(QString("spoton_misc::importUrl(): the URL scheme %1 "
+			 "is not acceptable.").arg(scheme));
+      else
+	logError("spoton_misc::importUrl(): invalid URL scheme.");
+
+      return false;
+    }
 
   url.setScheme(scheme);
 
@@ -4238,7 +4246,14 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	      ok = query.exec();
 
 	    if(!ok)
-	      return ok;
+	      {
+		logError
+		  (QString("spoton_misc::importUrl(): a failure occurred "
+			   "while attempting to update the URL content. "
+			   "The URL is %1").
+		   arg(url.toEncoded().constData()));
+		return ok;
+	      }
 
 	    /*
 	    ** Create a new revision using the previous content if the
@@ -4317,8 +4332,10 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
 	    if(!ok)
 	      logError
-		("spoton_misc::importUrl(): an error occurred while "
-		 "attempting to create a URL revision.");
+		(QString("spoton_misc::importUrl(): an error occurred while "
+			 "attempting to create a URL revision. "
+			 "The URL is %1.").
+		 arg(url.toEncoded().constData()));
 
 	    return ok;
 	  }
