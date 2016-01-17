@@ -120,7 +120,8 @@ Completed Items
 86.    Support ECC, or not. Signatures supported.
 87.    IMAP and POP3.
 88.    Optional OTR because it's so pretty. Partial SMP.
-89.    Provide GCM mode. libgcrypt 1.6.x is required. Authentication data is not included.
+89.    Provide GCM mode. libgcrypt 1.6.x is required. Authentication data
+       is not included.
 90.    Use super-secure memory? Used here and there.
 91.    Include licenses of other software where applicable.
        Satisfy the license soldiers.
@@ -140,6 +141,8 @@ Completed Items
        private listeners would be capable of transforming the data
        into StarBeam pulses.
 102.   Allow pass-through flow of non-Spot-On data.
+103.   Customize expiration timers.
+104.   Display information pertaining to unsigned documents.
 
 Ignored Items
 
@@ -147,7 +150,7 @@ Ignored Items
        listeners that are connected on interfaces having different external
        addresses.
 2.     CGI for listeners.
-3.     Customize expiration timers.
+3.     Hybrid group communications based on deterministic key pairs.
 4.     Introduce spoton_misc::findOptimalKeyLengthForPublicKey(). The method
        will allow Spot-On to select optimal lengths for digest keys based
        on provided content and public keys. Version 0.06 introduced
@@ -169,7 +172,7 @@ Ignored Items
        responses. Congestion control is helpful, however, short graphs
        tend to be skewed.
 14.    Per request, provide an automatic StarBeam rewind mechanism with a
-       timer.
+       timer. Private and public libraries.
 15.    Account credentials should not be recorded via reversible encryption.
        Derive keys? I really like the two-step mutual authentication.
 16.    Enable SQLite foreign key support via PRAGMA foreign_keys = ON.
@@ -189,7 +192,7 @@ Ignored Items
        is not properly defined.
 28.    Android build.
 29.    QFSFileEngine::open: No file name specified: created from
-       e-mail.
+       e-mail. Missing images?
 30.    Counting users is possible. Gathering message attributes is
        also possible. See group information in MESSAGES.
 31.    Add support for crypto++.
@@ -218,7 +221,6 @@ Ignored Items
 43.    The libgcrypt library supports GCRY_KDF_SCRYPT.
 44.    Weather feeds.
 45.    Create a user's configuration database. Store key types too.
-46.    Hybrid group communications based on deterministic key pairs.
 
 Remaining Items
 
@@ -231,4 +233,4 @@ Remaining Items
 6.     Allow custom addresses for spoton_external_address.
 7.     An account system where the initiator provides both random arrays.
 8.     Communications over telephones. Noise and text.
-9.     Display information pertaining to unsigned documents.
+9.     Provide new digests to lessen public key usage.
