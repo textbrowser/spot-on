@@ -7,17 +7,17 @@ libOpenSSL/Libraries.win32
 libSpotOn
 libcURL/Win32.d/bin
 
-Please copy GeoIP.dat from GeoIP/Data.
+Please copy Data/spot-on-neighbors.txt.
 
-Please copy Microsoft.VC90.CRT.manifest from libOpenSSL/Libraries.win32.
+Please copy GeoIP/Data/GeoIP.dat.
+
+Please copy Qt/qt.conf.
 
 Please copy SctpDrv-12.05.0.exe from SCTP.
 
 Please copy all required Qt DLLs, including plugins.
 
-Please copy qt.conf.
-
-Please copy spot-on-neighbors.txt.
+Please copy libOpenSSL/Libraries.win32/Microsoft.VC90.CRT.manifest.
 
 Please copy the Documentation directory.
 
