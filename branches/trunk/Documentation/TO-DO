@@ -232,5 +232,7 @@ Remaining Items
 5.     Per-participant permissions.
 6.     Allow custom addresses for spoton_external_address.
 7.     An account system where the initiator provides both random arrays.
-8.     Communications over telephones. Noise and text.
+8.     Audible.
 9.     Provide new digests to lessen public key usage.
+10.    SMP accounts.
+11.    Voice of Spot-On.
