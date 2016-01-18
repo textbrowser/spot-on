@@ -2014,7 +2014,7 @@ void spoton_rss::slotRefreshTimeline(void)
 	if(m_ui.action_Insert_Date->isChecked())
 	  str.append("ORDER BY insert_date");
 	else
-	  str.append("ORDER BY DATE(publication_date)");
+	  str.append("ORDER BY publication_date");
 
 	if(query.exec(str))
 	  {
