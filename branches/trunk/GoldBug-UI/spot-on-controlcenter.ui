@@ -6177,6 +6177,11 @@ QPushButton:pressed {
                  </item>
                  <item>
                   <widget class="QLabel" name="url_pages">
+                   <property name="font">
+                    <font>
+                     <family>Monospace</family>
+                    </font>
+                   </property>
                    <property name="text">
                     <string>| 1 |</string>
                    </property>
@@ -10828,6 +10833,11 @@ border-style: inset;
  </widget>
  <customwidgets>
   <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
+  </customwidget>
+  <customwidget>
    <class>spoton_textedit</class>
    <extends>QTextEdit</extends>
    <header>GUI/spot-on-textedit.h</header>
@@ -10842,11 +10852,6 @@ border-style: inset;
    <class>spoton_lineedit</class>
    <extends>QLineEdit</extends>
    <header>spot-on.h</header>
-  </customwidget>
-  <customwidget>
-   <class>spoton_textbrowser</class>
-   <extends>QTextBrowser</extends>
-   <header>spot-on-textbrowser.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

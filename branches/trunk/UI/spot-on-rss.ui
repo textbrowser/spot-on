@@ -547,6 +547,11 @@
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QTextBrowser" name="errors">
+          <property name="font">
+           <font>
+            <family>Monospace</family>
+           </font>
+          </property>
           <property name="tabChangesFocus">
            <bool>true</bool>
           </property>
