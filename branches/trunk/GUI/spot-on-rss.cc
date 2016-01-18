@@ -1825,24 +1825,24 @@ void spoton_rss::slotImport(void)
 
 	      if(batch)
 		{
+		  bool imported = false;
+
 		  if(!list.isEmpty())
-		    {
-		      QSqlQuery query(db);
-		      bool imported = importUrl(list, true);
+		    imported = importUrl(list, true);
 
-		      query.prepare("UPDATE rss_feeds_links "
-				    "SET imported = ? "
-				    "WHERE url_hash = ?");
+		  QSqlQuery query(db);
 
-		      if(imported)
-			query.bindValue(0, 1);
-		      else
-			query.bindValue(0, 2); // Import error.
+		  query.prepare("UPDATE rss_feeds_links "
+				"SET imported = ? "
+				"WHERE url_hash = ?");
 
-		      query.bindValue(1, urlHash);
-		      query.exec();
-		    }
+		  if(imported)
+		    query.bindValue(0, 1);
+		  else
+		    query.bindValue(0, 2); // Import error.
 
+		  query.bindValue(1, urlHash);
+		  query.exec();
 		  list.clear();
 		}
 	      else
@@ -1991,6 +1991,8 @@ void spoton_rss::slotRefreshTimeline(void)
 	  str.append(" WHERE imported = 1 ");
 	else if(m_ui.timeline_filter->currentIndex() == 2)
 	  str.append(" WHERE visited = 1 ");
+	else if(m_ui.timeline_filter->currentIndex() == 3)
+	  str.append(" WHERE imported = 2 OR visited = 2 ");
 
 	str.append("ORDER BY publication_date DESC");
 
