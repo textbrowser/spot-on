@@ -2010,6 +2010,8 @@ void spoton_rss::slotRefreshTimeline(void)
 	  str.append(" WHERE visited = 1 ");
 	else if(m_ui.timeline_filter->currentIndex() == 3)
 	  str.append(" WHERE imported = 2 OR visited = 2 ");
+	else if(m_ui.timeline_filter->currentIndex() == 4)
+	  str.append(" WHERE imported <> 1 ");
 
 	if(m_ui.action_Insert_Date->isChecked())
 	  str.append("ORDER BY insert_date");

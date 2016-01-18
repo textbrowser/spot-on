@@ -507,7 +507,7 @@
           <item>
            <widget class="QComboBox" name="timeline_filter">
             <property name="currentIndex">
-             <number>2</number>
+             <number>0</number>
             </property>
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToContents</enum>
@@ -530,6 +530,11 @@
             <item>
              <property name="text">
               <string>Malformed</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Not Imported</string>
              </property>
             </item>
            </widget>
