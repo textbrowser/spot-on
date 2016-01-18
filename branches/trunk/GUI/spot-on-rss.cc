@@ -1994,7 +1994,7 @@ void spoton_rss::slotRefreshTimeline(void)
 	else if(m_ui.timeline_filter->currentIndex() == 3)
 	  str.append(" WHERE imported = 2 OR visited = 2 ");
 
-	str.append("ORDER BY publication_date DESC");
+	str.append("ORDER BY publication_date");
 
 	if(query.exec(str))
 	  {
