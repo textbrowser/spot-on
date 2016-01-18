@@ -1203,6 +1203,10 @@ void spoton_rss::slotContentReplyFinished(void)
 	    reply->ignoreSslErrors();
 	    reply->setProperty("original-url", originalUrl);
 	    connect(reply,
+		    SIGNAL(error(QNetworkReply::NetworkError)),
+		    this,
+		    SLOT(slotReplyError(QNetworkReply::NetworkError)));
+	    connect(reply,
 		    SIGNAL(finished(void)),
 		    this,
 		    SLOT(slotContentReplyFinished(void)));
@@ -1449,6 +1453,10 @@ void spoton_rss::slotDownloadContent(void)
       reply->setProperty("original-url", url);
       reply->setReadBufferSize(0);
       connect(reply,
+	      SIGNAL(error(QNetworkReply::NetworkError)),
+	      this,
+	      SLOT(slotReplyError(QNetworkReply::NetworkError)));
+      connect(reply,
 	      SIGNAL(finished(void)),
 	      this,
 	      SLOT(slotContentReplyFinished(void)));
@@ -1464,6 +1472,10 @@ void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
 
       reply->ignoreSslErrors();
       reply->setProperty("url", url);
+      connect(reply,
+	      SIGNAL(error(QNetworkReply::NetworkError)),
+	      this,
+	      SLOT(slotReplyError(QNetworkReply::NetworkError)));
       connect(reply,
 	      SIGNAL(finished(void)),
 	      this,
@@ -1506,7 +1518,7 @@ void spoton_rss::slotDownloadTimeout(void)
   connect(reply,
 	  SIGNAL(error(QNetworkReply::NetworkError)),
 	  this,
-	  SLOT(slotFeedReplyError(QNetworkReply::NetworkError)));
+	  SLOT(slotReplyError(QNetworkReply::NetworkError)));
   connect(reply,
 	  SIGNAL(finished(void)),
 	  this,
@@ -1544,25 +1556,6 @@ void spoton_rss::slotFeedImageReplyFinished(void)
     reply->deleteLater();
 }
 
-void spoton_rss::slotFeedReplyError(QNetworkReply::NetworkError code)
-{
-  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
-  QString error("");
-
-  if(reply)
-    {
-      error = QString("The URL <a href=\"%1\">%1</a> "
-		      "generated an error (%2).").
-	arg(reply->url().toEncoded().constData()).
-	arg(reply->errorString());
-      reply->deleteLater();
-    }
-  else
-    error = QString("A QNetworkReply error (%1) occurred.").arg(code);
-
-  logError(error);
-}
-
 void spoton_rss::slotFeedReplyFinished(void)
 {
   QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
@@ -1595,6 +1588,10 @@ void spoton_rss::slotFeedReplyFinished(void)
 	    logError(error);
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
 	    reply->ignoreSslErrors();
+	    connect(reply,
+		    SIGNAL(error(QNetworkReply::NetworkError)),
+		    this,
+		    SLOT(slotReplyError(QNetworkReply::NetworkError)));
 	    connect(reply,
 		    SIGNAL(finished(void)),
 		    this,
@@ -2136,6 +2133,25 @@ void spoton_rss::slotRefreshTimeline(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_rss::slotReplyError(QNetworkReply::NetworkError code)
+{
+  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+  QString error("");
+
+  if(reply)
+    {
+      error = QString("The URL <a href=\"%1\">%1</a> "
+		      "generated an error (%2).").
+	arg(reply->url().toEncoded().constData()).
+	arg(reply->errorString());
+      reply->deleteLater();
+    }
+  else
+    error = QString("A QNetworkReply error (%1) occurred.").arg(code);
+
+  logError(error);
 }
 
 void spoton_rss::slotSaveProxy(void)

@@ -93,7 +93,6 @@ class spoton_rss: public QMainWindow
   void slotDownloadIntervalChanged(double value);
   void slotDownloadTimeout(void);
   void slotFeedImageReplyFinished(void);
-  void slotFeedReplyError(QNetworkReply::NetworkError code);
   void slotFeedReplyFinished(void);
   void slotFeedReplyReadyRead(void);
   void slotFind(void);
@@ -104,6 +103,7 @@ class spoton_rss: public QMainWindow
   void slotPurge(void);
   void slotPurgeDaysChanged(int value);
   void slotRefreshTimeline(void);
+  void slotReplyError(QNetworkReply::NetworkError code);
   void slotSaveProxy(void);
   void slotShowContextMenu(const QPoint &point);
   void slotStatisticsTimeout(void);
