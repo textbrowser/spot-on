@@ -527,6 +527,11 @@
               <string>Indexed</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Malformed</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item>
