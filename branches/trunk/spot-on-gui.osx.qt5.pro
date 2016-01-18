@@ -65,7 +65,7 @@ PROJECTNAME	= Spot-On
 QMAKE_STRIP	= echo
 
 install1.path           = /Applications/Spot-On_Qt5.d
-install1.files          = spot-on-neighbors.txt
+install1.files          = ./Data/spot-on-neighbors.txt
 libgeoip_data_install.path = /Applications/Spot-On_Qt5.d/GeoIP
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
 libntru_install.path  = .
