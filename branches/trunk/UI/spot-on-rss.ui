@@ -614,7 +614,15 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <widget class="QMenu" name="menu_Timeline_Order">
+     <property name="title">
+      <string>&amp;Timeline Order</string>
+     </property>
+     <addaction name="action_Insert_Date"/>
+     <addaction name="action_Publication_Date"/>
+    </widget>
     <addaction name="action_Find"/>
+    <addaction name="menu_Timeline_Order"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -634,6 +642,25 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="action_Insert_Date">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Insert Date</string>
+   </property>
+  </action>
+  <action name="action_Publication_Date">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Publication Date</string>
    </property>
   </action>
  </widget>

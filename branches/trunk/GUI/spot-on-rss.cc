@@ -69,6 +69,14 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotFindInitialize(void)));
+  connect(m_ui.action_Insert_Date,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotTimeOrderBy(bool)));
+  connect(m_ui.action_Publication_Date,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotTimeOrderBy(bool)));
   connect(m_ui.activate,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -177,6 +185,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   setWindowTitle(tr("%1: RSS").arg(SPOTON_APPLICATION_NAME));
 
   QSettings settings;
+  QString str("");
   double dvalue = 0.0;
   int index = 0;
   int ivalue = 0;
@@ -206,6 +215,14 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
      settings.value("gui/rss_purge_days", 1).toInt(),
      m_ui.purge_days->maximum());
   m_ui.purge_days->setValue(ivalue);
+  str = settings.value("gui/rss_time_order", "publication_date").toString().
+    toLower().trimmed();
+
+  if(str == "insert_date")
+    m_ui.action_Insert_Date->setChecked(true);
+  else
+    m_ui.action_Publication_Date->setChecked(true);
+
   m_importTimer.setInterval(2500);
   m_statisticsTimer.start(2500);
 
@@ -1994,7 +2011,10 @@ void spoton_rss::slotRefreshTimeline(void)
 	else if(m_ui.timeline_filter->currentIndex() == 3)
 	  str.append(" WHERE imported = 2 OR visited = 2 ");
 
-	str.append("ORDER BY publication_date");
+	if(m_ui.action_Insert_Date->isChecked())
+	  str.append("ORDER BY insert_date");
+	else
+	  str.append("ORDER BY DATE(publication_date)");
 
 	if(query.exec(str))
 	  {
@@ -2347,6 +2367,36 @@ void spoton_rss::slotTabChanged(int index)
   QSettings settings;
 
   settings.setValue("gui/rss_last_tab", index);
+}
+
+void spoton_rss::slotTimeOrderBy(bool state)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(action == m_ui.action_Insert_Date)
+    {
+      QSettings settings;
+
+      if(state)
+	settings.setValue("gui/rss_time_order", "insert_date");
+      else
+	settings.setValue("gui/rss_time_order", "publication_date");
+
+      m_ui.action_Publication_Date->setChecked(!state);
+      slotRefreshTimeline();
+    }
+  else if(action == m_ui.action_Publication_Date)
+    {
+      QSettings settings;
+
+      if(state)
+	settings.setValue("gui/rss_time_order", "publication_date");
+      else
+	settings.setValue("gui/rss_time_order", "insert_date");
+
+      m_ui.action_Insert_Date->setChecked(!state);
+      slotRefreshTimeline();
+    }
 }
 
 void spoton_rss::slotUrlLinkClicked(const QUrl &url)
