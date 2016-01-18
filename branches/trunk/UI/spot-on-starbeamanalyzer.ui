@@ -136,6 +136,11 @@ To re-analyze a mosaic, you must first delete the entry in the below table.</str
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="font">
+       <font>
+        <family>Monospace</family>
+       </font>
+      </property>
       <property name="tabChangesFocus">
        <bool>true</bool>
       </property>
