@@ -1555,6 +1555,11 @@ void spoton_kernel::prepareNeighbors(void)
 
   if(disconnected == m_neighbors.size() || m_neighbors.isEmpty())
     {
+      /*
+      ** The containers s_emailRequestCache and
+      ** s_geminisCache are not emptied here.
+      */
+
       QWriteLocker locker(&s_messagingCacheMutex);
 
       s_messagingCache.clear();

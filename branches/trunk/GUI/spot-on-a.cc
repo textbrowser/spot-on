@@ -2276,8 +2276,8 @@ spoton::spoton(void):QMainWindow()
   if(m_ui.hashType->findText(str) > -1)
     m_ui.hashType->setCurrentIndex(m_ui.hashType->findText(str));
 
-  str = m_settings.value("kernel/messaging_cache_algorithm",
-			 "sha224").toString();
+  str = m_settings.value("kernel/messaging_cache_algorithm", "sha224").
+    toString();
 
   if(m_ui.congestionAlgorithm->findText(str) > -1)
     m_ui.congestionAlgorithm->setCurrentIndex
