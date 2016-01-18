@@ -1404,25 +1404,6 @@ void spoton::slotPurgeEphemeralKeyPair(void)
        arg(m_kernelSocket.peerPort()));
 }
 
-void spoton::slotStarBeamReceivedAndVerified(const QString &fileName)
-{
-  if(fileName.isEmpty())
-    return;
-  else if(m_locked)
-    return;
-
-  QPoint point(frameGeometry().topRight());
-
-  point.setX(point.x() - 150);
-  point.setY(point.y() + 100);
-  QToolTip::showText(point, "");
-  QToolTip::showText
-    (point,
-     tr("<html><h2>%1: StarBeam %2 has been verified!</h2></html>").
-     arg(SPOTON_APPLICATION_NAME).
-     arg(spoton_misc::htmlEncode(fileName)));
-}
-
 void spoton::slotDisableSynchronousUrlImport(bool state)
 {
   QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());

@@ -1776,6 +1776,8 @@ void spoton::computeFileDigest(const QByteArray &expectedFileHash,
 			       const QString &oid,
 			       spoton_crypt *crypt)
 {
+  Q_UNUSED(expectedFileHash);
+
   QFile file;
 
   file.setFileName(fileName);
@@ -1797,10 +1799,7 @@ void spoton::computeFileDigest(const QByteArray &expectedFileHash,
 					  m_starbeamDigestInterrupt));
 
 	    if(!m_starbeamDigestInterrupt.fetchAndAddRelaxed(0))
-	      if(spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt))
-		if(!hash.isEmpty() && spoton_crypt::memcmp(expectedFileHash,
-							   hash))
-		  emit starBeamReceivedAndVerified(fileName);
+	      spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt);
 	  }
 
 	db.close();

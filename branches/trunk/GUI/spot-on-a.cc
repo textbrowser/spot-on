@@ -529,10 +529,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(iconsChanged(void)),
 	  m_starbeamAnalyzer,
 	  SLOT(slotSetIcons(void)));
-  connect(this,
-	  SIGNAL(starBeamReceivedAndVerified(const QString &)),
-	  this,
-	  SLOT(slotStarBeamReceivedAndVerified(const QString &)));
   connect(m_sb.authentication_request,
 	  SIGNAL(clicked(void)),
 	  this,
