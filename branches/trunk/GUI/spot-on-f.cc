@@ -1246,12 +1246,18 @@ void spoton::slotLock(void)
 	it.value().data()->close();
     }
 
-  foreach(spoton_pageviewer *pageViewer, findChildren<spoton_pageviewer *> ())
-    pageViewer->deleteLater();
-
   foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
     if(m_sb.lock != toolButton)
       toolButton->setEnabled(!m_locked);
+
+  foreach(QWidget *widget, QApplication::topLevelWidgets())
+    {
+      spoton_pageviewer *pageViewer = qobject_cast<spoton_pageviewer *>
+	(widget);
+
+      if(pageViewer)
+	pageViewer->deleteLater();
+    }
 
   m_echoKeyShare->close();
   m_encryptFile.close();
