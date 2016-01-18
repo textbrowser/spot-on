@@ -144,7 +144,7 @@ Completed Items
 103.   Customize expiration timers.
 104.   Display information pertaining to unsigned documents.
 
-Ignored Items
+Remaining Items
 
 1.     The kernel should fetch a node's external IP address. Not ideal for
        listeners that are connected on interfaces having different external
@@ -221,18 +221,15 @@ Ignored Items
 43.    The libgcrypt library supports GCRY_KDF_SCRYPT.
 44.    Weather feeds.
 45.    Create a user's configuration database. Store key types too.
-
-Remaining Items
-
-1.     C++11, unique_ptr and malloc().
-2.     gcry_md_setkey() does not impose minimum key lengths.
-3.     The method spoton_neighbor::savePublicKey() does not compare
+46.    C++11, unique_ptr and malloc().
+47.    gcry_md_setkey() does not impose minimum key lengths.
+48.    The method spoton_neighbor::savePublicKey() does not compare
        personal keys with provided keys.
-4.     Index the PostgreSQL tables.
-5.     Per-participant permissions.
-6.     Allow custom addresses for spoton_external_address.
-7.     An account system where the initiator provides both random arrays.
-8.     Audible.
-9.     Provide new digests to lessen public key usage.
-10.    SMP accounts.
-11.    Voice of Spot-On.
+49.    Index the PostgreSQL tables.
+50.    Per-participant permissions.
+51.    Allow custom addresses for spoton_external_address.
+52.    An account system where the initiator provides both random arrays.
+53.    Audible.
+54.    Provide new digests to lessen public key usage.
+55.    SMP accounts.
+56.    Voice of Spot-On.
