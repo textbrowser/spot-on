@@ -264,7 +264,12 @@ int main(int argc, char *argv[])
   int integer = settings.value("gui/gcryctl_init_secmem", 262144).
     toInt(&ok);
 
-  if(integer < 131072 || integer > 999999999 || !ok)
+  if(!ok)
+    integer = 262144;
+  else if(integer == 0)
+    {
+    }
+  else if(integer < 131072 || integer > 999999999 || !ok)
     integer = 262144;
 
   spoton_crypt::init(integer);
@@ -2417,6 +2422,15 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/gcryctl_init_secmem", 262144).toInt());
   m_ui.kernelSecureMemoryPool->setValue
     (m_settings.value("kernel/gcryctl_init_secmem", 262144).toInt());
+
+  if(m_ui.guiSecureMemoryPool->value() == 0)
+    m_ui.guiSecureMemoryPool->setStyleSheet
+      ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
+
+  if(m_ui.kernelSecureMemoryPool->value() == 0)
+    m_ui.kernelSecureMemoryPool->setStyleSheet
+      ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
+
   m_ui.destination->setToolTip(m_ui.destination->text());
   m_ui.emailParticipants->setAlternatingRowColors
     (m_optionsUi.emailAlternatingRowColors->isChecked());
@@ -5089,7 +5103,15 @@ void spoton::slotGeneralTimerTimeout(void)
 	m_buzzStatusTimer.stop();
     }
   else
-    m_buzzStatusTimer.stop();
+    {
+      m_buzzStatusTimer.stop();
+
+      if(m_ui.kernelSecureMemoryPool->value() == 0)
+	m_ui.kernelSecureMemoryPool->setStyleSheet
+	  ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
+      else
+	m_ui.kernelSecureMemoryPool->setStyleSheet("");
+    }
 
   if(!isKernelActive() ||
      m_sb.status->text() != tr("<html><a href=\"authenticate\">"

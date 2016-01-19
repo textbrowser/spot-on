@@ -154,6 +154,15 @@ void spoton_crypt::init(const int secureMemorySize)
 	     "failure. Perhaps you should verify some "
 	     "settings.");
 	}
+      else if(secureMemorySize == 0)
+	{
+	  std::cerr << "spoton_crypt::init(): disabling secure memory."
+		    << std::endl;
+	  spoton_misc::logError("spoton_crypt::init(): disabling secure "
+				"memory.");
+	  gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
+	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+	}
       else
 	{
 	  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);

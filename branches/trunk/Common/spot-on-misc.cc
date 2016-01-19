@@ -2073,6 +2073,9 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     integer = 262144;
+  else if(integer == 0)
+    {
+    }
   else if(integer < 131072 || integer > 999999999)
     integer = 262144;
 
@@ -2225,6 +2228,9 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     integer = 262144;
+  else if(integer == 0)
+    {
+    }
   else if(integer < 131072 || integer > 999999999)
     integer = 262144;
 
