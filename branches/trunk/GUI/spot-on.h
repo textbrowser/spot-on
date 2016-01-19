@@ -305,7 +305,7 @@ class spoton_virtual_keyboard: public QDialog
     if(button == m_ui.space)
       text.append(" ");
     else if(m_ui.shift->isChecked())
-      text.append(button->text().split('\n').value(0).toUpper());
+      text.append(button->text().split('\n').value(0).mid(0, 1).toUpper());
     else if(button->text().contains('\n'))
       text.append(button->text().split('\n').value(1));
     else
