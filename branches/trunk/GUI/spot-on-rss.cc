@@ -150,7 +150,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  this,
 	  SLOT(slotUrlLinkClicked(const QUrl &)));
   connect(m_ui.timeline_filter,
-	  SIGNAL(currentIndexChanged(int)),
+	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotRefreshTimeline(void)));
   connect(this,
@@ -296,7 +296,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list, const bool batch)
     url = list.value(3).toUrl();
 
   imported = spoton_misc::importUrl
-    (list.value(0).toByteArray(),       // UTF-8 Content
+    (list.value(0).toByteArray(),
      list.value(1).toString().toUtf8(), // Description
      list.value(2).toString().toUtf8(), // Title
      url.toEncoded(),                   // URL
@@ -2013,9 +2013,9 @@ void spoton_rss::slotRefreshTimeline(void)
 	  str.append(" WHERE imported <> 1 ");
 
 	if(m_ui.action_Insert_Date->isChecked())
-	  str.append("ORDER BY insert_date");
+	  str.append("ORDER BY insert_date DESC");
 	else
-	  str.append("ORDER BY publication_date");
+	  str.append("ORDER BY publication_date DESC");
 
 	if(query.exec(str))
 	  {
@@ -2391,30 +2391,34 @@ void spoton_rss::slotTabChanged(int index)
 
 void spoton_rss::slotTimeOrderBy(bool state)
 {
+  Q_UNUSED(state);
+
   QAction *action = qobject_cast<QAction *> (sender());
 
   if(action == m_ui.action_Insert_Date)
     {
       QSettings settings;
 
-      if(state)
-	settings.setValue("gui/rss_time_order", "insert_date");
-      else
-	settings.setValue("gui/rss_time_order", "publication_date");
-
-      m_ui.action_Publication_Date->setChecked(!state);
+      settings.setValue("gui/rss_time_order", "insert_date");
+      m_ui.action_Insert_Date->blockSignals(true);
+      m_ui.action_Insert_Date->setChecked(true);
+      m_ui.action_Insert_Date->blockSignals(false);
+      m_ui.action_Publication_Date->blockSignals(true);
+      m_ui.action_Publication_Date->setChecked(false);
+      m_ui.action_Publication_Date->blockSignals(false);
       slotRefreshTimeline();
     }
   else if(action == m_ui.action_Publication_Date)
     {
       QSettings settings;
 
-      if(state)
-	settings.setValue("gui/rss_time_order", "publication_date");
-      else
-	settings.setValue("gui/rss_time_order", "insert_date");
-
-      m_ui.action_Insert_Date->setChecked(!state);
+      settings.setValue("gui/rss_time_order", "publication_date");
+      m_ui.action_Insert_Date->blockSignals(true);
+      m_ui.action_Insert_Date->setChecked(false);
+      m_ui.action_Insert_Date->blockSignals(false);
+      m_ui.action_Publication_Date->blockSignals(true);
+      m_ui.action_Publication_Date->setChecked(true);
+      m_ui.action_Publication_Date->blockSignals(false);
       slotRefreshTimeline();
     }
 }
