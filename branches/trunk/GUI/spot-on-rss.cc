@@ -665,6 +665,7 @@ void spoton_rss::populateFeeds(void)
 	    }
 
 	m_ui.feeds->resizeColumnToContents(0);
+	m_ui.feeds->resizeRowsToContents();
 	m_ui.feeds->setRowCount(row);
 	m_ui.feeds->setSortingEnabled(true);
       }

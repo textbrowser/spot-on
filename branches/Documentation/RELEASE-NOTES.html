@@ -5,6 +5,7 @@
 <ol>
 <li>CHAR_BIT instead of 8.</li>
 <li>Corrected double ampersand in the virtual keyboard.</li>
+<li>Corrected lengthGreaterThan().</li>
 <li>Corrected std::cerr parameter when reporting invalid Spot-On-Kernel options.</li>
 <li>Do not distribute spoton::m_urlCommonCrypt to spoton_pageviewer objects. Instead, use spoton::instance()->urlCommonCrypt().</li>
 <li>Prepare URL containers after re-encoding.</li>
@@ -16,6 +17,7 @@
 <br>
 <b>Improvements</b>
 <ol>
+<li>During URL importing, keywords will now be sorted according to their lengths.</li>
 <li>Improved use of QString::fromUtf8().</li>
 <li>Increased maximum Search results.</li>
 <li>Removed StarBeam results tool tips. Troublesome.</li>
@@ -31,6 +33,7 @@
 <li>Removed parents from QMainWindow objects.</li>
 <li>URL page views are now rendered via WebKit.</li>
 <li>Upgraded NTRU files.</li>
+<li>Upgraded libspoton to version 0.1.5.</li>
 </ol>
 2015.12.25
 <br>

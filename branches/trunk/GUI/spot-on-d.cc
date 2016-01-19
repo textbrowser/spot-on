@@ -32,7 +32,7 @@
 
 static bool lengthGreaterThan(const QString &string1, const QString &string2)
 {
-  return string1.toLower() > string2.toLower();
+  return string1.length() > string2.length();
 }
 
 void spoton::slotDiscoverMissingLinks(void)

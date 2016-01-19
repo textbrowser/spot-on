@@ -58,6 +58,11 @@ extern "C"
 #include <signal.h>
 }
 
+static bool lengthGreaterThan(const QString &string1, const QString &string2)
+{
+  return string1.length() > string2.length();
+}
+
 QAtomicInt spoton_misc::s_enableLog = 0;
 QReadWriteLock spoton_misc::s_dbMutex;
 quint64 spoton_misc::s_dbId = 0;
@@ -4483,6 +4488,8 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 			   all_keywords.length()).
 	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
       int count = 0;
+
+      qSort(keywords.begin(), keywords.end(), lengthGreaterThan);
 
       if(db.driverName() == "QSQLITE")
 	{
