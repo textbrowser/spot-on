@@ -329,7 +329,6 @@ spoton::spoton(void):QMainWindow()
   m_keysShared["keys_sent_to_kernel"] = "false";
   m_buzzStatusTimer.setInterval(15000);
   m_buzzFavoritesLastModificationTime = QDateTime();
-  m_kernelStatisticsLastModificationTime = QDateTime();
   m_magnetsLastModificationTime = QDateTime();
   m_listenersLastModificationTime = QDateTime();
   m_neighborsLastModificationTime = QDateTime();
@@ -445,7 +444,7 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.setupUi(m_optionsWindow);
   m_statisticsUi.setupUi(m_statisticsWindow);
   m_statisticsUi.view->setModel(m_statisticsModel);
-  m_ui.kernelStatistics->setModel(m_statisticsModel);
+  m_ui.statistics->setModel(m_statisticsModel);
   m_optionsWindow->setWindowTitle
     (tr("%1: Options").arg(SPOTON_APPLICATION_NAME));
   m_poptasticRetroPhoneDialog = new QDialog(this);
@@ -459,7 +458,7 @@ spoton::spoton(void):QMainWindow()
   m_sb.forward_secrecy_request->setVisible(false);
   m_sb.status->setTextFormat(Qt::RichText);
   m_statisticsWindow->setWindowTitle
-    (tr("%1: Kernel Statistics").arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
   m_statisticsWindow->setWindowFlags
     (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #ifdef Q_OS_MAC
@@ -1637,7 +1636,7 @@ spoton::spoton(void):QMainWindow()
   connect(&m_kernelUpdateTimer,
 	  SIGNAL(timeout(void)),
 	  this,
-	  SLOT(slotPopulateKernelStatistics(void)));
+	  SLOT(slotPopulateStatistics(void)));
   connect(&m_listenersUpdateTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -2528,7 +2527,7 @@ spoton::spoton(void):QMainWindow()
     (0, Qt::AscendingOrder);
   m_statisticsUi.view->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
-  m_ui.kernelStatistics->horizontalHeader()->setSortIndicator
+  m_ui.statistics->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
   m_ui.mail->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
@@ -5035,9 +5034,8 @@ void spoton::slotGeneralTimerTimeout(void)
   if(text != m_ui.pid->text())
     {
       m_buzzFavoritesLastModificationTime = QDateTime();
-      m_kernelStatisticsLastModificationTime = QDateTime();
-      m_magnetsLastModificationTime = QDateTime();
       m_listenersLastModificationTime = QDateTime();
+      m_magnetsLastModificationTime = QDateTime();
       m_neighborsLastModificationTime = QDateTime();
       m_participantsLastModificationTime = QDateTime();
     }

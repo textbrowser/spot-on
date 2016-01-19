@@ -717,24 +717,20 @@ void spoton::slotStarOTMCheckChange(bool state)
     }
 }
 
-void spoton::slotPopulateKernelStatistics(void)
+void spoton::slotPopulateStatistics(void)
 {
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "kernel.db");
-
-  if(fileInfo.exists())
-    {
-      if(fileInfo.lastModified() > m_kernelStatisticsLastModificationTime)
-	m_kernelStatisticsLastModificationTime = fileInfo.lastModified();
-      else
-	return;
-    }
-  else
-    m_kernelStatisticsLastModificationTime = QDateTime();
-
+  QFileInfo fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "kernel.db");
   QString connectionName("");
+  QWidget *focusWidget = QApplication::focusWidget();
   int activeListeners = 0;
   int activeNeighbors = 0;
+  int row = 0;
+  int totalRows = 0;
+
+  m_statisticsUi.view->setSortingEnabled(false);
+  m_ui.statistics->setSortingEnabled(false);
+  m_statisticsModel->removeRows(0, m_statisticsModel->rowCount());
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -743,16 +739,9 @@ void spoton::slotPopulateKernelStatistics(void)
 
     if(db.open())
       {
-	m_statisticsUi.view->setSortingEnabled(false);
-	m_ui.kernelStatistics->setSortingEnabled(false);
-
 	QSqlQuery query(db);
-	QWidget *focusWidget = QApplication::focusWidget();
-	int totalRows = 0;
 
 	query.setForwardOnly(true);
-	m_statisticsModel->removeRows
-	  (0, m_statisticsModel->rowCount());
 	query.exec("PRAGMA read_uncommitted = True");
 
 	if(query.exec("SELECT COUNT(*) FROM kernel_statistics"))
@@ -761,61 +750,66 @@ void spoton::slotPopulateKernelStatistics(void)
 
 	if(query.exec("SELECT statistic, value FROM kernel_statistics "
 		      "ORDER BY statistic"))
-	  {
-	    int row = 0;
+	  while(query.next() &&
+		totalRows < m_statisticsModel->rowCount())
+	    {
+	      totalRows += 1;
 
-	    while(query.next() &&
-		  totalRows < m_statisticsModel->rowCount())
-	      {
-		totalRows += 1;
+	      QStandardItem *item = new QStandardItem
+		(query.value(0).toString());
 
-		QStandardItem *item = new QStandardItem
-		  (query.value(0).toString());
+	      item->setEditable(false);
+	      m_statisticsModel->setItem(row, 0, item);
+	      item = new QStandardItem(query.value(1).toString());
+	      item->setEditable(false);
+	      m_statisticsModel->setItem(row, 1, item);
 
-		item->setEditable(false);
-		m_statisticsModel->setItem(row, 0, item);
-		item = new QStandardItem(query.value(1).toString());
-		item->setEditable(false);
-		m_statisticsModel->setItem(row, 1, item);
+	      if(query.value(0).toString().toLower().
+		 contains("congestion container"))
+		{
+		  if(query.value(1).toLongLong() <= 50)
+		    item->setBackground
+		      (QBrush(QColor("lightgreen")));
+		  else
+		    item->setBackground
+		      (QBrush(QColor(240, 128, 128)));
+		}
+	      else if(query.value(0).toString().toLower().
+		      contains("live listeners"))
+		activeListeners = query.value(1).toInt();
+	      else if(query.value(0).toString().toLower().
+		      contains("live neighbors"))
+		activeNeighbors = query.value(1).toInt();
 
-		if(query.value(0).toString().toLower().
-		   contains("congestion container"))
-		  {
-		    if(query.value(1).toLongLong() <= 50)
-		      item->setBackground
-			(QBrush(QColor("lightgreen")));
-		    else
-		      item->setBackground
-			(QBrush(QColor(240, 128, 128)));
-		  }
-		else if(query.value(0).toString().toLower().
-			contains("live listeners"))
-		  activeListeners = query.value(1).toInt();
-		else if(query.value(0).toString().toLower().
-			contains("live neighbors"))
-		  activeNeighbors = query.value(1).toInt();
-
-		row += 1;
-	      }
-	  }
-
-	m_statisticsModel->setRowCount(totalRows);
-	m_statisticsUi.view->setSortingEnabled(true);
-	m_statisticsUi.view->resizeColumnToContents(0);
-	m_statisticsUi.view->horizontalHeader()->setStretchLastSection(true);
-	m_ui.kernelStatistics->setSortingEnabled(true);
-	m_ui.kernelStatistics->resizeColumnToContents(0);
-	m_ui.kernelStatistics->horizontalHeader()->
-	  setStretchLastSection(true);
-
-	if(focusWidget)
-	  focusWidget->setFocus();
+	      row += 1;
+	    }
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  totalRows += 1;
+  m_statisticsModel->setRowCount(totalRows);
+
+  QLocale locale;
+  QStandardItem *item = new QStandardItem("Display Open Database Connections");
+
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 0, item);
+  item = new QStandardItem(locale.toString(QSqlDatabase::connectionNames().
+					   size()));
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 1, item);
+  m_statisticsUi.view->setSortingEnabled(true);
+  m_statisticsUi.view->resizeColumnToContents(0);
+  m_statisticsUi.view->horizontalHeader()->setStretchLastSection(true);
+  m_ui.statistics->setSortingEnabled(true);
+  m_ui.statistics->resizeColumnToContents(0);
+  m_ui.statistics->horizontalHeader()->setStretchLastSection(true);
+
+  if(focusWidget)
+    focusWidget->setFocus();
 
   if(activeListeners > 0)
     {

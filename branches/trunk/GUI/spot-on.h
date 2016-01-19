@@ -439,9 +439,8 @@ class spoton: public QMainWindow
   QAtomicInt m_starbeamDigestInterrupt;
   QByteArray m_kernelSocketData;
   QDateTime m_buzzFavoritesLastModificationTime;
-  QDateTime m_magnetsLastModificationTime;
-  QDateTime m_kernelStatisticsLastModificationTime;
   QDateTime m_listenersLastModificationTime;
+  QDateTime m_magnetsLastModificationTime;
   QDateTime m_neighborsLastModificationTime;
   QDateTime m_participantsLastModificationTime;
   QDateTime m_starsLastModificationTime;
@@ -799,11 +798,11 @@ class spoton: public QMainWindow
   void slotPoptasticSettingsReset(void);
   void slotPopulateBuzzFavorites(void);
   void slotPopulateEtpMagnets(void);
-  void slotPopulateKernelStatistics(void);
   void slotPopulateListeners(void);
   void slotPopulateNeighbors(void);
   void slotPopulateParticipants(void);
   void slotPopulateStars(void);
+  void slotPopulateStatistics(void);
   void slotPostgreSQLConnect(void);
   void slotPostgreSQLDisconnect(int index);
   void slotPrepareSMP(const QString &hash);
