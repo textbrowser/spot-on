@@ -398,7 +398,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Only RSS 2.0 links are supported.</string>
+              <string>Atom 1.0 and RSS 2.0 feeds are supported.</string>
              </property>
             </widget>
            </item>

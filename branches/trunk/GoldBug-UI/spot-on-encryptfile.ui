@@ -221,6 +221,9 @@ QPushButton:pressed {
         <property name="text">
          <string>&amp;Decrypt</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -244,6 +247,9 @@ QPushButton:pressed {
         <property name="checked">
          <bool>true</bool>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -544,7 +550,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>885</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -586,4 +592,7 @@ QPushButton:pressed {
   <include location="../Icons/icons.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>
