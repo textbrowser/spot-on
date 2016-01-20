@@ -237,7 +237,7 @@ void spoton_fireshare::slotTimeout(void)
     }
 
   /*
-  ** Next, retrieve at most spoton_common::KERNEL_URLS_BATCH_SIZE URLs.
+  ** Next, retrieve some URL(s).
   */
 
   QByteArray data;
@@ -298,7 +298,8 @@ void spoton_fireshare::slotTimeout(void)
 
 	while(true)
 	  {
-	    if(count > spoton_common::KERNEL_URLS_BATCH_SIZE)
+	    if(count > spoton_kernel::setting("gui/kernel_url_batch_size",
+					      5).toInt())
 	      break;
 
 	    QByteArray shareHash;

@@ -148,7 +148,6 @@ const int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::HARVEST_POST_OFFICE_LETTERS_INTERVAL;
 const int spoton_common::KERNEL_CERTIFICATE_DAYS_VALID;
-const int spoton_common::KERNEL_URLS_BATCH_SIZE;
 const int spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC;
 const int spoton_common::LANE_WIDTH_DEFAULT;
 const int spoton_common::LANE_WIDTH_MAXIMUM;

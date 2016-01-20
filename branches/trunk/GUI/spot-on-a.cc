@@ -75,7 +75,6 @@ const int spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::HARVEST_POST_OFFICE_LETTERS_INTERVAL;
 const int spoton_common::KERNEL_CERTIFICATE_DAYS_VALID;
-const int spoton_common::KERNEL_URLS_BATCH_SIZE;
 const int spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC;
 const int spoton_common::LANE_WIDTH_DEFAULT;
 const int spoton_common::LANE_WIDTH_MAXIMUM;
@@ -1618,6 +1617,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotMaximumUrlKeywordsChanged(int)));
+  connect(m_optionsUi.kernel_url_batch_size,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotKernelUrlBatchSizeChanged(int)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1831,6 +1834,8 @@ spoton::spoton(void):QMainWindow()
      toInt());
   m_optionsUi.maximum_url_keywords_kernel->setValue
     (m_settings.value("gui/maximum_url_keywords_import_kernel", 50).toInt());
+  m_optionsUi.kernel_url_batch_size->setValue
+    (m_settings.value("gui/kernel_url_batch_size", 5).toInt());
   m_kernelUpdateTimer.start
     (static_cast<int> (1000 * m_optionsUi.kernelUpdateInterval->value()));
   m_listenersUpdateTimer.start

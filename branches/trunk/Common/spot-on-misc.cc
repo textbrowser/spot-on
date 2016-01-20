@@ -2051,8 +2051,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 10000;
 
   settings.insert("gui/congestionCost", integer);
-  integer = qAbs(settings.value("gui/emailRetrievalInterval",
-				5).toInt(&ok));
+  integer = qAbs(settings.value("gui/emailRetrievalInterval", 5).toInt(&ok));
 
   if(!ok)
     integer = 5;
@@ -2144,6 +2143,14 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 2048;
 
   settings.insert("gui/kernelKeySize", integer);
+  integer = qAbs(settings.value("gui/kernel_url_batch_size", 5).toInt(&ok));
+
+  if(!ok)
+    integer = 5;
+  else if(integer <= 0 || integer > 16)
+    integer = 5;
+
+  settings.insert("gui/kernel_url_batch_size", integer);
   integer = qAbs(settings.value("gui/limitConnections", 10).toInt(&ok));
 
   if(!ok)
@@ -2211,7 +2218,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 512;
 
   settings.insert("gui/saltLength", integer);
-  integer = qAbs(settings.value("gui/searchResultsPerPage", 10).toInt());
+  integer = qAbs(settings.value("gui/searchResultsPerPage", 10).toInt(&ok));
 
   if(!ok)
     integer = 10;

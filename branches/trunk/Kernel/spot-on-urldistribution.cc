@@ -39,7 +39,8 @@ spoton_urldistribution::spoton_urldistribution(QObject *parent):
   QThread(parent)
 {
   m_lastUniqueId = -1;
-  m_limit = static_cast<quint64> (spoton_common::KERNEL_URLS_BATCH_SIZE);
+  m_limit = static_cast<quint64>
+    (spoton_kernel::setting("gui/kernel_url_batch_size", 5).toInt());
   m_quit = 0;
 }
 
@@ -240,7 +241,7 @@ void spoton_urldistribution::slotTimeout(void)
     }
 
   /*
-  ** Next, retrieve at most spoton_common::KERNEL_URLS_BATCH_SIZE URLs.
+  ** Next, retrieve some URL(s).
   */
 
   QByteArray data;

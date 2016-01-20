@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>452</height>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -419,8 +419,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>402</width>
-                <height>479</height>
+                <width>802</width>
+                <height>482</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -813,8 +813,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>986</width>
-             <height>575</height>
+             <width>905</width>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1916,8 +1916,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>670</width>
-             <height>379</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2463,7 +2463,7 @@
                      <item>
                       <widget class="QLabel" name="label_18">
                        <property name="text">
-                        <string>&amp;Days Valid</string>
+                        <string>&amp;Day(s) Valid</string>
                        </property>
                        <property name="buddy">
                         <cstring>days_valid</cstring>
@@ -2582,8 +2582,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>273</width>
-                     <height>1406</height>
+                     <width>259</width>
+                     <height>1433</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3049,8 +3049,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>367</width>
-             <height>235</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3386,8 +3386,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>750</width>
-                  <height>424</height>
+                  <width>792</width>
+                  <height>458</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4131,8 +4131,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>359</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4208,8 +4208,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>696</width>
-                 <height>592</height>
+                 <width>802</width>
+                 <height>603</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5068,8 +5068,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>808</width>
-             <height>1080</height>
+             <width>812</width>
+             <height>1134</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -5122,7 +5122,7 @@
               <item>
                <widget class="QLabel" name="label_60">
                 <property name="text">
-                 <string>&amp;Secure Memory Pool</string>
+                 <string>&amp;Secure Memory Pool Size</string>
                 </property>
                 <property name="buddy">
                  <cstring>guiSecureMemoryPool</cstring>
@@ -5315,7 +5315,7 @@
                    <item>
                     <widget class="QLabel" name="label_68">
                      <property name="text">
-                      <string>&amp;Secure Memory Pool</string>
+                      <string>&amp;Secure Memory Pool Size</string>
                      </property>
                      <property name="buddy">
                       <cstring>kernelSecureMemoryPool</cstring>
@@ -6295,8 +6295,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>514</width>
-             <height>526</height>
+             <width>812</width>
+             <height>544</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7306,8 +7306,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>667</width>
-             <height>454</height>
+             <width>812</width>
+             <height>453</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7849,8 +7849,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>263</width>
-             <height>147</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8062,7 +8062,7 @@
      <x>0</x>
      <y>0</y>
      <width>850</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -8280,14 +8280,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>spoton_textbrowser</class>
-   <extends>QTextBrowser</extends>
-   <header>spot-on-textbrowser.h</header>
-  </customwidget>
-  <customwidget>
    <class>spoton_textedit</class>
    <extends>QTextEdit</extends>
    <header>GUI/spot-on-textedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
   </customwidget>
   <customwidget>
    <class>spoton_tabwidget</class>

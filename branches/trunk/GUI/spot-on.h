@@ -744,6 +744,7 @@ class spoton: public QMainWindow
   void slotKernelSocketSslErrors(const QList<QSslError> &errors);
   void slotKernelSocketState(void);
   void slotKernelStatus(void);
+  void slotKernelUrlBatchSizeChanged(int value);
   void slotHideOfflineParticipants(bool state);
   void slotImpersonate(bool state);
   void slotImportNeighbors(void);

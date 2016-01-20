@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>610</height>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -32,7 +32,7 @@
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Display</string>
+        <string>General</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <property name="spacing">
@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-530</y>
+             <y>-620</y>
              <width>462</width>
-             <height>1226</height>
+             <height>1267</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -388,7 +388,7 @@
                  <item>
                   <widget class="QDoubleSpinBox" name="chatUpdateInterval">
                    <property name="suffix">
-                    <string> seconds.</string>
+                    <string> second(s).</string>
                    </property>
                    <property name="minimum">
                     <double>0.500000000000000</double>
@@ -537,7 +537,7 @@
                  <item>
                   <widget class="QDoubleSpinBox" name="listenersUpdateInterval">
                    <property name="suffix">
-                    <string> seconds.</string>
+                    <string> second(s).</string>
                    </property>
                    <property name="minimum">
                     <double>0.500000000000000</double>
@@ -614,7 +614,7 @@
                  <item>
                   <widget class="QDoubleSpinBox" name="neighborsUpdateInterval">
                    <property name="suffix">
-                    <string> seconds.</string>
+                    <string> second(s).</string>
                    </property>
                    <property name="minimum">
                     <double>0.500000000000000</double>
@@ -665,16 +665,6 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="disable_kernel_synchronous_download">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the kernel aborts during a download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Disable kernel synchronous SQLite writes on download.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_67">
                  <property name="spacing">
                   <number>5</number>
@@ -692,7 +682,7 @@
                  <item>
                   <widget class="QLabel" name="label_15">
                    <property name="text">
-                    <string>&amp;maximum keywords considered during an import via the interface.</string>
+                    <string>&amp;maximum keyword accepted during an import via the interface.</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
@@ -704,49 +694,6 @@
                  </item>
                  <item>
                   <spacer name="horizontalSpacer_49">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_68">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QSpinBox" name="maximum_url_keywords_kernel">
-                   <property name="minimum">
-                    <number>50</number>
-                   </property>
-                   <property name="maximum">
-                    <number>65535</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_16">
-                   <property name="text">
-                    <string>&amp;maximum keywords considered during an import via the kernel.</string>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                   <property name="buddy">
-                    <cstring>maximum_url_keywords_interface</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_50">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -833,7 +780,7 @@
                  <item>
                   <widget class="QDoubleSpinBox" name="kernelUpdateInterval">
                    <property name="suffix">
-                    <string> seconds.</string>
+                    <string> second(s).</string>
                    </property>
                    <property name="minimum">
                     <double>0.500000000000000</double>
@@ -957,7 +904,7 @@
                  <item>
                   <widget class="QDoubleSpinBox" name="starbeamUpdateInterval">
                    <property name="suffix">
-                    <string> seconds.</string>
+                    <string> second(s).</string>
                    </property>
                    <property name="minimum">
                     <double>0.500000000000000</double>
@@ -1010,6 +957,105 @@
                   <bool>true</bool>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="disable_kernel_synchronous_download">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the kernel aborts during a download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>&amp;Disable kernel synchronous SQLite writes on download.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_69">
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <item>
+                  <widget class="QSpinBox" name="kernel_url_batch_size">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>16</number>
+                   </property>
+                   <property name="value">
+                    <number>5</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_17">
+                   <property name="text">
+                    <string>&amp;URL(s) batched per URL distribution.</string>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>true</bool>
+                   </property>
+                   <property name="buddy">
+                    <cstring>maximum_url_keywords_interface</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_51">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_68">
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <item>
+                  <widget class="QSpinBox" name="maximum_url_keywords_kernel">
+                   <property name="minimum">
+                    <number>50</number>
+                   </property>
+                   <property name="maximum">
+                    <number>65535</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_16">
+                   <property name="text">
+                    <string>&amp;maximum keyword accepted during an import via the kernel.</string>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>true</bool>
+                   </property>
+                   <property name="buddy">
+                    <cstring>maximum_url_keywords_interface</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_50">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -1372,7 +1418,7 @@
                  <item>
                   <widget class="QLabel" name="label_96">
                    <property name="text">
-                    <string>clients.</string>
+                    <string>client(s).</string>
                    </property>
                   </widget>
                  </item>
@@ -1773,8 +1819,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>276</width>
-             <height>235</height>
+             <width>468</width>
+             <height>539</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -2083,9 +2129,7 @@
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>
   <tabstop>disable_ui_synchronous_import</tabstop>
-  <tabstop>disable_kernel_synchronous_download</tabstop>
   <tabstop>maximum_url_keywords_interface</tabstop>
-  <tabstop>maximum_url_keywords_kernel</tabstop>
   <tabstop>searchResultsPerPage</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
   <tabstop>kernelCacheInterval</tabstop>
@@ -2093,54 +2137,14 @@
   <tabstop>starbeamUpdateInterval</tabstop>
   <tabstop>remove_otm</tabstop>
   <tabstop>urlsAlternatingRowColors</tabstop>
+  <tabstop>disable_kernel_synchronous_download</tabstop>
+  <tabstop>kernel_url_batch_size</tabstop>
+  <tabstop>maximum_url_keywords_kernel</tabstop>
   <tabstop>scrollArea_2</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>
   <tabstop>acceptGeminis</tabstop>
   <tabstop>chatAcceptSigned</tabstop>
   <tabstop>autoAddSharedSBMagnets</tabstop>
-  <tabstop>acceptChatKeys</tabstop>
-  <tabstop>impersonate</tabstop>
-  <tabstop>chatSignMessages</tabstop>
-  <tabstop>emailAcceptSigned</tabstop>
-  <tabstop>acceptEmailKeys</tabstop>
-  <tabstop>maximumEmailFileSize</tabstop>
-  <tabstop>coAcceptSigned</tabstop>
-  <tabstop>emailSignMessages</tabstop>
-  <tabstop>limitConnections</tabstop>
-  <tabstop>publishPeriodically</tabstop>
-  <tabstop>acceptPublishedConnected</tabstop>
-  <tabstop>acceptPublishedDisconnected</tabstop>
-  <tabstop>ignorePublished</tabstop>
-  <tabstop>publishedKeySize</tabstop>
-  <tabstop>openlinks</tabstop>
-  <tabstop>forceRegistration</tabstop>
-  <tabstop>launchKernel</tabstop>
-  <tabstop>scrambler</tabstop>
-  <tabstop>sharePrivateKeys</tabstop>
-  <tabstop>superEcho</tabstop>
-  <tabstop>acceptUrlKeys</tabstop>
-  <tabstop>buzzAutoJoin</tabstop>
-  <tabstop>position</tabstop>
-  <tabstop>displayPopups</tabstop>
-  <tabstop>enableChatEmoticons</tabstop>
-  <tabstop>chatSendMethod</tabstop>
-  <tabstop>chatUpdateInterval</tabstop>
-  <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
-  <tabstop>autoEmailRetrieve</tabstop>
-  <tabstop>emailRetrievalInterval</tabstop>
-  <tabstop>listenersUpdateInterval</tabstop>
-  <tabstop>icons</tabstop>
-  <tabstop>neighborsUpdateInterval</tabstop>
-  <tabstop>kernelUpdateInterval</tabstop>
-  <tabstop>scrollArea</tabstop>
-  <tabstop>sharePrivateKeys</tabstop>
-  <tabstop>starbeamUpdateInterval</tabstop>
-  <tabstop>iconsize</tabstop>
-  <tabstop>scrollArea</tabstop>
-  <tabstop>acceptBuzzMagnets</tabstop>
-  <tabstop>acceptGeminis</tabstop>
-  <tabstop>chatAcceptSigned</tabstop>
-  <tabstop>scrambler</tabstop>
   <tabstop>acceptChatKeys</tabstop>
   <tabstop>chat_fs_request</tabstop>
   <tabstop>impersonate</tabstop>
@@ -2160,6 +2164,7 @@
   <tabstop>publishedKeySize</tabstop>
   <tabstop>openlinks</tabstop>
   <tabstop>forceRegistration</tabstop>
+  <tabstop>launchKernel</tabstop>
   <tabstop>scrambler</tabstop>
   <tabstop>sharePrivateKeys</tabstop>
   <tabstop>superEcho</tabstop>
@@ -2175,6 +2180,48 @@
   <tabstop>poptastic_forward_secrecy_time_delta</tabstop>
   <tabstop>retrieve_mail_time_delta</tabstop>
   <tabstop>defaults</tabstop>
+  <tabstop>iconsize</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>buzzAutoJoin</tabstop>
+  <tabstop>sharePrivateKeys</tabstop>
+  <tabstop>chatAcceptSigned</tabstop>
+  <tabstop>position</tabstop>
+  <tabstop>acceptChatKeys</tabstop>
+  <tabstop>scrambler</tabstop>
+  <tabstop>impersonate</tabstop>
+  <tabstop>chatUpdateInterval</tabstop>
+  <tabstop>chatSignMessages</tabstop>
+  <tabstop>emailAcceptSigned</tabstop>
+  <tabstop>acceptEmailKeys</tabstop>
+  <tabstop>enableChatEmoticons</tabstop>
+  <tabstop>maximumEmailFileSize</tabstop>
+  <tabstop>coAcceptSigned</tabstop>
+  <tabstop>emailSignMessages</tabstop>
+  <tabstop>limitConnections</tabstop>
+  <tabstop>publishPeriodically</tabstop>
+  <tabstop>acceptPublishedConnected</tabstop>
+  <tabstop>acceptPublishedDisconnected</tabstop>
+  <tabstop>ignorePublished</tabstop>
+  <tabstop>publishedKeySize</tabstop>
+  <tabstop>openlinks</tabstop>
+  <tabstop>forceRegistration</tabstop>
+  <tabstop>scrambler</tabstop>
+  <tabstop>sharePrivateKeys</tabstop>
+  <tabstop>superEcho</tabstop>
+  <tabstop>chatSendMethod</tabstop>
+  <tabstop>acceptUrlKeys</tabstop>
+  <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
+  <tabstop>autoEmailRetrieve</tabstop>
+  <tabstop>emailRetrievalInterval</tabstop>
+  <tabstop>listenersUpdateInterval</tabstop>
+  <tabstop>icons</tabstop>
+  <tabstop>neighborsUpdateInterval</tabstop>
+  <tabstop>kernelUpdateInterval</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>displayPopups</tabstop>
+  <tabstop>starbeamUpdateInterval</tabstop>
+  <tabstop>acceptBuzzMagnets</tabstop>
+  <tabstop>acceptGeminis</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>

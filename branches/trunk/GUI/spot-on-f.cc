@@ -1836,3 +1836,11 @@ void spoton::slotMaximumUrlKeywordsChanged(int value)
       settings.setValue("gui/maximum_url_keywords_import_kernel", value);
     }
 }
+
+void spoton::slotKernelUrlBatchSizeChanged(int value)
+{
+  QSettings settings;
+
+  m_settings["gui/kernel_url_batch_size"] = value;
+  settings.setValue("gui/kernel_url_batch_size", value);
+}
