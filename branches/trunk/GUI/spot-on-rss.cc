@@ -832,6 +832,7 @@ void spoton_rss::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds_links ("
 		   "content TEXT NOT NULL, "
 		   "description TEXT NOT NULL, "
+		   "hidden INTEGER NOT NULL DEFAULT 0, "
 		   "imported INTEGER NOT NULL DEFAULT 0, "
 		   "insert_date TEXT NOT NULL, "
 		   "publication_date TEXT NOT NULL, "
@@ -2004,13 +2005,15 @@ void spoton_rss::slotRefreshTimeline(void)
 	  "title, url, url_redirected FROM rss_feeds_links ";
 
 	if(m_ui.timeline_filter->currentIndex() == 1)
-	  str.append(" WHERE imported = 1 ");
+	  str.append(" WHERE hidden = 1 ");
 	else if(m_ui.timeline_filter->currentIndex() == 2)
-	  str.append(" WHERE visited = 1 ");
+	  str.append(" WHERE hidden <> 1 AND imported = 1 ");
 	else if(m_ui.timeline_filter->currentIndex() == 3)
-	  str.append(" WHERE imported = 2 OR visited = 2 ");
+	  str.append(" WHERE hidden <> 1 AND visited = 1 ");
 	else if(m_ui.timeline_filter->currentIndex() == 4)
-	  str.append(" WHERE imported <> 1 ");
+	  str.append(" WHERE hidden <> 1 AND (imported = 2 OR visited = 2) ");
+	else if(m_ui.timeline_filter->currentIndex() == 5)
+	  str.append(" WHERE hidden <> 1 AND imported <> 1 ");
 
 	if(m_ui.action_Insert_Date->isChecked())
 	  str.append("ORDER BY insert_date DESC");
