@@ -390,6 +390,49 @@ void spoton_rss::deactivate(void)
   m_importTimer.stop();
 }
 
+void spoton_rss::hideUrl(const QUrl &url, const bool state)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	QString scheme(url.scheme().remove("hide-"));
+	QUrl u(url);
+	bool ok = true;
+
+	u.setScheme(scheme);
+	query.prepare("UPDATE rss_feeds_links SET hidden = ? "
+		      "WHERE url_hash = ?");
+	query.bindValue(0, state ? 1 : 0);
+	query.bindValue
+	  (1, crypt->keyedHash(u.toEncoded(), &ok).toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+  slotRefreshTimeline();
+}
+
 void spoton_rss::logError(const QString &error)
 {
   if(error.trimmed().isEmpty())
@@ -2441,6 +2484,12 @@ void spoton_rss::slotTimeOrderBy(bool state)
 
 void spoton_rss::slotUrlClicked(const QUrl &url)
 {
+  if(url.scheme().toLower().trimmed().startsWith("hide-"))
+    {
+      hideUrl(url, true);
+      return;
+    }
+
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
@@ -2448,42 +2497,6 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  if(url.scheme().toLower().trimmed().startsWith("hide-"))
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-	    QString scheme(url.scheme().remove("hide-"));
-	    QUrl u(url);
-	    bool ok = true;
-
-	    u.setScheme(scheme);
-	    query.prepare("UPDATE rss_feeds_links SET hidden = 1 "
-			  "WHERE url_hash = ?");
-	    query.bindValue
-	      (0, crypt->keyedHash(u.toEncoded(), &ok).toBase64());
-
-	    if(ok)
-	      query.exec();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-      QApplication::restoreOverrideCursor();
-      slotRefreshTimeline();
-      return;
-    }
 
   QString connectionName("");
   spoton_pageviewer *pageViewer = new spoton_pageviewer
