@@ -1352,6 +1352,7 @@ void spoton::slotPostgreSQLConnect(void)
 void spoton::slotSaveCommonUrlCredentials(void)
 {
   QPair<QByteArray, QByteArray> keys;
+  QScopedPointer<QMessageBox> mb;
   QString error("");
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
@@ -1359,6 +1360,28 @@ void spoton::slotSaveCommonUrlCredentials(void)
     {
       error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
       goto done_label;
+    }
+
+  mb.reset(new QMessageBox(this));
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb->setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb->setIcon(QMessageBox::Question);
+  mb->setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb->setText(tr("In order to save new Common Credentials, "
+		 "the RSS mechanism and the kernel will be deactivated. "
+		 "Proceed?"));
+  mb->setWindowModality(Qt::WindowModal);
+  mb->setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb->exec() != QMessageBox::Yes)
+    return;
+  else
+    {
+      m_rss->deactivate();
+      slotDeactivateKernel();
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
