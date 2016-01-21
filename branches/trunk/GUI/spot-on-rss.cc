@@ -34,6 +34,11 @@
 #include <QSqlQuery>
 #include <QXmlStreamReader>
 
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent>
+#endif
+#include <QtCore>
+
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "spot-on.h"
@@ -248,6 +253,8 @@ spoton_rss::~spoton_rss()
   m_downloadTimer.stop();
   m_importTimer.stop();
   m_statisticsTimer.stop();
+  m_parseXmlFuture.cancel();
+  m_parseXmlFuture.waitForFinished();
 }
 
 #ifdef Q_OS_MAC
@@ -388,6 +395,8 @@ void spoton_rss::deactivate(void)
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
+  m_parseXmlFuture.cancel();
+  m_parseXmlFuture.waitForFinished();
 }
 
 void spoton_rss::hideUrl(const QUrl &url, const bool state)
@@ -464,6 +473,9 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
   while(!reader.atEnd() && !reader.hasError())
     {
+      if(m_parseXmlFuture.isCanceled())
+	break;
+
       reader.readNext();
 
       if(reader.isStartElement())
@@ -489,6 +501,9 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
 	      while(true)
 		{
+		  if(m_parseXmlFuture.isCanceled())
+		    break;
+
 		  reader.readNext();
 
 		  if(reader.isEndElement())
@@ -526,6 +541,9 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
 	  while(true)
 	    {
+	      if(m_parseXmlFuture.isCanceled())
+		break;
+
 	      reader.readNext();
 
 	      if(reader.isEndElement())
@@ -545,7 +563,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 		  if(endDescription)
 		    tag.clear();
 		  else if(reader.isCharacters())
-		    description.append(reader.text().toString().trimmed());
+		    description.append(reader.text().toString());
 		}
 
 	      if(tag == "link")
@@ -583,7 +601,9 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 		break;
 	    }
 
-	  saveFeedLink(description, link, publicationDate, title, url);
+	  if(!m_parseXmlFuture.isCanceled())
+	    saveFeedLink
+	      (description.trimmed(), link, publicationDate, title, url);
 	}
       else if(currentTag == "title")
 	{
@@ -596,6 +616,9 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 	    }
 	}
     }
+
+  if(m_parseXmlFuture.isCanceled())
+    return;
 
   saveFeedData(description, link, title);
 
@@ -1544,6 +1567,9 @@ void spoton_rss::slotDownloadIntervalChanged(double value)
 
 void spoton_rss::slotDownloadTimeout(void)
 {
+  if(!m_parseXmlFuture.isFinished())
+    return;
+
   m_feedDownloadContent.clear();
 
   if(m_ui.feeds->rowCount() == 0)
@@ -1667,7 +1693,8 @@ void spoton_rss::slotFeedReplyFinished(void)
 
   if(!m_feedDownloadContent.isEmpty())
     if(!url.isEmpty() && url.isValid())
-      parseXmlContent(m_feedDownloadContent, url);
+      m_parseXmlFuture = QtConcurrent::run
+	(this, &spoton_rss::parseXmlContent, m_feedDownloadContent, url);
 
   m_feedDownloadContent.clear();
 }

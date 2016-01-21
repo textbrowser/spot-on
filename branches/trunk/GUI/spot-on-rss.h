@@ -28,6 +28,7 @@
 #ifndef _spoton_rss_h_
 #define _spoton_rss_h_
 
+#include <QFuture>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QTimer>
@@ -48,6 +49,7 @@ class spoton_rss: public QMainWindow
 
  private:
   QByteArray m_feedDownloadContent;
+  QFuture<void> m_parseXmlFuture;
   QNetworkAccessManager m_networkAccessManager;
   QPalette m_originalFindPalette;
   QString removeSpecialTags(const QString &text);
