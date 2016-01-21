@@ -2014,6 +2014,8 @@ void spoton_rss::slotRefreshTimeline(void)
 	  str.append(" WHERE hidden <> 1 AND (imported = 2 OR visited = 2) ");
 	else if(m_ui.timeline_filter->currentIndex() == 5)
 	  str.append(" WHERE hidden <> 1 AND imported <> 1 ");
+	else
+	  str.append(" WHERE hidden <> 1 ");
 
 	if(m_ui.action_Insert_Date->isChecked())
 	  str.append("ORDER BY insert_date DESC");
@@ -2107,13 +2109,17 @@ void spoton_rss::slotRefreshTimeline(void)
 			(spoton_misc::
 			 removeSpecialHtmlTags(list.value(1).toString()));
 
-		    html.append(" | ");
-		    html.append("<a href=\"hide-");
-		    html.append(list.value(2).toUrl().
-				toEncoded().constData());
-		    html.append("\">");
-		    html.append("Hide");
-		    html.append("</a>");
+		    if(m_ui.timeline_filter->currentIndex() != 1)
+		      {
+			html.append(" | ");
+			html.append("<a href=\"hide-");
+			html.append(list.value(2).toUrl().
+				    toEncoded().constData());
+			html.append("\">");
+			html.append("Hide");
+			html.append("</a>");
+		      }
+
 		    html.append("<br>");
 		    html.append
 		      (QString("<font color=\"green\" size=3>%1</font>").
@@ -2442,6 +2448,42 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  if(url.scheme().toLower().trimmed().startsWith("hide-"))
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+	    QString scheme(url.scheme().remove("hide-"));
+	    QUrl u(url);
+	    bool ok = true;
+
+	    u.setScheme(scheme);
+	    query.prepare("UPDATE rss_feeds_links SET hidden = 1 "
+			  "WHERE url_hash = ?");
+	    query.bindValue
+	      (0, crypt->keyedHash(u.toEncoded(), &ok).toBase64());
+
+	    if(ok)
+	      query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+      QApplication::restoreOverrideCursor();
+      slotRefreshTimeline();
+      return;
+    }
 
   QString connectionName("");
   spoton_pageviewer *pageViewer = new spoton_pageviewer
