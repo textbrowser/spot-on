@@ -148,7 +148,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   connect(m_ui.timeline,
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
-	  SLOT(slotUrlLinkClicked(const QUrl &)));
+	  SLOT(slotUrlClicked(const QUrl &)));
   connect(m_ui.timeline_filter,
 	  SIGNAL(activated(int)),
 	  this,
@@ -1103,7 +1103,7 @@ void spoton_rss::slotAddFeed(void)
   else if(!(url.scheme().toLower() == "http" ||
 	    url.scheme().toLower() == "https"))
     {
-      error = tr("Invalid RSS feed scheme; HTTP or HTTPS.");
+      error = tr("Invalid RSS feed scheme; HTTP or HTTPS please.");
       goto done_label;
     }
 
@@ -2107,6 +2107,13 @@ void spoton_rss::slotRefreshTimeline(void)
 			(spoton_misc::
 			 removeSpecialHtmlTags(list.value(1).toString()));
 
+		    html.append(" | ");
+		    html.append("<a href=\"hide-");
+		    html.append(list.value(2).toUrl().
+				toEncoded().constData());
+		    html.append("\">");
+		    html.append("Hide");
+		    html.append("</a>");
 		    html.append("<br>");
 		    html.append
 		      (QString("<font color=\"green\" size=3>%1</font>").
@@ -2426,7 +2433,7 @@ void spoton_rss::slotTimeOrderBy(bool state)
     }
 }
 
-void spoton_rss::slotUrlLinkClicked(const QUrl &url)
+void spoton_rss::slotUrlClicked(const QUrl &url)
 {
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;

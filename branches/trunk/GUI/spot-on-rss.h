@@ -109,7 +109,7 @@ class spoton_rss: public QMainWindow
   void slotStatisticsTimeout(void);
   void slotTabChanged(int index);
   void slotTimeOrderBy(bool state);
-  void slotUrlLinkClicked(const QUrl &url);
+  void slotUrlClicked(const QUrl &url);
 
  signals:
   void downloadFeedImage(const QUrl &imageUrl, const QUrl &url);
