@@ -410,9 +410,15 @@ void spoton_rss::hideUrl(const QUrl &url, const bool state)
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString scheme(url.scheme().remove("hide-"));
+	QString scheme(url.scheme());
 	QUrl u(url);
 	bool ok = true;
+
+	if(scheme.startsWith("hide-"))
+	  scheme.remove(0, 5);
+
+	if(scheme.startsWith("visible-"))
+	  scheme.remove(0, 8);
 
 	u.setScheme(scheme);
 	query.prepare("UPDATE rss_feeds_links SET hidden = ? "
@@ -2044,7 +2050,7 @@ void spoton_rss::slotRefreshTimeline(void)
 	QString str("");
 
 	query.setForwardOnly(true);
-	str = "SELECT content, description, publication_date, "
+	str = "SELECT content, description, hidden, publication_date, "
 	  "title, url, url_redirected FROM rss_feeds_links ";
 
 	if(m_ui.timeline_filter->currentIndex() == 1)
@@ -2098,7 +2104,7 @@ void spoton_rss::slotRefreshTimeline(void)
 
 		if(ok)
 		  bytes = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(3).toByteArray()),
+		    (QByteArray::fromBase64(query.value(4).toByteArray()),
 		     &ok);
 
 		if(ok)
@@ -2107,7 +2113,7 @@ void spoton_rss::slotRefreshTimeline(void)
 
 		if(ok)
 		  bytes = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(4).toByteArray()),
+		    (QByteArray::fromBase64(query.value(5).toByteArray()),
 		     &ok);
 
 		if(ok)
@@ -2115,7 +2121,7 @@ void spoton_rss::slotRefreshTimeline(void)
 
 		if(ok)
 		  bytes = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(5).toByteArray()),
+		    (QByteArray::fromBase64(query.value(6).toByteArray()),
 		     &ok);
 
 		if(ok)
@@ -2152,7 +2158,7 @@ void spoton_rss::slotRefreshTimeline(void)
 			(spoton_misc::
 			 removeSpecialHtmlTags(list.value(1).toString()));
 
-		    if(m_ui.timeline_filter->currentIndex() != 1)
+		    if(query.value(2).toInt() != 1)
 		      {
 			html.append(" | ");
 			html.append("<a href=\"hide-");
@@ -2160,6 +2166,16 @@ void spoton_rss::slotRefreshTimeline(void)
 				    toEncoded().constData());
 			html.append("\">");
 			html.append("Hide");
+			html.append("</a>");
+		      }
+		    else
+		      {
+			html.append(" | ");
+			html.append("<a href=\"visible-");
+			html.append(list.value(2).toUrl().
+				    toEncoded().constData());
+			html.append("\">");
+			html.append("Visible");
 			html.append("</a>");
 		      }
 
@@ -2487,6 +2503,11 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
   if(url.scheme().toLower().trimmed().startsWith("hide-"))
     {
       hideUrl(url, true);
+      return;
+    }
+  else if(url.scheme().toLower().trimmed().startsWith("visible-"))
+    {
+      hideUrl(url, false);
       return;
     }
 
