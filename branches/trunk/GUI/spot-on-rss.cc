@@ -30,6 +30,7 @@
 #include <QNetworkProxy>
 #include <QProgressDialog>
 #include <QSettings>
+#include <QScopedPointer>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QXmlStreamReader>
@@ -288,7 +289,9 @@ bool spoton_rss::importUrl(const QList<QVariant> &list, const bool batch)
   if(!crypt)
     return false;
 
-  if(!(spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0))
+  QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
+
+  if(!ucc)
     return false;
 
   if(!(spoton::instance() ? spoton::instance()->urlDatabase() :
@@ -311,7 +314,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list, const bool batch)
      m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 		    false).toBool(),
-     spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0);
+     ucc.data());
 
   if(batch)
     return imported;
@@ -354,6 +357,12 @@ bool spoton_rss::importUrl(const QList<QVariant> &list, const bool batch)
   }
 
   return imported;
+}
+
+spoton_crypt *spoton_rss::urlCommonCrypt(void) const
+{
+  return spoton_misc::retrieveUrlCommonCredentials
+    (spoton::instance() ? spoton::instance()->crypts().value("chat", 0) : 0);
 }
 
 void spoton_rss::center(QWidget *parent)
@@ -625,6 +634,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   if(!imageUrl.isEmpty() && imageUrl.isValid())
     emit downloadFeedImage(imageUrl, url);
 
+  QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
   QSettings settings;
 
   spoton_misc::importUrl
@@ -636,7 +646,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
      m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 		    false).toBool(),
-     spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0);
+     ucc.data());
 }
 
 void spoton_rss::populateFeeds(void)
@@ -1758,7 +1768,9 @@ void spoton_rss::slotImport(void)
 	  return;
 	}
 
-      if(!(spoton::instance() ? spoton::instance()->urlCommonCrypt() : 0))
+      QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
+
+      if(!ucc)
 	{
 	  QMessageBox::critical
 	    (this,

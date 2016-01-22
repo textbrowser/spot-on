@@ -35,6 +35,8 @@
 
 #include "ui_spot-on-rss.h"
 
+class spoton_crypt;
+
 class spoton_rss: public QMainWindow
 {
   Q_OBJECT
@@ -66,6 +68,7 @@ class spoton_rss: public QMainWindow
 #endif
   bool importUrl(const QList<QVariant> &list,
 		 const bool batch);
+  spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);
   void hideUrl(const QUrl &url, const bool state);
   void logError(const QString &error);
