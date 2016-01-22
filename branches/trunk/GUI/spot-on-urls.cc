@@ -371,7 +371,9 @@ void spoton::slotDeleteAllUrls(void)
 		"The shared.db database will not be vacuumed. Please "
 		"note that the deletion process may require "
 		"a considerable amount of time to complete. The "
-		"RSS mechanism and the kernel will be deactivated."));
+		"RSS mechanism and the kernel will be deactivated. "
+		"Please also verify that you have proper administrator "
+		"privileges."));
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
