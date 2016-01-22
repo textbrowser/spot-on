@@ -393,7 +393,9 @@ void spoton::slotDeleteAllUrls(void)
     QMessageBox::critical(this, tr("%1: Error").
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("One or more errors occurred while "
-			     "attempting to vacuum the URL databases."));
+			     "attempting to vacuum the URL databases. "
+			     "Please verify that you have correct "
+			     "administrator privileges."));
 }
 
 void spoton::slotDropUrlTables(void)
@@ -544,6 +546,9 @@ bool spoton::deleteAllUrls(void)
 
   QSqlQuery query(m_urlDatabase);
 
+  if(m_urlDatabase.driverName() != "QPSQL")
+    query.exec("PRAGMA secure_delete = ON");
+
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
@@ -569,9 +574,6 @@ bool spoton::deleteAllUrls(void)
 	      c2 = QChar(j + 48);
 	    else
 	      c2 = QChar(j + 97 - 10);
-
-	    if(m_urlDatabase.driverName() != "QPSQL")
-	      query.exec("PRAGMA secure_delete = ON");
 
 	    if(!query.exec(QString("DELETE FROM "
 				   "spot_on_keywords_%1%2").
