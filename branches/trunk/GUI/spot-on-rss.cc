@@ -71,6 +71,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotStatisticsTimeout(void)));
+  connect(m_ui.action_Descriptions_in_Timeline,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotTimelineShowOption(bool)));
   connect(m_ui.action_Find,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -83,6 +87,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotTimeOrderBy(bool)));
+  connect(m_ui.action_Publication_Dates_in_Timeline,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotTimelineShowOption(bool)));
   connect(m_ui.action_Toggle_Hidden,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -220,6 +228,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   int index = 0;
   int ivalue = 0;
 
+  m_ui.action_Descriptions_in_Timeline->setChecked
+    (settings.value("gui/rss_descriptions_in_timeline", true).toBool());
+  m_ui.action_Publication_Dates_in_Timeline->setChecked
+    (settings.value("gui/rss_publication_dates_in_timeline", true).toBool());
   m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
 					   false).toBool());
   m_ui.import_periodically->setChecked
@@ -2257,15 +2269,25 @@ void spoton_rss::slotRefreshTimeline(void)
 		      (QString("<font color=\"green\" size=3>%1</font>").
 		       arg(url.toEncoded().constData()));
 		    html.append("<br>");
-		    html.append
-		      (QString("<font color=\"gray\" size=3>%1</font>").
-		       arg(spoton_misc::
-			   removeSpecialHtmlTags(list.value(0).toString())));
-		    html.append("<br>");
-		    html.append
-		      (QString("<font color=\"gray\" size=3>%1</font>").
-		       arg(query.value(3).toString().trimmed()));
-		    html.append("<br>");
+
+		    if(m_ui.action_Descriptions_in_Timeline->isChecked())
+		      {
+			html.append
+			  (QString("<font color=\"gray\" size=3>%1</font>").
+			   arg(spoton_misc::
+			       removeSpecialHtmlTags(list.value(0).
+						     toString())));
+			html.append("<br>");
+		      }
+
+		    if(m_ui.action_Publication_Dates_in_Timeline->isChecked())
+		      {
+			html.append
+			  (QString("<font color=\"gray\" size=3>%1</font>").
+			   arg(query.value(3).toString().trimmed()));
+			html.append("<br>");
+		      }
+
 		    m_ui.timeline->append(html);
 
 		    QTextCursor cursor = m_ui.timeline->textCursor();
@@ -2567,6 +2589,26 @@ void spoton_rss::slotTimeOrderBy(bool state)
       m_ui.action_Publication_Date->blockSignals(true);
       m_ui.action_Publication_Date->setChecked(true);
       m_ui.action_Publication_Date->blockSignals(false);
+      slotRefreshTimeline();
+    }
+}
+
+void spoton_rss::slotTimelineShowOption(bool state)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(action == m_ui.action_Descriptions_in_Timeline)
+    {
+      QSettings settings;
+
+      settings.setValue("gui/rss_descriptions_in_timeline", state);
+      slotRefreshTimeline();
+    }
+  else if(action == m_ui.action_Publication_Dates_in_Timeline)
+    {
+      QSettings settings;
+
+      settings.setValue("gui/rss_publication_dates_in_timeline", state);
       slotRefreshTimeline();
     }
 }

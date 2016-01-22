@@ -645,8 +645,16 @@
     <addaction name="action_Toggle_Not_Indexed"/>
     <addaction name="action_Toggle_Shown"/>
    </widget>
+   <widget class="QMenu" name="menu_Show">
+    <property name="title">
+     <string>&amp;Show</string>
+    </property>
+    <addaction name="action_Descriptions_in_Timeline"/>
+    <addaction name="action_Publication_Dates_in_Timeline"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
+   <addaction name="menu_Show"/>
    <addaction name="menu_Tools"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -707,12 +715,45 @@
   </action>
   <action name="action_Toggle_Malformed">
    <property name="text">
-    <string>Toggle &amp;Malformed</string>
+    <string>Toggle Mal&amp;formed</string>
    </property>
   </action>
   <action name="action_Toggle_Not_Indexed">
    <property name="text">
-    <string>Toggle &amp;Not Indexed</string>
+    <string>Toggle Not &amp;Indexed</string>
+   </property>
+  </action>
+  <action name="action_Titles_Only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Descriptions in Timeline</string>
+   </property>
+  </action>
+  <action name="action_Publication_Dates_in_Timeline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Publication Dates in Timeline</string>
+   </property>
+  </action>
+  <action name="action_Descriptions_in_Timeline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Descriptions in Timeline</string>
    </property>
   </action>
  </widget>
