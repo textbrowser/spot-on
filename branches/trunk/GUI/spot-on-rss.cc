@@ -2214,7 +2214,7 @@ void spoton_rss::slotRefreshTimeline(void)
 			html.append(list.value(2).toUrl().
 				    toEncoded().constData());
 			html.append("\">");
-			html.append("Visible");
+			html.append("Show");
 			html.append("</a>");
 		      }
 
