@@ -2138,6 +2138,16 @@ void spoton_rss::slotRefreshTimeline(void)
 	  {
 	    m_ui.timeline->clear();
 
+	    /*
+	    ** 0 - content
+	    ** 1 - description
+	    ** 2 - hidden
+	    ** 3 - publication_date
+	    ** 4 - title
+	    ** 5 - url
+	    ** 6 - url_redirected
+	    */
+
 	    while(query.next())
 	      {
 		QByteArray bytes;
@@ -2254,7 +2264,7 @@ void spoton_rss::slotRefreshTimeline(void)
 		    html.append("<br>");
 		    html.append
 		      (QString("<font color=\"gray\" size=3>%1</font>").
-		       arg(query.value(2).toString().trimmed()));
+		       arg(query.value(3).toString().trimmed()));
 		    html.append("<br>");
 		    m_ui.timeline->append(html);
 
@@ -2600,7 +2610,7 @@ void spoton_rss::slotToggleState(void)
       {
 	QSqlQuery query(db);
 
-	qDebug() << query.exec(str);
+	query.exec(str);
       }
 
     db.close();
@@ -2608,6 +2618,7 @@ void spoton_rss::slotToggleState(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
+  slotRefreshTimeline();
 }
 
 void spoton_rss::slotUrlClicked(const QUrl &url)
