@@ -1544,11 +1544,11 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	      }
 	    else
 	      m_udpServer->setSocketOption
-		(QAbstractSocket::MulticastLoopbackOption, 0);
+		(QAbstractSocket::MulticastLoopbackOption, 1);
 #else
 	    ok = spoton_misc::joinMulticastGroup
 	      (QHostAddress(address),
-	       0, // Disable loopback.
+	       1, // Enabled loopback.
 	       m_udpServer->socketDescriptor(),
 	       port);
 #endif

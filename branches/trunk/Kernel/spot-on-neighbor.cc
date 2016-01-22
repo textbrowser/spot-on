@@ -6764,11 +6764,23 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	    sent = m_udpSocket->write(data, qMin(minimum, remaining));
 	  else
 	    {
-	      QHostAddress address(m_address);
+	      QHostAddress address;
+	      quint16 port = 0;
+
+	      if(spoton_misc::isMulticastAddress(m_udpSocket->localAddress()))
+		{
+		  address = m_udpSocket->localAddress();
+		  port = m_udpSocket->localPort();
+		}
+	      else
+		{
+		  address = QHostAddress(m_address);
+		  port = m_port;
+		}
 
 	      address.setScopeId(m_scopeId);
 	      sent = m_udpSocket->writeDatagram
-		(data, qMin(minimum, remaining), address, m_port);
+		(data, qMin(minimum, remaining), address, port);
 	    }
 
 	  if(sent == -1)
