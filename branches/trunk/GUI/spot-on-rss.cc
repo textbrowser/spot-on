@@ -83,6 +83,30 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotTimeOrderBy(bool)));
+  connect(m_ui.action_Toggle_Hidden,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotToggleState(void)));
+  connect(m_ui.action_Toggle_Imported,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotToggleState(void)));
+  connect(m_ui.action_Toggle_Indexed,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotToggleState(void)));
+  connect(m_ui.action_Toggle_Malformed,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotToggleState(void)));
+  connect(m_ui.action_Toggle_Not_Indexed,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotToggleState(void)));
+  connect(m_ui.action_Toggle_Shown,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotToggleState(void)));
   connect(m_ui.activate,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -340,7 +364,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list, const bool batch)
 	  if(imported)
 	    query.bindValue(0, 1);
 	  else
-	    query.bindValue(0, 2); // Import error.
+	    query.bindValue(0, 2); // Error.
 
 	  query.bindValue
 	    (1, crypt->keyedHash(list.value(3).toUrl().toEncoded(), &ok).
@@ -2535,6 +2559,55 @@ void spoton_rss::slotTimeOrderBy(bool state)
       m_ui.action_Publication_Date->blockSignals(false);
       slotRefreshTimeline();
     }
+}
+
+void spoton_rss::slotToggleState(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString str("");
+
+  if(action == m_ui.action_Toggle_Hidden)
+    str = "UPDATE rss_feeds_links SET hidden = 0 WHERE hidden = 1";
+  else if(action == m_ui.action_Toggle_Imported)
+    str = "UPDATE rss_feeds_links SET imported = 0 WHERE imported = 1";
+  else if(action == m_ui.action_Toggle_Indexed)
+    str = "UPDATE rss_feeds_links SET visited = 0 WHERE visited = 1";
+  else if(action == m_ui.action_Toggle_Malformed)
+    str = "UPDATE rss_feeds_links SET imported = 0, "
+      "visited = 0 WHERE imported = 2 OR visited = 2";
+  else if(action == m_ui.action_Toggle_Not_Indexed)
+    str = "UPDATE rss_feeds_links SET visited = 1 WHERE visited = 0";
+  else if(action == m_ui.action_Toggle_Shown)
+    str = "UPDATE rss_feeds_links SET hidden = 1 WHERE hidden = 0";
+
+  if(str.isEmpty())
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	qDebug() << query.exec(str);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::slotUrlClicked(const QUrl &url)

@@ -19,7 +19,7 @@
     <item>
      <widget class="QTabWidget" name="tab">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
@@ -634,8 +634,20 @@
     <addaction name="action_Find"/>
     <addaction name="menu_Timeline_Order"/>
    </widget>
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="action_Toggle_Hidden"/>
+    <addaction name="action_Toggle_Imported"/>
+    <addaction name="action_Toggle_Indexed"/>
+    <addaction name="action_Toggle_Malformed"/>
+    <addaction name="action_Toggle_Not_Indexed"/>
+    <addaction name="action_Toggle_Shown"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
+   <addaction name="menu_Tools"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_Close">
@@ -671,6 +683,36 @@
    </property>
    <property name="text">
     <string>&amp;Publication Date</string>
+   </property>
+  </action>
+  <action name="action_Toggle_Imported">
+   <property name="text">
+    <string>Toggle I&amp;mported</string>
+   </property>
+  </action>
+  <action name="action_Toggle_Hidden">
+   <property name="text">
+    <string>Toggle &amp;Hidden</string>
+   </property>
+  </action>
+  <action name="action_Toggle_Indexed">
+   <property name="text">
+    <string>Toggle I&amp;ndexed</string>
+   </property>
+  </action>
+  <action name="action_Toggle_Shown">
+   <property name="text">
+    <string>Toggle &amp;Shown</string>
+   </property>
+  </action>
+  <action name="action_Toggle_Malformed">
+   <property name="text">
+    <string>Toggle &amp;Malformed</string>
+   </property>
+  </action>
+  <action name="action_Toggle_Not_Indexed">
+   <property name="text">
+    <string>Toggle &amp;Not Indexed</string>
    </property>
   </action>
  </widget>
