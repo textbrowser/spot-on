@@ -509,7 +509,7 @@ void spoton_rss::logError(const QString &error)
 
   m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
   m_ui.errors->append(error.trimmed());
-  m_ui.errors->append("");
+  m_ui.errors->append("<br>");
   spoton_misc::logError(error);
 }
 

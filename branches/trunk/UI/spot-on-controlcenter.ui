@@ -2976,6 +2976,9 @@
                            <family>Monospace</family>
                           </font>
                          </property>
+                         <property name="tabChangesFocus">
+                          <bool>true</bool>
+                         </property>
                         </widget>
                        </item>
                        <item>
@@ -4207,7 +4210,7 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-370</y>
                  <width>802</width>
                  <height>603</height>
                 </rect>
@@ -5067,7 +5070,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-686</y>
              <width>812</width>
              <height>1134</height>
             </rect>
@@ -8280,14 +8283,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>spoton_textedit</class>
-   <extends>QTextEdit</extends>
-   <header>GUI/spot-on-textedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>spoton_textbrowser</class>
    <extends>QTextBrowser</extends>
    <header>spot-on-textbrowser.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textedit</class>
+   <extends>QTextEdit</extends>
+   <header>GUI/spot-on-textedit.h</header>
   </customwidget>
   <customwidget>
    <class>spoton_tabwidget</class>

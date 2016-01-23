@@ -2789,7 +2789,7 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-1109</y>
              <width>556</width>
              <height>1783</height>
             </rect>
@@ -3921,6 +3921,9 @@ QPushButton:pressed {
                      <font>
                       <family>Monospace</family>
                      </font>
+                    </property>
+                    <property name="tabChangesFocus">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </widget>
@@ -6277,7 +6280,7 @@ color: rgb(255, 255, 255);</string>
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>-215</x>
+             <x>0</x>
              <y>0</y>
              <width>771</width>
              <height>1304</height>
@@ -8858,6 +8861,9 @@ QPushButton:pressed {
                       </column>
                      </widget>
                      <widget class="QListWidget" name="transmittedMagnets">
+                      <property name="tabKeyNavigation">
+                       <bool>true</bool>
+                      </property>
                       <property name="selectionMode">
                        <enum>QAbstractItemView::SingleSelection</enum>
                       </property>
@@ -10839,14 +10845,14 @@ border-style: inset;
  </widget>
  <customwidgets>
   <customwidget>
-   <class>spoton_textedit</class>
-   <extends>QTextEdit</extends>
-   <header>GUI/spot-on-textedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>spoton_textbrowser</class>
    <extends>QTextBrowser</extends>
    <header>spot-on-textbrowser.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textedit</class>
+   <extends>QTextEdit</extends>
+   <header>GUI/spot-on-textedit.h</header>
   </customwidget>
   <customwidget>
    <class>spoton_tabwidget</class>

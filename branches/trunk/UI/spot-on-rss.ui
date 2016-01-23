@@ -436,6 +436,9 @@
             <family>Monospace</family>
            </font>
           </property>
+          <property name="tabChangesFocus">
+           <bool>true</bool>
+          </property>
           <property name="openLinks">
            <bool>false</bool>
           </property>
