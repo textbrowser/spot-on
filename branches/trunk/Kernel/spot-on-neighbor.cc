@@ -1786,21 +1786,29 @@ void spoton_neighbor::processData(void)
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::processData(): "
 		     "data does not contain Content-Length "
-		     "for %1:%2.").
+		     "from node %1:%2.").
 	     arg(m_address).
 	     arg(m_port));
 	  continue;
 	}
 
       if(length <= 0)
-	continue;
+	{
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::processData(): "
+		     "negative or zero length from node %1:%2. "
+		     "Ignoring.").
+	     arg(m_address).
+	     arg(m_port));
+	  continue;
+	}
 
       if(length > maximumContentLength)
 	{
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::processData(): "
 		     "the Content-Length header from node %1:%2 "
-		     "contains a lot of data (%3). Ignoring. ").
+		     "contains a lot of data (%3). Ignoring.").
 	     arg(m_address).
 	     arg(m_port).
 	     arg(length));
@@ -1953,7 +1961,15 @@ void spoton_neighbor::processData(void)
 	      spoton_kernel::messagingCacheAdd(originalData);
 	    }
 	  else
-	    continue;
+	    {
+	      spoton_misc::logError
+		(QString("spoton_neighbor::processData(): "
+			 "data length does not equal content length "
+			 "from node %1:%2. Ignoring.").
+		 arg(m_address).
+		 arg(m_port));
+	      continue;
+	    }
 
 	  /*
 	  ** Please note that findMessageType() calls
