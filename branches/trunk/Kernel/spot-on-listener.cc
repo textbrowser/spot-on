@@ -1548,7 +1548,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 #else
 	    ok = spoton_misc::joinMulticastGroup
 	      (QHostAddress(address),
-	       1, // Enabled loopback.
+	       1, // Enable loopback.
 	       m_udpServer->socketDescriptor(),
 	       port);
 #endif
