@@ -6758,7 +6758,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
   else if(size == 0)
     return 0;
 
-  qint64 minimum = size;
+  qint64 minimum = qMin(static_cast<qint64> (508), size);
   qint64 remaining = size;
   qint64 sent = 0;
 
