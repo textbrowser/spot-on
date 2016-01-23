@@ -219,6 +219,9 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   menu->addAction(tr("&Refresh table."),
 		  this,
 		  SLOT(slotPopulateFeeds(void)));
+  menu->addSeparator();
+  menu->addAction(tr("&Schedule selected feed for update."),
+		  this, SLOT(slotScheduleFeedUpdate(void)));
   m_ui.action_menu->setMenu(menu);
   connect(m_ui.action_menu,
 	  SIGNAL(clicked(void)),
@@ -1800,6 +1803,8 @@ void spoton_rss::slotDownloadTimeout(void)
 	  SIGNAL(readyRead(void)),
 	  this,
 	  SLOT(slotFeedReplyReadyRead(void)));
+  logError(QString("Downloading feed <a href=\"%1\">%1</a>.").
+	   arg(reply->url().toEncoded().constData()));
 }
 
 void spoton_rss::slotFeedImageReplyFinished(void)
@@ -2620,6 +2625,11 @@ void spoton_rss::slotSaveProxy(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton_rss::slotScheduleFeedUpdate(void)
+{
+  m_currentFeedRow = m_ui.feeds->currentRow() - 1;
+}
+
 void spoton_rss::slotShowContextMenu(const QPoint &point)
 {
   QMenu menu(this);
@@ -2634,6 +2644,9 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
   menu.addSeparator();
   menu.addAction(tr("&Refresh table."),
 		 this, SLOT(slotPopulateFeeds(void)));
+  menu.addSeparator();
+  menu.addAction(tr("&Schedule selected feed for update."),
+		 this, SLOT(slotScheduleFeedUpdate(void)));
   menu.exec(m_ui.feeds->mapToGlobal(point));
 }
 
