@@ -79,6 +79,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotFindInitialize(void)));
+  connect(m_ui.action_Import,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotImport(void)));
   connect(m_ui.action_Insert_Date,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -115,6 +119,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotToggleState(void)));
+  connect(m_ui.action_URL_Links_in_Timeline,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotTimelineShowOption(bool)));
   connect(m_ui.activate,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -143,13 +151,9 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
-  connect(m_ui.import,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotImport(void)));
   connect(m_ui.import_periodically,
 	  SIGNAL(toggled(bool)),
-	  m_ui.import,
+	  m_ui.action_Import,
 	  SLOT(setDisabled(bool)));
   connect(m_ui.import_periodically,
 	  SIGNAL(toggled(bool)),
@@ -232,11 +236,13 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
     (settings.value("gui/rss_descriptions_in_timeline", true).toBool());
   m_ui.action_Publication_Dates_in_Timeline->setChecked
     (settings.value("gui/rss_publication_dates_in_timeline", true).toBool());
+  m_ui.action_URL_Links_in_Timeline->setChecked
+    (settings.value("gui/rss_url_links_in_timeline", true).toBool());
   m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
 					   false).toBool());
   m_ui.import_periodically->setChecked
     (settings.value("gui/rss_import_activate", false).toBool());
-  m_ui.import->setEnabled(!m_ui.import_periodically->isChecked());
+  m_ui.action_Import->setEnabled(!m_ui.import_periodically->isChecked());
   ivalue = qBound(m_ui.maximum_keywords->minimum(),
 		  settings.value("gui/rss_maximum_keywords", 50).toInt(),
 		  m_ui.maximum_keywords->maximum());
@@ -434,8 +440,8 @@ void spoton_rss::closeEvent(QCloseEvent *event)
 
 void spoton_rss::deactivate(void)
 {
+  m_ui.action_Import->setEnabled(true);
   m_ui.activate->setChecked(false);
-  m_ui.import->setEnabled(true);
   m_ui.import_periodically->setChecked(false);
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
@@ -1922,12 +1928,12 @@ void spoton_rss::slotFindInitialize(void)
 
 void spoton_rss::slotImport(void)
 {
-  QPushButton *pushButton = qobject_cast<QPushButton *> (sender());
+  QAction *action = qobject_cast<QAction *> (sender());
   bool batch = false;
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
-  if(m_ui.import == pushButton)
+  if(action == m_ui.action_Import)
     {
       if(!crypt)
 	{
@@ -2409,10 +2415,14 @@ void spoton_rss::slotRefreshTimeline(void)
 		      }
 
 		    html.append("<br>");
-		    html.append
-		      (QString("<font color=\"green\" size=3>%1</font>").
-		       arg(url.toEncoded().constData()));
-		    html.append("<br>");
+
+		    if(m_ui.action_URL_Links_in_Timeline->isChecked())
+		      {
+			html.append
+			  (QString("<font color=\"green\" size=3>%1</font>").
+			   arg(url.toEncoded().constData()));
+			html.append("<br>");
+		      }
 
 		    if(m_ui.action_Descriptions_in_Timeline->isChecked())
 		      {
@@ -2631,6 +2641,7 @@ void spoton_rss::slotStatisticsTimeout(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   statusBar()->showMessage(tr("0 RSS Feeds | "
+			      "0 Hidden URLs | "
 			      "0 Imported URLs | "
 			      "0 Not Imported URLs | "
 			      "0 Indexed URLs | "
@@ -2654,18 +2665,21 @@ void spoton_rss::slotStatisticsTimeout(void)
 	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds "
 		      "UNION "
 		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
-		      "WHERE imported = 1 "
+		      "WHERE hidden = 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'c' FROM rss_feeds_links "
-		      "WHERE imported <> 1 "
+		      "WHERE imported = 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
-		      "WHERE visited = 1 "
+		      "WHERE imported <> 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
-		      "WHERE visited <> 1 "
+		      "WHERE visited = 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'f' FROM rss_feeds_links "
+		      "WHERE visited <> 1 "
+		      "UNION "
+		      "SELECT COUNT(*), 'g' FROM rss_feeds_links "
 		      "ORDER BY 2");
 
 	if(query.exec())
@@ -2676,17 +2690,19 @@ void spoton_rss::slotStatisticsTimeout(void)
 
 	statusBar()->showMessage
 	  (tr("%1 RSS Feeds | "
-	      "%2 Imported URLs | "
-	      "%3 Not Imported URLs | "
-	      "%4 Indexed URLs | "
-	      "%5 Not Indexed URLs | "
-	      "%6 Total URLs").
+	      "%2 Hidden URLs | "
+	      "%3 Imported URLs | "
+	      "%4 Not Imported URLs | "
+	      "%5 Indexed URLs | "
+	      "%6 Not Indexed URLs | "
+	      "%7 Total URLs").
 	   arg(locale.toString(counts.value(0))).
 	   arg(locale.toString(counts.value(1))).
 	   arg(locale.toString(counts.value(2))).
 	   arg(locale.toString(counts.value(3))).
 	   arg(locale.toString(counts.value(4))).
-	   arg(locale.toString(counts.value(5))));
+	   arg(locale.toString(counts.value(5))).
+	   arg(locale.toString(counts.value(6))));
       }
 
     db.close();
@@ -2753,6 +2769,13 @@ void spoton_rss::slotTimelineShowOption(bool state)
       QSettings settings;
 
       settings.setValue("gui/rss_publication_dates_in_timeline", state);
+      slotRefreshTimeline();
+    }
+  else if(action == m_ui.action_URL_Links_in_Timeline)
+    {
+      QSettings settings;
+
+      settings.setValue("gui/rss_url_links_in_timeline", state);
       slotRefreshTimeline();
     }
 }

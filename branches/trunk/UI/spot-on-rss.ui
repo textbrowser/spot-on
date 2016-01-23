@@ -299,13 +299,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="import">
-            <property name="text">
-             <string>Import</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -507,7 +500,7 @@
           <item>
            <widget class="QComboBox" name="timeline_filter">
             <property name="currentIndex">
-             <number>0</number>
+             <number>3</number>
             </property>
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToContents</enum>
@@ -638,6 +631,8 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
+    <addaction name="action_Import"/>
+    <addaction name="separator"/>
     <addaction name="action_Toggle_Hidden"/>
     <addaction name="action_Toggle_Imported"/>
     <addaction name="action_Toggle_Indexed"/>
@@ -651,6 +646,7 @@
     </property>
     <addaction name="action_Descriptions_in_Timeline"/>
     <addaction name="action_Publication_Dates_in_Timeline"/>
+    <addaction name="action_URL_Links_in_Timeline"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -756,6 +752,22 @@
     <string>&amp;Descriptions in Timeline</string>
    </property>
   </action>
+  <action name="action_Import">
+   <property name="text">
+    <string>Im&amp;port</string>
+   </property>
+  </action>
+  <action name="action_URL_Links_in_Timeline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;URL Links in Timeline</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -777,7 +789,6 @@
   <tabstop>download_interval</tabstop>
   <tabstop>import_periodically</tabstop>
   <tabstop>maximum_keywords</tabstop>
-  <tabstop>import</tabstop>
   <tabstop>action_menu</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>

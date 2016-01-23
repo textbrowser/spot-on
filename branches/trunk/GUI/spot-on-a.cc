@@ -82,6 +82,7 @@ const int spoton_common::LANE_WIDTH_MINIMUM;
 const int spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST;
 const int spoton_common::MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS;
+const int spoton_common::MAXIMUM_UDP_DATAGRAM_SIZE;
 const int spoton_common::MOSAIC_SIZE;
 const int spoton_common::NAME_MAXIMUM_LENGTH;
 const int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
