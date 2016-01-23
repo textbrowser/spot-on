@@ -245,7 +245,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 		 settings.value("gui/rss_last_tab", 0).toInt(),
 		 m_ui.tab->count());
   m_ui.tab->setCurrentIndex(index);
-  m_downloadContentTimer.setInterval(5 * 1000); // Every five seconds.
+  m_downloadContentTimer.setInterval(2500);
   dvalue = qBound
     (m_ui.download_interval->minimum(),
      settings.value("gui/rss_download_interval", 1.50).toDouble(),
@@ -513,8 +513,150 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   QString description("");
   QString link(url.toString());
   QString title("");
+  QString type("");
   QUrl imageUrl;
   QXmlStreamReader reader(data);
+
+  while(!reader.atEnd() && !reader.hasError())
+    {
+      if(m_parseXmlFuture.isCanceled())
+	break;
+
+      reader.readNext();
+
+      if(reader.name().toString().toLower().trimmed() == "feed")
+	{
+	  type = "feed";
+	  break;
+	}
+      else if(reader.name().toString().toLower().trimmed() == "rss")
+	{
+	  type = "rss";
+	  break;
+	}
+    }
+
+  /*
+  ** Atom
+  */
+
+  if(type == "feed")
+    {
+      while(!reader.atEnd() && !reader.hasError())
+	{
+	  if(m_parseXmlFuture.isCanceled())
+	    break;
+
+	  reader.readNext();
+
+	  if(reader.isStartElement())
+	    currentTag = reader.name().toString().toLower().trimmed();
+
+	  if(currentTag == "entry")
+	    {
+	      currentTag.clear();
+
+	      QString description("");
+	      QString link("");
+	      QString publicationDate("");
+	      QString tag("");
+	      QString title("");
+	      bool endDescription = false;
+
+	      while(true)
+		{
+		  if(m_parseXmlFuture.isCanceled())
+		    break;
+
+		  reader.readNext();
+
+		  if(reader.isEndElement())
+		    {
+		      if(reader.name().toString().toLower().trimmed() ==
+			 "entry")
+			break;
+
+		      if(reader.name().toString().toLower().trimmed() ==
+			 "summary")
+			endDescription = true;
+		    }
+		  else if(reader.isStartElement())
+		    tag = reader.name().toString().toLower().trimmed();
+
+		  if(tag == "summary")
+		    {
+		      if(endDescription)
+			tag.clear();
+		      else if(reader.isCharacters())
+			description.append(reader.text().toString());
+		    }
+
+		  if(tag == "link")
+		    {
+		      tag.clear();
+
+		      QXmlStreamAttributes attributes = reader.attributes();
+
+		      if(link.isEmpty())
+			link = attributes.value("href").toString().trimmed();
+		    }
+		  else if(tag == "updated")
+		    {
+		      tag.clear();
+
+		      if(publicationDate.isEmpty())
+			{
+			  reader.readNext();
+			  publicationDate = reader.text().toString().trimmed();
+			}
+		    }
+		  else if(tag == "title")
+		    {
+		      tag.clear();
+
+		      if(title.isEmpty())
+			{
+			  reader.readNext();
+			  title = reader.text().toString().trimmed();
+			}
+		    }
+
+		  if(reader.atEnd() || reader.hasError())
+		    break;
+		}
+
+	      if(!m_parseXmlFuture.isCanceled())
+		saveFeedLink
+		  (description.trimmed(), link, publicationDate, title, url);
+	    }
+	  else if(currentTag == "subtitle")
+	    {
+	      currentTag.clear();
+
+	      if(description.isEmpty())
+		{
+		  reader.readNext();
+		  description = reader.text().toString().trimmed();
+		}
+	    }
+	  else if(currentTag == "title")
+	    {
+	      currentTag.clear();
+
+	      if(title.isEmpty())
+		{
+		  reader.readNext();
+		  title = reader.text().toString().trimmed();
+		}
+	    }
+	}
+
+      goto done_label;
+    }
+
+  /*
+  ** RSS
+  */
 
   while(!reader.atEnd() && !reader.hasError())
     {
@@ -661,6 +803,8 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 	    }
 	}
     }
+
+ done_label:
 
   if(m_parseXmlFuture.isCanceled())
     return;
@@ -999,8 +1143,8 @@ void spoton_rss::saveFeedData(const QString &d,
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString description(d);
-	QString title(t);
+	QString description(d.trimmed());
+	QString title(t.trimmed());
 	bool ok = true;
 
 	if(description.isEmpty())
@@ -1099,9 +1243,9 @@ void spoton_rss::saveFeedLink(const QString &d,
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString description(d);
-	QString publicationDate(p);
-	QString title(t);
+	QString description(d.trimmed());
+	QString publicationDate(p.trimmed());
+	QString title(t.trimmed());
 	bool ok = true;
 
 	if(description.isEmpty())
