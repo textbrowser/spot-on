@@ -55,6 +55,12 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   m_ui.feeds->setIconSize(QSize(48, 48));
   m_ui.feeds->horizontalHeader()->setSortIndicator
     (1, Qt::AscendingOrder); // Feed
+#if QT_VERSION >= 0x050000
+  m_ui.feeds->verticalHeader()->setSectionResizeMode
+    (QHeaderView::ResizeToContents);
+#else
+  m_ui.feeds->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+#endif
   connect(&m_downloadContentTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -935,7 +941,6 @@ void spoton_rss::populateFeeds(void)
 	    }
 
 	m_ui.feeds->resizeColumnToContents(0);
-	m_ui.feeds->resizeRowsToContents();
 	m_ui.feeds->setRowCount(row);
 	m_ui.feeds->setSortingEnabled(true);
       }
