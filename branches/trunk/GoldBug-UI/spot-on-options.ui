@@ -378,7 +378,7 @@
                  <item>
                   <widget class="QLabel" name="label_121">
                    <property name="text">
-                    <string>&amp;Populate table every</string>
+                    <string>&amp;Populate the table every</string>
                    </property>
                    <property name="buddy">
                     <cstring>chatUpdateInterval</cstring>
@@ -527,7 +527,7 @@
                  <item>
                   <widget class="QLabel" name="label_123">
                    <property name="text">
-                    <string>&amp;Populate table every</string>
+                    <string>&amp;Populate the table every</string>
                    </property>
                    <property name="buddy">
                     <cstring>listenersUpdateInterval</cstring>
@@ -604,7 +604,7 @@
                  <item>
                   <widget class="QLabel" name="label_125">
                    <property name="text">
-                    <string>&amp;Populate table every</string>
+                    <string>&amp;Populate the table every</string>
                    </property>
                    <property name="buddy">
                     <cstring>neighborsUpdateInterval</cstring>
@@ -682,7 +682,7 @@
                  <item>
                   <widget class="QLabel" name="label_15">
                    <property name="text">
-                    <string>&amp;maximum keyword accepted during an import via the interface.</string>
+                    <string>&amp;maximum keywords accepted during an import via the interface.</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
@@ -1032,7 +1032,7 @@
                  <item>
                   <widget class="QLabel" name="label_16">
                    <property name="text">
-                    <string>&amp;maximum keyword accepted during an import via the kernel.</string>
+                    <string>&amp;maximum keywords accepted during an import via the kernel.</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
