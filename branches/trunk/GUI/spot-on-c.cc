@@ -744,6 +744,7 @@ QList<QPair<QString, QVariant> > spoton::gatherStatistics(void) const
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
+	query.exec("PRAGMA read_uncommitted = True");
 
 	if(query.exec("SELECT statistic, value FROM kernel_statistics "
 		      "ORDER BY statistic"))
