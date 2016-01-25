@@ -3527,10 +3527,11 @@ void spoton::populateMail(void)
       {
 	QList<int> rows;
 	QModelIndexList list
-	  (m_ui.mail->selectionModel()->selectedRows(9)); // hash
+	  (m_ui.mail->selectionModel()->
+	   selectedRows(m_ui.mail->columnCount() - 1)); // OID
 	QSqlQuery query(db);
 	QString html(m_ui.mailMessage->toHtml());
-	QStringList hashes;
+	QStringList oids;
 	int cRow = m_ui.mail->currentRow();
 	int totalRows = 0;
 
@@ -3539,7 +3540,7 @@ void spoton::populateMail(void)
 	    QVariant data(list.takeFirst().data());
 
 	    if(!data.isNull() && data.isValid())
-	      hashes.append(data.toString());
+	      oids.append(data.toString());
 	  }
 
 	m_ui.mail->clearContents();
@@ -3709,7 +3710,7 @@ void spoton::populateMail(void)
 
 		  }
 
-		if(hashes.contains(query.value(9).toString()))
+		if(oids.contains(query.value(11).toString()))
 		  rows.append(row - 1);
 	      }
 	  }
