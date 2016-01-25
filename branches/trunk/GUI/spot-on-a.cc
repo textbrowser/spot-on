@@ -127,7 +127,11 @@ static void qt_message_handler(QtMsgType type,
 static void qt_message_handler(QtMsgType type, const char *msg)
 {
   Q_UNUSED(type);
-  spoton_misc::logError(QString("An error (%1) occurred.").arg(msg));
+
+  if(msg && qstrnlen(msg, std::numeric_limits<uint>::max()) > 0)
+    spoton_misc::logError(QString("An error (%1) occurred.").arg(msg));
+  else
+    spoton_misc::logError("Unknown error.");
 }
 #endif
 
@@ -1645,7 +1649,7 @@ spoton::spoton(void):QMainWindow()
   connect(&m_kernelUpdateTimer,
 	  SIGNAL(timeout(void)),
 	  this,
-	  SLOT(slotPopulateStatistics(void)));
+	  SLOT(slotGatherStatistics(void)));
   connect(&m_listenersUpdateTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -2611,6 +2615,10 @@ spoton::spoton(void):QMainWindow()
 	m_externalAddressDiscovererTimer.start(60000);
     }
 
+  connect(&m_statisticsFutureWatcher,
+	  SIGNAL(finished(void)),
+	  this,
+	  SLOT(slotStatisticsGathered(void)));
 #if SPOTON_GOLDBUG == 0
   str = m_settings.value("gui/iconSet", "nouve").toString().toLower();
 #else
@@ -2728,6 +2736,7 @@ void spoton::cleanup(void)
       future.waitForFinished();
     }
 
+  m_statisticsFuture.waitForFinished();
   m_buzzStatusTimer.stop();
   m_chatInactivityTimer.stop();
   m_emailRetrievalTimer.stop();

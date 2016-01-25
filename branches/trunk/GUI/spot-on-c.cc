@@ -717,20 +717,22 @@ void spoton::slotStarOTMCheckChange(bool state)
     }
 }
 
-void spoton::slotPopulateStatistics(void)
+void spoton::slotGatherStatistics(void)
+{
+  if(!m_statisticsFuture.isFinished())
+    return;
+
+  m_statisticsFuture = QtConcurrent::run
+    (this, &spoton::gatherStatistics);
+  m_statisticsFutureWatcher.setFuture(m_statisticsFuture);
+}
+
+QList<QPair<QString, QVariant> > spoton::gatherStatistics(void) const
 {
   QFileInfo fileInfo
     (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+  QList<QPair<QString, QVariant> > list;
   QString connectionName("");
-  QWidget *focusWidget = QApplication::focusWidget();
-  int activeListeners = 0;
-  int activeNeighbors = 0;
-  int row = 0;
-  int totalRows = 0;
-
-  m_statisticsUi.view->setSortingEnabled(false);
-  m_ui.statistics->setSortingEnabled(false);
-  m_statisticsModel->removeRows(0, m_statisticsModel->rowCount());
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -742,53 +744,65 @@ void spoton::slotPopulateStatistics(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.exec("PRAGMA read_uncommitted = True");
-
-	if(query.exec("SELECT COUNT(*) FROM kernel_statistics"))
-	  if(query.next())
-	    m_statisticsModel->setRowCount(query.value(0).toInt());
 
 	if(query.exec("SELECT statistic, value FROM kernel_statistics "
 		      "ORDER BY statistic"))
-	  while(query.next() &&
-		totalRows < m_statisticsModel->rowCount())
-	    {
-	      totalRows += 1;
-
-	      QStandardItem *item = new QStandardItem
-		(query.value(0).toString());
-
-	      item->setEditable(false);
-	      m_statisticsModel->setItem(row, 0, item);
-	      item = new QStandardItem(query.value(1).toString());
-	      item->setEditable(false);
-	      m_statisticsModel->setItem(row, 1, item);
-
-	      if(query.value(0).toString().toLower().
-		 contains("congestion container"))
-		{
-		  if(query.value(1).toLongLong() <= 50)
-		    item->setBackground
-		      (QBrush(QColor("lightgreen")));
-		  else
-		    item->setBackground
-		      (QBrush(QColor(240, 128, 128)));
-		}
-	      else if(query.value(0).toString().toLower().
-		      contains("live listeners"))
-		activeListeners = query.value(1).toInt();
-	      else if(query.value(0).toString().toLower().
-		      contains("live neighbors"))
-		activeNeighbors = query.value(1).toInt();
-
-	      row += 1;
-	    }
+	  while(query.next())
+	    list << QPair<QString, QVariant> (query.value(0).toString(),
+					      query.value(1));
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  return list;
+}
+
+void spoton::slotStatisticsGathered(void)
+{
+  populateStatistics(m_statisticsFuture.result());
+}
+
+void spoton::populateStatistics
+(const QList<QPair<QString, QVariant> > &list)
+{
+  QWidget *focusWidget = QApplication::focusWidget();
+  int activeListeners = 0;
+  int activeNeighbors = 0;
+  int row = 0;
+  int totalRows = list.size();
+
+  m_statisticsUi.view->setSortingEnabled(false);
+  m_ui.statistics->setSortingEnabled(false);
+  m_statisticsModel->removeRows(0, m_statisticsModel->rowCount());
+  m_statisticsModel->setRowCount(totalRows);
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      QStandardItem *item = new QStandardItem(list.at(i).first);
+
+      item->setEditable(false);
+      m_statisticsModel->setItem(row, 0, item);
+      item = new QStandardItem(list.at(i).second.toString());
+      item->setEditable(false);
+      m_statisticsModel->setItem(row, 1, item);
+
+      if(list.at(i).first.toLower().contains("congestion container"))
+	{
+	  if(list.at(i).second.toLongLong() <= 50)
+	    item->setBackground(QBrush(QColor("lightgreen")));
+	  else
+	    item->setBackground(QBrush(QColor(240, 128, 128)));
+	}
+      else if(list.at(i).first.toLower().contains("live listeners"))
+	activeListeners = list.at(i).second.toInt();
+      else if(list.at(i).first.toLower().contains("live neighbors"))
+	activeNeighbors = list.at(i).second.toInt();
+
+      row += 1;
+    }
+
   totalRows += 1;
   m_statisticsModel->setRowCount(totalRows);
 

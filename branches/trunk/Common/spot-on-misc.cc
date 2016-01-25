@@ -3130,6 +3130,10 @@ void spoton_misc::vacuumAllDatabases(void)
 {
   QStringList list;
 
+  /*
+  ** rss.db is not vacuumed.
+  */
+
   list << "buzz_channels.db"
        << "echo_key_sharing_secrets.db"
        << "email.db"

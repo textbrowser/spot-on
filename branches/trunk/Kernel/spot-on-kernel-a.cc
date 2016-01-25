@@ -201,7 +201,11 @@ static void qt_message_handler(QtMsgType type,
 static void qt_message_handler(QtMsgType type, const char *msg)
 {
   Q_UNUSED(type);
-  spoton_misc::logError(QString("An error (%1) occurred.").arg(msg));
+
+  if(msg && qstrnlen(msg, std::numeric_limits<uint>::max()) > 0)
+    spoton_misc::logError(QString("An error (%1) occurred.").arg(msg));
+  else
+    spoton_misc::logError("Unknown error.");
 }
 #endif
 
@@ -4794,7 +4798,6 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	qint64 v1 = 0;
 	qint64 v2 = 0;
 
-	query.exec("PRAGMA synchronous = OFF");
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Active Buzz Channels', ?)");

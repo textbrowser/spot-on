@@ -37,6 +37,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QFuture>
+#include <QFutureWatcher>
 #include <QHash>
 #include <QInputDialog>
 #include <QLocale>
@@ -445,6 +446,8 @@ class spoton: public QMainWindow
   QDateTime m_participantsLastModificationTime;
   QDateTime m_starsLastModificationTime;
   QDialog *m_poptasticRetroPhoneDialog;
+  QFuture<QList<QPair<QString, QVariant> > > m_statisticsFuture;
+  QFutureWatcher<QList<QPair<QString, QVariant> > > m_statisticsFutureWatcher;
   QHash<QByteArray, QString> m_neighborToOidMap;
   QHash<QByteArray, quint64> m_receivedChatSequenceNumbers;
   QHash<QByteArray, spoton_forward_secrecy> m_forwardSecrecyRequests;
@@ -509,6 +512,7 @@ class spoton: public QMainWindow
   QByteArray poptasticName(void) const;
   QList<QByteArray> retrieveForwardSecrecyInformation
     (const QSqlDatabase &db, const QString &oid, bool *ok) const;
+  QList<QPair<QString, QVariant> > gatherStatistics(void) const;
   QPixmap pixmapForCountry(const QString &country) const;
   QString currentTabName(void) const;
   QString saveCommonUrlCredentials
@@ -570,6 +574,7 @@ class spoton: public QMainWindow
   void populateMOTD(const QString &listenerOid);
   void populateMail(void);
   void populateNovas(void);
+  void populateStatistics(const QList<QPair<QString, QVariant> > &list);
   void prepareContextMenuMirrors(void);
   void prepareListenerIPCombo(void);
   void prepareSMP(const QString &hash);
@@ -728,6 +733,7 @@ class spoton: public QMainWindow
   void slotFetchMoreButton(void);
   void slotForceKernelRegistration(bool state);
   void slotForwardSecrecyEncryptionKeyChanged(int index);
+  void slotGatherStatistics(void);
   void slotGatherUrlStatistics(void);
   void slotGeminiChanged(QTableWidgetItem *item);
   void slotGenerateEtpKeys(int index);
@@ -803,7 +809,6 @@ class spoton: public QMainWindow
   void slotPopulateNeighbors(void);
   void slotPopulateParticipants(void);
   void slotPopulateStars(void);
-  void slotPopulateStatistics(void);
   void slotPostgreSQLConnect(void);
   void slotPostgreSQLDisconnect(int index);
   void slotPrepareSMP(const QString &hash);
@@ -907,6 +912,7 @@ class spoton: public QMainWindow
   void slotSignatureCheckBoxToggled(bool state);
   void slotSignatureKeyTypeChanged(int index);
   void slotStarOTMCheckChange(bool state);
+  void slotStatisticsGathered(void);
   void slotStatusButtonClicked(void);
   void slotStatusChanged(int index);
   void slotSuperEcho(int index);
