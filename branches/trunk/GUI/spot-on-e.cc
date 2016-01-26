@@ -283,6 +283,7 @@ void spoton::slotConfigurePoptastic(void)
 	("gui/poptasticVerifySmtpPeer",
 	 m_poptasticRetroPhoneSettingsUi.out_verify_peer->
 	 isChecked() ? 1 : 0);
+      prepareDatabasesFromUI();
 
       QString error("");
 
@@ -1592,6 +1593,8 @@ void spoton::slotShareStarBeam(void)
   if(!ok)
     return;
 
+  prepareDatabasesFromUI();
+
   QString connectionName("");
 
   /*
@@ -1900,6 +1903,8 @@ void spoton::initializeUrlDistillers(void)
 
   if(!crypt)
     return;
+
+  prepareDatabasesFromUI();
 
   QString connectionName("");
 

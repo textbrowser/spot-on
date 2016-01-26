@@ -52,6 +52,8 @@ void spoton::slotDuplicateTransmittedMagnet(void)
   if(!crypt)
     goto done_label;
 
+  prepareDatabasesFromUI();
+
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
@@ -1476,6 +1478,8 @@ QString spoton::saveCommonUrlCredentials
   if(!crypt)
     return tr("Invalid spoton_crypt object. This is a fatal flaw.");
 
+  prepareDatabasesFromUI();
+
   QString connectionName("");
   QString error("");
 
@@ -1843,4 +1847,22 @@ void spoton::slotKernelUrlBatchSizeChanged(int value)
 
   m_settings["gui/kernel_url_batch_size"] = value;
   settings.setValue("gui/kernel_url_batch_size", value);
+}
+
+void spoton::prepareDatabasesFromUI(void)
+{
+  QCursor *cursor = QApplication::overrideCursor();
+  bool cursorIsBusy = false;
+
+  if(cursor && (cursor->shape() == Qt::BusyCursor ||
+		cursor->shape() == Qt::WaitCursor))
+    cursorIsBusy = true;
+
+  if(!cursorIsBusy)
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  spoton_misc::prepareDatabases();
+
+  if(!cursorIsBusy)
+    QApplication::restoreOverrideCursor();
 }

@@ -382,6 +382,8 @@ void spoton::slotAddInstitution(const QString &text)
       return;
     }
 
+  prepareDatabasesFromUI();
+
   QString connectionName("");
   bool ok = true;
 
@@ -829,6 +831,8 @@ void spoton::slotAddMagnet(void)
   if(!action)
     return;
 
+  prepareDatabasesFromUI();
+
   QString type(action->property("type").toString().toLower());
   QUrl url(action->property("url").toUrl());
 
@@ -999,6 +1003,8 @@ void spoton::slotAddAEToken(void)
 		 "least ninety-six characters.");
       goto done_label;
     }
+
+  prepareDatabasesFromUI();
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);

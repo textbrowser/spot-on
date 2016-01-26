@@ -2833,6 +2833,8 @@ void spoton::slotAddListener(void)
       goto done_label;
     }
 
+  prepareDatabasesFromUI();
+
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
@@ -3104,6 +3106,8 @@ void spoton::slotAddNeighbor(void)
 			       "This is a fatal flaw."));
       return;
     }
+
+  prepareDatabasesFromUI();
 
   QString connectionName("");
   QString error("");

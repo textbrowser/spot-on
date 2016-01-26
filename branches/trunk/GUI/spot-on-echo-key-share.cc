@@ -293,6 +293,8 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
   if(!crypt)
     return false;
 
+  spoton::prepareDatabasesFromUI();
+
   QString connectionName("");
   bool ok = true;
 
@@ -822,6 +824,8 @@ void spoton_echo_key_share::addCategory(void)
   else if(category.isEmpty())
     return;
 
+  spoton::prepareDatabasesFromUI();
+
   QString connectionName("");
 
   {
@@ -864,6 +868,8 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
 
   if(!crypt)
     return;
+
+  spoton::prepareDatabasesFromUI();
 
   QString category("Public Communities");
   QString connectionName("");

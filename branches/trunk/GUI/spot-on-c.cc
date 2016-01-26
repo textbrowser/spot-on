@@ -108,6 +108,8 @@ void spoton::slotAddEtpMagnet(const QString &text,
       goto done_label;
     }
 
+  prepareDatabasesFromUI();
+
   if(m_ui.magnetRadio->isChecked() || !text.isEmpty())
     {
       if(text.isEmpty())

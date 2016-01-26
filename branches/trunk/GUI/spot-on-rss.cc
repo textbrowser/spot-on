@@ -1246,6 +1246,8 @@ void spoton_rss::saveFeedLink(const QString &d,
   if(!crypt)
     return;
 
+  prepareDatabases();
+
   QString connectionName("");
 
   {

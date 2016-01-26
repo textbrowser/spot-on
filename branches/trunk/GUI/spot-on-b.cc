@@ -2892,6 +2892,8 @@ void spoton::slotSendMail(void)
 	}
     }
 
+  prepareDatabasesFromUI();
+
   QByteArray message;
 
   if(m_ui.richtext->isChecked())
@@ -5441,6 +5443,8 @@ void spoton::slotAddAcceptedIP(void)
 	return;
       }
 
+  prepareDatabasesFromUI();
+
   QString connectionName("");
   bool ok = true;
 
@@ -5715,6 +5719,8 @@ void spoton::slotAddAccount(void)
 		 "least thirty-two characters.");
       goto done_label;
     }
+
+  prepareDatabasesFromUI();
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);

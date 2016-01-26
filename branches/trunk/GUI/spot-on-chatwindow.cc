@@ -556,6 +556,8 @@ void spoton_chatwindow::slotShareStarBeam(void)
       return;
     }
 
+  spoton::prepareDatabasesFromUI();
+
   /*
   ** Create a StarBeam magnet.
   */
