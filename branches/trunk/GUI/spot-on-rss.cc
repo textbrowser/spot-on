@@ -2272,6 +2272,7 @@ void spoton_rss::slotRefreshTimeline(void)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_ui.timeline->clear();
 
   QString connectionName("");
 
@@ -2308,160 +2309,156 @@ void spoton_rss::slotRefreshTimeline(void)
 	  str.append("ORDER BY publication_date DESC");
 
 	if(query.exec(str))
-	  {
-	    m_ui.timeline->clear();
+	  /*
+	  ** 0 - content
+	  ** 1 - description
+	  ** 2 - hidden
+	  ** 3 - publication_date
+	  ** 4 - title
+	  ** 5 - url
+	  ** 6 - url_redirected
+	  */
 
-	    /*
-	    ** 0 - content
-	    ** 1 - description
-	    ** 2 - hidden
-	    ** 3 - publication_date
-	    ** 4 - title
-	    ** 5 - url
-	    ** 6 - url_redirected
-	    */
+	  while(query.next())
+	    {
+	      QByteArray bytes;
+	      QList<QVariant> list;
+	      bool contentAvailable = false;
+	      bool ok = true;
 
-	    while(query.next())
-	      {
-		QByteArray bytes;
-		QList<QVariant> list;
-		bool contentAvailable = false;
-		bool ok = true;
+	      bytes = qUncompress
+		(crypt->
+		 decryptedAfterAuthenticated(QByteArray::
+					     fromBase64(query.value(0).
+							toByteArray()),
+					     &ok));
 
-		bytes = qUncompress
-		  (crypt->
-		   decryptedAfterAuthenticated(QByteArray::
-					       fromBase64(query.value(0).
-							  toByteArray()),
-					       &ok));
+	      if(ok)
+		if(bytes.size() > 0)
+		  contentAvailable = true;
 
-		if(ok)
-		  if(bytes.size() > 0)
-		    contentAvailable = true;
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()),
+		   &ok);
 
-		if(ok)
-		  bytes = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(1).toByteArray()),
-		     &ok);
+	      if(ok)
+		list << QString::fromUtf8(bytes.constData(),
+					  bytes.length()).trimmed();
 
-		if(ok)
-		  list << QString::fromUtf8(bytes.constData(),
-					    bytes.length()).trimmed();
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(4).toByteArray()),
+		   &ok);
 
-		if(ok)
-		  bytes = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(4).toByteArray()),
-		     &ok);
+	      if(ok)
+		list << QString::fromUtf8(bytes.constData(),
+					  bytes.length()).trimmed();
 
-		if(ok)
-		  list << QString::fromUtf8(bytes.constData(),
-					    bytes.length()).trimmed();
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(5).toByteArray()),
+		   &ok);
 
-		if(ok)
-		  bytes = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(5).toByteArray()),
-		     &ok);
+	      if(ok)
+		list << QUrl::fromEncoded(bytes);
 
-		if(ok)
-		  list << QUrl::fromEncoded(bytes);
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(6).toByteArray()),
+		   &ok);
 
-		if(ok)
-		  bytes = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(6).toByteArray()),
-		     &ok);
+	      if(ok)
+		list << QUrl::fromEncoded(bytes);
 
-		if(ok)
-		  list << QUrl::fromEncoded(bytes);
+	      if(list.size() == 4)
+		{
+		  /*
+		  ** 0 - description
+		  ** 1 - title
+		  ** 2 - url
+		  ** 3 - url_redirected
+		  */
 
-		if(list.size() == 4)
-		  {
-		    /*
-		    ** 0 - description
-		    ** 1 - title
-		    ** 2 - url
-		    ** 3 - url_redirected
-		    */
+		  QString html("");
+		  QUrl url(list.value(3).toUrl());
 
-		    QString html("");
-		    QUrl url(list.value(3).toUrl());
+		  if(url.isEmpty() || !url.isValid())
+		    url = list.value(2).toUrl();
 
-		    if(url.isEmpty() || !url.isValid())
-		      url = list.value(2).toUrl();
-
-		    if(contentAvailable)
-		      {
-			html.append("<a href=\"");
-			html.append(list.value(2).toUrl().
-				    toEncoded().constData());
-			html.append("\">");
-			html.append
-			  (spoton_misc::
-			   removeSpecialHtmlTags(list.value(1).toString()));
-			html.append("</a>");
-		      }
-		    else
+		  if(contentAvailable)
+		    {
+		      html.append("<a href=\"");
+		      html.append(list.value(2).toUrl().
+				  toEncoded().constData());
+		      html.append("\">");
 		      html.append
 			(spoton_misc::
 			 removeSpecialHtmlTags(list.value(1).toString()));
+		      html.append("</a>");
+		    }
+		  else
+		    html.append
+		      (spoton_misc::
+		       removeSpecialHtmlTags(list.value(1).toString()));
 
-		    if(query.value(2).toInt() != 1)
-		      {
-			html.append(" | ");
-			html.append("<a href=\"hide-");
-			html.append(list.value(2).toUrl().
-				    toEncoded().constData());
-			html.append("\">");
-			html.append("Hide");
-			html.append("</a>");
-		      }
-		    else
-		      {
-			html.append(" | ");
-			html.append("<a href=\"visible-");
-			html.append(list.value(2).toUrl().
-				    toEncoded().constData());
-			html.append("\">");
-			html.append("Show");
-			html.append("</a>");
-		      }
+		  if(query.value(2).toInt() != 1)
+		    {
+		      html.append(" | ");
+		      html.append("<a href=\"hide-");
+		      html.append(list.value(2).toUrl().
+				  toEncoded().constData());
+		      html.append("\">");
+		      html.append("Hide");
+		      html.append("</a>");
+		    }
+		  else
+		    {
+		      html.append(" | ");
+		      html.append("<a href=\"visible-");
+		      html.append(list.value(2).toUrl().
+				  toEncoded().constData());
+		      html.append("\">");
+		      html.append("Show");
+		      html.append("</a>");
+		    }
 
-		    html.append("<br>");
+		  html.append("<br>");
 
-		    if(m_ui.action_URL_Links_in_Timeline->isChecked())
-		      {
-			html.append
-			  (QString("<font color=\"green\" size=3>%1</font>").
-			   arg(url.toEncoded().constData()));
-			html.append("<br>");
-		      }
+		  if(m_ui.action_URL_Links_in_Timeline->isChecked())
+		    {
+		      html.append
+			(QString("<font color=\"green\" size=3>%1</font>").
+			 arg(url.toEncoded().constData()));
+		      html.append("<br>");
+		    }
 
-		    if(m_ui.action_Descriptions_in_Timeline->isChecked())
-		      {
-			html.append
-			  (QString("<font color=\"gray\" size=3>%1</font>").
-			   arg(spoton_misc::
-			       removeSpecialHtmlTags(list.value(0).
-						     toString())));
-			html.append("<br>");
-		      }
+		  if(m_ui.action_Descriptions_in_Timeline->isChecked())
+		    {
+		      html.append
+			(QString("<font color=\"gray\" size=3>%1</font>").
+			 arg(spoton_misc::
+			     removeSpecialHtmlTags(list.value(0).
+						   toString())));
+		      html.append("<br>");
+		    }
 
-		    if(m_ui.action_Publication_Dates_in_Timeline->isChecked())
-		      {
-			html.append
-			  (QString("<font color=\"gray\" size=3>%1</font>").
-			   arg(query.value(3).toString().trimmed()));
-			html.append("<br>");
-		      }
+		  if(m_ui.action_Publication_Dates_in_Timeline->isChecked())
+		    {
+		      html.append
+			(QString("<font color=\"gray\" size=3>%1</font>").
+			 arg(query.value(3).toString().trimmed()));
+		      html.append("<br>");
+		    }
 
-		    m_ui.timeline->append(html);
+		  m_ui.timeline->append(html);
 
-		    QTextCursor cursor = m_ui.timeline->textCursor();
+		  QTextCursor cursor = m_ui.timeline->textCursor();
 
-		    cursor.setPosition(0);
-		    m_ui.timeline->setTextCursor(cursor);
-		  }
-	      }
-	  }
+		  cursor.setPosition(0);
+		  m_ui.timeline->setTextCursor(cursor);
+		}
+	    }
       }
 
     db.close();
