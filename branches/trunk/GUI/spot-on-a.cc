@@ -5662,14 +5662,14 @@ void spoton::slotSetPassphrase(void)
 		      "existing passphrase? Please note that URL data must "
 		      "be re-encoded via a separate tool. Please see "
 		      "the future Re-Encode URLs option. The RSS mechanism "
-		      "will be deactivated."));
+		      "and the kernel will be deactivated."));
       else
 	mb.setText(tr("Are you sure that you wish to replace the "
 		      "existing answer/question? Please note that URL "
 		      "data must "
 		      "be re-encoded via a separate tool. Please see "
 		      "the future Re-Encode URLs option. The RSS mechanism "
-		      "will be deactivated."));
+		      "and the kernel will be deactivated."));
 
       if(mb.exec() != QMessageBox::Yes)
 	{
@@ -5680,7 +5680,20 @@ void spoton::slotSetPassphrase(void)
 	  return;
 	}
       else
-	reencode = true;
+	{
+	  m_rss->deactivate();
+	  slotDeactivateKernel();
+	  reencode = true;
+	}
+    }
+  else
+    {
+      /*
+      ** Deactivate machines before preparing keys.
+      */
+
+      m_rss->deactivate();
+      slotDeactivateKernel();
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -5721,8 +5734,6 @@ void spoton::slotSetPassphrase(void)
 
   if(error1.isEmpty())
     {
-      slotDeactivateKernel();
-
       if(!m_ui.newKeys->isChecked() && reencode)
 	{
 	  if(m_crypts.value("chat", 0))
@@ -5969,8 +5980,6 @@ void spoton::slotSetPassphrase(void)
 							  iterationCount->
 							  value()),
 			      "chat"));
-
-	      m_rss->deactivate();
 
 	      spoton_reencode reencode;
 

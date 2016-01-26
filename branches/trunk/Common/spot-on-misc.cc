@@ -133,7 +133,8 @@ void spoton_misc::prepareDatabases(void)
 		   "name_hash TEXT NOT NULL, " // Keyed hash.
 		   "share TEXT NOT NULL, "
 		   "PRIMARY KEY (category_oid, name_hash))");
-	query.exec("CREATE TRIGGER purge AFTER DELETE ON categories "
+	query.exec("CREATE TRIGGER IF NOT EXISTS "
+		   "purge AFTER DELETE ON categories "
 		   "FOR EACH row "
 		   "BEGIN "
 		   "DELETE FROM echo_key_sharing_secrets "
