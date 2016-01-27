@@ -520,6 +520,7 @@ class spoton: public QMainWindow
     (const QPair<QByteArray, QByteArray> &keys,
      const QString &cipherType, const QString &hashType,
      spoton_crypt *crypt) const;
+  QString savePoptasticAccount(void);
   QStringList parseAEMagnet(const QString &magnet) const;
   bool deleteAllUrls(void);
 #ifdef Q_OS_MAC
@@ -575,6 +576,7 @@ class spoton: public QMainWindow
   void populateMOTD(const QString &listenerOid);
   void populateMail(void);
   void populateNovas(void);
+  void populatePoptasticWidgets(const QHash<QString, QVariant> &hash);
   void populateStatistics(const QList<QPair<QString, QVariant> > &list);
   void prepareContextMenuMirrors(void);
   void prepareListenerIPCombo(void);
@@ -699,6 +701,7 @@ class spoton: public QMainWindow
   void slotDeleteMail(void);
   void slotDeleteNeighbor(void);
   void slotDeleteNova(void);
+  void slotDeletePoptasticAccount(void);
   void slotDeleteReceived(void);
   void slotDeleteTransmitted(void);
   void slotDeleteUrlDistillers(void);
@@ -802,6 +805,7 @@ class spoton: public QMainWindow
   void slotPassphraseChanged(const QString &text);
   void slotPassphraseRadioToggled(bool state);
   void slotPassthroughCheckChange(bool state);
+  void slotPoptasticAccountChanged(const QString &text);
   void slotPoptasticSettingsReset(bool state);
   void slotPoptasticSettingsReset(void);
   void slotPopulateBuzzFavorites(void);
@@ -861,6 +865,7 @@ class spoton: public QMainWindow
   void slotSaveMOTD(void);
   void slotSaveNodeName(void);
   void slotSaveOpenLinks(bool state);
+  void slotSavePoptasticAccount(void);
   void slotSaveRefreshEmail(bool state);
   void slotSaveSharePrivateKeys(bool state);
   void slotSaveSslControlString(void);

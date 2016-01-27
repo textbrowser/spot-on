@@ -1767,15 +1767,20 @@ spoton::spoton(void):QMainWindow()
   settings.remove("gui/acceptUrlUL");
   settings.remove("gui/acceptedIPs");
   settings.remove("gui/applyPolarizers");
+  settings.remove("gui/disablePop3");
+  settings.remove("gui/disableSmtp");
   settings.remove("gui/disable_kernel_synchronous_sqlite_url_download");
   settings.remove("gui/enableCongestionControl");
   settings.remove("gui/encryptionKey");
   settings.remove("gui/geoipPath");
   settings.remove("gui/keySize");
   settings.remove("gui/my_poptasticStatus");
-  settings.remove("gui/poptasticName");
+  settings.remove("gui/poptasticVerifyPopHost");
   settings.remove("gui/poptasticVerifyPopHostPeer");
+  settings.remove("gui/poptasticVerifyPopPeer");
+  settings.remove("gui/poptasticVerifySmtpHost");
   settings.remove("gui/poptasticVerifySmtpHostPeer");
+  settings.remove("gui/poptasticVerifySmtpPeer");
   settings.remove("gui/rsaKeySize");
   settings.remove("gui/rss_scroll_automatically");
   settings.remove("gui/signatureKey");
@@ -6365,21 +6370,27 @@ void spoton::slotValidatePassphrase(void)
 	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
 	       toInt());
 
-	    QHash<QString, QVariant> hash;
+	    QString name("");
 	    bool ok = true;
 
-	    hash = spoton_misc::poptasticSettings
-	      (m_crypts.value("chat", 0), &ok);
+	    if(m_crypts.value("chat", 0))
+	      {
+		QByteArray bytes;
+		QSettings settings;
 
-	    if(ok)
-	      m_poptasticRetroPhoneSettingsUi.in_username->setText
-		(hash["in_username"].toString().trimmed());
-	    else
-	      m_poptasticRetroPhoneSettingsUi.in_username->setText
-		("unknown@unknown.org");
+		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(settings.
+					  value("gui/poptasticName").
+					  toByteArray()), &ok).trimmed();
 
-	    m_settings["gui/poptasticName"] =
-	      m_poptasticRetroPhoneSettingsUi.in_username->text().toUtf8();
+		if(ok)
+		  name = bytes.constData();
+	      }
+
+	    if(name.isEmpty() || !ok)
+	      name = "unknown@unknown.org";
+
+	    m_settings["gui/poptasticName"] = name.toLatin1();
 
 	    if(!m_settings.value("gui/initial_url_distillers_defined",
 				 false).toBool())

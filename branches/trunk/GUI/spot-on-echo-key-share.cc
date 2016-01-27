@@ -722,15 +722,10 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
   else if(keyType == "email")
     name = settings.value("gui/emailName", "unknown").toByteArray();
   else if(keyType == "poptastic")
-    {
-      QHash<QString, QVariant> hash;
-      bool ok = true;
-
-      hash = spoton_misc::poptasticSettings(eCrypt, &ok);
-
-      if(ok)
-	name = hash["in_username"].toString().trimmed().toUtf8();
-    }
+    name = spoton::instance() ?
+      spoton::instance()->m_settings.value
+      ("gui/poptasticName", "unknown@unknown.org").toByteArray() :
+      "unknown@unknown.org";
   else if(keyType == "rosetta")
     name = settings.value("gui/rosettaName", "unknown").toByteArray();
   else if(keyType == "url")

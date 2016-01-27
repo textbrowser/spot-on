@@ -1614,6 +1614,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	  while(query.next())
 	    {
 	      QByteArray bytes;
+	      QList<QByteArray> list;
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
@@ -1622,6 +1623,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				  "in_server_address = ?, "
 				  "in_server_port = ?, "
 				  "in_username = ?, "
+				  "in_username_hash = ?, "
 				  "out_password = ?, "
 				  "out_server_address = ?, "
 				  "out_server_port = ?, "
@@ -1643,9 +1645,32 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		     &ok);
 
 		  if(ok)
-		    updateQuery.bindValue
-		      (i, newCrypt->encryptedThenHashed(bytes, &ok).
-		       toBase64());
+		    {
+		      if(i == 3) // in_username
+			list << bytes << bytes;
+		      else
+			list << bytes;
+		    }
+		  else
+		    {
+		      list.clear();
+		      break;
+		    }
+		}
+
+	      for(int i = 0; i < list.size(); i++)
+		{
+		  if(ok)
+		    {
+		      if(i == 4) // in_username_hash
+			updateQuery.bindValue
+			  (i, newCrypt->keyedHash(list.at(i), &ok).
+			   toBase64());
+		      else
+			updateQuery.bindValue
+			  (i, newCrypt->encryptedThenHashed(list.at(i), &ok).
+			   toBase64());
+		    }
 		  else
 		    break;
 		}
@@ -2542,6 +2567,18 @@ void spoton_reencode::reencode(Ui_statusbar sb,
   QByteArray bytes;
   QSettings settings;
   bool ok = true;
+
+  bytes = oldCrypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.value("gui/poptasticName", "").
+			    toByteArray()), &ok);
+
+  if(ok)
+    settings.setValue
+      ("gui/poptasticName", newCrypt->encryptedThenHashed(bytes, &ok).
+       toBase64());
+
+  if(!ok)
+    settings.remove("gui/poptasticName");
 
   bytes = oldCrypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/postgresql_password", "").

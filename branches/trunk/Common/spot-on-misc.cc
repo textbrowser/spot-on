@@ -549,6 +549,9 @@ void spoton_misc::prepareDatabases(void)
 		   "in_ssltls TEXT NOT NULL CHECK "
 		   "(in_ssltls IN ('None', 'SSL', 'TLS')), "
 		   "in_username TEXT NOT NULL, "
+		   "in_username_hash TEXT PRIMARY KEY NOT NULL, "
+		   "in_verify_host INTEGER NOT NULL DEFAULT 0, "
+		   "in_verify_peer INTEGER NOT NULL DEFAULT 0, "
 		   "out_authentication TEXT NOT NULL, "
 		   "out_method TEXT NOT NULL CHECK "
 		   "(out_method IN ('Disable', 'SMTP')), "
@@ -558,6 +561,8 @@ void spoton_misc::prepareDatabases(void)
 		   "out_ssltls TEXT NOT NULL CHECK "
 		   "(out_ssltls IN ('None', 'SSL', 'TLS')), "
 		   "out_username TEXT NOT NULL, "
+		   "out_verify_host INTEGER NOT NULL DEFAULT 0, "
+		   "out_verify_peer INTEGER NOT NULL DEFAULT 0, "
 		   "proxy_enabled TEXT NOT NULL, "
 		   "proxy_password TEXT NOT NULL, "
 		   "proxy_server_address TEXT NOT NULL, "
@@ -566,12 +571,7 @@ void spoton_misc::prepareDatabases(void)
 		   "(proxy_type IN ('HTTP', 'SOCKS5')), "
 		   "proxy_username TEXT NOT NULL, "
 		   "smtp_localname TEXT NOT NULL)");
-	query.exec("CREATE TRIGGER IF NOT EXISTS "
-		   "poptastic_trigger "
-		   "BEFORE INSERT ON poptastic "
-		   "BEGIN "
-		   "DELETE FROM poptastic; "
-		   "END");
+	query.exec("DROP TRIGGER IF EXISTS poptastic_trigger");
       }
 
     db.close();
@@ -3552,8 +3552,8 @@ bool spoton_misc::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
   return ok;
 }
 
-QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
-							bool *ok)
+QList<QHash<QString, QVariant> > spoton_misc::
+poptasticSettings(const QString &in_username, spoton_crypt *crypt, bool *ok)
 {
   if(!crypt)
     {
@@ -3563,10 +3563,10 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
       logError
 	("spoton_misc::poptasticSettings(): crypt "
 	 "is zero.");
-      return QHash<QString, QVariant> ();
+      return QList<QHash<QString, QVariant> > ();
     }
 
-  QHash<QString, QVariant> hash;
+  QMap<QString, QHash<QString, QVariant> > map;
   QString connectionName("");
 
   {
@@ -3580,10 +3580,22 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT * FROM poptastic"))
+	if(in_username.trimmed().isEmpty())
+	  query.prepare("SELECT * FROM poptastic");
+	else
 	  {
-	    if(query.next())
+	    query.prepare
+	      ("SELECT * FROM poptastic WHERE in_username_hash = ?");
+	    query.bindValue(0, crypt->keyedHash(in_username.
+						trimmed().toLatin1(),
+						ok).toBase64());
+	  }
+
+	if(query.exec())
+	  {
+	    while(query.next())
 	      {
+		QHash<QString, QVariant> hash;
 		QSqlRecord record(query.record());
 
 		for(int i = 0; i < record.count(); i++)
@@ -3621,14 +3633,11 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
 		      *ok = false;
 		  }
 		else if(ok)
-		  *ok = true;
+		  {
+		    map.insert(hash["in_username"].toString(), hash);
+		    *ok = true;
+		  }
 	      }
-	    else if(ok)
-	      /*
-	      ** We do not have an entry.
-	      */
-
-	      *ok = true;
 	  }
 	else if(ok)
 	  *ok = false;
@@ -3640,7 +3649,7 @@ QHash<QString, QVariant> spoton_misc::poptasticSettings(spoton_crypt *crypt,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  return hash;
+  return map.values();
 }
 
 void spoton_misc::saveParticipantStatus(const QByteArray &name,

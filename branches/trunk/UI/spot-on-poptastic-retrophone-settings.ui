@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>750</width>
-    <height>694</height>
+    <height>806</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,16 @@
    <property name="spacing">
     <number>5</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>5</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>5</number>
+   </property>
+   <property name="bottomMargin">
     <number>5</number>
    </property>
    <item>
@@ -32,7 +41,7 @@
      <item>
       <widget class="QLabel" name="label_99">
        <property name="text">
-        <string>&amp;Query the incoming server every</string>
+        <string>&amp;Query the incoming server(s) every</string>
        </property>
        <property name="buddy">
         <cstring>poptasticRefresh</cstring>
@@ -68,157 +77,6 @@
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="proxy">
-     <property name="title">
-      <string>Pro&amp;xy</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="margin">
-       <number>5</number>
-      </property>
-      <property name="spacing">
-       <number>5</number>
-      </property>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_14">
-        <property name="text">
-         <string>&amp;Username</string>
-        </property>
-        <property name="buddy">
-         <cstring>proxy_username</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_7">
-        <property name="spacing">
-         <number>5</number>
-        </property>
-        <item>
-         <widget class="QComboBox" name="proxy_type">
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
-          </property>
-          <item>
-           <property name="text">
-            <string notr="true">HTTP</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string notr="true">SOCKS5</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="proxy_server_address"/>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="proxy_username"/>
-      </item>
-      <item row="1" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <property name="spacing">
-         <number>5</number>
-        </property>
-        <item>
-         <widget class="QSpinBox" name="proxy_server_port">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>65535</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_12">
-        <property name="text">
-         <string>&amp;Port</string>
-        </property>
-        <property name="buddy">
-         <cstring>proxy_server_port</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_13">
-        <property name="text">
-         <string>&amp;Type</string>
-        </property>
-        <property name="buddy">
-         <cstring>proxy_type</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_11">
-        <property name="text">
-         <string>&amp;Server Address</string>
-        </property>
-        <property name="buddy">
-         <cstring>proxy_server_address</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_15">
-        <property name="text">
-         <string>&amp;Password</string>
-        </property>
-        <property name="buddy">
-         <cstring>proxy_password</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="proxy_password">
-        <property name="echoMode">
-         <enum>QLineEdit::Password</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <property name="spacing">
       <number>5</number>
@@ -246,470 +104,721 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <property name="spacing">
-      <number>5</number>
-     </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_8">
      <item>
-      <widget class="QLabel" name="label_6">
-       <property name="maximumSize">
-        <size>
-         <width>256</width>
-         <height>256</height>
-        </size>
-       </property>
+      <widget class="QLabel" name="label_20">
        <property name="text">
-        <string/>
+        <string>&amp;Account</string>
        </property>
-       <property name="pixmap">
-        <pixmap resource="../Icons/icons.qrc">:/Logo/poptastic.png</pixmap>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
+       <property name="buddy">
+        <cstring>account</cstring>
        </property>
       </widget>
      </item>
      <item>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <property name="spacing">
-        <number>5</number>
+      <widget class="QComboBox" name="account">
+       <property name="sizeAdjustPolicy">
+        <enum>QComboBox::AdjustToContents</enum>
        </property>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="in_method">
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QComboBox::AdjustToContents</enum>
-         </property>
-         <item>
-          <property name="text">
-           <string notr="true">Disable</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string notr="true">IMAP</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string notr="true">POP3</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="7" column="3">
-        <widget class="QComboBox" name="out_authentication">
-         <property name="sizeAdjustPolicy">
-          <enum>QComboBox::AdjustToContents</enum>
-         </property>
-         <item>
-          <property name="text">
-           <string notr="true">Password</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>&amp;Server Address</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>in_server_address</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QComboBox" name="in_authentication">
-         <property name="sizeAdjustPolicy">
-          <enum>QComboBox::AdjustToContents</enum>
-         </property>
-         <item>
-          <property name="text">
-           <string notr="true">Password</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="9" column="1">
-        <widget class="QLineEdit" name="in_password">
-         <property name="echoMode">
-          <enum>QLineEdit::Password</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>&amp;Authentification</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>in_authentication</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QComboBox" name="in_ssltls">
-         <property name="currentIndex">
-          <number>2</number>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QComboBox::AdjustToContents</enum>
-         </property>
-         <item>
-          <property name="text">
-           <string notr="true">None</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string notr="true">SSL</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string notr="true">TLS</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="in_server_address"/>
-       </item>
-       <item row="8" column="1">
-        <widget class="QLineEdit" name="in_username"/>
-       </item>
-       <item row="5" column="1">
-        <widget class="QSpinBox" name="in_server_port">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>65535</number>
-         </property>
-         <property name="value">
-          <number>995</number>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>&amp;Password</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>in_password</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QComboBox" name="out_method">
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QComboBox::AdjustToContents</enum>
-         </property>
-         <item>
-          <property name="text">
-           <string notr="true">Disable</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string notr="true">SMTP</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="8" column="3">
-        <widget class="QLineEdit" name="out_username"/>
-       </item>
-       <item row="9" column="3">
-        <widget class="QLineEdit" name="out_password">
-         <property name="echoMode">
-          <enum>QLineEdit::Password</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_10">
-         <property name="text">
-          <string>&amp;Method</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>in_method</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Outgoing Server</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="QLineEdit" name="out_server_address"/>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Incoming Server</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="3">
-        <widget class="QComboBox" name="out_ssltls">
-         <property name="currentIndex">
-          <number>2</number>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QComboBox::AdjustToContents</enum>
-         </property>
-         <item>
-          <property name="text">
-           <string notr="true">None</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string notr="true">SSL</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string notr="true">TLS</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="12" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="testpop3">
-           <property name="text">
-            <string>Test</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="5" column="3">
-        <widget class="QSpinBox" name="out_server_port">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>65535</number>
-         </property>
-         <property name="value">
-          <number>587</number>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>&amp;Port</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>in_server_port</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>&amp;Username</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>in_username</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>&amp;SSL/TLS</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>in_ssltls</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="3">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="testsmtp">
-           <property name="text">
-            <string>Test</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="10" column="0">
-        <widget class="QLabel" name="label_16">
-         <property name="text">
-          <string>&amp;Verify Host</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>in_verify_host</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="1">
-        <widget class="QCheckBox" name="in_verify_host">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="3">
-        <widget class="QCheckBox" name="out_verify_host">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="0">
-        <widget class="QLabel" name="label_18">
-         <property name="text">
-          <string>&amp;Verify Peer</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>in_verify_peer</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="1">
-        <widget class="QCheckBox" name="in_verify_peer">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="3">
-        <widget class="QCheckBox" name="out_verify_peer">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_19">
-         <property name="text">
-          <string>&amp;Local Hostname</string>
-         </property>
-         <property name="buddy">
-          <cstring>smtp_localname</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="smtp_localname">
-         <property name="text">
-          <string>localhost</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="delete_account">
+       <property name="text">
+        <string>Delete</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_21">
+       <property name="text">
+        <string>&amp;Chat Primary Account</string>
+       </property>
+       <property name="buddy">
+        <cstring>chat_primary_account</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="chat_primary_account">
+       <property name="sizeAdjustPolicy">
+        <enum>QComboBox::AdjustToContents</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_8">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Account Details</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QGroupBox" name="proxy">
+        <property name="title">
+         <string>Pro&amp;xy</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <property name="leftMargin">
+          <number>5</number>
+         </property>
+         <property name="topMargin">
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
+          <number>5</number>
+         </property>
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>&amp;Username</string>
+           </property>
+           <property name="buddy">
+            <cstring>proxy_username</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <item>
+            <widget class="QComboBox" name="proxy_type">
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <item>
+              <property name="text">
+               <string notr="true">HTTP</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">SOCKS5</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="proxy_server_address"/>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="proxy_username"/>
+         </item>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <item>
+            <widget class="QSpinBox" name="proxy_server_port">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>65535</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>&amp;Port</string>
+           </property>
+           <property name="buddy">
+            <cstring>proxy_server_port</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>&amp;Type</string>
+           </property>
+           <property name="buddy">
+            <cstring>proxy_type</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>&amp;Server Address</string>
+           </property>
+           <property name="buddy">
+            <cstring>proxy_server_address</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>&amp;Password</string>
+           </property>
+           <property name="buddy">
+            <cstring>proxy_password</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="proxy_password">
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_6">
+          <property name="maximumSize">
+           <size>
+            <width>256</width>
+            <height>256</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="../Icons/icons.qrc">:/Logo/poptastic.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <property name="spacing">
+           <number>5</number>
+          </property>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="in_method">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string notr="true">Disable</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">IMAP</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">POP3</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="7" column="3">
+           <widget class="QComboBox" name="out_authentication">
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string notr="true">Password</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>&amp;Server Address</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>in_server_address</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QComboBox" name="in_authentication">
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string notr="true">Password</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QLineEdit" name="in_password">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>&amp;Authentification</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>in_authentication</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QComboBox" name="in_ssltls">
+            <property name="currentIndex">
+             <number>2</number>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string notr="true">None</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">SSL</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">TLS</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="in_server_address"/>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLineEdit" name="in_username"/>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSpinBox" name="in_server_port">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+            <property name="value">
+             <number>995</number>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>&amp;Password</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>in_password</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QComboBox" name="out_method">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string notr="true">Disable</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">SMTP</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="8" column="3">
+           <widget class="QLineEdit" name="out_username"/>
+          </item>
+          <item row="9" column="3">
+           <widget class="QLineEdit" name="out_password">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>&amp;Method</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>in_method</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Outgoing Server</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QLineEdit" name="out_server_address"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Incoming Server</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="3">
+           <widget class="QComboBox" name="out_ssltls">
+            <property name="currentIndex">
+             <number>2</number>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string notr="true">None</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">SSL</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">TLS</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="12" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="spacing">
+             <number>5</number>
+            </property>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="testpop3">
+              <property name="text">
+               <string>Test</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item row="5" column="3">
+           <widget class="QSpinBox" name="out_server_port">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+            <property name="value">
+             <number>587</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>&amp;Port</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>in_server_port</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>&amp;Username</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>in_username</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>&amp;SSL/TLS</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>in_ssltls</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="3">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="spacing">
+             <number>5</number>
+            </property>
+            <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="testsmtp">
+              <property name="text">
+               <string>Test</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item row="10" column="0">
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>&amp;Verify Host</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>in_verify_host</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="1">
+           <widget class="QCheckBox" name="in_verify_host">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="3">
+           <widget class="QCheckBox" name="out_verify_host">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="0">
+           <widget class="QLabel" name="label_18">
+            <property name="text">
+             <string>&amp;Verify Peer</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>in_verify_peer</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="1">
+           <widget class="QCheckBox" name="in_verify_peer">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="3">
+           <widget class="QCheckBox" name="out_verify_peer">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_19">
+            <property name="text">
+             <string>&amp;Local Hostname</string>
+            </property>
+            <property name="buddy">
+             <cstring>smtp_localname</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLineEdit" name="smtp_localname">
+            <property name="text">
+             <string>localhost</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <item>
+         <spacer name="horizontalSpacer_9">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="save_account">
+          <property name="text">
+           <string>Save Account</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">
@@ -738,14 +847,17 @@
  </widget>
  <tabstops>
   <tabstop>poptasticRefresh</tabstop>
+  <tabstop>capath</tabstop>
+  <tabstop>selectcapath</tabstop>
+  <tabstop>account</tabstop>
+  <tabstop>delete_account</tabstop>
+  <tabstop>chat_primary_account</tabstop>
   <tabstop>proxy</tabstop>
   <tabstop>proxy_server_address</tabstop>
   <tabstop>proxy_server_port</tabstop>
   <tabstop>proxy_type</tabstop>
   <tabstop>proxy_username</tabstop>
   <tabstop>proxy_password</tabstop>
-  <tabstop>capath</tabstop>
-  <tabstop>selectcapath</tabstop>
   <tabstop>in_method</tabstop>
   <tabstop>in_server_address</tabstop>
   <tabstop>in_server_port</tabstop>
@@ -767,6 +879,7 @@
   <tabstop>out_verify_host</tabstop>
   <tabstop>out_verify_peer</tabstop>
   <tabstop>testsmtp</tabstop>
+  <tabstop>save_account</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>

@@ -135,7 +135,7 @@ void spoton_kernel::popPoptastic(void)
   QHash<QString, QVariant> hash;
   bool ok = true;
 
-  hash = spoton_misc::poptasticSettings(s_crypt, &ok);
+  hash = spoton_misc::poptasticSettings("", s_crypt, &ok).value(0);
 
   if(hash.isEmpty() || !ok)
     {
@@ -401,7 +401,7 @@ void spoton_kernel::postPoptastic(void)
   QHash<QString, QVariant> hash;
   bool ok = true;
 
-  hash = spoton_misc::poptasticSettings(s_crypt, &ok);
+  hash = spoton_misc::poptasticSettings("", s_crypt, &ok).value(0);
 
   if(hash.isEmpty() || !ok)
     return;

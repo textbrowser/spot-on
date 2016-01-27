@@ -88,8 +88,6 @@ class spoton_misc
     (const QByteArray &publicKeyHash, spoton_crypt *crypt);
   static QHash<QString, QByteArray> retrieveEchoShareInformation
     (const QString &communityName, spoton_crypt *crypt);
-  static QHash<QString, QVariant> poptasticSettings(spoton_crypt *crypt,
-						    bool *ok);
   static QHostAddress peerAddressAndPort(const int socketDescriptor,
 					 quint16 *port);
   static QList<QByteArray> findEchoKeys(const QByteArray &bytes1,
@@ -100,6 +98,8 @@ class spoton_misc
 						  const QByteArray &bytes2,
 						  QString &messageType,
 						  spoton_crypt *crypt);
+  static QList<QHash<QString, QVariant> > poptasticSettings
+    (const QString &in_username, spoton_crypt *crypt, bool *ok);
   static QPair<QByteArray, QByteArray> decryptedAdaptiveEchoPair
     (const QPair<QByteArray, QByteArray>, spoton_crypt *crypt);
   static QPair<QByteArray, QByteArray> findGeminiInCosmos

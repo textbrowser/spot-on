@@ -2501,7 +2501,19 @@ void spoton_kernel::prepareStatus(const QString &keyType)
   QStringList receiverNames;
 
   if(keyType == "poptastic")
-    hash = spoton_misc::poptasticSettings(s_crypt1, &ok);
+    {
+      QByteArray bytes;
+      QString name("");
+
+      bytes = s_crypt1->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(setting("gui/poptasticName", "").
+				toByteArray()), &ok).trimmed();
+
+      if(ok)
+	name = bytes.constData();
+
+      hash = spoton_misc::poptasticSettings(name, s_crypt1, &ok).value(0);
+    }
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);

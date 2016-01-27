@@ -30,6 +30,7 @@ extern "C"
 #include <curl/curl.h>
 }
 
+#include <QSettings>
 #include <QThread>
 
 #if QT_VERSION >= 0x050000
@@ -66,28 +67,68 @@ void spoton::slotConfigurePoptastic(void)
       return;
     }
 
-  QHash<QString, QVariant> hash;
+  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
+  m_poptasticRetroPhoneSettingsUi.account->clear();
+  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
+  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+
+  QList<QHash<QString, QVariant> > list;
   bool ok = true;
 
-  hash = spoton_misc::poptasticSettings(crypt, &ok);
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  list = spoton_misc::poptasticSettings("", crypt, &ok);
+  QApplication::restoreOverrideCursor();
 
   if(!ok)
     {
       m_poptasticRetroPhoneDialog->show();
-      QMessageBox::critical(this, tr("%1: Error").
+      QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("A failure occurred with "
 			       "spoton_misc::poptasticSettings()."));
     }
+  else
+    {
+      m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
 
-  QString connectionName("");
+      for(int i = 0; i < list.size(); i++)
+	{
+	  m_poptasticRetroPhoneSettingsUi.account->addItem
+	    (list.at(i)["in_username"].toString());
+	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
+	    (list.at(i)["in_username"].toString());
+	}
+
+      m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
+
+      int index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	findText(m_settings["gui/poptasticName"].toByteArray());
+
+      if(index >= 0)
+	m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	  setCurrentIndex(index);
+      else
+	m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	  setCurrentIndex(0);
+    }
+
   QStringList protocols(curl_protocols());
 
+  connect(m_poptasticRetroPhoneSettingsUi.account,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotPoptasticAccountChanged(const QString &)),
+	  Qt::UniqueConnection);
   connect(m_poptasticRetroPhoneSettingsUi.
 	  buttonBox->button(QDialogButtonBox::Reset),
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotPoptasticSettingsReset(void)),
+	  Qt::UniqueConnection);
+  connect(m_poptasticRetroPhoneSettingsUi.delete_account,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeletePoptasticAccount(void)),
 	  Qt::UniqueConnection);
   connect(m_poptasticRetroPhoneSettingsUi.selectcapath,
 	  SIGNAL(clicked(void)),
@@ -98,6 +139,11 @@ void spoton::slotConfigurePoptastic(void)
 	  SIGNAL(clicked(bool)),
 	  this,
 	  SLOT(slotPoptasticSettingsReset(bool)),
+	  Qt::UniqueConnection);
+  connect(m_poptasticRetroPhoneSettingsUi.save_account,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSavePoptasticAccount(void)),
 	  Qt::UniqueConnection);
   connect(m_poptasticRetroPhoneSettingsUi.testpop3,
 	  SIGNAL(clicked(void)),
@@ -119,25 +165,12 @@ void spoton::slotConfigurePoptastic(void)
     (m_settings.value("gui/poptasticCAPath", "").toString());
   m_poptasticRetroPhoneSettingsUi.poptasticRefresh->setValue
     (m_settings.value("gui/poptasticRefreshInterval", 5.00).toDouble());
-
-  if(m_settings.value("gui/disablePop3", true).toBool())
-    m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
-  else
-    m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(2);
-
-  if(m_settings.value("gui/disableSmtp", true).toBool())
-    m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
-  else
-    m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(1);
-
-  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked
-    (m_settings.value("gui/poptasticVerifyPopHost", 0).toInt());
-  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked
-    (m_settings.value("gui/poptasticVerifyPopPeer", 0).toInt());
-  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked
-    (m_settings.value("gui/poptasticVerifySmtpHost", 0).toInt());
-  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked
-    (m_settings.value("gui/poptasticVerifySmtpPeer", 0).toInt());
+  m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
+  m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
+  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked(false);
 
   if(!protocols.contains("pop3s"))
     {
@@ -167,312 +200,48 @@ void spoton::slotConfigurePoptastic(void)
 	(tr("Your version of libcURL does not support SMTP."));
     }
 
-  if(!hash.isEmpty())
-    {
-      int index = -1;
-
-      index = m_poptasticRetroPhoneSettingsUi.in_method->findText
-	(hash["in_method"].toString());
-
-      if(index >= 0)
-	m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(index);
-      else
-	m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(2);
-
-      m_poptasticRetroPhoneSettingsUi.in_password->setText
-	(hash["in_password"].toString());
-      m_poptasticRetroPhoneSettingsUi.in_server_address->setText
-	(hash["in_server_address"].toString());
-      m_poptasticRetroPhoneSettingsUi.in_server_port->setValue
-	(hash["in_server_port"].toInt());
-      index = m_poptasticRetroPhoneSettingsUi.in_ssltls->findText
-	(hash["in_ssltls"].toString());
-
-      if(index >= 0)
-	m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(index);
-      else
-	m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
-
-      m_poptasticRetroPhoneSettingsUi.in_username->setText
-	(hash["in_username"].toString());
-      m_poptasticRetroPhoneSettingsUi.out_password->setText
-	(hash["out_password"].toString());
-      m_poptasticRetroPhoneSettingsUi.out_server_address->setText
-	(hash["out_server_address"].toString());
-      m_poptasticRetroPhoneSettingsUi.out_server_port->setValue
-	(hash["out_server_port"].toInt());
-      index = m_poptasticRetroPhoneSettingsUi.out_ssltls->findText
-	(hash["out_ssltls"].toString());
-
-      if(index >= 0)
-	m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(index);
-      else
-	m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
-
-      m_poptasticRetroPhoneSettingsUi.out_username->setText
-	(hash["out_username"].toString());
-      m_poptasticRetroPhoneSettingsUi.proxy->setChecked
-	(hash["proxy_enabled"].toBool());
-      m_poptasticRetroPhoneSettingsUi.proxy_password->setText
-	(hash["proxy_password"].toString());
-      m_poptasticRetroPhoneSettingsUi.proxy_server_address->setText
-	(hash["proxy_server_address"].toString());
-      m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue
-	(hash["proxy_server_port"].toInt());
-
-      index = m_poptasticRetroPhoneSettingsUi.proxy_type->findText
-	(hash["proxy_type"].toString());
-
-      if(index >= 0)
-	m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(index);
-      else
-	m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
-
-      m_poptasticRetroPhoneSettingsUi.proxy_username->setText
-	(hash["proxy_username"].toString());
-      m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
-	(hash.value("smtp_localname", "localhost").toString());
-    }
+  populatePoptasticWidgets(list.value(0));
 
   if(m_poptasticRetroPhoneDialog->exec() == QDialog::Accepted)
     {
-      QSettings settings;
-
-      m_settings["gui/disablePop3"] =
-	m_poptasticRetroPhoneSettingsUi.in_method->
-	currentIndex() == 0 ? true : false;
-      m_settings["gui/disableSmtp"] =
-	m_poptasticRetroPhoneSettingsUi.out_method->
-	currentIndex() == 0 ? true : false;
-      m_settings["gui/poptasticCAPath"] =
-	m_poptasticRetroPhoneSettingsUi.capath->text();
-      m_settings["gui/poptasticName"] =
-	m_poptasticRetroPhoneSettingsUi.in_username->text().toUtf8();
-      m_settings["gui/poptasticRefreshInterval"] =
-	m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value();
-      m_settings["gui/poptasticVerifyPopHost"] =
-	m_poptasticRetroPhoneSettingsUi.in_verify_host->isChecked() ? 1 : 0;
-      m_settings["gui/poptasticVerifyPopPeer"] =
-	m_poptasticRetroPhoneSettingsUi.in_verify_peer->isChecked() ? 1 : 0;
-      m_settings["gui/poptasticVerifySmtpHost"] =
-	m_poptasticRetroPhoneSettingsUi.out_verify_host->isChecked() ? 1 : 0;
-      m_settings["gui/poptasticVerifySmtpPeer"] =
-	m_poptasticRetroPhoneSettingsUi.out_verify_peer->isChecked() ? 1 : 0;
-      settings.setValue("gui/disablePop3",
-			m_poptasticRetroPhoneSettingsUi.in_method->
-			currentIndex() == 0 ? true : false);
-      settings.setValue("gui/disableSmtp",
-			m_poptasticRetroPhoneSettingsUi.out_method->
-			currentIndex() == 0 ? true : false);
-      settings.setValue
-	("gui/poptasticCAPath",
-	 m_poptasticRetroPhoneSettingsUi.capath->text());
-      settings.setValue
-	("gui/poptasticRefreshInterval",
-	 m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value());
-      settings.setValue
-	("gui/poptasticVerifyPopHost",
-	 m_poptasticRetroPhoneSettingsUi.in_verify_host->isChecked() ? 1 : 0);
-      settings.setValue
-	("gui/poptasticVerifyPopPeer",
-	 m_poptasticRetroPhoneSettingsUi.in_verify_peer->isChecked() ? 1 : 0);
-      settings.setValue
-	("gui/poptasticVerifySmtpHost",
-	 m_poptasticRetroPhoneSettingsUi.out_verify_host->isChecked() ? 1 : 0);
-      settings.setValue
-	("gui/poptasticVerifySmtpPeer",
-	 m_poptasticRetroPhoneSettingsUi.out_verify_peer->
-	 isChecked() ? 1 : 0);
       prepareDatabasesFromUI();
 
       QString error("");
 
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+      if(ok)
+	error = savePoptasticAccount();
+      else
+	error = "An error occurred with spoton_crypt.";
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "poptastic.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.prepare
-	      ("INSERT INTO poptastic "
-	       "(in_authentication, "
-	       "in_method, in_password, in_server_address, "
-	       "in_server_port, in_ssltls, in_username, "
-	       "out_authentication, "
-	       "out_method, out_password, out_server_address, "
-	       "out_server_port, out_ssltls, out_username, "
-	       "proxy_enabled, "
-	       "proxy_password, proxy_server_address, proxy_server_port, "
-	       "proxy_type, proxy_username, smtp_localname) "
-	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-	       "?, ?, ?, ?, ?, ?, ?)");
-	    query.bindValue
-	      (0, m_poptasticRetroPhoneSettingsUi.in_authentication->
-	       currentText());
-	    query.bindValue
-	      (1, m_poptasticRetroPhoneSettingsUi.in_method->currentText());
-	    query.bindValue
-	      (2, crypt->encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-					     in_password->
-					     text().
-					     toUtf8(), &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(3, crypt->
-		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				     in_server_address->
-				     text().trimmed().
-				     toLatin1(), &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(4, crypt->
-		 encryptedThenHashed(QByteArray::
-				     number(m_poptasticRetroPhoneSettingsUi.
-					    in_server_port->
-					    value()), &ok).toBase64());
-
-	    query.bindValue
-	      (5, m_poptasticRetroPhoneSettingsUi.in_ssltls->currentText());
-
-	    if(ok)
-	      query.bindValue
-		(6, crypt->
-		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				     in_username->text().
-				     trimmed().toLatin1(), &ok).
-		 toBase64());
-
-	    query.bindValue
-	      (7, m_poptasticRetroPhoneSettingsUi.out_authentication->
-	       currentText());
-	    query.bindValue
-	      (8, m_poptasticRetroPhoneSettingsUi.out_method->currentText());
-
-	    if(ok)
-	      query.bindValue
-		(9, crypt->
-		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				     out_password->
-				     text().
-				     toUtf8(), &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(10, crypt->
-		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				     out_server_address->
-				     text().trimmed().
-				     toLatin1(), &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(11, crypt->
-		 encryptedThenHashed(QByteArray::
-				     number(m_poptasticRetroPhoneSettingsUi.
-					    out_server_port->
-					    value()), &ok).toBase64());
-
-	    query.bindValue
-	      (12, m_poptasticRetroPhoneSettingsUi.out_ssltls->currentText());
-
-	    if(ok)
-	      query.bindValue
-		(13, crypt->
-		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				     out_username->text().
-				     trimmed().toLatin1(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(14, crypt->
-		 encryptedThenHashed(QByteArray::
-				     number(m_poptasticRetroPhoneSettingsUi.
-					    proxy->
-					    isChecked() ? 1 : 0),
-				     &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(15, crypt->
-		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				     proxy_password->text().
-				     toUtf8(), &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(16, crypt->
-		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				     proxy_server_address->text().
-				     trimmed().toLatin1(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(17, crypt->
-		 encryptedThenHashed(QByteArray::
-				     number(m_poptasticRetroPhoneSettingsUi.
-					    proxy_server_port->
-					    value()), &ok).toBase64());
-
-	    query.bindValue(18, m_poptasticRetroPhoneSettingsUi.proxy_type->
-			    currentText());
-
-	    if(ok)
-	      query.bindValue
-		(19, crypt->
-		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				     proxy_username->
-				     text().trimmed().toUtf8(),
-				     &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(20, crypt->
-		 encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				     smtp_localname->text().
-				     toUtf8(), &ok).toBase64());
-
-	    if(ok)
-	      ok = query.exec();
-
-	    if(query.lastError().isValid())
-	      error = query.lastError().text();
-	  }
-	else
-	  {
-	    error = "Unable to access poptastic.db.";
-	    ok = false;
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-
-      if(!ok)
+      if(!error.isEmpty())
 	{
-	  if(!error.isEmpty())
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
-				  tr("An error (%1) occurred while "
-				     "attempting to save the Poptastic "
-				     "information.").arg(error));
-	  else
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
-				  tr("An error occurred while "
-				     "attempting to save the Poptastic "
-				     "information."));
-
+	  QMessageBox::critical(this, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("An error (%1) occurred while "
+				   "attempting to save the Poptastic "
+				   "information.").arg(error));
 	  return;
 	}
+
+      QSettings settings;
+
+      m_settings["gui/poptasticCAPath"] =
+	m_poptasticRetroPhoneSettingsUi.capath->text();
+      m_settings["gui/poptasticName"] =
+	m_poptasticRetroPhoneSettingsUi.chat_primary_account->currentText().
+	toLatin1();
+      m_settings["gui/poptasticRefreshInterval"] =
+	m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value();
+      settings.setValue
+	("gui/poptasticCAPath",
+	 m_poptasticRetroPhoneSettingsUi.capath->text());
+      settings.setValue
+	("gui/poptasticName",
+	 crypt->encryptedThenHashed(m_settings["gui/poptasticName"].
+				    toByteArray(), &ok).toBase64());
+      settings.setValue
+	("gui/poptasticRefreshInterval",
+	 m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value());
     }
 
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
@@ -605,12 +374,14 @@ void spoton::slotTestPoptasticPop3Settings(void)
 
   if(ok)
     QMessageBox::information
-      (this, tr("%1: Poptastic Incoming Connection Test").
+      (m_poptasticRetroPhoneDialog,
+       tr("%1: Poptastic Incoming Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Test successful!"));
   else
     QMessageBox::critical
-      (this, tr("%1: Poptastic Incoming Connection Test").
+      (m_poptasticRetroPhoneDialog,
+       tr("%1: Poptastic Incoming Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!"));
 }
@@ -737,12 +508,14 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 
   if(ok)
     QMessageBox::information
-      (this, tr("%1: Poptastic Outgoing Connection Test").
+      (m_poptasticRetroPhoneDialog,
+       tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Test successful!"));
   else
     QMessageBox::critical
-      (this, tr("%1: Poptastic Outgoing Connection Test").
+      (m_poptasticRetroPhoneDialog,
+       tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!"));
 }
@@ -759,7 +532,29 @@ void spoton::slotPoptasticSettingsReset(bool state)
 
 void spoton::slotPoptasticSettingsReset(void)
 {
+  QMessageBox mb(m_poptasticRetroPhoneDialog);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to reset your Poptastic "
+		"settings?"));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
+  m_poptasticRetroPhoneSettingsUi.account->clear();
+  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
   m_poptasticRetroPhoneSettingsUi.capath->clear();
+  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
   m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
   m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
@@ -784,6 +579,36 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText("localhost");
+  m_settings["gui/poptasticName"] = "";
+
+  QSettings settings;
+
+  settings.remove("gui/poptasticCAPath");
+  settings.remove("gui/poptasticName");
+  settings.remove("gui/poptasticRefreshInterval");
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "poptastic.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM poptastic");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotSelectCAPath(void)
@@ -792,7 +617,7 @@ void spoton::slotSelectCAPath(void)
 
   if(m_poptasticRetroPhoneSettingsUi.selectcapath == sender())
     {
-      QFileDialog dialog(this);
+      QFileDialog dialog(m_poptasticRetroPhoneDialog);
 
       dialog.setWindowTitle
 	(tr("%1: Select CA File").
@@ -2044,14 +1869,478 @@ QHash<QString, spoton_crypt *> spoton::crypts(void) const
 
 QByteArray spoton::poptasticName(void) const
 {
-  QByteArray name;
-  QHash<QString, QVariant> hash;
+  return m_settings["gui/poptasticName"].toByteArray();
+}
+
+void spoton::slotSavePoptasticAccount(void)
+{
+  prepareDatabasesFromUI();
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString error(savePoptasticAccount());
+
+  QApplication::restoreOverrideCursor();
+
+  if(!error.isEmpty())
+    QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error (%1) occurred while "
+			     "attempting to save the Poptastic "
+			     "information.").arg(error));
+  else
+    {
+      QList<QHash<QString, QVariant> > list;
+      bool ok = true;
+
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      list = spoton_misc::poptasticSettings
+	("", m_crypts.value("chat", 0), &ok);
+      QApplication::restoreOverrideCursor();
+
+      if(ok)
+	{
+	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
+	  m_poptasticRetroPhoneSettingsUi.account->clear();
+	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+
+	  for(int i = 0; i < list.size(); i++)
+	    {
+	      m_poptasticRetroPhoneSettingsUi.account->addItem
+		(list.at(i)["in_username"].toString());
+	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
+		(list.at(i)["in_username"].toString());
+	    }
+
+	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
+
+	  int index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	    findText(m_settings["gui/poptasticName"].toByteArray());
+
+	  if(index >= 0)
+	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	      setCurrentIndex(index);
+	  else
+	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	      setCurrentIndex(0);
+	}
+    }
+}
+
+QString spoton::savePoptasticAccount(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return "Invalid spoton_crypt object. This is a fatal flaw.";
+  else if(m_poptasticRetroPhoneSettingsUi.in_username->text().
+	  trimmed().isEmpty())
+    return "Empty Incoming Server Username.";
+
+  QString connectionName("");
+  QString error("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "poptastic.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare
+	  ("INSERT OR REPLACE INTO poptastic "
+	   "(in_authentication, "
+	   "in_method, in_password, in_server_address, "
+	   "in_server_port, in_ssltls, in_username, "
+	   "in_username_hash, "
+	   "in_verify_host, in_verify_peer, "
+	   "out_authentication, "
+	   "out_method, out_password, out_server_address, "
+	   "out_server_port, out_ssltls, out_username, "
+	   "out_verify_host, out_verify_peer, "
+	   "proxy_enabled, "
+	   "proxy_password, proxy_server_address, proxy_server_port, "
+	   "proxy_type, proxy_username, smtp_localname) "
+	   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+	   "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	query.bindValue
+	  (0, m_poptasticRetroPhoneSettingsUi.in_authentication->
+	   currentText());
+	query.bindValue
+	  (1, m_poptasticRetroPhoneSettingsUi.in_method->currentText());
+	query.bindValue
+	  (2, crypt->encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+					 in_password->
+					 text().
+					 toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 in_server_address->
+				 text().trimmed().
+				 toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (4, crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					in_server_port->
+					value()), &ok).toBase64());
+
+	query.bindValue
+	  (5, m_poptasticRetroPhoneSettingsUi.in_ssltls->currentText());
+
+	if(ok)
+	  query.bindValue
+	    (6, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 in_username->text().
+				 trimmed().toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (7, crypt->
+	     keyedHash(m_poptasticRetroPhoneSettingsUi.
+		       in_username->text().trimmed().toLatin1(),
+		       &ok).toBase64());
+
+	query.bindValue
+	  (8, m_poptasticRetroPhoneSettingsUi.in_verify_host->isChecked() ?
+	   1 : 0);
+	query.bindValue
+	  (9, m_poptasticRetroPhoneSettingsUi.in_verify_peer->isChecked() ?
+	   1 : 0);
+	query.bindValue
+	  (10, m_poptasticRetroPhoneSettingsUi.out_authentication->
+	   currentText());
+	query.bindValue
+	  (11, m_poptasticRetroPhoneSettingsUi.out_method->currentText());
+
+	if(ok)
+	  query.bindValue
+	    (12, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_password->
+				 text().
+				 toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (13, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_server_address->
+				 text().trimmed().
+				 toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (14, crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					out_server_port->
+					value()), &ok).toBase64());
+
+	query.bindValue
+	  (15, m_poptasticRetroPhoneSettingsUi.out_ssltls->currentText());
+
+	if(ok)
+	  query.bindValue
+	    (16, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_username->text().
+				 trimmed().toLatin1(), &ok).
+	     toBase64());
+
+	query.bindValue
+	  (17, m_poptasticRetroPhoneSettingsUi.out_verify_host->isChecked() ?
+	   1 : 0);
+	query.bindValue
+	  (18, m_poptasticRetroPhoneSettingsUi.out_verify_peer->isChecked() ?
+	   1 : 0);
+
+	if(ok)
+	  query.bindValue
+	    (19, crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					proxy->
+					isChecked() ? 1 : 0),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (20, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 proxy_password->text().
+				 toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (21, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 proxy_server_address->text().
+				 trimmed().toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (22, crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					proxy_server_port->
+					value()), &ok).toBase64());
+
+	query.bindValue(23, m_poptasticRetroPhoneSettingsUi.proxy_type->
+			currentText());
+
+	if(ok)
+	  query.bindValue
+	    (24, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 proxy_username->
+				 text().trimmed().toUtf8(),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (25, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 smtp_localname->text().
+				 toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  {
+	    if(!query.exec())
+	      error = query.lastError().text();
+	  }
+	else
+	  error = "An error occured with spoton_crypt.";
+      }
+    else
+      error = "Unable to access poptastic.db.";
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return error;
+}
+
+void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
+{
+  if(hash.isEmpty())
+    return;
+
+  int index = -1;
+
+  index = m_poptasticRetroPhoneSettingsUi.in_method->findText
+    (hash["in_method"].toString());
+
+  if(index >= 0)
+    m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(index);
+  else
+    m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(2);
+
+  m_poptasticRetroPhoneSettingsUi.in_password->setText
+    (hash["in_password"].toString());
+  m_poptasticRetroPhoneSettingsUi.in_server_address->setText
+    (hash["in_server_address"].toString());
+  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue
+    (hash["in_server_port"].toInt());
+  index = m_poptasticRetroPhoneSettingsUi.in_ssltls->findText
+    (hash["in_ssltls"].toString());
+
+  if(index >= 0)
+    m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(index);
+  else
+    m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
+
+  m_poptasticRetroPhoneSettingsUi.in_username->setText
+    (hash["in_username"].toString());
+  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked
+    (hash["in_verify_host"].toBool());
+  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked
+    (hash["in_verify_peer"].toBool());
+  index = m_poptasticRetroPhoneSettingsUi.out_method->findText
+    (hash["out_method"].toString());
+
+  if(index >= 0)
+    m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(index);
+  else
+    m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
+
+  m_poptasticRetroPhoneSettingsUi.out_password->setText
+    (hash["out_password"].toString());
+  m_poptasticRetroPhoneSettingsUi.out_server_address->setText
+    (hash["out_server_address"].toString());
+  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue
+    (hash["out_server_port"].toInt());
+  index = m_poptasticRetroPhoneSettingsUi.out_ssltls->findText
+    (hash["out_ssltls"].toString());
+
+  if(index >= 0)
+    m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(index);
+  else
+    m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
+
+  m_poptasticRetroPhoneSettingsUi.out_username->setText
+    (hash["out_username"].toString());
+  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked
+    (hash["out_verify_host"].toBool());
+  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked
+    (hash["out_verify_peer"].toBool());
+  m_poptasticRetroPhoneSettingsUi.proxy->setChecked
+    (hash["proxy_enabled"].toBool());
+  m_poptasticRetroPhoneSettingsUi.proxy_password->setText
+    (hash["proxy_password"].toString());
+  m_poptasticRetroPhoneSettingsUi.proxy_server_address->setText
+    (hash["proxy_server_address"].toString());
+  m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue
+    (hash["proxy_server_port"].toInt());
+  index = m_poptasticRetroPhoneSettingsUi.proxy_type->findText
+    (hash["proxy_type"].toString());
+
+  if(index >= 0)
+    m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(index);
+  else
+    m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
+
+  m_poptasticRetroPhoneSettingsUi.proxy_username->setText
+    (hash["proxy_username"].toString());
+  m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
+    (hash.value("smtp_localname", "localhost").toString());
+}
+
+void spoton::slotPoptasticAccountChanged(const QString &text)
+{
+  QList<QHash<QString, QVariant> > list;
   bool ok = true;
 
-  hash = spoton_misc::poptasticSettings(m_crypts.value("chat", 0), &ok);
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  list = spoton_misc::poptasticSettings(text, m_crypts.value("chat", 0), &ok);
+  QApplication::restoreOverrideCursor();
 
   if(ok)
-    name = hash["in_username"].toString().trimmed().toUtf8();
+    populatePoptasticWidgets(list.value(0));
+}
 
-  return name;
+void spoton::slotDeletePoptasticAccount(void)
+{
+  QMessageBox mb(m_poptasticRetroPhoneDialog);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to delete the specified "
+		"Poptastic account?"));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "poptastic.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM poptastic WHERE in_username_hash = ?");
+	query.bindValue
+	  (0, crypt->keyedHash(m_poptasticRetroPhoneSettingsUi.
+			       account->currentText().toLatin1(), &ok).
+	   toBase64());
+
+	if(ok)
+	  ok = query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+
+  if(ok)
+    {
+      QList<QHash<QString, QVariant> > list;
+      bool ok = true;
+
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      list = spoton_misc::poptasticSettings("", crypt, &ok);
+      QApplication::restoreOverrideCursor();
+
+      if(ok)
+	{
+	  populatePoptasticWidgets(list.value(0));
+	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
+	  m_poptasticRetroPhoneSettingsUi.account->clear();
+	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+
+	  for(int i = 0; i < list.size(); i++)
+	    {
+	      m_poptasticRetroPhoneSettingsUi.account->addItem
+		(list.at(i)["in_username"].toString());
+	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
+		(list.at(i)["in_username"].toString());
+	    }
+
+	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
+
+	  int index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	    findText(m_settings["gui/poptasticName"].toByteArray());
+
+	  if(index >= 0)
+	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	      setCurrentIndex(index);
+	  else
+	    {
+	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+		setCurrentIndex(0);
+	      m_settings["gui/poptasticName"] =
+		m_poptasticRetroPhoneSettingsUi.
+		chat_primary_account->currentText().toLatin1();
+
+	      QSettings settings;
+
+	      settings.setValue
+		("gui/poptasticName",
+		 crypt->encryptedThenHashed(m_settings["gui/poptasticName"].
+					    toByteArray(), &ok).toBase64());
+	    }
+	}
+    }
 }
