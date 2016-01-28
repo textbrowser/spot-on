@@ -120,13 +120,6 @@ void spoton_kernel::slotPoptasticPost(void)
 
 void spoton_kernel::popPoptastic(void)
 {
-  if(setting("gui/disablePop3", true).toBool())
-    {
-      spoton_misc::logError("spoton_kernel::popPoptastic(): IMAP/POP3 is "
-			    "disabled.");
-      return;
-    }
-
   spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
 
   if(!s_crypt)
@@ -385,14 +378,6 @@ void spoton_kernel::popPoptastic(void)
 
 void spoton_kernel::postPoptastic(void)
 {
-  if(setting("gui/disableSmtp", true).toBool())
-    {
-      QWriteLocker locker(&m_poptasticCacheMutex);
-
-      m_poptasticCache.clear();
-      return;
-    }
-
   spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
 
   if(!s_crypt)
