@@ -659,15 +659,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_messagingCachePurgeTimer.setInterval
     (static_cast<int> (1000 * setting("kernel/cachePurgeInterval", 15.00).
 		       toDouble()));
-
-  if(!setting("gui/disablePop3", true).toBool())
-    m_poptasticPopTimer.start
-      (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
-					5.00).toDouble()));
-
-  if(!setting("gui/disableSmtp", true).toBool())
-    m_poptasticPostTimer.start(2500);
-
+  m_poptasticPopTimer.start
+    (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
+				      5.00).toDouble()));
+  m_poptasticPostTimer.start(2500);
   m_publishAllListenersPlaintextTimer.setInterval(10 * 60 * 1000);
   m_settingsTimer.setInterval(1500);
   m_scramblerTimer.setSingleShot(true);
@@ -2132,29 +2127,8 @@ void spoton_kernel::slotUpdateSettings(void)
   int integer = static_cast<int>
     (1000 * setting("gui/poptasticRefreshInterval", 5.00).toDouble());
 
-  if(!setting("gui/disablePop3", true).toBool())
-    {
-      if(!m_poptasticPopTimer.isActive())
-	m_poptasticPopTimer.start(integer);
-      else if(integer != m_poptasticPopTimer.interval())
-	m_poptasticPopTimer.start(integer);
-    }
-  else
-    m_poptasticPopTimer.stop();
-
-  if(!setting("gui/disableSmtp", true).toBool())
-    {
-      if(!m_poptasticPostTimer.isActive())
-	m_poptasticPostTimer.start(2500);
-    }
-  else
-    {
-      m_poptasticPostTimer.stop();
-
-      QWriteLocker locker(&m_poptasticCacheMutex);
-
-      m_poptasticCache.clear();
-    }
+  if(integer != m_poptasticPopTimer.interval())
+    m_poptasticPopTimer.start(integer);
 
   if(setting("gui/publishPeriodically", false).toBool())
     {
@@ -5719,14 +5693,6 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 					 const QByteArray &mode,
 					 const qint64 mailOid)
 {
-  if(setting("gui/disableSmtp", true).toBool())
-    {
-      QWriteLocker locker(&m_poptasticCacheMutex);
-
-      m_poptasticCache.clear();
-      return;
-    }
-
   QWriteLocker locker(&m_poptasticCacheMutex);
 
   m_lastPoptasticStatus = QDateTime::currentDateTime();

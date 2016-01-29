@@ -131,6 +131,7 @@ class spoton_kernel: public QObject
   QHash<qint64, QPointer<spoton_neighbor> > m_neighbors;
   QHash<qint64, QPointer<spoton_starbeam_reader> > m_starbeamReaders;
   QList<QByteArray> m_urlList;
+  QList<QHash<QString, QVariant> > m_poptasticAccounts;
   QQueue<QList<QVariant> > m_poptasticCache;
   QReadWriteLock m_poptasticCacheMutex;
   QReadWriteLock m_forwardSecrecyKeysMutex;

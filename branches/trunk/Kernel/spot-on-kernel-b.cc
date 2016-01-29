@@ -128,12 +128,31 @@ void spoton_kernel::popPoptastic(void)
   QHash<QString, QVariant> hash;
   bool ok = true;
 
-  hash = spoton_misc::poptasticSettings("", s_crypt, &ok).value(0);
+  if(m_poptasticAccounts.isEmpty())
+    m_poptasticAccounts = spoton_misc::poptasticSettings("", s_crypt, &ok);
+
+  /*
+  ** Discover an enabled account.
+  */
+
+  for(int i = m_poptasticAccounts.size() - 1; i >= 0; i--)
+    {
+      hash = m_poptasticAccounts.at(i);
+
+      if(hash["in_method"].toString() != "Disable")
+	{
+	  m_poptasticAccounts.removeAt(i);
+	  break;
+	}
+      else
+	hash.clear();
+    }
 
   if(hash.isEmpty() || !ok)
     {
       spoton_misc::logError("spoton_kernel::popPoptastic(): "
-			    "spoton_misc::poptasticSettings() failed.");
+			    "spoton_misc::poptasticSettings() failed or "
+			    "Poptastic inbound accounts are disabled.");
       return;
     }
 
