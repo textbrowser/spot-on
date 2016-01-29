@@ -1603,10 +1603,12 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT in_password, in_server_address, "
-		      "in_server_port, in_username, "
-		      "out_password, out_server_address, "
-		      "out_server_port, out_username, "
+	if(query.exec("SELECT in_method, in_password, in_server_address, "
+		      "in_server_port, in_ssltls, in_username, "
+		      "in_verify_host, in_verify_peer, "
+		      "out_method, out_password, out_server_address, "
+		      "out_server_port, out_ssltls, out_username, "
+		      "out_verify_host, out_verify_peer, "
 		      "proxy_enabled, proxy_password, "
 		      "proxy_server_address, proxy_server_port, "
 		      "proxy_username, smtp_localname "
@@ -1619,15 +1621,23 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      bool ok = true;
 
 	      updateQuery.prepare("UPDATE poptastic "
-				  "SET in_password = ?, "
+				  "SET in_method = ?, "
+				  "in_password = ?, "
 				  "in_server_address = ?, "
 				  "in_server_port = ?, "
+				  "in_ssltls = ?, "
 				  "in_username = ?, "
 				  "in_username_hash = ?, "
+				  "in_verify_host = ?, "
+				  "in_verify_peer = ?, "
+				  "out_method = ?, "
 				  "out_password = ?, "
 				  "out_server_address = ?, "
 				  "out_server_port = ?, "
+				  "out_ssltls = ?, "
 				  "out_username = ?, "
+				  "out_verify_host = ?, "
+				  "out_verify_peer = ?, "
 				  "proxy_enabled = ?, "
 				  "proxy_password = ?, "
 				  "proxy_server_address = ?, "
@@ -1646,7 +1656,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		  if(ok)
 		    {
-		      if(i == 3) // in_username
+		      if(i == 5) // in_username
 			list << bytes << bytes;
 		      else
 			list << bytes;
@@ -1662,7 +1672,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		{
 		  if(ok)
 		    {
-		      if(i == 4) // in_username_hash
+		      if(i == 6) // in_username_hash
 			updateQuery.bindValue
 			  (i, newCrypt->keyedHash(list.at(i), &ok).
 			   toBase64());

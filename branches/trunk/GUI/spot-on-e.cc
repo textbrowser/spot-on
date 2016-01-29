@@ -1970,12 +1970,16 @@ QString spoton::savePoptasticAccount(void)
 	  (0, m_poptasticRetroPhoneSettingsUi.in_authentication->
 	   currentText());
 	query.bindValue
-	  (1, m_poptasticRetroPhoneSettingsUi.in_method->currentText());
-	query.bindValue
-	  (2, crypt->encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-					 in_password->
-					 text().
-					 toUtf8(), &ok).toBase64());
+	  (1, crypt->
+	   encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.in_method->
+			       currentText().toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+					   in_password->
+					   text().
+					   toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -1993,8 +1997,11 @@ QString spoton::savePoptasticAccount(void)
 					in_server_port->
 					value()), &ok).toBase64());
 
-	query.bindValue
-	  (5, m_poptasticRetroPhoneSettingsUi.in_ssltls->currentText());
+	if(ok)
+	  query.bindValue
+	    (5, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.in_ssltls->
+				 currentText().toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -2011,17 +2018,32 @@ QString spoton::savePoptasticAccount(void)
 		       in_username->text().trimmed().toLatin1(),
 		       &ok).toBase64());
 
-	query.bindValue
-	  (8, m_poptasticRetroPhoneSettingsUi.in_verify_host->isChecked() ?
-	   1 : 0);
-	query.bindValue
-	  (9, m_poptasticRetroPhoneSettingsUi.in_verify_peer->isChecked() ?
-	   1 : 0);
+	if(ok)
+	  query.bindValue
+	    (8, crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					in_verify_host->isChecked() ?
+					1 : 0), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (9, crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					in_verify_peer->isChecked() ?
+					1 : 0), &ok).toBase64());
+
 	query.bindValue
 	  (10, m_poptasticRetroPhoneSettingsUi.out_authentication->
 	   currentText());
-	query.bindValue
-	  (11, m_poptasticRetroPhoneSettingsUi.out_method->currentText());
+
+	if(ok)
+	  query.bindValue
+	    (11, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_method->currentText().toLatin1(),
+				 &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -2047,8 +2069,12 @@ QString spoton::savePoptasticAccount(void)
 					out_server_port->
 					value()), &ok).toBase64());
 
-	query.bindValue
-	  (15, m_poptasticRetroPhoneSettingsUi.out_ssltls->currentText());
+	if(ok)
+	  query.bindValue
+	    (15, crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_ssltls->currentText().toLatin1(),
+				 &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -2058,12 +2084,21 @@ QString spoton::savePoptasticAccount(void)
 				 trimmed().toLatin1(), &ok).
 	     toBase64());
 
-	query.bindValue
-	  (17, m_poptasticRetroPhoneSettingsUi.out_verify_host->isChecked() ?
-	   1 : 0);
-	query.bindValue
-	  (18, m_poptasticRetroPhoneSettingsUi.out_verify_peer->isChecked() ?
-	   1 : 0);
+	if(ok)
+	  query.bindValue
+	    (17, crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					out_verify_host->isChecked() ?
+					1 : 0), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (18, crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					out_verify_peer->isChecked() ?
+					1 : 0), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue

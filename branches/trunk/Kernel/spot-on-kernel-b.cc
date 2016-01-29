@@ -225,16 +225,14 @@ void spoton_kernel::popPoptastic(void)
 	      arg(hash["in_server_address"].toString().trimmed()).
 	      arg(hash["in_server_port"].toString().trimmed());
 
-	  long verify = static_cast<long>
-	    (setting("gui/poptasticVerifyPopHost", 0).toInt());
+	  long verify = static_cast<long>(hash["in_verify_host"].toInt());
 
 	  if(verify)
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
 	  else
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
-	  verify = static_cast<long>
-	    (setting("gui/poptasticVerifyPopPeer", 0).toInt());
+	  verify = static_cast<long>(hash["in_verify_peer"].toInt());
 	  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
 	  if(ssltls == "TLS")
@@ -477,7 +475,7 @@ void spoton_kernel::postPoptastic(void)
 		      toString());
 
 	      long verify = static_cast<long>
-		(setting("gui/poptasticVerifySmtpHost", 0).toInt());
+		(hash["out_verify_host"].toInt());
 
 	      if(verify)
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
@@ -485,7 +483,7 @@ void spoton_kernel::postPoptastic(void)
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
 	      verify = static_cast<long>
-		(setting("gui/poptasticVerifySmtpPeer", 0).toInt());
+		(hash["out_verify_peer"].toInt());
 	      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
 	      if(ssltls == "TLS")

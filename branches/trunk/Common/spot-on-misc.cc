@@ -541,28 +541,24 @@ void spoton_misc::prepareDatabases(void)
 
 	query.exec("CREATE TABLE IF NOT EXISTS poptastic ("
 		   "in_authentication TEXT NOT NULL, "
-		   "in_method TEXT NOT NULL CHECK "
-		   "(in_method IN ('Disable', 'IMAP', 'POP3')), "
+		   "in_method TEXT NOT NULL, "
 		   "in_password TEXT NOT NULL, "
 		   "in_server_address TEXT NOT NULL, "
 		   "in_server_port TEXT NOT NULL, "
-		   "in_ssltls TEXT NOT NULL CHECK "
-		   "(in_ssltls IN ('None', 'SSL', 'TLS')), "
+		   "in_ssltls TEXT NOT NULL, "
 		   "in_username TEXT NOT NULL, "
 		   "in_username_hash TEXT PRIMARY KEY NOT NULL, "
-		   "in_verify_host INTEGER NOT NULL DEFAULT 0, "
-		   "in_verify_peer INTEGER NOT NULL DEFAULT 0, "
+		   "in_verify_host TEXT NOT NULL, "
+		   "in_verify_peer TEXT NOT NULL, "
 		   "out_authentication TEXT NOT NULL, "
-		   "out_method TEXT NOT NULL CHECK "
-		   "(out_method IN ('Disable', 'SMTP')), "
+		   "out_method TEXT NOT NULL, "
 		   "out_password TEXT NOT NULL, "
 		   "out_server_address TEXT NOT NULL, "
 		   "out_server_port TEXT NOT NULL, "
-		   "out_ssltls TEXT NOT NULL CHECK "
-		   "(out_ssltls IN ('None', 'SSL', 'TLS')), "
+		   "out_ssltls TEXT NOT NULL, "
 		   "out_username TEXT NOT NULL, "
-		   "out_verify_host INTEGER NOT NULL DEFAULT 0, "
-		   "out_verify_peer INTEGER NOT NULL DEFAULT 0, "
+		   "out_verify_host TEXT NOT NULL, "
+		   "out_verify_peer TEXT NOT NULL, "
 		   "proxy_enabled TEXT NOT NULL, "
 		   "proxy_password TEXT NOT NULL, "
 		   "proxy_server_address TEXT NOT NULL, "
@@ -3606,10 +3602,14 @@ poptasticSettings(const QString &in_username, spoton_crypt *crypt, bool *ok)
 		       record.fieldName(i) == "proxy_server_port" ||
 		       record.fieldName(i) == "proxy_username" ||
 		       record.fieldName(i).endsWith("_localname") ||
+		       record.fieldName(i).endsWith("_method") ||
 		       record.fieldName(i).endsWith("_password") ||
 		       record.fieldName(i).endsWith("_server_address") ||
 		       record.fieldName(i).endsWith("_server_port") ||
-		       record.fieldName(i).endsWith("_username"))
+		       record.fieldName(i).endsWith("_ssltls") ||
+		       record.fieldName(i).endsWith("_username") ||
+		       record.fieldName(i).endsWith("_verify_host") ||
+		       record.fieldName(i).endsWith("_verify_peer"))
 		      {
 			QByteArray bytes
 			  (QByteArray::fromBase64(record.value(i).
