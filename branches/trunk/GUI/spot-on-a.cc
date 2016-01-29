@@ -822,10 +822,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSaveUrlName(void)));
-  connect(m_ui.saveEmailName,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSaveEmailName(void)));
   connect(m_ui.buzzName,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -850,14 +846,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveNodeName(void)));
-  connect(m_ui.emailName,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveEmailName(void)));
   connect(m_ui.email_fs_gb,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotEmailFsGb(int)));
+  connect(m_ui.emailName,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotEmailNameIndexChanged(int)));
+  connect(m_ui.emailName,
+	  SIGNAL(currentTextChanged(const QString &)),
+	  this,
+	  SLOT(slotSaveEmailName(const QString &)));
   connect(m_ui.urlName,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -2027,8 +2027,8 @@ spoton::spoton(void):QMainWindow()
 		       toByteArray().length()).trimmed());
   m_ui.channel->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
-  m_ui.emailName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
-  m_ui.emailName->setText
+  m_ui.emailName->clear();
+  m_ui.emailName->addItem
     (QString::fromUtf8(m_settings.value("gui/emailName", "unknown").
 		       toByteArray().constData(),
 		       m_settings.value("gui/emailName", "unknown").
@@ -6151,7 +6151,8 @@ void spoton::slotSetPassphrase(void)
       settings.setValue("gui/spot_on_neighbors_txt_processed", true);
       settings.setValue("gui/urlName", m_settings["gui/urlName"]);
       m_ui.buzzName->setText(m_ui.username->text());
-      m_ui.emailName->setText(m_ui.username->text());
+      m_ui.emailName->clear();
+      m_ui.emailName->addItem(m_ui.username->text());
       m_ui.nodeName->setText(m_ui.username->text());
       m_ui.urlName->setText(m_ui.username->text());
 
@@ -6358,6 +6359,21 @@ void spoton::slotValidatePassphrase(void)
 
 	    for(int i = 0; i < m_ui.tab->count(); i++)
 	      m_ui.tab->setTabEnabled(i, true);
+
+	    {
+	      QList<QHash<QString, QVariant> > list
+		(spoton_misc::
+		 poptasticSettings("", m_crypts.value("chat", 0), 0));
+
+	      for(int i = 0; i < list.size(); i++)
+		{
+		  if(i == 0)
+		    m_ui.emailName->insertSeparator(1);
+
+		  m_ui.emailName->addItem(list.at(i)["in_username"].
+					  toString());
+		}
+	    }
 
 	    askKernelToReadStarBeamKeys();
 	    populateNovas();

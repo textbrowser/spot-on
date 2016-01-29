@@ -1065,24 +1065,26 @@ void spoton::slotSaveBuzzName(void)
   emit buzzNameChanged(str.toUtf8());
 }
 
-void spoton::slotSaveEmailName(void)
+void spoton::slotSaveEmailName(const QString &text)
 {
-  QString str(m_ui.emailName->text());
+  if(m_ui.emailName->currentIndex() != 0)
+    return;
+
+  QString str(text);
 
   if(str.trimmed().isEmpty())
     {
       str = "unknown";
-      m_ui.emailName->setText(str);
+      m_ui.emailName->setItemText(0, str);
     }
   else
-    m_ui.emailName->setText(str.trimmed());
+    m_ui.emailName->setItemText(0, str.trimmed());
 
   m_settings["gui/emailName"] = str.toUtf8();
 
   QSettings settings;
 
   settings.setValue("gui/emailName", str.toUtf8());
-  m_ui.emailName->selectAll();
 }
 
 void spoton::slotSaveNodeName(void)
@@ -4466,7 +4468,6 @@ void spoton::slotSetIcons(int index)
   // Chat
 
   m_ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
-  m_ui.saveEmailName->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   m_ui.saveNodeName->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   m_ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   list.clear();

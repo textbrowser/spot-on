@@ -464,7 +464,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>802</width>
+                <width>401</width>
                 <height>482</height>
                </rect>
               </property>
@@ -1456,14 +1456,34 @@
                        <number>5</number>
                       </property>
                       <item>
-                       <widget class="QLineEdit" name="emailName"/>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="saveEmailName">
-                        <property name="text">
-                         <string>Save</string>
+                       <widget class="QComboBox" name="emailName">
+                        <property name="insertPolicy">
+                         <enum>QComboBox::InsertAtCurrent</enum>
+                        </property>
+                        <property name="sizeAdjustPolicy">
+                         <enum>QComboBox::AdjustToContents</enum>
                         </property>
                        </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="reloadEmailNames">
+                        <property name="text">
+                         <string>Reload</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_45">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
                       </item>
                       <item>
                        <widget class="QPushButton" name="clearOutgoing">
@@ -1491,19 +1511,6 @@
                          <bool>true</bool>
                         </property>
                        </widget>
-                      </item>
-                      <item>
-                       <spacer name="horizontalSpacer_45">
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>40</width>
-                          <height>20</height>
-                         </size>
-                        </property>
-                       </spacer>
                       </item>
                      </layout>
                     </item>
@@ -2060,8 +2067,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>646</width>
+             <height>405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2753,7 +2760,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>260</width>
+                     <width>262</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -3277,8 +3284,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>361</width>
+             <height>225</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3614,7 +3621,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>792</width>
+                  <width>737</width>
                   <height>458</height>
                  </rect>
                 </property>
@@ -4395,8 +4402,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4480,9 +4487,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-418</y>
-                 <width>802</width>
-                 <height>603</height>
+                 <y>0</y>
+                 <width>663</width>
+                 <height>620</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5431,7 +5438,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>746</width>
              <height>1134</height>
             </rect>
            </property>
@@ -6712,7 +6719,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>495</width>
              <height>544</height>
             </rect>
            </property>
@@ -7813,7 +7820,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>661</width>
              <height>453</height>
             </rect>
            </property>
@@ -8428,8 +8435,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>258</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8932,7 +8939,7 @@
   <tabstop>mail</tabstop>
   <tabstop>mailMessage</tabstop>
   <tabstop>emailName</tabstop>
-  <tabstop>saveEmailName</tabstop>
+  <tabstop>reloadEmailNames</tabstop>
   <tabstop>clearOutgoing</tabstop>
   <tabstop>emailWriteActionMenu</tabstop>
   <tabstop>emailParticipants</tabstop>

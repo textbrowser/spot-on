@@ -3632,10 +3632,12 @@ poptasticSettings(const QString &in_username, spoton_crypt *crypt, bool *ok)
 		    if(ok)
 		      *ok = false;
 		  }
-		else if(ok)
+		else
 		  {
 		    map.insert(hash["in_username"].toString(), hash);
-		    *ok = true;
+
+		    if(ok)
+		      *ok = true;
 		  }
 	      }
 	  }
