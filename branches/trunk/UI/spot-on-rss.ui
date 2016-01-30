@@ -38,7 +38,16 @@
            <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
             <number>5</number>
            </property>
            <property name="spacing">
@@ -359,11 +368,6 @@
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
-          <column>
-           <property name="text">
-            <string>Echo</string>
-           </property>
-          </column>
           <column>
            <property name="text">
             <string>Feed</string>

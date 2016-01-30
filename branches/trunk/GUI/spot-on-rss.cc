@@ -50,11 +50,11 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 {
   m_currentFeedRow = -1;
   m_ui.setupUi(this);
-  m_ui.feeds->setColumnHidden(2, true); // OID
+  m_ui.feeds->setColumnHidden(m_ui.feeds->columnCount() - 1, true); // OID
   m_ui.feeds->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.feeds->setIconSize(QSize(48, 48));
   m_ui.feeds->horizontalHeader()->setSortIndicator
-    (1, Qt::AscendingOrder); // Feed
+    (0, Qt::AscendingOrder); // Feed
 #if QT_VERSION >= 0x050000
   m_ui.feeds->verticalHeader()->setSectionResizeMode
     (QHeaderView::ResizeToContents);
@@ -872,10 +872,9 @@ void spoton_rss::populateFeeds(void)
 	  if(query.next())
 	    m_ui.feeds->setRowCount(query.value(0).toInt());
 
-	if(query.exec("SELECT echo, feed, feed_image, OID FROM rss_feeds"))
+	if(query.exec("SELECT feed, feed_image, OID FROM rss_feeds"))
 	  while(query.next())
 	    {
-	      QByteArray echo;
 	      QByteArray feed;
 	      QString oid(query.value(query.record().count() - 1).
 			  toString());
@@ -883,28 +882,11 @@ void spoton_rss::populateFeeds(void)
 	      QTableWidgetItem *item = 0;
 	      bool ok = true;
 
-	      echo = crypt->decryptedAfterAuthenticated
+	      feed = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 	      item = new QTableWidgetItem();
-	      item->setFlags
-		(Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
-	      m_ui.feeds->setItem(row, 0, item);
-
-	      if(!ok)
-		item->setText(tr("error"));
-	      else
-		{
-		  if(item->text() == "true")
-		    item->setCheckState(Qt::Checked);
-		  else
-		    item->setCheckState(Qt::Unchecked);
-		}
-
-	      feed = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
-	      item = new QTableWidgetItem();
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.feeds->setItem(row, 1, item);
+	      m_ui.feeds->setItem(row, 0, item);
 
 	      if(!ok)
 		item->setText(tr("error"));
@@ -914,7 +896,7 @@ void spoton_rss::populateFeeds(void)
 	      if(ok)
 		{
 		  image = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(2).toByteArray()),
+		    (QByteArray::fromBase64(query.value(1).toByteArray()),
 		     &ok);
 
 		  if(ok)
@@ -936,7 +918,7 @@ void spoton_rss::populateFeeds(void)
 
 	      item = new QTableWidgetItem(oid);
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.feeds->setItem(row, 2, item);
+	      m_ui.feeds->setItem(row, 1, item);
 	      row += 1;
 	    }
 
@@ -1098,7 +1080,6 @@ void spoton_rss::prepareDatabases(void)
 	QSqlQuery query(db);
 
 	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds ("
-		   "echo TEXT NOT NULL, "
 		   "feed TEXT NOT NULL, "
 		   "feed_description TEXT NOT NULL, "
 		   "feed_hash TEXT NOT NULL PRIMARY KEY, "
@@ -1398,30 +1379,26 @@ void spoton_rss::slotAddFeed(void)
 	bool ok = true;
 
 	query.prepare("INSERT OR REPLACE INTO rss_feeds "
-		      "(echo, feed, feed_description, feed_hash, "
+		      "(feed, feed_description, feed_hash, "
 		      "feed_image, feed_title) "
-		      "VALUES (?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(QByteArray("false"), &ok).toBase64());
+	  (0, crypt->encryptedThenHashed(new_feed.toUtf8(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (1, crypt->encryptedThenHashed(new_feed.toUtf8(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue(2, crypt->encryptedThenHashed(QByteArray(),
+	  query.bindValue(1, crypt->encryptedThenHashed(QByteArray(),
 							&ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (3, crypt->keyedHash(new_feed.toUtf8(), &ok).toBase64());
+	    (2, crypt->keyedHash(new_feed.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(3, crypt->encryptedThenHashed(QByteArray(),
+							&ok).toBase64());
 
 	if(ok)
 	  query.bindValue(4, crypt->encryptedThenHashed(QByteArray(),
-							&ok).toBase64());
-
-	if(ok)
-	  query.bindValue(5, crypt->encryptedThenHashed(QByteArray(),
 							&ok).toBase64());
 
 	if(ok)
@@ -1583,7 +1560,7 @@ void spoton_rss::slotCopyFeedLink(void)
   if(!clipboard)
     return;
 
-  QTableWidgetItem *item = m_ui.feeds->item(m_ui.feeds->currentRow(), 1);
+  QTableWidgetItem *item = m_ui.feeds->item(m_ui.feeds->currentRow(), 0);
 
   if(!item)
     return;
@@ -1641,7 +1618,7 @@ void spoton_rss::slotDeleteFeed(void)
   QTableWidgetItem *item = 0;
   int row = m_ui.feeds->currentRow();
 
-  if((item = m_ui.feeds->item(row, 2)))
+  if((item = m_ui.feeds->item(row, m_ui.feeds->columnCount() - 1)))
     oid = item->text();
   else
     return;
@@ -1785,7 +1762,7 @@ void spoton_rss::slotDownloadTimeout(void)
   if(m_currentFeedRow >= m_ui.feeds->rowCount())
     m_currentFeedRow = 0;
 
-  QTableWidgetItem *item = m_ui.feeds->item(m_currentFeedRow, 1);
+  QTableWidgetItem *item = m_ui.feeds->item(m_currentFeedRow, 0);
 
   if(!item)
     {
