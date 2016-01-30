@@ -160,12 +160,14 @@ void spoton_misc::prepareDatabases(void)
 		   "date TEXT NOT NULL, "
 		   "folder_index INTEGER NOT NULL "
 		   "CHECK (folder_index >= 0 AND folder_index <= 2), "
+		   "from_account TEXT NOT NULL, "
 		   "goldbug TEXT NOT NULL, " /*
-					     ** 0 or 1 for inbound.
-					     ** Magnet for outbound.
+					     ** 0 or 1 for inbound,
+					     ** magnet for outbound.
 					     */
 		   "hash TEXT NOT NULL, " /*
-					  ** Keyed hash of the message and
+					  ** Keyed hash of the date,
+					  ** the message, and
 					  ** the subject.
 					  */
 		   "message BLOB NOT NULL, "
@@ -684,7 +686,7 @@ void spoton_misc::logError(const QString &error)
       QString eol("\n");
 #endif
 
-      file.write(now.toString().toLatin1());
+      file.write(now.toString(Qt::ISODate).toLatin1());
       file.write(eol.toLatin1());
       file.write(error.trimmed().toLatin1());
       file.write(eol.toLatin1());
@@ -5207,6 +5209,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	QByteArray name(list.value(2));
 	QByteArray senderPublicKeyHash(list.value(1));
 	QByteArray subject(list.value(3));
+	QDateTime now(QDateTime::currentDateTime());
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO folders "
@@ -5223,11 +5226,9 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 		      "subject, "
 		      "participant_oid) "
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
 	query.bindValue
 	  (0, crypt->
-	   encryptedThenHashed(QDateTime::currentDateTime().
-			       toString(Qt::ISODate).
+	   encryptedThenHashed(now.toString(Qt::ISODate).
 			       toLatin1(), &ok).toBase64());
 	query.bindValue(1, 0); // Inbox Folder
 
@@ -5239,7 +5240,8 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 
 	if(ok)
 	  query.bindValue
-	    (3, crypt->keyedHash(message + subject,
+	    (3, crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
+				 message + subject,
 				 &ok).toBase64());
 
 	if(ok)

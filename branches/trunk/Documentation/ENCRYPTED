@@ -1,4 +1,4 @@
-Some database fields contain encrypted data.
+Some database fields contain authenticated and encrypted data.
 
 buzz_channels.db
 

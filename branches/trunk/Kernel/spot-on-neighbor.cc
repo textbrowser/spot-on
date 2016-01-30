@@ -5379,6 +5379,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
     if(db.open())
       {
 	bool ok = true;
+	QDateTime now(QDateTime::currentDateTime());
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO folders "
@@ -5390,9 +5391,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, s_crypt->
-	   encryptedThenHashed(QDateTime::currentDateTime().
-			       toString(Qt::ISODate).
-			       toLatin1(), &ok).toBase64());
+	   encryptedThenHashed(now.toString(Qt::ISODate).toLatin1(),
+			       &ok).toBase64());
 	query.bindValue(1, 0); // Inbox Folder
 
 	if(ok)
@@ -5403,7 +5403,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 	if(ok)
 	  query.bindValue
-	    (3, s_crypt->keyedHash(message_l + subject_l,
+	    (3, s_crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
+				   message_l + subject_l,
 				   &ok).toBase64());
 
 	if(ok)

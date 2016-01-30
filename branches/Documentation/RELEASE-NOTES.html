@@ -3,7 +3,8 @@
 <br>
 <b>Corrections</b>
 <ol>
-<li>Corrected parents of Poptastic message dialogs.</li>
+<li>Corrected parent widgets of Poptastic message dialogs.</li>
+<li>Corrected digest computations in email.db. The date field must be considered.</li>
 <li>Corrected widget text in Options.</li>
 <li>Do not attempt to create SQL triggers if they already exist.</li>
 <li>E-mail table widget selections.</li>
@@ -18,8 +19,11 @@
 </ol>
 <b>New</b>
 <ol>
+<li>Added from_account to the folders table in email.db. Please DROP the folders table or remove email.db. The new field is required in support of multiple Poptastic accounts.</li>
 <li>Multiple Poptastic accounts. Please remove poptastic.db.</li>
-<li>Removed echo from the rss_feeds table. New installations only.</li>
+<li>OpenSSL products have been upgraded to version 1.0.2f on OS X and Windows.</li>
+<li>Removed the echo field from the rss_feeds table. New installations only.</li>
+<li>SQLite products have been upgraded to version 3.10.2 on Windows.</li>
 </ol>
 2016.02.01
 <br>

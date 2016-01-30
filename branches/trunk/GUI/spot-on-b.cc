@@ -3002,12 +3002,12 @@ void spoton::slotSendMail(void)
 	    }
 
 	    query.prepare("INSERT INTO folders "
-			  "(date, folder_index, goldbug, hash, "
+			  "(date, folder_index, from_account, goldbug, hash, "
 			  "message, message_code, mode, "
 			  "receiver_sender, receiver_sender_hash, "
 			  "signature, "
 			  "status, subject, participant_oid) "
-			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, crypt->
 	       encryptedThenHashed(now.toString(Qt::ISODate).
@@ -3016,54 +3016,59 @@ void spoton::slotSendMail(void)
 
 	    if(ok)
 	      query.bindValue
-		(2, crypt->
-		 encryptedThenHashed(goldbug, &ok).toBase64());
+		(2, crypt->encryptedThenHashed(m_ui.emailName->currentText().
+					       toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(3, crypt->
-		 keyedHash(now.toString().toLatin1() +
+		 encryptedThenHashed(goldbug, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(4, crypt->
+		 keyedHash(now.toString(Qt::ISODate).toLatin1() +
 			   message + subject, &ok).toBase64());
 
 	    if(ok)
-	      query.bindValue(4, crypt->
+	      query.bindValue(5, crypt->
 			      encryptedThenHashed(message, &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(5, crypt->
+		(6, crypt->
 		 encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(6, crypt->encryptedThenHashed(mode, &ok).toBase64());
+		(7, crypt->encryptedThenHashed(mode, &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(7, crypt->
+		(8, crypt->
 		 encryptedThenHashed(names.takeFirst().toUtf8(), &ok).
 		 toBase64());
 
 	    query.bindValue
-	      (8, publicKeyHash.toBase64());
+	      (9, publicKeyHash.toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(9, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(10, crypt->
-		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
+		(10, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(11, crypt->
-		 encryptedThenHashed(subject, &ok).toBase64());
+		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(12, crypt->
+		 encryptedThenHashed(subject, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(13, crypt->
 		 encryptedThenHashed(oid.toLatin1(), &ok).toBase64());
 
 	    if(ok)
@@ -4754,7 +4759,7 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 	    if(ok)
 	      updateQuery.bindValue
 		(1, m_crypts.value("email")->
-		 keyedHash(list.value(1) + list.value(5), &ok).
+		 keyedHash(list.value(0) + list.value(1) + list.value(5), &ok).
 		 toBase64());
 
 	    if(!list.value(1).isEmpty())

@@ -465,14 +465,14 @@ void spoton_chatwindow::setSMPVerified(const bool state)
       ui.smp->setToolTip
 	(tr("The Socialist Millionaire Protocol "
 	    "failed on %1.").
-	 arg(now.toString()));
+	 arg(now.toString(Qt::ISODate)));
     }
   else
     {
       ui.smp->setIcon(QIcon(":/generic/smp-locked.png"));
       ui.smp->setToolTip
 	(tr("The Socialist Millionaire Protocol succeeded on %1.").
-	 arg(now.toString()));
+	 arg(now.toString(Qt::ISODate)));
     }
 }
 
