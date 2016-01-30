@@ -341,7 +341,17 @@ void spoton::slotTestPoptasticPop3Settings(void)
 	  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
 	  if(index == 2) // TLS
-	    curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
+	    {
+	      QFileInfo fileInfo
+		(m_settings.value("gui/poptasticCAPath", "").toString());
+
+	      if(fileInfo.isReadable())
+		curl_easy_setopt
+		  (curl, CURLOPT_CAINFO,
+		   fileInfo.absoluteFilePath().toUtf8().constData());
+
+	      curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
+	    }
 	}
       else
 	{
@@ -479,7 +489,17 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 	  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
 	  if(index == 2) // TLS
-	    curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
+	    {
+	      QFileInfo fileInfo
+		(m_settings.value("gui/poptasticCAPath", "").toString());
+
+	      if(fileInfo.isReadable())
+		curl_easy_setopt
+		  (curl, CURLOPT_CAINFO,
+		   fileInfo.absoluteFilePath().toUtf8().constData());
+
+	      curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
+	    }
 	}
       else
 	{
