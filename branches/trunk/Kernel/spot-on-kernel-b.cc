@@ -412,7 +412,7 @@ void spoton_kernel::postPoptastic(void)
 
   if(!m_poptasticCache.isEmpty())
     {
-      QList<QVariant> values(m_poptasticCache.head());
+      QHash<QString, QVariant> values(m_poptasticCache.head());
 
       locker.unlock();
 
@@ -423,7 +423,8 @@ void spoton_kernel::postPoptastic(void)
 	  QHash<QString, QVariant> hash;
 
 	  for(int i = 0; i < list.size(); i++)
-	    if(list.at(i)["in_username"] == values.value(values.size() - 2))
+	    if(list.at(i)["in_username"].toString() ==
+	       values["from_account"].toString())
 	      {
 		hash = list.at(i);
 		break;
@@ -521,7 +522,7 @@ void spoton_kernel::postPoptastic(void)
 
 	  for(int i = 1, j = 1; i <= 15;)
 	    {
-	      QList<QVariant> values;
+	      QHash<QString, QVariant> values;
 	      QReadLocker locker(&m_poptasticCacheMutex);
 
 	      if(m_poptasticCache.isEmpty())
@@ -531,7 +532,7 @@ void spoton_kernel::postPoptastic(void)
 
 	      locker.unlock();
 
-	      QByteArray bytes(values.value(1).toByteArray());
+	      QByteArray bytes(values["message"].toByteArray());
 	      long count = 0;
 	      struct curl_slist *recipients = 0;
 	      struct curl_upload_status upload_ctx;
@@ -550,9 +551,18 @@ void spoton_kernel::postPoptastic(void)
 	      curl_payload_text.append
 		(QString("Date: %1\r\n").arg(QDateTime::currentDateTime().
 					     toUTC().toString()).toLatin1());
-	      curl_payload_text.append(QString("To: <%1> (%1)\r\n").
-				       arg(values.value(0).toString()).
-				       toLatin1());
+
+	      if(values.size() == 4)
+		curl_payload_text.append(QString("To: <%1> (%1)\r\n").
+					 arg(values["receiver_name"].
+					     toString()).
+					 toLatin1());
+	      else
+		curl_payload_text.append(QString("To: <%1> (%1)\r\n").
+					 arg(values["name"].toByteArray().
+					     constData()).
+					 toLatin1());
+
 	      curl_payload_text.append(QString("From: <%1>\r\n").arg(from).
 				       toLatin1());
 	      curl_payload_text.append
@@ -571,12 +581,13 @@ void spoton_kernel::postPoptastic(void)
 	      else
 		{
 		  curl_payload_text.append("Subject: ");
-		  curl_payload_text.append(values.value(2).toByteArray());
+		  curl_payload_text.append(values["subject"].toByteArray());
 		  curl_payload_text.append("\r\n");
 		}
 
-	      QByteArray attachment(values.value(3).toByteArray());
-	      QByteArray attachmentName(values.value(4).toByteArray());
+	      QByteArray attachment(values["attachment"].toByteArray());
+	      QByteArray attachmentName
+		(values["attachment_name"].toByteArray());
 
 	      if(attachment.isEmpty() || attachmentName.isEmpty() ||
 		 values.size() == 4)
@@ -619,7 +630,7 @@ void spoton_kernel::postPoptastic(void)
 			     "Content-Transfer-Encoding: base64\r\n\r\n").
 		     arg(r1.constData()).
 		     arg(r2.constData()).
-		     arg(values.value(1).toByteArray().constData()).
+		     arg(values["message"].toByteArray().constData()).
 		     arg(attachmentName.constData()));
 		  bytes.append(str);
 
@@ -652,8 +663,15 @@ void spoton_kernel::postPoptastic(void)
 	      curl_payload_text.append("\r\n");
 	      curl_payload_text.append("\r\n");
 	      curl_payload_text.append(0);
-	      recipients = curl_slist_append
-		(recipients, values.value(0).toByteArray().constData());
+
+	      if(values.size() == 4)
+		recipients = curl_slist_append
+		  (recipients, values["receiver_name"].toString().
+		   toLatin1().constData());
+	      else
+		recipients = curl_slist_append
+		  (recipients, values["name"].toByteArray().constData());
+
 	      curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 	      curl_easy_setopt(curl, CURLOPT_READDATA, &upload_ctx);
 	      curl_easy_setopt
@@ -689,7 +707,7 @@ void spoton_kernel::postPoptastic(void)
 		  qint64 mailOid = -1;
 
 		  if(!values.isEmpty())
-		    mailOid = values.value(values.size() - 1).toLongLong();
+		    mailOid = values["mail_oid"].toLongLong();
 
 		  if(mailOid > -1)
 		    spoton_misc::moveSentMailToSentFolder

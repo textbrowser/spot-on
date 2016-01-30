@@ -5675,13 +5675,15 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
   if(receiverName.isEmpty())
     return;
 
+  QHash<QString, QVariant> hash;
   QWriteLocker locker(&m_poptasticCacheMutex);
 
+  hash["from_account"] = fromAccount;
+  hash["mail_oid"] = mailOid;
+  hash["message"] = message;
+  hash["receiver_name"] = receiverName;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
-  m_poptasticCache.enqueue(QList<QVariant> () << receiverName
-			                      << message
-			                      << fromAccount
-			                      << mailOid);
+  m_poptasticCache.enqueue(hash);
 }
 
 void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
@@ -5693,17 +5695,19 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 					 const QByteArray &fromAccount,
 					 const qint64 mailOid)
 {
+  QHash<QString, QVariant> hash;
   QWriteLocker locker(&m_poptasticCacheMutex);
 
+  hash["attachment"] = attachment;
+  hash["attachment_name"] = attachmentName;
+  hash["from_account"] = fromAccount;
+  hash["mail_oid"] = mailOid;
+  hash["message"] = message;
+  hash["mode"] = mode;
+  hash["name"] = name;
+  hash["subject"] = subject;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
-  m_poptasticCache.enqueue(QList<QVariant> () << name
-			                      << message
-			                      << subject
-			                      << attachment
-			                      << attachmentName
-			                      << mode
-			                      << fromAccount
-			                      << mailOid);
+  m_poptasticCache.enqueue(hash);
 }
 
 QList<QPair<QByteArray, QByteArray> > spoton_kernel::adaptiveEchoTokens(void)

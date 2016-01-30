@@ -2268,6 +2268,10 @@ void spoton::slotPoptasticAccountChanged(const QString &text)
 
 void spoton::slotDeletePoptasticAccount(void)
 {
+  if(m_poptasticRetroPhoneSettingsUi.account->currentText().trimmed().
+     isEmpty())
+    return;
+
   QMessageBox mb(m_poptasticRetroPhoneDialog);
 
 #ifdef Q_OS_MAC
