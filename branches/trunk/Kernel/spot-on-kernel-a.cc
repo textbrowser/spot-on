@@ -826,9 +826,11 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 			  const QByteArray &,
 			  const QByteArray &,
 			  const QByteArray &,
+			  const QByteArray &,
 			  const qint64)),
 	  this,
 	  SLOT(slotSendMail(const QByteArray &,
+			    const QByteArray &,
 			    const QByteArray &,
 			    const QByteArray &,
 			    const QByteArray &,
@@ -3106,13 +3108,14 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				 const QByteArray &keyType,
 				 const QByteArray &receiverName,
 				 const QByteArray &mode,
+				 const QByteArray &fromAccount,
 				 const qint64 mailOid)
 {
   if(keyType == "poptastic" && publicKey.contains("-poptastic"))
     {
       postPoptasticMessage
 	(attachment, attachmentName, message, receiverName, subject, mode,
-	 mailOid);
+	 fromAccount, mailOid);
       return;
     }
 
@@ -3122,6 +3125,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
       if(prepareAlmostAnonymousEmail(attachment,
 				     attachmentName,
+				     fromAccount,
 				     goldbug,
 				     keyType,
 				     message,
@@ -3463,7 +3467,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	{
 	  QByteArray message(spoton_send::message0001b(list.first().first));
 
-	  postPoptasticMessage(receiverName, message, mailOid);
+	  postPoptasticMessage(receiverName, message, fromAccount, mailOid);
 	  return;
 	}
     }
@@ -5660,28 +5664,23 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 void spoton_kernel::postPoptasticMessage(const QString &receiverName,
 					 const QByteArray &message)
 {
-  postPoptasticMessage(receiverName, message, -1);
+  postPoptasticMessage(receiverName, message, QByteArray(), -1);
 }
 
 void spoton_kernel::postPoptasticMessage(const QString &receiverName,
 					 const QByteArray &message,
+					 const QByteArray &fromAccount,
 					 const qint64 mailOid)
 {
   if(receiverName.isEmpty())
     return;
-  else if(setting("gui/disableSmtp", true).toBool())
-    {
-      QWriteLocker locker(&m_poptasticCacheMutex);
-
-      m_poptasticCache.clear();
-      return;
-    }
 
   QWriteLocker locker(&m_poptasticCacheMutex);
 
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_poptasticCache.enqueue(QList<QVariant> () << receiverName
 			                      << message
+			                      << fromAccount
 			                      << mailOid);
 }
 
@@ -5691,6 +5690,7 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 					 const QByteArray &name,
 					 const QByteArray &subject,
 					 const QByteArray &mode,
+					 const QByteArray &fromAccount,
 					 const qint64 mailOid)
 {
   QWriteLocker locker(&m_poptasticCacheMutex);
@@ -5702,6 +5702,7 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 			                      << attachment
 			                      << attachmentName
 			                      << mode
+			                      << fromAccount
 			                      << mailOid);
 }
 

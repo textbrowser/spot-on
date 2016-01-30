@@ -178,6 +178,7 @@ class spoton_kernel: public QObject
 				    const QString &answer);
   bool prepareAlmostAnonymousEmail(const QByteArray &attachment,
 				   const QByteArray &attachmentName,
+				   const QByteArray &fromAccount,
 				   const QByteArray &goldbug,
 				   const QByteArray &keyType,
 				   const QByteArray &message,
@@ -202,11 +203,13 @@ class spoton_kernel: public QObject
 			    const QByteArray &name,
 			    const QByteArray &subject,
 			    const QByteArray &mode,
+			    const QByteArray &fromAccount,
 			    const qint64 mailOid);
   void postPoptasticMessage(const QString &receiverName,
 			    const QByteArray &message);
   void postPoptasticMessage(const QString &receiverName,
 			    const QByteArray &message,
+			    const QByteArray &fromAccount,
 			    const qint64 mailOid);
   void prepareListeners(void);
   void prepareNeighbors(void);
@@ -290,6 +293,7 @@ class spoton_kernel: public QObject
 		    const QByteArray &keyType,
 		    const QByteArray &receiverName,
 		    const QByteArray &mode,
+		    const QByteArray &fromAccount,
 		    const qint64 mailOid);
   void slotSettingsChanged(const QString &path);
   void slotStatusTimerExpired(void);

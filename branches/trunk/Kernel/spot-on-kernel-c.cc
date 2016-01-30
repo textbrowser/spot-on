@@ -35,6 +35,7 @@
 bool spoton_kernel::prepareAlmostAnonymousEmail
 (const QByteArray &attachment,
  const QByteArray &attachmentName,
+ const QByteArray &fromAccount,
  const QByteArray &goldbug,
  const QByteArray &keyType,
  const QByteArray &message,
@@ -98,7 +99,7 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
     {
       QByteArray message(spoton_send::message0001c(data));
 
-      postPoptasticMessage(receiverName, message, mailOid);
+      postPoptasticMessage(receiverName, message, fromAccount, mailOid);
     }
 
  done_label:

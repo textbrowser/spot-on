@@ -105,7 +105,7 @@ void spoton_mailer::slotTimeout(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT goldbug, message, mode, "
+	if(query.exec("SELECT from_account, goldbug, message, mode, "
 		      "participant_oid, status, subject, OID "
 		      "FROM folders WHERE folder_index = 1"))
 	  while(query.next())
@@ -114,7 +114,7 @@ void spoton_mailer::slotTimeout(void)
 	      bool ok = true;
 
 	      status = s_crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(4).toByteArray()), &ok).
+		(QByteArray::fromBase64(query.value(5).toByteArray()), &ok).
 		constData();
 
 	      if(status.toLower() != "queued")
@@ -122,6 +122,7 @@ void spoton_mailer::slotTimeout(void)
 
 	      QByteArray attachment;
 	      QByteArray attachmentName;
+	      QByteArray fromAccount;
 	      QByteArray goldbug;
 	      QByteArray keyType;
 	      QByteArray message;
@@ -129,28 +130,33 @@ void spoton_mailer::slotTimeout(void)
 	      QByteArray publicKey;
 	      QByteArray receiverName;
 	      QByteArray subject;
-	      qint64 mailOid = query.value(6).toLongLong();
+	      qint64 mailOid = query.value(7).toLongLong();
 	      qint64 participantOid = -1;
 
 	      if(ok)
-		goldbug = s_crypt->decryptedAfterAuthenticated
+		fromAccount = s_crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(0).toByteArray()),
 		   &ok);
 
 	      if(ok)
-		message = s_crypt->decryptedAfterAuthenticated
+		goldbug = s_crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(1).toByteArray()),
 		   &ok);
 
 	      if(ok)
-		if(!query.isNull(2))
+		message = s_crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		if(!query.isNull(3))
 		  mode = s_crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(2).toByteArray()),
+		    (QByteArray::fromBase64(query.value(3).toByteArray()),
 		     &ok);
 
 	      if(ok)
 		participantOid = s_crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(3).toByteArray()),
+		  (QByteArray::fromBase64(query.value(4).toByteArray()),
 		   &ok).toLongLong();
 
 	      if(ok)
@@ -192,7 +198,7 @@ void spoton_mailer::slotTimeout(void)
 	      if(ok)
 		subject = s_crypt->
 		  decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(5).toByteArray()),
+		  (QByteArray::fromBase64(query.value(6).toByteArray()),
 		   &ok);
 
 	      if(ok)
@@ -236,6 +242,7 @@ void spoton_mailer::slotTimeout(void)
 			 << keyType
 			 << receiverName
 			 << mode
+			 << fromAccount
 			 << mailOid;
 		  list.append(vector);
 		}
@@ -267,7 +274,8 @@ void spoton_mailer::slotTimeout(void)
 		    vector.value(7).toByteArray(),
 		    vector.value(8).toByteArray(),
 		    vector.value(9).toByteArray(),
-		    vector.value(10).toLongLong());
+		    vector.value(10).toByteArray(),
+		    vector.value(11).toLongLong());
     }
 }
 

@@ -400,24 +400,35 @@ void spoton_kernel::postPoptastic(void)
   if(!s_crypt)
     return;
 
-  QHash<QString, QVariant> hash;
+  QList<QHash<QString, QVariant> > list;
   bool ok = true;
 
-  hash = spoton_misc::poptasticSettings("", s_crypt, &ok).value(0);
+  list = spoton_misc::poptasticSettings("", s_crypt, &ok);
 
-  if(hash.isEmpty() || !ok)
+  if(list.isEmpty() || !ok)
     return;
 
   QReadLocker locker(&m_poptasticCacheMutex);
 
   if(!m_poptasticCache.isEmpty())
     {
+      QList<QVariant> values(m_poptasticCache.head());
+
       locker.unlock();
 
       CURL *curl = curl_easy_init();
 
       if(curl)
 	{
+	  QHash<QString, QVariant> hash;
+
+	  for(int i = 0; i < list.size(); i++)
+	    if(list.at(i)["in_username"] == values.value(values.size() - 2))
+	      {
+		hash = list.at(i);
+		break;
+	      }
+
 	  curl_easy_setopt
 	    (curl, CURLOPT_PASSWORD,
 	     hash["out_password"].toByteArray().constData());
@@ -549,7 +560,7 @@ void spoton_kernel::postPoptastic(void)
 		 arg(spoton_crypt::weakRandomBytes(16).toHex().
 		     constData()).toLatin1());
 
-	      if(values.size() == 3)
+	      if(values.size() == 4)
 		{
 		  curl_payload_text.append
 		    (QString("Subject: %1\r\n").
@@ -568,7 +579,7 @@ void spoton_kernel::postPoptastic(void)
 	      QByteArray attachmentName(values.value(4).toByteArray());
 
 	      if(attachment.isEmpty() || attachmentName.isEmpty() ||
-		 values.size() == 3)
+		 values.size() == 4)
 		{
 		  while(!bytes.isEmpty())
 		    {
