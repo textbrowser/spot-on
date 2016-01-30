@@ -416,20 +416,24 @@ void spoton_kernel::postPoptastic(void)
 
       locker.unlock();
 
+      QHash<QString, QVariant> hash;
+
+      for(int i = 0; i < list.size(); i++)
+	if(list.at(i)["in_username"].toString() ==
+	   values["from_account"].toString())
+	  {
+	    hash = list.at(i);
+
+	    if(hash["out_method"] == "Disable")
+	      return;
+
+	    break;
+	  }
+
       CURL *curl = curl_easy_init();
 
       if(curl)
 	{
-	  QHash<QString, QVariant> hash;
-
-	  for(int i = 0; i < list.size(); i++)
-	    if(list.at(i)["in_username"].toString() ==
-	       values["from_account"].toString())
-	      {
-		hash = list.at(i);
-		break;
-	      }
-
 	  curl_easy_setopt
 	    (curl, CURLOPT_PASSWORD,
 	     hash["out_password"].toByteArray().constData());
@@ -1084,12 +1088,14 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		bool ok = true;
 
 		query.prepare("INSERT INTO folders "
-			      "(date, folder_index, goldbug, hash, "
+			      "(date, folder_index, from_account, "
+			      "goldbug, hash, "
 			      "message, message_code, "
 			      "receiver_sender, receiver_sender_hash, "
 			      "signature, "
 			      "status, subject, participant_oid) "
-			      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, "
+			      "?, ?, ?, ?, ?)");
 		query.bindValue
 		  (0, s_crypt->
 		   encryptedThenHashed(now.toString(Qt::ISODate).
@@ -1097,57 +1103,62 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		query.bindValue(1, 0); // Inbox Folder
 
 		if(ok)
+		  query.bindValue(2, s_crypt->encryptedThenHashed(QByteArray(),
+								  &ok).
+				  toBase64());
+
+		if(ok)
 		  query.bindValue
-		    (2, s_crypt->
+		    (3, s_crypt->
 		     encryptedThenHashed(QByteArray::number(goldbugUsed_l),
 					 &ok).
 		     toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (3, s_crypt->keyedHash(now.toString(Qt::ISODate).
+		    (4, s_crypt->keyedHash(now.toString(Qt::ISODate).
 					   toLatin1() + message_l + subject_l,
 					   &ok).toBase64());
 
 		if(ok)
 		  if(!message.isEmpty())
 		    query.bindValue
-		      (4, s_crypt->encryptedThenHashed(message_l,
+		      (5, s_crypt->encryptedThenHashed(message_l,
 						       &ok).toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (5, s_crypt->encryptedThenHashed(QByteArray(), &ok).
+		    (6, s_crypt->encryptedThenHashed(QByteArray(), &ok).
 		     toBase64());
 
 		if(ok)
 		  if(!name.isEmpty())
 		    query.bindValue
-		      (6, s_crypt->encryptedThenHashed(name_l,
+		      (7, s_crypt->encryptedThenHashed(name_l,
 						       &ok).toBase64());
 
 		query.bindValue
-		  (7, senderPublicKeyHash.toBase64());
+		  (8, senderPublicKeyHash.toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (8, s_crypt->encryptedThenHashed(signature,
+		    (9, s_crypt->encryptedThenHashed(signature,
 						     &ok).toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (9, s_crypt->
+		    (10, s_crypt->
 		     encryptedThenHashed(QByteArray("Unread"), &ok).
 		     toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (10, s_crypt->encryptedThenHashed(subject_l, &ok).
+		    (11, s_crypt->encryptedThenHashed(subject_l, &ok).
 		     toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (11, s_crypt->
+		    (12, s_crypt->
 		     encryptedThenHashed(QByteArray::number(-1), &ok).
 		     toBase64());
 
@@ -1422,12 +1433,12 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    bool ok = true;
 
 	    query.prepare("INSERT INTO folders "
-			  "(date, folder_index, goldbug, hash, "
+			  "(date, folder_index, from_account, goldbug, hash, "
 			  "message, message_code, "
 			  "receiver_sender, receiver_sender_hash, "
 			  "signature, "
 			  "status, subject, participant_oid) "
-			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, s_crypt->
 	       encryptedThenHashed(now.toString(Qt::ISODate).
@@ -1435,32 +1446,37 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    query.bindValue(1, 0); // Inbox Folder
 
 	    if(ok)
+	      query.bindValue(2, s_crypt->encryptedThenHashed(QByteArray(),
+							      &ok).
+			      toBase64());
+
+	    if(ok)
 	      query.bindValue
-		(2, s_crypt->
+		(3, s_crypt->
 		 encryptedThenHashed(QByteArray::number(0), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(3, s_crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
+		(4, s_crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
 				       m + subject,
 				       &ok).toBase64());
 
 	    if(ok)
 	      if(!m.isEmpty())
 		query.bindValue
-		  (4, s_crypt->encryptedThenHashed(m,
+		  (5, s_crypt->encryptedThenHashed(m,
 						   &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(5, s_crypt->encryptedThenHashed(QByteArray(), &ok).
+		(6, s_crypt->encryptedThenHashed(QByteArray(), &ok).
 		 toBase64());
 
 	    if(ok)
 	      if(!from.isEmpty())
 		query.bindValue
-		  (6, s_crypt->encryptedThenHashed(from,
+		  (7, s_crypt->encryptedThenHashed(from,
 						   &ok).toBase64());
 
 	    if(ok)
@@ -1469,28 +1485,28 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		  (spoton_crypt::sha512Hash(from + "-poptastic", &ok));
 
 		query.bindValue
-		  (7, senderPublicKeyHash.toBase64());
+		  (8, senderPublicKeyHash.toBase64());
 	      }
 
 	    if(ok)
-	      query.bindValue(8, s_crypt->
+	      query.bindValue(9, s_crypt->
 			      encryptedThenHashed(QByteArray(), &ok).
 			      toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(9, s_crypt->
+		(10, s_crypt->
 		 encryptedThenHashed(QByteArray("Unread"), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(10, s_crypt->encryptedThenHashed(subject, &ok).
+		(11, s_crypt->encryptedThenHashed(subject, &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(11, s_crypt->
+		(12, s_crypt->
 		 encryptedThenHashed(QByteArray::number(-1), &ok).
 		 toBase64());
 

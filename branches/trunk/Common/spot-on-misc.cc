@@ -5215,6 +5215,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	query.prepare("INSERT INTO folders "
 		      "(date, "
 		      "folder_index, "
+		      "from_account, "
 		      "goldbug, "
 		      "hash, "
 		      "message, "
@@ -5225,7 +5226,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 		      "status, "
 		      "subject, "
 		      "participant_oid) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->
 	   encryptedThenHashed(now.toString(Qt::ISODate).
@@ -5233,52 +5234,56 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	query.bindValue(1, 0); // Inbox Folder
 
 	if(ok)
+	  query.bindValue(2, crypt->encryptedThenHashed(QByteArray(), &ok).
+			  toBase64());
+
+	if(ok)
 	  query.bindValue
-	    (2, crypt->
+	    (3, crypt->
 	     encryptedThenHashed(QByteArray::number(0), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (3, crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
+	    (4, crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
 				 message + subject,
 				 &ok).toBase64());
 
 	if(ok)
 	  if(!message.isEmpty())
 	    query.bindValue
-	      (4, crypt->encryptedThenHashed(message,
+	      (5, crypt->encryptedThenHashed(message,
 					     &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+	    (6, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  if(!name.isEmpty())
 	    query.bindValue
-	      (6, crypt->encryptedThenHashed(name,
+	      (7, crypt->encryptedThenHashed(name,
 					     &ok).toBase64());
 
 	query.bindValue
-	  (7, senderPublicKeyHash.toBase64());
+	  (8, senderPublicKeyHash.toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (8, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+	    (9, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (9, crypt->
+	    (10, crypt->
 	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (10, crypt->encryptedThenHashed(subject, &ok).toBase64());
+	    (11, crypt->encryptedThenHashed(subject, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (11, crypt->
+	    (12, crypt->
 	     encryptedThenHashed(QByteArray::number(-1), &ok).
 	     toBase64());
 

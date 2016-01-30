@@ -5383,12 +5383,12 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO folders "
-		      "(date, folder_index, goldbug, hash, "
+		      "(date, folder_index, from_account, goldbug, hash, "
 		      "message, message_code, "
 		      "receiver_sender, receiver_sender_hash, "
 		      "signature, "
 		      "status, subject, participant_oid) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, s_crypt->
 	   encryptedThenHashed(now.toString(Qt::ISODate).toLatin1(),
@@ -5396,52 +5396,54 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	query.bindValue(1, 0); // Inbox Folder
 
 	if(ok)
+	  query.bindValue(2, s_crypt->encryptedThenHashed(QByteArray(), &ok).
+			  toBase64());
+
+	if(ok)
 	  query.bindValue
-	    (2, s_crypt->
+	    (3, s_crypt->
 	     encryptedThenHashed(QByteArray::number(goldbugUsed_l), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (3, s_crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
+	    (4, s_crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
 				   message_l + subject_l,
 				   &ok).toBase64());
 
 	if(ok)
 	  if(!message.isEmpty())
 	    query.bindValue
-	      (4, s_crypt->encryptedThenHashed(message_l,
-					       &ok).toBase64());
+	      (5, s_crypt->encryptedThenHashed(message_l, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (5, s_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+	    (6, s_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  if(!name.isEmpty())
 	    query.bindValue
-	      (6, s_crypt->encryptedThenHashed(name_l,
-					       &ok).toBase64());
+	      (7, s_crypt->encryptedThenHashed(name_l, &ok).toBase64());
 
 	query.bindValue
-	  (7, senderPublicKeyHash.toBase64());
+	  (8, senderPublicKeyHash.toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (8, s_crypt->encryptedThenHashed(signature, &ok).toBase64());
+	    (9, s_crypt->encryptedThenHashed(signature, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (9, s_crypt->
+	    (10, s_crypt->
 	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (10, s_crypt->encryptedThenHashed(subject_l, &ok).toBase64());
+	    (11, s_crypt->encryptedThenHashed(subject_l, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (11, s_crypt->
+	    (12, s_crypt->
 	     encryptedThenHashed(QByteArray::number(-1), &ok).
 	     toBase64());
 

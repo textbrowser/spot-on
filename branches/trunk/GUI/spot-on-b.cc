@@ -2527,6 +2527,7 @@ void spoton::slotDisplayLocalSearchResults(void)
 void spoton::slotClearOutgoingMessage(void)
 {
   m_ui.attachment->clear();
+  m_ui.emailName->setCurrentIndex(0);
   m_ui.emailParticipants->selectionModel()->clear();
   m_ui.email_fs_gb->setCurrentIndex(2);
   m_ui.goldbug->clear();
