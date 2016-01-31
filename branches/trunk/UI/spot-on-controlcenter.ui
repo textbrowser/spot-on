@@ -464,7 +464,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>401</width>
+                <width>802</width>
                 <height>482</height>
                </rect>
               </property>
@@ -2067,8 +2067,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>646</width>
-             <height>405</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2760,7 +2760,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>262</width>
+                     <width>260</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -3284,8 +3284,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>361</width>
-             <height>225</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3621,7 +3621,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>737</width>
+                  <width>792</width>
                   <height>458</height>
                  </rect>
                 </property>
@@ -4402,8 +4402,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>347</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4488,8 +4488,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>663</width>
-                 <height>620</height>
+                 <width>802</width>
+                 <height>603</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5438,7 +5438,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>746</width>
+             <width>812</width>
              <height>1134</height>
             </rect>
            </property>
@@ -6719,7 +6719,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>495</width>
+             <width>812</width>
              <height>544</height>
             </rect>
            </property>
@@ -7820,7 +7820,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>661</width>
+             <width>812</width>
              <height>453</height>
             </rect>
            </property>
@@ -8435,8 +8435,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>258</width>
-             <height>150</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8672,6 +8672,17 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <widget class="QMenu" name="menu_Pages">
+     <property name="title">
+      <string>&amp;Pages</string>
+     </property>
+     <addaction name="action_Buzz"/>
+     <addaction name="action_Listeners"/>
+     <addaction name="action_Neighbors"/>
+     <addaction name="action_Search"/>
+     <addaction name="actionStarBeam"/>
+     <addaction name="action_Urls"/>
+    </widget>
     <addaction name="action_About"/>
     <addaction name="separator"/>
     <addaction name="action_Neighbor_Summary_Panel"/>
@@ -8679,6 +8690,7 @@
     <addaction name="action_Log_Viewer"/>
     <addaction name="action_Minimal_Display"/>
     <addaction name="action_Options"/>
+    <addaction name="menu_Pages"/>
     <addaction name="action_Poptastic_Settings"/>
     <addaction name="action_RSS"/>
     <addaction name="action_Statistics_Window"/>
@@ -8870,6 +8882,72 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="action_Buzz">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Buzz</string>
+   </property>
+  </action>
+  <action name="action_Listeners">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Listeners</string>
+   </property>
+  </action>
+  <action name="action_Neighbors">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Neighbors</string>
+   </property>
+  </action>
+  <action name="action_Search">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Search</string>
+   </property>
+  </action>
+  <action name="actionStarBeam">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>S&amp;tarBeam</string>
+   </property>
+  </action>
+  <action name="action_Urls">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Urls</string>
    </property>
   </action>
  </widget>

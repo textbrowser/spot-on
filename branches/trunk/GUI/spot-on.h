@@ -836,6 +836,7 @@ class spoton: public QMainWindow
   void slotRefreshPostOffice(void);
   void slotRefreshUrlDistillers(void);
   void slotRegenerateKey(void);
+  void slotReloadEmailNames(void);
   void slotRemoveEmailParticipants(void);
   void slotRemoveOtmOnExit(bool state);
   void slotRemoveParticipants(void);
@@ -911,6 +912,7 @@ class spoton: public QMainWindow
   void slotShowMinimalDisplay(bool state);
   void slotShowNeighborSummaryPanel(bool state);
   void slotShowOptions(void);
+  void slotShowPage(bool state);
   void slotShowRss(void);
   void slotShowStarBeamAnalyzer(void);
   void slotShowStatistics(void);

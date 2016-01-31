@@ -942,6 +942,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotResendMail(void)));
+  connect(m_ui.reloadEmailNames,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotReloadEmailNames(void)));
   connect(m_ui.participants,
 	  SIGNAL(itemChanged(QTableWidgetItem *)),
 	  this,
@@ -6361,6 +6365,8 @@ void spoton::slotValidatePassphrase(void)
 	      m_ui.tab->setTabEnabled(i, true);
 
 	    {
+	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
 	      QList<QHash<QString, QVariant> > list
 		(spoton_misc::
 		 poptasticSettings("", m_crypts.value("chat", 0), 0));
@@ -6373,6 +6379,8 @@ void spoton::slotValidatePassphrase(void)
 		  m_ui.emailName->addItem(list.at(i)["in_username"].
 					  toString());
 		}
+
+	      QApplication::restoreOverrideCursor();
 	    }
 
 	    askKernelToReadStarBeamKeys();

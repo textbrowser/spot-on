@@ -1874,3 +1874,8 @@ void spoton::slotEmailNameIndexChanged(int index)
   else
     m_ui.emailName->setEditable(false);
 }
+
+void spoton::slotShowPage(bool state)
+{
+  Q_UNUSED(state);
+}

@@ -242,6 +242,7 @@ void spoton::slotConfigurePoptastic(void)
       settings.setValue
 	("gui/poptasticRefreshInterval",
 	 m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value());
+      slotReloadEmailNames();
     }
 
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
@@ -2402,4 +2403,28 @@ void spoton::slotDeletePoptasticAccount(void)
 	    }
 	}
     }
+}
+
+void spoton::slotReloadEmailNames(void)
+{
+  m_ui.emailName->clear();
+  m_ui.emailName->addItem
+    (QString::fromUtf8(m_settings.value("gui/emailName", "unknown").
+		       toByteArray().constData(),
+		       m_settings.value("gui/emailName", "unknown").
+		       toByteArray().length()).trimmed());
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QList<QHash<QString, QVariant> > list
+    (spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), 0));
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      if(i == 0)
+	m_ui.emailName->insertSeparator(1);
+
+      m_ui.emailName->addItem(list.at(i)["in_username"].toString());
+    }
+
+  QApplication::restoreOverrideCursor();
 }
