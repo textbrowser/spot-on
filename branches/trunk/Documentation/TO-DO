@@ -233,3 +233,6 @@ Remaining Items
 54.    Provide new digests to lessen public key usage.
 55.    SMP accounts?
 56.    Voice of Spot-On.
+57.    Generate a 2048-bit prime, exchange it with a participant, and
+       perform SMP via the new prime. What do the mathematical connotations
+       show us?
