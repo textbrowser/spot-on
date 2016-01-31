@@ -6,9 +6,10 @@
 <li>Consider Certificate Authority Path during Poptastic testing.</li>
 <li>Corrected parent widgets of Poptastic message dialogs.</li>
 <li>Corrected digest computations in email.db. The date field must be considered.</li>
+<li>Corrected the Statistics Window menu item's accessibility state.</li>
 <li>Corrected widget text in Options.</li>
 <li>Do not attempt to create SQL triggers if they already exist.</li>
-<li>E-mail table widget selections.</li>
+<li>E-mail table widget selections. Digests are not necessarily unique. Database OIDs are.</li>
 <li>Remove rss.db during an application reset.</li>
 <li>Resize row heights of RSS feeds according to their contents.</li>
 </ol>
@@ -16,16 +17,16 @@
 <ol>
 <li>Additional authenticated and encrypted fields in poptastic.db. Please remove the file.</li>
 <li>Prepare databases before SQL INSERT statements are issued.</li>
-<li>Threaded statistics gathering in the UI. The legacy implementation had the habit of pausing the interface.</li>
+<li>Threaded statistics gathering in the UI. The legacy implementation had the habit of pausing the interface. Momentary display glitches may occur. Such events are characterized by unavailable kernel statistics and status bar icon changes.</li>
 </ol>
 <b>New</b>
 <ol>
 <li>Added from_account to the folders table in email.db. Please DROP the folders table or remove email.db. The new field is required in support of multiple Poptastic accounts.</li>
 <li>Multiple Poptastic accounts. Please remove poptastic.db.</li>
 <li>OpenSSL products have been upgraded to version 1.0.2f on OS X and Windows.</li>
-<li>Removed the echo field from the rss_feeds table. New installations only.</li>
+<li>Removed the echo field from the rss_feeds table. Please remove rss.db.</li>
 <li>SQLite products have been upgraded to version 3.10.2 on Windows.</li>
-<li>Upgraded curl products to version 7.47.0.</li>
+<li>Upgraded curl products to version 7.47.0 on Windows.</li>
 </ol>
 2016.02.01
 <br>
