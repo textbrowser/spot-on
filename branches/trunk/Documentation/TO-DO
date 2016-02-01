@@ -236,3 +236,4 @@ Remaining Items
 57.    Generate a 2048-bit prime, exchange it with a participant, and
        perform SMP via the new prime. What do the mathematical connotations
        show us?
+58.    Qt 5.5.x supports serial ports.
