@@ -398,7 +398,12 @@ void spoton_kernel::postPoptastic(void)
   spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
 
   if(!s_crypt)
-    return;
+    {
+      QWriteLocker locker(&m_poptasticCacheMutex);
+
+      m_poptasticCache.clear();
+      return;
+    }
 
   QList<QHash<QString, QVariant> > list;
   bool ok = true;
@@ -406,7 +411,29 @@ void spoton_kernel::postPoptastic(void)
   list = spoton_misc::poptasticSettings("", s_crypt, &ok);
 
   if(list.isEmpty() || !ok)
-    return;
+    {
+      QWriteLocker locker(&m_poptasticCacheMutex);
+
+      m_poptasticCache.clear();
+      return;
+    }
+
+  bool disabled = true;
+
+  for(int i = 0; i < list.size(); i++)
+    if(list.at(i)["out_method"] != "Disable")
+      {
+	disabled = false;
+	break;
+      }
+
+  if(disabled)
+    {
+      QWriteLocker locker(&m_poptasticCacheMutex);
+
+      m_poptasticCache.clear();
+      return;
+    }
 
   QReadLocker locker(&m_poptasticCacheMutex);
 
@@ -425,7 +452,14 @@ void spoton_kernel::postPoptastic(void)
 	    hash = list.at(i);
 
 	    if(hash["out_method"] == "Disable")
-	      return;
+	      {
+		QWriteLocker locker(&m_poptasticCacheMutex);
+
+		if(!m_poptasticCache.isEmpty())
+		  m_poptasticCache.dequeue();
+
+		return;
+	      }
 
 	    break;
 	  }
