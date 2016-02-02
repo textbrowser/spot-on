@@ -453,10 +453,14 @@ void spoton_kernel::postPoptastic(void)
 
 	    if(hash["out_method"] == "Disable")
 	      {
+		/*
+		** Remove the values item from the cache.
+		*/
+
 		QWriteLocker locker(&m_poptasticCacheMutex);
 
 		if(!m_poptasticCache.isEmpty())
-		  m_poptasticCache.dequeue();
+		  m_poptasticCache.removeOne(values);
 
 		return;
 	      }
@@ -738,7 +742,7 @@ void spoton_kernel::postPoptastic(void)
 		  QWriteLocker locker(&m_poptasticCacheMutex);
 
 		  if(!m_poptasticCache.isEmpty())
-		    m_poptasticCache.dequeue();
+		    m_poptasticCache.removeOne(values);
 
 		  locker.unlock();
 
@@ -761,7 +765,7 @@ void spoton_kernel::postPoptastic(void)
 		      QWriteLocker locker(&m_poptasticCacheMutex);
 
 		      if(!m_poptasticCache.isEmpty())
-			m_poptasticCache.dequeue();
+			m_poptasticCache.removeOne(values);
 
 		      locker.unlock();
 		    }
