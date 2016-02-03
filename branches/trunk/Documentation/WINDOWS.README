@@ -19,6 +19,8 @@ Please copy all required Qt DLLs, including plugins.
 
 Please copy libOpenSSL/Libraries.win32/Microsoft.VC90.CRT.manifest.
 
+Please copy libcURL/Win32.d/bin/curl-ca-bundle.crt.
+
 Please copy the Documentation directory.
 
 Please copy the SQL directory.
