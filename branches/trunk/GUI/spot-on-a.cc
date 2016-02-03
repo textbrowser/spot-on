@@ -359,6 +359,35 @@ spoton::spoton(void):QMainWindow()
   list.clear();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
+
+  list << "buzz"
+       << "chat"
+       << "email"
+       << "listeners"
+       << "neighbors"
+       << "search"
+       << "settings"
+       << "starbeam"
+       << "urls";
+#if SPOTON_GOLDBUG == 1
+  list << "add_friend";
+#endif
+  list << "about";
+
+  for(int i = 0; i < m_ui.tab->count(); i++)
+    {
+      m_tabWidgets[i] = m_ui.tab->widget(i);
+
+      QHash<QString, QVariant> hash;
+
+      hash["icon"] = m_ui.tab->tabIcon(i);
+      hash["label"] = m_ui.tab->tabText(i);
+      hash["name"] = list.value(i);
+      m_tabWidgetsProperties[i] = hash;
+    }
+
+  list.clear();
+
 #if SPOTON_GOLDBUG == 0
   m_ui.version->setText
     (QString("<html><head/><body><p><a href=\"https://github.com/textbrowser/"
@@ -1526,6 +1555,30 @@ spoton::spoton(void):QMainWindow()
 	  this, SLOT(slotAcceptGeminis(bool)));
   connect(m_ui.action_Poptastic_Settings, SIGNAL(triggered(void)),
 	  this, SLOT(slotConfigurePoptastic(void)));
+  connect(m_ui.action_Buzz,
+	  SIGNAL(triggered(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
+  connect(m_ui.action_Listeners,
+	  SIGNAL(triggered(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
+  connect(m_ui.action_Neighbors,
+	  SIGNAL(triggered(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
+  connect(m_ui.action_Search,
+	  SIGNAL(triggered(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
+  connect(m_ui.action_StarBeam,
+	  SIGNAL(triggered(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
+  connect(m_ui.action_Urls,
+	  SIGNAL(triggered(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
   connect(m_ui.addDistiller,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1811,6 +1864,18 @@ spoton::spoton(void):QMainWindow()
     (m_ui.action_Neighbor_Summary_Panel->isChecked());
   m_ui.activeUrlDistribution->setChecked
     (m_settings.value("gui/activeUrlDistribution", true).toBool());
+  m_ui.action_Buzz->setChecked
+    (m_settings.value("gui/showBuzzPage", true).toBool());
+  m_ui.action_Listeners->setChecked
+    (m_settings.value("gui/showListenersPage", true).toBool());
+  m_ui.action_Neighbors->setChecked
+    (m_settings.value("gui/showNeighborsPage", true).toBool());
+  m_ui.action_Search->setChecked
+    (m_settings.value("gui/showSearchPage", true).toBool());
+  m_ui.action_StarBeam->setChecked
+    (m_settings.value("gui/showStarBeamPage", true).toBool());
+  m_ui.action_Urls->setChecked
+    (m_settings.value("gui/showUrlsPage", true).toBool());
 
   if(m_ui.postgresqlConnect->isEnabled())
     {
@@ -2341,6 +2406,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.keys->setEnabled(true);
+      m_ui.menu_Pages->setEnabled(false);
       m_ui.regenerate->setEnabled(true);
       m_ui.signatureKeySize->setEnabled(false);
       m_ui.signatureKeyType->setEnabled(false);
@@ -2348,16 +2414,16 @@ spoton::spoton(void):QMainWindow()
       for(int i = 0; i < m_ui.tab->count(); i++)
 	if(i == m_ui.tab->count() - 1)
 	  {
+	    /*
+	    ** About.
+	    */
+
 	    m_ui.tab->blockSignals(true);
 	    m_ui.tab->setCurrentIndex(i);
 	    m_ui.tab->blockSignals(false);
 	    m_ui.tab->setTabEnabled(i, true);
 	  }
 	else
-	  /*
-	  ** About.
-	  */
-
 	  m_ui.tab->setTabEnabled(i, false);
 
       m_ui.passphrase->setFocus();
@@ -2381,6 +2447,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.kernelBox->setEnabled(false);
       m_ui.keys->setEnabled(false);
+      m_ui.menu_Pages->setEnabled(false);
       m_ui.newKeys->setEnabled(true);
       m_ui.passphrase->setEnabled(false);
       m_ui.passphraseButton->setEnabled(false);
@@ -2693,6 +2760,14 @@ spoton::spoton(void):QMainWindow()
 
       font.setStyleHint(QFont::Monospace);
       widgets.at(i)->setFont(font);
+    }
+
+  for(int i = 0; i < m_ui.tab->count(); i++)
+    {
+      QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
+
+      hash["enabled"] = m_ui.tab->isTabEnabled(i);
+      m_tabWidgetsProperties[i] = hash;
     }
 
   show();
@@ -6104,6 +6179,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.kernelBox->setEnabled(true);
       m_ui.keys->setEnabled(true);
+      m_ui.menu_Pages->setEnabled(true);
       m_ui.newKeys->setChecked(false);
       m_ui.newKeys->setEnabled(true);
       m_ui.passphrase1->clear();
@@ -6115,7 +6191,14 @@ void spoton::slotSetPassphrase(void)
       m_ui.signatureKeyType->setEnabled(false);
 
       for(int i = 0; i < m_ui.tab->count(); i++)
-	m_ui.tab->setTabEnabled(i, true);
+	{
+	  m_ui.tab->setTabEnabled(i, true);
+
+	  QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
+
+	  hash["enabled"] = true;
+	  m_tabWidgetsProperties[i] = hash;
+	}
 
       /*
       ** Save the various entities.
@@ -6349,6 +6432,7 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.encryptionKeyType->setEnabled(false);
 	    m_ui.kernelBox->setEnabled(true);
 	    m_ui.keys->setEnabled(true);
+	    m_ui.menu_Pages->setEnabled(true);
 	    m_ui.newKeys->setEnabled(true);
 	    m_ui.passphrase->clear();
 	    m_ui.passphrase->clear();
@@ -6366,7 +6450,14 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.signatureKeyType->setEnabled(false);
 
 	    for(int i = 0; i < m_ui.tab->count(); i++)
-	      m_ui.tab->setTabEnabled(i, true);
+	      {
+		m_ui.tab->setTabEnabled(i, true);
+
+		QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
+
+		hash["enabled"] = true;
+		m_tabWidgetsProperties[i] = hash;
+	      }
 
 	    {
 	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -6392,6 +6483,7 @@ void spoton::slotValidatePassphrase(void)
 	    populateUrlDistillers();
 	    prepareUrlContainers();
 	    prepareUrlLabels();
+	    prepareVisiblePages();
 	    sendBuzzKeysToKernel();
 	    m_rss->prepareAfterAuthentication();
 	    m_ui.tab->setCurrentIndex
@@ -6475,6 +6567,8 @@ void spoton::slotValidatePassphrase(void)
 
 void spoton::slotTabChanged(int index)
 {
+  Q_UNUSED(index);
+
   if(currentTabName() == "listeners")
     m_listenersLastModificationTime = QDateTime();
   else if(currentTabName() == "neighbors")
@@ -6485,9 +6579,9 @@ void spoton::slotTabChanged(int index)
       m_starsLastModificationTime = QDateTime();
     }
 
-  if(index == 0)
+  if(currentTabName() == "buzz")
     m_sb.buzz->setVisible(false);
-  else if(index == 1)
+  else if(currentTabName() == "chat")
     m_sb.chat->setVisible(false);
 }
 

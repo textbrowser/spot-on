@@ -54,7 +54,7 @@
       <property name="elideMode">
        <enum>Qt::ElideLeft</enum>
       </property>
-      <widget class="QWidget" name="tab_8">
+      <widget class="QWidget" name="tab_buzz">
        <attribute name="title">
         <string>Buzz</string>
        </attribute>
@@ -997,7 +997,7 @@
               <property name="currentIndex">
                <number>0</number>
               </property>
-              <widget class="QWidget" name="tab_4">
+              <widget class="QWidget" name="tab_read_write">
                <attribute name="title">
                 <string>&amp;Read / &amp;Write</string>
                </attribute>
@@ -1605,7 +1605,7 @@
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="tab_6">
+              <widget class="QWidget" name="tab_co">
                <attribute name="title">
                 <string>&amp;C/O</string>
                </attribute>
@@ -2031,7 +2031,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_7">
+      <widget class="QWidget" name="tab_listeners">
        <attribute name="title">
         <string>Listeners</string>
        </attribute>
@@ -6683,7 +6683,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_9">
+      <widget class="QWidget" name="tab_starbeam">
        <attribute name="title">
         <string>StarBeam</string>
        </attribute>
@@ -6744,7 +6744,7 @@
               <property name="currentIndex">
                <number>0</number>
               </property>
-              <widget class="QWidget" name="tab_10">
+              <widget class="QWidget" name="tab_magnets">
                <attribute name="title">
                 <string>&amp;Magnets</string>
                </attribute>
@@ -7092,7 +7092,7 @@
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="tab_11">
+              <widget class="QWidget" name="tab_received">
                <attribute name="title">
                 <string>&amp;Received</string>
                </attribute>
@@ -7399,7 +7399,7 @@
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="tab_12">
+              <widget class="QWidget" name="tab_transmitted">
                <attribute name="title">
                 <string>&amp;Transmitted</string>
                </attribute>
@@ -7784,7 +7784,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_cultivation">
+      <widget class="QWidget" name="tab_urls">
        <attribute name="title">
         <string>URLs</string>
        </attribute>
@@ -8092,7 +8092,7 @@
                   <property name="currentIndex">
                    <number>0</number>
                   </property>
-                  <widget class="QWidget" name="tab_2">
+                  <widget class="QWidget" name="tab_download">
                    <attribute name="title">
                     <string>&amp;Download</string>
                    </attribute>
@@ -8146,7 +8146,7 @@
                     </item>
                    </layout>
                   </widget>
-                  <widget class="QWidget" name="tab_5">
+                  <widget class="QWidget" name="tab_import">
                    <attribute name="title">
                     <string>&amp;Import</string>
                    </attribute>
@@ -8200,7 +8200,7 @@
                     </item>
                    </layout>
                   </widget>
-                  <widget class="QWidget" name="tab_3">
+                  <widget class="QWidget" name="tab_upload">
                    <attribute name="title">
                     <string>&amp;Upload</string>
                    </attribute>
@@ -8395,7 +8395,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_login">
+      <widget class="QWidget" name="tab_about">
        <attribute name="icon">
         <iconset resource="../Icons/icons.qrc">
          <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
@@ -8680,7 +8680,7 @@
      <addaction name="action_Listeners"/>
      <addaction name="action_Neighbors"/>
      <addaction name="action_Search"/>
-     <addaction name="actionStarBeam"/>
+     <addaction name="action_StarBeam"/>
      <addaction name="action_Urls"/>
     </widget>
     <addaction name="action_About"/>
@@ -8928,7 +8928,7 @@
     <string>&amp;Search</string>
    </property>
   </action>
-  <action name="actionStarBeam">
+  <action name="action_StarBeam">
    <property name="checkable">
     <bool>true</bool>
    </property>

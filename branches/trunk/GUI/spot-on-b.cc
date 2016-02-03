@@ -327,7 +327,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  m_ui.messages->verticalScrollBar()->setValue
 		    (m_ui.messages->verticalScrollBar()->maximum());
 
-		  if(m_ui.tab->currentIndex() != 1)
+		  if(currentTabName() != "chat")
 		    m_sb.chat->setVisible(true);
 
 		  playSong("receive.wav");
@@ -533,7 +533,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(ok)
 			sendSMPLinkToKernel(values, keyType, oid);
 
-		      if(m_ui.tab->currentIndex() != 1)
+		      if(currentTabName() != "chat")
 			m_sb.chat->setVisible(true);
 
 		      playSong("receive.wav");
@@ -748,7 +748,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  m_ui.messages->verticalScrollBar()->setValue
 		    (m_ui.messages->verticalScrollBar()->maximum());
 
-		  if(m_ui.tab->currentIndex() != 1)
+		  if(currentTabName() != "chat")
 		    m_sb.chat->setVisible(true);
 
 		  playSong("receive.wav");
@@ -4370,25 +4370,25 @@ void spoton::slotStatusButtonClicked(void)
   if(toolButton == m_sb.buzz)
     {
       m_sb.buzz->setVisible(false);
-      m_ui.tab->setCurrentIndex(0);
+      m_ui.tab->setCurrentIndex(tabIndexFromName("buzz"));
     }
   else if(toolButton == m_sb.chat)
     {
       m_sb.chat->setVisible(false);
-      m_ui.tab->setCurrentIndex(1);
+      m_ui.tab->setCurrentIndex(tabIndexFromName("chat"));
     }
   else if(toolButton == m_sb.email)
     {
       m_sb.email->setVisible(false);
       m_ui.folder->setCurrentIndex(0);
       m_ui.mailTab->setCurrentIndex(0);
-      m_ui.tab->setCurrentIndex(2);
+      m_ui.tab->setCurrentIndex(tabIndexFromName("email"));
       slotRefreshMail();
     }
   else if(toolButton == m_sb.listeners)
-    m_ui.tab->setCurrentIndex(3);
+    m_ui.tab->setCurrentIndex(tabIndexFromName("listeners"));
   else if(toolButton == m_sb.neighbors)
-    m_ui.tab->setCurrentIndex(4);
+    m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors"));
 }
 
 bool spoton::updateMailStatus(const QString &oid, const QString &status)
@@ -5337,7 +5337,7 @@ void spoton::initializeKernelSocket(void)
 
 void spoton::slotBuzzChanged(void)
 {
-  if(m_ui.tab->currentIndex() != 0)
+  if(currentTabName() != "buzz")
     m_sb.buzz->setVisible(true);
 
   playSong("buzz.wav");
@@ -6197,7 +6197,7 @@ void spoton::authenticationRequested(const QByteArray &data)
 void spoton::slotAuthenticationRequestButtonClicked(void)
 {
   m_sb.authentication_request->setVisible(false);
-  m_ui.tab->setCurrentIndex(4); // Neighbors
+  m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors")); // Neighbors
 
   if(m_neighborToOidMap.contains(m_sb.authentication_request->
 				 property("data").toByteArray()))

@@ -3,14 +3,14 @@
 <br>
 <b>Corrections</b>
 <ol>
-<li>Consider Certificate Authority Path during Poptastic testing.</li>
+<li>Consider the Certificate Authority Path during Poptastic testing.</li>
 <li>Corrected parent widgets of Poptastic message dialogs.</li>
 <li>Corrected digest computations in email.db. The date field must be considered.</li>
 <li>Corrected the Statistics Window menu item's accessibility state.</li>
 <li>Corrected widget text in Options.</li>
 <li>Do not attempt to create SQL triggers if they already exist.</li>
 <li>E-mail table widget selections. Digests are not necessarily unique. Database OIDs are.</li>
-<li>Proper removal order of Poptastic cache items.</li>
+<li>Proper removal order of Poptastic cache items. Multiple threads may compromise order.</li>
 <li>Remove rss.db during an application reset.</li>
 <li>Resize row heights of RSS feeds according to their contents.</li>
 </ol>
@@ -23,6 +23,7 @@
 <b>New</b>
 <ol>
 <li>Added from_account to the folders table in email.db. Please DROP the folders table or remove email.db. The new field is required in support of multiple Poptastic accounts.</li>
+<li>Allow hiding of particular pages in the main window. Simple concept, difficult implementation. QTabWidget does not provide a specific method for hiding pages.</li>
 <li>Multiple Poptastic accounts. Please remove poptastic.db.</li>
 <li>OpenSSL products have been upgraded to version 1.0.2f on OS X and Windows.</li>
 <li>Removed the echo field from the rss_feeds table. Please remove rss.db.</li>

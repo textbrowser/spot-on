@@ -840,28 +840,47 @@ void spoton::prepareTabIcons(void)
   list << "buzz.png" << "chat.png" << "email.png"
        << "server.png" << "connect.png" << "search.png"
        << "settings.png" << "starbeam.png" << "urls.png"
-       << "key.png"
-       << "goldbug.png";
+       << "key.png" << "goldbug.png";
 #endif
 
   for(int i = 0; i < list.size(); i++)
-    if(m_ui.tab->tabPosition() == QTabWidget::North ||
-       m_ui.tab->tabPosition() == QTabWidget::South)
+    {
+      QPixmap pixmap;
+
+      if(m_ui.tab->tabPosition() == QTabWidget::North ||
+	 m_ui.tab->tabPosition() == QTabWidget::South)
+	pixmap = QPixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
+      else
+	{
+	  QTransform transform;
+
+	  pixmap = QPixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
+	  
+	  if(m_ui.tab->tabPosition() == QTabWidget::East)
+	    transform.rotate(-90);
+	  else
+	    transform.rotate(90);
+
+	  pixmap = pixmap.transformed(transform, Qt::SmoothTransformation);
+	}
+
+      QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
+
+      hash["icon"] = QIcon(pixmap);
+      m_tabWidgetsProperties[i] = hash;
+    }
+
+  for(int i = 0; i < m_ui.tab->count(); i++)
+    {
+      /*
+      ** May be slow... although we have a few pages.
+      */
+
+      int index = m_tabWidgets.key(m_ui.tab->widget(i));
+
       m_ui.tab->setTabIcon
-	(i, QPixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i))));
-    else
-      {
-	QPixmap pixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
-	QTransform transform;
-
-	if(m_ui.tab->tabPosition() == QTabWidget::East)
-	  transform.rotate(-90);
-	else
-	  transform.rotate(90);
-
-	pixmap = pixmap.transformed(transform, Qt::SmoothTransformation);
-	m_ui.tab->setTabIcon(i, pixmap);
-      }
+	(i, m_tabWidgetsProperties[index]["icon"].value<QIcon> ());
+    }
 }
 
 void spoton::slotEmailFsGb(int index)
@@ -1877,5 +1896,119 @@ void spoton::slotEmailNameIndexChanged(int index)
 
 void spoton::slotShowPage(bool state)
 {
-  Q_UNUSED(state);
+  QAction *action = qobject_cast<QAction *> (sender());
+  QString str("");
+
+  if(action == m_ui.action_Buzz)
+    str = "gui/showBuzzPage";
+  else if(action == m_ui.action_Listeners)
+    str = "gui/showListenersPage";
+  else if(action == m_ui.action_Neighbors)
+    str = "gui/showNeighborsPage";
+  else if(action == m_ui.action_Search)
+    str = "gui/showSearchPage";
+  else if(action == m_ui.action_StarBeam)
+    str = "gui/showStarBeamPage";
+  else if(action == m_ui.action_Urls)
+    str = "gui/showUrlsPage";
+
+  if(!str.isEmpty())
+    {
+      m_settings[str] = state;
+
+      QSettings settings;
+
+      settings.setValue(str, state);
+      prepareVisiblePages();
+    }
+}
+
+void spoton::prepareVisiblePages(void)
+{
+  QMap<QString, QAction *> actions;
+  QMap<QString, int> pages;
+
+  actions["buzz"] = m_ui.action_Buzz;
+  actions["listeners"] = m_ui.action_Listeners;
+  actions["neighbors"] = m_ui.action_Neighbors;
+  actions["search"] = m_ui.action_Search;
+  actions["starbeam"] = m_ui.action_StarBeam;
+  actions["urls"] = m_ui.action_Urls;
+  pages["buzz"] = 0;
+  pages["chat"] = 1;
+  pages["email"] = 2;
+  pages["listeners"] = 3;
+  pages["neighbors"] = 4;
+  pages["search"] = 5;
+  pages["settings"] = 6;
+  pages["starbeam"] = 7;
+  pages["urls"] = 8;
+#if SPOTON_GOLDBUG == 1
+  pages["x_add_friend"] = 9; // Sorted keys.
+  pages["x_about"] = 10; // Sorted keys.
+#else
+  pages["x_about"] = 9; // Sorted keys.
+#endif
+
+  {
+    QMapIterator<QString, QAction *> it(actions);
+
+    while(it.hasNext())
+      {
+	it.next();
+
+	if(!it.value()->isChecked())
+	  pages.remove(it.key());
+      }
+  }
+
+  int count = m_ui.tab->count();
+
+  for(int i = 0; i < count; i++)
+    m_ui.tab->removeTab(0);
+
+  {
+    QMapIterator<QString, int> it(pages);
+
+    while(it.hasNext())
+      {
+	it.next();
+
+	QWidget *widget = m_tabWidgets.value(it.value());
+
+	if(!widget)
+	  continue;
+
+	QHash<QString, QVariant> hash
+	  (m_tabWidgetsProperties.value(it.value()));
+	QIcon icon(hash["icon"].value<QIcon> ());
+
+	m_ui.tab->addTab(widget, icon, hash["label"].toString());
+	m_ui.tab->setTabEnabled(it.value(), hash["enabled"].toBool());
+      }
+  }
+}
+
+int spoton::tabIndexFromName(const QString &name) const
+{
+  /*
+  ** Returns the index of the page having the given name.
+  ** If the page is hidden, a negative one is returned.
+  */
+
+  QMapIterator<int, QHash<QString, QVariant> > it(m_tabWidgetsProperties);
+  int index = -1;
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value()["name"].toString() == name)
+	{
+	  index = m_ui.tab->indexOf(m_tabWidgets[it.key()]);
+	  break;
+	}
+    }
+
+  return index;
 }

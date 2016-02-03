@@ -467,6 +467,11 @@ class spoton: public QMainWindow
   QList<QFuture<void> > m_starbeamDigestFutures;
   QMainWindow *m_optionsWindow;
   QMainWindow *m_statisticsWindow;
+  QMap<int, QHash<QString, QVariant> > m_tabWidgetsProperties;
+  QMap<int, QWidget *> m_tabWidgets; /*
+				     ** QTabWidget does not provide
+				     ** a method for hiding individual pages.
+				     */
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
@@ -535,6 +540,7 @@ class spoton: public QMainWindow
   bool updateMailStatus(const QString &oid, const QString &status);
   int applyGoldBugToLetter(const QByteArray &goldbug,
 			   const int row);
+  int tabIndexFromName(const QString &name) const;
   void addFriendsKey(const QByteArray &key, const QString &type);
   void applyGoldBugToAttachments(const QString &folderOid,
 				 const QSqlDatabase &db,
@@ -585,6 +591,7 @@ class spoton: public QMainWindow
   void prepareTimeWidgets(void);
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
+  void prepareVisiblePages(void);
   void refreshInstitutions(void);
   void removeFavorite(const bool removeAll);
   void saveDestination(const QString &path);

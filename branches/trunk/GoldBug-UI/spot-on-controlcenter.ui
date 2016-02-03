@@ -5365,7 +5365,7 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-33</y>
+                 <y>0</y>
                  <width>641</width>
                  <height>575</height>
                 </rect>
@@ -10192,6 +10192,21 @@ QPushButton:pressed {
         <string>Add Friend</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_22">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
+         <number>5</number>
+        </property>
         <item>
          <widget class="QLabel" name="label_125">
           <property name="minimumSize">

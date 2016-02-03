@@ -2299,33 +2299,19 @@ void spoton::slotAssignNewIPToNeighbor(void)
 
 QString spoton::currentTabName(void) const
 {
+  QMapIterator<int, QWidget *> it(m_tabWidgets);
   QString name("");
-  int index = m_ui.tab->currentIndex();
 
-  if(index == 0)
-    name = "buzz";
-  else if(index == 1)
-    name = "chat";
-  else if(index == 2)
-    name = "email";
-  else if(index == 3)
-    name = "listeners";
-  else if(index == 4)
-    name = "neighbors";
-  else if(index == 5)
-    name = "search";
-  else if(index == 6)
-    name = "settings";
-  else if(index == 7)
-    name = "starbeam";
-  else if(index == 8)
-    name = "urls";
-#if SPOTON_GOLDBUG == 1
-  else if(index == 9)
-    name = "add_friend";
-#endif
-  else
-    name = "about";
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value() == m_ui.tab->currentWidget())
+	{
+	  name = m_tabWidgetsProperties[it.key()]["name"].toString();
+	  break;
+	}
+    }
 
   return name;
 }
