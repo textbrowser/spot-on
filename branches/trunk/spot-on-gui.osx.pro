@@ -43,7 +43,7 @@ LIBS		+= -L../../libNTRU -lntru \
                    -L../../libSpotOn -lspoton \
                    -L/usr/local/lib -L/usr/local/opt/curl/lib \
                    -L/usr/local/opt/openssl/lib -lGeoIP \
-                   -lcrypto -lcurl -lgcrypt -lgpg-error -lssl
+                   -lcrypto -lcurl -lgcrypt -lgpg-error -lpq -lssl
 PRE_TARGETDEPS = libntru.dylib libspoton.dylib
 OBJECTS_DIR = temp/obj
 UI_DIR = temp/ui
