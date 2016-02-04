@@ -106,6 +106,7 @@ class spoton_rss: public QMainWindow
   void slotImport(void);
   void slotMaximumKeywordsChanged(int value);
   void slotPopulateFeeds(void);
+  void slotProxyClicked(bool state);
   void slotPurge(void);
   void slotPurgeDaysChanged(int value);
   void slotRefreshTimeline(void);

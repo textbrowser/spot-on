@@ -1440,8 +1440,13 @@ void spoton_kernel::prepareNeighbors(void)
 			    {
 			      QNetworkProxyQuery proxyQuery;
 
-			      proxyQuery.setQueryType
-				(QNetworkProxyQuery::TcpSocket);
+			      if(list.value(20).toString().toLower().
+				 trimmed() == "tcp")
+				proxyQuery.setQueryType
+				  (QNetworkProxyQuery::TcpSocket);
+			      else
+				proxyQuery.setQueryType
+				  (QNetworkProxyQuery::UdpSocket);
 
 			      QList<QNetworkProxy> proxies
 				(QNetworkProxyFactory::

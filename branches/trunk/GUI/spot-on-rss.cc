@@ -173,6 +173,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.proxy,
+	  SIGNAL(clicked(bool)),
+	  this,
+	  SLOT(slotProxyClicked(bool)));
   connect(m_ui.purge,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -2182,6 +2186,16 @@ void spoton_rss::slotPopulateFeeds(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   populateFeeds();
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_rss::slotProxyClicked(bool state)
+{
+  Q_UNUSED(state);
+  m_ui.proxyHostname->clear();
+  m_ui.proxyPassword->clear();
+  m_ui.proxyPort->setValue(m_ui.proxyPort->minimum());
+  m_ui.proxyType->setCurrentIndex(0);
+  m_ui.proxyUsername->clear();
 }
 
 void spoton_rss::slotPurge(void)
