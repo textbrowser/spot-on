@@ -439,19 +439,18 @@ void spoton_kernel::postPoptastic(void)
 
   if(!m_poptasticCache.isEmpty())
     {
-      QHash<QString, QVariant> values(m_poptasticCache.head());
+      const QHash<QString, QVariant> v(m_poptasticCache.head());
 
       locker.unlock();
 
-      QHash<QString, QVariant> hash;
+      QHash<QString, QVariant> h;
 
       for(int i = 0; i < list.size(); i++)
-	if(list.at(i)["in_username"].toString() ==
-	   values["from_account"].toString())
+	if(list.at(i)["in_username"].toString() == v["from_account"].toString())
 	  {
-	    hash = list.at(i);
+	    h = list.at(i);
 
-	    if(hash["out_method"] == "Disable")
+	    if(h["out_method"] == "Disable")
 	      {
 		/*
 		** Remove the values item from the cache.
@@ -460,7 +459,7 @@ void spoton_kernel::postPoptastic(void)
 		QWriteLocker locker(&m_poptasticCacheMutex);
 
 		if(!m_poptasticCache.isEmpty())
-		  m_poptasticCache.removeOne(values);
+		  m_poptasticCache.removeOne(v);
 
 		return;
 	      }
@@ -469,6 +468,7 @@ void spoton_kernel::postPoptastic(void)
 	  }
 
       CURL *curl = curl_easy_init();
+      const QHash<QString, QVariant> hash(h);
 
       if(curl)
 	{
@@ -564,13 +564,12 @@ void spoton_kernel::postPoptastic(void)
 
 	  for(int i = 1, j = 1; i <= 15;)
 	    {
-	      QHash<QString, QVariant> values;
 	      QReadLocker locker(&m_poptasticCacheMutex);
 
 	      if(m_poptasticCache.isEmpty())
 		break;
-	      else
-		values = m_poptasticCache.head();
+
+	      const QHash<QString, QVariant> values(m_poptasticCache.head());
 
 	      locker.unlock();
 
