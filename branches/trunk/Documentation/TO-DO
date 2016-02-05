@@ -237,3 +237,5 @@ Remaining Items
        perform SMP via the new prime. What do the mathematical connotations
        show us?
 58.    Qt 5.5.x supports serial ports.
+59.    Rosetta... support GPG keys (separate) and simple interface
+       into GPG (separate).

@@ -253,6 +253,7 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(1);
   m_poptasticRetroPhoneSettingsUi.out_username->clear();
   m_poptasticRetroPhoneSettingsUi.proxy->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(false);
   m_poptasticRetroPhoneSettingsUi.proxy_password->clear();
   m_poptasticRetroPhoneSettingsUi.proxy_server_address->clear();
   m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue(1);
@@ -543,7 +544,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 
 void spoton::slotPoptasticSettingsReset(bool state)
 {
-  Q_UNUSED(state);
+  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(state);
   m_poptasticRetroPhoneSettingsUi.proxy_password->clear();
   m_poptasticRetroPhoneSettingsUi.proxy_server_address->clear();
   m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue(1);
@@ -594,6 +595,7 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked(false);
   m_poptasticRetroPhoneSettingsUi.poptasticRefresh->setValue(5.00);
   m_poptasticRetroPhoneSettingsUi.proxy->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(false);
   m_poptasticRetroPhoneSettingsUi.proxy_password->clear();
   m_poptasticRetroPhoneSettingsUi.proxy_server_address->clear();
   m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue(1);
@@ -2254,6 +2256,8 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     (hash["out_verify_peer"].toBool());
   m_poptasticRetroPhoneSettingsUi.proxy->setChecked
     (hash["proxy_enabled"].toBool());
+  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible
+    (m_poptasticRetroPhoneSettingsUi.proxy->isChecked());
   m_poptasticRetroPhoneSettingsUi.proxy_password->setText
     (hash["proxy_password"].toString());
   m_poptasticRetroPhoneSettingsUi.proxy_server_address->setText
