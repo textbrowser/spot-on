@@ -53,142 +53,151 @@
            <property name="spacing">
             <number>5</number>
            </property>
-           <item row="2" column="2">
-            <widget class="QLabel" name="label_20">
-             <property name="text">
-              <string>&amp;Password</string>
-             </property>
-             <property name="buddy">
-              <cstring>proxyPassword</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="proxyHostname"/>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="proxyUsername"/>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>&amp;Port</string>
-             </property>
-             <property name="buddy">
-              <cstring>proxyPort</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <layout class="QHBoxLayout" name="horizontalLayout_39">
-             <property name="spacing">
-              <number>5</number>
-             </property>
-             <item>
-              <widget class="QSpinBox" name="proxyPort">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>65535</number>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_29">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_19">
-             <property name="text">
-              <string>&amp;Username</string>
-             </property>
-             <property name="buddy">
-              <cstring>proxyUsername</cstring>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>&amp;Type</string>
+            <widget class="QFrame" name="proxy_frame">
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
              </property>
-             <property name="buddy">
-              <cstring>proxyType</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>&amp;Hostname</string>
-             </property>
-             <property name="buddy">
-              <cstring>proxyHostname</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_29">
-             <property name="spacing">
-              <number>5</number>
-             </property>
-             <item>
-              <widget class="QComboBox" name="proxyType">
-               <property name="sizeAdjustPolicy">
-                <enum>QComboBox::AdjustToContents</enum>
-               </property>
-               <item>
+             <layout class="QGridLayout" name="gridLayout">
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="proxyHostname"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_3">
                 <property name="text">
-                 <string>HTTP</string>
+                 <string>&amp;Type</string>
                 </property>
-               </item>
-               <item>
+                <property name="buddy">
+                 <cstring>proxyType</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <layout class="QHBoxLayout" name="horizontalLayout_29">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QComboBox" name="proxyType">
+                  <property name="sizeAdjustPolicy">
+                   <enum>QComboBox::AdjustToContents</enum>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>HTTP</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Socks5</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>System</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_28">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_7">
                 <property name="text">
-                 <string>Socks5</string>
+                 <string>&amp;Hostname</string>
                 </property>
-               </item>
-               <item>
+                <property name="buddy">
+                 <cstring>proxyHostname</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_19">
                 <property name="text">
-                 <string>System</string>
+                 <string>&amp;Username</string>
                 </property>
-               </item>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_28">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item row="2" column="3">
-            <widget class="QLineEdit" name="proxyPassword">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="echoMode">
-              <enum>QLineEdit::Password</enum>
-             </property>
+                <property name="buddy">
+                 <cstring>proxyUsername</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="proxyUsername"/>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLabel" name="label_20">
+                <property name="text">
+                 <string>&amp;Password</string>
+                </property>
+                <property name="buddy">
+                 <cstring>proxyPassword</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QLineEdit" name="proxyPassword">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="echoMode">
+                 <enum>QLineEdit::Password</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>&amp;Port</string>
+                </property>
+                <property name="buddy">
+                 <cstring>proxyPort</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <layout class="QHBoxLayout" name="horizontalLayout_39">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QSpinBox" name="proxyPort">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>65535</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_29">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
@@ -797,7 +806,6 @@
   <tabstop>import_periodically</tabstop>
   <tabstop>maximum_keywords</tabstop>
   <tabstop>action_menu</tabstop>
-  <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>
   <tabstop>add</tabstop>
   <tabstop>timeline</tabstop>
@@ -808,6 +816,7 @@
   <tabstop>refresh_timeline</tabstop>
   <tabstop>errors</tabstop>
   <tabstop>clear_errors</tabstop>
+  <tabstop>feeds</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
