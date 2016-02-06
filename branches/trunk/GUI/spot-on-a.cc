@@ -359,7 +359,9 @@ spoton::spoton(void):QMainWindow()
   list.clear();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
+#if SPOTON_GOLDBUG == 0
   m_ui.proxy_frame->setVisible(m_ui.proxy->isChecked());
+#endif
   list << "buzz"
        << "chat"
        << "email"
@@ -8199,7 +8201,9 @@ void spoton::slotProxyChecked(bool state)
 	  this,
 	  SLOT(slotProxyTypeChanged(int)));
   m_ui.proxyUsername->clear();
+#if SPOTON_GOLDBUG == 0
   m_ui.proxy_frame->setVisible(state);
+#endif
 }
 
 void spoton::slotKernelSocketError(QAbstractSocket::SocketError error)
