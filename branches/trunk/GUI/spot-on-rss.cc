@@ -491,6 +491,9 @@ void spoton_rss::hideUrl(const QUrl &url, const bool state)
 	if(scheme.startsWith("hide-"))
 	  scheme.remove(0, 5);
 
+	if(scheme.startsWith("remove-"))
+	  scheme.remove(0, 7);
+
 	if(scheme.startsWith("visible-"))
 	  scheme.remove(0, 8);
 
@@ -2403,17 +2406,31 @@ void spoton_rss::slotRefreshTimeline(void)
 		      html.append(list.value(2).toUrl().
 				  toEncoded().constData());
 		      html.append("\">");
-		      html.append("Hide");
+		      html.append("Hide URL");
+		      html.append("</a>");
+		      html.append(" | ");
+		      html.append("<a href=\"remove-");
+		      html.append(list.value(2).toUrl().
+				  toEncoded().constData());
+		      html.append("\">");
+		      html.append("Remove URL");
 		      html.append("</a>");
 		    }
 		  else
 		    {
 		      html.append(" | ");
+		      html.append("<a href=\"remove-");
+		      html.append(list.value(2).toUrl().
+				  toEncoded().constData());
+		      html.append("\">");
+		      html.append("Remove URL");
+		      html.append("</a>");
+		      html.append(" | ");
 		      html.append("<a href=\"visible-");
 		      html.append(list.value(2).toUrl().
 				  toEncoded().constData());
 		      html.append("\">");
-		      html.append("Show");
+		      html.append("Show URL");
 		      html.append("</a>");
 		    }
 
@@ -2845,6 +2862,65 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
   if(url.scheme().toLower().trimmed().startsWith("hide-"))
     {
       hideUrl(url, true);
+      return;
+    }
+  else if(url.scheme().toLower().trimmed().startsWith("remove-"))
+    {
+      spoton_crypt *crypt = spoton::instance() ?
+	spoton::instance()->crypts().value("chat", 0) : 0;
+
+      if(!crypt)
+	return;
+
+      QMessageBox mb(this);
+      QUrl u(url);
+
+      u.setScheme(u.scheme().remove(0, 7));
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to remove %1?").
+		 arg(u.toEncoded().constData()));
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+	    bool ok = true;
+
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.prepare("DELETE FROM rss_feeds_links WHERE url_hash = ?");
+	    query.bindValue
+	      (0, crypt->keyedHash(u.toEncoded(), &ok).toBase64());
+
+	    if(ok)
+	      query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+      QApplication::restoreOverrideCursor();
+      slotRefreshTimeline();
       return;
     }
   else if(url.scheme().toLower().trimmed().startsWith("visible-"))
