@@ -855,7 +855,7 @@ void spoton::prepareTabIcons(void)
 	  QTransform transform;
 
 	  pixmap = QPixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
-	  
+
 	  if(m_ui.tab->tabPosition() == QTabWidget::East)
 	    transform.rotate(-90);
 	  else
