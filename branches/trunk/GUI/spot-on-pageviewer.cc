@@ -83,6 +83,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 
 spoton_pageviewer::~spoton_pageviewer()
 {
+  QWebSettings::clearMemoryCaches();
 }
 
 void spoton_pageviewer::slotCopyLinkLocation(void)
