@@ -31,6 +31,9 @@
           <property name="title">
            <string>Pro&amp;xy</string>
           </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
           <property name="checkable">
            <bool>true</bool>
           </property>

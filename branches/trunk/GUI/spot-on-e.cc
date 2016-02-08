@@ -71,6 +71,7 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneSettingsUi.account->clear();
   m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
   m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(false);
 
   QList<QHash<QString, QVariant> > list;
   bool ok = true;
@@ -2257,7 +2258,7 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
   m_poptasticRetroPhoneSettingsUi.proxy->setChecked
     (hash["proxy_enabled"].toBool());
   m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible
-    (m_poptasticRetroPhoneSettingsUi.proxy->isChecked());
+    (hash["proxy_enabled"].toBool());
   m_poptasticRetroPhoneSettingsUi.proxy_password->setText
     (hash["proxy_password"].toString());
   m_poptasticRetroPhoneSettingsUi.proxy_server_address->setText

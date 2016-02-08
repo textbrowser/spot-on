@@ -3620,7 +3620,7 @@
                 <property name="geometry">
                  <rect>
                   <x>0</x>
-                  <y>-192</y>
+                  <y>-212</y>
                   <width>792</width>
                   <height>478</height>
                  </rect>
@@ -4031,6 +4031,9 @@
                           <property name="title">
                            <string>Pro&amp;xy</string>
                           </property>
+                          <property name="flat">
+                           <bool>true</bool>
+                          </property>
                           <property name="checkable">
                            <bool>true</bool>
                           </property>
@@ -4198,8 +4201,6 @@
                                </widget>
                               </item>
                              </layout>
-                             <zorder>label_3</zorder>
-                             <zorder>label_3</zorder>
                              <zorder>label_3</zorder>
                              <zorder></zorder>
                              <zorder>label_7</zorder>
