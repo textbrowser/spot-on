@@ -34,6 +34,11 @@ extern "C"
 #include <curl/curl.h>
 }
 
+extern "C"
+{
+#include <libpq-fe.h>
+}
+
 #include <iostream>
 
 #ifdef Q_OS_MAC
@@ -154,6 +159,7 @@ static void signal_handler(int signal_number)
 
 int main(int argc, char *argv[])
 {
+  PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
   curl_global_init(CURL_GLOBAL_ALL);
   libspoton_enable_sqlite_cache();
   spoton_misc::prepareSignalHandler(signal_handler);

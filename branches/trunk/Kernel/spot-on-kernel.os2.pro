@@ -29,9 +29,12 @@ QMAKE_CXXFLAGS_RELEASE += -mtune=generic -fwrapv -pie -O3 \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libspoton purge
-INCLUDEPATH	+= . ../. ../../../. ../../../libSpotOn/Include.win32 \
+INCLUDEPATH	+= . ../. ../../../. \
+		   ../../../PostgreSQL/Include.win32 \
+		   ../../../libSpotOn/Include.win32 \
 		   u:/usr/local473/include
-LIBS		+= -L../../../libSpotOn \
+LIBS		+= -L../../../PostgreSQL/Libraries.win32 \
+		   -L../../../libSpotOn \
 		   -L../../../libSpotOn/Libraries.win32 \
 		   -Lu:/usr/local473/lib \
 		   -lcrypto -lcurl -lgcrypt -lgpg-error -lmmap -lpq \

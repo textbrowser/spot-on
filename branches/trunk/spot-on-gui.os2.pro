@@ -27,12 +27,14 @@ QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libspoton purge
-INCLUDEPATH	+= . ../../. GUI ../../libSpotOn/Include.win32 \
+INCLUDEPATH	+= . ../../. GUI \
+		   ../../PostgreSQL/Include.win32 \
+		   ../../libSpotOn/Include.win32 \
 		   u:/usr/local473/include
 LIBS		+= -L../../libSpotOn -L../../libSpotOn/Libraries.win32 \
 		   -Lu:/usr/local473/lib \
 		   -lcrypto -lcurl -lgcrypt \
-		   -lgpg-error -lmmap -lpthread -lspoton -lssl -lssp_s
+		   -lgpg-error -lmmap -lpq -lpthread -lspoton -lssl -lssp_s
 PRE_TARGETDEPS = libspotn.dll
 
 win32:RC_FILE	= Icons/Resources/spot-on.rc

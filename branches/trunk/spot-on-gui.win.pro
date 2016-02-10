@@ -33,7 +33,9 @@ QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-INCLUDEPATH	+= . ..\\..\\. GUI ..\\..\\libSpotOn\\Include.win32 \
+INCLUDEPATH	+= . ..\\..\\. GUI \
+		   ..\\..\\PostgreSQL\\Include.win32 \
+		   ..\\..\\libSpotOn\\Include.win32 \
 		   ..\\..\\libGeoIP\\Include.win32 \
 		   ..\\..\\libOpenSSL\\Include.win32 \
 		   ..\\..\\libcURL\\Win32.d\include
@@ -43,7 +45,7 @@ LIBS		+= -L..\\..\\libNTRU \
 		   -L..\\..\\libOpenSSL\\Libraries.win32 \
 		   -L..\\..\\libcURL\\Win32.d\\bin \
 		   -lGeoIP-1 -lcurl -leay32 -lgcrypt-20 -lgpg-error-0 \
-		   -lntru -lpthread -lspoton -lssl32 -lws2_32
+		   -lntru -lpq -lpthread -lspoton -lssl32 -lws2_32
 PRE_TARGETDEPS = libntru.dll libspoton.dll
 
 RC_FILE		= Icons\\Resources\\spot-on.rc
