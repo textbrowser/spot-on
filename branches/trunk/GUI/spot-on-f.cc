@@ -584,7 +584,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 	    goto remove_database_label;
 	  }
 
-	hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+	hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 	hashKey = spoton_crypt::strongRandomBytes
 	  (static_cast<size_t> (hashKey.length())).toHex();
 	symmetricKey.resize(static_cast<int> (symmetricKeyLength));
@@ -744,7 +744,7 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 
   QByteArray publicKeyHash(QByteArray::fromBase64(list.value(1)));
 
-  if(publicKeyHash.size() != spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES)
+  if(publicKeyHash.size() != spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES)
     return;
 
   if(m_forwardSecrecyRequests.contains(publicKeyHash))

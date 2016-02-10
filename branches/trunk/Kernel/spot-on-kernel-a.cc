@@ -467,7 +467,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_uptime = QDateTime::currentDateTime();
   s_institutionLastModificationTime = QDateTime();
   s_messagingCacheKey = spoton_crypt::weakRandomBytes
-    (static_cast<size_t> (spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES));
+    (static_cast<size_t> (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
   QDir().mkdir(spoton_misc::homePath());
 
@@ -2611,7 +2611,8 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 	      if(symmetricKeyLength > 0)
 		{
-		  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+		  hashKey.resize
+		    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		  hashKey = spoton_crypt::strongRandomBytes
 		    (static_cast<size_t> (hashKey.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
@@ -2802,7 +2803,7 @@ void spoton_kernel::slotScramble(void)
 	 QByteArray(),
 	 symmetricKey,
 	 spoton_crypt::
-	 strongRandomBytes(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES),
+	 strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES),
 	 0,
 	 0,
 	 "");
@@ -3012,7 +3013,8 @@ void spoton_kernel::slotRetrieveMail(void)
 
 	      if(symmetricKeyLength > 0)
 		{
-		  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+		  hashKey.resize
+		    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		  hashKey = spoton_crypt::strongRandomBytes
 		    (static_cast<size_t> (hashKey.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
@@ -3266,7 +3268,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		    (spoton_crypt::cipherKeyLength("aes256"));
 		  institutionPostalAddress =
 		    spoton_crypt::weakRandomBytes
-		    (spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+		    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		}
 
 	      if(!ok)
@@ -3284,7 +3286,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 	      if(symmetricKeyLength > 0)
 		{
-		  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+		  hashKey.resize
+		    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		  hashKey = spoton_crypt::strongRandomBytes
 		    (static_cast<size_t> (hashKey.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
@@ -3536,7 +3539,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 	      if(symmetricKeyLength > 0)
 		{
-		  hashKey1.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+		  hashKey1.resize
+		    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		  hashKey1 = spoton_crypt::strongRandomBytes
 		    (static_cast<size_t> (hashKey1.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
@@ -3596,7 +3600,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 	      if(symmetricKeyLength > 0)
 		{
-		  hashKey2.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+		  hashKey2.resize
+		    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		  hashKey2 = spoton_crypt::strongRandomBytes
 		    (static_cast<size_t> (hashKey2.length()));
 		  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
@@ -4439,7 +4444,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 		  if(symmetricKeyLength > 0)
 		    {
 		      hashKey.resize
-			(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+			(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		      hashKey = spoton_crypt::strongRandomBytes
 			(static_cast<size_t> (hashKey.length()));
 		      symmetricKey.resize
@@ -4662,7 +4667,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 		  if(symmetricKeyLength > 0)
 		    {
 		      hashKey.resize
-			(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+			(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		      hashKey = spoton_crypt::strongRandomBytes
 			(static_cast<size_t> (hashKey.length()));
 		      symmetricKey.resize
@@ -5227,13 +5232,9 @@ void spoton_kernel::discoverAdaptiveEchoPair
   */
 
   QByteArray messageCode
-    (last.mid(0,
-	      spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES)); /*
-							   ** SHA-512, etc.,
-							   ** output size.
-							   */
+    (last.mid(0, spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
 
-  if(messageCode.size() < spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES)
+  if(messageCode.size() < spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES)
     return;
 
   for(int i = 0; i < adaptiveEchoPairs.size(); i++)
@@ -5272,7 +5273,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
       */
 
       computedHash = crypt.keyedHash
-	(d + last.mid(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES), &ok);
+	(d + last.mid(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES), &ok);
 
       if(!ok)
 	continue;
@@ -5285,9 +5286,10 @@ void spoton_kernel::discoverAdaptiveEchoPair
 	  */
 
 	  QByteArray timestamp
-	    (crypt.decrypted(last.
-			     mid(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES),
-			     &ok));
+	    (crypt.
+	     decrypted(last.
+		       mid(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES),
+		       &ok));
 
 	  if(!ok)
 	    continue;
@@ -5558,7 +5560,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 		  if(symmetricKeyLength > 0)
 		    {
 		      hashKey.resize
-			(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+			(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		      hashKey = spoton_crypt::strongRandomBytes
 			(static_cast<size_t> (hashKey.length()));
 		      symmetricKey.resize

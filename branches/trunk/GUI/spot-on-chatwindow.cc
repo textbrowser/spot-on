@@ -567,7 +567,8 @@ void spoton_chatwindow::slotShareStarBeam(void)
 		  toBase64());
   QByteArray mKey(spoton_crypt::
 		  strongRandomBytes(spoton_crypt::
-				    SHA512_OUTPUT_SIZE_IN_BYTES).toBase64());
+				    XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+		  toBase64());
   QByteArray magnet;
   bool ok = true;
 

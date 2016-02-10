@@ -65,7 +65,7 @@ void spoton::slotGenerateEtpKeys(int index)
 	     toBase64());
 	  m_ui.etpMacKey->setText
 	    (spoton_crypt::
-	     strongRandomBytes(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES).
+	     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
 	     toBase64());
 	}
       else if(index == 2)
@@ -77,7 +77,7 @@ void spoton::slotGenerateEtpKeys(int index)
       else if(index == 3)
 	m_ui.etpMacKey->setText
 	  (spoton_crypt::
-	   strongRandomBytes(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES).
+	   strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
 	   toBase64());
 
       disconnect(m_ui.generate,
@@ -512,7 +512,7 @@ void spoton::slotBuzzActionsActivated(int index)
 	(spoton_crypt::strongRandomBytes(512).toBase64());
       m_ui.buzzHashKey->setText
 	(spoton_crypt::
-	 strongRandomBytes(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES).
+	 strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
 	 toBase64());
     }
 
@@ -2033,7 +2033,7 @@ void spoton::slotGenerateNova(void)
     (spoton_crypt::
      strongRandomBytes(spoton_crypt::cipherKeyLength("aes256")) +
      spoton_crypt::
-     strongRandomBytes(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES));
+     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
 
   m_ui.transmitNova->setText(nova.toBase64());
 }

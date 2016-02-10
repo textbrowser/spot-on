@@ -2515,7 +2515,7 @@ void spoton::generateHalfGeminis(void)
   gemini.first = spoton_crypt::
     strongRandomBytes(spoton_crypt::cipherKeyLength("aes256") / 2);
   gemini.second = spoton_crypt::strongRandomBytes
-    (spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES / 2);
+    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2);
   saveGemini(gemini, item->text());
 }
 

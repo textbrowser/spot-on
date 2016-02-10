@@ -320,7 +320,7 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 						   QIODevice::WriteOnly))
     {
       QByteArray bytes(1, 0);
-      QByteArray hash(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES, 0);
+      QByteArray hash(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES, 0);
       QByteArray hashes;
       qint64 rc = 0;
 
@@ -348,9 +348,9 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	{
 	  emit status(tr("Verifying the hash."));
 	  rc = file1.read(hash.data(),
-			  spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+			  spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 
-	  if(rc != spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES)
+	  if(rc != spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES)
 	    {
 	      error = tr("File read failure.");
 	      goto done_label;
@@ -433,7 +433,7 @@ void spoton_encryptfile::decrypt(const QString &fileName,
       ** Seek to the data area.
       */
 
-      if(!file1.seek(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES + 1))
+      if(!file1.seek(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES + 1))
 	{
 	  error = tr("File seek failure.");
 	  goto done_label;
@@ -535,7 +535,8 @@ void spoton_encryptfile::encrypt(const bool sign,
       qint64 rc = 0;
 
       bytes.append(QByteArray::number(sign));
-      bytes.append(QByteArray(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES, 0));
+      bytes.append
+	(QByteArray(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES, 0));
       rc = file2.write(bytes.constData(), bytes.length());
 
       if(bytes.length() != rc)

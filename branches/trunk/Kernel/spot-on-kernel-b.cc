@@ -2054,7 +2054,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   QByteArray hashKey;
 
-  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+  hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
   hashKey = spoton_crypt::strongRandomBytes
     (static_cast<size_t> (hashKey.length()));
   symmetricKey.resize(static_cast<int> (symmetricKeyLength));
@@ -2244,7 +2244,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 
   QByteArray hashKey;
 
-  hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+  hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
   hashKey = spoton_crypt::strongRandomBytes
     (static_cast<size_t> (hashKey.length()));
   symmetricKey.resize(static_cast<int> (symmetricKeyLength));

@@ -1123,7 +1123,7 @@ void spoton_misc::retrieveSymmetricData
 		    symmetricKey = spoton_crypt::strongRandomBytes
 		      (static_cast<size_t> (symmetricKey.length()));
 		    hashKey.resize
-		      (spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+		      (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 		    hashKey = spoton_crypt::strongRandomBytes
 		      (static_cast<size_t> (hashKey.length()));
 		  }

@@ -493,7 +493,7 @@ void spoton_fireshare::slotTimeout(void)
       QByteArray hashKey;
       QByteArray symmetricKey;
 
-      hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+      hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
       hashKey = spoton_crypt::strongRandomBytes
 	(static_cast<size_t> (hashKey.length()));
       symmetricKey.resize(static_cast<int> (symmetricKeyLength));

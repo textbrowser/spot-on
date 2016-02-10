@@ -106,7 +106,7 @@ void spoton_starbeam_writer::processData
 
   QByteArray d
     (data.mid(0, data.length() -
-	      spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES));
+	      spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
   QByteArray messageCode(data.mid(d.length()));
   bool found = false;
 

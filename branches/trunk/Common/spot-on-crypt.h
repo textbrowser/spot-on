@@ -115,7 +115,11 @@ class spoton_crypt
   static bool passphraseSet(void);
   static const int SHA224_OUTPUT_SIZE_IN_BYTES = 28;
   static const int SHA384_OUTPUT_SIZE_IN_BYTES = 48;
-  static const int SHA512_OUTPUT_SIZE_IN_BYTES = 64;
+  static const int XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES = 64; /*
+							 ** The preferred
+							 ** digest algorithm's
+							 ** output size.
+							 */
   static size_t cipherKeyLength(const QByteArray &cipherType);
   static void generateMcElieceKeys(const QString &keySize,
 				   QByteArray &privateKey,

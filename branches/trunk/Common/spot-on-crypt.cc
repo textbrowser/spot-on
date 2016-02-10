@@ -1278,7 +1278,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	    }
 	  else
 	    {
-	      random.resize(SHA512_OUTPUT_SIZE_IN_BYTES);
+	      random.resize(XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 	      random = strongRandomBytes
 		(static_cast<size_t> (random.length()));
 	      err = gcry_sexp_build(&data_t, 0,
@@ -1750,7 +1750,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 	}
       else
 	{
-	  random.resize(SHA512_OUTPUT_SIZE_IN_BYTES);
+	  random.resize(XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 	  err = gcry_sexp_build(&data_t, 0,
 				"(enc-val (flags oaep)"
 				"(hash-algo sha512)(random-override %b) %S)",
@@ -2383,7 +2383,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
   array.replace(0, array.length(), QByteArray(array.length(), 0));
   array.clear();
 
-  QByteArray hash(SHA512_OUTPUT_SIZE_IN_BYTES, 0);
+  QByteArray hash(XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES, 0);
   QByteArray random(20, 0);
   QByteArray signature;
   QString keyType("");
@@ -2752,7 +2752,7 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 				    const QByteArray &publicKey,
 				    const QByteArray &signature)
 {
-  QByteArray hash(SHA512_OUTPUT_SIZE_IN_BYTES, 0);
+  QByteArray hash(XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES, 0);
   QByteArray random(20, 0);
   QString keyType("");
   QStringList list;

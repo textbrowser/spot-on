@@ -6446,12 +6446,12 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 	    if(static_cast<size_t> (gemini.length()) ==
 	       spoton_crypt::cipherKeyLength("aes256") / 2 &&
 	       geminiHashKey.length() ==
-	       spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES / 2)
+	       spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2)
 	      {
 		bytes1 = spoton_crypt::strongRandomBytes
 		  (spoton_crypt::cipherKeyLength("aes256") / 2);
 		bytes2 = spoton_crypt::strongRandomBytes
-		  (spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES / 2);
+		  (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2);
 		geminis.first.append(bytes1);
 		geminis.second.append(bytes2);
 		respond = true;
@@ -6462,7 +6462,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 	    if(static_cast<size_t> (gemini.length()) ==
 	       spoton_crypt::cipherKeyLength("aes256") / 2 &&
 	       geminiHashKey.length() ==
-	       spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES / 2)
+	       spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2)
 	      {
 		/*
 		** We may be processing a two-way call.

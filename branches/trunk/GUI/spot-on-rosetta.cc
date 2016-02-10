@@ -675,7 +675,7 @@ void spoton_rosetta::slotConvert(void)
       encryptionKey.resize(static_cast<int> (encryptionKeyLength));
       encryptionKey = spoton_crypt::veryStrongRandomBytes
 	(static_cast<size_t> (encryptionKey.length()));
-      hashKey.resize(spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+      hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
       hashKey = spoton_crypt::veryStrongRandomBytes
 	(static_cast<size_t> (hashKey.length()));
       publicKey = ui.contacts->itemData(ui.contacts->currentIndex()).

@@ -4227,7 +4227,7 @@ void spoton::slotGenerateGeminiInChat(void)
   gemini.first = spoton_crypt::
     strongRandomBytes(spoton_crypt::cipherKeyLength("aes256"));
   gemini.second = spoton_crypt::strongRandomBytes
-    (spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES);
+    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 
   if(saveGemini(gemini, item1->text()))
     {

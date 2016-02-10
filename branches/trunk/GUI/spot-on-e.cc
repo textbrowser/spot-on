@@ -840,7 +840,7 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
      spoton_common::GEMINI_ITERATION_COUNT,
      smp->guessWhirlpool().toHex(),
      smp->guessSha(),
-     spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
+     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
      error);
   QApplication::restoreOverrideCursor();
 
@@ -1422,7 +1422,8 @@ void spoton::slotShareStarBeam(void)
 		  toBase64());
   QByteArray mKey(spoton_crypt::
 		  strongRandomBytes(spoton_crypt::
-				    SHA512_OUTPUT_SIZE_IN_BYTES).toBase64());
+				    XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+		  toBase64());
   QByteArray magnet;
   bool ok = true;
 
@@ -1698,7 +1699,7 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
      spoton_common::GEMINI_ITERATION_COUNT,
      smp->guessWhirlpool().toHex(),
      smp->guessSha(),
-     spoton_crypt::SHA512_OUTPUT_SIZE_IN_BYTES,
+     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
      error);
   QApplication::restoreOverrideCursor();
 
