@@ -44,7 +44,8 @@ INCLUDEPATH	+= . ..\\..\\. GUI \
 		   ..\\..\\libGeoIP\\Include.win32 \
 		   ..\\..\\libOpenSSL\\Include.win32 \
                    ..\\..\\libcURL\\Win32.d\\include
-LIBS		+= -L..\\..\\libNTRU \
+LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
+		   -L..\\..\\libNTRU \
                    -L..\\..\\libSpotOn -L..\\..\\libSpotOn\\Libraries.win32 \
 		   -L..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\libOpenSSL\\Libraries.win32 \
