@@ -7104,7 +7104,7 @@ void spoton::slotKernelSocketState(void)
 		      arg(cipher.usedBits()));
 
 	  m_sb.kernelstatus->setToolTip
-	    (tr("Connected securely to the kernel on port %1 "
+	    (tr("Connected to the kernel on port %1 "
 		"from local port %2 via cipher %3.").
 	     arg(m_kernelSocket.peerPort()).
 	     arg(m_kernelSocket.localPort()).
@@ -7112,7 +7112,7 @@ void spoton::slotKernelSocketState(void)
 	}
       else
 	m_sb.kernelstatus->setToolTip
-	  (tr("Connected insecurely to the kernel on port %1 "
+	  (tr("Connected to the kernel on port %1 "
 	      "from local port %2. Communications between the interface and "
 	      "the kernel have been disabled.").
 	   arg(m_kernelSocket.peerPort()).
@@ -7154,9 +7154,9 @@ void spoton::sendBuzzKeysToKernel(void)
   bool sent = true;
 
   if((sent = (m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
-    if((sent = m_kernelSocket.isEncrypted()))
-      foreach(spoton_buzzpage *page,
-	      m_ui.tab->findChildren<spoton_buzzpage *> ())
+    foreach(spoton_buzzpage *page,
+	    m_ui.tab->findChildren<spoton_buzzpage *> ())
+      if((sent &= m_kernelSocket.isEncrypted()))
 	{
 	  QByteArray message;
 

@@ -660,14 +660,27 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
     spoton::instance()->crypts().value(keyType + "-signature", 0) : 0;
 
   if(!eCrypt || !sCrypt)
-    return;
+    {
+      showError(tr("Invalid eCrypt and/or sCrypt object(s). This is a "
+		   "fatal error."));
+      return;
+    }
   else if(!m_kernelSocket)
-    return;
+    {
+      showError(tr("Invalid m_kernelSocket object."));
+      return;
+    }
 
   if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
-    return;
+    {
+      showError(tr("The interface is not connected to the kernel."));
+      return;
+    }
   else if(!m_kernelSocket->isEncrypted())
-    return;
+    {
+      showError(tr("The connection to the kernel is not encrypted."));
+      return;
+    }
 
   QStringList list;
 

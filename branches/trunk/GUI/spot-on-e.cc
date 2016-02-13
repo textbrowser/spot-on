@@ -927,6 +927,11 @@ void spoton::slotVerifySMPSecret(const QString &hash, const QString &keyType,
   ** Chat windows only please!
   */
 
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted())
+    return;
+
   verifySMPSecret(hash, keyType, oid);
 }
 

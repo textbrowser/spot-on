@@ -126,6 +126,11 @@ void spoton::addMessageToReplayQueue(const QString &message1,
 
 void spoton::slotReplayMessages(void)
 {
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted())
+    return;
+
   QTableWidgetItem *item = m_ui.participants->item
     (m_ui.participants->currentRow(), 3); // public_key_hash
 
@@ -1382,6 +1387,11 @@ void spoton::slotPurgeEphemeralKeys(void)
 
 void spoton::slotPurgeEphemeralKeyPair(void)
 {
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted())
+    return;
+
   QAction *action = qobject_cast<QAction *> (sender());
 
   if(!action)
@@ -1403,11 +1413,7 @@ void spoton::slotPurgeEphemeralKeyPair(void)
       m_ui.emailParticipants->selectionModel()->
       selectedRows(3); // public_key_hash
 
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted())
-    return;
-  else if(publicKeyHashes.isEmpty())
+  if(publicKeyHashes.isEmpty())
     return;
 
   QByteArray message("purge_ephemeral_key_pair_");
