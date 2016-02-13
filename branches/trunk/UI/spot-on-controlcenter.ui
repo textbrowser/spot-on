@@ -464,7 +464,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>802</width>
+                <width>401</width>
                 <height>482</height>
                </rect>
               </property>
@@ -2067,8 +2067,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>646</width>
+             <height>405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2760,7 +2760,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>260</width>
+                     <width>262</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -3284,8 +3284,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>361</width>
+             <height>225</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3620,8 +3620,8 @@
                 <property name="geometry">
                  <rect>
                   <x>0</x>
-                  <y>-212</y>
-                  <width>792</width>
+                  <y>0</y>
+                  <width>737</width>
                   <height>478</height>
                  </rect>
                 </property>
@@ -4424,8 +4424,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4510,8 +4510,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>802</width>
-                 <height>603</height>
+                 <width>663</width>
+                 <height>620</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5460,7 +5460,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>746</width>
              <height>1134</height>
             </rect>
            </property>
@@ -7482,6 +7482,16 @@
                  </layout>
                 </item>
                 <item>
+                 <widget class="QLabel" name="label_31">
+                  <property name="text">
+                   <string>Modifying the pulse size of an active or partially-transmitted StarBeam will result in loss of data.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QSplitter" name="splitter_2">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
@@ -7842,7 +7852,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>661</width>
              <height>453</height>
             </rect>
            </property>
@@ -8457,8 +8467,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>258</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
