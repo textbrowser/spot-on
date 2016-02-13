@@ -5968,12 +5968,11 @@ void spoton::slotSetPassphrase(void)
 
 	      for(int i = 0; i < list.size() && !progress.wasCanceled(); i++)
 		{
-		  if(i + 1<= progress.maximum())
+		  if(i + 1 <= progress.maximum())
 		    progress.setValue(i + 1);
 
 #ifndef Q_OS_MAC
 		  progress.repaint();
-		  QApplication::processEvents();
 #endif
 
 		  spoton_crypt crypt

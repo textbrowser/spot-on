@@ -2055,7 +2055,6 @@ void spoton_rss::slotImport(void)
 
 #ifndef Q_OS_MAC
 		  progress->repaint();
-		  QApplication::processEvents();
 #endif
 		}
 
@@ -2268,7 +2267,26 @@ void spoton_rss::slotRefreshTimeline(void)
   if(!crypt)
     return;
 
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  QProgressDialog progress(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  progress.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  progress.setLabelText(tr("Populating..."));
+  progress.setMaximum(0);
+  progress.setMinimum(0);
+  progress.setWindowModality(Qt::ApplicationModal);
+  progress.setWindowTitle(tr("%1: Populating").
+			  arg(SPOTON_APPLICATION_NAME));
+  progress.show();
+  progress.raise();
+  progress.activateWindow();
+#ifndef Q_OS_MAC
+  progress.repaint();
+  QApplication::processEvents();
+#endif
   m_ui.timeline->clear();
 
   QString connectionName("");
@@ -2281,31 +2299,40 @@ void spoton_rss::slotRefreshTimeline(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString str("");
+	QString str1("");
+	QString str2("");
+	int i = 0;
 
 	query.setForwardOnly(true);
-	str = "SELECT content, description, hidden, publication_date, "
+	str2 = "SELECT content, description, hidden, publication_date, "
 	  "title, url, url_redirected FROM rss_feeds_links ";
 
 	if(m_ui.timeline_filter->currentIndex() == 1)
-	  str.append(" WHERE hidden = 1 ");
+	  str1.append(" WHERE hidden = 1 ");
 	else if(m_ui.timeline_filter->currentIndex() == 2)
-	  str.append(" WHERE hidden <> 1 AND imported = 1 ");
+	  str1.append(" WHERE hidden <> 1 AND imported = 1 ");
 	else if(m_ui.timeline_filter->currentIndex() == 3)
-	  str.append(" WHERE hidden <> 1 AND visited = 1 ");
+	  str1.append(" WHERE hidden <> 1 AND visited = 1 ");
 	else if(m_ui.timeline_filter->currentIndex() == 4)
-	  str.append(" WHERE hidden <> 1 AND (imported = 2 OR visited = 2) ");
+	  str1.append(" WHERE hidden <> 1 AND (imported = 2 OR visited = 2) ");
 	else if(m_ui.timeline_filter->currentIndex() == 5)
-	  str.append(" WHERE hidden <> 1 AND imported <> 1 ");
+	  str1.append(" WHERE hidden <> 1 AND imported <> 1 ");
 	else
-	  str.append(" WHERE hidden <> 1 ");
+	  str1.append(" WHERE hidden <> 1 ");
+
+	str2.append(str1);
+	str1.prepend("SELECT COUNT(*) FROM rss_feeds_links ");
 
 	if(m_ui.action_Insert_Date->isChecked())
-	  str.append("ORDER BY insert_date DESC");
+	  str2.append("ORDER BY insert_date DESC");
 	else
-	  str.append("ORDER BY publication_date DESC");
+	  str2.append("ORDER BY publication_date DESC");
 
-	if(query.exec(str))
+	if(query.exec(str1))
+	  if(query.next())
+	    progress.setMaximum(query.value(0).toInt());
+
+	if(query.exec(str2))
 	  /*
 	  ** 0 - content
 	  ** 1 - description
@@ -2318,6 +2345,16 @@ void spoton_rss::slotRefreshTimeline(void)
 
 	  while(query.next())
 	    {
+	      if(progress.wasCanceled())
+		break;
+
+	      if(i <= progress.maximum())
+		progress.setValue(i);
+
+#ifndef Q_OS_MAC
+	      progress.repaint();
+#endif
+
 	      QByteArray bytes;
 	      QList<QVariant> list;
 	      bool contentAvailable = false;
@@ -2469,6 +2506,8 @@ void spoton_rss::slotRefreshTimeline(void)
 		  cursor.setPosition(0);
 		  m_ui.timeline->setTextCursor(cursor);
 		}
+
+	      i += 1;
 	    }
       }
 
@@ -2476,7 +2515,6 @@ void spoton_rss::slotRefreshTimeline(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::slotReplyError(QNetworkReply::NetworkError code)

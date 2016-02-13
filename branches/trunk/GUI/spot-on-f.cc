@@ -308,7 +308,6 @@ void spoton::slotEstablishForwardSecrecy(void)
 
 #ifndef Q_OS_MAC
       progress.repaint();
-      QApplication::processEvents();
 #endif
 
       bool temporary = publicKeyHashes.at(i).data(Qt::UserRole).toBool();
