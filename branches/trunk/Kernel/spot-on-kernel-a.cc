@@ -278,7 +278,7 @@ int main(int argc, char *argv[])
   for(int i = 1; i < argc; i++)
     if(argv[i] && qstrcmp(argv[i], "--version") == 0)
       {
-	fprintf(stdout, "Compiled on %s, %s. Version %s.\n",
+	fprintf(stdout, "Spot-On-Kernel. Compiled on %s, %s. Version %s.\n",
 		__DATE__, __TIME__, SPOTON_VERSION_STR);
 	exit(EXIT_SUCCESS);
       }
