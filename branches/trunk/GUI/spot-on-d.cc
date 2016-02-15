@@ -730,6 +730,9 @@ void spoton::slotChatPopup(void)
 void spoton::slotCommonBuzzChannelsActivated(int index)
 {
   repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
   m_ui.demagnetize->setText
     (m_ui.commonBuzzChannels->itemData(index).toString());
   demagnetize();

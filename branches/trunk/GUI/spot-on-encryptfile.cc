@@ -218,13 +218,13 @@ void spoton_encryptfile::slotConvert(void)
 
   if(destination.absoluteFilePath().isEmpty())
     {
-      error = tr("Please provide a valid destination file.");
+      error = tr("Please provide a valid destination path.");
       goto done_label;
     }
 
   if(!fileInfo.isReadable())
     {
-      error = tr("Please provide a valid origin file.");
+      error = tr("Please provide a valid origin path.");
       goto done_label;
     }
 

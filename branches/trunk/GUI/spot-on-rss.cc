@@ -2055,6 +2055,7 @@ void spoton_rss::slotImport(void)
 
 #ifndef Q_OS_MAC
 		  progress->repaint();
+		  QApplication::processEvents();
 #endif
 		}
 
@@ -2353,6 +2354,7 @@ void spoton_rss::slotRefreshTimeline(void)
 
 #ifndef Q_OS_MAC
 	      progress.repaint();
+	      QApplication::processEvents();
 #endif
 
 	      QByteArray bytes;

@@ -36,14 +36,14 @@
       <item>
        <widget class="QRadioButton" name="directory_mode">
         <property name="text">
-         <string>&amp;Directory</string>
+         <string>&amp;Directory Mode</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QRadioButton" name="file_mode">
         <property name="text">
-         <string>&amp;File</string>
+         <string>&amp;File Mode</string>
         </property>
         <property name="checked">
          <bool>true</bool>

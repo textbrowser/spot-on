@@ -5973,6 +5973,7 @@ void spoton::slotSetPassphrase(void)
 
 #ifndef Q_OS_MAC
 		  progress.repaint();
+		  QApplication::processEvents();
 #endif
 
 		  spoton_crypt crypt
