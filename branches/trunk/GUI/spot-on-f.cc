@@ -297,7 +297,7 @@ void spoton::slotEstablishForwardSecrecy(void)
   progress.setLabelText(tr("Generating key pairs. Please be patient."));
   progress.setMaximum(publicKeyHashes.size());
   progress.setMinimum(0);
-  progress.setWindowModality(Qt::ApplicationModal);
+  progress.setModal(true);
   progress.setWindowTitle(tr("%1: Generating Key Pairs").
 			  arg(SPOTON_APPLICATION_NAME));
   progress.show();
