@@ -365,7 +365,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list, const bool batch)
     (list.value(0).toByteArray(),
      list.value(1).toString().toUtf8(), // Description
      list.value(2).toString().toUtf8(), // Title
-     url.toEncoded(),                   // URL
+     spoton_misc::urlToEncoded(url),    // URL
      spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
      m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
@@ -399,8 +399,9 @@ bool spoton_rss::importUrl(const QList<QVariant> &list, const bool batch)
 	    query.bindValue(0, 2); // Error.
 
 	  query.bindValue
-	    (1, crypt->keyedHash(list.value(3).toUrl().toEncoded(), &ok).
-	     toBase64());
+	    (1, crypt->
+	     keyedHash(spoton_misc::urlToEncoded(list.value(3).toUrl()),
+		       &ok).toBase64());
 
 	  if(ok)
 	    query.exec();
@@ -502,7 +503,7 @@ void spoton_rss::hideUrl(const QUrl &url, const bool state)
 		      "WHERE url_hash = ?");
 	query.bindValue(0, state ? 1 : 0);
 	query.bindValue
-	  (1, crypt->keyedHash(u.toEncoded(), &ok).toBase64());
+	  (1, crypt->keyedHash(spoton_misc::urlToEncoded(u), &ok).toBase64());
 
 	if(ok)
 	  query.exec();
@@ -843,7 +844,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
     (data,
      description.toUtf8(),
      title.toUtf8(),
-     url.toEncoded(),
+     spoton_misc::urlToEncoded(url),
      spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
      m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
@@ -1459,8 +1460,8 @@ void spoton_rss::slotContentReplyFinished(void)
 	    QString error
 	      (QString("The URL <a href=\"%1\">%1</a> is being "
 		       "redirected to <a href=\"%2\">%2</a>.").
-	       arg(reply->url().toEncoded().constData()).
-	       arg(redirectUrl.toEncoded().constData()));
+	       arg(spoton_misc::urlToEncoded(reply->url()).constData()).
+	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 	    QUrl originalUrl(reply->property("original-url").toUrl());
 
 	    logError(error);
@@ -1514,8 +1515,10 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	    if(ok)
 	      query.bindValue
-		(1, crypt->encryptedThenHashed(reply->url().toEncoded(),
-					       &ok).toBase64());
+		(1, crypt->
+		 encryptedThenHashed(spoton_misc::
+				     urlToEncoded(reply->url()),
+				     &ok).toBase64());
 
 	    if(data.isEmpty() || reply->error() != QNetworkReply::NoError)
 	      {
@@ -1526,7 +1529,8 @@ void spoton_rss::slotContentReplyFinished(void)
 		    QString error
 		      (QString("The URL <a href=\"%1\">%1</a> "
 			       "does not have data.").
-		       arg(reply->url().toEncoded().constData()));
+		       arg(spoton_misc::urlToEncoded(reply->url()).
+			   constData()));
 
 		    logError(error);
 		  }
@@ -1536,7 +1540,8 @@ void spoton_rss::slotContentReplyFinished(void)
 		      (QString("The URL <a href=\"%1\">%1</a> "
 			       "cannot be indexed "
 			       "(%2).").
-		       arg(reply->url().toEncoded().constData()).
+		       arg(spoton_misc::urlToEncoded(reply->url()).
+			   constData()).
 		       arg(reply->errorString()));
 
 		    logError(error);
@@ -1548,8 +1553,10 @@ void spoton_rss::slotContentReplyFinished(void)
 	    if(ok)
 	      query.bindValue
 		(3, crypt->
-		 keyedHash(reply->property("original-url").toUrl().
-			   toEncoded(), &ok).toBase64());
+		 keyedHash(spoton_misc::urlToEncoded(reply->
+						     property("original-url").
+						     toUrl()),
+			   &ok).toBase64());
 
 	    if(ok)
 	      query.exec();
@@ -1797,7 +1804,7 @@ void spoton_rss::slotDownloadTimeout(void)
 	  this,
 	  SLOT(slotFeedReplyReadyRead(void)));
   logError(QString("Downloading feed <a href=\"%1\">%1</a>.").
-	   arg(reply->url().toEncoded().constData()));
+	   arg(spoton_misc::urlToEncoded(reply->url()).constData()));
 }
 
 void spoton_rss::slotFeedImageReplyFinished(void)
@@ -1853,8 +1860,8 @@ void spoton_rss::slotFeedReplyFinished(void)
 	    QString error
 	      (QString("The feed URL <a href=\"%1\">%1</a> "
 		       "is being redirected to <a href=\"%2\">%2</a>.").
-	       arg(url.toEncoded().constData()).
-	       arg(redirectUrl.toEncoded().constData()));
+	       arg(spoton_misc::urlToEncoded(url).constData()).
+	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 
 	    logError(error);
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
@@ -1879,7 +1886,8 @@ void spoton_rss::slotFeedReplyFinished(void)
       QString error
 	(QString("The URL <a href=\"%1\">%1</a> "
 		 "could not be accessed correctly (%2).").
-	 arg(reply->url().toEncoded().constData()).arg(reply->errorString()));
+	 arg(spoton_misc::urlToEncoded(reply->url()).constData()).
+	 arg(reply->errorString()));
 
       logError(error);
       reply->deleteLater();
@@ -2425,8 +2433,9 @@ void spoton_rss::slotRefreshTimeline(void)
 		  if(contentAvailable)
 		    {
 		      html.append("<a href=\"");
-		      html.append(list.value(2).toUrl().
-				  toEncoded().constData());
+		      html.append(spoton_misc::urlToEncoded(list.value(2).
+							    toUrl()).
+				  constData());
 		      html.append("\">");
 		      html.append
 			(spoton_misc::
@@ -2442,15 +2451,17 @@ void spoton_rss::slotRefreshTimeline(void)
 		    {
 		      html.append(" | ");
 		      html.append("<a href=\"hide-");
-		      html.append(list.value(2).toUrl().
-				  toEncoded().constData());
+		      html.append(spoton_misc::urlToEncoded(list.value(2).
+							    toUrl()).
+				  constData());
 		      html.append("\">");
 		      html.append("Hide URL");
 		      html.append("</a>");
 		      html.append(" | ");
 		      html.append("<a href=\"remove-");
-		      html.append(list.value(2).toUrl().
-				  toEncoded().constData());
+		      html.append(spoton_misc::urlToEncoded(list.value(2).
+							    toUrl()).
+				  constData());
 		      html.append("\">");
 		      html.append("Remove URL");
 		      html.append("</a>");
@@ -2459,15 +2470,17 @@ void spoton_rss::slotRefreshTimeline(void)
 		    {
 		      html.append(" | ");
 		      html.append("<a href=\"remove-");
-		      html.append(list.value(2).toUrl().
-				  toEncoded().constData());
+		      html.append(spoton_misc::urlToEncoded(list.value(2).
+							    toUrl()).
+				  constData());
 		      html.append("\">");
 		      html.append("Remove URL");
 		      html.append("</a>");
 		      html.append(" | ");
 		      html.append("<a href=\"visible-");
-		      html.append(list.value(2).toUrl().
-				  toEncoded().constData());
+		      html.append(spoton_misc::urlToEncoded(list.value(2).
+							    toUrl()).
+				  constData());
 		      html.append("\">");
 		      html.append("Show URL");
 		      html.append("</a>");
@@ -2479,7 +2492,7 @@ void spoton_rss::slotRefreshTimeline(void)
 		    {
 		      html.append
 			(QString("<font color=\"green\" size=3>%1</font>").
-			 arg(url.toEncoded().constData()));
+			 arg(spoton_misc::urlToEncoded(url).constData()));
 		      html.append("<br>");
 		    }
 
@@ -2528,7 +2541,7 @@ void spoton_rss::slotReplyError(QNetworkReply::NetworkError code)
     {
       error = QString("The URL <a href=\"%1\">%1</a> "
 		      "generated an error (%2).").
-	arg(reply->url().toEncoded().constData()).
+	arg(spoton_misc::urlToEncoded(reply->url()).constData()).
 	arg(reply->errorString());
       reply->deleteLater();
     }
@@ -2924,7 +2937,7 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to remove %1?").
-		 arg(u.toEncoded().constData()));
+		 arg(spoton_misc::urlToEncoded(u).constData()));
       mb.setWindowModality(Qt::WindowModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
@@ -2949,7 +2962,8 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
 	    query.exec("PRAGMA secure_delete = ON");
 	    query.prepare("DELETE FROM rss_feeds_links WHERE url_hash = ?");
 	    query.bindValue
-	      (0, crypt->keyedHash(u.toEncoded(), &ok).toBase64());
+	      (0, crypt->keyedHash(spoton_misc::urlToEncoded(u),
+				   &ok).toBase64());
 
 	    if(ok)
 	      query.exec();
@@ -2998,7 +3012,8 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
 		      "FROM rss_feeds_links WHERE "
 		      "url_hash = ?");
 	query.bindValue
-	  (0, crypt->keyedHash(url.toEncoded(), &ok).toBase64());
+	  (0, crypt->keyedHash(spoton_misc::urlToEncoded(url),
+			       &ok).toBase64());
 
 	if(ok && query.exec())
 	  if(query.next())

@@ -1646,7 +1646,7 @@ void spoton::slotLinkClicked(const QUrl &url)
     return;
 
   QMessageBox mb(this);
-  QString str(url.toEncoded().constData());
+  QString str(spoton_misc::urlToEncoded(url).constData());
 
   if(str.length() > 64)
     str = str.mid(0, 24) + "..." + str.right(24);

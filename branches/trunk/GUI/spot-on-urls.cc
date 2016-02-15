@@ -935,7 +935,8 @@ void spoton::slotImportUrls(void)
 
 			if(type == "accept")
 			  {
-			    if(u2.toEncoded().startsWith(u1.toEncoded()))
+			    if(spoton_misc::urlToEncoded(u2).
+			       startsWith(spoton_misc::urlToEncoded(u1)))
 			      {
 				ok = true;
 				break;
@@ -943,7 +944,8 @@ void spoton::slotImportUrls(void)
 			  }
 			else
 			  {
-			    if(u2.toEncoded().startsWith(u1.toEncoded()))
+			    if(spoton_misc::urlToEncoded(u2).
+			       startsWith(spoton_misc::urlToEncoded(u1)))
 			      {
 				ok = false;
 				break;
@@ -1792,7 +1794,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       url.setScheme(scheme);
 
       QMessageBox mb(this);
-      QString str(url.toEncoded().constData());
+      QString str(spoton_misc::urlToEncoded(url).constData());
 
       if(str.length() > 64)
 	str = str.mid(0, 24) + "..." + str.right(24);
@@ -1860,7 +1862,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to share %1?").
-		 arg(original.toEncoded().constData()));
+		 arg(spoton_misc::urlToEncoded(original).constData()));
 
       if(mb.exec() != QMessageBox::Yes)
 	return;
@@ -1876,7 +1878,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	{
 	  m_sb.status->setText(tr("URL %1 shared with your friendly "
 				  "participants.").
-			       arg(original.toEncoded().constData()));
+			       arg(spoton_misc::urlToEncoded(original).
+				   constData()));
 	  m_sb.status->repaint();
 	}
 
@@ -1979,7 +1982,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       if(m_settings.value("gui/openLinks", false).toBool())
 	{
 	  QMessageBox mb(this);
-	  QString str(url.toEncoded().constData());
+	  QString str(spoton_misc::urlToEncoded(url).constData());
 
 	  if(str.length() > 64)
 	    str = str.mid(0, 24) + "..." + str.right(24);
@@ -2035,7 +2038,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   QByteArray urlHash;
   bool ok = true;
 
-  urlHash = m_urlCommonCrypt->keyedHash(url.toEncoded(), &ok).toHex();
+  urlHash = m_urlCommonCrypt->
+    keyedHash(spoton_misc::urlToEncoded(url), &ok).toHex();
 
   if(!ok)
     return;

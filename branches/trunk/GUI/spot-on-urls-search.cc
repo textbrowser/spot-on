@@ -421,48 +421,50 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      if(scheme.contains("delete-"))
 		spoton_misc::logError
 		  (QString("spoton::showUrls(): malformed URL %1.").
-		   arg(url.toEncoded().constData()));
+		   arg(spoton_misc::urlToEncoded(url).constData()));
 
 	      if(scheme.contains("share-"))
 		spoton_misc::logError
 		  (QString("spoton::showUrls(): malformed URL %1.").
-		   arg(url.toEncoded().constData()));
+		   arg(spoton_misc::urlToEncoded(url).constData()));
 
 	      if(scheme.contains("view-"))
 		spoton_misc::logError
 		  (QString("spoton::showUrls(): malformed URL %1.").
-		   arg(url.toEncoded().constData()));
+		   arg(spoton_misc::urlToEncoded(url).constData()));
 
 	      url.setScheme(scheme);
 	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
-	      shareUrl.setPath(hash + "%3" + url.toEncoded());
+	      shareUrl.setPath(hash + "%3" +
+			       spoton_misc::urlToEncoded(url));
 	      shareUrl.setScheme(QString("share-%1").arg(url.scheme()));
-	      viewUrl.setPath(hash + "%3" + url.toEncoded());
+	      viewUrl.setPath(hash + "%3" +
+			      spoton_misc::urlToEncoded(url));
 	      viewUrl.setScheme(QString("view-%1").arg(url.scheme()));
 	      html.append(QString::number(count + m_urlOffset + 1));
 	      html.append(" | <a href=\"");
-	      html.append(url.toEncoded().constData());
+	      html.append(spoton_misc::urlToEncoded(url).constData());
 	      html.append("\">");
 	      html.append(spoton_misc::removeSpecialHtmlTags(title));
 	      html.append("</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
-	      html.append(deleteUrl.toEncoded().constData());
+	      html.append(spoton_misc::urlToEncoded(deleteUrl).constData());
 	      html.append("\">");
 	      html.append("Remove URL</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
-	      html.append(shareUrl.toEncoded().constData());
+	      html.append(spoton_misc::urlToEncoded(shareUrl).constData());
 	      html.append("\">");
 	      html.append("Share URL</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
-	      html.append(viewUrl.toEncoded().constData());
+	      html.append(spoton_misc::urlToEncoded(viewUrl).constData());
 	      html.append("\">");
 	      html.append("View Locally</a>");
 	      html.append("<br>");
 	      html.append(QString("<font color=\"green\" size=3>%1</font>").
-			  arg(url.toEncoded().constData()));
+			  arg(spoton_misc::urlToEncoded(url).constData()));
 	      html.append("<br>");
 	      html.append(QString("<font color=\"gray\" size=3>%1</font>").
 			  arg(spoton_misc::

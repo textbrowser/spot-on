@@ -405,7 +405,8 @@ void spoton_urldistribution::slotTimeout(void)
 
 		      if(type == "accept")
 			{
-			  if(u2.toEncoded().startsWith(u1.toEncoded()))
+			  if(spoton_misc::urlToEncoded(u2).
+			     startsWith(spoton_misc::urlToEncoded(u1)))
 			    {
 			      ok = true;
 			      break;
@@ -413,7 +414,8 @@ void spoton_urldistribution::slotTimeout(void)
 			}
 		      else
 			{
-			  if(u2.toEncoded().startsWith(u1.toEncoded()))
+			  if(spoton_misc::urlToEncoded(u2).
+			     startsWith(spoton_misc::urlToEncoded(u1)))
 			    {
 			      ok = false;
 			      break;

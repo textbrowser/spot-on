@@ -370,7 +370,7 @@ void spoton_encryptfile::slotConvert(void)
 	    }
         }
 
-      progress.hide();
+      progress.close();
       statusBar()->clearMessage();
       ui.cancel->setVisible(false);
       ui.convert->setEnabled(true);

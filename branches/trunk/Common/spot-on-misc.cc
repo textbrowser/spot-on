@@ -4222,7 +4222,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   QByteArray urlHash;
   bool ok = true;
 
-  urlHash = crypt->keyedHash(url.toEncoded(), &ok).toHex();
+  urlHash = crypt->keyedHash(urlToEncoded(url), &ok).toHex();
 
   if(!ok)
     {
@@ -4272,7 +4272,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 		  (QString("spoton_misc::importUrl(): a failure occurred "
 			   "while attempting to update the URL content. "
 			   "The URL is %1").
-		   arg(url.toEncoded().constData()));
+		   arg(urlToEncoded(url).constData()));
 		return ok;
 	      }
 
@@ -4356,7 +4356,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 		(QString("spoton_misc::importUrl(): an error occurred while "
 			 "attempting to create a URL revision. "
 			 "The URL is %1.").
-		 arg(url.toEncoded().constData()));
+		 arg(urlToEncoded(url).constData()));
 
 	    return ok;
 	  }
@@ -4400,7 +4400,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
       if(ok)
 	query.bindValue
-	  (3, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	  (3, crypt->encryptedThenHashed(urlToEncoded(url), &ok).
 	   toBase64());
 
       query.bindValue(4, urlHash.constData());
@@ -4466,7 +4466,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
       if(ok)
 	query.bindValue
-	  (5, crypt->encryptedThenHashed(url.toEncoded(), &ok).
+	  (5, crypt->encryptedThenHashed(urlToEncoded(url), &ok).
 	   toBase64());
 
       query.bindValue(6, urlHash.constData());
@@ -5526,4 +5526,17 @@ QString spoton_misc::removeSpecialHtmlTags(const QString &text)
   */
 
   return QString(text).remove(QRegExp("<[^>]*>"));
+}
+
+QByteArray spoton_misc::urlToEncoded(const QUrl &url)
+{
+#if QT_VERSION < 0x050000
+  QByteArray bytes(url.toEncoded());
+
+  bytes.replace("(", "%28");
+  bytes.replace(")", "%29");
+  return bytes;
+#else
+  return url.toEncoded();
+#endif
 }
