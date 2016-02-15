@@ -2017,7 +2017,7 @@ void spoton_rss::slotImport(void)
       progress->setLabelText(tr("Importing URLs. Please be patient."));
       progress->setMaximum(0);
       progress->setMinimum(0);
-      progress->setWindowModality(Qt::ApplicationModal);
+      progress->setModal(true);
       progress->setWindowTitle(tr("%1: Importing URLs").
 			       arg(SPOTON_APPLICATION_NAME));
       progress->show();
@@ -2278,7 +2278,7 @@ void spoton_rss::slotRefreshTimeline(void)
   progress.setLabelText(tr("Populating..."));
   progress.setMaximum(0);
   progress.setMinimum(0);
-  progress.setWindowModality(Qt::ApplicationModal);
+  progress.setModal(true);
   progress.setWindowTitle(tr("%1: Populating").
 			  arg(SPOTON_APPLICATION_NAME));
   progress.show();
