@@ -29,6 +29,7 @@
 #include <QFileDialog>
 #include <QKeyEvent>
 #include <QMessageBox>
+#include <QProgressDialog>
 #include <QSettings>
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
@@ -227,11 +228,12 @@ void spoton_encryptfile::slotConvert(void)
       goto done_label;
     }
 
-  if(destination == fileInfo)
-    {
-      error = tr("The destination and origin should be distinct.");
-      goto done_label;
-    }
+  if(ui.file_mode->isChecked())
+    if(destination == fileInfo)
+      {
+	error = tr("The destination and origin should be distinct.");
+	goto done_label;
+      }
 
   if(password.length() < 16)
     {
@@ -282,21 +284,117 @@ void spoton_encryptfile::slotConvert(void)
   else
     modeOfOperation = "gcm";
 
-  if(ui.decrypt->isChecked())
-    m_future = QtConcurrent::run
-      (this, &spoton_encryptfile::decrypt,
-       fileInfo.absoluteFilePath(),
-       destination.absoluteFilePath(),
-       list,
-       modeOfOperation);
+  if(ui.directory_mode->isChecked())
+    {
+      QStringList filters;
+
+      if(ui.decrypt->isChecked())
+	filters << "*.enc";
+      else
+	filters << "*";
+
+      QDir baseDir(destination.absoluteFilePath());
+      QDir dir(fileInfo.absoluteFilePath());
+      QFileInfoList files(dir.entryInfoList(filters, QDir::Files));
+      QProgressDialog progress(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      progress.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      progress.setLabelText(tr("Processing file(s)..."));
+      progress.setMaximum(0);
+      progress.setMinimum(0);
+      progress.setModal(true);
+      progress.setWindowTitle(tr("%1: Processing File(s)").
+			      arg(SPOTON_APPLICATION_NAME));
+      progress.show();
+#ifndef Q_OS_MAC
+      progress.repaint();
+      QApplication::processEvents();
+#endif
+
+      while(true)
+	{
+#ifndef Q_OS_MAC
+	  progress.repaint();
+	  QApplication::processEvents();
+#endif
+
+	  if(progress.wasCanceled())
+	    {
+	      m_future.cancel();
+	      m_future.waitForFinished();
+	      break;
+	    }
+	  else if(m_future.isRunning())
+	    continue;
+
+	  if(files.isEmpty())
+	    break;
+
+	  QFileInfo fileInfo(files.takeFirst());
+
+	  if(ui.decrypt->isChecked())
+	    {
+	      QString destination(baseDir.absolutePath());
+
+	      destination.append(QDir::separator());
+	      destination.append(fileInfo.fileName());
+
+	      if(destination.endsWith(".enc"))
+		destination = destination.mid(0, destination.length() - 4);
+
+	      m_future = QtConcurrent::run
+		(this, &spoton_encryptfile::decrypt,
+		 fileInfo.absoluteFilePath(),
+		 destination,
+		 list,
+		 modeOfOperation);
+	    }
+	  else
+	    {
+	      QString destination(baseDir.absolutePath());
+
+	      destination.append(QDir::separator());
+	      destination.append(fileInfo.fileName());
+	      destination.append(".enc");
+	      m_future = QtConcurrent::run
+		(this, &spoton_encryptfile::encrypt,
+		 ui.sign->isChecked(),
+		 fileInfo.absoluteFilePath(),
+		 destination,
+		 list,
+		 modeOfOperation);
+	    }
+        }
+
+      progress.hide();
+      statusBar()->clearMessage();
+      ui.cancel->setVisible(false);
+      ui.convert->setEnabled(true);
+      ui.reset->setEnabled(true);
+      ui.progressBar->setVisible(false);
+    }
   else
-    m_future = QtConcurrent::run
-      (this, &spoton_encryptfile::encrypt,
-       ui.sign->isChecked(),
-       fileInfo.absoluteFilePath(),
-       destination.absoluteFilePath(),
-       list,
-       modeOfOperation);
+    {
+      if(ui.decrypt->isChecked())
+	m_future = QtConcurrent::run
+	  (this, &spoton_encryptfile::decrypt,
+	   fileInfo.absoluteFilePath(),
+	   destination.absoluteFilePath(),
+	   list,
+	   modeOfOperation);
+      else
+	m_future = QtConcurrent::run
+	  (this, &spoton_encryptfile::encrypt,
+	   ui.sign->isChecked(),
+	   fileInfo.absoluteFilePath(),
+	   destination.absoluteFilePath(),
+	   list,
+	   modeOfOperation);
+    }
 
  done_label:
 
@@ -331,10 +429,9 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	  sign = bytes.mid(0, 1).toInt();
 	  bytes.clear();
 	  bytes.resize
-	    (qMax(1024 / 8, credentials.value(4).toInt() / 8) + 16 + 4);
+	    (qMax(1024 / 8, credentials.value(4).toInt() / 8) +
+	     LENGTH_OF_INITIALIZATION_VECTOR + 4);
 	  /*
-	  ** 16 = length of initialization
-	  **      vector.
 	  ** 4 = length of original buffer.
 	  */
 	}
@@ -346,7 +443,8 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 
       if(sign)
 	{
-	  emit status(tr("Verifying the hash."));
+	  emit status(tr("Verifying the hash of %1.").
+		      arg(fileName));
 	  rc = file1.read(hash.data(),
 			  spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 
@@ -441,7 +539,7 @@ void spoton_encryptfile::decrypt(const QString &fileName,
       else
 	emit completed(0);
 
-      emit status("Decrypting the file.");
+      emit status(tr("Decrypting the file %1.").arg(fileName));
 
       QByteArray eKey(credentials.value(2).toByteArray());
 
@@ -547,7 +645,7 @@ void spoton_encryptfile::encrypt(const bool sign,
 
       bytes.clear();
       bytes.resize(qMax(1024 / 8, credentials.value(4).toInt() / 8));
-      emit status("Encrypting the file.");
+      emit status(tr("Encrypting the file %1.").arg(fileName));
 
       QByteArray eKey(credentials.value(2).toByteArray());
 
@@ -673,9 +771,19 @@ void spoton_encryptfile::slotSelect(void)
      arg(SPOTON_APPLICATION_NAME));
 
   if(sender() == ui.select)
-    dialog.setFileMode(QFileDialog::ExistingFile);
+    {
+      if(ui.directory_mode->isChecked())
+	dialog.setFileMode(QFileDialog::Directory);
+      else
+	dialog.setFileMode(QFileDialog::ExistingFile);
+    }
   else
-    dialog.setFileMode(QFileDialog::AnyFile);
+    {
+      if(ui.directory_mode->isChecked())
+	dialog.setFileMode(QFileDialog::Directory);
+      else
+	dialog.setFileMode(QFileDialog::AnyFile);
+    }
 
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
@@ -709,6 +817,9 @@ void spoton_encryptfile::slotSelect(void)
 
 void spoton_encryptfile::slotCompleted(const QString &error)
 {
+  if(ui.directory_mode->isChecked())
+    return;
+
   statusBar()->clearMessage();
   ui.cancel->setVisible(false);
   ui.convert->setEnabled(true);
@@ -747,6 +858,7 @@ void spoton_encryptfile::slotReset(void)
   ui.destination->clear();
   ui.encrypt->setChecked(true);
   ui.file->clear();
+  ui.file_mode->setChecked(true);
   ui.hash->setCurrentIndex(0);
   ui.iteration_count->setValue(ui.iteration_count->minimum());
   ui.password->clear();
