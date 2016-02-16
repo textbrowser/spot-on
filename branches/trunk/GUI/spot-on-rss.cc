@@ -1670,6 +1670,9 @@ void spoton_rss::slotDeleteFeed(void)
 
 void spoton_rss::slotDownloadContent(void)
 {
+  if(!findChildren<QProgressDialog *> ().isEmpty())
+    return;
+
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
