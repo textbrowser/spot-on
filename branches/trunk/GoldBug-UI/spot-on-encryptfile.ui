@@ -19,16 +19,7 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="leftMargin">
-     <number>5</number>
-    </property>
-    <property name="topMargin">
-     <number>5</number>
-    </property>
-    <property name="rightMargin">
-     <number>5</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>5</number>
     </property>
     <item>
@@ -324,16 +315,7 @@ QPushButton:pressed {
          <property name="spacing">
           <number>5</number>
          </property>
-         <property name="leftMargin">
-          <number>5</number>
-         </property>
-         <property name="topMargin">
-          <number>5</number>
-         </property>
-         <property name="rightMargin">
-          <number>5</number>
-         </property>
-         <property name="bottomMargin">
+         <property name="margin">
           <number>5</number>
          </property>
          <item>
@@ -525,7 +507,7 @@ QPushButton:pressed {
          </sizepolicy>
         </property>
         <property name="text">
-         <string>&amp;Sign file.</string>
+         <string>&amp;Sign file(s).</string>
         </property>
         <property name="checked">
          <bool>true</bool>
