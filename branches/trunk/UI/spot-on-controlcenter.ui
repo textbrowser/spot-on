@@ -3959,11 +3959,9 @@
                               </item>
                              </layout>
                              <zorder>label_3</zorder>
-                             <zorder></zorder>
                              <zorder>label_7</zorder>
                              <zorder>proxyHostname</zorder>
                              <zorder>label_8</zorder>
-                             <zorder></zorder>
                              <zorder>label_19</zorder>
                              <zorder>proxyUsername</zorder>
                              <zorder>label_20</zorder>
