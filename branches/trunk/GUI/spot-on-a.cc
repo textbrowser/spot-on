@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 
   QApplication qapplication(argc, argv);
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
   QWebEngineProfile::defaultProfile()->setCachePath("");
   QWebEngineProfile::defaultProfile()->setHttpCacheMaximumSize(1);
   QWebEngineProfile::defaultProfile()->setHttpCacheType

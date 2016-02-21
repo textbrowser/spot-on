@@ -28,7 +28,7 @@
 #include <QPrintPreviewDialog>
 #include <QPrinter>
 #include <QSqlQuery>
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebEngineProfile>
 #else
 #include <QWebHitTestResult>
@@ -46,7 +46,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
   m_database = db;
   m_ui.setupUi(this);
   m_urlHash = urlHash;
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
   m_ui.action_Print_Preview->setEnabled(false);
   m_webView = new QWebEngineView(this);
   m_webView->page()->deleteLater();
@@ -79,7 +79,8 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
-#if QT_VERSION < 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#else
   connect(m_webView,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
@@ -96,7 +97,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 
 spoton_pageviewer::~spoton_pageviewer()
 {
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
   QWebEngineProfile::defaultProfile()->clearAllVisitedLinks();
 #else
   QWebSettings::clearMemoryCaches();
@@ -105,14 +106,15 @@ spoton_pageviewer::~spoton_pageviewer()
 
 void spoton_pageviewer::slotCopyLinkLocation(void)
 {
-#if QT_VERSION < 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#else
   m_webView->triggerPageAction(QWebPage::CopyLinkToClipboard);
 #endif
 }
 
 void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 {
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
   Q_UNUSED(point);
 #else
   QWebHitTestResult result = m_webView->page()->currentFrame()->
@@ -134,7 +136,7 @@ void spoton_pageviewer::slotFind(void)
 {
   QString text(m_ui.find->text());
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
   m_webView->findText(text);
 #else
   if(!m_webView->findText(text, QWebPage::FindWrapsAroundDocument))
@@ -226,7 +228,7 @@ void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
   if(data.trimmed().isEmpty())
     m_webView->setContent("Malformed content. Enjoy!");
   else
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
     m_webView->setContent(data, "text/html");
 #else
     m_webView->setContent(data);
@@ -255,7 +257,7 @@ void spoton_pageviewer::slotPagePrintPreview(void)
 
   if(printDialog.exec() == QDialog::Accepted)
     {
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
       m_webView->render(&printer);
 #else
       m_webView->print(&printer);
@@ -268,7 +270,7 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
   if(!printer)
     return;
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
 #else
   m_webView->print(printer);
 #endif
@@ -332,7 +334,7 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 	    if(content.trimmed().isEmpty())
 	      m_webView->setContent("Malformed content. Enjoy!");
 	    else
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
 	      m_webView->setContent(content, "text/html");
 #else
 	      m_webView->setContent(content);

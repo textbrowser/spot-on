@@ -85,7 +85,7 @@ class spoton_pageviewer: public QMainWindow
   QPalette m_originalFindPalette;
   QSqlDatabase m_database;
   QString m_urlHash;
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
   QWebEngineView *m_webView;
 #else
   QWebView *m_webView;
