@@ -30,12 +30,43 @@
 
 #include <QMainWindow>
 #include <QSqlDatabase>
+#if QT_VERSION >= 0x050000
+#include <QWebEngineView>
+#else
 #include <QWebView>
+#endif
 
 #include "ui_spot-on-pageviewer.h"
 
 class QPrinter;
 class spoton_crypt;
+
+#if QT_VERSION >= 0x050000
+class spoton_webengine_page: public QWebEnginePage
+{
+  Q_OBJECT
+
+ public:
+  spoton_webengine_page(QObject *parent):QWebEnginePage(parent)
+  {
+  }
+
+  ~spoton_webengine_page()
+  {
+  }
+
+ private:
+  bool acceptNavigationRequest(const QUrl &url,
+			       NavigationType type,
+			       bool isMainFrame)
+  {
+    Q_UNUSED(isMainFrame);
+    Q_UNUSED(type);
+    Q_UNUSED(url);
+    return false;
+  }
+};
+#endif
 
 class spoton_pageviewer: public QMainWindow
 {
@@ -54,7 +85,11 @@ class spoton_pageviewer: public QMainWindow
   QPalette m_originalFindPalette;
   QSqlDatabase m_database;
   QString m_urlHash;
+#if QT_VERSION >= 0x050000
+  QWebEngineView *m_webView;
+#else
   QWebView *m_webView;
+#endif
   Ui_pageviewer m_ui;
 
  private slots:

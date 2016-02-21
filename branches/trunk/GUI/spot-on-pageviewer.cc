@@ -28,7 +28,11 @@
 #include <QPrintPreviewDialog>
 #include <QPrinter>
 #include <QSqlQuery>
+#if QT_VERSION >= 0x050000
+#include <QWebEngineProfile>
+#else
 #include <QWebHitTestResult>
+#endif
 
 #include "../Common/spot-on-crypt.h"
 #include "spot-on.h"
@@ -42,6 +46,12 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
   m_database = db;
   m_ui.setupUi(this);
   m_urlHash = urlHash;
+#if QT_VERSION >= 0x050000
+  m_ui.action_Print_Preview->setEnabled(false);
+  m_webView = new QWebEngineView(this);
+  m_webView->page()->deleteLater();
+  m_webView->setPage(new spoton_webengine_page(this));
+#else
   m_webView = new QWebView(this);
   m_webView->page()->networkAccessManager()->
     setNetworkAccessible(QNetworkAccessManager::NotAccessible);
@@ -51,6 +61,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 			    QPainter::HighQualityAntialiasing |
 			    QPainter::SmoothPixmapTransform |
 			    QPainter::TextAntialiasing);
+#endif
   m_ui.frame->layout()->addWidget(m_webView);
   connect(m_ui.action_Find,
 	  SIGNAL(triggered(void)),
@@ -68,10 +79,12 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
+#if QT_VERSION < 0x050000
   connect(m_webView,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotCustomContextMenuRequested(const QPoint &)));
+#endif
   m_originalFindPalette = m_ui.find->palette();
 #if QT_VERSION >= 0x040700
   m_ui.find->setPlaceholderText(tr("Find Text"));
@@ -83,16 +96,25 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 
 spoton_pageviewer::~spoton_pageviewer()
 {
+#if QT_VERSION >= 0x050000
+  QWebEngineProfile::defaultProfile()->clearAllVisitedLinks();
+#else
   QWebSettings::clearMemoryCaches();
+#endif
 }
 
 void spoton_pageviewer::slotCopyLinkLocation(void)
 {
+#if QT_VERSION < 0x050000
   m_webView->triggerPageAction(QWebPage::CopyLinkToClipboard);
+#endif
 }
 
 void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 {
+#if QT_VERSION >= 0x050000
+  Q_UNUSED(point);
+#else
   QWebHitTestResult result = m_webView->page()->currentFrame()->
     hitTestContent(point);
 
@@ -105,10 +127,13 @@ void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 		     SLOT(slotCopyLinkLocation(void)));
       menu.exec(m_webView->mapToGlobal(point));
     }
+#endif
 }
 
 void spoton_pageviewer::slotFind(void)
 {
+#if QT_VERSION >= 0x050000
+#else
   QString text(m_ui.find->text());
 
   if(!m_webView->findText(text, QWebPage::FindWrapsAroundDocument))
@@ -126,6 +151,7 @@ void spoton_pageviewer::slotFind(void)
     }
   else
     m_ui.find->setPalette(m_originalFindPalette);
+#endif
 }
 
 void spoton_pageviewer::slotFindInitialize(void)
@@ -199,7 +225,11 @@ void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
   if(data.trimmed().isEmpty())
     m_webView->setContent("Malformed content. Enjoy!");
   else
+#if QT_VERSION >= 0x050000
+    m_webView->setContent(data, "text/html");
+#else
     m_webView->setContent(data);
+#endif
 
   m_webView->setFocus();
   m_ui.url->setText(url.toString());
@@ -223,7 +253,13 @@ void spoton_pageviewer::slotPagePrintPreview(void)
   QApplication::restoreOverrideCursor();
 
   if(printDialog.exec() == QDialog::Accepted)
-    m_webView->print(&printer);
+    {
+#if QT_VERSION >= 0x050000
+      m_webView->render(&printer);
+#else
+      m_webView->print(&printer);
+#endif
+    }
 }
 
 void spoton_pageviewer::slotPrint(QPrinter *printer)
@@ -231,7 +267,10 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
   if(!printer)
     return;
 
+#if QT_VERSION >= 0x050000
+#else
   m_webView->print(printer);
+#endif
 }
 
 void spoton_pageviewer::slotRevisionChanged(int index)
@@ -292,7 +331,11 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 	    if(content.trimmed().isEmpty())
 	      m_webView->setContent("Malformed content. Enjoy!");
 	    else
+#if QT_VERSION >= 0x050000
+	      m_webView->setContent(content, "text/html");
+#else
 	      m_webView->setContent(content);
+#endif
 
 	    QLocale locale;
 

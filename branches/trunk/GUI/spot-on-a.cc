@@ -49,7 +49,12 @@ extern "C"
 #include <QScopedPointer>
 #include <QStandardItemModel>
 #include <QThread>
+#if QT_VERSION >= 0x050000
+#include <QWebEngineProfile>
+#include <QWebEngineSettings>
+#else
 #include <QWebSettings>
+#endif
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetooth.h>
 #endif
@@ -184,6 +189,24 @@ int main(int argc, char *argv[])
 
   QApplication qapplication(argc, argv);
 
+#if QT_VERSION >= 0x050000
+  QWebEngineProfile::defaultProfile()->setCachePath("");
+  QWebEngineProfile::defaultProfile()->setHttpCacheMaximumSize(1);
+  QWebEngineProfile::defaultProfile()->setHttpCacheType
+    (QWebEngineProfile::MemoryHttpCache);
+  QWebEngineProfile::defaultProfile()->setHttpUserAgent("");
+  QWebEngineProfile::defaultProfile()->setPersistentCookiesPolicy
+    (QWebEngineProfile::NoPersistentCookies);
+  QWebEngineProfile::defaultProfile()->setPersistentStoragePath("");
+  QWebEngineSettings::globalSettings()->setAttribute
+    (QWebEngineSettings::AutoLoadImages, false);
+  QWebEngineSettings::globalSettings()->setAttribute
+    (QWebEngineSettings::JavascriptEnabled, false);
+  QWebEngineSettings::globalSettings()->setAttribute
+    (QWebEngineSettings::LocalContentCanAccessFileUrls, false);
+  QWebEngineSettings::globalSettings()->setAttribute
+    (QWebEngineSettings::LocalStorageEnabled, false);
+#else
   QWebSettings::globalSettings()->setAttribute
     (QWebSettings::AutoLoadImages, false);
   QWebSettings::globalSettings()->setAttribute
@@ -204,6 +227,7 @@ int main(int argc, char *argv[])
     (QWebSettings::MissingImageGraphic, QPixmap());
   QWebSettings::globalSettings()->setWebGraphic
     (QWebSettings::MissingPluginGraphic, QPixmap());
+#endif
 
   QThread *thread = qapplication.thread();
 
