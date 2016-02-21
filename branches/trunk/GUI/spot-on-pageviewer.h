@@ -41,7 +41,7 @@
 class QPrinter;
 class spoton_crypt;
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
 class spoton_webengine_page: public QWebEnginePage
 {
   Q_OBJECT
