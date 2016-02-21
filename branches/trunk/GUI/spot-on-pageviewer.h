@@ -30,7 +30,7 @@
 
 #include <QMainWindow>
 #include <QSqlDatabase>
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebEngineView>
 #else
 #include <QWebView>
