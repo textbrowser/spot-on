@@ -132,10 +132,11 @@ void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 
 void spoton_pageviewer::slotFind(void)
 {
-#if QT_VERSION >= 0x050000
-#else
   QString text(m_ui.find->text());
 
+#if QT_VERSION >= 0x050000
+  m_webView->findText(text);
+#else
   if(!m_webView->findText(text, QWebPage::FindWrapsAroundDocument))
     {
       if(!text.isEmpty())
