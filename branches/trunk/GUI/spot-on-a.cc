@@ -49,7 +49,7 @@ extern "C"
 #include <QScopedPointer>
 #include <QStandardItemModel>
 #include <QThread>
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
 #else
