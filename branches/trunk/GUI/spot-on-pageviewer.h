@@ -82,6 +82,7 @@ class spoton_pageviewer: public QMainWindow
 	       const int compressedSize);
 
  private:
+  QByteArray m_content;
   QPalette m_originalFindPalette;
   QSqlDatabase m_database;
   QString m_urlHash;

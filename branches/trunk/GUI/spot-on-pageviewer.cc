@@ -38,6 +38,7 @@
 #include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-pageviewer.h"
+#include "spot-on-textbrowser.h"
 
 spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 				     const QString &urlHash,
@@ -47,7 +48,6 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
   m_ui.setupUi(this);
   m_urlHash = urlHash;
 #if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
-  m_ui.action_Print_Preview->setEnabled(false);
   m_webView = new QWebEngineView(this);
   m_webView->page()->deleteLater();
   m_webView->setPage(new spoton_webengine_page(this));
@@ -226,13 +226,19 @@ void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
      arg(locale.toString(compressedSize / 1024)));
 
   if(data.trimmed().isEmpty())
-    m_webView->setContent("Malformed content. Enjoy!");
+    {
+      m_content = "Malformed content. Enjoy!";
+      m_webView->setContent(m_content);
+    }
   else
+    {
+      m_content = data;
 #if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
-    m_webView->setContent(data, "text/html");
+      m_webView->setContent(m_content, "text/html");
 #else
-    m_webView->setContent(data);
+      m_webView->setContent(m_content);
 #endif
+    }
 
   m_webView->setFocus();
   m_ui.url->setText(url.toString());
@@ -271,6 +277,10 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
     return;
 
 #if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+  spoton_textbrowser textedit(this);
+
+  textedit.setHtml(m_content);
+  textedit.print(printer);
 #else
   m_webView->print(printer);
 #endif
@@ -332,19 +342,25 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 	    content = qUncompress(content);
 
 	    if(content.trimmed().isEmpty())
-	      m_webView->setContent("Malformed content. Enjoy!");
+	      {
+		m_content = "Malformed content. Enjoy!";
+		m_webView->setContent(m_content);
+	      }
 	    else
+	      {
+		m_content = content;
 #if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
-	      m_webView->setContent(content, "text/html");
+		m_webView->setContent(m_content, "text/html");
 #else
-	      m_webView->setContent(content);
+		m_webView->setContent(m_content);
 #endif
+	      }
 
 	    QLocale locale;
 
 	    m_ui.size->setText
 	      (tr("%1 KiB, Compressed %2 KiB").
-	       arg(locale.toString(content.length() / 1024)).
+	       arg(locale.toString(m_content.length() / 1024)).
 	       arg(locale.toString(query.value(0).
 				   toByteArray().length() / 1024)));
 	  }
