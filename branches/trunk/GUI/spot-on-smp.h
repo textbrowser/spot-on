@@ -43,9 +43,11 @@ class spoton_smp
   spoton_smp(void);
   ~spoton_smp(void);
   static const unsigned int BITS = 1536;
+  static gcry_mpi_t generateWeakRandomPrime(bool *ok);
   static void test1(void);
   static void test2(void);
   static void test3(void);
+  static void test4(void);
   QByteArray guessSha(void) const;
   QByteArray guessWhirlpool(void) const;
   QList<QByteArray> nextStep(const QList<QByteArray> &other,
@@ -55,6 +57,12 @@ class spoton_smp
   int step(void) const;
   void initialize();
   void setGuess(const QString &guess);
+
+  void setModulus(const gcry_mpi_t modulus)
+  {
+    gcry_mpi_release(m_modulus);
+    m_modulus = gcry_mpi_copy(modulus);
+  }
 
  private:
   bool m_passed;

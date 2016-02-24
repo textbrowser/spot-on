@@ -170,10 +170,14 @@ QList<QByteArray> spoton_smp::step1(bool *ok)
 
   if(!m_a2)
     GOTO_DONE_LABEL;
+  else if(ok && !*ok)
+    GOTO_DONE_LABEL;
 
   m_a3 = generateRandomExponent(ok);
 
   if(!m_a3)
+    GOTO_DONE_LABEL;
+  else if(ok && !*ok)
     GOTO_DONE_LABEL;
 
   /*
@@ -210,6 +214,10 @@ QList<QByteArray> spoton_smp::step1(bool *ok)
   gcry_free(buffer);
   buffer = 0;
   m_step = 1;
+
+  if(ok)
+    *ok = true;
+
   terminalState = false;
 
  done_label:
@@ -318,10 +326,14 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
 
   if(!m_b2)
     GOTO_DONE_LABEL;
+  else if(ok && !*ok)
+    GOTO_DONE_LABEL;
 
   m_b3 = generateRandomExponent(ok);
 
   if(!m_b3)
+    GOTO_DONE_LABEL;
+  else if(ok && !*ok)
     GOTO_DONE_LABEL;
 
   /*
@@ -365,7 +377,9 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
 
   r = generateRandomExponent(ok);
 
-  if(!r)
+  if(ok && !*ok)
+    GOTO_DONE_LABEL;
+  else if(!r)
     GOTO_DONE_LABEL;
 
   /*
@@ -398,6 +412,10 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   gcry_free(buffer);
   buffer = 0;
   m_step = 2;
+
+  if(ok)
+    *ok = true;
+
   terminalState = false;
 
  done_label:
@@ -510,7 +528,9 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
 
   s = generateRandomExponent(ok);
 
-  if(!s)
+  if(ok && !*ok)
+    GOTO_DONE_LABEL;
+  else if(!s)
     GOTO_DONE_LABEL;
 
   /*
@@ -594,6 +614,10 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   gcry_free(buffer);
   buffer = 0;
   m_step = 3;
+
+  if(ok)
+    *ok = true;
+
   terminalState = false;
 
  done_label:
@@ -759,6 +783,10 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
     }
 
   m_step = 4;
+
+  if(ok)
+    *ok = true;
+
   terminalState = false;
 
  done_label:
@@ -787,6 +815,9 @@ bool spoton_smp::passed(void) const
 gcry_mpi_t spoton_smp::generateRandomExponent(bool *ok)
 {
   gcry_mpi_t exponent = 0;
+
+  gcry_fast_random_poll();
+
   unsigned char *buffer = (unsigned char *) gcry_random_bytes_secure
     (BITS / 8, GCRY_STRONG_RANDOM);
 
@@ -806,9 +837,35 @@ gcry_mpi_t spoton_smp::generateRandomExponent(bool *ok)
       goto done_label;
     }
 
+  if(ok)
+    *ok = true;
+
  done_label:
   gcry_free(buffer);
   return exponent;
+}
+
+gcry_mpi_t spoton_smp::generateWeakRandomPrime(bool *ok)
+{
+  gcry_mpi_t prime = 0;
+
+  gcry_fast_random_poll();
+
+  if(gcry_prime_generate(&prime,
+			 BITS,
+			 0, 0, 0, 0,
+			 GCRY_WEAK_RANDOM, 0) != 0)
+    {
+      if(ok)
+	*ok = false;
+    }
+  else
+    {
+      if(ok)
+	*ok = true;
+    }
+
+  return prime;
 }
 
 int spoton_smp::step(void) const
@@ -1055,6 +1112,10 @@ void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
     }
 
   m_step = 5;
+
+  if(ok)
+    *ok = true;
+
   terminalState = false;
 
  done_label:
@@ -1110,9 +1171,9 @@ void spoton_smp::test1(void)
     }
 
   if(passed)
-    qDebug() << "test1: Secrets are identical from b's perspective.";
+    qDebug() << "test1: Secrets are identical from b's perspective. Good!";
   else
-    qDebug() << "test1: Secrets are different from b's perspective.";
+    qDebug() << "test1: Secrets are different from b's perspective. Awful!";
 
   a.nextStep(list, &ok, &passed);
 
@@ -1123,9 +1184,9 @@ void spoton_smp::test1(void)
     }
 
   if(passed)
-    qDebug() << "test1: Secrets are identical from a's perspective.";
+    qDebug() << "test1: Secrets are identical from a's perspective. Good!";
   else
-    qDebug() << "test1: Secrets are different from a's perspective.";
+    qDebug() << "test1: Secrets are different from a's perspective. Awful!";
 }
 
 void spoton_smp::test2(void)
@@ -1171,9 +1232,9 @@ void spoton_smp::test2(void)
     }
 
   if(passed)
-    qDebug() << "test2: Secrets are identical from b's perspective.";
+    qDebug() << "test2: Secrets are identical from b's perspective. Awful!";
   else
-    qDebug() << "test2: Secrets are different from b's perspective.";
+    qDebug() << "test2: Secrets are different from b's perspective. Good!";
 
   a.nextStep(list, &ok, &passed);
 
@@ -1184,9 +1245,9 @@ void spoton_smp::test2(void)
     }
 
   if(passed)
-    qDebug() << "test2: Secrets are identical from a's perspective.";
+    qDebug() << "test2: Secrets are identical from a's perspective. Awful!";
   else
-    qDebug() << "test2: Secrets are different from a's perspective.";
+    qDebug() << "test2: Secrets are different from a's perspective. Good!";
 }
 
 void spoton_smp::test3(void)
@@ -1235,5 +1296,75 @@ void spoton_smp::test3(void)
     }
 
   if(!passed)
-    qDebug() << "test3: Secrets are different from b's perspective.";
+    qDebug() << "test3: Secrets are different from b's perspective. Good!";
+}
+
+void spoton_smp::test4(void)
+{
+  QList<QByteArray> list;
+  bool ok = true;
+  bool passed = false;
+  gcry_mpi_t prime = generateWeakRandomPrime(&ok);
+  spoton_smp a;
+  spoton_smp b;
+
+  if(!ok)
+    {
+      qDebug() << "test4: generateWeakRandomPrime() failure.";
+      return;
+    }
+
+  a.setGuess("This is a test using a random modulus.");
+  a.setModulus(prime);
+  b.setGuess("This is a test using a random modulus.");
+  b.setModulus(prime);
+  list = a.step1(&ok);
+
+  if(!ok)
+    {
+      qDebug() << "test4: SMP step 1 failure.";
+      return;
+    }
+
+  list = b.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test4: SMP step 2 failure.";
+      return;
+    }
+
+  list = a.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test4: SMP step 3 failure.";
+      return;
+    }
+
+  list = b.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test4: SMP step 4 failure.";
+      return;
+    }
+
+  if(passed)
+    qDebug() << "test4: Secrets are identical from b's perspective. Good!";
+  else
+    qDebug() << "test4: Secrets are different from b's perspective. Awful!";
+
+  a.nextStep(list, &ok, &passed);
+
+  if(!ok)
+    {
+      qDebug() << "test4: SMP step 5 failure.";
+      return;
+    }
+
+  if(passed)
+    qDebug() << "test4: Secrets are identical from a's perspective. Good!";
+  else
+    qDebug() << "test4: Secrets are different from a's perspective. Awful!";
 }
