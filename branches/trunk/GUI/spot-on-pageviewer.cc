@@ -233,11 +233,14 @@ void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
   else
     {
       m_content = data;
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
-      m_webView->setContent(m_content, "text/html");
-#else
-      m_webView->setContent(m_content);
-#endif
+
+      /*
+      ** setContent() will not display
+      ** some characters. setHtml() may
+      ** produce network activity.
+      */
+
+      m_webView->setHtml(m_content);
     }
 
   m_webView->setFocus();
@@ -349,11 +352,15 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 	    else
 	      {
 		m_content = content;
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
-		m_webView->setContent(m_content, "text/html");
-#else
-		m_webView->setContent(m_content);
-#endif
+
+		/*
+		** setContent() will not
+		** display some characters.
+		** setHtml() may produce
+		** network activity.
+		*/
+
+		m_webView->setHtml(m_content);
 	      }
 
 	    QLocale locale;
