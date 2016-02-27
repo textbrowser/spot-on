@@ -2723,13 +2723,6 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 void spoton_rss::slotStatisticsTimeout(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  statusBar()->showMessage(tr("0 RSS Feeds | "
-			      "0 Hidden URLs | "
-			      "0 Imported URLs | "
-			      "0 Not Imported URLs | "
-			      "0 Indexed URLs | "
-			      "0 Not Indexed URLs | "
-			      "0 Total URLs"));
 
   QList<QVariant> list;
   QString connectionName("");
@@ -2787,6 +2780,14 @@ void spoton_rss::slotStatisticsTimeout(void)
 	   arg(locale.toString(counts.value(5))).
 	   arg(locale.toString(counts.value(6))));
       }
+    else
+      statusBar()->showMessage(tr("0 RSS Feeds | "
+				  "0 Hidden URLs | "
+				  "0 Imported URLs | "
+				  "0 Not Imported URLs | "
+				  "0 Indexed URLs | "
+				  "0 Not Indexed URLs | "
+				  "0 Total URLs"));
 
     db.close();
   }
