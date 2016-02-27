@@ -549,7 +549,7 @@ spoton::spoton(void):QMainWindow()
     ("QToolButton {border: none;}"
      "QToolButton::menu-button {border: none;}");
 #endif
-#ifndef SPOTON_LINKED_WITH_LIBBOTAN
+#ifndef SPOTON_MCELIECE_ENABLED
   m_ui.encryptionKeyType->model()->setData
     (m_ui.encryptionKeyType->model()->index(1, 0), 0, Qt::UserRole - 1);
 #endif

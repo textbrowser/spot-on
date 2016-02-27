@@ -36,7 +36,7 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
   if(ok)
     *ok = false;
 
-#ifdef SPOTON_LINKED_WITH_LIBBOTAN
+#ifdef SPOTON_MCELIECE_ENABLED
   Q_UNUSED(keySize);
   Q_UNUSED(privateKey);
   Q_UNUSED(publicKey);
@@ -53,7 +53,7 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
   if(ok)
     *ok = false;
 
-#ifdef SPOTON_LINKED_WITH_LIBBOTAN
+#ifdef SPOTON_MCELIECE_ENABLED
   Q_UNUSED(data);
   return QByteArray();
 #else
@@ -69,7 +69,7 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
   if(ok)
     *ok = false;
 
-#ifdef SPOTON_LINKED_WITH_LIBBOTAN
+#ifdef SPOTON_MCELIECE_ENABLED
   Q_UNUSED(data);
   Q_UNUSED(publicKey);
   return QByteArray();

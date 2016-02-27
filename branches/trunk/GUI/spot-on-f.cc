@@ -254,7 +254,7 @@ void spoton::slotEstablishForwardSecrecy(void)
   dialog->setAttribute(Qt::WA_MacMetalStyle, false);
 #endif
   ui.encryptionKeySize->setObjectName("encryption_key_size");
-#ifndef SPOTON_LINKED_WITH_LIBBOTAN
+#ifndef SPOTON_MCELIECE_ENABLED
   ui.encryptionKeyType->model()->setData
     (ui.encryptionKeyType->model()->index(1, 0), 0, Qt::UserRole - 1);
 #endif

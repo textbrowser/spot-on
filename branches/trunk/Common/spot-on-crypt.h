@@ -28,7 +28,7 @@
 #ifndef _spoton_crypt_h_
 #define _spoton_crypt_h_
 
-#ifdef SPOTON_LINKED_WITH_LIBBOTAN
+#ifdef SPOTON_MCELIECE_ENABLED
 #endif
 
 #ifdef SPOTON_LINKED_WITH_LIBNTRU
