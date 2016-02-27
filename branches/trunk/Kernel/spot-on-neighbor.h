@@ -46,11 +46,10 @@
 #include <QUuid>
 
 #include "Common/spot-on-common.h"
+#include "Common/spot-on-external-address.h"
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-send.h"
 #include "spot-on-sctp-socket.h"
-
-class spoton_external_address;
 
 class spoton_neighbor_tcp_socket: public QSslSocket
 {
@@ -279,10 +278,6 @@ class spoton_neighbor: public QThread
 #else
   QPointer<QObject> m_bluetoothSocket;
 #endif
-  QPointer<spoton_external_address> m_externalAddress;
-  QPointer<spoton_neighbor_tcp_socket> m_tcpSocket;
-  QPointer<spoton_neighbor_udp_socket> m_udpSocket;
-  QPointer<spoton_sctp_socket> m_sctpSocket;
   QReadWriteLock m_accountClientSentSaltMutex;
   QReadWriteLock m_accountNameMutex;
   QReadWriteLock m_accountPasswordMutex;
@@ -293,6 +288,10 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_maximumBufferSizeMutex;
   QReadWriteLock m_maximumContentLengthMutex;
   QReadWriteLock m_receivedUuidMutex;
+  QScopedPointer<spoton_external_address> m_externalAddress;
+  QScopedPointer<spoton_neighbor_tcp_socket> m_tcpSocket;
+  QScopedPointer<spoton_neighbor_udp_socket> m_udpSocket;
+  QScopedPointer<spoton_sctp_socket> m_sctpSocket;
   QSslCertificate m_peerCertificate;
   QString m_address;
   QString m_echoMode;

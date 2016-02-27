@@ -399,7 +399,7 @@ int main(int argc, char *argv[])
     {
       try
 	{
-	  s_kernel = new spoton_kernel();
+	  new spoton_kernel();
 
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
 	  QMainWindow window;
@@ -407,7 +407,7 @@ int main(int argc, char *argv[])
 	  window.showMinimized();
 	  QObject::connect(&qapplication,
 			   SIGNAL(lastWindowClosed(void)),
-			   s_kernel,
+			   spoton_kernel::instance(),
 			   SLOT(deleteLater(void)));
 #endif
 
@@ -418,6 +418,7 @@ int main(int argc, char *argv[])
 	}
       catch(const std::bad_alloc &exception)
 	{
+	  s_kernel = 0;
 	  std::cerr << "Critical memory failure. Exiting kernel."
 		    << std::endl;
 	  curl_global_cleanup();
@@ -425,6 +426,7 @@ int main(int argc, char *argv[])
 	}
       catch(...)
 	{
+	  s_kernel = 0;
 	  std::cerr << "Critical failure. Exiting kernel."
 		    << std::endl;
 	  curl_global_cleanup();
@@ -444,6 +446,7 @@ int main(int argc, char *argv[])
 
 spoton_kernel::spoton_kernel(void):QObject(0)
 {
+  s_kernel = this;
   qRegisterMetaType<QAbstractSocket::SocketError>
     ("QAbstractSocket::SocketError");
   qRegisterMetaType<QByteArrayList> ("QByteArrayList");

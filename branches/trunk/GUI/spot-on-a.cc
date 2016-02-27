@@ -310,13 +310,14 @@ int main(int argc, char *argv[])
 
   try
     {
-      s_gui = new spoton();
+      new spoton();
       qapplication.exec();
       curl_global_cleanup();
       return EXIT_SUCCESS;
     }
   catch(const std::bad_alloc &exception)
     {
+      s_gui = 0;
       std::cerr << "Critical memory failure. Exiting." << std::endl;
       curl_global_cleanup();
       return EXIT_FAILURE;
@@ -325,6 +326,8 @@ int main(int argc, char *argv[])
 
 spoton::spoton(void):QMainWindow()
 {
+  s_gui = this;
+
   {
 #ifdef Q_OS_MAC
     /*

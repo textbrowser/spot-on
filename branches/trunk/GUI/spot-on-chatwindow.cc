@@ -133,7 +133,8 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 
   ui.share->setEnabled(m_keyType != "poptastic");
   ui.table->resizeColumnToContents(0);
-  ui.table->setModel(spoton::instance()->starbeamReceivedModel());
+  ui.table->setModel(spoton::instance() ?
+		     spoton::instance()->starbeamReceivedModel() : 0);
   ui.table->setVisible(false);
 
   QMenu *menu = new QMenu(this);
@@ -240,11 +241,12 @@ void spoton_chatwindow::sendMessage(bool *ok)
     }
 
   if(m_keyType == "chat")
-    name = spoton::instance()->m_settings.
-      value("gui/nodeName", "unknown").toByteArray();
+    name = spoton::instance() ? spoton::instance()->m_settings.
+      value("gui/nodeName", "unknown").toByteArray() : "unknown";
   else
-    name = spoton::instance()->m_settings.
-      value("gui/poptasticName", "unknown@unknown.org").toByteArray();
+    name = spoton::instance() ? spoton::instance()->m_settings.
+      value("gui/poptasticName", "unknown@unknown.org").toByteArray() :
+      "unknown@unknown.org";
 
   msg.append
     (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
@@ -265,9 +267,13 @@ void spoton_chatwindow::sendMessage(bool *ok)
   ui.messages->append(msg);
   ui.messages->verticalScrollBar()->setValue
     (ui.messages->verticalScrollBar()->maximum());
-  spoton::instance()->ui().messages->append(msg);
-  spoton::instance()->ui().messages->verticalScrollBar()->setValue
-    (spoton::instance()->ui().messages->verticalScrollBar()->maximum());
+
+  if(spoton::instance())
+    {
+      spoton::instance()->ui().messages->append(msg);
+      spoton::instance()->ui().messages->verticalScrollBar()->setValue
+	(spoton::instance()->ui().messages->verticalScrollBar()->maximum());
+    }
 
   if(name.isEmpty())
     {
@@ -277,7 +283,13 @@ void spoton_chatwindow::sendMessage(bool *ok)
 	name = "unknown@unknown.org";
     }
 
-  spoton::instance()->m_chatSequenceNumbers[m_id] += 1;
+  if(spoton::instance())
+    {
+      if(!spoton::instance()->m_chatSequenceNumbers.contains(m_id))
+	spoton::instance()->m_chatSequenceNumbers[m_id] = 0;
+
+      spoton::instance()->m_chatSequenceNumbers[m_id] += 1;
+    }
 
   if(m_keyType == "chat")
     message.append("message_");
@@ -290,13 +302,16 @@ void spoton_chatwindow::sendMessage(bool *ok)
   message.append(ui.message->toPlainText().toUtf8().toBase64());
   message.append("_");
   message.append
-    (QByteArray::number(spoton::instance()->m_chatSequenceNumbers[m_id]).
-     toBase64());
+    (QByteArray::number(spoton::instance() ?
+			spoton::instance()->m_chatSequenceNumbers[m_id] :
+			1).toBase64());
   message.append("_");
   message.append(QDateTime::currentDateTime().toUTC().
 		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
   message.append("\n");
-  spoton::instance()->addMessageToReplayQueue(msg, message, m_publicKeyHash);
+
+  if(spoton::instance())
+    spoton::instance()->addMessageToReplayQueue(msg, message, m_publicKeyHash);
 
   if(m_kernelSocket->write(message.constData(), message.length()) !=
      message.length())

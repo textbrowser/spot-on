@@ -123,6 +123,9 @@ void spoton::sendMessage(bool *ok)
 		name = "unknown@unknown.org";
 	    }
 
+	  if(!m_chatSequenceNumbers.contains(data.toString()))
+	    m_chatSequenceNumbers[data.toString()] = 0;
+
 	  m_chatSequenceNumbers[data.toString()] += 1;
 
 	  if(keyType == "chat")
