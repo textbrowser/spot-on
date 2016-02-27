@@ -267,7 +267,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 
 #if QT_VERSION < 0x050000
   if(m_sctpServer)
-    connect(m_sctpServer,
+    connect(m_sctpServer.data(),
 	    SIGNAL(newConnection(const int,
 				 const QHostAddress &,
 				 const quint16)),
