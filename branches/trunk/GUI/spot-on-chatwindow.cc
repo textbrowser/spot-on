@@ -93,10 +93,6 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 	  SLOT(slotShareStarBeam(void)));
   connect(ui.starbeam,
 	  SIGNAL(toggled(bool)),
-	  ui.echo,
-	  SLOT(setVisible(bool)));
-  connect(ui.starbeam,
-	  SIGNAL(toggled(bool)),
 	  ui.line,
 	  SLOT(setVisible(bool)));
   connect(ui.starbeam,
@@ -118,7 +114,6 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   else
     setWindowTitle(participant.trimmed());
 
-  ui.echo->setVisible(false);
   ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
 
   if(!status.trimmed().isEmpty())
