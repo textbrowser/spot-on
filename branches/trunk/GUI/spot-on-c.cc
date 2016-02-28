@@ -806,7 +806,7 @@ void spoton::populateStatistics
       row += 1;
     }
 
-  totalRows += 1;
+  totalRows += 2;
   m_statisticsModel->setRowCount(totalRows);
 
   QLocale locale;
@@ -816,6 +816,13 @@ void spoton::populateStatistics
   m_statisticsModel->setItem(row, 0, item);
   item = new QStandardItem(locale.toString(QSqlDatabase::connectionNames().
 					   size()));
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 1, item);
+  row += 1;
+  item = new QStandardItem("Display PID");
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 0, item);
+  item = new QStandardItem(QString::number(QApplication::applicationPid()));
   item->setEditable(false);
   m_statisticsModel->setItem(row, 1, item);
   m_statisticsUi.view->setSortingEnabled(true);

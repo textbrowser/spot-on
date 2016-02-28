@@ -4876,6 +4876,11 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
+		      "VALUES ('Kernel PID', ?)");
+	query.bindValue(0, QCoreApplication::applicationPid());
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
 		      "VALUES ('Live Listeners', ?)");
 	query.bindValue(0, listeners);
 	query.exec();
