@@ -188,28 +188,28 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
   m_bluetoothServer = 0;
 #endif
-  m_sctpServer.reset(0);
-  m_tcpServer.reset(0);
-  m_udpServer.reset(0);
+  m_sctpServer = 0;
+  m_tcpServer = 0;
+  m_udpServer = 0;
 
   if(transport == "bluetooth")
     {
     }
   else if(transport == "sctp")
-    m_sctpServer.reset(new spoton_sctp_server(id, this));
+    m_sctpServer = new spoton_sctp_server(id, this);
   else if(transport == "tcp")
-    m_tcpServer.reset(new spoton_listener_tcp_server(id, this));
+    m_tcpServer = new spoton_listener_tcp_server(id, this);
   else if(transport == "udp")
-    m_udpServer.reset(new spoton_listener_udp_server(id, this));
+    m_udpServer = new spoton_listener_udp_server(id, this);
 
   m_address = ipAddress;
   m_certificate = certificate;
   m_echoMode = echoMode;
 
   if(transport != "bluetooth")
-    m_externalAddress.reset(new spoton_external_address(this));
+    m_externalAddress = new spoton_external_address(this);
   else
-    m_externalAddress.reset(0);
+    m_externalAddress = 0;
 
   m_keySize = qAbs(keySize);
 
@@ -267,7 +267,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 
 #if QT_VERSION < 0x050000
   if(m_sctpServer)
-    connect(m_sctpServer.data(),
+    connect(m_sctpServer,
 	    SIGNAL(newConnection(const int,
 				 const QHostAddress &,
 				 const quint16)),
@@ -276,7 +276,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				   const QHostAddress &,
 				   const quint16)));
   else if(m_tcpServer)
-    connect(m_tcpServer.data(),
+    connect(m_tcpServer,
 	    SIGNAL(newConnection(const int,
 				 const QHostAddress &,
 				 const quint16)),
@@ -285,7 +285,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				   const QHostAddress &,
 				   const quint16)));
   else if(m_udpServer)
-    connect(m_udpServer.data(),
+    connect(m_udpServer,
 	    SIGNAL(newConnection(const int,
 				 const QHostAddress &,
 				 const quint16)),
@@ -295,7 +295,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				   const quint16)));
 #else
   if(m_sctpServer)
-    connect(m_sctpServer.data(),
+    connect(m_sctpServer,
 	    SIGNAL(newConnection(const qintptr,
 				 const QHostAddress &,
 				 const quint16)),
@@ -304,7 +304,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				   const QHostAddress &,
 				   const quint16)));
   else if(m_tcpServer)
-    connect(m_tcpServer.data(),
+    connect(m_tcpServer,
 	    SIGNAL(newConnection(const qintptr,
 				 const QHostAddress &,
 				 const quint16)),
@@ -313,7 +313,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				   const QHostAddress &,
 				   const quint16)));
   else if(m_udpServer)
-    connect(m_udpServer.data(),
+    connect(m_udpServer,
 	    SIGNAL(newConnection(const qintptr,
 				 const QHostAddress &,
 				 const quint16)),
@@ -324,7 +324,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 #endif
 
   if(m_externalAddress)
-    connect(m_externalAddress.data(),
+    connect(m_externalAddress,
 	    SIGNAL(ipAddressDiscovered(const QHostAddress &)),
 	    this,
 	    SLOT(slotExternalAddressDiscovered(const QHostAddress &)));
@@ -819,13 +819,13 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
       neighbor->setProperty("address", address);
       m_udpServer->addClientAddress(address);
-      connect(m_udpServer.data(),
+      connect(m_udpServer,
 	      SIGNAL(newDatagram(const QByteArray &)),
 	      neighbor,
 	      SLOT(slotNewDatagram(const QByteArray &)));
       connect(neighbor,
 	      SIGNAL(destroyed(QObject *)),
-	      m_udpServer.data(),
+	      m_udpServer,
 	      SLOT(slotClientDestroyed(QObject *)));
     }
 

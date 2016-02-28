@@ -209,10 +209,6 @@ class spoton_listener: public QObject
   QByteArray m_privateKey;
   QByteArray m_publicKey;
   QNetworkInterface *m_networkInterface;
-  QScopedPointer<spoton_external_address> m_externalAddress;
-  QScopedPointer<spoton_listener_tcp_server> m_tcpServer;
-  QScopedPointer<spoton_listener_udp_server> m_udpServer;
-  QScopedPointer<spoton_sctp_server> m_sctpServer;
   QString m_address;
   QString m_echoMode;
   QString m_motd;
@@ -233,6 +229,10 @@ class spoton_listener: public QObject
   qint64 m_maximumContentLength;
   quint16 m_externalPort;
   quint16 m_port;
+  spoton_external_address *m_externalAddress;
+  spoton_listener_tcp_server *m_tcpServer;
+  spoton_listener_udp_server *m_udpServer;
+  spoton_sctp_server *m_sctpServer;
   QString errorString(void) const;
   int maxPendingConnections(void) const;
   qint64 id(void) const;

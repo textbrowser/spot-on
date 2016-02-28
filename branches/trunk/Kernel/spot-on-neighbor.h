@@ -288,10 +288,6 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_maximumBufferSizeMutex;
   QReadWriteLock m_maximumContentLengthMutex;
   QReadWriteLock m_receivedUuidMutex;
-  QScopedPointer<spoton_external_address> m_externalAddress;
-  QScopedPointer<spoton_neighbor_tcp_socket> m_tcpSocket;
-  QScopedPointer<spoton_neighbor_udp_socket> m_udpSocket;
-  QScopedPointer<spoton_sctp_socket> m_sctpSocket;
   QSslCertificate m_peerCertificate;
   QString m_address;
   QString m_echoMode;
@@ -323,6 +319,10 @@ class spoton_neighbor: public QThread
   quint64 m_bytesRead;
   quint64 m_bytesWritten;
   quint16 m_port;
+  spoton_external_address *m_externalAddress;
+  spoton_neighbor_tcp_socket *m_tcpSocket;
+  spoton_neighbor_udp_socket *m_udpSocket;
+  spoton_sctp_socket *m_sctpSocket;
   QString findMessageType
     (const QByteArray &data,
      QList<QByteArray> &symmetricKeys,

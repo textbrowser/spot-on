@@ -96,9 +96,9 @@ spoton_neighbor::spoton_neighbor
 		       spoton_common::LANE_WIDTH_MAXIMUM);
   m_bluetoothSocket = 0;
   m_passthrough = passthrough;
-  m_sctpSocket.reset(0);
-  m_tcpSocket.reset(0);
-  m_udpSocket.reset(0);
+  m_sctpSocket = 0;
+  m_tcpSocket = 0;
+  m_udpSocket = 0;
   m_maximumBufferSize =
     qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
 	   maximumBufferSize,
@@ -132,11 +132,11 @@ spoton_neighbor::spoton_neighbor
 #endif
     }
   else if(transport == "sctp")
-    m_sctpSocket.reset(new spoton_sctp_socket(this));
+    m_sctpSocket = new spoton_sctp_socket(this);
   else if(transport == "tcp")
-    m_tcpSocket.reset(new spoton_neighbor_tcp_socket(this));
+    m_tcpSocket = new spoton_neighbor_tcp_socket(this);
   else if(transport == "udp")
-    m_udpSocket.reset(new spoton_neighbor_udp_socket(this));
+    m_udpSocket = new spoton_neighbor_udp_socket(this);
 
   if(m_bluetoothSocket)
     {
@@ -200,7 +200,7 @@ spoton_neighbor::spoton_neighbor
   m_bytesRead = 0;
   m_bytesWritten = 0;
   m_echoMode = echoMode;
-  m_externalAddress.reset(new spoton_external_address(this));
+  m_externalAddress = new spoton_external_address(this);
   m_id = -1; /*
 	     ** This neighbor was created by a listener. We must
 	     ** obtain a valid id at some point (setId())!
@@ -351,52 +351,52 @@ spoton_neighbor::spoton_neighbor
     }
   else if(m_sctpSocket)
     {
-      connect(m_sctpSocket.data(),
+      connect(m_sctpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SIGNAL(disconnected(void)));
-      connect(m_sctpSocket.data(),
+      connect(m_sctpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SLOT(slotDisconnected(void)));
-      connect(m_sctpSocket.data(),
+      connect(m_sctpSocket,
 	      SIGNAL(error(const QString &,
 			   const spoton_sctp_socket::SocketError)),
 	      this,
 	      SLOT(slotError(const QString &,
 			     const spoton_sctp_socket::SocketError)));
-      connect(m_sctpSocket.data(),
+      connect(m_sctpSocket,
 	      SIGNAL(readyRead(void)),
 	      this,
 	      SLOT(slotReadyRead(void)));
     }
   else if(m_tcpSocket)
     {
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SIGNAL(disconnected(void)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SLOT(slotDisconnected(void)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(encrypted(void)),
 	      this,
 	      SLOT(slotEncrypted(void)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(error(QAbstractSocket::SocketError)),
 	      this,
 	      SLOT(slotError(QAbstractSocket::SocketError)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(modeChanged(QSslSocket::SslMode)),
 	      this,
 	      SLOT(slotModeChanged(QSslSocket::SslMode)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(readyRead(void)),
 	      this,
 	      SLOT(slotReadyRead(void)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(sslErrors(const QList<QSslError> &)),
 	      this,
 	      SLOT(slotSslErrors(const QList<QSslError> &)));
@@ -409,25 +409,25 @@ spoton_neighbor::spoton_neighbor
       */
 
       m_udpSocket->setSocketState(QAbstractSocket::ConnectedState);
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SIGNAL(disconnected(void)));
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SLOT(slotDisconnected(void)));
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(error(QAbstractSocket::SocketError)),
 	      this,
 	      SLOT(slotError(QAbstractSocket::SocketError)));
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(readyRead(void)),
 	      this,
 	      SLOT(slotReadyRead(void)));
     }
 
-  connect(m_externalAddress.data(),
+  connect(m_externalAddress,
 	  SIGNAL(ipAddressDiscovered(const QHostAddress &)),
 	  this,
 	  SLOT(slotExternalAddressDiscovered(const QHostAddress &)));
@@ -533,7 +533,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_bytesRead = 0;
   m_bytesWritten = 0;
   m_echoMode = echoMode;
-  m_externalAddress.reset(new spoton_external_address(this));
+  m_externalAddress = new spoton_external_address(this);
   m_id = id;
   m_ipAddress = ipAddress;
   m_isUserDefined = userDefined;
@@ -567,7 +567,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_protocol = protocol;
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_requireSsl = requireSsl;
-  m_sctpSocket.reset(0);
+  m_sctpSocket = 0;
   m_sslControlString = sslControlString.trimmed();
 
   if(m_sslControlString.isEmpty())
@@ -575,9 +575,9 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 
   m_startTime = QDateTime::currentDateTime();
   m_statusControl = statusControl;
-  m_tcpSocket.reset(0);
+  m_tcpSocket = 0;
   m_transport = transport;
-  m_udpSocket.reset(0);
+  m_udpSocket = 0;
 
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
@@ -614,11 +614,11 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
     {
     }
   else if(m_transport == "sctp")
-    m_sctpSocket.reset(new spoton_sctp_socket(this));
+    m_sctpSocket = new spoton_sctp_socket(this);
   else if(m_transport == "tcp")
-    m_tcpSocket.reset(new spoton_neighbor_tcp_socket(this));
+    m_tcpSocket = new spoton_neighbor_tcp_socket(this);
   else if(m_transport == "udp")
-    m_udpSocket.reset(new spoton_neighbor_udp_socket(this));
+    m_udpSocket = new spoton_neighbor_udp_socket(this);
 
   if(m_sctpSocket)
     m_sctpSocket->setReadBufferSize(m_maximumBufferSize);
@@ -737,105 +737,105 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 
   if(m_sctpSocket)
     {
-      connect(m_sctpSocket.data(),
+      connect(m_sctpSocket,
 	      SIGNAL(connected(void)),
 	      this,
 	      SLOT(slotConnected(void)));
-      connect(m_sctpSocket.data(),
+      connect(m_sctpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SIGNAL(disconnected(void)));
-      connect(m_sctpSocket.data(),
+      connect(m_sctpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SLOT(slotDisconnected(void)));
-      connect(m_sctpSocket.data(),
+      connect(m_sctpSocket,
 	      SIGNAL(error(const QString &,
 			   const spoton_sctp_socket::SocketError)),
 	      this,
 	      SLOT(slotError(const QString &,
 			     const spoton_sctp_socket::SocketError)));
-      connect(m_sctpSocket.data(),
+      connect(m_sctpSocket,
 	      SIGNAL(readyRead(void)),
 	      this,
 	      SLOT(slotReadyRead(void)));
     }
   else if(m_tcpSocket)
     {
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(connected(void)),
 	      this,
 	      SLOT(slotConnected(void)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SIGNAL(disconnected(void)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SLOT(slotDisconnected(void)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(encrypted(void)),
 	      this,
 	      SLOT(slotEncrypted(void)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(error(QAbstractSocket::SocketError)),
 	      this,
 	      SLOT(slotError(QAbstractSocket::SocketError)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(modeChanged(QSslSocket::SslMode)),
 	      this,
 	      SLOT(slotModeChanged(QSslSocket::SslMode)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(peerVerifyError(const QSslError &)),
 	      this,
 	      SLOT(slotPeerVerifyError(const QSslError &)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &,
 						 QAuthenticator *)),
 	      this,
 	      SLOT(slotProxyAuthenticationRequired(const QNetworkProxy &,
 						   QAuthenticator *)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(readyRead(void)),
 	      this,
 	      SLOT(slotReadyRead(void)));
-      connect(m_tcpSocket.data(),
+      connect(m_tcpSocket,
 	      SIGNAL(sslErrors(const QList<QSslError> &)),
 	      this,
 	      SLOT(slotSslErrors(const QList<QSslError> &)));
     }
   else if(m_udpSocket)
     {
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(connected(void)),
 	      this,
 	      SLOT(slotConnected(void)));
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SIGNAL(disconnected(void)));
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SLOT(slotDisconnected(void)));
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(error(QAbstractSocket::SocketError)),
 	      this,
 	      SLOT(slotError(QAbstractSocket::SocketError)));
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &,
 						 QAuthenticator *)),
 	      this,
 	      SLOT(slotProxyAuthenticationRequired(const QNetworkProxy &,
 						   QAuthenticator *)));
-      connect(m_udpSocket.data(),
+      connect(m_udpSocket,
 	      SIGNAL(readyRead(void)),
 	      this,
 	      SLOT(slotReadyRead(void)));
     }
 
-  connect(m_externalAddress.data(),
+  connect(m_externalAddress,
 	  SIGNAL(ipAddressDiscovered(const QHostAddress &)),
 	  this,
 	  SLOT(slotExternalAddressDiscovered(const QHostAddress &)));
