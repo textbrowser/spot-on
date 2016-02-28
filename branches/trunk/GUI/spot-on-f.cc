@@ -26,7 +26,6 @@
 */
 
 #include <QProgressDialog>
-#include <QScopedPointer>
 #include <QToolTip>
 
 #include "Common/spot-on-crypt.h"
@@ -201,10 +200,10 @@ void spoton::slotEstablishForwardSecrecy(void)
   if(!(type == "email" || type == "chat"))
     return;
 
+  QDialog *dialog = 0;
   QModelIndexList names;
   QModelIndexList publicKeyHashes;
   QProgressDialog progress(this);
-  QScopedPointer<QDialog> dialog;
   QString algorithm("");
   QString error("");
   QString keySize("");
@@ -245,11 +244,11 @@ void spoton::slotEstablishForwardSecrecy(void)
       goto done_label;
     }
 
-  dialog.reset(new QDialog(this));
+  dialog = new QDialog(this);
   dialog->setWindowTitle
     (tr("%1: Forward Secrecy Algorithms Selection").
      arg(SPOTON_APPLICATION_NAME));
-  ui.setupUi(dialog.data());
+  ui.setupUi(dialog);
 #ifdef Q_OS_MAC
   dialog->setAttribute(Qt::WA_MacMetalStyle, false);
 #endif
@@ -376,6 +375,9 @@ void spoton::slotEstablishForwardSecrecy(void)
 
  done_label:
 
+  if(dialog)
+    dialog->deleteLater();
+
   if(!error.isEmpty())
     QMessageBox::critical
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
@@ -471,7 +473,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   QByteArray publicKeyHash
     (m_sb.forward_secrecy_request->property("public_key_hash").toByteArray());
   QByteArray symmetricKey;
-  QScopedPointer<QDialog> dialog;
+  QDialog *dialog = 0;
   QString aKey("");
   QString connectionName("");
   QString error("");
@@ -521,11 +523,11 @@ void spoton::slotRespondToForwardSecrecy(void)
       goto done_label;
     }
 
-  dialog.reset(new QDialog(this));
+  dialog = new QDialog(this);
   dialog->setWindowTitle
     (tr("%1: Forward Secrecy Algorithms Selection").
      arg(SPOTON_APPLICATION_NAME));
-  ui.setupUi(dialog.data());
+  ui.setupUi(dialog);
 #ifdef Q_OS_MAC
   dialog->setAttribute(Qt::WA_MacMetalStyle, false);
 #endif
@@ -672,6 +674,9 @@ void spoton::slotRespondToForwardSecrecy(void)
     popForwardSecrecyRequest(publicKeyHash);
 
  done_label:
+
+  if(dialog)
+    dialog->deleteLater();
 
   if(!error.isEmpty())
     QMessageBox::critical
