@@ -2254,6 +2254,7 @@ void spoton_rss::slotPurge(void)
 	  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
 	query.bindValue(1, 60 * 60 * 24 * m_ui.purge_days->value());
 	query.exec();
+	query.exec("VACUUM");
       }
 
     db.close();
