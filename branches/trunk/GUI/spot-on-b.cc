@@ -340,7 +340,6 @@ void spoton::slotReceivedKernelMessage(void)
 	    {
 	      data.remove
 		(0, static_cast<int> (qstrlen("forward_secrecy_request_")));
-
 	      forwardSecrecyRequested(data.split('_'));
 	    }
 	  else if(data.startsWith("forward_secrecy_response_"))
