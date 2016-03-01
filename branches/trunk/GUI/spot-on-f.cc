@@ -2023,3 +2023,35 @@ int spoton::tabIndexFromName(const QString &name) const
 
   return index;
 }
+
+void spoton::slotStarBeamFragmented(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE transmitted SET fragmented = ? "
+		      "WHERE OID = ? AND status_control <> 'deleted'");
+	query.bindValue(0, state ? 1 : 0);
+	query.bindValue(1, checkBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}

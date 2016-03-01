@@ -1612,9 +1612,26 @@ void spoton::slotPopulateStars(void)
 		      bytes = bytes.mid(0, 16) + "..." + bytes.right(16);
 		      item = new QTableWidgetItem(bytes.constData());
 		    }
-		  else if(i == 8 || i == 9 || i == query.record().count() - 1)
+		  else if(i == 8 || i == query.record().count() - 1)
 		    item = new QTableWidgetItem
 		      (query.value(i).toString());
+		  else if(i == 9)
+		    {
+		      QCheckBox *checkBox = new QCheckBox();
+
+		      if(query.value(i).toBool())
+			checkBox->setChecked(true);
+		      else
+			checkBox->setChecked(false);
+
+		      checkBox->setProperty
+			("oid", query.value(query.record().count() - 1));
+		      connect(checkBox,
+			      SIGNAL(toggled(bool)),
+			      this,
+			      SLOT(slotStarBeamFragmented(bool)));
+		      m_ui.transmitted->setCellWidget(row, i, checkBox);
+		    }
 
 		  if(item)
 		    {

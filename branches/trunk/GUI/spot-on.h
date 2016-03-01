@@ -927,6 +927,7 @@ class spoton: public QMainWindow
   void slotShowUrlSettings(bool state);
   void slotSignatureCheckBoxToggled(bool state);
   void slotSignatureKeyTypeChanged(int index);
+  void slotStarBeamFragmented(bool state);
   void slotStarOTMCheckChange(bool state);
   void slotStatisticsGathered(void);
   void slotStatusButtonClicked(void);
