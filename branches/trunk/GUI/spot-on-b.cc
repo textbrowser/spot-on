@@ -2827,7 +2827,7 @@ void spoton::slotSendMail(void)
     {
       fileInfo = QFileInfo(m_ui.attachment->text());
 
-      if(fileInfo.size() > 10 * 1024 * 1024)
+      if(fileInfo.size() > spoton_common::EMAIL_ATTACHMENT_MAXIMUM_SIZE)
 	{
 	  QMessageBox::critical
 	    (this, tr("%1: Error").

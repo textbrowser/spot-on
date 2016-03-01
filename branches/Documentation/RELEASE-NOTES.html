@@ -5,10 +5,12 @@
 <ol>
 <li>Prepare and review ok variables in spot-on-smp.cc.</li>
 <li>Removed empty zorders from UI files.</li>
+<li>The display repaints portions of itself according to database activity. Eliminated non-zero-probability of missed opportunities.</li>
 </ol>
 <b>Improvements</b>
 <ol>
-<li>Disable synchronous position updates of StarBeams within the kernel.</li>
+<li>Disable synchronous database writes with respect to StarBeam positions within the kernel.</li>
+<li>Read StarBeam pulses from dedicated threads.</li>
 </ol>
 <b>New</b>
 <ol>

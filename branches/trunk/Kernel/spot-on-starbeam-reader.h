@@ -28,6 +28,7 @@
 #ifndef _spoton_starbeam_reader_h_
 #define _spoton_starbeam_reader_h_
 
+#include <QFuture>
 #include <QHash>
 #include <QObject>
 #include <QSqlDatabase>
@@ -46,6 +47,7 @@ class spoton_starbeam_reader: public QObject
   void setReadInterval(const double readInterval);
 
  private:
+  QFuture<QPair<QByteArray, qint64> > m_readFuture;
   QList<QByteArray> m_magnets;
   QList<QByteArray> m_missingLinks;
   QListIterator<QByteArray> *m_missingLinksIterator;
@@ -57,14 +59,19 @@ class spoton_starbeam_reader: public QObject
   qint64 m_position;
   QHash<QString, QByteArray> elementsFromMagnet(const QByteArray &magnet,
 						spoton_crypt *crypt);
+  QPair<QByteArray, qint64> read(const QString &fileName,
+				 const QString &pulseSize,
+				 const qint64 position);
   void populateMagnets(const QSqlDatabase &db);
-  void pulsate(const QString &fileName,
+  void pulsate(const QByteArray &buffer,
+	       const QString &fileName,
 	       const QString &pulseSize,
 	       const QString &fileSize,
 	       const QByteArray &magnet,
 	       const QByteArray &nova,
 	       const QByteArray &hash,
 	       const QSqlDatabase &db,
+	       const qint64 rc,
 	       spoton_crypt *crypt);
   void savePositionAndStatus(const QString &status, const QSqlDatabase &db);
 

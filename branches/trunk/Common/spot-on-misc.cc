@@ -3034,7 +3034,7 @@ bool spoton_misc::isValidStarBeamMissingLinksMagnet(const QByteArray &magnet)
 	  bool ok = true;
 	  qint64 integer = str.toLongLong(&ok);
 
-	  if(integer < 1024 || !ok) // Please see controlcenter.ui.
+	  if(integer < spoton_common::MINIMUM_STARBEAM_PULSE_SIZE || !ok)
 	    {
 	      valid = false;
 	      goto done_label;

@@ -57,6 +57,7 @@ class spoton_common
   static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int ELEGANT_STARBEAM_SIZE = 15000;
+  static const int EMAIL_ATTACHMENT_MAXIMUM_SIZE = 10 * 1024 * 1024;
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;
@@ -76,6 +77,7 @@ class spoton_common
   static const int MAXIMUM_KERNEL_GUI_SERVER_SINGLE_SOCKET_BUFFER_SIZE =
     8 * 1024 * 1024;
   static const int MAXIMUM_UDP_DATAGRAM_SIZE = 508;
+  static const int MINIMUM_STARBEAM_PULSE_SIZE = 1024;
   static const int MOSAIC_SIZE = 64;
   static const int NAME_MAXIMUM_LENGTH = 64;
   static const int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 60;

@@ -1250,8 +1250,14 @@ void spoton::slotSetSBPulseSize(void)
   bool ok = true;
 
   integer = QInputDialog::getInt
-    (this, tr("%1: StarBeam Pulse Size").arg(SPOTON_APPLICATION_NAME),
-     tr("&Pulse Size"), integer, 1024, 250000, 1, &ok);
+    (this,
+     tr("%1: StarBeam Pulse Size").arg(SPOTON_APPLICATION_NAME),
+     tr("&Pulse Size"),
+     integer,
+     spoton_common::MINIMUM_STARBEAM_PULSE_SIZE,
+     static_cast<int> (spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE),
+     1,
+     &ok);
 
   if(!ok)
     return;

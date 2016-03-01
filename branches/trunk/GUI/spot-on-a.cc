@@ -3647,8 +3647,14 @@ void spoton::slotPopulateListeners(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() > m_listenersLastModificationTime)
-	m_listenersLastModificationTime = fileInfo.lastModified();
+      if(fileInfo.lastModified() >= m_listenersLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_listenersLastModificationTime)
+	    m_listenersLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_listenersLastModificationTime = fileInfo.lastModified();
+	}
       else
 	return;
     }
@@ -4300,8 +4306,14 @@ void spoton::slotPopulateNeighbors(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() > m_neighborsLastModificationTime)
-	m_neighborsLastModificationTime = fileInfo.lastModified();
+      if(fileInfo.lastModified() >= m_neighborsLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_neighborsLastModificationTime)
+	    m_neighborsLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_neighborsLastModificationTime = fileInfo.lastModified();
+	}
       else
 	return;
     }
@@ -7614,8 +7626,14 @@ void spoton::slotPopulateParticipants(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() > m_participantsLastModificationTime)
-	m_participantsLastModificationTime = fileInfo.lastModified();
+      if(fileInfo.lastModified() >= m_participantsLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_participantsLastModificationTime)
+	    m_participantsLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_participantsLastModificationTime = fileInfo.lastModified();
+	}
       else
 	return;
     }
@@ -9170,8 +9188,14 @@ void spoton::slotPopulateBuzzFavorites(void)
 
   if(fileInfo.exists())
     {
-      if(fileInfo.lastModified() > m_buzzFavoritesLastModificationTime)
-	m_buzzFavoritesLastModificationTime = fileInfo.lastModified();
+      if(fileInfo.lastModified() >= m_buzzFavoritesLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_buzzFavoritesLastModificationTime)
+	    m_buzzFavoritesLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_buzzFavoritesLastModificationTime = fileInfo.lastModified();
+	}
       else
 	return;
     }

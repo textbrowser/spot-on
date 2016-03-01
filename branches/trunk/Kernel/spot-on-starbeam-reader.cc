@@ -28,6 +28,10 @@
 #include <QDataStream>
 #include <QDir>
 #include <QSqlQuery>
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent>
+#endif
+#include <QtCore>
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
@@ -52,6 +56,8 @@ spoton_starbeam_reader::spoton_starbeam_reader
 
 spoton_starbeam_reader::~spoton_starbeam_reader()
 {
+  m_readFuture.cancel();
+  m_readFuture.waitForFinished();
   m_timer.stop();
 
   QString connectionName("");
@@ -258,10 +264,34 @@ void spoton_starbeam_reader::slotTimeout(void)
 			  constData();
 
 		      if(ok)
-			pulsate
-			  (fileName, pulseSize, fileSize,
-			   m_magnets.value(qrand() % m_magnets.count()),
-			   nova, hash, db, s_crypt);
+			{
+			  /*
+			  ** Read some portion of the file within
+			  ** a thread. After the thread has completed,
+			  ** process the read data.
+			  */
+
+			  if(m_readFuture.isFinished() &&
+			     m_readFuture.resultCount() > 0)
+			    {
+			      QPair<QByteArray, qint64> pair
+				(m_readFuture.result());
+
+			      if(!pair.first.isEmpty())
+				pulsate
+				  (pair.first, fileName, pulseSize, fileSize,
+				   m_magnets.value(qrand() %
+						   m_magnets.count()),
+				   nova, hash, db, pair.second, s_crypt);
+
+			      m_readFuture =
+				QFuture<QPair<QByteArray, qint64> > ();
+			    }
+			  else if(m_readFuture.isFinished())
+			    m_readFuture = QtConcurrent::run
+			      (this, &spoton_starbeam_reader::read,
+			       fileName, pulseSize, m_position);
+			}
 		    }
 		}
 	    }
@@ -371,13 +401,15 @@ QHash<QString, QByteArray> spoton_starbeam_reader::elementsFromMagnet
   return elements;
 }
 
-void spoton_starbeam_reader::pulsate(const QString &fileName,
+void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
+				     const QString &fileName,
 				     const QString &pulseSize,
 				     const QString &fileSize,
 				     const QByteArray &magnet,
 				     const QByteArray &nova,
 				     const QByteArray &hash,
 				     const QSqlDatabase &db,
+				     const qint64 rc,
 				     spoton_crypt *s_crypt)
 {
   if(m_position < 0)
@@ -396,131 +428,101 @@ void spoton_starbeam_reader::pulsate(const QString &fileName,
       return;
     }
 
-  QFile file(fileName);
+  QByteArray bytes;
+  QByteArray data(buffer.mid(0, static_cast<int> (rc)));
+  QByteArray messageCode;
+  QDataStream stream(&bytes, QIODevice::WriteOnly);
   QString status("completed");
-  bool ok = false;
+  bool ok = true;
+  int size = 0;
+  spoton_crypt crypt(elements.value("ct").constData(),
+		     elements.value("ht").constData(),
+		     QByteArray(),
+		     elements.value("ek"),
+		     elements.value("mk"),
+		     0,
+		     0,
+		     "");
 
-  if(file.open(QIODevice::ReadOnly))
+  data = qCompress(data, 9);
+  size = data.length();
+  stream << QByteArray("0060")
+	 << QFileInfo(fileName).fileName().toUtf8()
+	 << QByteArray::number(m_position)
+	 << QByteArray::number(size)
+	 << fileSize.toLatin1()
+	 << data
+	 << pulseSize.toLatin1()
+	 << hash;
+
+  if(stream.status() != QDataStream::Ok)
+    ok = false;
+  else
+    ok = true;
+
+  if(nova.isEmpty())
     {
-      if(file.seek(m_position))
-	{
-	  if(!file.atEnd())
-	    {
-	      QByteArray buffer(qAbs(pulseSize.toInt()), 0);
-	      qint64 rc = 0;
-
-	      if((rc = file.read(buffer.data(), buffer.length())) > 0)
-		{
-		  QByteArray bytes;
-		  QByteArray data(buffer.mid(0, static_cast<int> (rc)));
-		  QByteArray messageCode;
-		  QDataStream stream(&bytes, QIODevice::WriteOnly);
-		  int size = 0;
-		  spoton_crypt crypt(elements.value("ct").constData(),
-				     elements.value("ht").constData(),
-				     QByteArray(),
-				     elements.value("ek"),
-				     elements.value("mk"),
-				     0,
-				     0,
-				     "");
-
-		  data = qCompress(data, 9);
-		  size = data.length();
-		  stream << QByteArray("0060")
-			 << QFileInfo(fileName).fileName().toUtf8()
-			 << QByteArray::number(m_position)
-			 << QByteArray::number(size)
-			 << fileSize.toLatin1()
-			 << data
-			 << pulseSize.toLatin1()
-			 << hash;
-
-		  if(stream.status() != QDataStream::Ok)
-		    ok = false;
-		  else
-		    ok = true;
-
-		  if(nova.isEmpty())
-		    {
-		      if(ok)
-			data = crypt.encrypted(bytes, &ok);
-		    }
-		  else
-		    {
-		      QPair<QByteArray, QByteArray> pair;
-
-		      pair.first = nova.mid
-			(0, static_cast<int> (spoton_crypt::
-					      cipherKeyLength("aes256")));
-		      pair.second = nova.mid(pair.first.length());
-
-		      {
-			spoton_crypt crypt("aes256",
-					   "sha512",
-					   QByteArray(),
-					   pair.first,
-					   pair.second,
-					   0,
-					   0,
-					   "");
-
-			if(ok)
-			  data = crypt.encrypted(bytes, &ok);
-
-			if(ok)
-			  data = data + crypt.keyedHash(data, &ok);
-		      }
-
-		      if(ok)
-			data = crypt.encrypted(data, &ok);
-		    }
-
-		  if(ok)
-		    messageCode = crypt.keyedHash(data, &ok);
-
-		  if(ok)
-		    data = data.toBase64() + "\n" + messageCode.toBase64();
-
-		  if(ok)
-		    {
-		      if(spoton_kernel::instance())
-			spoton_kernel::instance()->writeMessage0060
-			  (data, m_fragmented ? &m_neighborIndex : 0, &ok);
-		      else
-			ok = false;
-		    }
-
-		  if(ok)
-		    {
-		      if(m_missingLinksIterator)
-			{
-			  if(!m_missingLinksIterator->hasNext())
-			    m_position = file.size();
-			}
-		      else
-			m_position = qAbs(m_position + rc); // +=
-		    }
-		}
-	      else if(rc < 0)
-		spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
-				      "read() failure.");
-	    }
-	  else
-	    ok = true;
-	}
-      else
-	spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
-			      "seek() failure.");
+      if(ok)
+	data = crypt.encrypted(bytes, &ok);
     }
   else
-    spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
-			  "open() failure.");
+    {
+      QPair<QByteArray, QByteArray> pair;
 
-  if(m_position < file.size())
+      pair.first = nova.mid
+	(0, static_cast<int> (spoton_crypt::
+			      cipherKeyLength("aes256")));
+      pair.second = nova.mid(pair.first.length());
+
+      {
+	spoton_crypt crypt("aes256",
+			   "sha512",
+			   QByteArray(),
+			   pair.first,
+			   pair.second,
+			   0,
+			   0,
+			   "");
+
+	if(ok)
+	  data = crypt.encrypted(bytes, &ok);
+
+	if(ok)
+	  data = data + crypt.keyedHash(data, &ok);
+      }
+
+      if(ok)
+	data = crypt.encrypted(data, &ok);
+    }
+
+  if(ok)
+    messageCode = crypt.keyedHash(data, &ok);
+
+  if(ok)
+    data = data.toBase64() + "\n" + messageCode.toBase64();
+
+  if(ok)
+    {
+      if(spoton_kernel::instance())
+	spoton_kernel::instance()->writeMessage0060
+	  (data, m_fragmented ? &m_neighborIndex : 0, &ok);
+      else
+	ok = false;
+    }
+
+  if(ok)
+    {
+      if(m_missingLinksIterator)
+	{
+	  if(!m_missingLinksIterator->hasNext())
+	    m_position = QFileInfo(fileName).size();
+	}
+      else
+	m_position = qAbs(m_position + rc); // +=
+    }
+
+  if(m_position < QFileInfo(fileName).size())
     status = "transmitting";
-
-  file.close();
 
   if(ok)
     savePositionAndStatus(status, db);
@@ -573,4 +575,52 @@ void spoton_starbeam_reader::setReadInterval(const double readInterval)
   if(static_cast<int> (1000 * m_readInterval) != m_timer.interval())
     if(m_timer.isActive())
       m_timer.start(static_cast<int> (1000 * m_readInterval));
+}
+
+QPair<QByteArray, qint64> spoton_starbeam_reader::read
+(const QString &fileName, const QString &pulseSize, const qint64 position)
+{
+  if(position < 0)
+    {
+      spoton_misc::logError("spoton_starbeam_reader::read(): "
+			    "position is negative.");
+      return QPair<QByteArray, qint64> (QByteArray(), 0);
+    }
+
+  QFile file(fileName);
+  QPair<QByteArray, qint64> pair(QByteArray(), 0);
+
+  if(file.open(QIODevice::ReadOnly))
+    {
+      if(file.seek(position))
+	{
+	  if(!file.atEnd())
+	    {
+	      QByteArray buffer
+		(qBound(spoton_common::MINIMUM_STARBEAM_PULSE_SIZE,
+			pulseSize.toInt(),
+			static_cast<int> (spoton_common::
+					  MAXIMUM_STARBEAM_PULSE_SIZE)), 0);
+	      qint64 rc = file.read(buffer.data(), buffer.length());
+
+	      if(rc < 0)
+		spoton_misc::logError("spoton_starbeam_reader::read(): "
+				      "read() failure.");
+	      else if(rc > 0)
+		{
+		  pair.first = buffer;
+		  pair.second = rc;
+		}
+	    }
+	}
+      else
+	spoton_misc::logError("spoton_starbeam_reader::read(): "
+			      "seek() failure.");
+    }
+  else
+    spoton_misc::logError("spoton_starbeam_reader::read(): "
+			  "open() failure.");
+
+  file.close();
+  return pair;
 }
