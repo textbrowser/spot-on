@@ -4995,23 +4995,57 @@ void spoton_kernel::slotBuzzMagnetReceivedFromUI(const qint64 oid,
        arg(neighbor->peerPort()));
 }
 
-void spoton_kernel::writeMessage0060(const QByteArray &data, bool *ok)
+void spoton_kernel::writeMessage0060
+(const QByteArray &data, int *neighborIndex, bool *ok)
 {
   if(*ok)
     *ok = false;
 
-  QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
-
-  while(it.hasNext())
+  if(neighborIndex)
     {
-      it.next();
+      if(m_neighbors.size() <= *neighborIndex)
+	*neighborIndex = 0;
 
-      if(it.value())
-	if(it.value()->writeMessage0060(data))
-	  {
-	    if(ok)
-	      *ok = true;
-	  }
+      QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
+      int i = 0;
+
+      while(it.hasNext())
+	{
+	  it.next();
+
+	  if(it.value())
+	    {
+	      if(i == *neighborIndex)
+		{
+		  if(it.value()->writeMessage0060(data))
+		    {
+		      if(ok)
+			*ok = true;
+		    }
+
+		  *neighborIndex += 1;
+		  break;
+		}
+
+	      i += 1;
+	    }
+	}
+    }
+  else
+    {
+      QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
+
+      while(it.hasNext())
+	{
+	  it.next();
+
+	  if(it.value())
+	    if(it.value()->writeMessage0060(data))
+	      {
+		if(ok)
+		  *ok = true;
+	      }
+	}
     }
 }
 

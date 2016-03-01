@@ -50,7 +50,9 @@ class spoton_starbeam_reader: public QObject
   QList<QByteArray> m_missingLinks;
   QListIterator<QByteArray> *m_missingLinksIterator;
   QTimer m_timer;
+  bool m_fragmented;
   double m_readInterval;
+  int m_neighborIndex;
   qint64 m_id;
   qint64 m_position;
   QHash<QString, QByteArray> elementsFromMagnet(const QByteArray &magnet,

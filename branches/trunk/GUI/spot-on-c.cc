@@ -1016,18 +1016,21 @@ void spoton::slotTransmit(void)
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO transmitted "
-		      "(file, hash, missing_links, mosaic, nova, "
+		      "(file, fragmented, "
+		      "hash, missing_links, mosaic, nova, "
 		      "position, pulse_size, "
 		      "status_control, total_size) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->
 	   encryptedThenHashed(m_ui.transmittedFile->text().toUtf8(),
 			       &ok).toBase64());
+	query.bindValue
+	  (1, m_ui.fragment_starbeam->isChecked() ? 1 : 0);
 
 	if(ok)
 	  query.bindValue
-	    (1, crypt->
+	    (2, crypt->
 	     encryptedThenHashed
 	     (spoton_crypt::
 	      sha1FileHash(m_ui.transmittedFile->text()).toHex(),
@@ -1052,7 +1055,7 @@ void spoton::slotTransmit(void)
 	      }
 
 	    query.bindValue
-	      (2, crypt->
+	      (3, crypt->
 	       encryptedThenHashed(missingLinks.
 				   toLatin1(), &ok).toBase64());
 	  }
@@ -1062,22 +1065,22 @@ void spoton::slotTransmit(void)
 	    encryptedMosaic = crypt->encryptedThenHashed(mosaic, &ok);
 
 	    if(ok)
-	      query.bindValue(3, encryptedMosaic.toBase64());
+	      query.bindValue(4, encryptedMosaic.toBase64());
 	  }
 
 	if(ok)
 	  query.bindValue
-	    (4, crypt->encryptedThenHashed
+	    (5, crypt->encryptedThenHashed
 	     (m_ui.transmitNova->text().
 	      toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed("0", &ok).toBase64());
+	    (6, crypt->encryptedThenHashed("0", &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->
+	    (7, crypt->
 	     encryptedThenHashed(QByteArray::
 				 number(qMin(m_ui.pulseSize->
 					     value(),
@@ -1085,11 +1088,11 @@ void spoton::slotTransmit(void)
 					     minimumNeighborLaneWidth())),
 				 &ok).toBase64());
 
-	query.bindValue(7, "paused");
+	query.bindValue(8, "paused");
 
 	if(ok)
 	  query.bindValue
-	    (8, crypt->
+	    (9, crypt->
 	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
 				 &ok).toBase64());
 
@@ -1160,6 +1163,7 @@ void spoton::slotTransmit(void)
 			  arg(SPOTON_APPLICATION_NAME), error);
   else
     {
+      m_ui.fragment_starbeam->setChecked(false);
       m_ui.missingLinks->clear();
       m_ui.missingLinksCheckBox->setChecked(false);
       m_ui.pulseSize->setValue(15000);
@@ -1527,7 +1531,7 @@ void spoton::slotPopulateStars(void)
 
 	query.prepare("SELECT 0, position, pulse_size, total_size, "
 		      "status_control, file, mosaic, hash, read_interval, "
-		      "OID FROM transmitted "
+		      "fragmented, OID FROM transmitted "
 		      "WHERE status_control <> 'deleted'");
 
 	if(query.exec())
@@ -1587,13 +1591,6 @@ void spoton::slotPopulateStars(void)
 			  item = new QTableWidgetItem(tr("error"));
 			}
 		    }
-		  else if(i == 6)
-		    {
-		      QByteArray bytes(query.value(i).toByteArray());
-
-		      bytes = bytes.mid(0, 16) + "..." + bytes.right(16);
-		      item = new QTableWidgetItem(bytes.constData());
-		    }
 		  else if(i == 4)
 		    {
 		      item = new QTableWidgetItem
@@ -1608,7 +1605,14 @@ void spoton::slotPopulateStars(void)
 		      else
 			item->setBackground(QBrush());
 		    }
-		  else if(i == 8 || i == query.record().count() - 1)
+		  else if(i == 6)
+		    {
+		      QByteArray bytes(query.value(i).toByteArray());
+
+		      bytes = bytes.mid(0, 16) + "..." + bytes.right(16);
+		      item = new QTableWidgetItem(bytes.constData());
+		    }
+		  else if(i == 8 || i == 9 || i == query.record().count() - 1)
 		    item = new QTableWidgetItem
 		      (query.value(i).toString());
 

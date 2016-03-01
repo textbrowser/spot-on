@@ -115,7 +115,7 @@ class spoton_kernel: public QObject
     (const QByteArray &data,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
   void saveUrls(const QList<QByteArray> &urls);
-  void writeMessage0060(const QByteArray &data, bool *ok);
+  void writeMessage0060(const QByteArray &data, int *neighborIndex, bool *ok);
 
  private:
   QAtomicInt m_urlImportFutureInterrupt;

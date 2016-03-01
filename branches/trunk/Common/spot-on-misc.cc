@@ -617,6 +617,7 @@ void spoton_misc::prepareDatabases(void)
 		   "nova_hash TEXT PRIMARY KEY NOT NULL)"); // Keyed hash.
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted ("
 		   "file TEXT NOT NULL, "
+		   "fragmented INTEGER NOT NULL DEFAULT 0, "
 		   "hash TEXT NOT NULL, " /*
 					  ** SHA-1 hash of the file.
 					  */
@@ -638,6 +639,8 @@ void spoton_misc::prepareDatabases(void)
 		   "(status_control IN ('completed', 'deleted', 'paused', "
 		   "'transmitting')), "
 		   "total_size TEXT NOT NULL)");
+	query.exec("ALTER TABLE transmitted "
+		   "ADD fragmented INTEGER NOT NULL DEFAULT 0");
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted_magnets ("
 		   "magnet BLOB NOT NULL, "
 		   "magnet_hash TEXT NOT NULL, " // Keyed hash.
