@@ -4998,6 +4998,10 @@ void spoton_kernel::slotBuzzMagnetReceivedFromUI(const qint64 oid,
 void spoton_kernel::writeMessage0060
 (const QByteArray &data, int *neighborIndex, bool *ok)
 {
+  /*
+  ** StarBeams.
+  */
+
   if(*ok)
     *ok = false;
 
