@@ -27,6 +27,7 @@
 
 #include <QDataStream>
 #include <QDir>
+#include <QElapsedTimer>
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -4047,4 +4048,25 @@ void spoton_crypt::purgePrivatePublicKeys(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_crypt::memcmp_test(void)
+{
+  QByteArray a;
+  QByteArray b;
+  QElapsedTimer timer;
+
+  for(int i = 0; i < 10; i++)
+    {
+      a = "This is a test.";
+      b = "This is another test.";
+      timer.restart();
+      memcmp(a, b);
+      qDebug() << "memcmp_test():" << timer.nsecsElapsed();
+      a = "This is another test.";
+      b = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+      timer.restart();
+      memcmp(a, b);
+      qDebug() << "memcmp_test():" << timer.nsecsElapsed();
+    }
 }

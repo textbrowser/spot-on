@@ -364,6 +364,7 @@ spoton::spoton(void):QMainWindow()
 
   m_locked = false;
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
+  spoton_crypt::memcmp_test();
   spoton_smp::test1();
   spoton_smp::test2();
   spoton_smp::test3();

@@ -137,6 +137,7 @@ class spoton_crypt
 			      const long days,
 			      QString &error);
   static void init(const int secureMemorySize);
+  static void memcmp_test(void);
   static void purgeDatabases(void);
   static void reencodePrivatePublicKeys
     (spoton_crypt *newCrypt, spoton_crypt *oldCrypt, const QString &id,
