@@ -921,7 +921,7 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotEmailNameIndexChanged(int)));
   connect(m_ui.emailName,
-	  SIGNAL(currentTextChanged(const QString &)),
+	  SIGNAL(editTextChanged(const QString &)),
 	  this,
 	  SLOT(slotSaveEmailName(const QString &)));
   connect(m_ui.urlName,
