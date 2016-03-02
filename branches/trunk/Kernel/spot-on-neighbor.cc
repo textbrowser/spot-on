@@ -144,7 +144,7 @@ spoton_neighbor::spoton_neighbor
   else if(m_sctpSocket)
     {
       m_sctpSocket->setReadBufferSize(m_maximumBufferSize);
-      m_sctpSocket->setSocketDescriptor(socketDescriptor);
+      m_sctpSocket->setSocketDescriptor(static_cast<int> (socketDescriptor));
       m_sctpSocket->setSocketOption
 	(spoton_sctp_socket::KeepAliveOption, 1);
       m_sctpSocket->setSocketOption
@@ -1414,7 +1414,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
   if(m_tcpSocket)
     cipher = m_tcpSocket->sessionCipher();
 
-  int seconds = qAbs(m_startTime.secsTo(QDateTime::currentDateTime()));
+  qint64 seconds = qAbs(m_startTime.secsTo(QDateTime::currentDateTime()));
 
   query.exec("PRAGMA synchronous = OFF");
   query.prepare("UPDATE neighbors SET "
@@ -6399,9 +6399,10 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
   dateTime.setTimeSpec(Qt::UTC);
   now.setTimeSpec(Qt::UTC);
 
-  int secsTo = qAbs(now.secsTo(dateTime));
+  qint64 secsTo = qAbs(now.secsTo(dateTime));
 
-  if(!(secsTo <= spoton_common::GEMINI_TIME_DELTA_MAXIMUM))
+  if(!(secsTo <= static_cast<qint64> (spoton_common::
+				      GEMINI_TIME_DELTA_MAXIMUM)))
     {
       spoton_misc::logError
 	(QString("spoton_neighbor::saveGemini(): "

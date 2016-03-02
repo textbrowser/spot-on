@@ -1624,9 +1624,10 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
   dateTime.setTimeSpec(Qt::UTC);
   now.setTimeSpec(Qt::UTC);
 
-  int secsTo = qAbs(now.secsTo(dateTime));
+  qint64 secsTo = qAbs(now.secsTo(dateTime));
 
-  if(!(secsTo <= spoton_common::GEMINI_TIME_DELTA_MAXIMUM))
+  if(!(secsTo <= static_cast<qint64> (spoton_common::
+				      GEMINI_TIME_DELTA_MAXIMUM)))
     {
       spoton_misc::logError
 	(QString("spoton_kernel::saveGemini(): "

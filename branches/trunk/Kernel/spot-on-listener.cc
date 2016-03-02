@@ -783,7 +783,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	{
 	  spoton_sctp_socket socket(this);
 
-	  socket.setSocketDescriptor(socketDescriptor);
+	  socket.setSocketDescriptor(static_cast<int> (socketDescriptor));
 	  socket.abort();
 	}
       else if(m_transport == "tcp")

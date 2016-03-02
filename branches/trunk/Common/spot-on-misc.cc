@@ -3679,9 +3679,9 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
   dateTime.setTimeSpec(Qt::UTC);
   now.setTimeSpec(Qt::UTC);
 
-  int secsTo = qAbs(now.secsTo(dateTime));
+  qint64 secsTo = qAbs(now.secsTo(dateTime));
 
-  if(!(secsTo <= seconds))
+  if(!(secsTo <= static_cast<qint64> (seconds)))
     {
       logError
 	(QString("spoton_misc::saveParticipantStatus(): "

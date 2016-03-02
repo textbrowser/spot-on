@@ -604,7 +604,8 @@ void spoton::slotReceivedKernelMessage(void)
 			  n.setTimeSpec(Qt::UTC);
 
 			  if(qAbs(d.secsTo(n)) >
-			     spoton_common::CHAT_TIME_DELTA_MAXIMUM)
+			     static_cast<qint64> (spoton_common::
+						  CHAT_TIME_DELTA_MAXIMUM))
 			    str = "#ff8c00";
 
 			  if(str == "green")

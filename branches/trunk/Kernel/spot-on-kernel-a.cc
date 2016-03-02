@@ -2440,7 +2440,7 @@ void spoton_kernel::slotStatusTimerExpired(void)
   prepareStatus("chat");
 
   if(qAbs(m_lastPoptasticStatus.secsTo(QDateTime::currentDateTime())) >=
-     spoton_common::POPTASTIC_STATUS_INTERVAL)
+     static_cast<qint64> (spoton_common::POPTASTIC_STATUS_INTERVAL))
     prepareStatus("poptastic");
 }
 
@@ -4950,10 +4950,7 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 		      "VALUES ('Uptime', ?)");
 	query.bindValue
 	  (0, QString("%1 Minutes").
-	   arg(QString::number(qAbs(uptime.
-				    secsTo(QDateTime::
-					   currentDateTime()) / 60.0),
-			       'f', 1)));
+	   arg(qAbs(uptime.secsTo(QDateTime::currentDateTime())) / 60));
 	query.exec();
       }
 
@@ -5353,7 +5350,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
 	  dateTime.setTimeSpec(Qt::UTC);
 	  now.setTimeSpec(Qt::UTC);
 
-	  int secsTo = qAbs(now.secsTo(dateTime));
+	  qint64 secsTo = qAbs(now.secsTo(dateTime));
 
 	  if(secsTo <= 5)
 	    {

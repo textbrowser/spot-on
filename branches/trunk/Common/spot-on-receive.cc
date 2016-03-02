@@ -1568,8 +1568,8 @@ QList<QByteArray> spoton_receive::process0091
       dateTime.setTimeSpec(Qt::UTC);
       now.setTimeSpec(Qt::UTC);
 
-      int secsTo = qAbs(now.secsTo(dateTime));
       int timeDelta = 0;
+      qint64 secsTo = qAbs(now.secsTo(dateTime));
 
       if(keyType == "email" || keyType == "email" || keyType == "url")
 	timeDelta = spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
@@ -1577,7 +1577,7 @@ QList<QByteArray> spoton_receive::process0091
 	timeDelta =
 	  spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
 
-      if(!(secsTo <= timeDelta))
+      if(!(secsTo <= static_cast<qint64> (timeDelta)))
 	{
 	  spoton_misc::logError
 	    (QString("spoton_receive::process0091(): "
