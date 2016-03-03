@@ -2028,9 +2028,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 
       keyType = QByteArray::fromBase64(keyType);
 
-      if(!(keyType == "chat" || keyType == "email" ||
-	   keyType == "poptastic" ||
-	   keyType == "rosetta" || keyType == "url"))
+      if(!spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(keyType))
 	{
 	  QMessageBox::critical
 	    (this, tr("%1: Error").
@@ -2373,11 +2371,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
 
-      if(!(list.value(0) == "chat" ||
-	   list.value(0) == "email" ||
-	   list.value(0) == "poptastic" ||
-	   list.value(0) == "rosetta" ||
-	   list.value(0) == "url"))
+      if(!spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(list.value(0)))
 	{
 	  QMessageBox::critical
 	    (this, tr("%1: Error").

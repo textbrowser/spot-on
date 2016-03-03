@@ -450,18 +450,13 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      if(list.size() == 2)
 		{
-		  QStringList names;
+		  QStringList names
+		    (spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+		     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-		  names << "chat"
-			<< "chat-signature"
-			<< "email"
-			<< "email-signature"
-			<< "poptastic"
-			<< "poptastic-signature"
-			<< "rosetta"
-			<< "rosetta-signature"
-			<< "url"
-			<< "url-signature";
+		  names.removeAll("rosetta");
+		  names.removeAll("rosetta-signature");
+		  qSort(names);
 
 		  for(int i = 0; i < names.size(); i++)
 		    if(!spoton_kernel::s_crypts.contains(names.at(i)))

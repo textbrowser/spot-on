@@ -939,8 +939,7 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
   if(ok)
     query.bindValue(3, crypt->keyedHash(keyType, &ok).toBase64());
 
-  if(keyType == "chat" || keyType == "email" || keyType == "poptastic" ||
-     keyType == "rosetta" || keyType == "url")
+  if(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(keyType))
     {
       if(ok)
 	{
@@ -1972,13 +1971,7 @@ void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
       return;
     }
 
-  QList<QByteArray> list;
-
-  list << "chat"
-       << "email"
-       << "poptastic"
-       << "rosetta"
-       << "url";
+  QStringList list(spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
   for(int i = 0; i < list.size(); i++)
     {
@@ -1996,7 +1989,7 @@ void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
 		    "(SELECT public_key_hash FROM friends_public_keys WHERE "
 		    "key_type_hash <> ?)");
       query.bindValue
-	(0, crypt->keyedHash(list.at(i) + "-signature", &ok).toBase64());
+	(0, crypt->keyedHash(list.at(i).toLatin1(), &ok).toBase64());
 
       if(ok)
 	query.exec();
@@ -2014,7 +2007,7 @@ void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
 
       if(ok)
 	query.bindValue
-	  (0, crypt->keyedHash(list.at(i) + "-signature", &ok).toBase64());
+	  (0, crypt->keyedHash(list.at(i).toLatin1(), &ok).toBase64());
 
       if(ok)
 	query.exec();

@@ -138,6 +138,18 @@ QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
 						      << 20971520;
 QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =
   QStringList() << "ftp" << "gopher" << "http" << "https";
+QStringList spoton_common::SPOTON_ENCRYPTION_KEY_NAMES =
+  QStringList() << "chat"
+		<< "email"
+		<< "poptastic"
+		<< "rosetta"
+		<< "url";
+QStringList spoton_common::SPOTON_SIGNATURE_KEY_NAMES =
+  QStringList() << "chat-signature"
+		<< "email-signature"
+		<< "poptastic-signature"
+		<< "rosetta-signature"
+		<< "url-signature";
 const int spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE;
 const int spoton_common::BUZZ_MAXIMUM_ID_LENGTH;
 const int spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
@@ -3825,16 +3837,12 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 	  {
 	    ok = true;
 
-	    QStringList list;
+	    QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+			     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-	    list << "chat"
-		 << "chat-signature"
-		 << "email"
-		 << "email-signature"
-		 << "poptastic"
-		 << "poptastic-signature"
-		 << "url"
-		 << "url-signature";
+	    list.removeAll("rosetta");
+	    list.removeAll("rosetta-signature");
+	    qSort(list);
 
 	    for(int i = 0; i < list.size(); i++)
 	      if(!s_crypts.contains(list.at(i)))

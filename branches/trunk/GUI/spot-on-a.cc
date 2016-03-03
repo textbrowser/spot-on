@@ -75,6 +75,18 @@ QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
 						      << 20971520;
 QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =
   QStringList() << "ftp" << "gopher" << "http" << "https";
+QStringList spoton_common::SPOTON_ENCRYPTION_KEY_NAMES =
+  QStringList() << "chat"
+		<< "email"
+		<< "poptastic"
+		<< "rosetta"
+		<< "url";
+QStringList spoton_common::SPOTON_SIGNATURE_KEY_NAMES =
+  QStringList() << "chat-signature"
+		<< "email-signature"
+		<< "poptastic-signature"
+		<< "rosetta-signature"
+		<< "url-signature";
 const int spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE;
 const int spoton_common::BUZZ_MAXIMUM_ID_LENGTH;
 const int spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
@@ -5891,18 +5903,10 @@ void spoton::slotSetPassphrase(void)
 							  iterationCount->
 							  value()),
 			      "chat"));
-	      QStringList list;
+	      QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+			       spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-	      list << "chat"
-		   << "chat-signature"
-		   << "email"
-		   << "email-signature"
-		   << "poptastic"
-		   << "poptastic-signature"
-		   << "rosetta"
-		   << "rosetta-signature"
-	           << "url"
-		   << "url-signature";
+	      qSort(list);
 
 	      for(int i = 0; i < list.size(); i++)
 		{
@@ -5976,16 +5980,9 @@ void spoton::slotSetPassphrase(void)
 	      else
 		signatureKeyType = "rsa";
 
-	      list << "chat"
-		   << "chat-signature"
-		   << "email"
-		   << "email-signature"
-		   << "poptastic"
-		   << "poptastic-signature"
-		   << "rosetta"
-		   << "rosetta-signature"
-		   << "url"
-		   << "url-signature";
+	      list << spoton_common::SPOTON_ENCRYPTION_KEY_NAMES
+		   << spoton_common::SPOTON_SIGNATURE_KEY_NAMES;
+	      qSort(list);
 
 	      QProgressDialog progress(this);
 
@@ -6138,18 +6135,10 @@ void spoton::slotSetPassphrase(void)
 
 	  m_crypts.clear();
 
-	  QStringList list;
+	  QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+			   spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-	  list << "chat"
-	       << "chat-signature"
-	       << "email"
-	       << "email-signature"
-	       << "poptastic"
-	       << "poptastic-signature"
-	       << "rosetta"
-	       << "rosetta-signature"
-	       << "url"
-	       << "url-signature";
+	  qSort(list);
 
 	  for(int i = 0; i < list.size(); i++)
 	    m_crypts.insert
@@ -6433,18 +6422,10 @@ void spoton::slotValidatePassphrase(void)
 
 	    m_crypts.clear();
 
-	    QStringList list;
+	    QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+			     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-	    list << "chat"
-		 << "chat-signature"
-		 << "email"
-		 << "email-signature"
-		 << "poptastic"
-		 << "poptastic-signature"
-		 << "rosetta"
-		 << "rosetta-signature"
-		 << "url"
-		 << "url-signature";
+	    qSort(list);
 
 	    for(int i = 0; i < list.size(); i++)
 	      m_crypts.insert

@@ -3320,18 +3320,9 @@ void spoton::updatePublicKeysLabel(void)
   m_ui.personal_public_keys->clearContents();
   m_ui.personal_public_keys->setRowCount(0);
 
-  QStringList list;
+  QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+		   spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-  list << "chat"
-       << "chat-signature"
-       << "email"
-       << "email-signature"
-       << "poptastic"
-       << "poptastic-signature"
-       << "rosetta"
-       << "rosetta-signature"
-       << "url"
-       << "url-signature";
   m_ui.personal_public_keys->setRowCount(list.size());
 
   for(int i = 0; i < list.size(); i++)

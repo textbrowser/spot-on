@@ -43,6 +43,8 @@ class spoton_common
  public:
   static QList<int> LANE_WIDTHS;
   static QStringList ACCEPTABLE_URL_SCHEMES;
+  static QStringList SPOTON_ENCRYPTION_KEY_NAMES;
+  static QStringList SPOTON_SIGNATURE_KEY_NAMES;
   static const int ACCOUNTS_RANDOM_BUFFER_SIZE = 64;
   static const int BUZZ_MAXIMUM_ID_LENGTH = 256; /*
 						 ** Please use a number
