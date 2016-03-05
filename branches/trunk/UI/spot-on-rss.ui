@@ -278,28 +278,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="import_periodically">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Periodic importing may impede the application.</string>
-            </property>
-            <property name="text">
-             <string>&amp;Import Periodically</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QLabel" name="label_6">
             <property name="text">
              <string>&amp;Max. Keywords</string>
@@ -806,7 +784,6 @@
   <tabstop>save_proxy_settings</tabstop>
   <tabstop>activate</tabstop>
   <tabstop>download_interval</tabstop>
-  <tabstop>import_periodically</tabstop>
   <tabstop>maximum_keywords</tabstop>
   <tabstop>action_menu</tabstop>
   <tabstop>new_feed</tabstop>

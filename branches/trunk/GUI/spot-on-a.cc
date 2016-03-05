@@ -1888,6 +1888,7 @@ spoton::spoton(void):QMainWindow()
   settings.remove("gui/poptasticVerifySmtpHostPeer");
   settings.remove("gui/poptasticVerifySmtpPeer");
   settings.remove("gui/rsaKeySize");
+  settings.remove("gui/rss_import_activate");
   settings.remove("gui/rss_scroll_automatically");
   settings.remove("gui/signatureKey");
 

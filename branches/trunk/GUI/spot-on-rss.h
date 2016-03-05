@@ -57,7 +57,6 @@ class spoton_rss: public QMainWindow
   QString removeSpecialTags(const QString &text);
   QTimer m_downloadTimer;
   QTimer m_downloadContentTimer;
-  QTimer m_importTimer;
   QTimer m_statisticsTimer;
   Ui_rss m_ui;
   int m_currentFeedRow;
@@ -66,8 +65,7 @@ class spoton_rss: public QMainWindow
   bool event(QEvent *event);
 #endif
 #endif
-  bool importUrl(const QList<QVariant> &list,
-		 const bool batch);
+  bool importUrl(const QList<QVariant> &list);
   spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);
   void hideUrl(const QUrl &url, const bool state);
@@ -89,7 +87,6 @@ class spoton_rss: public QMainWindow
  private slots:
   void slotAddFeed(void);
   void slotActivate(bool state);
-  void slotActivateImport(bool state);
   void slotContentReplyFinished(void);
   void slotCopyFeedLink(void);
   void slotDeleteAllFeeds(void);

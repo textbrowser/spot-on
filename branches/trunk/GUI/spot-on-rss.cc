@@ -70,10 +70,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotDownloadTimeout(void)));
-  connect(&m_importTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotImport(void)));
   connect(&m_statisticsTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -158,14 +154,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
-  connect(m_ui.import_periodically,
-	  SIGNAL(toggled(bool)),
-	  m_ui.action_Import,
-	  SLOT(setDisabled(bool)));
-  connect(m_ui.import_periodically,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotActivateImport(bool)));
   connect(m_ui.maximum_keywords,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -254,9 +242,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
     (settings.value("gui/rss_url_links_in_timeline", true).toBool());
   m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
 					   false).toBool());
-  m_ui.import_periodically->setChecked
-    (settings.value("gui/rss_import_activate", false).toBool());
-  m_ui.action_Import->setEnabled(!m_ui.import_periodically->isChecked());
   ivalue = qBound(m_ui.maximum_keywords->minimum(),
 		  settings.value("gui/rss_maximum_keywords", 50).toInt(),
 		  m_ui.maximum_keywords->maximum());
@@ -285,7 +270,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   else
     m_ui.action_Publication_Date->setChecked(true);
 
-  m_importTimer.setInterval(2500);
   m_statisticsTimer.start(2500);
 
   if(m_ui.activate->isChecked())
@@ -293,9 +277,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
       m_downloadContentTimer.start();
       m_downloadTimer.start();
     }
-
-  if(m_ui.import_periodically->isChecked())
-    m_importTimer.start();
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
@@ -308,7 +289,6 @@ spoton_rss::~spoton_rss()
 {
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
-  m_importTimer.stop();
   m_statisticsTimer.stop();
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
@@ -337,7 +317,7 @@ bool spoton_rss::event(QEvent *event)
 #endif
 #endif
 
-bool spoton_rss::importUrl(const QList<QVariant> &list, const bool batch)
+bool spoton_rss::importUrl(const QList<QVariant> &list)
 {
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
@@ -371,48 +351,6 @@ bool spoton_rss::importUrl(const QList<QVariant> &list, const bool batch)
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 		    false).toBool(),
      ucc.data());
-
-  if(batch)
-    return imported;
-
-  {
-    QString connectionName("");
-
-    {
-      QSqlDatabase db = spoton_misc::database(connectionName);
-
-      db.setDatabaseName
-	(spoton_misc::homePath() + QDir::separator() + "rss.db");
-
-      if(db.open())
-	{
-	  QSqlQuery query(db);
-	  bool ok = true;
-
-	  query.prepare("UPDATE rss_feeds_links "
-			"SET imported = ? "
-			"WHERE url_hash = ?");
-
-	  if(imported)
-	    query.bindValue(0, 1);
-	  else
-	    query.bindValue(0, 2); // Error.
-
-	  query.bindValue
-	    (1, crypt->
-	     keyedHash(spoton_misc::urlToEncoded(list.value(3).toUrl()),
-		       &ok).toBase64());
-
-	  if(ok)
-	    query.exec();
-	}
-
-      db.close();
-    }
-
-    QSqlDatabase::removeDatabase(connectionName);
-  }
-
   return imported;
 }
 
@@ -457,10 +395,8 @@ void spoton_rss::deactivate(void)
 {
   m_ui.action_Import->setEnabled(true);
   m_ui.activate->setChecked(false);
-  m_ui.import_periodically->setChecked(false);
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
-  m_importTimer.stop();
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
 }
@@ -1335,21 +1271,6 @@ void spoton_rss::slotActivate(bool state)
     }
 }
 
-void spoton_rss::slotActivateImport(bool state)
-{
-  QSettings settings;
-
-  settings.setValue("gui/rss_import_activate", state);
-
-  if(state)
-    {
-      if(!m_importTimer.isActive()) // Signals;
-	m_importTimer.start();
-    }
-  else
-    m_importTimer.stop();
-}
-
 void spoton_rss::slotAddFeed(void)
 {
   QString connectionName("");
@@ -1937,108 +1858,89 @@ void spoton_rss::slotFindInitialize(void)
 
 void spoton_rss::slotImport(void)
 {
-  QAction *action = qobject_cast<QAction *> (sender());
-  bool batch = false;
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
-  if(action == m_ui.action_Import)
+  if(!crypt)
     {
-      if(!crypt)
-	{
-	  QMessageBox::critical
-	    (this,
-	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid spoton_crypt object. This is a fatal flaw."));
-	  return;
-	}
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
 
-      if(!(spoton::instance() ? spoton::instance()->urlDatabase() :
-	   QSqlDatabase()).isOpen())
-	{
-	  QMessageBox::critical
-	    (this,
-	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	     tr("Please connect to a URL database."));
-	  return;
-	}
+  if(!(spoton::instance() ? spoton::instance()->urlDatabase() :
+       QSqlDatabase()).isOpen())
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please connect to a URL database."));
+      return;
+    }
 
-      QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
+  QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
 
-      if(!ucc)
-	{
-	  QMessageBox::critical
-	    (this,
-	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	     tr("Did you prepare common credentials?"));
-	  return;
-	}
+  if(!ucc)
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Did you prepare common credentials?"));
+      return;
+    }
 
-      QMessageBox mb(this);
+  QMessageBox mb(this);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-      mb.setIcon(QMessageBox::Question);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Did you prepare your databases and distillers?"));
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Did you prepare your databases and distillers?"));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
-      if(mb.exec() != QMessageBox::Yes)
-	return;
+  if(mb.exec() != QMessageBox::Yes)
+    return;
 
-      QMessageBox::information
+  m_downloadContentTimer.stop();
+  m_downloadTimer.stop();
+
+  QMessageBox::information
 		 (this, tr("%1: Information").
 		  arg(SPOTON_APPLICATION_NAME),
 		  tr("Please note that the URL-import process may "
 		     "require a considerable amount of time to complete."));
 
-      batch = true;
-      m_downloadContentTimer.stop();
-      m_downloadTimer.stop();
-      m_importTimer.stop();
-    }
-  else
-    {
-      if(!crypt)
-	return;
-    }
+  if(spoton::instance())
+    spoton::instance()->populateUrlDistillers();
 
-  if(!batch)
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  QProgressDialog *progress = new QProgressDialog(this);
 
-  QList<QVariant> list;
-  QProgressDialog *progress = 0;
-  QString connectionName("");
-
-  if(batch)
-    {
-      if(spoton::instance())
-	spoton::instance()->populateUrlDistillers();
-
-      progress = new QProgressDialog(this);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-      progress->setAttribute(Qt::WA_MacMetalStyle, true);
+  progress->setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-      progress->setLabelText(tr("Importing URLs. Please be patient."));
-      progress->setMaximum(0);
-      progress->setMinimum(0);
-      progress->setModal(true);
-      progress->setWindowTitle(tr("%1: Importing URLs").
-			       arg(SPOTON_APPLICATION_NAME));
-      progress->show();
-      progress->raise();
-      progress->activateWindow();
+  progress->setLabelText(tr("Importing URLs. Please be patient."));
+  progress->setMaximum(0);
+  progress->setMinimum(0);
+  progress->setModal(true);
+  progress->setWindowTitle(tr("%1: Importing URLs").
+			   arg(SPOTON_APPLICATION_NAME));
+  progress->show();
+  progress->raise();
+  progress->activateWindow();
 #ifndef Q_OS_MAC
-      progress->repaint();
-      QApplication::processEvents();
+  progress->repaint();
+  QApplication::processEvents();
 #endif
-    }
+
+  QString connectionName("");
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -2059,19 +1961,17 @@ void spoton_rss::slotImport(void)
 	if(query.exec())
 	  while(query.next())
 	    {
-	      if(progress)
-		{
-		  if(progress->wasCanceled())
-		    break;
+	      if(progress->wasCanceled())
+		break;
 
 #ifndef Q_OS_MAC
-		  progress->repaint();
-		  QApplication::processEvents();
+	      progress->repaint();
+	      QApplication::processEvents();
 #endif
-		}
 
               QByteArray bytes;
 	      QByteArray urlHash(query.value(4).toByteArray());
+	      QList<QVariant> list;
 	      bool ok = true;
 
 	      bytes = qUncompress
@@ -2123,35 +2023,24 @@ void spoton_rss::slotImport(void)
 		    list << url;
 		}
 
-	      if(batch)
-		{
-		  bool imported = false;
+	      bool imported = false;
 
-		  if(!list.isEmpty())
-		    imported = importUrl(list, true);
+	      if(!list.isEmpty())
+		imported = importUrl(list);
 
-		  QSqlQuery query(db);
+	      QSqlQuery query(db);
 
-		  query.prepare("UPDATE rss_feeds_links "
-				"SET imported = ? "
-				"WHERE url_hash = ?");
+	      query.prepare("UPDATE rss_feeds_links "
+			    "SET imported = ? "
+			    "WHERE url_hash = ?");
 
-		  if(imported)
-		    query.bindValue(0, 1);
-		  else
-		    query.bindValue(0, 2); // Import error.
-
-		  query.bindValue(1, urlHash);
-		  query.exec();
-		  list.clear();
-		}
+	      if(imported)
+		query.bindValue(0, 1);
 	      else
-		{
-		  if(ok)
-		    break;
-		  else
-		    list.clear();
-		}
+		query.bindValue(0, 2); // Import error.
+
+	      query.bindValue(1, urlHash);
+	      query.exec();
 	    }
       }
 
@@ -2160,35 +2049,14 @@ void spoton_rss::slotImport(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(!batch)
+  if(m_ui.activate->isChecked())
     {
-      if(!list.isEmpty())
-	{
-	  if(spoton::instance())
-	    spoton::instance()->populateUrlDistillers();
-
-	  importUrl(list, false);
-	}
-
-      QApplication::restoreOverrideCursor();
-    }
-  else
-    {
-      if(m_ui.activate->isChecked())
-	{
-          m_downloadContentTimer.start();
-	  m_downloadTimer.start();
-	}
-
-      if(m_ui.import_periodically->isChecked())
-	m_importTimer.start();
+      m_downloadContentTimer.start();
+      m_downloadTimer.start();
     }
 
-  if(progress)
-    {
-      progress->close();
-      progress->deleteLater();
-    }
+  progress->close();
+  progress->deleteLater();
 }
 
 void spoton_rss::slotMaximumKeywordsChanged(int value)
