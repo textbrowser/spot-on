@@ -2854,7 +2854,13 @@ void spoton::slotSendMail(void)
   spoton_crypt *crypt = m_crypts.value("email", 0);
 
   if(!crypt)
-    return;
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
 
   /*
   ** Why would you send an empty message?
@@ -2887,9 +2893,29 @@ void spoton::slotSendMail(void)
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Please provide a Gold Bug that contains at least sixteen "
 		"characters."));
-	  m_ui.outgoingMessage->setFocus();
 	  return;
 	}
+    }
+
+  QModelIndexList list
+    (m_ui.emailParticipants->selectionModel()->
+     selectedRows(0)); // Participant
+  bool temporary = false;
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      if(list.at(i).data(Qt::UserRole).toBool())
+	temporary = true;
+    }
+
+  if(temporary)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("At least one of the selected e-mail recipient(s) is temporary. "
+	    "Please correct."));
+      return;
     }
 
   prepareDatabasesFromUI();
