@@ -439,14 +439,21 @@ void spoton_kernel::postPoptastic(void)
 
   if(!m_poptasticCache.isEmpty())
     {
-      const QHash<QString, QVariant> v(m_poptasticCache.head());
+      const QHash<QString, QVariant> values(m_poptasticCache.head());
 
       locker.unlock();
 
       QHash<QString, QVariant> h;
 
       for(int i = 0; i < list.size(); i++)
-	if(list.at(i)["in_username"].toString() == v["from_account"].toString())
+	/*
+	** We wish to verify that the from_account matches an
+	** account having the in_username (not the out_username) because
+	** the UI creates a listing using the in_username values.
+	*/
+
+	if(list.at(i)["in_username"].toString() ==
+	   values["from_account"].toString())
 	  {
 	    h = list.at(i);
 
@@ -458,14 +465,28 @@ void spoton_kernel::postPoptastic(void)
 
 		QWriteLocker locker(&m_poptasticCacheMutex);
 
-		if(!m_poptasticCache.isEmpty())
-		  m_poptasticCache.removeOne(v);
+		if(m_poptasticCache.contains(values))
+		  m_poptasticCache.removeOne(values);
 
 		return;
 	      }
 
 	    break;
 	  }
+
+      if(h.isEmpty())
+	{
+	  /*
+	  ** Remove the values item.
+	  */
+
+	  QWriteLocker locker(&m_poptasticCacheMutex);
+
+	  if(m_poptasticCache.contains(values))
+	    m_poptasticCache.removeOne(values);
+
+	  return;
+	}
 
       CURL *curl = curl_easy_init();
       const QHash<QString, QVariant> hash(h);
@@ -508,6 +529,10 @@ void spoton_kernel::postPoptastic(void)
 			       hash["proxy_username"].toString().
 			       trimmed().toLatin1().constData());
 	    }
+
+	  /*
+	  ** The UI creates a listing using the in_username values.
+	  */
 
 	  QString from(hash["in_username"].toString().trimmed());
 	  QString ssltls(hash["out_ssltls"].toString().toUpper().trimmed());
@@ -562,14 +587,12 @@ void spoton_kernel::postPoptastic(void)
 
 	  curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
 
-	  for(int i = 1, j = 1; i <= 15;)
+	  for(int i = 1;; i++)
 	    {
 	      QReadLocker locker(&m_poptasticCacheMutex);
 
 	      if(m_poptasticCache.isEmpty())
 		break;
-
-	      const QHash<QString, QVariant> values(m_poptasticCache.head());
 
 	      locker.unlock();
 
@@ -735,12 +758,9 @@ void spoton_kernel::postPoptastic(void)
 
 	      if((rc = curl_easy_perform(curl)) == CURLE_OK)
 		{
-		  i += 1;
-		  j = 1;
-
 		  QWriteLocker locker(&m_poptasticCacheMutex);
 
-		  if(!m_poptasticCache.isEmpty())
+		  if(m_poptasticCache.contains(values))
 		    m_poptasticCache.removeOne(values);
 
 		  locker.unlock();
@@ -753,31 +773,29 @@ void spoton_kernel::postPoptastic(void)
 		  if(mailOid > -1)
 		    spoton_misc::moveSentMailToSentFolder
 		      (QList<qint64> () << mailOid, s_crypt);
+
+		  curl_slist_free_all(recipients);
+		  break;
 		}
 	      else
 		{
-		  if(j >= spoton_common::MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST)
-		    {
-		      i += 1;
-		      j = 1;
-
-		      QWriteLocker locker(&m_poptasticCacheMutex);
-
-		      if(!m_poptasticCache.isEmpty())
-			m_poptasticCache.removeOne(values);
-
-		      locker.unlock();
-		    }
-		  else
-		    j += 1;
-
+		  curl_slist_free_all(recipients);
 		  spoton_misc::logError
 		    (QString("spoton_kernel::postPoptastic(): "
 			     "curl_easy_perform() failure (%1).").
 		     arg(rc));
-		}
 
-	      curl_slist_free_all(recipients);
+		  if(i >= spoton_common::MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST)
+		    {
+		      QWriteLocker locker(&m_poptasticCacheMutex);
+
+		      if(m_poptasticCache.contains(values))
+			m_poptasticCache.removeOne(values);
+
+		      locker.unlock();
+		      break;
+		    }
+		}
 
 	      if(m_poptasticPostFuture.isCanceled())
 		break;

@@ -5736,12 +5736,14 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
     return;
 
   QHash<QString, QVariant> hash;
-  QWriteLocker locker(&m_poptasticCacheMutex);
 
   hash["from_account"] = fromAccount;
   hash["mail_oid"] = mailOid;
   hash["message"] = message;
   hash["receiver_name"] = receiverName;
+
+  QWriteLocker locker(&m_poptasticCacheMutex);
+
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_poptasticCache.enqueue(hash);
 }
@@ -5756,7 +5758,6 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 					 const qint64 mailOid)
 {
   QHash<QString, QVariant> hash;
-  QWriteLocker locker(&m_poptasticCacheMutex);
 
   hash["attachment"] = attachment;
   hash["attachment_name"] = attachmentName;
@@ -5766,6 +5767,9 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
   hash["mode"] = mode;
   hash["name"] = name;
   hash["subject"] = subject;
+
+  QWriteLocker locker(&m_poptasticCacheMutex);
+
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_poptasticCache.enqueue(hash);
 }
