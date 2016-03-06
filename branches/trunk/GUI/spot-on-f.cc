@@ -1328,8 +1328,7 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
 
       if(item)
 	{
-	  keyType = item->data
-	    (Qt::ItemDataRole(Qt::UserRole + 1)).toString().toLower();
+	  keyType = item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString();
 	  oid = item->text();
 	  temporary = item->data(Qt::UserRole).toBool();
 	}

@@ -2897,18 +2897,52 @@ void spoton::slotSendMail(void)
 	}
     }
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QModelIndexList list
     (m_ui.emailParticipants->selectionModel()->
      selectedRows(0)); // Participant
+  bool mixed = false;
   bool temporary = false;
 
   for(int i = 0; i < list.size(); i++)
     {
       if(list.at(i).data(Qt::UserRole).toBool())
 	temporary = true;
+      else
+	{
+	  QString keyType
+	    (list.at(i).data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
+
+	  if(m_ui.emailName->currentIndex() == 0)
+	    {
+	      if(keyType == "poptastic")
+		mixed = true;
+	    }
+	  else
+	    {
+	      if(keyType != "poptastic")
+		mixed = true;
+	    }
+	}
+
+      if(mixed || temporary)
+	break;
     }
 
-  if(temporary)
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  if(mixed)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("You are attempting to send an e-mail from an account "
+	    "that is not compatible with some of the recipients. "
+	    "Please correct."));
+      return;
+    }
+  else if(temporary)
     {
       QMessageBox::critical
 	(this, tr("%1: Error").
@@ -2919,6 +2953,7 @@ void spoton::slotSendMail(void)
     }
 
   prepareDatabasesFromUI();
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QByteArray message;
 
@@ -3153,6 +3188,7 @@ void spoton::slotSendMail(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.outgoingSubject->setFocus();
 }
 
