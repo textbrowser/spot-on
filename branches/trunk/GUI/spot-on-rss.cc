@@ -2567,6 +2567,9 @@ void spoton_rss::slotSaveProxy(void)
 void spoton_rss::slotScheduleFeedUpdate(void)
 {
   m_currentFeedRow = m_ui.feeds->currentRow() - 1;
+
+  if(!m_ui.activate->isChecked())
+    QTimer::singleShot(100, this, SLOT(slotDownloadTimeout(void)));
 }
 
 void spoton_rss::slotShowContextMenu(const QPoint &point)

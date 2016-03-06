@@ -3188,7 +3188,7 @@ void spoton::slotSendMail(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  QApplication::restoreOverrideCursor();
   m_ui.outgoingSubject->setFocus();
 }
 
