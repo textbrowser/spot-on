@@ -2950,6 +2950,7 @@ void spoton::slotSendMail(void)
 	while(!oids.isEmpty())
 	  {
 	    QByteArray goldbug;
+	    QByteArray name(names.takeFirst().toUtf8());
 	    QByteArray mode;
 	    QByteArray publicKeyHash(publicKeyHashes.takeFirst().toLatin1());
 	    QByteArray subject
@@ -3044,8 +3045,7 @@ void spoton::slotSendMail(void)
 	    if(ok)
 	      query.bindValue
 		(8, crypt->
-		 encryptedThenHashed(names.takeFirst().toUtf8(), &ok).
-		 toBase64());
+		 encryptedThenHashed(name, &ok).toBase64());
 
 	    query.bindValue
 	      (9, publicKeyHash.toBase64());
@@ -3098,6 +3098,7 @@ void spoton::slotSendMail(void)
 	  }
 
 	m_ui.attachment->clear();
+	m_ui.emailName->setCurrentIndex(0);
 	m_ui.emailParticipants->selectionModel()->clear();
 	m_ui.email_fs_gb->setCurrentIndex(2);
 	m_ui.goldbug->clear();
