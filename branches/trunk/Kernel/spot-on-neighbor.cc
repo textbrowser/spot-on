@@ -6773,10 +6773,11 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	{
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 	  sent = m_bluetoothSocket->write(data, remaining);
-	  m_bluetoothSocket->waitForBytesWritten
-	    (spoton_kernel::
-	     setting("kernel/bluetooth_msecs_waitforbyteswritten",
-		     2500).toInt());
+
+	  int msecs = spoton_kernel::s_bluetooth_waitforbyteswritten_msecs;
+
+	  if(msecs != 0)
+	    m_bluetoothSocket->waitForBytesWritten(msecs);
 #endif
 	}
       else if(m_sctpSocket)
@@ -6784,10 +6785,11 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
       else if(m_tcpSocket)
 	{
 	  sent = m_tcpSocket->write(data, remaining);
-	  m_tcpSocket->waitForBytesWritten
-	    (spoton_kernel::
-	     setting("kernel/tcp_msecs_waitforbyteswritten",
-		     2500).toInt());
+
+	  int msecs = spoton_kernel::s_tcp_waitforbyteswritten_msecs;
+
+	  if(msecs != 0)
+	    m_tcpSocket->waitForBytesWritten(msecs);
 	}
       else if(m_udpSocket)
 	{
@@ -6814,9 +6816,10 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 		(data, qMin(minimum, remaining), address, port);
 	    }
 
-	  m_udpSocket->waitForBytesWritten
-	    (spoton_kernel::setting("kernel/udp_msecs_waitforbyteswritten",
-				    2500).toInt());
+	  int msecs = spoton_kernel::s_udp_waitforbyteswritten_msecs;
+
+	  if(msecs != 0)
+	    m_udpSocket->waitForBytesWritten(msecs);
 
 	  if(sent == -1)
 	    {

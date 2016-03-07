@@ -97,6 +97,9 @@ extern "C"
 #endif
 #endif
 
+QAtomicInt spoton_kernel::s_bluetooth_waitforbyteswritten_msecs = 0;
+QAtomicInt spoton_kernel::s_tcp_waitforbyteswritten_msecs = 0;
+QAtomicInt spoton_kernel::s_udp_waitforbyteswritten_msecs = 0;
 QAtomicInt spoton_kernel::s_sendInitialStatus = 0;
 QByteArray spoton_kernel::s_messagingCacheKey;
 QDateTime spoton_kernel::s_institutionLastModificationTime;
@@ -2177,6 +2180,15 @@ void spoton_kernel::slotUpdateSettings(void)
       m_urlDistribution->quit();
       m_urlDistribution->wait();
     }
+
+  int msecs = 0;
+
+  msecs = setting("kernel/bluetooth_msecs_waitforbyteswritten", 0).toInt();
+  s_bluetooth_waitforbyteswritten_msecs = qBound(0, msecs, 30000);
+  msecs = setting("kernel/tcp_msecs_waitforbyteswritten", 0).toInt();
+  s_tcp_waitforbyteswritten_msecs = qBound(0, msecs, 30000);
+  msecs = setting("kernel/udp_msecs_waitforbyteswritten", 0).toInt();
+  s_udp_waitforbyteswritten_msecs = qBound(0, msecs, 30000);
 }
 
 void spoton_kernel::connectSignalsToNeighbor

@@ -71,6 +71,9 @@ class spoton_kernel: public QObject
  public:
   spoton_kernel(void);
   ~spoton_kernel();
+  static QAtomicInt s_bluetooth_waitforbyteswritten_msecs;
+  static QAtomicInt s_tcp_waitforbyteswritten_msecs;
+  static QAtomicInt s_udp_waitforbyteswritten_msecs;
   static QAtomicInt s_sendInitialStatus;
   static QHash<QString, spoton_crypt *> s_crypts;
   static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
