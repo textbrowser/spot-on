@@ -2134,6 +2134,17 @@ void spoton_kernel::slotUpdateSettings(void)
   spoton_misc::enableLog
     (setting("gui/kernelLogEvents", false).toBool());
 
+  if(setting("gui/activeUrlDistribution", true).toBool())
+    {
+      if(!m_urlDistribution->isRunning())
+	m_urlDistribution->start();
+    }
+  else
+    {
+      m_urlDistribution->quit();
+      m_urlDistribution->wait();
+    }
+
   if(setting("gui/etpReceivers", false).toBool())
     {
       if(!m_starbeamWriter->isActive())
@@ -2170,25 +2181,12 @@ void spoton_kernel::slotUpdateSettings(void)
   if(integer != m_messagingCachePurgeTimer.interval())
     m_messagingCachePurgeTimer.start(integer);
 
-  if(setting("gui/activeUrlDistribution", true).toBool())
-    {
-      if(!m_urlDistribution->isRunning())
-	m_urlDistribution->start();
-    }
-  else
-    {
-      m_urlDistribution->quit();
-      m_urlDistribution->wait();
-    }
-
-  int msecs = 0;
-
-  msecs = setting("kernel/bluetooth_msecs_waitforbyteswritten", 0).toInt();
-  s_bluetooth_waitforbyteswritten_msecs = qBound(0, msecs, 30000);
-  msecs = setting("kernel/tcp_msecs_waitforbyteswritten", 0).toInt();
-  s_tcp_waitforbyteswritten_msecs = qBound(0, msecs, 30000);
-  msecs = setting("kernel/udp_msecs_waitforbyteswritten", 0).toInt();
-  s_udp_waitforbyteswritten_msecs = qBound(0, msecs, 30000);
+  integer = setting("kernel/bluetooth_msecs_waitforbyteswritten", 0).toInt();
+  s_bluetooth_waitforbyteswritten_msecs = qBound(0, integer, 30000);
+  integer = setting("kernel/tcp_msecs_waitforbyteswritten", 0).toInt();
+  s_tcp_waitforbyteswritten_msecs = qBound(0, integer, 30000);
+  integer = setting("kernel/udp_msecs_waitforbyteswritten", 0).toInt();
+  s_udp_waitforbyteswritten_msecs = qBound(0, integer, 30000);
 }
 
 void spoton_kernel::connectSignalsToNeighbor
