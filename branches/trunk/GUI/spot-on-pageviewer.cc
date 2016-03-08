@@ -51,6 +51,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
   m_webView = new QWebEngineView(this);
   m_webView->page()->deleteLater();
   m_webView->setPage(new spoton_webengine_page(this));
+  m_webView->setContextMenuPolicy(Qt::CustomContextMenu);
 #else
   m_webView = new QWebView(this);
   m_webView->page()->networkAccessManager()->
@@ -79,13 +80,10 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
-#else
   connect(m_webView,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotCustomContextMenuRequested(const QPoint &)));
-#endif
   m_originalFindPalette = m_ui.find->palette();
 #if QT_VERSION >= 0x040700
   m_ui.find->setPlaceholderText(tr("Find Text"));
