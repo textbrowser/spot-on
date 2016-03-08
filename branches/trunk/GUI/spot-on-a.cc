@@ -6808,7 +6808,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this, SLOT(slotDisconnectAllNeighbors(void)));
       menu.addSeparator();
       menu.addAction
-	(tr("&Authenticate"),
+	(tr("&Authenticate Account"),
 	 this,
 	 SLOT(slotAuthenticate(void)));
       menu.addAction(tr("&Reset Account Information"),
@@ -9097,7 +9097,7 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
 
   ui.setupUi(&dialog);
   dialog.setWindowTitle
-    (tr("%1: Please Authenticate").
+    (tr("%1: Please Authenticate Account").
      arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
   dialog.setAttribute(Qt::WA_MacMetalStyle, false);

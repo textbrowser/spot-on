@@ -2991,7 +2991,7 @@ void spoton::prepareContextMenuMirrors(void)
 		      this, SLOT(slotDisconnectAllNeighbors(void)));
       menu->addSeparator();
       menu->addAction
-	(tr("&Authenticate"),
+	(tr("&Authenticate Account"),
 	 this,
 	 SLOT(slotAuthenticate(void)));
       menu->addAction(tr("&Reset Account Information"),
