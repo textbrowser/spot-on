@@ -248,9 +248,11 @@ void spoton::slotPopulateEtpMagnets(void)
 	      checked.append(checkBox->text());
 	  }
 
+	m_ui.etpMagnet->setUpdatesEnabled(false);
 	m_ui.etpMagnets->setSortingEnabled(false);
 	m_ui.etpMagnets->clearContents();
 	m_ui.etpMagnets->setRowCount(0);
+	m_ui.addTransmittedMagnets->setUpdatesEnabled(false);
 	m_ui.addTransmittedMagnets->setSortingEnabled(false);
 	m_ui.addTransmittedMagnets->clearContents();
 	m_ui.addTransmittedMagnets->setRowCount(0);
@@ -321,8 +323,10 @@ void spoton::slotPopulateEtpMagnets(void)
 
 	m_ui.addTransmittedMagnets->setRowCount(totalRows);
 	m_ui.addTransmittedMagnets->setSortingEnabled(true);
+	m_ui.addTransmittedMagnets->setUpdatesEnabled(true);
 	m_ui.etpMagnets->setRowCount(totalRows);
 	m_ui.etpMagnets->setSortingEnabled(true);
+	m_ui.etpMagnets->setUpdatesEnabled(true);
 
 	if(focusWidget)
 	  focusWidget->setFocus();
@@ -1296,6 +1300,7 @@ void spoton::slotPopulateStars(void)
 
 	hval = m_ui.received->horizontalScrollBar()->value();
 	vval = m_ui.received->verticalScrollBar()->value();
+	m_ui.received->setUpdatesEnabled(false);
 	m_ui.received->setSortingEnabled(false);
 	m_ui.received->clearContents();
 	m_ui.received->setRowCount(0);
@@ -1506,6 +1511,7 @@ void spoton::slotPopulateStars(void)
 	m_ui.received->horizontalHeader()->setStretchLastSection(true);
 	m_ui.received->horizontalScrollBar()->setValue(hval);
 	m_ui.received->verticalScrollBar()->setValue(vval);
+	m_ui.received->setUpdatesEnabled(true);
 
 	if(currentTabName() != "starbeam")
 	  {
@@ -1529,6 +1535,7 @@ void spoton::slotPopulateStars(void)
 
 	hval = m_ui.transmitted->horizontalScrollBar()->value();
 	vval = m_ui.transmitted->verticalScrollBar()->value();
+	m_ui.transmitted->setUpdatesEnabled(false);
 	m_ui.transmitted->setSortingEnabled(false);
 	m_ui.transmitted->clearContents();
 	m_ui.transmitted->setRowCount(0);
@@ -1716,6 +1723,7 @@ void spoton::slotPopulateStars(void)
 	m_ui.transmitted->horizontalHeader()->setStretchLastSection(true);
 	m_ui.transmitted->horizontalScrollBar()->setValue(hval);
 	m_ui.transmitted->verticalScrollBar()->setValue(vval);
+	m_ui.transmitted->setUpdatesEnabled(true);
 
 	if(focusWidget)
 	  focusWidget->setFocus();
