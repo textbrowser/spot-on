@@ -8,32 +8,7 @@
 #include "err.h"
 #include "arith.h"
 #include "encparams.h"
-
-#ifdef __APPLE__
-#include <libkern/OSByteOrder.h>
-#define htole64(x) OSSwapHostToLittleInt64(x)
-#define htole32(x) OSSwapHostToLittleInt32(x)
-#endif
-#ifdef __MINGW32__
-/* assume little endian */
-#define htole64(x) (x)
-#define htole32(x) (x)
-#endif
-#ifdef __FreeBSD__
-#include <sys/endian.h>
-#endif
-
-#ifdef __GLIBC__
-#if __GLIBC__ <= 2 || ( __GLIBC__ == 2 && __GLIBC_MINOR__ < 9 )
-/* assume little endian */
-#define htole64(x) (x)
-#define htole32(x) (x)
-#endif
-#endif
-
-#ifdef __OS2__
-#include <endian.h>
-#endif
+#include "ntru_endian.h"
 
 #define NTRU_SPARSE_THRESH 14
 #define NTRU_KARATSUBA_THRESH_16 40
@@ -59,7 +34,7 @@ uint8_t ntru_rand_tern(uint16_t N, uint16_t num_ones, uint16_t num_neg_ones, Ntr
     uint16_t bits = ntru_num_bits(N);
     uint16_t i = 0;
     while (i < num_ones) {
-        uint16_t r = rand_data[r_idx] >> (8*sizeof r - bits);   /* 0 <= r < 2^bits */
+        uint16_t r = htole16(rand_data[r_idx]) >> (8*sizeof r - bits);   /* 0 <= r < 2^bits */
         r_idx++;
         /* refill rand_data if we run out */
         if (r_idx >= rand_len) {
@@ -76,7 +51,7 @@ uint8_t ntru_rand_tern(uint16_t N, uint16_t num_ones, uint16_t num_neg_ones, Ntr
 
     i = 0;
     while (i < num_neg_ones) {
-        uint16_t r = rand_data[r_idx] >> (8*sizeof r - bits);   /* 0 <= r < 2^bits */
+        uint16_t r = htole16(rand_data[r_idx]) >> (8*sizeof r - bits);   /* 0 <= r < 2^bits */
         r_idx++;
         /* refill rand_data if we run out */
         if (r_idx >= rand_len) {
