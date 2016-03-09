@@ -7087,29 +7087,34 @@ Passthrough: %15</source>
 <context>
     <name>spoton_pageviewer</name>
     <message>
-        <location filename="../GUI/spot-on-pageviewer.cc" line="91"/>
+        <location filename="../GUI/spot-on-pageviewer.cc" line="93"/>
         <source>Find Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-pageviewer.cc" line="95"/>
+        <location filename="../GUI/spot-on-pageviewer.cc" line="97"/>
         <source>%1: Page Viewer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-pageviewer.cc" line="127"/>
+        <location filename="../GUI/spot-on-pageviewer.cc" line="132"/>
+        <source>Copy &amp;Last Hovered Link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../GUI/spot-on-pageviewer.cc" line="144"/>
         <source>Copy &amp;Link Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-pageviewer.cc" line="199"/>
-        <location filename="../GUI/spot-on-pageviewer.cc" line="210"/>
+        <location filename="../GUI/spot-on-pageviewer.cc" line="221"/>
+        <location filename="../GUI/spot-on-pageviewer.cc" line="232"/>
         <source>Current</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-pageviewer.cc" line="224"/>
-        <location filename="../GUI/spot-on-pageviewer.cc" line="369"/>
+        <location filename="../GUI/spot-on-pageviewer.cc" line="246"/>
+        <location filename="../GUI/spot-on-pageviewer.cc" line="391"/>
         <source>%1 KiB, Compressed %2 KiB</source>
         <translation type="unfinished"></translation>
     </message>
