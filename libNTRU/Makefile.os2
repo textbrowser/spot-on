@@ -10,7 +10,7 @@ endif
 LIBS+=-lrt
 SRCDIR=src
 TESTDIR=tests
-LIB_OBJS=bitstring.o encparams.o hash.o idxgen.o key.o mgf.o ntru.o poly.o rand.o arith.o sha1.o sha2.o
+LIB_OBJS=bitstring.o encparams.o hash.o idxgen.o key.o mgf.o ntru.o poly.o rand.o arith.o sha1.o sha2.o nist_ctr_drbg.o rijndael.o rijndael-alg-fst.o
 ifeq ($(SSE), yes)
     LIB_OBJS+=sha1-mb-x86_64.o sha256-mb-x86_64.o
 endif
@@ -35,7 +35,6 @@ all: lib
 
 lib: $(LIB_OBJS_PATHS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -shared -o libntru.dll $(LIB_OBJS_PATHS)
-	dllar -Zomf -o libntru.dll src/*.o
 
 install: lib
 	mkdir "$(DESTDIR)$(INST_PFX)"
@@ -81,28 +80,28 @@ dist:
 
 test:
 	$(MAKE) -f $(MAKEFILENAME) testnoham
-	echo
-	echo Testing patent-reduced build
+	@echo.
+	@echo Testing patent-reduced build
 	testnoham.exe
 	$(MAKE) -f $(MAKEFILENAME) testham
-	echo
-	echo Testing full build
+	@echo.
+	@echo Testing full build
 	testham.exe
 
 testham: clean lib $(TEST_OBJS_PATHS)
-	echo CFLAGS=$(CFLAGS)
-	$(CC) $(CFLAGS) -o testham.exe $(TEST_OBJS_PATHS) -L. -llibntru -lm
+	@echo CFLAGS=$(CFLAGS)
+	$(CC) $(CFLAGS) -o testham.exe $(TEST_OBJS_PATHS) -L. -lntru -lm
 
 testnoham: CFLAGS += -DNTRU_AVOID_HAMMING_WT_PATENT
 testnoham: clean lib $(TEST_OBJS_PATHS)
-	echo CFLAGS=$(CFLAGS)
-	$(CC) $(CFLAGS) -o testnoham.exe $(TEST_OBJS_PATHS) -L. -llibntru -lm
+	@echo CFLAGS=$(CFLAGS)
+	$(CC) $(CFLAGS) -o testnoham.exe $(TEST_OBJS_PATHS) -L. -lntru -lm
 
 bench: lib
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o bench $(SRCDIR)/bench.c -L. -llibntru
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o bench $(SRCDIR)/bench.c -L. -lntru
 
 hybrid: lib
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o hybrid $(SRCDIR)/hybrid.c $(LDFLAGS) -L. -llibntru -lcrypto -lgdi32
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o hybrid $(SRCDIR)/hybrid.c $(LDFLAGS) -L. -lntru -lcrypto -lgdi32
 
 $(SRCDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
