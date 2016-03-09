@@ -52,6 +52,10 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
   m_webView->page()->deleteLater();
   m_webView->setPage(new spoton_webengine_page(this));
   m_webView->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(m_webView->page(),
+	  SIGNAL(linkHovered(const QString &)),
+	  this,
+	  SLOT(slotLinkHovered(const QString &)));
 #else
   m_webView = new QWebView(this);
   m_webView->page()->networkAccessManager()->
@@ -105,6 +109,13 @@ spoton_pageviewer::~spoton_pageviewer()
 void spoton_pageviewer::slotCopyLinkLocation(void)
 {
 #if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      clipboard->setText(m_hoveredLink);
+      m_hoveredLink.clear();
+    }
 #else
   m_webView->triggerPageAction(QWebPage::CopyLinkToClipboard);
 #endif
@@ -113,7 +124,15 @@ void spoton_pageviewer::slotCopyLinkLocation(void)
 void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 {
 #if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
-  Q_UNUSED(point);
+  if(m_hoveredLink.isEmpty())
+    return;
+
+  QMenu menu(this);
+
+  menu.addAction(tr("Copy &Last Hovered Link"),
+		 this,
+		 SLOT(slotCopyLinkLocation(void)));
+  menu.exec(m_webView->mapToGlobal(point));
 #else
   QWebHitTestResult result = m_webView->page()->currentFrame()->
     hitTestContent(point);
@@ -159,6 +178,11 @@ void spoton_pageviewer::slotFindInitialize(void)
 {
   m_ui.find->selectAll();
   m_ui.find->setFocus();
+}
+
+void spoton_pageviewer::slotLinkHovered(const QString &url)
+{
+  m_hoveredLink = url;
 }
 
 void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,

@@ -85,6 +85,7 @@ class spoton_pageviewer: public QMainWindow
   QByteArray m_content;
   QPalette m_originalFindPalette;
   QSqlDatabase m_database;
+  QString m_hoveredLink;
   QString m_urlHash;
 #if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
   QWebEngineView *m_webView;
@@ -98,6 +99,7 @@ class spoton_pageviewer: public QMainWindow
   void slotCustomContextMenuRequested(const QPoint &point);
   void slotFind(void);
   void slotFindInitialize(void);
+  void slotLinkHovered(const QString &url);
   void slotPagePrintPreview(void);
   void slotPrint(QPrinter *printer);
   void slotRevisionChanged(int index);
