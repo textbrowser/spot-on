@@ -1652,6 +1652,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
 	  SLOT(slotLinkClicked(const QUrl &)));
+  connect(m_ui.secondary_storage,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveSecondaryStorage(bool)));
   connect(m_ui.urlDistributionModel,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
@@ -2274,6 +2278,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/urlsAlternatingRowColors", true).toBool());
   m_ui.saveCopy->setChecked
     (m_settings.value("gui/saveCopy", true).toBool());
+  m_ui.secondary_storage->setChecked
+    (m_settings.value("gui/secondary_storage", false).toBool());
   m_optionsUi.scrambler->setChecked
     (m_settings.value("gui/scramblerEnabled", false).toBool());
   m_optionsUi.starbeamAutoVerify->setChecked

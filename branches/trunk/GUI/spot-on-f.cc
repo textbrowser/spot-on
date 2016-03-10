@@ -2054,3 +2054,12 @@ void spoton::slotStarBeamFragmented(bool state)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton::slotSaveSecondaryStorage(bool state)
+{
+  m_settings["gui/secondary_storage"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/secondary_storage", state);
+}
