@@ -240,3 +240,4 @@ Remaining Items
 59.    Rosetta... support GPG keys (separate) and simple interface
        into GPG (separate).
 60.    Export/import URLs.
+61.    Large database values (BYTEA) will impede the user experience.
