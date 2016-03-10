@@ -464,7 +464,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>401</width>
+                <width>802</width>
                 <height>482</height>
                </rect>
               </property>
@@ -2067,8 +2067,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>646</width>
-             <height>405</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2760,7 +2760,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>262</width>
+                     <width>260</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -3284,8 +3284,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>361</width>
-             <height>225</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3621,7 +3621,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>737</width>
+                  <width>792</width>
                   <height>478</height>
                  </rect>
                 </property>
@@ -4422,8 +4422,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>347</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4508,8 +4508,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>663</width>
-                 <height>620</height>
+                 <width>802</width>
+                 <height>603</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5458,7 +5458,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>746</width>
+             <width>823</width>
              <height>1134</height>
             </rect>
            </property>
@@ -5944,6 +5944,13 @@
                     <widget class="QComboBox" name="congestionAlgorithm">
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="secondary_storage">
+                     <property name="text">
+                      <string>&amp;Secondary Storage</string>
                      </property>
                     </widget>
                    </item>
@@ -7862,7 +7869,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>661</width>
+             <width>812</width>
              <height>453</height>
             </rect>
            </property>
@@ -8477,8 +8484,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>258</width>
-             <height>150</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9209,6 +9216,7 @@
   <tabstop>kernelHashType</tabstop>
   <tabstop>cost</tabstop>
   <tabstop>congestionAlgorithm</tabstop>
+  <tabstop>secondary_storage</tabstop>
   <tabstop>kernelLogEvents</tabstop>
   <tabstop>kernelKeySize</tabstop>
   <tabstop>cipherType</tabstop>
