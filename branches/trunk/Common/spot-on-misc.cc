@@ -3714,7 +3714,7 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
       {
 	QSqlQuery query(db);
 
-	query.exec("PRAGMA synchronous = NORMAL");
+	query.exec("PRAGMA synchronous = OFF");
 
 	if(status.isEmpty())
 	  {

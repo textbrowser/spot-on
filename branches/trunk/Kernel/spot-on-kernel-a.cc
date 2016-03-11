@@ -2416,7 +2416,7 @@ void spoton_kernel::slotStatusTimerExpired(void)
       {
 	QSqlQuery query(db);
 
-	query.exec("PRAGMA synchronous = NORMAL");
+	query.exec("PRAGMA synchronous = OFF");
 
 	for(int i = 1; i <= 2; i++)
 	  {
@@ -4917,7 +4917,7 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	qint64 v1 = 0;
 	qint64 v2 = 0;
 
-	query.exec("PRAGMA synchronous = NORMAL");
+	query.exec("PRAGMA synchronous = OFF");
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Active Buzz Channels', ?)");
