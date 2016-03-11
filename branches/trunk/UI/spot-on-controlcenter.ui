@@ -5457,7 +5457,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-162</y>
+             <y>0</y>
              <width>823</width>
              <height>1318</height>
             </rect>
@@ -5851,7 +5851,7 @@
                  <item>
                   <widget class="QLabel" name="label_35">
                    <property name="text">
-                    <string>The cryptographic algorithms selected below will be used in various communication protocols. Some protocols, for example calling, may have set selections.</string>
+                    <string>The below cryptographic algorithms will be applied to the various communication protocols. Some protocols, however, may have additional restrictions.</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
@@ -6059,7 +6059,7 @@
                  <item>
                   <widget class="QLabel" name="label_76">
                    <property name="text">
-                    <string>The cryptographic algorithms selected below will be used for authentication and local storage.</string>
+                    <string>The below cryptographic algorithms will be applied to authentication and local storage.</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
