@@ -5929,6 +5929,9 @@
                    </item>
                    <item>
                     <widget class="QSpinBox" name="cost">
+                     <property name="toolTip">
+                      <string>The congestion cost applies to volatile memory only.</string>
+                     </property>
                      <property name="minimum">
                       <number>1000</number>
                      </property>
