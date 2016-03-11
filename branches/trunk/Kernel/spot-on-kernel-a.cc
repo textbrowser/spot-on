@@ -975,6 +975,9 @@ spoton_kernel::~spoton_kernel()
 
 void spoton_kernel::cleanup(void)
 {
+  QFile::remove(spoton_misc::homePath() + QDir::separator() +
+		"congestion_control.db");
+
   QString sharedPath(spoton_misc::homePath() + QDir::separator() +
 		     "shared.db");
   libspoton_handle_t libspotonHandle;

@@ -108,6 +108,25 @@ void spoton_misc::prepareDatabases(void)
   {
     QSqlDatabase db = database(connectionName);
 
+    db.setDatabaseName(homePath() + QDir::separator() +
+		       "congestion_control.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("CREATE TABLE IF NOT EXISTS congestion_control ("
+		   "hash TEXT PRIMARY KEY NOT NULL)");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = database(connectionName);
+
     db.setDatabaseName
       (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
 
