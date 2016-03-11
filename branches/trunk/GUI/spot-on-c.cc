@@ -248,7 +248,7 @@ void spoton::slotPopulateEtpMagnets(void)
 	      checked.append(checkBox->text());
 	  }
 
-	m_ui.etpMagnet->setUpdatesEnabled(false);
+	m_ui.etpMagnets->setUpdatesEnabled(false);
 	m_ui.etpMagnets->setSortingEnabled(false);
 	m_ui.etpMagnets->clearContents();
 	m_ui.etpMagnets->setRowCount(0);
