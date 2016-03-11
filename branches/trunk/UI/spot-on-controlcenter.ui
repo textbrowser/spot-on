@@ -5962,6 +5962,9 @@
                    </item>
                    <item>
                     <widget class="QCheckBox" name="secondary_storage">
+                     <property name="toolTip">
+                      <string>Store packet digests on non-volatile memory.</string>
+                     </property>
                      <property name="text">
                       <string>&amp;Secondary Storage</string>
                      </property>
