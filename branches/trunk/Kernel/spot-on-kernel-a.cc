@@ -98,6 +98,7 @@ extern "C"
 #endif
 
 QAtomicInt spoton_kernel::s_bluetooth_waitforbyteswritten_msecs = 0;
+QAtomicInt spoton_kernel::s_congestion_control_secondary_storage = 0;
 QAtomicInt spoton_kernel::s_tcp_waitforbyteswritten_msecs = 0;
 QAtomicInt spoton_kernel::s_udp_waitforbyteswritten_msecs = 0;
 QAtomicInt spoton_kernel::s_sendInitialStatus = 0;
