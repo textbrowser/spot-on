@@ -2057,9 +2057,9 @@ void spoton::slotStarBeamFragmented(bool state)
 
 void spoton::slotSaveSecondaryStorage(bool state)
 {
-  m_settings["gui/secondary_storage"] = state;
+  m_settings["gui/secondary_storage_congestion_control"] = state;
 
   QSettings settings;
 
-  settings.setValue("gui/secondary_storage", state);
+  settings.setValue("gui/secondary_storage_congestion_control", state);
 }

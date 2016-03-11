@@ -2279,7 +2279,8 @@ spoton::spoton(void):QMainWindow()
   m_ui.saveCopy->setChecked
     (m_settings.value("gui/saveCopy", true).toBool());
   m_ui.secondary_storage->setChecked
-    (m_settings.value("gui/secondary_storage", false).toBool());
+    (m_settings.value("gui/secondary_storage_congestion_control",
+		      false).toBool());
   m_optionsUi.scrambler->setChecked
     (m_settings.value("gui/scramblerEnabled", false).toBool());
   m_optionsUi.starbeamAutoVerify->setChecked

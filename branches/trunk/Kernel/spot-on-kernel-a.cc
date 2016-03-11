@@ -911,7 +911,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     }
 
   s_congestion_control_secondary_storage = setting
-    ("gui/secondary_storage", false).toBool();
+    ("gui/secondary_storage_congestion_control", false).toBool();
   spoton_misc::prepareDatabases();
 }
 
@@ -2182,7 +2182,7 @@ void spoton_kernel::slotUpdateSettings(void)
     m_publishAllListenersPlaintextTimer.stop();
 
   s_congestion_control_secondary_storage = setting
-    ("gui/secondary_storage", false).toBool();
+    ("gui/secondary_storage_congestion_control", false).toBool();
   integer = static_cast<int>
     (1000 * setting("kernel/cachePurgeInterval", 15.00).toDouble());
 
