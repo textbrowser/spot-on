@@ -2179,6 +2179,9 @@ void spoton_kernel::slotUpdateSettings(void)
   else
     m_publishAllListenersPlaintextTimer.stop();
 
+  s_congestion_control_secondary_storage = setting
+    ("gui/secondary_storage", false).toBool();
+
   integer = static_cast<int>
     (1000 * setting("kernel/cachePurgeInterval", 15.00).toDouble());
 
