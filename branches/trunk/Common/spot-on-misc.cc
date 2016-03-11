@@ -116,7 +116,7 @@ void spoton_misc::prepareDatabases(void)
 	QSqlQuery query(db);
 
 	query.exec("CREATE TABLE IF NOT EXISTS congestion_control ("
-		   "date_time_inserted NOT NULL, "
+		   "date_time_inserted BIGINT NOT NULL, "
 		   "hash TEXT PRIMARY KEY NOT NULL)");
       }
 

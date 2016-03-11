@@ -4143,42 +4143,70 @@ void spoton_kernel::purgeMessagingCache(void)
   ** Remove expired cache items.
   */
 
-  QWriteLocker locker3(&s_messagingCacheMutex);
-  QMutableMapIterator<uint, QByteArray> it3(s_messagingCacheLookup);
-  int i = 0;
-  int maximum = qMax(250, qCeil(0.15 * s_messagingCacheLookup.size()));
-
-  while(it3.hasNext())
+  if(s_congestion_control_secondary_storage)
     {
-      i += 1;
+      QString connectionName("");
 
-      if(i >= maximum)
-	break;
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
 
-      it3.next();
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "congestion_control.db");
 
-      uint now = QDateTime::currentDateTime().toTime_t();
-
-      if(now > it3.key())
-	if(now - it3.key() > static_cast<uint> (spoton_common::
-						CACHE_TIME_DELTA_MAXIMUM))
+	if(db.open())
 	  {
-	    QList<QByteArray> values
-	      (s_messagingCacheLookup.values(it3.key()));
+	    QSqlQuery query(db);
 
-	    while(!values.isEmpty())
+	    query.exec("PRAGMA synchronous = NORMAL");
+	    query.exec
+	      (QString("DELETE FROM congestion_control WHERE "
+		       "%1 - date_time_inserted > %2").
+	       arg(QDateTime::currentDateTime().toTime_t()).
+	       arg(spoton_common::CACHE_TIME_DELTA_MAXIMUM));
+	  }
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+  else
+    {
+      QWriteLocker locker3(&s_messagingCacheMutex);
+      QMutableMapIterator<uint, QByteArray> it3(s_messagingCacheLookup);
+      int i = 0;
+      int maximum = qMax(250, qCeil(0.15 * s_messagingCacheLookup.size()));
+
+      while(it3.hasNext())
+	{
+	  i += 1;
+
+	  if(i >= maximum)
+	    break;
+
+	  it3.next();
+
+	  uint now = QDateTime::currentDateTime().toTime_t();
+
+	  if(now > it3.key())
+	    if(now - it3.key() > static_cast<uint> (spoton_common::
+						    CACHE_TIME_DELTA_MAXIMUM))
 	      {
-		s_messagingCache.remove(values.takeFirst());
+		QList<QByteArray> values
+		  (s_messagingCacheLookup.values(it3.key()));
 
-		if(m_future.isCanceled())
-		  return;
+		while(!values.isEmpty())
+		  {
+		    s_messagingCache.remove(values.takeFirst());
+
+		    if(m_future.isCanceled())
+		      return;
+		  }
+
+		it3.remove();
 	      }
 
-	    it3.remove();
-	  }
-
-      if(m_future.isCanceled())
-	return;
+	  if(m_future.isCanceled())
+	    return;
+	}
     }
 }
 
@@ -4277,7 +4305,7 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 	    query.prepare("INSERT INTO congestion_control "
 			  "(date_time_inserted, hash) VALUES (?, ?)");
 	    query.bindValue
-	      (0, QDateTime::currentDateTime().toString(Qt::ISODate));
+	      (0, QDateTime::currentDateTime().toTime_t());
 	    query.bindValue(1, hash.toBase64());
 	    query.exec();
 	  }
