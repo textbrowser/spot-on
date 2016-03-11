@@ -552,7 +552,7 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status,
   QSqlQuery query(db);
   bool ok = true;
 
-  query.exec("PRAGMA synchronous = OFF");
+  query.exec("PRAGMA synchronous = NORMAL");
   query.prepare("UPDATE transmitted "
 		"SET position = ?, "
 		"status_control = CASE WHEN status_control = 'deleted' "

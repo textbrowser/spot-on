@@ -116,6 +116,7 @@ void spoton_misc::prepareDatabases(void)
 	QSqlQuery query(db);
 
 	query.exec("CREATE TABLE IF NOT EXISTS congestion_control ("
+		   "date_time_inserted NOT NULL, "
 		   "hash TEXT PRIMARY KEY NOT NULL)");
       }
 
@@ -3713,7 +3714,7 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
       {
 	QSqlQuery query(db);
 
-	query.exec("PRAGMA synchronous = OFF");
+	query.exec("PRAGMA synchronous = NORMAL");
 
 	if(status.isEmpty())
 	  {
