@@ -910,6 +910,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
       m_urlDistribution->wait();
     }
 
+  s_congestion_control_secondary_storage = setting
+    ("gui/secondary_storage", false).toBool();
   spoton_misc::prepareDatabases();
 }
 
@@ -2181,7 +2183,6 @@ void spoton_kernel::slotUpdateSettings(void)
 
   s_congestion_control_secondary_storage = setting
     ("gui/secondary_storage", false).toBool();
-
   integer = static_cast<int>
     (1000 * setting("kernel/cachePurgeInterval", 15.00).toDouble());
 
@@ -4201,9 +4202,40 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
   else
     hash = data;
 
-  QReadLocker locker(&s_messagingCacheMutex);
+  if(s_congestion_control_secondary_storage)
+    {
+      QString connectionName("");
+      bool contains = false;
 
-  return s_messagingCache.contains(hash);
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "congestion_control.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+	    query.prepare("SELECT COUNT(*) FROM "
+			  "congestion_control WHERE hash = ?");
+	    query.bindValue(0, hash.toBase64());
+
+	    if(query.exec() && query.next())
+	      contains = query.value(0).toLongLong() > 0;
+	  }
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+      return contains;
+    }
+  else
+    {
+      QReadLocker locker(&s_messagingCacheMutex);
+
+      return s_messagingCache.contains(hash);
+    }
 }
 
 void spoton_kernel::messagingCacheAdd(const QByteArray &data,
@@ -4227,18 +4259,46 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
   else
     hash = data;
 
-  int cost = setting("gui/congestionCost", 10000).toInt();
-
-  QWriteLocker locker(&s_messagingCacheMutex);
-
-  if(!s_messagingCache.contains(hash))
+  if(s_congestion_control_secondary_storage)
     {
-      if(cost <= s_messagingCache.size())
-	return;
+      QString connectionName("");
 
-      s_messagingCache.insert(hash, 0);
-      s_messagingCacheLookup.insert
-	(QDateTime::currentDateTime().addMSecs(add_msecs).toTime_t(), hash);
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "congestion_control.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.exec("PRAGMA synchronous = NORMAL");
+	    query.prepare("INSERT INTO congestion_control "
+			  "(hash) VALUES (?)");
+	    query.bindValue(0, hash.toBase64());
+	    query.exec();
+	  }
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+  else
+    {
+      int cost = setting("gui/congestionCost", 10000).toInt();
+
+      QWriteLocker locker(&s_messagingCacheMutex);
+
+      if(!s_messagingCache.contains(hash))
+	{
+	  if(cost <= s_messagingCache.size())
+	    return;
+
+	  s_messagingCache.insert(hash, 0);
+	  s_messagingCacheLookup.insert
+	    (QDateTime::currentDateTime().addMSecs(add_msecs).toTime_t(),
+	     hash);
+	}
     }
 }
 
