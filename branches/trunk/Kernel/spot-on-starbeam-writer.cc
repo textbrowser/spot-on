@@ -35,6 +35,13 @@
 #include "spot-on-kernel.h"
 #include "spot-on-starbeam-writer.h"
 
+#ifdef Q_OS_UNIX
+extern "C"
+{
+#include <unistd.h>
+}
+#endif
+
 spoton_starbeam_writer::spoton_starbeam_writer(QObject *parent):
   QThread(parent)
 {
@@ -290,7 +297,7 @@ void spoton_starbeam_writer::processData
 	return;
       }
 
-  if(file.open(QIODevice::ReadWrite))
+  if(file.open(QIODevice::ReadWrite | QIODevice::Unbuffered))
     {
       if(position > file.size())
 	if(!file.resize(position))
@@ -328,6 +335,9 @@ void spoton_starbeam_writer::processData
     spoton_misc::logError("spoton_starbeam_writer::processData(): "
 			  "QFile::open() failure.");
 
+#ifdef Q_OS_UNIX
+  fsync(file.handle());
+#endif
   file.close();
 
   if(!ok)
