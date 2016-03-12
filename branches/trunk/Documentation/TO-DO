@@ -243,3 +243,4 @@ Remaining Items
 61.    Large database values (BYTEA) will impede the user experience.
 62.    Is it possible for automatic digests to be computed on StarBeams before
        the files are completed?
+63.    Signal handlers and safe functions.
