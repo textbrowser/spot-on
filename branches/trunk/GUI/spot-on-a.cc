@@ -706,6 +706,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotQuit(void)));
+  connect(m_ui.action_Vacuum_Databases,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotVacuumDatabases(void)));
   connect(m_optionsUi.action_Close,
 	  SIGNAL(triggered(void)),
 	  m_optionsWindow,
@@ -2462,6 +2466,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_RSS->setEnabled(false);
       m_ui.action_Rosetta->setEnabled(false);
       m_ui.action_Statistics_Window->setEnabled(false);
+      m_ui.action_Vacuum_Databases->setEnabled(false);
       m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.keys->setEnabled(true);
@@ -2501,6 +2506,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_RSS->setEnabled(false);
       m_ui.action_Rosetta->setEnabled(false);
       m_ui.action_Statistics_Window->setEnabled(false);
+      m_ui.action_Vacuum_Databases->setEnabled(false);
       m_ui.answer_authenticate->setEnabled(false);
       m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
@@ -5111,16 +5117,15 @@ void spoton::slotActivateKernel(void)
     {
       QStringList list;
 
-      list << "-a" << program << "-g" << "--args" << "--vacuum";
+      list << "-a" << program << "-g";
       status = QProcess::startDetached("open", list);
     }
   else
-    status = QProcess::startDetached(program, QStringList("--vacuum"));
+    status = QProcess::startDetached(program);
 #elif defined(Q_OS_WIN32)
-  status = QProcess::startDetached(QString("\"%1\"").arg(program),
-				   QStringList("--vacuum"));
+  status = QProcess::startDetached(QString("\"%1\"").arg(program));
 #else
-  status = QProcess::startDetached(program, QStringList("--vacuum"));
+  status = QProcess::startDetached(program);
 #endif
 
   QElapsedTimer time;
@@ -6262,6 +6267,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.action_RSS->setEnabled(true);
       m_ui.action_Rosetta->setEnabled(true);
       m_ui.action_Statistics_Window->setEnabled(true);
+      m_ui.action_Vacuum_Databases->setEnabled(true);
       m_ui.answer->clear();
       m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
@@ -6506,6 +6512,7 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.action_RSS->setEnabled(true);
 	    m_ui.action_Rosetta->setEnabled(true);
 	    m_ui.action_Statistics_Window->setEnabled(true);
+	    m_ui.action_Vacuum_Databases->setEnabled(true);
 	    m_ui.answer->clear();
 	    m_ui.answer_authenticate->clear();
 	    m_ui.encryptionKeySize->setEnabled(false);

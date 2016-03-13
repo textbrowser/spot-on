@@ -949,6 +949,7 @@ class spoton: public QMainWindow
   void slotUpdateSpinBoxChanged(double value);
   void slotUrlLinkClicked(const QUrl &u);
   void slotUrlPolarizerTypeChange(int index);
+  void slotVacuumDatabases(void);
   void slotValidatePassphrase(void);
   void slotVerify(void);
   void slotVerifySMPSecret(const QString &hash, const QString &keyType,

@@ -2063,3 +2063,10 @@ void spoton::slotSaveSecondaryStorage(bool state)
 
   settings.setValue("gui/secondary_storage_congestion_control", state);
 }
+
+void spoton::slotVacuumDatabases(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  spoton_misc::vacuumAllDatabases();
+  QApplication::restoreOverrideCursor();
+}
