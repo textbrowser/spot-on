@@ -203,6 +203,9 @@ int spoton_common::MAIL_TIME_DELTA_MAXIMUM =
 int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 static QPointer<spoton_kernel> s_kernel = 0;
+static char *s_congestion_control_db_path = 0;
+static char *s_kernel_db_path = 0;
+static char *s_shared_db_path = 0;
 static int s_exit_code = EXIT_SUCCESS;
 
 #if QT_VERSION >= 0x050000
@@ -241,10 +244,10 @@ static void signal_handler(int signal_number)
 
 #ifdef Q_OS_WIN32
   DWORD mode = 0;
-  HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+  HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); // Safe?
 
-  GetConsoleMode(hStdin, &mode);
-  SetConsoleMode(hStdin, mode | ENABLE_ECHO_INPUT);
+  GetConsoleMode(hStdin, &mode); // Safe?
+  SetConsoleMode(hStdin, mode | ENABLE_ECHO_INPUT); // Safe?
 #else
   termios oldt;
 
@@ -253,33 +256,16 @@ static void signal_handler(int signal_number)
   tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 #endif
 
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() +
-		     "shared.db");
-  libspoton_handle_t libspotonHandle;
+  if(s_congestion_control_db_path)
+    unlink(s_congestion_control_db_path);
 
-  if(libspoton_init_b(sharedPath.toStdString().c_str(),
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      &libspotonHandle,
-		      262144) == LIBSPOTON_ERROR_NONE) /*
-						       ** We don't need
-						       ** the official secure
-						       ** memory size here.
-						       */
-#ifdef Q_OS_WIN32
-    libspoton_deregister_kernel(_getpid(), &libspotonHandle);
-#else
-    libspoton_deregister_kernel(getpid(), &libspotonHandle);
-#endif
+  if(s_kernel_db_path)
+    unlink(s_kernel_db_path);
 
-  libspoton_close(&libspotonHandle);
-  QFile::remove(spoton_misc::homePath() + QDir::separator() + "kernel.db");
-  spoton_crypt::terminate();
+  if(s_shared_db_path)
+    unlink(s_shared_db_path);
+
+  spoton_crypt::terminate(); // Safe.
 
   /*
   ** _Exit() and _exit() may be safely called from signal handlers.
@@ -290,6 +276,7 @@ static void signal_handler(int signal_number)
 
 int main(int argc, char *argv[])
 {
+  spoton_misc::prepareSignalHandler(signal_handler);
   PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
 
   for(int i = 1; i < argc; i++)
@@ -302,7 +289,6 @@ int main(int argc, char *argv[])
 
   curl_global_init(CURL_GLOBAL_ALL);
   libspoton_enable_sqlite_cache();
-  spoton_misc::prepareSignalHandler(signal_handler);
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
   struct sigaction act;
@@ -390,6 +376,52 @@ int main(int argc, char *argv[])
 
   spoton_crypt::init(integer);
 
+  QStringList paths;
+
+  paths << spoton_misc::homePath() + QDir::separator() +
+           "congestion_control.db"
+	<< spoton_misc::homePath() + QDir::separator() + "kernel.db"
+	<< spoton_misc::homePath() + QDir::separator() + "shared.db";
+
+  for(int i = 0; i < paths.size(); i++)
+    {
+      size_t size = static_cast<size_t> (paths.at(i).length()) + 1;
+
+      if(i == 0)
+	{
+	  s_congestion_control_db_path = new (std::nothrow) char[size];
+
+	  if(s_congestion_control_db_path)
+	    {
+	      memset(s_congestion_control_db_path, 0, size);
+	      strncpy(s_congestion_control_db_path,
+		      paths.at(i).toStdString().c_str(), size - 1);
+	    }
+	}
+      else if(i == 1)
+	{
+	  s_kernel_db_path = new (std::nothrow) char[size];
+
+	  if(s_kernel_db_path)
+	    {
+	      memset(s_kernel_db_path, 0, size);
+	      strncpy(s_kernel_db_path,
+		      paths.at(i).toStdString().c_str(), size - 1);
+	    }
+	}
+      else
+	{
+	  s_shared_db_path = new (std::nothrow) char[size];
+
+	  if(s_shared_db_path)
+	    {
+	      memset(s_shared_db_path, 0, size);
+	      strncpy(s_shared_db_path,
+		      paths.at(i).toStdString().c_str(), size - 1);
+	    }
+	}
+    }
+
   QString sharedPath(spoton_misc::homePath() + QDir::separator() +
 		     "shared.db");
   libspoton_error_t err = LIBSPOTON_ERROR_NONE;
@@ -431,6 +463,7 @@ int main(int argc, char *argv[])
 	  int rc = qapplication.exec();
 
 	  curl_global_cleanup();
+	  spoton_crypt::terminate();
 	  return rc;
 	}
       catch(const std::bad_alloc &exception)
@@ -439,6 +472,7 @@ int main(int argc, char *argv[])
 	  std::cerr << "Critical memory failure. Exiting kernel."
 		    << std::endl;
 	  curl_global_cleanup();
+	  spoton_crypt::terminate();
 	  return EXIT_FAILURE;
 	}
       catch(...)
@@ -447,6 +481,7 @@ int main(int argc, char *argv[])
 	  std::cerr << "Critical failure. Exiting kernel."
 		    << std::endl;
 	  curl_global_cleanup();
+	  spoton_crypt::terminate();
 	  return EXIT_FAILURE;
 	}
     }
@@ -457,6 +492,7 @@ int main(int argc, char *argv[])
 		<< ") with libspoton_init_b()."
 		<< std::endl;
       curl_global_cleanup();
+      spoton_crypt::terminate();
       return EXIT_FAILURE;
     }
 }
@@ -972,7 +1008,6 @@ spoton_kernel::~spoton_kernel()
   s_crypts.clear();
   spoton_misc::logError(QString("Kernel %1 about to exit.").
 			arg(QCoreApplication::applicationPid()));
-  spoton_crypt::terminate();
   QCoreApplication::exit(s_exit_code);
 }
 

@@ -166,7 +166,7 @@ static void signal_handler(int signal_number)
     _Exit(signal_number);
 
   fatal_error = 1;
-  spoton_crypt::terminate();
+  spoton_crypt::terminate(); // Safe.
 
   /*
   ** _Exit() and _exit() may be safely called from signal handlers.
@@ -177,10 +177,10 @@ static void signal_handler(int signal_number)
 
 int main(int argc, char *argv[])
 {
+  spoton_misc::prepareSignalHandler(signal_handler);
   PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
   curl_global_init(CURL_GLOBAL_ALL);
   libspoton_enable_sqlite_cache();
-  spoton_misc::prepareSignalHandler(signal_handler);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -326,6 +326,7 @@ int main(int argc, char *argv[])
       new spoton();
       qapplication.exec();
       curl_global_cleanup();
+      spoton_crypt::terminate();
       return EXIT_SUCCESS;
     }
   catch(const std::bad_alloc &exception)
@@ -333,6 +334,7 @@ int main(int argc, char *argv[])
       s_gui = 0;
       std::cerr << "Critical memory failure. Exiting." << std::endl;
       curl_global_cleanup();
+      spoton_crypt::terminate();
       return EXIT_FAILURE;
     }
 }
@@ -2917,7 +2919,6 @@ void spoton::cleanup(void)
   m_rss->deleteLater();
   m_starbeamAnalyzer->deleteLater();
   m_statisticsWindow->deleteLater();
-  spoton_crypt::terminate();
   QApplication::instance()->quit();
 }
 

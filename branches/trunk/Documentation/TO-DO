@@ -143,6 +143,8 @@ Completed Items
 102.   Allow pass-through flow of non-Spot-On data.
 103.   Customize expiration timers.
 104.   Display information pertaining to unsigned documents.
+105.   Signal handlers and safe functions. Some Windows-specific
+       functions remain.
 
 Remaining Items
 
@@ -243,4 +245,3 @@ Remaining Items
 61.    Large database values (BYTEA) will impede the user experience.
 62.    Is it possible for automatic digests to be computed on StarBeams before
        the files are completed?
-63.    Signal handlers and safe functions.
