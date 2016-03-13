@@ -205,7 +205,6 @@ int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
 static QPointer<spoton_kernel> s_kernel = 0;
 static char *s_congestion_control_db_path = 0; // We're not deleting.
 static char *s_kernel_db_path = 0; // We're not deleting.
-static char *s_shared_db_path = 0; // We're not deleting.
 static int s_exit_code = EXIT_SUCCESS;
 
 #if QT_VERSION >= 0x050000
@@ -265,9 +264,6 @@ static void signal_handler(int signal_number)
 
   if(s_kernel_db_path)
     unlink(s_kernel_db_path); // Safe.
-
-  if(s_shared_db_path)
-    unlink(s_shared_db_path); // Safe.
 
   spoton_crypt::terminate(); // Safe.
   _Exit(signal_number);
@@ -379,8 +375,7 @@ int main(int argc, char *argv[])
 
   paths << spoton_misc::homePath() + QDir::separator() +
            "congestion_control.db"
-	<< spoton_misc::homePath() + QDir::separator() + "kernel.db"
-	<< spoton_misc::homePath() + QDir::separator() + "shared.db";
+	<< spoton_misc::homePath() + QDir::separator() + "kernel.db";
 
   for(int i = 0; i < paths.size(); i++)
     {
@@ -405,17 +400,6 @@ int main(int argc, char *argv[])
 	    {
 	      memset(s_kernel_db_path, 0, size);
 	      strncpy(s_kernel_db_path,
-		      paths.at(i).toStdString().c_str(), size - 1);
-	    }
-	}
-      else
-	{
-	  s_shared_db_path = new (std::nothrow) char[size];
-
-	  if(s_shared_db_path)
-	    {
-	      memset(s_shared_db_path, 0, size);
-	      strncpy(s_shared_db_path,
 		      paths.at(i).toStdString().c_str(), size - 1);
 	    }
 	}
