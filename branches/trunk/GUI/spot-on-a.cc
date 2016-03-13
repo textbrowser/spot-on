@@ -5116,7 +5116,9 @@ void spoton::slotActivateKernel(void)
   do
     {
       tries += 1;
+#ifndef Q_OS_MAC
       QApplication::processEvents();
+#endif
       QThread::currentThread()->msleep(1000);
 
       if(m_ui.pid->text().toLongLong() > 0)
@@ -5126,6 +5128,7 @@ void spoton::slotActivateKernel(void)
     }
   while(true);
 
+  m_sb.status->clear();
   QApplication::restoreOverrideCursor();
 
   if(status)
