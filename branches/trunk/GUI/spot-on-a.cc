@@ -5087,6 +5087,14 @@ void spoton::slotActivateKernel(void)
   if(m_ui.pid->text().toLongLong() < 0)
     return;
 
+  m_ui.pid->setText("0");
+
+  QColor color(240, 128, 128); // Light coral!
+  QPalette palette(m_ui.pid->palette());
+
+  palette.setColor(m_ui.pid->backgroundRole(), color);
+  m_ui.pid->setPalette(palette);
+
   QString program(m_ui.kernelPath->text());
   bool status = false;
 
@@ -5107,29 +5115,46 @@ void spoton::slotActivateKernel(void)
   status = QProcess::startDetached(program, QStringList("--vacuum"));
 #endif
 
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_sb.status->setText(tr("Launching the kernel. Please be patient."));
-  m_sb.status->repaint();
+  QProgressDialog progress(this);
 
-  int tries = 0;
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  progress.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  progress.setCancelButton(0);
+  progress.setLabelText(tr("Launching the kernel. Please be patient."));
+  progress.setMaximum(0);
+  progress.setMinimum(0);
+  progress.setModal(true);
+  progress.setWindowTitle(tr("%1: Launching Kernel").
+			  arg(SPOTON_APPLICATION_NAME));
+  progress.show();
+#ifndef Q_OS_MAC
+  progress.repaint();
+  QApplication::processEvents();
+#endif
+
+  QElapsedTimer time;
+
+  time.start();
 
   do
     {
-      tries += 1;
+      progress.setValue(0);
 #ifndef Q_OS_MAC
+      progress.repaint();
       QApplication::processEvents();
 #endif
-      QThread::currentThread()->msleep(1000);
 
       if(m_ui.pid->text().toLongLong() > 0)
 	break;
-      else if(tries >= 10)
+      else if(time.hasExpired(10000))
 	break;
     }
   while(true);
 
-  m_sb.status->clear();
-  QApplication::restoreOverrideCursor();
+  progress.close();
 
   if(status)
     if(m_settings.value("gui/buzzAutoJoin", true).toBool())
