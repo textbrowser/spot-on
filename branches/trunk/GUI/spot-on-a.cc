@@ -5084,6 +5084,9 @@ void spoton::slotPopulateNeighbors(void)
 
 void spoton::slotActivateKernel(void)
 {
+  if(m_ui.pid->text().toLongLong() < 0)
+    return;
+
   QString program(m_ui.kernelPath->text());
   bool status = false;
 
@@ -5103,6 +5106,27 @@ void spoton::slotActivateKernel(void)
 #else
   status = QProcess::startDetached(program, QStringList("--vacuum"));
 #endif
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_sb.status->setText(tr("Launching the kernel. Please be patient."));
+  m_sb.status->repaint();
+
+  int tries = 0;
+
+  do
+    {
+      tries += 1;
+      QApplication::processEvents();
+      QThread::currentThread()->msleep(1000);
+
+      if(m_ui.pid->text().toLongLong() > 0)
+	break;
+      else if(tries >= 10)
+	break;
+    }
+  while(true);
+
+  QApplication::restoreOverrideCursor();
 
   if(status)
     if(m_settings.value("gui/buzzAutoJoin", true).toBool())
