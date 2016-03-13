@@ -2067,6 +2067,7 @@ void spoton::slotSaveSecondaryStorage(bool state)
 void spoton::slotVacuumDatabases(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
   spoton_misc::vacuumAllDatabases();
   QApplication::restoreOverrideCursor();
 }
