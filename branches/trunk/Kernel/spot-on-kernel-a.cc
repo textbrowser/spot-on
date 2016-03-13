@@ -231,6 +231,10 @@ static void qt_message_handler(QtMsgType type, const char *msg)
 
 static void signal_handler(int signal_number)
 {
+  /*
+  ** _Exit() and _exit() may be safely called from signal handlers.
+  */
+
   static int fatal_error = 0;
 
   if(fatal_error)
@@ -266,11 +270,6 @@ static void signal_handler(int signal_number)
     unlink(s_shared_db_path); // Safe.
 
   spoton_crypt::terminate(); // Safe.
-
-  /*
-  ** _Exit() and _exit() may be safely called from signal handlers.
-  */
-
   _Exit(signal_number);
 }
 
