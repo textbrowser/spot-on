@@ -203,9 +203,9 @@ int spoton_common::MAIL_TIME_DELTA_MAXIMUM =
 int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 static QPointer<spoton_kernel> s_kernel = 0;
-static char *s_congestion_control_db_path = 0;
-static char *s_kernel_db_path = 0;
-static char *s_shared_db_path = 0;
+static char *s_congestion_control_db_path = 0; // We're not deleting.
+static char *s_kernel_db_path = 0; // We're not deleting.
+static char *s_shared_db_path = 0; // We're not deleting.
 static int s_exit_code = EXIT_SUCCESS;
 
 #if QT_VERSION >= 0x050000
@@ -251,19 +251,19 @@ static void signal_handler(int signal_number)
 #else
   termios oldt;
 
-  tcgetattr(STDIN_FILENO, &oldt);
+  tcgetattr(STDIN_FILENO, &oldt); // Safe.
   oldt.c_lflag |= ECHO;
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Safe.
 #endif
 
   if(s_congestion_control_db_path)
-    unlink(s_congestion_control_db_path);
+    unlink(s_congestion_control_db_path); // Safe.
 
   if(s_kernel_db_path)
-    unlink(s_kernel_db_path);
+    unlink(s_kernel_db_path); // Safe.
 
   if(s_shared_db_path)
-    unlink(s_shared_db_path);
+    unlink(s_shared_db_path); // Safe.
 
   spoton_crypt::terminate(); // Safe.
 
