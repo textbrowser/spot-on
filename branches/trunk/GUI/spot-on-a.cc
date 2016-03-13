@@ -5092,14 +5092,11 @@ void spoton::slotActivateKernel(void)
     {
       QStringList list;
 
-      list << "-a" << program << "-g"
-	   << "--args" << "--vacuum";
-
+      list << "-a" << program << "-g" << "--args" << "--vacuum";
       status = QProcess::startDetached("open", list);
     }
   else
-    status = QProcess::startDetached(program,
-				     QStringList("--vacuum"));
+    status = QProcess::startDetached(program, QStringList("--vacuum"));
 #elif defined(Q_OS_WIN32)
   status = QProcess::startDetached(QString("\"%1\"").arg(program),
 				   QStringList("--vacuum"));
