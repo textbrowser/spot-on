@@ -5084,8 +5084,13 @@ void spoton::slotPopulateNeighbors(void)
 
 void spoton::slotActivateKernel(void)
 {
-  if(m_ui.pid->text().toLongLong() < 0)
+  if(m_ui.pid->text().toLongLong() < 0) // Error.
     return;
+  else if(!m_optionsUi.forceRegistration->isChecked())
+    {
+      if(m_ui.pid->text().toLongLong() > 0)
+	return;
+    }
 
   m_ui.pid->setText("0");
 
@@ -5094,6 +5099,9 @@ void spoton::slotActivateKernel(void)
 
   palette.setColor(m_ui.pid->backgroundRole(), color);
   m_ui.pid->setPalette(palette);
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_sb.status->setText(tr("Launching the kernel. Please be patient."));
+  m_sb.status->repaint();
 
   QString program(m_ui.kernelPath->text());
   bool status = false;
@@ -5115,35 +5123,13 @@ void spoton::slotActivateKernel(void)
   status = QProcess::startDetached(program, QStringList("--vacuum"));
 #endif
 
-  QProgressDialog progress(this);
-
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
-  progress.setCancelButton(0);
-  progress.setLabelText(tr("Launching the kernel. Please be patient."));
-  progress.setMaximum(0);
-  progress.setMinimum(0);
-  progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Launching Kernel").
-			  arg(SPOTON_APPLICATION_NAME));
-  progress.show();
-#ifndef Q_OS_MAC
-  progress.repaint();
-  QApplication::processEvents();
-#endif
-
   QElapsedTimer time;
 
   time.start();
 
   do
     {
-      progress.setValue(0);
 #ifndef Q_OS_MAC
-      progress.repaint();
       QApplication::processEvents();
 #endif
 
@@ -5154,7 +5140,9 @@ void spoton::slotActivateKernel(void)
     }
   while(true);
 
-  progress.close();
+  m_sb.status->clear();
+  m_sb.status->repaint();
+  QApplication::restoreOverrideCursor();
 
   if(status)
     if(m_settings.value("gui/buzzAutoJoin", true).toBool())
