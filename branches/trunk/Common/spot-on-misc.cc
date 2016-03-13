@@ -3134,6 +3134,7 @@ void spoton_misc::vacuumAllDatabases(void)
   QStringList list;
 
   list << "buzz_channels.db"
+       << "congestion_control.db"
        << "echo_key_sharing_secrets.db"
        << "email.db"
        << "friends_public_keys.db"
