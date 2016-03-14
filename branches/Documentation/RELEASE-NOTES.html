@@ -13,7 +13,7 @@
 </ol>
 <b>Improvements</b>
 <ol>
-<li>Disable StarBeam write() buffering.</li>
+<li>Disable StarBeam write() buffering. Issue fsync() on Unix systems.</li>
 <li>Modified StarBeam position synchronization to NORMAL.</li>
 <li>Read StarBeam pulses from dedicated threads.</li>
 <li>Signal handlers now only call safe functions, save for a Windows-specific block in the kernel.</li>

@@ -145,6 +145,9 @@ Completed Items
 104.   Display information pertaining to unsigned documents.
 105.   Signal handlers and safe functions. Some Windows-specific
        functions remain.
+106.   Is it possible for automatic digests to be computed on StarBeams before
+       the files are completed? Disable buffering and issue fsync() on
+       Unix systems.
 
 Remaining Items
 
@@ -243,5 +246,4 @@ Remaining Items
        into GPG (separate).
 60.    Export/import URLs.
 61.    Large database values (BYTEA) will impede the user experience.
-62.    Is it possible for automatic digests to be computed on StarBeams before
-       the files are completed?
+
