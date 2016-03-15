@@ -2931,7 +2931,7 @@ void spoton::slotSendMail(void)
 	break;
     }
 
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  QApplication::restoreOverrideCursor();
 
   if(mixed)
     {
