@@ -3331,6 +3331,7 @@ void spoton::updatePublicKeysLabel(void)
   QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 		   spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
+  qSort(list);
   m_ui.personal_public_keys->setRowCount(list.size());
 
   for(int i = 0; i < list.size(); i++)
