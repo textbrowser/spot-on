@@ -208,6 +208,7 @@ class spoton_neighbor: public QThread
 		  const Priority priority,
 		  const int laneWidth,
 		  const int passthrough,
+		  const int waitforbyteswritten_msecs,
 		  QObject *parent);
   spoton_neighbor(
 #if QT_VERSION < 0x050000

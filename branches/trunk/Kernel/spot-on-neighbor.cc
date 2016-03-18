@@ -250,6 +250,8 @@ spoton_neighbor::spoton_neighbor
   else
     m_useSsl = true;
 
+  m_waitforbyteswritten_msecs = 0;
+
   if(m_useSsl)
     {
       if(m_tcpSocket)
@@ -521,6 +523,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 				 const Priority priority,
 				 const int laneWidth,
 				 const int passthrough,
+				 const int waitforbyteswritten_msecs,
 				 QObject *parent):QThread(parent)
 {
   m_abort = 0;
@@ -578,6 +581,10 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_tcpSocket = 0;
   m_transport = transport;
   m_udpSocket = 0;
+  m_waitforbyteswritten_msecs =
+    qBound(0,
+	   waitforbyteswritten_msecs,
+	   spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM);
 
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
@@ -1038,7 +1045,8 @@ void spoton_neighbor::slotTimeout(void)
 		      "ssl_control_string, "
 		      "priority, "
 		      "lane_width, "
-		      "passthrough "
+		      "passthrough, "
+		      "waitforbyteswritten_msecs "
 		      "FROM neighbors WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -1216,6 +1224,11 @@ void spoton_neighbor::slotTimeout(void)
 		      }
 		    else if(!m_useSsl)
 		      m_sslControlString = "N/A";
+
+		    m_waitforbyteswritten_msecs = qBound
+		      (0,
+		       query.value(13).toInt(),
+		       spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM);
 		  }
 
 		if(query.value(1).toLongLong())
@@ -6774,7 +6787,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 	  sent = m_bluetoothSocket->write(data, remaining);
 
-	  if(m_waitforbyteswritten_msecs)
+	  if(m_waitforbyteswritten_msecs > 0)
 	    m_bluetoothSocket->waitForBytesWritten
 	      (m_waitforbyteswritten_msecs);
 #endif
@@ -6785,7 +6798,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	{
 	  sent = m_tcpSocket->write(data, remaining);
 
-	  if(m_waitforbyteswritten_msecs)
+	  if(m_waitforbyteswritten_msecs > 0)
 	    m_tcpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
 	}
       else if(m_udpSocket)
@@ -6813,7 +6826,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 		(data, qMin(minimum, remaining), address, port);
 	    }
 
-	  if(m_waitforbyteswritten_msecs != 0)
+	  if(m_waitforbyteswritten_msecs > 0)
 	    m_udpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
 
 	  if(sent == -1)

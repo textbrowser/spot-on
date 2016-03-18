@@ -1372,6 +1372,7 @@ void spoton_kernel::prepareNeighbors(void)
 		      "priority, "
 		      "lane_width, "
 		      "passthrough, "
+		      "waitforbyteswritten_msecs, "
 		      "OID FROM neighbors"))
 	  while(query.next())
 	    {
@@ -1421,6 +1422,8 @@ void spoton_kernel::prepareNeighbors(void)
 			else if(i == 25) // lane_width
 			  list.append(query.value(i).toInt());
 			else if(i == 26) // passthrough
+			  list.append(query.value(i).toInt());
+			else if(i == 27) // waitforbyteswritten_msecs
 			  list.append(query.value(i).toInt());
 			else
 			  {
@@ -1537,6 +1540,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 QThread::Priority(list.value(24).toInt()),
 				 list.value(25).toInt(),
 				 list.value(26).toInt(),
+				 list.value(27).toInt(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)
