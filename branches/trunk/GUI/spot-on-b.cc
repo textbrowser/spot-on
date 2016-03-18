@@ -2959,9 +2959,9 @@ void spoton::slotSendMail(void)
   QByteArray message;
 
   if(m_ui.richtext->isChecked())
-    message = m_ui.outgoingMessage->toPlainText().toUtf8();
-  else
     message = m_ui.outgoingMessage->toHtml().toUtf8();
+  else
+    message = m_ui.outgoingMessage->toPlainText().toUtf8();
 
   /*
   ** Bundle the love letter and send it to the email.db file. The
@@ -5031,7 +5031,7 @@ void spoton::slotReply(void)
 
   QString subject(item->text());
 
-  if(!m_ui.richtext->isChecked())
+  if(m_ui.richtext->isChecked())
     {
       message = "<br><span style=\"font-size:large;\">" +
 	message + "</span>";
