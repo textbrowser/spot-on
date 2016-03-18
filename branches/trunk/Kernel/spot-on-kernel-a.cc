@@ -2215,6 +2215,13 @@ void spoton_kernel::slotUpdateSettings(void)
       if(integer == 0)
 	QFile::remove(spoton_misc::homePath() + QDir::separator() +
 		      "congestion_control.db");
+      else
+	{
+	  QWriteLocker locker(&s_messagingCacheMutex);
+
+	  s_messagingCache.clear();
+	  s_messagingCacheLookup.clear();
+	}
     }
 
   integer = static_cast<int>
