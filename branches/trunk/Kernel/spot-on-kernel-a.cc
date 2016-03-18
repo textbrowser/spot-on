@@ -2221,6 +2221,7 @@ void spoton_kernel::slotUpdateSettings(void)
 
 	  s_messagingCache.clear();
 	  s_messagingCacheLookup.clear();
+	  locker.unlock();
 	}
     }
 
