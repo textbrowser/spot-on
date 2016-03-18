@@ -2213,10 +2213,20 @@ void spoton_kernel::slotUpdateSettings(void)
       s_congestion_control_secondary_storage = integer;
 
       if(integer == 0)
+	/*
+	** We're using volatile memory. Let's remove the
+	** temporary database.
+	*/
+
 	QFile::remove(spoton_misc::homePath() + QDir::separator() +
 		      "congestion_control.db");
       else
 	{
+	  /*
+	  ** We're using non-volatile memory. Let's clear
+	  ** the congestion containers.
+	  */
+
 	  QWriteLocker locker(&s_messagingCacheMutex);
 
 	  s_messagingCache.clear();
