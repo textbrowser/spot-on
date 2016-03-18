@@ -117,6 +117,7 @@ const int spoton_common::SEND_QUEUED_EMAIL_INTERVAL;
 const int spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH;
 const int spoton_common::STATUS_INTERVAL;
 const int spoton_common::STATUS_TEXT_MAXIMUM_LENGTH;
+const int spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
 const qint64 spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE;
@@ -4472,6 +4473,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "priority, "
 		      "lane_width, "
 		      "passthrough, "
+		      "waitforbyteswritten_msecs, "
 		      "OID "
 		      "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
@@ -4583,7 +4585,8 @@ void spoton::slotPopulateNeighbors(void)
 		      "SSL Control String: %24\n"
 		      "Priority: %25\n"
 		      "Lane Width: %26\n"
-		      "Passthrough: %27")).
+		      "Passthrough: %27\n"
+		      "Wait-For-Bytes-Written: %28")).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
@@ -4692,7 +4695,8 @@ void spoton::slotPopulateNeighbors(void)
 		  arg(query.value(34).toString()).
 		  arg(priority).
 		  arg(locale.toString(query.value(36).toInt())).
-		  arg(query.value(37).toInt());
+		  arg(query.value(37).toInt()).
+		  arg(query.value(38).toInt());
 
 		QCheckBox *check = 0;
 
@@ -4945,6 +4949,40 @@ void spoton::slotPopulateNeighbors(void)
 
 			QTableWidgetItem *item = new QTableWidgetItem
 			  (QString::number(query.value(i).toLongLong()));
+
+			m_ui.neighbors->setItem(row, i, item);
+		      }
+		    else if(i == 38) // Wait-For-Bytes-Written
+		      {
+			QSpinBox *box = new QSpinBox();
+
+			box->setCorrectionMode
+			  (QAbstractSpinBox::CorrectToNearestValue);
+			box->setMaximum
+			  (spoton_common::
+			   WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM);
+			box->setMaximumWidth
+			  (box->fontMetrics().
+			   width(QString::
+				 number(spoton_common::
+					WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM))
+			   + 50);
+			box->setMinimum(0);
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			box->setToolTip(tooltip);
+			box->setValue
+			  (static_cast<int> (query.value(i).toInt()));
+			box->setWrapping(true);
+			connect
+			  (box,
+			   SIGNAL(valueChanged(int)),
+			   this,
+			   SLOT(slotNeighborWaitForBytesWrittenChanged(int)));
+			m_ui.neighbors->setCellWidget(row, i, box);
+
+			QTableWidgetItem *item = new QTableWidgetItem
+			  (QString::number(box->value()));
 
 			m_ui.neighbors->setItem(row, i, item);
 		      }

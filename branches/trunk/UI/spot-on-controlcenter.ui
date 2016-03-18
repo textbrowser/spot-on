@@ -3284,8 +3284,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>361</width>
-             <height>225</height>
+             <width>826</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3582,6 +3582,11 @@
                     </column>
                     <column>
                      <property name="text">
+                      <string>Wait-For-Bytes-Written (Milliseconds)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
                       <string>OID</string>
                      </property>
                     </column>
@@ -3621,7 +3626,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>737</width>
+                  <width>792</width>
                   <height>478</height>
                  </rect>
                 </property>

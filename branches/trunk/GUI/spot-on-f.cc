@@ -2071,3 +2071,36 @@ void spoton::slotVacuumDatabases(void)
   spoton_misc::vacuumAllDatabases();
   QApplication::restoreOverrideCursor();
 }
+
+void spoton::slotNeighborWaitForBytesWrittenChanged(int value)
+{
+  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
+
+  if(!spinBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE neighbors SET "
+		      "waitforbyteswritten_msecs = ? "
+		      "WHERE OID = ?");
+	query.bindValue(0, value);
+	query.bindValue(1, spinBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}

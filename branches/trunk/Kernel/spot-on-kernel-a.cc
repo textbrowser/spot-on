@@ -97,10 +97,7 @@ extern "C"
 #endif
 #endif
 
-QAtomicInt spoton_kernel::s_bluetooth_waitforbyteswritten_msecs = 0;
 QAtomicInt spoton_kernel::s_congestion_control_secondary_storage = 0;
-QAtomicInt spoton_kernel::s_tcp_waitforbyteswritten_msecs = 0;
-QAtomicInt spoton_kernel::s_udp_waitforbyteswritten_msecs = 0;
 QAtomicInt spoton_kernel::s_sendInitialStatus = 0;
 QByteArray spoton_kernel::s_messagingCacheKey;
 QDateTime spoton_kernel::s_institutionLastModificationTime;
@@ -183,6 +180,7 @@ const int spoton_common::SEND_QUEUED_EMAIL_INTERVAL;
 const int spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH;
 const int spoton_common::STATUS_INTERVAL;
 const int spoton_common::STATUS_TEXT_MAXIMUM_LENGTH;
+const int spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
 const qint64 spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE;
@@ -518,7 +516,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   QSettings settings;
   bool disable_ui_server = false;
 
+  settings.remove("kernel/bluetooth_msecs_waitforbyteswritten");
   settings.remove("kernel/neighbor_thread_priority");
+  settings.remove("kernel/tcp_msecs_waitforbyteswritten");
+  settings.remove("kernel/udp_msecs_waitforbyteswritten");
 
   for(int i = 0; i < settings.allKeys().size(); i++)
     s_settings.insert(settings.allKeys().at(i),
@@ -2217,13 +2218,6 @@ void spoton_kernel::slotUpdateSettings(void)
 
   if(integer != m_messagingCachePurgeTimer.interval())
     m_messagingCachePurgeTimer.start(integer);
-
-  integer = setting("kernel/bluetooth_msecs_waitforbyteswritten", 0).toInt();
-  s_bluetooth_waitforbyteswritten_msecs = qBound(0, integer, 30000);
-  integer = setting("kernel/tcp_msecs_waitforbyteswritten", 0).toInt();
-  s_tcp_waitforbyteswritten_msecs = qBound(0, integer, 30000);
-  integer = setting("kernel/udp_msecs_waitforbyteswritten", 0).toInt();
-  s_udp_waitforbyteswritten_msecs = qBound(0, integer, 30000);
 }
 
 void spoton_kernel::connectSignalsToNeighbor

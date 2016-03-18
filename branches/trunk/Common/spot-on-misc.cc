@@ -538,13 +538,19 @@ void spoton_misc::prepareDatabases(void)
 					  */
 		   "passthrough INTEGER NOT NULL DEFAULT 0, "
 		   "priority INTEGER NOT NULL DEFAULT 4 CHECK "
-		   "(priority >= 0 AND priority <= 7))"). /*
-							  ** High
-							  ** priority.
-							  */
+		   "(priority >= 0 AND priority <= 7), " /*
+							 ** High
+							 ** priority.
+							 */
+		   "waitforbyteswritten_msecs INTEGER NOT NULL DEFAULT 0 "
+		   "CHECK (waitforbyteswritten_msecs >= 0 AND "
+		   "waitforbyteswritten_msecs <= %4))").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
-	   arg(spoton_common::LANE_WIDTH_DEFAULT));
+	   arg(spoton_common::LANE_WIDTH_DEFAULT).
+	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM));
+	query.exec("ALTER TABLE neighbors ADD waitforbyteswritten_msecs "
+		   "INTEGER NOT NULL DEFAULT 0");
       }
 
     db.close();
