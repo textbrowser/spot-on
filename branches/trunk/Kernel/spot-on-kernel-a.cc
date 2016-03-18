@@ -5858,7 +5858,16 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 void spoton_kernel::postPoptasticMessage(const QString &receiverName,
 					 const QByteArray &message)
 {
-  postPoptasticMessage(receiverName, message, QByteArray(), -1);
+  QByteArray bytes;
+  bool ok = true;
+  spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
+
+  if(s_crypt)
+    bytes = s_crypt->decryptedAfterAuthenticated
+      (QByteArray::fromBase64(setting("gui/poptasticName", "").
+			      toByteArray()), &ok).trimmed();
+
+  postPoptasticMessage(receiverName, message, bytes, -1);
 }
 
 void spoton_kernel::postPoptasticMessage(const QString &receiverName,
