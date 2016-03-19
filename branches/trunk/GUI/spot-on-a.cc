@@ -53,6 +53,9 @@ extern "C"
 #if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
+#if QT_VERSION >= 0x050600
+#include <QWebEngineUrlRequestInterceptor>
+#endif
 #else
 #include <QWebSettings>
 #endif
@@ -176,6 +179,27 @@ static void signal_handler(int signal_number)
   _Exit(signal_number);
 }
 
+#if QT_VERSION >= 0x050600 && !defined(SPOTON_WEBKIT_ENABLED)
+class spoton_webengine_url_request_interceptor:
+  public QWebEngineUrlRequestInterceptor
+{
+ public:
+  spoton_webengine_url_request_interceptor(QObject *parent):
+  QWebEngineUrlRequestInterceptor(parent)
+  {
+  }
+
+  ~spoton_webengine_url_request_interceptor()
+  {
+  }
+
+  void interceptRequest(QWebEngineUrlRequestInfo &info)
+  {
+    info.block(true);
+  }
+};
+#endif
+
 int main(int argc, char *argv[])
 {
   spoton_misc::prepareSignalHandler(signal_handler);
@@ -212,6 +236,10 @@ int main(int argc, char *argv[])
   QWebEngineProfile::defaultProfile()->setPersistentCookiesPolicy
     (QWebEngineProfile::NoPersistentCookies);
   QWebEngineProfile::defaultProfile()->setPersistentStoragePath("");
+#if QT_VERSION >= 0x050600
+  QWebEngineProfile::defaultProfile()->setRequestInterceptor
+    (new spoton_webengine_url_request_interceptor(0));
+#endif
   QWebEngineSettings::globalSettings()->setAttribute
     (QWebEngineSettings::AutoLoadImages, false);
   QWebEngineSettings::globalSettings()->setAttribute
