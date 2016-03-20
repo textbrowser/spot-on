@@ -7806,15 +7806,12 @@ void spoton::slotPopulateParticipants(void)
 	      hashesU.append(data.toString());
 	  }
 
-	m_ui.emailParticipants->setUpdatesEnabled(false);
 	m_ui.emailParticipants->setSortingEnabled(false);
 	m_ui.emailParticipants->clearContents();
 	m_ui.emailParticipants->setRowCount(0);
-	m_ui.participants->setUpdatesEnabled(false);
 	m_ui.participants->setSortingEnabled(false);
 	m_ui.participants->clearContents();
 	m_ui.participants->setRowCount(0);
-	m_ui.urlParticipants->setUpdatesEnabled(false);
 	m_ui.urlParticipants->setSortingEnabled(false);
 	m_ui.urlParticipants->clearContents();
 	m_ui.urlParticipants->setRowCount(0);
@@ -8305,7 +8302,6 @@ void spoton::slotPopulateParticipants(void)
 	  setStretchLastSection(true);
 	m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
 	m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
-	m_ui.emailParticipants->setUpdatesEnabled(true);
 	m_ui.participants->resizeColumnToContents
 	  (m_ui.participants->columnCount() - 3); // Gemini Encryption Key.
 	m_ui.participants->resizeColumnToContents
@@ -8316,7 +8312,6 @@ void spoton::slotPopulateParticipants(void)
 	m_ui.participants->horizontalHeader()->setStretchLastSection(true);
 	m_ui.participants->horizontalScrollBar()->setValue(hval);
 	m_ui.participants->verticalScrollBar()->setValue(vval);
-	m_ui.participants->setUpdatesEnabled(true);
 	m_ui.urlParticipants->setSelectionMode
 	  (QAbstractItemView::ExtendedSelection);
 	m_ui.urlParticipants->setSortingEnabled(true);
@@ -8325,7 +8320,6 @@ void spoton::slotPopulateParticipants(void)
 	  setStretchLastSection(true);
 	m_ui.urlParticipants->horizontalScrollBar()->setValue(hvalU);
 	m_ui.urlParticipants->verticalScrollBar()->setValue(vvalU);
-	m_ui.urlParticipants->setUpdatesEnabled(true);
 
 	if(focusWidget)
 	  focusWidget->setFocus();
