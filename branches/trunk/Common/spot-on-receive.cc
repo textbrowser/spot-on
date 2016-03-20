@@ -1571,7 +1571,7 @@ QList<QByteArray> spoton_receive::process0091
       int timeDelta = 0;
       qint64 secsTo = qAbs(now.secsTo(dateTime));
 
-      if(keyType == "email" || keyType == "email" || keyType == "url")
+      if(keyType == "chat" || keyType == "email" || keyType == "url")
 	timeDelta = spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
       else
 	timeDelta =
