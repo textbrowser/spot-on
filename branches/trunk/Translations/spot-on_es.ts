@@ -1157,7 +1157,7 @@
         <location filename="../GUI/spot-on-d.cc" line="1623"/>
         <location filename="../GUI/spot-on-d.cc" line="1726"/>
         <location filename="../GUI/spot-on-e.cc" line="652"/>
-        <location filename="../GUI/spot-on-e.cc" line="1408"/>
+        <location filename="../GUI/spot-on-e.cc" line="1409"/>
         <location filename="../GUI/spot-on-urls.cc" line="1042"/>
         <source>&amp;Select</source>
         <translation type="unfinished"></translation>
@@ -1435,11 +1435,11 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <location filename="../GUI/spot-on-e.cc" line="63"/>
         <location filename="../GUI/spot-on-e.cc" line="86"/>
         <location filename="../GUI/spot-on-e.cc" line="220"/>
-        <location filename="../GUI/spot-on-e.cc" line="1223"/>
-        <location filename="../GUI/spot-on-e.cc" line="1272"/>
-        <location filename="../GUI/spot-on-e.cc" line="1573"/>
-        <location filename="../GUI/spot-on-e.cc" line="1922"/>
-        <location filename="../GUI/spot-on-e.cc" line="2336"/>
+        <location filename="../GUI/spot-on-e.cc" line="1224"/>
+        <location filename="../GUI/spot-on-e.cc" line="1273"/>
+        <location filename="../GUI/spot-on-e.cc" line="1574"/>
+        <location filename="../GUI/spot-on-e.cc" line="1923"/>
+        <location filename="../GUI/spot-on-e.cc" line="2337"/>
         <location filename="../GUI/spot-on-f.cc" line="383"/>
         <location filename="../GUI/spot-on-f.cc" line="683"/>
         <location filename="../GUI/spot-on-f.cc" line="1139"/>
@@ -1578,7 +1578,7 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <location filename="../GUI/spot-on-c.cc" line="3693"/>
         <location filename="../GUI/spot-on-c.cc" line="4269"/>
         <location filename="../GUI/spot-on-e.cc" line="567"/>
-        <location filename="../GUI/spot-on-e.cc" line="2322"/>
+        <location filename="../GUI/spot-on-e.cc" line="2323"/>
         <location filename="../GUI/spot-on-f.cc" line="1154"/>
         <location filename="../GUI/spot-on-f.cc" line="1187"/>
         <location filename="../GUI/spot-on-f.cc" line="1664"/>
@@ -2196,9 +2196,9 @@ Passthrough: %15</source>
         <location filename="../GUI/spot-on-d.cc" line="1307"/>
         <location filename="../GUI/spot-on-d.cc" line="1643"/>
         <location filename="../GUI/spot-on-e.cc" line="65"/>
-        <location filename="../GUI/spot-on-e.cc" line="1225"/>
-        <location filename="../GUI/spot-on-e.cc" line="1365"/>
-        <location filename="../GUI/spot-on-e.cc" line="2338"/>
+        <location filename="../GUI/spot-on-e.cc" line="1226"/>
+        <location filename="../GUI/spot-on-e.cc" line="1366"/>
+        <location filename="../GUI/spot-on-e.cc" line="2339"/>
         <location filename="../GUI/spot-on-f.cc" line="492"/>
         <location filename="../GUI/spot-on-f.cc" line="1508"/>
         <location filename="../GUI/spot-on-urls.cc" line="710"/>
@@ -2339,7 +2339,7 @@ Passthrough: %15</source>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="56"/>
         <location filename="../GUI/spot-on-b.cc" line="4397"/>
-        <location filename="../GUI/spot-on-e.cc" line="1376"/>
+        <location filename="../GUI/spot-on-e.cc" line="1377"/>
         <location filename="../GUI/spot-on-f.cc" line="233"/>
         <location filename="../GUI/spot-on-f.cc" line="497"/>
         <location filename="../GUI/spot-on-urls.cc" line="1832"/>
@@ -2349,7 +2349,7 @@ Passthrough: %15</source>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="61"/>
         <location filename="../GUI/spot-on-b.cc" line="4394"/>
-        <location filename="../GUI/spot-on-e.cc" line="1382"/>
+        <location filename="../GUI/spot-on-e.cc" line="1383"/>
         <location filename="../GUI/spot-on-f.cc" line="238"/>
         <location filename="../GUI/spot-on-f.cc" line="502"/>
         <location filename="../GUI/spot-on-urls.cc" line="1834"/>
@@ -2749,7 +2749,7 @@ Passthrough: %15</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-c.cc" line="933"/>
-        <location filename="../GUI/spot-on-e.cc" line="1404"/>
+        <location filename="../GUI/spot-on-e.cc" line="1405"/>
         <source>%1: Select StarBeam Transmit File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3363,7 +3363,7 @@ Passthrough: %15</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-e.cc" line="222"/>
-        <location filename="../GUI/spot-on-e.cc" line="1924"/>
+        <location filename="../GUI/spot-on-e.cc" line="1925"/>
         <source>An error (%1) occurred while attempting to save the Poptastic information.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3390,42 +3390,42 @@ Passthrough: %15</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1255"/>
+        <location filename="../GUI/spot-on-e.cc" line="1256"/>
         <source>%1: StarBeam Pulse Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1256"/>
+        <location filename="../GUI/spot-on-e.cc" line="1257"/>
         <source>&amp;Pulse Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1274"/>
+        <location filename="../GUI/spot-on-e.cc" line="1275"/>
         <source>An error occurred while attempting to secure the pulse size.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1304"/>
+        <location filename="../GUI/spot-on-e.cc" line="1305"/>
         <source>%1: StarBeam Read Interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1305"/>
+        <location filename="../GUI/spot-on-e.cc" line="1306"/>
         <source>&amp;Read Interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1393"/>
+        <location filename="../GUI/spot-on-e.cc" line="1394"/>
         <source>Please select at least one participant for StarBeam sharing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1423"/>
+        <location filename="../GUI/spot-on-e.cc" line="1424"/>
         <source>The selected file is not readable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="2326"/>
+        <location filename="../GUI/spot-on-e.cc" line="2327"/>
         <source>Are you sure that you wish to delete the specified Poptastic account?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6525,582 +6525,582 @@ Passthrough: %15</source>
 <context>
     <name>spoton_options</name>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="76"/>
+        <location filename="../UI/spot-on-options.ui" line="103"/>
         <source>&amp;Icons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="93"/>
+        <location filename="../UI/spot-on-options.ui" line="120"/>
         <source>Everaldo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="98"/>
+        <location filename="../UI/spot-on-options.ui" line="125"/>
         <source>Nouve</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="103"/>
+        <location filename="../UI/spot-on-options.ui" line="130"/>
         <source>Nuvola</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="131"/>
+        <location filename="../UI/spot-on-options.ui" line="158"/>
         <source>Tab Icon &amp;Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="148"/>
+        <location filename="../UI/spot-on-options.ui" line="175"/>
         <source>16x16</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="153"/>
+        <location filename="../UI/spot-on-options.ui" line="180"/>
         <source>24x24</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="158"/>
+        <location filename="../UI/spot-on-options.ui" line="185"/>
         <source>32x32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="163"/>
+        <location filename="../UI/spot-on-options.ui" line="190"/>
         <source>64x64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="191"/>
+        <location filename="../UI/spot-on-options.ui" line="218"/>
         <source>Tab &amp;Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="208"/>
+        <location filename="../UI/spot-on-options.ui" line="235"/>
         <source>East</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="213"/>
+        <location filename="../UI/spot-on-options.ui" line="240"/>
         <source>North</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="223"/>
+        <location filename="../UI/spot-on-options.ui" line="250"/>
         <source>West</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="246"/>
-        <location filename="../UI/spot-on-options.ui" line="1120"/>
+        <location filename="../UI/spot-on-options.ui" line="273"/>
+        <location filename="../UI/spot-on-options.ui" line="1224"/>
         <source>Buzz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="264"/>
+        <location filename="../UI/spot-on-options.ui" line="300"/>
         <source>Join the first &amp;common channel after the kernel is activated.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="299"/>
+        <location filename="../UI/spot-on-options.ui" line="344"/>
         <source>&amp;Display participant popups automatically.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="328"/>
+        <location filename="../UI/spot-on-options.ui" line="373"/>
         <source>&amp;Preferred Method</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="348"/>
+        <location filename="../UI/spot-on-options.ui" line="393"/>
         <source>Normal POST</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="353"/>
+        <location filename="../UI/spot-on-options.ui" line="398"/>
         <source>Artificial GET</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="422"/>
+        <location filename="../UI/spot-on-options.ui" line="467"/>
         <source>&amp;Timestamps (remote events only).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="660"/>
+        <location filename="../UI/spot-on-options.ui" line="741"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the application aborts during an import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="663"/>
+        <location filename="../UI/spot-on-options.ui" line="744"/>
         <source>&amp;Disable interface synchronous SQLite writes on import.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="728"/>
+        <location filename="../UI/spot-on-options.ui" line="809"/>
         <source>&amp;results per page.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="773"/>
+        <location filename="../UI/spot-on-options.ui" line="863"/>
         <source>&amp;Populate statistics every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1164"/>
+        <location filename="../UI/spot-on-options.ui" line="1286"/>
         <source>&amp;Accept only signed geminis, messages, and status bulletins.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1203"/>
-        <location filename="../UI/spot-on-options.ui" line="1290"/>
+        <location filename="../UI/spot-on-options.ui" line="1325"/>
+        <location filename="../UI/spot-on-options.ui" line="1421"/>
         <source>Allow &amp;forward secrecy requests.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1230"/>
+        <location filename="../UI/spot-on-options.ui" line="1352"/>
         <source>&amp;Sign geminis, messages, and status bulletins.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1261"/>
+        <location filename="../UI/spot-on-options.ui" line="1392"/>
         <source>&amp;Accept only signed letters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1362"/>
+        <location filename="../UI/spot-on-options.ui" line="1493"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The kernel is responsible for signing messages. Please avoid toggling this checkbox until queued messages have been processed by the kernel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1365"/>
+        <location filename="../UI/spot-on-options.ui" line="1496"/>
         <source>Sign &amp;letters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1452"/>
+        <location filename="../UI/spot-on-options.ui" line="1592"/>
         <source>Periodically p&amp;ublish plaintext connection information.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1657"/>
+        <location filename="../UI/spot-on-options.ui" line="1824"/>
         <source>&amp;Periodically broadcast scrambled messages.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1667"/>
+        <location filename="../UI/spot-on-options.ui" line="1834"/>
         <source>&amp;Share private authentication and encryption keys with the kernel process.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="277"/>
-        <location filename="../UI/spot-on-options.ui" line="1142"/>
+        <location filename="../UI/spot-on-options.ui" line="313"/>
+        <location filename="../UI/spot-on-options.ui" line="1255"/>
         <source>Chat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="218"/>
+        <location filename="../UI/spot-on-options.ui" line="245"/>
         <source>South</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="289"/>
-        <location filename="../UI/spot-on-options.ui" line="447"/>
-        <location filename="../UI/spot-on-options.ui" line="954"/>
+        <location filename="../UI/spot-on-options.ui" line="334"/>
+        <location filename="../UI/spot-on-options.ui" line="501"/>
+        <location filename="../UI/spot-on-options.ui" line="1053"/>
         <source>Alternating row &amp;colors.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="309"/>
+        <location filename="../UI/spot-on-options.ui" line="354"/>
         <source>Enable &amp;emoticons.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="316"/>
+        <location filename="../UI/spot-on-options.ui" line="361"/>
         <source>&amp;On-top dialogs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="839"/>
+        <location filename="../UI/spot-on-options.ui" line="929"/>
         <source> seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="435"/>
-        <location filename="../UI/spot-on-options.ui" line="1243"/>
+        <location filename="../UI/spot-on-options.ui" line="480"/>
+        <location filename="../UI/spot-on-options.ui" line="1365"/>
         <source>E-Mail</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="457"/>
+        <location filename="../UI/spot-on-options.ui" line="511"/>
         <source>&amp;Refresh containers after launch.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="475"/>
+        <location filename="../UI/spot-on-options.ui" line="529"/>
         <source>&amp;Retrieve e-mail every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="482"/>
+        <location filename="../UI/spot-on-options.ui" line="536"/>
         <source> minutes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="513"/>
-        <location filename="../UI/spot-on-options.ui" line="1378"/>
+        <location filename="../UI/spot-on-options.ui" line="567"/>
+        <location filename="../UI/spot-on-options.ui" line="1509"/>
         <source>Listeners</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="574"/>
-        <location filename="../UI/spot-on-options.ui" line="1462"/>
+        <location filename="../UI/spot-on-options.ui" line="637"/>
+        <location filename="../UI/spot-on-options.ui" line="1602"/>
         <source>Neighbors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="592"/>
+        <location filename="../UI/spot-on-options.ui" line="664"/>
         <source>&amp;Keep only user-defined neighbors.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="964"/>
+        <location filename="../UI/spot-on-options.ui" line="1063"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the kernel aborts during a download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="967"/>
+        <location filename="../UI/spot-on-options.ui" line="1066"/>
         <source>&amp;Disable kernel synchronous SQLite writes on download.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="756"/>
-        <location filename="../UI/spot-on-options.ui" line="1610"/>
+        <location filename="../UI/spot-on-options.ui" line="837"/>
+        <location filename="../UI/spot-on-options.ui" line="1768"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="35"/>
+        <location filename="../UI/spot-on-options.ui" line="44"/>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="381"/>
-        <location filename="../UI/spot-on-options.ui" line="530"/>
-        <location filename="../UI/spot-on-options.ui" line="607"/>
+        <location filename="../UI/spot-on-options.ui" line="426"/>
+        <location filename="../UI/spot-on-options.ui" line="593"/>
+        <location filename="../UI/spot-on-options.ui" line="679"/>
         <source>&amp;Populate the table every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="391"/>
-        <location filename="../UI/spot-on-options.ui" line="540"/>
-        <location filename="../UI/spot-on-options.ui" line="617"/>
-        <location filename="../UI/spot-on-options.ui" line="783"/>
-        <location filename="../UI/spot-on-options.ui" line="907"/>
+        <location filename="../UI/spot-on-options.ui" line="436"/>
+        <location filename="../UI/spot-on-options.ui" line="603"/>
+        <location filename="../UI/spot-on-options.ui" line="689"/>
+        <location filename="../UI/spot-on-options.ui" line="873"/>
+        <location filename="../UI/spot-on-options.ui" line="1006"/>
         <source> second(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="685"/>
+        <location filename="../UI/spot-on-options.ui" line="766"/>
         <source>&amp;maximum keywords accepted during an import via the interface.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="799"/>
+        <location filename="../UI/spot-on-options.ui" line="889"/>
         <source>Increasing the timer value will impede current display statistics.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="829"/>
+        <location filename="../UI/spot-on-options.ui" line="919"/>
         <source>P&amp;urge cache container(s) every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="873"/>
+        <location filename="../UI/spot-on-options.ui" line="963"/>
         <source>StarBeam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="885"/>
+        <location filename="../UI/spot-on-options.ui" line="984"/>
         <source>&amp;Automatically verify digests.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="897"/>
+        <location filename="../UI/spot-on-options.ui" line="996"/>
         <source>&amp;Populate tables every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="938"/>
+        <location filename="../UI/spot-on-options.ui" line="1037"/>
         <source>&amp;Remove one-time magnets upon exit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="992"/>
+        <location filename="../UI/spot-on-options.ui" line="1091"/>
         <source>&amp;URL(s) batched per URL distribution.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1035"/>
+        <location filename="../UI/spot-on-options.ui" line="1134"/>
         <source>&amp;maximum keywords accepted during an import via the kernel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1084"/>
+        <location filename="../UI/spot-on-options.ui" line="1170"/>
         <source>Permissions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1132"/>
+        <location filename="../UI/spot-on-options.ui" line="1245"/>
         <source>Accept shared &amp;magnets.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1154"/>
+        <location filename="../UI/spot-on-options.ui" line="1276"/>
         <source>Accept &amp;geminis.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1180"/>
+        <location filename="../UI/spot-on-options.ui" line="1302"/>
         <source>Accept shared StarBeam &amp;magnets.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1190"/>
-        <location filename="../UI/spot-on-options.ui" line="1277"/>
-        <location filename="../UI/spot-on-options.ui" line="1761"/>
+        <location filename="../UI/spot-on-options.ui" line="1312"/>
+        <location filename="../UI/spot-on-options.ui" line="1408"/>
+        <location filename="../UI/spot-on-options.ui" line="1937"/>
         <source>Accept shared public &amp;keys.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1213"/>
+        <location filename="../UI/spot-on-options.ui" line="1335"/>
         <source>Broadcast odd messages at odd times. Please note that this option will advertise your presence.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1216"/>
+        <location filename="../UI/spot-on-options.ui" line="1338"/>
         <source>&amp;Impersonate me.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1305"/>
+        <location filename="../UI/spot-on-options.ui" line="1436"/>
         <source>&amp;Limit the size of email.db to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1315"/>
+        <location filename="../UI/spot-on-options.ui" line="1446"/>
         <source> MiB.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1346"/>
+        <location filename="../UI/spot-on-options.ui" line="1477"/>
         <source>&amp;Reject C/O letters without signatures. The setting does not apply to data destined for institutions.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1395"/>
+        <location filename="../UI/spot-on-options.ui" line="1535"/>
         <source>&amp;Limit connections to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1405"/>
+        <location filename="../UI/spot-on-options.ui" line="1545"/>
         <source>Limit the number of connections per client IP address.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1449"/>
+        <location filename="../UI/spot-on-options.ui" line="1589"/>
         <source>External IP information is required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1480"/>
+        <location filename="../UI/spot-on-options.ui" line="1629"/>
         <source>Select this option if you would like to accept and connect to published listeners.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1483"/>
+        <location filename="../UI/spot-on-options.ui" line="1632"/>
         <source>&amp;Accept published listeners (connected).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1496"/>
+        <location filename="../UI/spot-on-options.ui" line="1645"/>
         <source>Select this option if you would like to accept published listeners.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1499"/>
+        <location filename="../UI/spot-on-options.ui" line="1648"/>
         <source>&amp;Accept published listeners (disconnected).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1515"/>
+        <location filename="../UI/spot-on-options.ui" line="1664"/>
         <source>&amp;Ignore published listeners.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1530"/>
+        <location filename="../UI/spot-on-options.ui" line="1679"/>
         <source>&amp;SSL Key Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1547"/>
+        <location filename="../UI/spot-on-options.ui" line="1696"/>
         <source>2048</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1552"/>
+        <location filename="../UI/spot-on-options.ui" line="1701"/>
         <source>3072</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1557"/>
+        <location filename="../UI/spot-on-options.ui" line="1706"/>
         <source>4096</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1562"/>
+        <location filename="../UI/spot-on-options.ui" line="1711"/>
         <source>8192</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="651"/>
-        <location filename="../UI/spot-on-options.ui" line="1588"/>
+        <location filename="../UI/spot-on-options.ui" line="723"/>
+        <location filename="../UI/spot-on-options.ui" line="1737"/>
         <source>Search</source>
         <translation type="unfinished">Buscar</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1223"/>
-        <location filename="../UI/spot-on-options.ui" line="1600"/>
+        <location filename="../UI/spot-on-options.ui" line="1345"/>
+        <location filename="../UI/spot-on-options.ui" line="1758"/>
         <source>&amp;Open clicked links in the appropriate Web browser as defined by the user&apos;s environment.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1628"/>
+        <location filename="../UI/spot-on-options.ui" line="1795"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enable this option if you would like to force kernel registration. By forcing kernel registration, an existing kernel process that Spot-On is aware of will be deactivated. You may wish to use this option if a kernel was not deactivated properly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1631"/>
+        <location filename="../UI/spot-on-options.ui" line="1798"/>
         <source>&amp;Force kernel registration.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1641"/>
+        <location filename="../UI/spot-on-options.ui" line="1808"/>
         <source>&amp;Launch the kernel after user authentication.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1654"/>
+        <location filename="../UI/spot-on-options.ui" line="1821"/>
         <source>Please note that this option will advertise your presence.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1664"/>
+        <location filename="../UI/spot-on-options.ui" line="1831"/>
         <source>Automatically share the private authentication and encryption keys with a kernel process. If this option is disabled, the user interface will provide reminders.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1682"/>
+        <location filename="../UI/spot-on-options.ui" line="1849"/>
         <source>&amp;Super Echo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1692"/>
+        <location filename="../UI/spot-on-options.ui" line="1859"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, messages that are interpreted correctly will be echoed. Please note that this option will advertise your presence. This option does not supersede a half-echo agreement.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1702"/>
+        <location filename="../UI/spot-on-options.ui" line="1869"/>
         <source>Complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1707"/>
+        <location filename="../UI/spot-on-options.ui" line="1874"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="948"/>
-        <location filename="../UI/spot-on-options.ui" line="1733"/>
+        <location filename="../UI/spot-on-options.ui" line="1047"/>
+        <location filename="../UI/spot-on-options.ui" line="1900"/>
         <source>URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1421"/>
+        <location filename="../UI/spot-on-options.ui" line="1561"/>
         <source>client(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1745"/>
+        <location filename="../UI/spot-on-options.ui" line="1921"/>
         <source>&amp;Accept only signed URLs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1768"/>
+        <location filename="../UI/spot-on-options.ui" line="1944"/>
         <source>Sign &amp;URLs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1799"/>
+        <location filename="../UI/spot-on-options.ui" line="1975"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1805"/>
+        <location filename="../UI/spot-on-options.ui" line="1981"/>
         <source>Values have units of seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1832"/>
+        <location filename="../UI/spot-on-options.ui" line="2008"/>
         <source>&amp;Chat Time Delta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1862"/>
+        <location filename="../UI/spot-on-options.ui" line="2038"/>
         <source>&amp;Forward Secrecy Time Delta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1892"/>
+        <location filename="../UI/spot-on-options.ui" line="2068"/>
         <source>&amp;Gemini Time Delta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1922"/>
+        <location filename="../UI/spot-on-options.ui" line="2098"/>
         <source>Kernel &amp;Cache Object Lifetime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1952"/>
+        <location filename="../UI/spot-on-options.ui" line="2128"/>
         <source>Kernel &amp;URL Dispatcher Interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="1982"/>
+        <location filename="../UI/spot-on-options.ui" line="2158"/>
         <source>&amp;Poptastic Forward Secrecy Time Delta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="2012"/>
+        <location filename="../UI/spot-on-options.ui" line="2188"/>
         <source>&amp;Retrieve Mail Time Delta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="2055"/>
+        <location filename="../UI/spot-on-options.ui" line="2231"/>
         <source>Defaults</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="2095"/>
+        <location filename="../UI/spot-on-options.ui" line="2271"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="2103"/>
+        <location filename="../UI/spot-on-options.ui" line="2279"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-options.ui" line="2106"/>
+        <location filename="../UI/spot-on-options.ui" line="2282"/>
         <source>Esc</source>
         <translation type="unfinished"></translation>
     </message>
