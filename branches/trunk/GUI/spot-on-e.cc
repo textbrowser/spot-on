@@ -775,6 +775,7 @@ void spoton::slotShowOptions(void)
   m_optionsWindow->move(X, Y);
   m_optionsWindow->show();
   m_optionsWindow->raise();
+  m_optionsWindow->repaint();
 }
 
 void spoton::slotSetIconSize(int index)
