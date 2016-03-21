@@ -216,6 +216,7 @@ void spoton::slotConfigurePoptastic(void)
 
       if(!error.isEmpty())
 	{
+	  m_poptasticRetroPhoneDialog->show();
 	  QMessageBox::critical(this, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("An error (%1) occurred while "
