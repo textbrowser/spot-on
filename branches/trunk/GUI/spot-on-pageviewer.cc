@@ -28,9 +28,9 @@
 #include <QPrintPreviewDialog>
 #include <QPrinter>
 #include <QSqlQuery>
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
 #include <QWebEngineProfile>
-#else
+#elif defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebHitTestResult>
 #endif
 
@@ -47,7 +47,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
   m_database = db;
   m_ui.setupUi(this);
   m_urlHash = urlHash;
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   m_webView = new QWebEngineView(this);
   m_webView->page()->deleteLater();
   m_webView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -56,7 +56,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 	  SIGNAL(linkHovered(const QString &)),
 	  this,
 	  SLOT(slotLinkHovered(const QString &)));
-#else
+#elif defined(SPOTON_WEBENGINE_ENABLED)
   m_webView = new QWebView(this);
   m_webView->page()->networkAccessManager()->
     setNetworkAccessible(QNetworkAccessManager::NotAccessible);
@@ -66,6 +66,8 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 			    QPainter::HighQualityAntialiasing |
 			    QPainter::SmoothPixmapTransform |
 			    QPainter::TextAntialiasing);
+#else
+  m_webView = new spoton_textbrowser(this);
 #endif
   m_ui.frame->layout()->addWidget(m_webView);
   connect(m_ui.action_Find,
@@ -99,16 +101,16 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 
 spoton_pageviewer::~spoton_pageviewer()
 {
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   QWebEngineProfile::defaultProfile()->clearAllVisitedLinks();
-#else
+#elif defined(SPOTON_WEBKIT_ENABLED)
   QWebSettings::clearMemoryCaches();
 #endif
 }
 
 void spoton_pageviewer::slotCopyLinkLocation(void)
 {
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
@@ -116,14 +118,16 @@ void spoton_pageviewer::slotCopyLinkLocation(void)
       clipboard->setText(m_hoveredLink);
       m_hoveredLink.clear();
     }
-#else
+#elif defined(SPOTON_WEBKIT_ENABLED)
   m_webView->triggerPageAction(QWebPage::CopyLinkToClipboard);
+#else
+  m_webView->copy();
 #endif
 }
 
 void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 {
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   if(m_hoveredLink.isEmpty())
     return;
 
@@ -133,7 +137,7 @@ void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 		 this,
 		 SLOT(slotCopyLinkLocation(void)));
   menu.exec(m_webView->mapToGlobal(point));
-#else
+#elif defined(SPOTON_WEBKIT_ENABLED)
   QWebHitTestResult result = m_webView->page()->currentFrame()->
     hitTestContent(point);
 
@@ -146,6 +150,8 @@ void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 		     SLOT(slotCopyLinkLocation(void)));
       menu.exec(m_webView->mapToGlobal(point));
     }
+#else
+  Q_UNUSED(point);
 #endif
 }
 
@@ -153,9 +159,9 @@ void spoton_pageviewer::slotFind(void)
 {
   QString text(m_ui.find->text());
 
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   m_webView->findText(text);
-#else
+#elif defined(SPOTON_WEBKIT_ENABLED)
   if(!m_webView->findText(text, QWebPage::FindWrapsAroundDocument))
     {
       if(!text.isEmpty())
@@ -171,6 +177,8 @@ void spoton_pageviewer::slotFind(void)
     }
   else
     m_ui.find->setPalette(m_originalFindPalette);
+#else
+  m_webView->find(text);
 #endif
 }
 
@@ -288,8 +296,10 @@ void spoton_pageviewer::slotPagePrintPreview(void)
 
   if(printDialog.exec() == QDialog::Accepted)
     {
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
       m_webView->render(&printer);
+#elif defined(SPOTON_WEBKIT_ENABLED)
+      m_webView->print(&printer);
 #else
       m_webView->print(&printer);
 #endif
@@ -301,11 +311,13 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
   if(!printer)
     return;
 
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   spoton_textbrowser textedit(this);
 
   textedit.setHtml(m_content);
   textedit.print(printer);
+#elif defined(SPOTON_WEBKIT_ENABLED)
+  m_webView->print(printer);
 #else
   m_webView->print(printer);
 #endif

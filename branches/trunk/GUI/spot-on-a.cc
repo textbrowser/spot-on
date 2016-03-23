@@ -50,13 +50,13 @@ extern "C"
 #include <QScopedPointer>
 #include <QStandardItemModel>
 #include <QThread>
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
 #if QT_VERSION >= 0x050600
 #include <QWebEngineUrlRequestInterceptor>
 #endif
-#else
+#elif defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebSettings>
 #endif
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
@@ -179,7 +179,7 @@ static void signal_handler(int signal_number)
   _Exit(signal_number);
 }
 
-#if QT_VERSION >= 0x050600 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050600 && defined(SPOTON_WEBENGINE_ENABLED)
 class spoton_webengine_url_request_interceptor:
   public QWebEngineUrlRequestInterceptor
 {
@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
 
   QApplication qapplication(argc, argv);
 
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   QWebEngineProfile::defaultProfile()->setCachePath("");
   QWebEngineProfile::defaultProfile()->setHttpCacheMaximumSize(1);
   QWebEngineProfile::defaultProfile()->setHttpCacheType
@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
     (QWebEngineSettings::LocalContentCanAccessFileUrls, false);
   QWebEngineSettings::globalSettings()->setAttribute
     (QWebEngineSettings::LocalStorageEnabled, false);
-#else
+#elif defined(SPOTON_WEBKIT_ENABLED)
   QWebSettings::globalSettings()->setAttribute
     (QWebSettings::AutoLoadImages, false);
   QWebSettings::globalSettings()->setAttribute

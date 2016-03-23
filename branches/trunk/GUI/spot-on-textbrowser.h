@@ -38,6 +38,7 @@ class spoton_textbrowser: public QTextBrowser
   spoton_textbrowser(QWidget *parent);
   ~spoton_textbrowser();
   void append(const QString &text);
+  void setContent(const QByteArray &text);
   void setHtml(const QString &text);
 
  private:

@@ -30,18 +30,21 @@
 
 #include <QMainWindow>
 #include <QSqlDatabase>
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
 #include <QWebEngineView>
-#else
+#elif defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebView>
 #endif
 
+#if !defined(SPOTON_WEBENGINE_ENABLED) && !defined(SPOTON_WEBKIT_ENABLED)
+#include "spot-on-textbrowser.h"
+#endif
 #include "ui_spot-on-pageviewer.h"
 
 class QPrinter;
 class spoton_crypt;
 
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
 class spoton_webengine_page: public QWebEnginePage
 {
   Q_OBJECT
@@ -87,12 +90,16 @@ class spoton_pageviewer: public QMainWindow
   QSqlDatabase m_database;
   QString m_hoveredLink;
   QString m_urlHash;
-#if QT_VERSION >= 0x050000 && !defined(SPOTON_WEBKIT_ENABLED)
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   QWebEngineView *m_webView;
-#else
+#elif defined(SPOTON_WEBKIT_ENABLED)
   QWebView *m_webView;
 #endif
   Ui_pageviewer m_ui;
+#if !defined(SPOTON_WEBENGINE_ENABLED) && !defined(SPOTON_WEBKIT_ENABLED)
+  spoton_textbrowser *m_webView;
+#endif
+
 
  private slots:
   void slotCopyLinkLocation(void);

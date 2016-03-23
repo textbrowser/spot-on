@@ -87,6 +87,11 @@ void spoton_textbrowser::append(const QString &text)
   QTextBrowser::append(removeSpecial(text));
 }
 
+void spoton_textbrowser::setContent(const QByteArray &text)
+{
+  QTextBrowser::setHtml(removeSpecial(text));
+}
+
 void spoton_textbrowser::setHtml(const QString &text)
 {
   QTextBrowser::setHtml(removeSpecial(text));
