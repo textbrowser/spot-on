@@ -10,7 +10,7 @@ libspoton.depends =
 TEMPLATE	= app
 LANGUAGE	= C++
 QT		+= concurrent gui multimedia network printsupport sql \
-		   webenginewidgets widgets
+		   webkit webkitwidgets widgets
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
 
