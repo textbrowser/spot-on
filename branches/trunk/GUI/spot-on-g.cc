@@ -29,5 +29,8 @@
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
+  if(m_locked)
+    return;
+
   Q_UNUSED(point);
 }
