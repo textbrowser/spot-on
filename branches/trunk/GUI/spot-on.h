@@ -665,6 +665,7 @@ class spoton: public QMainWindow
   void slotClearClipboardBuffer(void);
   void slotClearOutgoingMessage(void);
   void slotCloseBuzzTab(int index);
+  void slotCloseTab(void);
   void slotCommonBuzzChannelsActivated(int index);
   void slotComputeFileHash(void);
   void slotConfigurePoptastic(void);

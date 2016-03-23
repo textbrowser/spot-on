@@ -32,5 +32,63 @@ void spoton::slotShowMainTabContextMenu(const QPoint &point)
   if(m_locked)
     return;
 
-  Q_UNUSED(point);
+  QWidget *widget = m_ui.tab->widget(m_ui.tab->tabBar()->tabAt(point));
+
+  if(!widget)
+    return;
+  else if(!widget->isEnabled())
+    return;
+
+  QMapIterator<int, QWidget *> it(m_tabWidgets);
+  QString name("");
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value() == widget)
+	{
+	  name = m_tabWidgetsProperties[it.key()]["name"].toString();
+	  break;
+	}
+    }
+
+  bool enabled = true;
+
+  if(!(name == "buzz" || name == "listeners" || name == "neighbors" ||
+       name == "search" || name == "starbeam" || name == "urls"))
+    enabled = false;
+  else if(name.isEmpty())
+    enabled = false;
+
+  QAction *action = 0;
+  QMenu menu(this);
+
+  action = menu.addAction(tr("&Close Page"), this, SLOT(slotCloseTab(void)));
+  action->setEnabled(enabled);
+  action->setProperty("name", name);
+  menu.exec(m_ui.tab->mapToGlobal(point));
+}
+
+void spoton::slotCloseTab(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString name(action->property("name").toString());
+
+  if(name == "buzz")
+    m_ui.action_Buzz->setChecked(false);
+  else if(name == "listeners")
+    m_ui.action_Listeners->setChecked(false);
+  else if(name == "neighbors")
+    m_ui.action_Neighbors->setChecked(false);
+  else if(name == "search")
+    m_ui.action_Search->setChecked(false);
+  else if(name == "starbeam")
+    m_ui.action_StarBeam->setChecked(false);
+  else if(name == "urls")
+    m_ui.action_Urls->setChecked(false);
 }

@@ -1640,27 +1640,27 @@ spoton::spoton(void):QMainWindow()
   connect(m_ui.action_Poptastic_Settings, SIGNAL(triggered(void)),
 	  this, SLOT(slotConfigurePoptastic(void)));
   connect(m_ui.action_Buzz,
-	  SIGNAL(triggered(bool)),
+	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Listeners,
-	  SIGNAL(triggered(bool)),
+	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Neighbors,
-	  SIGNAL(triggered(bool)),
+	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Search,
-	  SIGNAL(triggered(bool)),
+	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_StarBeam,
-	  SIGNAL(triggered(bool)),
+	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Urls,
-	  SIGNAL(triggered(bool)),
+	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowPage(bool)));
   connect(m_ui.addDistiller,
