@@ -68,6 +68,8 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 			    QPainter::TextAntialiasing);
 #else
   m_webView = new spoton_textbrowser(this);
+  m_webView->setOpenExternalLinks(false);
+  m_webView->setOpenLinks(false);
 #endif
   m_ui.frame->layout()->addWidget(m_webView);
   connect(m_ui.action_Find,
@@ -86,10 +88,12 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
+#if defined(SPOTON_WEBENGINE_ENABLED) || defined(SPOTON_WEBKIT_ENABLED)
   connect(m_webView,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotCustomContextMenuRequested(const QPoint &)));
+#endif
   m_originalFindPalette = m_ui.find->palette();
 #if QT_VERSION >= 0x040700
   m_ui.find->setPlaceholderText(tr("Find Text"));
