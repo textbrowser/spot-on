@@ -56,7 +56,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 	  SIGNAL(linkHovered(const QString &)),
 	  this,
 	  SLOT(slotLinkHovered(const QString &)));
-#elif defined(SPOTON_WEBENGINE_ENABLED)
+#elif defined(SPOTON_WEBKIT_ENABLED)
   m_webView = new QWebView(this);
   m_webView->page()->networkAccessManager()->
     setNetworkAccessible(QNetworkAccessManager::NotAccessible);
