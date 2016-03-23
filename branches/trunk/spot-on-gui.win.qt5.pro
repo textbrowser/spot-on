@@ -10,7 +10,7 @@ libspoton.depends =
 TEMPLATE	= app
 LANGUAGE	= C++
 QT		+= concurrent gui multimedia network printsupport sql \
-		   webenginewidgets widgets
+		   webkit webkitwidgets widgets
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
 
@@ -20,7 +20,8 @@ CONFIG		-= debug
 DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
 		   SPOTON_LINKED_WITH_LIBPTHREAD \
-                   SPOTON_SCTP_ENABLED
+                   SPOTON_SCTP_ENABLED \
+                   SPOTON_WEBKIT_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
