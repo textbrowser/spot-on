@@ -918,6 +918,7 @@ class spoton: public QMainWindow
   void slotShowContextMenu(const QPoint &point);
   void slotShowEncryptFile(void);
   void slotShowEtpMagnetsMenu(const QPoint &point);
+  void slotShowMainTabContextMenu(const QPoint &point);
   void slotShowMinimalDisplay(bool state);
   void slotShowNeighborSummaryPanel(bool state);
   void slotShowOptions(void);

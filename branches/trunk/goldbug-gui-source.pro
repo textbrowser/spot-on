@@ -55,6 +55,7 @@ SOURCES		= Common/spot-on-crypt.cc \
 		  GUI/spot-on-echo-key-share.cc \
 		  GUI/spot-on-encryptfile.cc \
 		  GUI/spot-on-f.cc \
+		  GUI/spot-on-g.cc \
 		  GUI/spot-on-logviewer.cc \
 		  GUI/spot-on-pageviewer.cc \
 		  GUI/spot-on-reencode.cc \
