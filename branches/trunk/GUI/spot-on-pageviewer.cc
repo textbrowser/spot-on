@@ -178,7 +178,8 @@ void spoton_pageviewer::slotFind(void)
   else
     m_ui.find->setPalette(m_originalFindPalette);
 #else
-  m_webView->find(text);
+  if(!m_webView->find(text))
+    m_webView->moveCursor(QTextCursor::Start);
 #endif
 }
 
