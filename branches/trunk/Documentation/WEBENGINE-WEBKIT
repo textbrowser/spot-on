@@ -1,0 +1,12 @@
+Qt 4.x
+
+DEFINES += SPOTON_WEBKIT_ENABLED
+QT += webkit
+
+Qt 5.x
+
+DEFINES += SPOTON_WEBENGINE_ENABLED
+QT += webenginewidgets
+
+DEFINES += SPOTON_WEBKIT_ENABLED
+QT += webkit webkitwidgets
