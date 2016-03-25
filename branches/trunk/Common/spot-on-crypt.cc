@@ -3495,6 +3495,10 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	      else
 		cipher = QSslCipher(next, QSsl::SslV3);
 #endif
+
+	      if(cipher.isNull())
+		cipher = QSslCipher(next);
+
 	      if(!cipher.isNull())
 		list.append(cipher);
 	    }
