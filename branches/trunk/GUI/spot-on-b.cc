@@ -5373,7 +5373,8 @@ void spoton::initializeKernelSocket(void)
     {
       QSslConfiguration configuration;
       QString sslCS
-	(m_settings.value("gui/sslControlString", "").toString());
+	(m_settings.value("gui/sslControlString",
+			  spoton_common::SSL_CONTROL_STRING).toString());
 
       configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 #if QT_VERSION >= 0x040800
