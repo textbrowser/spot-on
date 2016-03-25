@@ -269,6 +269,12 @@ static void signal_handler(int signal_number)
 
 int main(int argc, char *argv[])
 {
+  /*
+  ** Disable JIT.
+  */
+
+  qputenv("QT_ENABLE_REGEXP_JIT", "0");
+  qputenv("QV4_FORCE_INTERPRETER", "1");
   spoton_misc::prepareSignalHandler(signal_handler);
   PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
 

@@ -202,6 +202,12 @@ class spoton_webengine_url_request_interceptor:
 
 int main(int argc, char *argv[])
 {
+  /*
+  ** Disable JIT.
+  */
+
+  qputenv("QT_ENABLE_REGEXP_JIT", "0");
+  qputenv("QV4_FORCE_INTERPRETER", "1");
   spoton_misc::prepareSignalHandler(signal_handler);
   PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
   curl_global_init(CURL_GLOBAL_ALL);
