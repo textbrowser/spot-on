@@ -233,7 +233,7 @@ spoton_neighbor::spoton_neighbor
   m_sslControlString = sslControlString.trimmed();
 
   if(m_sslControlString.isEmpty())
-    m_sslControlString = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+    m_sslControlString = spoton_common::SSL_CONTROL_STRING;
 
   m_statusControl = "connected";
   m_startTime = QDateTime::currentDateTime();
@@ -574,7 +574,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_sslControlString = sslControlString.trimmed();
 
   if(m_sslControlString.isEmpty())
-    m_sslControlString = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+    m_sslControlString = spoton_common::SSL_CONTROL_STRING;
 
   m_startTime = QDateTime::currentDateTime();
   m_statusControl = statusControl;
@@ -1217,8 +1217,7 @@ void spoton_neighbor::slotTimeout(void)
 		      {
 			if(m_useSsl)
 			  m_sslControlString =
-			    "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:"
-			    "@STRENGTH";
+			    spoton_common::SSL_CONTROL_STRING;
 			else
 			  m_sslControlString = "N/A";
 		      }

@@ -38,6 +38,7 @@
 #include <iostream>
 #include <limits>
 
+#include "Common/spot-on-common.h"
 #include "spot-on-crypt.h"
 #include "spot-on-misc.h"
 
@@ -3389,8 +3390,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 
       controlString = settings.value
 	("gui/sslControlString",
-	 "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH").
-	toString().trimmed();
+	 spoton_common::SSL_CONTROL_STRING).toString().trimmed();
     }
 
   protocols << "TlsV1_2"

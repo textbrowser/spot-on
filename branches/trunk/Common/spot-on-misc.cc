@@ -385,7 +385,7 @@ void spoton_misc::prepareDatabases(void)
 						      ** the transport.
 						      */
 		   "ssl_control_string TEXT NOT NULL DEFAULT "
-		   "'HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH', "
+		   "'%4', "
 		   "ssl_key_size INTEGER NOT NULL DEFAULT 2048, "
 		   "echo_mode TEXT NOT NULL, "
 		   "certificate BLOB NOT NULL, "
@@ -405,7 +405,8 @@ void spoton_misc::prepareDatabases(void)
 		   "passthrough INTEGER NOT NULL DEFAULT 0)").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
-	   arg(spoton_common::LANE_WIDTH_DEFAULT));
+	   arg(spoton_common::LANE_WIDTH_DEFAULT).
+	   arg(spoton_common::SSL_CONTROL_STRING));
 	query.exec("CREATE TABLE IF NOT EXISTS listeners_accounts ("
 		   "account_name TEXT NOT NULL, "
 		   "account_name_hash TEXT NOT NULL, " // Keyed hash.
@@ -511,7 +512,7 @@ void spoton_misc::prepareDatabases(void)
 		   "bytes_written INTEGER NOT NULL DEFAULT 0 "
 		   "CHECK (bytes_written >= 0), "
 		   "ssl_control_string TEXT NOT NULL DEFAULT "
-		   "'HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH', "
+		   "'%5', "
 		   "ssl_session_cipher TEXT, "
 		   "ssl_required INTEGER NOT NULL DEFAULT 1, "
 		   "account_name TEXT NOT NULL, "
@@ -548,7 +549,8 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
-	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM));
+	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
+	   arg(spoton_common::SSL_CONTROL_STRING));
 	query.exec("ALTER TABLE neighbors ADD waitforbyteswritten_msecs "
 		   "INTEGER NOT NULL DEFAULT 0");
       }
@@ -1965,8 +1967,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	  }
 
 	if(transport == "tcp")
-	  query.bindValue
-	    (26, "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH");
+	  query.bindValue(26, spoton_common::SSL_CONTROL_STRING);
 	else
 	  query.bindValue(26, "N/A");
 

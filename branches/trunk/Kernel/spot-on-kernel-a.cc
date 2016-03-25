@@ -137,6 +137,8 @@ QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
                                                       << 50000
                                                       << 75000
 						      << 20971520;
+QString spoton_common::SSL_CONTROL_STRING =
+  "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =
   QStringList() << "ftp" << "gopher" << "http" << "https";
 QStringList spoton_common::SPOTON_ENCRYPTION_KEY_NAMES =

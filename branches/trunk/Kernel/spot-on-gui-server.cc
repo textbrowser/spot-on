@@ -86,8 +86,7 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 	      QString sslCS
 		(spoton_kernel::
 		 setting("gui/sslControlString",
-			 "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH").
-		 toString());
+			 spoton_common::SSL_CONTROL_STRING).toString());
 
 	      configuration.setLocalCertificate(QSslCertificate(certificate));
 	      configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));

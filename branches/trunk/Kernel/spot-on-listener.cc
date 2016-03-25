@@ -257,7 +257,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   m_sslControlString = sslControlString.trimmed();
 
   if(m_sslControlString.isEmpty())
-    m_sslControlString = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+    m_sslControlString = spoton_common::SSL_CONTROL_STRING;
 
   m_transport = transport;
   m_useAccounts = useAccounts;
@@ -503,8 +503,7 @@ void spoton_listener::slotTimeout(void)
 		if(m_sslControlString.isEmpty())
 		  {
 		    if(m_keySize > 0 && m_transport == "tcp")
-		      m_sslControlString =
-			"HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+		      m_sslControlString = spoton_common::SSL_CONTROL_STRING;
 		    else
 		      m_sslControlString = "N/A";
 		  }
@@ -1072,8 +1071,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    if(m_transport == "tcp")
 	      {
 		if(m_keySize > 0)
-		  query.bindValue
-		    (30, "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH");
+		  query.bindValue(30, spoton_common::SSL_CONTROL_STRING);
 		else
 		  query.bindValue(30, "N/A");
 	      }

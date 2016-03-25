@@ -2575,7 +2575,7 @@ void spoton::slotSetListenerSSLControlString(void)
     sslCS = m_ui.listenersSslControlString->text().trimmed();
 
   if(sslCS.isEmpty())
-    sslCS = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+    sslCS = spoton_common::SSL_CONTROL_STRING;
 
   if(keySize <= 0 || transport != "TCP")
     sslCS = "N/A";
@@ -2657,7 +2657,7 @@ void spoton::slotSetNeighborSSLControlString(void)
     sslCS = m_ui.neighborsSslControlString->text().trimmed();
 
   if(sslCS.isEmpty())
-    sslCS = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+    sslCS = spoton_common::SSL_CONTROL_STRING;
 
   if(keySize <= 0 || transport != "TCP")
     sslCS = "N/A";

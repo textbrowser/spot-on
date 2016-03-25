@@ -77,6 +77,8 @@ QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
                                                       << 50000
                                                       << 75000
 						      << 20971520;
+QString spoton_common::SSL_CONTROL_STRING =
+  "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =
   QStringList() << "ftp" << "gopher" << "http" << "https";
 QStringList spoton_common::SPOTON_ENCRYPTION_KEY_NAMES =
@@ -2215,8 +2217,7 @@ spoton::spoton(void):QMainWindow()
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")) + 512);
   m_ui.sslControlString->setText
     (m_settings.value("gui/sslControlString",
-		      "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH").
-     toString());
+		      spoton_common::SSL_CONTROL_STRING).toString());
   m_ui.etpEncryptionKey->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
   m_ui.institutionName->setMaxLength
@@ -3214,7 +3215,7 @@ void spoton::slotAddListener(void)
 	    (13, crypt->encryptedThenHashed("stream", &ok).toBase64());
 
 	if(sslCS.isEmpty())
-	  sslCS = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+	  sslCS = spoton_common::SSL_CONTROL_STRING;
 
 	if(!m_ui.sslListener->isChecked() || transport != "tcp")
 	  sslCS = "N/A";
@@ -3585,7 +3586,7 @@ void spoton::slotAddNeighbor(void)
 	  }
 
 	if(sslCS.isEmpty())
-	  sslCS = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+	  sslCS = spoton_common::SSL_CONTROL_STRING;
 
 	if(!m_ui.requireSsl->isChecked() || transport != "tcp")
 	  sslCS = "N/A";
@@ -8953,7 +8954,7 @@ void spoton::slotSaveSslControlString(void)
   QString str(m_ui.sslControlString->text());
 
   if(str.trimmed().isEmpty())
-    str = "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
+    str = spoton_common::SSL_CONTROL_STRING;
 
   m_ui.listenersSslControlString->setText(str.trimmed());
   m_ui.neighborsSslControlString->setText(str.trimmed());
