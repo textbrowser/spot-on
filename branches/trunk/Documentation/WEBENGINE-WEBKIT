@@ -3,10 +3,17 @@ Qt 4.x
 DEFINES += SPOTON_WEBKIT_ENABLED
 QT += webkit
 
-Qt 5.x
+Qt 5.x (< 5.6)
 
 DEFINES += SPOTON_WEBENGINE_ENABLED
 QT += webenginewidgets
 
 DEFINES += SPOTON_WEBKIT_ENABLED
 QT += webkit webkitwidgets
+
+Qt 5.x (>= 5.6)
+
+Windows requires a Microsoft compiler.
+
+DEFINES += SPOTON_WEBENGINE_ENABLED
+QT += webenginewidgets
