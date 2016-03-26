@@ -3499,7 +3499,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 #endif
 
 	      if(cipher.isNull())
-		cipher = QSslCipher(next);
+		cipher = QSslCipher(next, QSsl::UnknownProtocol);
 
 	      if(!cipher.isNull())
 		list.append(cipher);
