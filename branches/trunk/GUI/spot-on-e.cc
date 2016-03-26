@@ -1083,11 +1083,18 @@ void spoton::playSong(const QString &name)
     return;
 
 #if QT_VERSION >= 0x050000
-  QMediaPlayer *player = findChild<QMediaPlayer *> ();
+  QFileInfo fileInfo;
   QString str
     (QDir::cleanPath(QCoreApplication::applicationDirPath() +
 		     QDir::separator() + "Sounds" + QDir::separator() +
 		     name));
+
+  fileInfo.setFile(str);
+
+  if(!fileInfo.isReadable() || fileInfo.size() < 8192)
+    return;
+
+  QMediaPlayer *player = findChild<QMediaPlayer *> ();
 
   if(player)
     player->deleteLater();
