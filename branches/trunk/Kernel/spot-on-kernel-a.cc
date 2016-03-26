@@ -749,6 +749,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 					const QByteArray &,
 					const QString &,
 					const QByteArray &,
+					const QByteArray &,
 					const QByteArray &)),
 	      this,
 	      SLOT(slotBuzzReceivedFromUI(const QByteArray &,
@@ -758,6 +759,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 					  const QByteArray &,
 					  const QByteArray &,
 					  const QString &,
+					  const QByteArray &,
 					  const QByteArray &,
 					  const QByteArray &)));
       connect(m_guiServer,
@@ -4074,7 +4076,8 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 					   const QByteArray &sendMethod,
 					   const QString &messageType,
 					   const QByteArray &hashKey,
-					   const QByteArray &hashType)
+					   const QByteArray &hashType,
+					   const QByteArray &dateTime)
 {
   QByteArray data;
   QByteArray messageCode;
@@ -4102,7 +4105,8 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
       else
 	stream << name
 	       << id
-	       << message;
+	       << message
+	       << dateTime;
 
       if(stream.status() != QDataStream::Ok)
 	ok = false;

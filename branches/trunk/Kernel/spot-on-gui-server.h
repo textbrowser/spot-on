@@ -121,7 +121,8 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
 			  const QByteArray &sendMethod,
 			  const QString &messageType,
 			  const QByteArray &hashKey,
-			  const QByteArray &hashType);
+			  const QByteArray &hashType,
+			  const QByteArray &dateTime);
   void callParticipant(const QByteArray &keyType,
 		       const qint64 oid);
   void callParticipantUsingForwardSecrecy(const QByteArray &keyType,

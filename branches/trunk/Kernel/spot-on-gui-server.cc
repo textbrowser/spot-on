@@ -335,8 +335,9 @@ void spoton_gui_server::slotReadyRead(void)
 		   QByteArray(),
 		   "0040a",
 		   QByteArray::fromBase64(list.value(4)),
-		   QByteArray::fromBase64(list.value(5)));
-	      else if(list.size() == 8)
+		   QByteArray::fromBase64(list.value(5)),
+		   QByteArray());
+	      else if(list.size() == 9)
 		emit buzzReceivedFromUI
 		  (QByteArray::fromBase64(list.value(0)),
 		   QByteArray::fromBase64(list.value(1)),
@@ -346,7 +347,8 @@ void spoton_gui_server::slotReadyRead(void)
 		   QByteArray::fromBase64(list.value(5)),
 		   "0040b",
 		   QByteArray::fromBase64(list.value(6)),
-		   QByteArray::fromBase64(list.value(7)));
+		   QByteArray::fromBase64(list.value(7)),
+		   QByteArray::fromBase64(list.value(8)));
 	    }
 	  else if(message.
 		  startsWith("call_participant_using_forward_secrecy_"))

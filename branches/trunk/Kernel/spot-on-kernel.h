@@ -240,7 +240,8 @@ class spoton_kernel: public QObject
 			      const QByteArray &sendMethod,
 			      const QString &messageType,
 			      const QByteArray &hashKey,
-			      const QByteArray &hashType);
+			      const QByteArray &hashType,
+			      const QByteArray &dateTime);
   void slotCallParticipant(const QByteArray &publicKeyHash,
 			   const QByteArray &gemini,
 			   const QByteArray &geminiHashKey);

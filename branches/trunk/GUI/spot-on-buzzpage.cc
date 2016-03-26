@@ -247,6 +247,9 @@ void spoton_buzzpage::slotSendMessage(void)
     message.append(m_hashKey.toBase64());
     message.append("_");
     message.append(m_hashType.toBase64());
+    message.append("_");
+    message.append(QDateTime::currentDateTime().toUTC().
+		   toString("MMddyyyyhhmmss").toLatin1().toBase64());
     message.append("\n");
 
     if(m_kernelSocket->write(message.constData(),
@@ -274,7 +277,7 @@ void spoton_buzzpage::slotSendMessage(void)
 
 void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
 {
-  if(list.size() != 3)
+  if(list.size() != 4)
     return;
 
   QByteArray id
@@ -295,6 +298,9 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
     (list.value(0).mid(0, spoton_common::NAME_MAXIMUM_LENGTH).trimmed());
   QByteArray message(list.value(2));
   QDateTime now(QDateTime::currentDateTime());
+  QDateTime dateTime
+    (QDateTime::fromString(list.value(3).constData(),
+			   "MMddyyyyhhmmss"));
   QString msg("");
 
   if(name.isEmpty() || name == "unknown")
@@ -304,13 +310,22 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
     message = "unknown";
 
   msg.append
-    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>]:").
      arg(now.toString("MM")).
      arg(now.toString("dd")).
      arg(now.toString("yyyy")).
      arg(now.toString("hh")).
      arg(now.toString("mm")).
      arg(now.toString("ss")));
+  msg.append
+    (QString("[%1/%2/%3 %4:%5"
+	     "<font color=grey>:%6</font>] ").
+     arg(dateTime.toString("MM")).
+     arg(dateTime.toString("dd")).
+     arg(dateTime.toString("yyyy")).
+     arg(dateTime.toString("hh")).
+     arg(dateTime.toString("mm")).
+     arg(dateTime.toString("ss")));
   msg.append
     (QString("<font color=blue>%1: </font>").
      arg(QString::fromUtf8(name.constData(),

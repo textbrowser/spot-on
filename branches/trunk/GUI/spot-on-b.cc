@@ -247,7 +247,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  QByteArray bytes(list.value(0));
 		  QDataStream stream(&bytes, QIODevice::ReadOnly);
 		  QList<QByteArray> list;
-		  int end = 4;
+		  int end = 5;
 
 		  for(int i = 0; i < end; i++)
 		    {
@@ -266,7 +266,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(a == "0040a")
 			end = 3;
 		      else if(a == "004b")
-			end = 4;
+			end = 5;
 		    }
 
 		  if(!list.isEmpty())
@@ -274,7 +274,7 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  if(list.size() == 2)
 		    page->userStatus(list);
-		  else if(list.size() == 3)
+		  else if(list.size() == 4)
 		    page->appendMessage(list);
 		}
 	    }
