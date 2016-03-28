@@ -2709,15 +2709,13 @@ QByteArray spoton_crypt::randomBytes(const size_t size,
   if(size <= 0)
     return random;
 
-  unsigned char *buffer = static_cast<unsigned char *>
-    (malloc(sizeof(unsigned char) * size));
+  char *buffer = static_cast<char *> (malloc(size));
 
   if(!buffer)
     return random;
 
   gcry_randomize(buffer, size, level);
-  random = QByteArray
-    (reinterpret_cast<char *> (buffer), static_cast<int> (size));
+  random = QByteArray(buffer, static_cast<int> (size));
   free(buffer);
   return random;
 }
