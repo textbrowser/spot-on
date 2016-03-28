@@ -230,6 +230,14 @@ class spoton_crypt
 	    const QString &modeOfOperation);
   void initializePrivateKeyContainer(bool *ok);
   void setHashKey(const QByteArray &hashKey);
+  static QByteArray publicKeyEncryptMcEliece(const QByteArray &data,
+					     const QByteArray &publicKey,
+					     bool *ok);
+  static QByteArray publicKeyEncryptNTRU(const QByteArray &data,
+					 const QByteArray &publicKey,
+					 bool *ok);
+  static QByteArray randomBytes(const size_t size,
+				const enum gcry_random_level level);
   static bool setInitializationVector(QByteArray &iv,
 				      const int algorithm,
 				      gcry_cipher_hd_t cipherHandle);
@@ -238,12 +246,6 @@ class spoton_crypt
 				  const QHostAddress &address,
 				  const long days,
 				  QString &error);
-  static QByteArray publicKeyEncryptMcEliece(const QByteArray &data,
-					     const QByteArray &publicKey,
-					     bool *ok);
-  static QByteArray publicKeyEncryptNTRU(const QByteArray &data,
-					 const QByteArray &publicKey,
-					 bool *ok);
 };
 
 #endif

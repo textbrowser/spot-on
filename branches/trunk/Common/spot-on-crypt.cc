@@ -2701,26 +2701,35 @@ QString spoton_crypt::cipherType(void) const
   return m_cipherType;
 }
 
+QByteArray spoton_crypt::randomBytes(const size_t size,
+				     const enum gcry_random_level level)
+{
+  QByteArray random;
+
+  if(size <= 0)
+    return random;
+
+  unsigned char *buffer = static_cast<unsigned char *>
+    (malloc(sizeof(unsigned char) * size));
+
+  if(!buffer)
+    return random;
+
+  gcry_randomize(buffer, size, level);
+  random = QByteArray
+    (reinterpret_cast<char *> (buffer), static_cast<int> (size));
+  free(buffer);
+  return random;
+}
+
 QByteArray spoton_crypt::strongRandomBytes(const size_t size)
 {
-  QByteArray random(static_cast<int> (size), 0);
-
-  gcry_fast_random_poll();
-  gcry_randomize(random.data(),
-		 static_cast<size_t> (random.length()),
-		 GCRY_STRONG_RANDOM);
-  return random;
+  return randomBytes(size, GCRY_STRONG_RANDOM);
 }
 
 QByteArray spoton_crypt::veryStrongRandomBytes(const size_t size)
 {
-  QByteArray random(static_cast<int> (size), 0);
-
-  gcry_fast_random_poll();
-  gcry_randomize(random.data(),
-		 static_cast<size_t> (random.length()),
-		 GCRY_VERY_STRONG_RANDOM);
-  return random;
+  return randomBytes(size, GCRY_VERY_STRONG_RANDOM);
 }
 
 size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
@@ -2744,13 +2753,7 @@ size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
 
 QByteArray spoton_crypt::weakRandomBytes(const size_t size)
 {
-  QByteArray random(static_cast<int> (size), 0);
-
-  gcry_fast_random_poll();
-  gcry_randomize(random.data(),
-		 static_cast<size_t> (random.length()),
-		 GCRY_WEAK_RANDOM);
-  return random;
+  return randomBytes(size, GCRY_WEAK_RANDOM);
 }
 
 bool spoton_crypt::isValidSignature(const QByteArray &data,
