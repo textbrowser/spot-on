@@ -3635,7 +3635,8 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1,
 	(static_cast<unsigned long> (b.at(i)));
 
       for(size_t j = 0; j < ba1.size(); j++)
-	rc |= ba1[j] ^ ba2[j];
+	rc |= static_cast<unsigned long> (ba1[j]) ^
+	  static_cast<unsigned long> (ba2[j]);
     }
 
   return rc == 0; /*
