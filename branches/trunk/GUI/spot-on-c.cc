@@ -1091,11 +1091,7 @@ void spoton::slotTransmit(void)
 	if(ok)
 	  query.bindValue
 	    (7, crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(qMin(m_ui.pulseSize->
-					     value(),
-					     spoton_misc::
-					     minimumNeighborLaneWidth())),
+	     encryptedThenHashed(QByteArray::number(m_ui.pulseSize->value()),
 				 &ok).toBase64());
 
 	query.bindValue(8, "paused");

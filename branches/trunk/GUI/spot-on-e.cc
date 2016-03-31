@@ -1527,11 +1527,8 @@ void spoton::slotShareStarBeam(void)
 	if(ok)
 	  query.bindValue
 	    (6, crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(qMin(spoton_common::
-					     ELEGANT_STARBEAM_SIZE,
-					     spoton_misc::
-					     minimumNeighborLaneWidth())),
+	     encryptedThenHashed(QByteArray::number(spoton_common::
+						    ELEGANT_STARBEAM_SIZE),
 				 &ok).toBase64());
 
 	query.bindValue(7, 2.500);
