@@ -29,6 +29,10 @@
 
 spoton_tabwidget::spoton_tabwidget(QWidget *parent):QTabWidget(parent)
 {
+#ifdef Q_OS_MAC
+  setStyleSheet("QTabWidget::tab-bar {"
+		"alignment: left;}");
+#endif
 }
 
 spoton_tabwidget::~spoton_tabwidget()

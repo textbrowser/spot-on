@@ -2872,7 +2872,7 @@ spoton::spoton(void):QMainWindow()
     {
       QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
 
-      hash["enabled"] = m_ui.tab->isTabEnabled(i);
+      hash["enabled"] = true;
       m_tabWidgetsProperties[i] = hash;
     }
 
