@@ -67,7 +67,7 @@ void spoton::slotShowMainTabContextMenu(const QPoint &point)
   action = menu.addAction(tr("&Close Page"), this, SLOT(slotCloseTab(void)));
   action->setEnabled(enabled);
   action->setProperty("name", name);
-  menu.exec(m_ui.tab->mapToGlobal(point));
+  menu.exec(m_ui.tab->tabBar()->mapToGlobal(point));
 }
 
 void spoton::slotCloseTab(void)

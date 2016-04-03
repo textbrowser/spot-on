@@ -2633,7 +2633,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.neighbors->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.participants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.received->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.tab->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.tab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.transmitted->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.transmittedMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.urlParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -2669,7 +2669,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
-  connect(m_ui.tab,
+  connect(m_ui.tab->tabBar(),
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowMainTabContextMenu(const QPoint &)));
