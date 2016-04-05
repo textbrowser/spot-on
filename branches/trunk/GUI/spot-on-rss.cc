@@ -1916,9 +1916,6 @@ void spoton_rss::slotImport(void)
 		  tr("Please note that the URL-import process may "
 		     "require a considerable amount of time to complete."));
 
-  if(spoton::instance())
-    spoton::instance()->populateUrlDistillers();
-
   QProgressDialog *progress = new QProgressDialog(this);
 
 #ifdef Q_OS_MAC
