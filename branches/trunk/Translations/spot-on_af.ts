@@ -7478,31 +7478,31 @@ If not checked, the neighbor will be terminated after some internal timer expire
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="207"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2579"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2681"/>
         <source>Copy selected &amp;link.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="211"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2582"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2684"/>
         <source>Delete &amp;all feeds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="214"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2584"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2686"/>
         <source>Delete &amp;selected feed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="218"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2587"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2689"/>
         <source>&amp;Refresh table.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="222"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2590"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2692"/>
         <source>&amp;Schedule selected feed for update.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7557,9 +7557,9 @@ If not checked, the neighbor will be terminated after some internal timer expire
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1523"/>
-        <location filename="../GUI/spot-on-rss.cc" line="1905"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2099"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2818"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1906"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2201"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2920"/>
         <source>%1: Confirmation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7574,57 +7574,57 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1903"/>
-        <source>Did you prepare your databases and distillers?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1914"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1984"/>
         <source>%1: Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1916"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1986"/>
         <source>Please note that the URL-import process may require a considerable amount of time to complete.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1929"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1996"/>
         <source>Importing URLs. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1933"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2000"/>
         <source>%1: Importing URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2097"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2199"/>
         <source>Are you sure that you wish to purge obsolete links?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2158"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2260"/>
         <source>Populating...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2162"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2264"/>
         <source>%1: Populating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2656"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2758"/>
         <source>0 RSS Feeds | 0 Hidden URLs | 0 Imported URLs | 0 Not Imported URLs | 0 Indexed URLs | 0 Not Indexed URLs | 0 Total URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2640"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2742"/>
         <source>%1 RSS Feeds | %2 Hidden URLs | %3 Imported URLs | %4 Not Imported URLs | %5 Indexed URLs | %6 Not Indexed URLs | %7 Total URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2815"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1903"/>
+        <source>Did you prepare your databases and distillers? Declined URLs will be categorized as malformed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../GUI/spot-on-rss.cc" line="2917"/>
         <source>Are you sure that you wish to remove %1?</source>
         <translation type="unfinished"></translation>
     </message>
