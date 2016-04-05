@@ -1900,7 +1900,8 @@ void spoton_rss::slotImport(void)
 #endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Did you prepare your databases and distillers?"));
+  mb.setText(tr("Did you prepare your databases and distillers? "
+		"Declined URLs will be categorized as malformed."));
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
