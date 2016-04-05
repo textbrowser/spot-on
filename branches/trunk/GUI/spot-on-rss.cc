@@ -1910,6 +1910,75 @@ void spoton_rss::slotImport(void)
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
 
+  QString connectionName("");
+
+  /*
+  ** Now, retrieve polarizers.
+  */
+
+  QList<QPair<QUrl, QString> > polarizers;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT domain, permission FROM distillers WHERE "
+		      "direction_hash = ?");
+	query.bindValue(0, crypt->keyedHash(QByteArray("shared"),
+					    &ok).toBase64());
+
+	if(ok && query.exec())
+	  while(query.next())
+	    {
+	      QByteArray domain;
+	      QByteArray permission;
+	      bool ok = true;
+
+	      domain = crypt->
+		decryptedAfterAuthenticated(QByteArray::
+					    fromBase64(query.
+						       value(0).
+						       toByteArray()),
+					    &ok);
+
+	      if(ok)
+		permission = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(1).
+							 toByteArray()),
+					      &ok);
+
+	      if(ok)
+		{
+		  QUrl url(QUrl::fromUserInput(domain));
+
+		  if(!url.isEmpty())
+		    if(url.isValid())
+		      {
+			QPair<QUrl, QString> pair;
+
+			pair.first = url;
+			pair.second = permission.constData();
+			polarizers.append(pair);
+		      }
+		}
+
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   QMessageBox::information
 		 (this, tr("%1: Information").
 		  arg(SPOTON_APPLICATION_NAME),
@@ -1936,8 +2005,6 @@ void spoton_rss::slotImport(void)
   progress->repaint();
   QApplication::processEvents();
 #endif
-
-  QString connectionName("");
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
