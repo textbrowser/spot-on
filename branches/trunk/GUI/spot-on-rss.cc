@@ -2081,11 +2081,48 @@ void spoton_rss::slotImport(void)
 
 	      if(ok)
 		{
+		  /*
+		  ** Apply polarizers.
+		  */
+
+		  ok = false;
+
+		  for(int i = 0; i < polarizers.size(); i++)
+		    {
+		      QString type(polarizers.at(i).second);
+		      QUrl u1(polarizers.at(i).first);
+		      QUrl u2(QUrl::fromEncoded(bytes));
+
+		      if(type == "accept")
+			{
+			  if(spoton_misc::urlToEncoded(u2).
+			     startsWith(spoton_misc::urlToEncoded(u1)))
+			    {
+			      ok = true;
+			      break;
+			    }
+			}
+		      else
+			{
+			  if(spoton_misc::urlToEncoded(u2).
+			     startsWith(spoton_misc::urlToEncoded(u1)))
+			    {
+			      ok = false;
+			      break;
+			    }
+			}
+		    }
+		}
+
+	      if(ok)
+		{
 		  QUrl url(QUrl::fromEncoded(bytes));
 
 		  if(!url.isEmpty() && url.isValid())
 		    list << url;
 		}
+	      else
+		list.clear();
 
 	      bool imported = false;
 
