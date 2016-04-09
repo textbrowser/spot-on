@@ -199,9 +199,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  this,
 	  SLOT(slotDownloadFeedImage(const QUrl &, const QUrl &)));
   m_originalFindPalette = m_ui.find->palette();
-#if QT_VERSION >= 0x040700
   m_ui.find->setPlaceholderText(tr("Find Text"));
-#endif
   QMenu *menu = new QMenu(this);
 
   menu->addAction(tr("Copy selected &link."),

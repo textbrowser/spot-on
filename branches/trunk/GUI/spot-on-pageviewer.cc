@@ -95,9 +95,7 @@ spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
 	  SLOT(slotCustomContextMenuRequested(const QPoint &)));
 #endif
   m_originalFindPalette = m_ui.find->palette();
-#if QT_VERSION >= 0x040700
   m_ui.find->setPlaceholderText(tr("Find Text"));
-#endif
   m_ui.revision->setEnabled(false);
   setAttribute(Qt::WA_DeleteOnClose);
   setWindowTitle(tr("%1: Page Viewer").arg(SPOTON_APPLICATION_NAME));
