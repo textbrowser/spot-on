@@ -99,6 +99,9 @@
    <property name="text">
     <string>&amp;Close</string>
    </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
   </action>
   <action name="action_Empty_Log">
    <property name="text">
