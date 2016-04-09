@@ -562,7 +562,9 @@ spoton::spoton(void):QMainWindow()
   setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
+#if QT_VERSION >= 0x050200
   m_ui.message->setPlaceholderText(tr("Please type a message..."));
+#endif
   m_ui.search->setPlaceholderText(tr("Search"));
   m_optionsWindow = new QMainWindow(0);
   m_statisticsWindow = new QMainWindow(0);

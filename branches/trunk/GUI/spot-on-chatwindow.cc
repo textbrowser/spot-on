@@ -120,7 +120,9 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
     ui.icon->setToolTip(status.trimmed());
 
   ui.line->setVisible(false);
+#if QT_VERSION >= 0x050200
   ui.message->setPlaceholderText(tr("Please type a message..."));
+#endif
 
   if(participant.trimmed().isEmpty())
     ui.name->setText("unknown");
