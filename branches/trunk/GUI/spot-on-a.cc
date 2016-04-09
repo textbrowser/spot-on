@@ -9693,7 +9693,7 @@ void spoton::slotAbout(void)
   QPixmap pixmap(":/Logo/spot-on-logo.png");
 
   pixmap = pixmap.scaled
-    (QSize(128, 128), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
   str = "Please visit <a href=\"http://spot-on.sourceforge.net\">"
     "spot-on.sourceforge.net</a> for more information.";
   mb.setIconPixmap(pixmap);
