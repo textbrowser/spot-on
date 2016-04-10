@@ -2797,9 +2797,13 @@ void spoton::prepareContextMenuMirrors(void)
 		      arg(spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE),
 		      this,
 		      SLOT(slotReplayMessages(void)));
-      menu->addAction(tr("Share a &StarBeam."),
-		     this,
-		     SLOT(slotShareStarBeam(void)));
+      menu->addAction(QIcon(QString(":/%1/starbeam.png").
+			    arg(m_settings.value("gui/iconSet",
+						 "nouve").
+				toString().toLower())),
+		      tr("Share a &StarBeam."),
+		      this,
+		      SLOT(slotShareStarBeam(void)));
       menu->addSeparator();
       menu->addAction
 	(tr("Call via Forward &Secrecy credentials."),
