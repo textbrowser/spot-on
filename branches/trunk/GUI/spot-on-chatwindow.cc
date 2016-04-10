@@ -99,10 +99,6 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 	  SIGNAL(toggled(bool)),
 	  ui.table,
 	  SLOT(setVisible(bool)));
-  connect(ui.messages,
-	  SIGNAL(anchorClicked(const QUrl &)),
-	  this,
-	  SLOT(slotUrlLinkClicked(const QUrl &)));
 
   if(participant.trimmed().isEmpty())
     {

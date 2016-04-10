@@ -516,9 +516,12 @@ void spoton::slotReceivedKernelMessage(void)
 			    }
 			}
 
+		      if(chat)
+			chat->setSMPVerified(false);
+
 		      values = smp->nextStep(values, &ok, &passed);
 
-		      if(smp->step() == 4 || smp->step() == 5)
+		      if(!ok || smp->step() == 4 || smp->step() == 5)
 			{
 			  msg.clear();
 			  msg.append
@@ -531,20 +534,34 @@ void spoton::slotReceivedKernelMessage(void)
 			     arg(now.toString("mm")).
 			     arg(now.toString("ss")));
 
-			  if(passed)
-			    msg.append
-			      (tr("<font color=green>"
-				  "<i>SMP verification with %1...%2 "
-				  "has succeeded.</i></font>").
-			       arg(hash.toBase64().mid(0, 16).
-				   constData()).
-			       arg(hash.toBase64().right(16).
-				   constData()));
+			  if(smp->step() == 4 || smp->step() == 5)
+			    {
+			      if(passed)
+				msg.append
+				  (tr("<font color=green>"
+				      "<i>SMP verification with %1...%2 "
+				      "has succeeded.</i></font>").
+				   arg(hash.toBase64().mid(0, 16).
+				       constData()).
+				   arg(hash.toBase64().right(16).
+				       constData()));
+			      else
+				msg.append
+				  (tr("<font color=red>"
+				      "<i>SMP verification with %1...%2 "
+				      "has failed.</i></font>").
+				   arg(hash.toBase64().mid(0, 16).
+				       constData()).
+				   arg(hash.toBase64().right(16).
+				       constData()));
+			    }
 			  else
 			    msg.append
 			      (tr("<font color=red>"
 				  "<i>SMP verification with %1...%2 "
-				  "has failed.</i></font>").
+				  "experienced a protocol failure. "
+				  "The state machine has been reset."
+				  "</i></font>").
 			       arg(hash.toBase64().mid(0, 16).
 				   constData()).
 			       arg(hash.toBase64().right(16).
@@ -568,10 +585,9 @@ void spoton::slotReceivedKernelMessage(void)
 			  ** Let's reset the SMP state to s0.
 			  */
 
-			  smp->initialize();
+			  if(!ok)
+			    smp->initialize();
 			}
-		      else if(chat)
-			chat->setSMPVerified(false);
 
 		      if(ok)
 			sendSMPLinkToKernel(values, keyType, oid);

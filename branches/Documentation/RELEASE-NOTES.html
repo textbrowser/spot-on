@@ -10,6 +10,7 @@
 <li>Poptastic chat messaging. Must identify the correct account.</li>
 <li>Prepare and review condition variables in spot-on-smp.cc.</li>
 <li>Prevent e-mails to temporary participants.</li>
+<li>Removed duplicate signals from messaging popup objects.</li>
 <li>Removed empty zorders from UI files.</li>
 <li>Removed the requirement that StarBeam pulses must be less than or equal to the least neighbor lane width.</li>
 <li>The display repaints portions of itself according to database activity. Eliminated non-zero-probability of missed opportunities.</li>
@@ -20,10 +21,10 @@
 <ol>
 <li>Disable StarBeam write() buffering. Issue fsync() on Unix systems.</li>
 <li>Do not assume integer sizes (spoton_crypt::decrypted()).</li>
+<li>Initialize the SMP state machine to s0 if an error occurs during messaging verification.</li>
 <li>Modified StarBeam position database synchronization to NORMAL.</li>
 <li>Proper parameter types to gcry_randomize().
 <li>Read StarBeam pulses from dedicated threads.</li>
-<li>Reset SMP machine states to s0 after correct or incorrect verifications (s4, s5).</li>
 <li>Signal handlers must only call safe functions, save for a Windows-specific block in the kernel.</li>
 </ol>
 <b>New</b>
