@@ -563,6 +563,12 @@ void spoton::slotReceivedKernelMessage(void)
 				chat->activateWindow();
 #endif
 			    }
+
+			  /*
+			  ** Let's reset the SMP state to s0.
+			  */
+
+			  smp->initialize();
 			}
 		      else if(chat)
 			chat->setSMPVerified(false);
