@@ -457,7 +457,42 @@ void spoton::slotReceivedKernelMessage(void)
 		      spoton_smp *smp = m_smps.value(hash.toBase64(), 0);
 
 		      if(!smp)
-			continue;
+			{
+			  QDateTime now(QDateTime::currentDateTime());
+			  QString msg("");
+
+			  msg.append
+			    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+				     "</font>] ").
+			     arg(now.toString("MM")).
+			     arg(now.toString("dd")).
+			     arg(now.toString("yyyy")).
+			     arg(now.toString("hh")).
+			     arg(now.toString("mm")).
+			     arg(now.toString("ss")));
+			  msg.append(tr("<i>Unable to respond because "
+					"an SMP object is not defined for "
+					"%1...%2.</i>").
+				     arg(hash.toBase64().mid(0, 16).
+					 constData()).
+				     arg(hash.toBase64().right(16).
+					 constData()));
+
+			  if(chat)
+			    {
+			      chat->append(msg);
+#ifdef Q_OS_WIN32
+			      if(chat->isVisible())
+				chat->activateWindow();
+#endif
+			    }
+
+			  m_ui.messages->append(msg);
+			  m_ui.messages->verticalScrollBar()->setValue
+			    (m_ui.messages->verticalScrollBar()->maximum());
+			  playSong("receive.wav");
+			  continue;
+			}
 
 		      QList<QTableWidgetItem *> items
 			(findItems(m_ui.participants,
