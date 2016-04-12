@@ -2710,7 +2710,7 @@ void spoton::prepareContextMenuMirrors(void)
 	 tr("&Add participant as friend."),
 	 this, SLOT(slotShareChatPublicKeyWithParticipant(void)));
       menu->addSeparator();
-      menu->addAction(tr("Chat &popup."), this,
+      menu->addAction(tr("Chat &Popup..."), this,
 		      SLOT(slotChatPopup(void)));
       menu->addSeparator();
       menu->addAction(QIcon(":/generic/repleo-chat.png"),
@@ -2776,7 +2776,7 @@ void spoton::prepareContextMenuMirrors(void)
 		      tr("&Remove participant(s)."),
 		      this, SLOT(slotRemoveParticipants(void)));
       menu->addSeparator();
-      action = menu->addAction(tr("&Rename participant."),
+      action = menu->addAction(tr("&Rename Participant..."),
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "chat");
       menu->addSeparator();
@@ -2786,7 +2786,7 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("&Reset the SMP machine's internal state to s0."),
 		      this,
 		      SLOT(slotInitializeSMP(void)));
-      menu->addAction(tr("&Set an SMP secret."),
+      menu->addAction(tr("&Set an SMP Secret..."),
 		      this,
 		      SLOT(slotPrepareSMP(void)));
       menu->addAction(tr("&Verify the SMP secret."),
@@ -2808,7 +2808,7 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction
 	(tr("Call via Forward &Secrecy credentials."),
 	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
-      action = menu->addAction(tr("Initiate Forward &Secrecy exchange(s)."),
+      action = menu->addAction(tr("Initiate Forward &Secrecy Exchange(s)..."),
 			       this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "chat");
       action = menu->addAction(tr("Purge Forward &Secrecy key pair."),
@@ -2869,11 +2869,11 @@ void spoton::prepareContextMenuMirrors(void)
 		      tr("&Remove participant(s)."),
 		      this, SLOT(slotRemoveEmailParticipants(void)));
       menu->addSeparator();
-      action = menu->addAction(tr("&Rename participant."),
+      action = menu->addAction(tr("&Rename Participant..."),
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
       menu->addSeparator();
-      action = menu->addAction(tr("Initiate Forward &Secrecy exchange(s)."),
+      action = menu->addAction(tr("Initiate Forward &Secrecy Exchange(s)..."),
 			       this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "email");
       action = menu->addAction(tr("Purge Forward &Secrecy key pair."),
@@ -2922,7 +2922,7 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotCopyAEMagnet(void)));
       action->setProperty("from", "listeners");
       menu->addSeparator();
-      menu->addAction(tr("Set &SSL Control String"),
+      menu->addAction(tr("Set &SSL Control String..."),
 		      this, SLOT(slotSetListenerSSLControlString(void)));
       m_ui.listenersActionMenu->setMenu(menu);
       connect(m_ui.listenersActionMenu,
@@ -2978,7 +2978,7 @@ void spoton::prepareContextMenuMirrors(void)
 		      tr("Share &URL Public Key Pair"),
 		      this, SLOT(slotShareURLPublicKey(void)));
       menu->addSeparator();
-      menu->addAction(tr("&Assign New Remote IP Information"),
+      menu->addAction(tr("&Assign New Remote IP Information..."),
 		      this, SLOT(slotAssignNewIPToNeighbor(void)));
       menu->addAction(tr("&Connect"),
 		      this, SLOT(slotConnectNeighbor(void)));
@@ -2991,7 +2991,7 @@ void spoton::prepareContextMenuMirrors(void)
 		      this, SLOT(slotDisconnectAllNeighbors(void)));
       menu->addSeparator();
       menu->addAction
-	(tr("&Authenticate Account"),
+	(tr("&Authenticate Account..."),
 	 this,
 	 SLOT(slotAuthenticate(void)));
       menu->addAction(tr("&Reset Account Information"),
@@ -3027,12 +3027,12 @@ void spoton::prepareContextMenuMirrors(void)
       action = menu->addAction(tr("&Copy Adaptive Echo Magnet"),
 			       this, SLOT(slotCopyAEMagnet(void)));
       action->setProperty("from", "neighbors");
-      menu->addAction(tr("&Set Adaptive Echo Token Information"),
+      menu->addAction(tr("&Set Adaptive Echo Token Information..."),
 		      this, SLOT(slotSetAETokenInformation(void)));
       menu->addAction(tr("&Reset Adaptive Echo Token Information"),
 		      this, SLOT(slotResetAETokenInformation(void)));
       menu->addSeparator();
-      menu->addAction(tr("Set &SSL Control String"),
+      menu->addAction(tr("Set &SSL Control String..."),
 		      this, SLOT(slotSetNeighborSSLControlString(void)));
       menu->addSeparator();
 
@@ -3102,7 +3102,7 @@ void spoton::prepareContextMenuMirrors(void)
 			       SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "received");
       menu->addSeparator();
-      menu->addAction(tr("Discover &Missing Links"), this,
+      menu->addAction(tr("Discover &Missing Links..."), this,
 		      SLOT(slotDiscoverMissingLinks(void)));
       m_ui.receivedActionMenu->setMenu(menu);
       connect(m_ui.receivedActionMenu,
@@ -3137,9 +3137,9 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("&Duplicate Magnet"),
 		      this, SLOT(slotDuplicateTransmittedMagnet(void)));
       menu->addSeparator();
-      menu->addAction(tr("Set &Pulse Size"), this,
+      menu->addAction(tr("Set &Pulse Size..."), this,
 		      SLOT(slotSetSBPulseSize(void)));
-      menu->addAction(tr("Set &Read Interval"), this,
+      menu->addAction(tr("Set &Read Interval..."), this,
 		      SLOT(slotSetSBReadInterval(void)));
       m_ui.transmittedActionMenu->setMenu(menu);
       connect(m_ui.transmittedActionMenu,
@@ -3170,7 +3170,7 @@ void spoton::prepareContextMenuMirrors(void)
 		      tr("&Remove participant(s)."),
 		      this, SLOT(slotRemoveUrlParticipants(void)));
       menu->addSeparator();
-      action = menu->addAction(tr("&Rename participant."),
+      action = menu->addAction(tr("&Rename Participant..."),
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "url");
       m_ui.urlActionMenu->setMenu(menu);

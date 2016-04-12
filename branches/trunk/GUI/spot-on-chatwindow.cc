@@ -136,7 +136,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   menu->addAction(tr("&Reset the SMP machine's internal state to s0."),
 		  this,
 		  SLOT(slotInitializeSMP(void)));
-  menu->addAction(tr("&Set an SMP secret."),
+  menu->addAction(tr("&Set an SMP Secret..."),
 		  this,
 		  SLOT(slotPrepareSMP(void)));
   menu->addAction(tr("&Verify the SMP secret."),

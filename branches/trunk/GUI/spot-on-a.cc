@@ -6851,12 +6851,12 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     tr("&Remove participant(s)."),
 		     this, SLOT(slotRemoveEmailParticipants(void)));
       menu.addSeparator();
-      action = menu.addAction(tr("&Rename participant."),
+      action = menu.addAction(tr("&Rename Participant..."),
 			      this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
       menu.addSeparator();
       action = menu.addAction
-	(tr("Initiate Forward &Secrecy exchange(s)."),
+	(tr("Initiate Forward &Secrecy Exchange(s)..."),
 	 this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "email");
       action = menu.addAction
@@ -6896,7 +6896,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addAction(tr("&Half Echo"),
 		     this, SLOT(slotListenerHalfEcho(void)));
       menu.addSeparator();
-      menu.addAction(tr("Set &SSL Control String"),
+      menu.addAction(tr("Set &SSL Control String..."),
 		     this, SLOT(slotSetListenerSSLControlString(void)));
       menu.exec(m_ui.listeners->mapToGlobal(point));
     }
@@ -6926,7 +6926,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     tr("Share &URL Public Key Pair"),
 		     this, SLOT(slotShareURLPublicKey(void)));
       menu.addSeparator();
-      menu.addAction(tr("&Assign New Remote IP Information"),
+      menu.addAction(tr("&Assign New Remote IP Information..."),
 		     this, SLOT(slotAssignNewIPToNeighbor(void)));
       menu.addAction(tr("&Connect"),
 		     this, SLOT(slotConnectNeighbor(void)));
@@ -6939,7 +6939,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this, SLOT(slotDisconnectAllNeighbors(void)));
       menu.addSeparator();
       menu.addAction
-	(tr("&Authenticate Account"),
+	(tr("&Authenticate Account..."),
 	 this,
 	 SLOT(slotAuthenticate(void)));
       menu.addAction(tr("&Reset Account Information"),
@@ -6975,12 +6975,12 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action = menu.addAction(tr("&Copy Adaptive Echo Magnet"),
 			      this, SLOT(slotCopyAEMagnet(void)));
       action->setProperty("from", "neighbors");
-      menu.addAction(tr("&Set Adaptive Echo Token Information"),
+      menu.addAction(tr("&Set Adaptive Echo Token Information..."),
 		     this, SLOT(slotSetAETokenInformation(void)));
       menu.addAction(tr("&Reset Adaptive Echo Token Information"),
 		     this, SLOT(slotResetAETokenInformation(void)));
       menu.addSeparator();
-      menu.addAction(tr("Set &SSL Control String"),
+      menu.addAction(tr("Set &SSL Control String..."),
 		     this, SLOT(slotSetNeighborSSLControlString(void)));
       menu.addSeparator();
 
@@ -7036,7 +7036,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	 tr("&Add participant as friend."),
 	 this, SLOT(slotShareChatPublicKeyWithParticipant(void)));
       menu.addSeparator();
-      menu.addAction(tr("Chat &popup."), this,
+      menu.addAction(tr("Chat &Popup..."), this,
 		      SLOT(slotChatPopup(void)));
       menu.addSeparator();
       menu.addAction(QIcon(":/generic/repleo-chat.png"),
@@ -7102,7 +7102,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     tr("&Remove participant(s)."),
 		     this, SLOT(slotRemoveParticipants(void)));
       menu.addSeparator();
-      action = menu.addAction(tr("&Rename participant."),
+      action = menu.addAction(tr("&Rename Participant..."),
 			      this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "chat");
       menu.addSeparator();
@@ -7112,7 +7112,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addAction(tr("&Reset the SMP machine's internal state to s0."),
 		     this,
 		     SLOT(slotInitializeSMP(void)));
-      menu.addAction(tr("&Set an SMP secret."),
+      menu.addAction(tr("&Set an SMP Secret..."),
 		     this,
 		     SLOT(slotPrepareSMP(void)));
       menu.addAction(tr("&Verify the SMP secret."),
@@ -7127,7 +7127,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			   arg(m_settings.value("gui/iconSet",
 						"nouve").
 			       toString().toLower())),
-		     tr("Share a &StarBeam."),
+		     tr("Share a &StarBeam..."),
 		     this,
 		     SLOT(slotShareStarBeam(void)));
       menu.addSeparator();
@@ -7135,7 +7135,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	(tr("Call via Forward &Secrecy credentials."),
 	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
       action = menu.addAction
-	(tr("Initiate Forward &Secrecy exchange(s)."),
+	(tr("Initiate Forward &Secrecy Exchange(s)..."),
 	 this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "chat");
       action = menu.addAction
@@ -7169,7 +7169,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "received");
       menu.addSeparator();
-      menu.addAction(tr("Discover &Missing Links"), this,
+      menu.addAction(tr("Discover &Missing Links..."), this,
 		     SLOT(slotDiscoverMissingLinks(void)));
       menu.exec(m_ui.received->mapToGlobal(point));
     }
@@ -7194,9 +7194,9 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "transmitted");
       menu.addSeparator();
-      menu.addAction(tr("Set &Pulse Size"), this,
+      menu.addAction(tr("Set &Pulse Size..."), this,
 		     SLOT(slotSetSBPulseSize(void)));
-      menu.addAction(tr("Set &Read Interval"), this,
+      menu.addAction(tr("Set &Read Interval..."), this,
 		     SLOT(slotSetSBReadInterval(void)));
       menu.exec(m_ui.transmitted->mapToGlobal(point));
     }
@@ -7232,7 +7232,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     tr("&Remove participant(s)."),
 		     this, SLOT(slotRemoveUrlParticipants(void)));
       menu.addSeparator();
-      action = menu.addAction(tr("&Rename participant."),
+      action = menu.addAction(tr("&Rename Participant..."),
 			      this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "url");
       menu.exec(m_ui.urlParticipants->mapToGlobal(point));

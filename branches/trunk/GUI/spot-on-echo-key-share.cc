@@ -69,7 +69,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 
   QMenu *menu = new QMenu(this);
 
-  menu->addAction(tr("&New Category"),
+  menu->addAction(tr("&New Category..."),
 		  this,
 		  SLOT(slotMenuAction(void)));
   menu->addSeparator();
