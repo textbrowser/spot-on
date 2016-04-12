@@ -515,7 +515,7 @@ QPushButton:pressed {
  } </string>
           </property>
           <property name="text">
-           <string>Rename</string>
+           <string>Rename...</string>
           </property>
          </widget>
         </item>

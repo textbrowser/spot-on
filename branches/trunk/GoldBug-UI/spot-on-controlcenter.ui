@@ -1759,7 +1759,7 @@ QPushButton:pressed {
  }</string>
                       </property>
                       <property name="text">
-                       <string>Save Attachment</string>
+                       <string>Save Attachment...</string>
                       </property>
                       <property name="icon">
                        <iconset resource="../Icons/icons.qrc">
@@ -2415,6 +2415,9 @@ QPushButton:pressed {
                     <property name="margin">
                      <number>7</number>
                     </property>
+                    <property name="buddy">
+                     <cstring>emailName</cstring>
+                    </property>
                    </widget>
                   </item>
                   <item row="4" column="0">
@@ -2632,7 +2635,7 @@ QPushButton:pressed {
  }</string>
                       </property>
                       <property name="text">
-                       <string>Select</string>
+                       <string>Select...</string>
                       </property>
                      </widget>
                     </item>
@@ -5950,7 +5953,7 @@ QPushButton:pressed {
  }</string>
                        </property>
                        <property name="text">
-                        <string>Select</string>
+                        <string>Select...</string>
                        </property>
                       </widget>
                      </item>
@@ -6734,7 +6737,7 @@ color: rgb(255, 255, 255);</string>
                  <item>
                   <widget class="QPushButton" name="selectGeoIP4">
                    <property name="text">
-                    <string>Select</string>
+                    <string>Select...</string>
                    </property>
                   </widget>
                  </item>
@@ -6761,7 +6764,7 @@ color: rgb(255, 255, 255);</string>
                  <item>
                   <widget class="QPushButton" name="selectGeoIP6">
                    <property name="text">
-                    <string>Select</string>
+                    <string>Select...</string>
                    </property>
                   </widget>
                  </item>
@@ -6802,7 +6805,7 @@ color: rgb(255, 255, 255);</string>
                     <string>Display a list of ciphers produced by the provided SSL Control String.</string>
                    </property>
                    <property name="text">
-                    <string>Test</string>
+                    <string>Test...</string>
                    </property>
                   </widget>
                  </item>
@@ -7027,7 +7030,7 @@ QPushButton:pressed {
 </string>
                      </property>
                      <property name="text">
-                      <string>Select</string>
+                      <string>Select...</string>
                      </property>
                      <property name="icon">
                       <iconset resource="../Icons/icons.qrc">
@@ -8836,7 +8839,7 @@ QPushButton:pressed {
                       <item>
                        <widget class="QPushButton" name="etpSelectDestination">
                         <property name="text">
-                         <string>Select</string>
+                         <string>Select...</string>
                         </property>
                        </widget>
                       </item>
@@ -9021,7 +9024,7 @@ QPushButton:pressed {
  }</string>
                        </property>
                        <property name="text">
-                        <string>Select</string>
+                        <string>Select...</string>
                        </property>
                       </widget>
                      </item>
@@ -11291,7 +11294,7 @@ border-style: inset;
   </action>
   <action name="action_Log_Viewer">
    <property name="text">
-    <string>&amp;Log Viewer</string>
+    <string>&amp;Log Viewer...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
@@ -11304,7 +11307,7 @@ border-style: inset;
   </action>
   <action name="action_Rosetta">
    <property name="text">
-    <string>&amp;Rosetta</string>
+    <string>&amp;Rosetta...</string>
    </property>
   </action>
   <action name="action_Copy">
@@ -11325,27 +11328,27 @@ border-style: inset;
   </action>
   <action name="action_Export_Public_Keys">
    <property name="text">
-    <string>&amp;Export Public Keys</string>
+    <string>&amp;Export Public Keys...</string>
    </property>
   </action>
   <action name="action_Import_Public_Keys">
    <property name="text">
-    <string>&amp;Import Public Keys</string>
+    <string>&amp;Import Public Keys...</string>
    </property>
   </action>
   <action name="action_Export_Listeners">
    <property name="text">
-    <string>&amp;Export Listeners</string>
+    <string>&amp;Export Listeners...</string>
    </property>
   </action>
   <action name="action_Import_Neighbors">
    <property name="text">
-    <string>&amp;Import Neighbors</string>
+    <string>&amp;Import Neighbors...</string>
    </property>
   </action>
   <action name="action_StarBeam_Analyzer">
    <property name="text">
-    <string>&amp;StarBeam Analyzer</string>
+    <string>&amp;StarBeam Analyzer...</string>
    </property>
   </action>
   <action name="action_Minimal_Display">
@@ -11358,7 +11361,7 @@ border-style: inset;
   </action>
   <action name="action_File_Encryption">
    <property name="text">
-    <string>&amp;File Encryption</string>
+    <string>&amp;File Encryption...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
@@ -11374,7 +11377,7 @@ border-style: inset;
   </action>
   <action name="action_Poptastic_Settings">
    <property name="text">
-    <string>&amp;Poptastic &amp;&amp; RetroPhone Settings</string>
+    <string>&amp;Poptastic &amp;&amp; RetroPhone Settings...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -11382,7 +11385,7 @@ border-style: inset;
   </action>
   <action name="action_Options">
    <property name="text">
-    <string>&amp;Options</string>
+    <string>&amp;Options...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -11390,12 +11393,12 @@ border-style: inset;
   </action>
   <action name="action_About">
    <property name="text">
-    <string>&amp;About</string>
+    <string>&amp;About...</string>
    </property>
   </action>
   <action name="action_Echo_Key_Share">
    <property name="text">
-    <string>&amp;Echo Public Key Share</string>
+    <string>&amp;Echo Public Key Share...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -11408,7 +11411,7 @@ border-style: inset;
   </action>
   <action name="action_Statistics_Window">
    <property name="text">
-    <string>&amp;Statistics Window</string>
+    <string>&amp;Statistics Window...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -11431,7 +11434,7 @@ border-style: inset;
      <normaloff>:/generic/rss.png</normaloff>:/generic/rss.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;RSS</string>
+    <string>&amp;RSS...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -11475,14 +11478,14 @@ border-style: inset;
  </widget>
  <customwidgets>
   <customwidget>
-   <class>spoton_textbrowser</class>
-   <extends>QTextBrowser</extends>
-   <header>spot-on-textbrowser.h</header>
-  </customwidget>
-  <customwidget>
    <class>spoton_textedit</class>
    <extends>QTextEdit</extends>
    <header>GUI/spot-on-textedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
   </customwidget>
   <customwidget>
    <class>spoton_tabwidget</class>
