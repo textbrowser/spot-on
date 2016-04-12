@@ -468,6 +468,7 @@ spoton::spoton(void):QMainWindow()
 
       QHash<QString, QVariant> hash;
 
+      hash["enabled"] = true;
       hash["icon"] = m_ui.tab->tabIcon(i);
       hash["label"] = m_ui.tab->tabText(i);
       hash["name"] = list.value(i);
@@ -2867,14 +2868,6 @@ spoton::spoton(void):QMainWindow()
 
       font.setStyleHint(QFont::Monospace);
       widgets.at(i)->setFont(font);
-    }
-
-  for(int i = 0; i < m_ui.tab->count(); i++)
-    {
-      QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
-
-      hash["enabled"] = true;
-      m_tabWidgetsProperties[i] = hash;
     }
 
   show();

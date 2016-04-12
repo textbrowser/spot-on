@@ -1955,7 +1955,7 @@ void spoton::prepareVisiblePages(void)
   pages["urls"] = 8;
 #if SPOTON_GOLDBUG == 1
   pages["x_add_friend"] = 9; // Sorted keys.
-  pages["x_about"] = 10; // Sorted keys.
+  pages["y_about"] = 10; // Sorted keys.
 #else
   pages["x_about"] = 9; // Sorted keys.
 #endif
@@ -1994,7 +1994,6 @@ void spoton::prepareVisiblePages(void)
 	QIcon icon(hash["icon"].value<QIcon> ());
 
 	m_ui.tab->addTab(widget, icon, hash["label"].toString());
-	m_ui.tab->setTabEnabled(it.value(), hash["enabled"].toBool());
       }
   }
 }
