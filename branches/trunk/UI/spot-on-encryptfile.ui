@@ -19,7 +19,16 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
      <number>5</number>
     </property>
     <item>
@@ -77,7 +86,7 @@
       <item>
        <widget class="QPushButton" name="selectDestination">
         <property name="text">
-         <string>Select</string>
+         <string>Select...</string>
         </property>
        </widget>
       </item>
@@ -104,7 +113,7 @@
       <item>
        <widget class="QPushButton" name="select">
         <property name="text">
-         <string>Select</string>
+         <string>Select...</string>
         </property>
        </widget>
       </item>
@@ -226,7 +235,16 @@
          <property name="spacing">
           <number>5</number>
          </property>
-         <property name="margin">
+         <property name="leftMargin">
+          <number>5</number>
+         </property>
+         <property name="topMargin">
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
           <number>5</number>
          </property>
          <item>
