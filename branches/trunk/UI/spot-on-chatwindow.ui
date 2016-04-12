@@ -172,7 +172,7 @@
            <enum>Qt::LeftToRight</enum>
           </property>
           <property name="text">
-           <string>Share</string>
+           <string>Share...</string>
           </property>
          </widget>
         </item>

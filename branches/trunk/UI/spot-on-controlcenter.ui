@@ -464,7 +464,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>802</width>
+                <width>401</width>
                 <height>482</height>
                </rect>
               </property>
@@ -894,7 +894,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>953</width>
+             <width>962</width>
              <height>582</height>
             </rect>
            </property>
@@ -1108,7 +1108,7 @@
                       <item>
                        <widget class="QPushButton" name="saveAttachment">
                         <property name="text">
-                         <string>Save Attachment</string>
+                         <string>Save Attachment...</string>
                         </property>
                        </widget>
                       </item>
@@ -1263,7 +1263,7 @@
                       <item>
                        <widget class="QPushButton" name="selectAttachment">
                         <property name="text">
-                         <string>Select</string>
+                         <string>Select...</string>
                         </property>
                        </widget>
                       </item>
@@ -2067,8 +2067,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>646</width>
+             <height>405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2760,7 +2760,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>260</width>
+                     <width>262</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -3284,8 +3284,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>361</width>
+             <height>225</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3626,7 +3626,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>792</width>
+                  <width>737</width>
                   <height>478</height>
                  </rect>
                 </property>
@@ -4427,8 +4427,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4513,8 +4513,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>802</width>
-                 <height>603</height>
+                 <width>667</width>
+                 <height>620</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -4614,7 +4614,7 @@
                       <bool>false</bool>
                      </property>
                      <property name="text">
-                      <string>PostgreSQL Connect</string>
+                      <string>PostgreSQL Connect...</string>
                      </property>
                     </widget>
                    </item>
@@ -4978,7 +4978,7 @@
                      <item>
                       <widget class="QPushButton" name="selectUrlIni">
                        <property name="text">
-                        <string>Select</string>
+                        <string>Select...</string>
                        </property>
                       </widget>
                      </item>
@@ -5462,8 +5462,8 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-884</y>
-             <width>823</width>
+             <y>0</y>
+             <width>847</width>
              <height>1318</height>
             </rect>
            </property>
@@ -5585,7 +5585,7 @@
               <item>
                <widget class="QPushButton" name="selectGeoIP4">
                 <property name="text">
-                 <string>Select</string>
+                 <string>Select...</string>
                 </property>
                </widget>
               </item>
@@ -5612,7 +5612,7 @@
               <item>
                <widget class="QPushButton" name="selectGeoIP6">
                 <property name="text">
-                 <string>Select</string>
+                 <string>Select...</string>
                 </property>
                </widget>
               </item>
@@ -5653,7 +5653,7 @@
                  <string>Display a list of ciphers produced by the provided SSL Control String.</string>
                 </property>
                 <property name="text">
-                 <string>Test</string>
+                 <string>Test...</string>
                 </property>
                </widget>
               </item>
@@ -5787,7 +5787,7 @@
                    <item>
                     <widget class="QPushButton" name="selectKernelPath">
                      <property name="text">
-                      <string>Select</string>
+                      <string>Select...</string>
                      </property>
                     </widget>
                    </item>
@@ -6777,7 +6777,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>589</width>
              <height>544</height>
             </rect>
            </property>
@@ -7301,7 +7301,7 @@
                       <item>
                        <widget class="QPushButton" name="etpSelectDestination">
                         <property name="text">
-                         <string>Select</string>
+                         <string>Select...</string>
                         </property>
                        </widget>
                       </item>
@@ -7804,7 +7804,7 @@
                       <item>
                        <widget class="QPushButton" name="etpSelectFile">
                         <property name="text">
-                         <string>Select</string>
+                         <string>Select...</string>
                         </property>
                        </widget>
                       </item>
@@ -7900,7 +7900,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>661</width>
              <height>453</height>
             </rect>
            </property>
@@ -8515,8 +8515,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>448</height>
+             <width>258</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
