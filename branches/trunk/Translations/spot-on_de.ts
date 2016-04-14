@@ -644,43 +644,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-pageviewer.ui" line="108"/>
-        <location filename="../UI/spot-on-pageviewer.ui" line="198"/>
+        <location filename="../UI/spot-on-pageviewer.ui" line="117"/>
+        <location filename="../UI/spot-on-pageviewer.ui" line="207"/>
         <source>&amp;Find</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-pageviewer.ui" line="165"/>
+        <location filename="../UI/spot-on-pageviewer.ui" line="174"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-pageviewer.ui" line="173"/>
+        <location filename="../UI/spot-on-pageviewer.ui" line="182"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-pageviewer.ui" line="182"/>
+        <location filename="../UI/spot-on-pageviewer.ui" line="191"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-pageviewer.ui" line="185"/>
+        <location filename="../UI/spot-on-pageviewer.ui" line="194"/>
         <source>Esc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-pageviewer.ui" line="190"/>
-        <source>&amp;Print Preview</source>
+        <location filename="../UI/spot-on-pageviewer.ui" line="199"/>
+        <source>&amp;Print Preview...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-pageviewer.ui" line="193"/>
+        <location filename="../UI/spot-on-pageviewer.ui" line="202"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-pageviewer.ui" line="201"/>
+        <location filename="../UI/spot-on-pageviewer.ui" line="210"/>
         <source>Ctrl+F</source>
         <translation type="unfinished"></translation>
     </message>
