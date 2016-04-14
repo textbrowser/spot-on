@@ -97,7 +97,7 @@
      <item>
       <widget class="QPushButton" name="selectcapath">
        <property name="text">
-        <string>Select</string>
+        <string>Select...</string>
        </property>
       </widget>
      </item>

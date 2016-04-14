@@ -94,7 +94,16 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
       </layout>
@@ -187,7 +196,7 @@
   </action>
   <action name="action_Print_Preview">
    <property name="text">
-    <string>&amp;Print Preview</string>
+    <string>&amp;Print Preview...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
