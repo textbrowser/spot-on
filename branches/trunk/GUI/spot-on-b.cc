@@ -96,7 +96,7 @@ void spoton::sendMessage(bool *ok)
   m_ui.messages->verticalScrollBar()->setValue
     (m_ui.messages->verticalScrollBar()->maximum());
 
-  while(!list.isEmpty())
+  while(!list.isEmpty() && !publicKeyHashes.isEmpty())
     {
       QModelIndex index(list.takeFirst());
       QString publicKeyHash(publicKeyHashes.takeFirst().data().toString());
@@ -1048,7 +1048,7 @@ void spoton::slotRemoveParticipants(void)
 	   selectedRows(3)); // public_key_hash
 	QSqlQuery query(db);
 
-	while(!list.isEmpty())
+	while(!list.isEmpty() && !listHashes.isEmpty())
 	  {
 	    QVariant data(list.takeFirst().data());
 	    QVariant hash(listHashes.takeFirst().data());
@@ -3066,7 +3066,10 @@ void spoton::slotSendMail(void)
 	while(!list.isEmpty())
 	  publicKeyHashes.append(list.takeFirst().data().toString());
 
-	while(!oids.isEmpty())
+	while(!forwardSecrecyCredentials.isEmpty() &&
+	      !names.isEmpty() &&
+	      !publicKeyHashes.isEmpty() &&
+	      !oids.isEmpty())
 	  {
 	    QByteArray goldbug;
 	    QByteArray name(names.takeFirst().toUtf8());
@@ -3087,7 +3090,7 @@ void spoton::slotSendMail(void)
 		else
 		  mode = "pure-forward-secrecy";
 
-		goldbug = forwardSecrecyCredentials.takeFirst().toLatin1();
+		goldbug = forwardSecrecyCredentials.first().toLatin1();
 	      }
 	    else if(m_ui.email_fs_gb->currentIndex() == 1)
 	      {
@@ -3108,6 +3111,8 @@ void spoton::slotSendMail(void)
 	      }
 	    else
 	      mode = "normal";
+
+	    forwardSecrecyCredentials.takeFirst();
 
 	    {
 	      QList<QByteArray> list;

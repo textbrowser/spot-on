@@ -2851,7 +2851,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
       if(keyType == "chat")
 	emit sendStatus(list);
       else
-	while(!list.isEmpty())
+	while(!list.isEmpty() && !receiverNames.isEmpty())
 	  {
 	    QByteArray message(spoton_send::message0013(list.takeFirst()));
 

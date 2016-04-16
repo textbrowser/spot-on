@@ -384,6 +384,12 @@ void spoton_mailer::slotRetrieveMail
 
 void spoton_mailer::slotRetrieveMailTimeout(void)
 {
+  if(m_publicKeyHashesAdaptiveEchoPairs.isEmpty())
+    {
+      m_retrieveMailTimer.stop();
+      return;
+    }
+
   /*
   ** We're assuming that only authenticated participants
   ** can request their e-mail. Let's hope our implementation
