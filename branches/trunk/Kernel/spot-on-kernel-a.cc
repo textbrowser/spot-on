@@ -3443,10 +3443,10 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			goldbugUsed = true;
 
 		      if(crypt && ok)
-			if(setting("gui/emailSignMessages", true).toBool())
-			  {
-			    QByteArray signature;
+			{
+			  QByteArray signature;
 
+			  if(setting("gui/emailSignMessages", true).toBool())
 			    signature = s_crypt2->digitalSignature
 			      ("0001b" +
 			       symmetricKey +
@@ -3461,10 +3461,10 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			       items.value(4),  // Attachment Name
 			       &ok);
 
-			    if(ok)
-			      items << crypt->encryptedThenHashed
-				(signature, &ok);
-			  }
+			  if(ok)
+			    items << crypt->encryptedThenHashed
+			      (signature, &ok);
+			}
 
 		      delete crypt;
 		    }
@@ -3758,10 +3758,10 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			goldbugUsed = true;
 
 		      if(crypt && ok)
-			if(setting("gui/emailSignMessages", true).toBool())
-			  {
-			    QByteArray signature;
+			{
+			  QByteArray signature;
 
+			  if(setting("gui/emailSignMessages", true).toBool())
 			    signature = s_crypt2->digitalSignature
 			      ("0001b" +
 			       symmetricKey +
@@ -3776,10 +3776,10 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			       items.value(4),  // Attachment Name
 			       &ok);
 
-			    if(ok)
-			      items << crypt->encryptedThenHashed
-				(signature, &ok);
-			  }
+			  if(ok)
+			    items << crypt->encryptedThenHashed
+			      (signature, &ok);
+			}
 
 		      delete crypt;
 		    }
