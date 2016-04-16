@@ -5218,7 +5218,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 					 s_crypt))
     return;
 
-  if(spoton_kernel::setting("gui/emailAcceptSignedMessagesOnly",
+  if(!goldbugUsed &&
+     spoton_kernel::setting("gui/emailAcceptSignedMessagesOnly",
 			    true).toBool())
     if(!spoton_misc::
        isValidSignature("0001b" +

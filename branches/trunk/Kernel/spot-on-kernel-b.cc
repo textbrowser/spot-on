@@ -967,8 +967,8 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  signature = list.value(6);
 	  goldbugUsed = QVariant(list.value(7)).toBool();
 
-	  if(setting("gui/emailAcceptSignedMessagesOnly",
-		     true).toBool())
+	  if(!goldbugUsed && setting("gui/emailAcceptSignedMessagesOnly",
+				     true).toBool())
 	    if(!spoton_misc::
 	       isValidSignature("0001b" +
 				symmetricKeys.value(0) + // Encryption Key
