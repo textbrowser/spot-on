@@ -1629,7 +1629,10 @@ void spoton::slotAddAttachment(void)
 #endif
 
   if(dialog.exec() == QDialog::Accepted)
-    m_ui.attachment->setText(dialog.selectedFiles().value(0));
+    {
+      QFileInfo fileInfo(dialog.selectedFiles().value(0));
+      Q_UNUSED(fileInfo);
+    }
 }
 
 void spoton::slotSaveAttachment(void)
