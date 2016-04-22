@@ -893,8 +893,8 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>962</width>
+             <y>-134</y>
+             <width>812</width>
              <height>582</height>
             </rect>
            </property>
@@ -1001,22 +1001,7 @@
                <attribute name="title">
                 <string>&amp;Read / &amp;Write</string>
                </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_29">
-                <property name="spacing">
-                 <number>5</number>
-                </property>
-                <property name="leftMargin">
-                 <number>5</number>
-                </property>
-                <property name="topMargin">
-                 <number>5</number>
-                </property>
-                <property name="rightMargin">
-                 <number>5</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>5</number>
-                </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_24">
                 <item>
                  <widget class="QSplitter" name="emailSplitter">
                   <property name="orientation">
@@ -1217,251 +1202,10 @@
                     </item>
                    </layout>
                   </widget>
-                  <widget class="QWidget" name="gridLayoutWidget">
-                   <layout class="QGridLayout" name="gridLayout_4">
-                    <property name="spacing">
-                     <number>5</number>
-                    </property>
-                    <item row="5" column="0">
-                     <widget class="QLabel" name="label_6">
-                      <property name="text">
-                       <string>&amp;Optional</string>
-                      </property>
-                      <property name="margin">
-                       <number>7</number>
-                      </property>
-                      <property name="buddy">
-                       <cstring>goldbug</cstring>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QTextEdit" name="outgoingMessage">
-                      <property name="tabChangesFocus">
-                       <bool>true</bool>
-                      </property>
-                      <property name="textInteractionFlags">
-                       <set>Qt::TextEditorInteraction</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <layout class="QHBoxLayout" name="horizontalLayout_51">
-                      <property name="spacing">
-                       <number>5</number>
-                      </property>
-                      <item>
-                       <widget class="QLineEdit" name="attachment"/>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="label_95">
-                        <property name="text">
-                         <string>Maximum 10 MiB, please.</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="selectAttachment">
-                        <property name="text">
-                         <string>Attach...</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item row="5" column="1">
-                     <layout class="QHBoxLayout" name="horizontalLayout_31">
-                      <property name="spacing">
-                       <number>5</number>
-                      </property>
-                      <item>
-                       <widget class="QLineEdit" name="goldbug">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of AES-256 encryption and SHA-512 authentication. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QComboBox" name="email_fs_gb">
-                        <property name="currentIndex">
-                         <number>2</number>
-                        </property>
-                        <property name="sizeAdjustPolicy">
-                         <enum>QComboBox::AdjustToContents</enum>
-                        </property>
-                        <property name="minimumContentsLength">
-                         <number>25</number>
-                        </property>
-                        <item>
-                         <property name="text">
-                          <string>Forward Secrecy</string>
-                         </property>
-                        </item>
-                        <item>
-                         <property name="text">
-                          <string>Gold Bug</string>
-                         </property>
-                        </item>
-                        <item>
-                         <property name="text">
-                          <string>Normal</string>
-                         </property>
-                        </item>
-                        <item>
-                         <property name="text">
-                          <string>Pure Forward Secrecy</string>
-                         </property>
-                        </item>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QCheckBox" name="saveCopy">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="text">
-                         <string>&amp;Save copies.</string>
-                        </property>
-                        <property name="checked">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="sendMail">
-                        <property name="text">
-                         <string>Send</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_10">
-                      <property name="text">
-                       <string>&amp;To</string>
-                      </property>
-                      <property name="margin">
-                       <number>7</number>
-                      </property>
-                      <property name="buddy">
-                       <cstring>emailParticipants</cstring>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <layout class="QVBoxLayout" name="verticalLayout_70">
-                      <property name="spacing">
-                       <number>5</number>
-                      </property>
-                      <item>
-                       <widget class="QTableWidget" name="emailParticipants">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="maximumSize">
-                         <size>
-                          <width>16777215</width>
-                          <height>150</height>
-                         </size>
-                        </property>
-                        <property name="verticalScrollBarPolicy">
-                         <enum>Qt::ScrollBarAlwaysOn</enum>
-                        </property>
-                        <property name="alternatingRowColors">
-                         <bool>true</bool>
-                        </property>
-                        <property name="selectionBehavior">
-                         <enum>QAbstractItemView::SelectRows</enum>
-                        </property>
-                        <property name="horizontalScrollMode">
-                         <enum>QAbstractItemView::ScrollPerPixel</enum>
-                        </property>
-                        <property name="sortingEnabled">
-                         <bool>true</bool>
-                        </property>
-                        <attribute name="horizontalHeaderDefaultSectionSize">
-                         <number>200</number>
-                        </attribute>
-                        <attribute name="horizontalHeaderStretchLastSection">
-                         <bool>true</bool>
-                        </attribute>
-                        <column>
-                         <property name="text">
-                          <string>Participant</string>
-                         </property>
-                        </column>
-                        <column>
-                         <property name="text">
-                          <string>OID</string>
-                         </property>
-                        </column>
-                        <column>
-                         <property name="text">
-                          <string>neighbor_oid</string>
-                         </property>
-                        </column>
-                        <column>
-                         <property name="text">
-                          <string>public_key_hash</string>
-                         </property>
-                        </column>
-                        <column>
-                         <property name="text">
-                          <string>Forward Secrecy Information</string>
-                         </property>
-                        </column>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_94">
-                      <property name="text">
-                       <string>&amp;Attachment(s)</string>
-                      </property>
-                      <property name="margin">
-                       <number>7</number>
-                      </property>
-                      <property name="buddy">
-                       <cstring>attachment</cstring>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <layout class="QHBoxLayout" name="horizontalLayout_47">
-                      <property name="spacing">
-                       <number>5</number>
-                      </property>
-                      <item>
-                       <widget class="QComboBox" name="emailName">
-                        <property name="insertPolicy">
-                         <enum>QComboBox::InsertAtCurrent</enum>
-                        </property>
-                        <property name="sizeAdjustPolicy">
-                         <enum>QComboBox::AdjustToContents</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLineEdit" name="emailNameEditable"/>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="reloadEmailNames">
-                        <property name="toolTip">
-                         <string>Populate the From widget with Poptastic accounts.</string>
-                        </property>
-                        <property name="text">
-                         <string>Reload</string>
-                        </property>
-                       </widget>
-                      </item>
+                  <widget class="QWidget" name="">
+                   <layout class="QVBoxLayout" name="verticalLayout_29">
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_20">
                       <item>
                        <widget class="QPushButton" name="clearOutgoing">
                         <property name="text">
@@ -1489,56 +1233,347 @@
                         </property>
                        </widget>
                       </item>
-                     </layout>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_41">
-                      <property name="text">
-                       <string>&amp;From</string>
-                      </property>
-                      <property name="margin">
-                       <number>7</number>
-                      </property>
-                      <property name="buddy">
-                       <cstring>emailName</cstring>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <layout class="QVBoxLayout" name="verticalLayout_71">
-                      <property name="spacing">
-                       <number>5</number>
-                      </property>
                       <item>
-                       <spacer name="verticalSpacer_7">
+                       <spacer name="horizontalSpacer_3">
                         <property name="orientation">
-                         <enum>Qt::Vertical</enum>
+                         <enum>Qt::Horizontal</enum>
                         </property>
                         <property name="sizeHint" stdset="0">
                          <size>
-                          <width>20</width>
-                          <height>40</height>
+                          <width>40</width>
+                          <height>20</height>
                          </size>
                         </property>
                        </spacer>
                       </item>
-                      <item>
-                       <widget class="QLabel" name="label_4">
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QGridLayout" name="gridLayout_4">
+                      <property name="spacing">
+                       <number>5</number>
+                      </property>
+                      <item row="3" column="1">
+                       <widget class="QTextEdit" name="outgoingMessage">
+                        <property name="tabChangesFocus">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextEditorInteraction</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label_10">
                         <property name="text">
-                         <string>&amp;Message</string>
+                         <string>&amp;To</string>
                         </property>
                         <property name="margin">
                          <number>7</number>
                         </property>
                         <property name="buddy">
-                         <cstring>outgoingMessage</cstring>
+                         <cstring>emailParticipants</cstring>
                         </property>
                        </widget>
                       </item>
-                      <item>
-                       <widget class="QCheckBox" name="richtext">
+                      <item row="3" column="0">
+                       <layout class="QVBoxLayout" name="verticalLayout_71">
+                        <property name="spacing">
+                         <number>5</number>
+                        </property>
+                        <item>
+                         <spacer name="verticalSpacer_7">
+                          <property name="orientation">
+                           <enum>Qt::Vertical</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>20</width>
+                            <height>40</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_4">
+                          <property name="text">
+                           <string>&amp;Message</string>
+                          </property>
+                          <property name="margin">
+                           <number>7</number>
+                          </property>
+                          <property name="buddy">
+                           <cstring>outgoingMessage</cstring>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QCheckBox" name="richtext">
+                          <property name="text">
+                           <string>&amp;Rich Text</string>
+                          </property>
+                          <property name="checked">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="verticalSpacer_5">
+                          <property name="orientation">
+                           <enum>Qt::Vertical</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>20</width>
+                            <height>40</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </item>
+                      <item row="5" column="0">
+                       <widget class="QLabel" name="label_6">
                         <property name="text">
-                         <string>&amp;Rich Text</string>
+                         <string>&amp;Optional</string>
+                        </property>
+                        <property name="margin">
+                         <number>7</number>
+                        </property>
+                        <property name="buddy">
+                         <cstring>goldbug</cstring>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="1">
+                       <layout class="QHBoxLayout" name="horizontalLayout_31">
+                        <property name="spacing">
+                         <number>5</number>
+                        </property>
+                        <item>
+                         <widget class="QLineEdit" name="goldbug">
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of AES-256 encryption and SHA-512 authentication. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QComboBox" name="email_fs_gb">
+                          <property name="currentIndex">
+                           <number>2</number>
+                          </property>
+                          <property name="sizeAdjustPolicy">
+                           <enum>QComboBox::AdjustToContents</enum>
+                          </property>
+                          <property name="minimumContentsLength">
+                           <number>25</number>
+                          </property>
+                          <item>
+                           <property name="text">
+                            <string>Forward Secrecy</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Gold Bug</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Normal</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Pure Forward Secrecy</string>
+                           </property>
+                          </item>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item row="0" column="1">
+                       <layout class="QHBoxLayout" name="horizontalLayout_47">
+                        <property name="spacing">
+                         <number>5</number>
+                        </property>
+                        <item>
+                         <widget class="QComboBox" name="emailName">
+                          <property name="insertPolicy">
+                           <enum>QComboBox::InsertAtCurrent</enum>
+                          </property>
+                          <property name="sizeAdjustPolicy">
+                           <enum>QComboBox::AdjustToContents</enum>
+                          </property>
+                          <property name="minimumContentsLength">
+                           <number>25</number>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="emailNameEditable"/>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="reloadEmailNames">
+                          <property name="toolTip">
+                           <string>Populate the From widget with Poptastic accounts.</string>
+                          </property>
+                          <property name="text">
+                           <string>Reload</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item row="2" column="1">
+                       <widget class="QLineEdit" name="outgoingSubject"/>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QLabel" name="label_25">
+                        <property name="text">
+                         <string>&amp;Subject</string>
+                        </property>
+                        <property name="margin">
+                         <number>7</number>
+                        </property>
+                        <property name="buddy">
+                         <cstring>outgoingSubject</cstring>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_41">
+                        <property name="text">
+                         <string>&amp;From</string>
+                        </property>
+                        <property name="margin">
+                         <number>7</number>
+                        </property>
+                        <property name="buddy">
+                         <cstring>emailName</cstring>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <layout class="QVBoxLayout" name="verticalLayout_70">
+                        <property name="spacing">
+                         <number>5</number>
+                        </property>
+                        <item>
+                         <widget class="QTableWidget" name="emailParticipants">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>16777215</width>
+                            <height>150</height>
+                           </size>
+                          </property>
+                          <property name="verticalScrollBarPolicy">
+                           <enum>Qt::ScrollBarAlwaysOn</enum>
+                          </property>
+                          <property name="alternatingRowColors">
+                           <bool>true</bool>
+                          </property>
+                          <property name="selectionBehavior">
+                           <enum>QAbstractItemView::SelectRows</enum>
+                          </property>
+                          <property name="horizontalScrollMode">
+                           <enum>QAbstractItemView::ScrollPerPixel</enum>
+                          </property>
+                          <property name="sortingEnabled">
+                           <bool>true</bool>
+                          </property>
+                          <attribute name="horizontalHeaderDefaultSectionSize">
+                           <number>200</number>
+                          </attribute>
+                          <attribute name="horizontalHeaderStretchLastSection">
+                           <bool>true</bool>
+                          </attribute>
+                          <column>
+                           <property name="text">
+                            <string>Participant</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>OID</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>neighbor_oid</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>public_key_hash</string>
+                           </property>
+                          </column>
+                          <column>
+                           <property name="text">
+                            <string>Forward Secrecy Information</string>
+                           </property>
+                          </column>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item row="4" column="1">
+                       <layout class="QHBoxLayout" name="horizontalLayout_51">
+                        <property name="spacing">
+                         <number>5</number>
+                        </property>
+                        <item>
+                         <widget class="QLineEdit" name="attachment"/>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_95">
+                          <property name="text">
+                           <string>Maximum 10 MiB, please.</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="selectAttachment">
+                          <property name="text">
+                           <string>Attach...</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item row="4" column="0">
+                       <widget class="QLabel" name="label_94">
+                        <property name="text">
+                         <string>&amp;Attachment(s)</string>
+                        </property>
+                        <property name="margin">
+                         <number>7</number>
+                        </property>
+                        <property name="buddy">
+                         <cstring>attachment</cstring>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_22">
+                      <item>
+                       <widget class="QCheckBox" name="saveCopy">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>&amp;Save copies.</string>
                         </property>
                         <property name="checked">
                          <bool>true</bool>
@@ -1546,35 +1581,26 @@
                        </widget>
                       </item>
                       <item>
-                       <spacer name="verticalSpacer_5">
+                       <widget class="QPushButton" name="sendMail">
+                        <property name="text">
+                         <string>Send</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_14">
                         <property name="orientation">
-                         <enum>Qt::Vertical</enum>
+                         <enum>Qt::Horizontal</enum>
                         </property>
                         <property name="sizeHint" stdset="0">
                          <size>
-                          <width>20</width>
-                          <height>40</height>
+                          <width>40</width>
+                          <height>20</height>
                          </size>
                         </property>
                        </spacer>
                       </item>
                      </layout>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_25">
-                      <property name="text">
-                       <string>&amp;Subject</string>
-                      </property>
-                      <property name="margin">
-                       <number>7</number>
-                      </property>
-                      <property name="buddy">
-                       <cstring>outgoingSubject</cstring>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QLineEdit" name="outgoingSubject"/>
                     </item>
                    </layout>
                   </widget>
@@ -9080,11 +9106,11 @@
   <tabstop>saveAttachment</tabstop>
   <tabstop>mail</tabstop>
   <tabstop>mailMessage</tabstop>
+  <tabstop>clearOutgoing</tabstop>
+  <tabstop>emailWriteActionMenu</tabstop>
   <tabstop>emailName</tabstop>
   <tabstop>emailNameEditable</tabstop>
   <tabstop>reloadEmailNames</tabstop>
-  <tabstop>clearOutgoing</tabstop>
-  <tabstop>emailWriteActionMenu</tabstop>
   <tabstop>emailParticipants</tabstop>
   <tabstop>outgoingSubject</tabstop>
   <tabstop>richtext</tabstop>
