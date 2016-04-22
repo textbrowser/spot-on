@@ -41,6 +41,7 @@ class spoton_skein
  private:
   char *m_key; // Stored in secure memory.
   char *m_tweak;
+  size_t m_blockSize;
   size_t m_keyLength;
   size_t m_tweakLength;
 };

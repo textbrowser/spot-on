@@ -34,6 +34,7 @@ extern "C"
 
 spoton_skein::spoton_skein(void)
 {
+  m_blockSize = 0;
   m_key = 0;
   m_keyLength = 0;
   m_tweak = 0;
@@ -62,6 +63,7 @@ void spoton_skein::setKey(const QByteArray &key, bool *ok)
 
   if(!m_key)
     {
+      m_blockSize = 0;
       m_keyLength = 0;
 
       if(ok)
@@ -73,10 +75,12 @@ void spoton_skein::setKey(const QByteArray &key, bool *ok)
   if(*ok)
     *ok = true;
 
+  m_blockSize = 8 * m_keyLength;
   return;
 
  done_label:
   gcry_free(m_key);
+  m_blockSize = 0;
   m_key = 0;
   m_keyLength = 0;
 }
