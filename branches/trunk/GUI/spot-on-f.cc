@@ -1896,14 +1896,6 @@ void spoton::prepareDatabasesFromUI(void)
     QApplication::restoreOverrideCursor();
 }
 
-void spoton::slotEmailNameIndexChanged(int index)
-{
-  if(index == 0)
-    m_ui.emailName->setEditable(true);
-  else
-    m_ui.emailName->setEditable(false);
-}
-
 void spoton::slotShowPage(bool state)
 {
   QAction *action = qobject_cast<QAction *> (sender());

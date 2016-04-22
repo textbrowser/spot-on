@@ -973,14 +973,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotEmailFsGb(int)));
-  connect(m_ui.emailName,
-	  SIGNAL(currentIndexChanged(int)),
+  connect(m_ui.emailNameEditable,
+	  SIGNAL(returnPressed(void)),
 	  this,
-	  SLOT(slotEmailNameIndexChanged(int)));
-  connect(m_ui.emailName,
-	  SIGNAL(editTextChanged(const QString &)),
-	  this,
-	  SLOT(slotSaveEmailName(const QString &)));
+	  SLOT(slotSaveEmailName(void)));
   connect(m_ui.urlName,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -2201,6 +2197,7 @@ spoton::spoton(void):QMainWindow()
 		       toByteArray().constData(),
 		       m_settings.value("gui/emailName", "unknown").
 		       toByteArray().length()).trimmed());
+  m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
   m_ui.nodeName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.nodeName->setText
     (QString::fromUtf8(m_settings.value("gui/nodeName", "unknown").
@@ -6409,6 +6406,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.buzzName->setText(m_ui.username->text());
       m_ui.emailName->clear();
       m_ui.emailName->addItem(m_ui.username->text());
+      m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
       m_ui.nodeName->setText(m_ui.username->text());
       m_ui.urlName->setText(m_ui.username->text());
 

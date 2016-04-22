@@ -1125,26 +1125,28 @@ void spoton::slotSaveBuzzName(void)
   emit buzzNameChanged(str.toUtf8());
 }
 
-void spoton::slotSaveEmailName(const QString &text)
+void spoton::slotSaveEmailName(void)
 {
-  if(m_ui.emailName->currentIndex() != 0)
-    return;
-
-  QString str(text);
+  QString str(m_ui.emailNameEditable->text());
 
   if(str.trimmed().isEmpty())
     {
       str = "unknown";
       m_ui.emailName->setItemText(0, str);
+      m_ui.emailNameEditable->setText(str);
     }
   else
-    m_ui.emailName->setItemText(0, str.trimmed());
+    {
+      m_ui.emailName->setItemText(0, str.trimmed());
+      m_ui.emailNameEditable->setText(str.trimmed());
+    }
 
   m_settings["gui/emailName"] = str.toUtf8();
 
   QSettings settings;
 
   settings.setValue("gui/emailName", str.toUtf8());
+  m_ui.emailNameEditable->selectAll();
 }
 
 void spoton::slotSaveNodeName(void)

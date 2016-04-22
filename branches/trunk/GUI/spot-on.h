@@ -731,7 +731,6 @@ class spoton: public QMainWindow
   void slotDropUrlTables(void);
   void slotDuplicateTransmittedMagnet(void);
   void slotEmailFsGb(int index);
-  void slotEmailNameIndexChanged(int index);
   void slotEmptyTrash(void);
   void slotEnableChatEmoticons(bool state);
   void slotEnableRetrieveMail(void);
@@ -870,7 +869,7 @@ class spoton: public QMainWindow
   void slotSaveCongestionAlgorithm(const QString &text);
   void slotSaveCustomStatus(void);
   void slotSaveDestination(void);
-  void slotSaveEmailName(const QString &text);
+  void slotSaveEmailName(void);
   void slotSaveGeoIPPath(void);
   void slotSaveKernelPath(void);
   void slotSaveMOTD(void);
