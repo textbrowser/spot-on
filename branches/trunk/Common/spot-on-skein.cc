@@ -41,6 +41,7 @@ spoton_skein::spoton_skein(void)
 spoton_skein::~spoton_skein()
 {
   gcry_free(m_key);
+  gcry_free(m_tweak);
 }
 
 void spoton_skein::setKey(const QByteArray &key, bool *ok)
