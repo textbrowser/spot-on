@@ -74,4 +74,41 @@ void spoton_skein::setKey(const QByteArray &key, bool *ok)
 
  done_label:
   gcry_free(m_key);
+  m_key = 0;
+  m_keyLength = 0;
+}
+
+void spoton_skein::setTweak(const QByteArray &tweak, bool *ok)
+{
+  if(tweak.size() != 16)
+    {
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
+
+  gcry_free(m_tweak);
+  m_tweak = static_cast<char *> (calloc(tweak.length(), sizeof(char)));
+  m_tweakLength = tweak.length();
+
+  if(!m_tweak)
+    {
+      m_tweakLength = 0;
+
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
+
+  if(*ok)
+    *ok = true;
+
+  return;
+
+ done_label:
+  gcry_free(m_tweak);
+  m_tweak = 0;
+  m_tweakLength = 0;
 }

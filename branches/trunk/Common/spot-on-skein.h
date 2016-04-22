@@ -36,10 +36,13 @@ class spoton_skein
   spoton_skein(void);
   ~spoton_skein();
   void setKey(const QByteArray &key, bool *ok);
+  void setTweak(const QByteArray &tweak, bool *ok);
 
  private:
   char *m_key; // Stored in secure memory.
+  char *m_tweak;
   size_t m_keyLength;
+  size_t m_tweakLength;
 };
 
 #endif
