@@ -36,6 +36,8 @@ spoton_skein::spoton_skein(void)
 {
   m_key = 0;
   m_keyLength = 0;
+  m_tweak = 0;
+  m_tweakLength = 0;
 }
 
 spoton_skein::~spoton_skein()
