@@ -49,6 +49,8 @@ spoton_skein::~spoton_skein()
 
 void spoton_skein::setKey(const QByteArray &key, bool *ok)
 {
+  QWriteLocker locker(&m_locker);
+
   if(key.size() != 32)
     {
       if(*ok)
@@ -87,6 +89,8 @@ void spoton_skein::setKey(const QByteArray &key, bool *ok)
 
 void spoton_skein::setTweak(const QByteArray &tweak, bool *ok)
 {
+  QWriteLocker locker(&m_locker);
+
   if(tweak.size() != 16)
     {
       if(ok)

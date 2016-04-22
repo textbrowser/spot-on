@@ -29,6 +29,7 @@
 #define _spoton_skein_h_
 
 #include <QByteArray>
+#include <QReadWriteLock>
 
 class spoton_skein
 {
@@ -39,6 +40,7 @@ class spoton_skein
   void setTweak(const QByteArray &tweak, bool *ok);
 
  private:
+  QReadWriteLock m_locker;
   char *m_key; // Stored in secure memory.
   char *m_tweak;
   size_t m_blockSize;
