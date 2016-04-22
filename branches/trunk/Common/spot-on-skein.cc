@@ -26,3 +26,11 @@
 */
 
 #include "spot-on-skein.h"
+
+spoton_skein::spoton_skein(void)
+{
+}
+
+spoton_skein::~spoton_skein()
+{
+}

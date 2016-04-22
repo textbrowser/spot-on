@@ -27,4 +27,12 @@
 
 #ifndef _spoton_skein_h_
 #define _spoton_skein_h_
+
+class spoton_skein
+{
+ public:
+  spoton_skein(void);
+  ~spoton_skein();
+};
+
 #endif
