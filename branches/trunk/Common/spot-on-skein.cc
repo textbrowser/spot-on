@@ -27,10 +27,51 @@
 
 #include "spot-on-skein.h"
 
+extern "C"
+{
+#include <gcrypt.h>
+}
+
 spoton_skein::spoton_skein(void)
 {
+  m_key = 0;
+  m_keyLength = 0;
 }
 
 spoton_skein::~spoton_skein()
 {
+  gcry_free(m_key);
+}
+
+void spoton_skein::setKey(const QByteArray &key, bool *ok)
+{
+  if(key.size() != 32)
+    {
+      if(*ok)
+	*ok = false;
+
+      goto done_label;
+    }
+
+  gcry_free(m_key);
+  m_key = static_cast<char *> (gcry_calloc_secure(key.length(), sizeof(char)));
+  m_keyLength = key.length();
+
+  if(!m_key)
+    {
+      m_keyLength = 0;
+
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
+
+  if(*ok)
+    *ok = true;
+
+  return;
+
+ done_label:
+  gcry_free(m_key);
 }

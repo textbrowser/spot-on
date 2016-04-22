@@ -28,11 +28,18 @@
 #ifndef _spoton_skein_h_
 #define _spoton_skein_h_
 
+#include <QByteArray>
+
 class spoton_skein
 {
  public:
   spoton_skein(void);
   ~spoton_skein();
+  void setKey(const QByteArray &key, bool *ok);
+
+ private:
+  char *m_key; // Stored in secure memory.
+  size_t m_keyLength;
 };
 
 #endif
