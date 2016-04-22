@@ -177,6 +177,19 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_15">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item>
@@ -893,8 +906,8 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-134</y>
-             <width>812</width>
+             <y>0</y>
+             <width>827</width>
              <height>582</height>
             </rect>
            </property>
@@ -1202,7 +1215,7 @@
                     </item>
                    </layout>
                   </widget>
-                  <widget class="QWidget" name="">
+                  <widget class="QWidget" name="layoutWidget">
                    <layout class="QVBoxLayout" name="verticalLayout_29">
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_20">
