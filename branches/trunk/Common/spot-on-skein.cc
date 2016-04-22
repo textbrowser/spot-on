@@ -47,6 +47,20 @@ spoton_skein::~spoton_skein()
   gcry_free(m_tweak);
 }
 
+QByteArray spoton_skein::decrypted(const QByteArray &bytes, bool *ok) const
+{
+  Q_UNUSED(bytes);
+  Q_UNUSED(ok);
+  return QByteArray();
+}
+
+QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
+{
+  Q_UNUSED(bytes);
+  Q_UNUSED(ok);
+  return QByteArray();
+}
+
 void spoton_skein::setKey(const QByteArray &key, bool *ok)
 {
   QWriteLocker locker(&m_locker);

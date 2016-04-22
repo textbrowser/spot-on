@@ -36,6 +36,8 @@ class spoton_skein
  public:
   spoton_skein(void);
   ~spoton_skein();
+  QByteArray decrypted(const QByteArray &bytes, bool *ok) const;
+  QByteArray encrypted(const QByteArray &bytes, bool *ok) const;
   void setKey(const QByteArray &key, bool *ok);
   void setTweak(const QByteArray &tweak, bool *ok);
 
