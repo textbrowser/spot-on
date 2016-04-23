@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QDataStream>
 #include <QtCore/qmath.h>
 
 #include "spot-on-misc.h"
@@ -87,7 +88,23 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
     plaintext = plaintext.leftJustified
       (static_cast<int> (m_blockSize) *
        static_cast<int> (qCeil(static_cast<qreal> (plaintext.length()) /
-			       static_cast<qreal> (m_blockSize))), 0);
+			       static_cast<qreal> (m_blockSize)) + 1), 0);
+
+  QByteArray originalLength;
+  QDataStream out(&originalLength, QIODevice::WriteOnly);
+
+  out << bytes.length();
+
+  if(out.status() != QDataStream::Ok)
+    {
+      if(ok)
+	*ok = false;
+
+      return QByteArray();
+    }
+
+  plaintext.replace
+    (plaintext.length() - sizeof(int), sizeof(int), originalLength);
 
   for(int i = 0; i < plaintext.length() / static_cast<int> (m_blockSize); i++)
     {
