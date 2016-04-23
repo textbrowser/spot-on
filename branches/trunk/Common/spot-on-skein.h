@@ -42,12 +42,13 @@ class spoton_skein
   void setTweak(const QByteArray &tweak, bool *ok);
 
  private:
-  QReadWriteLock m_locker;
   char *m_key; // Stored in secure memory.
   char *m_tweak;
+  mutable QReadWriteLock m_locker;
   size_t m_blockSize;
   size_t m_keyLength;
   size_t m_tweakLength;
+  void setInitializationVector(QByteArray &bytes, bool *ok) const;
 };
 
 #endif

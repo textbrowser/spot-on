@@ -25,6 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QtCore/qmath.h>
+
 #include "spot-on-skein.h"
 
 extern "C"
@@ -56,9 +58,72 @@ QByteArray spoton_skein::decrypted(const QByteArray &bytes, bool *ok) const
 
 QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
 {
-  Q_UNUSED(bytes);
-  Q_UNUSED(ok);
-  return QByteArray();
+  QByteArray iv;
+
+  setInitializationVector(iv, ok);
+
+  if(iv.isEmpty())
+    {
+      if(ok)
+	*ok = false;
+
+      return QByteArray();
+    }
+
+  /*
+  ** Let's resize the container to the block size.
+  */
+
+  QByteArray encrypted(bytes);
+  QReadLocker locker(&m_locker);
+
+  if(encrypted.isEmpty())
+    encrypted = encrypted.leftJustified
+      (static_cast<int> (m_blockSize), 0);
+  else if(static_cast<size_t> (encrypted.length()) < m_blockSize)
+    encrypted = encrypted.leftJustified
+      (static_cast<int> (m_blockSize) *
+       static_cast<int> (qCeil(static_cast<qreal> (encrypted.length()) /
+			       static_cast<qreal> (m_blockSize))), 0);
+
+  return encrypted;
+}
+
+void spoton_skein::setInitializationVector(QByteArray &bytes, bool *ok) const
+{
+  QReadLocker locker(&m_locker);
+  size_t ivLength = m_keyLength;
+
+  locker.unlock();
+
+  if(ok)
+    *ok = false;
+
+  if(ivLength <= 0)
+    return;
+
+  char *iv = static_cast<char *> (gcry_calloc(ivLength, sizeof(char)));
+
+  if(iv)
+    {
+      if(ok)
+	*ok = true;
+
+      if(bytes.isEmpty())
+	{
+	  gcry_fast_random_poll();
+	  gcry_create_nonce(iv, ivLength);
+	  bytes.append(iv, static_cast<int> (ivLength));
+	}
+      else
+	{
+	  memcpy
+	    (iv,
+	     bytes.constData(),
+	     qMin(ivLength, static_cast<size_t> (bytes.length())));
+	  bytes.remove(0, static_cast<int> (ivLength));
+	}
+    }
 }
 
 void spoton_skein::setKey(const QByteArray &key, bool *ok)
@@ -74,8 +139,9 @@ void spoton_skein::setKey(const QByteArray &key, bool *ok)
     }
 
   gcry_free(m_key);
-  m_key = static_cast<char *> (gcry_calloc_secure(key.length(), sizeof(char)));
-  m_keyLength = key.length();
+  m_key = static_cast<char *>
+    (gcry_calloc_secure(static_cast<size_t> (key.length()), sizeof(char)));
+  m_keyLength = static_cast<size_t> (key.length());
 
   if(!m_key)
     {
@@ -91,7 +157,7 @@ void spoton_skein::setKey(const QByteArray &key, bool *ok)
   if(*ok)
     *ok = true;
 
-  m_blockSize = 8 * m_keyLength;
+  m_blockSize = m_keyLength;
   return;
 
  done_label:
@@ -114,8 +180,9 @@ void spoton_skein::setTweak(const QByteArray &tweak, bool *ok)
     }
 
   gcry_free(m_tweak);
-  m_tweak = static_cast<char *> (calloc(tweak.length(), sizeof(char)));
-  m_tweakLength = tweak.length();
+  m_tweak = static_cast<char *>
+    (calloc(static_cast<size_t> (tweak.length()), sizeof(char)));
+  m_tweakLength = static_cast<size_t> (tweak.length());
 
   if(!m_tweak)
     {
