@@ -87,6 +87,7 @@ class spoton_misc
   static QByteArray signaturePublicKeyFromPublicKeyHash
     (const QByteArray &publicKeyHash, spoton_crypt *crypt);
   static QByteArray urlToEncoded(const QUrl &url);
+  static QByteArray xor_arrays(const QByteArray &a, const QByteArray &b);
   static QHash<QString, QByteArray> retrieveEchoShareInformation
     (const QString &communityName, spoton_crypt *crypt);
   static QHostAddress peerAddressAndPort(const int socketDescriptor,

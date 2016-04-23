@@ -27,6 +27,7 @@
 
 #include <QtCore/qmath.h>
 
+#include "spot-on-misc.h"
 #include "spot-on-skein.h"
 
 extern "C"
@@ -74,17 +75,36 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
   ** Let's resize the container to the block size.
   */
 
-  QByteArray encrypted(bytes);
+  QByteArray block;
+  QByteArray encrypted;
+  QByteArray plaintext(bytes);
   QReadLocker locker(&m_locker);
 
-  if(encrypted.isEmpty())
-    encrypted = encrypted.leftJustified
+  if(plaintext.isEmpty())
+    plaintext = plaintext.leftJustified
       (static_cast<int> (m_blockSize), 0);
-  else if(static_cast<size_t> (encrypted.length()) < m_blockSize)
-    encrypted = encrypted.leftJustified
+  else if(static_cast<size_t> (plaintext.length()) < m_blockSize)
+    plaintext = plaintext.leftJustified
       (static_cast<int> (m_blockSize) *
-       static_cast<int> (qCeil(static_cast<qreal> (encrypted.length()) /
+       static_cast<int> (qCeil(static_cast<qreal> (plaintext.length()) /
 			       static_cast<qreal> (m_blockSize))), 0);
+
+  for(int i = 0; i < plaintext.length() / static_cast<int> (m_blockSize); i++)
+    {
+      QByteArray p;
+      int position = i * static_cast<int> (m_blockSize);
+
+      p = plaintext.mid(position, static_cast<int> (m_blockSize));
+
+      if(i == 0)
+	block = spoton_misc::xor_arrays(block, iv);
+      else
+	block = spoton_misc::xor_arrays(block, p);
+
+      /*
+      ** Pass the block container into Skein.
+      */
+    }
 
   return encrypted;
 }
