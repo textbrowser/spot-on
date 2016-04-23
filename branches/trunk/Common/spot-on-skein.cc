@@ -28,6 +28,7 @@
 #include <QDataStream>
 #include <QtCore/qmath.h>
 
+#include "Common/spot-on-crypt.h"
 #include "spot-on-misc.h"
 #include "spot-on-skein.h"
 
@@ -510,19 +511,22 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
   ** Let's resize the container to the block size.
   */
 
-  QByteArray block;
+  QByteArray block(iv.length(), 0);
   QByteArray encrypted;
   QByteArray plaintext(bytes);
   QReadLocker locker(&m_locker);
+  size_t blockSize = m_blockSize;
+
+  locker.unlock();
 
   if(plaintext.isEmpty())
     plaintext = plaintext.leftJustified
-      (static_cast<int> (m_blockSize), 0);
-  else if(static_cast<size_t> (plaintext.length()) < m_blockSize)
+      (static_cast<int> (blockSize), 0);
+  else
     plaintext = plaintext.leftJustified
-      (static_cast<int> (m_blockSize) *
+      (static_cast<int> (blockSize) *
        static_cast<int> (qCeil(static_cast<qreal> (plaintext.length()) /
-			       static_cast<qreal> (m_blockSize)) + 1), 0);
+			       static_cast<qreal> (blockSize)) + 1), 0);
 
   QByteArray originalLength;
   QDataStream out(&originalLength, QIODevice::WriteOnly);
@@ -540,12 +544,14 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
   plaintext.replace
     (plaintext.length() - sizeof(int), sizeof(int), originalLength);
 
-  for(int i = 0; i < plaintext.length() / static_cast<int> (m_blockSize); i++)
+  int iterations = plaintext.length() / static_cast<int> (blockSize);
+
+  for(int i = 0; i < iterations; i++)
     {
       QByteArray p;
-      int position = i * static_cast<int> (m_blockSize);
+      int position = i * static_cast<int> (blockSize);
 
-      p = plaintext.mid(position, static_cast<int> (m_blockSize));
+      p = plaintext.mid(position, static_cast<int> (blockSize));
 
       if(i == 0)
 	block = spoton_misc::xor_arrays(block, iv);
@@ -556,12 +562,15 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
       ** Pass the block container into Skein.
       */
 
+      QReadLocker locker(&m_locker);
+
       skein_threefish_encrypt(block.data(),
 			      m_key,
 			      m_tweak,
 			      p.constData(),
 			      static_cast<size_t> (p.length()),
 			      256);
+      locker.unlock();
       encrypted.append(block);
     }
 
@@ -688,6 +697,22 @@ void spoton_skein::setTweak(const QByteArray &tweak, bool *ok)
 
 void spoton_skein::test1(void)
 {
+  QByteArray c;
+  QByteArray p;
+  bool ok = true;
+  spoton_skein *s = new spoton_skein();
+
+  s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
+
+  if(ok)
+    s->setTweak("76543210fedcba98", &ok);
+
+  p = "The pink duck visited the Soap Queen. A happy moment indeed.";
+
+  if(ok)
+    c = s->encrypted(p, &ok);
+
+  delete s;
 }
 
 void spoton_skein::test2(void)
