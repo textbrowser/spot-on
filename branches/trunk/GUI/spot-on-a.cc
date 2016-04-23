@@ -62,6 +62,7 @@ extern "C"
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetooth.h>
 #endif
+#include "Common/spot-on-skein.h"
 #include "spot-on-buzzpage.h"
 #include "spot-on-defines.h"
 #include "spot-on.h"
@@ -416,6 +417,9 @@ spoton::spoton(void):QMainWindow()
   m_locked = false;
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
   spoton_crypt::memcmp_test();
+  spoton_skein::test1();
+  spoton_skein::test2();
+  spoton_skein::test3();
   spoton_smp::test1();
   spoton_smp::test2();
   spoton_smp::test3();

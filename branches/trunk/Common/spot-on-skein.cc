@@ -685,3 +685,15 @@ void spoton_skein::setTweak(const QByteArray &tweak, bool *ok)
   m_tweak = 0;
   m_tweakLength = 0;
 }
+
+void spoton_skein::test1(void)
+{
+}
+
+void spoton_skein::test2(void)
+{
+}
+
+void spoton_skein::test3(void)
+{
+}
