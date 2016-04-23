@@ -124,6 +124,8 @@ void spoton_skein::setInitializationVector(QByteArray &bytes, bool *ok) const
 	  bytes.remove(0, static_cast<int> (ivLength));
 	}
     }
+
+  gcry_free(iv);
 }
 
 void spoton_skein::setKey(const QByteArray &key, bool *ok)
