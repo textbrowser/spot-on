@@ -121,6 +121,8 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
       /*
       ** Pass the block container into Skein.
       */
+
+      encrypted.append(block);
     }
 
   return encrypted;
