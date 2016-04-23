@@ -48,6 +48,7 @@ class spoton_skein
   size_t m_blockSize;
   size_t m_keyLength;
   size_t m_tweakLength;
+  QByteArray threefish_encrypt(const QByteArray &bytes, bool *ok) const;
   void setInitializationVector(QByteArray &bytes, bool *ok) const;
 };
 
