@@ -128,25 +128,6 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
   return encrypted;
 }
 
-QByteArray spoton_skein::threefish_encrypt
-(const QByteArray &bytes, bool *ok) const
-{
-  QByteArray encrypted;
-  size_t Nr = 72;
-  size_t Nw = 4;
-  size_t P_size = static_cast<size_t> (bytes.length());
-  uint8_t Pi[4] = {0, 3, 2, 1};
-
-  if(ok)
-    *ok = true;
-
-  Q_UNUSED(Nr);
-  Q_UNUSED(Nw);
-  Q_UNUSED(P_size);
-  Q_UNUSED(Pi);
-  return encrypted;
-}
-
 void spoton_skein::setInitializationVector(QByteArray &bytes, bool *ok) const
 {
   QReadLocker locker(&m_locker);
