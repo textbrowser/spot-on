@@ -574,7 +574,7 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
       encrypted.append(block);
     }
 
-  return encrypted;
+  return iv + encrypted;
 }
 
 void spoton_skein::setInitializationVector(QByteArray &bytes, bool *ok) const
