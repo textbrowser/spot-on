@@ -534,6 +534,46 @@ QByteArray spoton_skein::decrypted(const QByteArray &bytes, bool *ok) const
       decrypted.append(block);
     }
 
+  QByteArray originalLength;
+  int s = 0;
+
+  if(decrypted.length() > static_cast<int> (sizeof(int)))
+    originalLength = decrypted.mid
+      (decrypted.length() - static_cast<int> (sizeof(int)),
+       static_cast<int> (sizeof(int)));
+
+  if(!originalLength.isEmpty())
+    {
+      QDataStream in(&originalLength, QIODevice::ReadOnly);
+
+      in >> s;
+
+      if(in.status() != QDataStream::Ok)
+	{
+	  if(ok)
+	    *ok = false;
+
+	  decrypted.clear();
+	}
+      else
+	{
+	  if(s >= 0 && s <= decrypted.length())
+	    {
+	      if(ok)
+		*ok = true;
+
+	      decrypted = decrypted.mid(0, s);
+	    }
+	  else
+	    {
+	      if(ok)
+		*ok = false;
+
+	      decrypted.clear();
+	    }
+	}
+    }
+
   return decrypted;
 }
 
@@ -764,6 +804,31 @@ void spoton_skein::test1(void)
 
 void spoton_skein::test2(void)
 {
+  QByteArray c;
+  QByteArray p;
+  bool ok = true;
+  spoton_skein *s = new spoton_skein();
+
+  s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
+
+  if(ok)
+    s->setTweak("76543210fedcba98", &ok);
+
+  p = "If you wish to glimpse inside a human soul "
+    "and get to know a man, don't bother analyzing "
+    "his ways of being silent, of talking, of weeping, "
+    "of seeing how much he is moved by noble ideas; you "
+    "will get better results if you just watch him laugh. "
+    "If he laughs well, he's a good man.";
+
+  if(ok)
+    c = s->encrypted(p, &ok);
+
+  if(ok)
+    p = s->decrypted(c, &ok);
+
+  qDebug() << ok << p;
+  delete s;
 }
 
 void spoton_skein::test3(void)
