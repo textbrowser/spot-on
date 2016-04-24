@@ -569,7 +569,7 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
 			      m_tweak,
 			      p.constData(),
 			      static_cast<size_t> (p.length()),
-			      256);
+			      8 * m_blockSize);
       locker.unlock();
       encrypted.append(block);
     }
