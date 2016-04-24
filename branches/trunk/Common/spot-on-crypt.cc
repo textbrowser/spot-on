@@ -735,8 +735,8 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
 				    0,
 				    0)) == 0)
 	{
-	  int s = 0;
 	  QByteArray originalLength;
+	  int s = 0;
 
 	  if(decrypted.length() > static_cast<int> (sizeof(int)))
 	    originalLength = decrypted.mid
