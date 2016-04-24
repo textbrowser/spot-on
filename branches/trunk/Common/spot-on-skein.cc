@@ -589,6 +589,8 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
       return QByteArray();
     }
 
+  locker.unlock();
+
   QByteArray iv;
 
   setInitializationVector(iv, ok);
@@ -600,6 +602,8 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
 
       return QByteArray();
     }
+
+  locker.relock();
 
   /*
   ** Let's resize the container to the block size.
