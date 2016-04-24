@@ -495,6 +495,16 @@ QByteArray spoton_skein::decrypted(const QByteArray &bytes, bool *ok) const
 
 QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
 {
+  QReadLocker locker(&m_locker);
+
+  if(!m_key || !m_tweak)
+    {
+      if(ok)
+	*ok = false;
+
+      return QByteArray();
+    }
+
   QByteArray iv;
 
   setInitializationVector(iv, ok);
@@ -514,7 +524,6 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
   QByteArray block(iv.length(), 0);
   QByteArray encrypted;
   QByteArray plaintext(bytes);
-  QReadLocker locker(&m_locker);
   size_t blockSize = m_blockSize;
 
   locker.unlock();
@@ -562,15 +571,12 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
       ** Pass the block container into Skein.
       */
 
-      QReadLocker locker(&m_locker);
-
       skein_threefish_encrypt(block.data(),
 			      m_key,
 			      m_tweak,
 			      p.constData(),
 			      static_cast<size_t> (p.length()),
 			      8 * m_blockSize);
-      locker.unlock();
       encrypted.append(block);
     }
 
