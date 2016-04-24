@@ -488,9 +488,29 @@ spoton_skein::~spoton_skein()
 
 QByteArray spoton_skein::decrypted(const QByteArray &bytes, bool *ok) const
 {
-  Q_UNUSED(bytes);
-  Q_UNUSED(ok);
-  return QByteArray();
+  QReadLocker locker(&m_locker);
+
+  if(!m_key || !m_tweak)
+    {
+      if(ok)
+	*ok = false;
+
+      return QByteArray();
+    }
+
+  QByteArray iv(bytes.mid(0, static_cast<int> (m_keyLength)));
+
+  if(iv.length() != static_cast<int> (m_keyLength))
+    {
+      if(ok)
+	*ok = false;
+
+      return QByteArray();
+    }
+
+  QByteArray decrypted(bytes.mid(iv.length()));
+
+  return decrypted;
 }
 
 QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
