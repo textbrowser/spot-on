@@ -39,6 +39,7 @@
 #include <limits>
 
 #include "Common/spot-on-common.h"
+#include "Common/spot-on-skein.h"
 #include "spot-on-crypt.h"
 #include "spot-on-misc.h"
 
@@ -430,6 +431,8 @@ QStringList spoton_crypt::cipherTypes(void)
 	types.removeAt(i);
     }
 
+  types << "threefish";
+  qSort(types.begin(), types.end());
   return types;
 }
 
@@ -573,6 +576,7 @@ void spoton_crypt::init(const QString &cipherType,
   m_iterationCount = iterationCount;
   m_privateKey = 0;
   m_privateKeyLength = 0;
+  m_skein = 0;
   m_symmetricKey = 0;
 
   if(m_cipherAlgorithm)
@@ -671,6 +675,7 @@ void spoton_crypt::init(const QString &cipherType,
 
 spoton_crypt::~spoton_crypt()
 {
+  delete m_skein;
   m_publicKey.clear();
   gcry_cipher_close(m_cipherHandle);
   gcry_free(m_hashKey);
