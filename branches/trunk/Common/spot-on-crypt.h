@@ -59,7 +59,7 @@ extern "C"
 #include <QSslConfiguration>
 #include <QStringList>
 
-class spoton_skein;
+class spoton_threefish;
 
 class spoton_crypt
 {
@@ -218,7 +218,7 @@ class spoton_crypt
   size_t m_hashKeyLength;
   size_t m_privateKeyLength;
   size_t m_symmetricKeyLength;
-  spoton_skein *m_skein;
+  spoton_threefish *m_threefish;
   unsigned long m_iterationCount;
   QByteArray publicKeyDecryptMcEliece(const QByteArray &data, bool *ok);
   QByteArray publicKeyDecryptNTRU(const QByteArray &data, bool *ok);

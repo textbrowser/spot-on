@@ -39,7 +39,7 @@
 #include <limits>
 
 #include "Common/spot-on-common.h"
-#include "Common/spot-on-skein.h"
+#include "Common/spot-on-threefish.h"
 #include "spot-on-crypt.h"
 #include "spot-on-misc.h"
 
@@ -576,15 +576,15 @@ void spoton_crypt::init(const QString &cipherType,
   m_iterationCount = iterationCount;
   m_privateKey = 0;
   m_privateKeyLength = 0;
-  m_skein = 0;
+  m_saltLength = saltLength;
   m_symmetricKey = 0;
+  m_threefish = 0;
 
   if(m_cipherAlgorithm)
     m_symmetricKeyLength = gcry_cipher_get_algo_keylen(m_cipherAlgorithm);
   else
     m_symmetricKeyLength = 0;
 
-  m_saltLength = saltLength;
   setHashKey(hashKey);
 
   if(m_symmetricKeyLength > 0)
@@ -675,7 +675,7 @@ void spoton_crypt::init(const QString &cipherType,
 
 spoton_crypt::~spoton_crypt()
 {
-  delete m_skein;
+  delete m_threefish;
   m_publicKey.clear();
   gcry_cipher_close(m_cipherHandle);
   gcry_free(m_hashKey);

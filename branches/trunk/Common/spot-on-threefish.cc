@@ -30,7 +30,7 @@
 
 #include "Common/spot-on-crypt.h"
 #include "spot-on-misc.h"
-#include "spot-on-skein.h"
+#include "spot-on-threefish.h"
 
 extern "C"
 {
@@ -77,30 +77,30 @@ static void bytesToWords(uint64_t *W,
 			 const char *bytes,
 			 const size_t bytes_size);
 static void purge(void *buffer, const size_t buffer_size);
-static void skein_threefish_decrypt(char *D,
-				    const char *K,
-				    const char *T,
-				    const char *C,
-				    const size_t C_size,
-				    const size_t block_size);
-static void skein_threefish_encrypt(char *E,
-				    const char *K,
-				    const char *T,
-				    const char *P,
-				    const size_t P_size,
-				    const size_t block_size);
 static void threefish_decrypt(char *D,
 			      const char *K,
 			      const char *T,
 			      const char *C,
 			      const size_t C_size,
 			      const size_t block_size);
+static void threefish_decrypt_implementation(char *D,
+					     const char *K,
+					     const char *T,
+					     const char *C,
+					     const size_t C_size,
+					     const size_t block_size);
 static void threefish_encrypt(char *E,
 			      const char *K,
 			      const char *T,
 			      const char *P,
 			      const size_t P_size,
 			      const size_t block_size);
+static void threefish_encrypt_implementation(char *E,
+					     const char *K,
+					     const char *T,
+					     const char *P,
+					     const size_t P_size,
+					     const size_t block_size);
 static void wordsToBytes(char *B,
 			 const uint64_t *words,
 			 const size_t words_size);
@@ -210,12 +210,12 @@ static void purge(void *buffer,
     }
 }
 
-static void skein_threefish_decrypt(char *D,
-				    const char *K,
-				    const char *T,
-				    const char *C,
-				    const size_t C_size,
-				    const size_t block_size)
+static void threefish_decrypt(char *D,
+			      const char *K,
+			      const char *T,
+			      const char *C,
+			      const size_t C_size,
+			      const size_t block_size)
 {
   if(!C || C_size <= 0 || !D || !K || !T || block_size <= 0)
     return;
@@ -241,49 +241,15 @@ static void skein_threefish_decrypt(char *D,
   else
     return;
 
-  threefish_decrypt(D, K, T, C, C_size, block_size);
+  threefish_decrypt_implementation(D, K, T, C, C_size, block_size);
 }
 
-static void skein_threefish_encrypt(char *E,
-				    const char *K,
-				    const char *T,
-				    const char *P,
-				    const size_t P_size,
-				    const size_t block_size)
-{
-  if(!E || !K || !P || P_size <= 0 || !T || block_size <= 0)
-    return;
-
-  if(block_size == 256)
-    {
-      Nr = 72;
-      Nw = 4;
-      Pi = Pi_4;
-    }
-  else if(block_size == 512)
-    {
-      Nr = 72;
-      Nw = 8;
-      Pi = Pi_8;
-    }
-  else if(block_size == 1024)
-    {
-      Nr = 80;
-      Nw = 16;
-      Pi = Pi_16;
-    }
-  else
-    return;
-
-  threefish_encrypt(E, K, T, P, P_size, block_size);
-}
-
-static void threefish_decrypt(char *D,
-			      const char *K,
-			      const char *T,
-			      const char *C,
-			      const size_t C_size,
-			      const size_t block_size)
+static void threefish_decrypt_implementation(char *D,
+					     const char *K,
+					     const char *T,
+					     const char *C,
+					     const size_t C_size,
+					     const size_t block_size)
 {
   if(!C || C_size <= 0 || !D || !K || !T || block_size <= 0)
     return;
@@ -371,6 +337,40 @@ static void threefish_encrypt(char *E,
 			      const char *P,
 			      const size_t P_size,
 			      const size_t block_size)
+{
+  if(!E || !K || !P || P_size <= 0 || !T || block_size <= 0)
+    return;
+
+  if(block_size == 256)
+    {
+      Nr = 72;
+      Nw = 4;
+      Pi = Pi_4;
+    }
+  else if(block_size == 512)
+    {
+      Nr = 72;
+      Nw = 8;
+      Pi = Pi_8;
+    }
+  else if(block_size == 1024)
+    {
+      Nr = 80;
+      Nw = 16;
+      Pi = Pi_16;
+    }
+  else
+    return;
+
+  threefish_encrypt_implementation(E, K, T, P, P_size, block_size);
+}
+
+static void threefish_encrypt_implementation(char *E,
+					     const char *K,
+					     const char *T,
+					     const char *P,
+					     const size_t P_size,
+					     const size_t block_size)
 {
   if(!E || !K || !T || !P || P_size <= 0 || block_size <= 0)
     return;
@@ -469,7 +469,7 @@ static void wordsToBytes(char *B,
     }
 }
 
-spoton_skein::spoton_skein(void)
+spoton_threefish::spoton_threefish(void)
 {
   m_blockSize = 0;
   m_key = 0;
@@ -478,13 +478,13 @@ spoton_skein::spoton_skein(void)
   m_tweakLength = 0;
 }
 
-spoton_skein::~spoton_skein()
+spoton_threefish::~spoton_threefish()
 {
   gcry_free(m_key);
   gcry_free(m_tweak);
 }
 
-QByteArray spoton_skein::decrypted(const QByteArray &bytes, bool *ok) const
+QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
 {
   QReadLocker locker(&m_locker);
 
@@ -516,14 +516,14 @@ QByteArray spoton_skein::decrypted(const QByteArray &bytes, bool *ok) const
     {
       int position = i * static_cast<int> (m_blockSize);
 
-      skein_threefish_decrypt(block.data(),
-			      m_key,
-			      m_tweak,
-			      ciphertext.mid(position,
-					     static_cast<int> (m_blockSize)).
-			      constData(),
-			      m_blockSize,
-			      8 * m_blockSize);
+      threefish_decrypt(block.data(),
+			m_key,
+			m_tweak,
+			ciphertext.mid(position,
+				       static_cast<int> (m_blockSize)).
+			constData(),
+			m_blockSize,
+			8 * m_blockSize);
 
       if(i == 0)
 	block = spoton_misc::xor_arrays(block, iv);
@@ -577,7 +577,7 @@ QByteArray spoton_skein::decrypted(const QByteArray &bytes, bool *ok) const
   return decrypted;
 }
 
-QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
+QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
 {
   QReadLocker locker(&m_locker);
 
@@ -652,19 +652,20 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
       else
 	block = spoton_misc::xor_arrays(block, p);
 
-      skein_threefish_encrypt(block.data(),
-			      m_key,
-			      m_tweak,
-			      block,
-			      m_blockSize,
-			      8 * m_blockSize);
+      threefish_encrypt(block.data(),
+			m_key,
+			m_tweak,
+			block,
+			m_blockSize,
+			8 * m_blockSize);
       encrypted.append(block);
     }
 
   return iv + encrypted;
 }
 
-void spoton_skein::setInitializationVector(QByteArray &bytes, bool *ok) const
+void spoton_threefish::setInitializationVector
+(QByteArray &bytes, bool *ok) const
 {
   QReadLocker locker(&m_locker);
   size_t ivLength = m_keyLength;
@@ -703,7 +704,7 @@ void spoton_skein::setInitializationVector(QByteArray &bytes, bool *ok) const
   gcry_free(iv);
 }
 
-void spoton_skein::setKey(const QByteArray &key, bool *ok)
+void spoton_threefish::setKey(const QByteArray &key, bool *ok)
 {
   QWriteLocker locker(&m_locker);
 
@@ -744,7 +745,7 @@ void spoton_skein::setKey(const QByteArray &key, bool *ok)
   m_keyLength = 0;
 }
 
-void spoton_skein::setTweak(const QByteArray &tweak, bool *ok)
+void spoton_threefish::setTweak(const QByteArray &tweak, bool *ok)
 {
   QWriteLocker locker(&m_locker);
 
@@ -782,12 +783,12 @@ void spoton_skein::setTweak(const QByteArray &tweak, bool *ok)
   m_tweakLength = 0;
 }
 
-void spoton_skein::test1(void)
+void spoton_threefish::test1(void)
 {
   QByteArray c;
   QByteArray p;
   bool ok = true;
-  spoton_skein *s = new spoton_skein();
+  spoton_threefish *s = new spoton_threefish();
 
   s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
 
@@ -806,12 +807,12 @@ void spoton_skein::test1(void)
   delete s;
 }
 
-void spoton_skein::test2(void)
+void spoton_threefish::test2(void)
 {
   QByteArray c;
   QByteArray p;
   bool ok = true;
-  spoton_skein *s = new spoton_skein();
+  spoton_threefish *s = new spoton_threefish();
 
   s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
 
@@ -835,12 +836,12 @@ void spoton_skein::test2(void)
   delete s;
 }
 
-void spoton_skein::test3(void)
+void spoton_threefish::test3(void)
 {
   QByteArray c;
   QByteArray p;
   bool ok = true;
-  spoton_skein *s = new spoton_skein();
+  spoton_threefish *s = new spoton_threefish();
 
   s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
 

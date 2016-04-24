@@ -25,17 +25,17 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _spoton_skein_h_
-#define _spoton_skein_h_
+#ifndef _spoton_threefish_h_
+#define _spoton_threefish_h_
 
 #include <QByteArray>
 #include <QReadWriteLock>
 
-class spoton_skein
+class spoton_threefish
 {
  public:
-  spoton_skein(void);
-  ~spoton_skein();
+  spoton_threefish(void);
+  ~spoton_threefish();
   QByteArray decrypted(const QByteArray &bytes, bool *ok) const;
   QByteArray encrypted(const QByteArray &bytes, bool *ok) const;
   static void test1(void);
