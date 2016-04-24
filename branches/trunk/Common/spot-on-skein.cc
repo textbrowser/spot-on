@@ -506,7 +506,7 @@ QByteArray spoton_skein::decrypted(const QByteArray &bytes, bool *ok) const
       return QByteArray();
     }
 
-  QByteArray block(iv.length(), 0);
+  QByteArray block(static_cast<int> (m_blockSize), 0);
   QByteArray c;
   QByteArray ciphertext(bytes.mid(iv.length()));
   QByteArray decrypted;
@@ -611,8 +611,8 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
       skein_threefish_encrypt(block.data(),
 			      m_key,
 			      m_tweak,
-			      p.constData(),
-			      static_cast<size_t> (p.length()),
+			      block,
+			      m_blockSize,
 			      8 * m_blockSize);
       encrypted.append(block);
     }
