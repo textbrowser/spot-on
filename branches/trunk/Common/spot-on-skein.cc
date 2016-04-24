@@ -833,4 +833,28 @@ void spoton_skein::test2(void)
 
 void spoton_skein::test3(void)
 {
+  QByteArray c;
+  QByteArray p;
+  bool ok = true;
+  spoton_skein *s = new spoton_skein();
+
+  s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
+
+  if(ok)
+    s->setTweak("76543210fedcba98", &ok);
+
+  p = "The truth is always an abyss. One must - as in a swimming pool "
+    "- dare to dive from the quivering springboard of trivial "
+    "everyday experience and sink into the depths, in order to "
+    "later rise again - laughing and fighting for breath - to "
+    "the now doubly illuminated surface of things.";
+
+  if(ok)
+    c = s->encrypted(p, &ok);
+
+  if(ok)
+    p = s->decrypted(c, &ok);
+
+  qDebug() << ok << p;
+  delete s;
 }
