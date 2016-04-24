@@ -587,10 +587,6 @@ QByteArray spoton_skein::encrypted(const QByteArray &bytes, bool *ok) const
       else
 	block = spoton_misc::xor_arrays(block, p);
 
-      /*
-      ** Pass the block container into Skein.
-      */
-
       skein_threefish_encrypt(block.data(),
 			      m_key,
 			      m_tweak,
