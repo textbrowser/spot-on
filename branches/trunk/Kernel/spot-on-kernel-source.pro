@@ -18,6 +18,7 @@ SOURCES		= ../Common/spot-on-crypt.cc \
 		  ../Common/spot-on-misc.cc \
                   ../Common/spot-on-receive.cc \
 		  ../Common/spot-on-send.cc \
+		  ../Common/spot-on-skein.cc \
 		  spot-on-fireshare.cc \
 		  spot-on-gui-server.cc \
 		  spot-on-kernel-a.cc \
