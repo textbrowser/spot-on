@@ -40,13 +40,7 @@ extern "C"
 static const uint8_t *Pi = 0;
 static const uint8_t *RPi = 0;
 static const uint8_t Pi_4[4] = {0, 3, 2, 1};
-static const uint8_t Pi_8[8] = {2, 1, 4, 7, 6, 5, 0, 3};
-static const uint8_t Pi_16[16] = {0, 9, 2, 13, 6, 11, 4, 15,
-				  10, 7, 12, 3, 14, 5, 8, 1};
 static const uint8_t RPi_4[4] = {0, 3, 2, 1};
-static const uint8_t RPi_8[8] = {6, 1, 0, 7, 2, 5, 4, 3};
-static const uint8_t RPi_16[16] = {0, 15, 2, 11, 6, 13, 4, 9,
-				   14, 1, 8, 5, 10, 3, 12, 7};
 static const uint8_t R_4[8][2] = {{14, 16},
 				  {52, 57},
 				  {23, 40},
@@ -55,22 +49,6 @@ static const uint8_t R_4[8][2] = {{14, 16},
 				  {46, 12},
 				  {58, 22},
 				  {32, 32}};
-static const uint8_t R_8[8][4] = {{46, 36, 19, 37},
-				  {33, 27, 14, 42},
-				  {17, 49, 36, 39},
-				  {44, 9, 54, 56},
-				  {39, 30, 34, 24},
-				  {13, 50, 10, 17},
-				  {25, 29, 39, 43},
-				  {8, 35, 56, 22}};
-static const uint8_t R_16[8][8] = {{24, 13, 8, 47, 8, 17, 22, 37},
-				   {38, 19, 10, 55, 49, 18, 23, 52},
-				   {33, 4, 51, 13, 34, 41, 59, 17},
-				   {5, 20, 48, 41, 47, 28, 16, 25},
-				   {41, 9, 37, 31, 12, 47, 44, 30},
-				   {16, 34, 56, 51, 4, 53, 42, 41},
-				   {31, 44, 47, 46, 19, 42, 44, 25},
-				   {9, 48, 35, 52, 23, 31, 37, 20}};
 static size_t Nr = 0;
 static size_t Nw = 0;
 static void bytesToWords(uint64_t *W,
@@ -138,6 +116,8 @@ static void mix(const uint64_t x0,
 		uint64_t *y1,
 		const size_t block_size)
 {
+  Q_UNUSED(block_size);
+
   if(!y0 || !y1)
     return;
 
@@ -145,14 +125,7 @@ static void mix(const uint64_t x0,
   ** Section 3.3.1.
   */
 
-  uint64_t r = 0;
-
-  if(block_size == 256)
-    r = R_4[d % 8][i];
-  else if(block_size == 512)
-    r = R_8[d % 8][i];
-  else
-    r = R_16[d % 8][i];
+  uint64_t r = R_4[d % 8][i];
 
   *y0 = x0 + x1;
 
@@ -171,6 +144,8 @@ static void mix_inverse(const uint64_t y0,
 			uint64_t *x1,
 			const size_t block_size)
 {
+  Q_UNUSED(block_size);
+
   if(!x0 || !x1)
     return;
 
@@ -178,14 +153,7 @@ static void mix_inverse(const uint64_t y0,
   ** Section 3.3.1.
   */
 
-  uint64_t r = 0;
-
-  if(block_size == 256)
-    r = R_4[d % 8][i];
-  else if(block_size == 512)
-    r = R_8[d % 8][i];
-  else
-    r = R_16[d % 8][i];
+  uint64_t r = R_4[d % 8][i];
 
   /*
   ** Please see https://en.wikipedia.org/wiki/Circular_shift.
@@ -220,27 +188,9 @@ static void threefish_decrypt(char *D,
   if(!C || C_size <= 0 || !D || !K || !T || block_size <= 0)
     return;
 
-  if(block_size == 256)
-    {
-      Nr = 72;
-      Nw = 4;
-      RPi = RPi_4;
-    }
-  else if(block_size == 512)
-    {
-      Nr = 72;
-      Nw = 8;
-      RPi = RPi_8;
-    }
-  else if(block_size == 1024)
-    {
-      Nr = 80;
-      Nw = 16;
-      RPi = RPi_16;
-    }
-  else
-    return;
-
+  Nr = 72;
+  Nw = 4;
+  RPi = RPi_4;
   threefish_decrypt_implementation(D, K, T, C, C_size, block_size);
 }
 
@@ -341,27 +291,9 @@ static void threefish_encrypt(char *E,
   if(!E || !K || !P || P_size <= 0 || !T || block_size <= 0)
     return;
 
-  if(block_size == 256)
-    {
-      Nr = 72;
-      Nw = 4;
-      Pi = Pi_4;
-    }
-  else if(block_size == 512)
-    {
-      Nr = 72;
-      Nw = 8;
-      Pi = Pi_8;
-    }
-  else if(block_size == 1024)
-    {
-      Nr = 80;
-      Nw = 16;
-      Pi = Pi_16;
-    }
-  else
-    return;
-
+  Nr = 72;
+  Nw = 4;
+  Pi = Pi_4;
   threefish_encrypt_implementation(E, K, T, P, P_size, block_size);
 }
 
