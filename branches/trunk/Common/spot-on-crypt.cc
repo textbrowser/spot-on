@@ -228,12 +228,12 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   QByteArray temporaryKey;
   QPair<QByteArray, QByteArray> keys;
   gcry_error_t err = 0;
-  int cipherAlgorithm = gcry_cipher_map_name(cipherType.toLatin1().
-					     constData());
+  int cipherAlgorithm = (cipherType == "threefish") ? -1 :
+    gcry_cipher_map_name(cipherType.toLatin1().constData());
   int hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
   size_t cipherKeyLength = 0;
 
-  if(gcry_cipher_test_algo(cipherAlgorithm) != 0)
+  if(cipherType != "threefish" && gcry_cipher_test_algo(cipherAlgorithm) != 0)
     {
       error = QObject::tr("gcry_cipher_test_algo() returned non-zero");
       spoton_misc::logError
@@ -251,7 +251,10 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
       goto done_label;
     }
 
-  if((cipherKeyLength = gcry_cipher_get_algo_keylen(cipherAlgorithm)) <= 0)
+  if(cipherType == "threefish")
+    cipherKeyLength = 32;
+  else if((cipherKeyLength =
+	   gcry_cipher_get_algo_keylen(cipherAlgorithm)) <= 0)
     {
       error = QObject::tr("gcry_cipher_get_algo_keylen() failed");
       spoton_misc::logError

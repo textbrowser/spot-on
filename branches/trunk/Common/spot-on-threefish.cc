@@ -516,14 +516,13 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
     {
       int position = i * static_cast<int> (m_blockSize);
 
-      threefish_decrypt(block.data(),
-			m_key,
-			m_tweak,
-			ciphertext.mid(position,
-				       static_cast<int> (m_blockSize)).
-			constData(),
-			m_blockSize,
-			8 * m_blockSize);
+      threefish_decrypt
+	(block.data(),
+	 m_key,
+	 m_tweak,
+	 ciphertext.mid(position,static_cast<int> (m_blockSize)).constData(),
+	 m_blockSize,
+	 8 * m_blockSize);
 
       if(i == 0)
 	block = spoton_misc::xor_arrays(block, iv);
