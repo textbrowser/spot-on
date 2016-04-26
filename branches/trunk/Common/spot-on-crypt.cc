@@ -233,7 +233,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   int hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
   size_t cipherKeyLength = 0;
 
-  if(cipherType != "threefish" && gcry_cipher_test_algo(cipherAlgorithm) != 0)
+  if(cipherAlgorithm > 0 && gcry_cipher_test_algo(cipherAlgorithm) != 0)
     {
       error = QObject::tr("gcry_cipher_test_algo() returned non-zero");
       spoton_misc::logError
@@ -646,11 +646,21 @@ void spoton_crypt::init(const QString &cipherType,
 	{
 	  bool ok = true;
 
-	  m_threefish = new spoton_threefish();
-	  m_threefish->setKey(m_symmetricKey, m_symmetricKeyLength, &ok);
+	  m_threefish = new (std::nothrow) spoton_threefish();
 
-	  if(ok)
-	    m_threefish->setTweak("76543210fedcba98", &ok);
+	  if(m_threefish)
+	    {
+	      m_threefish->setKey(m_symmetricKey, m_symmetricKeyLength, &ok);
+
+	      if(ok)
+		m_threefish->setTweak("76543210fedcba98", &ok);
+	    }
+
+	  if(!ok)
+	    {
+	      delete m_threefish;
+	      m_threefish = 0;
+	    }
 	}
       else
 	spoton_misc::logError("spoton_crypt::init(): "
@@ -674,6 +684,12 @@ void spoton_crypt::init(const QString &cipherType,
 			     "failure (%1).").
 		     arg(buffer.constData()));
 		}
+	    }
+	  else if(m_cipherType == "threefish")
+	    {
+	      if(!m_threefish)
+		spoton_misc::logError("spoton_crypt::init(): "
+				      "m_threefish is zero.");
 	    }
 	  else
 	    spoton_misc::logError("spoton_crypt::init(): "
@@ -712,6 +728,9 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
 
       return QByteArray();
     }
+
+  if(m_threefish)
+    return m_threefish->decrypted(data, ok);
 
   if(m_cipherAlgorithm == 0)
     {
@@ -816,6 +835,9 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
 
 QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 {
+  if(m_threefish)
+    return m_threefish->encrypted(data, ok);
+
   if(m_cipherAlgorithm == 0)
     {
       if(ok)
@@ -2752,16 +2774,19 @@ QByteArray spoton_crypt::veryStrongRandomBytes(const size_t size)
 
 size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
 {
-  int cipherAlgorithm = gcry_cipher_map_name(cipherType.constData());
+  int cipherAlgorithm = (cipherType == "threefish") ? -1 :
+    gcry_cipher_map_name(cipherType.constData());
   size_t keyLength = 0;
 
-  if(cipherAlgorithm)
+  if(cipherAlgorithm > 0)
     {
       if((keyLength = gcry_cipher_get_algo_keylen(cipherAlgorithm)) <= 0)
 	spoton_misc::logError("spoton_crypt::cipherKeyLength(): "
 			      "gcry_cipher_get_algo_keylen() "
 			      "failed.");
     }
+  else if(cipherType == "threefish")
+    keyLength = 32;
   else
     spoton_misc::logError("spoton_crypt::cipherKeyLength(): "
 			  "gcry_cipher_map_name() failure.");
