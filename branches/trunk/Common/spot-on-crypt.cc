@@ -251,16 +251,18 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
       goto done_label;
     }
 
-  if(cipherAlgorithm > 0 && (cipherKeyLength =
-			     gcry_cipher_get_algo_keylen(cipherAlgorithm)) <=
-     0)
+  if(cipherAlgorithm > 0)
     {
-      error = QObject::tr("gcry_cipher_get_algo_keylen() failed");
-      spoton_misc::logError
-	(QString("spoton_crypt::derivedKeys(): "
-		 "gcry_cipher_get_algo_keylen() "
-		 "failure for %1.").arg(cipherType));
-      goto done_label;
+      if((cipherKeyLength =
+	  gcry_cipher_get_algo_keylen(cipherAlgorithm)) <= 0)
+	{
+	  error = QObject::tr("gcry_cipher_get_algo_keylen() failed");
+	  spoton_misc::logError
+	    (QString("spoton_crypt::derivedKeys(): "
+		     "gcry_cipher_get_algo_keylen() "
+		     "failure for %1.").arg(cipherType));
+	  goto done_label;
+	}
     }
   else if(cipherType == "threefish")
     cipherKeyLength = 32;
@@ -673,7 +675,8 @@ void spoton_crypt::init(const QString &cipherType,
 	}
       else
 	spoton_misc::logError("spoton_crypt::init(): "
-			      "m_cipherAlgorithm is zero.");
+			      "m_cipherAlgorithm is zero or unsupported "
+			      "cipher.");
 
       if(err == 0)
 	{
@@ -702,7 +705,8 @@ void spoton_crypt::init(const QString &cipherType,
 	    }
 	  else
 	    spoton_misc::logError("spoton_crypt::init(): "
-				  "m_cipherHandle is zero.");
+				  "m_cipherHandle is zero or unsupported "
+				  "cipher.");
 	}
     }
   else if(m_symmetricKeyLength > 0)
