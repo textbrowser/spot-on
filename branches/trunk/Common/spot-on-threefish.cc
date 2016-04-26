@@ -60,25 +60,29 @@ static void threefish_decrypt(char *D,
 			      const char *T,
 			      const char *C,
 			      const size_t C_size,
-			      const size_t block_size);
+			      const size_t block_size,
+			      bool *ok);
 static void threefish_decrypt_implementation(char *D,
 					     const char *K,
 					     const char *T,
 					     const char *C,
 					     const size_t C_size,
-					     const size_t block_size);
+					     const size_t block_size,
+					     bool *ok);
 static void threefish_encrypt(char *E,
 			      const char *K,
 			      const char *T,
 			      const char *P,
 			      const size_t P_size,
-			      const size_t block_size);
+			      const size_t block_size,
+			      bool *ok);
 static void threefish_encrypt_implementation(char *E,
 					     const char *K,
 					     const char *T,
 					     const char *P,
 					     const size_t P_size,
-					     const size_t block_size);
+					     const size_t block_size,
+					     bool *ok);
 static void wordsToBytes(char *B,
 			 const uint64_t *words,
 			 const size_t words_size);
@@ -183,15 +187,21 @@ static void threefish_decrypt(char *D,
 			      const char *T,
 			      const char *C,
 			      const size_t C_size,
-			      const size_t block_size)
+			      const size_t block_size,
+			      bool *ok)
 {
   if(!C || C_size <= 0 || !D || !K || !T || block_size <= 0)
-    return;
+    {
+      if(ok)
+	*ok = false;
+
+      return;
+    }
 
   Nr = 72;
   Nw = 4;
   RPi = RPi_4;
-  threefish_decrypt_implementation(D, K, T, C, C_size, block_size);
+  threefish_decrypt_implementation(D, K, T, C, C_size, block_size, ok);
 }
 
 static void threefish_decrypt_implementation(char *D,
@@ -199,24 +209,52 @@ static void threefish_decrypt_implementation(char *D,
 					     const char *T,
 					     const char *C,
 					     const size_t C_size,
-					     const size_t block_size)
+					     const size_t block_size,
+					     bool *ok)
 {
   if(!C || C_size <= 0 || !D || !K || !T || block_size <= 0)
-    return;
+    {
+      if(ok)
+	*ok = false;
+
+      return;
+    }
 
   /*
   ** The inverse of section 3.3.
   */
 
+  bool error = false;
   uint64_t C240 = 0x1bd11bdaa9fc1a22;
-  uint64_t *k = new uint64_t[Nw + 1];
+  uint64_t *k = new (std::nothrow) uint64_t[Nw + 1];
   uint64_t kNw = C240; // Section 3.3.2.
-  uint64_t **s = new uint64_t*[Nr / 4 + 1];
+  uint64_t **s = new (std::nothrow) uint64_t*[Nr / 4 + 1];
   uint64_t t[3];
-  uint64_t *v = new uint64_t[Nw];
+  uint64_t *v = new (std::nothrow) uint64_t[Nw];
+
+  if(!k || !s || !v)
+    {
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
 
   for(size_t i = 0; i < Nr / 4 + 1; i++)
-    s[i] = new uint64_t[Nw];
+    {
+      s[i] = new (std::nothrow) uint64_t[Nw];
+
+      if(!s[i])
+	error = true;
+    }
+
+  if(error)
+    {
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
 
   bytesToWords(k, K, C_size);
   bytesToWords(t, T, 16);
@@ -250,7 +288,15 @@ static void threefish_decrypt_implementation(char *D,
 
   for(size_t d = Nr - 1;; d--)
     {
-      uint64_t *f = new uint64_t[Nw];
+      uint64_t *f = new (std::nothrow) uint64_t[Nw];
+
+      if(!f)
+	{
+	  if(ok)
+	    *ok = false;
+
+	  goto done_label;
+	}
 
       for(size_t i = 0; i < Nw; i++)
 	f[i] = v[RPi[i]];
@@ -279,10 +325,16 @@ static void threefish_decrypt_implementation(char *D,
     }
 
   wordsToBytes(D, v, Nw);
+
+  if(ok)
+    *ok = true;
+
+ done_label:
   purge(k, sizeof(k));
   purge(s, sizeof(s));
   purge(t, sizeof(t));
   purge(v, sizeof(v));
+
   delete []k;
 
   for(size_t i = 0; i < Nr / 4 + 1; i++)
@@ -297,15 +349,21 @@ static void threefish_encrypt(char *E,
 			      const char *T,
 			      const char *P,
 			      const size_t P_size,
-			      const size_t block_size)
+			      const size_t block_size,
+			      bool *ok)
 {
   if(!E || !K || !P || P_size <= 0 || !T || block_size <= 0)
-    return;
+    {
+      if(ok)
+	*ok = false;
+
+      return;
+    }
 
   Nr = 72;
   Nw = 4;
   Pi = Pi_4;
-  threefish_encrypt_implementation(E, K, T, P, P_size, block_size);
+  threefish_encrypt_implementation(E, K, T, P, P_size, block_size, ok);
 }
 
 static void threefish_encrypt_implementation(char *E,
@@ -313,24 +371,44 @@ static void threefish_encrypt_implementation(char *E,
 					     const char *T,
 					     const char *P,
 					     const size_t P_size,
-					     const size_t block_size)
+					     const size_t block_size,
+					     bool *ok)
 {
   if(!E || !K || !T || !P || P_size <= 0 || block_size <= 0)
-    return;
+    {
+      if(ok)
+	*ok = false;
+
+      return;
+    }
 
   /*
   ** Section 3.3.
   */
 
+  bool error = false;
   uint64_t C240 = 0x1bd11bdaa9fc1a22;
-  uint64_t *k = new uint64_t[Nw + 1];
+  uint64_t *k = new (std::nothrow) uint64_t[Nw + 1];
   uint64_t kNw = C240; // Section 3.3.2.
-  uint64_t **s = new uint64_t*[Nr / 4 + 1];
+  uint64_t **s = new (std::nothrow) uint64_t*[Nr / 4 + 1];
   uint64_t t[3];
-  uint64_t *v = new uint64_t[Nw];
+  uint64_t *v = new (std::nothrow) uint64_t[Nw];
 
   for(size_t i = 0; i < Nr / 4 + 1; i++)
-    s[i] = new uint64_t[Nw];
+    {
+      s[i] = new uint64_t[Nw];
+
+      if(!s[i])
+	error = true;
+    }
+
+  if(error)
+    {
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
 
   bytesToWords(k, K, P_size);
   bytesToWords(t, T, 16);
@@ -365,7 +443,7 @@ static void threefish_encrypt_implementation(char *E,
 	for(size_t i = 0; i < Nw; i++)
 	  v[i] += s[d / 4][i];
 
-      uint64_t *f = new uint64_t[Nw];
+      uint64_t *f = new (std::nothrow) uint64_t[Nw];
 
       for(size_t i = 0; i < Nw / 2; i++)
 	{
@@ -390,6 +468,11 @@ static void threefish_encrypt_implementation(char *E,
     v[i] += s[Nr / 4][i];
 
   wordsToBytes(E, v, Nw);
+
+  if(ok)
+    *ok = true;
+
+ done_label:
   purge(k, sizeof(k));
   purge(s, sizeof(s));
   purge(t, sizeof(t));
@@ -468,6 +551,7 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
 
   for(int i = 0; i < iterations; i++)
     {
+      bool ok = true;
       int position = i * static_cast<int> (m_blockSize);
 
       threefish_decrypt
@@ -476,7 +560,14 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
 	 m_tweak,
 	 ciphertext.mid(position,static_cast<int> (m_blockSize)).constData(),
 	 m_blockSize,
-	 8 * m_blockSize);
+	 8 * m_blockSize,
+	 &ok);
+
+      if(!ok)
+	{
+	  decrypted.clear();
+	  break;
+	}
 
       if(i == 0)
 	block = spoton_misc::xor_arrays(block, iv);
@@ -485,6 +576,14 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
 
       c = ciphertext.mid(position, static_cast<int> (m_blockSize));
       decrypted.append(block);
+    }
+
+  if(decrypted.isEmpty())
+    {
+      if(ok)
+	*ok = false;
+
+      return decrypted;
     }
 
   QByteArray originalLength;
@@ -596,6 +695,7 @@ QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
   for(int i = 0; i < iterations; i++)
     {
       QByteArray p;
+      bool ok = true;
       int position = i * static_cast<int> (m_blockSize);
 
       p = plaintext.mid(position, static_cast<int> (m_blockSize));
@@ -610,8 +710,24 @@ QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
 			m_tweak,
 			block,
 			m_blockSize,
-			8 * m_blockSize);
+			8 * m_blockSize,
+			&ok);
+
+      if(!ok)
+	{
+	  encrypted.clear();
+	  break;
+	}
+
       encrypted.append(block);
+    }
+
+  if(encrypted.isEmpty())
+    {
+      if(ok)
+	*ok = false;
+
+      return encrypted;
     }
 
   return iv + encrypted;
