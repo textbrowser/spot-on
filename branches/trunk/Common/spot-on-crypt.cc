@@ -265,7 +265,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 	}
     }
   else if(cipherType == "threefish")
-    cipherKeyLength = 32;
+    cipherKeyLength = spoton_crypt::cipherKeyLength(cipherType.toLatin1());
   else
     {
       error = QObject::tr("unsupported cipher");
@@ -597,7 +597,8 @@ void spoton_crypt::init(const QString &cipherType,
   if(m_cipherAlgorithm > 0)
     m_symmetricKeyLength = gcry_cipher_get_algo_keylen(m_cipherAlgorithm);
   else if(m_cipherType == "threefish")
-    m_symmetricKeyLength = 32;
+    m_symmetricKeyLength = spoton_crypt::cipherKeyLength
+      (m_cipherType.toLatin1());
   else
     m_symmetricKeyLength = 0;
 
