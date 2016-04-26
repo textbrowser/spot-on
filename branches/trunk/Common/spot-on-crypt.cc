@@ -251,16 +251,25 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
       goto done_label;
     }
 
-  if(cipherType == "threefish")
-    cipherKeyLength = 32;
-  else if((cipherKeyLength =
-	   gcry_cipher_get_algo_keylen(cipherAlgorithm)) <= 0)
+  if(cipherAlgorithm > 0 && (cipherKeyLength =
+			     gcry_cipher_get_algo_keylen(cipherAlgorithm)) <=
+     0)
     {
       error = QObject::tr("gcry_cipher_get_algo_keylen() failed");
       spoton_misc::logError
 	(QString("spoton_crypt::derivedKeys(): "
 		 "gcry_cipher_get_algo_keylen() "
 		 "failure for %1.").arg(cipherType));
+      goto done_label;
+    }
+  else if(cipherType == "threefish")
+    cipherKeyLength = 32;
+  else
+    {
+      error = QObject::tr("unsupported cipher");
+      spoton_misc::logError
+	(QString("spoton_crypt::derivedKeys(): "
+		 "unsupported cipher %1.").arg(cipherType));
       goto done_label;
     }
 
@@ -2789,7 +2798,8 @@ size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
     keyLength = 32;
   else
     spoton_misc::logError("spoton_crypt::cipherKeyLength(): "
-			  "gcry_cipher_map_name() failure.");
+			  "gcry_cipher_map_name() failure or unsupported "
+			  "cipher.");
 
   return keyLength;
 }
