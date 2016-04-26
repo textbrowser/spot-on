@@ -42,6 +42,7 @@ class spoton_threefish
   static void test2(void);
   static void test3(void);
   void setKey(const QByteArray &key, bool *ok);
+  void setKey(const char *key, const size_t keyLength, bool *ok);
   void setTweak(const QByteArray &tweak, bool *ok);
 
  private:

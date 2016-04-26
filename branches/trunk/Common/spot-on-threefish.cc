@@ -659,20 +659,24 @@ void spoton_threefish::setInitializationVector
 
 void spoton_threefish::setKey(const QByteArray &key, bool *ok)
 {
+  setKey(key.constData(), static_cast<size_t> (key.length()), ok);
+}
+
+void spoton_threefish::setKey
+(const char *key, const size_t keyLength, bool *ok)
+{
   QWriteLocker locker(&m_locker);
 
-  if(key.size() != 32)
+  if(keyLength != 32)
     {
       if(*ok)
 	*ok = false;
 
-      goto done_label;
+      return;
     }
 
   gcry_free(m_key);
-  m_key = static_cast<char *>
-    (gcry_calloc_secure(static_cast<size_t> (key.length()), sizeof(char)));
-  m_keyLength = static_cast<size_t> (key.length());
+  m_key = static_cast<char *> (gcry_calloc_secure(keyLength, sizeof(char)));
 
   if(!m_key)
     {
@@ -682,27 +686,22 @@ void spoton_threefish::setKey(const QByteArray &key, bool *ok)
       if(ok)
 	*ok = false;
 
-      goto done_label;
+      return;
     }
 
   if(*ok)
     *ok = true;
 
-  m_blockSize = m_keyLength;
-  return;
-
- done_label:
-  gcry_free(m_key);
-  m_blockSize = 0;
-  m_key = 0;
-  m_keyLength = 0;
+  m_blockSize = keyLength;
+  m_keyLength = keyLength;
+  memcpy(m_key, key, m_keyLength);
 }
 
 void spoton_threefish::setTweak(const QByteArray &tweak, bool *ok)
 {
   QWriteLocker locker(&m_locker);
 
-  if(tweak.size() != 16)
+  if(tweak.length() != 16)
     {
       if(ok)
 	*ok = false;

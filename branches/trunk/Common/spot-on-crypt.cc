@@ -567,8 +567,8 @@ void spoton_crypt::init(const QString &cipherType,
 			const QString &modeOfOperation)
 {
   Q_UNUSED(passphrase);
-  m_cipherAlgorithm = gcry_cipher_map_name(cipherType.toLatin1().
-					   constData());
+  m_cipherAlgorithm = (cipherType == "threefish") ? -1 :
+    gcry_cipher_map_name(cipherType.toLatin1().constData());
   m_cipherHandle = 0;
   m_cipherType = cipherType;
   m_hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
@@ -583,8 +583,10 @@ void spoton_crypt::init(const QString &cipherType,
   m_symmetricKey = 0;
   m_threefish = 0;
 
-  if(m_cipherAlgorithm)
+  if(m_cipherAlgorithm > 0)
     m_symmetricKeyLength = gcry_cipher_get_algo_keylen(m_cipherAlgorithm);
+  else if(m_cipherType == "threefish")
+    m_symmetricKeyLength = 32;
   else
     m_symmetricKeyLength = 0;
 
@@ -606,7 +608,7 @@ void spoton_crypt::init(const QString &cipherType,
 
       gcry_error_t err = 0;
 
-      if(m_cipherAlgorithm)
+      if(m_cipherAlgorithm > 0)
 	{
 	  if(modeOfOperation.toLower() == "cbc")
 	    err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,
@@ -639,6 +641,16 @@ void spoton_crypt::init(const QString &cipherType,
 		spoton_misc::logError("spoton_crypt::init(): "
 				      "gcry_cipher_open() failure.");
 	    }
+	}
+      else if(m_cipherType == "threefish")
+	{
+	  bool ok = true;
+
+	  m_threefish = new spoton_threefish();
+	  m_threefish->setKey(m_symmetricKey, m_symmetricKeyLength, &ok);
+
+	  if(ok)
+	    m_threefish->setTweak("76543210fedcba98", &ok);
 	}
       else
 	spoton_misc::logError("spoton_crypt::init(): "
