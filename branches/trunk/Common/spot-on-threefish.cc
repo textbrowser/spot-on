@@ -587,7 +587,6 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
     }
 
   QByteArray originalLength;
-  int s = 0;
 
   if(decrypted.length() > static_cast<int> (sizeof(int)))
     originalLength = decrypted.mid
@@ -597,6 +596,7 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
   if(!originalLength.isEmpty())
     {
       QDataStream in(&originalLength, QIODevice::ReadOnly);
+      int s = 0;
 
       in >> s;
 
@@ -624,6 +624,13 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
 	      decrypted.clear();
 	    }
 	}
+    }
+  else
+    {
+      if(ok)
+	*ok = false;
+
+      decrypted.clear();
     }
 
   return decrypted;
