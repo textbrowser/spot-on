@@ -2875,40 +2875,53 @@ void spoton::slotSendMail(void)
       return;
     }
 
-  QByteArray attachment;
-  QString fileName;
+  QList<QByteArray> attachments;
+  QStringList fileNames;
 
   if(!m_ui.attachment->toPlainText().isEmpty())
     {
-      fileInfo = QFileInfo(m_ui.attachment->toPlainText());
+      QStringList files(m_ui.attachment->toPlainText().split("\n"));
 
-      if(fileInfo.size() > spoton_common::EMAIL_ATTACHMENT_MAXIMUM_SIZE)
+      while(!files.isEmpty())
 	{
-	  QMessageBox::critical
-	    (this, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("The attachment is too large."));
-	  return;
+	  QString fileName(files.takeFirst());
+
+	  fileName = fileName.mid(0, fileName.lastIndexOf(' '));
+	  fileName = fileName.mid(0, fileName.lastIndexOf(' '));
+
+	  QFileInfo fileInfo(fileName);
+
+	  if(fileInfo.size() > spoton_common::EMAIL_ATTACHMENT_MAXIMUM_SIZE)
+	    {
+	      QMessageBox::critical
+		(this, tr("%1: Error").
+		 arg(SPOTON_APPLICATION_NAME),
+		 tr("The attachment %1 is too large.").arg(fileName));
+	      return;
+	    }
+
+	  QByteArray attachment;
+	  QFile file(fileName);
+
+	  if(file.open(QIODevice::ReadOnly))
+	    attachment = file.readAll();
+
+	  file.close();
+
+	  if(attachment.isEmpty() ||
+	     attachment.length() != static_cast<int> (fileInfo.size()))
+	    {
+	      QMessageBox::critical
+		(this, tr("%1: Error").
+		 arg(SPOTON_APPLICATION_NAME),
+		 tr("An error occurred while reading the attachment %1.").
+		 arg(fileName));
+	      return;
+	    }
+
+	  attachments << attachment;
+	  fileNames << fileName;
 	}
-
-      QFile file(fileInfo.absoluteFilePath());
-
-      if(file.open(QIODevice::ReadOnly))
-	attachment = file.readAll();
-
-      file.close();
-
-      if(attachment.isEmpty() ||
-	 attachment.length() != static_cast<int> (fileInfo.size()))
-	{
-	  QMessageBox::critical
-	    (this, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("An error occurred while reading the attachment."));
-	  return;
-	}
-
-      fileName = fileInfo.fileName();
     }
 
   spoton_crypt *crypt = m_crypts.value("email", 0);
@@ -3197,32 +3210,32 @@ void spoton::slotSendMail(void)
 
 	    if(ok)
 	      if(query.exec())
-		{
-		  if(!attachment.isEmpty() && !fileName.isEmpty())
-		    {
-		      QVariant variant(query.lastInsertId());
-		      qint64 id = query.lastInsertId().toLongLong();
+		while(!attachments.isEmpty() && !fileNames.isEmpty())
+		  {
+		    QByteArray attachment(attachments.takeFirst());
+		    QString fileName(fileNames.takeFirst());
+		    QVariant variant(query.lastInsertId());
+		    qint64 id = query.lastInsertId().toLongLong();
 
-		      if(variant.isValid())
-			{
-			  query.prepare("INSERT INTO folders_attachment "
-					"(data, folders_oid, name) "
-					"VALUES (?, ?, ?)");
+		    if(variant.isValid())
+		      {
+			query.prepare("INSERT INTO folders_attachment "
+				      "(data, folders_oid, name) "
+				      "VALUES (?, ?, ?)");
+			query.bindValue
+			  (0, crypt->encryptedThenHashed(attachment,
+							 &ok).toBase64());
+			query.bindValue(1, id);
+
+			if(ok)
 			  query.bindValue
-			    (0, crypt->encryptedThenHashed(attachment,
+			    (2, crypt->encryptedThenHashed(fileName.toUtf8(),
 							   &ok).toBase64());
-			  query.bindValue(1, id);
 
-			  if(ok)
-			    query.bindValue
-			      (2, crypt->encryptedThenHashed(fileName.toUtf8(),
-							     &ok).toBase64());
-
-			  if(ok)
-			    query.exec();
-			}
-		    }
-		}
+			if(ok)
+			  query.exec();
+		      }
+		  }
 	  }
 
 	m_ui.attachment->clear();
