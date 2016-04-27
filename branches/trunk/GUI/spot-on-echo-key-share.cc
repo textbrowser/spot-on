@@ -590,7 +590,7 @@ void spoton_echo_key_share::resetWidgets(void)
 {
   ui.cipher->setCurrentIndex(0);
   ui.hash->setCurrentIndex(0);
-  ui.iteration_count->setValue(ui.iteration_count->minimum());
+  ui.iteration_count->setValue(250000);
   ui.name->clear();
 }
 
