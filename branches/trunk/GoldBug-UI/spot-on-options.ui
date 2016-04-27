@@ -71,7 +71,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-684</y>
+             <y>0</y>
              <width>462</width>
              <height>1254</height>
             </rect>
@@ -1197,7 +1197,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-528</y>
              <width>634</width>
              <height>1084</height>
             </rect>
@@ -1704,11 +1704,6 @@
                    <item>
                     <property name="text">
                      <string>4096</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>8192</string>
                     </property>
                    </item>
                   </widget>

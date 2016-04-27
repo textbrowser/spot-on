@@ -3839,7 +3839,7 @@ void spoton::importNeighbors(const QString &filePath)
 
 			if(!(token == "0" ||
 			     token == "2048" || token == "3072" ||
-			     token == "4096" || token == "8192"))
+			     token == "4096"))
 			  fine = false;
 			else
 			  hash["ssl_key_size"] = token;

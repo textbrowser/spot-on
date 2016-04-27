@@ -227,7 +227,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
     {
       if(m_keySize != 0)
 	if(!(m_keySize == 2048 || m_keySize == 3072 ||
-	     m_keySize == 4096 || m_keySize == 8192))
+	     m_keySize == 4096))
 	  m_keySize = 2048;
     }
   else

@@ -1916,8 +1916,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 		  keySize = 2048;
 		else if(!(keySize == 2048 ||
 			  keySize == 3072 ||
-			  keySize == 4096 ||
-			  keySize == 8192))
+			  keySize == 4096))
 		  keySize = 2048;
 
 		query.bindValue(20, keySize);
@@ -2149,7 +2148,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   if(!ok)
     integer = 2048;
   else if(!(integer == 2048 || integer == 3072 ||
-	    integer == 4096 || integer == 8192))
+	    integer == 4096))
     integer = 2048;
 
   settings.insert("gui/kernelKeySize", integer);
@@ -2208,7 +2207,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   if(!ok)
     integer = 2048;
   else if(!(integer == 2048 || integer == 3072 ||
-	    integer == 4096 || integer == 8192))
+	    integer == 4096))
     integer = 2048;
 
   settings.insert("gui/publishedKeySize", integer);

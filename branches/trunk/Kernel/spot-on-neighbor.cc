@@ -546,7 +546,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   if(transport == "tcp")
     if(m_keySize != 0)
       if(!(m_keySize == 2048 || m_keySize == 3072 ||
-	   m_keySize == 4096 || m_keySize == 8192))
+	   m_keySize == 4096))
 	m_keySize = 2048;
 
   m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,

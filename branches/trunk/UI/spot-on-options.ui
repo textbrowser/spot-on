@@ -1706,11 +1706,6 @@
                      <string>4096</string>
                     </property>
                    </item>
-                   <item>
-                    <property name="text">
-                     <string>8192</string>
-                    </property>
-                   </item>
                   </widget>
                  </item>
                  <item>
@@ -1995,8 +1990,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>539</height>
+             <width>288</width>
+             <height>235</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
