@@ -2992,7 +2992,8 @@ void spoton::slotAddListener(void)
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       m_sb.status->setText
-	(tr("Generating SSL data. Please be patient."));
+	(tr("Generating %1-bit SSL/TLS data. Please be patient.").
+	 arg(m_ui.listenerKeySize->currentText()));
       m_sb.status->repaint();
       spoton_crypt::generateSslKeys
 	(m_ui.listenerKeySize->currentText().toInt(),

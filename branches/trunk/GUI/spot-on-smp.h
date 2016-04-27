@@ -53,6 +53,12 @@ class spoton_smp
   QList<QByteArray> nextStep(const QList<QByteArray> &other,
 			     bool *ok, bool *passed );
   QList<QByteArray> step1(bool *ok);
+
+  QString guessString(void) const
+  {
+    return m_guessString;
+  }
+
   bool passed(void) const;
   int step(void) const;
   void initialize();
@@ -65,6 +71,7 @@ class spoton_smp
   }
 
  private:
+  QString m_guessString;
   bool m_passed;
   char *m_guessWhirl; // Stored in secure memory.
   gcry_mpi_t m_a2;

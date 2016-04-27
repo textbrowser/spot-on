@@ -105,7 +105,7 @@ class spoton_common
   static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH =
     256 < MAXIMUM_NEIGHBOR_CONTENT_LENGTH ?
     256 : MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
-  static const unsigned long GEMINI_ITERATION_COUNT = 100000;
+  static const unsigned long GEMINI_ITERATION_COUNT = 25000;
 
   /*
   ** Dynamic values. Not a pleasant solution.

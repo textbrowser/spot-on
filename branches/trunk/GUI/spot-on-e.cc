@@ -893,19 +893,23 @@ void spoton::prepareSMP(const QString &hash)
   if(hash.isEmpty())
     return;
 
+  spoton_smp *smp = 0;
+
+  if(m_smps.contains(hash))
+    smp = m_smps.value(hash, 0);
+
   QString guess("");
   spoton_virtual_keyboard dialog(QApplication::activeWindow());
+
+  if(smp)
+    dialog.m_ui.passphrase->setText(smp->guessString());
 
   if(dialog.exec() == QDialog::Accepted)
     guess = dialog.m_ui.passphrase->text();
   else
     return;
 
-  spoton_smp *smp = 0;
-
-  if(m_smps.contains(hash))
-    smp = m_smps.value(hash, 0);
-  else
+  if(!smp)
     {
       smp = new spoton_smp();
       m_smps[hash] = smp;

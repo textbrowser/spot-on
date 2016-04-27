@@ -876,6 +876,7 @@ int spoton_smp::step(void) const
 void spoton_smp::initialize(void)
 {
   QByteArray bytes;
+  QString guessString(m_guessString);
   gcry_mpi_t g = 0;
 
   if(m_guess)
@@ -888,6 +889,8 @@ void spoton_smp::initialize(void)
 
   if(g)
     m_guess = gcry_mpi_set(0, g);
+
+  m_guessString = guessString;
 
   if(bytes.length() > 0)
     {
@@ -923,6 +926,7 @@ void spoton_smp::reset(void)
   m_b2 = 0;
   m_b3 = 0;
   m_guess = 0;
+  m_guessString.clear();
   m_guessWhirl = 0;
   m_guessWhirlLength = 0;
   m_pa = 0;
@@ -956,10 +960,13 @@ void spoton_smp::setGuess(const QString &guess)
   hash = spoton_crypt::sha512Hash(guess.toUtf8(), &ok);
 
   if(ok)
-    gcry_mpi_scan
-      (&m_guess, GCRYMPI_FMT_USG,
-       reinterpret_cast<const unsigned char *> (hash.constData()),
-       static_cast<size_t> (hash.length()), 0);
+    {
+      gcry_mpi_scan
+	(&m_guess, GCRYMPI_FMT_USG,
+	 reinterpret_cast<const unsigned char *> (hash.constData()),
+	 static_cast<size_t> (hash.length()), 0);
+      m_guessString = guess;
+    }
 
   hash = spoton_crypt::whirlpoolHash(guess.toUtf8(), &ok);
 
