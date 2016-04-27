@@ -490,6 +490,10 @@ void spoton::slotReceivedKernelMessage(void)
 			  m_ui.messages->append(msg);
 			  m_ui.messages->verticalScrollBar()->setValue
 			    (m_ui.messages->verticalScrollBar()->maximum());
+
+			  if(currentTabName() != "chat")
+			    m_sb.chat->setVisible(true);
+
 			  playSong("receive.wav");
 			  continue;
 			}
