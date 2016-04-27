@@ -5171,6 +5171,20 @@ void spoton::slotActivateKernel(void)
 	return;
     }
 
+  QFileInfo fileInfo(m_ui.kernelPath->text());
+
+#if defined(Q_OS_MAC)
+  if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
+#elif defined(Q_OS_WIN32)
+  if(fileInfo.isReadable() && fileInfo.size() > 0)
+#else
+  if(fileInfo.isExecutable() && fileInfo.size() > 0)
+#endif
+    {
+    }
+  else
+    return; // Incorrect executable!
+
   m_ui.pid->setText("0");
 
   QColor color(240, 128, 128); // Light coral!
