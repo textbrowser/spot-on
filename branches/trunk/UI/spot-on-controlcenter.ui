@@ -906,9 +906,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-179</y>
              <width>827</width>
-             <height>582</height>
+             <height>613</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1542,12 +1542,18 @@
                          <number>5</number>
                         </property>
                         <item>
-                         <widget class="QLineEdit" name="attachment"/>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_95">
-                          <property name="text">
-                           <string>Maximum 10 MiB, please.</string>
+                         <widget class="QTextBrowser" name="attachment">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="tabChangesFocus">
+                           <bool>true</bool>
+                          </property>
+                          <property name="openLinks">
+                           <bool>false</bool>
                           </property>
                          </widget>
                         </item>
@@ -5479,7 +5485,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>823</width>
+             <width>847</width>
              <height>1318</height>
             </rect>
            </property>
@@ -9127,8 +9133,8 @@
   <tabstop>emailParticipants</tabstop>
   <tabstop>outgoingSubject</tabstop>
   <tabstop>richtext</tabstop>
-  <tabstop>outgoingMessage</tabstop>
   <tabstop>attachment</tabstop>
+  <tabstop>outgoingMessage</tabstop>
   <tabstop>selectAttachment</tabstop>
   <tabstop>goldbug</tabstop>
   <tabstop>email_fs_gb</tabstop>

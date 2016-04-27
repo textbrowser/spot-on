@@ -2878,9 +2878,9 @@ void spoton::slotSendMail(void)
   QByteArray attachment;
   QString fileName;
 
-  if(!m_ui.attachment->text().isEmpty())
+  if(!m_ui.attachment->toPlainText().isEmpty())
     {
-      fileInfo = QFileInfo(m_ui.attachment->text());
+      fileInfo = QFileInfo(m_ui.attachment->toPlainText());
 
       if(fileInfo.size() > spoton_common::EMAIL_ATTACHMENT_MAXIMUM_SIZE)
 	{
@@ -3197,30 +3197,32 @@ void spoton::slotSendMail(void)
 
 	    if(ok)
 	      if(query.exec())
-		if(!attachment.isEmpty() && !fileName.isEmpty())
-		  {
-		    QVariant variant(query.lastInsertId());
-		    qint64 id = query.lastInsertId().toLongLong();
+		{
+		  if(!attachment.isEmpty() && !fileName.isEmpty())
+		    {
+		      QVariant variant(query.lastInsertId());
+		      qint64 id = query.lastInsertId().toLongLong();
 
-		    if(variant.isValid())
-		      {
-			query.prepare("INSERT INTO folders_attachment "
-				      "(data, folders_oid, name) "
-				      "VALUES (?, ?, ?)");
-			query.bindValue
-			  (0, crypt->encryptedThenHashed(attachment,
-							 &ok).toBase64());
-			query.bindValue(1, id);
-
-			if(ok)
+		      if(variant.isValid())
+			{
+			  query.prepare("INSERT INTO folders_attachment "
+					"(data, folders_oid, name) "
+					"VALUES (?, ?, ?)");
 			  query.bindValue
-			    (2, crypt->encryptedThenHashed(fileName.toUtf8(),
+			    (0, crypt->encryptedThenHashed(attachment,
 							   &ok).toBase64());
+			  query.bindValue(1, id);
 
-			if(ok)
-			  query.exec();
-		      }
-		  }
+			  if(ok)
+			    query.bindValue
+			      (2, crypt->encryptedThenHashed(fileName.toUtf8(),
+							     &ok).toBase64());
+
+			  if(ok)
+			    query.exec();
+			}
+		    }
+		}
 	  }
 
 	m_ui.attachment->clear();

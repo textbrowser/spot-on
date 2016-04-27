@@ -5575,3 +5575,22 @@ QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
 
   return bytes;
 }
+
+QString spoton_misc::prettyFileSize(const qint64 size)
+{
+  if(size < 0)
+    return "0 Bytes";
+
+  if(size == 0)
+    return QObject::tr("0 Bytes");
+  else if(size == 1)
+    return QObject::tr("1 Byte");
+  else if(size < 1024)
+    return QString(QObject::tr("%1 Bytes")).arg(size);
+  else if(size < 1048576)
+    return QString(QObject::tr("%1 KiB")).arg
+      (QString::number(qRound(static_cast<double> (size) / 1024.0)));
+  else
+    return QString(QObject::tr("%1 MiB")).arg
+      (QString::number(static_cast<double> (size) / 1048576.0, 'f', 1));
+}

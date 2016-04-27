@@ -1631,7 +1631,11 @@ void spoton::slotAddAttachment(void)
   if(dialog.exec() == QDialog::Accepted)
     {
       QFileInfo fileInfo(dialog.selectedFiles().value(0));
-      Q_UNUSED(fileInfo);
+
+      m_ui.attachment->append
+	(QString("<a href=\"%1\">%1 (%2)</a>").
+	 arg(fileInfo.absoluteFilePath()).
+	 arg(spoton_misc::prettyFileSize(fileInfo.size())));
     }
 }
 
