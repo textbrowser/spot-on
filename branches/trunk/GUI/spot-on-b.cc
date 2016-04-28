@@ -3839,13 +3839,14 @@ void spoton::populateMail(void)
 			  {
 			    if(query.value(i).toLongLong() > 0)
 			      {
-				item = new QTableWidgetItem();
+				item = new QTableWidgetItem
+				  (query.value(i).toString());
 				item->setData(Qt::UserRole, 1);
 				item->setIcon(QIcon(":/generic/attach.png"));
 			      }
 			    else
 			      {
-				item = new QTableWidgetItem();
+				item = new QTableWidgetItem("0");
 				item->setData(Qt::UserRole, 0);
 			      }
 			  }
