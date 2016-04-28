@@ -454,6 +454,15 @@ void spoton::slotReceivedKernelMessage(void)
 		      m_ui.messages->verticalScrollBar()->setValue
 			(m_ui.messages->verticalScrollBar()->maximum());
 
+		      if(m_ui.status->currentIndex() == 3) // Away
+			{
+			  if(currentTabName() != "chat")
+			    m_sb.chat->setVisible(true);
+
+			  playSong("receive.wav");
+			  continue;
+			}
+
 		      spoton_smp *smp = m_smps.value(hash.toBase64(), 0);
 
 		      if(!smp)
@@ -490,18 +499,10 @@ void spoton::slotReceivedKernelMessage(void)
 			  m_ui.messages->append(msg);
 			  m_ui.messages->verticalScrollBar()->setValue
 			    (m_ui.messages->verticalScrollBar()->maximum());
-
-			  if(currentTabName() != "chat")
-			    m_sb.chat->setVisible(true);
-
-			  playSong("receive.wav");
-			  continue;
 			}
 
 		      QList<QTableWidgetItem *> items
-			(findItems(m_ui.participants,
-				   hash.toBase64(),
-				   3));
+			(findItems(m_ui.participants, hash.toBase64(), 3));
 		      QString oid("");
 		      bool ok = true;
 		      bool passed = false;
