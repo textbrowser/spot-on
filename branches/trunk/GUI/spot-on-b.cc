@@ -3224,6 +3224,8 @@ void spoton::slotSendMail(void)
 
 		    if(variant.isValid())
 		      {
+			QSqlQuery query(db);
+
 			query.prepare("INSERT INTO folders_attachment "
 				      "(data, folders_oid, name) "
 				      "VALUES (?, ?, ?)");
