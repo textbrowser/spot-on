@@ -5456,7 +5456,6 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 		  if(variant.isValid())
 		    {
-		      QByteArray attachmentName;
 		      QByteArray data;
 
 		      if(!goldbugUsed_l)
