@@ -793,6 +793,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddNeighbor(void)));
+  connect(m_ui.attachment,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotRemoveAttachment(const QUrl &)));
   connect(m_optionsUi.autoAddSharedSBMagnets,
 	  SIGNAL(toggled(bool)),
 	  this,

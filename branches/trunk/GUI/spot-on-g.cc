@@ -92,3 +92,22 @@ void spoton::slotCloseTab(void)
   else if(name == "urls")
     m_ui.action_Urls->setChecked(false);
 }
+
+void spoton::slotRemoveAttachment(const QUrl &url)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QStringList list(m_ui.attachment->toPlainText().split('\n'));
+
+  m_ui.attachment->clear();
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(str != url.toString())
+	m_ui.attachment->append(QString("<a href=\"%1\">%1</a>").arg(str));
+    }
+
+  QApplication::restoreOverrideCursor();
+}

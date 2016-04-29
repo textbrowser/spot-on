@@ -845,6 +845,7 @@ class spoton: public QMainWindow
   void slotRefreshUrlDistillers(void);
   void slotRegenerateKey(void);
   void slotReloadEmailNames(void);
+  void slotRemoveAttachment(const QUrl &url);
   void slotRemoveEmailParticipants(void);
   void slotRemoveOtmOnExit(bool state);
   void slotRemoveParticipants(void);

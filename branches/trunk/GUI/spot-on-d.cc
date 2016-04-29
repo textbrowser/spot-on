@@ -1633,7 +1633,7 @@ void spoton::slotAddAttachment(void)
       QFileInfo fileInfo(dialog.selectedFiles().value(0));
 
       m_ui.attachment->append
-	(QString("<a href=\"%1\">%1 (%2)</a>").
+	(QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
 	 arg(fileInfo.absoluteFilePath()).
 	 arg(spoton_misc::prettyFileSize(fileInfo.size())));
     }
