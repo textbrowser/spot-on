@@ -2925,7 +2925,7 @@ void spoton::slotSendMail(void)
 	    }
 
 	  attachments << attachment;
-	  fileNames << fileName;
+	  fileNames << fileInfo.fileName();
 	}
     }
 
