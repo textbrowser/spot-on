@@ -3699,6 +3699,10 @@ void spoton::populateMail(void)
 	      oids.append(data.toString());
 	  }
 
+	disconnect(m_ui.mail,
+		   SIGNAL(itemSelectionChanged(void)),
+		   this,
+		   SLOT(slotMailSelected(void)));
 	m_ui.mail->clearContents();
 	m_ui.mail->setRowCount(0);
 	m_ui.mail->setSortingEnabled(false);
@@ -3885,6 +3889,10 @@ void spoton::populateMail(void)
 
 	m_ui.mail->setSelectionMode
 	  (QAbstractItemView::ExtendedSelection);
+	connect(m_ui.mail,
+		SIGNAL(itemSelectionChanged(void)),
+		this,
+		SLOT(slotMailSelected(void)));
       }
 
     db.close();
