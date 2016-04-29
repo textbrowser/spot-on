@@ -2930,8 +2930,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			  return;
 			}
 
-		      QByteArray attachment;
-		      QByteArray attachmentName;
+		      QByteArray attachmentData;
 		      QByteArray message;
 		      QByteArray name;
 		      QByteArray signature;
@@ -2952,7 +2951,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			{
 			  QList<QByteArray> list(data.split('\n'));
 
-			  if(list.size() == 8)
+			  if(list.size() == 7)
 			    {
 			      senderPublicKeyHash2 =
 				QByteArray::fromBase64(list.value(0));
@@ -2962,14 +2961,12 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 				QByteArray::fromBase64(list.value(2));
 			      message =
 				QByteArray::fromBase64(list.value(3));
-			      attachment =
+			      attachmentData =
 				QByteArray::fromBase64(list.value(4));
-			      attachmentName =
-			        QByteArray::fromBase64(list.value(5));
 			      signature =
-				QByteArray::fromBase64(list.value(6));
+				QByteArray::fromBase64(list.value(5));
 			      goldbugUsed = QVariant
-				(QByteArray::fromBase64(list.value(7))).
+				(QByteArray::fromBase64(list.value(6))).
 				toBool();
 			    }
 			  else
@@ -2977,7 +2974,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			      spoton_misc::logError
 				(QString("spoton_neighbor::process0001a(): "
 					 "received irregular data. "
-					 "Expecting 8 "
+					 "Expecting 7 "
 					 "entries, "
 					 "received %1.").arg(list.size()));
 			      return;
@@ -2999,8 +2996,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 				      name,
 				      subject,
 				      message,
-				      attachment,
-				      attachmentName,
+				      attachmentData,
 				      signature,
 				      goldbugUsed);
 			  return;
@@ -3156,7 +3152,7 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 			{
 			  QList<QByteArray> list(data.split('\n'));
 
-			  if(list.size() == 8)
+			  if(list.size() == 7)
 			    {
 			      for(int i = 0; i < list.size(); i++)
 				list.replace
@@ -3171,10 +3167,9 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 				 list.value(1),  // Name
 				 list.value(2),  // Subject
 				 list.value(3),  // Message
-				 list.value(4),  // Attachment
-				 list.value(5),  // Attachment Name
-				 list.value(6),  // Signature
-				 QVariant(list.value(7)).
+				 list.value(4),  // Attachment Data
+				 list.value(5),  // Signature
+				 QVariant(list.value(6)).
 				 toBool());      // Gold Bug Used?
 			    }
 			  else
@@ -3182,7 +3177,7 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 			      spoton_misc::logError
 				(QString("spoton_neighbor::process0001b(): "
 					 "received irregular data. "
-					 "Expecting 8 "
+					 "Expecting 7 "
 					 "entries, "
 					 "received %1.").arg(list.size()));
 			      return;
@@ -5192,8 +5187,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 				  const QByteArray &name,
 				  const QByteArray &subject,
 				  const QByteArray &message,
-				  const QByteArray &attachment,
-				  const QByteArray &attachmentName,
+				  const QByteArray &attachmentData,
 				  const QByteArray &signature,
 				  const bool goldbugUsed)
 {
@@ -5231,8 +5225,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 			name +
 			subject +
 			message +
-			attachment +
-			attachmentName,
+			attachmentData,
 			senderPublicKeyHash,
 			signature, s_crypt))
       {
@@ -5256,8 +5249,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
   else
     saveParticipantStatus(name, senderPublicKeyHash);
 
-  QByteArray attachmentName_l(attachmentName);
-  QByteArray attachment_l(attachment);
+  QByteArray attachmentData_l(attachmentData);
   QByteArray message_l(message);
   QByteArray name_l(name);
   QByteArray subject_l(subject);
@@ -5333,14 +5325,9 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 		      if(crypt)
 			{
-			  attachmentName_l = crypt->
-			    decryptedAfterAuthenticated(attachmentName_l,
+			  attachmentData_l = crypt->
+			    decryptedAfterAuthenticated(attachmentData_l,
 							&ok);
-
-			  if(ok)
-			    attachment_l = crypt->
-			      decryptedAfterAuthenticated
-			      (attachment_l, &ok);
 
 			  if(ok)
 			    message_l = crypt->
@@ -5364,8 +5351,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 			      ** Reset the local variables.
 			      */
 
-			      attachmentName_l = attachmentName;
-			      attachment_l = attachment;
+			      attachmentData_l = attachmentData;
 			      message_l = message;
 			      name_l = name;
 			      subject_l = subject;
@@ -5463,39 +5449,55 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	if(ok)
 	  if(query.exec())
 	    {
-	      if(!attachment_l.isEmpty() && !attachmentName_l.isEmpty())
+	      if(!attachmentData_l.isEmpty())
 		{
 		  QVariant variant(query.lastInsertId());
 		  qint64 id = query.lastInsertId().toLongLong();
 
 		  if(variant.isValid())
 		    {
+		      QByteArray attachmentName;
 		      QByteArray data;
 
 		      if(!goldbugUsed_l)
-			data = qUncompress(attachment_l);
+			data = qUncompress(attachmentData_l);
 		      else
-			data = attachment_l;
+			data = attachmentData_l;
 
 		      if(!data.isEmpty())
 			{
-			  query.prepare("INSERT INTO folders_attachment "
-					"(data, folders_oid, name) "
-					"VALUES (?, ?, ?)");
-			  query.bindValue
-			    (0, s_crypt->encryptedThenHashed(data,
-							     &ok).
-			     toBase64());
-			  query.bindValue(1, id);
+			  QDataStream stream(&data, QIODevice::ReadOnly);
+			  QList<QPair<QByteArray, QByteArray> > attachments;
 
-			  if(ok)
-			    query.bindValue
-			      (2, s_crypt->
-			       encryptedThenHashed(attachmentName_l,
-						   &ok).toBase64());
+			  stream >> attachments;
 
-			  if(ok)
-			    query.exec();
+			  if(stream.status() != QDataStream::Ok)
+			    attachments.clear();
+
+			  while(!attachments.isEmpty())
+			    {
+			      QPair<QByteArray, QByteArray> pair
+				(attachments.takeFirst());
+			      QSqlQuery query(db);
+
+			      query.prepare("INSERT INTO folders_attachment "
+					    "(data, folders_oid, name) "
+					    "VALUES (?, ?, ?)");
+			      query.bindValue
+				(0, s_crypt->encryptedThenHashed(pair.first,
+								 &ok).
+				 toBase64());
+			      query.bindValue(1, id);
+
+			      if(ok)
+				query.bindValue
+				  (2, s_crypt->
+				   encryptedThenHashed(pair.second,
+						       &ok).toBase64());
+
+			      if(ok)
+				query.exec();
+			    }
 			}
 		    }
 		}

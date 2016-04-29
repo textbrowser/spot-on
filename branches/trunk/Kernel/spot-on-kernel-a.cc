@@ -876,11 +876,9 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 			  const QByteArray &,
 			  const QByteArray &,
 			  const QByteArray &,
-			  const QByteArray &,
 			  const qint64)),
 	  this,
 	  SLOT(slotSendMail(const QByteArray &,
-			    const QByteArray &,
 			    const QByteArray &,
 			    const QByteArray &,
 			    const QByteArray &,
@@ -3199,8 +3197,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				 const QByteArray &name,
 				 const QByteArray &publicKey,
 				 const QByteArray &subject,
-				 const QByteArray &attachment,
-				 const QByteArray &attachmentName,
+				 const QByteArray &attachmentData,
 				 const QByteArray &keyType,
 				 const QByteArray &receiverName,
 				 const QByteArray &mode,
@@ -3210,7 +3207,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
   if(keyType == "poptastic" && publicKey.contains("-poptastic"))
     {
       postPoptasticMessage
-	(attachment, attachmentName, message, receiverName, subject, mode,
+	(attachmentData, message, receiverName, subject, mode,
 	 fromAccount, mailOid);
       return;
     }
@@ -3219,8 +3216,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
     {
       QByteArray data;
 
-      if(prepareAlmostAnonymousEmail(attachment,
-				     attachmentName,
+      if(prepareAlmostAnonymousEmail(attachmentData,
 				     fromAccount,
 				     goldbug,
 				     keyType,
@@ -3407,18 +3403,16 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 	      if(ok)
 		{
-		  if(attachment.isEmpty() || attachmentName.isEmpty())
+		  if(attachmentData.isEmpty())
 		    items << name
 			  << subject
 			  << message
-			  << QByteArray()
 			  << QByteArray();
 		  else
 		    items << name
 			  << subject
 			  << message
-			  << qCompress(attachment, 9)
-			  << attachmentName;
+			  << qCompress(attachmentData, 9);
 		}
 
 	      if(ok)
@@ -3457,8 +3451,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			       items.value(0) + // Name
 			       items.value(1) + // Subject
 			       items.value(2) + // Message
-			       items.value(3) + // Attachment
-			       items.value(4),  // Attachment Name
+			       items.value(3),  // Attachment Data
 			       &ok);
 
 			  if(ok)
@@ -3484,8 +3477,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			     items.value(0) + // Name
 			     items.value(1) + // Subject
 			     items.value(2) + // Message
-			     items.value(3) + // Attachment
-			     items.value(4),  // Attachment Name
+			     items.value(3),  // Attachment Data
 			     &ok);
 			  items << signature;
 			}
@@ -3509,9 +3501,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		       items.value(0).toBase64() + "\n" + // Name
 		       items.value(1).toBase64() + "\n" + // Subject
 		       items.value(2).toBase64() + "\n" + // Message
-		       items.value(3).toBase64() + "\n" + // Attachment
-		       items.value(4).toBase64() + "\n" + // Attachment Name
-		       items.value(5).toBase64() + "\n" + // Signature
+		       items.value(3).toBase64() + "\n" + // Attachment Data
+		       items.value(4).toBase64() + "\n" + // Signature
 		       QVariant(goldbugUsed).toByteArray().toBase64(),
 		       &ok);
 
@@ -3722,18 +3713,16 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 	      if(ok)
 		{
-		  if(attachment.isEmpty() || attachmentName.isEmpty())
+		  if(attachmentData.isEmpty())
 		    items << name
 			  << subject
 			  << message
-			  << QByteArray()
 			  << QByteArray();
 		  else
 		    items << name
 			  << subject
 			  << message
-			  << qCompress(attachment, 9)
-			  << attachmentName;
+			  << qCompress(attachmentData, 9);
 		}
 
 	      if(ok)
@@ -3772,8 +3761,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			       items.value(0) + // Name
 			       items.value(1) + // Subject
 			       items.value(2) + // Message
-			       items.value(3) + // Attachment
-			       items.value(4),  // Attachment Name
+			       items.value(3),  // Attachment Data
 			       &ok);
 
 			  if(ok)
@@ -3799,8 +3787,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			     items.value(0) + // Name
 			     items.value(1) + // Subject
 			     items.value(2) + // Message
-			     items.value(3) + // Attachment
-			     items.value(4),  // Attachment Name
+			     items.value(3),  // Attachment Data
 			     &ok);
 			  items << signature;
 			}
@@ -3823,9 +3810,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		       items.value(0).toBase64() + "\n" + // Name
 		       items.value(1).toBase64() + "\n" + // Subject
 		       items.value(2).toBase64() + "\n" + // Message
-		       items.value(3).toBase64() + "\n" + // Attachment
-		       items.value(4).toBase64() + "\n" + // Attachment Name
-		       items.value(5).toBase64() + "\n" + // Signature
+		       items.value(3).toBase64() + "\n" + // Attachment Data
+		       items.value(4).toBase64() + "\n" + // Signature
 		       QVariant(goldbugUsed).toByteArray().toBase64(),
 		       &ok);
 
@@ -5922,8 +5908,7 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
   m_poptasticCache.enqueue(hash);
 }
 
-void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
-					 const QByteArray &attachmentName,
+void spoton_kernel::postPoptasticMessage(const QByteArray &attachmentData,
 					 const QByteArray &message,
 					 const QByteArray &name,
 					 const QByteArray &subject,
@@ -5933,8 +5918,7 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachment,
 {
   QHash<QString, QVariant> hash;
 
-  hash["attachment"] = attachment;
-  hash["attachment_name"] = attachmentName;
+  hash["attachment"] = attachmentData;
   hash["from_account"] = fromAccount;
   hash["mail_oid"] = mailOid;
   hash["message"] = message;

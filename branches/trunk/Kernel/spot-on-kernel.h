@@ -177,8 +177,7 @@ class spoton_kernel: public QObject
   static QReadWriteLock s_settingsMutex;
   bool initializeSecurityContainers(const QString &passphrase,
 				    const QString &answer);
-  bool prepareAlmostAnonymousEmail(const QByteArray &attachment,
-				   const QByteArray &attachmentName,
+  bool prepareAlmostAnonymousEmail(const QByteArray &attachmentData,
 				   const QByteArray &fromAccount,
 				   const QByteArray &goldbug,
 				   const QByteArray &keyType,
@@ -198,8 +197,7 @@ class spoton_kernel: public QObject
   void importUrls(void);
   void popPoptastic(void);
   void postPoptastic(void);
-  void postPoptasticMessage(const QByteArray &attachment,
-			    const QByteArray &attachmentName,
+  void postPoptasticMessage(const QByteArray &attachmentData,
 			    const QByteArray &message,
 			    const QByteArray &name,
 			    const QByteArray &subject,
@@ -290,8 +288,7 @@ class spoton_kernel: public QObject
 		    const QByteArray &name,
 		    const QByteArray &publicKey,
 		    const QByteArray &subject,
-		    const QByteArray &attachment,
-		    const QByteArray &attachmentName,
+		    const QByteArray &attachmentData,
 		    const QByteArray &keyType,
 		    const QByteArray &receiverName,
 		    const QByteArray &mode,

@@ -33,8 +33,7 @@
 #include "spot-on-kernel.h"
 
 bool spoton_kernel::prepareAlmostAnonymousEmail
-(const QByteArray &attachment,
- const QByteArray &attachmentName,
+(const QByteArray &attachmentData,
  const QByteArray &fromAccount,
  const QByteArray &goldbug,
  const QByteArray &keyType,
@@ -62,20 +61,18 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
   QDataStream stream(&data, QIODevice::WriteOnly);
   bool ok = true;
 
-  if(attachment.isEmpty() || attachmentName.isEmpty())
+  if(attachmentData.isEmpty())
     stream << QByteArray("0001c")
 	   << name
 	   << subject
 	   << message
-	   << QByteArray()
 	   << QByteArray();
   else
     stream << QByteArray("0001c")
 	   << name
 	   << subject
 	   << message
-	   << qCompress(attachment, 9)
-	   << attachmentName;
+	   << qCompress(attachmentData, 9);
 
   if(stream.status() != QDataStream::Ok)
     {

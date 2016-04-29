@@ -169,14 +169,12 @@ EOL
 EOL
 3 - Message (Optional Gold Bug) (Base-64)
 EOL
-4 - Attachment (Optional Gold Bug) (Base-64)
+4 - Attachment Data (Optional Gold Bug) (Base-64)
 EOL
-5 - Attachment Name (Optional Gold Bug) (Base-64)
-EOL
-6 - Signature (0001b Group Items and Previous Six Items)
+5 - Signature (0001b Group Items and Previous Six Items)
     (Optional Gold Bug) (Base-64)
 EOL
-7 - Gold Bug Used? (Base-64)
+6 - Gold Bug Used? (Base-64)
 }
 EOL
 {
@@ -218,14 +216,12 @@ EOL
 EOL
 3 - Message (Optional Gold Bug) (Base-64)
 EOL
-4 - Attachment (Optional Gold Bug) (Base-64)
+4 - Attachment Data (Optional Gold Bug) (Base-64)
 EOL
-5 - Attachment Name (Optional Gold Bug) (Base-64)
-EOL
-6 - Signature (First Group Items and Previous Six Items)
+5 - Signature (First Group Items and Previous Six Items)
     (Optional Gold Bug) (Base-64)
 EOL
-7 - Gold Bug Used? (Base-64)
+6 - Gold Bug Used? (Base-64)
 }
 EOL
 {
@@ -260,8 +256,7 @@ Symmetric Key (Base-64)
 1 - Dispatcher's Name
 2 - Subject
 3 - Message
-4 - Attachment
-5 - Attachment Name
+4 - Attachment Data
 }
 EOL
 {

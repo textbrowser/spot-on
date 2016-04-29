@@ -78,6 +78,7 @@ void spoton_mailer::slotTimeout(void)
       return;
     }
 
+  QByteArray attachmentData;
   QList<QVector<QVariant> > list;
   QString connectionName1("");
   QString connectionName2("");
@@ -100,7 +101,7 @@ void spoton_mailer::slotTimeout(void)
 	QSqlQuery query(db1);
 
 	/*
-	** Send all messages from the sent folder.
+	** Send one message from the sent folder.
 	*/
 
 	query.setForwardOnly(true);
@@ -110,6 +111,9 @@ void spoton_mailer::slotTimeout(void)
 		      "FROM folders WHERE folder_index = 1"))
 	  while(query.next())
 	    {
+	      attachmentData.clear();
+	      list.clear();
+
 	      QString status("");
 	      bool ok = true;
 
@@ -120,8 +124,6 @@ void spoton_mailer::slotTimeout(void)
 	      if(status.toLower() != "queued")
 		continue;
 
-	      QByteArray attachment;
-	      QByteArray attachmentName;
 	      QByteArray fromAccount;
 	      QByteArray goldbug;
 	      QByteArray keyType;
@@ -203,6 +205,7 @@ void spoton_mailer::slotTimeout(void)
 
 	      if(ok)
 		{
+		  QList<QPair<QByteArray, QByteArray> > attachments;
 		  QSqlQuery query(db1);
 
 		  query.setForwardOnly(true);
@@ -211,8 +214,11 @@ void spoton_mailer::slotTimeout(void)
 		  query.bindValue(0, mailOid);
 
 		  if(query.exec())
-		    if(query.next())
+		    while(query.next())
 		      {
+			QByteArray attachment;
+			QByteArray attachmentName;
+
 			attachment = s_crypt->
 			  decryptedAfterAuthenticated
 			  (QByteArray::fromBase64(query.value(0).
@@ -225,7 +231,24 @@ void spoton_mailer::slotTimeout(void)
 			    (QByteArray::fromBase64(query.value(1).
 						    toByteArray()),
 			     &ok);
+
+			if(ok)
+			  attachments << QPair<QByteArray, QByteArray>
+			    (attachment, attachmentName);
+			else
+			  break;
 		      }
+
+		  if(!attachments.isEmpty())
+		    {
+		      QDataStream stream
+			(&attachmentData, QIODevice::WriteOnly);
+
+		      stream << attachments;
+
+		      if(stream.status() != QDataStream::Ok)
+			ok = false;
+		    }
 		}
 
 	      if(ok)
@@ -237,14 +260,14 @@ void spoton_mailer::slotTimeout(void)
 			 << name
 			 << publicKey
 			 << subject
-			 << attachment
-			 << attachmentName
+			 << attachmentData
 			 << keyType
 			 << receiverName
 			 << mode
 			 << fromAccount
 			 << mailOid;
 		  list.append(vector);
+		  break;
 		}
 	    }
       }
@@ -274,8 +297,7 @@ void spoton_mailer::slotTimeout(void)
 		    vector.value(7).toByteArray(),
 		    vector.value(8).toByteArray(),
 		    vector.value(9).toByteArray(),
-		    vector.value(10).toByteArray(),
-		    vector.value(11).toLongLong());
+		    vector.value(10).toLongLong());
     }
 }
 
