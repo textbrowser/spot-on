@@ -1682,6 +1682,8 @@ void spoton::slotSaveAttachment(void)
   if(dialog.exec() != QDialog::Accepted)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   bool ok = false;
 
   {
@@ -1750,6 +1752,8 @@ void spoton::slotSaveAttachment(void)
 
     QSqlDatabase::removeDatabase(connectionName);
   }
+
+  QApplication::restoreOverrideCursor();
 
   if(!ok)
     QMessageBox::critical(this, tr("%1: Error").
