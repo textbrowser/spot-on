@@ -906,7 +906,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-179</y>
              <width>841</width>
              <height>613</height>
             </rect>
@@ -1548,6 +1548,9 @@
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                            </sizepolicy>
+                          </property>
+                          <property name="toolTip">
+                           <string>Click an attachment to remove it.</string>
                           </property>
                           <property name="tabChangesFocus">
                            <bool>true</bool>
