@@ -171,7 +171,7 @@ EOL
 EOL
 4 - Attachment Data (Optional Gold Bug) (Base-64)
 EOL
-5 - Signature (0001b Group Items and Previous Six Items)
+5 - Signature (0001b Group Items and Previous Five Items)
     (Optional Gold Bug) (Base-64)
 EOL
 6 - Gold Bug Used? (Base-64)
@@ -218,7 +218,7 @@ EOL
 EOL
 4 - Attachment Data (Optional Gold Bug) (Base-64)
 EOL
-5 - Signature (First Group Items and Previous Six Items)
+5 - Signature (First Group Items and Previous Five Items)
     (Optional Gold Bug) (Base-64)
 EOL
 6 - Gold Bug Used? (Base-64)
