@@ -5223,8 +5223,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 
     if(db.open())
       {
-	QByteArray attachment(list.value(5));
-	QByteArray attachmentName(list.value(6));
+	QByteArray attachmentData(list.value(5));
 	QByteArray message(list.value(4));
 	QByteArray name(list.value(2));
 	QByteArray senderPublicKeyHash(list.value(1));
@@ -5310,35 +5309,49 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	if(ok)
 	  if((ok = query.exec()))
 	    {
-	      if(!attachment.isEmpty() && !attachmentName.isEmpty())
+	      if(!attachmentData.isEmpty())
 		{
 		  QVariant variant(query.lastInsertId());
 		  qint64 id = query.lastInsertId().toLongLong();
 
 		  if(variant.isValid())
 		    {
-		      QByteArray data;
-
-		      data = qUncompress(attachment);
+		      QByteArray data(qUncompress(attachmentData));
 
 		      if(!data.isEmpty())
 			{
-			  query.prepare("INSERT INTO folders_attachment "
-					"(data, folders_oid, name) "
-					"VALUES (?, ?, ?)");
-			  query.bindValue
-			    (0, crypt->encryptedThenHashed(data,
-							   &ok).toBase64());
-			  query.bindValue(1, id);
+			  QDataStream stream(&data, QIODevice::ReadOnly);
+			  QList<QPair<QByteArray, QByteArray> > attachments;
 
-			  if(ok)
-			    query.bindValue
-			      (2, crypt->
-			       encryptedThenHashed(attachmentName,
-						   &ok).toBase64());
+			  stream >> attachments;
 
-			  if(ok)
-			    ok = query.exec();
+			  if(stream.status() != QDataStream::Ok)
+			    attachments.clear();
+
+			  while(!attachments.isEmpty())
+			    {
+			      QPair<QByteArray, QByteArray> pair
+				(attachments.takeFirst());
+			      QSqlQuery query(db);
+
+			      query.prepare("INSERT INTO folders_attachment "
+					    "(data, folders_oid, name) "
+					    "VALUES (?, ?, ?)");
+			      query.bindValue
+				(0, crypt->encryptedThenHashed(pair.first,
+							       &ok).
+				 toBase64());
+			      query.bindValue(1, id);
+
+			      if(ok)
+				query.bindValue
+				  (2, crypt->
+				   encryptedThenHashed(pair.second,
+						       &ok).toBase64());
+
+			      if(ok)
+				ok = query.exec();
+			    }
 			}
 		    }
 		}

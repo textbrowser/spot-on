@@ -4134,24 +4134,24 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
       signature = item->text();
   }
 
-  if(signature.isEmpty())
-    {
-      text.append(tr("<font color=#9F6000><b>"
-		     "The message was not digitally signed "
-		     "or digital signatures are not supported."
-		     "</b></font>"));
-      text.append("<br><br>");
-    }
-  else
-    {
-      text.append(tr("<font color=#4F8A10><b>"
-		     "The message appears to have been digitally signed."
-		     "</b></font>"));
-      text.append("<br><br>");
-    }
-
   if(m_ui.folder->currentIndex() == 0) // Inbox
     {
+      if(signature.isEmpty())
+	{
+	  text.append(tr("<font color=#9F6000><b>"
+			 "The message was not digitally signed "
+			 "or digital signatures are not supported."
+			 "</b></font>"));
+	  text.append("<br><br>");
+	}
+      else
+	{
+	  text.append(tr("<font color=#4F8A10><b>"
+			 "The message appears to have been digitally signed."
+			 "</b></font>"));
+	  text.append("<br><br>");
+	}
+
       text.append(tr("<b>From:</b> "));
       text.append(fromTo);
       text.append("<br>");

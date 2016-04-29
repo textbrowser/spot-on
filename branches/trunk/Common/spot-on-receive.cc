@@ -1015,7 +1015,7 @@ QList<QByteArray> spoton_receive::process0001c
       QDataStream stream(&data, QIODevice::ReadOnly);
       QList<QByteArray> list;
 
-      for(int i = 0; i < 6; i++)
+      for(int i = 0; i < 5; i++)
 	{
 	  QByteArray a;
 
