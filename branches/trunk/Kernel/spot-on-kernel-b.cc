@@ -950,7 +950,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  if(!s_crypt)
 	    return;
 
-	  QByteArray attachment;
+	  QByteArray attachmentData;
 	  QByteArray attachmentName;
 	  QByteArray message;
 	  QByteArray name;
@@ -963,10 +963,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  name = list.value(1);
 	  subject = list.value(2);
 	  message = list.value(3);
-	  attachment = list.value(4);
-	  attachmentName = list.value(5);
-	  signature = list.value(6);
-	  goldbugUsed = QVariant(list.value(7)).toBool();
+	  attachmentName = list.value(4);
+	  signature = list.value(5);
+	  goldbugUsed = QVariant(list.value(6)).toBool();
 
 	  if(!goldbugUsed && setting("gui/emailAcceptSignedMessagesOnly",
 				     true).toBool())
@@ -980,8 +979,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 				name +
 				subject +
 				message +
-				attachment +
-				attachmentName,
+				attachmentData,
 				senderPublicKeyHash,
 				signature, s_crypt))
 	      {
@@ -1001,8 +999,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 						 s_crypt))
 	    return;
 
-	  QByteArray attachmentName_l(attachmentName);
-	  QByteArray attachment_l(attachment);
+	  QByteArray attachmentData_l(attachmentData);
 	  QByteArray message_l(message);
 	  QByteArray name_l(name);
 	  QByteArray subject_l(subject);
@@ -1080,14 +1077,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 			      if(crypt)
 				{
-				  attachmentName_l = crypt->
+				  attachmentData_l = crypt->
 				    decryptedAfterAuthenticated
-				    (attachmentName_l, &ok);
-
-				  if(ok)
-				    attachment_l = crypt->
-				      decryptedAfterAuthenticated
-				      (attachment_l, &ok);
+				    (attachmentData_l, &ok);
 
 				  if(ok)
 				    message_l = crypt->
@@ -1112,8 +1104,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 				      ** Reset the local variables.
 				      */
 
-				      attachmentName_l = attachmentName;
-				      attachment_l = attachment;
+				      attachmentData_l = attachmentData;
 				      message_l = message;
 				      name_l = name;
 				      subject_l = subject;
@@ -1221,8 +1212,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		if(ok)
 		  if(query.exec())
 		    {
-		      if(!attachment_l.isEmpty() &&
-			 !attachmentName_l.isEmpty())
+		      if(!attachmentData_l.isEmpty())
 			{
 			  QVariant variant(query.lastInsertId());
 			  qint64 id = query.lastInsertId().toLongLong();
@@ -1232,30 +1222,49 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 			      QByteArray data;
 
 			      if(!goldbugUsed_l)
-				data = qUncompress(attachment_l);
+				data = qUncompress(attachmentData_l);
 			      else
-				data = attachment_l;
+				data = attachmentData_l;
 
 			      if(!data.isEmpty())
 				{
-				  query.prepare
-				    ("INSERT INTO folders_attachment "
-				     "(data, folders_oid, name) "
-				     "VALUES (?, ?, ?)");
-				  query.bindValue
-				    (0, s_crypt->
-				     encryptedThenHashed(data,
-							 &ok).toBase64());
-				  query.bindValue(1, id);
+				  QDataStream stream
+				    (&data, QIODevice::ReadOnly);
+				  QList<QPair<QByteArray, QByteArray> >
+				    attachments;
 
-				  if(ok)
-				    query.bindValue
-				      (2, s_crypt->
-				       encryptedThenHashed(attachmentName_l,
-							   &ok).toBase64());
+				  stream >> attachments;
 
-				  if(ok)
-				    query.exec();
+				  if(stream.status() != QDataStream::Ok)
+				    attachments.clear();
+
+				  while(!attachments.isEmpty())
+				    {
+				      QPair<QByteArray, QByteArray> pair
+					(attachments.takeFirst());
+				      QSqlQuery query(db);
+
+				      query.prepare
+					("INSERT INTO folders_attachment "
+					 "(data, folders_oid, name) "
+					 "VALUES (?, ?, ?)");
+				      query.bindValue
+					(0, s_crypt->
+					 encryptedThenHashed(pair.first,
+							     &ok).
+					 toBase64());
+				      query.bindValue(1, id);
+
+				      if(ok)
+					query.bindValue
+					  (2, s_crypt->
+					   encryptedThenHashed(pair.second,
+							       &ok).
+					   toBase64());
+
+				      if(ok)
+					query.exec();
+				    }
 				}
 			    }
 			}
