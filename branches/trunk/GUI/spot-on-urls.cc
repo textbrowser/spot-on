@@ -1039,7 +1039,7 @@ void spoton::slotSelectUrlIniPath(void)
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setFilter(QDir::AllEntries | QDir::Hidden);
   dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000

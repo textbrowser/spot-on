@@ -1620,7 +1620,7 @@ void spoton::slotAddAttachment(void)
      arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -1675,7 +1675,7 @@ void spoton::slotSaveAttachment(void)
 #endif
   dialog.setDirectory(QDir::homePath());
   dialog.setFileMode(QFileDialog::Directory);
-  dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setWindowTitle(tr("%1: Save Attachment(s)").
                         arg(SPOTON_APPLICATION_NAME));
 

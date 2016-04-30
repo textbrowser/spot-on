@@ -471,7 +471,7 @@ void spoton::slotSelectDestination(void)
      arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::Directory);
   dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -934,7 +934,7 @@ void spoton::slotSelectTransmitFile(void)
      arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -3436,7 +3436,7 @@ void spoton::slotExportPublicKeys(void)
 		      standardLocations(QStandardPaths::DesktopLocation).
 		      value(0));
 #endif
-  dialog.setLabelText(QFileDialog::Accept, tr("&Save"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
   dialog.setAcceptMode(QFileDialog::AcceptSave);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -3483,7 +3483,7 @@ void spoton::slotImportPublicKeys(void)
     (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
      value(0));
 #endif
-  dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -3570,7 +3570,7 @@ void spoton::slotExportListeners(void)
 		      standardLocations(QStandardPaths::DesktopLocation).
 		      value(0));
 #endif
-  dialog.setLabelText(QFileDialog::Accept, tr("&Save"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
   dialog.setAcceptMode(QFileDialog::AcceptSave);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -3665,7 +3665,7 @@ void spoton::slotImportNeighbors(void)
     (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
      value(0));
 #endif
-  dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000

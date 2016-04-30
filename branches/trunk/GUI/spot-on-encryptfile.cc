@@ -786,7 +786,7 @@ void spoton_encryptfile::slotSelect(void)
     }
 
   dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("&Select"));
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
