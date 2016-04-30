@@ -650,12 +650,9 @@ void spoton_kernel::postPoptastic(void)
 		  curl_payload_text.append("\r\n");
 		}
 
-	      QByteArray attachment(values["attachment"].toByteArray());
-	      QByteArray attachmentName
-		(values["attachment_name"].toByteArray());
+	      QByteArray attachmentData(values["attachment"].toByteArray());
 
-	      if(attachment.isEmpty() || attachmentName.isEmpty() ||
-		 values.size() == 4)
+	      if(attachmentData.isEmpty() || values.size() == 4)
 		{
 		  while(!bytes.isEmpty())
 		    {
@@ -665,9 +662,28 @@ void spoton_kernel::postPoptastic(void)
 		      bytes.remove(0, CURL_MAX_WRITE_SIZE);
 		    }
 		}
-	      else if(!attachment.isEmpty() && !attachmentName.isEmpty())
+	      else if(!attachmentData.isEmpty())
 		{
-		  QByteArray a(attachment.toBase64());
+		  QDataStream stream(&attachmentData, QIODevice::ReadOnly);
+		  QList<QPair<QByteArray, QByteArray> > attachments;
+
+		  stream >> attachments;
+
+		  if(stream.status() != QDataStream::Ok)
+		    attachments.clear();
+
+		  QByteArray attachment;
+		  QByteArray attachmentName;
+		  size_t attachmentSize = 0;
+
+		  if(!attachments.isEmpty())
+		    {
+		      attachment = attachments.at(0).first.toBase64();
+		      attachmentName = attachments.at(0).second;
+		      attachmentSize = static_cast<size_t>
+			(attachment.length());
+		    }
+
 		  QByteArray bytes;
 		  QByteArray r1(spoton_crypt::weakRandomBytes(8).toHex());
 		  QByteArray r2(spoton_crypt::weakRandomBytes(8).toHex());
@@ -699,10 +715,10 @@ void spoton_kernel::postPoptastic(void)
 		     arg(attachmentName.constData()));
 		  bytes.append(str);
 
-		  while(!a.isEmpty())
+		  while(!attachment.isEmpty())
 		    {
-		      bytes.append(a.mid(0, 76));
-		      a.remove(0, 76);
+		      bytes.append(attachment.mid(0, 76));
+		      attachment.remove(0, 76);
 		      bytes.append("\r\n");
 		    }
 
@@ -719,8 +735,7 @@ void spoton_kernel::postPoptastic(void)
 		    }
 
 		  curl_easy_setopt
-		    (curl, CURLOPT_INFILESIZE,
-		     static_cast<size_t> (attachment.toBase64().length()));
+		    (curl, CURLOPT_INFILESIZE, attachmentSize);
 		}
 
 	      curl_payload_text.append("\r\n");
@@ -951,7 +966,6 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    return;
 
 	  QByteArray attachmentData;
-	  QByteArray attachmentName;
 	  QByteArray message;
 	  QByteArray name;
 	  QByteArray senderPublicKeyHash;
@@ -963,7 +977,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  name = list.value(1);
 	  subject = list.value(2);
 	  message = list.value(3);
-	  attachmentName = list.value(4);
+	  attachmentData = list.value(4);
 	  signature = list.value(5);
 	  goldbugUsed = QVariant(list.value(6)).toBool();
 
@@ -1589,6 +1603,8 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 			  if(!data.isEmpty())
 			    {
+			      QSqlQuery query(db);
+
 			      query.prepare
 				("INSERT INTO folders_attachment "
 				 "(data, folders_oid, name) "
