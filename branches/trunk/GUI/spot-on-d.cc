@@ -1618,7 +1618,7 @@ void spoton::slotAddAttachment(void)
   dialog.setWindowTitle
     (tr("%1: Select Attachment").
      arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setFileMode(QFileDialog::ExistingFiles);
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
@@ -1630,12 +1630,19 @@ void spoton::slotAddAttachment(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
-      QFileInfo fileInfo(dialog.selectedFiles().value(0));
+      QStringList list(dialog.selectedFiles());
 
-      m_ui.attachment->append
-	(QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
-	 arg(fileInfo.absoluteFilePath()).
-	 arg(spoton_misc::prettyFileSize(fileInfo.size())));
+      qSort(list);
+
+      while(!list.isEmpty())
+	{
+	  QFileInfo fileInfo(list.takeFirst());
+
+	  m_ui.attachment->append
+	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
+	     arg(fileInfo.absoluteFilePath()).
+	     arg(spoton_misc::prettyFileSize(fileInfo.size())));
+	}
     }
 }
 
