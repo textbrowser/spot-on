@@ -100,7 +100,6 @@ void spoton::slotRemoveAttachment(const QUrl &url)
   QStringList list(m_ui.attachment->toPlainText().split('\n'));
 
   m_ui.attachment->clear();
-  qSort(list);
 
   while(!list.isEmpty())
     {
