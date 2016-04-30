@@ -906,9 +906,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-179</y>
+             <y>0</y>
              <width>841</width>
-             <height>613</height>
+             <height>636</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1217,6 +1217,22 @@
                   </widget>
                   <widget class="QWidget" name="layoutWidget">
                    <layout class="QVBoxLayout" name="verticalLayout_29">
+                    <item>
+                     <widget class="QLabel" name="label_86">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color: rgb(255, 255, 224);</string>
+                      </property>
+                      <property name="text">
+                       <string>Traditional e-mail supports only single attachments.</string>
+                      </property>
+                     </widget>
+                    </item>
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_20">
                       <item>
