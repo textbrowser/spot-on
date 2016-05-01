@@ -25,6 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QDataStream>
+
 #include "spot-on.h"
 #include "spot-on-defines.h"
 #include "ui_spot-on-adaptive-echo-prompt.h"
@@ -1793,96 +1795,76 @@ void spoton::applyGoldBugToAttachments(const QString &folderOid,
       return;
     }
 
+  *count = 0;
+
   QSqlQuery query(db);
 
   query.setForwardOnly(true);
-  query.prepare("SELECT data, name, OID FROM folders_attachment WHERE "
+  query.prepare("SELECT data, OID FROM folders_attachment WHERE "
 		"folders_oid = ?");
   query.bindValue(0, folderOid);
 
   if(query.exec())
     {
-      while(query.next())
+      if(query.next())
 	{
-	  QByteArray attachment
+	  QByteArray attachmentData
 	    (QByteArray::fromBase64(query.value(0).toByteArray()));
-	  QByteArray attachmentName
-	    (QByteArray::fromBase64(query.value(1).toByteArray()));
 	  bool ok2 = true;
 
-	  attachment = crypt2->decryptedAfterAuthenticated(attachment, &ok2);
+	  attachmentData = crypt2->decryptedAfterAuthenticated
+	    (attachmentData, &ok2);
 
 	  if(ok2)
-	    attachmentName = crypt2->decryptedAfterAuthenticated
-	      (attachmentName, &ok2);
+	    attachmentData = crypt1->decryptedAfterAuthenticated
+	      (attachmentData, &ok2);
 
 	  if(ok2)
 	    {
-	      attachment = crypt1->decryptedAfterAuthenticated
-		(attachment, &ok2);
+	      if(!attachmentData.isEmpty())
+		attachmentData = qUncompress(attachmentData);
 
-	      if(ok2)
+	      if(!attachmentData.isEmpty())
 		{
-		  if(!attachment.isEmpty())
-		    attachment = qUncompress(attachment);
+		  QDataStream stream(&attachmentData, QIODevice::ReadOnly);
+		  QList<QPair<QByteArray, QByteArray> > attachments;
 
-		  attachmentName = crypt1->decryptedAfterAuthenticated
-		    (attachmentName, &ok2);
-		}
+		  stream >> attachments;
 
-	      if(ok2)
-		{
-		  if(!attachment.isEmpty() && !attachmentName.isEmpty())
+		  if(stream.status() != QDataStream::Ok)
 		    {
-		      QSqlQuery updateQuery(db);
+		      if(ok1)
+			*ok1 = false;
 
-		      updateQuery.prepare("UPDATE folders_attachment "
-					  "SET data = ?, "
-					  "name = ? "
-					  "WHERE OID = ?");
-		      updateQuery.bindValue
-			(0, crypt2->encryptedThenHashed(attachment, &ok2).
+		      attachments.clear();
+		    }
+
+		  while(!attachments.isEmpty())
+		    {
+		      QPair<QByteArray, QByteArray> pair
+			(attachments.takeFirst());
+		      QSqlQuery query(db);
+
+		      query.prepare("INSERT INTO folders_attachment "
+				    "(data, folders_oid, name) "
+				    "VALUES (?, ?, ?)");
+		      query.bindValue
+			(0, crypt2->encryptedThenHashed(pair.first,
+							&ok2).
 			 toBase64());
+		      query.bindValue(1, folderOid);
 
 		      if(ok2)
-			updateQuery.bindValue
-			  (1, crypt2->encryptedThenHashed(attachmentName,
-							  &ok2).
-			   toBase64());
-
-		      updateQuery.bindValue(2, query.value(2));
+			query.bindValue
+			  (2, crypt2->
+			   encryptedThenHashed(pair.second,
+					       &ok2).toBase64());
 
 		      if(ok2)
-			{
-			  if(updateQuery.exec())
-			    *count += 1;
-			  else
-			    {
-			      if(*ok1)
-				*ok1 = false;
+			ok2 = query.exec();
 
-			      break;
-			    }
-			}
-		      else
-			{
-			  if(ok1)
-			    *ok1 = false;
-
-			  break;
-			}
-		    }
-		  else
-		    {
-		      QSqlQuery deleteQuery(db);
-
-		      deleteQuery.exec("PRAGMA secure_delete = ON");
-		      deleteQuery.prepare("DELETE FROM folders_attachment "
-					  "WHERE OID = ?");
-		      deleteQuery.bindValue(0, query.value(2));
-
-		      if(deleteQuery.exec())
-			*count -= 1;
+		      if(ok2)
+			*count += 1;
 		      else
 			{
 			  if(ok1)
@@ -1892,25 +1874,21 @@ void spoton::applyGoldBugToAttachments(const QString &folderOid,
 			}
 		    }
 		}
-	      else
-		{
-		  if(ok1)
-		    *ok1 = false;
-
-		  break;
-		}
-	    }
-	  else
-	    {
-	      if(*ok1)
-		*ok1 = false;
-
-	      break;
 	    }
 	}
     }
   else if(ok1)
     *ok1 = false;
+
+  query.exec("PRAGMA secure_delete = ON");
+  query.prepare("DELETE FROM folders_attachment WHERE OID = ?");
+  query.bindValue(0, folderOid);
+
+  if(!query.exec())
+    {
+      if(ok1)
+	*ok1 = false;
+    }
 }
 
 void spoton::slotEncryptionKeyTypeChanged(int index)
