@@ -147,6 +147,23 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="label_22">
+       <property name="text">
+        <string>&amp;E-Mail Primary Account</string>
+       </property>
+       <property name="buddy">
+        <cstring>email_primary_account</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="email_primary_account">
+       <property name="sizeAdjustPolicy">
+        <enum>QComboBox::AdjustToContents</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_8">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -886,6 +903,7 @@
   <tabstop>account</tabstop>
   <tabstop>delete_account</tabstop>
   <tabstop>chat_primary_account</tabstop>
+  <tabstop>email_primary_account</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>proxy</tabstop>
   <tabstop>proxy_type</tabstop>
