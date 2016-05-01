@@ -5019,7 +5019,7 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 		else
 		  item->setData(Qt::UserRole, 0);
 
-		item->setText("");
+		item->setText(QString::number(attachmentsCount));
 	      }
 
 	    item = m_ui.mail->item(row, 5); // Gold Bug
