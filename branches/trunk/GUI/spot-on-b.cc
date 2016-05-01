@@ -4874,8 +4874,10 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 		** Let's prepare the attachments.
 		*/
 
+		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 		applyGoldBugToAttachments
 		  (oid, db, &attachmentsCount, crypt, &ok);
+		QApplication::restoreOverrideCursor();
 
 		if(!ok)
 		  if(rc == 0)
