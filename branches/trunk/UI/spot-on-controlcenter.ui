@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>850</width>
-    <height>550</height>
+    <height>626</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -91,7 +91,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>448</height>
+             <height>524</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -477,8 +477,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>802</width>
-                <height>482</height>
+                <width>816</width>
+                <height>514</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -906,9 +906,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-128</y>
              <width>841</width>
-             <height>636</height>
+             <height>638</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1218,22 +1218,6 @@
                   <widget class="QWidget" name="layoutWidget">
                    <layout class="QVBoxLayout" name="verticalLayout_29">
                     <item>
-                     <widget class="QLabel" name="label_86">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(255, 255, 224);</string>
-                      </property>
-                      <property name="text">
-                       <string>Traditional e-mail supports only single attachments.</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_20">
                       <item>
                        <widget class="QPushButton" name="clearOutgoing">
@@ -1282,16 +1266,6 @@
                       <property name="spacing">
                        <number>5</number>
                       </property>
-                      <item row="3" column="1">
-                       <widget class="QTextEdit" name="outgoingMessage">
-                        <property name="tabChangesFocus">
-                         <bool>true</bool>
-                        </property>
-                        <property name="textInteractionFlags">
-                         <set>Qt::TextEditorInteraction</set>
-                        </property>
-                       </widget>
-                      </item>
                       <item row="1" column="0">
                        <widget class="QLabel" name="label_10">
                         <property name="text">
@@ -1304,6 +1278,22 @@
                          <cstring>emailParticipants</cstring>
                         </property>
                        </widget>
+                      </item>
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_41">
+                        <property name="text">
+                         <string>&amp;From</string>
+                        </property>
+                        <property name="margin">
+                         <number>7</number>
+                        </property>
+                        <property name="buddy">
+                         <cstring>emailName</cstring>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="1">
+                       <widget class="QLineEdit" name="outgoingSubject"/>
                       </item>
                       <item row="3" column="0">
                        <layout class="QVBoxLayout" name="verticalLayout_71">
@@ -1361,66 +1351,6 @@
                         </item>
                        </layout>
                       </item>
-                      <item row="5" column="0">
-                       <widget class="QLabel" name="label_6">
-                        <property name="text">
-                         <string>&amp;Optional</string>
-                        </property>
-                        <property name="margin">
-                         <number>7</number>
-                        </property>
-                        <property name="buddy">
-                         <cstring>goldbug</cstring>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="5" column="1">
-                       <layout class="QHBoxLayout" name="horizontalLayout_31">
-                        <property name="spacing">
-                         <number>5</number>
-                        </property>
-                        <item>
-                         <widget class="QLineEdit" name="goldbug">
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of AES-256 encryption and SHA-512 authentication. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QComboBox" name="email_fs_gb">
-                          <property name="currentIndex">
-                           <number>2</number>
-                          </property>
-                          <property name="sizeAdjustPolicy">
-                           <enum>QComboBox::AdjustToContents</enum>
-                          </property>
-                          <property name="minimumContentsLength">
-                           <number>25</number>
-                          </property>
-                          <item>
-                           <property name="text">
-                            <string>Forward Secrecy</string>
-                           </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>Gold Bug</string>
-                           </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>Normal</string>
-                           </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>Pure Forward Secrecy</string>
-                           </property>
-                          </item>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
                       <item row="0" column="1">
                        <layout class="QHBoxLayout" name="horizontalLayout_47">
                         <property name="spacing">
@@ -1454,9 +1384,6 @@
                         </item>
                        </layout>
                       </item>
-                      <item row="2" column="1">
-                       <widget class="QLineEdit" name="outgoingSubject"/>
-                      </item>
                       <item row="2" column="0">
                        <widget class="QLabel" name="label_25">
                         <property name="text">
@@ -1467,19 +1394,6 @@
                         </property>
                         <property name="buddy">
                          <cstring>outgoingSubject</cstring>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="0">
-                       <widget class="QLabel" name="label_41">
-                        <property name="text">
-                         <string>&amp;From</string>
-                        </property>
-                        <property name="margin">
-                         <number>7</number>
-                        </property>
-                        <property name="buddy">
-                         <cstring>emailName</cstring>
                         </property>
                        </widget>
                       </item>
@@ -1552,38 +1466,75 @@
                         </item>
                        </layout>
                       </item>
-                      <item row="4" column="1">
-                       <layout class="QHBoxLayout" name="horizontalLayout_51">
+                      <item row="5" column="0">
+                       <widget class="QLabel" name="label_6">
+                        <property name="text">
+                         <string>&amp;Optional</string>
+                        </property>
+                        <property name="margin">
+                         <number>7</number>
+                        </property>
+                        <property name="buddy">
+                         <cstring>goldbug</cstring>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="1">
+                       <layout class="QHBoxLayout" name="horizontalLayout_31">
                         <property name="spacing">
                          <number>5</number>
                         </property>
                         <item>
-                         <widget class="QTextBrowser" name="attachment">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
+                         <widget class="QLineEdit" name="goldbug">
                           <property name="toolTip">
-                           <string>Click an attachment to remove it.</string>
-                          </property>
-                          <property name="tabChangesFocus">
-                           <bool>true</bool>
-                          </property>
-                          <property name="openLinks">
-                           <bool>false</bool>
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of AES-256 encryption and SHA-512 authentication. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QPushButton" name="selectAttachment">
-                          <property name="text">
-                           <string>Attach...</string>
+                         <widget class="QComboBox" name="email_fs_gb">
+                          <property name="currentIndex">
+                           <number>2</number>
                           </property>
+                          <property name="sizeAdjustPolicy">
+                           <enum>QComboBox::AdjustToContents</enum>
+                          </property>
+                          <property name="minimumContentsLength">
+                           <number>25</number>
+                          </property>
+                          <item>
+                           <property name="text">
+                            <string>Forward Secrecy</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Gold Bug</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Normal</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Pure Forward Secrecy</string>
+                           </property>
+                          </item>
                          </widget>
                         </item>
                        </layout>
+                      </item>
+                      <item row="3" column="1">
+                       <widget class="QTextEdit" name="outgoingMessage">
+                        <property name="tabChangesFocus">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextEditorInteraction</set>
+                        </property>
+                       </widget>
                       </item>
                       <item row="4" column="0">
                        <widget class="QLabel" name="label_94">
@@ -1597,6 +1548,62 @@
                          <cstring>attachment</cstring>
                         </property>
                        </widget>
+                      </item>
+                      <item row="4" column="1">
+                       <layout class="QVBoxLayout" name="verticalLayout_72">
+                        <item>
+                         <widget class="QLabel" name="label_86">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">background-color: rgb(255, 255, 224);</string>
+                          </property>
+                          <property name="text">
+                           <string>Traditional e-mail supports only single attachments. Inline attachments are also not supported.</string>
+                          </property>
+                          <property name="wordWrap">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_51">
+                          <property name="spacing">
+                           <number>5</number>
+                          </property>
+                          <item>
+                           <widget class="QTextBrowser" name="attachment">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="toolTip">
+                             <string>Click an attachment to remove it.</string>
+                            </property>
+                            <property name="tabChangesFocus">
+                             <bool>true</bool>
+                            </property>
+                            <property name="openLinks">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QPushButton" name="selectAttachment">
+                            <property name="text">
+                             <string>Attach...</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
                       </item>
                      </layout>
                     </item>
@@ -2109,7 +2116,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>448</height>
+             <height>524</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3321,7 +3328,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>448</height>
+             <height>524</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4459,7 +4466,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>448</height>
+             <height>524</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -7926,8 +7933,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
-             <height>453</height>
+             <width>826</width>
+             <height>524</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8542,7 +8549,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>448</height>
+             <height>524</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9137,8 +9144,8 @@
   <tabstop>emailParticipants</tabstop>
   <tabstop>outgoingSubject</tabstop>
   <tabstop>richtext</tabstop>
-  <tabstop>attachment</tabstop>
   <tabstop>outgoingMessage</tabstop>
+  <tabstop>attachment</tabstop>
   <tabstop>selectAttachment</tabstop>
   <tabstop>goldbug</tabstop>
   <tabstop>email_fs_gb</tabstop>
