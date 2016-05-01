@@ -5814,7 +5814,7 @@ void spoton::slotTestSslControlString(void)
 {
   QList<QSslCipher> ciphers
     (spoton_crypt::defaultSslCiphers(m_optionsUi.sslControlString->text()));
-  QMessageBox mb(this);
+  QMessageBox mb(m_optionsWindow);
   QString str("");
 
   for(int i = 0; i < ciphers.size(); i++)

@@ -5452,7 +5452,7 @@ void spoton::slotGeneralTimerTimeout(void)
 
 void spoton::slotSelectGeoIPPath(void)
 {
-  QFileDialog dialog(this);
+  QFileDialog dialog(m_optionsWindow);
 
   dialog.setWindowTitle
     (tr("%1: Select GeoIP Data Path").
