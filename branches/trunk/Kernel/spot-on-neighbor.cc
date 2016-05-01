@@ -5465,13 +5465,20 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 		      if(!data.isEmpty())
 			{
-			  QDataStream stream(&data, QIODevice::ReadOnly);
 			  QList<QPair<QByteArray, QByteArray> > attachments;
 
-			  stream >> attachments;
+			  if(!goldbugUsed_l)
+			    {
+			      QDataStream stream(&data, QIODevice::ReadOnly);
 
-			  if(stream.status() != QDataStream::Ok)
-			    attachments.clear();
+			      stream >> attachments;
+
+			      if(stream.status() != QDataStream::Ok)
+				attachments.clear();
+			    }
+			  else
+			    attachments << QPair<QByteArray, QByteArray>
+			      (data, data);
 
 			  while(!attachments.isEmpty())
 			    {
