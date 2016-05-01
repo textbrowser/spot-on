@@ -893,7 +893,7 @@ void spoton::slotExternalIp(int index)
   QString str("");
   int v = 30;
 
-  if(comboBox == m_ui.guiExternalIpFetch)
+  if(comboBox == m_optionsUi.guiExternalIpFetch)
     str = "gui";
   else
     str = "kernel";
@@ -1861,7 +1861,7 @@ void spoton::slotSecureMemoryPoolChanged(int value)
 {
   QSettings settings;
 
-  if(m_ui.guiSecureMemoryPool == sender())
+  if(m_optionsUi.guiSecureMemoryPool == sender())
     {
       m_settings["gui/gcryctl_init_secmem"] = value;
       settings.setValue("gui/gcryctl_init_secmem", value);

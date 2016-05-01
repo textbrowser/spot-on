@@ -545,20 +545,20 @@ spoton::spoton(void):QMainWindow()
       }
 
 #ifndef SPOTON_LINKED_WITH_LIBGEOIP
-  m_ui.geoipPath4->setEnabled(false);
-  m_ui.geoipPath4->setToolTip
+  m_optionsUi.geoipPath4->setEnabled(false);
+  m_optionsUi.geoipPath4->setToolTip
     (tr("%1 was configured without "
 	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
-  m_ui.geoipPath6->setEnabled(false);
-  m_ui.geoipPath6->setToolTip
+  m_optionsUi.geoipPath6->setEnabled(false);
+  m_optionsUi.geoipPath6->setToolTip
     (tr("%1 was configured without "
 	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
-  m_ui.selectGeoIP4->setEnabled(false);
-  m_ui.selectGeoIP4->setToolTip
+  m_optionsUi.selectGeoIP4->setEnabled(false);
+  m_optionsUi.selectGeoIP4->setToolTip
     (tr("%1 was configured without "
 	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
-  m_ui.selectGeoIP6->setEnabled(false);
-  m_ui.selectGeoIP6->setToolTip
+  m_optionsUi.selectGeoIP6->setEnabled(false);
+  m_optionsUi.selectGeoIP6->setToolTip
     (tr("%1 was configured without "
 	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
 #endif
@@ -853,11 +853,11 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectDestination(void)));
-  connect(m_ui.selectGeoIP4,
+  connect(m_optionsUi.selectGeoIP4,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectGeoIPPath(void)));
-  connect(m_ui.selectGeoIP6,
+  connect(m_optionsUi.selectGeoIP6,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectGeoIPPath(void)));
@@ -897,11 +897,11 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveDestination(void)));
-  connect(m_ui.geoipPath4,
+  connect(m_optionsUi.geoipPath4,
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveGeoIPPath(void)));
-  connect(m_ui.geoipPath6,
+  connect(m_optionsUi.geoipPath6,
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveGeoIPPath(void)));
@@ -957,7 +957,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveBuzzName(void)));
-  connect(m_ui.guiExternalIpFetch,
+  connect(m_optionsUi.guiExternalIpFetch,
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotExternalIp(int)));
@@ -1241,7 +1241,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotMailRetrievalIntervalChanged(int)));
-  connect(m_ui.guiSecureMemoryPool,
+  connect(m_optionsUi.guiSecureMemoryPool,
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotSecureMemoryPoolChanged(int)));
@@ -1341,7 +1341,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotDeleteAEToken(void)));
-  connect(m_ui.sslControlString,
+  connect(m_optionsUi.sslControlString,
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveSslControlString(void)));
@@ -1373,7 +1373,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotDiscover(void)));
-  connect(m_ui.saveSslControlString,
+  connect(m_optionsUi.saveSslControlString,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSaveSslControlString(void)));
@@ -1429,7 +1429,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddAcceptedIP(void)));
-  connect(m_ui.testSslControlString,
+  connect(m_optionsUi.testSslControlString,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotTestSslControlString(void)));
@@ -2075,21 +2075,21 @@ spoton::spoton(void):QMainWindow()
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
 #if defined(Q_OS_LINUX)
-  m_ui.geoipPath4->setText
+  m_optionsUi.geoipPath4->setText
     (m_settings.value("gui/geoipPath4",
 		      "/usr/share/GeoIP/GeoIP.dat").toString());
-  m_ui.geoipPath6->setText
+  m_optionsUi.geoipPath6->setText
     (m_settings.value("gui/geoipPath6",
 		      "/usr/share/GeoIP/GeoIP.dat").toString());
 #elif defined(Q_OS_WIN32)
-  m_ui.geoipPath4->setText
+  m_optionsUi.geoipPath4->setText
     (m_settings.value("gui/geoipPath4", "GeoIP.dat").toString());
-  m_ui.geoipPath6->setText
+  m_optionsUi.geoipPath6->setText
     (m_settings.value("gui/geoipPath6", "GeoIP.dat").toString());
 #else
-  m_ui.geoipPath4->setText
+  m_optionsUi.geoipPath4->setText
     (m_settings.value("gui/geoipPath4", "GeoIP.dat").toString());
-  m_ui.geoipPath6->setText
+  m_optionsUi.geoipPath6->setText
     (m_settings.value("gui/geoipPath6", "GeoIP.dat").toString());
 #endif
 #endif
@@ -2178,11 +2178,11 @@ spoton::spoton(void):QMainWindow()
     m_ui.status->setCurrentIndex(4);
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  if(!m_ui.geoipPath4->text().isEmpty())
-    m_ui.geoipPath4->setToolTip(m_ui.geoipPath4->text());
+  if(!m_optionsUi.geoipPath4->text().isEmpty())
+    m_optionsUi.geoipPath4->setToolTip(m_optionsUi.geoipPath4->text());
 
-  if(!m_ui.geoipPath6->text().isEmpty())
-    m_ui.geoipPath6->setToolTip(m_ui.geoipPath6->text());
+  if(!m_optionsUi.geoipPath6->text().isEmpty())
+    m_optionsUi.geoipPath6->setToolTip(m_optionsUi.geoipPath6->text());
 #endif
 
   /*
@@ -2222,7 +2222,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.username->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.receiveNova->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")) + 512);
-  m_ui.sslControlString->setText
+  m_optionsUi.sslControlString->setText
     (m_settings.value("gui/sslControlString",
 		      spoton_common::SSL_CONTROL_STRING).toString());
   m_ui.etpEncryptionKey->setMaxLength
@@ -2478,11 +2478,11 @@ spoton::spoton(void):QMainWindow()
   str = m_settings.value("gui/guiExternalIpInterval", "-1").toString();
 
   if(str == "30")
-    m_ui.guiExternalIpFetch->setCurrentIndex(0);
+    m_optionsUi.guiExternalIpFetch->setCurrentIndex(0);
   else if(str == "60")
-    m_ui.guiExternalIpFetch->setCurrentIndex(1);
+    m_optionsUi.guiExternalIpFetch->setCurrentIndex(1);
   else
-    m_ui.guiExternalIpFetch->setCurrentIndex(2);
+    m_optionsUi.guiExternalIpFetch->setCurrentIndex(2);
 
   str = m_settings.value("gui/kernelExternalIpInterval", "-1").toString();
 
@@ -2498,6 +2498,7 @@ spoton::spoton(void):QMainWindow()
   if(spoton_crypt::passphraseSet())
     {
       m_sb.frame->setEnabled(false);
+      m_sb.lock->setEnabled(false);
       m_ui.action_Echo_Key_Share->setEnabled(false);
       m_ui.action_Export_Listeners->setEnabled(false);
       m_ui.action_Export_Public_Keys->setEnabled(false);
@@ -2510,6 +2511,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Rosetta->setEnabled(false);
       m_ui.action_Statistics_Window->setEnabled(false);
       m_ui.action_Vacuum_Databases->setEnabled(false);
+      m_ui.delete_key->setEnabled(true);
       m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.keys->setEnabled(true);
@@ -2538,6 +2540,7 @@ spoton::spoton(void):QMainWindow()
   else
     {
       m_sb.frame->setEnabled(false);
+      m_sb.lock->setEnabled(false);
       m_ui.action_Echo_Key_Share->setEnabled(false);
       m_ui.action_Export_Listeners->setEnabled(false);
       m_ui.action_Export_Public_Keys->setEnabled(false);
@@ -2551,17 +2554,21 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Statistics_Window->setEnabled(false);
       m_ui.action_Vacuum_Databases->setEnabled(false);
       m_ui.answer_authenticate->setEnabled(false);
+      m_ui.delete_key->setEnabled(false);
       m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.kernelBox->setEnabled(false);
+      m_ui.kernelBox->setVisible(false);
       m_ui.keys->setEnabled(false);
       m_ui.menu_Pages->setEnabled(false);
       m_ui.newKeys->setEnabled(true);
       m_ui.passphrase->setEnabled(false);
       m_ui.passphraseButton->setEnabled(false);
       m_ui.passphrase_rb_authenticate->setEnabled(false);
+      m_ui.publicKeysBox->setVisible(false);
       m_ui.question_rb_authenticate->setEnabled(false);
       m_ui.regenerate->setEnabled(false);
+      m_ui.showStatistics->setVisible(false);
       m_ui.signatureKeySize->setEnabled(false);
       m_ui.signatureKeyType->setEnabled(false);
 
@@ -2614,13 +2621,13 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.destination->setText(m_settings.value("gui/etpDestinationPath", "").
 			    toString());
-  m_ui.guiSecureMemoryPool->setValue
+  m_optionsUi.guiSecureMemoryPool->setValue
     (m_settings.value("gui/gcryctl_init_secmem", 262144).toInt());
   m_ui.kernelSecureMemoryPool->setValue
     (m_settings.value("kernel/gcryctl_init_secmem", 262144).toInt());
 
-  if(m_ui.guiSecureMemoryPool->value() == 0)
-    m_ui.guiSecureMemoryPool->setStyleSheet
+  if(m_optionsUi.guiSecureMemoryPool->value() == 0)
+    m_optionsUi.guiSecureMemoryPool->setStyleSheet
       ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
 
   if(m_ui.kernelSecureMemoryPool->value() == 0)
@@ -2795,12 +2802,12 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotDiscoverExternalAddress(void)));
 
-  if(m_ui.guiExternalIpFetch->currentIndex() !=
-     m_ui.guiExternalIpFetch->count() - 1)
+  if(m_optionsUi.guiExternalIpFetch->currentIndex() !=
+     m_optionsUi.guiExternalIpFetch->count() - 1)
     {
       m_externalAddress.discover();
 
-      if(m_ui.guiExternalIpFetch->currentIndex() == 0)
+      if(m_optionsUi.guiExternalIpFetch->currentIndex() == 0)
 	m_externalAddressDiscovererTimer.start(30000);
       else
 	m_externalAddressDiscovererTimer.start(60000);
@@ -5462,7 +5469,7 @@ void spoton::slotSelectGeoIPPath(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
-      if(m_ui.selectGeoIP4 == sender())
+      if(m_optionsUi.selectGeoIP4 == sender())
 	saveGeoIPPath(4, dialog.selectedFiles().value(0));
       else
 	saveGeoIPPath(6, dialog.selectedFiles().value(0));
@@ -5492,10 +5499,10 @@ void spoton::slotSelectKernelPath(void)
 
 void spoton::slotSaveGeoIPPath(void)
 {
-  if(m_ui.geoipPath4 == sender())
-    saveGeoIPPath(4, m_ui.geoipPath4->text());
+  if(m_optionsUi.geoipPath4 == sender())
+    saveGeoIPPath(4, m_optionsUi.geoipPath4->text());
   else
-    saveGeoIPPath(6, m_ui.geoipPath6->text());
+    saveGeoIPPath(6, m_optionsUi.geoipPath6->text());
 }
 
 void spoton::slotSaveKernelPath(void)
@@ -5519,15 +5526,15 @@ void spoton::saveGeoIPPath(const int version, const QString &path)
 
   if(version == 4)
     {
-      m_ui.geoipPath4->setText(path);
-      m_ui.geoipPath4->setToolTip(path);
-      m_ui.geoipPath4->selectAll();
+      m_optionsUi.geoipPath4->setText(path);
+      m_optionsUi.geoipPath4->setToolTip(path);
+      m_optionsUi.geoipPath4->selectAll();
     }
   else
     {
-      m_ui.geoipPath6->setText(path);
-      m_ui.geoipPath6->setToolTip(path);
-      m_ui.geoipPath6->selectAll();
+      m_optionsUi.geoipPath6->setText(path);
+      m_optionsUi.geoipPath6->setToolTip(path);
+      m_optionsUi.geoipPath6->selectAll();
     }
 }
 
@@ -6317,6 +6324,7 @@ void spoton::slotSetPassphrase(void)
 
 	      if(mb.exec() == QMessageBox::Yes)
 		{
+		  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 		  spoton_misc::prepareUrlKeysDatabase();
 
 		  if(saveCommonUrlCredentials(derivedKeys,
@@ -6328,6 +6336,8 @@ void spoton::slotSetPassphrase(void)
 		      prepareUrlContainers();
 		      prepareUrlLabels();
 		    }
+
+		  QApplication::restoreOverrideCursor();
 		}
 	    }
 
@@ -6348,6 +6358,7 @@ void spoton::slotSetPassphrase(void)
 	}
 
       m_sb.frame->setEnabled(true);
+      m_sb.lock->setEnabled(true);
       m_ui.action_Echo_Key_Share->setEnabled(true);
       m_ui.action_Export_Listeners->setEnabled(true);
       m_ui.action_Export_Public_Keys->setEnabled(true);
@@ -6361,9 +6372,11 @@ void spoton::slotSetPassphrase(void)
       m_ui.action_Statistics_Window->setEnabled(true);
       m_ui.action_Vacuum_Databases->setEnabled(true);
       m_ui.answer->clear();
+      m_ui.delete_key->setEnabled(true);
       m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.kernelBox->setEnabled(true);
+      m_ui.kernelBox->setVisible(true);
       m_ui.keys->setEnabled(true);
       m_ui.menu_Pages->setEnabled(true);
       m_ui.newKeys->setChecked(false);
@@ -6371,10 +6384,14 @@ void spoton::slotSetPassphrase(void)
       m_ui.passphrase1->clear();
       m_ui.passphrase2->clear();
       m_ui.passphrase_strength_indicator->setVisible(false);
+      m_ui.publicKeysBox->setVisible(true);
       m_ui.question->clear();
       m_ui.regenerate->setEnabled(true);
+      m_ui.showStatistics->setVisible(true);
       m_ui.signatureKeyType->setEnabled(false);
       m_ui.signatureKeyType->setEnabled(false);
+      repaint();
+      QApplication::processEvents();
 
       for(int i = 0; i < m_ui.tab->count(); i++)
 	{
@@ -6594,6 +6611,7 @@ void spoton::slotValidatePassphrase(void)
 	      slotActivateKernel();
 
 	    m_sb.frame->setEnabled(true);
+	    m_sb.lock->setEnabled(true);
 	    m_ui.action_Echo_Key_Share->setEnabled(true);
 	    m_ui.action_Export_Listeners->setEnabled(true);
 	    m_ui.action_Export_Public_Keys->setEnabled(true);
@@ -6608,9 +6626,11 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.action_Vacuum_Databases->setEnabled(true);
 	    m_ui.answer->clear();
 	    m_ui.answer_authenticate->clear();
+	    m_ui.delete_key->setEnabled(true);
 	    m_ui.encryptionKeySize->setEnabled(false);
 	    m_ui.encryptionKeyType->setEnabled(false);
 	    m_ui.kernelBox->setEnabled(true);
+	    m_ui.kernelBox->setVisible(true);
 	    m_ui.keys->setEnabled(true);
 	    m_ui.menu_Pages->setEnabled(true);
 	    m_ui.newKeys->setEnabled(true);
@@ -6622,10 +6642,12 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.passphraseButton->setEnabled(false);
 	    m_ui.passphrase_rb_authenticate->setChecked(true);
 	    m_ui.passphrase_rb_authenticate->setEnabled(false);
+	    m_ui.publicKeysBox->setVisible(true);
 	    m_ui.question->clear();
 	    m_ui.question_authenticate->clear();
 	    m_ui.question_rb_authenticate->setEnabled(false);
 	    m_ui.regenerate->setEnabled(true);
+	    m_ui.showStatistics->setVisible(true);
 	    m_ui.signatureKeySize->setEnabled(false);
 	    m_ui.signatureKeyType->setEnabled(false);
 
@@ -8970,15 +8992,15 @@ void spoton::slotCopyAllMyPublicKeys(void)
 
 void spoton::slotSaveSslControlString(void)
 {
-  QString str(m_ui.sslControlString->text());
+  QString str(m_optionsUi.sslControlString->text());
 
   if(str.trimmed().isEmpty())
     str = spoton_common::SSL_CONTROL_STRING;
 
   m_ui.listenersSslControlString->setText(str.trimmed());
   m_ui.neighborsSslControlString->setText(str.trimmed());
-  m_ui.sslControlString->setText(str.trimmed());
-  m_ui.sslControlString->selectAll();
+  m_optionsUi.sslControlString->setText(str.trimmed());
+  m_optionsUi.sslControlString->selectAll();
   m_settings["gui/sslControlString"] = str;
 
   QSettings settings;

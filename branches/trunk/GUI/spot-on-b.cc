@@ -1200,7 +1200,7 @@ void spoton::highlightPaths(void)
   palette.setColor(m_ui.destination->backgroundRole(), color);
   m_ui.destination->setPalette(palette);
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  fileInfo.setFile(m_ui.geoipPath4->text());
+  fileInfo.setFile(m_optionsUi.geoipPath4->text());
 
   if(fileInfo.isReadable() && fileInfo.size() > 0)
     color = QColor(144, 238, 144);
@@ -1210,10 +1210,10 @@ void spoton::highlightPaths(void)
   color = QColor(240, 128, 128); // Light coral!
 #endif
 
-  palette.setColor(m_ui.geoipPath4->backgroundRole(), color);
-  m_ui.geoipPath4->setPalette(palette);
+  palette.setColor(m_optionsUi.geoipPath4->backgroundRole(), color);
+  m_optionsUi.geoipPath4->setPalette(palette);
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  fileInfo.setFile(m_ui.geoipPath6->text());
+  fileInfo.setFile(m_optionsUi.geoipPath6->text());
 
   if(fileInfo.isReadable() && fileInfo.size() > 0)
     color = QColor(144, 238, 144);
@@ -1222,8 +1222,8 @@ void spoton::highlightPaths(void)
 #else
   color = QColor(240, 128, 128); // Light coral!
 #endif
-  palette.setColor(m_ui.geoipPath6->backgroundRole(), color);
-  m_ui.geoipPath6->setPalette(palette);
+  palette.setColor(m_optionsUi.geoipPath6->backgroundRole(), color);
+  m_optionsUi.geoipPath6->setPalette(palette);
   fileInfo.setFile(m_ui.kernelPath->text());
 
 #if defined(Q_OS_MAC)
@@ -5813,7 +5813,7 @@ void spoton::slotDeleteAccepedIP(void)
 void spoton::slotTestSslControlString(void)
 {
   QList<QSslCipher> ciphers
-    (spoton_crypt::defaultSslCiphers(m_ui.sslControlString->text()));
+    (spoton_crypt::defaultSslCiphers(m_optionsUi.sslControlString->text()));
   QMessageBox mb(this);
   QString str("");
 
