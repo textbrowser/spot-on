@@ -2595,6 +2595,18 @@ void spoton_reencode::reencode(Ui_statusbar sb,
     settings.remove("gui/poptasticName");
 
   bytes = oldCrypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.value("gui/poptasticNameEmail", "").
+			    toByteArray()), &ok);
+
+  if(ok)
+    settings.setValue
+      ("gui/poptasticNameEmail", newCrypt->encryptedThenHashed(bytes, &ok).
+       toBase64());
+
+  if(!ok)
+    settings.remove("gui/poptasticNameEmail");
+
+  bytes = oldCrypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/postgresql_password", "").
 			    toByteArray()), &ok);
 
