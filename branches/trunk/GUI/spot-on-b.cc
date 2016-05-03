@@ -3010,23 +3010,19 @@ void spoton::slotSendMail(void)
 
   QApplication::restoreOverrideCursor();
 
-  if(mixed)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
-	 tr("You are attempting to send an e-mail from an account "
-	    "that is not compatible with some of the recipients. "
-	    "Please correct."));
-      return;
-    }
-  else if(temporary)
+  if(temporary)
     {
       QMessageBox::critical
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("At least one of the selected e-mail recipient(s) is temporary. "
 	    "Please correct."));
+      return;
+    }
+
+  if(mixed)
+    {
+      slotConfigurePoptastic();
       return;
     }
 

@@ -71,6 +71,7 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneSettingsUi.account->clear();
   m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
   m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
   m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(false);
 
   QList<QHash<QString, QVariant> > list;
@@ -98,6 +99,8 @@ void spoton::slotConfigurePoptastic(void)
 	    (list.at(i)["in_username"].toString());
 	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
 	    (list.at(i)["in_username"].toString());
+	  m_poptasticRetroPhoneSettingsUi.email_primary_account->addItem
+	    (list.at(i)["in_username"].toString());
 	}
 
       m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
@@ -110,6 +113,16 @@ void spoton::slotConfigurePoptastic(void)
 	  setCurrentIndex(index);
       else
 	m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	  setCurrentIndex(0);
+
+      index = m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	findText(m_settings["gui/poptasticNameEmail"].toByteArray());
+
+      if(index >= 0)
+	m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	  setCurrentIndex(index);
+      else
+	m_poptasticRetroPhoneSettingsUi.email_primary_account->
 	  setCurrentIndex(0);
     }
 
@@ -231,6 +244,9 @@ void spoton::slotConfigurePoptastic(void)
 	m_poptasticRetroPhoneSettingsUi.capath->text();
       m_settings["gui/poptasticName"] =
 	m_poptasticRetroPhoneSettingsUi.chat_primary_account->currentText().
+	toLatin1();
+      m_settings["gui/poptasticNameEmail"] =
+	m_poptasticRetroPhoneSettingsUi.email_primary_account->currentText().
 	toLatin1();
       m_settings["gui/poptasticRefreshInterval"] =
 	m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value();
@@ -579,6 +595,7 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
   m_poptasticRetroPhoneSettingsUi.capath->clear();
   m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
   m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
   m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
