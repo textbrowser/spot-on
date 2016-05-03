@@ -258,6 +258,10 @@ void spoton::slotConfigurePoptastic(void)
 	 crypt->encryptedThenHashed(m_settings["gui/poptasticName"].
 				    toByteArray(), &ok).toBase64());
       settings.setValue
+	("gui/poptasticNameEmail",
+	 crypt->encryptedThenHashed(m_settings["gui/poptasticNameEmail"].
+				    toByteArray(), &ok).toBase64());
+      settings.setValue
 	("gui/poptasticRefreshInterval",
 	 m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value());
       slotReloadEmailNames();
@@ -621,12 +625,14 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText("localhost");
-  m_settings["gui/poptasticName"] = "";
+  m_settings["gui/poptasticName"].clear();
+  m_settings["gui/poptasticNameEmail"].clear();
 
   QSettings settings;
 
   settings.remove("gui/poptasticCAPath");
   settings.remove("gui/poptasticName");
+  settings.remove("gui/poptasticNameEmail");
   settings.remove("gui/poptasticRefreshInterval");
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
@@ -1985,6 +1991,17 @@ void spoton::slotSavePoptasticAccount(void)
 	  else
 	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
 	      setCurrentIndex(0);
+
+	  index = m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	    findText(m_settings["gui/poptasticNameEmail"].toByteArray());
+
+	  if(index >= 0)
+	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	      setCurrentIndex(index);
+	  else
+	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	      setCurrentIndex(0);
+
 	}
     }
 }
