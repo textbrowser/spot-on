@@ -2462,6 +2462,29 @@ void spoton::slotDeletePoptasticAccount(void)
 		 crypt->encryptedThenHashed(m_settings["gui/poptasticName"].
 					    toByteArray(), &ok).toBase64());
 	    }
+
+	  index = m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	    findText(m_settings["gui/poptasticNameEmail"].toByteArray());
+
+	  if(index >= 0)
+	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	      setCurrentIndex(index);
+	  else
+	    {
+	      m_poptasticRetroPhoneSettingsUi.email_primary_account->
+		setCurrentIndex(0);
+	      m_settings["gui/poptasticNameEmail"] =
+		m_poptasticRetroPhoneSettingsUi.
+		email_primary_account->currentText().toLatin1();
+
+	      QSettings settings;
+
+	      settings.setValue
+		("gui/poptasticNameEmail",
+		 crypt->
+		 encryptedThenHashed(m_settings["gui/poptasticNameEmail"].
+				     toByteArray(), &ok).toBase64());
+	    }
 	}
     }
 }
