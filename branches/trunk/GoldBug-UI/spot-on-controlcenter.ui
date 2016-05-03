@@ -1307,7 +1307,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>580</width>
-             <height>660</height>
+             <height>637</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2923,8 +2923,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>1783</height>
+             <width>499</width>
+             <height>1799</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -6385,7 +6385,7 @@ QPushButton:pressed {
  }</string>
                    </property>
                    <property name="text">
-                    <string>Discover!</string>
+                    <string>&amp;Discover!</string>
                    </property>
                    <property name="icon">
                     <iconset resource="../Icons/icons.qrc">
@@ -6585,9 +6585,9 @@ color: rgb(255, 255, 255);</string>
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>-262</x>
+             <x>0</x>
              <y>0</y>
-             <width>818</width>
+             <width>842</width>
              <height>1304</height>
             </rect>
            </property>
