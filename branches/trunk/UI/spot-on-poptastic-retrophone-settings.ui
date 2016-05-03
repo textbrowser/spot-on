@@ -130,6 +130,23 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer_8">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_12">
+     <item>
       <widget class="QLabel" name="label_21">
        <property name="text">
         <string>&amp;Chat Primary Account</string>
@@ -164,7 +181,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_8">
+      <spacer name="horizontalSpacer_10">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -191,8 +208,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>740</width>
-        <height>656</height>
+        <width>726</width>
+        <height>631</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
