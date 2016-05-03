@@ -3015,7 +3015,7 @@ void spoton::slotSendMail(void)
       QMessageBox::critical
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
-	 tr("At least one of the selected e-mail recipient(s) is temporary. "
+	 tr("At least one of the selected e-mail recipients is temporary. "
 	    "Please correct."));
       return;
     }
