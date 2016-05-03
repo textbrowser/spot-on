@@ -3022,7 +3022,16 @@ void spoton::slotSendMail(void)
 
   if(mixed)
     {
-      slotConfigurePoptastic();
+      if(m_settings.value("gui/poptasticNameEmail").isNull())
+	{
+	  QMessageBox::information
+	    (this, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("The Poptastic & Retrophone Settings window will be "
+		"displayed. Please prepare at least one Poptastic account."));
+	  slotConfigurePoptastic();
+	}
+
       return;
     }
 
