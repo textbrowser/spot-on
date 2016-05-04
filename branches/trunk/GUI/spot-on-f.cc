@@ -209,6 +209,7 @@ void spoton::slotEstablishForwardSecrecy(void)
   QString keySize("");
   Ui_forwardsecrecyalgorithmsselection ui;
   int count = 0;
+  int traditional = 0;
 
   if(type == "chat")
     {
@@ -246,12 +247,18 @@ void spoton::slotEstablishForwardSecrecy(void)
     }
 
   for(int i = 0; i < publicKeyHashes.size(); i++)
-    if(publicKeyHashes.at(i).data(Qt::UserRole).toBool())
-      /*
-      ** Ignore temporary participants.
-      */
+    {
+      if(names.value(i).data(Qt::ItemDataRole(Qt::UserRole + 2)).
+	 toString() == "traditional e-mail")
+	traditional += 1;
 
-      count += 1;
+      if(publicKeyHashes.value(i).data(Qt::UserRole).toBool())
+	/*
+	** Ignore temporary participants.
+	*/
+
+	count += 1;
+    }
 
   if(count == publicKeyHashes.size())
     {
@@ -260,11 +267,25 @@ void spoton::slotEstablishForwardSecrecy(void)
 		 "to establish Forward Secrecy credentials.");
       goto done_label;
     }
-  else if(count > 0)
+
+  if(publicKeyHashes.size() == traditional)
+    {
+      error = tr("Traditional e-mail accounts do not support "
+		 "Forward Secrecy.");
+      goto done_label;
+    }
+
+  if(count > 0)
     QMessageBox::information
       (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
        tr("Some of the selected participants are temporary. "
 	  "Forward Secrecy credentials will not be established."));
+
+  if(traditional > 0)
+    QMessageBox::information
+      (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+       tr("Please note that traditional e-mail accounts do not "
+	  "support Forward Secrecy."));
 
   dialog = new QDialog(this);
   dialog->setWindowTitle

@@ -8188,8 +8188,13 @@ void spoton::slotPopulateParticipants(void)
 			  else if(keyType == "poptastic")
 			    {
 			      if(publicKey.contains("-poptastic"))
-				item->setBackground
-				  (QBrush(QColor(255, 255, 224)));
+				{
+				  item->setBackground
+				    (QBrush(QColor(255, 255, 224)));
+				  item->setData
+				    (Qt::ItemDataRole(Qt::UserRole + 2),
+				     "traditional e-mail");
+				}
 			      else
 				{
 				  item->setBackground
