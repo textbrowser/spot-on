@@ -3063,6 +3063,7 @@ void spoton::slotSendMail(void)
       {
 	QModelIndexList list;
 	QStringList forwardSecrecyCredentials;
+	QStringList keyTypes;
 	QStringList names;
 	QStringList oids;
 	QStringList publicKeyHashes;
@@ -3078,7 +3079,13 @@ void spoton::slotSendMail(void)
 	  selectedRows(0); // Participant
 
 	while(!list.isEmpty())
-	  names.append(list.takeFirst().data().toString());
+	  {
+	    QModelIndex index(list.takeFirst());
+
+	    keyTypes.append(index.data(Qt::ItemDataRole(Qt::UserRole + 1)).
+			    toString());
+	    names.append(index.data().toString());
+	  }
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(1); // OID
@@ -3093,6 +3100,7 @@ void spoton::slotSendMail(void)
 	  publicKeyHashes.append(list.takeFirst().data().toString());
 
 	while(!forwardSecrecyCredentials.isEmpty() &&
+	      !keyTypes.isEmpty() &&
 	      !names.isEmpty() &&
 	      !publicKeyHashes.isEmpty() &&
 	      !oids.isEmpty())
@@ -3105,6 +3113,7 @@ void spoton::slotSendMail(void)
 	      (m_ui.outgoingSubject->text().toUtf8());
 	    QDateTime now(QDateTime::currentDateTime());
 	    QSqlQuery query(db);
+	    QString keyType(keyTypes.takeFirst());
 	    QString oid(oids.takeFirst());
 	    bool ok = true;
 
@@ -3163,10 +3172,29 @@ void spoton::slotSendMail(void)
 				   toLatin1(), &ok).toBase64());
 	    query.bindValue(1, 1); // Sent Folder
 
-	    if(ok)
-	      query.bindValue
-		(2, crypt->encryptedThenHashed(m_ui.emailName->currentText().
-					       toUtf8(), &ok).toBase64());
+	    /*
+	    ** If the destination account is a Spot-On account, let's
+	    ** use the Spot-On e-mail name. Otherwise, we'll use
+	    ** the primary Poptastic e-mail account.
+	    */
+
+	    if(keyType != "email")
+	      {
+		if(ok)
+		  query.bindValue
+		    (2,
+		     crypt->encryptedThenHashed(poptasticNameEmail(), &ok).
+		     toBase64());
+	      }
+	    else
+	      {
+		if(ok)
+		  query.bindValue
+		    (2,
+		     crypt->encryptedThenHashed(m_ui.emailNameEditable->
+						text().toUtf8(), &ok).
+		     toBase64());
+	      }
 
 	    if(ok)
 	      query.bindValue

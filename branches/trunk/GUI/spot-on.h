@@ -515,6 +515,7 @@ class spoton: public QMainWindow
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray copyMyUrlPublicKey(void) const;
   QByteArray poptasticName(void) const;
+  QByteArray poptasticNameEmail(void) const;
   QList<QByteArray> retrieveForwardSecrecyInformation
     (const QSqlDatabase &db, const QString &oid, bool *ok) const;
   QList<QPair<QString, QVariant> > gatherStatistics(void) const;

@@ -111,3 +111,8 @@ void spoton::slotRemoveAttachment(const QUrl &url)
 
   QApplication::restoreOverrideCursor();
 }
+
+QByteArray spoton::poptasticNameEmail(void) const
+{
+  return m_settings["gui/poptasticNameEmail"].toByteArray();
+}
