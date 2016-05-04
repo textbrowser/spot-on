@@ -43,6 +43,7 @@
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-receive.h"
 #include "spot-on-kernel.h"
+#include "spot-on-mailer.h"
 #include "spot-on-neighbor.h"
 
 extern "C"
@@ -5140,7 +5141,7 @@ void spoton_neighbor::slotSendMail
     {
       spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
 
-      spoton_misc::moveSentMailToSentFolder(oids, s_crypt);
+      spoton_mailer::moveSentMailToSentFolder(oids, s_crypt);
     }
 }
 

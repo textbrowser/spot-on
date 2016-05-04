@@ -29,6 +29,7 @@
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-receive.h"
 #include "spot-on-kernel.h"
+#include "spot-on-mailer.h"
 
 #include <QSqlQuery>
 
@@ -787,7 +788,7 @@ void spoton_kernel::postPoptastic(void)
 		    mailOid = values["mail_oid"].toLongLong();
 
 		  if(mailOid > -1)
-		    spoton_misc::moveSentMailToSentFolder
+		    spoton_mailer::moveSentMailToSentFolder
 		      (QList<qint64> () << mailOid, s_crypt);
 
 		  curl_slist_free_all(recipients);

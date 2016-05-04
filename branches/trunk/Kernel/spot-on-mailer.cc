@@ -29,11 +29,14 @@
 #include <QDir>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSqlRecord>
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "spot-on-kernel.h"
 #include "spot-on-mailer.h"
+
+QMap<qint64, char> spoton_mailer::s_oids;
 
 spoton_mailer::spoton_mailer(QObject *parent):QObject(parent)
 {
@@ -113,6 +116,15 @@ void spoton_mailer::slotTimeout(void)
 	    {
 	      attachmentData.clear();
 	      list.clear();
+
+	      qint64 oid = query.value(query.record().count() - 1).
+		toLongLong();
+
+	      if(s_oids.contains(oid))
+		{
+		  s_oids.remove(oid);
+		  continue;
+		}
 
 	      QString status("");
 	      bool ok = true;
@@ -267,6 +279,7 @@ void spoton_mailer::slotTimeout(void)
 			 << fromAccount
 			 << mailOid;
 		  list.append(vector);
+		  s_oids[mailOid] = 0;
 		  break;
 		}
 	    }
@@ -551,6 +564,80 @@ void spoton_mailer::slotReap(void)
 		  deleteQuery.exec();
 		}
 	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_mailer::moveSentMailToSentFolder(const QList<qint64> &oids,
+					     spoton_crypt *crypt)
+{
+  bool keep = spoton_kernel::setting("gui/saveCopy", true).toBool();
+
+  if(keep)
+    if(!crypt)
+      {
+	spoton_misc::logError
+	  ("spoton_mailer::moveSentMailToSentFolder(): crypt is zero.");
+	return;
+      }
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(keep)
+	  query.prepare("UPDATE folders SET status = ? WHERE "
+			"OID = ?");
+	else
+	  {
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.prepare("DELETE FROM folders WHERE OID = ?");
+	  }
+
+	for(int i = 0; i < oids.size(); i++)
+	  {
+	    bool ok = true;
+
+	    if(keep)
+	      {
+		query.bindValue
+		  (0, crypt->encryptedThenHashed(QByteArray("Sent"),
+						 &ok).toBase64());
+		query.bindValue(1, oids.at(i));
+	      }
+	    else
+	      query.bindValue(0, oids.at(i));
+
+	    if(ok)
+	      if(query.exec())
+		{
+		  s_oids.remove(oids.at(i));
+
+		  if(!keep)
+		    {
+		      QSqlQuery query(db);
+
+		      query.exec("PRAGMA secure_delete = ON");
+		      query.prepare
+			("DELETE FROM folders_attachment WHERE "
+			 "folders_oid = ?");
+		      query.bindValue(0, oids.at(i));
+		      query.exec();
+		    }
+		}
+	  }
       }
 
     db.close();

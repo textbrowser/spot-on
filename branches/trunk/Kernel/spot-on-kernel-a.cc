@@ -5904,6 +5904,15 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
 
   QWriteLocker locker(&m_poptasticCacheMutex);
 
+  if(mailOid > -1)
+    /*
+    ** Poptastic accounts may be disabled. Let's not
+    ** accumulate a large cache.
+    */
+
+    if(m_poptasticCache.contains(hash))
+      return;
+
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_poptasticCache.enqueue(hash);
 }
@@ -5927,6 +5936,15 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachmentData,
   hash["subject"] = subject;
 
   QWriteLocker locker(&m_poptasticCacheMutex);
+
+  if(mailOid > -1)
+    /*
+    ** Poptastic accounts may be disabled. Let's not
+    ** accumulate a large cache.
+    */
+
+    if(m_poptasticCache.contains(hash))
+      return;
 
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_poptasticCache.enqueue(hash);

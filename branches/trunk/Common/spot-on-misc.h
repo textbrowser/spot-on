@@ -196,8 +196,6 @@ class spoton_misc
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
   static void enableLog(const bool state);
   static void logError(const QString &error);
-  static void moveSentMailToSentFolder(const QList<qint64> &oids,
-				       spoton_crypt *crypt);
   static void populateUrlsDatabase(const QList<QList<QVariant> > &list,
 				   spoton_crypt *crypt);
   static void prepareDatabases(void);

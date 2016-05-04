@@ -33,6 +33,8 @@
 
 #include "Common/spot-on-common.h"
 
+class spoton_crypt;
+
 class spoton_mailer: public QObject
 {
   Q_OBJECT
@@ -40,6 +42,9 @@ class spoton_mailer: public QObject
  public:
   spoton_mailer(QObject *parent);
   ~spoton_mailer();
+  static QMap<qint64, char> s_oids;
+  static void moveSentMailToSentFolder(const QList<qint64> &oids,
+				       spoton_crypt *crypt);
 
  private:
   QList<QList<QByteArray> > m_publicKeyHashesAdaptiveEchoPairs;
