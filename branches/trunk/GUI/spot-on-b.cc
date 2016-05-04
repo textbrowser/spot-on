@@ -3027,7 +3027,7 @@ void spoton::slotSendMail(void)
 	  QMessageBox::information
 	    (this, tr("%1: Information").
 	     arg(SPOTON_APPLICATION_NAME),
-	     tr("The Poptastic & Retrophone Settings window will be "
+	     tr("The Poptastic & RetroPhone Settings window will be "
 		"displayed. Please prepare at least one Poptastic account."));
 	  slotConfigurePoptastic();
 	}
