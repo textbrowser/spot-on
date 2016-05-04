@@ -2288,16 +2288,18 @@ void spoton_rss::slotRefreshTimeline(void)
 	str2 = "SELECT content, description, hidden, publication_date, "
 	  "title, url, url_redirected FROM rss_feeds_links ";
 
-	if(m_ui.timeline_filter->currentIndex() == 1)
+	if(m_ui.timeline_filter->currentIndex() == 1) // Hidden
 	  str1.append(" WHERE hidden = 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 2)
-	  str1.append(" WHERE hidden <> 1 AND imported = 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 3)
-	  str1.append(" WHERE hidden <> 1 AND visited = 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 4)
-	  str1.append(" WHERE hidden <> 1 AND (imported = 2 OR visited = 2) ");
-	else if(m_ui.timeline_filter->currentIndex() == 5)
-	  str1.append(" WHERE hidden <> 1 AND imported <> 1 ");
+	else if(m_ui.timeline_filter->currentIndex() == 2) // Imported
+	  str1.append(" WHERE imported = 1 ");
+	else if(m_ui.timeline_filter->currentIndex() == 3) // Indexed
+	  str1.append(" WHERE visited = 1 ");
+	else if(m_ui.timeline_filter->currentIndex() == 4) // Malformed
+	  str1.append(" WHERE imported = 2 OR visited = 2 ");
+	else if(m_ui.timeline_filter->currentIndex() == 5) // Not Imported
+	  str1.append(" WHERE imported <> 1 ");
+	else if(m_ui.timeline_filter->currentIndex() == 6) // Not Indexed
+	  str1.append(" WHERE visited = 0 ");
 	else
 	  str1.append(" WHERE hidden <> 1 ");
 

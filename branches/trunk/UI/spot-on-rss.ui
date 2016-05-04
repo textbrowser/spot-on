@@ -550,6 +550,11 @@
                   <string>Not Imported</string>
                  </property>
                 </item>
+                <item>
+                 <property name="text">
+                  <string>Not Indexed</string>
+                 </property>
+                </item>
                </widget>
               </item>
               <item>
