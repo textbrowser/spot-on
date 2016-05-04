@@ -148,6 +148,7 @@ Completed Items
 106.   Is it possible for automatic digests to be computed on StarBeams before
        the files are completed? Disable buffering and issue fsync() on
        Unix systems.
+107.   Multiple Poptastic attachments.
 
 Remaining Items
 
@@ -247,4 +248,3 @@ Remaining Items
 60.    Export/import URLs.
 61.    Large database values (BYTEA) will impede the user experience.
 62.    Keys are re-used in directory-mode file encryption.
-63.    Multiple Poptastic attachments.
