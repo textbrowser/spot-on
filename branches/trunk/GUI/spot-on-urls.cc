@@ -1124,8 +1124,8 @@ void spoton::slotVerify(void)
        tr("The provided credentials are correct. Please save the "
 	  "information!"));
   else
-    QMessageBox::information
-      (this, tr("%1: Information").
+    QMessageBox::critical
+      (this, tr("%1: Error").
        arg(SPOTON_APPLICATION_NAME),
        tr("The provided credentials are incorrect."));
 }
