@@ -2880,8 +2880,7 @@ void spoton::slotSendMail(void)
       return;
     }
 
-  QList<QByteArray> attachments;
-  QStringList fileNames;
+  QList<QPair<QByteArray, QByteArray> > attachments;
 
   if(!m_ui.attachment->toPlainText().isEmpty())
     {
@@ -2924,8 +2923,8 @@ void spoton::slotSendMail(void)
 	      return;
 	    }
 
-	  attachments << attachment;
-	  fileNames << fileInfo.fileName();
+	  attachments << QPair<QByteArray, QByteArray>
+	    (attachment, fileInfo.fileName().toUtf8());
 	}
     }
 
@@ -3253,10 +3252,10 @@ void spoton::slotSendMail(void)
 		  QVariant variant(query.lastInsertId());
 		  qint64 id = query.lastInsertId().toLongLong();
 
-		  while(!attachments.isEmpty() && !fileNames.isEmpty())
+		  for(int i = 0; i < attachments.size(); i++)
 		    {
-		      QByteArray attachment(attachments.takeFirst());
-		      QString fileName(fileNames.takeFirst());
+		      QByteArray attachment(attachments.at(i).first);
+		      QByteArray fileName(attachments.at(i).second);
 
 		      if(variant.isValid())
 			{
@@ -3272,7 +3271,7 @@ void spoton::slotSendMail(void)
 
 			  if(ok)
 			    query.bindValue
-			      (2, crypt->encryptedThenHashed(fileName.toUtf8(),
+			      (2, crypt->encryptedThenHashed(fileName,
 							     &ok).toBase64());
 
 			  if(ok)
