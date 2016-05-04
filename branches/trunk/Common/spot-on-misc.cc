@@ -5114,7 +5114,8 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 		      "AND "
 		      "forward_secrecy_authentication_key IS NOT NULL AND "
 		      "forward_secrecy_encryption_algorithm IS NOT NULL AND "
-		      "forward_secrecy_encryption_key IS NOT NULL");
+		      "forward_secrecy_encryption_key IS NOT NULL AND "
+		      "neighbor_oid = -1");
 
 	if(ok && query.exec())
 	  while(query.next())
