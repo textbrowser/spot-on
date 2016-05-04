@@ -4394,8 +4394,6 @@ void spoton::slotRenameParticipant(void)
 
 	if(!data.isNull() && data.isValid())
 	  {
-	    bool ok = true;
-
 	    query.prepare("UPDATE friends_public_keys "
 			  "SET name = ?, "
 			  "name_changed_by_user = 1 "

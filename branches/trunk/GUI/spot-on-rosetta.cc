@@ -990,7 +990,6 @@ void spoton_rosetta::slotDelete(void)
 	QByteArray data(ui.contacts->itemData(ui.contacts->currentIndex()).
 			toByteArray());
 	QSqlQuery query(db);
-	bool ok = true;
 
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM friends_public_keys WHERE "
