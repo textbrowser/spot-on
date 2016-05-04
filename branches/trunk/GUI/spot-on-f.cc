@@ -208,6 +208,7 @@ void spoton::slotEstablishForwardSecrecy(void)
   QString error("");
   QString keySize("");
   Ui_forwardsecrecyalgorithmsselection ui;
+  int count = 0;
 
   if(type == "chat")
     {
@@ -243,6 +244,27 @@ void spoton::slotEstablishForwardSecrecy(void)
       error = tr("Please select at least one participant.");
       goto done_label;
     }
+
+  for(int i = 0; i < publicKeyHashes.size(); i++)
+    if(publicKeyHashes.at(i).data(Qt::UserRole).toBool())
+      /*
+      ** Ignore temporary participants.
+      */
+
+      count += 1;
+
+  if(count == publicKeyHashes.size())
+    {
+      error = tr("All of the selected participants are temporary. "
+		 "Please befriend some participants before attempting "
+		 "to establish Forward Secrecy credentials.");
+      goto done_label;
+    }
+  else if(count > 0)
+    QMessageBox::information
+      (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+       tr("Some of the selected participants are temporary. "
+	  "Forward Secrecy credentials will not be established."));
 
   dialog = new QDialog(this);
   dialog->setWindowTitle
