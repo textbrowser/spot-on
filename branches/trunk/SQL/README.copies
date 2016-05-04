@@ -1,0 +1,12 @@
+Please create copies of your Spot-On PostgreSQL database(s).
+
+The following instructions must be executed on the server that is
+hosting the database(s).
+
+pg_dump -U postgres --clean --file=spot_on_user_db.sql xbook_db
+pg_dumpall -U postgres --clean --globals-only --file=globals.sql
+
+Importing a database copy is simple.
+
+psql -U postgres < globals.sql
+psql -U postgres < spot_on_user_db.sql
