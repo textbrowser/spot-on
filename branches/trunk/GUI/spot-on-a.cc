@@ -8212,19 +8212,25 @@ void spoton::slotPopulateParticipants(void)
 			  (query.value(i).toString());
 		      else if(i == 4)
 			{
-			  QList<QByteArray> list;
-			  bool ok = true;
-
-			  list = retrieveForwardSecrecyInformation
-			    (db, oid, &ok);
-
-			  if(ok)
-			    item = new QTableWidgetItem
-			      (spoton_misc::
-			       forwardSecrecyMagnetFromList(list).
-			       constData());
+			  if(keyType == "poptastic" &&
+			     publicKey.contains("-poptastic"))
+			    item = new QTableWidgetItem("");
 			  else
-			    item = new QTableWidgetItem(tr("error"));
+			    {
+			      QList<QByteArray> list;
+			      bool ok = true;
+
+			      list = retrieveForwardSecrecyInformation
+				(db, oid, &ok);
+
+			      if(ok)
+				item = new QTableWidgetItem
+				  (spoton_misc::
+				   forwardSecrecyMagnetFromList(list).
+				   constData());
+			      else
+				item = new QTableWidgetItem(tr("error"));
+			    }
 			}
 
 		      if(i >= 0 && i <= 4)
