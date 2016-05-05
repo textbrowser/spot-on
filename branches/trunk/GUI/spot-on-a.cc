@@ -8829,13 +8829,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!clipboard)
     return;
 
-  if(!m_crypts.value("email", 0) ||
-     !m_crypts.value("email-signature", 0))
-    {
-      clipboard->clear();
-      return;
-    }
-
+  QString keyType("");
   QString oid("");
   int row = -1;
 
@@ -8845,10 +8839,21 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 	(row, 1); // OID
 
       if(item)
-	oid = item->text();
+	{
+	  keyType = item->data(Qt::ItemDataRole(Qt::UserRole + 1)).
+	    toString();
+	  oid = item->text();
+	}
     }
 
   if(oid.isEmpty())
+    {
+      clipboard->clear();
+      return;
+    }
+
+  if(!m_crypts.value(keyType, 0) ||
+     !m_crypts.value(QString("%1-signature").arg(keyType), 0))
     {
       clipboard->clear();
       return;
@@ -8864,8 +8869,8 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 
   QString neighborOid("");
   QByteArray cipherType(m_settings.value("gui/kernelCipherType",
-					 "aes256").toString().
-			toLatin1());
+					 "aes256").
+			toString().toLatin1());
   QByteArray hashKey;
   QByteArray keyInformation;
   QByteArray publicKey;
@@ -8888,7 +8893,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 				     receiverName,
 				     cipherType,
 				     oid,
-				     m_crypts.value("email", 0),
+				     m_crypts.value(keyType, 0),
 				     &ok);
 
   if(!ok || publicKey.isEmpty() || symmetricKey.isEmpty())
@@ -8900,7 +8905,8 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   keyInformation = spoton_crypt::publicKeyEncrypt
     (symmetricKey.toBase64() + "@" +
      cipherType.toBase64() + "@" +
-     hashKey.toBase64(), publicKey, &ok);
+     hashKey.toBase64(),
+     publicKey, &ok);
 
   if(!ok)
     {
@@ -8908,7 +8914,8 @@ void spoton::slotCopyEmailFriendshipBundle(void)
       return;
     }
 
-  QByteArray mySPublicKey(m_crypts.value("email-signature")->publicKey(&ok));
+  QByteArray mySPublicKey
+    (m_crypts.value(QString("%1-signature").arg(keyType))->publicKey(&ok));
 
   if(!ok)
     {
@@ -8917,7 +8924,8 @@ void spoton::slotCopyEmailFriendshipBundle(void)
     }
 
   QByteArray mySSignature
-    (m_crypts.value("email-signature")->digitalSignature(mySPublicKey, &ok));
+    (m_crypts.value(QString("%1-signature").arg(keyType))->
+     digitalSignature(mySPublicKey, &ok));
 
   if(!ok)
     {
@@ -8925,7 +8933,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
       return;
     }
 
-  QByteArray myPublicKey(m_crypts.value("email")->publicKey(&ok));
+  QByteArray myPublicKey(m_crypts.value(keyType)->publicKey(&ok));
 
   if(!ok)
     {
@@ -8933,7 +8941,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
       return;
     }
 
-  QByteArray mySignature(m_crypts.value("email")->
+  QByteArray mySignature(m_crypts.value(keyType)->
 			 digitalSignature(myPublicKey, &ok));
 
   if(!ok)
@@ -8942,11 +8950,20 @@ void spoton::slotCopyEmailFriendshipBundle(void)
       return;
     }
 
-  QByteArray myName
-    (m_settings.value("gui/emailName", "unknown").toByteArray());
+  QByteArray myName;
+
+  if(keyType == "email")
+    myName = m_settings.value("gui/emailName", "unknown").toByteArray();
+  else
+    myName = poptasticNameEmail();
 
   if(myName.isEmpty())
-    myName = "unknown";
+    {
+      if(keyType == "email")
+	myName = "unknown";
+      else
+	myName = "unknown@unknown.org";
+    }
 
   QByteArray data;
   spoton_crypt crypt(cipherType,
@@ -8958,7 +8975,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 		     0,
 		     "");
 
-  data = crypt.encrypted(QByteArray("email").toBase64() + "@" +
+  data = crypt.encrypted(keyType.toLatin1().toBase64() + "@" +
 			 myName.toBase64() + "@" +
 			 myPublicKey.toBase64() + "@" +
 			 mySignature.toBase64() + "@" +
