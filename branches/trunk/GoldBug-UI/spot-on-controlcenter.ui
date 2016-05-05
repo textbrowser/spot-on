@@ -1307,7 +1307,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>580</width>
-             <height>637</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2343,6 +2343,22 @@ QPushButton:pressed {
                   <property name="spacing">
                    <number>5</number>
                   </property>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_25">
+                    <property name="text">
+                     <string>&amp;Subject</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="margin">
+                     <number>7</number>
+                    </property>
+                    <property name="buddy">
+                     <cstring>outgoingSubject</cstring>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="6" column="0">
                    <widget class="QLabel" name="label_6">
                     <property name="text">
@@ -2366,6 +2382,9 @@ QPushButton:pressed {
                     </property>
                     <item>
                      <widget class="QComboBox" name="emailName"/>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="emailNameEditable"/>
                     </item>
                     <item>
                      <widget class="QPushButton" name="reloadEmailNames">
@@ -2479,22 +2498,6 @@ QPushButton:pressed {
                     </item>
                    </layout>
                   </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_25">
-                    <property name="text">
-                     <string>&amp;Subject</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                    <property name="margin">
-                     <number>7</number>
-                    </property>
-                    <property name="buddy">
-                     <cstring>outgoingSubject</cstring>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="6" column="1">
                    <layout class="QHBoxLayout" name="horizontalLayout_31">
                     <property name="spacing">
@@ -2602,12 +2605,15 @@ QPushButton:pressed {
                      <number>5</number>
                     </property>
                     <item>
-                     <widget class="QLineEdit" name="attachment"/>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_95">
-                      <property name="text">
-                       <string>Maximum 10 MiB, please.</string>
+                     <widget class="QTextEdit" name="attachment">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Traditional e-mail supports only single attachments. Inline attachments are also not supported.&lt;/p&gt;&lt;p&gt;Click an attachment to remove it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                      </widget>
                     </item>
@@ -2923,8 +2929,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>499</width>
-             <height>1799</height>
+             <width>556</width>
+             <height>1783</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4214,7 +4220,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>597</width>
-             <height>576</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5367,7 +5373,7 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-250</y>
+                 <y>0</y>
                  <width>651</width>
                  <height>575</height>
                 </rect>
@@ -6587,7 +6593,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>842</width>
+             <width>818</width>
              <height>1304</height>
             </rect>
            </property>
@@ -8133,7 +8139,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>448</width>
+             <width>556</width>
              <height>771</height>
             </rect>
            </property>
@@ -9513,8 +9519,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>536</width>
-             <height>471</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -11539,6 +11545,7 @@ border-style: inset;
   <tabstop>addInstitutionLineEdit</tabstop>
   <tabstop>addInstitution</tabstop>
   <tabstop>emailName</tabstop>
+  <tabstop>emailNameEditable</tabstop>
   <tabstop>reloadEmailNames</tabstop>
   <tabstop>saveEmailName</tabstop>
   <tabstop>clearOutgoing</tabstop>
