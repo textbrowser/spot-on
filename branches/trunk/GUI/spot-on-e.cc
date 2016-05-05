@@ -287,6 +287,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
 {
   CURL *curl = 0;
   CURLcode res = CURLE_OK;
+  QString error("");
   bool ok = false;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -400,6 +401,8 @@ void spoton::slotTestPoptasticPop3Settings(void)
 
       if(res == CURLE_OK)
 	ok = true;
+      else
+	error = curl_easy_strerror(res);
 
       curl_easy_cleanup(curl);
     }
@@ -417,13 +420,14 @@ void spoton::slotTestPoptasticPop3Settings(void)
       (m_poptasticRetroPhoneDialog,
        tr("%1: Poptastic Incoming Connection Test").
        arg(SPOTON_APPLICATION_NAME),
-       tr("Failure!"));
+       tr("Failure!\nError: %1.").arg(error));
 }
 
 void spoton::slotTestPoptasticSmtpSettings(void)
 {
   CURL *curl = 0;
   CURLcode res = CURLE_OK;
+  QString error("");
   bool ok = false;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -544,6 +548,8 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 
       if(res == CURLE_OK)
 	ok = true;
+      else
+	error = curl_easy_strerror(res);
 
       curl_easy_cleanup(curl);
     }
@@ -561,7 +567,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
       (m_poptasticRetroPhoneDialog,
        tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
-       tr("Failure!"));
+       tr("Failure!\nError: %1.").arg(error));
 }
 
 void spoton::slotPoptasticSettingsReset(bool state)
