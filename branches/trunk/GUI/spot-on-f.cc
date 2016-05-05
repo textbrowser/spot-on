@@ -306,7 +306,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 #endif
   ui.tab->setCurrentIndex(0);
   ui.tab->setTabEnabled(1, false);
-  ui.text_1->setText(tr("Please make a selection."));
+  ui.text_1->setText(tr("Please select."));
   connect(ui.encryptionKeyType,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
