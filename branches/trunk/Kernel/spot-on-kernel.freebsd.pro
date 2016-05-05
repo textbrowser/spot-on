@@ -32,7 +32,7 @@ QMAKE_CXX = clang++
 QMAKE_DISTCLEAN += -r temp
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-			  -mtune=generic -O3 \
+			  -mtune=native -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \

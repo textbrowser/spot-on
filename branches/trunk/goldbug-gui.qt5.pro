@@ -32,7 +32,7 @@ QMAKE_CLEAN     += GoldBug ../../libNTRU/*.so ../../libNTRU/src/*.o \
 		   ../../libSpotOn/test
 QMAKE_DISTCLEAN += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-                          -mtune=generic -pie \
+                          -mtune=native -pie \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \

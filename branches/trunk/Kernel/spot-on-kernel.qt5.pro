@@ -32,7 +32,7 @@ QMAKE_CLEAN     += ../Spot-On-Kernel ../../../libNTRU/*.so \
 QMAKE_DISTCLEAN += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-			  -mtune=generic -pie -O3 \
+			  -mtune=native -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Werror -Wextra -Wl,-z,relro \
 			  -Woverloaded-virtual -Wpointer-arith \

@@ -29,7 +29,7 @@ QMAKE_CLEAN     += Spot-On ../../libNTRU/*.so ../../libNTRU/src/*.o \
 QMAKE_CXX = clang++
 QMAKE_DISTCLEAN += -r temp
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-                          -mtune=generic \
+                          -mtune=native \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
