@@ -1215,7 +1215,7 @@
                     </item>
                    </layout>
                   </widget>
-                  <widget class="QWidget" name="layoutWidget">
+                  <widget class="QWidget" name="layoutWidget1">
                    <layout class="QVBoxLayout" name="verticalLayout_29">
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_20">
@@ -2140,7 +2140,7 @@
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
-              <widget class="QWidget" name="layoutWidget">
+              <widget class="QWidget" name="layoutWidget2">
                <layout class="QVBoxLayout" name="verticalLayout_6">
                 <property name="spacing">
                  <number>5</number>
@@ -3337,7 +3337,7 @@
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
-              <widget class="QWidget" name="layoutWidget1">
+              <widget class="QWidget" name="layoutWidget3">
                <layout class="QVBoxLayout" name="verticalLayout_57">
                 <property name="spacing">
                  <number>5</number>
@@ -3679,7 +3679,7 @@
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
                    </property>
-                   <widget class="QWidget" name="layoutWidget1b">
+                   <widget class="QWidget" name="layoutWidget4">
                     <layout class="QHBoxLayout" name="horizontalLayout_2">
                      <property name="spacing">
                       <number>5</number>
