@@ -477,8 +477,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>514</height>
+                <width>401</width>
+                <height>482</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -2115,8 +2115,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>524</height>
+             <width>646</width>
+             <height>405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2803,7 +2803,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>260</width>
+                     <width>262</width>
                      <height>1433</height>
                     </rect>
                    </property>
@@ -3327,8 +3327,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>524</height>
+             <width>361</width>
+             <height>225</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3669,7 +3669,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>792</width>
+                  <width>737</width>
                   <height>478</height>
                  </rect>
                 </property>
@@ -4465,8 +4465,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>524</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4550,9 +4550,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-253</y>
-                 <width>802</width>
-                 <height>603</height>
+                 <y>0</y>
+                 <width>667</width>
+                 <height>620</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5501,7 +5501,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>823</width>
+             <width>847</width>
              <height>1176</height>
             </rect>
            </property>
@@ -6634,7 +6634,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>589</width>
              <height>544</height>
             </rect>
            </property>
@@ -7757,8 +7757,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>524</height>
+             <width>661</width>
+             <height>453</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8372,8 +8372,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>524</height>
+             <width>258</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8626,6 +8626,7 @@
     <addaction name="separator"/>
     <addaction name="action_Log_Viewer"/>
     <addaction name="action_Minimal_Display"/>
+    <addaction name="action_Notifications_Window"/>
     <addaction name="action_Options"/>
     <addaction name="menu_Pages"/>
     <addaction name="action_Poptastic_Settings"/>
@@ -8892,6 +8893,11 @@
   <action name="action_Vacuum_Databases">
    <property name="text">
     <string>&amp;Vacuum Databases</string>
+   </property>
+  </action>
+  <action name="action_Notifications_Window">
+   <property name="text">
+    <string>No&amp;tifications Window...</string>
    </property>
   </action>
  </widget>

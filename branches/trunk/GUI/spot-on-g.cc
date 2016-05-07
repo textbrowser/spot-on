@@ -116,3 +116,11 @@ QByteArray spoton::poptasticNameEmail(void) const
 {
   return m_settings["gui/poptasticNameEmail"].toByteArray();
 }
+
+void spoton::slotShowNotificationsWindow(void)
+{
+  m_notificationsWindow->showNormal();
+  m_notificationsWindow->activateWindow();
+  m_notificationsWindow->raise();
+  centerWidget(m_notificationsWindow, this);
+}

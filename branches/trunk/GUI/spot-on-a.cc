@@ -571,8 +571,10 @@ spoton::spoton(void):QMainWindow()
   m_ui.message->setPlaceholderText(tr("Please type a message..."));
 #endif
   m_ui.search->setPlaceholderText(tr("Search"));
+  m_notificationsWindow = new QMainWindow(0);
   m_optionsWindow = new QMainWindow(0);
   m_statisticsWindow = new QMainWindow(0);
+  m_notificationsUi.setupUi(m_notificationsWindow);
   m_optionsUi.setupUi(m_optionsWindow);
   m_statisticsUi.setupUi(m_statisticsWindow);
   m_statisticsUi.view->setModel(m_statisticsModel);
@@ -589,6 +591,19 @@ spoton::spoton(void):QMainWindow()
   m_sb.email->setVisible(false);
   m_sb.forward_secrecy_request->setVisible(false);
   m_sb.status->setTextFormat(Qt::RichText);
+  m_notificationsWindow->setWindowTitle
+    (tr("%1: Notifications").arg(SPOTON_APPLICATION_NAME));
+  m_notificationsWindow->setWindowFlags
+    (m_notificationsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  m_notificationsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#if QT_VERSION >= 0x050000
+  m_notificationsWindow->setWindowFlags
+    (m_notificationsWindow->windowFlags() & ~Qt::WindowFullscreenButtonHint);
+#endif
+#endif
   m_statisticsWindow->setWindowTitle
     (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
   m_statisticsWindow->setWindowFlags
@@ -1509,6 +1524,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowStarBeamAnalyzer(void)));
+  connect(m_ui.action_Notifications_Window,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowNotificationsWindow(void)));
   connect(m_ui.action_Statistics_Window,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -2504,6 +2523,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Export_Public_Keys->setEnabled(false);
       m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Import_Public_Keys->setEnabled(false);
+      m_ui.action_Notifications_Window->setEnabled(false);
       m_ui.action_Options->setEnabled(false);
       m_ui.action_Poptastic_Settings->setEnabled(false);
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(false);
@@ -2546,6 +2566,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Export_Public_Keys->setEnabled(false);
       m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Import_Public_Keys->setEnabled(false);
+      m_ui.action_Notifications_Window->setEnabled(false);
       m_ui.action_Options->setEnabled(false);
       m_ui.action_Poptastic_Settings->setEnabled(false);
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(false);
@@ -2968,6 +2989,7 @@ void spoton::cleanup(void)
 
   m_crypts.clear();
   m_echoKeyShare->deleteLater();
+  m_notificationsWindow->deleteLater();
   m_optionsWindow->deleteLater();
   m_rss->deleteLater();
   m_starbeamAnalyzer->deleteLater();
@@ -6364,6 +6386,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.action_Export_Public_Keys->setEnabled(true);
       m_ui.action_Import_Neighbors->setEnabled(true);
       m_ui.action_Import_Public_Keys->setEnabled(true);
+      m_ui.action_Notifications_Window->setEnabled(true);
       m_ui.action_Options->setEnabled(true);
       m_ui.action_Poptastic_Settings->setEnabled(true);
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
@@ -6617,6 +6640,7 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.action_Export_Public_Keys->setEnabled(true);
 	    m_ui.action_Import_Neighbors->setEnabled(true);
 	    m_ui.action_Import_Public_Keys->setEnabled(true);
+	    m_ui.action_Notifications_Window->setEnabled(true);
 	    m_ui.action_Options->setEnabled(true);
 	    m_ui.action_Poptastic_Settings->setEnabled(true);
 	    m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);

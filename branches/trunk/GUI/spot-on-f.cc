@@ -26,7 +26,6 @@
 */
 
 #include <QProgressDialog>
-#include <QToolTip>
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
@@ -828,14 +827,13 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 	}
 
       QString str(publicKeyHash.toBase64().constData());
-      QString toolTip
-	(tr("<html><h2>%1: Participant <i>%2</i> (%3) is "
+
+      m_notificationsUi.textBrowser->append
+	(tr("Participant <i>%1</i> (%2) is "
 	    "requesting forward secrecy "
-	    "credentials. Please see the status bar.</h2></html>").
-	 arg(SPOTON_APPLICATION_NAME).
+	    "credentials.").
 	 arg(name).
 	 arg(str.mid(0, 16) + "..." + str.right(16)));
-
       m_sb.forward_secrecy_request->setProperty
 	("public_key_hash", publicKeyHash);
       m_sb.forward_secrecy_request->
@@ -844,12 +842,6 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 					  "..." +
 					  str.right(16)));
       m_sb.forward_secrecy_request->setVisible(true);
-
-      if(!m_locked)
-	{
-	  QToolTip::showText(pos(), "");
-	  QToolTip::showText(pos(), toolTip);
-	}
     }
 }
 
@@ -1336,6 +1328,7 @@ void spoton::slotLock(void)
   m_echoKeyShare->close();
   m_encryptFile.close();
   m_logViewer.close();
+  m_notificationsWindow->close();
   m_optionsWindow->close();
   m_rosetta.close();
   m_rss->close();

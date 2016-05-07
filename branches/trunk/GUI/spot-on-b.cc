@@ -30,7 +30,6 @@
 #include "spot-on-defines.h"
 
 #include <QSslKey>
-#include <QToolTip>
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothlocaldevice.h>
@@ -367,19 +366,14 @@ void spoton::slotReceivedKernelMessage(void)
 			name = "unknown";
 		    }
 
-		  if(!m_locked)
-		    {
-		      QString str(list.value(0).toBase64().constData());
-		      QString toolTip
-			(tr("<html><h2>%1: Participant <i>%2</i> (%3) "
-			    "has completed a "
-			    "forward secrecy exchange.</h2></html>").
-			 arg(SPOTON_APPLICATION_NAME).
-			 arg(name).
-			 arg(str.mid(0, 16) + "..." + str.right(16)));
-		      QToolTip::showText(pos(), "");
-		      QToolTip::showText(pos(), toolTip);
-		    }
+		  QString str(list.value(0).toBase64().constData());
+
+		  m_notificationsUi.textBrowser->append
+		    (tr("Participant <i>%1</i> (%2) "
+			"has completed a "
+			"forward secrecy exchange.").
+		     arg(name).
+		     arg(str.mid(0, 16) + "..." + str.right(16)));
 		}
 	    }
 	  else if(data.startsWith("message_"))
@@ -825,20 +819,8 @@ void spoton::slotReceivedKernelMessage(void)
 #if SPOTON_GOLDBUG == 1
 	      populateMail();
 #endif
-
-	      if(!m_locked)
-		{
-		  QPoint point(frameGeometry().bottomRight());
-
-		  point.setX(point.x() - 150);
-		  point.setY(point.y() - 100);
-		  QToolTip::showText(point, "");
-		  QToolTip::showText
-		    (point,
-		     tr("<html><h3>%1: You have new e-mail!</h3></html>").
-		     arg(SPOTON_APPLICATION_NAME));
-		}
-
+	      m_notificationsUi.textBrowser->append
+		(tr("You have new e-mail!"));
 	      playSong("echo.wav");
 	    }
 	}

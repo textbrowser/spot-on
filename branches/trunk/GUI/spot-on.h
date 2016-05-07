@@ -390,6 +390,7 @@ class spoton_lineedit: public QLineEdit
 #include "spot-on-smp.h"
 #include "spot-on-starbeamanalyzer.h"
 #include "ui_spot-on-controlcenter.h"
+#include "ui_spot-on-notificationswindow.h"
 #include "ui_spot-on-options.h"
 #include "ui_spot-on-poptastic-retrophone-settings.h"
 #include "ui_spot-on-statisticswindow.h"
@@ -464,6 +465,7 @@ class spoton: public QMainWindow
 				       ** purging is less rigid.
 				       */
   QList<QFuture<void> > m_starbeamDigestFutures;
+  QMainWindow *m_notificationsWindow;
   QMainWindow *m_optionsWindow;
   QMainWindow *m_statisticsWindow;
   QMap<int, QHash<QString, QVariant> > m_tabWidgetsProperties;
@@ -490,6 +492,7 @@ class spoton: public QMainWindow
   QTimer m_tableTimer;
   QTimer m_updateChatWindowsTimer;
   QWidget *m_sbWidget;
+  Ui_notifications_window m_notificationsUi;
   Ui_poptasticretrophonesettings m_poptasticRetroPhoneSettingsUi;
   Ui_spoton_mainwindow m_ui;
   Ui_spoton_options m_optionsUi;
@@ -923,6 +926,7 @@ class spoton: public QMainWindow
   void slotShowMainTabContextMenu(const QPoint &point);
   void slotShowMinimalDisplay(bool state);
   void slotShowNeighborSummaryPanel(bool state);
+  void slotShowNotificationsWindow(void);
   void slotShowOptions(void);
   void slotShowPage(bool state);
   void slotShowRss(void);
