@@ -1634,11 +1634,15 @@ void spoton_neighbor::slotReadyRead(void)
 
 	if(ok)
 	  {
-	    if(!spoton_kernel::messagingCacheContains(data))
-	      emit receivedMessage
-		(data, m_id, QPair<QByteArray, QByteArray> ());
-
 	    emit resetKeepAlive();
+
+	    if(!spoton_kernel::messagingCacheContains(data))
+	      {
+		emit receivedMessage
+		  (data, m_id, QPair<QByteArray, QByteArray> ());
+		spoton_kernel::messagingCacheAdd(data);
+	      }
+
 	    return;
 	  }
       }
@@ -3654,10 +3658,10 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
 
+      emit resetKeepAlive();
       savePublicKey
 	(list.value(0), list.value(1), list.value(2), list.value(3),
 	 list.value(4), list.value(5), -1);
-      emit resetKeepAlive();
     }
   else
     spoton_misc::logError
@@ -3717,6 +3721,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 
   if(length == data.length())
     {
+      emit resetKeepAlive();
       data = QByteArray::fromBase64(data);
 
       QList<QByteArray> list(data.split('\n'));
@@ -3790,8 +3795,6 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 
 	  QSqlDatabase::removeDatabase(connectionName);
 	}
-
-      emit resetKeepAlive();
     }
   else
     spoton_misc::logError
@@ -4409,6 +4412,7 @@ void spoton_neighbor::process0065(int length, const QByteArray &dataIn)
 
   if(length == data.length())
     {
+      emit resetKeepAlive();
       data = QByteArray::fromBase64(data);
 
       if(spoton_kernel::setting("gui/acceptBuzzMagnets", false).toBool())
@@ -4447,8 +4451,6 @@ void spoton_neighbor::process0065(int length, const QByteArray &dataIn)
 
 	    QSqlDatabase::removeDatabase(connectionName);
 	  }
-
-      emit resetKeepAlive();
     }
   else
     spoton_misc::logError
@@ -4488,6 +4490,7 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
 
   if(length == data.length())
     {
+      emit resetKeepAlive();
       data = QByteArray::fromBase64(data);
 
       QString motd(QString::fromUtf8(data.constData(),
@@ -4519,7 +4522,6 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
       }
 
       QSqlDatabase::removeDatabase(connectionName);
-      emit resetKeepAlive();
     }
   else
     spoton_misc::logError
@@ -7064,11 +7066,15 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
       if(ok)
 	{
-	  if(!spoton_kernel::messagingCacheContains(datagram))
-	    emit receivedMessage
-	      (datagram, m_id, QPair<QByteArray, QByteArray> ());
-
 	  emit resetKeepAlive();
+
+	  if(!spoton_kernel::messagingCacheContains(datagram))
+	    {
+	      emit receivedMessage
+		(datagram, m_id, QPair<QByteArray, QByteArray> ());
+	      spoton_kernel::messagingCacheAdd(datagram);
+	    }
+
 	  return;
 	}
     }
