@@ -829,9 +829,11 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
       QString str(publicKeyHash.toBase64().constData());
 
       m_notificationsUi.textBrowser->append
+	(QDateTime::currentDateTime().toString());
+      m_notificationsUi.textBrowser->append
 	(tr("Participant <i>%1</i> (%2) is "
 	    "requesting forward secrecy "
-	    "credentials.").
+	    "credentials.<br>").
 	 arg(name).
 	 arg(str.mid(0, 16) + "..." + str.right(16)));
       m_sb.forward_secrecy_request->setProperty
