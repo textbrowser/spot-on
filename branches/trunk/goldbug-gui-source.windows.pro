@@ -9,7 +9,7 @@ FORMS           = GoldBug-UI\\spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI\\spot-on-keyboard.ui \
 		  GoldBug-UI\\spot-on-listener-socket-options.ui \
                   GoldBug-UI\\spot-on-logviewer.ui \
-		  Goldbug-UI\\spot-on-notificationswindow.ui \
+		  GoldBug-UI\\spot-on-notificationswindow.ui \
 		  GoldBug-UI\\spot-on-options.ui \
 		  GoldBug-UI\\spot-on-pageviewer.ui \
                   GoldBug-UI\\spot-on-password-prompt.ui \
