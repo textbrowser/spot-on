@@ -61,7 +61,11 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   QSettings settings;
 
   if(settings.value("gui/ontopChatDialogs", false).toBool())
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint
+#ifdef Q_WS_X11
+		   | Qt::X11BypassWindowManagerHint
+#endif
+		   );
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   setAttribute(Qt::WA_MacMetalStyle, true);
@@ -725,7 +729,11 @@ void spoton_chatwindow::showNormal(void)
   QSettings settings;
 
   if(settings.value("gui/ontopChatDialogs", false).toBool())
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint
+#ifdef Q_WS_X11
+		   | Qt::X11BypassWindowManagerHint
+#endif
+		   );
 
   QMainWindow::showNormal();
 }

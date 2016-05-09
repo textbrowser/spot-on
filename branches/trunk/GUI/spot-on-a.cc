@@ -594,7 +594,11 @@ spoton::spoton(void):QMainWindow()
   m_notificationsWindow->setWindowTitle
     (tr("%1: Notifications").arg(SPOTON_APPLICATION_NAME));
   m_notificationsWindow->setWindowFlags
-    (m_notificationsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+    (m_notificationsWindow->windowFlags() | Qt::WindowStaysOnTopHint
+#ifdef Q_WS_X11
+     | Qt::X11BypassWindowManagerHint
+#endif
+     );
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   m_notificationsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
@@ -607,7 +611,11 @@ spoton::spoton(void):QMainWindow()
   m_statisticsWindow->setWindowTitle
     (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
   m_statisticsWindow->setWindowFlags
-    (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
+    (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint
+#ifdef Q_WS_X11
+     | Qt::X11BypassWindowManagerHint
+#endif
+     );
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   m_statisticsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
