@@ -1906,6 +1906,10 @@ spoton::spoton(void):QMainWindow()
     (menu->addAction(tr("Copy &E-Mail Public Key Pair")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyMyEmailPublicKey(void)));
   connect
+    (menu->addAction(tr("Copy &Open Library Public Key Pair")),
+     SIGNAL(triggered(void)), this,
+     SLOT(slotCopyMyOpenLibraryPublicKey(void)));
+  connect
     (menu->addAction(tr("Copy &Poptastic Public Key Pair")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyMyPoptasticPublicKey(void)));
   connect
@@ -6983,6 +6987,11 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			       toString().toLower())),
 		     tr("Share &E-Mail Public Key Pair"),
 		     this, SLOT(slotShareEmailPublicKey(void)));
+      menu.addAction(QIcon(QString(":/%1/share.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("Share &Open Library Public Key Pair"),
+		     this, SLOT(slotShareOpenLibraryPublicKey(void)));
       menu.addAction(QIcon(QString(":/%1/share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),

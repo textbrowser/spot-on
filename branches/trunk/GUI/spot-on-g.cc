@@ -163,6 +163,10 @@ QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
 
 void spoton::slotCopyMyOpenLibraryPublicKey(void)
 {
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    clipboard->setText(copyMyOpenLibraryPublicKey());
 }
 
 void spoton::slotShareOpenLibraryPublicKey(void)

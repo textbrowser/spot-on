@@ -2972,6 +2972,11 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
+		      tr("Share &Open Library Public Key Pair"),
+		      this, SLOT(slotShareOpenLibraryPublicKey(void)));
+      menu->addAction(QIcon(QString(":/%1/share.png").
+			    arg(m_settings.value("gui/iconSet", "nouve").
+				toString().toLower())),
 		      tr("Share &Poptastic Public Key Pair"),
 		      this, SLOT(slotSharePoptasticPublicKey(void)));
       menu->addAction(QIcon(QString(":%1//share.png").
