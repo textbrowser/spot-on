@@ -6592,8 +6592,8 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>842</width>
+             <y>-644</y>
+             <width>818</width>
              <height>1304</height>
             </rect>
            </property>
@@ -7859,6 +7859,11 @@ QPushButton:pressed {
                      </item>
                      <item>
                       <property name="text">
+                       <string notr="true">Open Library</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
                        <string notr="true">Poptastic</string>
                       </property>
                      </item>
@@ -8139,7 +8144,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>448</width>
+             <width>556</width>
              <height>771</height>
             </rect>
            </property>
@@ -9519,8 +9524,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>536</width>
-             <height>471</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">

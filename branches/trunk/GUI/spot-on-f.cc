@@ -1160,6 +1160,8 @@ void spoton::slotDeleteKey(void)
     keyType = "chat";
   else if(m_ui.keys->currentText() == "E-Mail")
     keyType = "email";
+  else if(m_ui.keys->currentText() == "Open Library")
+    keyType = "open-library";
   else if(m_ui.keys->currentText() == "Poptastic")
     keyType = "poptastic";
   else if(m_ui.keys->currentText() == "Rosetta")
