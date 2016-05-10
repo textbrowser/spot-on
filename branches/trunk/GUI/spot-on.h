@@ -514,6 +514,7 @@ class spoton: public QMainWindow
   QByteArray copiedPublicKeyPairToMagnet(const QByteArray &data) const;
   QByteArray copyMyChatPublicKey(void) const;
   QByteArray copyMyEmailPublicKey(void) const;
+  QByteArray copyMyOpenLibraryPublicKey(void) const;
   QByteArray copyMyPoptasticPublicKey(void) const;
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray copyMyUrlPublicKey(void) const;
@@ -685,6 +686,7 @@ class spoton: public QMainWindow
   void slotCopyInstitution(void);
   void slotCopyMyChatPublicKey(void);
   void slotCopyMyEmailPublicKey(void);
+  void slotCopyMyOpenLibraryPublicKey(void);
   void slotCopyMyPoptasticPublicKey(void);
   void slotCopyMyRosettaPublicKey(void);
   void slotCopyMyURLPublicKey(void);
@@ -916,6 +918,7 @@ class spoton: public QMainWindow
   void slotShareEmailPublicKey(void);
   void slotShareEmailPublicKeyWithParticipant(void);
   void slotShareKeysWithKernel(const QString &link);
+  void slotShareOpenLibraryPublicKey(void);
   void slotSharePoptasticPublicKey(void);
   void slotShareStarBeam(void);
   void slotShareUrlPublicKeyWithParticipant(void);

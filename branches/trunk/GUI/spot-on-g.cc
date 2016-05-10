@@ -124,3 +124,47 @@ void spoton::slotShowNotificationsWindow(void)
   m_notificationsWindow->raise();
   centerWidget(m_notificationsWindow, this);
 }
+
+QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
+{
+  if(!m_crypts.value("open-library", 0) ||
+     !m_crypts.value("open-library-signature", 0))
+    return QByteArray();
+
+  QByteArray name;
+  QByteArray mPublicKey;
+  QByteArray mSignature;
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+  bool ok = true;
+
+  name = m_settings.value("gui/openLibraryName", "unknown").toByteArray();
+  mPublicKey = m_crypts.value("open-library")->publicKey(&ok);
+
+  if(ok)
+    mSignature = m_crypts.value("open-library")->
+      digitalSignature(mPublicKey, &ok);
+
+  if(ok)
+    sPublicKey = m_crypts.value("open-library-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("open-library-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    return "K" + QByteArray("open-library").toBase64() + "@" +
+      name.toBase64() + "@" +
+      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      sPublicKey.toBase64() + "@" + sSignature.toBase64();
+  else
+    return QByteArray();
+}
+
+void spoton::slotCopyMyOpenLibraryPublicKey(void)
+{
+}
+
+void spoton::slotShareOpenLibraryPublicKey(void)
+{
+}
