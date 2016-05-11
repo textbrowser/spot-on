@@ -2070,7 +2070,8 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   QByteArray keyType(list.value(4));
 
-  if(!(keyType == "chat" || keyType == "email" || keyType == "poptastic" ||
+  if(!(keyType == "chat" || keyType == "email" ||
+       keyType == "open-library" || keyType == "poptastic" ||
        keyType == "url"))
     return;
 
@@ -2261,7 +2262,8 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 
   QByteArray keyType(list.value(2));
 
-  if(!(keyType == "chat" || keyType == "email" || keyType == "poptastic" ||
+  if(!(keyType == "chat" || keyType == "email" ||
+       keyType == "open-library" || keyType == "poptastic" ||
        keyType == "url"))
     return;
 
