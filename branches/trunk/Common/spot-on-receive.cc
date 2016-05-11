@@ -1464,7 +1464,8 @@ QList<QByteArray> spoton_receive::process0091
 	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
 
       if(!(keyType == "chat" || keyType == "email" ||
-	   keyType == "poptastic" || keyType == "url"))
+	   keyType == "open-library" || keyType == "poptastic" ||
+	   keyType == "url"))
 	{
 	  spoton_misc::logError
 	    ("spoton_receive::process0091(): "

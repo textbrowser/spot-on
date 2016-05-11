@@ -791,7 +791,8 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
   QString keyType(QByteArray::fromBase64(list.value(0)).constData());
 
   if(!(keyType == "chat" || keyType == "email" ||
-       keyType == "poptastic" || keyType == "url"))
+       keyType == "open-library" || keyType == "poptastic" ||
+       keyType == "url"))
     return;
 
   QByteArray publicKeyHash(QByteArray::fromBase64(list.value(1)));

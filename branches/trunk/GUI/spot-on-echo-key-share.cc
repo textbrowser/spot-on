@@ -87,6 +87,9 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
   menu->addAction(tr("Share &E-Mail Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
+  menu->addAction(tr("Share &Open Library Public Key Pair"),
+		  this,
+		  SLOT(slotMenuAction(void)));
   menu->addAction(tr("Share &Poptastic Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
@@ -260,14 +263,16 @@ void spoton_echo_key_share::slotMenuAction(void)
   else if(index == 7)
     shareSelected("email");
   else if(index == 8)
-    shareSelected("poptastic");
+    shareSelected("open-library");
   else if(index == 9)
-    shareSelected("rosetta");
+    shareSelected("poptastic");
   else if(index == 10)
+    shareSelected("rosetta");
+  else if(index == 11)
     shareSelected("url");
-  else if(index == 12) // Remove Selected
+  else if(index == 13) // Remove Selected
     deleteSelected();
-  else if(index == 14) // Reset Widgets
+  else if(index == 15) // Reset Widgets
     resetWidgets();
 }
 
@@ -734,11 +739,13 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
     name = settings.value("gui/nodeName", "unknown").toByteArray();
   else if(keyType == "email")
     name = settings.value("gui/emailName", "unknown").toByteArray();
+  else if(keyType == "open-library")
+    name = settings.value("gui/openLibraryName", "unknown").toByteArray();
   else if(keyType == "poptastic")
     name = spoton::instance() ?
-      spoton::instance()->m_settings.value
-      ("gui/poptasticName", "unknown@unknown.org").toByteArray() :
-      "unknown@unknown.org";
+      spoton::instance()->m_settings.value("gui/poptasticName",
+					   "unknown@unknown.org").
+      toByteArray() : "unknown@unknown.org";
   else if(keyType == "rosetta")
     name = settings.value("gui/rosettaName", "unknown").toByteArray();
   else if(keyType == "url")

@@ -85,12 +85,14 @@ QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =
 QStringList spoton_common::SPOTON_ENCRYPTION_KEY_NAMES =
   QStringList() << "chat"
 		<< "email"
+	        << "open-library"
 		<< "poptastic"
 		<< "rosetta"
 		<< "url";
 QStringList spoton_common::SPOTON_SIGNATURE_KEY_NAMES =
   QStringList() << "chat-signature"
 		<< "email-signature"
+		<< "open-library-signature"
 		<< "poptastic-signature"
 		<< "rosetta-signature"
 		<< "url-signature";

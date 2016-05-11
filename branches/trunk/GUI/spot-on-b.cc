@@ -2034,6 +2034,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
     {
       if(!m_crypts.value("chat", 0) ||
 	 !m_crypts.value("email", 0) ||
+	 !m_crypts.value("open-library", 0) ||
 	 !m_crypts.value("poptastic", 0) ||
 	 !m_crypts.value("rosetta", 0) ||
 	 !m_crypts.value("url", 0))
@@ -2264,6 +2265,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 
       if(!m_crypts.value("chat", 0) ||
 	 !m_crypts.value("email", 0) ||
+	 !m_crypts.value("open-library", 0) ||
 	 !m_crypts.value("poptastic", 0) ||
 	 !m_crypts.value("rosetta", 0) ||
 	 !m_crypts.value("url", 0))
@@ -2322,28 +2324,34 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 
 	  if(!ok)
 	    {
-	      keyInformation = m_crypts.value("poptastic")->
+	      keyInformation = m_crypts.value("open-library")->
 		publicKeyDecrypt(list.value(0), &ok);
 
 	      if(!ok)
 		{
-		  keyInformation = m_crypts.value("rosetta")->
+		  keyInformation = m_crypts.value("poptastic")->
 		    publicKeyDecrypt(list.value(0), &ok);
 
 		  if(!ok)
 		    {
-		      keyInformation = m_crypts.value("url")->
+		      keyInformation = m_crypts.value("rosetta")->
 			publicKeyDecrypt(list.value(0), &ok);
 
 		      if(!ok)
 			{
-			  QMessageBox::critical
-			    (this, tr("%1: Error").
-			     arg(SPOTON_APPLICATION_NAME),
-			     tr("Asymmetric decryption failure. "
-				"Are you attempting "
-				"to add a repleo that you gathered?"));
-			  return;
+			  keyInformation = m_crypts.value("url")->
+			    publicKeyDecrypt(list.value(0), &ok);
+
+			  if(!ok)
+			    {
+			      QMessageBox::critical
+				(this, tr("%1: Error").
+				 arg(SPOTON_APPLICATION_NAME),
+				 tr("Asymmetric decryption failure. "
+				    "Are you attempting "
+				    "to add a repleo that you gathered?"));
+			      return;
+			    }
 			}
 		    }
 		}
@@ -2448,6 +2456,14 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 
 	  if(ok)
 	    mySPublicKey = m_crypts.value("email-signature")->
+	      publicKey(&ok);
+	}
+      else if(list.value(0) == "open-library")
+	{
+	  myPublicKey = m_crypts.value("open-library")->publicKey(&ok);
+
+	  if(ok)
+	    mySPublicKey = m_crypts.value("open-library-signature")->
 	      publicKey(&ok);
 	}
       else if(list.value(0) == "poptastic")
