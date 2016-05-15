@@ -300,7 +300,6 @@ void spoton_pageviewer::slotPagePrintPreview(void)
   if(printDialog.exec() == QDialog::Accepted)
     {
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
-      m_webView->render(&printer);
 #elif defined(SPOTON_WEBKIT_ENABLED)
       m_webView->print(&printer);
 #else
