@@ -315,10 +315,10 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
     return;
 
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
-  spoton_textbrowser textedit(this);
+  spoton_textbrowser textbrowser(this);
 
-  textedit.setHtml(m_content);
-  textedit.print(printer);
+  textbrowser.setHtml(m_content);
+  textbrowser.print(printer);
 #elif defined(SPOTON_WEBKIT_ENABLED)
   m_webView->print(printer);
 #else
