@@ -8632,7 +8632,7 @@
     <addaction name="action_Log_Viewer"/>
     <addaction name="action_Minimal_Display"/>
     <addaction name="action_Notifications_Window"/>
-    <addaction name="actionOpen_Library"/>
+    <addaction name="action_Open_Library"/>
     <addaction name="action_Options"/>
     <addaction name="menu_Pages"/>
     <addaction name="action_Poptastic_Settings"/>
