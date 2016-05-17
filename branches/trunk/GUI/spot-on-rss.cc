@@ -323,13 +323,13 @@ bool spoton_rss::importUrl(const QList<QVariant> &list)
   if(!crypt)
     return false;
 
+  if(!(spoton::instance() ? spoton::instance()->urlDatabase() :
+       QSqlDatabase()).isOpen())
+    return false;
+
   QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
 
   if(!ucc)
-    return false;
-
-  if(!(spoton::instance() ? spoton::instance()->urlDatabase() :
-       QSqlDatabase()).isOpen())
     return false;
 
   QSettings settings;
