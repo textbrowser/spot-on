@@ -2825,6 +2825,10 @@ spoton::spoton(void):QMainWindow()
     button->setToolTip(tr("Select All"));
 
   foreach(QAbstractButton *button,
+	  m_ui.mail->findChildren<QAbstractButton *> ())
+    button->setToolTip(tr("Select All"));
+
+  foreach(QAbstractButton *button,
 	  m_ui.participants->findChildren<QAbstractButton *> ())
     button->setToolTip(tr("Select All"));
 
@@ -4173,9 +4177,6 @@ void spoton::slotPopulateListeners(void)
 			    box->addItem(tr("Unlimited"));
 			    box->setMaximumWidth
 			      (box->fontMetrics().width(tr("Unlimited")) + 50);
-			    box->setToolTip
-			      (tr("Please deactivate the listener before "
-				  "changing the maximum connections value."));
 			    m_ui.listeners->setCellWidget(row, i, box);
 
 			    if(query.value(i).toLongLong() <= 0)
@@ -4198,7 +4199,9 @@ void spoton::slotPopulateListeners(void)
 			  }
 			else
 			  {
-			    box->addItem("1");
+			    box->addItem(tr("Unlimited"));
+			    box->setMaximumWidth
+			      (box->fontMetrics().width(tr("Unlimited")) + 50);
 			    box->setEnabled(false);
 			    m_ui.listeners->setCellWidget(row, i, box);
 			  }

@@ -564,7 +564,8 @@ void spoton_listener::slotTimeout(void)
 
 			  if(maximumPendingConnections > 0)
 			    {
-			      if(maximumPendingConnections % 5 != 0)
+			      if(maximumPendingConnections != 1 &&
+				 maximumPendingConnections % 5 != 0)
 				maximumPendingConnections = 5;
 			    }
 			  else

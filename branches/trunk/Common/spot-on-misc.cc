@@ -374,7 +374,11 @@ void spoton_misc::prepareDatabases(void)
 		   "connections INTEGER NOT NULL DEFAULT 0 "
 		   "CHECK (connections >= 0), "
 		   "maximum_clients INTEGER NOT NULL DEFAULT 5 "
-		   "CHECK (maximum_clients > 0), "
+		   "CHECK (maximum_clients >= 0), " /*
+						    ** Please set to zero
+						    ** for an unlimited
+						    ** number of clients.
+						    */
 		   "external_ip_address TEXT, "
 		   "external_port TEXT, "
 		   "hash TEXT PRIMARY KEY NOT NULL, " /*
