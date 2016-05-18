@@ -10,7 +10,7 @@ libspoton.o:	libspoton.c libspoton.h
 	$(CC) $(CFLAGS) \
 	-DLIBSPOTON_IGNORE_GCRY_CONTROL_GCRYCTL_INIT_SECMEM_RETURN_VALUE \
 	-DLIBSPOTON_OS_FREEBSD=1 -I/usr/local/include \
-	-fPIC -fstack-protector-all -pedantic \
+	-fPIC -fstack-protector-all -pedantic -O2 \
 	-Waggregate-return \
 	-Wall -Wconversion -Werror -Wextra -Wformat=2 -Wpointer-arith \
 	-Wshadow -Wsign-conversion \

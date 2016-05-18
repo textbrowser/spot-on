@@ -1270,6 +1270,7 @@ void spoton::slotPopulateStars(void)
 
     if(db.open())
       {
+	QLocale locale;
 	QModelIndexList list;
 	QSqlQuery query(db);
 	QString mosaic("");
@@ -1402,10 +1403,10 @@ void spoton::slotPopulateStars(void)
 
 	      if(item1 && item2)
 		{
+		  QFileInfo fileInfo(item2->text());
 		  int percent = static_cast<int>
 		    (100 *
-       		     qAbs(static_cast<double> (QFileInfo(item2->text()).
-					       size()) /
+       		     qAbs(static_cast<double> (fileInfo.size()) /
 			  static_cast<double> (qMax(static_cast<long long>
 						    (1),
 						    item1->text().
@@ -1424,9 +1425,10 @@ void spoton::slotPopulateStars(void)
 		      progressBar->setValue(percent);
 		      progressBar->setTextVisible(true);
 		      progressBar->setToolTip
-			(QString("%1% - %2").
+			(QString("%1% - %2 (%3 KiB)").
 			 arg(percent).
-			 arg(QFileInfo(fileName).fileName()));
+			 arg(fileInfo.fileName()).
+			 arg(locale.toString(fileInfo.size() / 1048576)));
 		      m_ui.received->setCellWidget(row, 1, progressBar);
 		    }
 		  else
@@ -1659,6 +1661,7 @@ void spoton::slotPopulateStars(void)
 
 	      if(item)
 		{
+		  QFileInfo fileInfo(fileName);
 		  int percent = static_cast<int>
 		    (100 *
 		     qAbs(static_cast<double> (position) /
@@ -1673,9 +1676,11 @@ void spoton::slotPopulateStars(void)
 
 		      progressBar->setValue(percent);
 		      progressBar->setToolTip
-			(QString("%1% - %2").
+			(QString("%1% - %2 (%3 KiB)").
 			 arg(percent).
-			 arg(QFileInfo(fileName).fileName()));
+			 arg(fileInfo.fileName()).
+			 arg(locale.toString(fileInfo.size() /
+					     1048576)));
 		      progressBar->setTextVisible(true);
 		      m_ui.transmitted->setCellWidget
 			(row, 1, progressBar);
