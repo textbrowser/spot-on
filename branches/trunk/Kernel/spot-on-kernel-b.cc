@@ -25,13 +25,13 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QSqlQuery>
+
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-receive.h"
 #include "spot-on-kernel.h"
 #include "spot-on-mailer.h"
-
-#include <QSqlQuery>
 
 static QList<QByteArray> curl_payload_text;
 
