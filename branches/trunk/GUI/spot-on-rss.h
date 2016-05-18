@@ -51,12 +51,14 @@ class spoton_rss: public QMainWindow
 
  private:
   QByteArray m_feedDownloadContent;
+  QFuture<void> m_importFuture;
   QFuture<void> m_parseXmlFuture;
   QNetworkAccessManager m_networkAccessManager;
   QPalette m_originalFindPalette;
   QString removeSpecialTags(const QString &text);
   QTimer m_downloadTimer;
   QTimer m_downloadContentTimer;
+  QTimer m_importTimer;
   QTimer m_statisticsTimer;
   Ui_rss m_ui;
   int m_currentFeedRow;
@@ -65,11 +67,11 @@ class spoton_rss: public QMainWindow
   bool event(QEvent *event);
 #endif
 #endif
-  bool importUrl(const QList<QVariant> &list);
+  bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
   spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);
   void hideUrl(const QUrl &url, const bool state);
-  void logError(const QString &error);
+  void import(const int maximumKeywords);
   void parseXmlContent(const QByteArray &data,
 		       const QUrl &url);
   void populateFeeds(void);
@@ -87,6 +89,7 @@ class spoton_rss: public QMainWindow
  private slots:
   void slotAddFeed(void);
   void slotActivate(bool state);
+  void slotActivateImport(bool state);
   void slotContentReplyFinished(void);
   void slotCopyFeedLink(void);
   void slotDeleteAllFeeds(void);
@@ -101,6 +104,7 @@ class spoton_rss: public QMainWindow
   void slotFind(void);
   void slotFindInitialize(void);
   void slotImport(void);
+  void slotLogError(const QString &error);
   void slotMaximumKeywordsChanged(int value);
   void slotPopulateFeeds(void);
   void slotProxyClicked(bool state);
@@ -120,6 +124,7 @@ class spoton_rss: public QMainWindow
 
  signals:
   void downloadFeedImage(const QUrl &imageUrl, const QUrl &url);
+  void logError(const QString &error);
 };
 
 #endif

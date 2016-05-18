@@ -298,6 +298,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="periodic_import">
+            <property name="text">
+             <string>&amp;Periodic Import</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -436,8 +443,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>801</width>
-             <height>482</height>
+             <width>847</width>
+             <height>131</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -628,7 +635,7 @@
      <x>0</x>
      <y>0</y>
      <width>841</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -655,8 +662,6 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <addaction name="action_Import"/>
-    <addaction name="separator"/>
     <addaction name="action_Toggle_Hidden"/>
     <addaction name="action_Toggle_Imported"/>
     <addaction name="action_Toggle_Indexed"/>
@@ -812,6 +817,7 @@
   <tabstop>activate</tabstop>
   <tabstop>download_interval</tabstop>
   <tabstop>maximum_keywords</tabstop>
+  <tabstop>periodic_import</tabstop>
   <tabstop>action_menu</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>

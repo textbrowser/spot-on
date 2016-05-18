@@ -34,7 +34,6 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QXmlStreamReader>
-
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
 #endif
@@ -70,6 +69,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotDownloadTimeout(void)));
+  connect(&m_importTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotImport(void)));
   connect(&m_statisticsTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -82,10 +85,6 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotFindInitialize(void)));
-  connect(m_ui.action_Import,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotImport(void)));
   connect(m_ui.action_Insert_Date,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -162,6 +161,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.periodic_import,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotActivateImport(bool)));
   connect(m_ui.proxy,
 	  SIGNAL(clicked(bool)),
 	  this,
@@ -198,6 +201,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(downloadFeedImage(const QUrl &, const QUrl &)),
 	  this,
 	  SLOT(slotDownloadFeedImage(const QUrl &, const QUrl &)));
+  connect(this,
+	  SIGNAL(logError(const QString &)),
+	  this,
+	  SLOT(slotLogError(const QString &)));
   m_originalFindPalette = m_ui.find->palette();
   m_ui.find->setPlaceholderText(tr("Find Text"));
   QMenu *menu = new QMenu(this);
@@ -255,6 +262,8 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
      m_ui.download_interval->maximum());
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * dvalue));
   m_ui.download_interval->setValue(dvalue);
+  m_ui.periodic_import->setChecked
+    (settings.value("gui/rss_import_activate", false).toBool());
   ivalue = qBound
     (m_ui.purge_days->minimum(),
      settings.value("gui/rss_purge_days", 1).toInt(),
@@ -268,6 +277,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   else
     m_ui.action_Publication_Date->setChecked(true);
 
+  m_importTimer.setInterval(250);
   m_statisticsTimer.start(2500);
 
   if(m_ui.activate->isChecked())
@@ -275,6 +285,9 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
       m_downloadContentTimer.start();
       m_downloadTimer.start();
     }
+
+  if(m_ui.periodic_import->isChecked())
+    m_importTimer.start();
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
@@ -315,16 +328,13 @@ bool spoton_rss::event(QEvent *event)
 #endif
 #endif
 
-bool spoton_rss::importUrl(const QList<QVariant> &list)
+bool spoton_rss::importUrl(const QList<QVariant> &list,
+			   const int maximumKeywords)
 {
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->crypts().value("chat", 0) : 0;
 
   if(!crypt)
-    return false;
-
-  if(!(spoton::instance() ? spoton::instance()->urlDatabase() :
-       QSqlDatabase()).isOpen())
     return false;
 
   QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
@@ -339,16 +349,70 @@ bool spoton_rss::importUrl(const QList<QVariant> &list)
   if(url.isEmpty() || !url.isValid())
     url = list.value(3).toUrl();
 
-  imported = spoton_misc::importUrl
-    (list.value(0).toByteArray(),
-     list.value(1).toString().toUtf8(), // Description
-     list.value(2).toString().toUtf8(), // Title
-     spoton_misc::urlToEncoded(url),    // URL
-     spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
-     m_ui.maximum_keywords->value(),
-     settings.value("gui/disable_ui_synchronous_sqlite_url_import",
-		    false).toBool(),
-     ucc.data());
+  QString connectionName("");
+
+  {
+    connectionName = spoton_misc::databaseName();
+
+    QSqlDatabase db;
+
+    if(settings.value("gui/sqliteSearch", true).toBool())
+      {
+	db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "urls.db");
+	db.open();
+      }
+    else
+      {
+	QByteArray password;
+	QString database
+	  (settings.value("gui/postgresql_database", "").
+	   toString().trimmed());
+	QString host
+	  (settings.value("gui/postgresql_host", "localhost").
+	   toString().trimmed());
+	QString name
+	  (settings.value("gui/postgresql_name", "").toString().trimmed());
+	QString str("connect_timeout=10");
+	bool ok = true;
+	bool ssltls = settings.value("gui/postgresql_ssltls", false).toBool();
+	int port = settings.value("gui/postgresql_port", 5432).toInt();
+
+	password = crypt->decryptedAfterAuthenticated
+	  (QByteArray::
+	   fromBase64(settings.value("gui/postgresql_password", "").
+		      toByteArray()), &ok);
+
+	if(ssltls)
+	  str.append(";requiressl=1");
+
+	db = QSqlDatabase::addDatabase("QPSQL", connectionName);
+	db.setConnectOptions(str);
+	db.setDatabaseName(database);
+	db.setHostName(host);
+	db.setPort(port);
+
+	if(ok)
+	  db.open(name, password);
+      }
+
+    if(db.isOpen())
+      imported = spoton_misc::importUrl
+	(list.value(0).toByteArray(),
+	 list.value(1).toString().toUtf8(), // Description
+	 list.value(2).toString().toUtf8(), // Title
+	 spoton_misc::urlToEncoded(url),    // URL
+	 db,
+	 maximumKeywords,
+	 settings.value("gui/disable_ui_synchronous_sqlite_url_import",
+			false).toBool(),
+	 ucc.data());
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   return imported;
 }
 
@@ -391,10 +455,13 @@ void spoton_rss::closeEvent(QCloseEvent *event)
 
 void spoton_rss::deactivate(void)
 {
-  m_ui.action_Import->setEnabled(true);
   m_ui.activate->setChecked(false);
+  m_ui.periodic_import->setChecked(false);
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
+  m_importTimer.stop();
+  m_importFuture.cancel();
+  m_importFuture.waitForFinished();
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
 }
@@ -451,14 +518,230 @@ void spoton_rss::hideUrl(const QUrl &url, const bool state)
   slotRefreshTimeline();
 }
 
-void spoton_rss::logError(const QString &error)
+void spoton_rss::import(const int maximumKeywords)
 {
-  if(error.trimmed().isEmpty())
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    {
+      emit logError("Import failure. Invalid spoton_crypt object. "
+		    "This is a fatal flaw.");
+      return;
+    }
+
+  QString connectionName("");
+
+  /*
+  ** Now, retrieve polarizers.
+  */
+
+  QList<QPair<QUrl, QString> > polarizers;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT domain, permission FROM distillers WHERE "
+		      "direction_hash = ?");
+	query.bindValue(0, crypt->keyedHash(QByteArray("shared"),
+					    &ok).toBase64());
+
+	if(ok && query.exec())
+	  while(query.next())
+	    {
+	      if(m_importFuture.isCanceled())
+		break;
+
+	      QByteArray domain;
+	      QByteArray permission;
+	      bool ok = true;
+
+	      domain = crypt->
+		decryptedAfterAuthenticated(QByteArray::
+					    fromBase64(query.
+						       value(0).
+						       toByteArray()),
+					    &ok);
+
+	      if(ok)
+		permission = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(1).
+							 toByteArray()),
+					      &ok);
+
+	      if(ok)
+		{
+		  QUrl url(QUrl::fromUserInput(domain));
+
+		  if(!url.isEmpty())
+		    if(url.isValid())
+		      {
+			QPair<QUrl, QString> pair;
+
+			pair.first = url;
+			pair.second = permission.constData();
+			polarizers.append(pair);
+		      }
+		}
+
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(m_importFuture.isCanceled())
     return;
 
-  m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
-  m_ui.errors->append(QString(error).trimmed().append("<br>"));
-  spoton_misc::logError(error);
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare
+	  ("SELECT content, description, title, url, url_hash, "
+	   "url_redirected "
+	   "FROM rss_feeds_links WHERE "
+	   "imported = 0 AND visited = 1");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+              QByteArray bytes;
+	      QByteArray urlHash(query.value(4).toByteArray());
+	      QList<QVariant> list;
+	      bool ok = true;
+
+	      bytes = qUncompress
+		(crypt->
+		 decryptedAfterAuthenticated(QByteArray::
+					     fromBase64(query.value(0).
+							toByteArray()),
+					     &ok));
+
+	      if(ok)
+		list << bytes;
+
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		list << QString::fromUtf8(bytes.constData(),
+					  bytes.length()).trimmed();
+
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		list << QString::fromUtf8(bytes.constData(),
+					  bytes.length()).trimmed();
+
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(3).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		list << QUrl::fromEncoded(bytes);
+
+	      if(ok)
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(5).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		{
+		  /*
+		  ** Apply polarizers.
+		  */
+
+		  ok = false;
+
+		  for(int i = 0; i < polarizers.size(); i++)
+		    {
+		      QString type(polarizers.at(i).second);
+		      QUrl u1(polarizers.at(i).first);
+		      QUrl u2(QUrl::fromEncoded(bytes));
+
+		      if(type == "accept")
+			{
+			  if(spoton_misc::urlToEncoded(u2).
+			     startsWith(spoton_misc::urlToEncoded(u1)))
+			    {
+			      ok = true;
+			      break;
+			    }
+			}
+		      else
+			{
+			  if(spoton_misc::urlToEncoded(u2).
+			     startsWith(spoton_misc::urlToEncoded(u1)))
+			    {
+			      ok = false;
+			      break;
+			    }
+			}
+		    }
+		}
+
+	      if(ok)
+		{
+		  QUrl url(QUrl::fromEncoded(bytes));
+
+		  if(!url.isEmpty() && url.isValid())
+		    list << url;
+		}
+	      else
+		list.clear();
+
+	      bool imported = false;
+
+	      if(!list.isEmpty())
+		imported = importUrl(list, maximumKeywords);
+
+	      QSqlQuery query(db);
+
+	      query.prepare("UPDATE rss_feeds_links "
+			    "SET imported = ? "
+			    "WHERE url_hash = ?");
+
+	      if(imported)
+		query.bindValue(0, 1);
+	      else
+		query.bindValue(0, 2); // Import error.
+
+	      query.bindValue(1, urlHash);
+	      query.exec();
+	      break; // Single import per execution.
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
@@ -1269,6 +1552,25 @@ void spoton_rss::slotActivate(bool state)
     }
 }
 
+void spoton_rss::slotActivateImport(bool state)
+{
+  QSettings settings;
+
+  settings.setValue("gui/rss_import_activate", state);
+
+  if(state)
+    {
+      if(!m_importTimer.isActive()) // Signals;
+	m_importTimer.start();
+    }
+  else
+    {
+      m_importTimer.stop();
+      m_importFuture.cancel();
+      m_importFuture.waitForFinished();
+    }
+}
+
 void spoton_rss::slotAddFeed(void)
 {
   QString connectionName("");
@@ -1383,7 +1685,7 @@ void spoton_rss::slotContentReplyFinished(void)
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 	    QUrl originalUrl(reply->property("original-url").toUrl());
 
-	    logError(error);
+	    slotLogError(error);
 	    reply->deleteLater();
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
 	    reply->ignoreSslErrors();
@@ -1451,7 +1753,7 @@ void spoton_rss::slotContentReplyFinished(void)
 		       arg(spoton_misc::urlToEncoded(reply->url()).
 			   constData()));
 
-		    logError(error);
+		    slotLogError(error);
 		  }
 		else
 		  {
@@ -1463,7 +1765,7 @@ void spoton_rss::slotContentReplyFinished(void)
 			   constData()).
 		       arg(reply->errorString()));
 
-		    logError(error);
+		    slotLogError(error);
 		  }
 	      }
 	    else
@@ -1725,8 +2027,8 @@ void spoton_rss::slotDownloadTimeout(void)
 	  SIGNAL(readyRead(void)),
 	  this,
 	  SLOT(slotFeedReplyReadyRead(void)));
-  logError(QString("Downloading feed <a href=\"%1\">%1</a>.").
-	   arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+  slotLogError(QString("Downloading feed <a href=\"%1\">%1</a>.").
+	       arg(spoton_misc::urlToEncoded(reply->url()).constData()));
 }
 
 void spoton_rss::slotFeedImageReplyFinished(void)
@@ -1785,7 +2087,7 @@ void spoton_rss::slotFeedReplyFinished(void)
 	       arg(spoton_misc::urlToEncoded(url).constData()).
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 
-	    logError(error);
+	    slotLogError(error);
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
 	    reply->ignoreSslErrors();
 	    connect(reply,
@@ -1811,7 +2113,7 @@ void spoton_rss::slotFeedReplyFinished(void)
 	 arg(spoton_misc::urlToEncoded(reply->url()).constData()).
 	 arg(reply->errorString()));
 
-      logError(error);
+      slotLogError(error);
       reply->deleteLater();
     }
 
@@ -1856,307 +2158,19 @@ void spoton_rss::slotFindInitialize(void)
 
 void spoton_rss::slotImport(void)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  if(m_importFuture.isFinished())
+    m_importFuture = QtConcurrent::run
+      (this, &spoton_rss::import, m_ui.maximum_keywords->value());
+}
 
-  if(!crypt)
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
-      return;
-    }
-
-  if(!(spoton::instance() ? spoton::instance()->urlDatabase() :
-       QSqlDatabase()).isOpen())
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Please connect to a URL database."));
-      return;
-    }
-
-  QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
-
-  if(!ucc)
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Did you prepare common credentials?"));
-      return;
-    }
-
-  QMessageBox mb(this);
-
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Did you prepare your databases and distillers? "
-		"Declined URLs will be categorized as malformed."));
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
+void spoton_rss::slotLogError(const QString &error)
+{
+  if(error.trimmed().isEmpty())
     return;
 
-  m_downloadContentTimer.stop();
-  m_downloadTimer.stop();
-
-  QString connectionName("");
-
-  /*
-  ** Now, retrieve polarizers.
-  */
-
-  QList<QPair<QUrl, QString> > polarizers;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT domain, permission FROM distillers WHERE "
-		      "direction_hash = ?");
-	query.bindValue(0, crypt->keyedHash(QByteArray("shared"),
-					    &ok).toBase64());
-
-	if(ok && query.exec())
-	  while(query.next())
-	    {
-	      QByteArray domain;
-	      QByteArray permission;
-	      bool ok = true;
-
-	      domain = crypt->
-		decryptedAfterAuthenticated(QByteArray::
-					    fromBase64(query.
-						       value(0).
-						       toByteArray()),
-					    &ok);
-
-	      if(ok)
-		permission = crypt->
-		  decryptedAfterAuthenticated(QByteArray::
-					      fromBase64(query.
-							 value(1).
-							 toByteArray()),
-					      &ok);
-
-	      if(ok)
-		{
-		  QUrl url(QUrl::fromUserInput(domain));
-
-		  if(!url.isEmpty())
-		    if(url.isValid())
-		      {
-			QPair<QUrl, QString> pair;
-
-			pair.first = url;
-			pair.second = permission.constData();
-			polarizers.append(pair);
-		      }
-		}
-
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QMessageBox::information
-		 (this, tr("%1: Information").
-		  arg(SPOTON_APPLICATION_NAME),
-		  tr("Please note that the URL-import process may "
-		     "require a considerable amount of time to complete."));
-
-  QProgressDialog *progress = new QProgressDialog(this);
-
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress->setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
-  progress->setLabelText(tr("Importing URLs. Please be patient."));
-  progress->setMaximum(0);
-  progress->setMinimum(0);
-  progress->setModal(true);
-  progress->setWindowTitle(tr("%1: Importing URLs").
-			   arg(SPOTON_APPLICATION_NAME));
-  progress->show();
-  progress->raise();
-  progress->activateWindow();
-#ifndef Q_OS_MAC
-  progress->repaint();
-  QApplication::processEvents();
-#endif
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare
-	  ("SELECT content, description, title, url, url_hash, "
-	   "url_redirected "
-	   "FROM rss_feeds_links WHERE "
-	   "imported = 0 AND visited = 1");
-
-	if(query.exec())
-	  while(query.next())
-	    {
-	      if(progress->wasCanceled())
-		break;
-
-#ifndef Q_OS_MAC
-	      progress->repaint();
-	      QApplication::processEvents();
-#endif
-
-              QByteArray bytes;
-	      QByteArray urlHash(query.value(4).toByteArray());
-	      QList<QVariant> list;
-	      bool ok = true;
-
-	      bytes = qUncompress
-		(crypt->
-		 decryptedAfterAuthenticated(QByteArray::
-					     fromBase64(query.value(0).
-							toByteArray()),
-					     &ok));
-
-	      if(ok)
-		list << bytes;
-
-	      if(ok)
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(1).toByteArray()),
-		   &ok);
-
-	      if(ok)
-		list << QString::fromUtf8(bytes.constData(),
-					  bytes.length()).trimmed();
-
-	      if(ok)
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(2).toByteArray()),
-		   &ok);
-
-	      if(ok)
-		list << QString::fromUtf8(bytes.constData(),
-					  bytes.length()).trimmed();
-
-	      if(ok)
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(3).toByteArray()),
-		   &ok);
-
-	      if(ok)
-		list << QUrl::fromEncoded(bytes);
-
-	      if(ok)
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(5).toByteArray()),
-		   &ok);
-
-	      if(ok)
-		{
-		  /*
-		  ** Apply polarizers.
-		  */
-
-		  ok = false;
-
-		  for(int i = 0; i < polarizers.size(); i++)
-		    {
-		      QString type(polarizers.at(i).second);
-		      QUrl u1(polarizers.at(i).first);
-		      QUrl u2(QUrl::fromEncoded(bytes));
-
-		      if(type == "accept")
-			{
-			  if(spoton_misc::urlToEncoded(u2).
-			     startsWith(spoton_misc::urlToEncoded(u1)))
-			    {
-			      ok = true;
-			      break;
-			    }
-			}
-		      else
-			{
-			  if(spoton_misc::urlToEncoded(u2).
-			     startsWith(spoton_misc::urlToEncoded(u1)))
-			    {
-			      ok = false;
-			      break;
-			    }
-			}
-		    }
-		}
-
-	      if(ok)
-		{
-		  QUrl url(QUrl::fromEncoded(bytes));
-
-		  if(!url.isEmpty() && url.isValid())
-		    list << url;
-		}
-	      else
-		list.clear();
-
-	      bool imported = false;
-
-	      if(!list.isEmpty())
-		imported = importUrl(list);
-
-	      QSqlQuery query(db);
-
-	      query.prepare("UPDATE rss_feeds_links "
-			    "SET imported = ? "
-			    "WHERE url_hash = ?");
-
-	      if(imported)
-		query.bindValue(0, 1);
-	      else
-		query.bindValue(0, 2); // Import error.
-
-	      query.bindValue(1, urlHash);
-	      query.exec();
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(m_ui.activate->isChecked())
-    {
-      m_downloadContentTimer.start();
-      m_downloadTimer.start();
-    }
-
-  progress->close();
-  progress->deleteLater();
+  m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
+  m_ui.errors->append(QString(error).trimmed().append("<br>"));
+  spoton_misc::logError(error);
 }
 
 void spoton_rss::slotMaximumKeywordsChanged(int value)
@@ -2522,7 +2536,7 @@ void spoton_rss::slotReplyError(QNetworkReply::NetworkError code)
   else
     error = QString("A QNetworkReply error (%1) occurred.").arg(code);
 
-  logError(error);
+  slotLogError(error);
 }
 
 void spoton_rss::slotSaveProxy(void)
