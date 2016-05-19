@@ -1661,7 +1661,6 @@ void spoton::slotPopulateStars(void)
 
 	      if(item)
 		{
-		  QFileInfo fileInfo(fileName);
 		  int percent = static_cast<int>
 		    (100 *
 		     qAbs(static_cast<double> (position) /
@@ -1678,8 +1677,8 @@ void spoton::slotPopulateStars(void)
 		      progressBar->setToolTip
 			(QString("%1% - %2 (%3 KiB)").
 			 arg(percent).
-			 arg(fileInfo.fileName()).
-			 arg(locale.toString(fileInfo.size() /
+			 arg(QFileInfo(fileName).fileName()).
+			 arg(locale.toString(position /
 					     1048576)));
 		      progressBar->setTextVisible(true);
 		      m_ui.transmitted->setCellWidget

@@ -4113,26 +4113,27 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 			    const QSqlDatabase &db,
 			    const int maximum_keywords,
 			    const bool disable_synchronous_sqlite_writes,
+			    QString &error,
 			    spoton_crypt *crypt)
 {
   if(c.trimmed().isEmpty())
     {
-      logError("spoton_misc::importUrl(): empty content.");
+      error = "spoton_misc::importUrl(): empty content.";
+      logError(error);
       return false;
     }
 
   if(!crypt)
     {
-      logError
-	("spoton_misc::importUrl(): crypt "
-	 "is zero.");
+      error = "spoton_misc::importUrl(): crypt is zero.";
+      logError(error);
       return false;
     }
 
   if(!db.isOpen())
     {
-      logError
-	("spoton_misc::importUrl(): db is closed.");
+      error = "spoton_misc::importUrl(): db is closed.";
+      logError(error);
       return false;
     }
 
@@ -4140,8 +4141,8 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
   if(url.isEmpty() || !url.isValid())
     {
-      logError
-	("spoton_misc::importUrl(): empty or invalid URL.");
+      error = "spoton_misc::importUrl(): empty or invalid URL.";
+      logError(error);
       return false;
     }
 
@@ -4150,11 +4151,12 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
     {
       if(!scheme.isEmpty())
-	logError(QString("spoton_misc::importUrl(): the URL scheme %1 "
-			 "is not acceptable.").arg(scheme));
+	error = QString("spoton_misc::importUrl(): the URL scheme %1 "
+			"is not acceptable.").arg(scheme);
       else
-	logError("spoton_misc::importUrl(): invalid URL scheme.");
+	error = "spoton_misc::importUrl(): invalid URL scheme.";
 
+      logError(error);
       return false;
     }
 
@@ -4183,8 +4185,8 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
   if(!ok)
     {
-      logError
-	("spoton_misc::importUrl(): keyedHash() failure.");
+      error = "spoton_misc::importUrl(): keyedHash() failure.";
+      logError(error);
       return ok;
     }
 
@@ -4225,11 +4227,11 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
 	    if(!ok)
 	      {
-		logError
-		  (QString("spoton_misc::importUrl(): a failure occurred "
-			   "while attempting to update the URL content. "
-			   "The URL is %1").
-		   arg(urlToEncoded(url).constData()));
+		error = QString("spoton_misc::importUrl(): a failure occurred "
+				"while attempting to update the URL content. "
+				"The URL is %1").
+		  arg(urlToEncoded(url).constData());
+		logError(error);
 		return ok;
 	      }
 
@@ -4309,11 +4311,14 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 		  ok = false;
 
 	    if(!ok)
-	      logError
-		(QString("spoton_misc::importUrl(): an error occurred while "
-			 "attempting to create a URL revision. "
-			 "The URL is %1.").
-		 arg(urlToEncoded(url).constData()));
+	      {
+		error =
+		  QString("spoton_misc::importUrl(): an error occurred while "
+			  "attempting to create a URL revision. "
+			  "The URL is %1.").
+		  arg(urlToEncoded(url).constData());
+		logError(error);
+	      }
 
 	    return ok;
 	  }
@@ -4321,8 +4326,9 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   else
     {
       ok = false;
-      logError(QString("spoton_misc::importUrl(): "
-		       "%1.").arg(query.lastError().text()));
+      error = QString("spoton_misc::importUrl(): "
+		      "%1.").arg(query.lastError().text());
+      logError(error);
       return ok;
     }
 
@@ -4376,15 +4382,17 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	  else
 	    {
 	      ok = false;
-	      logError(QString("spoton_misc::importUrl(): "
-			       "%1.").arg(query.lastError().text()));
+	      error = QString("spoton_misc::importUrl(): "
+			      "%1.").arg(query.lastError().text());
+	      logError(error);
 	    }
 	}
       else
 	{
 	  ok = false;
-	  logError(QString("spoton_misc::importUrl(): "
-			   "%1.").arg(query.lastError().text()));
+	  error = QString("spoton_misc::importUrl(): "
+			  "%1.").arg(query.lastError().text());
+	  logError(error);
 	}
 
       if(disable_synchronous_sqlite_writes)
@@ -4438,8 +4446,9 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       if(!query.lastError().text().toLower().contains("unique"))
 	{
 	  ok = false;
-	  logError(QString("spoton_misc::importUrl(): "
-			   "%1.").arg(query.lastError().text()));
+	  error = QString("spoton_misc::importUrl(): "
+			  "%1.").arg(query.lastError().text());
+	  logError(error);
 	}
 
   if(ok)
@@ -4494,8 +4503,11 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	  if(query.exec())
 	    count += 1;
 	  else
-	    logError(QString("spoton_misc::importUrl(): "
-			     "%1.").arg(query.lastError().text()));
+	    {
+	      error = QString("spoton_misc::importUrl(): "
+			      "%1.").arg(query.lastError().text());
+	      logError(error);
+	    }
 
 	  if(count >= maximum_keywords)
 	    break;

@@ -957,16 +957,22 @@ void spoton::slotImportUrls(void)
 		      declined += 1;
 
 		    if(ok)
-		      ok = spoton_misc::importUrl
-			(content,
-			 description,
-			 title,
-			 url,
-			 m_urlDatabase,
-			 m_optionsUi.maximum_url_keywords_interface->value(),
-			 m_settings.value("gui/disable_ui_synchronous_"
-					  "sqlite_url_import", false).toBool(),
-			 m_urlCommonCrypt);
+		      {
+			QString error("");
+
+			ok = spoton_misc::importUrl
+			  (content,
+			   description,
+			   title,
+			   url,
+			   m_urlDatabase,
+			   m_optionsUi.maximum_url_keywords_interface->value(),
+			   m_settings.value("gui/disable_ui_synchronous_"
+					    "sqlite_url_import",
+					    false).toBool(),
+			   error,
+			   m_urlCommonCrypt);
+		      }
 		  }
 
 		if(ok)

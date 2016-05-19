@@ -2007,24 +2007,29 @@ void spoton_kernel::importUrls(void)
 	      }
 
 	    if(ok)
-	      if(spoton_misc::importUrl(content,
-					description,
-					title,
-					url,
-					db,
-					setting("gui/maximum_url_keywords_"
-						"import_kernel",
-						50).toInt(),
-					setting("gui/disable_kernel_"
-						"synchronous_sqlite_url_"
-						"download",
-						false).toBool(),
-					crypt))
-		{
-		  QWriteLocker locker(&m_urlsProcessedMutex);
+	      {
+		QString error("");
 
-		  m_urlsProcessed += 1;
-		}
+		if(spoton_misc::importUrl(content,
+					  description,
+					  title,
+					  url,
+					  db,
+					  setting("gui/maximum_url_keywords_"
+						  "import_kernel",
+						  50).toInt(),
+					  setting("gui/disable_kernel_"
+						  "synchronous_sqlite_url_"
+						  "download",
+						  false).toBool(),
+					  error,
+					  crypt))
+		  {
+		    QWriteLocker locker(&m_urlsProcessedMutex);
+
+		    m_urlsProcessed += 1;
+		  }
+	      }
 	  }
 	while(true);
       }

@@ -133,6 +133,7 @@ class spoton_misc
 			const QSqlDatabase &db,
 			const int maximum_keywords,
 			const bool disable_synchronous_sqlite_writes,
+			QString &error,
 			spoton_crypt *crypt);
   static bool isAcceptedIP(const QHostAddress &address,
 			   const qint64 id,

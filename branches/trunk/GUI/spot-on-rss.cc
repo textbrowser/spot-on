@@ -277,7 +277,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   else
     m_ui.action_Publication_Date->setChecked(true);
 
-  m_importTimer.setInterval(250);
+  m_importTimer.setInterval(100);
   m_statisticsTimer.start(2500);
 
   if(m_ui.activate->isChecked())
@@ -398,16 +398,24 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
       }
 
     if(db.isOpen())
-      imported = spoton_misc::importUrl
-	(list.value(0).toByteArray(),
-	 list.value(1).toString().toUtf8(), // Description
-	 list.value(2).toString().toUtf8(), // Title
-	 spoton_misc::urlToEncoded(url),    // URL
-	 db,
-	 maximumKeywords,
-	 settings.value("gui/disable_ui_synchronous_sqlite_url_import",
-			false).toBool(),
-	 ucc.data());
+      {
+	QString error("");
+
+	imported = spoton_misc::importUrl
+	  (list.value(0).toByteArray(),
+	   list.value(1).toString().toUtf8(), // Description
+	   list.value(2).toString().toUtf8(), // Title
+	   spoton_misc::urlToEncoded(url),    // URL
+	   db,
+	   maximumKeywords,
+	   settings.value("gui/disable_ui_synchronous_sqlite_url_import",
+			  false).toBool(),
+	   error,
+	   ucc.data());
+
+	if(!error.isEmpty())
+	  emit logError(error);
+      }
 
     db.close();
   }
@@ -1056,6 +1064,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
   QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
   QSettings settings;
+  QString error("");
 
   spoton_misc::importUrl
     (data,
@@ -1066,7 +1075,11 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
      m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 		    false).toBool(),
+     error,
      ucc.data());
+
+  if(!error.isEmpty())
+    emit logError(error);
 }
 
 void spoton_rss::populateFeeds(void)
@@ -1685,7 +1698,7 @@ void spoton_rss::slotContentReplyFinished(void)
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 	    QUrl originalUrl(reply->property("original-url").toUrl());
 
-	    slotLogError(error);
+	    emit logError(error);
 	    reply->deleteLater();
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
 	    reply->ignoreSslErrors();
@@ -1753,7 +1766,7 @@ void spoton_rss::slotContentReplyFinished(void)
 		       arg(spoton_misc::urlToEncoded(reply->url()).
 			   constData()));
 
-		    slotLogError(error);
+		    emit logError(error);
 		  }
 		else
 		  {
@@ -1765,7 +1778,7 @@ void spoton_rss::slotContentReplyFinished(void)
 			   constData()).
 		       arg(reply->errorString()));
 
-		    slotLogError(error);
+		    emit logError(error);
 		  }
 	      }
 	    else
@@ -2027,8 +2040,8 @@ void spoton_rss::slotDownloadTimeout(void)
 	  SIGNAL(readyRead(void)),
 	  this,
 	  SLOT(slotFeedReplyReadyRead(void)));
-  slotLogError(QString("Downloading feed <a href=\"%1\">%1</a>.").
-	       arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+  emit logError(QString("Downloading feed <a href=\"%1\">%1</a>.").
+		arg(spoton_misc::urlToEncoded(reply->url()).constData()));
 }
 
 void spoton_rss::slotFeedImageReplyFinished(void)
@@ -2087,7 +2100,7 @@ void spoton_rss::slotFeedReplyFinished(void)
 	       arg(spoton_misc::urlToEncoded(url).constData()).
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 
-	    slotLogError(error);
+	    emit logError(error);
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
 	    reply->ignoreSslErrors();
 	    connect(reply,
@@ -2113,7 +2126,7 @@ void spoton_rss::slotFeedReplyFinished(void)
 	 arg(spoton_misc::urlToEncoded(reply->url()).constData()).
 	 arg(reply->errorString()));
 
-      slotLogError(error);
+      emit logError(error);
       reply->deleteLater();
     }
 
@@ -2536,7 +2549,7 @@ void spoton_rss::slotReplyError(QNetworkReply::NetworkError code)
   else
     error = QString("A QNetworkReply error (%1) occurred.").arg(code);
 
-  slotLogError(error);
+  emit logError(error);
 }
 
 void spoton_rss::slotSaveProxy(void)
