@@ -2824,6 +2824,10 @@ void spoton::prepareContextMenuMirrors(void)
 	(tr("Reset Forward &Secrecy information."),
 	 this, SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "chat");
+      menu->addSeparator();
+      menu->addAction(tr("Invite to an anonymous Buzz channel."),
+		      this,
+		      SLOT(slotBuzzInvite(void)));
       m_ui.chatActionMenu->setMenu(menu);
       connect(m_ui.chatActionMenu,
 	      SIGNAL(clicked(void)),

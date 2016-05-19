@@ -7228,6 +7228,10 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	(tr("Reset Forward &Secrecy information."),
 	 this, SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "chat");
+      menu.addSeparator();
+      menu.addAction(tr("Invite to an anonymous Buzz channel."),
+		     this,
+		     SLOT(slotBuzzInvite(void)));
       menu.exec(m_ui.participants->mapToGlobal(point));
     }
   else if(m_ui.received == sender())

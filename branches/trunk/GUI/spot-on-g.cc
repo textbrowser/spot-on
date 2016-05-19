@@ -248,3 +248,7 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 	   arg(m_kernelSocket.peerPort()));
     }
 }
+
+void spoton::slotBuzzInvite(void)
+{
+}

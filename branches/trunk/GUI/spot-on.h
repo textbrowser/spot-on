@@ -657,6 +657,7 @@ class spoton: public QMainWindow
   void slotBluetoothSecurityChanged(int index);
   void slotBuzzActionsActivated(int index);
   void slotBuzzChanged(void);
+  void slotBuzzInvite(void);
   void slotBuzzTools(int index);
   void slotCallParticipant(void);
   void slotCallParticipantViaForwardSecrecy(void);
