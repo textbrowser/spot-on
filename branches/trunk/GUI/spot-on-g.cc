@@ -251,4 +251,53 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 
 void spoton::slotBuzzInvite(void)
 {
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted())
+    return;
+
+  QModelIndexList list
+    (m_ui.participants->selectionModel()->selectedRows(1)); // OID
+  QStringList oids;
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      if(list.value(i).data(Qt::UserRole).toBool())
+	/*
+	** Ignore temporary participants.
+	*/
+
+	continue;
+
+      else if(list.value(i).
+	      data(Qt::ItemDataRole(Qt::UserRole + 1)) != "chat")
+	/*
+	** Ignore non-chat participants.
+	*/
+
+	continue;
+      else
+	oids << list.value(i).data().toString();
+    }
+
+  if(oids.isEmpty())
+    return;
+
+  for(int i = 0; i < oids.size(); i++)
+    {
+      QByteArray message;
+
+      message.append("buzzinvite_");
+      message.append(oids.at(i).toLatin1());
+      message.append("_");
+      message.append("\n");
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::slotBuzzInvite(): write() failure "
+		   "for %1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+    }
 }
