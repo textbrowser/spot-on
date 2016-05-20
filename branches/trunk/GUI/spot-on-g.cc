@@ -382,7 +382,7 @@ void spoton::slotBuzzInvite(void)
   if(m_kernelSocket.write(message.constData(), message.length()) !=
      message.length())
     spoton_misc::logError
-      (QString("spoton::slotJoinBuzzChannel(): "
+      (QString("spoton::slotBuzzInvite(): "
 	       "write() failure for %1:%2.").
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
@@ -418,4 +418,144 @@ void spoton::slotBuzzInvite(void)
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
     }
+}
+
+void spoton::joinBuzzChannel(const QUrl &url)
+{
+  QString channel("");
+  QString channelSalt("");
+  QString channelType("");
+  QString hashKey("");
+  QString hashType("");
+  QStringList list(url.toString().remove("magnet:?").split("&"));
+  unsigned long iterationCount = 0;
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(str.startsWith("rn="))
+	{
+	  str.remove(0, 3);
+	  channel = str;
+	}
+      else if(str.startsWith("xf="))
+	{
+	  str.remove(0, 3);
+	  iterationCount = qAbs(str.toInt());
+	}
+      else if(str.startsWith("xs="))
+	{
+	  str.remove(0, 3);
+	  channelSalt = str;
+	}
+      else if(str.startsWith("ct="))
+	{
+	  str.remove(0, 3);
+	  channelType = str;
+	}
+      else if(str.startsWith("hk="))
+	{
+	  str.remove(0, 3);
+	  hashKey = str;
+	}
+      else if(str.startsWith("ht="))
+	{
+	  str.remove(0, 3);
+	  hashType = str;
+	}
+      else if(str.startsWith("xt="))
+	{
+	}
+    }
+
+  QByteArray id;
+  QPair<QByteArray, QByteArray> keys;
+  QString error("");
+  bool found = false;
+  spoton_buzzpage *page = 0;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  keys = spoton_crypt::derivedKeys(channelType,
+				   hashType,
+				   iterationCount,
+				   channel + channelType,
+				   channelSalt.toLatin1(),
+				   error);
+  QApplication::restoreOverrideCursor();
+
+  if(!error.isEmpty())
+    return;
+
+  foreach(spoton_buzzpage *page,
+	  m_ui.buzzTab->findChildren<spoton_buzzpage *> ())
+    if(keys.first == page->key())
+      {
+	found = true;
+	m_ui.buzzTab->setCurrentWidget(page);
+	break;
+      }
+
+  if(found)
+    return;
+
+  if(m_buzzIds.contains(keys.first))
+    id = m_buzzIds[keys.first];
+  else
+    {
+      id = spoton_crypt::
+	strongRandomBytes
+	(spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
+      m_buzzIds[keys.first] = id;
+    }
+
+  page = new spoton_buzzpage
+    (&m_kernelSocket, channel.toLatin1(), channelSalt.toLatin1(),
+     channelType.toLatin1(), id, iterationCount, hashKey.toLatin1(),
+     hashType.toLatin1(), keys.first, this);
+  connect(&m_buzzStatusTimer,
+	  SIGNAL(timeout(void)),
+	  page,
+	  SLOT(slotSendStatus(void)));
+  connect(page,
+	  SIGNAL(changed(void)),
+	  this,
+	  SLOT(slotBuzzChanged(void)));
+  connect(page,
+	  SIGNAL(channelSaved(void)),
+	  this,
+	  SLOT(slotPopulateBuzzFavorites(void)));
+  connect(this,
+	  SIGNAL(buzzNameChanged(const QByteArray &)),
+	  page,
+	  SLOT(slotBuzzNameChanged(const QByteArray &)));
+  connect(this,
+	  SIGNAL(iconsChanged(void)),
+	  page,
+	  SLOT(slotSetIcons(void)));
+  m_ui.buzzTab->addTab(page, channel);
+  m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
+
+  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
+    if(m_kernelSocket.isEncrypted())
+      {
+	QByteArray message("addbuzz_");
+
+	message.append(page->key().toBase64());
+	message.append("_");
+	message.append(page->channelType().toBase64());
+	message.append("_");
+	message.append(page->hashKey().toBase64());
+	message.append("_");
+	message.append(page->hashType().toBase64());
+	message.append("\n");
+
+	if(m_kernelSocket.write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton::joinBuzzChannel(): "
+		     "write() failure for %1:%2.").
+	     arg(m_kernelSocket.peerAddress().toString()).
+	     arg(m_kernelSocket.peerPort()));
+      }
 }

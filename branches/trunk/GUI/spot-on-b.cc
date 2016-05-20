@@ -734,7 +734,17 @@ void spoton::slotReceivedKernelMessage(void)
 		      str.prepend("<a href='");
 		      str.append(content);
 		      str.append("'>");
-		      str.append(content);
+		      str.append("<i>");
+		      str.append
+			(QString("%1...%2 cordially invites you to "
+				 "join a Buzz channel. "
+				 "Please click this link to accept "
+				 "the invitation.").
+			 arg(hash.toBase64().mid(0, 16).
+			     constData()).
+			 arg(hash.toBase64().right(16).
+			     constData()));
+		      str.append("</i>");
 		      str.append("</a>");
 		      content = str;
 		    }

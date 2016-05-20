@@ -576,6 +576,7 @@ class spoton: public QMainWindow
   void initializeKernelSocket(void);
   void initializeSMP(const QString &hash);
   void initializeUrlDistillers(void);
+  void joinBuzzChannel(const QUrl &url);
   void joinDefaultBuzzChannel(void);
   void magnetize(void);
   void playSong(const QString &name);

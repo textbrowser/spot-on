@@ -809,7 +809,11 @@ void spoton::slotMessagesAnchorClicked(const QUrl &link)
   QString type("");
 
   if(spoton_misc::isValidBuzzMagnet(link.toString().toLatin1()))
-    type = "buzz";
+    {
+      type = "buzz";
+      joinBuzzChannel(link);
+      return;
+    }
   else if(spoton_misc::isValidInstitutionMagnet(link.toString().toLatin1()))
     type = "institution";
   else if(spoton_misc::isValidStarBeamMagnet(link.toString().toLatin1()))
