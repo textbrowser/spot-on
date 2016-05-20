@@ -1422,13 +1422,16 @@ void spoton::slotPopulateStars(void)
 
 		      QProgressBar *progressBar = new QProgressBar();
 
-		      progressBar->setValue(percent);
+		      progressBar->setFormat("%p% - %v of %m KiB");
+		      progressBar->setMaximum(fileInfo.size() / 1048576);
 		      progressBar->setTextVisible(true);
 		      progressBar->setToolTip
 			(QString("%1% - %2 (%3 KiB)").
 			 arg(percent).
 			 arg(fileInfo.fileName()).
 			 arg(locale.toString(fileInfo.size() / 1048576)));
+		      progressBar->setValue(item1->text().toLongLong() /
+					    1048576);
 		      m_ui.received->setCellWidget(row, 1, progressBar);
 		    }
 		  else
@@ -1673,16 +1676,17 @@ void spoton::slotPopulateStars(void)
 		    {
 		      QProgressBar *progressBar = new QProgressBar();
 
-		      progressBar->setValue(percent);
+		      progressBar->setFormat("%p% - %v of %m KiB");
+		      progressBar->setMaximum(item->text().toLongLong() /
+					      1048576);
+		      progressBar->setTextVisible(true);
 		      progressBar->setToolTip
 			(QString("%1% - %2 (%3 KiB)").
 			 arg(percent).
 			 arg(QFileInfo(fileName).fileName()).
-			 arg(locale.toString(position /
-					     1048576)));
-		      progressBar->setTextVisible(true);
-		      m_ui.transmitted->setCellWidget
-			(row, 1, progressBar);
+			 arg(locale.toString(position / 1048576)));
+		      progressBar->setValue(position / 1048576);
+		      m_ui.transmitted->setCellWidget(row, 1, progressBar);
 		    }
 		  else
 		    {
