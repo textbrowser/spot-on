@@ -2600,7 +2600,6 @@ spoton::spoton(void):QMainWindow()
       m_ui.passphrase->setEnabled(false);
       m_ui.passphraseButton->setEnabled(false);
       m_ui.passphrase_rb_authenticate->setEnabled(false);
-      m_ui.publicKeysBox->setVisible(false);
       m_ui.question_rb_authenticate->setEnabled(false);
       m_ui.regenerate->setEnabled(false);
       m_ui.showStatistics->setVisible(false);
