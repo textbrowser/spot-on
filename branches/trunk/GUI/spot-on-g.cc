@@ -283,6 +283,20 @@ void spoton::slotBuzzInvite(void)
   if(oids.isEmpty())
     return;
 
+  /*
+  ** Let's generate an anonymous Buzz channel.
+  */
+
+  QByteArray bytes1(spoton_crypt::
+		    strongRandomBytes(static_cast<size_t> (m_ui.channel->
+							   maxLength())).
+		    toBase64());
+  QByteArray bytes2(spoton_crypt::strongRandomBytes(512).toBase64());
+  QByteArray bytes3
+    (spoton_crypt::
+     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+     toBase64());
+
   for(int i = 0; i < oids.size(); i++)
     {
       QByteArray message;
