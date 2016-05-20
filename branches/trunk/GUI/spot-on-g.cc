@@ -387,13 +387,27 @@ void spoton::slotBuzzInvite(void)
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
 
+  QByteArray name(m_settings.value("gui/nodeName", "unknown").toByteArray());
+  QString magnet(page->magnet());
+
+  if(name.isEmpty())
+    name = "unknown";
+
   for(int i = 0; i < oids.size(); i++)
     {
       QByteArray message;
 
-      message.append("buzzinvite_");
-      message.append(oids.at(i).toLatin1());
+      message.append("message_");
+      message.append(QString("%1_").arg(oids.at(i)));
+      message.append(name.toBase64());
       message.append("_");
+      message.append(magnet.toLatin1().toBase64());
+      message.append("_");
+      message.append
+	(QByteArray("1").toBase64()); // Artificial sequence number.
+      message.append("_");
+      message.append(QDateTime::currentDateTime().toUTC().
+		     toString("MMddyyyyhhmmss").toLatin1().toBase64());
       message.append("\n");
 
       if(m_kernelSocket.write(message.constData(), message.length()) !=

@@ -58,6 +58,7 @@ class spoton_buzzpage: public QWidget
   QByteArray hashKey(void) const;
   QByteArray hashType(void) const;
   QByteArray key(void) const;
+  QString magnet(void) const;
   void userStatus(const QList<QByteArray> &list);
   void appendMessage(const QList<QByteArray> &list);
 

@@ -743,3 +743,8 @@ void spoton_buzzpage::slotCopy(void)
   else
     clipboard->setText(ui.magnet->text());
 }
+
+QString spoton_buzzpage::magnet(void) const
+{
+  return ui.magnet->text();
+}
