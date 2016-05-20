@@ -26,6 +26,7 @@
 */
 
 #include "spot-on.h"
+#include "spot-on-buzzpage.h"
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
@@ -287,15 +288,104 @@ void spoton::slotBuzzInvite(void)
   ** Let's generate an anonymous Buzz channel.
   */
 
-  QByteArray bytes1(spoton_crypt::
-		    strongRandomBytes(static_cast<size_t> (m_ui.channel->
-							   maxLength())).
-		    toBase64());
-  QByteArray bytes2(spoton_crypt::strongRandomBytes(512).toBase64());
-  QByteArray bytes3
+  QByteArray channel(spoton_crypt::
+		     strongRandomBytes(static_cast<size_t> (m_ui.channel->
+							    maxLength())).
+		     toBase64());
+  QByteArray channelSalt(spoton_crypt::strongRandomBytes(512).toBase64());
+  QByteArray channelType("aes256");
+  QByteArray hashKey
     (spoton_crypt::
      strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
      toBase64());
+  QByteArray hashType("sha512");
+  QByteArray id;
+  QPair<QByteArray, QByteArray> keys;
+  QString error("");
+  bool found = false;
+  spoton_buzzpage *page = 0;
+  unsigned long iterationCount =
+    static_cast<unsigned long> (m_ui.buzzIterationCount->minimum());
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  keys = spoton_crypt::derivedKeys(channelType,
+				   hashType,
+				   iterationCount,
+				   channel + channelType,
+				   channelSalt,
+				   error);
+  QApplication::restoreOverrideCursor();
+
+  if(!error.isEmpty())
+    return;
+
+  foreach(spoton_buzzpage *page,
+	  m_ui.buzzTab->findChildren<spoton_buzzpage *> ())
+    if(keys.first == page->key())
+      {
+	found = true;
+	m_ui.buzzTab->setCurrentWidget(page);
+	break;
+      }
+
+  if(!found)
+    {
+      if(m_buzzIds.contains(keys.first))
+	id = m_buzzIds[keys.first];
+      else
+	{
+	  id = spoton_crypt::
+	    strongRandomBytes
+	    (spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
+	  m_buzzIds[keys.first] = id;
+	}
+
+      page = new spoton_buzzpage
+	(&m_kernelSocket, channel, channelSalt, channelType,
+	 id, iterationCount, hashKey, hashType, keys.first, this);
+      connect(&m_buzzStatusTimer,
+	      SIGNAL(timeout(void)),
+	      page,
+	      SLOT(slotSendStatus(void)));
+      connect(page,
+	      SIGNAL(changed(void)),
+	      this,
+	      SLOT(slotBuzzChanged(void)));
+      connect(page,
+	      SIGNAL(channelSaved(void)),
+	      this,
+	      SLOT(slotPopulateBuzzFavorites(void)));
+      connect(this,
+	      SIGNAL(buzzNameChanged(const QByteArray &)),
+	      page,
+	      SLOT(slotBuzzNameChanged(const QByteArray &)));
+      connect(this,
+	      SIGNAL(iconsChanged(void)),
+	      page,
+	      SLOT(slotSetIcons(void)));
+      m_ui.buzzTab->addTab(page, QString::fromUtf8(channel.constData(),
+						   channel.length()));
+      m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
+    }
+
+  QByteArray message("addbuzz_");
+
+  message.append(page->key().toBase64());
+  message.append("_");
+  message.append(page->channelType().toBase64());
+  message.append("_");
+  message.append(page->hashKey().toBase64());
+  message.append("_");
+  message.append(page->hashType().toBase64());
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotJoinBuzzChannel(): "
+	       "write() failure for %1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
 
   for(int i = 0; i < oids.size(); i++)
     {
