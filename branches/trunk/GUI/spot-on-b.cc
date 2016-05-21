@@ -6314,6 +6314,10 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
      0);
 
   connect(chat,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotMessagesAnchorClicked(const QUrl &)));
+  connect(chat,
 	  SIGNAL(deriveGeminiPairViaSMP(const QString &, const QString &)),
 	  this,
 	  SLOT(slotDeriveGeminiPairViaSMP(const QString &,

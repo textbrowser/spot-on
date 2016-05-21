@@ -82,6 +82,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   connect(ui.messages,
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
+	  SIGNAL(anchorClicked(const QUrl &)));
+  connect(ui.messages,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
 	  SLOT(slotLinkClicked(const QUrl &)));
   connect(ui.message,
 	  SIGNAL(returnPressed(void)),

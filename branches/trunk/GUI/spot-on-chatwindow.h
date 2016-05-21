@@ -86,6 +86,7 @@ class spoton_chatwindow: public QMainWindow
   void slotVerifySMPSecret(void);
 
  signals:
+  void anchorClicked(const QUrl &url);
   void deriveGeminiPairViaSMP(const QString &publicKeyHash,
 			      const QString &oid);
   void initializeSMP(const QString &publicKeyHash);
