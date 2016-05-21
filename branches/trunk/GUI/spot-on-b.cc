@@ -408,7 +408,58 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(m_chatWindows.contains(list.value(0).toBase64()))
 		    chat = m_chatWindows.value(list.value(0).toBase64(), 0);
 
-		  if(spoton_misc::isValidSMPMagnet(list.value(2), values))
+		  if(spoton_misc::isValidBuzzMagnet(list.value(2)))
+		    {
+		      QByteArray hash
+			(list.at(0)); /*
+				      ** SHA-512 hash of the sender's
+				      ** public key.
+				      */
+		      QDateTime now(QDateTime::currentDateTime());
+		      QString keyType("");
+		      QString msg("");
+
+		      msg.append
+			(QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+				 "</font>] ").
+			 arg(now.toString("MM")).
+			 arg(now.toString("dd")).
+			 arg(now.toString("yyyy")).
+			 arg(now.toString("hh")).
+			 arg(now.toString("mm")).
+			 arg(now.toString("ss")));
+		      msg.append
+			(tr("<i><a href='%1'>"
+			    "%2...%3 cordially invites you to "
+			    "join a Buzz channel. Please click this "
+			    "link to accept the invitation.</a></i>").
+			 arg(list.value(2).constData()).
+			 arg(hash.toBase64().mid(0, 16).
+			     constData()).
+			 arg(hash.toBase64().right(16).
+			     constData()));
+
+		      if(chat)
+			{
+			  chat->append(msg);
+#ifdef Q_OS_WIN32
+			  if(chat->isVisible())
+			    chat->activateWindow();
+#endif
+			}
+
+		      m_ui.messages->append(msg);
+		      m_ui.messages->verticalScrollBar()->setValue
+			(m_ui.messages->verticalScrollBar()->maximum());
+
+		      if(currentTabName() != "chat")
+			m_sb.chat->setVisible(true);
+
+		      playSong("receive.wav");
+		      continue;
+		    }
+		  else if(spoton_misc::isValidSMPMagnet(list.value(2),
+							values))
 		    {
 		      QByteArray hash
 			(list.at(0)); /*
@@ -727,29 +778,8 @@ void spoton::slotReceivedKernelMessage(void)
 		    msg.append
 		      ("<font color=orange>unsigned: </font>");
 
-		  if(spoton_misc::isValidBuzzMagnet(content.toLatin1()))
-		    {
-		      QString str("");
-
-		      str.prepend("<a href='");
-		      str.append(content);
-		      str.append("'>");
-		      str.append("<i>");
-		      str.append
-			(QString("%1...%2 cordially invites you to "
-				 "join a Buzz channel. "
-				 "Please click this link to accept "
-				 "the invitation.").
-			 arg(hash.toBase64().mid(0, 16).
-			     constData()).
-			 arg(hash.toBase64().right(16).
-			     constData()));
-		      str.append("</i>");
-		      str.append("</a>");
-		      content = str;
-		    }
-		  else if(spoton_misc::
-			  isValidInstitutionMagnet(content.toLatin1()))
+		  if(spoton_misc::isValidInstitutionMagnet(content.
+							   toLatin1()))
 		    {
 		      QString str("");
 
