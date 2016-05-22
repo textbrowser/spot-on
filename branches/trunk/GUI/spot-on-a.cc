@@ -735,6 +735,16 @@ spoton::spoton(void):QMainWindow()
 			     "border: none; "
 			     "}");
   statusBar()->setMaximumHeight(m_sbWidget->height());
+  m_ui.buzzTab->setStyleSheet
+    ("QTabBar::tear {"
+     "image: none;"
+     "}"
+     );
+  m_ui.tab->setStyleSheet
+    ("QTabBar::tear {"
+     "image: none;"
+     "}"
+     );
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
