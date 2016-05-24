@@ -7762,7 +7762,7 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1836"/>
         <location filename="../GUI/spot-on-rss.cc" line="2226"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2947"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2948"/>
         <source>%1: Confirmation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7782,17 +7782,17 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2785"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2786"/>
         <source>0 RSS Feeds | 0 Hidden URLs | 0 Imported URLs | 0 Not Imported URLs | 0 Indexed URLs | 0 Not Indexed URLs | 0 Total URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2769"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2770"/>
         <source>%1 RSS Feeds | %2 Hidden URLs | %3 Imported URLs | %4 Not Imported URLs | %5 Indexed URLs | %6 Not Indexed URLs | %7 Total URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2944"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2945"/>
         <source>Are you sure that you wish to remove %1?</source>
         <translation type="unfinished"></translation>
     </message>
