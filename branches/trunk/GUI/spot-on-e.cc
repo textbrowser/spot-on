@@ -1115,6 +1115,11 @@ void spoton::playSong(const QString &name)
     return;
 
 #if QT_VERSION >= 0x050000
+  QMediaPlayer *player = findChild<QMediaPlayer *> ();
+
+  if(player)
+    player->deleteLater();
+
   QFileInfo fileInfo;
   QString str
     (QDir::cleanPath(QCoreApplication::applicationDirPath() +
@@ -1125,11 +1130,6 @@ void spoton::playSong(const QString &name)
 
   if(!fileInfo.isReadable() || fileInfo.size() < 8192)
     return;
-
-  QMediaPlayer *player = findChild<QMediaPlayer *> ();
-
-  if(player)
-    player->deleteLater();
 
   player = new (std::nothrow) QMediaPlayer(this, QMediaPlayer::LowLatency);
 
