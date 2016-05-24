@@ -2739,6 +2739,7 @@ void spoton_rss::slotStatisticsTimeout(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
+	query.exec("PRAGMA read_uncommitted = True");
 	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds "
 		      "UNION "
 		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
