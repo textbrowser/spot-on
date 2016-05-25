@@ -138,7 +138,7 @@ void spoton_listener_udp_server::slotReadyRead(void)
 	      isAcceptedIP(peerAddress, m_id,
 			   spoton_kernel::s_crypts.value("chat", 0)))
 	spoton_misc::logError
-	  (QString("spoton_listener_udp_server::incomingConnection(): "
+	  (QString("spoton_listener_udp_server::slotReadyRead(): "
 		   "connection from %1 denied for %2:%3.").
 	   arg(peerAddress.toString()).
 	   arg(localAddress().toString()).
@@ -147,7 +147,7 @@ void spoton_listener_udp_server::slotReadyRead(void)
 				       spoton_kernel::s_crypts.
 				       value("chat", 0)))
 	spoton_misc::logError
-	  (QString("spoton_listener_udp_server::incomingConnection(): "
+	  (QString("spoton_listener_udp_server::slotReadyRead(): "
 		   "connection from %1 blocked for %2:%3.").
 	   arg(peerAddress.toString()).
 	   arg(localAddress().toString()).
