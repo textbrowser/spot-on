@@ -224,6 +224,11 @@ void spoton_gui_server::slotClientDisconnected(void)
 
   if(socket)
     {
+      spoton_misc::logError
+	(QString("spoton_gui_server::slotClientDisconnected(): "
+		 "client %1:%2 disconnected.").
+	 arg(socket->peerAddress().toString()).
+	 arg(socket->peerPort()));
       m_guiSocketData.remove(socket->socketDescriptor());
       socket->deleteLater();
     }
