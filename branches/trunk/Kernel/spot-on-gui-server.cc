@@ -171,6 +171,7 @@ spoton_gui_server::spoton_gui_server(QObject *parent):
 
 spoton_gui_server::~spoton_gui_server()
 {
+  spoton_misc::logError("The UI server has been terminated.");
   m_generalTimer.stop();
   m_guiSocketData.clear();
 

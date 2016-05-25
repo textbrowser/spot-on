@@ -1392,7 +1392,7 @@ bool spoton_listener::isListening(void) const
 {
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_bluetoothServer)
-    return true;
+    return m_bluetoothServer->isListening();
 #endif
   if(m_sctpServer)
     return m_sctpServer->isListening();
