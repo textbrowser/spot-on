@@ -10,7 +10,7 @@ purge.commands = rm -f *~
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= bluetooth concurrent core network sql widgets
+QT		+= bluetooth concurrent network sql
 CONFIG		+= qt release warn_on
 
 # The function gcry_kdf_derive() is available in version

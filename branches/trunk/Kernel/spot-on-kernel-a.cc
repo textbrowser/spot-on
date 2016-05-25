@@ -30,7 +30,7 @@
 #include <QApplication>
 #else
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
-#include <QApplication>
+#include <QCoreApplication>
 #else
 #include <QCoreApplication>
 #endif
@@ -324,7 +324,7 @@ int main(int argc, char *argv[])
   QApplication qapplication(argc, argv);
 #else
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
-  QApplication qapplication(argc, argv);
+  QCoreApplication qapplication(argc, argv);
 #else
   QCoreApplication qapplication(argc, argv);
 #endif
