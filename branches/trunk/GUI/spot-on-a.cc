@@ -4665,7 +4665,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "External IP: %6\n"
 		      "Country: %7 Remote IP: %8 Remote Port: %9 "
 		      "Scope ID: %10\n"
-		      "Proxy HostName: %11 Proxy Port: %12\n"
+		      "Proxy Hostname: %11 Proxy Port: %12\n"
 		      "Echo Mode: %13\n"
 		      "Communications Mode: %14\n"
 		      "Uptime: %15 Minutes\n"
