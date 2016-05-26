@@ -142,6 +142,7 @@ class spoton_kernel: public QObject
   QTimer m_messagingCachePurgeTimer;
   QTimer m_poptasticPopTimer;
   QTimer m_poptasticPostTimer;
+  QTimer m_prepareTimer;
   QTimer m_publishAllListenersPlaintextTimer;
   QTimer m_scramblerTimer;
   QTimer m_settingsTimer;
@@ -266,6 +267,7 @@ class spoton_kernel: public QObject
   void slotPoppedMessage(const QByteArray &message);
   void slotPoptasticPop(void);
   void slotPoptasticPost(void);
+  void slotPrepareObjects(void);
   void slotPublicKeyReceivedFromUI(const qint64 oid,
 				   const QByteArray &keyType,
 				   const QByteArray &name,

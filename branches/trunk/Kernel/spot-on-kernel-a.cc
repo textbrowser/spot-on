@@ -685,6 +685,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotPoptasticPost(void)));
+  connect(&m_prepareTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPrepareObjects(void)));
   connect(&m_publishAllListenersPlaintextTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -714,6 +718,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
 				      5.00).toDouble()));
   m_poptasticPostTimer.start(2500);
+  m_prepareTimer.start(10000);
   m_publishAllListenersPlaintextTimer.setInterval(10 * 60 * 1000);
   m_settingsTimer.setInterval(1500);
   m_scramblerTimer.setSingleShot(true);
@@ -953,6 +958,7 @@ spoton_kernel::~spoton_kernel()
   m_messagingCachePurgeTimer.stop();
   m_poptasticPopTimer.stop();
   m_poptasticPostTimer.stop();
+  m_prepareTimer.stop();
   m_publishAllListenersPlaintextTimer.stop();
   m_scramblerTimer.stop();
   m_settingsTimer.stop();
@@ -1035,11 +1041,6 @@ void spoton_kernel::cleanup(void)
 
 void spoton_kernel::slotPollDatabase(void)
 {
-  spoton_misc::prepareDatabases();
-  prepareListeners();
-  prepareNeighbors();
-  prepareStarbeamReaders();
-
   if(m_statisticsFuture.isFinished())
     m_statisticsFuture = QtConcurrent::run
       (this, &spoton_kernel::updateStatistics,

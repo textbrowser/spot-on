@@ -242,3 +242,11 @@ void spoton_kernel::slotCallParticipantUsingForwardSecrecy
 	emit callParticipant(data, "0000d");
     }
 }
+
+void spoton_kernel::slotPrepareObjects(void)
+{
+  spoton_misc::prepareDatabases();
+  prepareListeners();
+  prepareNeighbors();
+  prepareStarbeamReaders();
+}
