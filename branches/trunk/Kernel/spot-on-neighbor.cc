@@ -7031,14 +7031,18 @@ void spoton_neighbor::close(void)
     m_sctpSocket->close();
   else if(m_tcpSocket)
     {
-      int socketDescriptor = static_cast<int>
-	(m_tcpSocket->socketDescriptor());
+      if(!m_isUserDefined)
+	{
+	  int socketDescriptor = static_cast<int>
+	    (m_tcpSocket->socketDescriptor());
 
 #ifdef Q_OS_WIN32
-      shutdown(socketDescriptor, SD_BOTH);
+	  shutdown(socketDescriptor, SD_BOTH);
 #else
-      shutdown(socketDescriptor, SHUT_RDWR);
+	  shutdown(socketDescriptor, SHUT_RDWR);
 #endif
+	}
+
       m_tcpSocket->close();
     }
   else if(m_udpSocket)
