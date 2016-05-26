@@ -80,6 +80,9 @@ typedef struct NtruEncParams {
     /* hash function for 4 inputs, e.g. ntru_sha256_4way */
     void (*hash_4way)(uint8_t *[4], uint16_t, uint8_t *[4]);
 
+    /* hash function for 8 inputs, e.g. ntru_sha256_8way */
+    void (*hash_8way)(uint8_t *[8], uint16_t, uint8_t *[8]);
+
     /* output length of the hash function */
     uint16_t hlen;
 
@@ -218,22 +221,22 @@ extern const NtruEncParams EES743EP1;
 /*
  * The default parameter set for 112 bits of security.
  */
-#define NTRU_DEFAULT_PARAMS_112_BITS EES401EP1
+#define NTRU_DEFAULT_PARAMS_112_BITS EES541EP1
 
 /*
  * The default parameter set for 128 bits of security.
  */
-#define NTRU_DEFAULT_PARAMS_128_BITS EES449EP1
+#define NTRU_DEFAULT_PARAMS_128_BITS EES613EP1
 
 /*
  * The default parameter set for 192 bits of security.
  */
-#define NTRU_DEFAULT_PARAMS_192_BITS EES677EP1
+#define NTRU_DEFAULT_PARAMS_192_BITS EES887EP1
 
 /*
  * The default parameter set for 256 bits of security.
  */
-#define NTRU_DEFAULT_PARAMS_256_BITS EES1087EP2
+#define NTRU_DEFAULT_PARAMS_256_BITS EES1171EP1
 
 #define ALL_PARAM_SETS {EES401EP1, EES449EP1, EES677EP1, EES1087EP2, EES541EP1, EES613EP1, EES887EP1, EES1171EP1, EES659EP1, EES761EP1, EES1087EP1, EES1499EP1}
 
