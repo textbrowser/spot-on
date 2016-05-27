@@ -4168,15 +4168,13 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   QByteArray title(t.trimmed());
   bool separate = true;
 
-  if(description.isEmpty())
-    description = url.toString().toUtf8();
-  else
+  if(!description.isEmpty())
     all_keywords = description;
 
-  if(title.isEmpty())
-    title = url.toString().toUtf8();
-  else
+  if(!title.isEmpty())
     all_keywords.append(" ").append(title);
+
+  all_keywords.append(" ").append(url.toString().toUtf8());
 
   QByteArray urlHash;
   bool ok = true;
