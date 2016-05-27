@@ -6,22 +6,22 @@
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="238"/>
         <source>gcry_cipher_test_algo() returned non-zero</source>
-        <translation type="unfinished"></translation>
+        <translation>gcry_cipher_test_algo() meldete non-zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="247"/>
         <source>gcry_md_test_algo() returned non-zero</source>
-        <translation type="unfinished"></translation>
+        <translation>gcry_md_test_algo() meldete non-zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="329"/>
         <source>gcry_kdf_derive() returned non-zero</source>
-        <translation type="unfinished"></translation>
+        <translation>gcry_kdf_derive() meldete non-zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="410"/>
         <source>gcry_md_get_algo_dlen() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>gcry_md_get_algo_dlen() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="380"/>
@@ -31,277 +31,277 @@
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="259"/>
         <source>gcry_cipher_get_algo_keylen() failed</source>
-        <translation type="unfinished"></translation>
+        <translation>gcry_cipher_get_algo_keylen() war nicht erfolgreich</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="271"/>
         <source>unsupported cipher</source>
-        <translation type="unfinished"></translation>
+        <translation>nicht unterstützte Cipher</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="372"/>
         <source>empty hashType</source>
-        <translation>Leerer Hash Type</translation>
+        <translation>leerer Hash Type</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="388"/>
         <source>empty salt</source>
-        <translation>Leerer Salz Wert</translation>
+        <translation>leerer Salz-Wert</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="398"/>
         <source>gcry_md_map_name() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>gcry_md_map_name() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2057"/>
         <source>generateMcElieceKeys() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei: generateMcElieceKeys()</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2098"/>
         <source>gcry_sexp_build() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei: gcry_sexp_build()</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2123"/>
         <source>gcry_pk_genkey() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei: gcry_pk_genkey()</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2153"/>
         <source>gcry_sexp_find_token() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei: gcry_sexp_find_token()</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2164"/>
         <location filename="../Common/spot-on-crypt.cc" line="2179"/>
         <source>gcry_sexp_sprint() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei: gcry_sexp_sprint()</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2198"/>
         <source>malloc() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei: malloc()</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2254"/>
         <source>QSqlQuery::exec() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei: QSqlQuery::exec()</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3057"/>
         <source>BN_new() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>BN_new() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3065"/>
         <source>BN_set_word() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei: BN_set_word()</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3073"/>
         <source>RSA_new() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>RSA_new() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3081"/>
         <source>RSA_generate_key_ex() returned negative one</source>
-        <translation type="unfinished"></translation>
+        <translation>RSA_generate_key_ex() meldete negativen Eintrag zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3089"/>
         <location filename="../Common/spot-on-crypt.cc" line="3097"/>
         <location filename="../Common/spot-on-crypt.cc" line="3386"/>
         <source>BIO_new() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>BIO_new() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3105"/>
         <source>PEM_write_bio_RSAPrivateKey() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>PEM_write_bio_RSAPrivateKey() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3113"/>
         <source>PEM_write_bio_RSAPublicKey() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>PEM_write_bio_RSAPublicKey() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3407"/>
         <source>calloc() failure bptr-&gt;length + 1 is irregular</source>
-        <translation type="unfinished"></translation>
+        <translation>calloc() Fehler bptr-&gt;length + 1 ist irregular</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3816"/>
         <source>newCrypt is zero</source>
-        <translation type="unfinished"></translation>
+        <translation>newCrypt ist zero</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3824"/>
         <source>oldCrypt is zero</source>
-        <translation type="unfinished"></translation>
+        <translation>oldCrypt ist zero</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3299"/>
         <source>calloc() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>calloc() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3228"/>
         <source>rsa container is zero</source>
-        <translation type="unfinished"></translation>
+        <translation>rsa container ist zero</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3126"/>
         <location filename="../Common/spot-on-crypt.cc" line="3144"/>
         <source>calloc() failure or bptr-&gt;length + 1 is irregular</source>
-        <translation type="unfinished"></translation>
+        <translation>calloc() Fehler oder bptr-&gt;length + 1 ist irregulär</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2074"/>
         <source>generateNTRUKeys() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>generateNTRUKeys() Fehler</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2087"/>
         <source>key type is not supported</source>
-        <translation type="unfinished"></translation>
+        <translation>Schlüssel-Typ wird nicht unterstützt</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="2263"/>
         <source>encryptedThenHashed() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>encryptedThenHashed() Fehler</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3236"/>
         <source>EVP_PKEY_new() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>EVP_PKEY_new() Fehler</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3245"/>
         <source>X509_new() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_new() Fehler</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3254"/>
         <source>EVP_PKEY_assign_RSA() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>EVP_PKEY_assign_RSA() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3266"/>
         <source>X509_set_version() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_set_version() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3274"/>
         <location filename="../Common/spot-on-crypt.cc" line="3282"/>
         <source>X509_gmtime_adj() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_gmtime_adj() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3316"/>
         <source>X509_NAME_ENTRY_create_by_NID() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_NAME_ENTRY_create_by_NID() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3326"/>
         <source>X509_NAME_new() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_NAME_new() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3334"/>
         <source>X509_NAME_add_entry() failure</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_NAME_add_entry() Fehler</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3342"/>
         <source>X509_set_subject_name() failed</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_set_subject_name() hatte einen Fehler</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3350"/>
         <source>X509_get_subject_name() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_get_subject_name() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3358"/>
         <source>X509_set_issuer_name() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_set_issuer_name() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3366"/>
         <source>X509_set_pubkey() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_set_pubkey() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3374"/>
         <source>X509_sign() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>X509_sign() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3394"/>
         <source>PEM_write_bio_X509() returned zero</source>
-        <translation type="unfinished"></translation>
+        <translation>PEM_write_bio_X509() meldete zero zurück</translation>
     </message>
     <message>
         <location filename="../Common/spot-on-crypt.cc" line="3937"/>
         <source>decryption or encryption failure, or the keys are malformed</source>
-        <translation type="unfinished">Ent- oder Ver-Schlüsselungs-Fehler, oder die Schlüssel sind im unkorrekten Layout.</translation>
+        <translation>Ent- oder Ver-Schlüsselungs-Fehler, oder die Schlüssel sind im unkorrekten Layout.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="277"/>
         <source>Re-encoding email.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="58"/>
         <source>Re-encoding buzz_channels.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="122"/>
         <source>Re-encoding echo_key_sharing_secrets.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="614"/>
         <source>Re-encoding friends_public_keys.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="823"/>
         <source>Re-encoding listeners.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="1216"/>
         <source>Re-encoding neighbors.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="1595"/>
         <source>Re-encoding poptastic.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="1710"/>
         <source>Re-encoding rss.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="1955"/>
         <source>Re-encoding starbeam.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="2352"/>
         <source>Re-encoding urls_distillers_information.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-reencode.cc" line="2447"/>
         <source>Re-encoding urls_key_information.db.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Sent</source>
@@ -310,27 +310,27 @@
     <message>
         <location filename="../Common/spot-on-misc.cc" line="5544"/>
         <source>0 Bytes</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Common/spot-on-misc.cc" line="5546"/>
         <source>1 Byte</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Common/spot-on-misc.cc" line="5548"/>
         <source>%1 Bytes</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Common/spot-on-misc.cc" line="5550"/>
         <source>%1 KiB</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Common/spot-on-misc.cc" line="5553"/>
         <source>%1 MiB</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -969,299 +969,299 @@
     <message>
         <location filename="../UI/spot-on-rss.ui" line="26"/>
         <source>&amp;Subscriptions</source>
-        <translation type="unfinished"></translation>
+        <translation>Einschreibungen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="32"/>
         <source>Pro&amp;xy</source>
-        <translation type="unfinished">Proxy</translation>
+        <translation>Proxy</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="146"/>
         <source>&amp;Password</source>
-        <translation type="unfinished">&amp;Password</translation>
+        <translation>Password</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="166"/>
         <source>&amp;Port</source>
-        <translation type="unfinished">&amp;Port</translation>
+        <translation>Port</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="133"/>
         <source>&amp;Username</source>
-        <translation type="unfinished">&amp;Nutzername</translation>
+        <translation>Nutzername</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="71"/>
         <source>&amp;Type</source>
-        <translation type="unfinished">&amp;Typ</translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="123"/>
         <source>&amp;Hostname</source>
-        <translation type="unfinished">Hostname</translation>
+        <translation>Hostname</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="90"/>
         <source>HTTP</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="95"/>
         <source>Socks5</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="100"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="227"/>
         <source>Save Proxy Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichere Proxy Einstellungen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="244"/>
         <source>&amp;Activate</source>
-        <translation type="unfinished">&amp;Aktiviere</translation>
+        <translation>Aktiviere</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="257"/>
         <source>&amp;Download Interval</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="267"/>
         <source> minutes</source>
-        <translation type="unfinished"></translation>
+        <translation> minuten</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="283"/>
         <source>&amp;Max. Keywords</source>
-        <translation type="unfinished"></translation>
+        <translation>Max. Schlüsselworte</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="303"/>
         <source>&amp;Periodic Import</source>
-        <translation type="unfinished"></translation>
+        <translation>Periodischer Import</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="323"/>
         <source>Context Menu</source>
-        <translation type="unfinished">Kontext-Menü</translation>
+        <translation>Kontext-Menü</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="326"/>
         <source>Context Menu Reflection</source>
-        <translation type="unfinished">Betrachtung des Kontext-Menüs</translation>
+        <translation>Betrachtung des Kontext-Menüs</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="370"/>
         <source>Feed</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="375"/>
         <source>OID</source>
-        <translation type="unfinished">OID</translation>
+        <translation>OID</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="383"/>
         <source>Add Feed</source>
-        <translation type="unfinished"></translation>
+        <translation>Füge Feed hinzu</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="395"/>
         <source>Atom 1.0 and RSS 2.0 feeds are supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Atom 1.0 und RSS 2.0 Feeds werden unterstützt.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="404"/>
         <source>&amp;Feed</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="417"/>
         <source>Add</source>
-        <translation type="unfinished">Hinzufügen</translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="430"/>
         <source>&amp;Timeline</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="471"/>
         <location filename="../UI/spot-on-rss.ui" line="696"/>
         <source>&amp;Find</source>
-        <translation type="unfinished">Finden</translation>
+        <translation>Finde</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="491"/>
         <source>Purge</source>
-        <translation type="unfinished"></translation>
+        <translation>Reinige</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="498"/>
         <source>links that are older than</source>
-        <translation type="unfinished"></translation>
+        <translation>Links, die älter sind als</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="515"/>
         <source>&amp;day(s).</source>
-        <translation type="unfinished"></translation>
+        <translation>Tag(e).</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="532"/>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="537"/>
         <source>Hidden</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgeblendet</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="542"/>
         <source>Imported</source>
-        <translation type="unfinished"></translation>
+        <translation>Importiert</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="547"/>
         <source>Indexed</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexiert</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="552"/>
         <source>Malformed</source>
-        <translation type="unfinished"></translation>
+        <translation>Krumme</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="557"/>
         <source>Not Imported</source>
-        <translation type="unfinished"></translation>
+        <translation>nicht importiert</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="562"/>
         <source>Not Indexed</source>
-        <translation type="unfinished"></translation>
+        <translation>nicht indexiert</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="570"/>
         <source>&amp;Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Erneuern</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="584"/>
         <source>&amp;Zoo Notices</source>
-        <translation type="unfinished"></translation>
+        <translation>Notizen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="620"/>
         <source>Clear</source>
-        <translation type="unfinished">Löschen</translation>
+        <translation>Löschen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="643"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="649"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished">Bearbeiten</translation>
+        <translation>Bearbeiten</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="653"/>
         <source>&amp;Timeline Order</source>
-        <translation type="unfinished"></translation>
+        <translation>Timeline Sortierung</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="663"/>
         <source>&amp;Tools</source>
-        <translation type="unfinished">Tools</translation>
+        <translation>Werkzeuge</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="674"/>
         <source>&amp;Show</source>
-        <translation type="unfinished">&amp;Anzeigen</translation>
+        <translation>Anzeigen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="688"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Schließen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="691"/>
         <source>Esc</source>
-        <translation type="unfinished">Esc</translation>
+        <translation>Esc</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="699"/>
         <source>Ctrl+F</source>
-        <translation type="unfinished">Ctrl+F</translation>
+        <translation>Ctrl+F</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="707"/>
         <source>&amp;Insert Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Gebe Datum ein</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="718"/>
         <source>&amp;Publication Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Veröffentlichungsdatum</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="723"/>
         <source>Toggle I&amp;mported</source>
-        <translation type="unfinished"></translation>
+        <translation>Toggle Importierte</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="728"/>
         <source>Toggle &amp;Hidden</source>
-        <translation type="unfinished"></translation>
+        <translation>Toggle Ausgeblendete</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="733"/>
         <source>Toggle I&amp;ndexed</source>
-        <translation type="unfinished"></translation>
+        <translation>Toggle Indexierte</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="738"/>
         <source>Toggle &amp;Shown</source>
-        <translation type="unfinished"></translation>
+        <translation>Toggle Angezeigte</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="743"/>
         <source>Toggle Mal&amp;formed</source>
-        <translation type="unfinished"></translation>
+        <translation>Toggle Krumme</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="748"/>
         <source>Toggle Not &amp;Indexed</source>
-        <translation type="unfinished"></translation>
+        <translation>Toggle nicht indexierte</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="759"/>
         <location filename="../UI/spot-on-rss.ui" line="781"/>
         <source>&amp;Descriptions in Timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Beschreibungen in der Timeline</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="770"/>
         <source>&amp;Publication Dates in Timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Veröffentlichungsdatum in der Timeline</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="786"/>
         <source>Im&amp;port</source>
-        <translation type="unfinished"></translation>
+        <translation>Import</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="797"/>
         <source>&amp;URL Links in Timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>URL Links in der Timeline</translation>
     </message>
 </context>
 <context>
@@ -4332,7 +4332,7 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="90"/>
         <source>Share &amp;Open Library Public Key Pair</source>
-        <translation type="unfinished"></translation>
+        <translation>Sende und teile den öffentlichen Schlüssel für Öffentliche Bibliothek</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="93"/>
@@ -7636,17 +7636,17 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-options.ui" line="93"/>
         <source>Everaldo</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="98"/>
         <source>Nouve</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="103"/>
         <source>Nuvola</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="131"/>
@@ -7656,22 +7656,22 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-options.ui" line="148"/>
         <source>16x16</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="153"/>
         <source>24x24</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="158"/>
         <source>32x32</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="163"/>
         <source>64x64</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="191"/>
@@ -7697,7 +7697,7 @@ Error: %1.</source>
         <location filename="../UI/spot-on-options.ui" line="246"/>
         <location filename="../UI/spot-on-options.ui" line="1283"/>
         <source>Buzz</source>
-        <translation type="unfinished">Buzz-IRC</translation>
+        <translation>Buzz-IRC</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="264"/>
@@ -7717,12 +7717,12 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-options.ui" line="348"/>
         <source>Normal POST</source>
-        <translation type="unfinished">Normales POST</translation>
+        <translation>Normales POST</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="353"/>
         <source>Artificial GET</source>
-        <translation type="unfinished">Künstliches GET</translation>
+        <translation>Künstliches GET</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="422"/>
@@ -7799,7 +7799,7 @@ Error: %1.</source>
         <location filename="../UI/spot-on-options.ui" line="277"/>
         <location filename="../UI/spot-on-options.ui" line="1305"/>
         <source>Chat</source>
-        <translation type="unfinished">Chat</translation>
+        <translation>Chat</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="218"/>
@@ -7832,7 +7832,7 @@ Error: %1.</source>
         <location filename="../UI/spot-on-options.ui" line="435"/>
         <location filename="../UI/spot-on-options.ui" line="1406"/>
         <source>E-Mail</source>
-        <translation type="unfinished">E-Mail</translation>
+        <translation>E-Mail</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="457"/>
@@ -8276,7 +8276,7 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-options.ui" line="2264"/>
         <source>Esc</source>
-        <translation type="unfinished">Esc</translation>
+        <translation>Esc</translation>
     </message>
     <message>
         <source>&amp;Empty Log</source>
@@ -8328,12 +8328,12 @@ Error: %1.</source>
         <location filename="../UI/spot-on-rosetta.ui" line="42"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="1094"/>
         <source>&amp;Name</source>
-        <translation type="unfinished">&amp;Name</translation>
+        <translation>Name</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="55"/>
         <source>Save</source>
-        <translation type="unfinished">Speichern</translation>
+        <translation>Speichern</translation>
     </message>
     <message>
         <source>Copy &amp;Rosetta Public Keys</source>
@@ -8342,13 +8342,13 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="138"/>
         <source>Add</source>
-        <translation type="unfinished">Hinzufügen</translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="145"/>
         <location filename="../UI/spot-on-rosetta.ui" line="406"/>
         <source>Clear</source>
-        <translation type="unfinished">Löschen</translation>
+        <translation>Löschen</translation>
     </message>
     <message>
         <source>1</source>
@@ -8357,12 +8357,12 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="201"/>
         <source>&amp;Encrypt</source>
-        <translation type="unfinished">&amp;Entschlüsseln</translation>
+        <translation>Entschlüsseln</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="181"/>
         <source>&amp;Decrypt</source>
-        <translation type="unfinished">&amp;Verschlüsseln</translation>
+        <translation>Verschlüsseln</translation>
     </message>
     <message>
         <source>4</source>
@@ -8379,22 +8379,22 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="75"/>
         <source>Copy your public key pairs to the clipboard buffer.</source>
-        <translation type="unfinished">Kopiere Deine öffentlichen Schlüssel in die Zwischenablage.</translation>
+        <translation>Kopiere Deine öffentlichen Schlüssel in die Zwischenablage.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="78"/>
         <source>Copy Rosetta Public Keys</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiere Rosetta&apos;s öffentl. Schlüssel</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="87"/>
         <source>New Contact</source>
-        <translation type="unfinished"></translation>
+        <translation>Neuer Kontakt</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="211"/>
         <source>&amp;Participant</source>
-        <translation type="unfinished">Teilnehmer</translation>
+        <translation>Teilnehmer</translation>
     </message>
     <message>
         <source>Delete</source>
@@ -8403,102 +8403,102 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="261"/>
         <source>Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Eingabe</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="327"/>
         <source>&amp;Sign message.</source>
-        <translation type="unfinished"></translation>
+        <translation>Signiere Nachricht.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="367"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgabe</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="447"/>
         <source>Convert</source>
-        <translation type="unfinished">Konvertiere</translation>
+        <translation>Konvertiere</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="228"/>
         <source>Remove</source>
-        <translation type="unfinished">Entfernen</translation>
+        <translation>Entferne</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="235"/>
         <source>Rename...</source>
-        <translation type="unfinished"></translation>
+        <translation>Umbenennen...</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="287"/>
         <source>&amp;Cipher Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Cipher Typ</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="304"/>
         <source>&amp;Hash Type</source>
-        <translation type="unfinished">&amp;Hash Typ</translation>
+        <translation>Hash Typ</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="350"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Reset</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="454"/>
         <source>Copy</source>
-        <translation type="unfinished">Kopiere</translation>
+        <translation>Kopiere</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="473"/>
         <source>&amp;File</source>
-        <translation type="unfinished">Datei</translation>
+        <translation>Datei</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="479"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished">Bearbeiten</translation>
+        <translation>Bearbeiten</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="490"/>
         <source>&amp;Close</source>
-        <translation type="unfinished">Schließen</translation>
+        <translation>Schließen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="493"/>
         <source>Esc</source>
-        <translation type="unfinished">Esc</translation>
+        <translation>Esc</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="498"/>
         <source>&amp;Empty Log</source>
-        <translation type="unfinished">Lösche Log</translation>
+        <translation>Lösche Log</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="506"/>
         <source>E&amp;nable Log</source>
-        <translation type="unfinished">Aktiviere Log</translation>
+        <translation>Aktiviere Log</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="511"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished">&amp;Kopieren</translation>
+        <translation>Kopiere</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="514"/>
         <source>Ctrl+C</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="519"/>
         <source>&amp;Paste</source>
-        <translation type="unfinished">&amp;Einfügen</translation>
+        <translation>Einfügen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="522"/>
         <source>Ctrl+V</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Spot-On: Error</source>
@@ -8507,7 +8507,7 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="47"/>
         <source>%1: Rosetta</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="329"/>
@@ -8528,7 +8528,7 @@ Error: %1.</source>
         <location filename="../GUI/spot-on-rosetta.cc" line="1083"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="1138"/>
         <source>%1: Error</source>
-        <translation type="unfinished">%1: Fehler</translation>
+        <translation>%1: Fehler</translation>
     </message>
     <message>
         <source>Empty key. Really?</source>
@@ -8537,34 +8537,34 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="364"/>
         <source>Irregular data. Expecting 6 entries, received %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unregelmäßige Daten. Erwarte 6 Einträge, erhielt %1.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="378"/>
         <source>Invalid key type. Expecting &apos;rosetta&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültiger Schlüssel Typ. Erwarte &apos;Rosetta&apos;.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="401"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="425"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="969"/>
         <source>%1: Confirmation</source>
-        <translation type="unfinished">%1: Bestätigung</translation>
+        <translation>%1: Bestätigung</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="443"/>
         <source>You&apos;re attempting to add your own &apos;%1&apos; keys. Please do not do this!</source>
-        <translation type="unfinished">Du versuchst Deinen eigenen Schlüssel hinzuzufügen:&apos;%1&apos;. Bitte versuche dieses nicht!</translation>
+        <translation>Du versuchst Deinen eigenen Schlüssel hinzuzufügen:&apos;%1&apos;. Bitte mache dieses nicht!</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="456"/>
         <source>Invalid &apos;rosetta&apos; public key signature.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültige &apos;Rosetta&apos; Signatur des öffentl. Schlüssels.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="472"/>
         <source>Invalid signature public key signature.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültige Signatur der öffentl. Schlüssel-Signatur.</translation>
     </message>
     <message>
         <source>Empty</source>
@@ -8575,79 +8575,79 @@ Error: %1.</source>
         <location filename="../GUI/spot-on-rosetta.cc" line="957"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="1085"/>
         <source>Invalid item data. This is a serious flaw.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültige Einzel-Daten. Das ist ein ernster Fehler.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="660"/>
         <source>Please provide an actual message!</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte gebe eine aktuelle Nachricht ein!</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="669"/>
         <source>The method spoton_crypt::cipherKeyLength() failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Methode war nicht erfolgreich: spoton_crypt::cipherKeyLength().</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="754"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="930"/>
         <source>A serious cryptographic error occurred.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein ernster kryptographischer Fehler ereignete sich.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="791"/>
         <source>Empty input data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Eingabedaten sind leer.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="805"/>
         <source>The method spoton_crypt::publicKeyDecrypt() failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Methode war nicht erfolgreich: spoton_crypt::publicKeyDecrypt().</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="841"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="908"/>
         <source>Stream error.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler im Stream.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="853"/>
         <source>The method spoton_crypt::keyedHash() failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Methode war nicht erfolgreich: spoton_crypt::keyedHash().</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="863"/>
         <source>The computed hash does not match the provided hash.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der prozessierte Hash stimmt nicht mit dem vorgegebenen Hash überein.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="918"/>
         <source>The message was not signed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Nachricht war nicht signiert.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="923"/>
         <source>Invalid signature. Perhaps your contacts are not current.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültige Signatur. Ggf. sind Deine Kontaktdaten nicht aktuell.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="1018"/>
         <source>An error occurred while attempting to delete the specified participant.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein Fehler ist bei dem Versuch aufgetreten, einen ausgewählten Teilnehmer zu löschen.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="1076"/>
         <source>Invalid spoton_crypt object. This is a fatal flaw.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültiges spoton_crypt Objekt. Dieses ist ein ernster Fehler.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="1093"/>
         <source>%1: New Name</source>
-        <translation type="unfinished">%1: Neuer Name</translation>
+        <translation>%1: Neuer Name</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="1140"/>
         <source>An error occurred while attempting to rename the specified participant.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein Fehler ist bei dem Versuch aufgetreten, einen ausgewählten Teilnehmer umzubenennen.</translation>
     </message>
     <message>
         <source>Spot-On: Confirmation</source>
@@ -8657,42 +8657,42 @@ Error: %1.</source>
         <location filename="../GUI/spot-on-rosetta.cc" line="331"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="630"/>
         <source>Invalid spoton_crypt object(s). This is a fatal flaw.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültige(s) spoton_crypt Objekt(e). Dieses ist ein ernster Fehler.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="343"/>
         <source>Empty key(s). Really?</source>
-        <translation type="unfinished"></translation>
+        <translation>Leere(r) Schlüssel. Wirklich?</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="352"/>
         <source>Invalid key(s). The provided text must start with either the letter K or the letter k.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültige(r) Schlüssel. Der eingegbene Text muss entweder mit dem Buchstaben K oder dem Buchstaben k beginnen.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="405"/>
         <source>Unable to retrieve your %1 public key for comparison. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann Deinen %1 öffentl. Schlüssel für den Vergleich nicht erhalten. Fortfahren?</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="429"/>
         <source>Unable to retrieve your %1 signature public key for comparison. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann Deine %1 Signatur des öffentl. Schlüssels für den Vergleich nicht erhalten. Fortfahren?</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="518"/>
         <source>An error occurred while attempting to save the friendship bundle.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein Fehler ist bei dem Versuch aufgetreten, das Bündel der Freundschaftsangaben zu speichern.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="698"/>
         <source>The method spoton_crypt::publicKeyEncrypt() failed or an error occurred with the QDataStream object.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Methode war nicht erfolgreich: spoton_crypt::publicKeyEncrypt() oder ein Fehler ist mit dem QDataStream Objekt aufgetreten.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="973"/>
         <source>Are you sure that you wish to remove the selected contact?</source>
-        <translation type="unfinished"></translation>
+        <translation>Bist Du sicher, dass Du diesen ausgewählten Kontakt entfernen möchtest?</translation>
     </message>
 </context>
 <context>
@@ -8700,119 +8700,119 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="209"/>
         <source>Find Text</source>
-        <translation type="unfinished">Finde Text</translation>
+        <translation>Finde Text</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="212"/>
         <location filename="../GUI/spot-on-rss.cc" line="2708"/>
         <source>Copy selected &amp;link.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiere ausgewählten Link.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="216"/>
         <location filename="../GUI/spot-on-rss.cc" line="2711"/>
         <source>Delete &amp;all feeds.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lösche alle Feeds.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="219"/>
         <location filename="../GUI/spot-on-rss.cc" line="2713"/>
         <source>Delete &amp;selected feed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lösche ausgewählen Feed.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="223"/>
         <location filename="../GUI/spot-on-rss.cc" line="2716"/>
         <source>&amp;Refresh table.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualisiere Tabelle.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="227"/>
         <location filename="../GUI/spot-on-rss.cc" line="2719"/>
         <source>&amp;Schedule selected feed for update.</source>
-        <translation type="unfinished"></translation>
+        <translation>Plane ausgewählten Feed für ein Update.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="234"/>
         <source>%1: RSS</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1131"/>
         <source>error</source>
-        <translation type="unfinished">Fehler</translation>
+        <translation>Fehler</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1598"/>
         <source>Invalid spoton_crypt object. This is a fatal flaw.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültiges spoton_crypt Objekt. Da ist ein Fehler.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1603"/>
         <source>Please provide an RSS feed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte gebe einen RSS Feed an.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1609"/>
         <source>Invalid RSS feed scheme; HTTP or HTTPS please.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültiges Schema für RSS-Feed: HTTPS oder HTTP bitte.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1653"/>
         <source>Unable to insert the specified feed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann den speziellen Feed nicht hinzufügen.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1656"/>
         <source>Unable to access rss.db.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Zugriff auf die RSS.db.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1667"/>
         <source>%1: Error</source>
-        <translation type="unfinished">%1: Fehler</translation>
+        <translation>%1: Fehler</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1833"/>
         <source>Are you sure that you wish to delete all of the RSS feeds?</source>
-        <translation type="unfinished"></translation>
+        <translation>Bist Du sicher, dass Du alle RSS-Feeds löschen willst?</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="1836"/>
         <location filename="../GUI/spot-on-rss.cc" line="2226"/>
         <location filename="../GUI/spot-on-rss.cc" line="2948"/>
         <source>%1: Confirmation</source>
-        <translation type="unfinished">%1: Bestätigung</translation>
+        <translation>%1: Bestätigung</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="2224"/>
         <source>Are you sure that you wish to purge obsolete links?</source>
-        <translation type="unfinished"></translation>
+        <translation>Bist Du sicher, dass Du alle ungültigen Links löschen willst?</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="2285"/>
         <source>Populating...</source>
-        <translation type="unfinished"></translation>
+        <translation>Erstelle...</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="2289"/>
         <source>%1: Populating</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: Erstelle</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="2786"/>
         <source>0 RSS Feeds | 0 Hidden URLs | 0 Imported URLs | 0 Not Imported URLs | 0 Indexed URLs | 0 Not Indexed URLs | 0 Total URLs</source>
-        <translation type="unfinished"></translation>
+        <translation>0 RSS Feeds | 0 ausgeblendete URLs | 0 importierte URLs | 0 nicht importierte URLs | 0 indexierte URLs | 0 nicht indexierte URLs | 0 Gesamte URLs</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="2770"/>
         <source>%1 RSS Feeds | %2 Hidden URLs | %3 Imported URLs | %4 Not Imported URLs | %5 Indexed URLs | %6 Not Indexed URLs | %7 Total URLs</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 RSS Feeds | %2 ausgeblendete URLs | %3 importierte URLs | %4 nicht importierte URLs | %5 indexierte URLs | %6 nicht indexierte URLs | %7 Gesamte URLs</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="2945"/>
         <source>Are you sure that you wish to remove %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Bist Du sicher, dass Du %1 entfernen willst?</translation>
     </message>
 </context>
 <context>
