@@ -368,9 +368,8 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  QString str(list.value(0).toBase64().constData());
 
-		  m_notificationsUi.textBrowser->append
-		    (QDateTime::currentDateTime().toString());
-		  m_notificationsUi.textBrowser->append
+		  notify(QDateTime::currentDateTime().toString());
+		  notify
 		    (tr("Participant <i>%1</i> (%2) "
 			"has completed a "
 			"forward secrecy exchange.<br>").
@@ -861,10 +860,8 @@ void spoton::slotReceivedKernelMessage(void)
 #if SPOTON_GOLDBUG == 1
 	      populateMail();
 #endif
-	      m_notificationsUi.textBrowser->append
-		(QDateTime::currentDateTime().toString());
-	      m_notificationsUi.textBrowser->append
-		(tr("You have new e-mail!<br>"));
+	      notify(QDateTime::currentDateTime().toString());
+	      notify(tr("You have new e-mail!<br>"));
 	      playSong("echo.wav");
 	    }
 	}

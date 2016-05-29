@@ -559,3 +559,11 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	     arg(m_kernelSocket.peerPort()));
       }
 }
+
+void spoton::notify(const QString &text)
+{
+  if(text.trimmed().isEmpty())
+    return;
+
+  m_notificationsUi.textBrowser->append(text.trimmed());
+}

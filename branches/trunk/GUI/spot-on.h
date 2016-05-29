@@ -579,6 +579,7 @@ class spoton: public QMainWindow
   void joinBuzzChannel(const QUrl &url);
   void joinDefaultBuzzChannel(void);
   void magnetize(void);
+  void notify(const QString &text);
   void playSong(const QString &name);
   void popForwardSecrecyRequest(const QByteArray &publicKeyHash);
   void populateAETokens(void);
