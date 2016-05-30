@@ -170,7 +170,7 @@ void spoton::sendMessage(bool *ok)
  done_label:
 
   if(error.isEmpty())
-    playSong("send.wav");
+    playSound("send.wav");
 
   if(!error.isEmpty())
     {
@@ -332,7 +332,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(currentTabName() != "chat")
 		    m_sb.chat->setVisible(true);
 
-		  playSong("receive.wav");
+		  playSound("receive.wav");
 		}
 	    }
 	  else if(data.startsWith("forward_secrecy_request_"))
@@ -454,7 +454,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(currentTabName() != "chat")
 			m_sb.chat->setVisible(true);
 
-		      playSong("receive.wav");
+		      playSound("receive.wav");
 		      continue;
 		    }
 		  else if(spoton_misc::isValidSMPMagnet(list.value(2),
@@ -505,7 +505,7 @@ void spoton::slotReceivedKernelMessage(void)
 			  if(currentTabName() != "chat")
 			    m_sb.chat->setVisible(true);
 
-			  playSong("receive.wav");
+			  playSound("receive.wav");
 			  continue;
 			}
 
@@ -646,7 +646,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(currentTabName() != "chat")
 			m_sb.chat->setVisible(true);
 
-		      playSong("receive.wav");
+		      playSound("receive.wav");
 		      continue;
 		    }
 
@@ -851,7 +851,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(currentTabName() != "chat")
 		    m_sb.chat->setVisible(true);
 
-		  playSong("receive.wav");
+		  playSound("receive.wav");
 		}
 	    }
 	  else if(data == "newmail")
@@ -862,7 +862,7 @@ void spoton::slotReceivedKernelMessage(void)
 #endif
 	      notify(QDateTime::currentDateTime().toString());
 	      notify(tr("You have new e-mail!<br>"));
-	      playSong("echo.wav");
+	      playSound("echo.wav");
 	    }
 	}
     }
@@ -5575,7 +5575,7 @@ void spoton::slotBuzzChanged(void)
   if(currentTabName() != "buzz")
     m_sb.buzz->setVisible(true);
 
-  playSong("buzz.wav");
+  playSound("buzz.wav");
 }
 
 void spoton::slotRemoveEmailParticipants(void)

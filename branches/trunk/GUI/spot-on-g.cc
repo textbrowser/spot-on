@@ -567,3 +567,12 @@ void spoton::notify(const QString &text)
 
   m_notificationsUi.textBrowser->append(text.trimmed());
 }
+
+void spoton::slotPlaySounds(bool state)
+{
+  m_settings["gui/play_sounds"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/play_sounds", state);
+}

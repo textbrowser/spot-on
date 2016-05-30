@@ -121,9 +121,9 @@
              </layout>
             </item>
             <item>
-             <widget class="QCheckBox" name="play_songs">
+             <widget class="QCheckBox" name="play_sounds">
               <property name="text">
-               <string>Play songs.</string>
+               <string>&amp;Play sounds.</string>
               </property>
               <property name="checked">
                <bool>true</bool>
@@ -1987,8 +1987,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>539</height>
+             <width>276</width>
+             <height>235</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -2279,7 +2279,7 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>icons</tabstop>
-  <tabstop>play_songs</tabstop>
+  <tabstop>play_sounds</tabstop>
   <tabstop>iconsize</tabstop>
   <tabstop>position</tabstop>
   <tabstop>buzzAutoJoin</tabstop>

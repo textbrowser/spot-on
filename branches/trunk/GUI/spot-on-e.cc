@@ -1109,9 +1109,12 @@ void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
        arg(m_kernelSocket.peerPort()));
 }
 
-void spoton::playSong(const QString &name)
+void spoton::playSound(const QString &name)
 {
   if(m_locked)
+    return;
+
+  if(!m_optionsUi.play_sounds->isChecked())
     return;
 
 #if QT_VERSION >= 0x050000

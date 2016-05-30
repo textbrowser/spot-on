@@ -789,6 +789,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotVacuumDatabases(void)));
+  connect(m_optionsUi.play_sounds,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotPlaySongs(bool)));
   connect(m_optionsUi.action_Close,
 	  SIGNAL(triggered(void)),
 	  m_optionsWindow,
@@ -2427,6 +2431,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/openChatUrl", false).toBool());
   m_optionsUi.chatTimestamps->setChecked
     (m_settings.value("gui/chatTimestamps", true).toBool());
+  m_optionsUi.play_sounds->setChecked
+    (m_settings.value("gui/play_sounds", true).toBool());
 
   /*
   ** Please don't translate n/a.
@@ -6567,7 +6573,7 @@ void spoton::slotSetPassphrase(void)
 #if SPOTON_GOLDBUG == 1
       slotConnectAllNeighbors();
 #endif
-      playSong("login.wav");
+      playSound("login.wav");
     }
 }
 
@@ -6811,7 +6817,7 @@ void spoton::slotValidatePassphrase(void)
 #if SPOTON_GOLDBUG == 1
       slotConnectAllNeighbors();
 #endif
-      playSong("login.wav");
+      playSound("login.wav");
       m_ui.passphrase->setFocus();
       updatePublicKeysLabel();
     }
