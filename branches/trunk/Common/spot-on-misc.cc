@@ -208,6 +208,7 @@ void spoton_misc::prepareDatabases(void)
 							  ** public key.
 							  */
 		   "signature TEXT NOT NULL, "
+		   "sign TEXT NOT NULL, "
 		   "status TEXT NOT NULL, " /*
 					    ** Deleted, read, etc.
 					    */

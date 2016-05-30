@@ -2635,6 +2635,7 @@ void spoton::slotClearOutgoingMessage(void)
   m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
   m_ui.outgoingSubject->clear();
   m_ui.richtext->setChecked(true);
+  m_ui.sign_this_email->setChecked(m_optionsUi.emailSignMessages->isChecked());
   m_ui.outgoingSubject->setFocus();
 }
 
@@ -3329,6 +3330,8 @@ void spoton::slotSendMail(void)
 	m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
 	m_ui.outgoingSubject->clear();
 	m_ui.richtext->setChecked(true);
+	m_ui.sign_this_email->setChecked
+	  (m_optionsUi.emailSignMessages->isChecked());
 
 #if SPOTON_GOLDBUG == 1
 	QMessageBox mb(this);
