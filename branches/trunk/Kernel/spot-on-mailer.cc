@@ -109,8 +109,15 @@ void spoton_mailer::slotTimeout(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT from_account, goldbug, message, mode, "
-		      "participant_oid, status, subject, OID "
+	if(query.exec("SELECT from_account, " // 0
+		      "goldbug, "             // 1
+		      "message, "             // 2
+		      "mode, "                // 3
+		      "participant_oid, "     // 4
+		      "sign, "                // 5
+		      "status, "              // 6
+		      "subject, "             // 7
+		      "OID "                  // 8
 		      "FROM folders WHERE folder_index = 1"))
 	  while(query.next())
 	    {
@@ -130,7 +137,7 @@ void spoton_mailer::slotTimeout(void)
 	      bool ok = true;
 
 	      status = s_crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(5).toByteArray()), &ok).
+		(QByteArray::fromBase64(query.value(6).toByteArray()), &ok).
 		constData();
 
 	      if(status.toLower() != "queued")
@@ -144,7 +151,7 @@ void spoton_mailer::slotTimeout(void)
 	      QByteArray publicKey;
 	      QByteArray receiverName;
 	      QByteArray subject;
-	      qint64 mailOid = query.value(7).toLongLong();
+	      bool sign = query.value(5).toBool();
 	      qint64 participantOid = -1;
 
 	      if(ok)
@@ -212,7 +219,7 @@ void spoton_mailer::slotTimeout(void)
 	      if(ok)
 		subject = s_crypt->
 		  decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(6).toByteArray()),
+		  (QByteArray::fromBase64(query.value(7).toByteArray()),
 		   &ok);
 
 	      if(ok)
@@ -223,7 +230,7 @@ void spoton_mailer::slotTimeout(void)
 		  query.setForwardOnly(true);
 		  query.prepare("SELECT data, name FROM folders_attachment "
 				"WHERE folders_oid = ?");
-		  query.bindValue(0, mailOid);
+		  query.bindValue(0, oid);
 
 		  if(query.exec())
 		    while(query.next())
@@ -277,9 +284,10 @@ void spoton_mailer::slotTimeout(void)
 			 << receiverName
 			 << mode
 			 << fromAccount
-			 << mailOid;
+			 << sign
+			 << oid;
 		  list.append(vector);
-		  s_oids[mailOid] = 0;
+		  s_oids[oid] = 0;
 		  break;
 		}
 	    }
@@ -310,7 +318,8 @@ void spoton_mailer::slotTimeout(void)
 		    vector.value(7).toByteArray(),
 		    vector.value(8).toByteArray(),
 		    vector.value(9).toByteArray(),
-		    vector.value(10).toLongLong());
+		    vector.value(10).toBool(),
+		    vector.value(11).toLongLong());
     }
 }
 

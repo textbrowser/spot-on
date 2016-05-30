@@ -884,6 +884,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 			  const QByteArray &,
 			  const QByteArray &,
 			  const QByteArray &,
+			  const bool,
 			  const qint64)),
 	  this,
 	  SLOT(slotSendMail(const QByteArray &,
@@ -896,6 +897,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 			    const QByteArray &,
 			    const QByteArray &,
 			    const QByteArray &,
+			    const bool,
 			    const qint64)));
 
   if(m_guiServer)
@@ -3206,6 +3208,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				 const QByteArray &receiverName,
 				 const QByteArray &mode,
 				 const QByteArray &fromAccount,
+				 const bool sign,
 				 const qint64 mailOid)
 {
   if(keyType == "poptastic" && publicKey.contains("-poptastic"))
@@ -3444,7 +3447,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			{
 			  QByteArray signature;
 
-			  if(setting("gui/emailSignMessages", true).toBool())
+			  if(sign)
 			    signature = s_crypt2->digitalSignature
 			      ("0001b" +
 			       symmetricKey +
@@ -3467,7 +3470,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		    }
 		  else
 		    {
-		      if(setting("gui/emailSignMessages", true).toBool())
+		      if(sign)
 			{
 			  QByteArray signature;
 
@@ -3659,8 +3662,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     0,
 				     "");
 
-		  if(setting("gui/emailSignMessages",
-			     true).toBool())
+		  if(sign)
 		    signature = s_crypt2->digitalSignature
 		      ("0001a" +
 		       symmetricKey +
@@ -3754,7 +3756,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			{
 			  QByteArray signature;
 
-			  if(setting("gui/emailSignMessages", true).toBool())
+			  if(sign)
 			    signature = s_crypt2->digitalSignature
 			      ("0001b" +
 			       symmetricKey +
@@ -3777,7 +3779,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		    }
 		  else
 		    {
-		      if(setting("gui/emailSignMessages", true).toBool())
+		      if(sign)
 			{
 			  QByteArray signature;
 
