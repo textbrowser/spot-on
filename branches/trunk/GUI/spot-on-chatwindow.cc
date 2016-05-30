@@ -339,25 +339,36 @@ void spoton_chatwindow::sendMessage(bool *ok)
   if(error.isEmpty())
     {
       QMediaPlayer *player = findChild<QMediaPlayer *> ();
-      QString str
-	(QDir::cleanPath(QCoreApplication::applicationDirPath() +
-			 QDir::separator() + "Sounds" + QDir::separator() +
-			 "send.wav"));
 
       if(player)
 	player->deleteLater();
 
-      player = new (std::nothrow) QMediaPlayer
-	(this, QMediaPlayer::LowLatency);
-
-      if(player)
+      if(spoton::instance() ? spoton::instance()->m_settings.
+	 value("gui/play_sounds", true).toBool() : true)
 	{
-	  player->setMedia(QUrl::fromLocalFile(str));
-	  player->setVolume(100);
-	  player->play();
+	  QFileInfo fileInfo;
+	  QString str
+	    (QDir::cleanPath(QCoreApplication::applicationDirPath() +
+			     QDir::separator() + "Sounds" + QDir::separator() +
+			     "send.wav"));
+
+	  fileInfo.setFile(str);
+      
+	  if(!(!fileInfo.isReadable() || fileInfo.size() < 8192))
+	    {
+	      player = new (std::nothrow) QMediaPlayer
+		(this, QMediaPlayer::LowLatency);
+
+	      if(player)
+		{
+		  player->setMedia(QUrl::fromLocalFile(str));
+		  player->setVolume(100);
+		  player->play();
+		}
+	      else
+		QApplication::beep();
+	    }
 	}
-      else
-	QApplication::beep();
     }
 #else
   if(error.isEmpty())

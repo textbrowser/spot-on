@@ -1225,7 +1225,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 		if(ok)
 		  query.bindValue
-		    (12, s_crypt->
+		    (13, s_crypt->
 		     encryptedThenHashed(QByteArray::number(-1), &ok).
 		     toBase64());
 
