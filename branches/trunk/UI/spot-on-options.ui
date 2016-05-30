@@ -54,8 +54,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>539</width>
-             <height>1375</height>
+             <width>631</width>
+             <height>1349</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1276,8 +1276,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>605</width>
-             <height>1084</height>
+             <width>723</width>
+             <height>1072</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1400,7 +1400,7 @@
                <item>
                 <widget class="QCheckBox" name="chatSignMessages">
                  <property name="text">
-                  <string>&amp;Sign geminis, messages, and status bulletins.</string>
+                  <string>&amp;Sign forward secrecy requests and replies, geminis, messages, and status bulletins.</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -1535,7 +1535,7 @@
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The kernel is responsible for signing messages. Please avoid toggling this checkbox until queued messages have been processed by the kernel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
-                  <string>Sign &amp;letters.</string>
+                  <string>Sign forward secrecy requests and replies, and &amp;letters.</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -1987,8 +1987,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>276</width>
-             <height>235</height>
+             <width>323</width>
+             <height>312</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -2255,7 +2255,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

@@ -792,7 +792,7 @@ spoton::spoton(void):QMainWindow()
   connect(m_optionsUi.play_sounds,
 	  SIGNAL(toggled(bool)),
 	  this,
-	  SLOT(slotPlaySongs(bool)));
+	  SLOT(slotPlaySounds(bool)));
   connect(m_optionsUi.action_Close,
 	  SIGNAL(triggered(void)),
 	  m_optionsWindow,

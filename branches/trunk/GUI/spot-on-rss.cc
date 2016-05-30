@@ -2171,6 +2171,12 @@ void spoton_rss::slotFindInitialize(void)
 
 void spoton_rss::slotImport(void)
 {
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    return;
+
   if(m_importFuture.isFinished())
     m_importFuture = QtConcurrent::run
       (this, &spoton_rss::import, m_ui.maximum_keywords->value());

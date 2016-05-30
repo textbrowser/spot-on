@@ -81,6 +81,10 @@ spoton_encryptfile::spoton_encryptfile(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotCancel(void)));
+  connect(ui.cipher,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotCipherTypeChanged(const QString &)));
   connect(ui.convert,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -125,6 +129,22 @@ void spoton_encryptfile::slotCancel(void)
   m_future.cancel();
   m_future.waitForFinished();
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_encryptfile::slotCipherTypeChanged(const QString &text)
+{
+#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
+  Q_UNUSED(text);
+  ui.gcm->setEnabled(false);
+#else
+  if(text == "threefish")
+    {
+      ui.cbc->setChecked(true);
+      ui.gcm->setEnabled(false);
+    }
+  else
+    ui.gcm->setEnabled(true);
+#endif
 }
 
 void spoton_encryptfile::slotClose(void)
