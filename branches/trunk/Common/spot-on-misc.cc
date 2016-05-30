@@ -555,8 +555,6 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING));
-	query.exec("ALTER TABLE neighbors ADD waitforbyteswritten_msecs "
-		   "INTEGER NOT NULL DEFAULT 0");
       }
 
     db.close();
@@ -671,8 +669,6 @@ void spoton_misc::prepareDatabases(void)
 		   "(status_control IN ('completed', 'deleted', 'paused', "
 		   "'transmitting')), "
 		   "total_size TEXT NOT NULL)");
-	query.exec("ALTER TABLE transmitted "
-		   "ADD fragmented INTEGER NOT NULL DEFAULT 0");
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted_magnets ("
 		   "magnet BLOB NOT NULL, "
 		   "magnet_hash TEXT NOT NULL, " // Keyed hash.
