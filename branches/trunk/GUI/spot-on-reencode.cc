@@ -291,7 +291,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 	if(query.exec("SELECT date, from_account, "
 		      "goldbug, message, message_code, mode, "
-		      "participant_oid, receiver_sender, signature, "
+		      "participant_oid, receiver_sender, sign, signature, "
 		      "status, subject, "
 		      "OID FROM folders"))
 	  while(query.next())
@@ -329,11 +329,12 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 					"mode = ?, "            // 5
 					"participant_oid = ?, " // 6
 					"receiver_sender = ?, " // 7
-					"signature = ?, "       // 8
-					"status = ?, "          // 9
-					"subject = ?, "         // 10
-					"hash = ? "             // 11
-					"WHERE OID = ?");       // 12
+					"sign = ?, "            // 8
+					"signature = ?, "       // 9
+					"status = ?, "          // 10
+					"subject = ?, "         // 11
+					"hash = ? "             // 12
+					"WHERE OID = ?");       // 13
 
 		    for(int i = 0; i < list.size(); i++)
 		      if(ok)
@@ -350,15 +351,15 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 			** date + message + subject
 			*/
 
-			(11, newCrypt->keyedHash(list.value(0) +
+			(12, newCrypt->keyedHash(list.value(0) +
 						 list.value(3) +
-						 list.value(10), &ok).
+						 list.value(11), &ok).
 			 toBase64());
 
 		    if(ok)
 		      {
 			updateQuery.bindValue
-			  (12, query.value(query.record().count() - 1));
+			  (13, query.value(query.record().count() - 1));
 			updateQuery.exec();
 		      }
 		    else
