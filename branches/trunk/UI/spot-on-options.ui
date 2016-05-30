@@ -53,9 +53,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-556</y>
+             <y>0</y>
              <width>539</width>
-             <height>1348</height>
+             <height>1375</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -119,6 +119,16 @@
                </spacer>
               </item>
              </layout>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="play_songs">
+              <property name="text">
+               <string>Play songs.</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -1265,7 +1275,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-528</y>
+             <y>0</y>
              <width>605</width>
              <height>1084</height>
             </rect>
@@ -2269,6 +2279,7 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>icons</tabstop>
+  <tabstop>play_songs</tabstop>
   <tabstop>iconsize</tabstop>
   <tabstop>position</tabstop>
   <tabstop>buzzAutoJoin</tabstop>
