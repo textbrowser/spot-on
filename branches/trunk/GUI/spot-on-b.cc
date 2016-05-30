@@ -170,7 +170,7 @@ void spoton::sendMessage(bool *ok)
  done_label:
 
   if(error.isEmpty())
-    playSong("send.wav");
+    playSound("send.wav");
 
   if(!error.isEmpty())
     {
@@ -332,7 +332,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(currentTabName() != "chat")
 		    m_sb.chat->setVisible(true);
 
-		  playSong("receive.wav");
+		  playSound("receive.wav");
 		}
 	    }
 	  else if(data.startsWith("forward_secrecy_request_"))
@@ -368,9 +368,8 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  QString str(list.value(0).toBase64().constData());
 
-		  m_notificationsUi.textBrowser->append
-		    (QDateTime::currentDateTime().toString());
-		  m_notificationsUi.textBrowser->append
+		  notify(QDateTime::currentDateTime().toString());
+		  notify
 		    (tr("Participant <i>%1</i> (%2) "
 			"has completed a "
 			"forward secrecy exchange.<br>").
@@ -455,7 +454,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(currentTabName() != "chat")
 			m_sb.chat->setVisible(true);
 
-		      playSong("receive.wav");
+		      playSound("receive.wav");
 		      continue;
 		    }
 		  else if(spoton_misc::isValidSMPMagnet(list.value(2),
@@ -506,7 +505,7 @@ void spoton::slotReceivedKernelMessage(void)
 			  if(currentTabName() != "chat")
 			    m_sb.chat->setVisible(true);
 
-			  playSong("receive.wav");
+			  playSound("receive.wav");
 			  continue;
 			}
 
@@ -647,7 +646,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(currentTabName() != "chat")
 			m_sb.chat->setVisible(true);
 
-		      playSong("receive.wav");
+		      playSound("receive.wav");
 		      continue;
 		    }
 
@@ -852,7 +851,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(currentTabName() != "chat")
 		    m_sb.chat->setVisible(true);
 
-		  playSong("receive.wav");
+		  playSound("receive.wav");
 		}
 	    }
 	  else if(data == "newmail")
@@ -861,11 +860,9 @@ void spoton::slotReceivedKernelMessage(void)
 #if SPOTON_GOLDBUG == 1
 	      populateMail();
 #endif
-	      m_notificationsUi.textBrowser->append
-		(QDateTime::currentDateTime().toString());
-	      m_notificationsUi.textBrowser->append
-		(tr("You have new e-mail!<br>"));
-	      playSong("echo.wav");
+	      notify(QDateTime::currentDateTime().toString());
+	      notify(tr("You have new e-mail!<br>"));
+	      playSound("echo.wav");
 	    }
 	}
     }
@@ -2638,6 +2635,7 @@ void spoton::slotClearOutgoingMessage(void)
   m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
   m_ui.outgoingSubject->clear();
   m_ui.richtext->setChecked(true);
+  m_ui.sign_this_email->setChecked(m_optionsUi.emailSignMessages->isChecked());
   m_ui.outgoingSubject->setFocus();
 }
 
@@ -3204,9 +3202,10 @@ void spoton::slotSendMail(void)
 			  "(date, folder_index, from_account, goldbug, hash, "
 			  "message, message_code, mode, "
 			  "receiver_sender, receiver_sender_hash, "
-			  "signature, "
+			  "sign, signature, "
 			  "status, subject, participant_oid) "
-			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			  "VALUES (?, ?, ?, ?, ?, ?, ?, "
+			  "?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, crypt->
 	       encryptedThenHashed(now.toString(Qt::ISODate).
@@ -3271,21 +3270,28 @@ void spoton::slotSendMail(void)
 
 	    if(ok)
 	      query.bindValue
-		(10, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+		(10, crypt->
+		 encryptedThenHashed(QByteArray::
+				     number(m_ui.sign_this_email->
+					    isChecked()), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(11, crypt->
-		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
+		(11, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(12, crypt->
-		 encryptedThenHashed(subject, &ok).toBase64());
+		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(13, crypt->
+		 encryptedThenHashed(subject, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(14, crypt->
 		 encryptedThenHashed(oid.toLatin1(), &ok).toBase64());
 
 	    if(ok)
@@ -3332,6 +3338,8 @@ void spoton::slotSendMail(void)
 	m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
 	m_ui.outgoingSubject->clear();
 	m_ui.richtext->setChecked(true);
+	m_ui.sign_this_email->setChecked
+	  (m_optionsUi.emailSignMessages->isChecked());
 
 #if SPOTON_GOLDBUG == 1
 	QMessageBox mb(this);
@@ -5578,7 +5586,7 @@ void spoton::slotBuzzChanged(void)
   if(currentTabName() != "buzz")
     m_sb.buzz->setVisible(true);
 
-  playSong("buzz.wav");
+  playSound("buzz.wav");
 }
 
 void spoton::slotRemoveEmailParticipants(void)

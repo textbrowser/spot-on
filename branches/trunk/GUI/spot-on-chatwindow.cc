@@ -134,6 +134,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
     ui.name->setText(participant.trimmed());
 
   ui.share->setEnabled(m_keyType != "poptastic");
+  ui.starbeam->setEnabled(m_keyType != "poptastic");
   ui.table->resizeColumnToContents(0);
   ui.table->setModel(spoton::instance() ?
 		     spoton::instance()->starbeamReceivedModel() : 0);

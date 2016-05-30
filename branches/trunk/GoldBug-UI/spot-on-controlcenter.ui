@@ -1307,7 +1307,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>580</width>
-             <height>637</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2242,31 +2242,31 @@ QPushButton:pressed {
                            </item>
                           </layout>
                          </item>
-                         <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_77">
-                           <property name="spacing">
-                            <number>5</number>
-                           </property>
-                           <item>
-                            <widget class="QCheckBox" name="addInstitutionCheckBox">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="text">
-                              <string>&amp;or add a Magnet</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QLineEdit" name="addInstitutionLineEdit"/>
-                           </item>
-                          </layout>
-                         </item>
                         </layout>
                        </widget>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_77">
+                        <property name="spacing">
+                         <number>5</number>
+                        </property>
+                        <item>
+                         <widget class="QCheckBox" name="addInstitutionCheckBox">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="text">
+                           <string>&amp;or add a Magnet</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="addInstitutionLineEdit"/>
+                        </item>
+                       </layout>
                       </item>
                       <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_79">
@@ -2929,8 +2929,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>499</width>
-             <height>1799</height>
+             <width>556</width>
+             <height>1783</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4220,7 +4220,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>597</width>
-             <height>576</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5289,7 +5289,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>637</width>
-             <height>352</height>
+             <height>660</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6593,7 +6593,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>842</width>
+             <width>818</width>
              <height>1304</height>
             </rect>
            </property>
@@ -8144,7 +8144,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>448</width>
+             <width>556</width>
              <height>771</height>
             </rect>
            </property>
@@ -9524,8 +9524,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>536</width>
-             <height>471</height>
+             <width>570</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">

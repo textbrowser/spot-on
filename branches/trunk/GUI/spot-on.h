@@ -579,7 +579,8 @@ class spoton: public QMainWindow
   void joinBuzzChannel(const QUrl &url);
   void joinDefaultBuzzChannel(void);
   void magnetize(void);
-  void playSong(const QString &name);
+  void notify(const QString &text);
+  void playSound(const QString &name);
   void popForwardSecrecyRequest(const QByteArray &publicKeyHash);
   void populateAETokens(void);
   void populateAccounts(const QString &listenerOid);
@@ -822,6 +823,7 @@ class spoton: public QMainWindow
   void slotPassphraseChanged(const QString &text);
   void slotPassphraseRadioToggled(bool state);
   void slotPassthroughCheckChange(bool state);
+  void slotPlaySounds(bool state);
   void slotPoptasticAccountChanged(const QString &text);
   void slotPoptasticSettingsReset(bool state);
   void slotPoptasticSettingsReset(void);

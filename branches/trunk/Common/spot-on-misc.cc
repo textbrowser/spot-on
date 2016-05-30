@@ -207,6 +207,7 @@ void spoton_misc::prepareDatabases(void)
 							  ** or the sender's
 							  ** public key.
 							  */
+		   "sign TEXT NOT NULL, "
 		   "signature TEXT NOT NULL, "
 		   "status TEXT NOT NULL, " /*
 					    ** Deleted, read, etc.
@@ -555,8 +556,6 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING));
-	query.exec("ALTER TABLE neighbors ADD waitforbyteswritten_msecs "
-		   "INTEGER NOT NULL DEFAULT 0");
       }
 
     db.close();
@@ -671,8 +670,6 @@ void spoton_misc::prepareDatabases(void)
 		   "(status_control IN ('completed', 'deleted', 'paused', "
 		   "'transmitting')), "
 		   "total_size TEXT NOT NULL)");
-	query.exec("ALTER TABLE transmitted "
-		   "ADD fragmented INTEGER NOT NULL DEFAULT 0");
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted_magnets ("
 		   "magnet BLOB NOT NULL, "
 		   "magnet_hash TEXT NOT NULL, " // Keyed hash.
@@ -5186,11 +5183,12 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 		      "message_code, "
 		      "receiver_sender, "
 		      "receiver_sender_hash, "
+		      "sign, "
 		      "signature, "
 		      "status, "
 		      "subject, "
 		      "participant_oid) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->
 	   encryptedThenHashed(now.toString(Qt::ISODate).
@@ -5238,16 +5236,20 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 
 	if(ok)
 	  query.bindValue
-	    (10, crypt->
+	    (10, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (11, crypt->
 	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (11, crypt->encryptedThenHashed(subject, &ok).toBase64());
+	    (12, crypt->encryptedThenHashed(subject, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (12, crypt->
+	    (13, crypt->
 	     encryptedThenHashed(QByteArray::number(-1), &ok).
 	     toBase64());
 

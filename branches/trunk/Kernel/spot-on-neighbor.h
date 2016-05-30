@@ -415,7 +415,8 @@ class spoton_neighbor: public QThread
 		   const QByteArray &recipientHash);
 
  private slots:
-  void slotAccountAuthenticated(const QByteArray &name,
+  void slotAccountAuthenticated(const QByteArray &clientSalt,
+				const QByteArray &name,
 				const QByteArray &password);
   void slotAuthenticationTimerTimeout(void);
   void slotCallParticipant(const QByteArray &data,
@@ -481,7 +482,8 @@ class spoton_neighbor: public QThread
 			  const QByteArray &sSignature);
 
  signals:
-  void accountAuthenticated(const QByteArray &name,
+  void accountAuthenticated(const QByteArray &clientSalt,
+			    const QByteArray &name,
 			    const QByteArray &password);
   void authenticationRequested(const QString &peerInformation);
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)

@@ -322,9 +322,11 @@ spoton_neighbor::spoton_neighbor
 
   connect(this,
 	  SIGNAL(accountAuthenticated(const QByteArray &,
+				      const QByteArray &,
 				      const QByteArray &)),
 	  this,
 	  SLOT(slotAccountAuthenticated(const QByteArray &,
+					const QByteArray &,
 					const QByteArray &)));
   connect(this,
 	  SIGNAL(resetKeepAlive(void)),
@@ -4119,13 +4121,18 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 	  m_accountAuthenticated.fetchAndStoreOrdered(1);
 	  emit stopTimer(&m_accountTimer);
 	  emit stopTimer(&m_authenticationTimer);
-	  emit accountAuthenticated(name, password);
+	  emit accountAuthenticated(list.at(1), name, password);
 	}
       else
 	{
+	  /*
+	  ** Respond with invalid information.
+	  */
+
 	  m_accountAuthenticated.fetchAndStoreOrdered(0);
 	  emit accountAuthenticated
 	    (spoton_crypt::weakRandomBytes(64),
+	     spoton_crypt::weakRandomBytes(64),
 	     spoton_crypt::weakRandomBytes(64));
 	}
 
@@ -4275,7 +4282,8 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 		newHash = spoton_crypt::keyedHash
 		  (QDateTime::currentDateTime().toUTC().
 		   toString("MMddyyyyhhmm").
-		   toLatin1() + salt, name + password, "sha512", &ok);
+		   toLatin1() + accountClientSentSalt + salt,
+		   name + password, "sha512", &ok);
 
 	      if(ok)
 		{
@@ -4291,7 +4299,8 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 		      newHash = spoton_crypt::keyedHash
 			(QDateTime::currentDateTime().toUTC().addSecs(60).
 			 toString("MMddyyyyhhmm").
-			 toLatin1() + salt, name + password, "sha512", &ok);
+			 toLatin1() + accountClientSentSalt + salt,
+			 name + password, "sha512", &ok);
 
 		      if(ok)
 			{
@@ -4322,7 +4331,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	    spoton_misc::logError
 	      ("spoton_neighbor::process0051(): "
 	       "the server replied to an authentication message, however, "
-	       "my provided salt is small.");
+	       "my provided salt is short.");
 	  else if(spoton_crypt::memcmp(list.at(1), accountClientSentSalt))
 	    spoton_misc::logError
 	      ("spoton_neighbor::process0051(): "
@@ -5387,10 +5396,10 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	query.prepare("INSERT INTO folders "
 		      "(date, folder_index, from_account, goldbug, hash, "
 		      "message, message_code, "
-		      "receiver_sender, receiver_sender_hash, "
+		      "receiver_sender, receiver_sender_hash, sign, "
 		      "signature, "
 		      "status, subject, participant_oid) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, s_crypt->
 	   encryptedThenHashed(now.toString(Qt::ISODate).toLatin1(),
@@ -5432,20 +5441,24 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 	if(ok)
 	  query.bindValue
-	    (9, s_crypt->encryptedThenHashed(signature, &ok).toBase64());
+	    (9, s_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (10, s_crypt->
+	    (10, s_crypt->encryptedThenHashed(signature, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (11, s_crypt->
 	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (11, s_crypt->encryptedThenHashed(subject_l, &ok).toBase64());
+	    (12, s_crypt->encryptedThenHashed(subject_l, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (12, s_crypt->
+	    (13, s_crypt->
 	     encryptedThenHashed(QByteArray::number(-1), &ok).
 	     toBase64());
 
@@ -6725,7 +6738,8 @@ void spoton_neighbor::slotSendAccountInformation(void)
       }
 }
 
-void spoton_neighbor::slotAccountAuthenticated(const QByteArray &name,
+void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
+					       const QByteArray &name,
 					       const QByteArray &password)
 {
   if(state() != QAbstractSocket::ConnectedState)
@@ -6748,7 +6762,7 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &name,
 
   hash = spoton_crypt::keyedHash
     (QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmm").
-     toLatin1() + salt, name + password, "sha512", &ok);
+     toLatin1() + clientSalt + salt, name + password, "sha512", &ok);
 
   if(ok)
     message = spoton_send::message0051(hash, salt);
@@ -7165,9 +7179,11 @@ void spoton_neighbor::deleteLater(void)
 		 SLOT(slotReadyRead(void)));
       disconnect(this,
 		 SIGNAL(accountAuthenticated(const QByteArray &,
+					     const QByteArray &,
 					     const QByteArray &)),
 		 this,
 		 SLOT(slotAccountAuthenticated(const QByteArray &,
+					       const QByteArray &,
 					       const QByteArray &)));
       disconnect(this,
 		 SIGNAL(resetKeepAlive(void)),

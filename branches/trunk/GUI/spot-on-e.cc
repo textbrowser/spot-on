@@ -1109,16 +1109,19 @@ void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
        arg(m_kernelSocket.peerPort()));
 }
 
-void spoton::playSong(const QString &name)
+void spoton::playSound(const QString &name)
 {
-  if(m_locked)
-    return;
-
 #if QT_VERSION >= 0x050000
   QMediaPlayer *player = findChild<QMediaPlayer *> ();
 
   if(player)
     player->deleteLater();
+
+  if(m_locked)
+    return;
+
+  if(!m_optionsUi.play_sounds->isChecked())
+    return;
 
   QFileInfo fileInfo;
   QString str
@@ -1150,6 +1153,12 @@ void spoton::playSong(const QString &name)
   else
     QApplication::beep();
 #else
+  if(m_locked)
+    return;
+
+  if(!m_optionsUi.play_sounds->isChecked())
+    return;
+
   Q_UNUSED(name);
   QApplication::beep();
 #endif
