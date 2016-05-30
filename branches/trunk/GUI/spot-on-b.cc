@@ -3202,9 +3202,10 @@ void spoton::slotSendMail(void)
 			  "(date, folder_index, from_account, goldbug, hash, "
 			  "message, message_code, mode, "
 			  "receiver_sender, receiver_sender_hash, "
-			  "signature, "
+			  "sign, signature, "
 			  "status, subject, participant_oid) "
-			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			  "VALUES (?, ?, ?, ?, ?, ?, ?, "
+			  "?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, crypt->
 	       encryptedThenHashed(now.toString(Qt::ISODate).
@@ -3269,21 +3270,28 @@ void spoton::slotSendMail(void)
 
 	    if(ok)
 	      query.bindValue
-		(10, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+		(10, crypt->
+		 encryptedThenHashed(QByteArray::
+				     number(m_ui.sign_this_email->
+					    isChecked()), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(11, crypt->
-		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
+		(11, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(12, crypt->
-		 encryptedThenHashed(subject, &ok).toBase64());
+		 encryptedThenHashed(QByteArray("Queued"), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(13, crypt->
+		 encryptedThenHashed(subject, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(14, crypt->
 		 encryptedThenHashed(oid.toLatin1(), &ok).toBase64());
 
 	    if(ok)

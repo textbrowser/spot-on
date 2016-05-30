@@ -1153,10 +1153,10 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 			      "(date, folder_index, from_account, "
 			      "goldbug, hash, "
 			      "message, message_code, "
-			      "receiver_sender, receiver_sender_hash, "
+			      "receiver_sender, receiver_sender_hash, sign, "
 			      "signature, "
 			      "status, subject, participant_oid) "
-			      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, "
+			      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, "
 			      "?, ?, ?, ?, ?)");
 		query.bindValue
 		  (0, s_crypt->
@@ -1204,18 +1204,23 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 		if(ok)
 		  query.bindValue
-		    (9, s_crypt->encryptedThenHashed(signature,
+		    (9, s_crypt->encryptedThenHashed(QByteArray(),
 						     &ok).toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (10, s_crypt->
+		    (10, s_crypt->encryptedThenHashed(signature,
+						     &ok).toBase64());
+
+		if(ok)
+		  query.bindValue
+		    (11, s_crypt->
 		     encryptedThenHashed(QByteArray("Unread"), &ok).
 		     toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (11, s_crypt->encryptedThenHashed(subject_l, &ok).
+		    (12, s_crypt->encryptedThenHashed(subject_l, &ok).
 		     toBase64());
 
 		if(ok)
@@ -1524,9 +1529,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 			  "(date, folder_index, from_account, goldbug, hash, "
 			  "message, message_code, "
 			  "receiver_sender, receiver_sender_hash, "
-			  "signature, "
+			  "sign, signature, "
 			  "status, subject, participant_oid) "
-			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, s_crypt->
 	       encryptedThenHashed(now.toString(Qt::ISODate).
@@ -1577,24 +1582,29 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	      }
 
 	    if(ok)
-	      query.bindValue(9, s_crypt->
+	      query.bindValue(9, s_crypt->encryptedThenHashed(QByteArray(),
+							      &ok).
+			      toBase64());
+
+	    if(ok)
+	      query.bindValue(10, s_crypt->
 			      encryptedThenHashed(QByteArray(), &ok).
 			      toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(10, s_crypt->
+		(11, s_crypt->
 		 encryptedThenHashed(QByteArray("Unread"), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(11, s_crypt->encryptedThenHashed(subject, &ok).
+		(12, s_crypt->encryptedThenHashed(subject, &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(12, s_crypt->
+		(13, s_crypt->
 		 encryptedThenHashed(QByteArray::number(-1), &ok).
 		 toBase64());
 

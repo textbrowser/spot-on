@@ -5183,11 +5183,12 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 		      "message_code, "
 		      "receiver_sender, "
 		      "receiver_sender_hash, "
+		      "sign, "
 		      "signature, "
 		      "status, "
 		      "subject, "
 		      "participant_oid) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->
 	   encryptedThenHashed(now.toString(Qt::ISODate).
@@ -5235,16 +5236,20 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 
 	if(ok)
 	  query.bindValue
-	    (10, crypt->
+	    (10, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (11, crypt->
 	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (11, crypt->encryptedThenHashed(subject, &ok).toBase64());
+	    (12, crypt->encryptedThenHashed(subject, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (12, crypt->
+	    (13, crypt->
 	     encryptedThenHashed(QByteArray::number(-1), &ok).
 	     toBase64());
 

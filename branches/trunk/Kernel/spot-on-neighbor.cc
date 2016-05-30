@@ -5396,10 +5396,10 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	query.prepare("INSERT INTO folders "
 		      "(date, folder_index, from_account, goldbug, hash, "
 		      "message, message_code, "
-		      "receiver_sender, receiver_sender_hash, "
+		      "receiver_sender, receiver_sender_hash, sign, "
 		      "signature, "
 		      "status, subject, participant_oid) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, s_crypt->
 	   encryptedThenHashed(now.toString(Qt::ISODate).toLatin1(),
@@ -5441,20 +5441,24 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 	if(ok)
 	  query.bindValue
-	    (9, s_crypt->encryptedThenHashed(signature, &ok).toBase64());
+	    (9, s_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (10, s_crypt->
+	    (10, s_crypt->encryptedThenHashed(signature, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (11, s_crypt->
 	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (11, s_crypt->encryptedThenHashed(subject_l, &ok).toBase64());
+	    (12, s_crypt->encryptedThenHashed(subject_l, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (12, s_crypt->
+	    (13, s_crypt->
 	     encryptedThenHashed(QByteArray::number(-1), &ok).
 	     toBase64());
 
