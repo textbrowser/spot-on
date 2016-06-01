@@ -8,7 +8,7 @@ libspoton.depends =
 
 TEMPLATE	= app
 LANGUAGE	= C++
-QT		+= network sql webkit
+QT		+= gui network sql
 CONFIG		+= app_bundle qt release warn_on
 
 # The function gcry_kdf_derive() is available in version
