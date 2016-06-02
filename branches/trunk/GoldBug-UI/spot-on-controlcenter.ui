@@ -1235,7 +1235,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>743</width>
-             <height>659</height>
+             <height>632</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2810,7 +2810,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>552</width>
+             <width>522</width>
              <height>1741</height>
             </rect>
            </property>
@@ -4047,7 +4047,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>620</width>
-             <height>659</height>
+             <height>553</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5077,10 +5077,10 @@ color: rgb(255, 255, 255);
           <widget class="QWidget" name="scrollAreaWidgetContents_9">
            <property name="geometry">
             <rect>
-             <x>-72</x>
+             <x>0</x>
              <y>0</y>
              <width>642</width>
-             <height>659</height>
+             <height>364</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5155,7 +5155,7 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-236</y>
+                 <y>0</y>
                  <width>688</width>
                  <height>544</height>
                 </rect>
@@ -6321,7 +6321,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>855</width>
+             <width>894</width>
              <height>1248</height>
             </rect>
            </property>
@@ -7809,7 +7809,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>552</width>
+             <width>477</width>
              <height>758</height>
             </rect>
            </property>
@@ -9099,8 +9099,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>677</height>
+             <width>545</width>
+             <height>473</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10877,6 +10877,10 @@ border-style: inset;
    </property>
   </action>
   <action name="action_About">
+   <property name="icon">
+    <iconset resource="../Icons/icons.qrc">
+     <normaloff>:/Logo/goldbug.png</normaloff>:/Logo/goldbug.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;About...</string>
    </property>
