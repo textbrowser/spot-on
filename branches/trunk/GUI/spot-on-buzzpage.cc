@@ -54,6 +54,10 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 				 QWidget *parent):QWidget(parent)
 {
   ui.setupUi(this);
+#if SPOTON_GOLDBUG == 1
+  ui.sendMethod->setVisible(false);
+  ui.send_method_label->setVisible(false);
+#endif
   m_channel = channel;
 
   if(m_channel.isEmpty())
