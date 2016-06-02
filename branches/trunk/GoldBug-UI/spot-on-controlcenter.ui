@@ -5077,7 +5077,7 @@ color: rgb(255, 255, 255);
           <widget class="QWidget" name="scrollAreaWidgetContents_9">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-72</x>
              <y>0</y>
              <width>642</width>
              <height>659</height>
@@ -5155,7 +5155,7 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-236</y>
                  <width>688</width>
                  <height>544</height>
                 </rect>
@@ -6321,7 +6321,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>894</width>
+             <width>855</width>
              <height>1248</height>
             </rect>
            </property>
@@ -10179,10 +10179,11 @@ QPushButton:pressed {
             <property name="font">
              <font>
               <pointsize>12</pointsize>
+              <italic>true</italic>
              </font>
             </property>
             <property name="text">
-             <string>Your Instant Definition in Crypto.</string>
+             <string>Your Instant Definition in Decentralized Crypto.</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -10856,6 +10857,10 @@ border-style: inset;
    </property>
   </action>
   <action name="action_Poptastic_Settings">
+   <property name="icon">
+    <iconset resource="../Icons/icons.qrc">
+     <normaloff>:/generic/poptastic.png</normaloff>:/generic/poptastic.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Poptastic &amp;&amp; RetroPhone Settings...</string>
    </property>
