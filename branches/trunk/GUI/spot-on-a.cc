@@ -2645,10 +2645,6 @@ spoton::spoton(void):QMainWindow()
     m_ui.emailSplitter->restoreState
       (m_settings.value("gui/emailSplitter").toByteArray());
 
-#if SPOTON_GOLDBUG == 1
-  m_ui.action_Minimal_Display->setChecked(true);
-#endif
-
   if(m_settings.contains("gui/listenersHorizontalSplitter"))
     m_ui.listenersHorizontalSplitter->restoreState
       (m_settings.value("gui/listenersHorizontalSplitter").toByteArray());
@@ -2935,6 +2931,14 @@ spoton::spoton(void):QMainWindow()
       font.setStyleHint(QFont::Monospace);
       widgets.at(i)->setFont(font);
     }
+
+#if SPOTON_GOLDBUG == 1
+  /*
+  ** Enable a minimal view after all other UI preparations.
+  */
+
+  m_ui.action_Minimal_Display->setChecked(true);
+#endif
 
   show();
   update();
