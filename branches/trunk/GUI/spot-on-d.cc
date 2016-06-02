@@ -544,6 +544,7 @@ void spoton::slotShowMinimalDisplay(bool state)
     if(qobject_cast<QWidget *> (object))
       qobject_cast<QWidget *> (object)->setVisible(!state);
 
+  m_ui.action_Neighbor_Summary_Panel->setChecked(!state);
   m_ui.activateKernel->setVisible(true);
   m_ui.addException->setVisible(!state);
   m_ui.aeBox->setVisible(!state);
