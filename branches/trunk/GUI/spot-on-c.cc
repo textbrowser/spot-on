@@ -2849,12 +2849,12 @@ void spoton::prepareContextMenuMirrors(void)
     {
       QMenu *menu = new QMenu(this);
 
-      menu->addAction(tr("Drop Tables"),
-		      this,
-		      SLOT(slotDropUrlTables(void)));
-      menu->addAction(tr("Vacuum Databases"),
+      menu->addAction(tr("Delete URL Data"),
 		      this,
 		      SLOT(slotDeleteAllUrls(void)));
+      menu->addAction(tr("Drop URL Tables"),
+		      this,
+		      SLOT(slotDropUrlTables(void)));
       m_ui.deleteAllUrls->setMenu(menu);
       connect(m_ui.deleteAllUrls,
 	      SIGNAL(clicked(void)),

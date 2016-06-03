@@ -366,9 +366,9 @@ void spoton::slotDeleteAllUrls(void)
 #endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to vacuum most of the "
+  mb.setText(tr("Are you sure that you wish to delete most of the "
 		"URL databases? Your credentials will also be removed. "
-		"The shared.db database will not be vacuumed. Please "
+		"The shared.db database will not be removed. Please "
 		"note that the deletion process may require "
 		"a considerable amount of time to complete. The "
 		"RSS mechanism and the kernel will be deactivated. "
@@ -395,7 +395,7 @@ void spoton::slotDeleteAllUrls(void)
     QMessageBox::critical(this, tr("%1: Error").
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("One or more errors occurred while "
-			     "attempting to vacuum the URL databases. "
+			     "attempting to delete the URL data. "
 			     "Please verify that you have correct "
 			     "administrator privileges."));
 }
@@ -534,11 +534,11 @@ bool spoton::deleteAllUrls(void)
   progress.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-  progress.setLabelText(tr("Vacuuming URL databases. Please be patient."));
+  progress.setLabelText(tr("Deleting URL data... Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Vacuuming URL Databases").
+  progress.setWindowTitle(tr("%1: Deleting URL Data").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
 #ifndef Q_OS_MAC
