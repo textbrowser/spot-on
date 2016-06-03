@@ -477,8 +477,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>438</width>
-                <height>466</height>
+                <width>816</width>
+                <height>516</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -6649,8 +6649,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>661</width>
-             <height>516</height>
+             <width>826</width>
+             <height>526</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -6736,9 +6736,6 @@
                 </item>
                 <item>
                  <widget class="QTableWidget" name="etpMagnets">
-                  <property name="verticalScrollBarPolicy">
-                   <enum>Qt::ScrollBarAlwaysOn</enum>
-                  </property>
                   <property name="alternatingRowColors">
                    <bool>true</bool>
                   </property>
@@ -7257,9 +7254,6 @@
                     </item>
                     <item>
                      <widget class="QTableWidget" name="received">
-                      <property name="verticalScrollBarPolicy">
-                       <enum>Qt::ScrollBarAlwaysOn</enum>
-                      </property>
                       <property name="alternatingRowColors">
                        <bool>true</bool>
                       </property>
@@ -7415,9 +7409,6 @@
                      </property>
                      <item>
                       <widget class="QTableWidget" name="transmitted">
-                       <property name="verticalScrollBarPolicy">
-                        <enum>Qt::ScrollBarAlwaysOn</enum>
-                       </property>
                        <property name="alternatingRowColors">
                         <bool>true</bool>
                        </property>
@@ -7562,9 +7553,6 @@
                     </property>
                     <item>
                      <widget class="QTableWidget" name="addTransmittedMagnets">
-                      <property name="verticalScrollBarPolicy">
-                       <enum>Qt::ScrollBarAlwaysOn</enum>
-                      </property>
                       <property name="alternatingRowColors">
                        <bool>true</bool>
                       </property>

@@ -8254,9 +8254,6 @@ color: rgb(255, 255, 255);</string>
                 </item>
                 <item>
                  <widget class="QTableWidget" name="etpMagnets">
-                  <property name="verticalScrollBarPolicy">
-                   <enum>Qt::ScrollBarAlwaysOn</enum>
-                  </property>
                   <property name="alternatingRowColors">
                    <bool>true</bool>
                   </property>
@@ -8761,9 +8758,6 @@ QPushButton:pressed {
    border-width: 0px;
 }</string>
                       </property>
-                      <property name="verticalScrollBarPolicy">
-                       <enum>Qt::ScrollBarAsNeeded</enum>
-                      </property>
                       <property name="alternatingRowColors">
                        <bool>true</bool>
                       </property>
@@ -9044,9 +9038,6 @@ QPushButton:pressed {
                      <property name="toolTip">
                       <string>Available magnets.</string>
                      </property>
-                     <property name="verticalScrollBarPolicy">
-                      <enum>Qt::ScrollBarAlwaysOn</enum>
-                     </property>
                      <property name="alternatingRowColors">
                       <bool>true</bool>
                      </property>
@@ -9269,9 +9260,6 @@ QPushButton:pressed {
                      <widget class="QTableWidget" name="transmitted">
                       <property name="toolTip">
                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uploads. Please uncheck &amp;quot;paused&amp;quot; after you have copied and sent the magnet(s) to your receiving friend(s).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="verticalScrollBarPolicy">
-                       <enum>Qt::ScrollBarAsNeeded</enum>
                       </property>
                       <property name="alternatingRowColors">
                        <bool>true</bool>
