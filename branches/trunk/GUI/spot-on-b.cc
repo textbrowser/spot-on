@@ -2122,6 +2122,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 	    (this, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid key type. Expecting 'chat', 'email', "
+		"'open-library', "
 		"'poptastic', 'rosetta', or 'url'."));
 	  return;
 	}
@@ -2471,7 +2472,8 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 	  QMessageBox::critical
 	    (this, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid key type. Expecting 'chat', 'email', 'poptastic', "
+	     tr("Invalid key type. Expecting 'chat', 'email', "
+		"'open-library', 'poptastic', "
 		"'rosetta', or 'url'."));
 	  return;
 	}
@@ -2552,7 +2554,8 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 	  QMessageBox::critical
 	    (this, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid 'chat', 'email', 'rosetta', 'poptastic', or 'url' "
+	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
+		"'rosetta', or 'url' "
 		"public key signature."));
 	  return;
 	}
@@ -2565,7 +2568,8 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 	  QMessageBox::critical
 	    (this, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid 'chat', 'email', 'rosetta', 'poptastic', or 'url' "
+	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
+		"'rosetta', or 'url' "
 		"signature public key signature."));
 	  return;
 	}
