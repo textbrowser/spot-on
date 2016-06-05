@@ -9839,7 +9839,9 @@ void spoton::slotAbout(void)
     "spot-on.sourceforge.net</a> for more information.";
   mb.setIconPixmap(pixmap);
 #else
-  str = "Please visit <a href=\"http://goldbug.sourceforge.net\">"
+  str = "GoldBug is an open source application published under "
+    "the Revised BSD License.<br>"
+    "Please visit <a href=\"http://goldbug.sourceforge.net\">"
     "goldbug.sourceforge.net</a> for more information.";
   mb.setIconPixmap(*m_ui.logo->pixmap());
 #endif
