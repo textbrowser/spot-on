@@ -277,7 +277,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   else
     m_ui.action_Publication_Date->setChecked(true);
 
-  m_importTimer.setInterval(100);
+  m_importTimer.setInterval(250);
   m_statisticsTimer.start(2500);
 
   if(m_ui.activate->isChecked())
