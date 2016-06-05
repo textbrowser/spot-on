@@ -2937,7 +2937,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>556</width>
-             <height>1783</height>
+             <height>1743</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3099,46 +3099,6 @@ color: rgb(255, 255, 255);</string>
                </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_10">
-                <property name="spacing">
-                 <number>5</number>
-                </property>
-                <item>
-                 <widget class="QToolButton" name="listenersActionMenu">
-                  <property name="toolTip">
-                   <string>Context Menu</string>
-                  </property>
-                  <property name="text">
-                   <string>Context Menu Reflection</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="../Icons/icons.qrc">
-                    <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
-                  </property>
-                  <property name="popupMode">
-                   <enum>QToolButton::MenuButtonPopup</enum>
-                  </property>
-                  <property name="autoRaise">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_20">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-              <item>
                <widget class="QGroupBox" name="groupBox_7">
                 <property name="title">
                  <string>Add Chat-Server-Listener</string>
@@ -3246,6 +3206,26 @@ color: rgb(255, 255, 255);</string>
                       </spacer>
                      </item>
                     </layout>
+                   </item>
+                   <item>
+                    <widget class="QToolButton" name="listenersActionMenu">
+                     <property name="toolTip">
+                      <string>Context Menu</string>
+                     </property>
+                     <property name="text">
+                      <string>Context Menu Reflection</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../Icons/icons.qrc">
+                       <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+                     </property>
+                     <property name="popupMode">
+                      <enum>QToolButton::MenuButtonPopup</enum>
+                     </property>
+                     <property name="autoRaise">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5293,7 +5273,7 @@ color: rgb(255, 255, 255);
           <widget class="QWidget" name="scrollAreaWidgetContents_9">
            <property name="geometry">
             <rect>
-             <x>-67</x>
+             <x>0</x>
              <y>0</y>
              <width>637</width>
              <height>660</height>
@@ -5380,7 +5360,7 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-250</y>
+                 <y>0</y>
                  <width>651</width>
                  <height>575</height>
                 </rect>
@@ -11633,9 +11613,9 @@ border-style: inset;
   <tabstop>sendMail</tabstop>
   <tabstop>scrollArea_7</tabstop>
   <tabstop>listeners</tabstop>
-  <tabstop>listenersActionMenu</tabstop>
   <tabstop>listenersEchoMode</tabstop>
   <tabstop>listenerShareAddress</tabstop>
+  <tabstop>listenersActionMenu</tabstop>
   <tabstop>sslListener</tabstop>
   <tabstop>listenerKeySize</tabstop>
   <tabstop>permanentCertificate</tabstop>
