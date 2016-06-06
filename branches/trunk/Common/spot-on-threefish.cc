@@ -695,7 +695,8 @@ QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
     }
 
   plaintext.replace
-    (plaintext.length() - sizeof(int), sizeof(int), originalLength);
+    (plaintext.length() - static_cast<int> (sizeof(int)),
+     static_cast<int> (sizeof(int)), originalLength);
 
   int iterations = plaintext.length() / static_cast<int> (m_blockSize);
 

@@ -442,7 +442,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
       else if(str.startsWith("xf="))
 	{
 	  str.remove(0, 3);
-	  iterationCount = qAbs(str.toInt());
+	  iterationCount = static_cast<unsigned long> (qAbs(str.toInt()));
 	}
       else if(str.startsWith("xs="))
 	{
