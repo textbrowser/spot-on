@@ -302,7 +302,6 @@ void spoton::slotBuzzInvite(void)
   QByteArray id;
   QPair<QByteArray, QByteArray> keys;
   QString error("");
-  bool found = false;
   spoton_buzzpage *page = 0;
   unsigned long iterationCount =
     static_cast<unsigned long> (m_ui.buzzIterationCount->minimum());
@@ -319,16 +318,16 @@ void spoton::slotBuzzInvite(void)
   if(!error.isEmpty())
     return;
 
-  foreach(spoton_buzzpage *page,
+  foreach(spoton_buzzpage *p,
 	  m_ui.buzzTab->findChildren<spoton_buzzpage *> ())
-    if(keys.first == page->key())
+    if(keys.first == p->key())
       {
-	found = true;
-	m_ui.buzzTab->setCurrentWidget(page);
+	m_ui.buzzTab->setCurrentWidget(p);
+	page = p;
 	break;
       }
 
-  if(!found)
+  if(!page)
     {
       if(m_buzzIds.contains(keys.first))
 	id = m_buzzIds[keys.first];
@@ -472,7 +471,6 @@ void spoton::joinBuzzChannel(const QUrl &url)
   QByteArray id;
   QPair<QByteArray, QByteArray> keys;
   QString error("");
-  bool found = false;
   spoton_buzzpage *page = 0;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -487,16 +485,16 @@ void spoton::joinBuzzChannel(const QUrl &url)
   if(!error.isEmpty())
     return;
 
-  foreach(spoton_buzzpage *page,
+  foreach(spoton_buzzpage *p,
 	  m_ui.buzzTab->findChildren<spoton_buzzpage *> ())
-    if(keys.first == page->key())
+    if(keys.first == p->key())
       {
-	found = true;
-	m_ui.buzzTab->setCurrentWidget(page);
+	m_ui.buzzTab->setCurrentWidget(p);
+	page = p;
 	break;
       }
 
-  if(found)
+  if(page)
     return;
 
   if(m_buzzIds.contains(keys.first))
