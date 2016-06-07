@@ -606,8 +606,6 @@ void spoton::slotSeparateBuzzPage(void)
 
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
-  mainWindow->setWindowFlags
-    (mainWindow->windowFlags() & ~Qt::WindowStaysOnTopHint);
   mainWindow->setWindowTitle
     (QString("%1: %2").
      arg(SPOTON_APPLICATION_NAME).
