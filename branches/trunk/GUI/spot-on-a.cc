@@ -5477,7 +5477,7 @@ void spoton::slotGeneralTimerTimeout(void)
 
   if(isKernelActive())
     {
-      if(m_ui.buzzTab->count() > 0)
+      if(findChildren<spoton_buzzpage *> ().count() > 0)
 	{
 	  if(!m_buzzStatusTimer.isActive())
 	    m_buzzStatusTimer.start();

@@ -5485,19 +5485,15 @@ void spoton::slotJoinBuzzChannel(void)
 
 void spoton::slotCloseBuzzTab(int index)
 {
-  int count = 0;
+  m_ui.buzzTab->removeTab(index);
+
   spoton_buzzpage *page = qobject_cast<spoton_buzzpage *>
     (m_ui.buzzTab->widget(index));
 
-  count = m_ui.buzzTab->count();
-
   if(page)
-    {
-      count -= 1;
-      page->deleteLater();
-    }
+    page->deleteLater();
 
-  if(count <= 0)
+  if(findChildren<spoton_buzzpage *> ().isEmpty())
     m_buzzStatusTimer.stop();
 }
 
