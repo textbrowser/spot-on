@@ -152,9 +152,11 @@ void spoton_kernel::popPoptastic(void)
   if(hash.isEmpty() || !ok)
     {
       m_poptasticAccounts.clear();
-      spoton_misc::logError("spoton_kernel::popPoptastic(): "
-			    "spoton_misc::poptasticSettings() failed or "
-			    "Poptastic inbound accounts are disabled.");
+
+      if(!ok)
+	spoton_misc::logError("spoton_kernel::popPoptastic(): "
+			      "spoton_misc::poptasticSettings() failed.");
+
       return;
     }
 
