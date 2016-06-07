@@ -277,7 +277,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   else
     m_ui.action_Publication_Date->setChecked(true);
 
-  m_importTimer.setInterval(250);
+  m_importTimer.setInterval(2500);
   m_statisticsTimer.start(2500);
 
   if(m_ui.activate->isChecked())
@@ -622,6 +622,7 @@ void spoton_rss::import(const int maximumKeywords)
     if(db.open())
       {
 	QSqlQuery query(db);
+	int ct = 0;
 
 	query.setForwardOnly(true);
 	query.prepare
@@ -633,6 +634,8 @@ void spoton_rss::import(const int maximumKeywords)
 	if(query.exec())
 	  while(query.next())
 	    {
+	      ct += 1;
+
               QByteArray bytes;
 	      QByteArray urlHash(query.value(4).toByteArray());
 	      QList<QVariant> list;
@@ -689,6 +692,9 @@ void spoton_rss::import(const int maximumKeywords)
 
 		  for(int i = 0; i < polarizers.size(); i++)
 		    {
+		      if(m_importFuture.isCanceled())
+			break;
+
 		      QString type(polarizers.at(i).second);
 		      QUrl u1(polarizers.at(i).first);
 		      QUrl u2(QUrl::fromEncoded(bytes));
@@ -712,6 +718,9 @@ void spoton_rss::import(const int maximumKeywords)
 			    }
 			}
 		    }
+
+		  if(m_importFuture.isCanceled())
+		    break;
 		}
 
 	      if(ok)
@@ -742,7 +751,10 @@ void spoton_rss::import(const int maximumKeywords)
 
 	      query.bindValue(1, urlHash);
 	      query.exec();
-	      break; // Single import per execution.
+
+	      if(ct >= spoton_common::RSS_IMPORTS_PER_THREAD ||
+		 m_importFuture.isCanceled())
+		break;
 	    }
       }
 

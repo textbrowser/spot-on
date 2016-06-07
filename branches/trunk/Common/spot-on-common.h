@@ -87,6 +87,7 @@ class spoton_common
   static const int POPTASTIC_MAXIMUM_EMAIL_SIZE = 50 * 1024 * 1024;
   static const int POPTASTIC_STATUS_INTERVAL = 60;
   static const int REAP_POST_OFFICE_LETTERS_INTERVAL = 60;
+  static const int RSS_IMPORTS_PER_THREAD = 5;
   static const int SEND_QUEUED_EMAIL_INTERVAL = 5;
   static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
   static const int STATUS_INTERVAL = 15;

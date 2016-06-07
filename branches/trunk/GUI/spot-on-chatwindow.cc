@@ -353,7 +353,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 			     "send.wav"));
 
 	  fileInfo.setFile(str);
-      
+
 	  if(!(!fileInfo.isReadable() || fileInfo.size() < 8192))
 	    {
 	      player = new (std::nothrow) QMediaPlayer
