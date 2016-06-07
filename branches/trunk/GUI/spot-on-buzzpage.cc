@@ -162,6 +162,24 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 spoton_buzzpage::~spoton_buzzpage()
 {
   m_statusTimer.stop();
+
+  if(m_kernelSocket &&
+     m_kernelSocket->state() == QAbstractSocket::ConnectedState)
+    if(m_kernelSocket->isEncrypted())
+      {
+	QByteArray message("removebuzz_");
+
+	message.append(key().toBase64());
+	message.append("\n");
+
+	if(m_kernelSocket->write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton_buzzpage::~spoton_buzzpage(): write() failure "
+		     "for %1:%2.").
+	     arg(m_kernelSocket->peerAddress().toString()).
+	     arg(m_kernelSocket->peerPort()));
+      }
 }
 
 void spoton_buzzpage::slotSetIcons(void)

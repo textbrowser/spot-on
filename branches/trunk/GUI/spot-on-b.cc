@@ -5397,11 +5397,14 @@ void spoton::slotJoinBuzzChannel(void)
     goto done_label;
 
   foreach(spoton_buzzpage *page,
-	  m_ui.buzzTab->findChildren<spoton_buzzpage *> ())
+	  findChildren<spoton_buzzpage *> ())
     if(keys.first == page->key())
       {
 	found = true;
-	m_ui.buzzTab->setCurrentWidget(page);
+
+	if(m_ui.buzzTab == page->parent())
+	  m_ui.buzzTab->setCurrentWidget(page);
+
 	break;
       }
 
@@ -5482,7 +5485,6 @@ void spoton::slotJoinBuzzChannel(void)
 
 void spoton::slotCloseBuzzTab(int index)
 {
-  QByteArray key;
   int count = 0;
   spoton_buzzpage *page = qobject_cast<spoton_buzzpage *>
     (m_ui.buzzTab->widget(index));
@@ -5491,31 +5493,12 @@ void spoton::slotCloseBuzzTab(int index)
 
   if(page)
     {
-      key = page->key();
       count -= 1;
       page->deleteLater();
     }
 
   if(count <= 0)
     m_buzzStatusTimer.stop();
-
-  if(!key.isEmpty())
-    if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-      if(m_kernelSocket.isEncrypted())
-	{
-	  QByteArray message("removebuzz_");
-
-	  message.append(key.toBase64());
-	  message.append("\n");
-
-	  if(m_kernelSocket.write(message.constData(), message.length()) !=
-	     message.length())
-	    spoton_misc::logError
-	      (QString("spoton::slotCloseBuzzTab(): write() failure "
-		       "for %1:%2.").
-	       arg(m_kernelSocket.peerAddress().toString()).
-	       arg(m_kernelSocket.peerPort()));
-	}
 }
 
 void spoton::initializeKernelSocket(void)

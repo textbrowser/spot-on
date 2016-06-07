@@ -322,7 +322,9 @@ void spoton::slotBuzzInvite(void)
 	  m_ui.buzzTab->findChildren<spoton_buzzpage *> ())
     if(keys.first == p->key())
       {
-	m_ui.buzzTab->setCurrentWidget(p);
+	if(m_ui.buzzTab == p->parent())
+	  m_ui.buzzTab->setCurrentWidget(p);
+
 	page = p;
 	break;
       }
@@ -489,7 +491,9 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	  m_ui.buzzTab->findChildren<spoton_buzzpage *> ())
     if(keys.first == p->key())
       {
-	m_ui.buzzTab->setCurrentWidget(p);
+	if(m_ui.buzzTab == p->parent())
+	  m_ui.buzzTab->setCurrentWidget(p);
+
 	page = p;
 	break;
       }
