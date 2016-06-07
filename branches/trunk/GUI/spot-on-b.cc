@@ -222,27 +222,15 @@ void spoton::slotReceivedKernelMessage(void)
 	      QByteArray key(list.value(1));
 
 	      /*
-	      ** Find the channel!
+	      ** Find the channel(s)!
 	      */
 
-	      spoton_buzzpage *page = 0;
-
-	      for(int i = 0; i < m_ui.buzzTab->count(); i++)
+	      foreach(spoton_buzzpage *page,
+		      findChildren<spoton_buzzpage *> ())
 		{
-		  page = qobject_cast<spoton_buzzpage *>
-		    (m_ui.buzzTab->widget(i));
-
-		  if(!page)
+		  if(key != page->key())
 		    continue;
 
-		  if(key == page->key())
-		    break;
-		  else
-		    page = 0;
-		}
-
-	      if(page)
-		{
 		  QByteArray bytes(list.value(0));
 		  QDataStream stream(&bytes, QIODevice::ReadOnly);
 		  QList<QByteArray> list;

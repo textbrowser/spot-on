@@ -7431,8 +7431,7 @@ void spoton::sendBuzzKeysToKernel(void)
   bool sent = true;
 
   if((sent = (m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
-    foreach(spoton_buzzpage *page,
-	    m_ui.tab->findChildren<spoton_buzzpage *> ())
+    foreach(spoton_buzzpage *page, findChildren<spoton_buzzpage *> ())
       if((sent &= m_kernelSocket.isEncrypted()))
 	{
 	  QByteArray message;
