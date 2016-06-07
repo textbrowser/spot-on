@@ -2680,6 +2680,7 @@ spoton::spoton(void):QMainWindow()
     m_ui.kernelSecureMemoryPool->setStyleSheet
       ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
 
+  m_ui.buzzTab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.destination->setToolTip(m_ui.destination->text());
   m_ui.emailParticipants->setAlternatingRowColors
     (m_optionsUi.emailAlternatingRowColors->isChecked());
@@ -2729,6 +2730,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
+  connect(m_ui.buzzTab->tabBar(),
+	  SIGNAL(customContextMenuRequested(const QPoint &)),
+	  this,
+	  SLOT(slotShowBuzzTabContextMenu(const QPoint &)));
   connect(m_ui.tab->tabBar(),
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,

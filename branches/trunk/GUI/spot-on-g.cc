@@ -574,3 +574,42 @@ void spoton::slotPlaySounds(bool state)
 
   settings.setValue("gui/play_sounds", state);
 }
+
+void spoton::slotShowBuzzTabContextMenu(const QPoint &point)
+{
+  QAction *action = 0;
+  QMenu menu(this);
+
+  action = menu.addAction(tr("&Separate..."), this,
+			  SLOT(slotSeparateBuzzPage(void)));
+  action->setProperty("index", m_ui.buzzTab->tabBar()->tabAt(point));
+  menu.exec(m_ui.buzzTab->tabBar()->mapToGlobal(point));
+}
+
+void spoton::slotSeparateBuzzPage(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  int index = action->property("index").toInt();
+  spoton_buzzpage *page = qobject_cast<spoton_buzzpage *>
+    (m_ui.buzzTab->widget(index));
+
+  if(!page)
+    return;
+
+  m_ui.buzzTab->removeTab(index);
+
+  QMainWindow *mainWindow = new QMainWindow(this);
+
+  mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
+  mainWindow->setCentralWidget(page);
+  mainWindow->setWindowTitle
+    (QString("%1: %2").
+     arg(SPOTON_APPLICATION_NAME).
+     arg(page->channel().constData()));
+  mainWindow->show();
+  page->show();
+}

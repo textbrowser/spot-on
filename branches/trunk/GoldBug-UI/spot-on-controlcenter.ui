@@ -545,7 +545,7 @@ QPushButton:pressed {
              </layout>
             </item>
             <item>
-             <widget class="QTabWidget" name="buzzTab">
+             <widget class="spoton_tabwidget" name="buzzTab">
               <property name="currentIndex">
                <number>-1</number>
               </property>
@@ -1307,7 +1307,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>710</width>
-             <height>660</height>
+             <height>637</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2936,8 +2936,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>1743</height>
+             <width>499</width>
+             <height>1759</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4207,7 +4207,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>597</width>
-             <height>660</height>
+             <height>576</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5276,7 +5276,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>637</width>
-             <height>660</height>
+             <height>352</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6598,7 +6598,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>818</width>
+             <width>842</width>
              <height>1304</height>
             </rect>
            </property>
@@ -8149,7 +8149,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
+             <width>448</width>
              <height>771</height>
             </rect>
            </property>
@@ -9517,8 +9517,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>536</width>
+             <height>471</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
