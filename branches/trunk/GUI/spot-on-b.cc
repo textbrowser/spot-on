@@ -5361,7 +5361,6 @@ void spoton::slotJoinBuzzChannel(void)
   QByteArray id;
   QPair<QByteArray, QByteArray> keys;
   QString error("");
-  bool found = false;
   spoton_buzzpage *page = 0;
   unsigned long iterationCount =
     static_cast<unsigned long> (m_ui.buzzIterationCount->value());
@@ -5396,19 +5395,18 @@ void spoton::slotJoinBuzzChannel(void)
   if(!error.isEmpty())
     goto done_label;
 
-  foreach(spoton_buzzpage *page,
+  foreach(spoton_buzzpage *p,
 	  findChildren<spoton_buzzpage *> ())
-    if(keys.first == page->key())
+    if(keys.first == p->key())
       {
-	found = true;
+	if(m_ui.buzzTab->indexOf(p) != -1)
+	  m_ui.buzzTab->setCurrentWidget(p);
 
-	if(m_ui.buzzTab == page->parent())
-	  m_ui.buzzTab->setCurrentWidget(page);
-
+	page = p;
 	break;
       }
 
-  if(found)
+  if(page)
     goto done_label;
 
   if(m_buzzIds.contains(keys.first))
