@@ -2200,7 +2200,7 @@ void spoton_rss::slotLogError(const QString &error)
     return;
 
   m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
-  m_ui.errors->append(QString(error).trimmed().append("<br>"));
+  m_ui.errors->append(error.trimmed().append("<br>"));
   spoton_misc::logError(error);
 }
 
