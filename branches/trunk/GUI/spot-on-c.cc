@@ -1278,6 +1278,11 @@ void spoton::slotPopulateStars(void)
 
     if(db.open())
       {
+	disconnect(m_ui.received,
+		   SIGNAL(itemChanged(QTableWidgetItem *)),
+		   this,
+		   SLOT(slotReceiversChanged(QTableWidgetItem *)));
+
 	QLocale locale;
 	QModelIndexList list;
 	QSqlQuery query(db);
@@ -1341,20 +1346,15 @@ void spoton::slotPopulateStars(void)
 
 		  if(i == 0)
 		    {
-		      check = new QCheckBox();
+		      item = new QTableWidgetItem();
+		      item->setFlags(Qt::ItemIsEnabled |
+				     Qt::ItemIsSelectable |
+				     Qt::ItemIsUserCheckable);
 
-		      if(query.value(i).toInt())
-			check->setChecked(true);
+		      if(query.value(i).toBool())
+			item->setCheckState(Qt::Checked);
 		      else
-			check->setChecked(false);
-
-		      check->setProperty
-			("oid", query.value(query.record().count() - 1));
-		      connect(check,
-			      SIGNAL(toggled(bool)),
-			      this,
-			      SLOT(slotMosaicLocked(bool)));
-		      m_ui.received->setCellWidget(row, 0, check);
+			item->setCheckState(Qt::Unchecked);
 		    }
 		  else if(i >= 1 && i <= 5)
 		    {
@@ -1399,7 +1399,8 @@ void spoton::slotPopulateStars(void)
 
 		  if(item)
 		    {
-		      item->setFlags(Qt::ItemIsEnabled |
+		      item->setFlags(item->flags() |
+				     Qt::ItemIsEnabled |
 				     Qt::ItemIsSelectable);
 		      m_ui.received->setItem(row, i + 1, item);
 		    }
@@ -1528,6 +1529,10 @@ void spoton::slotPopulateStars(void)
 #ifdef Q_WS_X11
 	m_ui.received->setUpdatesEnabled(true);
 #endif
+	connect(m_ui.received,
+		SIGNAL(itemChanged(QTableWidgetItem *)),
+		this,
+		SLOT(slotReceiversChanged(QTableWidgetItem *)));
 
 	if(currentTabName() != "starbeam")
 	  {

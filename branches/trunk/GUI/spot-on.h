@@ -806,7 +806,6 @@ class spoton: public QMainWindow
 #endif
   void slotMessagesAnchorClicked(const QUrl &url);
   void slotModeChanged(QSslSocket::SslMode mode);
-  void slotMosaicLocked(bool state);
   void slotNeighborChanged(QTableWidgetItem *item);
   void slotNeighborFullEcho(void);
   void slotNeighborHalfEcho(void);
@@ -847,6 +846,7 @@ class spoton: public QMainWindow
   void slotPurgeEphemeralKeys(void);
   void slotQuit(void);
   void slotReceivedKernelMessage(void);
+  void slotReceiversChanged(QTableWidgetItem *item);
   void slotReceiversClicked(bool state);
   void slotRefreshMail(void);
   void slotRefreshPostOffice(void);

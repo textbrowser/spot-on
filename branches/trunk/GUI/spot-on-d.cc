@@ -2326,54 +2326,61 @@ QString spoton::currentTabName(void) const
   return name;
 }
 
-void spoton::slotMosaicLocked(bool state)
+void spoton::slotReceiversChanged(QTableWidgetItem *item)
 {
-  QCheckBox *check = qobject_cast<QCheckBox *> (sender());
-
-  if(!check)
+  if(!item)
     return;
 
-  QFile file(check->property("filename").toString());
+  if(!(item->column() == 0)) // Locked
+    return;
 
-  if(state)
+  QFile file;
+
+  if(m_ui.received->item(item->row(), 4)) // File
+    file.setFileName(m_ui.received->item(item->row(), 4)->text());
+
+  if(file.exists())
     {
-      QFile::Permissions g(file.permissions());
-      QFile::Permissions s = 0;
+      if(item->checkState() == Qt::Checked)
+	{
+	  QFile::Permissions g(file.permissions());
+	  QFile::Permissions s = 0;
 
-      if(g & QFile::ExeOther)
-	s |= QFile::ExeOther;
+	  if(g & QFile::ExeOther)
+	    s |= QFile::ExeOther;
 
-      if(g & QFile::WriteOther)
-	s |= QFile::WriteOther;
+	  if(g & QFile::WriteOther)
+	    s |= QFile::WriteOther;
 
-      if(g & QFile::ReadOther)
-	s |= QFile::ReadOther;
+	  if(g & QFile::ReadOther)
+	    s |= QFile::ReadOther;
 
-      if(g & QFile::ExeGroup)
-	s |= QFile::ExeGroup;
+	  if(g & QFile::ExeGroup)
+	    s |= QFile::ExeGroup;
 
-      if(g & QFile::WriteGroup)
-	s |= QFile::WriteGroup;
+	  if(g & QFile::WriteGroup)
+	    s |= QFile::WriteGroup;
 
-      if(g & QFile::ReadGroup)
-	s |= QFile::ReadGroup;
+	  if(g & QFile::ReadGroup)
+	    s |= QFile::ReadGroup;
 
-      if(g & QFile::ExeUser)
-	s |= QFile::ExeUser;
+	  if(g & QFile::ExeUser)
+	    s |= QFile::ExeUser;
 
-      if(g & QFile::ReadUser)
-	s |= QFile::ReadUser;
+	  if(g & QFile::ReadUser)
+	    s |= QFile::ReadUser;
 
-      if(g & QFile::ExeOwner)
-	s |= QFile::ExeOwner;
+	  if(g & QFile::ExeOwner)
+	    s |= QFile::ExeOwner;
 
-      if(g & QFile::ReadOwner)
-	s |= QFile::ReadOwner;
+	  if(g & QFile::ReadOwner)
+	    s |= QFile::ReadOwner;
 
-      file.setPermissions(s);
+	  file.setPermissions(s);
+	}
+      else
+	file.setPermissions(file.permissions() | QFile::WriteOwner);
     }
-  else
-    file.setPermissions(file.permissions() | QFile::WriteOwner);
 
   QString connectionName("");
 
@@ -2386,12 +2393,20 @@ void spoton::slotMosaicLocked(bool state)
     if(db.open())
       {
 	QSqlQuery query(db);
+	QString oid("");
 
-	query.prepare
-	  ("UPDATE received SET locked = ? WHERE OID = ?");
-	query.bindValue(0, state);
-	query.bindValue(1, check->property("oid"));
-	query.exec();
+	if(m_ui.received->item(item->row(), m_ui.received->columnCount() - 1))
+	  oid = m_ui.received->item(item->row(),
+				    m_ui.received->columnCount() - 1)->text();
+
+	if(item->column() == 0)
+	  {
+	    query.prepare
+	      ("UPDATE received SET locked = ? WHERE OID = ?");
+	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
+	    query.bindValue(1, oid);
+	    query.exec();
+	  }
       }
 
     db.close();
