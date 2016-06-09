@@ -617,3 +617,8 @@ void spoton::slotSeparateBuzzPage(void)
   mainWindow->show();
   page->show();
 }
+
+void spoton::slotShowBuzzDetails(bool state)
+{
+  m_ui.buzz_frame->setVisible(state);
+}

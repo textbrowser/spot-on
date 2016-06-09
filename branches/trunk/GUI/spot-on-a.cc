@@ -452,6 +452,7 @@ spoton::spoton(void):QMainWindow()
   list.clear();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
+  m_ui.buzz_frame->setVisible(m_ui.buzz_details->isChecked());
 #if SPOTON_GOLDBUG == 0
   m_ui.proxy_frame->setVisible(m_ui.proxy->isChecked());
 #endif
@@ -1533,6 +1534,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(bool)),
 	  this,
 	  SLOT(slotReceiversClicked(bool)));
+  connect(m_ui.buzz_details,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowBuzzDetails(bool)));
   connect(m_ui.rewind,
 	  SIGNAL(clicked(void)),
 	  this,
