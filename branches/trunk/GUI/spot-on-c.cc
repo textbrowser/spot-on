@@ -1405,7 +1405,12 @@ void spoton::slotPopulateStars(void)
 		    }
 
 		  if(item)
-		    m_ui.received->setItem(row, i + 1, item);
+		    {
+		      if(i == 0)
+			m_ui.received->setItem(row, i, item);
+		      else
+			m_ui.received->setItem(row, i + 1, item);
+		    }
 		}
 
 	      if(check)
