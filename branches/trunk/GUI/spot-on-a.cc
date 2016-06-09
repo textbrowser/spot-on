@@ -3860,9 +3860,7 @@ void spoton::slotPopulateListeners(void)
 	if(!list.isEmpty())
 	  transportS = list.at(0).data().toString();
 
-#ifdef Q_WS_X11
 	m_ui.listeners->setUpdatesEnabled(false);
-#endif
 	m_ui.listeners->setSortingEnabled(false);
 	m_ui.listeners->clearContents();
 	m_ui.listeners->setRowCount(0);
@@ -4421,9 +4419,7 @@ void spoton::slotPopulateListeners(void)
 	m_ui.listeners->horizontalHeader()->setStretchLastSection(true);
 	m_ui.listeners->horizontalScrollBar()->setValue(hval);
 	m_ui.listeners->verticalScrollBar()->setValue(vval);
-#ifdef Q_WS_X11
 	m_ui.listeners->setUpdatesEnabled(true);
-#endif
 	connect(m_ui.listeners,
 		SIGNAL(itemChanged(QTableWidgetItem *)),
 		this,
@@ -4540,9 +4536,7 @@ void spoton::slotPopulateNeighbors(void)
 	  transport = list.at(0).data().toString();
 
 	m_neighborToOidMap.clear();
-#ifdef Q_WS_X11
 	m_ui.neighbors->setUpdatesEnabled(false);
-#endif
 	m_ui.neighbors->setSortingEnabled(false);
 	m_ui.neighbors->clearContents();
 	m_ui.neighbors->setRowCount(0);
@@ -5220,9 +5214,7 @@ void spoton::slotPopulateNeighbors(void)
 	m_ui.neighbors->horizontalHeader()->setStretchLastSection(true);
 	m_ui.neighbors->horizontalScrollBar()->setValue(hval);
 	m_ui.neighbors->verticalScrollBar()->setValue(vval);
-#ifdef Q_WS_X11
 	m_ui.neighbors->setUpdatesEnabled(true);
-#endif
 	connect(m_ui.neighbors,
 		SIGNAL(itemChanged(QTableWidgetItem *)),
 		this,

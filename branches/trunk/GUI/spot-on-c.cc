@@ -248,15 +248,11 @@ void spoton::slotPopulateEtpMagnets(void)
 	      checked.append(checkBox->text());
 	  }
 
-#ifdef Q_WS_X11
 	m_ui.etpMagnets->setUpdatesEnabled(false);
-#endif
 	m_ui.etpMagnets->setSortingEnabled(false);
 	m_ui.etpMagnets->clearContents();
 	m_ui.etpMagnets->setRowCount(0);
-#ifdef Q_WS_X11
 	m_ui.addTransmittedMagnets->setUpdatesEnabled(false);
-#endif
 	m_ui.addTransmittedMagnets->setSortingEnabled(false);
 	m_ui.addTransmittedMagnets->clearContents();
 	m_ui.addTransmittedMagnets->setRowCount(0);
@@ -327,14 +323,10 @@ void spoton::slotPopulateEtpMagnets(void)
 
 	m_ui.addTransmittedMagnets->setRowCount(totalRows);
 	m_ui.addTransmittedMagnets->setSortingEnabled(true);
-#ifdef Q_WS_X11
 	m_ui.addTransmittedMagnets->setUpdatesEnabled(true);
-#endif
 	m_ui.etpMagnets->setRowCount(totalRows);
 	m_ui.etpMagnets->setSortingEnabled(true);
-#ifdef Q_WS_X11
 	m_ui.etpMagnets->setUpdatesEnabled(true);
-#endif
 
 	if(focusWidget)
 	  focusWidget->setFocus();
@@ -1310,9 +1302,7 @@ void spoton::slotPopulateStars(void)
 
 	hval = m_ui.received->horizontalScrollBar()->value();
 	vval = m_ui.received->verticalScrollBar()->value();
-#ifdef Q_WS_X11
 	m_ui.received->setUpdatesEnabled(false);
-#endif
 	m_ui.received->setSortingEnabled(false);
 	m_ui.received->clearContents();
 	m_ui.received->setRowCount(0);
@@ -1533,9 +1523,7 @@ void spoton::slotPopulateStars(void)
 	m_ui.received->horizontalHeader()->setStretchLastSection(true);
 	m_ui.received->horizontalScrollBar()->setValue(hval);
 	m_ui.received->verticalScrollBar()->setValue(vval);
-#ifdef Q_WS_X11
 	m_ui.received->setUpdatesEnabled(true);
-#endif
 	connect(m_ui.received,
 		SIGNAL(itemChanged(QTableWidgetItem *)),
 		this,
@@ -1563,9 +1551,7 @@ void spoton::slotPopulateStars(void)
 
 	hval = m_ui.transmitted->horizontalScrollBar()->value();
 	vval = m_ui.transmitted->verticalScrollBar()->value();
-#ifdef Q_WS_X11
 	m_ui.transmitted->setUpdatesEnabled(false);
-#endif
 	m_ui.transmitted->setSortingEnabled(false);
 	m_ui.transmitted->clearContents();
 	m_ui.transmitted->setRowCount(0);
@@ -1759,9 +1745,7 @@ void spoton::slotPopulateStars(void)
 	m_ui.transmitted->horizontalHeader()->setStretchLastSection(true);
 	m_ui.transmitted->horizontalScrollBar()->setValue(hval);
 	m_ui.transmitted->verticalScrollBar()->setValue(vval);
-#ifdef Q_WS_X11
 	m_ui.transmitted->setUpdatesEnabled(true);
-#endif
 
 	if(focusWidget)
 	  focusWidget->setFocus();
