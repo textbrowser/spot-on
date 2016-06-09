@@ -1379,6 +1379,9 @@ void spoton::slotPopulateStars(void)
 		      else
 			item = new QTableWidgetItem(tr("error"));
 
+		      item->setFlags(Qt::ItemIsEnabled |
+				     Qt::ItemIsSelectable);
+
 		      if(i == 3)
 			{
 			  fileName = item->text();
@@ -1394,16 +1397,15 @@ void spoton::slotPopulateStars(void)
 			expectedFileHash = bytes;
 		    }
 		  else if(i == query.record().count() - 1)
-		    item = new QTableWidgetItem
-		      (query.value(i).toString());
+		    {
+		      item = new QTableWidgetItem
+			(query.value(i).toString());
+		      item->setFlags(Qt::ItemIsEnabled |
+				     Qt::ItemIsSelectable);
+		    }
 
 		  if(item)
-		    {
-		      item->setFlags(item->flags() |
-				     Qt::ItemIsEnabled |
-				     Qt::ItemIsSelectable);
-		      m_ui.received->setItem(row, i + 1, item);
-		    }
+		    m_ui.received->setItem(row, i + 1, item);
 		}
 
 	      if(check)
