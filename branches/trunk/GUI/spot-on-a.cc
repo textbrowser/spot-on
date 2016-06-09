@@ -4359,9 +4359,10 @@ void spoton::slotPopulateListeners(void)
 
 		    if(item)
 		      {
-			item->setFlags
-			  (item->flags() |
-			   Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+			if(!(i == 0 || i == 12))
+			  item->setFlags
+			    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
 			item->setToolTip(tooltip);
 			m_ui.listeners->setItem(row, i, item);
 
