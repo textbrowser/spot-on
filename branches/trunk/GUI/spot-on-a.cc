@@ -7276,7 +7276,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			   arg(m_settings.value("gui/iconSet",
 						"nouve").
 			       toString().toLower())),
-		     tr("Invite to an anonymous Buzz channel."),
+		     tr("Invite to an anonymous Buzz channel..."),
 		     this,
 		     SLOT(slotBuzzInvite(void)));
       menu.exec(m_ui.participants->mapToGlobal(point));

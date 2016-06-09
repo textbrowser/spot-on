@@ -2855,7 +2855,7 @@ void spoton::prepareContextMenuMirrors(void)
 			    arg(m_settings.value("gui/iconSet",
 						 "nouve").
 				toString().toLower())),
-		      tr("Invite to an anonymous Buzz channel."),
+		      tr("Invite to an anonymous Buzz channel..."),
 		      this,
 		      SLOT(slotBuzzInvite(void)));
       m_ui.chatActionMenu->setMenu(menu);

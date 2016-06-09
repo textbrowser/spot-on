@@ -364,9 +364,17 @@ void spoton::slotBuzzInvite(void)
 	      SIGNAL(iconsChanged(void)),
 	      page,
 	      SLOT(slotSetIcons(void)));
-      m_ui.buzzTab->addTab(page, QString::fromUtf8(channel.constData(),
-						   channel.length()));
-      m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
+
+      QMainWindow *mainWindow = new QMainWindow(this);
+
+      mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
+      mainWindow->setCentralWidget(page);
+      mainWindow->setWindowTitle
+	(QString("%1: %2").
+	 arg(SPOTON_APPLICATION_NAME).
+	 arg(page->channel().constData()));
+      mainWindow->show();
+      page->show();
     }
 
   QByteArray message("addbuzz_");
@@ -535,8 +543,17 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	  SIGNAL(iconsChanged(void)),
 	  page,
 	  SLOT(slotSetIcons(void)));
-  m_ui.buzzTab->addTab(page, channel);
-  m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
+
+  QMainWindow *mainWindow = new QMainWindow(this);
+
+  mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
+  mainWindow->setCentralWidget(page);
+  mainWindow->setWindowTitle
+    (QString("%1: %2").
+     arg(SPOTON_APPLICATION_NAME).
+     arg(page->channel().constData()));
+  mainWindow->show();
+  page->show();
 
   if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
     if(m_kernelSocket.isEncrypted())

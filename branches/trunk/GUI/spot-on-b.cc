@@ -419,7 +419,8 @@ void spoton::slotReceivedKernelMessage(void)
 			(tr("<i><a href='%1'>"
 			    "%2...%3 cordially invites you to "
 			    "join a Buzz channel. Please click this "
-			    "link to accept the invitation.</a></i>").
+			    "link to accept the invitation in a new "
+			    "window.</a></i>").
 			 arg(list.value(2).constData()).
 			 arg(hash.toBase64().mid(0, 16).
 			     constData()).
