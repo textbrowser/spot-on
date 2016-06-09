@@ -784,13 +784,12 @@ class spoton: public QMainWindow
   void slotLaunchKernelAfterAuthentication(bool state);
   void slotLimitConnections(int value);
   void slotLinkClicked(const QUrl &url);
-  void slotListenerCheckChange(bool state);
+  void slotListenerChanged(QTableWidgetItem *item);
   void slotListenerFullEcho(void);
   void slotListenerHalfEcho(void);
   void slotListenerIPComboChanged(int index);
   void slotListenerMaximumChanged(int value);
   void slotListenerSelected(void);
-  void slotListenerUseAccounts(bool state);
   void slotLock(void);
   void slotMagnetRadioToggled(bool state);
   void slotMailRetrievalIntervalChanged(int value);
@@ -822,7 +821,6 @@ class spoton: public QMainWindow
   void slotPassphraseAuthenticateRadioToggled(bool state);
   void slotPassphraseChanged(const QString &text);
   void slotPassphraseRadioToggled(bool state);
-  void slotPassthroughCheckChange(bool state);
   void slotPlaySounds(bool state);
   void slotPoptasticAccountChanged(const QString &text);
   void slotPoptasticSettingsReset(bool state);

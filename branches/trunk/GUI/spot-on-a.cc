@@ -3811,6 +3811,10 @@ void spoton::slotPopulateListeners(void)
 
     if(db.open())
       {
+	disconnect(m_ui.listeners,
+		   SIGNAL(itemChanged(QTableWidgetItem *)),
+		   this,
+		   SLOT(slotListenerChanged(QTableWidgetItem *)));
 	updateListenersTable(db);
 
 	QModelIndexList list;
@@ -4009,13 +4013,18 @@ void spoton::slotPopulateListeners(void)
 
 		    if(i == 0 || i == 12)
 		      {
-			QCheckBox *check = new QCheckBox();
+			item = new QTableWidgetItem();
+			item->setFlags(Qt::ItemIsEnabled |
+				       Qt::ItemIsSelectable |
+				       Qt::ItemIsUserCheckable);
 
 			if(i == 0)
 			  {
 			    if(query.value(0).toString().
 			       toLower() == "online")
-			      check->setChecked(true);
+			      item->setCheckState(Qt::Checked);
+			    else
+			      item->setCheckState(Qt::Unchecked);
 			  }
 			else
 			  {
@@ -4023,35 +4032,24 @@ void spoton::slotPopulateListeners(void)
 			      {
 				if(query.value(2).toLongLong() > 0)
 				  {
-				    if(query.value(i).toLongLong())
-				      check->setChecked(true);
+				    if(query.value(i).toBool())
+				      item->setCheckState(Qt::Checked);
+				    else
+				      item->setCheckState(Qt::Unchecked);
 				  }
 				else
-				  check->setEnabled(false);
+				  item->setFlags
+				    (Qt::ItemIsEnabled |
+				     Qt::ItemIsSelectable);
 			      }
 			    else
 			      {
-				if(query.value(i).toLongLong())
-				  check->setChecked(true);
+				if(query.value(i).toBool())
+				  item->setCheckState(Qt::Checked);
+				else
+				  item->setCheckState(Qt::Unchecked);
 			      }
 			  }
-
-			check->setProperty
-			  ("oid", query.value(query.record().count() - 1));
-			check->setToolTip(tooltip);
-
-			if(i == 0)
-			  connect(check,
-				  SIGNAL(toggled(bool)),
-				  this,
-				  SLOT(slotListenerCheckChange(bool)));
-			else
-			  connect(check,
-				  SIGNAL(toggled(bool)),
-				  this,
-				  SLOT(slotListenerUseAccounts(bool)));
-
-			m_ui.listeners->setCellWidget(row, i, check);
 		      }
 		    else if(i == 2)
 		      {
@@ -4316,21 +4314,15 @@ void spoton::slotPopulateListeners(void)
 		      }
 		    else if(i == 21) // Passthrough
 		      {
-			QCheckBox *check = new QCheckBox();
+			item = new QTableWidgetItem();
+			item->setFlags(Qt::ItemIsEnabled |
+				       Qt::ItemIsSelectable |
+				       Qt::ItemIsUserCheckable);
 
-			if(query.value(i).toLongLong())
-			  check->setChecked(true);
+			if(query.value(i).toBool())
+			  item->setCheckState(Qt::Checked);
 			else
-			  check->setChecked(false);
-
-			check->setProperty
-			  ("oid", query.value(query.record().count() - 1));
-			check->setProperty("table", "listeners");
-			connect(check,
-				SIGNAL(toggled(bool)),
-				this,
-				SLOT(slotPassthroughCheckChange(bool)));
-			m_ui.listeners->setCellWidget(row, i, check);
+			  item->setCheckState(Qt::Unchecked);
 		      }
 		    else
 		      {
@@ -4363,7 +4355,8 @@ void spoton::slotPopulateListeners(void)
 		    if(item)
 		      {
 			item->setFlags
-			  (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+			  (item->flags() |
+			   Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 			item->setToolTip(tooltip);
 			m_ui.listeners->setItem(row, i, item);
 
@@ -4425,6 +4418,10 @@ void spoton::slotPopulateListeners(void)
 #ifdef Q_WS_X11
 	m_ui.listeners->setUpdatesEnabled(true);
 #endif
+	connect(m_ui.listeners,
+		SIGNAL(itemChanged(QTableWidgetItem *)),
+		this,
+		SLOT(slotListenerChanged(QTableWidgetItem *)));
 
 	if(focusWidget)
 	  focusWidget->setFocus();
@@ -4826,8 +4823,7 @@ void spoton::slotPopulateNeighbors(void)
 		  else
 		    item->setCheckState(Qt::Unchecked);
 
-		  item->setFlags(Qt::ItemIsEditable |
-				 Qt::ItemIsEnabled |
+		  item->setFlags(Qt::ItemIsEnabled |
 				 Qt::ItemIsSelectable |
 				 Qt::ItemIsUserCheckable);
 		  item->setToolTip(tr("The sticky feature enables an "
@@ -5050,8 +5046,7 @@ void spoton::slotPopulateNeighbors(void)
 			else
 			  item->setCheckState(Qt::Unchecked);
 
-			item->setFlags(Qt::ItemIsEditable |
-				       Qt::ItemIsEnabled |
+			item->setFlags(Qt::ItemIsEnabled |
 				       Qt::ItemIsSelectable |
 				       Qt::ItemIsUserCheckable);
 			item->setToolTip(tooltip);
@@ -5770,79 +5765,76 @@ void spoton::slotDeleteNeighbor(void)
   m_ui.neighborSummary->clear();
 }
 
-void spoton::slotListenerCheckChange(bool state)
+void spoton::slotListenerChanged(QTableWidgetItem *item)
 {
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+  if(!item)
+    return;
 
-  if(checkBox)
-    {
-      QString connectionName("");
+  if(!(item->column() == 0 ||  // Activate
+       item->column() == 12 || // Use Accounts?
+       item->column() == 21))  // Passthrough
+    return;
 
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	QSqlQuery query(db);
+	QString oid("");
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "listeners.db");
+	if(m_ui.listeners->item(item->row(),
+				m_ui.listeners->columnCount() - 1))
+	  oid = m_ui.listeners->item
+	    (item->row(), m_ui.listeners->columnCount() - 1)->text();
 
-	if(db.open())
+	if(item->column() == 0)
 	  {
-	    QSqlQuery query(db);
-
 	    query.prepare("UPDATE listeners SET "
 			  "status_control = ? "
 			  "WHERE OID = ? AND status_control <> 'deleted'");
 
-	    if(state)
+	    if(item->checkState() == Qt::Checked)
 	      query.bindValue(0, "online");
 	    else
 	      query.bindValue(0, "offline");
 
-	    query.bindValue(1, checkBox->property("oid"));
+	    query.bindValue(1, oid);
 	    query.exec();
 	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-}
-
-void spoton::slotListenerUseAccounts(bool state)
-{
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
-
-  if(checkBox)
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "listeners.db");
-
-	if(db.open())
+	else if(item->column() == 12)
 	  {
-	    QSqlQuery query(db);
-
 	    query.prepare("UPDATE listeners SET "
 			  "use_accounts = ? WHERE OID = ?");
 
-	    if(state)
+	    if(item->checkState() == Qt::Checked)
 	      query.bindValue(0, 1);
 	    else
 	      query.bindValue(0, 0);
 
-	    query.bindValue(1, checkBox->property("oid"));
+	    query.bindValue(1, oid);
 	    query.exec();
 	  }
-
-	db.close();
+	else if(item->column() == 21)
+	  {
+	    query.prepare("UPDATE listeners SET "
+			  "passthrough = ? "
+			  "WHERE OID = ?");
+	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
+	    query.bindValue(1, oid);
+	    query.exec();
+	  }
       }
 
-      QSqlDatabase::removeDatabase(connectionName);
-    }
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::updateListenersTable(const QSqlDatabase &db)
