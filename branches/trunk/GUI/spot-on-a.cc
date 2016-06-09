@@ -3851,7 +3851,9 @@ void spoton::slotPopulateListeners(void)
 	if(!list.isEmpty())
 	  transportS = list.at(0).data().toString();
 
+#ifdef Q_WS_X11
 	m_ui.listeners->setUpdatesEnabled(false);
+#endif
 	m_ui.listeners->setSortingEnabled(false);
 	m_ui.listeners->clearContents();
 	m_ui.listeners->setRowCount(0);
@@ -4420,7 +4422,9 @@ void spoton::slotPopulateListeners(void)
 	m_ui.listeners->horizontalHeader()->setStretchLastSection(true);
 	m_ui.listeners->horizontalScrollBar()->setValue(hval);
 	m_ui.listeners->verticalScrollBar()->setValue(vval);
+#ifdef Q_WS_X11
 	m_ui.listeners->setUpdatesEnabled(true);
+#endif
 
 	if(focusWidget)
 	  focusWidget->setFocus();
@@ -4471,6 +4475,10 @@ void spoton::slotPopulateNeighbors(void)
 
     if(db.open())
       {
+	disconnect(m_ui.neighbors,
+		   SIGNAL(itemChanged(QTableWidgetItem *)),
+		   this,
+		   SLOT(slotNeighborChanged(QTableWidgetItem *)));
 	updateNeighborsTable(db);
 
 	QModelIndexList list;
@@ -4529,7 +4537,9 @@ void spoton::slotPopulateNeighbors(void)
 	  transport = list.at(0).data().toString();
 
 	m_neighborToOidMap.clear();
+#ifdef Q_WS_X11
 	m_ui.neighbors->setUpdatesEnabled(false);
+#endif
 	m_ui.neighbors->setSortingEnabled(false);
 	m_ui.neighbors->clearContents();
 	m_ui.neighbors->setRowCount(0);
@@ -4808,33 +4818,24 @@ void spoton::slotPopulateNeighbors(void)
 		  arg(query.value(37).toInt()).
 		  arg(query.value(38).toInt());
 
-		QCheckBox *check = 0;
-
-		check = new QCheckBox();
-		check->setToolTip(tr("The sticky feature enables an "
-				     "indefinite lifetime for a neighbor.\n"
-				     "If "
-				     "not checked, the neighbor will be "
-				     "terminated after some internal "
-				     "timer expires."));
-
-		if(query.value(0).toLongLong())
-		  check->setChecked(true);
-		else
-		  check->setChecked(false);
-
-		check->setProperty
-		  ("oid", query.value(query.record().count() - 1));
-		connect(check,
-			SIGNAL(toggled(bool)),
-			this,
-			SLOT(slotNeighborCheckChange(bool)));
-		m_ui.neighbors->setCellWidget(row, 0, check);
-
 		{
-		  QTableWidgetItem *item = new QTableWidgetItem
-		    (QString::number(query.value(0).toLongLong()));
+		  QTableWidgetItem *item = new QTableWidgetItem();
 
+		  if(query.value(0).toBool())
+		    item->setCheckState(Qt::Checked);
+		  else
+		    item->setCheckState(Qt::Unchecked);
+
+		  item->setFlags(Qt::ItemIsEditable |
+				 Qt::ItemIsEnabled |
+				 Qt::ItemIsSelectable |
+				 Qt::ItemIsUserCheckable);
+		  item->setToolTip(tr("The sticky feature enables an "
+				      "indefinite lifetime for a neighbor.\n"
+				      "If "
+				      "not checked, the neighbor will be "
+				      "terminated after some internal "
+				      "timer expires."));
 		  m_ui.neighbors->setItem(row, 0, item);
 		}
 
@@ -5016,6 +5017,7 @@ void spoton::slotPopulateNeighbors(void)
 			box->setProperty
 			  ("oid", query.value(query.record().count() - 1));
 			box->setProperty("table", "neighbors");
+			box->setToolTip(tooltip);
 			m_ui.neighbors->setCellWidget(row, i, box);
 
 			if(box->findText(QString::
@@ -5041,25 +5043,18 @@ void spoton::slotPopulateNeighbors(void)
 		      }
 		    else if(i == 37) // Passthrough
 		      {
-			QCheckBox *check = new QCheckBox();
+			QTableWidgetItem *item = new QTableWidgetItem();
 
-			if(query.value(i).toLongLong())
-			  check->setChecked(true);
+			if(query.value(i).toBool())
+			  item->setCheckState(Qt::Checked);
 			else
-			  check->setChecked(false);
+			  item->setCheckState(Qt::Unchecked);
 
-			check->setProperty
-			  ("oid", query.value(query.record().count() - 1));
-			check->setProperty("table", "neighbors");
-			connect(check,
-				SIGNAL(toggled(bool)),
-				this,
-				SLOT(slotPassthroughCheckChange(bool)));
-			m_ui.neighbors->setCellWidget(row, i, check);
-
-			QTableWidgetItem *item = new QTableWidgetItem
-			  (QString::number(query.value(i).toLongLong()));
-
+			item->setFlags(Qt::ItemIsEditable |
+				       Qt::ItemIsEnabled |
+				       Qt::ItemIsSelectable |
+				       Qt::ItemIsUserCheckable);
+			item->setToolTip(tooltip);
 			m_ui.neighbors->setItem(row, i, item);
 		      }
 		    else if(i == 38) // Wait-For-Bytes-Written
@@ -5224,7 +5219,13 @@ void spoton::slotPopulateNeighbors(void)
 	m_ui.neighbors->horizontalHeader()->setStretchLastSection(true);
 	m_ui.neighbors->horizontalScrollBar()->setValue(hval);
 	m_ui.neighbors->verticalScrollBar()->setValue(vval);
+#ifdef Q_WS_X11
 	m_ui.neighbors->setUpdatesEnabled(true);
+#endif
+	connect(m_ui.neighbors,
+		SIGNAL(itemChanged(QTableWidgetItem *)),
+		this,
+		SLOT(slotNeighborChanged(QTableWidgetItem *)));
 
 	if(focusWidget)
 	  focusWidget->setFocus();
@@ -6852,37 +6853,58 @@ void spoton::slotTabChanged(int index)
     m_sb.chat->setVisible(false);
 }
 
-void spoton::slotNeighborCheckChange(bool state)
+void spoton::slotNeighborChanged(QTableWidgetItem *item)
 {
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+  if(!item)
+    return;
 
-  if(checkBox)
-    {
-      QString connectionName("");
+  if(!(item->column() == 0 || // Sticky
+       item->column() == 37)) // Passthrough
+    return;
 
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	QSqlQuery query(db);
+	QString oid("");
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "neighbors.db");
+	if(m_ui.neighbors->item(item->row(),
+				m_ui.neighbors->columnCount() - 1))
+	  oid = m_ui.neighbors->item(item->row(),
+				     m_ui.neighbors->columnCount() - 1)->
+	    text();
 
-	if(db.open())
+	if(item->column() == 0)
 	  {
-	    QSqlQuery query(db);
-
 	    query.prepare("UPDATE neighbors SET "
 			  "sticky = ? "
 			  "WHERE OID = ?");
-	    query.bindValue(0, state ? 1 : 0);
-	    query.bindValue(1, checkBox->property("oid"));
+	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
+	    query.bindValue(1, oid);
 	    query.exec();
 	  }
-
-	db.close();
+	else if(item->column() == 37)
+	  {
+	    query.prepare("UPDATE neighbors SET "
+			  "passthrough = ? "
+			  "WHERE OID = ?");
+	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
+	    query.bindValue(1, oid);
+	    query.exec();
+	  }
       }
 
-      QSqlDatabase::removeDatabase(connectionName);
-    }
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotMaximumClientsChanged(int index)

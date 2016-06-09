@@ -1798,26 +1798,16 @@ void spoton::slotPassthroughCheckChange(bool state)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    if(checkBox->property("table") == "listeners")
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "listeners.db");
-    else
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "neighbors.db");
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
 
-	if(checkBox->property("table") == "listeners")
-	  query.prepare("UPDATE listeners SET "
-			"passthrough = ? "
-			"WHERE OID = ?");
-	else
-	  query.prepare("UPDATE neighbors SET "
-			"passthrough = ? "
-			"WHERE OID = ?");
-
+	query.prepare("UPDATE listeners SET "
+		      "passthrough = ? "
+		      "WHERE OID = ?");
 	query.bindValue(0, state ? 1 : 0);
 	query.bindValue(1, checkBox->property("oid"));
 	query.exec();
