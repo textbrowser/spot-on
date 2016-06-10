@@ -614,6 +614,9 @@ void spoton_rss::import(const int maximumKeywords)
   if(m_importFuture.isCanceled())
     return;
 
+  QList<QByteArray> urlHashes;
+  QList<QList<QVariant> > lists;
+
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
@@ -733,29 +736,58 @@ void spoton_rss::import(const int maximumKeywords)
 	      else
 		list.clear();
 
-	      bool imported = false;
-
 	      if(!list.isEmpty())
-		imported = importUrl(list, maximumKeywords);
-
-	      QSqlQuery updateQuery(db);
-
-	      updateQuery.prepare("UPDATE rss_feeds_links "
-				  "SET imported = ? "
-				  "WHERE url_hash = ?");
-
-	      if(imported)
-		updateQuery.bindValue(0, 1);
-	      else
-		updateQuery.bindValue(0, 2); // Import error.
-
-	      updateQuery.bindValue(1, urlHash);
-	      updateQuery.exec();
+		{
+		  lists << list;
+		  urlHashes << urlHash;
+		}
 
 	      if(ct >= spoton_common::RSS_IMPORTS_PER_THREAD ||
 		 m_importFuture.isCanceled())
 		break;
 	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(m_importFuture.isCanceled())
+    return;
+
+  QList<bool> imported;
+
+  while(!lists.isEmpty() && !m_importFuture.isCanceled())
+    imported << importUrl(lists.takeFirst(), maximumKeywords);
+
+  if(m_importFuture.isCanceled())
+    return;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	for(int i = 0; i < imported.size() && !m_importFuture.isCanceled();
+	    i++)
+	  {
+	    query.prepare("UPDATE rss_feeds_links "
+			  "SET imported = ? "
+			  "WHERE url_hash = ?");
+
+	    if(imported.at(i))
+	      query.bindValue(0, 1);
+	    else
+	      query.bindValue(0, 2); // Import error.
+
+	    query.bindValue(1, urlHashes.value(i));
+	    query.exec();
+	  }
       }
 
     db.close();
