@@ -26,7 +26,6 @@
 */
 
 #include "spot-on.h"
-#include "spot-on-buzzpage.h"
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
@@ -301,8 +300,8 @@ void spoton::slotBuzzInvite(void)
   QByteArray hashType("sha512");
   QByteArray id;
   QPair<QByteArray, QByteArray> keys;
+  QPointer<spoton_buzzpage> page;
   QString error("");
-  spoton_buzzpage *page = 0;
   unsigned long iterationCount =
     static_cast<unsigned long> (m_ui.buzzIterationCount->minimum());
 
@@ -318,9 +317,8 @@ void spoton::slotBuzzInvite(void)
   if(!error.isEmpty())
     return;
 
-  foreach(spoton_buzzpage *p,
-	  findChildren<spoton_buzzpage *> ())
-    if(keys.first == p->key())
+  foreach(spoton_buzzpage *p, m_buzzPages.values())
+    if(p && keys.first == p->key())
       {
 	if(m_ui.buzzTab->indexOf(p) != -1)
 	  m_ui.buzzTab->setCurrentWidget(p);
@@ -344,6 +342,7 @@ void spoton::slotBuzzInvite(void)
       page = new spoton_buzzpage
 	(&m_kernelSocket, channel, channelSalt, channelType,
 	 id, iterationCount, hashKey, hashType, keys.first, this);
+      m_buzzPages[page->key()] = page;
       connect(&m_buzzStatusTimer,
 	      SIGNAL(timeout(void)),
 	      page,
@@ -356,6 +355,14 @@ void spoton::slotBuzzInvite(void)
 	      SIGNAL(channelSaved(void)),
 	      this,
 	      SLOT(slotPopulateBuzzFavorites(void)));
+      connect(page,
+	      SIGNAL(destroyed(QObject *)),
+	      this,
+	      SLOT(slotBuzzPageDestroyed(QObject *)));
+      connect(page,
+	      SIGNAL(unify(void)),
+	      this,
+	      SLOT(slotUnify(void)));
       connect(this,
 	      SIGNAL(buzzNameChanged(const QByteArray &)),
 	      page,
@@ -365,7 +372,7 @@ void spoton::slotBuzzInvite(void)
 	      page,
 	      SLOT(slotSetIcons(void)));
 
-      QMainWindow *mainWindow = new QMainWindow(this);
+      QMainWindow *mainWindow = new QMainWindow(0);
 
       mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
       mainWindow->setCentralWidget(page);
@@ -375,6 +382,7 @@ void spoton::slotBuzzInvite(void)
 	 arg(page->channel().constData()));
       mainWindow->show();
       page->show();
+      page->showUnify(true);
     }
 
   QByteArray message("addbuzz_");
@@ -480,8 +488,8 @@ void spoton::joinBuzzChannel(const QUrl &url)
 
   QByteArray id;
   QPair<QByteArray, QByteArray> keys;
+  QPointer<spoton_buzzpage> page;
   QString error("");
-  spoton_buzzpage *page = 0;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   keys = spoton_crypt::derivedKeys(channelType,
@@ -495,9 +503,8 @@ void spoton::joinBuzzChannel(const QUrl &url)
   if(!error.isEmpty())
     return;
 
-  foreach(spoton_buzzpage *p,
-	  findChildren<spoton_buzzpage *> ())
-    if(keys.first == p->key())
+  foreach(spoton_buzzpage *p, m_buzzPages.values())
+    if(p && keys.first == p->key())
       {
 	if(m_ui.buzzTab->indexOf(p) != -1)
 	  m_ui.buzzTab->setCurrentWidget(p);
@@ -523,6 +530,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
     (&m_kernelSocket, channel.toLatin1(), channelSalt.toLatin1(),
      channelType.toLatin1(), id, iterationCount, hashKey.toLatin1(),
      hashType.toLatin1(), keys.first, this);
+  m_buzzPages[page->key()] = page;
   connect(&m_buzzStatusTimer,
 	  SIGNAL(timeout(void)),
 	  page,
@@ -535,6 +543,14 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	  SIGNAL(channelSaved(void)),
 	  this,
 	  SLOT(slotPopulateBuzzFavorites(void)));
+  connect(page,
+	  SIGNAL(destroyed(QObject *)),
+	  this,
+	  SLOT(slotBuzzPageDestroyed(QObject *)));
+  connect(page,
+	  SIGNAL(unify(void)),
+	  this,
+	  SLOT(slotUnify(void)));
   connect(this,
 	  SIGNAL(buzzNameChanged(const QByteArray &)),
 	  page,
@@ -544,7 +560,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	  page,
 	  SLOT(slotSetIcons(void)));
 
-  QMainWindow *mainWindow = new QMainWindow(this);
+  QMainWindow *mainWindow = new QMainWindow(0);
 
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
@@ -554,6 +570,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
      arg(page->channel().constData()));
   mainWindow->show();
   page->show();
+  page->showUnify(true);
 
   if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
     if(m_kernelSocket.isEncrypted())
@@ -623,7 +640,7 @@ void spoton::slotSeparateBuzzPage(void)
 
   m_ui.buzzTab->removeTab(index);
 
-  QMainWindow *mainWindow = new QMainWindow(this);
+  QMainWindow *mainWindow = new QMainWindow(0);
 
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
@@ -633,9 +650,49 @@ void spoton::slotSeparateBuzzPage(void)
      arg(page->channel().constData()));
   mainWindow->show();
   page->show();
+  page->showUnify(true);
 }
 
 void spoton::slotShowBuzzDetails(bool state)
 {
   m_ui.buzz_frame->setVisible(state);
+}
+
+void spoton::slotUnifyBuzz(void)
+{
+  spoton_buzzpage *page = qobject_cast<spoton_buzzpage *> (sender());
+
+  if(!page)
+    return;
+
+  QMainWindow *mainWindow = qobject_cast<QMainWindow *> (page->parentWidget());
+
+  page->setParent(this);
+
+  if(mainWindow)
+    {
+      mainWindow->setCentralWidget(0);
+      mainWindow->deleteLater();
+    }
+
+  page->showUnify(false);
+  m_ui.buzzTab->addTab(page, QString::fromUtf8(page->channel().constData(),
+					       page->channel().length()));
+  m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
+}
+
+void spoton::slotBuzzPageDestroyed(QObject *object)
+{
+  Q_UNUSED(object);
+
+  QMutableHashIterator<QByteArray, QPointer<spoton_buzzpage> > it
+    (m_buzzPages);
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(!it.value())
+	it.remove();
+    }
 }

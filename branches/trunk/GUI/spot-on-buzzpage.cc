@@ -122,6 +122,10 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSendMessage(void)));
+  connect(ui.unify,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SIGNAL(unify(void)));
   ui.clients->setColumnHidden(1, true); // ID
   ui.clients->setColumnHidden(2, true); // Time
   ui.clients->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
@@ -130,6 +134,7 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 #endif
   ui.splitter->setStretchFactor(0, 1);
   ui.splitter->setStretchFactor(1, 0);
+  ui.unify->setVisible(false);
 
   QByteArray data;
 
@@ -769,4 +774,9 @@ void spoton_buzzpage::slotCopy(void)
 QString spoton_buzzpage::magnet(void) const
 {
   return ui.magnet->text();
+}
+
+void spoton_buzzpage::showUnify(const bool state)
+{
+  ui.unify->setVisible(state);
 }

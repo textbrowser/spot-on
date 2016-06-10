@@ -88,6 +88,7 @@ extern "C"
 #endif
 #endif
 
+#include "spot-on-buzzpage.h"
 #include "spot-on-defines.h"
 #include "ui_spot-on-keyboard.h"
 
@@ -449,6 +450,7 @@ class spoton: public QMainWindow
   QDialog *m_poptasticRetroPhoneDialog;
   QFuture<QList<QPair<QString, QVariant> > > m_statisticsFuture;
   QFutureWatcher<QList<QPair<QString, QVariant> > > m_statisticsFutureWatcher;
+  QHash<QByteArray, QPointer<spoton_buzzpage> > m_buzzPages;
   QHash<QByteArray, QString> m_neighborToOidMap;
   QHash<QByteArray, quint64> m_receivedChatSequenceNumbers;
   QHash<QByteArray, spoton_forward_secrecy> m_forwardSecrecyRequests;
@@ -660,6 +662,7 @@ class spoton: public QMainWindow
   void slotBuzzActionsActivated(int index);
   void slotBuzzChanged(void);
   void slotBuzzInvite(void);
+  void slotBuzzPageDestroyed(QObject *object);
   void slotBuzzTools(int index);
   void slotCallParticipant(void);
   void slotCallParticipantViaForwardSecrecy(void);
@@ -961,6 +964,7 @@ class spoton: public QMainWindow
   void slotTransmittedSelected(void);
   void slotTransportChanged(int index);
   void slotUnblockNeighbor(void);
+  void slotUnifyBuzz(void);
   void slotUpdateChatWindows(void);
   void slotUpdateSpinBoxChanged(double value);
   void slotUrlLinkClicked(const QUrl &u);

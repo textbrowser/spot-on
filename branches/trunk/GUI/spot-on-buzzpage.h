@@ -61,6 +61,7 @@ class spoton_buzzpage: public QWidget
   QString magnet(void) const;
   void userStatus(const QList<QByteArray> &list);
   void appendMessage(const QList<QByteArray> &list);
+  void showUnify(const bool state);
 
  private:
   QByteArray m_channel;
@@ -88,6 +89,7 @@ class spoton_buzzpage: public QWidget
  signals:
   void changed(void);
   void channelSaved(void);
+  void unify(void);
 };
 
 #endif

@@ -63,7 +63,6 @@ extern "C"
 #include <qbluetooth.h>
 #endif
 #include "Common/spot-on-threefish.h"
-#include "spot-on-buzzpage.h"
 #include "spot-on-defines.h"
 #include "spot-on.h"
 #include "ui_spot-on-password-prompt.h"
@@ -5471,7 +5470,7 @@ void spoton::slotGeneralTimerTimeout(void)
 
   if(isKernelActive())
     {
-      if(findChildren<spoton_buzzpage *> ().count() > 0)
+      if(!m_buzzPages.isEmpty())
 	{
 	  if(!m_buzzStatusTimer.isActive())
 	    m_buzzStatusTimer.start();
@@ -7443,8 +7442,8 @@ void spoton::sendBuzzKeysToKernel(void)
   bool sent = true;
 
   if((sent = (m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
-    foreach(spoton_buzzpage *page, findChildren<spoton_buzzpage *> ())
-      if((sent &= m_kernelSocket.isEncrypted()))
+    foreach(spoton_buzzpage *page, m_buzzPages.values())
+      if(page && (sent &= m_kernelSocket.isEncrypted()))
 	{
 	  QByteArray message;
 

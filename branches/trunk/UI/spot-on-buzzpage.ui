@@ -17,7 +17,16 @@
    <property name="spacing">
     <number>5</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>5</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>5</number>
+   </property>
+   <property name="bottomMargin">
     <number>5</number>
    </property>
    <item>
@@ -63,6 +72,16 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="unify">
+       <property name="toolTip">
+        <string>Attach to the main window's Buzz page.</string>
+       </property>
+       <property name="text">
+        <string>Unify</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -78,7 +97,16 @@
        <property name="spacing">
         <number>5</number>
        </property>
-       <property name="margin">
+       <property name="leftMargin">
+        <number>5</number>
+       </property>
+       <property name="topMargin">
+        <number>5</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
         <number>5</number>
        </property>
        <item>
@@ -131,7 +159,16 @@
        <property name="spacing">
         <number>5</number>
        </property>
-       <property name="margin">
+       <property name="leftMargin">
+        <number>5</number>
+       </property>
+       <property name="topMargin">
+        <number>5</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
         <number>5</number>
        </property>
        <item>
@@ -292,6 +329,7 @@
   <tabstop>favorite</tabstop>
   <tabstop>copy</tabstop>
   <tabstop>remove</tabstop>
+  <tabstop>unify</tabstop>
   <tabstop>clearMessages</tabstop>
   <tabstop>messages</tabstop>
   <tabstop>clients</tabstop>

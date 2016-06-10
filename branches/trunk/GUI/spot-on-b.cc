@@ -26,7 +26,6 @@
 */
 
 #include "spot-on.h"
-#include "spot-on-buzzpage.h"
 #include "spot-on-defines.h"
 
 #include <QSslKey>
@@ -225,10 +224,11 @@ void spoton::slotReceivedKernelMessage(void)
 	      ** Find the channel(s)!
 	      */
 
-	      foreach(spoton_buzzpage *page,
-		      findChildren<spoton_buzzpage *> ())
+	      foreach(spoton_buzzpage *page, m_buzzPages.values())
 		{
-		  if(key != page->key())
+		  if(!page)
+		    continue;
+		  else if(key != page->key())
 		    continue;
 
 		  QByteArray bytes(list.value(0));
@@ -5361,8 +5361,8 @@ void spoton::slotJoinBuzzChannel(void)
   QByteArray hashType(m_ui.buzzHashType->currentText().toLatin1());
   QByteArray id;
   QPair<QByteArray, QByteArray> keys;
+  QPointer<spoton_buzzpage> page;
   QString error("");
-  spoton_buzzpage *page = 0;
   unsigned long iterationCount =
     static_cast<unsigned long> (m_ui.buzzIterationCount->value());
 
@@ -5396,9 +5396,8 @@ void spoton::slotJoinBuzzChannel(void)
   if(!error.isEmpty())
     goto done_label;
 
-  foreach(spoton_buzzpage *p,
-	  findChildren<spoton_buzzpage *> ())
-    if(keys.first == p->key())
+  foreach(spoton_buzzpage *p, m_buzzPages.values())
+    if(p && keys.first == p->key())
       {
 	if(m_ui.buzzTab->indexOf(p) != -1)
 	  m_ui.buzzTab->setCurrentWidget(p);
@@ -5428,6 +5427,7 @@ void spoton::slotJoinBuzzChannel(void)
   page = new spoton_buzzpage
     (&m_kernelSocket, channel, channelSalt, channelType,
      id, iterationCount, hashKey, hashType, keys.first, this);
+  m_buzzPages[page->key()] = page;
   connect(&m_buzzStatusTimer,
 	  SIGNAL(timeout(void)),
 	  page,
@@ -5440,6 +5440,14 @@ void spoton::slotJoinBuzzChannel(void)
 	  SIGNAL(channelSaved(void)),
 	  this,
 	  SLOT(slotPopulateBuzzFavorites(void)));
+  connect(page,
+	  SIGNAL(destroyed(QObject *)),
+	  this,
+	  SLOT(slotBuzzPageDestroyed(QObject *)));
+  connect(page,
+	  SIGNAL(unify(void)),
+	  this,
+	  SLOT(slotUnifyBuzz(void)));
   connect(this,
 	  SIGNAL(buzzNameChanged(const QByteArray &)),
 	  page,
@@ -5484,15 +5492,18 @@ void spoton::slotJoinBuzzChannel(void)
 
 void spoton::slotCloseBuzzTab(int index)
 {
-  m_ui.buzzTab->removeTab(index);
-
   spoton_buzzpage *page = qobject_cast<spoton_buzzpage *>
     (m_ui.buzzTab->widget(index));
 
   if(page)
-    page->deleteLater();
+    {
+      m_buzzPages.remove(page->key());
+      page->deleteLater();
+    }
 
-  if(findChildren<spoton_buzzpage *> ().isEmpty())
+  m_ui.buzzTab->removeTab(index);
+
+  if(m_buzzPages.isEmpty())
     m_buzzStatusTimer.stop();
 }
 
