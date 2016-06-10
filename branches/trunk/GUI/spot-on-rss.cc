@@ -738,19 +738,19 @@ void spoton_rss::import(const int maximumKeywords)
 	      if(!list.isEmpty())
 		imported = importUrl(list, maximumKeywords);
 
-	      QSqlQuery query(db);
+	      QSqlQuery updateQuery(db);
 
-	      query.prepare("UPDATE rss_feeds_links "
-			    "SET imported = ? "
-			    "WHERE url_hash = ?");
+	      updateQuery.prepare("UPDATE rss_feeds_links "
+				  "SET imported = ? "
+				  "WHERE url_hash = ?");
 
 	      if(imported)
-		query.bindValue(0, 1);
+		updateQuery.bindValue(0, 1);
 	      else
-		query.bindValue(0, 2); // Import error.
+		updateQuery.bindValue(0, 2); // Import error.
 
-	      query.bindValue(1, urlHash);
-	      query.exec();
+	      updateQuery.bindValue(1, urlHash);
+	      updateQuery.exec();
 
 	      if(ct >= spoton_common::RSS_IMPORTS_PER_THREAD ||
 		 m_importFuture.isCanceled())
