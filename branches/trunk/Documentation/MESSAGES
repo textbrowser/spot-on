@@ -402,10 +402,12 @@ EOL
 Capabilities Exchange
 Echoed? No
 
-Message Type ("0014")
-0 - UUID (Base-64)
+Message Type ("0014") (Base-64)
+0 - UUID
 EOL
-1 - Lane Width (Base-64)
+1 - Lane Width
+EOL
+2 - Full/Half-Echo
 
 Echo Listener Publication
 Echoed? Yes

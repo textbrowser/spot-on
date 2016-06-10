@@ -3758,8 +3758,16 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 		if(!m_isUserDefined)
 		  {
 		    QList<int> laneWidths(spoton_common::LANE_WIDTHS);
+		    QString echoMode(list.value(2));
 		    int laneWidth = list.value(1).toInt();
 
+		    if(!(echoMode == "full" || echoMode == "half"))
+		      echoMode = "full";
+
+		    QWriteLocker locker(&m_echoModeMutex);
+
+		    m_echoMode = echoMode;
+		    locker.unlock();
 		    laneWidths << spoton_common::LANE_WIDTH_DEFAULT
 			       << spoton_common::LANE_WIDTH_MAXIMUM
 			       << spoton_common::LANE_WIDTH_MINIMUM;
@@ -3767,15 +3775,24 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 		    if(!laneWidths.contains(laneWidth))
 		      laneWidth = spoton_common::LANE_WIDTH_DEFAULT;
 
-		    query.prepare("UPDATE neighbors SET lane_width = ?, "
+		    query.prepare("UPDATE neighbors SET "
+				  "echo_mode = ?, "
+				  "lane_width = ?, "
 				  "uuid = ? "
 				  "WHERE OID = ?");
-		    query.bindValue(0, laneWidth);
 		    query.bindValue
-		      (1, s_crypt->
-		       encryptedThenHashed(uuid.toString().toLatin1(),
+		      (0, s_crypt->
+		       encryptedThenHashed(echoMode.toLatin1(),
 					   &ok).toBase64());
-		    query.bindValue(2, m_id);
+		    query.bindValue(1, laneWidth);
+
+		    if(ok)
+		      query.bindValue
+			(2, s_crypt->
+			 encryptedThenHashed(uuid.toString().toLatin1(),
+					     &ok).toBase64());
+
+		    query.bindValue(3, m_id);
 		  }
 		else
 		  {
@@ -4979,12 +4996,18 @@ void spoton_neighbor::slotSendCapabilities(void)
     return;
 
   QByteArray message;
+  QReadLocker locker(&m_echoModeMutex);
+  QString echoMode(m_echoMode);
+
+  locker.unlock();
+
   QUuid uuid
     (spoton_kernel::
      setting("gui/uuid", "{00000000-0000-0000-0000-000000000000}").toString());
 
   message = spoton_send::message0014(uuid.toString().toLatin1() + "\n" +
-				     QByteArray::number(m_laneWidth));
+				     QByteArray::number(m_laneWidth) + "\n" +
+				     echoMode.toLatin1());
 
   if(write(message.constData(), message.length()) != message.length())
     spoton_misc::logError
