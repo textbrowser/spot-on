@@ -72,8 +72,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>629</width>
-             <height>1349</height>
+             <width>562</width>
+             <height>1391</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -151,9 +151,6 @@
              <widget class="QCheckBox" name="play_sounds">
               <property name="text">
                <string>&amp;Play sounds.</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -1383,9 +1380,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-76</y>
-             <width>722</width>
-             <height>1072</height>
+             <y>0</y>
+             <width>634</width>
+             <height>1084</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -2176,8 +2173,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>322</width>
-             <height>312</height>
+             <width>288</width>
+             <height>235</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -2444,7 +2441,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

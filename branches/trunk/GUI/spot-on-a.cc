@@ -2440,7 +2440,7 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.chatTimestamps->setChecked
     (m_settings.value("gui/chatTimestamps", true).toBool());
   m_optionsUi.play_sounds->setChecked
-    (m_settings.value("gui/play_sounds", true).toBool());
+    (m_settings.value("gui/play_sounds", false).toBool());
 
   /*
   ** Please don't translate n/a.

@@ -11252,6 +11252,8 @@ border-style: inset;
     <addaction name="separator"/>
     <addaction name="action_File_Encryption"/>
     <addaction name="separator"/>
+    <addaction name="action_New_Global_Name"/>
+    <addaction name="separator"/>
     <addaction name="action_Rosetta"/>
     <addaction name="separator"/>
     <addaction name="action_StarBeam_Analyzer"/>
@@ -11514,6 +11516,11 @@ border-style: inset;
   <action name="action_Notifications_Window">
    <property name="text">
     <string>No&amp;tifications Window...</string>
+   </property>
+  </action>
+  <action name="action_New_Global_Name">
+   <property name="text">
+    <string>&amp;New Global Name...</string>
    </property>
   </action>
  </widget>

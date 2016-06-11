@@ -344,7 +344,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 	player->deleteLater();
 
       if(spoton::instance() ? spoton::instance()->m_settings.
-	 value("gui/play_sounds", true).toBool() : true)
+	 value("gui/play_sounds", false).toBool() : false)
 	{
 	  QFileInfo fileInfo;
 	  QString str
