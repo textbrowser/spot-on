@@ -649,6 +649,32 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	    break;
 	  }
       }
+    else if(arguments.at(i) == "--terminate")
+      {
+	QString sharedPath(spoton_misc::homePath() + QDir::separator() +
+			   "shared.db");
+	libspoton_handle_t libspotonHandle;
+
+	if(libspoton_init_b(sharedPath.toStdString().c_str(),
+			    0,
+			    0,
+			    0,
+			    0,
+			    0,
+			    0,
+			    0,
+			    &libspotonHandle,
+			    settings.value("gui/gcryctl_init_secmem",
+					   262144).toInt()) ==
+	   LIBSPOTON_ERROR_NONE)
+	  libspoton_deregister_kernel
+	    (libspoton_registered_kernel_pid(&libspotonHandle, 0),
+	     &libspotonHandle);
+
+	libspoton_close(&libspotonHandle);
+	deleteLater();
+	break;
+      }
     else if(arguments.at(i) == "--vacuum")
       {
       }
