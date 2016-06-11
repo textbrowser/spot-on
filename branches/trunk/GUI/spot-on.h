@@ -815,6 +815,7 @@ class spoton: public QMainWindow
   void slotNeighborMaximumChanged(int value);
   void slotNeighborSelected(void);
   void slotNeighborWaitForBytesWrittenChanged(int value);
+  void slotNewGlobalName(void);
   void slotNewKeys(bool state);
   void slotOntopChatDialogs(bool state);
   void slotOpenChatUrlChecked(bool state);

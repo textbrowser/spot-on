@@ -696,3 +696,7 @@ void spoton::slotBuzzPageDestroyed(QObject *object)
 	it.remove();
     }
 }
+
+void spoton::slotNewGlobalName(void)
+{
+}
