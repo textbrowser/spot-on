@@ -769,6 +769,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(bool)),
 	  this,
 	  SLOT(slotShowNeighborSummaryPanel(bool)));
+  connect(m_ui.action_New_Global_Name,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotNewGlobalName(void)));
   connect(m_ui.action_Paste,
 	  SIGNAL(triggered(void)),
 	  this,

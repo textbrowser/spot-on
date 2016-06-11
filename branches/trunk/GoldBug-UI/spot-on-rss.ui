@@ -617,7 +617,7 @@
           <item>
            <widget class="QPushButton" name="clear_errors">
             <property name="text">
-             <string>Clear</string>
+             <string>&amp;Clear</string>
             </property>
            </widget>
           </item>

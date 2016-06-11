@@ -309,6 +309,12 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
     return QByteArray();
 }
 
+void spoton_rosetta::setName(const QString &text)
+{
+  ui.name->setText(text);
+  slotSaveName();
+}
+
 void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
 {
   QClipboard *clipboard = QApplication::clipboard();

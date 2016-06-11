@@ -709,6 +709,7 @@ void spoton::slotNewGlobalName(void)
   if(!ok)
     return;
 
+  m_rosetta.setName(text);
   m_ui.buzzName->setText(text);
   m_ui.emailNameEditable->setText(text);
   m_ui.nodeName->setText(text);
