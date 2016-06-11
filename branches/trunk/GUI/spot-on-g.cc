@@ -362,7 +362,7 @@ void spoton::slotBuzzInvite(void)
       connect(page,
 	      SIGNAL(unify(void)),
 	      this,
-	      SLOT(slotUnify(void)));
+	      SLOT(slotUnifyBuzz(void)));
       connect(this,
 	      SIGNAL(buzzNameChanged(const QByteArray &)),
 	      page,
@@ -550,7 +550,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
   connect(page,
 	  SIGNAL(unify(void)),
 	  this,
-	  SLOT(slotUnify(void)));
+	  SLOT(slotUnifyBuzz(void)));
   connect(this,
 	  SIGNAL(buzzNameChanged(const QByteArray &)),
 	  page,
