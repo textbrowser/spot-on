@@ -8934,7 +8934,7 @@
   </action>
   <action name="action_New_Global_Name">
    <property name="text">
-    <string>&amp;New Global Name</string>
+    <string>&amp;New Global Name...</string>
    </property>
   </action>
  </widget>

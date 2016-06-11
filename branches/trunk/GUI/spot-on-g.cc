@@ -699,4 +699,22 @@ void spoton::slotBuzzPageDestroyed(QObject *object)
 
 void spoton::slotNewGlobalName(void)
 {
+  QString text("");
+  bool ok = true;
+
+  text = QInputDialog::getText
+    (this, tr("%1: Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
+     QLineEdit::Normal, "", &ok).trimmed();
+
+  if(!ok)
+    return;
+
+  m_ui.buzzName->setText(text);
+  m_ui.emailNameEditable->setText(text);
+  m_ui.nodeName->setText(text);
+  m_ui.urlName->setText(text);
+  slotSaveBuzzName();
+  slotSaveEmailName();
+  slotSaveNodeName();
+  slotSaveUrlName();
 }
