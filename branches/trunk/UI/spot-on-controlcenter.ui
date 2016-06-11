@@ -19,7 +19,16 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
      <number>5</number>
     </property>
     <item>
@@ -56,7 +65,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -73,14 +91,23 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>526</height>
+             <height>524</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -417,7 +444,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -432,7 +468,16 @@
            <property name="spacing">
             <number>5</number>
            </property>
-           <property name="margin">
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
             <number>5</number>
            </property>
            <item>
@@ -448,15 +493,24 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>516</height>
+                <width>401</width>
+                <height>482</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
                <property name="spacing">
                 <number>5</number>
                </property>
-               <property name="margin">
+               <property name="leftMargin">
+                <number>5</number>
+               </property>
+               <property name="topMargin">
+                <number>5</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <property name="bottomMargin">
                 <number>5</number>
                </property>
                <item>
@@ -477,7 +531,16 @@
                      <property name="spacing">
                       <number>5</number>
                      </property>
-                     <property name="margin">
+                     <property name="leftMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="bottomMargin">
                       <number>5</number>
                      </property>
                      <item>
@@ -533,7 +596,16 @@
                      <property name="spacing">
                       <number>5</number>
                      </property>
-                     <property name="margin">
+                     <property name="leftMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="bottomMargin">
                       <number>5</number>
                      </property>
                      <item>
@@ -826,7 +898,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -842,15 +923,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>933</width>
-             <height>623</height>
+             <width>850</width>
+             <height>638</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -1597,7 +1687,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -1730,7 +1829,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -1828,7 +1936,16 @@
                       <property name="spacing">
                        <number>5</number>
                       </property>
-                      <property name="margin">
+                      <property name="leftMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="bottomMargin">
                        <number>5</number>
                       </property>
                       <item>
@@ -1863,7 +1980,16 @@
                          <property name="spacing">
                           <number>5</number>
                          </property>
-                         <property name="margin">
+                         <property name="leftMargin">
+                          <number>5</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>5</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>5</number>
+                         </property>
+                         <property name="bottomMargin">
                           <number>5</number>
                          </property>
                          <item>
@@ -1990,7 +2116,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -2006,15 +2141,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>526</height>
+             <width>646</width>
+             <height>405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -2222,7 +2366,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -2651,7 +2804,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -2667,15 +2829,24 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>276</width>
-                     <height>1425</height>
+                     <width>262</width>
+                     <height>1433</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -2687,7 +2858,16 @@
                        <property name="spacing">
                         <number>5</number>
                        </property>
-                       <property name="margin">
+                       <property name="leftMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="bottomMargin">
                         <number>5</number>
                        </property>
                        <item>
@@ -2806,7 +2986,16 @@
                        <property name="spacing">
                         <number>5</number>
                        </property>
-                       <property name="margin">
+                       <property name="leftMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="bottomMargin">
                         <number>5</number>
                        </property>
                        <item>
@@ -2982,7 +3171,16 @@
                        <property name="spacing">
                         <number>5</number>
                        </property>
-                       <property name="margin">
+                       <property name="leftMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="bottomMargin">
                         <number>5</number>
                        </property>
                        <item>
@@ -3051,7 +3249,16 @@
                        <property name="spacing">
                         <number>5</number>
                        </property>
-                       <property name="margin">
+                       <property name="leftMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="bottomMargin">
                         <number>5</number>
                        </property>
                        <item>
@@ -3121,7 +3328,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -3137,8 +3353,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>526</height>
+             <width>361</width>
+             <height>225</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3479,8 +3695,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>809</width>
-                  <height>454</height>
+                  <width>737</width>
+                  <height>478</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -3503,7 +3719,16 @@
                         <property name="spacing">
                          <number>5</number>
                         </property>
-                        <property name="margin">
+                        <property name="leftMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="bottomMargin">
                          <number>5</number>
                         </property>
                         <item>
@@ -3888,7 +4113,16 @@
                            <property name="spacing">
                             <number>5</number>
                            </property>
-                           <property name="margin">
+                           <property name="leftMargin">
+                            <number>5</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>5</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>5</number>
+                           </property>
+                           <property name="bottomMargin">
                             <number>5</number>
                            </property>
                            <item>
@@ -4101,7 +4335,16 @@
                         <property name="spacing">
                          <number>5</number>
                         </property>
-                        <property name="margin">
+                        <property name="leftMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="bottomMargin">
                          <number>5</number>
                         </property>
                         <item>
@@ -4223,7 +4466,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -4239,15 +4491,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>526</height>
+             <width>630</width>
+             <height>347</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -4316,15 +4577,24 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>800</width>
-                 <height>601</height>
+                 <width>667</width>
+                 <height>620</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -4349,7 +4619,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -4480,7 +4759,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -4670,7 +4958,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -5024,7 +5321,16 @@
                <property name="spacing">
                 <number>5</number>
                </property>
-               <property name="margin">
+               <property name="leftMargin">
+                <number>5</number>
+               </property>
+               <property name="topMargin">
+                <number>5</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <property name="bottomMargin">
                 <number>5</number>
                </property>
                <item>
@@ -5196,7 +5502,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -5212,15 +5527,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>907</width>
-             <height>1141</height>
+             <width>847</width>
+             <height>1176</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -5237,7 +5561,16 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -5605,7 +5938,16 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -5861,7 +6203,16 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -6208,7 +6559,16 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -6280,7 +6640,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -6296,15 +6665,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>526</height>
+             <width>589</width>
+             <height>544</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -6320,7 +6698,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -6412,7 +6799,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -6525,7 +6921,16 @@
                       <property name="spacing">
                        <number>5</number>
                       </property>
-                      <property name="margin">
+                      <property name="leftMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="bottomMargin">
                        <number>5</number>
                       </property>
                       <item>
@@ -6638,7 +7043,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -6654,7 +7068,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -6730,7 +7153,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -6915,7 +7347,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -7114,7 +7555,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -7301,7 +7751,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -7317,15 +7776,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>526</height>
+             <width>661</width>
+             <height>453</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -7406,7 +7874,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -7544,7 +8021,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -7570,7 +8056,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -7615,7 +8110,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -7660,7 +8164,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -7711,7 +8224,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -7844,7 +8366,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -7860,15 +8391,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>526</height>
+             <width>258</width>
+             <height>150</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -8073,7 +8613,7 @@
      <x>0</x>
      <y>0</y>
      <width>850</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -8125,6 +8665,8 @@
     <addaction name="action_Echo_Key_Share"/>
     <addaction name="separator"/>
     <addaction name="action_File_Encryption"/>
+    <addaction name="separator"/>
+    <addaction name="action_New_Global_Name"/>
     <addaction name="separator"/>
     <addaction name="action_Rosetta"/>
     <addaction name="separator"/>
@@ -8388,6 +8930,11 @@
   <action name="action_Notifications_Window">
    <property name="text">
     <string>No&amp;tifications Window...</string>
+   </property>
+  </action>
+  <action name="action_New_Global_Name">
+   <property name="text">
+    <string>&amp;New Global Name</string>
    </property>
   </action>
  </widget>
