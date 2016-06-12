@@ -234,6 +234,7 @@ class spoton_neighbor: public QThread
 		  const Priority priority,
 		  const int laneWidth,
 		  const int passthrough,
+		  const int sourceOfRandomness,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 		  QBluetoothSocket *socket,
 #endif
@@ -314,6 +315,7 @@ class spoton_neighbor: public QThread
   bool m_useSsl;
   int m_keySize;
   int m_laneWidth;
+  int m_sourceOfRandomness;
   qint64 m_id;
   qint64 m_listenerOid;
   qint64 m_maximumBufferSize;

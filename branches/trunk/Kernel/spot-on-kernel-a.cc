@@ -1141,7 +1141,8 @@ void spoton_kernel::prepareListeners(void)
 		      "ssl_control_string, "     // 17
 		      "lane_width, "             // 18
 		      "passthrough, "            // 19
-		      "OID "                     // 20
+		      "source_of_randomness, "   // 20
+		      "OID "                     // 21
 		      "FROM listeners"))
 	  while(query.next())
 	    {
@@ -1278,6 +1279,7 @@ void spoton_kernel::prepareListeners(void)
 				 query.value(17).toString(),
 				 query.value(18).toInt(),
 				 query.value(19).toInt(),
+				 query.value(20).toInt(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)

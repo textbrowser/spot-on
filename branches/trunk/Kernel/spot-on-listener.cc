@@ -183,6 +183,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
 				 const QString &sslControlString,
 				 const int laneWidth,
 				 const int passthrough,
+				 const int sourceOfRandomness,
 				 QObject *parent):QObject(parent)
 {
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
@@ -254,6 +255,10 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   m_publicKey = publicKey;
   m_scopeId = scopeId;
   m_shareAddress = shareAddress;
+  m_sourceOfRandomness = qBound
+    (0,
+     sourceOfRandomness,
+     static_cast<int> (std::numeric_limits<unsigned short>::max()));
   m_sslControlString = sslControlString.trimmed();
 
   if(m_sslControlString.isEmpty())
@@ -467,7 +472,8 @@ void spoton_listener::slotTimeout(void)
 		      "motd, "
 		      "ssl_control_string, "
 		      "lane_width, "
-		      "passthrough "
+		      "passthrough, "
+		      "source_of_randomness "
 		      "FROM listeners WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -496,6 +502,11 @@ void spoton_listener::slotTimeout(void)
 		  (query.value(6).toByteArray().constData(),
 		   query.value(6).toByteArray().length()).trimmed();
 		m_passthrough = query.value(9).toInt();
+		m_sourceOfRandomness = qBound
+		  (0,
+		   query.value(10).toInt(),
+		   static_cast<int> (std::numeric_limits<unsigned short>::
+				     max()));
 		m_sslControlString = query.value(7).toString().trimmed();
 		m_useAccounts = static_cast<int>
 		  (query.value(3).toLongLong());
@@ -755,6 +766,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	 QThread::HighPriority,
 	 m_laneWidth,
 	 m_passthrough,
+	 m_sourceOfRandomness,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 	 0,
 #endif
@@ -1678,6 +1690,7 @@ void spoton_listener::slotNewConnection(void)
 	 QThread::HighPriority,
 	 m_laneWidth,
 	 m_passthrough,
+	 m_sourceOfRandomness,
 	 socket,
 	 this);
     }

@@ -85,6 +85,7 @@ spoton_neighbor::spoton_neighbor
  const Priority priority,
  const int laneWidth,
  const int passthrough,
+ const int sourceOfRandomness,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
  QBluetoothSocket *socket,
 #endif
@@ -98,6 +99,10 @@ spoton_neighbor::spoton_neighbor
   m_bluetoothSocket = 0;
   m_passthrough = passthrough;
   m_sctpSocket = 0;
+  m_sourceOfRandomness = qBound
+    (0,
+     sourceOfRandomness,
+     static_cast<int> (std::numeric_limits<unsigned short>::max()));
   m_tcpSocket = 0;
   m_udpSocket = 0;
   m_maximumBufferSize =
@@ -574,6 +579,7 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_requireSsl = requireSsl;
   m_sctpSocket = 0;
+  m_sourceOfRandomness = 0;
   m_sslControlString = sslControlString.trimmed();
 
   if(m_sslControlString.isEmpty())
