@@ -4039,27 +4039,10 @@ void spoton::slotPopulateListeners(void)
 			  }
 			else
 			  {
-			    if(query.value(15).toString().toLower() == "tcp")
-			      {
-				if(query.value(2).toLongLong() > 0)
-				  {
-				    if(query.value(i).toBool())
-				      item->setCheckState(Qt::Checked);
-				    else
-				      item->setCheckState(Qt::Unchecked);
-				  }
-				else
-				  item->setFlags
-				    (Qt::ItemIsEnabled |
-				     Qt::ItemIsSelectable);
-			      }
+			    if(query.value(i).toBool())
+			      item->setCheckState(Qt::Checked);
 			    else
-			      {
-				if(query.value(i).toBool())
-				  item->setCheckState(Qt::Checked);
-				else
-				  item->setCheckState(Qt::Unchecked);
-			      }
+			      item->setCheckState(Qt::Unchecked);
 			  }
 		      }
 		    else if(i == 2)
@@ -4387,7 +4370,7 @@ void spoton::slotPopulateListeners(void)
 
 		    if(item)
 		      {
-			if(!(i == 0 || i == 12))
+			if(!(i == 0 || i == 12 || i == 21))
 			  item->setFlags
 			    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 

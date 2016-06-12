@@ -1411,6 +1411,10 @@ void spoton_neighbor::slotTimeout(void)
   a = m_learnedAdaptiveEchoPairs.toSet();
   m_learnedAdaptiveEchoPairs =
     QList<QPair<QByteArray, QByteArray> >::fromSet(a.intersect(b));
+
+  if(!m_isUserDefined && m_sourceOfRandomness > 0)
+    write(spoton_crypt::weakRandomBytes(m_sourceOfRandomness).constData(),
+	  m_sourceOfRandomness);
 }
 
 void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
