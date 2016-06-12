@@ -2141,8 +2141,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>646</width>
-             <height>405</height>
+             <width>826</width>
+             <height>524</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2348,6 +2348,11 @@
                   <column>
                    <property name="text">
                     <string>Passthrough</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Randomness Source</string>
                    </property>
                   </column>
                   <column>
@@ -2829,7 +2834,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>262</width>
+                     <width>260</width>
                      <height>1433</height>
                     </rect>
                    </property>
