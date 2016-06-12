@@ -3902,9 +3902,12 @@ void spoton::slotPopulateListeners(void)
 		      "ssl_control_string, "
 		      "lane_width, "
 		      "passthrough, "
+		      "source_of_randomness, "
 		      "OID "
 		      "FROM listeners WHERE status_control <> 'deleted'"))
 	  {
+	    QLocale locale;
+
 	    row = 0;
 
 	    while(query.next() && totalRows < m_ui.listeners->rowCount())
@@ -3960,7 +3963,8 @@ void spoton::slotPopulateListeners(void)
 		      "Orientation: %12\n"
 		      "SSL Control String: %13\n"
 		      "Lane Width: %14\n"
-		      "Passthrough: %15")).
+		      "Passthrough: %15\n"
+		      "Source of Randomness: %16")).
 		  arg(query.value(1).toString().toLower()).
 		  arg(query.value(2).toString()).
 		  arg(crypt->
@@ -3999,9 +4003,9 @@ void spoton::slotPopulateListeners(void)
 							     toByteArray()),
 						  &ok).
 		      constData()).
-		  arg(query.value(12).toLongLong() ? "Yes" : "No").
+		  arg(query.value(12).toLongLong() ? tr("Yes") : tr("No")).
 		  arg(transport).
-		  arg(query.value(16).toLongLong() ? "Yes" : "No").
+		  arg(query.value(16).toLongLong() ? tr("Yes") : tr("No")).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
@@ -4010,8 +4014,9 @@ void spoton::slotPopulateListeners(void)
 						  &ok).
 		      constData()).
 		  arg(query.value(19).toString()).
-		  arg(query.value(20).toInt()).
-		  arg(query.value(21).toInt());
+		  arg(locale.toString(query.value(20).toInt())).
+		  arg(query.value(21).toInt() ? tr("Yes") : tr("No")).
+		  arg(locale.toString(query.value(22).toInt()));
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
@@ -4330,6 +4335,28 @@ void spoton::slotPopulateListeners(void)
 			else
 			  item->setCheckState(Qt::Unchecked);
 		      }
+		    else if(i == 22) // Source of Randomness
+		      {
+			QSpinBox *box = new QSpinBox();
+
+			box->setMaximum(std::numeric_limits<unsigned short>::
+					max());
+			box->setMaximumWidth
+			  (box->fontMetrics().
+			   width(QString::
+				 number(box->maximum())) + 50);
+			box->setMinimum(0);
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			box->setToolTip(tooltip);
+			box->setValue(query.value(i).toInt());
+			connect
+			  (box,
+			   SIGNAL(valueChanged(int)),
+			   this,
+			   SLOT(slotListenerSourceOfRandomnessChanged(int)));
+			m_ui.listeners->setCellWidget(row, i, box);
+		      }
 		    else
 		      {
 			if((i >= 3 && i <= 7) ||
@@ -4597,6 +4624,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "OID "
 		      "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
+	    QLocale locale;
 	    QString localIp("");
 	    QString localPort("");
 
@@ -4609,7 +4637,6 @@ void spoton::slotPopulateNeighbors(void)
 		QByteArray certificate;
 		QByteArray certificateDigest;
 		QByteArray sslSessionCipher;
-		QLocale locale;
 		QString priority("");
 		QString tooltip("");
 		bool isEncrypted = query.value
@@ -4779,7 +4806,7 @@ void spoton::slotPopulateNeighbors(void)
 		      number(static_cast<double> (query.value(19).
 						  toLongLong()) /
 			     60.00, 'f', 1)).
-		  arg(query.value(21).toLongLong() ? "Yes" : "No").
+		  arg(query.value(21).toLongLong() ? tr("Yes") : tr("No")).
 		  arg(locale.toString(query.value(22).toULongLong())).
 		  arg(locale.toString(query.value(23).toULongLong())).
 		  arg(sslSessionCipher.constData()).
@@ -4796,7 +4823,7 @@ void spoton::slotPopulateNeighbors(void)
 		       fromBase64(query.
 				  value(26).
 				  toByteArray()),
-		       &ok).toLongLong() ? "Yes": "No").
+		       &ok).toLongLong() ? tr("Yes"): tr("No")).
 		  arg(QString(crypt->
 			      decryptedAfterAuthenticated
 			      (QByteArray::
@@ -4815,8 +4842,8 @@ void spoton::slotPopulateNeighbors(void)
 		  arg(query.value(34).toString()).
 		  arg(priority).
 		  arg(locale.toString(query.value(36).toInt())).
-		  arg(query.value(37).toInt()).
-		  arg(query.value(38).toInt());
+		  arg(query.value(37).toInt() ? tr("Yes") : tr("No")).
+		  arg(locale.toString(query.value(38).toInt()));
 
 		{
 		  QTableWidgetItem *item = new QTableWidgetItem();
