@@ -294,9 +294,15 @@ spoton_neighbor::spoton_neighbor
 		    (QSsl::SslOptionDisableSessionSharing, true);
 #endif
 #endif
+#if QT_VERSION >= 0x050000
+		  spoton_crypt::setSslCiphers
+		    (configuration.supportedCiphers(), m_sslControlString,
+		     configuration);
+#else
 		  spoton_crypt::setSslCiphers
 		    (m_tcpSocket->supportedCiphers(), m_sslControlString,
 		     configuration);
+#endif
 		  m_tcpSocket->setSslConfiguration(configuration);
 		}
 	      else
@@ -699,9 +705,15 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 #endif
 #endif
 	      configuration.setPeerVerifyMode(QSslSocket::QueryPeer);
+#if QT_VERSION >= 0x050000
+	      spoton_crypt::setSslCiphers
+		(configuration.supportedCiphers(), m_sslControlString,
+		 configuration);
+#else
 	      spoton_crypt::setSslCiphers
 		(m_tcpSocket->supportedCiphers(), m_sslControlString,
 		 configuration);
+#endif
 	      m_tcpSocket->setSslConfiguration(configuration);
 	    }
 	  else

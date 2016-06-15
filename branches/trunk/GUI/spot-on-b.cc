@@ -5550,9 +5550,16 @@ void spoton::initializeKernelSocket(void)
       configuration.setSslOption
 	(QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
+#if QT_VERSION >= 0x050000
+      spoton_crypt::setSslCiphers
+	(configuration.supportedCiphers(),
+	 sslCS,
+	 configuration);
+#else
       spoton_crypt::setSslCiphers(QSslSocket::supportedCiphers(),
 				  sslCS,
 				  configuration);
+#endif
       m_kernelSocket.setSslConfiguration(configuration);
     }
   else
