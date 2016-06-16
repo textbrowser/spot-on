@@ -6558,8 +6558,7 @@ void spoton::slotSetPassphrase(void)
       QMessageBox::information
 	(this, tr("%1: Information").
 	 arg(SPOTON_APPLICATION_NAME),
-	 tr("Your confidential information has been saved. "
-	    "You are now ready to use the full power of %1. Enjoy!").
+	 tr("Your confidential information has been saved. Enjoy!").
 	 arg(SPOTON_APPLICATION_NAME));
 
       if(m_ui.pid->text() == "0")
