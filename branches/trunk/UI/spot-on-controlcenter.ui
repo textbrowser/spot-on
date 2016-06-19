@@ -91,7 +91,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>524</height>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>401</width>
-                <height>482</height>
+                <width>365</width>
+                <height>444</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -923,8 +923,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>850</width>
-             <height>638</height>
+             <width>812</width>
+             <height>575</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1568,6 +1568,43 @@
                       <item row="4" column="1">
                        <layout class="QVBoxLayout" name="verticalLayout_72">
                         <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_74">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_51">
+                            <property name="spacing">
+                             <number>5</number>
+                            </property>
+                            <item>
+                             <widget class="QTextBrowser" name="attachment">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="toolTip">
+                               <string>Click an attachment to remove it.</string>
+                              </property>
+                              <property name="tabChangesFocus">
+                               <bool>true</bool>
+                              </property>
+                              <property name="openLinks">
+                               <bool>false</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QPushButton" name="selectAttachment">
+                              <property name="text">
+                               <string>Attach...</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
                          <widget class="QLabel" name="label_86">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -1585,39 +1622,6 @@
                            <bool>true</bool>
                           </property>
                          </widget>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_51">
-                          <property name="spacing">
-                           <number>5</number>
-                          </property>
-                          <item>
-                           <widget class="QTextBrowser" name="attachment">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="toolTip">
-                             <string>Click an attachment to remove it.</string>
-                            </property>
-                            <property name="tabChangesFocus">
-                             <bool>true</bool>
-                            </property>
-                            <property name="openLinks">
-                             <bool>false</bool>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QPushButton" name="selectAttachment">
-                            <property name="text">
-                             <string>Attach...</string>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
                         </item>
                        </layout>
                       </item>
@@ -2141,8 +2145,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>524</height>
+             <width>610</width>
+             <height>320</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2835,7 +2839,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>260</width>
-                     <height>1433</height>
+                     <height>1363</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3358,8 +3362,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>361</width>
-             <height>225</height>
+             <width>344</width>
+             <height>180</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3700,8 +3704,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>737</width>
-                  <height>478</height>
+                  <width>697</width>
+                  <height>394</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4496,8 +4500,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>347</height>
+             <width>616</width>
+             <height>293</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4582,8 +4586,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>667</width>
-                 <height>620</height>
+                 <width>658</width>
+                 <height>552</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5532,8 +5536,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>847</width>
-             <height>1176</height>
+             <width>844</width>
+             <height>1072</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6670,8 +6674,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>589</width>
-             <height>544</height>
+             <width>565</width>
+             <height>470</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7781,8 +7785,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>661</width>
-             <height>453</height>
+             <width>606</width>
+             <height>384</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8396,8 +8400,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>258</width>
-             <height>150</height>
+             <width>239</width>
+             <height>138</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8618,7 +8622,7 @@
      <x>0</x>
      <y>0</y>
      <width>850</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

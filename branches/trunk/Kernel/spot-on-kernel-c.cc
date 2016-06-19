@@ -41,6 +41,7 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
  const QByteArray &name,
  const QByteArray &receiverName,
  const QByteArray &subject,
+ const QByteArray &date,
  const qint64 mailOid,
  QByteArray &data)
 {
@@ -66,12 +67,14 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
 	   << name
 	   << subject
 	   << message
+	   << date
 	   << QByteArray();
   else
     stream << QByteArray("0001c")
 	   << name
 	   << subject
 	   << message
+	   << date
 	   << qCompress(attachmentData, 9);
 
   if(stream.status() != QDataStream::Ok)

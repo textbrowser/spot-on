@@ -744,7 +744,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
 				      5.00).toDouble()));
   m_poptasticPostTimer.start(2500);
-  m_prepareTimer.start(10000);
+  m_prepareTimer.start(5000);
   m_publishAllListenersPlaintextTimer.setInterval(10 * 60 * 1000);
   m_settingsTimer.setInterval(1500);
   m_scramblerTimer.setSingleShot(true);
@@ -910,10 +910,12 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 			  const QByteArray &,
 			  const QByteArray &,
 			  const QByteArray &,
+			  const QByteArray &,
 			  const bool,
 			  const qint64)),
 	  this,
 	  SLOT(slotSendMail(const QByteArray &,
+			    const QByteArray &,
 			    const QByteArray &,
 			    const QByteArray &,
 			    const QByteArray &,
@@ -3236,6 +3238,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				 const QByteArray &receiverName,
 				 const QByteArray &mode,
 				 const QByteArray &fromAccount,
+				 const QByteArray &date,
 				 const bool sign,
 				 const qint64 mailOid)
 {
@@ -3259,6 +3262,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     name,
 				     receiverName,
 				     subject,
+				     date,
 				     mailOid,
 				     data))
 	{
@@ -3442,11 +3446,13 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		    items << name
 			  << subject
 			  << message
+			  << date
 			  << QByteArray();
 		  else
 		    items << name
 			  << subject
 			  << message
+			  << date
 			  << qCompress(attachmentData, 9);
 		}
 
@@ -3486,7 +3492,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			       items.value(0) + // Name
 			       items.value(1) + // Subject
 			       items.value(2) + // Message
-			       items.value(3),  // Attachment Data
+			       items.value(3) + // Date
+			       items.value(4),  // Attachment Data
 			       &ok);
 
 			  if(ok)
@@ -3512,7 +3519,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			     items.value(0) + // Name
 			     items.value(1) + // Subject
 			     items.value(2) + // Message
-			     items.value(3),  // Attachment Data
+			     items.value(3) + // Date
+			     items.value(4),  // Attachment Data
 			     &ok);
 			  items << signature;
 			}
@@ -3536,8 +3544,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		       items.value(0).toBase64() + "\n" + // Name
 		       items.value(1).toBase64() + "\n" + // Subject
 		       items.value(2).toBase64() + "\n" + // Message
-		       items.value(3).toBase64() + "\n" + // Attachment Data
-		       items.value(4).toBase64() + "\n" + // Signature
+		       items.value(3).toBase64() + "\n" + // Date
+		       items.value(4).toBase64() + "\n" + // Attachment Data
+		       items.value(5).toBase64() + "\n" + // Signature
 		       QVariant(goldbugUsed).toByteArray().toBase64(),
 		       &ok);
 
@@ -3751,11 +3760,13 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		    items << name
 			  << subject
 			  << message
+			  << date
 			  << QByteArray();
 		  else
 		    items << name
 			  << subject
 			  << message
+			  << date
 			  << qCompress(attachmentData, 9);
 		}
 
@@ -3795,7 +3806,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			       items.value(0) + // Name
 			       items.value(1) + // Subject
 			       items.value(2) + // Message
-			       items.value(3),  // Attachment Data
+			       items.value(3) + // Date
+			       items.value(4),  // Attachment Data
 			       &ok);
 
 			  if(ok)
@@ -3821,7 +3833,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			     items.value(0) + // Name
 			     items.value(1) + // Subject
 			     items.value(2) + // Message
-			     items.value(3),  // Attachment Data
+			     items.value(3) + // Date
+			     items.value(4),  // Attachment Data
 			     &ok);
 			  items << signature;
 			}
@@ -3844,8 +3857,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		       items.value(0).toBase64() + "\n" + // Name
 		       items.value(1).toBase64() + "\n" + // Subject
 		       items.value(2).toBase64() + "\n" + // Message
-		       items.value(3).toBase64() + "\n" + // Attachment Data
-		       items.value(4).toBase64() + "\n" + // Signature
+		       items.value(3).toBase64() + "\n" + // Date
+		       items.value(4).toBase64() + "\n" + // Attachment Data
+		       items.value(5).toBase64() + "\n" + // Signature
 		       QVariant(goldbugUsed).toByteArray().toBase64(),
 		       &ok);
 

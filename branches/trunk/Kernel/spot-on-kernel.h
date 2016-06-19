@@ -185,6 +185,7 @@ class spoton_kernel: public QObject
 				   const QByteArray &name,
 				   const QByteArray &receiverName,
 				   const QByteArray &subject,
+				   const QByteArray &date,
 				   const qint64 mailOid,
 				   QByteArray &data);
   void checkForTermination(void);
@@ -294,6 +295,7 @@ class spoton_kernel: public QObject
 		    const QByteArray &receiverName,
 		    const QByteArray &mode,
 		    const QByteArray &fromAccount,
+		    const QByteArray &date,
 		    const bool sign,
 		    const qint64 mailOid);
   void slotSettingsChanged(const QString &path);

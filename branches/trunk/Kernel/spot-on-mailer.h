@@ -74,6 +74,7 @@ class spoton_mailer: public QObject
 		const QByteArray &receiverName,
 		const QByteArray &mode,
 		const QByteArray &fromAccount,
+		const QByteArray &date,
 		const bool sign,
 		const qint64 mailOid);
   void sendMailFromPostOffice

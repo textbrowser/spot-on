@@ -2961,6 +2961,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			}
 
 		      QByteArray attachmentData;
+		      QByteArray date;
 		      QByteArray message;
 		      QByteArray name;
 		      QByteArray signature;
@@ -2981,7 +2982,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			{
 			  QList<QByteArray> list(data.split('\n'));
 
-			  if(list.size() == 7)
+			  if(list.size() == 8)
 			    {
 			      senderPublicKeyHash2 =
 				QByteArray::fromBase64(list.value(0));
@@ -2991,12 +2992,14 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 				QByteArray::fromBase64(list.value(2));
 			      message =
 				QByteArray::fromBase64(list.value(3));
-			      attachmentData =
+			      date =
 				QByteArray::fromBase64(list.value(4));
-			      signature =
+			      attachmentData =
 				QByteArray::fromBase64(list.value(5));
+			      signature =
+				QByteArray::fromBase64(list.value(6));
 			      goldbugUsed = QVariant
-				(QByteArray::fromBase64(list.value(6))).
+				(QByteArray::fromBase64(list.value(7))).
 				toBool();
 			    }
 			  else
@@ -3004,7 +3007,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			      spoton_misc::logError
 				(QString("spoton_neighbor::process0001a(): "
 					 "received irregular data. "
-					 "Expecting 7 "
+					 "Expecting 8 "
 					 "entries, "
 					 "received %1.").arg(list.size()));
 			      return;
@@ -3026,6 +3029,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 				      name,
 				      subject,
 				      message,
+				      date,
 				      attachmentData,
 				      signature,
 				      goldbugUsed);
@@ -3182,7 +3186,7 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 			{
 			  QList<QByteArray> list(data.split('\n'));
 
-			  if(list.size() == 7)
+			  if(list.size() == 8)
 			    {
 			      for(int i = 0; i < list.size(); i++)
 				list.replace
@@ -3197,9 +3201,10 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 				 list.value(1),  // Name
 				 list.value(2),  // Subject
 				 list.value(3),  // Message
-				 list.value(4),  // Attachment Data
-				 list.value(5),  // Signature
-				 QVariant(list.value(6)).
+				 list.value(4),  // Date
+				 list.value(5),  // Attachment Data
+				 list.value(6),  // Signature
+				 QVariant(list.value(7)).
 				 toBool());      // Gold Bug Used?
 			    }
 			  else
@@ -3207,7 +3212,7 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
 			      spoton_misc::logError
 				(QString("spoton_neighbor::process0001b(): "
 					 "received irregular data. "
-					 "Expecting 7 "
+					 "Expecting 8 "
 					 "entries, "
 					 "received %1.").arg(list.size()));
 			      return;
@@ -5249,6 +5254,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 				  const QByteArray &name,
 				  const QByteArray &subject,
 				  const QByteArray &message,
+				  const QByteArray &date,
 				  const QByteArray &attachmentData,
 				  const QByteArray &signature,
 				  const bool goldbugUsed)
@@ -5287,6 +5293,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 			name +
 			subject +
 			message +
+			date +
 			attachmentData,
 			senderPublicKeyHash,
 			signature, s_crypt))
@@ -5312,6 +5319,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
     saveParticipantStatus(name, senderPublicKeyHash);
 
   QByteArray attachmentData_l(attachmentData);
+  QByteArray date_l(date);
   QByteArray message_l(message);
   QByteArray name_l(name);
   QByteArray subject_l(subject);
@@ -5392,6 +5400,11 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 							&ok);
 
 			  if(ok)
+			    date_l = crypt->
+			      decryptedAfterAuthenticated
+			      (date_l, &ok);
+
+			  if(ok)
 			    message_l = crypt->
 			      decryptedAfterAuthenticated
 			      (message_l, &ok);
@@ -5414,6 +5427,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 			      */
 
 			      attachmentData_l = attachmentData;
+			      date_l = date;
 			      message_l = message;
 			      name_l = name;
 			      subject_l = subject;
@@ -5440,7 +5454,6 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
     if(db.open())
       {
 	bool ok = true;
-	QDateTime now(QDateTime::currentDateTime());
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO folders "
@@ -5452,8 +5465,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, s_crypt->
-	   encryptedThenHashed(now.toString(Qt::ISODate).toLatin1(),
-			       &ok).toBase64());
+	   encryptedThenHashed(date_l, &ok).toBase64());
 	query.bindValue(1, 0); // Inbox Folder
 
 	if(ok)
@@ -5468,12 +5480,11 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 	if(ok)
 	  query.bindValue
-	    (4, s_crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
-				   message_l + subject_l,
+	    (4, s_crypt->keyedHash(date_l + message_l + subject_l,
 				   &ok).toBase64());
 
 	if(ok)
-	  if(!message.isEmpty())
+	  if(!message_l.isEmpty())
 	    query.bindValue
 	      (5, s_crypt->encryptedThenHashed(message_l, &ok).toBase64());
 

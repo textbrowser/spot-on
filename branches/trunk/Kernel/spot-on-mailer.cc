@@ -117,7 +117,8 @@ void spoton_mailer::slotTimeout(void)
 		      "sign, "                // 5
 		      "status, "              // 6
 		      "subject, "             // 7
-		      "OID "                  // 8
+		      "date, "                // 8
+		      "OID "                  // 9
 		      "FROM folders WHERE folder_index = 1"))
 	  while(query.next())
 	    {
@@ -143,6 +144,7 @@ void spoton_mailer::slotTimeout(void)
 	      if(status.toLower() != "queued")
 		continue;
 
+	      QByteArray date;
 	      QByteArray fromAccount;
 	      QByteArray goldbug;
 	      QByteArray keyType;
@@ -223,6 +225,12 @@ void spoton_mailer::slotTimeout(void)
 		   &ok);
 
 	      if(ok)
+		date = s_crypt->
+		  decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(8).toByteArray()),
+		   &ok);
+
+	      if(ok)
 		{
 		  QList<QPair<QByteArray, QByteArray> > attachments;
 		  QSqlQuery query(db1);
@@ -284,6 +292,7 @@ void spoton_mailer::slotTimeout(void)
 			 << receiverName
 			 << mode
 			 << fromAccount
+			 << date
 			 << sign
 			 << oid;
 		  list.append(vector);
@@ -318,8 +327,9 @@ void spoton_mailer::slotTimeout(void)
 		    vector.value(7).toByteArray(),
 		    vector.value(8).toByteArray(),
 		    vector.value(9).toByteArray(),
-		    vector.value(10).toBool(),
-		    vector.value(11).toLongLong());
+		    vector.value(10).toByteArray(),
+		    vector.value(11).toBool(),
+		    vector.value(12).toLongLong());
     }
 }
 

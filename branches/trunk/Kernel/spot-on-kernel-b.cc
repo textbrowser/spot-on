@@ -969,6 +969,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    return;
 
 	  QByteArray attachmentData;
+	  QByteArray date;
 	  QByteArray message;
 	  QByteArray name;
 	  QByteArray senderPublicKeyHash;
@@ -981,8 +982,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  subject = list.value(2);
 	  message = list.value(3);
 	  attachmentData = list.value(4);
-	  signature = list.value(5);
-	  goldbugUsed = QVariant(list.value(6)).toBool();
+	  date = list.value(5);
+	  signature = list.value(6);
+	  goldbugUsed = QVariant(list.value(7)).toBool();
 
 	  if(!goldbugUsed && setting("gui/emailAcceptSignedMessagesOnly",
 				     true).toBool())
@@ -996,6 +998,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 				name +
 				subject +
 				message +
+				date +
 				attachmentData,
 				senderPublicKeyHash,
 				signature, s_crypt))
@@ -1017,6 +1020,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    return;
 
 	  QByteArray attachmentData_l(attachmentData);
+	  QByteArray date_l(date);
 	  QByteArray message_l(message);
 	  QByteArray name_l(name);
 	  QByteArray subject_l(subject);
@@ -1099,6 +1103,11 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 				    (attachmentData_l, &ok);
 
 				  if(ok)
+				    date_l = crypt->
+				      decryptedAfterAuthenticated
+				      (date_l, &ok);
+
+				  if(ok)
 				    message_l = crypt->
 				      decryptedAfterAuthenticated
 				      (message_l, &ok);
@@ -1122,6 +1131,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 				      */
 
 				      attachmentData_l = attachmentData;
+				      date_l = date;
 				      message_l = message;
 				      name_l = name;
 				      subject_l = subject;
@@ -1147,7 +1157,6 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 	    if(db.open())
 	      {
-		QDateTime now(QDateTime::currentDateTime());
 		QSqlQuery query(db);
 		bool ok = true;
 
@@ -1162,8 +1171,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 			      "?, ?, ?, ?, ?)");
 		query.bindValue
 		  (0, s_crypt->
-		   encryptedThenHashed(now.toString(Qt::ISODate).
-				       toLatin1(), &ok).toBase64());
+		   encryptedThenHashed(date_l, &ok).toBase64());
 		query.bindValue(1, 0); // Inbox Folder
 
 		if(ok)
@@ -1180,12 +1188,11 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 		if(ok)
 		  query.bindValue
-		    (4, s_crypt->keyedHash(now.toString(Qt::ISODate).
-					   toLatin1() + message_l + subject_l,
+		    (4, s_crypt->keyedHash(date_l + message_l + subject_l,
 					   &ok).toBase64());
 
 		if(ok)
-		  if(!message.isEmpty())
+		  if(!message_l.isEmpty())
 		    query.bindValue
 		      (5, s_crypt->encryptedThenHashed(message_l,
 						       &ok).toBase64());
