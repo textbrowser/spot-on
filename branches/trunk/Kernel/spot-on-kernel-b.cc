@@ -980,8 +980,8 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  name = list.value(1);
 	  subject = list.value(2);
 	  message = list.value(3);
-	  attachmentData = list.value(4);
-	  date = list.value(5);
+	  attachmentData = list.value(5);
+	  date = list.value(4);
 	  signature = list.value(6);
 	  goldbugUsed = QVariant(list.value(7)).toBool();
 
