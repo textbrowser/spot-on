@@ -3750,7 +3750,11 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
       data = QByteArray::fromBase64(data);
 
       QList<QByteArray> list(data.split('\n'));
+#if QT_VERSION >= 0x040800
       QUuid uuid(list.value(0));
+#else
+      QUuid uuid(list.value(0).constData());
+#endif
       QWriteLocker locker(&m_receivedUuidMutex);
 
       m_receivedUuid = uuid;

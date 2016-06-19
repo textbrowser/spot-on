@@ -4131,11 +4131,19 @@ void spoton_crypt::memcmp_test(void)
       b = "This is another test.";
       timer.restart();
       memcmp(a, b);
+#if QT_VERSION >= 0x040800
       qDebug() << "memcmp_test():" << timer.nsecsElapsed();
+#else
+      qDebug() << "memcmp_test():" << timer.elapsed();
+#endif
       a = "This is another test.";
       b = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       timer.restart();
       memcmp(a, b);
+#if QT_VERSION >= 0x040800
       qDebug() << "memcmp_test():" << timer.nsecsElapsed();
+#else
+      qDebug() << "memcmp_test():" << timer.elapsed();
+#endif
     }
 }
