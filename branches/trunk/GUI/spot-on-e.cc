@@ -1985,12 +1985,15 @@ void spoton::slotSavePoptasticAccount(void)
 	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
 	  m_poptasticRetroPhoneSettingsUi.account->clear();
 	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+	  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
 
 	  for(int i = 0; i < list.size(); i++)
 	    {
 	      m_poptasticRetroPhoneSettingsUi.account->addItem
 		(list.at(i)["in_username"].toString());
 	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
+		(list.at(i)["in_username"].toString());
+	      m_poptasticRetroPhoneSettingsUi.email_primary_account->addItem
 		(list.at(i)["in_username"].toString());
 	    }
 
@@ -2444,12 +2447,15 @@ void spoton::slotDeletePoptasticAccount(void)
 	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
 	  m_poptasticRetroPhoneSettingsUi.account->clear();
 	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+	  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
 
 	  for(int i = 0; i < list.size(); i++)
 	    {
 	      m_poptasticRetroPhoneSettingsUi.account->addItem
 		(list.at(i)["in_username"].toString());
 	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
+		(list.at(i)["in_username"].toString());
+	      m_poptasticRetroPhoneSettingsUi.email_primary_account->addItem
 		(list.at(i)["in_username"].toString());
 	    }
 

@@ -943,10 +943,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
   else if(messageType == "0001b")
     {
       QList<QByteArray> list
-	(spoton_receive::
-	 process0001b(data.length(), data,
-		      "127.0.0.1", 0,
-		      s_crypts.value("poptastic", 0)));
+	(spoton_receive::process0001b(data.length(), data,
+				      "127.0.0.1", 0,
+				      s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
 	{
