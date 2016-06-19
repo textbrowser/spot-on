@@ -4924,9 +4924,9 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 	    else
 	      for(int i = 0; i < list.size(); i++)
 		{
-		  if(i == 0 || i == 2 || i == 4 || i == 6)
+		  if(i == 2 || i == 4 || i == 6)
 		    /*
-		    ** Ignore the date, message_code,
+		    ** Ignore the message_code,
 		    ** receiver_sender_hash, and attachment(s) count columns.
 		    */
 
@@ -4979,6 +4979,7 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 	    QSqlQuery updateQuery(db);
 
 	    updateQuery.prepare("UPDATE folders SET "
+				"date = ?, "
 				"goldbug = ?, "
 				"hash = ?, "
 				"message = ?, "
@@ -4987,48 +4988,51 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 				"signature = ?, "
 				"subject = ? "
 				"WHERE OID = ?");
+	    updateQuery.bindValue
+	      (0, m_crypts.value("email")->
+	       encryptedThenHashed(list.value(0), &ok).toBase64());
 
 	    if(ok)
 	      updateQuery.bindValue
-		(0, m_crypts.value("email")->
+		(1, m_crypts.value("email")->
 		 encryptedThenHashed(QByteArray::number(0), &ok).
 		 toBase64());
 
 	    if(ok)
 	      updateQuery.bindValue
-		(1, m_crypts.value("email")->
+		(2, m_crypts.value("email")->
 		 keyedHash(list.value(0) + list.value(1) + list.value(5), &ok).
 		 toBase64());
 
 	    if(!list.value(1).isEmpty())
 	      if(ok)
 		updateQuery.bindValue
-		  (2, m_crypts.value("email")->
+		  (3, m_crypts.value("email")->
 		   encryptedThenHashed(list.value(1), &ok).toBase64());
 
 	    if(!list.value(2).isEmpty())
 	      if(ok)
 		updateQuery.bindValue
-		  (3, m_crypts.value("email")->
+		  (4, m_crypts.value("email")->
 		   encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	    if(!list.value(3).isEmpty())
 	      if(ok)
 		updateQuery.bindValue
-		  (4, m_crypts.value("email")->
+		  (5, m_crypts.value("email")->
 		   encryptedThenHashed(list.value(3), &ok).toBase64());
 
 	    if(ok)
 	      updateQuery.bindValue
-		(5, m_crypts.value("email")->
+		(6, m_crypts.value("email")->
 		 encryptedThenHashed(list.value(7), &ok).toBase64());
 
 	    if(ok)
 	      updateQuery.bindValue
-		(6, m_crypts.value("email")->
+		(7, m_crypts.value("email")->
 		 encryptedThenHashed(list.value(5), &ok).toBase64());
 
-	    updateQuery.bindValue(7, oid);
+	    updateQuery.bindValue(8, oid);
 
 	    if(ok)
 	      {
