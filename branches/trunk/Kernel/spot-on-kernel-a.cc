@@ -3246,7 +3246,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
     {
       postPoptasticMessage
 	(attachmentData, message, receiverName, subject, mode,
-	 fromAccount, mailOid);
+	 fromAccount, date, mailOid);
       return;
     }
 
@@ -5971,11 +5971,13 @@ void spoton_kernel::postPoptasticMessage(const QByteArray &attachmentData,
 					 const QByteArray &subject,
 					 const QByteArray &mode,
 					 const QByteArray &fromAccount,
+					 const QByteArray &date,
 					 const qint64 mailOid)
 {
   QHash<QString, QVariant> hash;
 
   hash["attachment"] = attachmentData;
+  hash["date"] = date;
   hash["from_account"] = fromAccount;
   hash["mail_oid"] = mailOid;
   hash["message"] = message;
