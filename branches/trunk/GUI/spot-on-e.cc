@@ -268,10 +268,10 @@ void spoton::slotConfigurePoptastic(void)
 
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
   m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
-  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(1);
+  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
   m_poptasticRetroPhoneSettingsUi.out_password->clear();
   m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
-  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(1);
+  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
   m_poptasticRetroPhoneSettingsUi.out_username->clear();
   m_poptasticRetroPhoneSettingsUi.proxy->setChecked(false);
   m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(false);
@@ -1976,8 +1976,7 @@ void spoton::slotSavePoptasticAccount(void)
       bool ok = true;
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      list = spoton_misc::poptasticSettings
-	("", m_crypts.value("chat", 0), &ok);
+      list = spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), &ok);
       QApplication::restoreOverrideCursor();
 
       if(ok)
@@ -2019,6 +2018,7 @@ void spoton::slotSavePoptasticAccount(void)
 	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
 	      setCurrentIndex(0);
 
+	  slotReloadEmailNames();
 	}
     }
 }
@@ -2506,6 +2506,28 @@ void spoton::slotDeletePoptasticAccount(void)
 				     toByteArray(), &ok).toBase64());
 	    }
 	}
+
+      if(list.isEmpty())
+	{
+	  m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
+	  m_poptasticRetroPhoneSettingsUi.in_password->clear();
+	  m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
+	  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
+	  m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
+	  m_poptasticRetroPhoneSettingsUi.in_username->clear();
+	  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked(false);
+	  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked(false);
+	  m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
+	  m_poptasticRetroPhoneSettingsUi.out_password->clear();
+	  m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
+	  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
+	  m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
+	  m_poptasticRetroPhoneSettingsUi.out_username->clear();
+	  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked(false);
+	  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked(false);
+	}
+
+      slotReloadEmailNames();
     }
 }
 
