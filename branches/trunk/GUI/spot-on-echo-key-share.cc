@@ -73,7 +73,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 		  this,
 		  SLOT(slotMenuAction(void)));
   menu->addSeparator();
-  menu->addAction(tr("&Generate"),
+  menu->addAction(tr("&Generate Community"),
 		  this,
 		  SLOT(slotMenuAction(void)));
   menu->addSeparator();
@@ -104,7 +104,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 		  this,
 		  SLOT(slotMenuAction(void)));
   menu->addSeparator();
-  menu->addAction(tr("&Reset Widgets"),
+  menu->addAction(tr("&Reset Input Widgets"),
 		  this,
 		  SLOT(slotMenuAction(void)));
   ui.menu->setMenu(menu);
