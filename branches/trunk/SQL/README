@@ -2,3 +2,5 @@
    Replace user with an applicable value.
 2. Modify the spot_on_user in postgresql_create_schema.sql, if necessary.
 3. Log into the new database and execute \i postgresql_create_schema.sql.
+4. If connecting via SSL/TLS, please consider settings sslmode=verify-full
+   as a connection option in the UI.
