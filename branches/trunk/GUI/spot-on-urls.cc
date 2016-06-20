@@ -1275,6 +1275,9 @@ void spoton::slotPostgreSQLConnect(void)
 #ifdef Q_OS_MAC
   dialog.setAttribute(Qt::WA_MacMetalStyle, false);
 #endif
+  ui.connection_options->setText
+    (settings.value("gui/postgresql_connection_options", "").
+     toString().trimmed());
   ui.database->setText(settings.value("gui/postgresql_database", "").
 		       toString().trimmed());
   ui.database->selectAll();
@@ -1304,6 +1307,9 @@ void spoton::slotPostgreSQLConnect(void)
       m_urlDatabase = QSqlDatabase::addDatabase("QPSQL", "URLDatabase");
 
       QString str("connect_timeout=10");
+
+      if(!ui.connection_options->text().trimmed().isEmpty())
+	str.append(";").append(ui.connection_options->text().trimmed());
 
       if(ui.ssltls->isChecked())
 	str.append(";requiressl=1");
@@ -1340,6 +1346,8 @@ void spoton::slotPostgreSQLConnect(void)
 	     arg(ui.name->text()).
 	     arg(ui.host->text()).
 	     arg(ui.database->text()));
+	  settings.setValue("gui/postgresql_connection_options",
+			    ui.connection_options->text().trimmed());
 	  settings.setValue("gui/postgresql_database",
 			    ui.database->text());
 	  settings.setValue("gui/postgresql_host",
