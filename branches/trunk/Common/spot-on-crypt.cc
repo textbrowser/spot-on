@@ -3540,7 +3540,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	  if((next = SSL_get_cipher_list(ssl, index)))
 	    {
 #if QT_VERSION < 0x050000
-	      QSslCipher ciper;
+	      QSslCipher cipher;
 
 	      if(protocol == "SslV3")
 		cipher = QSslCipher(next, QSsl::SslV3);
