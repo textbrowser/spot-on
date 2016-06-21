@@ -3433,6 +3433,7 @@ void spoton::slotExportPublicKeys(void)
 
   QByteArray keys(copyMyChatPublicKey() + "\n" +
 		  copyMyEmailPublicKey() + "\n" +
+		  copyMyOpenLibraryPublicKey() + "\n" +
 		  copyMyPoptasticPublicKey() + "\n" +
 		  copyMyRosettaPublicKey() + "\n" +
 		  copyMyUrlPublicKey());
@@ -3554,8 +3555,9 @@ void spoton::slotImportPublicKeys(void)
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
-	    (tr("The import file contains a lot (%1) of data. Are you "
+	    (tr("The import file (%1) contains a lot (%2) of data. Are you "
 		"sure that you wish to process it?").
+	     arg(fileInfo.absoluteFilePath()).
 	     arg(fileInfo.size()));
 
 	  if(mb.exec() != QMessageBox::Yes)
@@ -3736,8 +3738,9 @@ void spoton::slotImportNeighbors(void)
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
-	    (tr("The import file contains a lot (%1) of data. Are you "
+	    (tr("The import file (%1) contains a lot (%2) of data. Are you "
 		"sure that you wish to process it?").
+	     arg(fileInfo.absoluteFilePath()).
 	     arg(fileInfo.size()));
 
 	  if(mb.exec() != QMessageBox::Yes)

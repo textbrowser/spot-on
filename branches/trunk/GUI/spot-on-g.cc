@@ -752,3 +752,27 @@ void spoton::slotListenerSourceOfRandomnessChanged(int value)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton::updatePoptasticNameSettingsFromWidgets(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+
+  QSettings settings;
+  bool ok = true;
+
+  m_settings["gui/poptasticName"] =
+    m_poptasticRetroPhoneSettingsUi.chat_primary_account->currentText().
+    toLatin1();
+  m_settings["gui/poptasticNameEmail"] =
+    m_poptasticRetroPhoneSettingsUi.email_primary_account->currentText().
+    toLatin1();
+  settings.setValue
+    ("gui/poptasticName",
+     crypt->encryptedThenHashed(m_settings["gui/poptasticName"].
+				toByteArray(), &ok).toBase64());
+  settings.setValue
+    ("gui/poptasticNameEmail",
+     crypt->encryptedThenHashed(m_settings["gui/poptasticNameEmail"].
+				toByteArray(), &ok).toBase64());
+}

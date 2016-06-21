@@ -6169,7 +6169,7 @@ void spoton::slotSetPassphrase(void)
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
-	    (tr("Would you like to generate private and public keys?"));
+	    (tr("Would you like to generate private and public key pairs?"));
 
 	  if(mb.exec() == QMessageBox::Yes)
 	    {
@@ -6558,8 +6558,7 @@ void spoton::slotSetPassphrase(void)
       QMessageBox::information
 	(this, tr("%1: Information").
 	 arg(SPOTON_APPLICATION_NAME),
-	 tr("Your confidential information has been saved. Enjoy!").
-	 arg(SPOTON_APPLICATION_NAME));
+	 tr("Your confidential information has been saved. Enjoy!"));
 
       if(m_ui.pid->text() == "0")
 	if(QFileInfo(m_ui.kernelPath->text()).isExecutable())
@@ -9112,6 +9111,7 @@ void spoton::slotCopyAllMyPublicKeys(void)
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(copyMyChatPublicKey() + "\n" +
 			 copyMyEmailPublicKey() + "\n" +
+			 copyMyOpenLibraryPublicKey() + "\n" +
 			 copyMyPoptasticPublicKey() + "\n" +
 			 copyMyRosettaPublicKey() + "\n" +
 			 copyMyUrlPublicKey());

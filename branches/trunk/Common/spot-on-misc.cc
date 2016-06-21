@@ -605,7 +605,6 @@ void spoton_misc::prepareDatabases(void)
 		   "(proxy_type IN ('HTTP', 'SOCKS5')), "
 		   "proxy_username TEXT NOT NULL, "
 		   "smtp_localname TEXT NOT NULL)");
-	query.exec("DROP TRIGGER IF EXISTS poptastic_trigger");
       }
 
     db.close();

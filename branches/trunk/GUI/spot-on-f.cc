@@ -1705,7 +1705,7 @@ void spoton::slotLinkClicked(const QUrl &url)
 		    arg(SPOTON_APPLICATION_NAME));
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to access %1?").arg(str));
+  mb.setText(tr("Are you sure that you wish to access the URL %1?").arg(str));
 
   if(mb.exec() != QMessageBox::Yes)
     return;

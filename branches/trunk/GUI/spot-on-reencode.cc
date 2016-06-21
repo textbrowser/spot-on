@@ -1610,6 +1610,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 	if(query.exec("SELECT in_method, in_password, in_server_address, "
 		      "in_server_port, in_ssltls, in_username, "
+		      "in_username_hash, "
 		      "in_verify_host, in_verify_peer, "
 		      "out_method, out_password, out_server_address, "
 		      "out_server_port, out_ssltls, out_username, "
@@ -1648,10 +1649,18 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				  "proxy_server_address = ?, "
 				  "proxy_server_port = ?, "
 				  "proxy_username = ?, "
-				  "smtp_localname = ?");
+				  "smtp_localname = ? WHERE "
+				  "in_username_hash = ?");
 
 	      for(int i = 0; i < query.record().count(); i++)
 		{
+		  if(i == 6)
+		    {
+		      list << QByteArray::fromBase64(query.value(i).
+						     toByteArray());
+		      continue;
+		    }
+
 		  bytes = oldCrypt->decryptedAfterAuthenticated
 		    (QByteArray::
 		     fromBase64(query.
@@ -1660,12 +1669,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		     &ok);
 
 		  if(ok)
-		    {
-		      if(i == 5) // in_username
-			list << bytes << bytes;
-		      else
-			list << bytes;
-		    }
+		    list << bytes;
 		  else
 		    {
 		      list.clear();
@@ -1679,7 +1683,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		    {
 		      if(i == 6) // in_username_hash
 			updateQuery.bindValue
-			  (i, newCrypt->keyedHash(list.at(i), &ok).
+			  (i, newCrypt->keyedHash(list.at(i - 1), &ok).
 			   toBase64());
 		      else
 			updateQuery.bindValue
@@ -1689,6 +1693,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  else
 		    break;
 		}
+
+	      updateQuery.bindValue(23, query.value(6));
 
 	      if(ok)
 		updateQuery.exec();

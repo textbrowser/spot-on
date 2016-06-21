@@ -622,6 +622,7 @@ class spoton: public QMainWindow
   void updateListenersTable(const QSqlDatabase &db);
   void updateNeighborsTable(const QSqlDatabase &db);
   void updateParticipantsTable(const QSqlDatabase &db);
+  void updatePoptasticNameSettingsFromWidgets(spoton_crypt *crypt);
   void updatePublicKeysLabel(void);
   void verifySMPSecret(const QString &hash, const QString &keyType,
 		       const QString &oid);

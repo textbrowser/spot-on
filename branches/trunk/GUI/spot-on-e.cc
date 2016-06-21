@@ -241,28 +241,15 @@ void spoton::slotConfigurePoptastic(void)
 
       m_settings["gui/poptasticCAPath"] =
 	m_poptasticRetroPhoneSettingsUi.capath->text();
-      m_settings["gui/poptasticName"] =
-	m_poptasticRetroPhoneSettingsUi.chat_primary_account->currentText().
-	toLatin1();
-      m_settings["gui/poptasticNameEmail"] =
-	m_poptasticRetroPhoneSettingsUi.email_primary_account->currentText().
-	toLatin1();
       m_settings["gui/poptasticRefreshInterval"] =
 	m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value();
       settings.setValue
 	("gui/poptasticCAPath",
 	 m_poptasticRetroPhoneSettingsUi.capath->text());
       settings.setValue
-	("gui/poptasticName",
-	 crypt->encryptedThenHashed(m_settings["gui/poptasticName"].
-				    toByteArray(), &ok).toBase64());
-      settings.setValue
-	("gui/poptasticNameEmail",
-	 crypt->encryptedThenHashed(m_settings["gui/poptasticNameEmail"].
-				    toByteArray(), &ok).toBase64());
-      settings.setValue
 	("gui/poptasticRefreshInterval",
 	 m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value());
+      updatePoptasticNameSettingsFromWidgets(crypt);
       slotReloadEmailNames();
     }
 
@@ -1981,6 +1968,8 @@ void spoton::slotSavePoptasticAccount(void)
 
       if(ok)
 	{
+	  bool initial = m_poptasticRetroPhoneSettingsUi.account->count() == 0;
+
 	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
 	  m_poptasticRetroPhoneSettingsUi.account->clear();
 	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
@@ -2017,6 +2006,9 @@ void spoton::slotSavePoptasticAccount(void)
 	  else
 	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
 	      setCurrentIndex(0);
+
+	  if(initial)
+	    updatePoptasticNameSettingsFromWidgets(m_crypts.value("chat", 0));
 
 	  slotReloadEmailNames();
 	}

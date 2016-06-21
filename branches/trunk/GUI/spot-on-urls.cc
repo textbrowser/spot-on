@@ -725,7 +725,7 @@ void spoton::slotImportUrls(void)
       QMessageBox::critical
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Did you prepare common credentials?"));
+	 tr("Did you prepare URL common credentials?"));
       return;
     }
 
@@ -738,7 +738,7 @@ void spoton::slotImportUrls(void)
 #endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Did you prepare your databases and distillers?"));
+  mb.setText(tr("Did you prepare your URL databases and URL distillers?"));
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
@@ -1829,7 +1829,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 			arg(SPOTON_APPLICATION_NAME));
       mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Are you sure that you wish to remove %1?").arg(str));
+      mb.setText(tr("Are you sure that you wish to remove the URL %1?").
+		 arg(str));
 
       if(mb.exec() != QMessageBox::Yes)
 	return;
@@ -1881,7 +1882,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 			arg(SPOTON_APPLICATION_NAME));
       mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Are you sure that you wish to share %1?").
+      mb.setText(tr("Are you sure that you wish to share the URL %1?").
 		 arg(spoton_misc::urlToEncoded(original).constData()));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -2017,7 +2018,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 			    arg(SPOTON_APPLICATION_NAME));
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText(tr("Are you sure that you wish to access %1?").arg(str));
+	  mb.setText(tr("Are you sure that you wish to access the URL %1?").
+		     arg(str));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return;
