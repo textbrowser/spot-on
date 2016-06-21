@@ -73,7 +73,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 		  this,
 		  SLOT(slotMenuAction(void)));
   menu->addSeparator();
-  menu->addAction(tr("&Generate Community"),
+  menu->addAction(tr("&Generate Specified Community"),
 		  this,
 		  SLOT(slotMenuAction(void)));
   menu->addSeparator();
@@ -528,15 +528,33 @@ void spoton_echo_key_share::populate(void)
 
 void spoton_echo_key_share::deleteSelected(void)
 {
+  QTreeWidgetItem *item = ui.tree->selectedItems().value(0);
+
+  if(!item)
+    return;
+
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to remove the selected "
+		"item(s)?"));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
   spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
     value("chat", 0) : 0;
 
   if(!crypt)
-    return;
-
-  QTreeWidgetItem *item = ui.tree->selectedItems().value(0);
-
-  if(!item)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
