@@ -1729,7 +1729,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT echo, feed, feed_description, "
+	if(query.exec("SELECT feed, feed_description, "
 		      "feed_image, feed_title, OID FROM rss_feeds"))
 	  while(query.next())
 	    {
@@ -1756,7 +1756,6 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  QSqlQuery updateQuery(query);
 
 		  updateQuery.prepare("UPDATE rss_feeds SET "
-				      "echo = ?, "
 				      "feed = ?, "
 				      "feed_description = ?, "
 				      "feed_hash = ?, "
@@ -1774,25 +1773,20 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		  if(ok)
 		    updateQuery.bindValue
-		      (2, newCrypt->encryptedThenHashed(list.value(2),
-							&ok).toBase64());
+		      (2, newCrypt->keyedHash(list.value(0), &ok).toBase64());
 
 		  if(ok)
 		    updateQuery.bindValue
-		      (3, newCrypt->keyedHash(list.value(1), &ok).toBase64());
+		      (3, newCrypt->encryptedThenHashed(list.value(2),
+							&ok).toBase64());
 
 		  if(ok)
 		    updateQuery.bindValue
 		      (4, newCrypt->encryptedThenHashed(list.value(3),
 							&ok).toBase64());
 
-		  if(ok)
-		    updateQuery.bindValue
-		      (5, newCrypt->encryptedThenHashed(list.value(4),
-							&ok).toBase64());
-
 		  updateQuery.bindValue
-		    (6, query.value(query.record().count() - 1));
+		    (5, query.value(query.record().count() - 1));
 
 		  if(ok)
 		    updateQuery.exec();

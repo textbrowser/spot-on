@@ -2019,7 +2019,8 @@ void spoton_rss::slotDownloadContent(void)
 
 void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
 {
-  if(!imageUrl.isEmpty() && imageUrl.isValid())
+  if(!imageUrl.isEmpty() && imageUrl.isValid() &&
+     !url.isEmpty() && url.isValid())
     {
       QNetworkReply *reply = m_networkAccessManager.get
 	(QNetworkRequest(imageUrl));

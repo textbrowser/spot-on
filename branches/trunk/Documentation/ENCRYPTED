@@ -128,7 +128,7 @@ smtp_localname
 
 rss.db
 
-all fields save for feed_hash, imported, insert_date,
+all fields save for feed_hash, hidden, imported, insert_date,
 publication_date, url_hash, visited
 
 -----
