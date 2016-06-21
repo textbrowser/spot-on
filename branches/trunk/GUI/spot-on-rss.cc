@@ -1186,7 +1186,8 @@ void spoton_rss::populateFeeds(void)
 		    {
 		      QPixmap pixmap;
 
-		      pixmap.loadFromData(image);
+		      if(!pixmap.loadFromData(image))
+			pixmap = QPixmap();
 
 		      if(!pixmap.isNull())
 			item->setIcon(pixmap);
@@ -2099,14 +2100,21 @@ void spoton_rss::slotFeedImageReplyFinished(void)
       QPixmap pixmap;
       QUrl url(reply->property("url").toUrl());
 
-      pixmap.loadFromData(data);
+      if(!pixmap.loadFromData(data))
+	pixmap = QPixmap();
+
       reply->deleteLater();
 
       QList<QTableWidgetItem *> list(m_ui.feeds->findItems(url.toString(),
 							   Qt::MatchExactly));
 
       if(!list.isEmpty())
-	list.at(0)->setIcon(pixmap);
+	{
+	  if(!pixmap.isNull())
+	    list.at(0)->setIcon(pixmap);
+	  else
+	    list.at(0)->setIcon(QIcon(":/generic/rss.png"));
+	}
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       saveFeedImage(data, url.toString());
