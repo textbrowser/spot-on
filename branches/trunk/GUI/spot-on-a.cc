@@ -6760,12 +6760,13 @@ void spoton::slotValidatePassphrase(void)
 	       toInt());
 
 	    QString name("");
-	    bool ok = true;
+	    QString nameEmail("");
 
 	    if(m_crypts.value("chat", 0))
 	      {
 		QByteArray bytes;
 		QSettings settings;
+		bool ok = true;
 
 		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(settings.
@@ -6774,12 +6775,24 @@ void spoton::slotValidatePassphrase(void)
 
 		if(ok)
 		  name = bytes.constData();
+
+		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(settings.
+					  value("gui/poptasticNameEmail").
+					  toByteArray()), &ok).trimmed();
+
+		if(ok)
+		  nameEmail = bytes.constData();
 	      }
 
-	    if(name.isEmpty() || !ok)
+	    if(name.isEmpty())
 	      name = "unknown@unknown.org";
 
+	    if(nameEmail.isEmpty())
+	      nameEmail = "unknown@unknown.org";
+
 	    m_settings["gui/poptasticName"] = name.toLatin1();
+	    m_settings["gui/poptasticNameEmail"] = nameEmail.toLatin1();
 
 	    if(!m_settings.value("gui/initial_url_distillers_defined",
 				 false).toBool())
