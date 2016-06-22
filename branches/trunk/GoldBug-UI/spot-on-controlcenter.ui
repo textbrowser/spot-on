@@ -135,8 +135,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>570</width>
-             <height>674</height>
+             <width>582</width>
+             <height>683</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -238,6 +238,16 @@ QPushButton:pressed {
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="buzz_details">
+                <property name="text">
+                 <string>Details</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_64">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -253,196 +263,202 @@ QPushButton:pressed {
              </layout>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_33">
-              <property name="spacing">
-               <number>5</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_33">
-                <property name="text">
-                 <string>Channel &amp;Name</string>
-                </property>
-                <property name="buddy">
-                 <cstring>channel</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="channel"/>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_72">
-                <property name="text">
-                 <string>&amp;or Magnet</string>
-                </property>
-                <property name="buddy">
-                 <cstring>demagnetize</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="demagnetize">
-                <property name="toolTip">
-                 <string>Demagnetize the link.</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_40">
-              <property name="spacing">
-               <number>5</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_44">
-                <property name="text">
-                 <string>&amp;Frequency</string>
-                </property>
-                <property name="buddy">
-                 <cstring>buzzIterationCount</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="buzzIterationCount">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimum">
-                 <number>10000</number>
-                </property>
-                <property name="maximum">
-                 <number>999999999</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_36">
-                <property name="text">
-                 <string>Channel &amp;Type</string>
-                </property>
-                <property name="buddy">
-                 <cstring>channelType</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="channelType">
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_61">
-              <property name="spacing">
-               <number>5</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_61">
-                <property name="text">
-                 <string>Hash &amp;Key</string>
-                </property>
-                <property name="buddy">
-                 <cstring>buzzHashKey</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="buzzHashKey"/>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_37">
-                <property name="text">
-                 <string>&amp;Salt</string>
-                </property>
-                <property name="buddy">
-                 <cstring>channelSalt</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="channelSalt"/>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_62">
-                <property name="text">
-                 <string>Hash &amp;Type</string>
-                </property>
-                <property name="buddy">
-                 <cstring>buzzHashType</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="buzzHashType">
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="buzzActions">
-                <property name="styleSheet">
-                 <string notr="true"/>
-                </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>Clear</string>
+             <widget class="QFrame" name="buzz_frame">
+              <layout class="QVBoxLayout" name="verticalLayout_7">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_33">
+                 <property name="spacing">
+                  <number>5</number>
                  </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Generate</string>
+                 <item>
+                  <widget class="QLabel" name="label_33">
+                   <property name="text">
+                    <string>Channel &amp;Name</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>channel</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="channel"/>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_72">
+                   <property name="text">
+                    <string>&amp;or Magnet</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>demagnetize</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="demagnetize">
+                   <property name="toolTip">
+                    <string>Demagnetize the link.</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_40">
+                 <property name="spacing">
+                  <number>5</number>
                  </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_45">
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_49">
-                <property name="text">
-                 <string>&amp;Bookmarks</string>
-                </property>
-                <property name="buddy">
-                 <cstring>favorites</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="favorites">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
-                </property>
-                <item>
-                 <property name="text">
-                  <string notr="true">Empty</string>
+                 <item>
+                  <widget class="QLabel" name="label_44">
+                   <property name="text">
+                    <string>&amp;Frequency</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>buzzIterationCount</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="buzzIterationCount">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimum">
+                    <number>10000</number>
+                   </property>
+                   <property name="maximum">
+                    <number>999999999</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_36">
+                   <property name="text">
+                    <string>Channel &amp;Type</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>channelType</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="channelType">
+                   <property name="sizeAdjustPolicy">
+                    <enum>QComboBox::AdjustToContents</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_61">
+                 <property name="spacing">
+                  <number>5</number>
                  </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
+                 <item>
+                  <widget class="QLabel" name="label_61">
+                   <property name="text">
+                    <string>Hash &amp;Key</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>buzzHashKey</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="buzzHashKey"/>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_37">
+                   <property name="text">
+                    <string>&amp;Salt</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>channelSalt</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="channelSalt"/>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_62">
+                   <property name="text">
+                    <string>Hash &amp;Type</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>buzzHashType</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="buzzHashType">
+                   <property name="sizeAdjustPolicy">
+                    <enum>QComboBox::AdjustToContents</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="buzzActions">
+                   <property name="styleSheet">
+                    <string notr="true"/>
+                   </property>
+                   <property name="sizeAdjustPolicy">
+                    <enum>QComboBox::AdjustToContents</enum>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>Clear</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Generate</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_45">
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label_49">
+                   <property name="text">
+                    <string>&amp;Bookmarks</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>favorites</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="favorites">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="sizeAdjustPolicy">
+                    <enum>QComboBox::AdjustToContents</enum>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string notr="true">Empty</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_28">
@@ -708,10 +724,10 @@ color: rgb(255, 255, 255);
                    <bool>true</bool>
                   </property>
                   <property name="html">
-                   <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;https://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+                   <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="openExternalLinks">
@@ -1306,8 +1322,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>710</width>
-             <height>637</height>
+             <width>683</width>
+             <height>546</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2937,7 +2953,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>499</width>
-             <height>1759</height>
+             <height>1629</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4206,8 +4222,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>597</width>
-             <height>576</height>
+             <width>588</width>
+             <height>486</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5275,8 +5291,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>637</width>
-             <height>352</height>
+             <width>626</width>
+             <height>292</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5361,8 +5377,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>651</width>
-                 <height>575</height>
+                 <width>631</width>
+                 <height>505</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6598,8 +6614,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>842</width>
-             <height>1304</height>
+             <width>848</width>
+             <height>1177</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -8149,8 +8165,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>448</width>
-             <height>771</height>
+             <width>450</width>
+             <height>677</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9517,8 +9533,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>536</width>
-             <height>471</height>
+             <width>492</width>
+             <height>398</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10483,10 +10499,10 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                 <bool>true</bool>
                </property>
                <property name="html">
-                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;https://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="overwriteMode">
@@ -11199,7 +11215,7 @@ border-style: inset;
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -11553,6 +11569,7 @@ border-style: inset;
   <tabstop>buzzName</tabstop>
   <tabstop>saveBuzzName</tabstop>
   <tabstop>commonBuzzChannels</tabstop>
+  <tabstop>buzz_details</tabstop>
   <tabstop>channel</tabstop>
   <tabstop>demagnetize</tabstop>
   <tabstop>buzzIterationCount</tabstop>
