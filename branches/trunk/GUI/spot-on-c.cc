@@ -3952,19 +3952,19 @@ void spoton::importNeighbors(const QString &filePath)
 		    query.bindValue
 		      (2, crypt->
 		       encryptedThenHashed
-		       (hash["protocol"], &ok).toBase64());
+		       (hash.value("protocol"), &ok).toBase64());
 
 		    if(ok)
 		      query.bindValue
 			(3, crypt->
 			 encryptedThenHashed
-			 (hash["ip_address"], &ok).toBase64());
+			 (hash.value("ip_address"), &ok).toBase64());
 
 		    if(ok)
 		      query.bindValue
 			(4, crypt->
 			 encryptedThenHashed
-			 (hash["port"], &ok).toBase64());
+			 (hash.value("port"), &ok).toBase64());
 
 		    query.bindValue(5, 1); // Sticky.
 
@@ -3972,24 +3972,24 @@ void spoton::importNeighbors(const QString &filePath)
 		      query.bindValue
 			(6, crypt->
 			 encryptedThenHashed
-			 (hash["scope_id"], &ok).toBase64());
+			 (hash.value("scope_id"), &ok).toBase64());
 
 		    if(ok)
 		      query.bindValue
 			(7, crypt->
 			 keyedHash(QByteArray() + // Proxy HostName
 				   QByteArray() + // Proxy Port
-				   hash["ip_address"] +
-				   hash["port"] +
-				   hash["scope_id"] +
-				   hash["transport"], &ok).
+				   hash.value("ip_address") +
+				   hash.value("port") +
+				   hash.value("scope_id") +
+				   hash.value("transport"), &ok).
 			 toBase64());
 
 		    query.bindValue(8, "disconnected");
 
 		    QString country
 		      (spoton_misc::
-		       countryNameFromIPAddress(hash["ip_address"].
+		       countryNameFromIPAddress(hash.value("ip_address").
 						constData()));
 
 		    if(ok)
@@ -4001,7 +4001,7 @@ void spoton::importNeighbors(const QString &filePath)
 		    if(ok)
 		      query.bindValue
 			(10, crypt->
-			 keyedHash(hash["ip_address"], &ok).
+			 keyedHash(hash.value("ip_address"), &ok).
 			 toBase64());
 
 		    if(ok)
@@ -4052,11 +4052,11 @@ void spoton::importNeighbors(const QString &filePath)
 		      query.bindValue
 			(18, crypt->
 			 encryptedThenHashed
-			 (hash["echo_mode"], &ok).toBase64());
+			 (hash.value("echo_mode"), &ok).toBase64());
 
-		    if(hash["transport"] == "tcp")
+		    if(hash.value("transport") == "tcp")
 		      query.bindValue
-			(19, hash["ssl_key_size"].toInt());
+			(19, hash.value("ssl_key_size").toInt());
 		    else
 		      query.bindValue(19, 0);
 
@@ -4068,7 +4068,7 @@ void spoton::importNeighbors(const QString &filePath)
 			 (QByteArray(),
 			  &ok).toBase64());
 
-		    if(hash["transport"] == "tcp")
+		    if(hash.value("transport") == "tcp")
 		      query.bindValue(22, 1);
 		    else
 		      query.bindValue(22, 0);
@@ -4089,13 +4089,13 @@ void spoton::importNeighbors(const QString &filePath)
 		      query.bindValue
 			(25,
 			 crypt->encryptedThenHashed
-			 (hash["transport"],
+			 (hash.value("transport"),
 			  &ok).toBase64());
 
 		    if(ok)
 		      query.bindValue
 			(26, crypt->encryptedThenHashed
-			 (hash["orientation"],
+			 (hash.value("orientation"),
 			  &ok).toBase64());
 
 		    if(ok)

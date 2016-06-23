@@ -140,7 +140,7 @@ void spoton_kernel::popPoptastic(void)
     {
       hash = m_poptasticAccounts.at(i);
 
-      if(hash["in_method"].toString() != "Disable")
+      if(hash.value("in_method").toString() != "Disable")
 	{
 	  m_poptasticAccounts.removeAt(i);
 	  break;
@@ -172,14 +172,14 @@ void spoton_kernel::popPoptastic(void)
     {
       curl_easy_setopt
 	(curl, CURLOPT_PASSWORD,
-	 hash["in_password"].toByteArray().constData());
+	 hash.value("in_password").toByteArray().constData());
       curl_easy_setopt
 	(curl, CURLOPT_USERNAME,
-	 hash["in_username"].toByteArray().trimmed().constData());
+	 hash.value("in_username").toByteArray().trimmed().constData());
 
       long timeout = 10L;
 
-      if(hash["proxy_enabled"].toBool())
+      if(hash.value("proxy_enabled").toBool())
 	{
 	  timeout += 15L;
 
@@ -188,10 +188,10 @@ void spoton_kernel::popPoptastic(void)
 	  QString scheme("");
 	  QString url("");
 
-	  address = hash["proxy_server_address"].toString().trimmed();
-	  port = hash["proxy_server_port"].toString().trimmed();
+	  address = hash.value("proxy_server_address").toString().trimmed();
+	  port = hash.value("proxy_server_port").toString().trimmed();
 
-	  if(hash["proxy_type"] == "HTTP")
+	  if(hash.value("proxy_type") == "HTTP")
 	    scheme = "http";
 	  else
 	    scheme = "socks5";
@@ -200,15 +200,15 @@ void spoton_kernel::popPoptastic(void)
 	  curl_easy_setopt
 	    (curl, CURLOPT_PROXY, url.toLatin1().constData());
 	  curl_easy_setopt(curl, CURLOPT_PROXYPASSWORD,
-			   hash["proxy_password"].toString().
+			   hash.value("proxy_password").toString().
 			   toUtf8().constData());
 	  curl_easy_setopt(curl, CURLOPT_PROXYUSERNAME,
-			   hash["proxy_username"].toString().
+			   hash.value("proxy_username").toString().
 			   trimmed().toLatin1().constData());
 	}
 
-      QString method(hash["in_method"].toString().toUpper().trimmed());
-      QString ssltls(hash["in_ssltls"].toString().toUpper().trimmed());
+      QString method(hash.value("in_method").toString().toUpper().trimmed());
+      QString ssltls(hash.value("in_ssltls").toString().toUpper().trimmed());
       QString url("");
 
       if(ssltls == "SSL" || ssltls == "TLS")
@@ -217,26 +217,26 @@ void spoton_kernel::popPoptastic(void)
 	    {
 	      if(popRound)
 		url = QString("imaps://%1:%2/INBOX/;UID=1").
-		  arg(hash["in_server_address"].toString().trimmed()).
-		  arg(hash["in_server_port"].toString().trimmed());
+		  arg(hash.value("in_server_address").toString().trimmed()).
+		  arg(hash.value("in_server_port").toString().trimmed());
 	      else
 		url = QString("imaps://%1:%2/INBOX").
-		  arg(hash["in_server_address"].toString().trimmed()).
-		  arg(hash["in_server_port"].toString().trimmed());
+		  arg(hash.value("in_server_address").toString().trimmed()).
+		  arg(hash.value("in_server_port").toString().trimmed());
 	    }
 	  else
 	    url = QString("pop3s://%1:%2/1").
-	      arg(hash["in_server_address"].toString().trimmed()).
-	      arg(hash["in_server_port"].toString().trimmed());
+	      arg(hash.value("in_server_address").toString().trimmed()).
+	      arg(hash.value("in_server_port").toString().trimmed());
 
-	  long verify = static_cast<long>(hash["in_verify_host"].toInt());
+	  long verify = static_cast<long>(hash.value("in_verify_host").toInt());
 
 	  if(verify)
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
 	  else
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
-	  verify = static_cast<long>(hash["in_verify_peer"].toInt());
+	  verify = static_cast<long>(hash.value("in_verify_peer").toInt());
 	  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
 	  if(ssltls == "TLS")
@@ -258,17 +258,17 @@ void spoton_kernel::popPoptastic(void)
 	    {
 	      if(popRound)
 		url = QString("imap://%1:%2/INBOX/;UID=1").
-		  arg(hash["in_server_address"].toString().trimmed()).
-		  arg(hash["in_server_port"].toString().trimmed());
+		  arg(hash.value("in_server_address").toString().trimmed()).
+		  arg(hash.value("in_server_port").toString().trimmed());
 	      else
 		url = QString("imap://%1:%2/INBOX").
-		  arg(hash["in_server_address"].toString().trimmed()).
-		  arg(hash["in_server_port"].toString().trimmed());
+		  arg(hash.value("in_server_address").toString().trimmed()).
+		  arg(hash.value("in_server_port").toString().trimmed());
 	    }
 	  else
 	    url = QString("pop3://%1:%2/1").
-	      arg(hash["in_server_address"].toString().trimmed()).
-	      arg(hash["in_server_port"].toString().trimmed());
+	      arg(hash.value("in_server_address").toString().trimmed()).
+	      arg(hash.value("in_server_port").toString().trimmed());
 	}
 
       curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
@@ -425,7 +425,7 @@ void spoton_kernel::postPoptastic(void)
   bool disabled = true;
 
   for(int i = 0; i < list.size(); i++)
-    if(list.at(i)["out_method"] != "Disable")
+    if(list.at(i).value("out_method") != "Disable")
       {
 	disabled = false;
 	break;
@@ -456,12 +456,12 @@ void spoton_kernel::postPoptastic(void)
 	** the UI creates a listing using the in_username values.
 	*/
 
-	if(list.at(i)["in_username"].toString() ==
-	   values["from_account"].toString())
+	if(list.at(i).value("in_username").toString() ==
+	   values.value("from_account").toString())
 	  {
 	    h = list.at(i);
 
-	    if(h["out_method"] == "Disable")
+	    if(h.value("out_method") == "Disable")
 	      {
 		/*
 		** Remove the values item from the cache.
@@ -499,14 +499,14 @@ void spoton_kernel::postPoptastic(void)
 	{
 	  curl_easy_setopt
 	    (curl, CURLOPT_PASSWORD,
-	     hash["out_password"].toByteArray().constData());
+	     hash.value("out_password").toByteArray().constData());
 	  curl_easy_setopt
 	    (curl, CURLOPT_USERNAME,
-	     hash["out_username"].toByteArray().trimmed().constData());
+	     hash.value("out_username").toByteArray().trimmed().constData());
 
 	  long timeout = 10L;
 
-	  if(hash["proxy_enabled"].toBool())
+	  if(hash.value("proxy_enabled").toBool())
 	    {
 	      timeout += 15L;
 
@@ -515,10 +515,11 @@ void spoton_kernel::postPoptastic(void)
 	      QString scheme("");
 	      QString url("");
 
-	      address = hash["proxy_server_address"].toString().trimmed();
-	      port = hash["proxy_server_port"].toString().trimmed();
+	      address = hash.value("proxy_server_address").toString().
+		trimmed();
+	      port = hash.value("proxy_server_port").toString().trimmed();
 
-	      if(hash["proxy_type"] == "HTTP")
+	      if(hash.value("proxy_type") == "HTTP")
 		scheme = "http";
 	      else
 		scheme = "socks5";
@@ -527,10 +528,10 @@ void spoton_kernel::postPoptastic(void)
 	      curl_easy_setopt
 		(curl, CURLOPT_PROXY, url.toLatin1().constData());
 	      curl_easy_setopt(curl, CURLOPT_PROXYPASSWORD,
-			       hash["proxy_password"].toString().
+			       hash.value("proxy_password").toString().
 			       toUtf8().constData());
 	      curl_easy_setopt(curl, CURLOPT_PROXYUSERNAME,
-			       hash["proxy_username"].toString().
+			       hash.value("proxy_username").toString().
 			       trimmed().toLatin1().constData());
 	    }
 
@@ -538,27 +539,28 @@ void spoton_kernel::postPoptastic(void)
 	  ** The UI creates a listing using the in_username values.
 	  */
 
-	  QString from(hash["in_username"].toString().trimmed());
-	  QString ssltls(hash["out_ssltls"].toString().toUpper().trimmed());
+	  QString from(hash.value("in_username").toString().trimmed());
+	  QString ssltls(hash.value("out_ssltls").toString().toUpper().
+			 trimmed());
 	  QString url("");
 
 	  if(ssltls == "SSL" || ssltls == "TLS")
 	    {
 	      if(ssltls == "SSL")
 		url = QString("smtps://%1:%2/%3").
-		  arg(hash["out_server_address"].toString().trimmed()).
-		  arg(hash["out_server_port"].toString().trimmed()).
+		  arg(hash.value("out_server_address").toString().trimmed()).
+		  arg(hash.value("out_server_port").toString().trimmed()).
 		  arg(hash.value("smtp_localname", "localhost").
 		      toString());
 	      else
 		url = QString("smtp://%1:%2/%3").
-		  arg(hash["out_server_address"].toString().trimmed()).
-		  arg(hash["out_server_port"].toString().trimmed()).
+		  arg(hash.value("out_server_address").toString().trimmed()).
+		  arg(hash.value("out_server_port").toString().trimmed()).
 		  arg(hash.value("smtp_localname", "localhost").
 		      toString());
 
 	      long verify = static_cast<long>
-		(hash["out_verify_host"].toInt());
+		(hash.value("out_verify_host").toInt());
 
 	      if(verify)
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
@@ -566,7 +568,7 @@ void spoton_kernel::postPoptastic(void)
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
 	      verify = static_cast<long>
-		(hash["out_verify_peer"].toInt());
+		(hash.value("out_verify_peer").toInt());
 	      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
 	      if(ssltls == "TLS")
@@ -584,8 +586,8 @@ void spoton_kernel::postPoptastic(void)
 	    }
 	  else
 	    url = QString("smtp://%1:%2/%3").
-	      arg(hash["out_server_address"].toString().trimmed()).
-	      arg(hash["out_server_port"].toString().trimmed()).
+	      arg(hash.value("out_server_address").toString().trimmed()).
+	      arg(hash.value("out_server_port").toString().trimmed()).
 	      arg(hash.value("smtp_localname", "localhost").
 		  toString());
 
@@ -600,7 +602,7 @@ void spoton_kernel::postPoptastic(void)
 
 	      locker.unlock();
 
-	      QByteArray bytes(values["message"].toByteArray());
+	      QByteArray bytes(values.value("message").toByteArray());
 	      long count = 0;
 	      struct curl_slist *recipients = 0;
 	      struct curl_upload_status upload_ctx;
@@ -622,14 +624,14 @@ void spoton_kernel::postPoptastic(void)
 
 	      if(values.size() == 4)
 		curl_payload_text.append(QString("To: <%1> (%1)\r\n").
-					 arg(values["receiver_name"].
+					 arg(values.value("receiver_name").
 					     toString()).
 					 toLatin1());
 	      else
-		curl_payload_text.append(QString("To: <%1> (%1)\r\n").
-					 arg(values["name"].toByteArray().
-					     constData()).
-					 toLatin1());
+		curl_payload_text.append
+		  (QString("To: <%1> (%1)\r\n").
+		   arg(values.value("name").toByteArray().constData()).
+		   toLatin1());
 
 	      curl_payload_text.append(QString("From: <%1>\r\n").arg(from).
 				       toLatin1());
@@ -649,11 +651,13 @@ void spoton_kernel::postPoptastic(void)
 	      else
 		{
 		  curl_payload_text.append("Subject: ");
-		  curl_payload_text.append(values["subject"].toByteArray());
+		  curl_payload_text.append(values.value("subject").
+					   toByteArray());
 		  curl_payload_text.append("\r\n");
 		}
 
-	      QByteArray attachmentData(values["attachment"].toByteArray());
+	      QByteArray attachmentData(values.value("attachment").
+					toByteArray());
 
 	      if(attachmentData.isEmpty() || values.size() == 4)
 		{
@@ -714,7 +718,7 @@ void spoton_kernel::postPoptastic(void)
 			     "Content-Transfer-Encoding: base64\r\n\r\n").
 		     arg(r1.constData()).
 		     arg(r2.constData()).
-		     arg(values["message"].toByteArray().constData()).
+		     arg(values.value("message").toByteArray().constData()).
 		     arg(attachmentName.constData()));
 		  bytes.append(str);
 
@@ -749,11 +753,11 @@ void spoton_kernel::postPoptastic(void)
 
 	      if(values.size() == 4)
 		recipients = curl_slist_append
-		  (recipients, values["receiver_name"].toString().
+		  (recipients, values.value("receiver_name").toString().
 		   toLatin1().constData());
 	      else
 		recipients = curl_slist_append
-		  (recipients, values["name"].toByteArray().constData());
+		  (recipients, values.value("name").toByteArray().constData());
 
 	      curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 	      curl_easy_setopt(curl, CURLOPT_READDATA, &upload_ctx);
@@ -787,7 +791,7 @@ void spoton_kernel::postPoptastic(void)
 		  qint64 mailOid = -1;
 
 		  if(!values.isEmpty())
-		    mailOid = values["mail_oid"].toLongLong();
+		    mailOid = values.value("mail_oid").toLongLong();
 
 		  if(mailOid > -1)
 		    spoton_mailer::moveSentMailToSentFolder

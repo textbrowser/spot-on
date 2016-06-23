@@ -2318,7 +2318,7 @@ QString spoton::currentTabName(void) const
 
       if(it.value() == m_ui.tab->currentWidget())
 	{
-	  name = m_tabWidgetsProperties[it.key()]["name"].toString();
+	  name = m_tabWidgetsProperties[it.key()].value("name").toString();
 	  break;
 	}
     }

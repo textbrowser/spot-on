@@ -793,11 +793,11 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	  QByteArray messageCode;
 	  QDataStream stream(&message, QIODevice::WriteOnly);
 	  bool ok = true;
-	  spoton_crypt crypt(hash["cipher_type"].constData(),
-			     hash["hash_type"].constData(),
+	  spoton_crypt crypt(hash.value("cipher_type").constData(),
+			     hash.value("hash_type").constData(),
 			     QByteArray(),
-			     hash["encryption_key"],
-			     hash["authentication_key"],
+			     hash.value("encryption_key"),
+			     hash.value("authentication_key"),
 			     0,
 			     0,
 			     "");

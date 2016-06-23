@@ -926,7 +926,7 @@ void spoton::prepareTabIcons(void)
       int index = m_tabWidgets.key(m_ui.tab->widget(i));
 
       m_ui.tab->setTabIcon
-	(i, m_tabWidgetsProperties[index]["icon"].value<QIcon> ());
+	(i, m_tabWidgetsProperties[index].value("icon").value<QIcon> ());
     }
 }
 
@@ -1980,9 +1980,9 @@ void spoton::prepareVisiblePages(void)
 
 	QHash<QString, QVariant> hash
 	  (m_tabWidgetsProperties.value(it.value()));
-	QIcon icon(hash["icon"].value<QIcon> ());
+	QIcon icon(hash.value("icon").value<QIcon> ());
 
-	m_ui.tab->addTab(widget, icon, hash["label"].toString());
+	m_ui.tab->addTab(widget, icon, hash.value("label").toString());
       }
   }
 }
@@ -2001,7 +2001,7 @@ int spoton::tabIndexFromName(const QString &name) const
     {
       it.next();
 
-      if(it.value()["name"].toString() == name)
+      if(it.value().value("name").toString() == name)
 	{
 	  index = m_ui.tab->indexOf(m_tabWidgets[it.key()]);
 	  break;

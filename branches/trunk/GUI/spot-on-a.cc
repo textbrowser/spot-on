@@ -6740,7 +6740,7 @@ void spoton::slotValidatePassphrase(void)
 		  if(i == 0)
 		    m_ui.emailName->insertSeparator(1);
 
-		  m_ui.emailName->addItem(list.at(i)["in_username"].
+		  m_ui.emailName->addItem(list.at(i).value("in_username").
 					  toString());
 		}
 
@@ -6789,7 +6789,13 @@ void spoton::slotValidatePassphrase(void)
 	      name = "unknown@unknown.org";
 
 	    if(nameEmail.isEmpty())
-	      nameEmail = "unknown@unknown.org";
+	      {
+		/*
+		** Leave gui/poptasticNameEmail empty.
+		** If Poptastic e-mail is written, the user will be required
+		** to provide Poptastic information.
+		*/
+	      }
 
 	    m_settings["gui/poptasticName"] = name.toLatin1();
 	    m_settings["gui/poptasticNameEmail"] = nameEmail.toLatin1();

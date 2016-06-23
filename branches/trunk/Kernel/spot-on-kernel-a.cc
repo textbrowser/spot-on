@@ -2718,7 +2718,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		name = setting("gui/nodeName", "unknown").
 		  toByteArray();
 	      else
-		name = hash["in_username"].toByteArray();
+		name = hash.value("in_username").toByteArray();
 
 	      if(name.isEmpty())
 		{

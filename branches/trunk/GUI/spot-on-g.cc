@@ -48,7 +48,7 @@ void spoton::slotShowMainTabContextMenu(const QPoint &point)
 
       if(it.value() == widget)
 	{
-	  name = m_tabWidgetsProperties[it.key()]["name"].toString();
+	  name = m_tabWidgetsProperties[it.key()].value("name").toString();
 	  break;
 	}
     }
@@ -114,7 +114,7 @@ void spoton::slotRemoveAttachment(const QUrl &url)
 
 QByteArray spoton::poptasticNameEmail(void) const
 {
-  return m_settings["gui/poptasticNameEmail"].toByteArray();
+  return m_settings.value("gui/poptasticNameEmail").toByteArray();
 }
 
 void spoton::slotShowNotificationsWindow(void)
@@ -769,10 +769,10 @@ void spoton::updatePoptasticNameSettingsFromWidgets(spoton_crypt *crypt)
     toLatin1();
   settings.setValue
     ("gui/poptasticName",
-     crypt->encryptedThenHashed(m_settings["gui/poptasticName"].
+     crypt->encryptedThenHashed(m_settings.value("gui/poptasticName").
 				toByteArray(), &ok).toBase64());
   settings.setValue
     ("gui/poptasticNameEmail",
-     crypt->encryptedThenHashed(m_settings["gui/poptasticNameEmail"].
+     crypt->encryptedThenHashed(m_settings.value("gui/poptasticNameEmail").
 				toByteArray(), &ok).toBase64());
 }

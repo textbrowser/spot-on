@@ -95,17 +95,17 @@ void spoton::slotConfigurePoptastic(void)
       for(int i = 0; i < list.size(); i++)
 	{
 	  m_poptasticRetroPhoneSettingsUi.account->addItem
-	    (list.at(i)["in_username"].toString());
+	    (list.at(i).value("in_username").toString());
 	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
-	    (list.at(i)["in_username"].toString());
+	    (list.at(i).value("in_username").toString());
 	  m_poptasticRetroPhoneSettingsUi.email_primary_account->addItem
-	    (list.at(i)["in_username"].toString());
+	    (list.at(i).value("in_username").toString());
 	}
 
       m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
 
       int index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
-	findText(m_settings["gui/poptasticName"].toByteArray());
+	findText(m_settings.value("gui/poptasticName").toByteArray());
 
       if(index >= 0)
 	m_poptasticRetroPhoneSettingsUi.chat_primary_account->
@@ -115,7 +115,7 @@ void spoton::slotConfigurePoptastic(void)
 	  setCurrentIndex(0);
 
       index = m_poptasticRetroPhoneSettingsUi.email_primary_account->
-	findText(m_settings["gui/poptasticNameEmail"].toByteArray());
+	findText(m_settings.value("gui/poptasticNameEmail").toByteArray());
 
       if(index >= 0)
 	m_poptasticRetroPhoneSettingsUi.email_primary_account->
@@ -617,8 +617,8 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText("localhost");
-  m_settings["gui/poptasticName"].clear();
-  m_settings["gui/poptasticNameEmail"].clear();
+  m_settings["gui/poptasticName"] = "";
+  m_settings["gui/poptasticNameEmail"] = "";
 
   QSettings settings;
 
@@ -767,7 +767,7 @@ void spoton::slotSaveSharePrivateKeys(bool state)
   settings.setValue("gui/sharePrivateKeysWithKernel", state);
 
   if(state)
-    if(m_keysShared["keys_sent_to_kernel"] == "ignore")
+    if(m_keysShared.value("keys_sent_to_kernel") == "ignore")
       m_keysShared["keys_sent_to_kernel"] = "false";
 }
 
@@ -1939,7 +1939,7 @@ QHash<QString, spoton_crypt *> spoton::crypts(void) const
 
 QByteArray spoton::poptasticName(void) const
 {
-  return m_settings["gui/poptasticName"].toByteArray();
+  return m_settings.value("gui/poptasticName").toByteArray();
 }
 
 void spoton::slotSavePoptasticAccount(void)
@@ -2265,7 +2265,7 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
   int index = -1;
 
   index = m_poptasticRetroPhoneSettingsUi.in_method->findText
-    (hash["in_method"].toString());
+    (hash.value("in_method").toString());
 
   if(index >= 0)
     m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(index);
@@ -2273,13 +2273,13 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(2);
 
   m_poptasticRetroPhoneSettingsUi.in_password->setText
-    (hash["in_password"].toString());
+    (hash.value("in_password").toString());
   m_poptasticRetroPhoneSettingsUi.in_server_address->setText
-    (hash["in_server_address"].toString());
+    (hash.value("in_server_address").toString());
   m_poptasticRetroPhoneSettingsUi.in_server_port->setValue
-    (hash["in_server_port"].toInt());
+    (hash.value("in_server_port").toInt());
   index = m_poptasticRetroPhoneSettingsUi.in_ssltls->findText
-    (hash["in_ssltls"].toString());
+    (hash.value("in_ssltls").toString());
 
   if(index >= 0)
     m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(index);
@@ -2287,13 +2287,13 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
 
   m_poptasticRetroPhoneSettingsUi.in_username->setText
-    (hash["in_username"].toString());
+    (hash.value("in_username").toString());
   m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked
-    (hash["in_verify_host"].toBool());
+    (hash.value("in_verify_host").toBool());
   m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked
-    (hash["in_verify_peer"].toBool());
+    (hash.value("in_verify_peer").toBool());
   index = m_poptasticRetroPhoneSettingsUi.out_method->findText
-    (hash["out_method"].toString());
+    (hash.value("out_method").toString());
 
   if(index >= 0)
     m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(index);
@@ -2301,13 +2301,13 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
 
   m_poptasticRetroPhoneSettingsUi.out_password->setText
-    (hash["out_password"].toString());
+    (hash.value("out_password").toString());
   m_poptasticRetroPhoneSettingsUi.out_server_address->setText
-    (hash["out_server_address"].toString());
+    (hash.value("out_server_address").toString());
   m_poptasticRetroPhoneSettingsUi.out_server_port->setValue
-    (hash["out_server_port"].toInt());
+    (hash.value("out_server_port").toInt());
   index = m_poptasticRetroPhoneSettingsUi.out_ssltls->findText
-    (hash["out_ssltls"].toString());
+    (hash.value("out_ssltls").toString());
 
   if(index >= 0)
     m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(index);
@@ -2315,23 +2315,23 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
 
   m_poptasticRetroPhoneSettingsUi.out_username->setText
-    (hash["out_username"].toString());
+    (hash.value("out_username").toString());
   m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked
-    (hash["out_verify_host"].toBool());
+    (hash.value("out_verify_host").toBool());
   m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked
-    (hash["out_verify_peer"].toBool());
+    (hash.value("out_verify_peer").toBool());
   m_poptasticRetroPhoneSettingsUi.proxy->setChecked
-    (hash["proxy_enabled"].toBool());
+    (hash.value("proxy_enabled").toBool());
   m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible
-    (hash["proxy_enabled"].toBool());
+    (hash.value("proxy_enabled").toBool());
   m_poptasticRetroPhoneSettingsUi.proxy_password->setText
-    (hash["proxy_password"].toString());
+    (hash.value("proxy_password").toString());
   m_poptasticRetroPhoneSettingsUi.proxy_server_address->setText
-    (hash["proxy_server_address"].toString());
+    (hash.value("proxy_server_address").toString());
   m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue
-    (hash["proxy_server_port"].toInt());
+    (hash.value("proxy_server_port").toInt());
   index = m_poptasticRetroPhoneSettingsUi.proxy_type->findText
-    (hash["proxy_type"].toString());
+    (hash.value("proxy_type").toString());
 
   if(index >= 0)
     m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(index);
@@ -2339,7 +2339,7 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
 
   m_poptasticRetroPhoneSettingsUi.proxy_username->setText
-    (hash["proxy_username"].toString());
+    (hash.value("proxy_username").toString());
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
     (hash.value("smtp_localname", "localhost").toString());
 }
@@ -2444,17 +2444,17 @@ void spoton::slotDeletePoptasticAccount(void)
 	  for(int i = 0; i < list.size(); i++)
 	    {
 	      m_poptasticRetroPhoneSettingsUi.account->addItem
-		(list.at(i)["in_username"].toString());
+		(list.at(i).value("in_username").toString());
 	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
-		(list.at(i)["in_username"].toString());
+		(list.at(i).value("in_username").toString());
 	      m_poptasticRetroPhoneSettingsUi.email_primary_account->addItem
-		(list.at(i)["in_username"].toString());
+		(list.at(i).value("in_username").toString());
 	    }
 
 	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
 
 	  int index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
-	    findText(m_settings["gui/poptasticName"].toByteArray());
+	    findText(m_settings.value("gui/poptasticName").toByteArray());
 
 	  if(index >= 0)
 	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
@@ -2471,12 +2471,13 @@ void spoton::slotDeletePoptasticAccount(void)
 
 	      settings.setValue
 		("gui/poptasticName",
-		 crypt->encryptedThenHashed(m_settings["gui/poptasticName"].
+		 crypt->encryptedThenHashed(m_settings.
+					    value("gui/poptasticName").
 					    toByteArray(), &ok).toBase64());
 	    }
 
 	  index = m_poptasticRetroPhoneSettingsUi.email_primary_account->
-	    findText(m_settings["gui/poptasticNameEmail"].toByteArray());
+	    findText(m_settings.value("gui/poptasticNameEmail").toByteArray());
 
 	  if(index >= 0)
 	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
@@ -2494,7 +2495,8 @@ void spoton::slotDeletePoptasticAccount(void)
 	      settings.setValue
 		("gui/poptasticNameEmail",
 		 crypt->
-		 encryptedThenHashed(m_settings["gui/poptasticNameEmail"].
+		 encryptedThenHashed(m_settings.
+				     value("gui/poptasticNameEmail").
 				     toByteArray(), &ok).toBase64());
 	    }
 	}
@@ -2541,7 +2543,7 @@ void spoton::slotReloadEmailNames(void)
       if(i == 0)
 	m_ui.emailName->insertSeparator(1);
 
-      m_ui.emailName->addItem(list.at(i)["in_username"].toString());
+      m_ui.emailName->addItem(list.at(i).value("in_username").toString());
     }
 
   QApplication::restoreOverrideCursor();
