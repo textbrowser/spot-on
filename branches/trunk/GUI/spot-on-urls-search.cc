@@ -68,7 +68,7 @@ void spoton::discoverUrls(void)
   m_ui.url_pages->setText("| 1 |");
 
   QString querystr("");
-  QString search(m_ui.search->text().trimmed());
+  QString search(m_ui.search->text().toLower().trimmed());
 
   m_urlCurrentPage = 1;
   m_urlLimit = static_cast<quint64>
