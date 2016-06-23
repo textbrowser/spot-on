@@ -465,10 +465,15 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append("<br>");
 	      html.append(QString("<font color=\"green\" size=3>%1</font>").
 			  arg(spoton_misc::urlToEncoded(url).constData()));
-	      html.append("<br>");
-	      html.append(QString("<font color=\"gray\" size=3>%1</font>").
-			  arg(spoton_misc::
-			      removeSpecialHtmlTags(description)));
+
+	      if(!description.isEmpty())
+		{
+		  html.append("<br>");
+		  html.append(QString("<font color=\"gray\" size=3>%1</font>").
+			      arg(spoton_misc::
+				  removeSpecialHtmlTags(description)));
+		}
+
 	      html.append("<br>");
 	      html.append
 		(QString("<font color=\"gray\" size=3>%1 | %2 KiB</font>").
