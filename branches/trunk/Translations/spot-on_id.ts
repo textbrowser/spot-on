@@ -3201,12 +3201,12 @@ Source of Randomness: %16</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls-search.cc" line="521"/>
+        <location filename="../GUI/spot-on-urls-search.cc" line="526"/>
         <source> &lt;a href=&quot;&gt;&quot;&gt;Next&lt;/a&gt; </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls-search.cc" line="524"/>
+        <location filename="../GUI/spot-on-urls-search.cc" line="529"/>
         <source> &lt;a href=&quot;&lt;&quot;&gt;Previous&lt;/a&gt; </source>
         <translation type="unfinished"></translation>
     </message>
