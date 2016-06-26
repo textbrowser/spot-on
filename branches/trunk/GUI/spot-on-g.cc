@@ -776,3 +776,9 @@ void spoton::updatePoptasticNameSettingsFromWidgets(spoton_crypt *crypt)
      crypt->encryptedThenHashed(m_settings.value("gui/poptasticNameEmail").
 				toByteArray(), &ok).toBase64());
 }
+
+void spoton::slotShowAddParticipant(void)
+{
+#if SPOTON_GOLDBUG == 0
+#endif
+}

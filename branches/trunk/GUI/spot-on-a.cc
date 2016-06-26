@@ -2556,6 +2556,9 @@ spoton::spoton(void):QMainWindow()
     {
       m_sb.frame->setEnabled(false);
       m_sb.lock->setEnabled(false);
+#if SPOTON_GOLDBUG == 0
+      m_ui.action_Add_Participant->setEnabled(false);
+#endif
       m_ui.action_Echo_Key_Share->setEnabled(false);
       m_ui.action_Export_Listeners->setEnabled(false);
       m_ui.action_Export_Public_Keys->setEnabled(false);
@@ -2599,6 +2602,9 @@ spoton::spoton(void):QMainWindow()
     {
       m_sb.frame->setEnabled(false);
       m_sb.lock->setEnabled(false);
+#if SPOTON_GOLDBUG == 0
+      m_ui.action_Add_Participant->setEnabled(false);
+#endif
       m_ui.action_Echo_Key_Share->setEnabled(false);
       m_ui.action_Export_Listeners->setEnabled(false);
       m_ui.action_Export_Public_Keys->setEnabled(false);
@@ -6426,6 +6432,9 @@ void spoton::slotSetPassphrase(void)
 
       m_sb.frame->setEnabled(true);
       m_sb.lock->setEnabled(true);
+#if SPOTON_GOLDBUG == 0
+      m_ui.action_Add_Participant->setEnabled(true);
+#endif
       m_ui.action_Echo_Key_Share->setEnabled(true);
       m_ui.action_Export_Listeners->setEnabled(true);
       m_ui.action_Export_Public_Keys->setEnabled(true);
@@ -6678,6 +6687,9 @@ void spoton::slotValidatePassphrase(void)
 
 	    m_sb.frame->setEnabled(true);
 	    m_sb.lock->setEnabled(true);
+#if SPOTON_GOLDBUG == 0
+	    m_ui.action_Add_Participant->setEnabled(true);
+#endif
 	    m_ui.action_Echo_Key_Share->setEnabled(true);
 	    m_ui.action_Export_Listeners->setEnabled(true);
 	    m_ui.action_Export_Public_Keys->setEnabled(true);
