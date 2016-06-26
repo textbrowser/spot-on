@@ -1329,6 +1329,7 @@ void spoton::slotLock(void)
 	pageViewer->deleteLater();
     }
 
+  m_addParticipantWindow->close();
   m_echoKeyShare->close();
   m_encryptFile.close();
   m_logViewer.close();
