@@ -3582,7 +3582,7 @@ void spoton::slotImportPublicKeys(void)
 
 	  bytes.append(list.takeFirst());
 	  bytes.remove(0, 1);
-	  addFriendsKey(bytes, "K");
+	  addFriendsKey(bytes, "K", this);
 	}
     }
 }

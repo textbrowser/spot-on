@@ -1969,9 +1969,14 @@ void spoton::slotAddFriendsKey(void)
 {
   QByteArray key
     (m_ui.friendInformation->toPlainText().toLatin1().trimmed());
+#if SPOTON_GOLDBUG == 0
+  QWidget *parent = m_addParticipantWindow;
+#else
+  QWidget *parent = this;
+#endif
 
   if(m_ui.addFriendEmail->isChecked())
-    addFriendsKey(key, "E");
+    addFriendsKey(key, "E", parent);
   else if(key.startsWith("K") || key.startsWith("k"))
     {
       QList<QByteArray> list(key.split('\n'));
@@ -1982,22 +1987,26 @@ void spoton::slotAddFriendsKey(void)
 
 	  bytes.append(list.takeFirst());
 	  bytes.remove(0, 1);
-	  addFriendsKey(bytes, "K");
+	  addFriendsKey(bytes, "K", parent);
 	}
     }
   else
-    addFriendsKey(key, "R");
+    addFriendsKey(key, "R", parent);
 }
 
-void spoton::addFriendsKey(const QByteArray &k, const QString &type)
+void spoton::addFriendsKey(const QByteArray &k, const QString &type,
+			   QWidget *parent)
 {
   QByteArray key(k.trimmed());
+
+  if(!parent)
+    parent = this;
 
   if(type == "E")
     {
       if(!m_crypts.value("chat", 0))
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
+	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Invalid spoton_crypt object. This is "
 				   "a fatal flaw."));
@@ -2006,14 +2015,14 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       else if(!key.contains("@"))
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Please provide a normal e-mail address."));
 	  return;
 	}
       else if(key.isEmpty())
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
+	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Empty e-mail address. Really?"));
 	  return;
@@ -2051,7 +2060,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       QSqlDatabase::removeDatabase(connectionName);
 
       if(!ok)
-	QMessageBox::critical(this, tr("%1: Error").
+	QMessageBox::critical(parent, tr("%1: Error").
 			      arg(SPOTON_APPLICATION_NAME),
 			      tr("An error occurred while attempting "
 				 "to save the friendship bundle."));
@@ -2065,7 +2074,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 	 !m_crypts.value("rosetta", 0) ||
 	 !m_crypts.value("url", 0))
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
+	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Invalid spoton_crypt object(s). This is "
 				   "a fatal flaw."));
@@ -2073,7 +2082,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 	}
       else if(key.isEmpty())
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
+	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Empty key(s). Really?"));
 	  return;
@@ -2082,7 +2091,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(!(key.startsWith("K") || key.startsWith("k")))
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid key(s). The provided text must start with either "
 		"the letter K or the letter k."));
@@ -2094,7 +2103,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(list.size() != 6)
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Irregular data. Expecting 6 entries, received %1.").
 	     arg(list.size()));
@@ -2108,7 +2117,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(!spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(keyType))
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid key type. Expecting 'chat', 'email', "
 		"'open-library', "
@@ -2127,7 +2136,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 
       if(!ok)
 	{
-	  QMessageBox mb(this);
+	  QMessageBox mb(parent);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -2152,7 +2161,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 
       if(!ok)
 	{
-	  QMessageBox mb(this);
+	  QMessageBox mb(parent);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -2176,7 +2185,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 	 (mSignature == mySPublicKey && !mySPublicKey.isEmpty()))
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("You're attempting to add your own '%1' keys. "
 		"Please do not do this!").arg(keyType.constData()));
@@ -2188,7 +2197,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(!spoton_crypt::isValidSignature(mPublicKey, mPublicKey,
 					 mSignature))
 	{
-	  QMessageBox mb(this);
+	  QMessageBox mb(parent);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -2217,7 +2226,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey,
 					 sSignature))
 	{
-	  QMessageBox mb(this);
+	  QMessageBox mb(parent);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -2278,7 +2287,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       QSqlDatabase::removeDatabase(connectionName);
 
       if(!ok)
-	QMessageBox::critical(this, tr("%1: Error").
+	QMessageBox::critical(parent, tr("%1: Error").
 			      arg(SPOTON_APPLICATION_NAME),
 			      tr("An error occurred while attempting "
 				 "to save the friendship bundle."));
@@ -2297,7 +2306,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 	 !m_crypts.value("rosetta", 0) ||
 	 !m_crypts.value("url", 0))
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
+	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Invalid spoton_crypt object(s). This is "
 				   "a fatal flaw."));
@@ -2305,7 +2314,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 	}
       else if(key.isEmpty())
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
+	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Empty key(s). Really?"));
 	  return;
@@ -2314,7 +2323,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(!(key.startsWith("R") || key.startsWith("r")))
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid repleo(s). The provided text must start with "
 		"either the letter R or the letter r."));
@@ -2326,7 +2335,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(list.size() != 3)
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Irregular data. Expecting 3 entries, received %1.").
 	     arg(list.size()));
@@ -2372,7 +2381,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 			  if(!ok)
 			    {
 			      QMessageBox::critical
-				(this, tr("%1: Error").
+				(parent, tr("%1: Error").
 				 arg(SPOTON_APPLICATION_NAME),
 				 tr("Asymmetric decryption failure. "
 				    "Are you attempting "
@@ -2390,7 +2399,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(list.size() != 3)
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Irregular data. Expecting 3 entries, received %1.").
 	     arg(list.size()));
@@ -2414,7 +2423,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 
       if(!ok)
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
+	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Unable to compute a keyed hash."));
 	  return;
@@ -2423,7 +2432,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(computedHash.isEmpty() || hash.isEmpty() ||
 	 !spoton_crypt::memcmp(computedHash, hash))
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
+	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("The computed hash does not match "
 				   "the provided hash."));
@@ -2435,7 +2444,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(!ok)
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Symmetric decryption failure. Serious!"));
 	  return;
@@ -2446,7 +2455,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(list.size() != 6)
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Irregular data. Expecting 6 entries, received %1.").
 	     arg(list.size()));
@@ -2459,7 +2468,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(!spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(list.value(0)))
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid key type. Expecting 'chat', 'email', "
 		"'open-library', 'poptastic', "
@@ -2527,7 +2536,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       if(!ok)
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("You're attempting to add your own keys or "
 		"%1 was not able to retrieve your keys for "
@@ -2541,7 +2550,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 					 list.value(3))) // Signature
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
 		"'rosetta', or 'url' "
@@ -2555,7 +2564,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
 			  list.value(5))) // Signature
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
+	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
 		"'rosetta', or 'url' "
@@ -2602,7 +2611,7 @@ void spoton::addFriendsKey(const QByteArray &k, const QString &type)
       QSqlDatabase::removeDatabase(connectionName);
 
       if(!ok)
-	QMessageBox::critical(this, tr("%1: Error").
+	QMessageBox::critical(parent, tr("%1: Error").
 			      arg(SPOTON_APPLICATION_NAME),
 			      tr("An error occurred while attempting "
 				 "to save the friendship bundle."));

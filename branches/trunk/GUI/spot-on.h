@@ -548,7 +548,8 @@ class spoton: public QMainWindow
   int applyGoldBugToLetter(const QByteArray &goldbug,
 			   const int row);
   int tabIndexFromName(const QString &name) const;
-  void addFriendsKey(const QByteArray &key, const QString &type);
+  void addFriendsKey(const QByteArray &key, const QString &type,
+		     QWidget *parent);
   void applyGoldBugToAttachments(const QString &folderOid,
 				 const QSqlDatabase &db,
 				 int *count,
