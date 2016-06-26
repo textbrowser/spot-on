@@ -574,6 +574,12 @@ spoton::spoton(void):QMainWindow()
   m_ui.message->setPlaceholderText(tr("Please type a message..."));
 #endif
   m_ui.search->setPlaceholderText(tr("Search"));
+#if SPOTON_GOLDBUG == 0
+  m_addParticipantWindow = new QMainWindow(0);
+  m_addParticipantWindow->setCentralWidget(m_ui.add_participant_groupbox);
+  m_addParticipantWindow->setWindowTitle
+    (tr("%1: Add Participant").arg(SPOTON_APPLICATION_NAME));
+#endif
   m_notificationsWindow = new QMainWindow(0);
   m_optionsWindow = new QMainWindow(0);
   m_statisticsWindow = new QMainWindow(0);
@@ -749,6 +755,12 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotAbout(void)));
+#if SPOTON_GOLDBUG == 0
+  connect(m_ui.action_Add_Participant,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowAddParticipant(void)));
+#endif
   connect(m_ui.activeUrlDistribution,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -3044,6 +3056,9 @@ void spoton::cleanup(void)
     }
 
   m_crypts.clear();
+#if SPOTON_GOLDBUG == 0
+  m_addParticipantWindow->deleteLater();
+#endif
   m_echoKeyShare->deleteLater();
   m_notificationsWindow->deleteLater();
   m_optionsWindow->deleteLater();

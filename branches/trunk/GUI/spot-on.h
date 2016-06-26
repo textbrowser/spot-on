@@ -467,6 +467,7 @@ class spoton: public QMainWindow
 				       ** purging is less rigid.
 				       */
   QList<QFuture<void> > m_starbeamDigestFutures;
+  QMainWindow *m_addParticipantWindow;
   QMainWindow *m_notificationsWindow;
   QMainWindow *m_optionsWindow;
   QMainWindow *m_statisticsWindow;

@@ -780,5 +780,9 @@ void spoton::updatePoptasticNameSettingsFromWidgets(spoton_crypt *crypt)
 void spoton::slotShowAddParticipant(void)
 {
 #if SPOTON_GOLDBUG == 0
+  m_addParticipantWindow->showNormal();
+  m_addParticipantWindow->activateWindow();
+  m_addParticipantWindow->raise();
+  centerWidget(m_addParticipantWindow, this);
 #endif
 }
