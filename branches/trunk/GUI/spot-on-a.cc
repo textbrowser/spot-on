@@ -2577,6 +2577,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Export_Public_Keys->setEnabled(false);
       m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Import_Public_Keys->setEnabled(false);
+      m_ui.action_New_Global_Name->setEnabled(false);
       m_ui.action_Notifications_Window->setEnabled(false);
       m_ui.action_Options->setEnabled(false);
       m_ui.action_Poptastic_Settings->setEnabled(false);
@@ -2623,6 +2624,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Export_Public_Keys->setEnabled(false);
       m_ui.action_Import_Neighbors->setEnabled(false);
       m_ui.action_Import_Public_Keys->setEnabled(false);
+      m_ui.action_New_Global_Name->setEnabled(false);
       m_ui.action_Notifications_Window->setEnabled(false);
       m_ui.action_Options->setEnabled(false);
       m_ui.action_Poptastic_Settings->setEnabled(false);
@@ -6456,6 +6458,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.action_Export_Public_Keys->setEnabled(true);
       m_ui.action_Import_Neighbors->setEnabled(true);
       m_ui.action_Import_Public_Keys->setEnabled(true);
+      m_ui.action_New_Global_Name->setEnabled(true);
       m_ui.action_Notifications_Window->setEnabled(true);
       m_ui.action_Options->setEnabled(true);
       m_ui.action_Poptastic_Settings->setEnabled(true);
@@ -6711,6 +6714,7 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.action_Export_Public_Keys->setEnabled(true);
 	    m_ui.action_Import_Neighbors->setEnabled(true);
 	    m_ui.action_Import_Public_Keys->setEnabled(true);
+	    m_ui.action_New_Global_Name->setEnabled(true);
 	    m_ui.action_Notifications_Window->setEnabled(true);
 	    m_ui.action_Options->setEnabled(true);
 	    m_ui.action_Poptastic_Settings->setEnabled(true);
