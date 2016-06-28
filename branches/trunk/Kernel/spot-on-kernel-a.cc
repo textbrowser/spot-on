@@ -347,11 +347,36 @@ int main(int argc, char *argv[])
 		     spoton_misc::homePath());
   QSettings::setDefaultFormat(QSettings::IniFormat);
 
-  QSettings settings;
+  for(int i = 1; i < argc; i++)
+    if(argv && argv[i] && qstrcmp(argv[i], "--terminate") == 0)
+      {
+	QString sharedPath(spoton_misc::homePath() + QDir::separator() +
+			   "shared.db");
+	libspoton_handle_t libspotonHandle;
+
+	if(libspoton_init_b(sharedPath.toStdString().c_str(),
+			    0,
+			    0,
+			    0,
+			    0,
+			    0,
+			    0,
+			    0,
+			    &libspotonHandle,
+			    1) == LIBSPOTON_ERROR_NONE)
+	  libspoton_deregister_kernel
+	    (libspoton_registered_kernel_pid(&libspotonHandle, 0),
+	     &libspotonHandle);
+
+	libspoton_close(&libspotonHandle);
+	return EXIT_SUCCESS;
+      }
 
   for(int i = 1; i < argc; i++)
-    if(argv[i] && qstrcmp(argv[i], "--vacuum") == 0)
+    if(argv && argv[i] && qstrcmp(argv[i], "--vacuum") == 0)
       spoton_misc::vacuumAllDatabases();
+
+  QSettings settings;
 
   if(!settings.contains("kernel/gcryctl_init_secmem"))
     settings.setValue("kernel/gcryctl_init_secmem", 262144);
@@ -648,32 +673,6 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	    deleteLater();
 	    break;
 	  }
-      }
-    else if(arguments.at(i) == "--terminate")
-      {
-	QString sharedPath(spoton_misc::homePath() + QDir::separator() +
-			   "shared.db");
-	libspoton_handle_t libspotonHandle;
-
-	if(libspoton_init_b(sharedPath.toStdString().c_str(),
-			    0,
-			    0,
-			    0,
-			    0,
-			    0,
-			    0,
-			    0,
-			    &libspotonHandle,
-			    settings.value("gui/gcryctl_init_secmem",
-					   262144).toInt()) ==
-	   LIBSPOTON_ERROR_NONE)
-	  libspoton_deregister_kernel
-	    (libspoton_registered_kernel_pid(&libspotonHandle, 0),
-	     &libspotonHandle);
-
-	libspoton_close(&libspotonHandle);
-	deleteLater();
-	break;
       }
     else if(arguments.at(i) == "--vacuum")
       {
