@@ -786,3 +786,7 @@ void spoton::slotShowAddParticipant(void)
   centerWidget(m_addParticipantWindow, this);
 #endif
 }
+
+void spoton::cancelUrlQuery(void)
+{
+}

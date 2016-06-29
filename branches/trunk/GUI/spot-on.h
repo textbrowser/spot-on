@@ -414,8 +414,7 @@ class spoton: public QMainWindow
  public:
   spoton(void);
   ~spoton();
-  QHash<QString, QPair<QQueue<QString>, QQueue<QByteArray> > >
-    m_chatQueues;
+  QHash<QString, QPair<QQueue<QString>, QQueue<QByteArray> > > m_chatQueues;
   QHash<QString, QVariant> m_settings;
   QHash<QString, quint64> m_chatSequenceNumbers;
   QHash<QString, spoton_crypt *> crypts(void) const;
@@ -559,6 +558,7 @@ class spoton: public QMainWindow
   void authenticate(spoton_crypt *crypt, const QString &oid,
 		    const QString &message = "");
   void authenticationRequested(const QByteArray &data);
+  void cancelUrlQuery(void);
   void changeEchoMode(const QString &mode, QTableWidget *tableWidget);
   void cleanup(void);
   void closeEvent(QCloseEvent *event);
