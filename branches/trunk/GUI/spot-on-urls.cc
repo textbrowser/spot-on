@@ -1317,6 +1317,7 @@ void spoton::slotPostgreSQLConnect(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       m_ui.url_database_connection_information->clear();
       m_urlDatabase.close();
       m_urlDatabase = QSqlDatabase();
@@ -1339,6 +1340,7 @@ void spoton::slotPostgreSQLConnect(void)
       m_urlDatabase.setDatabaseName(ui.database->text());
       m_urlDatabase.setPort(ui.port->value());
       m_urlDatabase.open(ui.name->text(), ui.password->text());
+      QApplication::restoreOverrideCursor();
 
       if(!m_urlDatabase.isOpen())
 	{
