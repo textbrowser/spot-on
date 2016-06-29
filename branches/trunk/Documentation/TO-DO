@@ -149,6 +149,7 @@ Completed Items
        the files are completed? Disable buffering and issue fsync() on
        Unix systems.
 107.   Multiple Poptastic attachments.
+108.   Index the PostgreSQL tables.
 
 Remaining Items
 
@@ -231,7 +232,7 @@ Remaining Items
 47.    gcry_md_setkey() does not impose minimum key lengths.
 48.    The method spoton_neighbor::savePublicKey() does not compare
        personal keys with provided keys.
-49.    Index the PostgreSQL tables.
+49.    How do I trust an external process?
 50.    Per-participant permissions.
 51.    Allow custom addresses for spoton_external_address.
 52.    An account system where the initiator provides both random arrays.
@@ -250,4 +251,3 @@ Remaining Items
 62.    Keys are re-used in directory-mode file encryption.
 63.    Per Schmidt, share StarBeams through Buzz.
 64.    Key pools.
-65.    How do I trust an external process?
