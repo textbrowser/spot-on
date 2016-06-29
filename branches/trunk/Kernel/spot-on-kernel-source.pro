@@ -26,7 +26,8 @@ SOURCES		= ../Common/spot-on-crypt.cc \
 		  spot-on-kernel-c.cc \
 		  spot-on-listener.cc \
 		  spot-on-mailer.cc \
-		  spot-on-neighbor.cc \
+		  spot-on-neighbor-a.cc \
+		  spot-on-neighbor-b.cc \
 		  spot-on-sctp-server.cc \
 		  spot-on-sctp-socket.cc \
 		  spot-on-starbeam-reader.cc \
