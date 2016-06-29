@@ -287,7 +287,12 @@ int main(int argc, char *argv[])
     if(argv[i] && qstrcmp(argv[i], "--version") == 0)
       {
 	fprintf(stdout, "Spot-On-Kernel. Compiled on %s, %s. Version %s.\n",
-		__DATE__, __TIME__, SPOTON_VERSION_STR);
+#ifdef SPOTON_DATELESS_COMPILATION
+		"January 1, 3000", "01:01:01",
+#else
+		__DATE__, __TIME__,
+#endif
+		SPOTON_VERSION_STR);
 	exit(EXIT_SUCCESS);
       }
 

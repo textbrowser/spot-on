@@ -516,8 +516,13 @@ spoton::spoton(void):QMainWindow()
 	     "libgcrypt %7.\n"
 	     "libspoton %8.\n"
 	     "Location of .spot-on: %9.").
+#ifdef SPOTON_DATELESS_COMPILATION
+     arg("January 1, 3000").
+     arg("01:01:01").
+#else
      arg(__DATE__).
      arg(__TIME__).
+#endif
      arg(sslSupported ?
 	 SSLeay_version(SSLEAY_VERSION) :
 	 "OpenSSL is not supported, according to Qt").
