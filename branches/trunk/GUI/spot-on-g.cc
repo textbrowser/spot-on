@@ -25,6 +25,13 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+extern "C"
+{
+#include <libpq-fe.h>
+}
+
+#include <QSqlDriver>
+
 #include "spot-on.h"
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
@@ -789,4 +796,26 @@ void spoton::slotShowAddParticipant(void)
 
 void spoton::cancelUrlQuery(void)
 {
+  if(m_urlDatabase.driverName() != "QPSQL")
+    return;
+  else if(!m_urlDatabase.driver())
+    return;
+
+  QVariant handle(m_urlDatabase.driver()->handle());
+
+  if(handle.typeName() != QString("PGconn") || !handle.isValid())
+    return;
+
+  PGconn *connection = *static_cast<PGconn **> (handle.data());
+
+  if(!connection)
+    return;
+
+  PGcancel *cancel = PQgetCancel(connection);
+
+  if(!cancel)
+    return;
+
+  PQcancel(cancel, 0, 0);
+  PQfreeCancel(cancel);
 }
