@@ -216,14 +216,6 @@ void spoton::slotPrepareUrlDatabases(void)
 			       arg(c1).arg(c2)))
 		  created = false;
 
-		if(!query.exec(QString("CREATE INDEX IF NOT EXISTS "
-				       "spot_on_keywords_"
-				       "keyword_hash_index_%1%2 ON "
-				       "spot_on_keywords_%1%2 "
-				       "(keyword_hash)").
-			       arg(c1).arg(c2)))
-		  created = false;
-
 		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
 				       "spot_on_keywords_%1%2 TO "
 				       "spot_on_user").
@@ -254,14 +246,6 @@ void spoton::slotPrepareUrlDatabases(void)
 				       "unique_id BIGINT UNIQUE, "
 				       "url BYTEA NOT NULL, "
 				       "url_hash TEXT PRIMARY KEY NOT NULL)").
-			       arg(c1).arg(c2)))
-		  created = false;
-
-		if(!query.exec(QString("CREATE INDEX IF NOT EXISTS "
-				       "spot_on_urls_"
-				       "url_hash_index_%1%2 ON "
-				       "spot_on_urls_%1%2 "
-				       "(url_hash)").
 			       arg(c1).arg(c2)))
 		  created = false;
 
@@ -511,10 +495,6 @@ void spoton::slotDropUrlTables(void)
 	      c2 = QChar(j + 48);
 	    else
 	      c2 = QChar(j + 97 - 10);
-
-	    /*
-	    ** Indexes will be dropped automatically.
-	    */
 
 	    if(!query.exec(QString("DROP TABLE IF EXISTS "
 				   "spot_on_keywords_%1%2").

@@ -149,7 +149,10 @@ Completed Items
        the files are completed? Disable buffering and issue fsync() on
        Unix systems.
 107.   Multiple Poptastic attachments.
-108.   Index the PostgreSQL tables.
+
+Ignored Items
+
+1.     Index the PostgreSQL tables.
 
 Remaining Items
 
