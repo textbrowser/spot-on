@@ -421,7 +421,7 @@ void spoton::slotDropUrlTables(void)
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to drop most of the "
-		"URL databases? Your credentials will not be removed. "
+		"URL tables? Your credentials will not be removed. "
 		"The shared.db database will not be removed. Please "
 		"note that the process may require "
 		"a considerable amount of time to complete. The "
@@ -445,11 +445,11 @@ void spoton::slotDropUrlTables(void)
   progress.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-  progress.setLabelText(tr("Dropping URL databases. Please be patient."));
+  progress.setLabelText(tr("Dropping URL tables. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Dropping URL Databases").
+  progress.setWindowTitle(tr("%1: Dropping URL Tables").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
 #ifndef Q_OS_MAC
