@@ -257,7 +257,7 @@ void spoton::discoverUrls(void)
       m_ui.searchfor->setText(searchfor);
       keywordsearch.clear();
 
-      QSet<QString> prefixes;
+      QMap<QString, QString> prefixes;
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
@@ -270,47 +270,50 @@ void spoton::discoverUrls(void)
 	  if(query.exec(keywordsearches.at(i)))
 	    while(query.next())
 	      {
-		prefixes << query.value(0).toString().mid(0, 2);
+		QString hash(query.value(0).toString());
+		QString prefix(hash.mid(0, 2));
 
-		if(prefixes.size() >= 16 * 16)
-		  goto done_label;
+		if(!prefixes.contains(prefix))
+		  prefixes.insert(prefix, QString("'%1'").arg(hash));
+		else
+		  {
+		    QString str(prefixes.value(prefix));
+
+		    str.append(QString(", '%1'").arg(hash));
+		    prefixes.insert(prefix, str);
+		  }
 	      }
 	}
 
-    done_label:
-
       QApplication::restoreOverrideCursor();
 
-      while(!keywordsearches.isEmpty())
+      QMapIterator<QString, QString> it(prefixes);
+      int i = 0;
+
+      while(it.hasNext())
 	{
-	  keywordsearch = keywordsearches.takeFirst();
+	  i += 1;
+	  it.next();
 
-	  int i = 0;
+	  /*
+	  ** For absolute correctness, we ought to use parameters in
+	  ** the SQL queries.
+	  */
 
-	  foreach(QString prefix, prefixes)
-	    {
-	      i += 1;
-
-	      /*
-	      ** For absolute correctness, we ought to use parameters in
-	      ** the SQL queries.
-	      */
-
-	      if(i == prefixes.size() && keywordsearches.isEmpty())
-		querystr.append
-		  (QString("SELECT title, url, description, "
-			   "date_time_inserted, LENGTH(content), url_hash "
-			   "FROM spot_on_urls_%1 WHERE "
-			   "url_hash IN (%2) ").
-		   arg(prefix).arg(keywordsearch));
-	      else
-		querystr.append
-		  (QString("SELECT title, url, description, "
-			   "date_time_inserted, LENGTH(content), url_hash "
-			   "FROM spot_on_urls_%1 WHERE "
-			   "url_hash IN (%2) UNION ").
-		   arg(prefix).arg(keywordsearch));
-	    }
+	  if(i == prefixes.size())
+	    querystr.append
+	      (QString("SELECT title, url, description, "
+		       "date_time_inserted, LENGTH(content), url_hash "
+		       "FROM spot_on_urls_%1 WHERE "
+		       "url_hash IN (%2) ").
+	       arg(it.key()).arg(it.value()));
+	  else
+	    querystr.append
+	      (QString("SELECT title, url, description, "
+		       "date_time_inserted, LENGTH(content), url_hash "
+		       "FROM spot_on_urls_%1 WHERE "
+		       "url_hash IN (%2) UNION ").
+	       arg(it.key()).arg(it.value()));
 	}
 
       querystr.append(" ORDER BY 4 DESC ");
