@@ -288,11 +288,9 @@ void spoton::discoverUrls(void)
       QApplication::restoreOverrideCursor();
 
       QMapIterator<QString, QString> it(prefixes);
-      int i = 0;
 
       while(it.hasNext())
 	{
-	  i += 1;
 	  it.next();
 
 	  /*
@@ -300,7 +298,7 @@ void spoton::discoverUrls(void)
 	  ** the SQL queries.
 	  */
 
-	  if(i == prefixes.size())
+	  if(!it.hasNext())
 	    querystr.append
 	      (QString("SELECT title, url, description, "
 		       "date_time_inserted, LENGTH(content), url_hash "
