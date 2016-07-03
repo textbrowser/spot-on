@@ -609,6 +609,9 @@ void spoton::notify(const QString &text)
     return;
 
   m_notificationsUi.textBrowser->append(text.trimmed());
+
+  if(m_optionsUi.notifications->isChecked())
+    slotShowNotificationsWindow();
 }
 
 void spoton::slotPlaySounds(bool state)
