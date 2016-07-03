@@ -813,7 +813,6 @@ class spoton: public QMainWindow
 #endif
   void slotMessagesAnchorClicked(const QUrl &url);
   void slotModeChanged(QSslSocket::SslMode mode);
-  void slotNegotiationsEnabled(bool state);
   void slotNeighborChanged(QTableWidgetItem *item);
   void slotNeighborFullEcho(void);
   void slotNeighborHalfEcho(void);
@@ -822,6 +821,7 @@ class spoton: public QMainWindow
   void slotNeighborWaitForBytesWrittenChanged(int value);
   void slotNewGlobalName(void);
   void slotNewKeys(bool state);
+  void slotNotificationsEnabled(bool state);
   void slotOntopChatDialogs(bool state);
   void slotOpenChatUrlChecked(bool state);
   void slotPageClicked(const QString &link);

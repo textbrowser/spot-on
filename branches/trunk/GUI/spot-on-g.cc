@@ -823,11 +823,11 @@ void spoton::cancelUrlQuery(void)
   PQfreeCancel(cancel);
 }
 
-void spoton::slotNegotiationsEnabled(bool state)
+void spoton::slotNotificationsEnabled(bool state)
 {
-  m_settings["gui/automaticNegotiationsDisplay"] = state;
+  m_settings["gui/automaticNotifications"] = state;
 
   QSettings settings;
 
-  settings.setValue("gui/automaticNegotiationsDisplay", state);
+  settings.setValue("gui/automaticNotifications", state);
 }

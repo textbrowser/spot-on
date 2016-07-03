@@ -811,6 +811,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotVacuumDatabases(void)));
+  connect(m_optionsUi.notifications,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotNotificationsEnabled(bool)));
   connect(m_optionsUi.play_sounds,
 	  SIGNAL(toggled(bool)),
 	  this,
