@@ -72,8 +72,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>562</width>
-             <height>1391</height>
+             <width>571</width>
+             <height>1211</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -92,6 +92,13 @@
             <property name="bottomMargin">
              <number>5</number>
             </property>
+            <item>
+             <widget class="QCheckBox" name="notifications">
+              <property name="text">
+               <string>&amp;Activate Notifications window on events.</string>
+              </property>
+             </widget>
+            </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <property name="spacing">
@@ -1381,8 +1388,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>634</width>
-             <height>1084</height>
+             <width>635</width>
+             <height>966</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -2173,8 +2180,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>288</width>
-             <height>235</height>
+             <width>287</width>
+             <height>218</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -2441,7 +2448,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -2464,6 +2471,7 @@
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>scrollArea</tabstop>
+  <tabstop>notifications</tabstop>
   <tabstop>icons</tabstop>
   <tabstop>play_sounds</tabstop>
   <tabstop>iconsize</tabstop>
