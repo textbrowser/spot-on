@@ -2388,6 +2388,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/kernelLogEvents", false).toBool());
   m_optionsUi.limitConnections->setValue
     (m_settings.value("gui/limitConnections", 10).toInt());
+  m_optionsUi.notifications->setChecked
+    (m_settings.value("gui/automaticNotifications", false).toBool());
   m_optionsUi.openlinks->setChecked
     (m_settings.value("gui/openLinks", false).toBool());
   m_ui.postofficeCheckBox->setChecked
