@@ -113,7 +113,7 @@ were skipped on import are not exported.
 */
 curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "cookies.txt");  /* export */
 &nbsp;
-res = curl_easy_perform(curl);  /* cookies imported from cookies.txt */
+curl_easy_perform(curl);  /* cookies imported from cookies.txt */
 &nbsp;
 curl_easy_cleanup(curl);  /* cookies exported to cookies.txt */
 </pre>
@@ -124,6 +124,6 @@ curl_easy_cleanup(curl);  /* cookies exported to cookies.txt */
 <p class="level0">FLUSH was added in 7.17.1 
 <p class="level0">RELOAD was added in 7.39.0 <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
 <p class="level0">Returns CURLE_OK if the option is supported, CURLE_UNKNOWN_OPTION if not, or CURLE_OUT_OF_MEMORY if there was insufficient heap space. <a name="SEE"></a><h2 class="nroffsh">SEE ALSO</h2>
-<p class="level0"><a Class="manpage" href="./CURLOPT_COOKIEFILE.html">CURLOPT_COOKIEFILE</a>, <a Class="manpage" href="./CURLOPT_COOKIEJAR.html">CURLOPT_COOKIEJAR</a>, <a Class="manpage" href="./CURLOPT_COOKIE.html">CURLOPT_COOKIE</a><p class="roffit">
+<p class="level0"><a Class="manpage" href="./CURLOPT_COOKIEFILE.html">CURLOPT_COOKIEFILE</a>, <a Class="manpage" href="./CURLOPT_COOKIEJAR.html">CURLOPT_COOKIEJAR</a>, <a Class="manpage" href="./CURLOPT_COOKIE.html">CURLOPT_COOKIE</a>, <a Class="manpage" href="./CURLINFO_COOKIELIST.html">CURLINFO_COOKIELIST</a><p class="roffit">
  This HTML page was made with <a href="http://daniel.haxx.se/projects/roffit/">roffit</a>.
 </body></html>

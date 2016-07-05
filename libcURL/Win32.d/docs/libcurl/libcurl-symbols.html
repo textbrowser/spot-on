@@ -182,6 +182,8 @@ p.roffit {
 <p class="level1">Introduced in 7.9.1 
 <p class="level0"><a name="CURLEHTTP2"></a><span class="nroffip">CURLE_HTTP2</span> 
 <p class="level1">Introduced in 7.38.0 
+<p class="level0"><a name="CURLEHTTP2STREAM"></a><span class="nroffip">CURLE_HTTP2_STREAM</span> 
+<p class="level1">Introduced in 7.49.0 
 <p class="level0"><a name="CURLEHTTPNOTFOUND"></a><span class="nroffip">CURLE_HTTP_NOT_FOUND</span> 
 <p class="level1">Introduced in 7.1 
 <p class="level0"><a name="CURLEHTTPPORTFAILED"></a><span class="nroffip">CURLE_HTTP_PORT_FAILED</span> 
@@ -551,7 +553,9 @@ p.roffit {
 <p class="level0"><a name="CURLINFOTEXT"></a><span class="nroffip">CURLINFO_TEXT</span> 
 <p class="level1">Introduced in 7.9.6 
 <p class="level0"><a name="CURLINFOTLSSESSION"></a><span class="nroffip">CURLINFO_TLS_SESSION</span> 
-<p class="level1">Introduced in 7.34.0 
+<p class="level1">Introduced in 7.34.0 Deprecated since 7.48.0 
+<p class="level0"><a name="CURLINFOTLSSSLPTR"></a><span class="nroffip">CURLINFO_TLS_SSL_PTR</span> 
+<p class="level1">Introduced in 7.48.0 
 <p class="level0"><a name="CURLINFOTOTALTIME"></a><span class="nroffip">CURLINFO_TOTAL_TIME</span> 
 <p class="level1">Introduced in 7.4.1 
 <p class="level0"><a name="CURLINFOTYPEMASK"></a><span class="nroffip">CURLINFO_TYPEMASK</span> 
@@ -690,6 +694,8 @@ p.roffit {
 <p class="level1">Introduced in 7.16.2 
 <p class="level0"><a name="CURLOPTCONNECTONLY"></a><span class="nroffip">CURLOPT_CONNECT_ONLY</span> 
 <p class="level1">Introduced in 7.15.2 
+<p class="level0"><a name="CURLOPTCONNECTTO"></a><span class="nroffip">CURLOPT_CONNECT_TO</span> 
+<p class="level1">Introduced in 7.49.0 
 <p class="level0"><a name="CURLOPTCONVFROMNETWORKFUNCTION"></a><span class="nroffip">CURLOPT_CONV_FROM_NETWORK_FUNCTION</span> 
 <p class="level1">Introduced in 7.15.4 
 <p class="level0"><a name="CURLOPTCONVFROMUTF8FUNCTION"></a><span class="nroffip">CURLOPT_CONV_FROM_UTF8_FUNCTION</span> 
@@ -1015,7 +1021,7 @@ p.roffit {
 <p class="level0"><a name="CURLOPTSOCKS5GSSAPINEC"></a><span class="nroffip">CURLOPT_SOCKS5_GSSAPI_NEC</span> 
 <p class="level1">Introduced in 7.19.4 
 <p class="level0"><a name="CURLOPTSOCKS5GSSAPISERVICE"></a><span class="nroffip">CURLOPT_SOCKS5_GSSAPI_SERVICE</span> 
-<p class="level1">Introduced in 7.19.4 
+<p class="level1">Introduced in 7.19.4 Deprecated since 7.49.0 
 <p class="level0"><a name="CURLOPTSOURCEHOST"></a><span class="nroffip">CURLOPT_SOURCE_HOST</span> 
 <p class="level1">Introduced in 7.12.1 
 <p class="level0"><a name="CURLOPTSOURCEPATH"></a><span class="nroffip">CURLOPT_SOURCE_PATH</span> 
@@ -1102,10 +1108,14 @@ p.roffit {
 <p class="level1">Introduced in 7.25.0 
 <p class="level0"><a name="CURLOPTTCPNODELAY"></a><span class="nroffip">CURLOPT_TCP_NODELAY</span> 
 <p class="level1">Introduced in 7.11.2 
+<p class="level0"><a name="CURLOPTTCPFASTOPEN"></a><span class="nroffip">CURLOPT_TCP_FASTOPEN</span> 
+<p class="level1">Introduced in 7.49.0 
 <p class="level0"><a name="CURLOPTTELNETOPTIONS"></a><span class="nroffip">CURLOPT_TELNETOPTIONS</span> 
 <p class="level1">Introduced in 7.7 
 <p class="level0"><a name="CURLOPTTFTPBLKSIZE"></a><span class="nroffip">CURLOPT_TFTP_BLKSIZE</span> 
 <p class="level1">Introduced in 7.19.4 
+<p class="level0"><a name="CURLOPTTFTPNOOPTIONS"></a><span class="nroffip">CURLOPT_TFTP_NO_OPTIONS</span> 
+<p class="level1">Introduced in 7.48.0 
 <p class="level0"><a name="CURLOPTTIMECONDITION"></a><span class="nroffip">CURLOPT_TIMECONDITION</span> 
 <p class="level1">Introduced in 7.1 
 <p class="level0"><a name="CURLOPTTIMEOUT"></a><span class="nroffip">CURLOPT_TIMEOUT</span> 
@@ -1292,6 +1302,8 @@ p.roffit {
 <p class="level1">Introduced in 7.16.1 
 <p class="level0"><a name="CURLSSLBACKENDAXTLS"></a><span class="nroffip">CURLSSLBACKEND_AXTLS</span> 
 <p class="level1">Introduced in 7.38.0 
+<p class="level0"><a name="CURLSSLBACKENDBORINGSSL"></a><span class="nroffip">CURLSSLBACKEND_BORINGSSL</span> 
+<p class="level1">Introduced in 7.49.0 
 <p class="level0"><a name="CURLSSLBACKENDCYASSL"></a><span class="nroffip">CURLSSLBACKEND_CYASSL</span> 
 <p class="level1">Introduced in 7.34.0 
 <p class="level0"><a name="CURLSSLBACKENDDARWINSSL"></a><span class="nroffip">CURLSSLBACKEND_DARWINSSL</span> 
@@ -1300,6 +1312,8 @@ p.roffit {
 <p class="level1">Introduced in 7.34.0 
 <p class="level0"><a name="CURLSSLBACKENDGSKIT"></a><span class="nroffip">CURLSSLBACKEND_GSKIT</span> 
 <p class="level1">Introduced in 7.34.0 
+<p class="level0"><a name="CURLSSLBACKENDLIBRESSL"></a><span class="nroffip">CURLSSLBACKEND_LIBRESSL</span> 
+<p class="level1">Introduced in 7.49.0 
 <p class="level0"><a name="CURLSSLBACKENDMBEDTLS"></a><span class="nroffip">CURLSSLBACKEND_MBEDTLS</span> 
 <p class="level1">Introduced in 7.46.0 
 <p class="level0"><a name="CURLSSLBACKENDNONE"></a><span class="nroffip">CURLSSLBACKEND_NONE</span> 
@@ -1314,6 +1328,8 @@ p.roffit {
 <p class="level1">Introduced in 7.34.0 
 <p class="level0"><a name="CURLSSLBACKENDSCHANNEL"></a><span class="nroffip">CURLSSLBACKEND_SCHANNEL</span> 
 <p class="level1">Introduced in 7.34.0 
+<p class="level0"><a name="CURLSSLBACKENDWOLFSSL"></a><span class="nroffip">CURLSSLBACKEND_WOLFSSL</span> 
+<p class="level1">Introduced in 7.49.0 
 <p class="level0"><a name="CURLSSLOPTALLOWBEAST"></a><span class="nroffip">CURLSSLOPT_ALLOW_BEAST</span> 
 <p class="level1">Introduced in 7.25.0 
 <p class="level0"><a name="CURLSSLOPTNOREVOKE"></a><span class="nroffip">CURLSSLOPT_NO_REVOKE</span> 
@@ -1352,6 +1368,8 @@ p.roffit {
 <p class="level1">Introduced in 7.16.3 
 <p class="level0"><a name="CURLCSELECTOUT"></a><span class="nroffip">CURL_CSELECT_OUT</span> 
 <p class="level1">Introduced in 7.16.3 
+<p class="level0"><a name="CURLDIDMEMORYFUNCTYPEDEFS"></a><span class="nroffip">CURL_DID_MEMORY_FUNC_TYPEDEFS</span> 
+<p class="level1">Introduced in 7.49.0 
 <p class="level0"><a name="CURLEASYNONE"></a><span class="nroffip">CURL_EASY_NONE</span> 
 <p class="level1">Introduced in 7.14.0 
 <p class="level0"><a name="CURLEASYTIMEOUT"></a><span class="nroffip">CURL_EASY_TIMEOUT</span> 
@@ -1418,6 +1436,8 @@ p.roffit {
 <p class="level1">Introduced in 7.33.0 
 <p class="level0"><a name="CURLHTTPVERSION2TLS"></a><span class="nroffip">CURL_HTTP_VERSION_2TLS</span> 
 <p class="level1">Introduced in 7.47.0 
+<p class="level0"><a name="CURLHTTPVERSION2PRIORKNOWLEDGE"></a><span class="nroffip">CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE</span> 
+<p class="level1">Introduced in 7.49.0 
 <p class="level0"><a name="CURLHTTPVERSIONNONE"></a><span class="nroffip">CURL_HTTP_VERSION_NONE</span> 
 <p class="level1">Introduced in 7.9.1 
 <p class="level0"><a name="CURLIPRESOLVEV4"></a><span class="nroffip">CURL_IPRESOLVE_V4</span> 

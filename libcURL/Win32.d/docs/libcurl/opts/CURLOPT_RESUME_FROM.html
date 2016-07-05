@@ -62,7 +62,7 @@ p.roffit {
 <p class="level0"><pre class="level0">
 CURL *curl = curl_easy_init();
 if(curl) {
-&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "<a href="ftp://example.com">ftp://example.com</a>");
+&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "ftp://example.com");
 &nbsp;
 &nbsp; /* resume upload at byte index 200 */
 &nbsp; curl_easy_setopt(curl, CURLOPT_RESUME_FROM, 200L);

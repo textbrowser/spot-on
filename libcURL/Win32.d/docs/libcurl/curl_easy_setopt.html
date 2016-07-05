@@ -168,14 +168,16 @@ p.roffit {
 <p class="level1">Filter out hosts from proxy use. <span Class="emphasis">CURLOPT_NOPROXY(3)</span> 
 <p class="level0"><a name="CURLOPTHTTPPROXYTUNNEL"></a><span class="nroffip">CURLOPT_HTTPPROXYTUNNEL</span> 
 <p class="level1">Tunnel through the HTTP proxy. <span Class="emphasis">CURLOPT_HTTPPROXYTUNNEL(3)</span> 
+<p class="level0"><a name="CURLOPTCONNECTTO"></a><span class="nroffip">CURLOPT_CONNECT_TO</span> 
+<p class="level1">Connect to a specific host and port. See <span Class="emphasis">CURLOPT_CONNECT_TO(3)</span> 
 <p class="level0"><a name="CURLOPTSOCKS5GSSAPISERVICE"></a><span class="nroffip">CURLOPT_SOCKS5_GSSAPI_SERVICE</span> 
 <p class="level1">Socks5 GSSAPI service name. <span Class="emphasis">CURLOPT_SOCKS5_GSSAPI_SERVICE(3)</span> 
 <p class="level0"><a name="CURLOPTSOCKS5GSSAPINEC"></a><span class="nroffip">CURLOPT_SOCKS5_GSSAPI_NEC</span> 
 <p class="level1">Socks5 GSSAPI NEC mode. See <span Class="emphasis">CURLOPT_SOCKS5_GSSAPI_NEC(3)</span> 
 <p class="level0"><a name="CURLOPTPROXYSERVICENAME"></a><span class="nroffip">CURLOPT_PROXY_SERVICE_NAME</span> 
-<p class="level1">Proxy service name. <span Class="emphasis">CURLOPT_PROXY_SERVICE_NAME(3)</span> 
+<p class="level1">Proxy authentication service name. <span Class="emphasis">CURLOPT_PROXY_SERVICE_NAME(3)</span> 
 <p class="level0"><a name="CURLOPTSERVICENAME"></a><span class="nroffip">CURLOPT_SERVICE_NAME</span> 
-<p class="level1">SPNEGO service name. <span Class="emphasis">CURLOPT_SERVICE_NAME(3)</span> 
+<p class="level1">Authentication service name. <span Class="emphasis">CURLOPT_SERVICE_NAME(3)</span> 
 <p class="level0"><a name="CURLOPTINTERFACE"></a><span class="nroffip">CURLOPT_INTERFACE</span> 
 <p class="level1">Bind connection locally to this. See <span Class="emphasis">CURLOPT_INTERFACE(3)</span> 
 <p class="level0"><a name="CURLOPTLOCALPORT"></a><span class="nroffip">CURLOPT_LOCALPORT</span> 
@@ -190,6 +192,8 @@ p.roffit {
 <p class="level1">Ask for smaller buffer size. See <span Class="emphasis">CURLOPT_BUFFERSIZE(3)</span> 
 <p class="level0"><a name="CURLOPTPORT"></a><span class="nroffip">CURLOPT_PORT</span> 
 <p class="level1">Port number to connect to. See <span Class="emphasis">CURLOPT_PORT(3)</span> 
+<p class="level0"><a name="CURLOPTTCPFASTOPEN"></a><span class="nroffip">CURLOPT_TCP_FASTOPEN</span> 
+<p class="level1">Enable TFO, TCP Fast Open. See <span Class="emphasis">CURLOPT_TCP_FASTOPEN(3)</span> 
 <p class="level0"><a name="CURLOPTTCPNODELAY"></a><span class="nroffip">CURLOPT_TCP_NODELAY</span> 
 <p class="level1">Disable the Nagle algorithm. See <span Class="emphasis">CURLOPT_TCP_NODELAY(3)</span> 
 <p class="level0"><a name="CURLOPTADDRESSSCOPE"></a><span class="nroffip">CURLOPT_ADDRESS_SCOPE</span> 
@@ -315,7 +319,9 @@ p.roffit {
 <p class="level1">Authentication address. See <span Class="emphasis">CURLOPT_MAIL_AUTH(3)</span> <a name="TFTP"></a><h2 class="nroffsh">TFTP OPTIONS</h2>
 <p class="level0">
 <p class="level0"><a name="CURLOPTTFTPBLKSIZE"></a><span class="nroffip">CURLOPT_TFTP_BLKSIZE</span> 
-<p class="level1">TFTP block size. See <span Class="emphasis">CURLOPT_TFTP_BLKSIZE(3)</span> <a name="FTP"></a><h2 class="nroffsh">FTP OPTIONS</h2>
+<p class="level1">TFTP block size. See <span Class="emphasis">CURLOPT_TFTP_BLKSIZE(3)</span> 
+<p class="level0"><a name="CURLOPTTFTPNOOPTIONS"></a><span class="nroffip">CURLOPT_TFTP_NO_OPTIONS</span> 
+<p class="level1">Do not send TFTP options requests. See <span Class="emphasis">CURLOPT_TFTP_NO_OPTIONS(3)</span> <a name="FTP"></a><h2 class="nroffsh">FTP OPTIONS</h2>
 <p class="level0">
 <p class="level0"><a name="CURLOPTFTPPORT"></a><span class="nroffip">CURLOPT_FTPPORT</span> 
 <p class="level1">Use active FTP. See <span Class="emphasis">CURLOPT_FTPPORT(3)</span> 
@@ -526,7 +532,7 @@ p.roffit {
 CURL *curl = curl_easy_init();
 if(curl) {
 &nbsp; CURLcode res;
-&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "<a href="http://example.com">http://example.com</a>");
+&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "http://example.com");
 &nbsp; res = curl_easy_perform(curl);
 &nbsp; curl_easy_cleanup(curl);
 }

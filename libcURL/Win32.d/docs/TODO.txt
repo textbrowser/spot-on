@@ -32,12 +32,14 @@
  1.14 Typesafe curl_easy_setopt()
  1.15 TCP Fast Open
  1.16 Try to URL encode given URL
+ 1.17 Add support for IRIs
 
  2. libcurl - multi interface
  2.1 More non-blocking
  2.2 Better support for same name resolves
  2.3 Non-blocking curl_multi_remove_handle()
  2.4 Split connect and authentication process
+ 2.5 Edge-triggered sockets should work
 
  3. Documentation
  3.1 Update date and version in man pages
@@ -69,23 +71,23 @@
  7. SMTP
  7.1 Pipelining
  7.2 Enhanced capability support
- 
+
  8. POP3
  8.1 Pipelining
  8.2 Enhanced capability support
- 
+
  9. IMAP
  9.1 Enhanced capability support
- 
+
  10. LDAP
  10.1 SASL based authentication mechanisms
- 
+
  11. SMB
  11.1 File listing support
  11.2 Honor file timestamps
  11.3 Use NTLMv2
  11.4 Create remote directories
- 
+
  12. New protocols
  12.1 RSYNC
 
@@ -111,8 +113,9 @@
  16. SASL
  16.1 Other authentication mechanisms
  16.2 Add QOP support to GSSAPI authentication
- 
- 17. Client
+ 16.3 Support binary messages (i.e.: non-base64)
+
+ 17. Command line tool
  17.1 sync
  17.2 glob posts
  17.3 prevent file overwriting
@@ -123,6 +126,10 @@
  17.8 offer color-coded HTTP header output
  17.9 Choose the name of file in braces for complex URLs
  17.10 improve how curl works in a windows console window
+ 17.11 -w output to stderr
+ 17.12 keep running, read instructions from pipe/socket
+ 17.13 support metalink in http headers
+ 17.14 --fail without --location should treat 3xx as a failure
 
  18. Build
  18.1 roffit
@@ -133,6 +140,7 @@
  19.3 more protocols supported
  19.4 more platforms supported
  19.5 Add support for concurrent connections
+ 19.6 Use the RFC6265 test suite
 
  20. Next SONAME bump
  20.1 http-style HEAD output for FTP
@@ -172,7 +180,7 @@
  signal handler back into the library with a sigsetjmp, which effectively
  causes libcurl to continue running within the signal handler. This is
  non-portable and could cause problems on some platforms. A discussion on the
- problem is available at http://curl.haxx.se/mail/lib-2008-09/0197.html
+ problem is available at https://curl.haxx.se/mail/lib-2008-09/0197.html
 
  Also, alarm() provides timeout resolution only to the nearest second. alarm
  ought to be replaced by setitimer on systems that support it.
@@ -239,7 +247,7 @@
  would be the ones that link to 3rd party libs. That would allow us to avoid
  having to load ALL dependencies since only the necessary ones for this
  app/invoke/used protocols would be necessary to load.  See
- https://github.com/bagder/curl/issues/349
+ https://github.com/curl/curl/issues/349
 
 1.12 have form functions use CURL handle argument
 
@@ -261,7 +269,7 @@
  hack ;-)
 
  Please see the following thread for more information:
- http://curl.haxx.se/mail/lib-2012-05/0178.html
+ https://curl.haxx.se/mail/lib-2012-05/0178.html
 
 1.14 Typesafe curl_easy_setopt()
 
@@ -292,7 +300,17 @@
  perhaps URL encoded byte values over 128 etc (basically do what the redirect
  following code already does).
 
- https://github.com/bagder/curl/issues/514
+ https://github.com/curl/curl/issues/514
+
+1.17 Add support for IRIs
+
+ IRIs (RFC 3987) allow localized, non-ascii, names in the URL. To properly
+ support this, curl/libcurl would need to translate/encode the given input
+ from the input string encoding into percent encoded output "over the wire".
+
+ To make that work smoothly for curl users even on Windows, curl would
+ probably need to be able to convert from several input encodings.
+
 
 2. libcurl - multi interface
 
@@ -333,6 +351,12 @@
  phase. As such any failures during authentication won't trigger the relevant
  QUIT or LOGOFF for protocols such as IMAP, POP3 and SMTP.
 
+2.5 Edge-triggered sockets should work
+
+ The multi_socket API should work with edge-triggered socket events. One of
+ the internal actions that need to be improved for this to work perfectly is
+ the 'maxloops' handling in transfer.c:readwrite_data().
+
 3. Documentation
 
 3.1 Update date and version in man pages
@@ -355,7 +379,7 @@
  When trying to connect passively to a server which only supports active
  connections, libcurl returns CURLE_FTP_WEIRD_PASV_REPLY and closes the
  connection. There could be a way to fallback to an active connection (and
- vice versa). http://curl.haxx.se/bug/feature.cgi?id=1754793
+ vice versa). https://curl.haxx.se/bug/feature.cgi?id=1754793
 
 4.3 Earlier bad letter detection
 
@@ -392,13 +416,13 @@ This is not detailed in any FTP specification.
 5.1 Better persistency for HTTP 1.0
 
  "Better" support for persistent connections over HTTP 1.0
- http://curl.haxx.se/bug/feature.cgi?id=1089001
+ https://curl.haxx.se/bug/feature.cgi?id=1089001
 
 5.2 support FF3 sqlite cookie files
 
  Firefox 3 is changing from its former format to a a sqlite database instead.
  We should consider how (lib)curl can/should support this.
- http://curl.haxx.se/bug/feature.cgi?id=1871388
+ https://curl.haxx.se/bug/feature.cgi?id=1871388
 
 5.3 Rearrange request header order
 
@@ -428,13 +452,13 @@ This is not detailed in any FTP specification.
  For example:
 
  http://test:pass;auth=NTLM@example.com would be equivalent to specifying --user
- test:pass;auth=NTLM or --user test:pass --ntlm from the command line. 
+ test:pass;auth=NTLM or --user test:pass --ntlm from the command line.
 
  Additionally this should be implemented for proxy base URLs as well.
 
 5.6 Refuse "downgrade" redirects
 
- See https://github.com/bagder/curl/issues/226
+ See https://github.com/curl/curl/issues/226
 
  Consider a way to tell curl to refuse to "downgrade" protocol with a redirect
  and/or possibly a bit that refuses redirect to change protocol completely.
@@ -543,7 +567,7 @@ that doesn't exist on the server, just like --ftp-create-dirs.
 13.1 Disable specific versions
 
  Provide an option that allows for disabling specific SSL versions, such as
- SSLv2 http://curl.haxx.se/bug/feature.cgi?id=1767276
+ SSLv2 https://curl.haxx.se/bug/feature.cgi?id=1767276
 
 13.2 Provide mutex locking API
 
@@ -554,7 +578,7 @@ that doesn't exist on the server, just like --ftp-create-dirs.
 13.3 Evaluate SSL patches
 
  Evaluate/apply Gertjan van Wingerde's SSL patches:
- http://curl.haxx.se/mail/lib-2004-03/0087.html
+ https://curl.haxx.se/mail/lib-2004-03/0087.html
 
 13.4 Cache OpenSSL contexts
 
@@ -592,9 +616,9 @@ that doesn't exist on the server, just like --ftp-create-dirs.
  https://www.rfc-editor.org/rfc/rfc6698.txt
 
  An initial patch was posted by Suresh Krishnaswamy on March 7th 2013
- (http://curl.haxx.se/mail/lib-2013-03/0075.html) but it was a too simple
+ (https://curl.haxx.se/mail/lib-2013-03/0075.html) but it was a too simple
  approach. See Daniel's comments:
- http://curl.haxx.se/mail/lib-2013-03/0103.html . libunbound may be the
+ https://curl.haxx.se/mail/lib-2013-03/0103.html . libunbound may be the
  correct library to base this development on.
 
 14. GnuTLS
@@ -649,7 +673,7 @@ that doesn't exist on the server, just like --ftp-create-dirs.
 
  Add support for other authentication mechanisms such as OLP,
  GSS-SPNEGO and others.
- 
+
 16.2 Add QOP support to GSSAPI authentication
 
  Currently the GSSAPI authentication only supports the default QOP of auth
@@ -657,7 +681,11 @@ that doesn't exist on the server, just like --ftp-create-dirs.
  with integrity protection) and auth-conf (Authentication with integrity and
  privacy protection).
 
-17. Client
+16.3 Support binary messages (i.e.: non-base64)
+
+  Mandatory to support LDAP SASL authentication.
+
+17. Command line tool
 
 17.1 sync
 
@@ -686,7 +714,7 @@ that doesn't exist on the server, just like --ftp-create-dirs.
  The client could be told to use maximum N simultaneous parallel transfers and
  then just make sure that happens. It should of course not make more than one
  connection to the same remote host. This would require the client to use the
- multi interface. http://curl.haxx.se/bug/feature.cgi?id=1558595
+ multi interface. https://curl.haxx.se/bug/feature.cgi?id=1558595
 
 17.5 provide formpost headers
 
@@ -729,13 +757,53 @@ that doesn't exist on the server, just like --ftp-create-dirs.
  {partURL1:name1,partURL2:name2,partURL3:name3} where the name following the
  colon is the output name.
 
- See https://github.com/bagder/curl/issues/221
+ See https://github.com/curl/curl/issues/221
 
 17.10 improve how curl works in a windows console window
 
  If you pull the scrollbar when transferring with curl in a Windows console
  window, the transfer is interrupted and can get disconnected. This can
- probably be improved. See https://github.com/bagder/curl/issues/322
+ probably be improved. See https://github.com/curl/curl/issues/322
+
+17.11 -w output to stderr
+
+ -w is quite useful, but not to those of us who use curl without -o or -O
+ (such as for scripting through a higher level language). It would be nice to
+ have an option that is exactly like -w but sends it to stderr
+ instead. Proposed name: --write-stderr. See
+ https://github.com/curl/curl/issues/613
+
+17.12 keep running, read instructions from pipe/socket
+
+ Provide an option that makes curl not exit after the last URL (or even work
+ without a given URL), and then make it read instructions passed on a pipe or
+ over a socket to make further instructions so that a second subsequent curl
+ invoke can talk to the still running instance and ask for transfers to get
+ done, and thus maintain its connection pool, DNS cache and more.
+
+17.13 support metalink in http headers
+
+ Curl has support for downloading a metalink xml file, processing it, and then
+ downloading the target of the metalink. This is done via the --metalink option.
+ It would be nice if metalink also supported downloading via metalink
+ information that is stored in HTTP headers (RFC 6249). Theoretically this could
+ also be supported with the --metalink option.
+
+ See https://tools.ietf.org/html/rfc6249
+
+ See also https://lists.gnu.org/archive/html/bug-wget/2015-06/msg00034.html for
+ an implematation of this in wget.
+
+17.14 --fail without --location should treat 3xx as a failure
+
+ To allow a command line like this to detect a redirect and consider it a
+ failure:
+
+    curl -v --fail -O https://example.com/curl-7.48.0.tar.gz
+
+ ... --fail must treat 3xx responses as failures too. The least problematic
+ way to implement this is probably to add that new logic in the command line
+ tool only and not in the underlying CURLOPT_FAILONERROR logic.
 
 
 18. Build
@@ -781,6 +849,16 @@ that doesn't exist on the server, just like --ftp-create-dirs.
  been dropped (unless it has been forced - which we shouldn't do in these tests)
  and thus the wait for connections loop is never entered to receive the second
  connection.
+
+19.6 Use the RFC6265 test suite
+
+ A test suite made for HTTP cookies (RFC 6265) by Adam Barth is available at
+ https://github.com/abarth/http-state/tree/master/tests
+
+ It'd be really awesome if someone would write a script/setup that would run
+ curl with that test suite and detect deviances. Ideally, that would even be
+ incorporated into our regular test suite.
+
 
 20. Next SONAME bump
 

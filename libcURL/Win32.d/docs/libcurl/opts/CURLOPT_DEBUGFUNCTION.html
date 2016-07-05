@@ -120,8 +120,10 @@ void dump(const char *text,
 &nbsp;   }
 &nbsp;
 &nbsp;   /* show data on the right */
-&nbsp;   for(c = 0; (c &lt; width) && (i+c &lt; size); c++)
-&nbsp;     fputc(ptr[i+c]&gt;=0x20) && (ptr[i+c]&lt;0x80)?ptr[i+c]:'.', stream);
+&nbsp;   for(c = 0; (c &lt; width) && (i+c &lt; size); c++) {
+&nbsp;     char x = (ptr[i+c] &gt;= 0x20 && ptr[i+c] &lt; 0x80) ? ptr[i+c] : '.';
+&nbsp;     fputc(x, stream);
+&nbsp;   }
 &nbsp;
 &nbsp;   fputc('\n', stream); /* newline */
 &nbsp; }
@@ -180,7 +182,7 @@ int main(void)
 &nbsp;   /* example.com is redirected, so we tell libcurl to follow redirection */
 &nbsp;   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 &nbsp;
-&nbsp;   curl_easy_setopt(curl, CURLOPT_URL, "<a href="http://example.com/">http://example.com/</a>");
+&nbsp;   curl_easy_setopt(curl, CURLOPT_URL, "http://example.com/");
 &nbsp;   res = curl_easy_perform(curl);
 &nbsp;   /* Check for errors */
 &nbsp;   if(res != CURLE_OK)

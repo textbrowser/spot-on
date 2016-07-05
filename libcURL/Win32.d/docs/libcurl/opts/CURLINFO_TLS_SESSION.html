@@ -59,32 +59,15 @@ CURLcode curl_easy_getinfo(CURL *handle, CURLINFO_TLS_SESSION,
 &nbsp;                          struct curl_tlssessioninfo **session);
 </pre>
 <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
-<p class="level0">Pass a pointer to a 'struct curl_tlssessioninfo *'.  The pointer will be initialized to refer to a 'struct curl_tlssessioninfo *' that will contain an enum indicating the SSL library used for the handshake and the respective internal TLS session structure of this underlying SSL library. 
-<p class="level0">This may then be used to extract certificate information in a format convenient for further processing, such as manual validation. NOTE: this option may not be available for all SSL backends; unsupported SSL backends will always return NULL in the <span Class="emphasis">internals</span> pointer to indicate that they are not supported. 
-<p class="level0"><pre class="level0">
-struct curl_tlssessioninfo {
-&nbsp; curl_sslbackend backend;
-&nbsp; void *internals;
-};
-</pre>
-
-<p class="level0">
-<p class="level0">The <span Class="emphasis">backend</span> struct member is one of the defines in the CURLSSLBACKEND_* series: CURLSSLBACKEND_NONE (when built without TLS support), CURLSSLBACKEND_OPENSSL, CURLSSLBACKEND_GNUTLS, CURLSSLBACKEND_NSS, CURLSSLBACKEND_GSKIT, CURLSSLBACKEND_POLARSSL, CURLSSLBACKEND_CYASSL, CURLSSLBACKEND_SCHANNEL, CURLSSLBACKEND_DARWINSSL or CURLSSLBACKEND_AXTLS. (Note that the OpenSSL forks are all reported as just OpenSSL here.) 
-<p class="level0">The <span Class="emphasis">internals</span> struct member will point to a TLS library specific pointer with the following underlying types: 
-<p class="level1">
-<p class="level0"><a name="OpenSSL"></a><span class="nroffip">OpenSSL</span> 
-<p class="level1">SSL_CTX * 
-<p class="level0"><a name="GnuTLS"></a><span class="nroffip">GnuTLS</span> 
-<p class="level1">gnutls_session_t 
-<p class="level0"><a name="NSS"></a><span class="nroffip">NSS</span> 
-<p class="level1">PRFileDesc * 
-<p class="level0"><a name="gskit"></a><span class="nroffip">gskit</span> 
-<p class="level1">gsk_handle 
-<p class="level0"><a name="PROTOCOLS"></a><h2 class="nroffsh">PROTOCOLS</h2>
+<p class="level0"><span Class="bold">This option has been superseded</span> by <a Class="emphasis" href="./CURLINFO_TLS_SSL_PTR.html">CURLINFO_TLS_SSL_PTR</a> which was added in 7.48.0. The only reason you would use this option instead is if you could be using a version of libcurl earlier than 7.48.0. 
+<p class="level0">This option is exactly the same as <a Class="emphasis" href="./CURLINFO_TLS_SSL_PTR.html">CURLINFO_TLS_SSL_PTR</a> except in the case of OpenSSL. If the session <span Class="emphasis">backend</span> is CURLSSLBACKEND_OPENSSL the session <span Class="emphasis">internals</span> pointer varies depending on the option: 
+<p class="level0">CURLINFO_TLS_SESSION OpenSSL session <span Class="emphasis">internals</span> is SSL_CTX *. 
+<p class="level0">CURLINFO_TLS_SSL_PTR OpenSSL session <span Class="emphasis">internals</span> is SSL *. 
+<p class="level0">You can obtain an SSL_CTX pointer from an SSL pointer using OpenSSL function SSL_get_SSL_CTX. Therefore unless you need compatibility with older versions of libcurl use <a Class="emphasis" href="./CURLINFO_TLS_SSL_PTR.html">CURLINFO_TLS_SSL_PTR</a>. Refer to that document for more information. <a name="PROTOCOLS"></a><h2 class="nroffsh">PROTOCOLS</h2>
 <p class="level0">All TLS-based <a name="EXAMPLE"></a><h2 class="nroffsh">EXAMPLE</h2>
 <p class="level0">TODO <a name="AVAILABILITY"></a><h2 class="nroffsh">AVAILABILITY</h2>
-<p class="level0">Added in 7.34.0 <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
+<p class="level0">Added in 7.34.0, and supported OpenSSL, GnuTLS, NSS and gskit only up until 7.48.0 was released. <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
 <p class="level0">Returns CURLE_OK if the option is supported, and CURLE_UNKNOWN_OPTION if not. <a name="SEE"></a><h2 class="nroffsh">SEE ALSO</h2>
-<p class="level0"><span Class="manpage">curl_easy_getinfo (3)</span>, <span Class="manpage">curl_easy_setopt (3)</span><p class="roffit">
+<p class="level0"><span Class="manpage">curl_easy_getinfo (3)</span>, <span Class="manpage">curl_easy_setopt (3)</span>, <a Class="manpage" href="./CURLINFO_TLS_SSL_PTR.html">CURLINFO_TLS_SSL_PTR</a><p class="roffit">
  This HTML page was made with <a href="http://daniel.haxx.se/projects/roffit/">roffit</a>.
 </body></html>

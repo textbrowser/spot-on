@@ -70,7 +70,7 @@ p.roffit {
 <p class="level0"><pre class="level0">
 CURL *curl = curl_easy_init();
 if(curl) {
-&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "<a href="ftp://example.com/dir/file.ext">ftp://example.com/dir/file.ext</a>");
+&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "ftp://example.com/dir/file.ext");
 &nbsp;
 &nbsp; /* require use of SSL for this, or fail */
 &nbsp; curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);

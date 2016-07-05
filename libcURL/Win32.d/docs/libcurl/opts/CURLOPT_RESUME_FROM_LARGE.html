@@ -69,7 +69,7 @@ if(curl) {
 &nbsp; curl_off_t resume_position = GET_IT_SOMEHOW;
 &nbsp; curl_off_t file_size = GET_IT_SOMEHOW_AS_WELL;
 &nbsp;
-&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "<a href="ftp://example.com">ftp://example.com</a>");
+&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "ftp://example.com");
 &nbsp;
 &nbsp; /* resuming upload at this position, possibly beyond 2GB */
 &nbsp; curl_easy_setopt(curl, CURLOPT_RESUME_FROM_LARGE, resume_position);

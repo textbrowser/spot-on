@@ -60,7 +60,7 @@ CURLcode curl_easy_setopt(CURL *handle, CURLOPT_USERNAME,
 </pre>
 <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
 <p class="level0">Pass a char * as parameter, which should be pointing to the zero terminated user name to use for the transfer. 
-<p class="level0"><a Class="bold" href="./CURLOPT_USERNAME.html">CURLOPT_USERNAME</a> sets the user name to be used in protocol authentication. You should not use this option together with the (older) <a Class="emphasis" href="./CURLOPT_USERPWD.html">CURLOPT_USERPWD</a> option. 
+<p class="level0"><a Class="emphasis" href="./CURLOPT_USERNAME.html">CURLOPT_USERNAME</a> sets the user name to be used in protocol authentication. You should not use this option together with the (older) <a Class="emphasis" href="./CURLOPT_USERPWD.html">CURLOPT_USERPWD</a> option. 
 <p class="level0">When using Kerberos V5 authentication with a Windows based server, you should include the domain name in order for the server to successfully obtain a Kerberos Ticket. If you don't then the initial part of the authentication handshake may fail. 
 <p class="level0">When using NTLM, the user name can be specified simply as the user name without the domain name should the server be part of a single domain and forest. 
 <p class="level0">To include the domain name use either Down-Level Logon Name or UPN (User Principal Name) formats. For example, EXAMPLE\user and user@example.com respectively. 

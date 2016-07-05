@@ -66,7 +66,7 @@ CURL *curl = curl_easy_init();
 if(curl) {
 &nbsp; long uploadsize = FILE_SIZE;
 &nbsp;
-&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "<a href="ftp://example.com/destination.tar.gz">ftp://example.com/destination.tar.gz</a>");
+&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "ftp://example.com/destination.tar.gz");
 &nbsp;
 &nbsp; curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 &nbsp;

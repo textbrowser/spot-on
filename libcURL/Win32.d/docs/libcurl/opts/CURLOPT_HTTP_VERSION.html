@@ -65,9 +65,11 @@ p.roffit {
 <p class="level1">Enforce HTTP 1.1 requests. 
 <p class="level0"><a name="CURLHTTPVERSION20"></a><span class="nroffip">CURL_HTTP_VERSION_2_0</span> 
 <p class="level1">Attempt HTTP 2 requests. libcurl will fall back to HTTP 1.1 if HTTP 2 can't be negotiated with the server. (Added in 7.33.0) 
-<p class="level1">The alias <span class="emphasis">CURL_HTTP_VERSION_2<span class="emphasis"> was added in 7.43.0 to better reflect the actual protocol name. 
+<p class="level1">The alias <span Class="emphasis">CURL_HTTP_VERSION_2</span> was added in 7.43.0 to better reflect the actual protocol name. 
 <p class="level0"><a name="CURLHTTPVERSION2TLS"></a><span class="nroffip">CURL_HTTP_VERSION_2TLS</span> 
-<p class="level1">Attempt HTTP 2 over TLS (HTTPS) only. libcurl will fall back to HTTP 1.1 if HTTP 2 can't be negotiated with the HTTPS server. For clear text HTTP servers, libcurl will use 1.1. (Added in 7.47.0) <a name="DEFAULT"></a><h2 class="nroffsh">DEFAULT</h2>
+<p class="level1">Attempt HTTP 2 over TLS (HTTPS) only. libcurl will fall back to HTTP 1.1 if HTTP 2 can't be negotiated with the HTTPS server. For clear text HTTP servers, libcurl will use 1.1. (Added in 7.47.0) 
+<p class="level0"><a name="CURLHTTPVERSION2PRIORKNOWLEDGE"></a><span class="nroffip">CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE</span> 
+<p class="level1">Issue non-TLS HTTP requests using HTTP/2 without HTTP/1.1 Upgrade. It requires prior knowledge that the server supports HTTP/2 straight away. HTTPS requests will still do HTTP/2 the standard way with negotiated protocol version in the TLS handshake. (Added in 7.49.0) <a name="DEFAULT"></a><h2 class="nroffsh">DEFAULT</h2>
 <p class="level0">CURL_HTTP_VERSION_NONE <a name="PROTOCOLS"></a><h2 class="nroffsh">PROTOCOLS</h2>
 <p class="level0">HTTP <a name="EXAMPLE"></a><h2 class="nroffsh">EXAMPLE</h2>
 <p class="level0">TODO <a name="AVAILABILITY"></a><h2 class="nroffsh">AVAILABILITY</h2>

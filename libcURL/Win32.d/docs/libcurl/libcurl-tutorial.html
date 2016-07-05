@@ -102,7 +102,7 @@ p.roffit {
 <p class="level0">Many of the options you set in libcurl are "strings", pointers to data terminated with a zero byte. When you set strings with <a Class="emphasis" href="./curl_easy_setopt.html">curl_easy_setopt</a>, libcurl makes its own copy so that they don't need to be kept around in your application after being set[4]. 
 <p class="level0">One of the most basic properties to set in the handle is the URL. You set your preferred URL to transfer with <span Class="emphasis">CURLOPT_URL(3)</span> in a manner similar to: 
 <p class="level0"><pre class="level0">
-&nbsp;curl_easy_setopt(handle, CURLOPT_URL, "<a href="http://domain.com/">http://domain.com/</a>");
+&nbsp;curl_easy_setopt(handle, CURLOPT_URL, "http://domain.com/");
 </pre>
 
 <p class="level0">
@@ -187,7 +187,7 @@ p.roffit {
 <p class="level0"><pre class="level0">
 &nbsp;   char *data="name=daniel&project=curl";
 &nbsp;   curl_easy_setopt(easyhandle, CURLOPT_POSTFIELDS, data);
-&nbsp;   curl_easy_setopt(easyhandle, CURLOPT_URL, "<a href="http://posthere.com/">http://posthere.com/</a>");
+&nbsp;   curl_easy_setopt(easyhandle, CURLOPT_URL, "http://posthere.com/");
 &nbsp;
 &nbsp;   curl_easy_perform(easyhandle); /* post away! */
 </pre>
@@ -214,7 +214,7 @@ p.roffit {
 </pre>
 
 <p class="level0">
-<p class="level0">While the simple examples above cover the majority of all cases where HTTP POST operations are required, they don't do multi-part formposts. Multi-part formposts were introduced as a better way to post (possibly large) binary data and were first documented in the <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a> (updated in RFC2388). They're called multi-part because they're built by a chain of parts, each part being a single unit of data. Each part has its own name and contents. You can in fact create and post a multi-part formpost with the regular libcurl POST support described above, but that would require that you build a formpost yourself and provide to libcurl. To make that easier, libcurl provides <a Class="emphasis" href="./curl_formadd.html">curl_formadd</a>. Using this function, you add parts to the form. When you're done adding parts, you post the whole form. 
+<p class="level0">While the simple examples above cover the majority of all cases where HTTP POST operations are required, they don't do multi-part formposts. Multi-part formposts were introduced as a better way to post (possibly large) binary data and were first documented in the <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a> (updated in <a href="http://www.ietf.org/rfc/rfc2388.txt">RFC 2388</a>). They're called multi-part because they're built by a chain of parts, each part being a single unit of data. Each part has its own name and contents. You can in fact create and post a multi-part formpost with the regular libcurl POST support described above, but that would require that you build a formpost yourself and provide to libcurl. To make that easier, libcurl provides <a Class="emphasis" href="./curl_formadd.html">curl_formadd</a>. Using this function, you add parts to the form. When you're done adding parts, you post the whole form. 
 <p class="level0">The following example sets two simple text parts with plain textual contents, and then a file with binary contents and uploads the whole thing. 
 <p class="level0"><pre class="level0">
 &nbsp;struct curl_httppost *post=NULL;
@@ -412,7 +412,7 @@ class AClass {
 <p class="level0"><a name="FTP"></a><span class="nroffip">FTP Custom Commands</span> 
 <p class="level1">
 <p class="level1">Not all protocols are HTTP-like, and thus the above may not help you when you want to make, for example, your FTP transfers to behave differently. 
-<p class="level1">Sending custom commands to a FTP server means that you need to send the commands exactly as the FTP server expects them (<a href="http://www.ietf.org/rfc/rfc959.txt">RFC 959</a> is a good guide here), and you can only use commands that work on the control-connection alone. All kinds of commands that require data interchange and thus need a data-connection must be left to libcurl's own judgement. Also be aware that libcurl will do its very best to change directory to the target directory before doing any transfer, so if you change directory (with CWD or similar) you might confuse libcurl and then it might not attempt to transfer the file in the correct remote directory. 
+<p class="level1">Sending custom commands to a FTP server means that you need to send the commands exactly as the FTP server expects them (RFC959 is a good guide here), and you can only use commands that work on the control-connection alone. All kinds of commands that require data interchange and thus need a data-connection must be left to libcurl's own judgement. Also be aware that libcurl will do its very best to change directory to the target directory before doing any transfer, so if you change directory (with CWD or similar) you might confuse libcurl and then it might not attempt to transfer the file in the correct remote directory. 
 <p class="level1">A little example that deletes a given file before an operation: 
 <p class="level1"><pre class="level1">
 &nbsp;headers = curl_slist_append(headers, "DELE file-to-remove");
@@ -464,7 +464,7 @@ class AClass {
 <p class="level0"><a name="Security"></a><h2 class="nroffsh">Security Considerations</h2>
 <p class="level0">
 <p class="level0">The libcurl project takes security seriously.  The library is written with caution and precautions are taken to mitigate many kinds of risks encountered while operating with potentially malicious servers on the Internet.  It is a powerful library, however, which allows application writers to make trade offs between ease of writing and exposure to potential risky operations.  If used the right way, you can use libcurl to transfer data pretty safely. 
-<p class="level0">Many applications are used in closed networks where users and servers can be trusted, but many others are used on arbitrary servers and are fed input from potentially untrusted users.  Following is a discussion about some risks in the ways in which applications commonly use libcurl and potential mitigations of those risks. It is by no means comprehensive, but shows classes of attacks that robust applications should consider. The Common Weakness Enumeration project at <a href="http://cwe.mitre.org/">http://cwe.mitre.org/</a> is a good reference for many of these and similar types of weaknesses of which application writers should be aware. 
+<p class="level0">Many applications are used in closed networks where users and servers can be trusted, but many others are used on arbitrary servers and are fed input from potentially untrusted users.  Following is a discussion about some risks in the ways in which applications commonly use libcurl and potential mitigations of those risks. It is by no means comprehensive, but shows classes of attacks that robust applications should consider. The Common Weakness Enumeration project at <a href="https://cwe.mitre.org/">https://cwe.mitre.org/</a> is a good reference for many of these and similar types of weaknesses of which application writers should be aware. 
 <p class="level0">
 <p class="level0"><a name="Command"></a><span class="nroffip">Command Lines</span> 
 <p class="level1">If you use a command line tool (such as curl) that uses libcurl, and you give options to the tool on the command line those options can very likely get read by other users of your system when they use 'ps' or other tools to list currently running processes. 
@@ -482,9 +482,9 @@ class AClass {
 <p class="level1">The <span Class="emphasis">CURLOPT_FOLLOWLOCATION(3)</span> option automatically follows HTTP redirects sent by a remote server.  These redirects can refer to any kind of URL, not just HTTP. By default libcurl will allow all protocols on redirect except several disabled for security reasons: Since 7.19.4 FILE and SCP are disabled, and since 7.40.0 SMB and SMBS are also disabled. 
 <p class="level1">A redirect to a file: URL would cause the libcurl to read (or write) arbitrary files from the local filesystem.  If the application returns the data back to the user (as would happen in some kinds of CGI scripts), an attacker could leverage this to read otherwise forbidden data (e.g. file://localhost/etc/passwd). 
 <p class="level1">If authentication credentials are stored in the ~/.netrc file, or Kerberos is in use, any other URL type (not just file:) that requires authentication is also at risk.  A redirect such as <a href="ftp://some-internal-server/private-file">ftp://some-internal-server/private-file</a> would then return data even when the server is password protected. 
-<p class="level1">In the same way, if an unencrypted SSH private key has been configured for the user running the libcurl application, SCP: or SFTP: URLs could access password or private-key protected resources, e.g. s<a href="ftp://user">ftp://user</a>@some-internal-server/etc/passwd 
+<p class="level1">In the same way, if an unencrypted SSH private key has been configured for the user running the libcurl application, SCP: or SFTP: URLs could access password or private-key protected resources, e.g. sftp://user@some-internal-server/etc/passwd 
 <p class="level1">The <span Class="emphasis">CURLOPT_REDIR_PROTOCOLS(3)</span> and <span Class="emphasis">CURLOPT_NETRC(3)</span> options can be used to mitigate against this kind of attack. 
-<p class="level1">A redirect can also specify a location available only on the machine running libcurl, including servers hidden behind a firewall from the attacker. e.g. <a href="http://127.0.0.1/">http://127.0.0.1/</a> or <a href="http://intranet/delete-stuff.cgi">http://intranet/delete-stuff.cgi</a>?delete=all or t<a href="ftp://bootp-server/pc-config-data">ftp://bootp-server/pc-config-data</a> 
+<p class="level1">A redirect can also specify a location available only on the machine running libcurl, including servers hidden behind a firewall from the attacker. e.g. <a href="http://127.0.0.1/">http://127.0.0.1/</a> or <a href="http://intranet/delete-stuff.cgi?delete=all">http://intranet/delete-stuff.cgi?delete=all</a> or tftp://bootp-server/pc-config-data 
 <p class="level1">Apps can mitigate against this by disabling <span Class="emphasis">CURLOPT_FOLLOWLOCATION(3)</span> and handling redirects itself, sanitizing URLs as necessary. Alternately, an app could leave <span Class="emphasis">CURLOPT_FOLLOWLOCATION(3)</span> enabled but set <span Class="emphasis">CURLOPT_REDIR_PROTOCOLS(3)</span> and install a <span Class="emphasis">CURLOPT_OPENSOCKETFUNCTION(3)</span> callback function in which addresses are sanitized before use. 
 <p class="level1">
 <p class="level0"><a name="Private"></a><span class="nroffip">Private Resources</span> 
@@ -504,7 +504,7 @@ class AClass {
 <p class="level1">Use of the CURLUSESSL_TRY option to <span Class="emphasis">CURLOPT_USE_SSL(3)</span> could result in user name and password being sent in clear text to an FTP server.  Instead, use CURLUSESSL_CONTROL to ensure that an encrypted connection is used or else fail the request. 
 <p class="level1">
 <p class="level0"><a name="Cookies"></a><span class="nroffip">Cookies</span> 
-<p class="level1">If cookies are enabled and cached, then a user could craft a URL which performs some malicious action to a site whose authentication is already stored in a cookie. e.g. <a href="http://mail.example.com/delete-stuff.cgi">http://mail.example.com/delete-stuff.cgi</a>?delete=all Apps can mitigate against this by disabling cookies or clearing them between requests. 
+<p class="level1">If cookies are enabled and cached, then a user could craft a URL which performs some malicious action to a site whose authentication is already stored in a cookie. e.g. <a href="http://mail.example.com/delete-stuff.cgi?delete=all">http://mail.example.com/delete-stuff.cgi?delete=all</a> Apps can mitigate against this by disabling cookies or clearing them between requests. 
 <p class="level1">
 <p class="level0"><a name="Dangerous"></a><span class="nroffip">Dangerous URLs</span> 
 <p class="level1">SCP URLs can contain raw commands within the scp: URL, which is a side effect of how the SCP protocol is designed. e.g. scp://user:pass@host/a;date &gt;/tmp/test; Apps must not allow unsanitized SCP: URLs to be passed in for downloads. 

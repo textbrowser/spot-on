@@ -54,7 +54,7 @@ p.roffit {
 <p class="level0">CURLOPT_COOKIEFILE - file name to read cookies from <a name="SYNOPSIS"></a><h2 class="nroffsh">SYNOPSIS</h2>
 <p class="level0">&#35;include &lt;curl/curl.h&gt; 
 <p class="level0">CURLcode curl_easy_setopt(CURL *handle, CURLOPT_COOKIEFILE, char *filename); <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
-<p class="level0">Pass a pointer to a zero terminated string as parameter. It should point to the file name of your file holding cookie data to read. The cookie data can be in either the old Netscape / Mozilla cookie data format or just regular HTTP-style headers dumped to a file. 
+<p class="level0">Pass a pointer to a zero terminated string as parameter. It should point to the file name of your file holding cookie data to read. The cookie data can be in either the old Netscape / Mozilla cookie data format or just regular HTTP headers (Set-Cookie style) dumped to a file. 
 <p class="level0">It also enables the cookie engine, making libcurl parse and send cookies on subsequent requests with this handle. 
 <p class="level0">Given an empty or non-existing file or by passing the empty string ("") to this option, you can enable the cookie engine without reading any initial cookies. 
 <p class="level0">This option only <span Class="bold">reads</span> cookies. To make libcurl write cookies to file, see <a Class="emphasis" href="./CURLOPT_COOKIEJAR.html">CURLOPT_COOKIEJAR</a>. 

@@ -56,7 +56,7 @@ p.roffit {
 <p class="level0"><span Class="bold">struct curl_slist *curl_slist_append(struct curl_slist * list,</span> <span Class="bold">const char * string );</span> 
 <p class="level0"><a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
 <p class="level0">curl_slist_append() appends a specified string to a linked list of strings. The existing <span Class="emphasis">list</span> should be passed as the first argument while the new list is returned from this function. The specified <span Class="emphasis">string</span> has been appended when this function returns. curl_slist_append() copies the string. 
-<p class="level0">The list should be freed again (after usage) with <a Class="bold" href="./curl_slist_free_all.html">curl_slist_free_all</a>. <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
+<p class="level0">The list should be freed again (after usage) with <a Class="emphasis" href="./curl_slist_free_all.html">curl_slist_free_all</a>. <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
 <p class="level0">A null pointer is returned if anything went wrong, otherwise the new list pointer is returned. <a name="EXAMPLE"></a><h2 class="nroffsh">EXAMPLE</h2>
 <p class="level0"><pre class="level0">
 &nbsp;CURL handle;

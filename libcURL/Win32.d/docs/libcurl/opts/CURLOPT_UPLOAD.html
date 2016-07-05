@@ -69,7 +69,7 @@ if(curl) {
 &nbsp; curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 &nbsp;
 &nbsp; /* specify target */
-&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "<a href="ftp://example.com/dir/to/newfile">ftp://example.com/dir/to/newfile</a>");
+&nbsp; curl_easy_setopt(curl, CURLOPT_URL, "ftp://example.com/dir/to/newfile");
 &nbsp;
 &nbsp; /* now specify which pointer to pass to our callback */
 &nbsp; curl_easy_setopt(curl, CURLOPT_READDATA, hd_src);
