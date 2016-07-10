@@ -2349,15 +2349,15 @@ void spoton::slotCorrectUrlDatabases(void)
 		    break;
 
 		  query2.prepare
-		    (QString("SELECT COUNT(*) FROM "
+		    (QString("SELECT EXISTS(SELECT 1 FROM "
 			     "spot_on_urls_%1 WHERE "
-			     "url_hash = ?").
+			     "url_hash = ?)").
 		     arg(query1.value(0).toString().mid(0, 2)));
 		  query2.bindValue(0, query1.value(0));
 
 		  if(query2.exec())
 		    if(query2.next())
-		      if(query2.value(0).toLongLong() == 0)
+		      if(!query2.value(0).toBool())
 			{
 			  query3.prepare
 			    (QString("DELETE FROM "

@@ -960,7 +960,7 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
     return;
 
   QString name("The Spot-On URL Community");
-  qint64 count = 0;
+  bool exists = false;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -974,17 +974,17 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT COUNT(*) FROM "
+	query.prepare("SELECT EXISTS(SELECT 1 FROM "
 		      "echo_key_sharing_secrets WHERE "
 		      "category_oid = ? AND "
-		      "name_hash = ?");
+		      "name_hash = ?)");
 	query.bindValue(0, id);
 	query.bindValue
 	  (1, crypt->keyedHash(name.toUtf8(), &ok).toBase64());
 
 	if(query.exec())
 	  if(query.next())
-	    count = query.value(0).toLongLong();
+	    exists = query.value(0).toBool();
       }
 
     db.close();
@@ -992,7 +992,7 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(count > 0)
+  if(exists)
     return;
 
   QPair<QByteArray, QByteArray> keys;

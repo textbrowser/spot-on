@@ -1203,7 +1203,7 @@ bool spoton_misc::isAcceptedParticipant(const QByteArray &publicKeyHash,
     }
 
   QString connectionName("");
-  qint64 count = 0;
+  bool exists = false;
 
   {
     QSqlDatabase db = database(connectionName);
@@ -1217,25 +1217,25 @@ bool spoton_misc::isAcceptedParticipant(const QByteArray &publicKeyHash,
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT COUNT(*) "
+	query.prepare("SELECT EXISTS(SELECT 1 "
 		      "FROM friends_public_keys WHERE "
 		      "key_type_hash = ? AND "
 		      "neighbor_oid = -1 AND "
-		      "public_key_hash = ?");
+		      "public_key_hash = ?)");
 	query.bindValue
 	  (0, crypt->keyedHash(keyType.toLatin1(), &ok).toBase64());
 	query.bindValue(1, publicKeyHash.toBase64());
 
 	if(ok && query.exec())
 	  if(query.next())
-	    count = query.value(0).toLongLong();
+	    exists = query.value(0).toBool();
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  return count > 0;
+  return exists;
 }
 
 bool spoton_misc::isPrivateNetwork(const QHostAddress &address)
@@ -2383,7 +2383,7 @@ bool spoton_misc::isAcceptedIP(const QString &address,
     }
 
   QString connectionName("");
-  qint64 count = 0;
+  bool exists = false;
 
   {
     QSqlDatabase db = database(connectionName);
@@ -2397,9 +2397,9 @@ bool spoton_misc::isAcceptedIP(const QString &address,
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT COUNT(*) FROM listeners_allowed_ips "
+	query.prepare("SELECT EXISTS(SELECT 1 FROM listeners_allowed_ips "
 		      "WHERE ip_address_hash IN (?, ?) AND "
-		      "listener_oid = ?");
+		      "listener_oid = ?)");
 	query.bindValue(0, crypt->keyedHash(address.
 					    toLatin1(), &ok).
 			toBase64());
@@ -2412,14 +2412,14 @@ bool spoton_misc::isAcceptedIP(const QString &address,
 	if(ok)
 	  if(query.exec())
 	    if(query.next())
-	      count = query.value(0).toLongLong();
+	      exists = query.value(0).toBool();
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  return count > 0;
+  return exists;
 }
 
 bool spoton_misc::authenticateAccount(QByteArray &name,
@@ -2458,15 +2458,15 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 	bool exists = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT COUNT(*) FROM "
+	query.prepare("SELECT EXISTS(SELECT 1 FROM "
 		      "listeners_accounts_consumed_authentications "
-		      "WHERE data = ? AND listener_oid = ?");
+		      "WHERE data = ? AND listener_oid = ?)");
 	query.bindValue(0, hash.toBase64());
 	query.bindValue(1, listenerOid);
 
 	if(query.exec())
 	  if(query.next())
-	    exists = query.value(0).toLongLong() > 0;
+	    exists = query.value(0).toBool();
 
 	if(!exists)
 	  {
@@ -3325,7 +3325,7 @@ bool spoton_misc::isIpBlocked(const QString &address,
     }
 
   QString connectionName("");
-  qint64 count = -1;
+  bool exists = false;
 
   {
     QSqlDatabase db = database(connectionName);
@@ -3338,9 +3338,9 @@ bool spoton_misc::isIpBlocked(const QString &address,
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT COUNT(*) FROM neighbors WHERE "
+	query.prepare("SELECT EXISTS(SELECT 1 FROM neighbors WHERE "
 		      "remote_ip_address_hash = ? AND "
-		      "status_control = 'blocked'");
+		      "status_control = 'blocked')");
 	query.bindValue
 	  (0, crypt->
 	   keyedHash(address.toLatin1(), &ok).toBase64());
@@ -3348,14 +3348,14 @@ bool spoton_misc::isIpBlocked(const QString &address,
 	if(ok)
 	  if(query.exec())
 	    if(query.next())
-	      count = query.value(0).toLongLong();
+	      exists = query.value(0).toBool();
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  return count > 0;
+  return exists;
 }
 
 QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair

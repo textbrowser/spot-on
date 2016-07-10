@@ -4252,7 +4252,8 @@ void spoton_kernel::purgeMessagingCache(void)
 	  {
 	    QSqlQuery query(db);
 
-	    query.exec("PRAGMA synchronous = NORMAL");
+	    query.exec("PRAGMA journal_mode = WAL");
+	    query.exec("PRAGMA synchronous = OFF");
 	    query.exec
 	      (QString("DELETE FROM congestion_control WHERE "
 		       "%1 - date_time_inserted > %2").
@@ -4341,7 +4342,6 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
 	    QSqlQuery query(db);
 
 	    query.setForwardOnly(true);
-	    query.exec("PRAGMA read_uncommitted = True");
 	    query.prepare("SELECT EXISTS(SELECT 1 FROM "
 			  "congestion_control WHERE hash = ?)");
 	    query.bindValue(0, hash.toBase64());
@@ -4397,6 +4397,7 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 	  {
 	    QSqlQuery query(db);
 
+	    query.exec("PRAGMA journal_mode = WAL");
 	    query.exec("PRAGMA synchronous = OFF");
 	    query.prepare("INSERT INTO congestion_control "
 			  "(date_time_inserted, hash) VALUES (?, ?)");
