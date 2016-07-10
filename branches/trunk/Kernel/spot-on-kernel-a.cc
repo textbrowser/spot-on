@@ -4342,12 +4342,12 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
 
 	    query.setForwardOnly(true);
 	    query.exec("PRAGMA read_uncommitted = True");
-	    query.prepare("SELECT COUNT(*) FROM "
-			  "congestion_control WHERE hash = ?");
+	    query.prepare("SELECT EXISTS(SELECT 1 FROM "
+			  "congestion_control WHERE hash = ?)");
 	    query.bindValue(0, hash.toBase64());
 
 	    if(query.exec() && query.next())
-	      contains = query.value(0).toLongLong() > 0;
+	      contains = query.value(0).toBool();
 	  }
       }
 
