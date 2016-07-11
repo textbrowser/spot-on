@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>365</width>
-                <height>444</height>
+                <width>816</width>
+                <height>530</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -2145,8 +2145,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>610</width>
-             <height>320</height>
+             <width>826</width>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2838,7 +2838,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>260</width>
+                     <width>264</width>
                      <height>1363</height>
                     </rect>
                    </property>
@@ -3362,8 +3362,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>344</width>
-             <height>180</height>
+             <width>826</width>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3704,7 +3704,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>697</width>
+                  <width>788</width>
                   <height>394</height>
                  </rect>
                 </property>
@@ -4337,9 +4337,6 @@
                      </item>
                      <item>
                       <widget class="QGroupBox" name="add_participant_groupbox">
-                       <property name="title">
-                        <string>Add Participant</string>
-                       </property>
                        <layout class="QVBoxLayout" name="verticalLayout_22">
                         <property name="spacing">
                          <number>5</number>
@@ -4500,8 +4497,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>616</width>
-             <height>293</height>
+             <width>826</width>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4586,8 +4583,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>658</width>
-                 <height>552</height>
+                 <width>800</width>
+                 <height>537</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6674,8 +6671,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>565</width>
-             <height>470</height>
+             <width>826</width>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7785,8 +7782,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>606</width>
-             <height>384</height>
+             <width>826</width>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8400,8 +8397,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>239</width>
-             <height>138</height>
+             <width>826</width>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
