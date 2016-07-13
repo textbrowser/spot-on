@@ -2463,8 +2463,15 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/openChatUrl", false).toBool());
   m_optionsUi.chatTimestamps->setChecked
     (m_settings.value("gui/chatTimestamps", true).toBool());
+#if QT_VERSION >= 0x050000
   m_optionsUi.play_sounds->setChecked
     (m_settings.value("gui/play_sounds", false).toBool());
+#else
+  m_optionsUi.play_sounds->setChecked(false);
+  m_optionsUi.play_sounds->setEnabled(false);
+  m_optionsUi.play_sounds->setToolTip(tr("Qt 5.x is required for media "
+					 "sound."));
+#endif
 
   /*
   ** Please don't translate n/a.
@@ -8541,7 +8548,7 @@ void spoton::slotPopulateParticipants(void)
 	m_ui.urlParticipants->setSelectionMode
 	  (QAbstractItemView::ExtendedSelection);
 	m_ui.urlParticipants->setSortingEnabled(true);
-	m_ui.urlParticipants->resizeColumnsToContents();
+	m_ui.urlParticipants->resizeColumnToContents(0);
 	m_ui.urlParticipants->horizontalHeader()->
 	  setStretchLastSection(true);
 	m_ui.urlParticipants->horizontalScrollBar()->setValue(hvalU);
