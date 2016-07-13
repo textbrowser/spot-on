@@ -1,5 +1,5 @@
 Requirements: Qt 5.x, libGeoIP, libcURL, libcrypto, libeay, libgcrypt,
-libgpg-error, libssl. Qt 4.8.x is also suppored.
+libgpg-error, libssl. Qt 4.8.6 and Qt 4.8.7 are also supported.
 
 Homebrew is required for OS X.
 
