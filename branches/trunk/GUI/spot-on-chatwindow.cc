@@ -750,6 +750,12 @@ void spoton_chatwindow::showNormal(void)
 		   | Qt::X11BypassWindowManagerHint
 #endif
 		   );
+  else
+    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint
+#ifdef Q_WS_X11
+		   & ~Qt::X11BypassWindowManagerHint
+#endif
+		   );
 
   QMainWindow::showNormal();
 }

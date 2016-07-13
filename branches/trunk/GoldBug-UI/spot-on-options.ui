@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>571</width>
-             <height>1211</height>
+             <height>1255</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -371,6 +371,9 @@
                </item>
                <item>
                 <widget class="QCheckBox" name="ontopChatDialogs">
+                 <property name="toolTip">
+                  <string>Please close open windows after modifying this setting.</string>
+                 </property>
                  <property name="text">
                   <string>&amp;On-top dialogs.</string>
                  </property>
@@ -1389,7 +1392,7 @@
              <x>0</x>
              <y>0</y>
              <width>635</width>
-             <height>966</height>
+             <height>1004</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -2181,7 +2184,7 @@
              <x>0</x>
              <y>0</y>
              <width>287</width>
-             <height>218</height>
+             <height>219</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -2448,7 +2451,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>19</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
