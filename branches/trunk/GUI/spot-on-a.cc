@@ -608,12 +608,14 @@ spoton::spoton(void):QMainWindow()
   m_sb.status->setTextFormat(Qt::RichText);
   m_notificationsWindow->setWindowTitle
     (tr("%1: Notifications").arg(SPOTON_APPLICATION_NAME));
+#if QT_VERSION >= 0x040806
   m_notificationsWindow->setWindowFlags
     (m_notificationsWindow->windowFlags() | Qt::WindowStaysOnTopHint
 #ifdef Q_WS_X11
      | Qt::X11BypassWindowManagerHint
 #endif
      );
+#endif
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   m_notificationsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
@@ -625,12 +627,14 @@ spoton::spoton(void):QMainWindow()
 #endif
   m_statisticsWindow->setWindowTitle
     (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
+#if QT_VERSION >= 0x040806
   m_statisticsWindow->setWindowFlags
     (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint
 #ifdef Q_WS_X11
      | Qt::X11BypassWindowManagerHint
 #endif
      );
+#endif
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   m_statisticsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
@@ -2445,6 +2449,12 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
   m_optionsUi.ontopChatDialogs->setChecked
     (m_settings.value("gui/ontopChatDialogs", false).toBool());
+#if QT_VERSION < 0x040806
+  m_optionsUi.ontopChatDialogs->setChecked(false);
+  m_optionsUi.ontopChatDialogs->setEnabled(false);
+  m_optionsUi.ontopChatDialogs->setToolTip
+    (tr("Pre-Qt 4.8.6 is not supported. Good luck!"));
+#endif
   m_optionsUi.urlSignMessages->setChecked
     (m_settings.value("gui/urlSignMessages", true).toBool());
   m_optionsUi.remove_otm->setChecked
