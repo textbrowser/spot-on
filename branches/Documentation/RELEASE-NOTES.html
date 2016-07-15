@@ -3,13 +3,14 @@
   <br>
   <b>Corrections</b>
   <ol>
+    <li>Close congestion control databases.</li>
     <li>Disable sound options if Qt 5.x is not available.</li>
     <li>Properly resize URL participant entries.</li>
   </ol>
   <b>Improvements</b>
   <ol>
     <li>Replaced COUNT(*) with EXISTS() wherever necessary.</li>
-    <li>WAL mode for congestion_control.db on writes.</li>
+    <li>WAL mode for congestion_control.db on reads and writes.</li>
   </ol>
   <b>New</b>
   <ol>
