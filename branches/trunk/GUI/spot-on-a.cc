@@ -4842,7 +4842,13 @@ void spoton::slotPopulateNeighbors(void)
 						  toLongLong()) /
 			     60.00, 'f', 1)).
 		  arg(query.value(21).toLongLong() ? tr("Yes") : tr("No")).
+		  /*
+		  ** Bytes read.
+		  */
 		  arg(locale.toString(query.value(22).toULongLong())).
+		  /*
+		  ** Bytes written.
+		  */
 		  arg(locale.toString(query.value(23).toULongLong())).
 		  arg(sslSessionCipher.constData()).
 		  arg(crypt->

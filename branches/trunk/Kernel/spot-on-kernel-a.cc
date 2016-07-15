@@ -4260,6 +4260,8 @@ void spoton_kernel::purgeMessagingCache(void)
 	       arg(QDateTime::currentDateTime().toTime_t()).
 	       arg(spoton_common::CACHE_TIME_DELTA_MAXIMUM));
 	  }
+
+	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
@@ -4342,6 +4344,7 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
 	    QSqlQuery query(db);
 
 	    query.setForwardOnly(true);
+	    query.exec("PRAGMA journal_mode = WAL");
 	    query.prepare("SELECT EXISTS(SELECT 1 FROM "
 			  "congestion_control WHERE hash = ?)");
 	    query.bindValue(0, hash.toBase64());
@@ -4349,6 +4352,8 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
 	    if(query.exec() && query.next())
 	      contains = query.value(0).toBool();
 	  }
+
+	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
@@ -4406,6 +4411,8 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 	    query.bindValue(1, hash.toBase64());
 	    query.exec();
 	  }
+
+	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
@@ -5072,6 +5079,40 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	   QString::number(100.00 * static_cast<double> (v1) /
 			   static_cast<double> (v2), 'f', 2).append("%"));
 	query.exec();
+
+	{
+	  QString connectionName("");
+	  qint64 count = 0;
+
+	  {
+	    QSqlDatabase db = spoton_misc::database(connectionName);
+
+	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			       "congestion_control.db");
+
+	    if(db.open())
+	      {
+		QSqlQuery query(db);
+
+		query.setForwardOnly(true);
+		query.exec("PRAGMA journal_mode = WAL");
+		query.prepare("SELECT COUNT(*) FROM congestion_control");
+
+		if(query.exec() && query.next())
+		  count = query.value(0).toLongLong();
+	      }
+
+	    db.close();
+	  }
+
+	  QSqlDatabase::removeDatabase(connectionName);
+	  query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+			"(statistic, value) "
+			"VALUES ('Congestion Database Entries', ?)");
+	  query.bindValue(0, QString("%1").arg(locale.toString(count)));
+	  query.exec();
+	}
+
 	query.prepare("INSERT OR REPLACE INTO KERNEL_STATISTICS "
 		      "(statistic, value) "
 		      "VALUES ('Database Accesses', ?)");
