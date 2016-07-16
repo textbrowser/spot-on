@@ -2447,12 +2447,6 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
   m_optionsUi.ontopChatDialogs->setChecked
     (m_settings.value("gui/ontopChatDialogs", false).toBool());
-#if QT_VERSION < 0x040806
-  m_optionsUi.ontopChatDialogs->setChecked(false);
-  m_optionsUi.ontopChatDialogs->setEnabled(false);
-  m_optionsUi.ontopChatDialogs->setToolTip
-    (tr("Pre-Qt 4.8.6 is not supported. Good luck!"));
-#endif
   m_optionsUi.urlSignMessages->setChecked
     (m_settings.value("gui/urlSignMessages", true).toBool());
   m_optionsUi.remove_otm->setChecked
