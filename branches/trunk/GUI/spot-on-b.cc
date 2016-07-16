@@ -855,7 +855,8 @@ void spoton::slotReceivedKernelMessage(void)
 	    }
 	}
     }
-  else if(m_kernelSocketData.length() > 50000)
+  else if(m_kernelSocketData.length() >
+	  static_cast<int> (spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH))
     {
       m_kernelSocketData.clear();
       spoton_misc::logError
