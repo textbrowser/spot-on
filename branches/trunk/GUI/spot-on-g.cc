@@ -383,6 +383,7 @@ void spoton::slotBuzzInvite(void)
 
       mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
       mainWindow->setCentralWidget(page);
+      mainWindow->setWindowIcon(windowIcon());
       mainWindow->setWindowTitle
 	(QString("%1: %2").
 	 arg(SPOTON_APPLICATION_NAME).
@@ -571,6 +572,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
 
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
+  mainWindow->setWindowIcon(windowIcon());
   mainWindow->setWindowTitle
     (QString("%1: %2").
      arg(SPOTON_APPLICATION_NAME).
@@ -654,6 +656,7 @@ void spoton::slotSeparateBuzzPage(void)
 
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
+  mainWindow->setWindowIcon(windowIcon());
   mainWindow->setWindowTitle
     (QString("%1: %2").
      arg(SPOTON_APPLICATION_NAME).
