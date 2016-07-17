@@ -5533,7 +5533,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>844</width>
+             <width>815</width>
              <height>1072</height>
             </rect>
            </property>
@@ -7424,6 +7424,9 @@
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
+                   <property name="childrenCollapsible">
+                    <bool>false</bool>
+                   </property>
                    <widget class="QWidget" name="verticalLayoutWidget">
                     <layout class="QVBoxLayout" name="verticalLayout_47">
                      <property name="spacing">
@@ -7692,6 +7695,9 @@
                       </item>
                       <item>
                        <widget class="QCheckBox" name="fragment_starbeam">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fragmented StarBeams allow for the fragmentation of a mosaic (file) into a number of N unique pulses, where N is the number of active network connections. The standard StarBeam transfers a particular pulse over each network connection.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="text">
                          <string>&amp;Fragment</string>
                         </property>
