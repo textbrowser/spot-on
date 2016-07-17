@@ -653,6 +653,8 @@ void spoton::slotGatherUrlStatistics(void)
   QApplication::processEvents();
 #endif
 
+  QSqlQuery query(m_urlDatabase);
+
   for(int i = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
@@ -668,7 +670,6 @@ void spoton::slotGatherUrlStatistics(void)
 	  {
 	    QChar c1;
 	    QChar c2;
-	    QSqlQuery query(m_urlDatabase);
 
 	    if(i <= 9)
 	      c1 = QChar(i + 48);
@@ -2133,7 +2134,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
 	QChar c1;
 	QChar c2;
-	QSqlQuery query(m_urlDatabase);
 
 	if(i <= 9)
 	  c1 = QChar(i + 48);
@@ -2145,13 +2145,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	else
 	  c2 = QChar(j + 97 - 10);
 
-	if(m_urlDatabase.driverName() != "QPSQL")
-	  query.exec("PRAGMA secure_delete = ON");
-
 	query.prepare(QString("DELETE FROM "
 			      "spot_on_keywords_%1%2 WHERE "
-			      "url_hash = ?").
-		      arg(c1).arg(c2));
+			      "url_hash = ?").arg(c1).arg(c2));
 	query.bindValue(0, urlHash.constData());
 	query.exec();
 	processed += 1;
