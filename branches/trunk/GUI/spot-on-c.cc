@@ -33,7 +33,6 @@
 #include <QDesktopServices>
 #endif
 #include <QPlainTextEdit>
-#include <QProgressBar>
 #include <QStandardItemModel>
 #if QT_VERSION >= 0x050000
 #include <QStandardPaths>
@@ -1422,28 +1421,38 @@ void spoton::slotPopulateStars(void)
 
 		  if(percent < 100)
 		    {
+		      QLinearGradient linearGradient
+			(0,
+			 m_ui.received->rowHeight(row),
+			 m_ui.received->columnWidth(1),
+			 m_ui.received->rowHeight(row));
+		      QTableWidgetItem *i = new QTableWidgetItem();
+
+		      linearGradient.setColorAt(percent / 100.0,
+						QColor("lightgreen"));
+		      linearGradient.setColorAt(percent / 100.0 + 0.05,
+						QColor("white"));
+
+		      QBrush brush(linearGradient);
+
+		      i->setBackground(brush);
+		      i->setText
+			(QString(tr("%1% - %2 of %3 Bytes")).
+			 arg(percent).
+			 arg(locale.toString(fileInfo.size())).
+			 arg(locale.toString(item1->text().toLongLong())));
+		      i->setToolTip
+			(tr("%1% - %2 (%3 Bytes)").
+			 arg(percent).
+			 arg(fileInfo.fileName()).
+			 arg(locale.toString(fileInfo.size())));
+		      m_ui.received->setItem(row, 1, i);
+
 		      QStandardItem *sItem = new QStandardItem
 			(QString("%1%").arg(percent));
 
 		      sItem->setEditable(false);
 		      m_starbeamReceivedModel->setItem(row, 0, sItem);
-
-		      QProgressBar *progressBar = new QProgressBar();
-
-		      progressBar->setFormat("%p% - %v of %m MiB");
-		      progressBar->setMaximum
-			(static_cast<int> (item1->text().toLongLong() /
-					   1048576));
-		      progressBar->setMinimum(0);
-		      progressBar->setTextVisible(true);
-		      progressBar->setToolTip
-			(QString("%1% - %2 (%3 MiB)").
-			 arg(percent).
-			 arg(fileInfo.fileName()).
-			 arg(locale.toString(fileInfo.size() / 1048576)));
-		      progressBar->setValue
-			(static_cast<int> (fileInfo.size() / 1048576));
-		      m_ui.received->setCellWidget(row, 1, progressBar);
 		    }
 		  else
 		    {
@@ -1689,17 +1698,31 @@ void spoton::slotPopulateStars(void)
 
 		  if(percent < 100)
 		    {
+		      QLinearGradient linearGradient
+			(0,
+			 m_ui.transmitted->rowHeight(row),
+			 m_ui.transmitted->columnWidth(1),
+			 m_ui.transmitted->rowHeight(row));
 		      QTableWidgetItem *i = new QTableWidgetItem();
 
+		      linearGradient.setColorAt(percent / 100.0,
+						QColor("lightgreen"));
+		      linearGradient.setColorAt(percent / 100.0 + 0.05,
+						QColor("white"));
+
+		      QBrush brush(linearGradient);
+
+		      i->setBackground(brush);
 		      i->setText
 			(QString(tr("%1% - %2 of %3 Bytes")).
 			 arg(percent).
 			 arg(locale.toString(position)).
 			 arg(locale.toString(item->text().toLongLong())));
-		      i->setToolTip(tr("%1% - %2 (%3 Bytes)").
-				    arg(percent).
-				    arg(QFileInfo(fileName).fileName()).
-				    arg(locale.toString(position)));
+		      i->setToolTip
+			(tr("%1% - %2 (%3 Bytes)").
+			 arg(percent).
+			 arg(QFileInfo(fileName).fileName()).
+			 arg(locale.toString(position)));
 		      m_ui.transmitted->setItem(row, 1, i);
 		    }
 		  else
