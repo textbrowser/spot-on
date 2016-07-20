@@ -336,6 +336,12 @@ int main(int argc, char *argv[])
       dir.cd("Mosaics");
       settings.setValue("gui/etpDestinationPath", dir.absolutePath());
     }
+  else
+    {
+      QDir dir;
+
+      dir.mkpath(settings.value("gui/etpDestinationPath").toString());
+    }
 #else
   if(!settings.contains("gui/etpDestinationPath"))
     settings.setValue("gui/etpDestinationPath", QDir::homePath());
