@@ -1689,22 +1689,18 @@ void spoton::slotPopulateStars(void)
 
 		  if(percent < 100)
 		    {
-		      QProgressBar *progressBar = new QProgressBar();
+		      QTableWidgetItem *i = new QTableWidgetItem();
 
-		      progressBar->setFormat("%p% - %v of %m MiB");
-		      progressBar->setMaximum
-			(static_cast<int> (item->text().toLongLong() /
-					   1048576));
-		      progressBar->setMinimum(0);
-		      progressBar->setTextVisible(true);
-		      progressBar->setToolTip
-			(QString("%1% - %2 (%3 MiB)").
+		      i->setText
+			(QString(tr("%1% - %2 of %3 Bytes")).
 			 arg(percent).
-			 arg(QFileInfo(fileName).fileName()).
-			 arg(locale.toString(position / 1048576)));
-		      progressBar->setValue
-			(static_cast<int> (position / 1048576));
-		      m_ui.transmitted->setCellWidget(row, 1, progressBar);
+			 arg(locale.toString(position)).
+			 arg(locale.toString(item->text().toLongLong())));
+		      i->setToolTip(tr("%1% - %2 (%3 Bytes)").
+				    arg(percent).
+				    arg(QFileInfo(fileName).fileName()).
+				    arg(locale.toString(position)));
+		      m_ui.transmitted->setItem(row, 1, i);
 		    }
 		  else
 		    {
@@ -1722,7 +1718,7 @@ void spoton::slotPopulateStars(void)
 		      SLOT(slotTransmittedPaused(bool)));
 
 	      for(int i = 0; i < m_ui.transmitted->columnCount(); i++)
-		if(m_ui.transmitted->item(row, i))
+		if(i != 1 && m_ui.transmitted->item(row, i))
 		  m_ui.transmitted->item(row, i)->setToolTip(fileName);
 
 	      if(m_ui.transmitted->item(row, 6) &&
