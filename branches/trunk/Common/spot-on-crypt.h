@@ -106,6 +106,7 @@ class spoton_crypt
     (const QString &sslControlString);
   static QString publicKeyAlgorithm(const QByteArray &data);
   static QString publicKeySize(const QByteArray &data);
+  static QString publicKeySizeMcEliece(const QByteArray &data);
   static QString publicKeySizeNTRU(const QByteArray &data);
   static QStringList cipherTypes(void);
   static QStringList congestionHashAlgorithms(void);
@@ -194,6 +195,7 @@ class spoton_crypt
   QString cipherType(void) const;
   QString publicKeyAlgorithm(void);
   QString publicKeySize(void);
+  QString publicKeySizeMcEliece(void);
   QString publicKeySizeNTRU(void);
   qint64 publicKeyCount(void);
   void purgePrivatePublicKeys(void);

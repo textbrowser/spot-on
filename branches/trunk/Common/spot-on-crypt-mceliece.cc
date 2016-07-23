@@ -79,3 +79,32 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
   return QByteArray();
 #endif
 }
+
+QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
+{
+  Q_UNUSED(data);
+
+  QString keySize("");
+
+  return keySize;
+}
+
+QString spoton_crypt::publicKeySizeMcEliece(void)
+{
+#ifdef SPOTON_MCELIECE_ENABLED
+  bool ok = true;
+
+  publicKey(&ok);
+
+  if(!ok)
+    {
+      spoton_misc::logError
+	("spoton_crypt::publicKeySizeMcEliece(): publicKey() failure.");
+      return "";
+    }
+
+  return publicKeySizeMcEliece(m_publicKey);
+#else
+  return publicKeySizeMcEliece(QByteArray());
+#endif
+}

@@ -4014,7 +4014,9 @@ QString spoton_crypt::publicKeyAlgorithm(const QByteArray &data)
 
   if(keyType.isEmpty())
     {
-      if(data.startsWith("ntru"))
+      if(data.startsWith("mceliece"))
+	keyType = "McEliece";
+      else if(data.startsWith("ntru"))
 	keyType = "NTRU";
     }
 
@@ -4050,7 +4052,9 @@ QString spoton_crypt::publicKeySize(const QByteArray &data)
 
   QString keySize("");
 
-  if(algorithm == "ntru")
+  if(algorithm == "mceliece")
+    keySize = publicKeySizeMcEliece(data);
+  else if(algorithm == "ntru")
     keySize = publicKeySizeNTRU(data);
   else
     {
