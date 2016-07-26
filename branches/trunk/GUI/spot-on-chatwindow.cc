@@ -76,6 +76,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 #endif
   statusBar()->setSizeGripEnabled(false);
 #endif
+  connect(ui.action_Close,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(close(void)));
   connect(ui.clearMessages,
 	  SIGNAL(clicked(void)),
 	  ui.messages,
