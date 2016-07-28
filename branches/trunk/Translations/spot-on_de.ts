@@ -517,6 +517,21 @@
         <translation>&amp;StarBeam</translation>
     </message>
     <message>
+        <location filename="../UI/spot-on-chatwindow.ui" line="257"/>
+        <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/spot-on-chatwindow.ui" line="265"/>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/spot-on-chatwindow.ui" line="268"/>
+        <source>Esc</source>
+        <translation type="unfinished">Esc</translation>
+    </message>
+    <message>
         <source>&amp;Echo Magnets</source>
         <translation type="vanished">&amp;Echo die Magneten.</translation>
     </message>
@@ -4269,12 +4284,12 @@ Error: %1.</source>
         <translation type="obsolete">Nicht mit dem Kernel verbunden.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="129"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="133"/>
         <source>Please type a message...</source>
         <translation>Bitte tippe eine Nachricht...</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="146"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="150"/>
         <source>&amp;Reset the SMP machine&apos;s internal state to s0.</source>
         <translation>&amp;Setze den internen Status der SMP-Maschine auf Status 0.</translation>
     </message>
@@ -4283,75 +4298,75 @@ Error: %1.</source>
         <translation type="vanished">&amp;Definiere ein SMP-Geheimnis (ein gemeinsames Passwort).</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="149"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="153"/>
         <source>&amp;Set an SMP Secret...</source>
         <translation>&amp;Definiere ein SMP-Geheimnis (ein gemeinsames Passwort)...</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="152"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="156"/>
         <source>&amp;Verify the SMP secret.</source>
         <translation>&amp;Lass das SMP-Geheimnis auf Richtigkeit an beiden Seiten überprüfen.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="156"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="160"/>
         <source>&amp;Derive Gemini pair from SMP secret.</source>
         <translation>&amp;Leite ein Gemini-Paar vom SMP-Geheimnis ab.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="233"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="548"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="237"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="552"/>
         <source>The interface is not connected to the kernel.</source>
         <translation>Die Benutzeroberfläche ist nicht mit dem Kernel verbunden.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="238"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="554"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="242"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="558"/>
         <source>The connection to the kernel is not encrypted.</source>
         <translation>Die Verbindung zum Kernel ist nicht verschlüsselt.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="243"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="247"/>
         <source>Please provide a real message.</source>
         <translation>Bitte gebe eine echte Nachricht ein.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="263"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="267"/>
         <source>&lt;b&gt;me:&lt;/b&gt; </source>
         <translation>&lt;b&gt;Ich:&lt;/b&gt; </translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="323"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="327"/>
         <source>An error occurred while writing to the kernel socket.</source>
         <translation>Ein Fehler ist beim Schreiben zum Kernel-Sockel aufgetreten,</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="384"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="740"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="388"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="744"/>
         <source>%1: Error</source>
         <translation>%1: Fehler</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="496"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="500"/>
         <source>The Socialist Millionaire Protocol failed on %1.</source>
         <translation>Das Socialist-Millionaire-Protokoll (SMP) stimmte nicht überein bei %1.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="504"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="508"/>
         <source>The Socialist Millionaire Protocol succeeded on %1.</source>
         <translation>Das Socialist-Millionaire-Protokoll war erfolgreich bei %1.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="537"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="541"/>
         <source>Invalid spoton_crypt object. This is a fatal flaw.</source>
         <translation>Ungültiges spoton_crypt Objekt. Das ist ein fataler Fehler</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="565"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="569"/>
         <source>%1: Select StarBeam Transmit File</source>
         <translation>%1: Wähle eine Datei für die StarBeam-Übertragung</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="569"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="573"/>
         <source>Select</source>
         <translation>Auswählen</translation>
     </message>
@@ -4360,22 +4375,22 @@ Error: %1.</source>
         <translation type="vanished">Auswählen</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="584"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="588"/>
         <source>The selected file is not readable.</source>
         <translation>Die ausgewählte Datei konnte nicht gelesen werden.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="728"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="732"/>
         <source>An error occurred while attempting to save the StarBeam data. Please enable logging via the Log Viewer and try again.</source>
         <translation>Es ist beim Speichern der StarBeam Daten ein Fehler aufgetreten. Bitte aktiviere das Loggen in der Log-Ansicht und versuche es erneut.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="789"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="793"/>
         <source>%1: Confirmation</source>
         <translation>%1: Bestätigung</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="793"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="797"/>
         <source>Are you sure that you wish to access %1?</source>
         <translation>Bist Du sicher, diese URL aufrufen zu wollen: %1?</translation>
     </message>

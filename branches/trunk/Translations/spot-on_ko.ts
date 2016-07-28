@@ -493,6 +493,21 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../UI/spot-on-chatwindow.ui" line="257"/>
+        <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/spot-on-chatwindow.ui" line="265"/>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/spot-on-chatwindow.ui" line="268"/>
+        <source>Esc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../UI/spot-on-chatwindow.ui" line="169"/>
         <source>Share a StarBeam.</source>
         <translation type="unfinished"></translation>
@@ -3818,105 +3833,105 @@ Error: %1.</source>
 <context>
     <name>spoton_chatwindow</name>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="129"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="133"/>
         <source>Please type a message...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="146"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="150"/>
         <source>&amp;Reset the SMP machine&apos;s internal state to s0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="149"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="153"/>
         <source>&amp;Set an SMP Secret...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="152"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="156"/>
         <source>&amp;Verify the SMP secret.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="156"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="160"/>
         <source>&amp;Derive Gemini pair from SMP secret.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="233"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="548"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="237"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="552"/>
         <source>The interface is not connected to the kernel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="238"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="554"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="242"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="558"/>
         <source>The connection to the kernel is not encrypted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="243"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="247"/>
         <source>Please provide a real message.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="263"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="267"/>
         <source>&lt;b&gt;me:&lt;/b&gt; </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="323"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="327"/>
         <source>An error occurred while writing to the kernel socket.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="384"/>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="740"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="388"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="744"/>
         <source>%1: Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="496"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="500"/>
         <source>The Socialist Millionaire Protocol failed on %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="504"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="508"/>
         <source>The Socialist Millionaire Protocol succeeded on %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="537"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="541"/>
         <source>Invalid spoton_crypt object. This is a fatal flaw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="565"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="569"/>
         <source>%1: Select StarBeam Transmit File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="569"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="573"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="584"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="588"/>
         <source>The selected file is not readable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="728"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="732"/>
         <source>An error occurred while attempting to save the StarBeam data. Please enable logging via the Log Viewer and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="789"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="793"/>
         <source>%1: Confirmation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-chatwindow.cc" line="793"/>
+        <location filename="../GUI/spot-on-chatwindow.cc" line="797"/>
         <source>Are you sure that you wish to access %1?</source>
         <translation type="unfinished"></translation>
     </message>
