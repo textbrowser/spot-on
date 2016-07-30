@@ -6733,6 +6733,9 @@ void spoton::slotValidatePassphrase(void)
 							      value()),
 				  list.at(i)));
 
+	    spoton_misc::alterDatabasesAfterAuthentication
+	      (m_crypts.value("chat", 0));
+
 	    if(m_optionsUi.launchKernel->isChecked())
 	      slotActivateKernel();
 

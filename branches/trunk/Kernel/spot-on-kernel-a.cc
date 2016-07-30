@@ -3950,6 +3950,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 
 	    QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 			     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
+	    bool altered = false;
 
 	    list.removeAll("rosetta");
 	    list.removeAll("rosetta-signature");
@@ -3976,6 +3977,13 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 							     10000).
 						     toInt()),
 			 list.at(i));
+
+		      if(!altered)
+			{
+			  spoton_misc::alterDatabasesAfterAuthentication
+			    (crypt);
+			  altered = true;
+			}
 		    }
 		  catch(const std::bad_alloc &exception)
 		    {

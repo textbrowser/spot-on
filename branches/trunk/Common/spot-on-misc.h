@@ -193,6 +193,7 @@ class spoton_misc
   static spoton_crypt *cryptFromForwardSecrecyMagnet
     (const QByteArray &magnet);
   static spoton_crypt *retrieveUrlCommonCredentials(spoton_crypt *crypt);
+  static void alterDatabasesAfterAuthentication(spoton_crypt *crypt);
   static void cleanupDatabases(spoton_crypt *crypt);
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
   static void enableLog(const bool state);

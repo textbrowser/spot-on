@@ -190,6 +190,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		      "iteration_count, "
 		      "name, "
 		      "share, "
+		      "signatures_required, "
 		      "category_oid, "
 		      "OID FROM echo_key_sharing_secrets"))
 	  while(query.next())
@@ -218,8 +219,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		    QSqlQuery updateQuery(db);
 
 		    updateQuery.prepare
-		      ("UPDATE echo_key_sharing_secrets "
-		       "SET "
+		      ("UPDATE echo_key_sharing_secrets SET "
 		       "accept = ?, "
 		       "authentication_key = ?, "
 		       "cipher_type = ?, "
@@ -228,6 +228,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		       "iteration_count = ?, "
 		       "name = ?, "
 		       "share = ?, "
+		       "signatures_required = ?, "
 		       "name_hash = ? "
 		       "WHERE OID = ?");
 
@@ -240,11 +241,11 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 		    if(ok)
 		      updateQuery.bindValue
-			(8, newCrypt->keyedHash(list.value(6), &ok).
+			(9, newCrypt->keyedHash(list.value(6), &ok).
 			 toBase64());
 
 		    updateQuery.bindValue
-		      (9, query.value(query.record().count() - 1));
+		      (10, query.value(query.record().count() - 1));
 
 		    if(ok)
 		      updateQuery.exec();

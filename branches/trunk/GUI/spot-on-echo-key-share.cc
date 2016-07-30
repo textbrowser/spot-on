@@ -324,8 +324,9 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 		      "iteration_count, "
 		      "name, "
 		      "name_hash, "
-		      "share) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "share, "
+		      "signatures_required) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->encryptedThenHashed(QByteArray("true"), &ok).
 	   toBase64());
@@ -367,6 +368,11 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 	  query.bindValue
 	    (9, crypt->encryptedThenHashed(QByteArray("true"),
 					   &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (10, crypt->encryptedThenHashed(QByteArray("true"),
+					    &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -443,6 +449,7 @@ void spoton_echo_key_share::populate(void)
 			"cipher_type, "
 			"hash_type, "
 			"iteration_count, "
+			"signatures_required, "
 			"OID FROM echo_key_sharing_secrets "
 			"WHERE category_oid = ?");
 	      q.bindValue(0, query.value(query.record().count() - 1));
@@ -464,12 +471,17 @@ void spoton_echo_key_share::populate(void)
 			  (QByteArray::fromBase64(q.value(i).toByteArray()),
 			   &ok);
 
-			if(i == 0 || i == 1)
+			if(i == 0 || i == 1 || i == 6)
 			  {
 			    if(ok)
 			      checked << QVariant(bytes).toBool();
 			    else
-			      checked << false;
+			      {
+				if(i == 0 || i == 1)
+				  checked << false;
+				else
+				  checked << true;
+			      }
 
 			    strings << "";
 			  }
@@ -500,10 +512,17 @@ void spoton_echo_key_share::populate(void)
 		      (1, checked.value(0) ? Qt::Checked : Qt::Unchecked);
 		    item->setCheckState
 		      (2, checked.value(1) ? Qt::Checked : Qt::Unchecked);
+		    item->setCheckState
+		      (7, checked.value(2) ? Qt::Checked : Qt::Unchecked);
 		    item->setToolTip(1, tr("If checked, public key pairs "
 					   "originating from the specified "
 					   "community will be saved in "
 					   "friends_public_keys.db."));
+		    item->setToolTip(7, tr("If checked, public key pairs "
+					   "originating from the specified "
+					   "community must contain valid "
+					   "signatures in order to be saved "
+					   "in friends_public_keys.db."));
 		  }
 	    }
       }
@@ -517,6 +536,7 @@ void spoton_echo_key_share::populate(void)
   ui.tree->resizeColumnToContents(4);
   ui.tree->resizeColumnToContents(5);
   ui.tree->resizeColumnToContents(6);
+  ui.tree->resizeColumnToContents(7);
   ui.tree->sortItems(0, Qt::AscendingOrder);
   ui.tree->expandAll();
   connect(ui.tree,
@@ -626,7 +646,7 @@ void spoton_echo_key_share::slotItemChanged(QTreeWidgetItem *item,
   if(!crypt)
     return;
 
-  if(!(column == 1 || column == 2))
+  if(!(column == 1 || column == 2 || column == 7))
     return;
   else if(!item)
     return;
@@ -649,9 +669,13 @@ void spoton_echo_key_share::slotItemChanged(QTreeWidgetItem *item,
 	  query.prepare("UPDATE echo_key_sharing_secrets "
 			"SET accept = ? WHERE "
 			"OID = ?");
-	else
+	else if(column == 2)
 	  query.prepare("UPDATE echo_key_sharing_secrets "
 			"SET share = ? WHERE "
+			"OID = ?");
+	else
+	  query.prepare("UPDATE echo_key_sharing_secrets "
+			"SET signatures_required = ? WHERE "
 			"OID = ?");
 
 	if(item->checkState(column) == Qt::Checked)

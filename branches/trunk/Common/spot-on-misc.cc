@@ -152,6 +152,7 @@ void spoton_misc::prepareDatabases(void)
 		   "name TEXT NOT NULL, "
 		   "name_hash TEXT NOT NULL, " // Keyed hash.
 		   "share TEXT NOT NULL, "
+		   "signatures_required TEXT NOT NULL, "
 		   "PRIMARY KEY (category_oid, name_hash))");
 	query.exec("CREATE TRIGGER IF NOT EXISTS "
 		   "purge AFTER DELETE ON categories "
@@ -414,9 +415,6 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
 	   arg(spoton_common::SSL_CONTROL_STRING));
-	query.exec("ALTER TABLE listeners ADD source_of_randomness "
-		   "INTEGER NOT NULL DEFAULT 0 "
-		   "CHECK (source_of_randomness >= 0)");
 	query.exec("CREATE TABLE IF NOT EXISTS listeners_accounts ("
 		   "account_name TEXT NOT NULL, "
 		   "account_name_hash TEXT NOT NULL, " // Keyed hash.
@@ -5542,7 +5540,7 @@ QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
 QString spoton_misc::prettyFileSize(const qint64 size)
 {
   if(size < 0)
-    return "0 Bytes";
+    return QObject::tr("0 Bytes");
 
   if(size == 0)
     return QObject::tr("0 Bytes");
@@ -5556,4 +5554,35 @@ QString spoton_misc::prettyFileSize(const qint64 size)
   else
     return QString(QObject::tr("%1 MiB")).arg
       (QString::number(static_cast<double> (size) / 1048576.0, 'f', 1));
+}
+
+void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.exec
+	  (QString("ALTER TABLE echo_key_sharing_secrets ADD COLUMN "
+		   "signatures_required TEXT NOT NULL DEFAULT '%1'").
+	   arg(crypt->encryptedThenHashed(QByteArray("true"),
+					  &ok).toBase64().constData()));
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
