@@ -397,7 +397,8 @@ class spoton_neighbor: public QThread
 		     const QByteArray &sPublicKey,
 		     const QByteArray &sSignature,
 		     const qint64 neighborOid,
-		     const bool ignore_key_permissions = false);
+		     const bool ignore_key_permissions,
+		     const bool signatures_required);
   void saveStatistics(const QSqlDatabase &db);
   void saveStatus(const QSqlDatabase &db, const QString &status);
   void saveStatus(const QString &status);

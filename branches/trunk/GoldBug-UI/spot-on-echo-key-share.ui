@@ -133,7 +133,7 @@ color: rgb(255, 255, 255);
        <bool>true</bool>
       </property>
       <attribute name="headerDefaultSectionSize">
-       <number>150</number>
+       <number>175</number>
       </attribute>
       <column>
        <property name="text">
@@ -168,6 +168,11 @@ color: rgb(255, 255, 255);
       <column>
        <property name="text">
         <string>Iteration Count</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Signatures Required</string>
        </property>
       </column>
      </widget>
@@ -277,7 +282,7 @@ color: rgb(255, 255, 255);
      <x>0</x>
      <y>0</y>
      <width>585</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

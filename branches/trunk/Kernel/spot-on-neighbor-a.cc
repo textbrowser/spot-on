@@ -2348,7 +2348,8 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 				    const QByteArray &sPublicKey,
 				    const QByteArray &sSignature,
 				    const qint64 neighborOid,
-				    const bool ignore_key_permissions)
+				    const bool ignore_key_permissions,
+				    const bool signatures_required)
 {
   if(keyType == "chat" || keyType == "poptastic")
     {
@@ -2391,11 +2392,13 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
   ** Save a friendly key.
   */
 
-  if(!spoton_crypt::isValidSignature(publicKey, publicKey, signature))
-    return;
+  if(signatures_required)
+    if(!spoton_crypt::isValidSignature(publicKey, publicKey, signature))
+      return;
 
-  if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
-    return;
+  if(signatures_required)
+    if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
+      return;
 
   /*
   ** If neighborOid is -1, we have bonded two neighbors.
@@ -3628,7 +3631,7 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
       if(m_id != -1)
 	savePublicKey
 	  (list.value(0), list.value(1), list.value(2), list.value(3),
-	   list.value(4), list.value(5), m_id);
+	   list.value(4), list.value(5), m_id, false, true);
       else
 	spoton_misc::logError("spoton_neighbor::process0011(): "
 			      "m_id equals negative one. "
@@ -3691,7 +3694,7 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
       emit resetKeepAlive();
       savePublicKey
 	(list.value(0), list.value(1), list.value(2), list.value(3),
-	 list.value(4), list.value(5), -1);
+	 list.value(4), list.value(5), -1, false, true);
     }
   else
     spoton_misc::logError
@@ -4767,6 +4770,7 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
       ** symmetricKeys[1]: Encryption Type
       ** symmetricKeys[2]: Hash Key
       ** symmetricKeys[3]: Hash Type
+      ** symmetricKeys[4]: Signatures Required
       */
 
       bool ok = true;
@@ -4812,14 +4816,19 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 	      return;
 	    }
 
-	  savePublicKey(list.value(1), // Key Type
-			list.value(2), // Name,
-			list.value(3), // Public Key
-			list.value(4), // Public Key Signature
-			list.value(5), // Signature Public Key
-			list.value(6), // Signature Public Key Signature
-			-1,            // Neighbor OID
-			true);         // Ignore Permissions (acceptChatKeys)
+	  savePublicKey
+	    (list.value(1),                    // Key Type
+	     list.value(2),                    // Name,
+	     list.value(3),                    // Public Key
+	     list.value(4),                    // Public Key Signature
+	     list.value(5),                    // Signature Public Key
+	     list.value(6),                    // Signature Public Key
+	                                       // Signature
+	     -1,                               // Neighbor OID
+	     true,                             // Ignore Permissions
+	                                       // (acceptChatKeys)
+	     QVariant(symmetricKeys.value(4)). // Signatures Required
+	     toBool());
 	}
     }
   else

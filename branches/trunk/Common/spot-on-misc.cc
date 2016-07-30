@@ -4619,7 +4619,8 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 		      "authentication_key, "  // 1
 		      "cipher_type, "         // 2
 		      "encryption_key, "      // 3
-		      "hash_type "            // 4
+		      "hash_type, "           // 4
+		      "signatures_required "  // 5
 		      "FROM echo_key_sharing_secrets");
 
 	if(query.exec())
@@ -4681,7 +4682,8 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 			  echoKeys << list.value(3)
 				   << list.value(2)
 				   << list.value(1)
-				   << list.value(4);
+				   << list.value(4)
+				   << list.value(5);
 			  type = a;
 			}
 
