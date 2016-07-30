@@ -8165,8 +8165,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>582</width>
-             <height>683</height>
+             <width>450</width>
+             <height>677</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -10453,23 +10453,6 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                 </spacer>
                </item>
                <item>
-                <widget class="QRadioButton" name="addFriendSymmetricBundleRadio">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The Repleo contains your key pair encrypted with your friend's public key.&lt;/p&gt;&lt;p&gt;In case you send your key pair first to your friend, they can decide to send their own key pair in plaintext or encrypted with your key. &lt;/p&gt;&lt;p&gt;This is called a Repleo; the key is not sent in plaintext.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::LeftToRight</enum>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Repleo</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="../Icons/icons.qrc">
-                   <normaloff>:/nuvola/repleo.png</normaloff>:/nuvola/repleo.png</iconset>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <spacer name="horizontalSpacer_24">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -11838,7 +11821,6 @@ border-style: inset;
   <tabstop>toolButtonCopyToClipboard</tabstop>
   <tabstop>addFriendEmail</tabstop>
   <tabstop>addFriendPublicKeyRadio</tabstop>
-  <tabstop>addFriendSymmetricBundleRadio</tabstop>
   <tabstop>friendInformation</tabstop>
   <tabstop>addFriend</tabstop>
   <tabstop>clearFriend</tabstop>

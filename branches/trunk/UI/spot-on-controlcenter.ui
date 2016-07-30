@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>530</height>
+                <width>365</width>
+                <height>444</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -2145,8 +2145,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>540</height>
+             <width>610</width>
+             <height>320</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2838,7 +2838,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>264</width>
+                     <width>260</width>
                      <height>1363</height>
                     </rect>
                    </property>
@@ -4375,13 +4375,6 @@
                             </property>
                            </widget>
                           </item>
-                          <item>
-                           <widget class="QRadioButton" name="addFriendSymmetricBundleRadio">
-                            <property name="text">
-                             <string>&amp;Repleo</string>
-                            </property>
-                           </widget>
-                          </item>
                          </layout>
                         </item>
                         <item>
@@ -4497,8 +4490,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>540</height>
+             <width>616</width>
+             <height>293</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4583,8 +4576,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>800</width>
-                 <height>537</height>
+                 <width>658</width>
+                 <height>552</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5533,7 +5526,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>815</width>
+             <width>844</width>
              <height>1072</height>
             </rect>
            </property>
@@ -6671,8 +6664,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>540</height>
+             <width>565</width>
+             <height>470</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7788,8 +7781,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>540</height>
+             <width>606</width>
+             <height>384</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8403,8 +8396,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>540</height>
+             <width>239</width>
+             <height>138</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9121,7 +9114,6 @@
   <tabstop>addNeighbor</tabstop>
   <tabstop>addFriendEmail</tabstop>
   <tabstop>addFriendPublicKeyRadio</tabstop>
-  <tabstop>addFriendSymmetricBundleRadio</tabstop>
   <tabstop>friendInformation</tabstop>
   <tabstop>addFriend</tabstop>
   <tabstop>clearFriend</tabstop>
