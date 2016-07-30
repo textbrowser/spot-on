@@ -591,6 +591,15 @@ spoton::spoton(void):QMainWindow()
   m_addParticipantWindow->setCentralWidget(m_ui.add_participant_groupbox);
   m_addParticipantWindow->setWindowTitle
     (tr("%1: Add Participant").arg(SPOTON_APPLICATION_NAME));
+
+  QAction *action = 0;
+  QMenu *menu = new QMenu("&File", this);
+
+  action = menu->addAction(tr("&Close"),
+			   m_addParticipantWindow,
+			   SLOT(close(void)));
+  action->setShortcut(Qt::Key_Escape);
+  m_addParticipantWindow->menuBar()->addMenu(menu);
 #endif
   m_notificationsWindow = new QMainWindow(0);
   m_optionsWindow = new QMainWindow(0);
@@ -1951,9 +1960,7 @@ spoton::spoton(void):QMainWindow()
 	"active?"));
   m_sb.listeners->setToolTip(tr("Listeners are offline."));
   m_sb.neighbors->setToolTip(tr("Neighbors are offline."));
-
-  QMenu *menu = new QMenu(this);
-
+  menu = new QMenu(this);
   connect
     (menu->addAction(tr("Copy &Chat Public Key Pair")),
      SIGNAL(triggered(void)), this, SLOT(slotCopyMyChatPublicKey(void)));
