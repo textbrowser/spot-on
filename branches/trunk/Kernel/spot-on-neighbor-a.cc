@@ -2347,10 +2347,20 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 				    const QByteArray &signature,
 				    const QByteArray &sPublicKey,
 				    const QByteArray &sSignature,
-				    const qint64 neighborOid,
+				    const qint64 neighbor_oid,
 				    const bool ignore_key_permissions,
 				    const bool signatures_required)
 {
+  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
+
+  if(spoton_crypt::exists(publicKey, s_crypt) ||
+     spoton_crypt::exists(sPublicKey, s_crypt))
+    {
+      spoton_misc::logError("spoton_neighbor::savePublicKey(): "
+			    "attempting to add my own public key(s).");
+      return;
+    }
+
   if(keyType == "chat" || keyType == "poptastic")
     {
       if(!ignore_key_permissions)
@@ -2401,11 +2411,10 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
       return;
 
   /*
-  ** If neighborOid is -1, we have bonded two neighbors.
+  ** If neighbor_oid is -1, we have bonded two neighbors.
   */
 
   QString connectionName("");
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -2416,7 +2425,7 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 
     if(db.open())
       {
-	if(neighborOid != -1)
+	if(neighbor_oid != -1)
 	  {
 	    /*
 	    ** We have received a request for friendship.
@@ -2448,10 +2457,10 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 
 		spoton_misc::saveFriendshipBundle
 		  (keyType, name, publicKey, sPublicKey,
-		   neighborOid, db, s_crypt);
+		   neighbor_oid, db, s_crypt);
 		spoton_misc::saveFriendshipBundle
 		  (keyType + "-signature", name, sPublicKey,
-		   QByteArray(), neighborOid, db, s_crypt);
+		   QByteArray(), neighbor_oid, db, s_crypt);
 	      }
 	  }
 	else

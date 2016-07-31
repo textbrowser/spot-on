@@ -4155,3 +4155,48 @@ void spoton_crypt::memcmp_test(void)
 #endif
     }
 }
+
+bool spoton_crypt::exists(const QByteArray &publicKey, spoton_crypt *crypt)
+{
+  if(!crypt)
+    return false;
+
+  QString connectionName("");
+  bool exists = false;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT public_key FROM idiotes"))
+	  while(query.next())
+	    {
+	      QByteArray data;
+	      bool ok = true;
+
+	      data = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	      if(ok)
+		if(data == publicKey)
+		  {
+		    exists = true;
+		    break;
+		  }
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return exists;
+}
