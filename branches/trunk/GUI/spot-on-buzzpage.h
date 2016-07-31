@@ -62,6 +62,7 @@ class spoton_buzzpage: public QWidget
   void userStatus(const QList<QByteArray> &list);
   void appendMessage(const QList<QByteArray> &list);
   void showUnify(const bool state);
+  void unite(void);
 
  private:
   QByteArray m_channel;

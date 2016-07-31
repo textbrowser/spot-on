@@ -1228,7 +1228,8 @@ void spoton::slotLock(void)
       mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to lock the application? "
-		    "All other windows will be closed."));
+		    "All other windows will be closed. Buzz windows will be "
+		    "united with the main window."));
 
       if(mb.exec() != QMessageBox::Yes)
 	return;
@@ -1348,6 +1349,27 @@ void spoton::slotLock(void)
   m_sb.status->setEnabled(!m_locked);
   m_ui.menubar->setEnabled(!m_locked);
   m_ui.tab->setEnabled(!m_locked);
+
+  /*
+  ** Unite Buzz windows.
+  */
+
+  foreach(QWidget *widget, QApplication::topLevelWidgets())
+    if(widget->isWindow())
+      {
+	QMainWindow *window = qobject_cast<QMainWindow *> (widget);
+
+	if(!window)
+	  continue;
+
+	spoton_buzzpage *page = qobject_cast<spoton_buzzpage *>
+	  (window->centralWidget());
+
+	if(!page)
+	  continue;
+
+	page->unite();
+      }
 }
 
 void spoton::slotCallParticipantViaForwardSecrecy(void)

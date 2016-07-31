@@ -780,3 +780,8 @@ void spoton_buzzpage::showUnify(const bool state)
 {
   ui.unify->setVisible(state);
 }
+
+void spoton_buzzpage::unite(void)
+{
+  emit unify();
+}
