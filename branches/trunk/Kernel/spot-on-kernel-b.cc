@@ -956,7 +956,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
 			     "email.db");
 	  qint64 maximumSize = 1048576 * setting
-	    ("gui/maximumEmailFileSize", 100).toLongLong();
+	    ("gui/maximumEmailFileSize", 1024).toLongLong();
 
 	  if(fileInfo.size() >= maximumSize)
 	    {
@@ -1375,7 +1375,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
       QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
 			 "email.db");
       qint64 maximumSize = 1048576 * setting
-	("gui/maximumEmailFileSize", 100).toLongLong();
+	("gui/maximumEmailFileSize", 1024).toLongLong();
 
       if(fileInfo.size() >= maximumSize)
 	{

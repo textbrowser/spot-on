@@ -2119,7 +2119,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 50;
 
   settings.insert("gui/maximum_url_keywords_import_kernel", integer);
-  integer = qAbs(settings.value("gui/maximumEmailFileSize", 100).toInt(&ok));
+  integer = qAbs(settings.value("gui/maximumEmailFileSize", 1024).toInt(&ok));
 
   if(!ok)
     integer = 100;

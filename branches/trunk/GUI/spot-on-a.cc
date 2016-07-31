@@ -2357,7 +2357,7 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.emailRetrievalInterval->setValue
     (m_settings.value("gui/emailRetrievalInterval", 5).toInt());
   m_optionsUi.maximumEmailFileSize->setValue
-    (m_settings.value("gui/maximumEmailFileSize", 100).toInt());
+    (m_settings.value("gui/maximumEmailFileSize", 1024).toInt());
 
   QString statusControl
     (m_settings.

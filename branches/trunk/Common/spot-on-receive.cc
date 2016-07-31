@@ -1040,7 +1040,7 @@ QList<QByteArray> spoton_receive::process0001c
       QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
 			 "email.db");
       qint64 maximumSize = 1048576 * spoton_kernel::setting
-	("gui/maximumEmailFileSize", 100).toLongLong();
+	("gui/maximumEmailFileSize", 1024).toLongLong();
 
       if(fileInfo.size() >= maximumSize)
 	{
