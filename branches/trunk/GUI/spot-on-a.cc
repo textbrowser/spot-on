@@ -589,6 +589,7 @@ spoton::spoton(void):QMainWindow()
   m_addParticipantWindow = new QMainWindow(0);
   m_addParticipantWindow->layout()->setContentsMargins(5, 5, 5, 5);
   m_addParticipantWindow->setCentralWidget(m_ui.add_participant_groupbox);
+  m_addParticipantWindow->setWindowIcon(windowIcon());
   m_addParticipantWindow->setWindowTitle
     (tr("%1: Add Participant").arg(SPOTON_APPLICATION_NAME));
 
