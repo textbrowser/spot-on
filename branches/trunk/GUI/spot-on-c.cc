@@ -3597,10 +3597,11 @@ void spoton::slotImportPublicKeys(void)
 
       while(!list.isEmpty())
 	{
-	  QByteArray bytes("K");
+	  QByteArray bytes(list.takeFirst().trimmed());
 
-	  bytes.append(list.takeFirst());
-	  bytes.remove(0, 1);
+	  if(bytes.isEmpty())
+	    continue;
+
 	  addFriendsKey(bytes, "K", this);
 	}
     }
