@@ -29,6 +29,7 @@
 #define _spoton_tabwidget_h_
 
 #include <QTabWidget>
+#include <QTimer>
 
 class QTabBar;
 
@@ -40,6 +41,12 @@ class spoton_tabwidget: public QTabWidget
   spoton_tabwidget(QWidget *parent);
   ~spoton_tabwidget();
   QTabBar *tabBar(void) const;
+
+ private:
+  QTimer m_timer;
+
+ private slots:
+  void slotTimeout(void);
 };
 
 #endif

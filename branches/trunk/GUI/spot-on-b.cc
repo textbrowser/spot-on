@@ -2928,6 +2928,7 @@ void spoton::slotSendMail(void)
 
   if(!m_ui.attachment->toPlainText().isEmpty())
     {
+      QLocale locale;
       QStringList files(m_ui.attachment->toPlainText().split("\n"));
 
       while(!files.isEmpty())
@@ -2946,7 +2947,8 @@ void spoton::slotSendMail(void)
 		 arg(SPOTON_APPLICATION_NAME),
 		 tr("The attachment %1 is too large. The maximum size "
 		    "of an attachment is %2 byte(s).").arg(fileName).
-		 arg(spoton_common::EMAIL_ATTACHMENT_MAXIMUM_SIZE));
+		 arg(locale.toString(spoton_common::
+				     EMAIL_ATTACHMENT_MAXIMUM_SIZE)));
 	      return;
 	    }
 
@@ -4525,6 +4527,8 @@ void spoton::slotEmptyTrash(void)
   if(mb.exec() != QMessageBox::Yes)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
 
   {
@@ -4541,12 +4545,14 @@ void spoton::slotEmptyTrash(void)
 	query.exec("DELETE FROM folders WHERE folder_index = 2");
 	query.exec("DELETE FROM folders_attachment WHERE folders_oid "
 		   "NOT IN (SELECT OID FROM folders)");
+	query.exec("VACUUM");
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 
   if(m_ui.folder->currentIndex() == 2)
     {

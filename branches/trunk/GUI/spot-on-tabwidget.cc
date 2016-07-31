@@ -25,10 +25,19 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QFileInfo>
+
+#include "Common/spot-on-misc.h"
+#include "spot-on.h"
 #include "spot-on-tabwidget.h"
 
 spoton_tabwidget::spoton_tabwidget(QWidget *parent):QTabWidget(parent)
 {
+  connect(&m_timer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotTimeout(void)));
+  m_timer.start(2500);
 #ifdef Q_OS_MAC
   setStyleSheet("QTabWidget::tab-bar {"
 		"alignment: left;}");
@@ -42,4 +51,32 @@ spoton_tabwidget::~spoton_tabwidget()
 QTabBar *spoton_tabwidget::tabBar(void) const
 {
   return QTabWidget::tabBar();
+}
+
+void spoton_tabwidget::slotTimeout(void)
+{
+  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
+		     "email.db");
+  qint64 maximumSize = 1048576 * (spoton::instance() ?
+				  spoton::instance()->m_settings.
+				  value("gui/maximumEmailFileSize", 1024).
+				  toLongLong() : 1024);
+
+  if((1.0 * fileInfo.size()) / (1.0 * maximumSize) >= 1.0)
+    {
+      tabBar()->setTabTextColor(2, QColor("red"));
+      tabBar()->setTabToolTip
+	(2, tr("The database email.db has reached its capacity."));
+    }
+  else if((1.0 * fileInfo.size()) / (1.0 * maximumSize) >= 0.90)
+    {
+      tabBar()->setTabTextColor(2, QColor("orange"));
+      tabBar()->setTabToolTip
+	(2, tr("The database email.db has almost reached its capacity."));
+    }
+  else
+    {
+      tabBar()->setTabTextColor(2, QColor());
+      tabBar()->setTabToolTip(2, "");
+    }
 }
