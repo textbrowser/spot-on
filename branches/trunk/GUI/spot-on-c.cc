@@ -3450,12 +3450,21 @@ void spoton::slotExportPublicKeys(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QByteArray keys(copyMyChatPublicKey() + "\n" +
-		  copyMyEmailPublicKey() + "\n" +
-		  copyMyOpenLibraryPublicKey() + "\n" +
-		  copyMyPoptasticPublicKey() + "\n" +
-		  copyMyRosettaPublicKey() + "\n" +
-		  copyMyUrlPublicKey());
+  QByteArray keys;
+  QList<QByteArray> list;
+
+  list << copyMyChatPublicKey()
+       << copyMyEmailPublicKey()
+       << copyMyOpenLibraryPublicKey()
+       << copyMyPoptasticPublicKey()
+       << copyMyRosettaPublicKey()
+       << copyMyUrlPublicKey();
+
+  for(int i = 0; i < list.size(); i++)
+    if(!list.at(i).trimmed().isEmpty())
+      keys.append(list.at(i).trimmed() + "\n");
+
+  keys = keys.trimmed();
 
   QApplication::restoreOverrideCursor();
 
