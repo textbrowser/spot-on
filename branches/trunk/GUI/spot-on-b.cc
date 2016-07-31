@@ -3923,6 +3923,14 @@ void spoton::populateMail(void)
 
 				if(!ok)
 				  item->setText(tr("error"));
+				else if(i == 0) // date
+				  {
+				    if(QDateTime::currentDateTime().
+				       toString(Qt::ISODate).mid(0, 10) ==
+				       item->text().mid(0, 10))
+				      item->setBackground
+					(QBrush(QColor("lightgreen")));
+				  }
 			      }
 			    else
 			      item = new QTableWidgetItem("#####");
