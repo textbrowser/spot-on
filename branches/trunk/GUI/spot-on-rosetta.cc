@@ -1098,7 +1098,7 @@ void spoton_rosetta::slotRename(void)
   name = QInputDialog::getText
     (this, tr("%1: New Name").
      arg(SPOTON_APPLICATION_NAME), tr("&Name"),
-     QLineEdit::Normal, "", &ok);
+     QLineEdit::Normal, ui.contacts->currentText(), &ok);
   name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
 
   if(name.isEmpty() || !ok)
