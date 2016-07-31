@@ -2919,7 +2919,8 @@ void spoton::slotSendMail(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("The file email.db has exceeded the specified limit. Please "
-	    "remove some entries."));
+	    "remove some entries and/or increase the limit "
+	    "via the Permissions page in Options."));
       return;
     }
 
