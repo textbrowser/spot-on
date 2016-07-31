@@ -2944,7 +2944,9 @@ void spoton::slotSendMail(void)
 	      QMessageBox::critical
 		(this, tr("%1: Error").
 		 arg(SPOTON_APPLICATION_NAME),
-		 tr("The attachment %1 is too large.").arg(fileName));
+		 tr("The attachment %1 is too large. The maximum size "
+		    "of an attachment is %2 byte(s).").arg(fileName).
+		 arg(spoton_common::EMAIL_ATTACHMENT_MAXIMUM_SIZE));
 	      return;
 	    }
 
