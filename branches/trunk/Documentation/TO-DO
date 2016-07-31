@@ -255,3 +255,7 @@ Remaining Items
 62.    Keys are re-used in directory-mode file encryption.
 63.    Per Schmidt, share StarBeams through Buzz.
 64.    Key pools.
+65.    Personalized status messages.
+66.    Per-neighbor override of required signature proofs during key sharing.
+67.    Per Magical Hero, download specific Web pages on request.
+       Pseudo-proxy.
