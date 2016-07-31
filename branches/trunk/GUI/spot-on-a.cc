@@ -600,6 +600,8 @@ spoton::spoton(void):QMainWindow()
 			   SLOT(close(void)));
   action->setShortcut(Qt::Key_Escape);
   m_addParticipantWindow->menuBar()->addMenu(menu);
+#else
+  QMenu *menu = 0;
 #endif
   m_notificationsWindow = new QMainWindow(0);
   m_optionsWindow = new QMainWindow(0);

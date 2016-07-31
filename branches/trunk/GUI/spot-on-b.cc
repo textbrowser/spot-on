@@ -4788,8 +4788,6 @@ void spoton::slotSetIcons(int index)
   m_ui.addFriend->setIcon(QIcon(QString(":/%1/add.png").arg(iconSet)));
   m_ui.clearFriend->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
 #if SPOTON_GOLDBUG == 1
-  m_ui.addFriendSymmetricBundleRadio->setIcon
-    (QIcon(QString(":/%1/repleo.png").arg(iconSet)));
   m_ui.addFriendPublicKeyRadio->setIcon
     (QIcon(QString(":/%1/key.png").arg(iconSet)));
 #endif
