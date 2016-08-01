@@ -5574,13 +5574,67 @@ void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
 
-	query.exec
-	  (QString("ALTER TABLE echo_key_sharing_secrets ADD COLUMN "
-		   "signatures_required TEXT NOT NULL DEFAULT '%1'").
-	   arg(crypt->encryptedThenHashed(QByteArray("true"),
-					  &ok).toBase64().constData()));
+	if(!query.exec("SELECT EXISTS (SELECT signatures_required FROM "
+		       "echo_key_sharing_secrets)"))
+	  {
+	    /*
+	    ** Perhaps signatures_required does not exist.
+	    */
+
+	    query.exec
+	      ("CREATE TABLE IF NOT EXISTS "
+	       "echo_key_sharing_secrets_temporary ("
+	       "accept TEXT NOT NULL, "
+	       "authentication_key TEXT NOT NULL, "
+	       "category_oid INTEGER NOT NULL, "
+	       "cipher_type TEXT NOT NULL, "
+	       "encryption_key TEXT NOT NULL, "
+	       "hash_type TEXT NOT NULL, "
+	       "iteration_count TEXT NOT NULL, "
+	       "name TEXT NOT NULL, "
+	       "name_hash TEXT NOT NULL, "
+	       "share TEXT NOT NULL, "
+	       "signatures_required TEXT NOT NULL, "
+	       "PRIMARY KEY (category_oid, name_hash))");
+
+	    if(query.exec("SELECT accept, "
+			  "authentication_key, "
+			  "category_oid, "
+			  "cipher_type, "
+			  "encryption_key, "
+			  "hash_type, "
+			  "iteration_count, "
+			  "name, "
+			  "name_hash, "
+			  "share FROM echo_key_sharing_secrets"))
+	      {
+		while(query.next())
+		  {
+		    QSqlQuery insertQuery(db);
+		    bool ok = true;
+
+		    insertQuery.prepare
+		      ("INSERT INTO echo_key_sharing_secrets_temporary "
+		       "(authentication_key, category_oid, cipher_type, "
+		       "encryption_key, hash_type, iteration_count, "
+		       "name, name_hash, share, signatures_required) "
+		       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+		    for(int i = 0; i < query.record().count(); i++)
+		      insertQuery.bindValue(i, query.value(i));
+
+		    insertQuery.bindValue
+		      (10, crypt->encryptedThenHashed(QByteArray("true"),
+						      &ok).toBase64());
+		    insertQuery.exec();
+		  }
+
+		query.exec("DROP TABLE echo_key_sharing_secrets");
+		query.exec("ALTER TABLE echo_key_sharing_secrets_temporary "
+			   "RENAME TO echo_key_sharing_secrets");
+	      }
+	  }
       }
 
     db.close();
