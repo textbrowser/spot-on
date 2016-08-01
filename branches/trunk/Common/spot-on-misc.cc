@@ -2122,9 +2122,9 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   integer = qAbs(settings.value("gui/maximumEmailFileSize", 1024).toInt(&ok));
 
   if(!ok)
-    integer = 100;
+    integer = 1024;
   else if(integer < 1 || integer > 5000)
-    integer = 100;
+    integer = 1024;
 
   settings.insert("gui/maximumEmailFileSize", integer);
   integer = qAbs(settings.value("gui/postofficeDays", 1).toInt(&ok));
