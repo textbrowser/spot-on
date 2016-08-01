@@ -2366,15 +2366,36 @@ void spoton_kernel::connectSignalsToNeighbor
 	      Qt::UniqueConnection);
     }
 
-  connect(neighbor,
-	  SIGNAL(receivedMessage(const QByteArray &,
-				 const qint64,
+  QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      /*
+      ** Handshaking, a bit of.
+      */
+
+      if(it.value() && it.value() != neighbor)
+	{
+	  connect(it.value(),
+		  SIGNAL(receivedMessage(const QByteArray &,
+					 const qint64,
+					 const QPairByteArrayByteArray &)),
+		  neighbor,
+		  SLOT(slotWrite(const QByteArray &, const qint64,
 				 const QPairByteArrayByteArray &)),
-	  this,
-	  SIGNAL(write(const QByteArray &,
-		       const qint64,
-		       const QPairByteArrayByteArray &)),
-	  Qt::UniqueConnection);
+		  Qt::UniqueConnection);
+	  connect(neighbor,
+		  SIGNAL(receivedMessage(const QByteArray &,
+					 const qint64,
+					 const QPairByteArrayByteArray &)),
+		  it.value(),
+		  SLOT(slotWrite(const QByteArray &, const qint64,
+				 const QPairByteArrayByteArray &)),
+		  Qt::UniqueConnection);
+	}
+    }
 
   if(m_guiServer)
     connect(neighbor,
@@ -2480,13 +2501,6 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SIGNAL(sendStatus(const QByteArrayList &)),
 	  neighbor,
 	  SLOT(slotSendStatus(const QByteArrayList &)),
-	  Qt::UniqueConnection);
-  connect(this,
-	  SIGNAL(write(const QByteArray &, const qint64,
-		       const QPairByteArrayByteArray &)),
-	  neighbor,
-	  SLOT(slotWrite(const QByteArray &, const qint64,
-			 const QPairByteArrayByteArray &)),
 	  Qt::UniqueConnection);
 }
 
