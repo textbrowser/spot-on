@@ -533,6 +533,8 @@ class spoton: public QMainWindow
      spoton_crypt *crypt) const;
   QString savePoptasticAccount(void);
   QStringList parseAEMagnet(const QString &magnet) const;
+  bool addFriendsKey(const QByteArray &key, const QString &type,
+		     QWidget *parent);
   bool deleteAllUrls(void);
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
@@ -547,8 +549,6 @@ class spoton: public QMainWindow
   int applyGoldBugToLetter(const QByteArray &goldbug,
 			   const int row);
   int tabIndexFromName(const QString &name) const;
-  void addFriendsKey(const QByteArray &key, const QString &type,
-		     QWidget *parent);
   void applyGoldBugToAttachments(const QString &folderOid,
 				 const QSqlDatabase &db,
 				 int *count,

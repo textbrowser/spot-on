@@ -3561,6 +3561,8 @@ void spoton::slotImportPublicKeys(void)
 #endif
 #endif
 
+  int count = 0;
+
   if(dialog.exec() == QDialog::Accepted)
     {
       QFileInfo fileInfo;
@@ -3611,9 +3613,14 @@ void spoton::slotImportPublicKeys(void)
 	  if(bytes.isEmpty())
 	    continue;
 
-	  addFriendsKey(bytes, "K", this);
+	  if(addFriendsKey(bytes, "K", this))
+	    count += 1;
 	}
     }
+
+  QMessageBox::information
+    (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+     tr("A total of %1 key pairs were imported.").arg(count));
 }
 
 void spoton::slotExportListeners(void)
