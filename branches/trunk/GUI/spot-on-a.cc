@@ -6743,8 +6743,10 @@ void spoton::slotValidatePassphrase(void)
 							      value()),
 				  list.at(i)));
 
+	    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	    spoton_misc::alterDatabasesAfterAuthentication
 	      (m_crypts.value("chat", 0));
+	    QApplication::restoreOverrideCursor();
 
 	    if(m_optionsUi.launchKernel->isChecked())
 	      slotActivateKernel();
