@@ -62,7 +62,7 @@ void spoton_tabwidget::slotTimeout(void)
 				  value("gui/maximumEmailFileSize", 1024).
 				  toLongLong() : 1024);
 
-  if((1.0 * fileInfo.size()) / (1.0 * maximumSize) >= 1.0)
+  if(fileInfo.size() >= maximumSize)
     {
       tabBar()->setTabTextColor(2, QColor("red"));
       tabBar()->setTabToolTip
