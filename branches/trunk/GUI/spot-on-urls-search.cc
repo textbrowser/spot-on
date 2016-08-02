@@ -382,6 +382,8 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      if(description.length() > spoton_common::
 		 MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS)
 		{
+		  description = spoton_misc::removeSpecialHtmlTags
+		    (description);
 		  description = description.mid
 		    (0, spoton_common::
 		     MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS).trimmed();
@@ -455,8 +457,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 		{
 		  html.append("<br>");
 		  html.append(QString("<font color=\"gray\" size=3>%1</font>").
-			      arg(spoton_misc::
-				  removeSpecialHtmlTags(description)));
+			      arg(description));
 		}
 
 	      html.append("<br>");
