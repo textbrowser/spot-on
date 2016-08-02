@@ -379,11 +379,11 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
 	  if(ok)
 	    {
+	      description = spoton_misc::removeSpecialHtmlTags(description);
+
 	      if(description.length() > spoton_common::
 		 MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS)
 		{
-		  description = spoton_misc::removeSpecialHtmlTags
-		    (description);
 		  description = description.mid
 		    (0, spoton_common::
 		     MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS).trimmed();
