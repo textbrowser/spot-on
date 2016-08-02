@@ -329,6 +329,8 @@ class spoton_kernel: public QObject
   void sendStatus(const QByteArrayList &status);
   void statusMessageReceived(const QByteArray &publicKeyHash,
 			     const QString &status);
+  void write(const QByteArray &data, const qint64 id,
+	     const QPairByteArrayByteArray &adaptiveEchoPair);
 };
 
 #endif
