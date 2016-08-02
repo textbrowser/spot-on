@@ -328,7 +328,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 		      "signatures_required) "
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(QByteArray("true"), &ok).
+	  (0, crypt->encryptedThenHashed(QByteArray("false"), &ok).
 	   toBase64());
 
 	if(ok)
@@ -366,7 +366,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 	if(ok)
 	  query.bindValue
-	    (9, crypt->encryptedThenHashed(QByteArray("true"),
+	    (9, crypt->encryptedThenHashed(QByteArray("false"),
 					   &ok).toBase64());
 
 	if(ok)
