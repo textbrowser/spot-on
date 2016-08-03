@@ -259,4 +259,5 @@ Remaining Items
 66.    Per-neighbor override of required signature proofs during key sharing.
 67.    Per Magical Hero, download specific Web pages on request.
        Pseudo-proxy.
-68.    Automatic computations of rapid StarBeams may be incorrect.
+68.    Automatic computations of rapid StarBeam digests may be incorrect.
+       See spoton::slotPopulateStars().
