@@ -230,22 +230,12 @@ void spoton_starbeam_reader::slotTimeout(void)
 			   &ok);
 
 		      if(ok)
-			{
-			  if(!m_missingLinksIterator)
-			    m_position = s_crypt->
-			      decryptedAfterAuthenticated
-			      (QByteArray::
-			       fromBase64(query.value(5).toByteArray()),
-			       &ok).toLongLong();
-			  else if(m_missingLinksIterator->hasNext())
-			    {
-			      QByteArray bytes
-				(m_missingLinksIterator->next());
-
-			      if(!bytes.isEmpty())
-				m_position = qAbs(bytes.toLongLong());
-			    }
-			}
+			if(!m_missingLinksIterator)
+			  m_position = s_crypt->
+			    decryptedAfterAuthenticated
+			    (QByteArray::
+			     fromBase64(query.value(5).toByteArray()),
+			     &ok).toLongLong();
 
 		      if(ok)
 			pulseSize = s_crypt->
@@ -288,9 +278,21 @@ void spoton_starbeam_reader::slotTimeout(void)
 				QFuture<QPair<QByteArray, qint64> > ();
 			    }
 			  else if(m_readFuture.isFinished())
-			    m_readFuture = QtConcurrent::run
-			      (this, &spoton_starbeam_reader::read,
-			       fileName, pulseSize, m_position);
+			    {
+			      if(m_missingLinksIterator &&
+				 m_missingLinksIterator->hasNext())
+				{
+				  QByteArray bytes
+				    (m_missingLinksIterator->next());
+
+				  if(!bytes.isEmpty())
+				    m_position = qAbs(bytes.toLongLong());
+				}
+
+			      m_readFuture = QtConcurrent::run
+				(this, &spoton_starbeam_reader::read,
+				 fileName, pulseSize, m_position);
+			    }
 			}
 		    }
 		}
