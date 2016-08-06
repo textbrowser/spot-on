@@ -175,7 +175,6 @@ spoton_neighbor::spoton_neighbor
     }
   else if(m_udpSocket)
     {
-      qDebug()<<m_udpSocket->state();
 #ifdef Q_OS_WIN32
       m_udpSocket->setSocketDescriptor
 	(_dup(static_cast<int> (socketDescriptor)));
