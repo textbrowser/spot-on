@@ -1539,33 +1539,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
       else
 	flags |= QUdpSocket::DontShareAddress;
 
-      bool ok = m_udpServer->bind(QHostAddress(address), port, flags);
-
-      if(ok)
-	if(spoton_misc::isMulticastAddress(QHostAddress(address)))
-	  {
-#if QT_VERSION >= 0x040800
-	    if(!m_udpServer->joinMulticastGroup(QHostAddress(address)))
-	      {
-		ok = false;
-		spoton_misc::logError
-		  (QString("spoton_listener(): listen(): "
-			   "joinMulticastGroup() failure for %1:%2.").
-		   arg(address).arg(port));
-	      }
-	    else
-	      m_udpServer->setSocketOption
-		(QAbstractSocket::MulticastLoopbackOption, 1);
-#else
-	    ok = spoton_misc::joinMulticastGroup
-	      (QHostAddress(address),
-	       1, // Enable loopback.
-	       m_udpServer->socketDescriptor(),
-	       port);
-#endif
-	  }
-
-      return ok;
+      return m_udpServer->bind(QHostAddress(address), port, flags);
     }
   else
     return false;

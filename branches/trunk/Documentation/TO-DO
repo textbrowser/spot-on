@@ -151,6 +151,7 @@ Completed Items
 107.   Multiple Poptastic attachments.
 108.   The method spoton_neighbor::savePublicKey() does not compare
        personal keys with provided keys.
+109.   UDP multicast servers are not necessary.
 
 Ignored Items
 
@@ -263,4 +264,3 @@ Remaining Items
        See spoton::slotPopulateStars().
 69.    UDP multicast address sharing is flawed in Qt 4.x.
        (https://bugreports.qt.io/browse/QTBUG-33419)
-70.    UDP multicast servers are not necessary.

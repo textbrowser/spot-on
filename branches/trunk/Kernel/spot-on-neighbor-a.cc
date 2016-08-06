@@ -175,6 +175,7 @@ spoton_neighbor::spoton_neighbor
     }
   else if(m_udpSocket)
     {
+      qDebug()<<m_udpSocket->state();
 #ifdef Q_OS_WIN32
       m_udpSocket->setSocketDescriptor
 	(_dup(static_cast<int> (socketDescriptor)));
@@ -6911,23 +6912,11 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	    sent = m_udpSocket->write(data, qMin(minimum, remaining));
 	  else
 	    {
-	      QHostAddress address;
-	      quint16 port = 0;
-
-	      if(spoton_misc::isMulticastAddress(m_udpSocket->localAddress()))
-		{
-		  address = m_udpSocket->localAddress();
-		  port = m_udpSocket->localPort();
-		}
-	      else
-		{
-		  address = QHostAddress(m_address);
-		  port = m_port;
-		}
+	      QHostAddress address(m_address);
 
 	      address.setScopeId(m_scopeId);
 	      sent = m_udpSocket->writeDatagram
-		(data, qMin(minimum, remaining), address, port);
+		(data, qMin(minimum, remaining), address, m_port);
 	    }
 
 	  if(m_waitforbyteswritten_msecs > 0)

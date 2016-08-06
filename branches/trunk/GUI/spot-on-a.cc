@@ -3149,6 +3149,17 @@ void spoton::slotAddListener(void)
       m_sb.status->clear();
       QApplication::restoreOverrideCursor();
     }
+  else if(m_ui.listenerTransport->currentIndex() == 3) // UDP
+    {
+      if(spoton_misc::isMulticastAddress(QHostAddress(m_ui.listenerIP->text().
+						      trimmed())))
+	{
+	  QMessageBox::information
+	    (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	     tr("Please create a UDP multicast neighbor."));
+	  return;
+	}
+    }
 
   QString connectionName("");
   bool ok = true;
