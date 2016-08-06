@@ -129,7 +129,7 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	  }
 	else
 	  m_multicastSocket->setSocketOption
-	    (QAbstractSocket::MulticastLoopbackOption, 0);
+	    (QAbstractSocket::MulticastLoopbackOption, 1);
 #else
 	if(!spoton_misc::joinMulticastGroup(address,
 					    1, // Enable loopback.
