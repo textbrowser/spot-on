@@ -261,3 +261,5 @@ Remaining Items
        Pseudo-proxy.
 68.    Automatic computations of rapid StarBeam digests may be incorrect.
        See spoton::slotPopulateStars().
+69.    UDP multicast address sharing is flawed in Qt 4.x.
+       (https://bugreports.qt.io/browse/QTBUG-33419)
