@@ -136,7 +136,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>582</width>
-             <height>683</height>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -1322,8 +1322,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>683</width>
-             <height>546</height>
+             <width>684</width>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2952,8 +2952,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>499</width>
-             <height>1629</height>
+             <width>500</width>
+             <height>1606</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4223,7 +4223,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>588</width>
-             <height>486</height>
+             <height>474</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5292,7 +5292,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>626</width>
-             <height>292</height>
+             <height>291</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5378,7 +5378,7 @@ color: rgb(255, 255, 255);
                  <x>0</x>
                  <y>0</y>
                  <width>631</width>
-                 <height>505</height>
+                 <height>484</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6615,7 +6615,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>848</width>
-             <height>1177</height>
+             <height>1155</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -8166,7 +8166,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>450</width>
-             <height>677</height>
+             <height>671</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9537,7 +9537,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>492</width>
-             <height>398</height>
+             <height>392</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -11201,7 +11201,7 @@ border-style: inset;
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -11512,7 +11512,7 @@ border-style: inset;
     <string>&amp;Vacuum SQLite Databases</string>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reclaim storage occupied by dead data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reclaim storage occupied by empty database pages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
   <action name="action_Notifications_Window">
