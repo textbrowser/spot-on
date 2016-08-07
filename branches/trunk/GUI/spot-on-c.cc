@@ -655,7 +655,11 @@ void spoton::slotTransportChanged(int index)
       m_ui.ipv4Listener->setEnabled(index != 0);
       m_ui.ipv6Listener->setEnabled(index != 0);
       m_ui.listenerKeySize->setEnabled(index == 2);
+#ifdef Q_OS_WIN32
+      m_ui.listenerShareAddress->setEnabled(false);
+#else
       m_ui.listenerShareAddress->setEnabled(index == 3);
+#endif
       m_ui.listenersSslControlString->setEnabled(index == 2);
       m_ui.permanentCertificate->setEnabled(index == 2);
       m_ui.recordIPAddress->setEnabled(index == 2);
