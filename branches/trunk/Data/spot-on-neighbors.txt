@@ -1,10 +1,11 @@
 # The contents of this file are automatically processed after a
 # passphrase has been prepared. After the contents are processed,
-# Spot-On will modify the initialization file and set the parameter
+# Spot-On will modify the initialization file (INI) and set the parameter
 # spot_on_neighbors_txt_processed to true. For automatic processing,
 # this file must reside in the same directory as the Spot-On
 # executable.
 
+echo_mode=full&ip_address=239.255.43.21&orientation=packet&port=4710&protocol=IPv4&scope_id=&ssl_key_size=0&transport=udp
 echo_mode=full&ip_address=tulip-ipv4.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=0&transport=sctp
 echo_mode=full&ip_address=tulip-ipv4.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
 echo_mode=full&ip_address=tulip-ipv6.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
