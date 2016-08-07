@@ -1323,7 +1323,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>684</width>
-             <height>540</height>
+             <height>669</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2952,8 +2952,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>500</width>
-             <height>1606</height>
+             <width>566</width>
+             <height>1592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3202,6 +3202,9 @@ color: rgb(255, 255, 255);</string>
                          <horstretch>0</horstretch>
                          <verstretch>0</verstretch>
                         </sizepolicy>
+                       </property>
+                       <property name="toolTip">
+                        <string>Allow other UDP services to bind to the same address and port. Ignored on Windows.</string>
                        </property>
                        <property name="text">
                         <string>&amp;Share Address</string>
@@ -4223,7 +4226,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>588</width>
-             <height>474</height>
+             <height>669</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5292,7 +5295,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>626</width>
-             <height>291</height>
+             <height>669</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -8165,8 +8168,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>450</width>
-             <height>671</height>
+             <width>582</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9536,8 +9539,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>492</width>
-             <height>392</height>
+             <width>582</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
