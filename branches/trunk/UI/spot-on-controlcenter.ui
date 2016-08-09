@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>532</height>
+                <width>366</width>
+                <height>442</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -2145,8 +2145,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>542</height>
+             <width>610</width>
+             <height>313</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2841,7 +2841,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>264</width>
+                     <width>260</width>
                      <height>1344</height>
                     </rect>
                    </property>
@@ -3365,8 +3365,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>542</height>
+             <width>344</width>
+             <height>179</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3707,7 +3707,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>788</width>
+                  <width>681</width>
                   <height>381</height>
                  </rect>
                 </property>
@@ -4493,8 +4493,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>542</height>
+             <width>616</width>
+             <height>291</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4579,8 +4579,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>800</width>
-                 <height>517</height>
+                 <width>658</width>
+                 <height>531</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5529,7 +5529,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>815</width>
+             <width>844</width>
              <height>1050</height>
             </rect>
            </property>
@@ -6667,8 +6667,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>542</height>
+             <width>566</width>
+             <height>465</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7784,8 +7784,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>542</height>
+             <width>607</width>
+             <height>377</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8399,8 +8399,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>542</height>
+             <width>240</width>
+             <height>135</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8633,6 +8633,9 @@
     <addaction name="action_Quit"/>
    </widget>
    <widget class="QMenu" name="menu_View">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
     <property name="title">
      <string>&amp;View</string>
     </property>
@@ -8661,6 +8664,9 @@
     <addaction name="action_Statistics_Window"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
     <property name="title">
      <string>&amp;Tools</string>
     </property>

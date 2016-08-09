@@ -507,6 +507,10 @@ spoton::spoton(void):QMainWindow()
 #endif
   setWindowTitle
     (tr("%1").arg(SPOTON_APPLICATION_NAME));
+  m_ui.menu_Tools->setWindowTitle
+    (tr("%1: Tools").arg(SPOTON_APPLICATION_NAME));
+  m_ui.menu_View->setWindowTitle
+    (tr("%1: View").arg(SPOTON_APPLICATION_NAME));
   m_ui.listenerOrientation->model()->setData
     (m_ui.listenerOrientation->model()->index(1, 0), 0, Qt::UserRole - 1);
   m_ui.neighborOrientation->model()->setData
