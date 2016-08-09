@@ -1659,15 +1659,14 @@ void spoton_neighbor::slotReadyRead(void)
 
 	if(ok)
 	  {
+	    /*
+	    ** We cannot safely inspect duplicate bytes.
+	    ** For example, an 'a' followed by another 'a' may
+	    ** be acceptable.
+	    */
+
 	    emit resetKeepAlive();
-
-	    if(!spoton_kernel::messagingCacheContains(data))
-	      {
-		emit receivedMessage
-		  (data, m_id, QPair<QByteArray, QByteArray> ());
-		spoton_kernel::messagingCacheAdd(data);
-	      }
-
+	    emit receivedMessage(data, m_id, QPair<QByteArray, QByteArray> ());
 	    return;
 	  }
       }
