@@ -1616,7 +1616,7 @@
                            <string notr="true">background-color: rgb(255, 255, 224);</string>
                           </property>
                           <property name="text">
-                           <string>Traditional e-mail supports only single attachments. Inline attachments are also not supported.</string>
+                           <string>Traditional e-mail supports only single attachments. Inline attachments are not supported.</string>
                           </property>
                           <property name="wordWrap">
                            <bool>true</bool>
