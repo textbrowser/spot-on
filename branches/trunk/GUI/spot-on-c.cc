@@ -2881,7 +2881,8 @@ void spoton::prepareContextMenuMirrors(void)
       connect(m_ui.chatActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.chatActionMenu,
-	      SLOT(showMenu(void)));
+	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
     }
 
   if(!m_ui.deleteAllUrls->menu())
@@ -2898,7 +2899,8 @@ void spoton::prepareContextMenuMirrors(void)
       connect(m_ui.deleteAllUrls,
 	      SIGNAL(clicked(void)),
 	      m_ui.deleteAllUrls,
-	      SLOT(showMenu(void)));
+	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
     }
 
   if(!m_ui.emailWriteActionMenu->menu())
@@ -2946,7 +2948,8 @@ void spoton::prepareContextMenuMirrors(void)
       connect(m_ui.emailWriteActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.emailWriteActionMenu,
-	      SLOT(showMenu(void)));
+	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
     }
 
   if(!m_ui.listenersActionMenu->menu())
@@ -2987,7 +2990,8 @@ void spoton::prepareContextMenuMirrors(void)
       connect(m_ui.listenersActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.listenersActionMenu,
-	      SLOT(showMenu(void)));
+	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
     }
 
   if(!m_ui.magnetsActionMenu->menu())
@@ -3008,7 +3012,8 @@ void spoton::prepareContextMenuMirrors(void)
       connect(m_ui.magnetsActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.magnetsActionMenu,
-	      SLOT(showMenu(void)));
+	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
     }
 
   if(!m_ui.neighborsActionMenu->menu())
@@ -3142,7 +3147,8 @@ void spoton::prepareContextMenuMirrors(void)
       connect(m_ui.neighborsActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.neighborsActionMenu,
-	      SLOT(showMenu(void)));
+	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
     }
 
   if(!m_ui.receivedActionMenu->menu())
@@ -3172,7 +3178,8 @@ void spoton::prepareContextMenuMirrors(void)
       connect(m_ui.receivedActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.receivedActionMenu,
-	      SLOT(showMenu(void)));
+	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
     }
 
   if(!m_ui.transmittedActionMenu->menu())
@@ -3209,7 +3216,8 @@ void spoton::prepareContextMenuMirrors(void)
       connect(m_ui.transmittedActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.transmittedActionMenu,
-	      SLOT(showMenu(void)));
+	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
     }
 
   if(!m_ui.urlActionMenu->menu())
@@ -3246,7 +3254,8 @@ void spoton::prepareContextMenuMirrors(void)
       connect(m_ui.urlActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.urlActionMenu,
-	      SLOT(showMenu(void)));
+	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
     }
 }
 

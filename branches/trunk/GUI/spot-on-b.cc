@@ -4746,6 +4746,13 @@ void spoton::slotSetIcons(int index)
 
   // Chat
 
+
+  if(m_ui.chatActionMenu->menu())
+    {
+      m_ui.chatActionMenu->menu()->deleteLater();
+      m_ui.chatActionMenu->setMenu(0);
+    }
+
   m_ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   m_ui.saveNodeName->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   m_ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
@@ -4758,6 +4765,12 @@ void spoton::slotSetIcons(int index)
       (i, QIcon(QString(":/%1/%2").arg(iconSet).arg(list.at(i))));
 
   // Email
+
+  if(m_ui.emailWriteActionMenu->menu())
+    {
+      m_ui.emailWriteActionMenu->menu()->deleteLater();
+      m_ui.emailWriteActionMenu->setMenu(0);
+    }
 
   m_ui.refreshMail->setIcon(QIcon(QString(":/%1/refresh.png").arg(iconSet)));
   m_ui.reply->setIcon(QIcon(QString(":/%1/reply.png").arg(iconSet)));
@@ -4781,6 +4794,12 @@ void spoton::slotSetIcons(int index)
       (i, QIcon(QString(":/%1/%2").arg(iconSet).arg(list.at(i))));
 
   // Listeners
+
+  if(m_ui.listenersActionMenu->menu())
+    {
+      m_ui.listenersActionMenu->menu()->deleteLater();
+      m_ui.listenersActionMenu->setMenu(0);
+    }
 
   m_ui.addAEToken->setIcon(QIcon(QString(":/%1/add.png").
 				 arg(iconSet)));
@@ -4808,6 +4827,12 @@ void spoton::slotSetIcons(int index)
 
   // Neighbors
 
+  if(m_ui.neighborsActionMenu->menu())
+    {
+      m_ui.neighborsActionMenu->menu()->deleteLater();
+      m_ui.neighborsActionMenu->setMenu(0);
+    }
+
   m_ui.toolButtonCopyToClipboard->setIcon
     (QIcon(QString(":/%1/copy.png").arg(iconSet)));
   m_ui.shareBuzzMagnet->setIcon
@@ -4822,6 +4847,12 @@ void spoton::slotSetIcons(int index)
 
   // Search
 
+  if(m_ui.deleteAllUrls->menu())
+    {
+      m_ui.deleteAllUrls->menu()->deleteLater();
+      m_ui.deleteAllUrls->setMenu(0);
+    }
+
   m_ui.discover->setIcon(QIcon(QString(":/%1/search.png").arg(iconSet)));
 
   // Settings
@@ -4833,6 +4864,24 @@ void spoton::slotSetIcons(int index)
   m_ui.setPassphrase->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
 
   // StarBeam
+
+  if(m_ui.magnetsActionMenu->menu())
+    {
+      m_ui.magnetsActionMenu->menu()->deleteLater();
+      m_ui.magnetsActionMenu->setMenu(0);
+    }
+
+  if(m_ui.receivedActionMenu->menu())
+    {
+      m_ui.receivedActionMenu->menu()->deleteLater();
+      m_ui.receivedActionMenu->setMenu(0);
+    }
+
+  if(m_ui.transmittedActionMenu->menu())
+    {
+      m_ui.transmittedActionMenu->menu()->deleteLater();
+      m_ui.transmittedActionMenu->setMenu(0);
+    }
 
   m_ui.addMagnet->setIcon(QIcon(QString(":/%1/add.png").
 				arg(iconSet)));
@@ -4861,6 +4910,12 @@ void spoton::slotSetIcons(int index)
 
   // URLs
 
+  if(m_ui.urlActionMenu->menu())
+    {
+      m_ui.urlActionMenu->menu()->deleteLater();
+      m_ui.urlActionMenu->setMenu(0);
+    }
+
   m_ui.addDistiller->setIcon(QIcon(QString(":/%1/add.png").arg(iconSet)));
   m_ui.deleteDistillers->setIcon
     (QIcon(QString(":/%1/delete.png").arg(iconSet)));
@@ -4872,6 +4927,7 @@ void spoton::slotSetIcons(int index)
     (1, QIcon(QString(":/%1/share.png").arg(iconSet)));
   m_ui.urlTab->setTabIcon
     (2, QIcon(QString(":/%1/up.png").arg(iconSet)));
+  prepareContextMenuMirrors();
   emit iconsChanged();
 }
 
