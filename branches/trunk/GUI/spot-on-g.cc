@@ -834,3 +834,94 @@ void spoton::slotNotificationsEnabled(bool state)
 
   settings.setValue("gui/automaticNotifications", state);
 }
+
+void spoton::slotCopyUrlKeys(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QByteArray name;
+  QByteArray publicKeyHash;
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.urlParticipants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.urlParticipants->
+	item(row, 0); // Name
+
+      if(item)
+	name.append(item->text());
+
+      item = m_ui.urlParticipants->item(row, 1); // OID
+
+      if(item)
+	oid = item->text();
+
+      item = m_ui.urlParticipants->item(row, 3); // public_key_hash
+
+      if(item)
+	publicKeyHash.append(item->text());
+    }
+
+  if(oid.isEmpty() || publicKeyHash.isEmpty())
+    {
+      clipboard->clear();
+      return;
+    }
+
+  if(name.isEmpty())
+    name = "unknown";
+
+  QByteArray publicKey;
+  QByteArray signatureKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT public_key "
+		      "FROM friends_public_keys WHERE "
+		      "OID = ?");
+	query.bindValue(0, oid);
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).
+				      toByteArray()),
+	       &ok);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  signatureKey = spoton_misc::signaturePublicKeyFromPublicKeyHash
+    (QByteArray::fromBase64(publicKeyHash), crypt);
+
+  if(!publicKey.isEmpty() && !signatureKey.isEmpty())
+    clipboard->setText
+      ("K" + QByteArray("url").toBase64() + "@" +
+       name.toBase64() + "@" +
+       publicKey.toBase64() + "@" + QByteArray().toBase64() + "@" +
+       signatureKey.toBase64() + "@" + QByteArray().toBase64());
+  else
+    clipboard->clear();
+}

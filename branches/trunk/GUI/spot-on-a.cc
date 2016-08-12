@@ -7475,6 +7475,11 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addAction(QIcon(":/generic/repleo-url.png"),
 		     tr("&Copy Repleo to the clipboard buffer."),
 		     this, SLOT(slotCopyUrlFriendshipBundle(void)));
+      menu.addAction(QIcon(QString(":/%1/copy.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Copy keys to the clipboard buffer."),
+		     this, SLOT(slotCopyUrlKeys(void)));
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
