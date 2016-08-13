@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de_DE">
+<TS version="2.1" language="de_DE">
 <context>
     <name>QObject</name>
     <message>
@@ -534,7 +534,7 @@
     </message>
     <message>
         <source>&amp;Echo Magnets</source>
-        <translation>&amp;Echo die Magneten.</translation>
+        <translation type="vanished">&amp;Echo die Magneten.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-chatwindow.ui" line="169"/>
@@ -543,7 +543,7 @@
     </message>
     <message>
         <source>Share</source>
-        <translation>Datei senden</translation>
+        <translation type="vanished">Datei senden</translation>
     </message>
 </context>
 <context>
@@ -786,7 +786,7 @@
     </message>
     <message>
         <source>&amp;Query the incoming server every</source>
-        <translation>&amp;Frage den eingehenden Server alle</translation>
+        <translation type="vanished">&amp;Frage den eingehenden Server alle</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-poptastic-retrophone-settings.ui" line="54"/>
@@ -878,7 +878,7 @@
     </message>
     <message>
         <source>Select</source>
-        <translation>Auswählen</translation>
+        <translation type="vanished">Auswählen</translation>
     </message>
     <message>
         <source>Password</source>
@@ -1200,7 +1200,7 @@
     </message>
     <message>
         <source>Clear</source>
-        <translation>Löschen</translation>
+        <translation type="vanished">Löschen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="643"/>
@@ -1312,7 +1312,7 @@
     </message>
     <message>
         <source>&amp;Select</source>
-        <translation>Wähle</translation>
+        <translation type="vanished">Wähle</translation>
     </message>
     <message>
         <source>Spot-On: Error</source>
@@ -1432,7 +1432,7 @@
     </message>
     <message>
         <source>%1 was configured without libphoton.</source>
-        <translation>%1 wurde ohne libphoton konfiguriert.</translation>
+        <translation type="vanished">%1 wurde ohne libphoton konfiguriert.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-a.cc" line="620"/>
@@ -1829,7 +1829,7 @@ Ausrichtung: %23
     </message>
     <message>
         <source>Your confidential information has been saved. You are now ready to use the full power of %1. Enjoy!</source>
-        <translation>Deine vertraulichen Informationen wurden konfiguriert. Du bist nun in der Lage, alle Funktionen vollständig zu nutzen. Viel Spaß!</translation>
+        <translation type="vanished">Deine vertraulichen Informationen wurden konfiguriert. Du bist nun in der Lage, alle Funktionen vollständig zu nutzen. Viel Spaß!</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-a.cc" line="7082"/>
@@ -2634,7 +2634,7 @@ Source of Randomness: %16</source>
     </message>
     <message>
         <source>Would you like to generate private and public keys?</source>
-        <translation>Möchtest Du private und öffentl. Schlüssel nun erstellen? (Empfehlung: Ja, jetzt.)</translation>
+        <translation type="vanished">Möchtest Du private und öffentl. Schlüssel nun erstellen? (Empfehlung: Ja, jetzt.)</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-a.cc" line="6301"/>
@@ -2669,7 +2669,7 @@ Source of Randomness: %16</source>
     </message>
     <message>
         <source>Invite to an anonymous Buzz channel.</source>
-        <translation>Lade zu einem anonymen Buzz-Kanal ein.</translation>
+        <translation type="vanished">Lade zu einem anonymen Buzz-Kanal ein.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-a.cc" line="7422"/>
@@ -2845,7 +2845,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     </message>
     <message>
         <source>&lt;i&gt;&lt;a href=&apos;%1&apos;&gt;%2...%3 cordially invites you to join a Buzz channel. Please click this link to accept the invitation.&lt;/a&gt;&lt;/i&gt;</source>
-        <translation>&lt;i&gt;&lt;a href=&apos;%1&apos;&gt;%2...%3 lädt Dich herzlich ein, einem Buzz-e*IRC-Raum beizutreten. Bitte klicke diesen Link, um die Einladung anzunehmen.&lt;/a&gt;&lt;/i&gt;</translation>
+        <translation type="vanished">&lt;i&gt;&lt;a href=&apos;%1&apos;&gt;%2...%3 lädt Dich herzlich ein, einem Buzz-e*IRC-Raum beizutreten. Bitte klicke diesen Link, um die Einladung anzunehmen.&lt;/a&gt;&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="471"/>
@@ -3173,7 +3173,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     </message>
     <message>
         <source>The attachment %1 is too large.</source>
-        <translation>Der Anhang %1 ist zu gross.</translation>
+        <translation type="vanished">Der Anhang %1 ist zu gross.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="2980"/>
@@ -3492,7 +3492,7 @@ Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine inte
     </message>
     <message>
         <source>Vacuum Databases</source>
-        <translation>Entleere die Datenbank</translation>
+        <translation type="vanished">Entleere die Datenbank</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-c.cc" line="3503"/>
@@ -4329,7 +4329,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Set an SMP secret.</source>
-        <translation>&amp;Definiere ein SMP-Geheimnis (ein gemeinsames Passwort).</translation>
+        <translation type="vanished">&amp;Definiere ein SMP-Geheimnis (ein gemeinsames Passwort).</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="153"/>
@@ -4406,7 +4406,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Select</source>
-        <translation>Auswählen</translation>
+        <translation type="vanished">Auswählen</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="588"/>
@@ -4461,7 +4461,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;New Category</source>
-        <translation>&amp;Neue Kategorie</translation>
+        <translation type="vanished">&amp;Neue Kategorie</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="72"/>
@@ -4470,7 +4470,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Generate</source>
-        <translation>&amp;Erstelle</translation>
+        <translation type="vanished">&amp;Erstelle</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="80"/>
@@ -4514,7 +4514,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Reset Widgets</source>
-        <translation>&amp;Setze die Einstellungen zurück auf Standardwerte.</translation>
+        <translation type="vanished">&amp;Setze die Einstellungen zurück auf Standardwerte.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-echo-key-share.cc" line="76"/>
@@ -4692,15 +4692,15 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Empty Log</source>
-        <translation>Lösche Log</translation>
+        <translation type="vanished">Lösche Log</translation>
     </message>
     <message>
         <source>&amp;Copy</source>
-        <translation>&amp;Kopieren</translation>
+        <translation type="vanished">&amp;Kopieren</translation>
     </message>
     <message>
         <source>&amp;Paste</source>
-        <translation>&amp;Einfügen</translation>
+        <translation type="vanished">&amp;Einfügen</translation>
     </message>
 </context>
 <context>
@@ -4833,7 +4833,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Sign the file.</source>
-        <translation>&amp;Signiere die Datei.</translation>
+        <translation type="vanished">&amp;Signiere die Datei.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-encryptfile.ui" line="426"/>
@@ -4852,19 +4852,19 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Empty Log</source>
-        <translation>Lösche Log</translation>
+        <translation type="vanished">Lösche Log</translation>
     </message>
     <message>
         <source>E&amp;nable Log</source>
-        <translation>Aktiviere Log</translation>
+        <translation type="vanished">Aktiviere Log</translation>
     </message>
     <message>
         <source>&amp;Copy</source>
-        <translation>&amp;Kopieren</translation>
+        <translation type="vanished">&amp;Kopieren</translation>
     </message>
     <message>
         <source>&amp;Paste</source>
-        <translation>&amp;Einfügen</translation>
+        <translation type="vanished">&amp;Einfügen</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-encryptfile.cc" line="50"/>
@@ -4969,11 +4969,11 @@ Error: %1.</source>
     </message>
     <message>
         <source>Please provide a valid destination file.</source>
-        <translation>Bitte geben einen Pfad zu einer gültigen Ziel-Datei ein.</translation>
+        <translation type="vanished">Bitte geben einen Pfad zu einer gültigen Ziel-Datei ein.</translation>
     </message>
     <message>
         <source>Please provide a valid origin file.</source>
-        <translation>Bitte gebe eine gültige Ursprungs-Datei ein.</translation>
+        <translation type="vanished">Bitte gebe eine gültige Ursprungs-Datei ein.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-encryptfile.cc" line="254"/>
@@ -4982,7 +4982,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Verifying the hash.</source>
-        <translation>Überprüfe den Hash.</translation>
+        <translation type="vanished">Überprüfe den Hash.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-encryptfile.cc" line="473"/>
@@ -5028,7 +5028,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Select</source>
-        <translation>Wähle</translation>
+        <translation type="vanished">Wähle</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-encryptfile.cc" line="851"/>
@@ -5056,7 +5056,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Löschen</translation>
+        <translation type="vanished">Löschen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-logviewer.ui" line="83"/>
@@ -5299,7 +5299,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Add Participant</source>
-        <translation>Füge Teilnehmer hinzu</translation>
+        <translation type="vanished">Füge Teilnehmer hinzu</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The key must start with either the letter K or the letter k.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -5980,7 +5980,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Maximum 10 MiB, please.</source>
-        <translation>Bitte maximal 10 MB.</translation>
+        <translation type="vanished">Bitte maximal 10 MB.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="1241"/>
@@ -6010,7 +6010,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;day(s) will be purged automatically.</source>
-        <translation>&amp;Tag(en), werden automatisch gelöscht.</translation>
+        <translation type="vanished">&amp;Tag(en), werden automatisch gelöscht.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="1830"/>
@@ -6130,7 +6130,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please consider installing PostgreSQL. Although SQLite is fully supported, PostgreSQL offers improved performance as well as networking capabilities. Please visit &lt;a href=&quot;http://www.postgresql.org/download&quot;&gt;http://www.postgresql.org/download&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bitte überlege, ob Du nicht die professionelle Datenbank PostgreSQL erlernen möchtest. Obwohl die eifachere SQLite-Datenbank vollständig unterstützt wird, bietet PostgreSQL verbesserte Leistungsfähigkeit als auch Netzwerkfähigkeiten an. Bitte besuche dann&lt;a href=&quot;http://www.postgresql.org/download&quot;&gt;http://www.postgresql.org/download&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bitte überlege, ob Du nicht die professionelle Datenbank PostgreSQL erlernen möchtest. Obwohl die eifachere SQLite-Datenbank vollständig unterstützt wird, bietet PostgreSQL verbesserte Leistungsfähigkeit als auch Netzwerkfähigkeiten an. Bitte besuche dann&lt;a href=&quot;http://www.postgresql.org/download&quot;&gt;http://www.postgresql.org/download&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="4991"/>
@@ -6170,11 +6170,11 @@ Error: %1.</source>
     </message>
     <message>
         <source>Statistic</source>
-        <translation>Statistik</translation>
+        <translation type="vanished">Statistik</translation>
     </message>
     <message>
         <source>Value</source>
-        <translation>Wert</translation>
+        <translation type="vanished">Wert</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="6127"/>
@@ -6487,7 +6487,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Save Attachment</source>
-        <translation>Speichere Anhang</translation>
+        <translation type="vanished">Speichere Anhang</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="1180"/>
@@ -6496,7 +6496,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Attachment</source>
-        <translation>&amp;Anhang</translation>
+        <translation type="vanished">&amp;Anhang</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="1883"/>
@@ -6597,7 +6597,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Click to disable rich text.</source>
-        <translation>Klicke, um Rich Text abzustellen.</translation>
+        <translation type="vanished">Klicke, um Rich Text abzustellen.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="2259"/>
@@ -6654,7 +6654,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Days Valid</source>
-        <translation>&amp;Tage gültig</translation>
+        <translation type="vanished">&amp;Tage gültig</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="2749"/>
@@ -6945,7 +6945,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Vacuum Databases</source>
-        <translation>Entleere die Datenbank</translation>
+        <translation type="vanished">Entleere die Datenbank</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="4758"/>
@@ -6978,10 +6978,8 @@ Error: %1.</source>
         <translation>PIN</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-controlcenter.ui" line="4902"/>
-        <location filename="../UI/spot-on-controlcenter.ui" line="5095"/>
         <source>Iteraction &amp;Count</source>
-        <translation>Iteraction Zählung</translation>
+        <translation type="vanished">Iteraction Zählung</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="4938"/>
@@ -7278,7 +7276,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Poptastic &amp;&amp; RetroPhone Settings</source>
-        <translation>&amp;Poptastic Einstellungen (POP3 / IMAP)</translation>
+        <translation type="vanished">&amp;Poptastic Einstellungen (POP3 / IMAP)</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="8808"/>
@@ -7287,7 +7285,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Options</source>
-        <translation>&amp;Optionen</translation>
+        <translation type="vanished">&amp;Optionen</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="8816"/>
@@ -7296,7 +7294,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;About</source>
-        <translation>&amp;Über</translation>
+        <translation type="vanished">&amp;Über</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="8833"/>
@@ -7315,7 +7313,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Discover!</source>
-        <translation>Entdecke!</translation>
+        <translation type="vanished">Entdecke!</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="2739"/>
@@ -7599,6 +7597,8 @@ Error: %1.</source>
         <translation type="obsolete">Verneinen</translation>
     </message>
     <message>
+        <location filename="../UI/spot-on-controlcenter.ui" line="4902"/>
+        <location filename="../UI/spot-on-controlcenter.ui" line="5095"/>
         <location filename="../UI/spot-on-controlcenter.ui" line="6007"/>
         <source>Iteration &amp;Count</source>
         <translation></translation>
@@ -7640,7 +7640,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Log Viewer</source>
-        <translation>Logbuch Ansicht</translation>
+        <translation type="vanished">Logbuch Ansicht</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="2294"/>
@@ -7687,7 +7687,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Select</source>
-        <translation>Auswählen</translation>
+        <translation type="vanished">Auswählen</translation>
     </message>
     <message>
         <source>Show Only &amp;Online Listeners</source>
@@ -7987,7 +7987,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Sign geminis, messages, and status bulletins.</source>
-        <translation>Signiere Geminis, Nachrichten und Status-Mitteilungen.</translation>
+        <translation type="vanished">Signiere Geminis, Nachrichten und Status-Mitteilungen.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="1585"/>
@@ -8001,7 +8001,7 @@ Error: %1.</source>
     </message>
     <message>
         <source>Sign &amp;letters.</source>
-        <translation>Signiere Briefe.</translation>
+        <translation type="vanished">Signiere Briefe.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-options.ui" line="1785"/>

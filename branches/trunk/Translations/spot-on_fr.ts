@@ -5230,12 +5230,6 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-controlcenter.ui" line="4902"/>
-        <location filename="../UI/spot-on-controlcenter.ui" line="5095"/>
-        <source>Iteraction &amp;Count</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="4938"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate encryption and hash keys and save the results along with relevant information.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
@@ -6573,6 +6567,8 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../UI/spot-on-controlcenter.ui" line="4902"/>
+        <location filename="../UI/spot-on-controlcenter.ui" line="5095"/>
         <location filename="../UI/spot-on-controlcenter.ui" line="6007"/>
         <source>Iteration &amp;Count</source>
         <translation type="unfinished"></translation>
