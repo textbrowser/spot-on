@@ -5812,7 +5812,7 @@ QPushButton:pressed {
                      <item>
                       <widget class="QLabel" name="label_140">
                        <property name="text">
-                        <string>Iteraction &amp;Count</string>
+                        <string>Iteration &amp;Count</string>
                        </property>
                        <property name="buddy">
                         <cstring>commonUrlIterationCount</cstring>
@@ -6055,7 +6055,7 @@ QPushButton:pressed {
                      <item>
                       <widget class="QLabel" name="label_111">
                        <property name="text">
-                        <string>Iteraction &amp;Count</string>
+                        <string>Iteration &amp;Count</string>
                        </property>
                        <property name="buddy">
                         <cstring>urlIteration</cstring>
