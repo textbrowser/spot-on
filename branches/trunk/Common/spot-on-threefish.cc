@@ -394,9 +394,17 @@ static void threefish_encrypt_implementation(char *E,
   uint64_t t[3];
   uint64_t *v = new (std::nothrow) uint64_t[Nw];
 
+  if(!k || !s || !v)
+    {
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
+
   for(size_t i = 0; i < Nr / 4 + 1; i++)
     {
-      s[i] = new uint64_t[Nw];
+      s[i] = new (std::nothrow) uint64_t[Nw];
 
       if(!s[i])
 	error = true;
@@ -444,6 +452,14 @@ static void threefish_encrypt_implementation(char *E,
 	  v[i] += s[d / 4][i];
 
       uint64_t *f = new (std::nothrow) uint64_t[Nw];
+
+      if(!f)
+	{
+	  if(ok)
+	    *ok = false;
+
+	  goto done_label;
+	}
 
       for(size_t i = 0; i < Nw / 2; i++)
 	{
@@ -834,13 +850,20 @@ void spoton_threefish::setTweak(const QByteArray &tweak, bool *ok)
     }
 
   delete []m_tweak;
-  m_tweak = new char[static_cast<size_t> (tweak.length())];
+  m_tweak = new (std::nothrow) char[static_cast<size_t> (tweak.length())];
+
+  if(!m_tweak)
+    {
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
+
   m_tweakLength = static_cast<size_t> (tweak.length());
 
   if(!m_tweak)
     {
-      m_tweakLength = 0;
-
       if(ok)
 	*ok = false;
 
@@ -861,10 +884,14 @@ void spoton_threefish::setTweak(const QByteArray &tweak, bool *ok)
 
 void spoton_threefish::test1(void)
 {
+  spoton_threefish *s = new (std::nothrow) spoton_threefish();
+
+  if(!s)
+    return;
+
   QByteArray c;
   QByteArray p;
   bool ok = true;
-  spoton_threefish *s = new spoton_threefish();
 
   s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
 
@@ -885,10 +912,14 @@ void spoton_threefish::test1(void)
 
 void spoton_threefish::test2(void)
 {
+  spoton_threefish *s = new (std::nothrow) spoton_threefish();
+
+  if(!s)
+    return;
+
   QByteArray c;
   QByteArray p;
   bool ok = true;
-  spoton_threefish *s = new spoton_threefish();
 
   s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
 
@@ -914,10 +945,14 @@ void spoton_threefish::test2(void)
 
 void spoton_threefish::test3(void)
 {
+  spoton_threefish *s = new (std::nothrow) spoton_threefish();
+
+  if(!s)
+    return;
+
   QByteArray c;
   QByteArray p;
   bool ok = true;
-  spoton_threefish *s = new spoton_threefish();
 
   s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
 
