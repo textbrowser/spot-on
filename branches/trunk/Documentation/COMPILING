@@ -12,6 +12,12 @@ include qt5 in their names. qmake may be an alias for qmake-qt4 or qmake-qt5.
 Absolute cleaning:
 make distclean or mingw32-make distclean
 
+ARM
+
+qmake or qmake-qt4 -o Makefile spot-on.arm.pro
+qmake or qmake-qt5 -o Makefile spot-on.arm.qt5.pro
+make
+
 FreeBSD
 
 qmake or qmake-qt4 -o Makefile spot-on.freebsd.pro
