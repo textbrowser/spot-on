@@ -559,9 +559,10 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(chat)
 			chat->setSMPVerified(false);
 
-		      values = smp->nextStep(values, &ok, &passed);
+		      if(smp)
+			values = smp->nextStep(values, &ok, &passed);
 
-		      if(!ok || smp->step() == 4 || smp->step() == 5)
+		      if(smp && (!ok || smp->step() == 4 || smp->step() == 5))
 			{
 			  msg.clear();
 			  msg.append
