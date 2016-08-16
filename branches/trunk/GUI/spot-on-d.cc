@@ -577,7 +577,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.label_140->setVisible(!state);
   m_ui.label_15->setVisible(!state);
   m_ui.label_16->setVisible(!state);
-  m_ui.label_2->setVisible(!state);
   m_ui.label_21->setVisible(!state);
   m_ui.label_23->setVisible(!state);
   m_ui.label_27->setVisible(!state);
@@ -605,7 +604,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.neighborsEchoMode->setVisible(!state);
   m_ui.neighborsSslControlString->setVisible(!state);
   m_ui.neighborsSslControlString->setVisible(!state);
-  m_ui.postgresql_recommended_labe->setVisible(!state);
+  m_ui.postgresql_recommendation_label->setVisible(!state);
   m_ui.proxy->setVisible(!state);
   m_ui.publicKeysBox->setVisible(!state);
   m_ui.pulseSize->setVisible(!state);

@@ -2953,7 +2953,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>566</width>
-             <height>1592</height>
+             <height>1684</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3633,18 +3633,6 @@ QPushButton#addListener:pressed {
                    </property>
                    <item>
                     <widget class="QListWidget" name="accounts">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>16777215</width>
-                       <height>100</height>
-                      </size>
-                     </property>
                      <property name="tabKeyNavigation">
                       <bool>true</bool>
                      </property>
@@ -8168,8 +8156,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>450</width>
-             <height>671</height>
+             <width>582</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9539,8 +9527,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>492</width>
-             <height>392</height>
+             <width>582</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
