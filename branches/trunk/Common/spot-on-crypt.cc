@@ -114,10 +114,11 @@ struct gcry_thread_cbs gcry_threads_qt =
   };
 #endif
 
+bool spoton_crypt::s_cbc_cts_enabled = true;
 static bool gcryctl_set_thread_cbs_set = false;
 static bool ssl_library_initialized = false;
 
-void spoton_crypt::init(const int secureMemorySize)
+void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 {
   if(!gcryctl_set_thread_cbs_set)
     {
@@ -144,6 +145,7 @@ void spoton_crypt::init(const int secureMemorySize)
 
   if(!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
     {
+      s_cbc_cts_enabled = cbc_cts_enabled;
       gcry_control(GCRYCTL_ENABLE_M_GUARD);
 
       if(!gcry_check_version(GCRYPT_VERSION))
@@ -623,9 +625,16 @@ void spoton_crypt::init(const QString &cipherType,
       if(m_cipherAlgorithm > 0)
 	{
 	  if(modeOfOperation.toLower() == "cbc")
-	    err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,
-				   GCRY_CIPHER_MODE_CBC,
-				   GCRY_CIPHER_CBC_CTS | GCRY_CIPHER_SECURE);
+	    {
+	      unsigned int flags = GCRY_CIPHER_SECURE;
+
+	      if(s_cbc_cts_enabled)
+		flags |= GCRY_CIPHER_CBC_CTS;
+
+	      err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,
+				     GCRY_CIPHER_MODE_CBC,
+				     flags);
+	    }
 #if GCRYPT_VERSION_NUMBER >= 0x010600
 	  else if(modeOfOperation.toLower() == "gcm")
 	    err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,

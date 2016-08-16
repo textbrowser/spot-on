@@ -365,7 +365,8 @@ int main(int argc, char *argv[])
   else if(integer < 131072 || integer > 999999999 || !ok)
     integer = 262144;
 
-  spoton_crypt::init(integer);
+  spoton_crypt::init
+    (integer, settings.value("gui/cbc_cts_enabled", true).toBool());
 
   try
     {

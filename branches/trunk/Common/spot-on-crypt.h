@@ -140,7 +140,7 @@ class spoton_crypt
 			      const QHostAddress &address,
 			      const long days,
 			      QString &error);
-  static void init(const int secureMemorySize);
+  static void init(const int secureMemorySize, const bool cbc_cts_enabled);
   static void memcmp_test(void);
   static void purgeDatabases(void);
   static void reencodePrivatePublicKeys
@@ -222,6 +222,7 @@ class spoton_crypt
   size_t m_privateKeyLength;
   size_t m_symmetricKeyLength;
   spoton_threefish *m_threefish;
+  static bool s_cbc_cts_enabled;
   unsigned long m_iterationCount;
   QByteArray publicKeyDecryptMcEliece(const QByteArray &data, bool *ok);
   QByteArray publicKeyDecryptNTRU(const QByteArray &data, bool *ok);
