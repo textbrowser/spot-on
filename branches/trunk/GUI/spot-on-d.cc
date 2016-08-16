@@ -605,6 +605,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.neighborsEchoMode->setVisible(!state);
   m_ui.neighborsSslControlString->setVisible(!state);
   m_ui.neighborsSslControlString->setVisible(!state);
+  m_ui.postgresql_recommended_labe->setVisible(!state);
   m_ui.proxy->setVisible(!state);
   m_ui.publicKeysBox->setVisible(!state);
   m_ui.pulseSize->setVisible(!state);

@@ -5401,7 +5401,7 @@ color: rgb(255, 255, 255);
                  <number>5</number>
                 </property>
                 <item>
-                 <widget class="QLabel" name="label_2">
+                 <widget class="QLabel" name="postgresql_recommendation_label">
                   <property name="text">
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please consider installing PostgreSQL. Although SQLite is fully supported, PostgreSQL offers improved performance as well as networking capabilities. Please visit &lt;a href=&quot;https://www.postgresql.org/download&quot;&gt;https://www.postgresql.org/download&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
@@ -6617,7 +6617,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>848</width>
              <height>1155</height>
             </rect>
            </property>
@@ -8168,8 +8168,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>582</width>
-             <height>685</height>
+             <width>450</width>
+             <height>671</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9539,8 +9539,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>582</width>
-             <height>685</height>
+             <width>492</width>
+             <height>392</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
