@@ -969,7 +969,7 @@ QPushButton:pressed {
              </widget>
              <widget class="QGroupBox" name="groupBox_11">
               <property name="title">
-               <string>Friends</string>
+               <string>Participants</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_73">
                <property name="spacing">
@@ -1043,7 +1043,7 @@ QPushButton:pressed {
                   </attribute>
                   <column>
                    <property name="text">
-                    <string>Friend</string>
+                    <string>Participant</string>
                    </property>
                   </column>
                   <column>
@@ -1322,8 +1322,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>684</width>
-             <height>540</height>
+             <width>700</width>
+             <height>669</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1775,7 +1775,7 @@ QPushButton:pressed {
  }</string>
                       </property>
                       <property name="text">
-                       <string>Save Attachment...</string>
+                       <string>Save Attachment(s)...</string>
                       </property>
                       <property name="icon">
                        <iconset resource="../Icons/icons.qrc">
@@ -2752,7 +2752,7 @@ QPushButton:pressed {
                   <item row="5" column="0">
                    <widget class="QLabel" name="label_94">
                     <property name="text">
-                     <string>&amp;Attachment</string>
+                     <string>&amp;Attachment(s)</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -2952,8 +2952,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>500</width>
-             <height>1606</height>
+             <width>566</width>
+             <height>1592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4226,7 +4226,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>588</width>
-             <height>474</height>
+             <height>669</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5295,7 +5295,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>626</width>
-             <height>291</height>
+             <height>669</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6617,7 +6617,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>848</width>
+             <width>812</width>
              <height>1155</height>
             </rect>
            </property>
@@ -8168,8 +8168,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>450</width>
-             <height>671</height>
+             <width>582</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -8710,7 +8710,7 @@ QPushButton:pressed {
                  <normaloff>:/nuvola/down.png</normaloff>:/nuvola/down.png</iconset>
                </attribute>
                <attribute name="title">
-                <string>&amp;Incoming</string>
+                <string>&amp;Received</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_44">
                 <property name="spacing">
@@ -8947,7 +8947,7 @@ QPushButton:pressed {
                  <normaloff>:/nuvola/up.png</normaloff>:/nuvola/up.png</iconset>
                </attribute>
                <attribute name="title">
-                <string>&amp;Uploaded</string>
+                <string>&amp;Transmitted</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_46">
                 <property name="spacing">
@@ -9539,8 +9539,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>492</width>
-             <height>392</height>
+             <width>582</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
