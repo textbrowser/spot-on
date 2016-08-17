@@ -71,7 +71,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-571</y>
              <width>571</width>
              <height>1211</height>
             </rect>
@@ -1267,11 +1267,14 @@
                  </property>
                  <item>
                   <widget class="QSpinBox" name="kernel_url_batch_size">
+                   <property name="toolTip">
+                    <string>Please review your lane widths before increasing this value.</string>
+                   </property>
                    <property name="minimum">
                     <number>1</number>
                    </property>
                    <property name="maximum">
-                    <number>16</number>
+                    <number>15</number>
                    </property>
                    <property name="value">
                     <number>5</number>
@@ -2183,8 +2186,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>559</height>
+             <width>287</width>
+             <height>218</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
