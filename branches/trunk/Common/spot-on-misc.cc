@@ -5006,7 +5006,7 @@ void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
   spoton_common::CACHE_TIME_DELTA_MAXIMUM =
     qBound(5, values.value(3), 600);
   spoton_common::KERNEL_URL_DISPATCHER_INTERVAL =
-    qBound(15, values.value(4), 600);
+    qBound(45, values.value(4), 600);
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
     qBound(5, values.value(5), 600);
   spoton_common::MAIL_TIME_DELTA_MAXIMUM =

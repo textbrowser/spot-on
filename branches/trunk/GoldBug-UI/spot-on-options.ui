@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>571</width>
-             <height>1255</height>
+             <height>1211</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1392,7 +1392,7 @@
              <x>0</x>
              <y>0</y>
              <width>635</width>
-             <height>1004</height>
+             <height>966</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -2183,8 +2183,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>287</width>
-             <height>219</height>
+             <width>468</width>
+             <height>559</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_24">
@@ -2323,7 +2323,7 @@
               <item>
                <widget class="QSlider" name="kernel_url_dispatcher">
                 <property name="minimum">
-                 <number>5</number>
+                 <number>45</number>
                 </property>
                 <property name="maximum">
                  <number>600</number>
@@ -2451,7 +2451,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
