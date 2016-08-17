@@ -4541,7 +4541,7 @@ QList<QTableWidgetItem *> spoton::findItems(QTableWidget *table,
 					    const QString &text,
 					    const int column)
 {
-  if(column < 0 || !table)
+  if(column < 0 || !table || column >= table->columnCount())
     return QList<QTableWidgetItem *> ();
 
   QList<QTableWidgetItem *> list;

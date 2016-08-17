@@ -70,6 +70,11 @@ class spoton_smp
     m_modulus = gcry_mpi_copy(modulus);
   }
 
+  void setStep0(void)
+  {
+    m_step = 0;
+  }
+
  private:
   QString m_guessString;
   bool m_passed;

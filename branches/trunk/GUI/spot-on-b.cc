@@ -403,7 +403,6 @@ void spoton::slotReceivedKernelMessage(void)
 				      ** public key.
 				      */
 		      QDateTime now(QDateTime::currentDateTime());
-		      QString keyType("");
 		      QString msg("");
 
 		      msg.append
@@ -455,8 +454,33 @@ void spoton::slotReceivedKernelMessage(void)
 				      ** public key.
 				      */
 		      QDateTime now(QDateTime::currentDateTime());
+		      QList<QTableWidgetItem *> items
+			(findItems(m_ui.participants, hash.toBase64(), 3));
 		      QString keyType("");
 		      QString msg("");
+		      QString smpName("");
+
+		      if(!items.isEmpty() && items.at(0))
+			{
+			  QTableWidgetItem *item = m_ui.participants->
+			    item(items.at(0)->row(), 0); // Name
+
+			  if(item)
+			    {
+			      keyType = item->data
+				(Qt::ItemDataRole(Qt::UserRole + 1)).
+				toString();
+			      smpName = item->text();
+			    }
+			}
+
+		      if(smpName.isEmpty())
+			{
+			  if(keyType == "poptastic")
+			    smpName = "unknown@unknown.org";
+			  else
+			    smpName = "unknown";
+			}
 
 		      msg.append
 			(QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
@@ -469,8 +493,9 @@ void spoton::slotReceivedKernelMessage(void)
 			 arg(now.toString("ss")));
 		      msg.append
 			(tr("<i>Received an%1SMP message "
-			    "from %2...%3.</i>").
+			    "from %2 (%3...%4).</i>").
 			 arg(notsigned).
+			 arg(smpName).
 			 arg(hash.toBase64().mid(0, 16).
 			     constData()).
 			 arg(hash.toBase64().right(16).
@@ -516,7 +541,8 @@ void spoton::slotReceivedKernelMessage(void)
 			     arg(now.toString("ss")));
 			  msg.append(tr("<i>Unable to respond because "
 					"an SMP object is not defined for "
-					"%1...%2.</i>").
+					"%1 (%2...%3).</i>").
+				     arg(smpName).
 				     arg(hash.toBase64().mid(0, 16).
 					 constData()).
 				     arg(hash.toBase64().right(16).
@@ -536,8 +562,8 @@ void spoton::slotReceivedKernelMessage(void)
 			    (m_ui.messages->verticalScrollBar()->maximum());
 			}
 
-		      QList<QTableWidgetItem *> items
-			(findItems(m_ui.participants, hash.toBase64(), 3));
+		      items = findItems(m_ui.participants, hash.toBase64(), 3);
+
 		      QString oid("");
 		      bool ok = true;
 		      bool passed = false;
@@ -578,19 +604,33 @@ void spoton::slotReceivedKernelMessage(void)
 			  if(smp->step() == 4 || smp->step() == 5)
 			    {
 			      if(passed)
-				msg.append
-				  (tr("<font color=green>"
-				      "<i>SMP verification with %1...%2 "
-				      "has succeeded.</i></font>").
-				   arg(hash.toBase64().mid(0, 16).
-				       constData()).
-				   arg(hash.toBase64().right(16).
-				       constData()));
+				{
+				  msg.append
+				    (tr("<font color=green>"
+					"<i>SMP verification with "
+					"%1 (%2...%3) "
+					"has succeeded.</i></font>").
+				     arg(smpName).
+				     arg(hash.toBase64().mid(0, 16).
+					 constData()).
+				     arg(hash.toBase64().right(16).
+					 constData()));
+
+				  /*
+				  ** Set the SMP's state to the first stage.
+				  ** Messaging popups may be displayed after
+				  ** a successful SMP execution.
+				  */
+
+				  smp->setStep0();
+				}
 			      else
 				msg.append
 				  (tr("<font color=red>"
-				      "<i>SMP verification with %1...%2 "
+				      "<i>SMP verification with "
+				      "%1 (%2...%3) "
 				      "has failed.</i></font>").
+				   arg(smpName).
 				   arg(hash.toBase64().mid(0, 16).
 				       constData()).
 				   arg(hash.toBase64().right(16).
@@ -599,10 +639,12 @@ void spoton::slotReceivedKernelMessage(void)
 			  else
 			    msg.append
 			      (tr("<font color=red>"
-				  "<i>SMP verification with %1...%2 "
+				  "<i>SMP verification with "
+				  "%1 (%2...%3) "
 				  "experienced a protocol failure. "
 				  "The state machine has been reset."
 				  "</i></font>").
+			       arg(smpName).
 			       arg(hash.toBase64().mid(0, 16).
 				   constData()).
 			       arg(hash.toBase64().right(16).
