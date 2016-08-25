@@ -152,12 +152,9 @@ Completed Items
 108.   The method spoton_neighbor::savePublicKey() does not compare
        personal keys with provided keys.
 109.   UDP multicast servers are not necessary.
+110.   Prevent inserts of own keys in friends_public_keys.db.
 
 Ignored Items
-
-1.     Index the PostgreSQL tables.
-
-Remaining Items
 
 1.     The kernel should fetch a node's external IP address. Not ideal for
        listeners that are connected on interfaces having different external
@@ -223,7 +220,7 @@ Remaining Items
        address changes while connections are already established, the
        state timers will eventually cause objects to be reset and therefore
        new attempts will be made to capture the external IP addresses. Review!
-38.    Prevent inserts of own keys in friends_public_keys.db.
+38.    Index the PostgreSQL tables.
 39.    Wormholes for streamed data.
 40.    Sieve machine for better congestion control and less repetitive
        work.
@@ -249,7 +246,7 @@ Remaining Items
        perform SMP via the new prime. What do the mathematical connotations
        show us? May require a generator too.
 58.    Qt 5.5.x supports serial ports.
-59.    Rosetta... support GPG keys (separate) and simple interface
+59.    Rosetta, support GPG keys (separate) and simple interface
        into GPG (separate).
 60.    Export/import URLs.
 61.    Large database values (BYTEA) will impede the user experience.
@@ -260,7 +257,10 @@ Remaining Items
 66.    Per-neighbor override of required signature proofs during key sharing.
 67.    Per Magical Hero, download specific Web pages on request.
        Pseudo-proxy.
-68.    Automatic computations of rapid StarBeam digests may be incorrect.
+
+Remaining Items
+
+1.     Automatic computations of rapid StarBeam digests may be incorrect.
        See spoton::slotPopulateStars().
-69.    UDP multicast address sharing is flawed in Qt 4.x.
+2.     UDP multicast address sharing is flawed in Qt 4.x.
        (https://bugreports.qt.io/browse/QTBUG-33419)
