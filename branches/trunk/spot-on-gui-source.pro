@@ -44,6 +44,7 @@ SOURCES		= Common/spot-on-crypt.cc \
 		  Common/spot-on-crypt-mceliece.cc \
 		  Common/spot-on-crypt-ntru.cc \
 		  Common/spot-on-external-address.cc \
+		  Common/spot-on-mceliece.cc \
 		  Common/spot-on-misc.cc \
                   Common/spot-on-send.cc \
 		  Common/spot-on-threefish.cc \
