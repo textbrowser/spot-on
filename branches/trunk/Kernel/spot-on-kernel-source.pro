@@ -1,4 +1,9 @@
+ntl.target = ntl.a
+ntl.commands = cd ../../../libNTL/unix.d/src && ./configure && $(MAKE)
+ntl.depends =
+
 INCLUDEPATH	+= ../../../libNTL/unix.d/include
+LIBS		+= -L../../../libNTL/unix.d/src -l:ntl.a
 
 HEADERS		= ../Common/spot-on-external-address.h \
 		  spot-on-fireshare.h \

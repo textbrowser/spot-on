@@ -1509,7 +1509,7 @@ public:
 class InvModErrorObject : public ArithmeticErrorObject {
 public:
    InvModErrorObject(const char *s, const ZZ& a, const ZZ& n)
-      : ArithmeticErrorObject(s) { }
+     : ArithmeticErrorObject(s) {(void) a; (void) n; }
 
    const ZZ& get_a() const { return ZZ::zero(); }
    const ZZ& get_n() const { return ZZ::zero(); }

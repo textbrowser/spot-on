@@ -30,6 +30,8 @@
 */
 
 #ifdef SPOTON_MCELIECE_ENABLED
+#include <QObject>
+
 #include <bitset>
 #include <map>
 
@@ -393,6 +395,9 @@ spoton_mceliece::spoton_mceliece(const size_t m,
 				 const std::stringstream &P,
 				 const std::stringstream &S)
 {
+  Q_UNUSED(G);
+  Q_UNUSED(P);
+  Q_UNUSED(S);
   m_privateKey = 0;
   m_publicKey = 0;
 

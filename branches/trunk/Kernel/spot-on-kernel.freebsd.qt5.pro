@@ -21,6 +21,7 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_LINKED_WITH_LIBGEOIP \
    	   SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
+           SPOTON_MCELIECE_ENABLED \
            SPOTON_SCTP_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -39,13 +40,13 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
-QMAKE_EXTRA_TARGETS = libntru libspoton purge
+QMAKE_EXTRA_TARGETS = libntru libspoton ntl purge
 INCLUDEPATH	+= . ../. ../../../. /usr/local/include/postgresql
 LIBS		+= -L../../../libNTRU -L../../../libSpotOn \
 		   -L/usr/local/lib -lGeoIP \
 		   -lcrypto -lcurl -lgcrypt -lgpg-error -lntru -lpq \
 		   -lspoton -lssl
-PRE_TARGETDEPS = libntru.so libspoton.so purge
+PRE_TARGETDEPS = libntru.so libspoton.so ntl.a
 OBJECTS_DIR = temp/obj
 UI_DIR = temp/ui
 MOC_DIR = temp/moc
