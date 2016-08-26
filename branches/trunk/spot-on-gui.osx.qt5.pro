@@ -47,7 +47,8 @@ LIBS		+= -L../../libNTRU -lntru \
                    -L../../libSpotOn -lspoton \
                    -L/usr/local/lib -L/usr/local/opt/curl/lib \
                    -L/usr/local/opt/openssl/lib -lGeoIP \
-                   -lcrypto -lcurl -lgcrypt -lgpg-error -l:libntl.a -lpq -lssl \
+                   -lcrypto -lcurl -lgcrypt -lgmp \
+		   -lgpg-error -lntl -lpq -lssl \
                    -framework AppKit -framework Cocoa
 PRE_TARGETDEPS = libntru.dylib libspoton.dylib
 OBJECTS_DIR = temp/obj
