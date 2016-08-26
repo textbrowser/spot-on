@@ -64,7 +64,7 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
 	mceliece->publicKeyParameters(publicKey);
 
 	if(!publicKey.isEmpty())
-	  publicKey.prepend("mceliece-public-key");
+	  publicKey.prepend("mceliece-public-key-");
 
 	if(!publicKey.isEmpty() && !privateKey.isEmpty())
 	  if(ok)
@@ -102,9 +102,30 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
     *ok = false;
 
 #ifdef SPOTON_MCELIECE_ENABLED
-  Q_UNUSED(data);
-  Q_UNUSED(publicKey);
-  return QByteArray();
+  if(data.isEmpty() || !publicKey.startsWith("mceliece-public-key-"))
+    return QByteArray();
+
+  QByteArray bytes;
+  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece
+    (publicKey.mid(static_cast<int> (qstrlen("mceliece-public-key-"))));
+  std::stringstream ciphertext;
+
+  if(mceliece)
+    if(mceliece->encrypt(data.constData(),
+			 static_cast<size_t> (data.length()),
+			 ciphertext))
+      {
+	bytes = QByteArray // A deep copy is required.
+	  (ciphertext.str().c_str(),
+	   static_cast<int> (ciphertext.str().size()));
+
+	if(!bytes.isEmpty())
+	  if(ok)
+	    *ok = true;
+      }
+
+  delete mceliece;
+  return bytes;
 #else
   Q_UNUSED(data);
   Q_UNUSED(publicKey);
@@ -114,10 +135,20 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
 
 QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
 {
-  Q_UNUSED(data);
-
   QString keySize("");
 
+#ifdef SPOTON_MCELIECE_ENABLED
+  if(!data.startsWith("mceliece-public-key-"))
+    return keySize;
+
+  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece
+    (data.mid(static_cast<int> (qstrlen("mceliece-public-key-"))));
+
+  if(mceliece)
+    keySize = QString("m%1t%2").arg(mceliece->m(), mceliece->t());
+
+  delete mceliece;
+#endif
   return keySize;
 }
 

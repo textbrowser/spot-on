@@ -354,15 +354,10 @@ spoton_mceliece_public_key::spoton_mceliece_public_key(const size_t m,
 }
 
 spoton_mceliece_public_key::spoton_mceliece_public_key
-(const size_t t,
- const std::stringstream &Gcar)
+(const size_t t, const NTL::mat_GF2 &Gcar)
 {
+  m_Gcar = Gcar;
   m_t = spoton_mceliece::minimumT(t);
-
-  std::stringstream s;
-
-  s << Gcar.rdbuf();
-  s >> m_Gcar;
 }
 
 spoton_mceliece_public_key::~spoton_mceliece_public_key()
@@ -424,9 +419,25 @@ spoton_mceliece::spoton_mceliece(const size_t m,
     }
 }
 
-spoton_mceliece::spoton_mceliece(const size_t t,
-				 const std::stringstream &Gcar)
+spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
 {
+  NTL::mat_GF2 Gcar;
+  char *c = new (std::nothrow) char[static_cast<size_t> (publicKey.length())];
+  size_t t = 0;
+
+  if(c)
+    {
+      memcpy
+	(c, publicKey.constData(), static_cast<size_t> (publicKey.length()));
+
+      std::stringstream s;
+
+      s << c;
+      s >> Gcar;
+      s >> t;
+    }
+
+  delete []c;
   m_privateKey = 0;
   m_publicKey = new (std::nothrow) spoton_mceliece_public_key(t, Gcar);
 
@@ -900,7 +911,7 @@ void spoton_mceliece::publicKeyParameters(QByteArray &publicKey)
 
       s << m_publicKey->Gcar();
       s << m_publicKey->t();
-      publicKey = QByteArray
+      publicKey = QByteArray // A deep copy is required.
 	(s.str().c_str(), static_cast<int> (s.str().size()));
     }
 }
