@@ -66,6 +66,8 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
 	if(!publicKey.isEmpty())
 	  publicKey.prepend("mceliece-public-key-");
 
+	privateKey = publicKey;
+
 	if(!publicKey.isEmpty() && !privateKey.isEmpty())
 	  if(ok)
 	    *ok = true;
@@ -145,7 +147,7 @@ QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
     (data.mid(static_cast<int> (qstrlen("mceliece-public-key-"))));
 
   if(mceliece)
-    keySize = QString("m%1t%2").arg(mceliece->m(), mceliece->t());
+    keySize = QString("m%1t%2").arg(mceliece->m()).arg(mceliece->t());
 
   delete mceliece;
 #endif
