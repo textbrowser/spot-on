@@ -26,6 +26,9 @@
 */
 
 #include "spot-on-crypt.h"
+#ifdef SPOTON_MCELIECE_ENABLED
+#include "spot-on-mceliece.h"
+#endif
 #include "spot-on-misc.h"
 
 void spoton_crypt::generateMcElieceKeys(const QString &keySize,
@@ -37,7 +40,30 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
     *ok = false;
 
 #ifdef SPOTON_MCELIECE_ENABLED
-  Q_UNUSED(keySize);
+  size_t m = 0;
+  size_t t = 0;
+
+  if(keySize == "m12t66")
+    {
+      m = 12;
+      t = 66;
+    }
+  else if(keySize == "m13t119")
+    {
+      m = 13;
+      t = 119;
+    }
+  else
+    return;
+
+  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece(m, t);
+
+  if(mceliece)
+    if(mceliece->generatePrivatePublicKeys())
+      {
+      }
+
+  delete mceliece;
   Q_UNUSED(privateKey);
   Q_UNUSED(publicKey);
 #else
