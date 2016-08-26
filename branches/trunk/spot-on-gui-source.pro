@@ -1,9 +1,11 @@
+!macx {
 ntl.target = ntl.a
 ntl.commands = cd ../../libNTL/unix.d/src && ./configure && $(MAKE)
 ntl.depends =
 
 INCLUDEPATH	+= ../../libNTL/unix.d/include
 LIBS		+= -L../../libNTL/unix.d/src -l:ntl.a
+}
 
 FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
 		  UI/spot-on-buzzpage.ui \
