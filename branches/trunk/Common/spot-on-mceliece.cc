@@ -30,7 +30,7 @@
 */
 
 #ifdef SPOTON_MCELIECE_ENABLED
-#include <QObject>
+#include <QDataStream>
 
 #include <bitset>
 #include <map>
@@ -878,12 +878,16 @@ void spoton_mceliece::privateKeyParameters(std::stringstream &G,
   Sinv << m_privateKey->Sinv();
 }
 
-void spoton_mceliece::publicKeyParameters(size_t &t, std::stringstream &Gcar)
+void spoton_mceliece::publicKeyParameters(QByteArray &publicKey)
 {
   if(m_publicKey)
     {
-      Gcar << m_publicKey->Gcar();
-      t = m_t;
+      std::stringstream s;
+
+      s << m_publicKey->Gcar();
+      s << m_publicKey->t();
+      publicKey = QByteArray
+	(s.str().c_str(), static_cast<int> (s.str().size()));
     }
 }
 

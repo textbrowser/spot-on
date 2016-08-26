@@ -175,6 +175,11 @@ class spoton_mceliece_public_key
     return static_cast<size_t> (m_Gcar.NumCols());
   }
 
+  size_t t(void) const
+  {
+    return m_t;
+  }
+
  private:
   NTL::mat_GF2 m_Gcar;
   bool m_ok;
@@ -227,7 +232,7 @@ class spoton_mceliece
 			    std::stringstream &Pinv,
 			    std::stringstream &S,
 			    std::stringstream &Sinv);
-  void publicKeyParameters(size_t &t, std::stringstream &Gcar);
+  void publicKeyParameters(QByteArray &publicKey);
 
  private:
   spoton_mceliece_private_key *m_privateKey;
