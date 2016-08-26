@@ -108,16 +108,6 @@ class spoton_mceliece_private_key
 
   bool prepareG(const NTL::mat_GF2 &R);
 
-  size_t m(void) const
-  {
-    return m_m;
-  }
-
-  size_t t(void) const
-  {
-    return m_t;
-  }
-
   std::vector<NTL::GF2EX> preSynTab(void) const
   {
     return m_preSynTab;
@@ -179,16 +169,6 @@ class spoton_mceliece_public_key
     return static_cast<size_t> (m_Gcar.NumRows());
   }
 
-  size_t m(void) const
-  {
-    size_t m = 0;
-
-    if(t() > 0)
-      m = (n() - k()) / t();
-
-    return m;
-  }
-
   size_t n(void) const
   {
     return static_cast<size_t> (m_Gcar.NumCols());
@@ -208,13 +188,8 @@ class spoton_mceliece_public_key
 class spoton_mceliece
 {
  public:
-  spoton_mceliece(const size_t m, const size_t t);
-  spoton_mceliece(const size_t m,
-		  const size_t t,
-		  const std::stringstream &G,
-		  const std::stringstream &P,
-		  const std::stringstream &S);
   spoton_mceliece(const QByteArray &publicKey);
+  spoton_mceliece(const size_t m, const size_t t);
   ~spoton_mceliece();
   bool decrypt(const std::stringstream &ciphertext,
 	       std::stringstream &plaintext);
@@ -224,22 +199,12 @@ class spoton_mceliece
 
   size_t m(void) const
   {
-    if(m_privateKey)
-      return m_privateKey->m();
-    else if(m_publicKey)
-      return m_publicKey->m();
-    else
-      return 0;
+    return m_m;
   }
 
   size_t t(void) const
   {
-    if(m_privateKey)
-      return m_privateKey->t();
-    else if(m_publicKey)
-      return m_publicKey->t();
-    else
-      return 0;
+    return m_t;
   }
 
   static size_t minimumM(const size_t m)

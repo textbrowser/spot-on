@@ -383,6 +383,49 @@ bool spoton_mceliece_public_key::prepareGcar(const NTL::mat_GF2 &G,
   return true;
 }
 
+spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
+{
+  m_k = 0;
+  m_m = 0;
+  m_n = 0;
+  m_t = 0;
+
+  NTL::mat_GF2 Gcar;
+  char *c = new (std::nothrow) char
+    [static_cast<size_t> (publicKey.length()) + 1];
+
+  if(c)
+    {
+      memset(c, 0, static_cast<size_t> (publicKey.length()) + 1);
+      memcpy
+	(c, publicKey.constData(), static_cast<size_t> (publicKey.length()));
+
+      std::stringstream s;
+
+      s << c;
+      s >> Gcar;
+      s >> m_t;
+    }
+
+  delete []c;
+  m_t = minimumT(m_t);
+  m_privateKey = 0;
+  m_publicKey = new (std::nothrow) spoton_mceliece_public_key(m_t, Gcar);
+
+  if(m_publicKey)
+    {
+      m_k = m_publicKey->k();
+      m_n = m_publicKey->n();
+    }
+
+  /*
+  ** Calculate m.
+  */
+
+  if(m_t > 0)
+    m_m = (m_n - m_k) / m_t;
+}
+
 spoton_mceliece::spoton_mceliece(const size_t m,
 				 const size_t t)
 {
@@ -395,56 +438,6 @@ spoton_mceliece::spoton_mceliece(const size_t m,
     }
   catch(...)
     {
-    }
-}
-
-spoton_mceliece::spoton_mceliece(const size_t m,
-				 const size_t t,
-				 const std::stringstream &G,
-				 const std::stringstream &P,
-				 const std::stringstream &S)
-{
-  Q_UNUSED(G);
-  Q_UNUSED(P);
-  Q_UNUSED(S);
-  m_privateKey = 0;
-  m_publicKey = 0;
-
-  try
-    {
-      initializeSystemParameters(m, t);
-    }
-  catch(...)
-    {
-    }
-}
-
-spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
-{
-  NTL::mat_GF2 Gcar;
-  char *c = new (std::nothrow) char[static_cast<size_t> (publicKey.length())];
-  size_t t = 0;
-
-  if(c)
-    {
-      memcpy
-	(c, publicKey.constData(), static_cast<size_t> (publicKey.length()));
-
-      std::stringstream s;
-
-      s << c;
-      s >> Gcar;
-      s >> t;
-    }
-
-  delete []c;
-  m_privateKey = 0;
-  m_publicKey = new (std::nothrow) spoton_mceliece_public_key(t, Gcar);
-
-  if(m_publicKey)
-    {
-      m_k = m_publicKey->k();
-      m_n = m_publicKey->n();
     }
 }
 
