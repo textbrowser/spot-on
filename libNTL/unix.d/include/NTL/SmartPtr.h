@@ -930,12 +930,14 @@ bool operator!=(const UniquePtr<T,P>& a, const UniquePtr<T,P>& b)
 template<class X, class Y, class U, class V>
 bool operator==(const UniquePtr<X,U>& a, const UniquePtr<Y,V>& b)
 {
+  (void) b;
    return a.cannot_compare_these_types();
 }
 
 template<class X, class Y, class U, class V>
 bool operator!=(const UniquePtr<X,U>& a, const UniquePtr<Y,V>& b)
 {
+  (void) b;
    return a.cannot_compare_these_types();
 }
 
@@ -1086,12 +1088,14 @@ bool operator!=(const CopiedPtr<T,P>& a, const CopiedPtr<T,P>& b)
 template<class X, class Y, class U, class V>
 bool operator==(const CopiedPtr<X,U>& a, const CopiedPtr<Y,V>& b)
 {
+  (void) b;
    return a.cannot_compare_these_types();
 }
 
 template<class X, class Y, class U, class V>
 bool operator!=(const CopiedPtr<X,U>& a, const CopiedPtr<Y,V>& b)
 {
+  (void) b;
    return a.cannot_compare_these_types();
 }
 
@@ -1343,12 +1347,14 @@ bool operator!=(const UniqueArray<X>& a, const UniqueArray<X>& b)
 template<class X, class Y>
 bool operator==(const UniqueArray<X>& a, const UniqueArray<Y>& b)
 {
+  (void) b;
    return a.cannot_compare_these_types();
 }
 
 template<class X, class Y>
 bool operator!=(const UniqueArray<X>& a, const UniqueArray<Y>& b)
 {
+  (void) b;
    return a.cannot_compare_these_types();
 }
 
@@ -1542,12 +1548,14 @@ bool operator!=(const Unique2DArray<X>& a, const Unique2DArray<X>& b)
 template<class X, class Y>
 bool operator==(const Unique2DArray<X>& a, const Unique2DArray<Y>& b)
 {
+  (void) b;
    return a.cannot_compare_these_types();
 }
 
 template<class X, class Y>
 bool operator!=(const Unique2DArray<X>& a, const Unique2DArray<Y>& b)
 {
+  (void) b;
    return a.cannot_compare_these_types();
 }
 

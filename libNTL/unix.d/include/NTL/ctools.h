@@ -426,6 +426,7 @@ void _ntl_swap(T*& a, T*& b)
 static inline
 char *_ntl_make_aligned(char *p, long align)
 {
+  (void) align;
    return p;
 }
 
