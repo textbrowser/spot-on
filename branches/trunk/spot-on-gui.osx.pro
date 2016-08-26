@@ -30,7 +30,7 @@ QMAKE_CLEAN     += Spot-On ../../libNTRU/*.dylib ../../libNTRU/src/*.o \
 QMAKE_DISTCLEAN += -r temp
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -mtune=generic -pie \
-			  -Wall -Wcast-align -Wcast-qual \
+			  -Wall -Wcast-qual \
                           -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5

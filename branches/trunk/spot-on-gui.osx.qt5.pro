@@ -34,7 +34,7 @@ QMAKE_CXX = clang++
 QMAKE_DISTCLEAN += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -mtune=generic \
-			  -Wall -Wcast-align -Wcast-qual \
+			  -Wall -Wcast-qual \
                           -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
