@@ -56,6 +56,9 @@ extern "C"
 #include <QSslConfiguration>
 #include <QStringList>
 
+#ifdef SPOTON_MCELIECE_ENABLED
+class spoton_mceliece;
+#endif
 class spoton_threefish;
 
 class spoton_crypt
@@ -218,6 +221,9 @@ class spoton_crypt
   size_t m_hashKeyLength;
   size_t m_privateKeyLength;
   size_t m_symmetricKeyLength;
+#ifdef SPOTON_MCELIECE_ENABLED
+  spoton_mceliece *m_mceliece;
+#endif
   spoton_threefish *m_threefish;
   static bool s_cbc_cts_enabled;
   unsigned long m_iterationCount;

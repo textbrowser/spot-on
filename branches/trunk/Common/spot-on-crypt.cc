@@ -38,10 +38,13 @@
 #include <iostream>
 #include <limits>
 
-#include "Common/spot-on-common.h"
-#include "Common/spot-on-threefish.h"
+#include "spot-on-common.h"
 #include "spot-on-crypt.h"
+#ifdef SPOTON_MCELIECE_ENABLED
+#include "spot-on-mceliece.h"
+#endif
 #include "spot-on-misc.h"
+#include "spot-on-threefish.h"
 
 extern "C"
 {
@@ -590,6 +593,9 @@ void spoton_crypt::init(const QString &cipherType,
   m_hashType = hashType;
   m_id = id;
   m_iterationCount = iterationCount;
+#ifdef SPOTON_MCELIECE_ENABLED
+  m_mceliece = 0;
+#endif
   m_privateKey = 0;
   m_privateKeyLength = 0;
   m_saltLength = saltLength;
@@ -729,6 +735,9 @@ void spoton_crypt::init(const QString &cipherType,
 
 spoton_crypt::~spoton_crypt()
 {
+#ifdef SPOTON_MCELIECE_ENABLED
+  delete m_mceliece;
+#endif
   delete m_threefish;
   m_publicKey.clear();
   gcry_cipher_close(m_cipherHandle);

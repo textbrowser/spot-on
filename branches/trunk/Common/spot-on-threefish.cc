@@ -28,7 +28,7 @@
 #include <QDataStream>
 #include <QtCore/qmath.h>
 
-#include "Common/spot-on-crypt.h"
+#include "spot-on-crypt.h"
 #include "spot-on-misc.h"
 #include "spot-on-threefish.h"
 

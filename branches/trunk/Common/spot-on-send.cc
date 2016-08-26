@@ -28,7 +28,6 @@
 #include <QDateTime>
 #include <QString>
 
-#include "Common/spot-on-crypt.h"
 #include "spot-on-crypt.h"
 #include "spot-on-send.h"
 
