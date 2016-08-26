@@ -426,17 +426,12 @@ spoton_mceliece::spoton_mceliece(const size_t t,
 				 const std::stringstream &Gcar)
 {
   m_privateKey = 0;
+  m_publicKey = new (std::nothrow) spoton_mceliece_public_key(t, Gcar);
 
-  try
+  if(m_publicKey)
     {
-      m_publicKey = new spoton_mceliece_public_key(t, Gcar);
       m_k = m_publicKey->k();
       m_n = m_publicKey->n();
-    }
-  catch(...)
-    {
-      delete m_publicKey;
-      m_publicKey = 0;
     }
 }
 
@@ -452,7 +447,20 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
   if(!m_privateKey || !m_privateKey->ok())
     return false;
 
-  char *p = 0;
+  size_t plaintext_size = static_cast<size_t>
+    (std::ceil(m_k / CHAR_BIT)); /*
+				 ** m_k is not necessarily
+				 ** a multiple of CHAR_BIT.
+				 ** It may be, however.
+				 */
+
+  if(plaintext_size <= 0) // Unlikely.
+    return false;
+
+  char *p = new (std::nothrow) char[plaintext_size];
+
+  if(!p)
+    return false;
 
   try
     {
@@ -463,13 +471,19 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       s >> c;
 
       if(c.length() != static_cast<long int> (m_n))
-	return false;
+	{
+	  delete []p;
+	  return false;
+	}
 
       NTL::vec_GF2 ccar = c * m_privateKey->Pinv();
 
       if(ccar.length() != static_cast<long int> (m_n) ||
 	 m_n != m_privateKey->preSynTab().size())
-	return false;
+	{
+	  delete []p;
+	  return false;
+	}
 
       /*
       ** Patterson.
@@ -601,18 +615,6 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	mcar[i] = vec_GF2[i + n - k];
 
       m = mcar * m_privateKey->Sinv();
-
-      size_t plaintext_size = static_cast<size_t>
-	(std::ceil(m_k / CHAR_BIT)); /*
-				     ** m_k is not necessarily
-				     ** a multiple of CHAR_BIT.
-				     ** It may be, however.
-				     */
-
-      if(plaintext_size <= 0) // Unlikely.
-	return false;
-
-      p = new char[plaintext_size];
       memset(p, 0, plaintext_size);
 
       for(long int i = 0, k = 0; i < static_cast<long int> (plaintext_size);
