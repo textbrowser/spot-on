@@ -33,8 +33,8 @@ QMAKE_DISTCLEAN += -r temp
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -mtune=generic -pie -O3 \
-			  -Wall -Wcast-qual \
-                          -Werror -Wextra \
+			  -Wall -Wcast-align -Wcast-qual \
+                          -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
