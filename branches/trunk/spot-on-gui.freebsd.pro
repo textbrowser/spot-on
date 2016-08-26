@@ -5,9 +5,7 @@ libntru.depends =
 libspoton.target = libspoton.so
 libspoton.commands = gmake -C ../../libSpotOn library
 libspoton.depends =
-ntl.target = ntl.a
 ntl.commands = cd ../../libNTL/unix.d/src && ./configure CXX=clang++ && gmake
-ntl.depends =
 
 TEMPLATE	= app
 LANGUAGE	= C++
