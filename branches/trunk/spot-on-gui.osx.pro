@@ -34,7 +34,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
                           -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
-QMAKE_EXTRA_TARGETS = libntru libspoton ntl purge
+QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RELEASE =
 QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . ../../. GUI \
@@ -44,8 +44,8 @@ LIBS		+= -L../../libNTRU -lntru \
                    -L../../libSpotOn -lspoton \
                    -L/usr/local/lib -L/usr/local/opt/curl/lib \
                    -L/usr/local/opt/openssl/lib -lGeoIP \
-                   -lcrypto -lcurl -lgcrypt -lgpg-error -lpq -lssl
-PRE_TARGETDEPS = libntru.dylib libspoton.dylib ntl.a
+                   -lcrypto -lcurl -lgcrypt -lgpg-error -l:libntl.a -lpq -lssl
+PRE_TARGETDEPS = libntru.dylib libspoton.dylib
 OBJECTS_DIR = temp/obj
 UI_DIR = temp/ui
 MOC_DIR = temp/moc

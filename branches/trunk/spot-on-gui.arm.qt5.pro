@@ -24,9 +24,10 @@ DEFINES	+= SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_SCTP_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
-# about the internals of libNTRU and libSpotOn.
+# about the internals of libNTL, libNTRU, and libSpotOn.
 
-QMAKE_CLEAN     += Spot-On ../../libNTRU/*.so ../../libNTRU/src/*.o \
+QMAKE_CLEAN     += Spot-On ../../libNTL/unix.d/src/*.o \
+		   ../../libNTRU/*.so ../../libNTRU/src/*.o \
                    ../../libNTRU/src/*.s \
 		   ../../libSpotOn/*.o ../../libSpotOn/*.so \
 		   ../../libSpotOn/test
