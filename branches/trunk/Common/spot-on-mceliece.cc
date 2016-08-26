@@ -711,12 +711,22 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
   m_privateKey = 0;
   delete m_publicKey;
   m_publicKey = 0;
+  m_privateKey = new (std::nothrow) spoton_mceliece_private_key(m_m, m_t);
+
+  if(!m_privateKey)
+    return false;
+
+  m_publicKey = new (std::nothrow) spoton_mceliece_public_key(m_m, m_t);
+
+  if(!m_publicKey)
+    {
+      delete m_privateKey;
+      m_privateKey = 0;
+      return false;
+    }
 
   try
     {
-      m_privateKey = new spoton_mceliece_private_key(m_m, m_t);
-      m_publicKey = new spoton_mceliece_public_key(m_m, m_t);
-
       if(!m_privateKey->ok() || !m_publicKey->ok())
 	throw std::exception();
 
