@@ -230,11 +230,7 @@ class spoton_mceliece
     m_k = m_n - m_m * m_t;
   }
 
-  void privateKeyParameters(std::stringstream &G,
-			    std::stringstream &P,
-			    std::stringstream &Pinv,
-			    std::stringstream &S,
-			    std::stringstream &Sinv);
+  void privateKeyParameters(QByteArray &privateKey);
   void publicKeyParameters(QByteArray &publicKey);
 
  private:

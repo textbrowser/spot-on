@@ -61,12 +61,15 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
   if(mceliece)
     if(mceliece->generatePrivatePublicKeys())
       {
+	mceliece->privateKeyParameters(privateKey);
+
+	if(!privateKey.isEmpty())
+	  privateKey.prepend("mceliece-private-key-");
+
 	mceliece->publicKeyParameters(publicKey);
 
 	if(!publicKey.isEmpty())
 	  publicKey.prepend("mceliece-public-key-");
-
-	privateKey = publicKey;
 
 	if(!publicKey.isEmpty() && !privateKey.isEmpty())
 	  if(ok)

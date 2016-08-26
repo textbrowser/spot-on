@@ -880,33 +880,54 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
   return true;
 }
 
-void spoton_mceliece::privateKeyParameters(std::stringstream &G,
-					   std::stringstream &P,
-					   std::stringstream &Pinv,
-					   std::stringstream &S,
-					   std::stringstream &Sinv)
+void spoton_mceliece::privateKeyParameters(QByteArray &privateKey)
 {
   if(!m_privateKey)
     return;
 
-  G << m_privateKey->G();
-  P << m_privateKey->P();
-  Pinv << m_privateKey->Pinv();
-  S << m_privateKey->S();
-  Sinv << m_privateKey->Sinv();
+  std::stringstream s;
+
+  s << m_privateKey->L()
+    << m_privateKey->Pinv()
+    << m_privateKey->Sinv()
+    << m_privateKey->gZ();
+
+  long int *a = 0;
+  std::vector<long int> v(m_privateKey->swappingColumns());
+
+  if((a = new (std::nothrow) long int[v.size()]))
+    {
+      for(size_t i = 0; i < v.size(); i++)
+	a[i] = v[i];
+
+      s << a;
+      delete []a;
+    }
+  else
+    return;
+
+  /*
+  ** A deep copy is required.
+  */
+
+  privateKey = QByteArray(s.str().c_str(), static_cast<int> (s.str().size()));
 }
 
 void spoton_mceliece::publicKeyParameters(QByteArray &publicKey)
 {
-  if(m_publicKey)
-    {
-      std::stringstream s;
+  if(!m_publicKey)
+    return;
 
-      s << m_publicKey->Gcar();
-      s << m_publicKey->t();
-      publicKey = QByteArray // A deep copy is required.
-	(s.str().c_str(), static_cast<int> (s.str().size()));
-    }
+  std::stringstream s;
+
+  s << m_publicKey->Gcar()
+    << m_publicKey->t();
+
+  /*
+  ** A deep copy is required.
+  */
+
+  publicKey = QByteArray(s.str().c_str(), static_cast<int> (s.str().size()));
 }
 
 #endif
