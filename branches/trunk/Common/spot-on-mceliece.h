@@ -148,6 +148,7 @@ class spoton_mceliece_public_key
 {
  public:
   spoton_mceliece_public_key(const size_t m, const size_t t);
+  spoton_mceliece_public_key(const size_t t, const std::stringstream &Gcar);
   ~spoton_mceliece_public_key();
 
   NTL::mat_GF2 Gcar(void) const
@@ -164,6 +165,16 @@ class spoton_mceliece_public_key
 		   const NTL::mat_GF2 &P,
 		   const NTL::mat_GF2 &S);
 
+  size_t k(void) const
+  {
+    return static_cast<size_t> (m_Gcar.NumRows());
+  }
+
+  size_t n(void) const
+  {
+    return static_cast<size_t> (m_Gcar.NumCols());
+  }
+
  private:
   NTL::mat_GF2 m_Gcar;
   bool m_ok;
@@ -179,6 +190,8 @@ class spoton_mceliece
 		  const std::stringstream &G,
 		  const std::stringstream &P,
 		  const std::stringstream &S);
+  spoton_mceliece(const size_t t,
+		  const std::stringstream &Gcar);
   ~spoton_mceliece();
   bool decrypt(const std::stringstream &ciphertext,
 	       std::stringstream &plaintext);

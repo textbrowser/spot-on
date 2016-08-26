@@ -37,8 +37,8 @@
 
 #include "spot-on-mceliece.h"
 
-spoton_mceliece_private_key::spoton_mceliece_private_key
-(const size_t m, const size_t t)
+spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
+							 const size_t t)
 {
   m_k = 0;
   m_m = spoton_mceliece::minimumM(m);
@@ -351,6 +351,18 @@ spoton_mceliece_public_key::spoton_mceliece_public_key(const size_t m,
   m_Gcar.SetDims(k, n);
 }
 
+spoton_mceliece_public_key::spoton_mceliece_public_key
+(const size_t t,
+ const std::stringstream &Gcar)
+{
+  m_t = spoton_mceliece::minimumT(t);
+
+  std::stringstream s;
+
+  s << Gcar.rdbuf();
+  s >> m_Gcar;
+}
+
 spoton_mceliece_public_key::~spoton_mceliece_public_key()
 {
 }
@@ -375,7 +387,7 @@ bool spoton_mceliece_public_key::prepareGcar(const NTL::mat_GF2 &G,
 }
 
 spoton_mceliece::spoton_mceliece(const size_t m,
-		   const size_t t)
+				 const size_t t)
 {
   m_privateKey = 0;
   m_publicKey = 0;
@@ -407,6 +419,24 @@ spoton_mceliece::spoton_mceliece(const size_t m,
     }
   catch(...)
     {
+    }
+}
+
+spoton_mceliece::spoton_mceliece(const size_t t,
+				 const std::stringstream &Gcar)
+{
+  m_privateKey = 0;
+
+  try
+    {
+      m_publicKey = new spoton_mceliece_public_key(t, Gcar);
+      m_k = m_publicKey->k();
+      m_n = m_publicKey->n();
+    }
+  catch(...)
+    {
+      delete m_publicKey;
+      m_publicKey = 0;
     }
 }
 
