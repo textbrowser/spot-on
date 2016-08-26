@@ -20,6 +20,7 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
            SPOTON_LINKED_WITH_LIBGEOIP \
            SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
+           SPOTON_MCELIECE_ENABLED \
 	   SPOTON_SCTP_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -38,7 +39,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
                           -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
-QMAKE_EXTRA_TARGETS = libntru libspoton purge
+QMAKE_EXTRA_TARGETS = libntru libspoton ntl purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 INCLUDEPATH	+= . ../. ../../../. \
 		   ../../../libSCTP/Include.osx64 \
@@ -51,7 +52,7 @@ LIBS		+= -L../../../libNTRU -lntru \
                    -L/usr/local/opt/openssl/lib -lGeoIP \
                    -lcrypto -lcurl -lgcrypt -lgpg-error -lpq -lssl \
                    -framework Cocoa
-PRE_TARGETDEPS = libntru.dylib libspoton.dylib
+PRE_TARGETDEPS = libntru.dylib libspoton.dylib ntl.a
 OBJECTS_DIR = temp/obj
 UI_DIR = temp/ui
 MOC_DIR = temp/moc
