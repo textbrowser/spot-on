@@ -101,7 +101,7 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
   std::stringstream ciphertext;
   std::stringstream plaintext;
 
-  ciphertext << data.constData();
+  ciphertext.write(data.constData(), static_cast<size_t> (data.length()));
 
   if(m_mceliece->decrypt(ciphertext, plaintext))
     {

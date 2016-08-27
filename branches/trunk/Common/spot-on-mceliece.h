@@ -110,6 +110,21 @@ class spoton_mceliece_private_key
 
   bool prepareG(const NTL::mat_GF2 &R);
 
+  size_t k(void) const
+  {
+    return m_k;
+  }
+
+  size_t n(void) const
+  {
+    return m_n;
+  }
+
+  size_t t(void) const
+  {
+    return m_t;
+  }
+
   std::vector<NTL::GF2EX> preSynTab(void) const
   {
     return m_preSynTab;

@@ -62,11 +62,12 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
       if((c = new (std::nothrow) char[privateKeyLength - offset + 1]))
 	{
 	  memset(c, 0, privateKeyLength - offset + 1);
-	  memcpy(c, privateKey, privateKeyLength - offset);
+	  memcpy(c, privateKey + offset, privateKeyLength - offset);
 
 	  NTL::vec_long v;
-	  std::stringstream s(c);
+	  std::stringstream s;
 
+	  s << c;
 	  s >> m_L;
 	  s >> m_Pinv;
 	  s >> m_Sinv;
@@ -78,7 +79,10 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 
 	  m_k = static_cast<size_t> (m_Sinv.NumRows());
 	  m_n = static_cast<size_t> (m_L.length());
-	  m_t = static_cast<size_t> (spoton_mceliece::minimumT(NTL::deg(m_gZ)));
+
+	  if(NTL::deg(m_gZ))
+	    m_t = static_cast<size_t>
+	      (spoton_mceliece::minimumT(NTL::deg(m_gZ)));
 
 	  /*
 	  ** Some calculations.
@@ -86,6 +90,8 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 
 	  if(m_t > 0)
 	    m_m = spoton_mceliece::minimumT((m_n - m_k) / m_t);
+
+	  preparePreSynTab();
 	}
       else
 	m_ok = false;
@@ -448,6 +454,20 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
   m_privateKey = new (std::nothrow) spoton_mceliece_private_key
     (privateKey, privateKeyLength);
   m_publicKey = 0;
+
+  if(m_privateKey)
+    {
+      m_k = m_privateKey->k();
+      m_n = m_privateKey->n();
+      m_t = m_privateKey->t();
+
+      /*
+      ** Calculate m.
+      */
+
+      if(m_privateKey->t() > 0)
+	m_m = (m_privateKey->n() - m_privateKey->k()) / m_privateKey->t();
+    }
 }
 
 spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
@@ -467,8 +487,9 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
       memcpy
 	(c, publicKey.constData(), static_cast<size_t> (publicKey.length()));
 
-      std::stringstream s(c);
+      std::stringstream s;
 
+      s << c;
       s >> Gcar;
       s >> m_t;
     }
