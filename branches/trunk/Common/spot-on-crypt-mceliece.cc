@@ -137,8 +137,7 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
     return QByteArray();
 
   QByteArray bytes;
-  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece
-    (publicKey.mid(static_cast<int> (qstrlen("mceliece-public-key-"))));
+  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece(publicKey);
   std::stringstream ciphertext;
 
   if(mceliece)

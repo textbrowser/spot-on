@@ -422,6 +422,7 @@ spoton_mceliece_public_key::spoton_mceliece_public_key
 (const size_t t, const NTL::mat_GF2 &Gcar)
 {
   m_Gcar = Gcar;
+  m_ok = true;
   m_t = spoton_mceliece::minimumT(t);
 }
 
@@ -478,23 +479,30 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
   m_t = 0;
 
   NTL::mat_GF2 Gcar;
-  char *c = new (std::nothrow) char
-    [static_cast<size_t> (publicKey.length()) + 1];
+  size_t offset = static_cast<size_t> (qstrlen("mceliece-public-key-"));
 
-  if(c)
+  if(publicKey.length() > static_cast<int> (offset))
     {
-      memset(c, 0, static_cast<size_t> (publicKey.length()) + 1);
-      memcpy
-	(c, publicKey.constData(), static_cast<size_t> (publicKey.length()));
+      char *c = new (std::nothrow) char
+	[static_cast<size_t> (publicKey.length()) - offset + 1];
 
-      std::stringstream s;
+      if(c)
+	{
+	  memset(c, 0, static_cast<size_t> (publicKey.length()) - offset + 1);
+	  memcpy
+	    (c, publicKey.mid(static_cast<int> (offset)).constData(),
+	     static_cast<size_t> (publicKey.length()) - offset);
 
-      s << c;
-      s >> Gcar;
-      s >> m_t;
+	  std::stringstream s;
+
+	  s << c;
+	  s >> Gcar;
+	  s >> m_t;
+	}
+
+      delete []c;
     }
 
-  delete []c;
   m_t = minimumT(m_t);
   m_privateKey = 0;
   m_publicKey = new (std::nothrow) spoton_mceliece_public_key(m_t, Gcar);
@@ -721,7 +729,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	  p[i] = static_cast<char> (b.to_ulong());
 	}
 
-      plaintext << p;
+      plaintext.write(p, plaintext_size);
     }
   catch(...)
     {
