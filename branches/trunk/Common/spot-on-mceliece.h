@@ -39,8 +39,6 @@ extern "C"
 #include <string.h>
 }
 
-#ifdef Q_OS_WIN32
-#else
 #include <NTL/GF2E.h>
 #include <NTL/GF2EX.h>
 #include <NTL/GF2EXFactoring.h>
@@ -49,7 +47,6 @@ extern "C"
 #include <NTL/mat_GF2.h>
 #include <NTL/mat_ZZ_p.h>
 #include <NTL/vec_GF2E.h>
-#endif
 
 #include <limits>
 #include <sstream>
@@ -223,6 +220,21 @@ class spoton_mceliece
   size_t t(void) const
   {
     return m_t;
+  }
+
+  static double expansion(void)
+  {
+    size_t k = 0;
+    size_t m = 11;
+    size_t n = 1 << m; // 2^m
+    size_t t = 51;
+
+    k = n - m * t;
+
+    if(k > 0)
+      return static_cast<double> (n) / static_cast<double> (k);
+    else
+      return 0.0;
   }
 
   static size_t minimumM(const size_t m)

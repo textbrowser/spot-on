@@ -399,7 +399,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 	  message.append("_");
 	  message.append(keyType.toLatin1().toBase64());
 	  message.append("_");
-	  message.append(QByteArray("email").toBase64());
+	  message.append(type.toLatin1().toBase64()); // Widget type.
 	  message.append("\n");
 
 	  if(m_kernelSocket.write(message.constData(), message.length()) !=
