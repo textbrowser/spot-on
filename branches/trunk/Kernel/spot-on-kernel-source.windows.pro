@@ -1,5 +1,3 @@
-INCLUDEPATH	+= ..\\..\\..\\libNTL\\windows.d\\include
-
 HEADERS		= ..\\Common\\spot-on-external-address.h \
 		  spot-on-fireshare.h \
 		  spot-on-gui-server.h \

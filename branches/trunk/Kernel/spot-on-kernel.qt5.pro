@@ -6,6 +6,9 @@ libntru.depends =
 libspoton.target = libspoton.so
 libspoton.commands = $(MAKE) -C ../../../libSpotOn library
 libspoton.depends =
+ntl.target = ntl.a
+ntl.commands = cd ../../../libNTL/unix.d/src && ./configure && $(MAKE)
+ntl.depends =
 purge.commands = rm -f *~
 
 TEMPLATE	= app
@@ -24,9 +27,11 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
            SPOTON_SCTP_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
-# about the internals of libNTRU and libSpotOn.
+# about the internals of libNTL, libNTRU, and libSpotOn.
 
-QMAKE_CLEAN     += ../Spot-On-Kernel ../../../libNTRU/*.so \
+QMAKE_CLEAN     += ../Spot-On-Kernel \
+		   ../../../libNTL/unix.d/src/*.o \
+		   ../../../libNTRU/*.so \
 		   ../../../libNTRU/src/*.o ../../../libNTRU/src/*.s \
 		   ../../../libSpotOn/*.o \
 		   ../../../libSpotOn/*.so ../../../libSpotOn/test
@@ -40,10 +45,12 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
                           -Wstack-protector -Wstrict-overflow=5
 QMAKE_LFLAGS_RELEASE += -Wl,-rpath,/usr/local/spot-on/Lib
 QMAKE_EXTRA_TARGETS = libntru libspoton ntl purge
-INCLUDEPATH	+= . ../. ../../../. /usr/include/postgresql
-LIBS		+= -L../../../libNTRU -L../../../libSpotOn \
+INCLUDEPATH	+= . ../. ../../../. ../../../libNTL/unix.d/include \
+		   /usr/include/postgresql
+LIBS		+= -L../../../libNTL/unix.d/src \
+		   -L../../../libNTRU -L../../../libSpotOn \
 		   -lGeoIP \
-		   -lcrypto -lcurl -lgcrypt -lgpg-error -lntru \
+		   -lcrypto -lcurl -lgcrypt -lgpg-error -l:ntl.a -lntru \
 		   -lpq -lspoton -lssl
 PRE_TARGETDEPS = libntru.so libspoton.so ntl.a
 OBJECTS_DIR = temp/obj
