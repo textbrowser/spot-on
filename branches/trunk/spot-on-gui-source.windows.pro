@@ -1,5 +1,3 @@
-INCLUDEPATH	+= ..\\..\\libNTL\\windows.d\\include
-
 FORMS           = UI\\spot-on-adaptive-echo-prompt.ui \
 		  UI\\spot-on-buzzpage.ui \
 		  UI\\spot-on-chatwindow.ui \
