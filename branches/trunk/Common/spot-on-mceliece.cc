@@ -89,7 +89,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 	  */
 
 	  if(m_t > 0)
-	    m_m = spoton_mceliece::minimumT((m_n - m_k) / m_t);
+	    m_m = spoton_mceliece::minimumM((m_n - m_k) / m_t);
 
 	  preparePreSynTab();
 	}
