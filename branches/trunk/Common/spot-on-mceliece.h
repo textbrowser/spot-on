@@ -58,6 +58,8 @@ extern "C"
 class spoton_mceliece_private_key
 {
  public:
+  spoton_mceliece_private_key(const char *privateKey,
+			      const size_t privateKeyLength);
   spoton_mceliece_private_key(const size_t m, const size_t t);
   ~spoton_mceliece_private_key();
 
@@ -189,6 +191,7 @@ class spoton_mceliece
 {
  public:
   spoton_mceliece(const QByteArray &publicKey);
+  spoton_mceliece(const char *publicKey, const size_t publicKeyLength);
   spoton_mceliece(const size_t m, const size_t t);
   ~spoton_mceliece();
   bool decrypt(const std::stringstream &ciphertext,

@@ -30,12 +30,75 @@
 */
 
 #ifdef SPOTON_MCELIECE_ENABLED
-#include <QDataStream>
+#include <QByteArray>
 
 #include <bitset>
 #include <map>
 
 #include "spot-on-mceliece.h"
+
+spoton_mceliece_private_key::spoton_mceliece_private_key
+(const char *privateKey, const size_t privateKeyLength)
+{
+  m_k = 0;
+  m_m = spoton_mceliece::minimumM(0);
+  m_n = 0;
+  m_ok = true;
+  m_t = spoton_mceliece::minimumT(0);
+  NTL::GF2E::init
+    (NTL::BuildIrred_GF2X(static_cast<long int> (12))); /*
+							** Initialize
+							** some NTL
+							** internal
+							** object(s).
+							*/
+
+  if(privateKey && privateKeyLength > 0)
+    {
+      char *c = new (std::nothrow) char[privateKeyLength + 1];
+
+      if(c)
+	{
+	  memset(c, 0, privateKeyLength + 1);
+	  memcpy(c, privateKey, privateKeyLength);
+	  c += static_cast<size_t> (qstrlen("mceliece-private-key-"));
+
+	  std::stringstream s;
+
+	  s << c;
+	  s >> m_L;
+	  s >> m_Pinv;
+	  s >> m_Sinv;
+	  s >> m_gZ;
+
+	  for(size_t i = 0; i < static_cast<size_t> (m_L.length()); i++)
+	    {
+	      size_t v = 0;
+
+	      s >> v;
+	      m_swappingColumns.push_back(v);
+	    }
+
+	  m_k = static_cast<size_t> (m_Sinv.NumRows());
+	  m_n = static_cast<size_t> (m_L.length());
+	  m_t = static_cast<size_t>
+	    (spoton_mceliece::minimumT(NTL::deg(m_gZ)));
+
+	  /*
+	  ** Some calculations.
+	  */
+
+	  if(m_t > 0)
+	    m_m = spoton_mceliece::minimumT((m_n - m_k) / m_t);
+	}
+      else
+	m_ok = false;
+
+      delete []c;
+    }
+  else
+    m_ok = false;
+}
 
 spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
 							 const size_t t)
@@ -383,6 +446,14 @@ bool spoton_mceliece_public_key::prepareGcar(const NTL::mat_GF2 &G,
   return true;
 }
 
+spoton_mceliece::spoton_mceliece(const char *privateKey,
+				 const size_t privateKeyLength)
+{
+  m_privateKey = new (std::nothrow) spoton_mceliece_private_key
+    (privateKey, privateKeyLength);
+  m_publicKey = 0;
+}
+
 spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
 {
   m_k = 0;
@@ -423,7 +494,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
   */
 
   if(m_t > 0)
-    m_m = (m_n - m_k) / m_t;
+    m_m = minimumM((m_n - m_k) / m_t);
 }
 
 spoton_mceliece::spoton_mceliece(const size_t m,
@@ -892,19 +963,8 @@ void spoton_mceliece::privateKeyParameters(QByteArray &privateKey)
     << m_privateKey->Sinv()
     << m_privateKey->gZ();
 
-  long int *a = 0;
-  std::vector<long int> v(m_privateKey->swappingColumns());
-
-  if((a = new (std::nothrow) long int[v.size()]))
-    {
-      for(size_t i = 0; i < v.size(); i++)
-	a[i] = v[i];
-
-      s << a;
-      delete []a;
-    }
-  else
-    return;
+  for(size_t i = 0; i < m_privateKey->swappingColumns().size(); i++)
+    s << m_privateKey->swappingColumns()[i];
 
   /*
   ** A deep copy is required.
