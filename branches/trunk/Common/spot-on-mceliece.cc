@@ -46,7 +46,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
   m_ok = true;
   m_t = spoton_mceliece::minimumT(0);
   NTL::GF2E::init
-    (NTL::BuildIrred_GF2X(static_cast<long int> (12))); /*
+    (NTL::BuildIrred_GF2X(static_cast<long int> (11))); /*
 							** Initialize
 							** some NTL
 							** internal
