@@ -78,7 +78,7 @@ class spoton_common
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
   static const int MAXIMUM_KERNEL_GUI_SERVER_SINGLE_SOCKET_BUFFER_SIZE =
-    std::numeric_limits<int>::max();
+    INT_MAX;
   static const int MAXIMUM_UDP_DATAGRAM_SIZE = 508;
   static const int MINIMUM_STARBEAM_PULSE_SIZE = 1024;
   static const int MOSAIC_SIZE = 64;

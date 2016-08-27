@@ -183,6 +183,8 @@ QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
     keySize = QString("m%1t%2").arg(mceliece->m()).arg(mceliece->t());
 
   delete mceliece;
+#else
+  Q_UNUSED(data);
 #endif
   return keySize;
 }
