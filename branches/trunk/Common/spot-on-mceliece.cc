@@ -53,36 +53,32 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 							** object(s).
 							*/
 
-  if(privateKey && privateKeyLength > 0)
+  size_t offset = static_cast<size_t> (qstrlen("mceliece-private-key-"));
+
+  if(privateKey && privateKeyLength > offset)
     {
-      char *c = new (std::nothrow) char[privateKeyLength + 1];
+      char *c = 0;
 
-      if(c)
+      if((c = new (std::nothrow) char[privateKeyLength - offset + 1]))
 	{
-	  memset(c, 0, privateKeyLength + 1);
-	  memcpy(c, privateKey, privateKeyLength);
-	  c += static_cast<size_t> (qstrlen("mceliece-private-key-"));
+	  memset(c, 0, privateKeyLength - offset + 1);
+	  memcpy(c, privateKey, privateKeyLength - offset);
 
-	  std::stringstream s;
+	  NTL::vec_long v;
+	  std::stringstream s(c);
 
-	  s << c;
 	  s >> m_L;
 	  s >> m_Pinv;
 	  s >> m_Sinv;
 	  s >> m_gZ;
+	  s >> v;
 
-	  for(size_t i = 0; i < static_cast<size_t> (m_L.length()); i++)
-	    {
-	      size_t v = 0;
-
-	      s >> v;
-	      m_swappingColumns.push_back(v);
-	    }
+	  for(long int i = 0; i < v.length(); i++)
+	    m_swappingColumns.push_back(v[i]);
 
 	  m_k = static_cast<size_t> (m_Sinv.NumRows());
 	  m_n = static_cast<size_t> (m_L.length());
-	  m_t = static_cast<size_t>
-	    (spoton_mceliece::minimumT(NTL::deg(m_gZ)));
+	  m_t = static_cast<size_t> (spoton_mceliece::minimumT(NTL::deg(m_gZ)));
 
 	  /*
 	  ** Some calculations.
@@ -471,9 +467,8 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
       memcpy
 	(c, publicKey.constData(), static_cast<size_t> (publicKey.length()));
 
-      std::stringstream s;
+      std::stringstream s(c);
 
-      s << c;
       s >> Gcar;
       s >> m_t;
     }
@@ -963,8 +958,14 @@ void spoton_mceliece::privateKeyParameters(QByteArray &privateKey)
     << m_privateKey->Sinv()
     << m_privateKey->gZ();
 
+  NTL::vec_long v;
+
+  v.SetLength(static_cast<long int> (m_privateKey->swappingColumns().size()));
+
   for(size_t i = 0; i < m_privateKey->swappingColumns().size(); i++)
-    s << m_privateKey->swappingColumns()[i];
+    v[static_cast<long int> (i)] = m_privateKey->swappingColumns()[i];
+
+  s << v;
 
   /*
   ** A deep copy is required.

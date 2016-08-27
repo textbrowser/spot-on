@@ -90,7 +90,8 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
     {
       QReadLocker locker(&m_privateKeyMutex);
 
-      m_mceliece = new spoton_mceliece(m_privateKey, m_privateKeyLength);
+      m_mceliece = new (std::nothrow) spoton_mceliece
+	(m_privateKey, m_privateKeyLength);
     }
 
   if(!m_mceliece)
@@ -112,6 +113,10 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
 	if(ok)
 	  *ok = true;
     }
+
+  if(bytes.isEmpty())
+    spoton_misc::logError("spoton_crypt::publicKeyDecryptMcEliece(): "
+			  "failure.");
 
   return bytes;
 #else
@@ -151,6 +156,11 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
       }
 
   delete mceliece;
+
+  if(bytes.isEmpty())
+    spoton_misc::logError("spoton_crypt::publicKeyEncryptMcEliece(): "
+			  "failure.");
+
   return bytes;
 #else
   Q_UNUSED(data);
