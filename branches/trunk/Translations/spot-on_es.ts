@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="es_ES">
+<TS version="2.0" language="es_ES">
 <context>
     <name>QObject</name>
     <message>
@@ -368,17 +368,17 @@
     <message>
         <location filename="../UI/spot-on-buzzpage.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Formar</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-buzzpage.ui" line="57"/>
         <source>Bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Marcador</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-buzzpage.ui" line="71"/>
         <source>Remove Bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Eliminar marcador</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-buzzpage.ui" line="40"/>
@@ -388,7 +388,7 @@
     <message>
         <location filename="../UI/spot-on-buzzpage.ui" line="64"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Copiar</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-buzzpage.ui" line="78"/>
@@ -418,7 +418,7 @@
     <message>
         <location filename="../UI/spot-on-buzzpage.ui" line="190"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nombre</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-buzzpage.ui" line="195"/>
@@ -448,7 +448,7 @@
     <message>
         <location filename="../UI/spot-on-buzzpage.ui" line="310"/>
         <source>Send</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Enviar</translation>
     </message>
 </context>
 <context>
@@ -476,12 +476,12 @@
     <message>
         <location filename="../UI/spot-on-chatwindow.ui" line="162"/>
         <source>Send</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Enviar</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-chatwindow.ui" line="175"/>
         <source>Share...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Compartir...</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-chatwindow.ui" line="198"/>
@@ -511,7 +511,7 @@
     <message>
         <location filename="../UI/spot-on-chatwindow.ui" line="169"/>
         <source>Share a StarBeam.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Compartir una Starbeam.</translation>
     </message>
 </context>
 <context>
@@ -1982,7 +1982,7 @@ If not checked, the neighbor will be terminated after some internal timer expire
     <message>
         <location filename="../GUI/spot-on-a.cc" line="590"/>
         <source>Please type a message...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Por favor, escriba un mensaje ...</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-a.cc" line="592"/>
@@ -1992,7 +1992,7 @@ If not checked, the neighbor will be terminated after some internal timer expire
     <message>
         <location filename="../GUI/spot-on-a.cc" line="599"/>
         <source>%1: Add Participant</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1: Agregar participante</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-a.cc" line="604"/>
@@ -2548,7 +2548,7 @@ Source of Randomness: %16</source>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="64"/>
         <source>Please provide a real message.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Escribe el mensaje real.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="418"/>
@@ -2615,17 +2615,17 @@ Source of Randomness: %16</source>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="3814"/>
         <source>From</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">De</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="3817"/>
         <source>To</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">A</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="3819"/>
         <source>From/To</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">De / A</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="4239"/>
@@ -3660,7 +3660,7 @@ Error: %1.</source>
         <location filename="../GUI/spot-on-e.cc" line="403"/>
         <location filename="../GUI/spot-on-e.cc" line="550"/>
         <source>Test successful!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Prueba con éxito!</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-e.cc" line="172"/>
@@ -3791,7 +3791,7 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="133"/>
         <source>Please type a message...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Por favor, escriba un mensaje ...</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="214"/>
@@ -3811,12 +3811,12 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="229"/>
         <source>Please provide a real message.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Escribe el mensaje real.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="241"/>
         <source>&lt;b&gt;me:&lt;/b&gt; </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;b&gt;mi:&lt;/b&gt; </translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="288"/>
@@ -3835,7 +3835,7 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="469"/>
         <source>&lt;i&gt;%1 has joined %2.&lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;i&gt;%1 se ha unido a %2.&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="505"/>
@@ -3845,7 +3845,7 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="570"/>
         <source>&lt;i&gt;%1 has left %2.&lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;i&gt;%1 ha dejado %2.&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-buzzpage.cc" line="609"/>
@@ -3869,7 +3869,7 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="133"/>
         <source>Please type a message...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Por favor, escriba un mensaje ...</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="150"/>
@@ -3906,7 +3906,7 @@ Error: %1.</source>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="247"/>
         <source>Please provide a real message.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Escribe el mensaje real.</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-chatwindow.cc" line="267"/>
@@ -4744,12 +4744,12 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="403"/>
         <source>Generate</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Generar</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="411"/>
         <source>Join</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Unirse</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="667"/>
@@ -5416,7 +5416,7 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="8958"/>
         <source>&amp;Add Participant...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&amp;Añada participante...</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-controlcenter.ui" line="1397"/>
@@ -8127,17 +8127,17 @@ To re-analyze a mosaic, you must first delete the entry in the below table.</sou
     <message>
         <location filename="../UI/spot-on-statusbar.ui" line="96"/>
         <source>Buzz activity detected!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Detectó la actividad de Buzz!</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-statusbar.ui" line="109"/>
         <source>You have received a new message.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ha recibido un nuevo mensaje.</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-statusbar.ui" line="125"/>
         <source>New e-mail has arrived!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nuevo correo electrónico ha llegado!</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-statusbar.ui" line="141"/>
