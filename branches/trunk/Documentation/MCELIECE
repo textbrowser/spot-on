@@ -2,7 +2,7 @@ The McEliece cryptographic system is only enabled for the Linux Qt 5.x project f
 
 To enable the system for other systems, please follow the following suggestions. Good luck!
 
-1. Verify that libtoon is installed.
+1. Verify that libtool is installed.
 
 2. Create a special libntl target.
 

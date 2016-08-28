@@ -829,7 +829,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	  stream << QByteArray("0090")
 		 << keyType.toLatin1()
 		 << name
-		 << publicKey
+		 << qCompress(publicKey)
 		 << signature
 		 << sPublicKey
 		 << sSignature;

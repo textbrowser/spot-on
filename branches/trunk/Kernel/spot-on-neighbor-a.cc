@@ -4827,7 +4827,7 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 	  savePublicKey
 	    (list.value(1),                    // Key Type
 	     list.value(2),                    // Name
-	     list.value(3),                    // Public Key
+	     qUncompress(list.value(3)),       // Public Key
 	     list.value(4),                    // Public Key Signature
 	     list.value(5),                    // Signature Public Key
 	     list.value(6),                    // Signature Public Key
