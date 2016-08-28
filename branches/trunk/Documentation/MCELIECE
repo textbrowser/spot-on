@@ -1,35 +1,37 @@
 The McEliece cryptographic system is only enabled for the Linux Qt 5.x project files.
 
-To enable the system for other systems, please follow the following suggestions.
+To enable the system for other systems, please follow the following suggestions. Good luck!
 
-1. Create a special ntl target.
+1. Verify that libtoon is installed.
 
-ntl.target = ntl.a
-ntl.commands = cd ../../libNTL/unix.d/src && ./configure && $(MAKE)
-ntl.depends =
+2. Create a special libntl target.
 
-Be careful on freeBSD systems.
+libntl.target = libntl.so
+libntl.commands = cd ../../libNTL/unix.d/src && ./configure && $(MAKE)
+libntl.depends =
 
-ntl.commands = cd ../../libNTL/unix.d/src && ./configure CXX=clang++ && gmake
+Be careful on FreeBSD systems.
 
-2. Modify DEFINES.
+libntl.commands = cd ../../libNTL/unix.d/src && ./configure CXX=clang++ && gmake
+
+3. Modify DEFINES.
 
 DEFINES	+= SPOTON_MCELIECE_ENABLED
 
-3. Modify INCLUDEPATH and LIBS.
+4. Modify INCLUDEPATH and LIBS.
 
 INCLUDEPATH	+= ../../libNTL/unix.d/include
-LIBS		+= -L../../libNTL/unix.d/src -l:ntl.a
+LIBS		+= -L../../libNTL/unix.d/src/.libs -lntl
 
-Be careful of OS X systems. Use Homebrew!
+Be careful on OS X systems. Use Homebrew!
 
 LIBS		+= -lgmp -lntl
 
-4. Modify QMAKE_CLEAN.
+5. Modify QMAKE_CLEAN.
 
 QMAKE_CLEAN += ../../libNTL/unix.d/src/*.o
 
-5. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS.
+6. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS.
 
-QMAKE_EXTRA_TARGETS = libntru libspoton ntl purge
-PRE_TARGETDEPS = libntru.so libspoton.so ntl.a
+QMAKE_EXTRA_TARGETS = libntl libntru libspoton purge
+PRE_TARGETDEPS = libntl.so libntru.so libspoton.so
