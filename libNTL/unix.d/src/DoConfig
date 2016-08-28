@@ -58,7 +58,7 @@
 'NTL_THREADS'             => 'off',
 'NTL_DISABLE_TLS_HACK'    => 'off',
 'NTL_ENABLE_TLS_HACK'     => 'off',
-'NTL_EXCEPTIONS'          => 'off',
+'NTL_EXCEPTIONS'          => 'on',
 'NTL_THREAD_BOOST'        => 'off',
 'NTL_GMP_LIP'             => 'off',
 'NTL_GF2X_LIB'            => 'off',
