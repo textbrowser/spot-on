@@ -2,15 +2,16 @@ The McEliece cryptographic system is only enabled for the Linux Qt 5.x project f
 
 To enable the system for other systems, please follow the following suggestions. Good luck!
 
-1. Verify that libtool is installed.
+1. Verify that libtool is installed. On FreeBSD, issue sudo pkg install libtool.
 
-2. Create a special libntl target.
+2. Create a special libntl target. Please note that a kernel's project file will reference
+different libNTL paths (../../../libNTL).
 
 libntl.target = libntl.so
 libntl.commands = cd ../../libNTL/unix.d/src && ./configure && $(MAKE)
 libntl.depends =
 
-Be careful on FreeBSD systems.
+On FreeBSD, clang++ must be used.
 
 libntl.commands = cd ../../libNTL/unix.d/src && ./configure CXX=clang++ && gmake
 
@@ -23,7 +24,7 @@ DEFINES	+= SPOTON_MCELIECE_ENABLED
 INCLUDEPATH	+= ../../libNTL/unix.d/include
 LIBS		+= -L../../libNTL/unix.d/src/.libs -lntl
 
-Be careful on OS X systems. Use Homebrew!
+On OS X, Homebrew should be used. Also, NTL requires GMP.
 
 LIBS		+= -lgmp -lntl
 
