@@ -1,14 +1,14 @@
 cache()
 include(spot-on-kernel-source.pro)
+libntl.target = libntl.so
+libntl.commands = cd ../../../libNTL/unix.d/src && ./configure && $(MAKE)
+libntl.depends =
 libntru.target = libntru.so
 libntru.commands = $(MAKE) -C ../../../libNTRU
 libntru.depends =
 libspoton.target = libspoton.so
 libspoton.commands = $(MAKE) -C ../../../libSpotOn library
 libspoton.depends =
-ntl.target = ntl.a
-ntl.commands = cd ../../../libNTL/unix.d/src && ./configure && $(MAKE)
-ntl.depends =
 purge.commands = rm -f *~
 
 TEMPLATE	= app
@@ -44,15 +44,15 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Woverloaded-virtual -Wpointer-arith \
                           -Wstack-protector -Wstrict-overflow=5
 QMAKE_LFLAGS_RELEASE += -Wl,-rpath,/usr/local/spot-on/Lib
-QMAKE_EXTRA_TARGETS = libntru libspoton ntl purge
+QMAKE_EXTRA_TARGETS = libntl libntru libspoton purge
 INCLUDEPATH	+= . ../. ../../../. ../../../libNTL/unix.d/include \
 		   /usr/include/postgresql
-LIBS		+= -L../../../libNTL/unix.d/src \
+LIBS		+= -L../../../libNTL/unix.d/src/.libs \
 		   -L../../../libNTRU -L../../../libSpotOn \
 		   -lGeoIP \
-		   -lcrypto -lcurl -lgcrypt -lgpg-error -l:ntl.a -lntru \
+		   -lcrypto -lcurl -lgcrypt -lgpg-error -lntl -lntru \
 		   -lpq -lspoton -lssl
-PRE_TARGETDEPS = libntru.so libspoton.so ntl.a
+PRE_TARGETDEPS = libntl.so libntru.so libspoton.so
 OBJECTS_DIR = temp/obj
 UI_DIR = temp/ui
 MOC_DIR = temp/moc
