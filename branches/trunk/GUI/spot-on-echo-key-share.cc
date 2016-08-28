@@ -225,7 +225,7 @@ void spoton_echo_key_share::slotMenuAction(void)
       keys = spoton_crypt::derivedKeys
 	(ui.cipher->currentText(),
 	 ui.hash->currentText(),
-	 static_cast<unsigned long> (ui.iteration_count->value()),
+	 static_cast<unsigned long int> (ui.iteration_count->value()),
 	 name.mid(0, 16).toUtf8(),
 	 ui.cipher->currentText().toLatin1().toHex() +
 	 ui.hash->currentText().toLatin1().toHex() +
@@ -1025,7 +1025,7 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
   keys = spoton_crypt::derivedKeys
     ("aes256",
      "sha512",
-     static_cast<unsigned long> (15000),
+     static_cast<unsigned long int> (15000),
      name.mid(0, 16).toUtf8(),
      QByteArray("aes256").toHex() + QByteArray("sha512").toHex() +
      name.mid(16).toUtf8(),

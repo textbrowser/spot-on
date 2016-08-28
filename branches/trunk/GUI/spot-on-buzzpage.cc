@@ -47,7 +47,7 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 				 const QByteArray &channelSalt,
 				 const QByteArray &channelType,
 				 const QByteArray &id,
-				 const unsigned long iterationCount,
+				 const unsigned long int iterationCount,
 				 const QByteArray &hashKey,
 				 const QByteArray &hashType,
 				 const QByteArray &key,
@@ -80,7 +80,7 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
     m_hashType = "sha512";
 
   m_id = id.trimmed();
-  m_iterationCount = qMax(static_cast<unsigned long> (10000),
+  m_iterationCount = qMax(static_cast<unsigned long int> (10000),
 			  iterationCount);
 
   if(m_id.isEmpty())

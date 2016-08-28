@@ -339,7 +339,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
 		  text().trimmed()).
 	      arg(m_poptasticRetroPhoneSettingsUi.in_server_port->value());
 
-	  long verify = static_cast<long>
+	  long int verify = static_cast<long int>
 	    (m_poptasticRetroPhoneSettingsUi.in_verify_host->isChecked());
 
 	  if(verify)
@@ -347,7 +347,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
 	  else
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
-	  verify = static_cast<long>
+	  verify = static_cast<long int>
 	    (m_poptasticRetroPhoneSettingsUi.in_verify_peer->isChecked());
 	  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
@@ -490,7 +490,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 		      smtp_localname->text());
 	    }
 
-	  long verify = static_cast<long>
+	  long int verify = static_cast<long int>
 	    (m_poptasticRetroPhoneSettingsUi.out_verify_host->isChecked());
 
 	  if(verify)
@@ -498,7 +498,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 	  else
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
-	  verify = static_cast<long>
+	  verify = static_cast<long int>
 	    (m_poptasticRetroPhoneSettingsUi.out_verify_peer->isChecked());
 	  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 

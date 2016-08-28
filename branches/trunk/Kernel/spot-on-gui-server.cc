@@ -54,8 +54,9 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
      privateKey,
      publicKey,
      serverAddress(),
-     60L * 60L * 24L * static_cast<long> (spoton_common::
-					  KERNEL_CERTIFICATE_DAYS_VALID),
+     60L * 60L * 24L *
+     static_cast<long int> (spoton_common::
+			    KERNEL_CERTIFICATE_DAYS_VALID),
      error);
 
   if(error.isEmpty())
@@ -490,9 +491,9 @@ void spoton_gui_server::slotReadyRead(void)
 			       setting("gui/saltLength",
 				       512).toInt(),
 			       static_cast<unsigned
-			       long> (spoton_kernel::
-				      setting("gui/iterationCount",
-					      10000).toInt()),
+			       long int> (spoton_kernel::
+					  setting("gui/iterationCount",
+						  10000).toInt()),
 			       names.at(i));
 			  }
 			catch(const std::bad_alloc &exception)

@@ -130,7 +130,7 @@ const qint64 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
 const qint64 spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE;
 const qint64 spoton_common::MINIMUM_NEIGHBOR_CONTENT_LENGTH;
-const unsigned long spoton_common::GEMINI_ITERATION_COUNT;
+const unsigned long int spoton_common::GEMINI_ITERATION_COUNT;
 int spoton_common::CACHE_TIME_DELTA_MAXIMUM =
   spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::CHAT_TIME_DELTA_MAXIMUM =
@@ -3149,7 +3149,7 @@ void spoton::slotAddListener(void)
 	 privateKey,
 	 publicKey,
 	 address,
-	 60L * 60L * 24L * static_cast<long> (m_ui.days_valid->value()),
+	 60L * 60L * 24L * static_cast<long int> (m_ui.days_valid->value()),
 	 error);
       m_sb.status->clear();
       QApplication::restoreOverrideCursor();
@@ -6170,7 +6170,7 @@ void spoton::slotSetPassphrase(void)
     derivedKeys = spoton_crypt::derivedKeys
       (m_ui.cipherType->currentText(),
        m_ui.hashType->currentText(),
-       static_cast<unsigned long> (m_ui.iterationCount->value()),
+       static_cast<unsigned long int> (m_ui.iterationCount->value()),
        str1,
        salt,
        error1);
@@ -6178,7 +6178,7 @@ void spoton::slotSetPassphrase(void)
     derivedKeys = spoton_crypt::derivedKeys
       (m_ui.cipherType->currentText(),
        m_ui.hashType->currentText(),
-       static_cast<unsigned long> (m_ui.iterationCount->value()),
+       static_cast<unsigned long int> (m_ui.iterationCount->value()),
        str1 + str2,
        salt,
        error1);
@@ -6202,9 +6202,9 @@ void spoton::slotSetPassphrase(void)
 			      derivedKeys.first,
 			      derivedKeys.second,
 			      m_ui.saltLength->value(),
-			      static_cast<unsigned long> (m_ui.
-							  iterationCount->
-							  value()),
+			      static_cast<unsigned long int> (m_ui.
+							      iterationCount->
+							      value()),
 			      "chat"));
 	      QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 			       spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
@@ -6324,8 +6324,8 @@ void spoton::slotSetPassphrase(void)
 		     derivedKeys.first,
 		     derivedKeys.second,
 		     m_ui.saltLength->value(),
-		     static_cast<unsigned long> (m_ui.iterationCount->
-						 value()),
+		     static_cast<unsigned long int> (m_ui.iterationCount->
+						     value()),
 		     list.at(i));
 
 		  if(!list.at(i).contains("signature"))
@@ -6415,9 +6415,9 @@ void spoton::slotSetPassphrase(void)
 			      derivedKeys.first,
 			      derivedKeys.second,
 			      m_ui.saltLength->value(),
-			      static_cast<unsigned long> (m_ui.
-							  iterationCount->
-							  value()),
+			      static_cast<unsigned long int> (m_ui.
+							      iterationCount->
+							      value()),
 			      "chat"));
 
 	      spoton_reencode reencode;
@@ -6452,9 +6452,9 @@ void spoton::slotSetPassphrase(void)
 				derivedKeys.first,
 				derivedKeys.second,
 				m_ui.saltLength->value(),
-				static_cast<unsigned long> (m_ui.
-							    iterationCount->
-							    value()),
+				static_cast<unsigned long int> (m_ui.
+								iterationCount->
+								value()),
 				list.at(i)));
 
 	  if(!reencode)
@@ -6712,7 +6712,7 @@ void spoton::slotValidatePassphrase(void)
 	  keys = spoton_crypt::derivedKeys
 	    (m_ui.cipherType->currentText(),
 	     m_ui.hashType->currentText(),
-	     static_cast<unsigned long> (m_ui.iterationCount->value()),
+	     static_cast<unsigned long int> (m_ui.iterationCount->value()),
 	     m_ui.passphrase->text(),
 	     salt,
 	     error);
@@ -6720,7 +6720,7 @@ void spoton::slotValidatePassphrase(void)
 	  keys = spoton_crypt::derivedKeys
 	    (m_ui.cipherType->currentText(),
 	     m_ui.hashType->currentText(),
-	     static_cast<unsigned long> (m_ui.iterationCount->value()),
+	     static_cast<unsigned long int> (m_ui.iterationCount->value()),
 	     m_ui.question_authenticate->text() +
 	     m_ui.answer_authenticate->text(),
 	     salt,
@@ -6748,16 +6748,17 @@ void spoton::slotValidatePassphrase(void)
 	    for(int i = 0; i < list.size(); i++)
 	      m_crypts.insert
 		(list.at(i),
-		 new spoton_crypt(m_ui.cipherType->currentText(),
-				  m_ui.hashType->currentText(),
-				  QByteArray(),
-				  keys.first,
-				  keys.second,
-				  m_ui.saltLength->value(),
-				  static_cast<unsigned long> (m_ui.
-							      iterationCount->
-							      value()),
-				  list.at(i)));
+		 new spoton_crypt
+		 (m_ui.cipherType->currentText(),
+		  m_ui.hashType->currentText(),
+		  QByteArray(),
+		  keys.first,
+		  keys.second,
+		  m_ui.saltLength->value(),
+		  static_cast<unsigned long int> (m_ui.
+						  iterationCount->
+						  value()),
+		  list.at(i)));
 
 	    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	    spoton_misc::alterDatabasesAfterAuthentication
@@ -9651,13 +9652,13 @@ void spoton::slotPopulateBuzzFavorites(void)
 		     !hashKey.isEmpty() && !hashType.isEmpty())
 		    {
 		      QByteArray label;
-		      unsigned long iterationCount = 0;
+		      unsigned long int iterationCount = 0;
 
 		      channelSalt = QByteArray::fromBase64
 			(list.value(2));
 		      iterationCount = qMax
 			(QByteArray::fromBase64(list.value(1)).
-			 toULong(), static_cast<unsigned long> (10000));
+			 toULong(), static_cast<unsigned long int> (10000));
 
 		      if(channelName.length() > 16)
 			{

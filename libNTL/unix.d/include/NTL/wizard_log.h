@@ -2,6 +2,7 @@
 
 /***************************
 Basic Configuration Options:
+NTL_EXCEPTIONS
 
 Resolution of double-word types:
 __int128_t

@@ -211,7 +211,7 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 (const QString &cipherType,
  const QString &hashType,
- const unsigned long iterationCount,
+ const unsigned long int iterationCount,
  const QString &passphrase,
  const QByteArray &salt,
  QString &error)
@@ -223,7 +223,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 (const QString &cipherType,
  const QString &hashType,
- const unsigned long iterationCount,
+ const unsigned long int iterationCount,
  const QString &passphrase,
  const QByteArray &salt,
  const int hashKeySize,
@@ -538,7 +538,7 @@ spoton_crypt::spoton_crypt(const QString &cipherType,
 			   const QByteArray &passphrase,
 			   const QByteArray &symmetricKey,
 			   const int saltLength,
-			   const unsigned long iterationCount,
+			   const unsigned long int iterationCount,
 			   const QString &id)
 {
   init(cipherType, hashType, passphrase, symmetricKey, QByteArray(),
@@ -551,7 +551,7 @@ spoton_crypt::spoton_crypt(const QString &cipherType,
 			   const QByteArray &symmetricKey,
 			   const QByteArray &hashKey,
 			   const int saltLength,
-			   const unsigned long iterationCount,
+			   const unsigned long int iterationCount,
 			   const QString &id)
 {
   init(cipherType, hashType, passphrase, symmetricKey, hashKey,
@@ -564,7 +564,7 @@ spoton_crypt::spoton_crypt(const QString &cipherType,
 			   const QByteArray &symmetricKey,
 			   const QByteArray &hashKey,
 			   const int saltLength,
-			   const unsigned long iterationCount,
+			   const unsigned long int iterationCount,
 			   const QString &id,
 			   const QString &modeOfOperation)
 {
@@ -578,7 +578,7 @@ void spoton_crypt::init(const QString &cipherType,
 			const QByteArray &symmetricKey,
 			const QByteArray &hashKey,
 			const int saltLength,
-			const unsigned long iterationCount,
+			const unsigned long int iterationCount,
 			const QString &id,
 			const QString &modeOfOperation)
 {
@@ -3059,7 +3059,7 @@ void spoton_crypt::generateSslKeys(const int rsaKeySize,
 				   QByteArray &privateKey,
 				   QByteArray &publicKey,
 				   const QHostAddress &address,
-				   const long days,
+				   const long int days,
 				   QString &error)
 {
   BIGNUM *f4 = 0;
@@ -3224,7 +3224,7 @@ void spoton_crypt::purgeDatabases(void)
 void spoton_crypt::generateCertificate(RSA *rsa,
 				       QByteArray &certificate,
 				       const QHostAddress &address,
-				       const long days,
+				       const long int days,
 				       QString &error)
 {
   BIO *memory = 0;
@@ -3700,7 +3700,7 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1,
   QByteArray a;
   QByteArray b;
   int length = qMax(bytes1.length(), bytes2.length());
-  unsigned long rc = 0;
+  unsigned long int rc = 0;
 
   a = bytes1.leftJustified(length, 0);
   b = bytes2.leftJustified(length, 0);
@@ -3711,14 +3711,14 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1,
 
   for(int i = 0; i < length; i++)
     {
-      std::bitset<CHAR_BIT * sizeof(unsigned long)> ba1
-	(static_cast<unsigned long> (a.at(i)));
-      std::bitset<CHAR_BIT * sizeof(unsigned long)> ba2
-	(static_cast<unsigned long> (b.at(i)));
+      std::bitset<CHAR_BIT * sizeof(unsigned long int)> ba1
+	(static_cast<unsigned long int> (a.at(i)));
+      std::bitset<CHAR_BIT * sizeof(unsigned long int)> ba2
+	(static_cast<unsigned long int> (b.at(i)));
 
       for(size_t j = 0; j < ba1.size(); j++)
-	rc |= static_cast<unsigned long> (ba1[j]) ^
-	  static_cast<unsigned long> (ba2[j]);
+	rc |= static_cast<unsigned long int> (ba1[j]) ^
+	  static_cast<unsigned long int> (ba2[j]);
     }
 
   return rc == 0; /*

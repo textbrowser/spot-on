@@ -67,14 +67,14 @@ class spoton_crypt
   static QPair<QByteArray, QByteArray> derivedKeys
     (const QString &cipherType,
      const QString &hashType,
-     const unsigned long iterationCount,
+     const unsigned long int iterationCount,
      const QString &passphrase,
      const QByteArray &salt,
      QString &error);
   static QPair<QByteArray, QByteArray> derivedKeys
     (const QString &cipherType,
      const QString &hashType,
-     const unsigned long iterationCount,
+     const unsigned long int iterationCount,
      const QString &passphrase,
      const QByteArray &salt,
      const int hashKeySize,
@@ -138,7 +138,7 @@ class spoton_crypt
 			      QByteArray &privateKey,
 			      QByteArray &publicKey,
 			      const QHostAddress &address,
-			      const long days,
+			      const long int days,
 			      QString &error);
   static void init(const int secureMemorySize, const bool cbc_cts_enabled);
   static void memcmp_test(void);
@@ -157,7 +157,7 @@ class spoton_crypt
 	       const QByteArray &passphrase,
 	       const QByteArray &symmetricKey,
 	       const int saltLength,
-	       const unsigned long iterationCount,
+	       const unsigned long int iterationCount,
 	       const QString &id);
   spoton_crypt(const QString &cipherType,
 	       const QString &hashType,
@@ -165,7 +165,7 @@ class spoton_crypt
 	       const QByteArray &symmetricKey,
 	       const QByteArray &hashKey,
 	       const int saltLength,
-	       const unsigned long iterationCount,
+	       const unsigned long int iterationCount,
 	       const QString &id);
   spoton_crypt(const QString &cipherType,
 	       const QString &hashType,
@@ -173,7 +173,7 @@ class spoton_crypt
 	       const QByteArray &symmetricKey,
 	       const QByteArray &hashKey,
 	       const int saltLength,
-	       const unsigned long iterationCount,
+	       const unsigned long int iterationCount,
 	       const QString &id,
 	       const QString &modeOfOperation);
   ~spoton_crypt();
@@ -226,7 +226,7 @@ class spoton_crypt
 #endif
   spoton_threefish *m_threefish;
   static bool s_cbc_cts_enabled;
-  unsigned long m_iterationCount;
+  unsigned long int m_iterationCount;
   QByteArray publicKeyDecryptMcEliece(const QByteArray &data, bool *ok);
   QByteArray publicKeyDecryptNTRU(const QByteArray &data, bool *ok);
   void init(const QString &cipherType,
@@ -235,7 +235,7 @@ class spoton_crypt
 	    const QByteArray &symmetricKey,
 	    const QByteArray &hashKey,
 	    const int saltLength,
-	    const unsigned long iterationCount,
+	    const unsigned long int iterationCount,
 	    const QString &id,
 	    const QString &modeOfOperation);
   void initializePrivateKeyContainer(bool *ok);
@@ -254,7 +254,7 @@ class spoton_crypt
   static void generateCertificate(RSA *rsa,
 				  QByteArray &certificate,
 				  const QHostAddress &address,
-				  const long days,
+				  const long int days,
 				  QString &error);
 };
 

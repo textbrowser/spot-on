@@ -47,7 +47,7 @@ class spoton_buzzpage: public QWidget
 		  const QByteArray &channelSalt,
 		  const QByteArray &channelType,
 		  const QByteArray &id,
-		  const unsigned long iterationCount,
+		  const unsigned long int iterationCount,
 		  const QByteArray &hashKey,
 		  const QByteArray &hashType,
 		  const QByteArray &key,
@@ -75,7 +75,7 @@ class spoton_buzzpage: public QWidget
   QPointer<QSslSocket> m_kernelSocket;
   QTimer m_statusTimer;
   Ui_buzzPage ui;
-  unsigned long m_iterationCount;
+  unsigned long int m_iterationCount;
 
  private slots:
   void slotBuzzNameChanged(const QByteArray &name);

@@ -309,8 +309,8 @@ void spoton::slotBuzzInvite(void)
   QPair<QByteArray, QByteArray> keys;
   QPointer<spoton_buzzpage> page;
   QString error("");
-  unsigned long iterationCount =
-    static_cast<unsigned long> (m_ui.buzzIterationCount->minimum());
+  unsigned long int iterationCount =
+    static_cast<unsigned long int> (m_ui.buzzIterationCount->minimum());
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   keys = spoton_crypt::derivedKeys(channelType,
@@ -453,7 +453,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
   QString hashKey("");
   QString hashType("");
   QStringList list(url.toString().remove("magnet:?").split("&"));
-  unsigned long iterationCount = 0;
+  unsigned long int iterationCount = 0;
 
   while(!list.isEmpty())
     {
@@ -467,7 +467,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
       else if(str.startsWith("xf="))
 	{
 	  str.remove(0, 3);
-	  iterationCount = static_cast<unsigned long> (qAbs(str.toInt()));
+	  iterationCount = static_cast<unsigned long int> (qAbs(str.toInt()));
 	}
       else if(str.startsWith("xs="))
 	{

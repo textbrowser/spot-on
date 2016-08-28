@@ -145,7 +145,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   int rc = 0;
   socklen_t optlen = sizeof(optval);
 #ifdef Q_OS_WIN32
-  unsigned long enabled = 1;
+  unsigned long int enabled = 1;
 #endif
 
   if(QHostAddress(address).protocol() == QAbstractSocket::IPv6Protocol)

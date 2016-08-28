@@ -190,7 +190,7 @@ const qint64 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
 const qint64 spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE;
 const qint64 spoton_common::MINIMUM_NEIGHBOR_CONTENT_LENGTH;
-const unsigned long spoton_common::GEMINI_ITERATION_COUNT;
+const unsigned long int spoton_common::GEMINI_ITERATION_COUNT;
 int spoton_common::CACHE_TIME_DELTA_MAXIMUM =
   spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::CHAT_TIME_DELTA_MAXIMUM =
@@ -3938,9 +3938,9 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 			       "aes256").toString(),
 		       setting("gui/hashType",
 			       "sha512").toString(),
-		       static_cast<unsigned long> (setting("gui/"
-							   "iterationCount",
-							   10000).toInt()),
+		       static_cast<unsigned long int> (setting("gui/"
+							       "iterationCount",
+							       10000).toInt()),
 		       passphrase,
 		       salt,
 		       error));
@@ -3973,10 +3973,11 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 			 keys.first,
 			 keys.second,
 			 setting("gui/saltLength", 512).toInt(),
-			 static_cast<unsigned long> (setting("gui/"
-							     "iterationCount",
-							     10000).
-						     toInt()),
+			 static_cast
+			 <unsigned long int> (setting("gui/"
+						      "iterationCount",
+						      10000).
+					      toInt()),
 			 list.at(i));
 
 		      if(!altered)

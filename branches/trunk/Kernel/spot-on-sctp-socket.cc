@@ -316,7 +316,7 @@ int spoton_sctp_socket::setSocketBlockingOrNon(void)
   int rc = 0;
 
 #ifdef Q_OS_WIN32
-  unsigned long enabled = 1;
+  unsigned long int enabled = 1;
 
   rc = ioctlsocket(m_socketDescriptor, FIONBIO, &enabled);
 

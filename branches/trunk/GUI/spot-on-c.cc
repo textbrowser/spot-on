@@ -1418,7 +1418,7 @@ void spoton::slotPopulateStars(void)
 		  int percent = static_cast<int>
 		    (100 *
        		     qAbs(static_cast<double> (fileInfo.size()) /
-			  static_cast<double> (qMax(static_cast<long long>
+			  static_cast<double> (qMax(static_cast<long long int>
 						    (1),
 						    item1->text().
 						    toLongLong()))));
@@ -1695,7 +1695,7 @@ void spoton::slotPopulateStars(void)
 		  int percent = static_cast<int>
 		    (100 *
 		     qAbs(static_cast<double> (position) /
-			  static_cast<double> (qMax(static_cast<long long>
+			  static_cast<double> (qMax(static_cast<long long int>
 						    (1),
 						    item->text().
 						    toLongLong()))));

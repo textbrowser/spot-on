@@ -33,13 +33,8 @@
 #include "spot-on-kernel.h"
 #include "spot-on-mailer.h"
 
+static QByteArray curl_receive_data;
 static QList<QByteArray> curl_payload_text;
-
-struct curl_memory
-{
-  char *memory;
-  size_t size;
-};
 
 struct curl_upload_status
 {
@@ -76,33 +71,14 @@ static size_t curl_payload_source
   return 0;
 }
 
-static size_t curl_write_memory_callback(void *contents, size_t size,
-					 size_t nmemb, void *userp)
+static size_t curl_write_memory_callback
+(void *contents, size_t size, size_t nmemb)
 {
-  if(!contents || nmemb <= 0 || size <= 0 || !userp)
+  if(!contents || nmemb <= 0 || size <= 0)
     return 0;
 
-  struct curl_memory *memory = (struct curl_memory *) userp;
-
-  if(!memory)
-    return 0;
-
-  size_t realsize = nmemb * size;
-
-  memory->memory = (char *)
-    realloc(memory->memory, memory->size + realsize + 1);
-
-  if(!memory->memory)
-    {
-      spoton_misc::logError
-	("curl_write_memory_callback(): memory->memory is zero!");
-      return 0;
-    }
-
-  memcpy(&(memory->memory[memory->size]), contents, realsize);
-  memory->size += realsize;
-  memory->memory[memory->size] = 0;
-  return realsize;
+  curl_receive_data.append((char *) contents, nmemb *size);
+  return nmemb * size;
 }
 
 void spoton_kernel::slotPoptasticPop(void)
@@ -170,6 +146,7 @@ void spoton_kernel::popPoptastic(void)
 
   if(curl)
     {
+      curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
       curl_easy_setopt
 	(curl, CURLOPT_PASSWORD,
 	 hash.value("in_password").toByteArray().constData());
@@ -177,7 +154,7 @@ void spoton_kernel::popPoptastic(void)
 	(curl, CURLOPT_USERNAME,
 	 hash.value("in_username").toByteArray().trimmed().constData());
 
-      long timeout = 10L;
+      long int timeout = 10L;
 
       if(hash.value("proxy_enabled").toBool())
 	{
@@ -229,14 +206,16 @@ void spoton_kernel::popPoptastic(void)
 	      arg(hash.value("in_server_address").toString().trimmed()).
 	      arg(hash.value("in_server_port").toString().trimmed());
 
-	  long verify = static_cast<long>(hash.value("in_verify_host").toInt());
+	  long int verify = static_cast<long int>
+	    (hash.value("in_verify_host").toInt());
 
 	  if(verify)
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
 	  else
 	    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
-	  verify = static_cast<long>(hash.value("in_verify_peer").toInt());
+	  verify = static_cast<long int>
+	    (hash.value("in_verify_peer").toInt());
 	  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
 	  if(ssltls == "TLS")
@@ -279,17 +258,9 @@ void spoton_kernel::popPoptastic(void)
 
 	  for(int i = 1; i <= 15; i++)
 	    {
-	      struct curl_memory chunk;
-
-	      chunk.memory = (char *) malloc(1);
-
-	      if(!chunk.memory)
-		break;
-
-	      chunk.size = 0;
-	      curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+	      curl_receive_data.clear();
+	      curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 128L);
 	      curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
-	      curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *) &chunk);
 	      curl_easy_setopt
 		(curl, CURLOPT_WRITEFUNCTION, curl_write_memory_callback);
 
@@ -315,33 +286,34 @@ void spoton_kernel::popPoptastic(void)
 			(curl, CURLOPT_URL, url.toLatin1().constData());
 		    }
 
-		  if(chunk.size > 0)
+		  if(!curl_receive_data.isEmpty())
 		    {
 		      QByteArray hash;
-		      QByteArray message
-			(QByteArray(chunk.memory,
-				    static_cast<int> (chunk.size)));
 		      bool ok = true;
 
-		      hash = s_crypt->keyedHash(message, &ok);
+		      hash = s_crypt->keyedHash(curl_receive_data, &ok);
 
 		      if(!cache.contains(hash))
 			{
-			  emit poppedMessage(message);
+			  emit poppedMessage(curl_receive_data);
 			  cache[hash] = 0;
 			}
 		    }
 		}
+	      else if(rc == CURLE_OPERATION_TIMEDOUT)
+		{
+                  if(method == "IMAP")
+		    list.append(i); // Remove this item from the Inbox.
+
+		  break;
+                }
 	      else
 		{
-		  free(chunk.memory);
 		  spoton_misc::logError
 		    (QString("spoton_kernel::popPoptastic(): "
 			     "curl_easy_perform() failure (%1).").arg(rc));
 		  break;
 		}
-
-	      free(chunk.memory);
 
 	      if(m_poptasticPopFuture.isCanceled())
 		break;
@@ -351,7 +323,6 @@ void spoton_kernel::popPoptastic(void)
 	{
 	  while(!list.isEmpty())
 	    {
-	      curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 	      curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	      curl_easy_setopt
 		(curl, CURLOPT_URL, url.toLatin1().constData());
@@ -385,6 +356,7 @@ void spoton_kernel::popPoptastic(void)
 	}
 
       curl_easy_cleanup(curl);
+      curl_receive_data.clear();
 
       if(m_poptasticPopFuture.isCanceled())
 	return;
@@ -497,6 +469,7 @@ void spoton_kernel::postPoptastic(void)
 
       if(curl)
 	{
+	  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 	  curl_easy_setopt
 	    (curl, CURLOPT_PASSWORD,
 	     hash.value("out_password").toByteArray().constData());
@@ -504,7 +477,7 @@ void spoton_kernel::postPoptastic(void)
 	    (curl, CURLOPT_USERNAME,
 	     hash.value("out_username").toByteArray().trimmed().constData());
 
-	  long timeout = 10L;
+	  long int timeout = 10L;
 
 	  if(hash.value("proxy_enabled").toBool())
 	    {
@@ -559,7 +532,7 @@ void spoton_kernel::postPoptastic(void)
 		  arg(hash.value("smtp_localname", "localhost").
 		      toString());
 
-	      long verify = static_cast<long>
+	      long int verify = static_cast<long int>
 		(hash.value("out_verify_host").toInt());
 
 	      if(verify)
@@ -567,7 +540,7 @@ void spoton_kernel::postPoptastic(void)
 	      else
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
-	      verify = static_cast<long>
+	      verify = static_cast<long int>
 		(hash.value("out_verify_peer").toInt());
 	      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify);
 
@@ -603,7 +576,7 @@ void spoton_kernel::postPoptastic(void)
 	      locker.unlock();
 
 	      QByteArray bytes(values.value("message").toByteArray());
-	      long count = 0;
+	      long int count = 0;
 	      struct curl_slist *recipients = 0;
 	      struct curl_upload_status upload_ctx;
 
@@ -611,7 +584,6 @@ void spoton_kernel::postPoptastic(void)
 	      curl_easy_setopt
 		(curl, CURLOPT_MAIL_FROM,
 		 QString("<%1>").arg(from).toLatin1().constData());
-	      curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 
 	      /*
 	      ** Prepare curl_payload_text.
@@ -773,7 +745,7 @@ void spoton_kernel::postPoptastic(void)
 		*/
 
 		curl_easy_setopt
-		  (curl, CURLOPT_TIMEOUT, (long) 2.5 * count + timeout);
+		  (curl, CURLOPT_TIMEOUT, (long int) 2.5 * count + timeout);
 
 	      curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 
@@ -2274,7 +2246,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 (const QByteArrayList &list)
 {
-  if(list.isEmpty())
+  if(list.size() != 7)
     return;
 
   /*
@@ -2374,7 +2346,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   }
 
   bundle = spoton_crypt::publicKeyEncrypt
-    (bundle, list.value(1), &ok);
+    (bundle, qUncompress(list.value(1)), &ok);
 
   if(!ok)
     return;
@@ -2496,6 +2468,9 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
 
       if(!ok)
 	continue;
+
+      pair.first = qUncompress(pair.first);
+      pair.second = qUncompress(pair.second);
 
       spoton_crypt crypt(pair.first, pair.second);
 

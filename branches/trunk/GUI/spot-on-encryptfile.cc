@@ -275,7 +275,7 @@ void spoton_encryptfile::slotConvert(void)
   derivedKeys = spoton_crypt::derivedKeys
     (ui.cipher->currentText(),
      ui.hash->currentText(),
-     static_cast<unsigned long> (ui.iteration_count->value()),
+     static_cast<unsigned long int> (ui.iteration_count->value()),
      password.toUtf8(),
      pin.toUtf8(),
      error);

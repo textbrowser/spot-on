@@ -346,6 +346,7 @@ void spoton::slotEstablishForwardSecrecy(void)
   progress.repaint();
   QApplication::processEvents();
 #endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   for(int i = 0; i < publicKeyHashes.size() && !progress.wasCanceled(); i++)
     {
@@ -388,6 +389,8 @@ void spoton::slotEstablishForwardSecrecy(void)
 	     toString());
 	  QString name(names.at(i).data().toString());
 
+	  keys.first = qCompress(keys.first);
+	  keys.second = qCompress(keys.second);
 	  message.append("forward_secrecy_request_");
 	  message.append(name.toUtf8().toBase64());
 	  message.append("_");
@@ -414,6 +417,7 @@ void spoton::slotEstablishForwardSecrecy(void)
     }
 
   progress.close();
+  QApplication::restoreOverrideCursor();
 
  done_label:
 
@@ -588,6 +592,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 	name = "unknown";
     }
 
+  sfs.public_key = qUncompress(sfs.public_key);
   aKey = spoton_crypt::publicKeyAlgorithm(sfs.public_key);
 
   if(aKey.isEmpty())
@@ -686,6 +691,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(!error.isEmpty())
     goto done_label;
 
+  sfs.public_key = qCompress(sfs.public_key);
   message.append("forward_secrecy_response_");
   message.append(publicKeyHash.toBase64());
   message.append("_");

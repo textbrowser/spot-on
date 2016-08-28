@@ -1155,7 +1155,7 @@ void spoton::slotSaveUrlCredentials(void)
   keys = spoton_crypt::derivedKeys
     (m_ui.urlCipher->currentText(),
      m_ui.urlHash->currentText(),
-     static_cast<unsigned long> (m_ui.urlIteration->value()),
+     static_cast<unsigned long int> (m_ui.urlIteration->value()),
      m_ui.urlPassphrase->text(),
      salt,
      64, // Dooble.
@@ -1415,7 +1415,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
   keys = spoton_crypt::derivedKeys
     (m_ui.commonUrlCipher->currentText(),
      m_ui.commonUrlHash->currentText(),
-     static_cast<unsigned long> (m_ui.commonUrlIterationCount->value()),
+     static_cast<unsigned long int> (m_ui.commonUrlIterationCount->value()),
      m_ui.commonUrlPassphrase->text(),
      m_ui.commonUrlPin->text().toUtf8(),
      error);

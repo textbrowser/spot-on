@@ -5502,8 +5502,8 @@ void spoton::slotJoinBuzzChannel(void)
   QPair<QByteArray, QByteArray> keys;
   QPointer<spoton_buzzpage> page;
   QString error("");
-  unsigned long iterationCount =
-    static_cast<unsigned long> (m_ui.buzzIterationCount->value());
+  unsigned long int iterationCount =
+    static_cast<unsigned long int> (m_ui.buzzIterationCount->value());
 
   if(channel.isEmpty())
     {

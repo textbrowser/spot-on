@@ -7,7 +7,7 @@
 %MakeFlag = (
 
 'WIZARD'  => 'on',
-'SHARED'  => 'off',
+'SHARED'  => 'on',
 'NATIVE'  => 'on'
 
 );
