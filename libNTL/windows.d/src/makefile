@@ -325,11 +325,11 @@ LINK = $(CXX) $(NTL_INCLUDE) $(CPPFLAGS) $(CXXAUTOFLAGS) $(CXXFLAGS) $(LDFLAGS)
 # again.
 
 all:
-	make setup1
-	make setup2
-	make setup3
-	make setup4
-	make ntl.a
+	$(MAKE) setup1
+	$(MAKE) setup2
+	$(MAKE) setup3
+	$(MAKE) setup4
+	$(MAKE) ntl.a
 	touch all
 
 
