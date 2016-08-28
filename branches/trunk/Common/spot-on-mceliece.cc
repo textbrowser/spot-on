@@ -30,6 +30,11 @@
 */
 
 #ifdef SPOTON_MCELIECE_ENABLED
+extern "C"
+{
+#include <math.h>
+}
+
 #include <QByteArray>
 
 #include <bitset>
@@ -45,61 +50,73 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
   m_n = 0;
   m_ok = true;
   m_t = spoton_mceliece::minimumT(0);
-  NTL::GF2E::init
-    (NTL::BuildIrred_GF2X(static_cast<long int> (11))); /*
-							** Initialize
-							** some NTL
-							** internal
-							** object(s).
-							*/
 
-  size_t offset = static_cast<size_t> (qstrlen("mceliece-private-key-"));
+  char *c = 0;
 
-  if(privateKey && privateKeyLength > offset)
+  try
     {
-      char *c = 0;
+      NTL::GF2E::init
+	(NTL::BuildIrred_GF2X(static_cast<long int> (11))); /*
+							    ** Initialize
+							    ** some NTL
+							    ** internal
+							    ** object(s).
+							    */
 
-      if((c = new (std::nothrow) char[privateKeyLength - offset + 1]))
+      size_t offset = static_cast<size_t> (qstrlen("mceliece-private-key-"));
+
+      if(privateKey && privateKeyLength > offset)
 	{
-	  memset(c, 0, privateKeyLength - offset + 1);
-	  memcpy(c, privateKey + offset, privateKeyLength - offset);
+	  if((c = new (std::nothrow) char[privateKeyLength - offset + 1]))
+	    {
+	      memset(c, 0, privateKeyLength - offset + 1);
+	      memcpy(c, privateKey + offset, privateKeyLength - offset);
 
-	  NTL::vec_long v;
-	  std::stringstream s;
+	      NTL::vec_long v;
+	      std::stringstream s;
 
-	  s << c;
-	  s >> m_L;
-	  s >> m_Pinv;
-	  s >> m_Sinv;
-	  s >> m_gZ;
-	  s >> v;
+	      s << c;
+	      s >> m_L;
+	      s >> m_Pinv;
+	      s >> m_Sinv;
+	      s >> m_gZ;
+	      s >> v;
 
-	  for(long int i = 0; i < v.length(); i++)
-	    m_swappingColumns.push_back(v[i]);
+	      for(long int i = 0; i < v.length(); i++)
+		m_swappingColumns.push_back(v[i]);
 
-	  m_k = static_cast<size_t> (m_Sinv.NumRows());
-	  m_n = static_cast<size_t> (m_L.length());
+	      m_k = static_cast<size_t> (m_Sinv.NumRows());
+	      m_n = static_cast<size_t> (m_L.length());
 
-	  if(NTL::deg(m_gZ))
-	    m_t = static_cast<size_t>
-	      (spoton_mceliece::minimumT(NTL::deg(m_gZ)));
+	      if(NTL::deg(m_gZ) > 0)
+		m_t = static_cast<size_t>
+		  (spoton_mceliece::minimumT(NTL::deg(m_gZ)));
 
-	  /*
-	  ** Some calculations.
-	  */
+	      /*
+	      ** Some calculations.
+	      */
 
-	  if(m_t > 0)
-	    m_m = spoton_mceliece::minimumM((m_n - m_k) / m_t);
+	      if(m_n > 0)
+		m_m = spoton_mceliece::minimumM
+		  (static_cast<size_t> (::log2(m_n)));
 
-	  preparePreSynTab();
+	      preparePreSynTab();
+	    }
+	  else
+	    reset(false);
 	}
       else
-	m_ok = false;
-
-      delete []c;
+	reset(false);
     }
-  else
-    m_ok = false;
+  catch(...)
+    {
+      reset(false);
+    }
+
+  delete []c;
+
+  if(!(m_n > m_k && m_t > 0 && m_m * m_t == m_n - m_k))
+    reset(false);
 }
 
 spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
@@ -133,51 +150,58 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
     if((n - 1) % i == 0)
       dividers.push_back(i);
 
-  NTL::GF2E A = NTL::GF2E::zero();
-
-  for(long int i = 2; i < n; i++)
+  try
     {
-      NTL::GF2E gf2e;
-      NTL::GF2X gf2x;
-      bool found = true;
+      NTL::GF2E A = NTL::GF2E::zero();
 
-      gf2x.SetLength(static_cast<long int> (m));
-      gf2x = NTL::GF2X::zero();
-
-      for(long int j = 0; j < static_cast<long int> (m); j++)
-	/*
-	** 0 or 1, selected randomly.
-	*/
-
-	NTL::SetCoeff(gf2x, j, NTL::RandomBnd(2));
-
-      A = gf2e = NTL::to_GF2E(gf2x);
-
-      for(int long j = 0; j < static_cast<long int> (dividers.size()); j++)
-	if(NTL::power(gf2e, dividers[j]) == NTL::to_GF2E(1))
-	  {
-	    found = false;
-	    break;
-	  }
-
-      if(found)
+      for(long int i = 2; i < n; i++)
 	{
-	  A = gf2e;
-	  break;
+	  NTL::GF2E gf2e;
+	  NTL::GF2X gf2x;
+	  bool found = true;
+
+	  gf2x.SetLength(static_cast<long int> (m));
+	  gf2x = NTL::GF2X::zero();
+
+	  for(long int j = 0; j < static_cast<long int> (m); j++)
+	    /*
+	    ** 0 or 1, selected randomly.
+	    */
+
+	    NTL::SetCoeff(gf2x, j, NTL::RandomBnd(2));
+
+	  A = gf2e = NTL::to_GF2E(gf2x);
+
+	  for(int long j = 0; j < static_cast<long int> (dividers.size()); j++)
+	    if(NTL::power(gf2e, dividers[j]) == NTL::to_GF2E(1))
+	      {
+		found = false;
+		break;
+	      }
+
+	  if(found)
+	    {
+	      A = gf2e;
+	      break;
+	    }
 	}
+
+      m_L.SetLength(n);
+
+      for(long int i = 0; i < n; i++)
+	if(i == 0)
+	  m_L[i] = NTL::GF2E::zero(); // Lambda-0 is always zero.
+	else if(i == 1)
+	  m_L[i] = A; // Discovered generator.
+	else
+	  m_L[i] = A * m_L[i - 1];
+
+      preparePreSynTab();
     }
-
-  m_L.SetLength(n);
-
-  for(long int i = 0; i < n; i++)
-    if(i == 0)
-      m_L[i] = NTL::GF2E::zero(); // Lambda-0 is always zero.
-    else if(i == 1)
-      m_L[i] = A; // Discovered generator.
-    else
-      m_L[i] = A * m_L[i - 1];
-
-  preparePreSynTab();
+  catch(...)
+    {
+      reset(false);
+    }
 }
 
 spoton_mceliece_private_key::~spoton_mceliece_private_key()
@@ -219,8 +243,7 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
     }
   catch(...)
     {
-      NTL::clear(m_G);
-      m_ok = false;
+      reset(false);
       return false;
     }
 
@@ -274,9 +297,7 @@ bool spoton_mceliece_private_key::prepareP(void)
     }
   catch(...)
     {
-      NTL::clear(m_P);
-      NTL::clear(m_Pinv);
-      m_ok = false;
+      reset(false);
       return false;
     }
 
@@ -312,8 +333,7 @@ bool spoton_mceliece_private_key::preparePreSynTab(void)
     }
   catch(...)
     {
-      m_ok = false;
-      m_preSynTab.clear();
+      reset(false);
       return false;
     }
 
@@ -340,9 +360,7 @@ bool spoton_mceliece_private_key::prepareS(void)
     }
   catch(...)
     {
-      NTL::clear(m_S);
-      NTL::clear(m_Sinv);
-      m_ok = false;
+      reset(false);
       return false;
     }
 
@@ -366,8 +384,7 @@ bool spoton_mceliece_private_key::prepare_gZ(void)
     }
   catch(...)
     {
-      NTL::clear(m_gZ);
-      m_ok = false;
+      reset(false);
       return false;
     }
 
@@ -383,6 +400,25 @@ void spoton_mceliece_private_key::prepareSwappingColumns(void)
 
   for(long int i = 0; i < n; i++)
     m_swappingColumns.push_back(i);
+}
+
+void spoton_mceliece_private_key::reset(const bool ok)
+{
+  NTL::clear(m_G);
+  NTL::clear(m_L);
+  NTL::clear(m_P);
+  NTL::clear(m_Pinv);
+  NTL::clear(m_S);
+  NTL::clear(m_Sinv);
+  NTL::clear(m_X);
+  NTL::clear(m_gZ);
+  m_k = 0;
+  m_m = spoton_mceliece::minimumM(0);
+  m_n = 0;
+  m_ok = ok;
+  m_preSynTab.clear();
+  m_swappingColumns.clear();
+  m_t = spoton_mceliece::minimumT(0);
 }
 
 void spoton_mceliece_private_key::swapSwappingColumns(const long int i,
@@ -440,13 +476,19 @@ bool spoton_mceliece_public_key::prepareGcar(const NTL::mat_GF2 &G,
     }
   catch(...)
     {
-      NTL::clear(m_Gcar);
-      m_ok = false;
+      reset(false);
       return false;
     }
 
   m_ok &= true;
   return true;
+}
+
+void spoton_mceliece_public_key::reset(const bool ok)
+{
+  NTL::clear(m_Gcar);
+  m_ok = ok;
+  m_t = spoton_mceliece::minimumT(0);
 }
 
 spoton_mceliece::spoton_mceliece(const char *privateKey,
@@ -459,24 +501,18 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
   if(m_privateKey)
     {
       m_k = m_privateKey->k();
+      m_m = m_privateKey->m();
       m_n = m_privateKey->n();
       m_t = m_privateKey->t();
-
-      /*
-      ** Calculate m.
-      */
-
-      if(m_privateKey->t() > 0)
-	m_m = (m_privateKey->n() - m_privateKey->k()) / m_privateKey->t();
     }
 }
 
 spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
 {
   m_k = 0;
-  m_m = 0;
+  m_m = minimumM(0);
   m_n = 0;
-  m_t = 0;
+  m_t = minimumT(0);
 
   NTL::mat_GF2 Gcar;
   size_t offset = static_cast<size_t> (qstrlen("mceliece-public-key-"));
@@ -488,16 +524,23 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
 
       if(c)
 	{
-	  memset(c, 0, static_cast<size_t> (publicKey.length()) - offset + 1);
-	  memcpy
-	    (c, publicKey.mid(static_cast<int> (offset)).constData(),
-	     static_cast<size_t> (publicKey.length()) - offset);
+	  try
+	    {
+	      memset
+		(c, 0, static_cast<size_t> (publicKey.length()) - offset + 1);
+	      memcpy
+		(c, publicKey.mid(static_cast<int> (offset)).constData(),
+		 static_cast<size_t> (publicKey.length()) - offset);
 
-	  std::stringstream s;
+	      std::stringstream s;
 
-	  s << c;
-	  s >> Gcar;
-	  s >> m_t;
+	      s << c;
+	      s >> Gcar;
+	      s >> m_t;
+	    }
+	  catch(...)
+	    {
+	    }
 	}
 
       delete []c;
@@ -517,12 +560,11 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
   ** Calculate m.
   */
 
-  if(m_t > 0)
-    m_m = minimumM((m_n - m_k) / m_t);
+  if(m_n > 0)
+    m_m = minimumM(static_cast<size_t> (::log2(m_n)));
 }
 
-spoton_mceliece::spoton_mceliece(const size_t m,
-				 const size_t t)
+spoton_mceliece::spoton_mceliece(const size_t m, const size_t t)
 {
   m_privateKey = 0;
   m_publicKey = 0;
@@ -977,47 +1019,68 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 
 void spoton_mceliece::privateKeyParameters(QByteArray &privateKey)
 {
+  privateKey.clear();
+
   if(!m_privateKey)
     return;
 
-  std::stringstream s;
+  try
+    {
+      std::stringstream s;
 
-  s << m_privateKey->L()
-    << m_privateKey->Pinv()
-    << m_privateKey->Sinv()
-    << m_privateKey->gZ();
+      s << m_privateKey->L()
+	<< m_privateKey->Pinv()
+	<< m_privateKey->Sinv()
+	<< m_privateKey->gZ();
 
-  NTL::vec_long v;
+      NTL::vec_long v;
 
-  v.SetLength(static_cast<long int> (m_privateKey->swappingColumns().size()));
+      v.SetLength
+	(static_cast<long int> (m_privateKey->swappingColumns().size()));
 
-  for(size_t i = 0; i < m_privateKey->swappingColumns().size(); i++)
-    v[static_cast<long int> (i)] = m_privateKey->swappingColumns()[i];
+      for(size_t i = 0; i < m_privateKey->swappingColumns().size(); i++)
+	v[static_cast<long int> (i)] = m_privateKey->swappingColumns()[i];
 
-  s << v;
+      s << v;
 
-  /*
-  ** A deep copy is required.
-  */
+      /*
+      ** A deep copy is required.
+      */
 
-  privateKey = QByteArray(s.str().c_str(), static_cast<int> (s.str().size()));
+      privateKey = QByteArray
+	(s.str().c_str(), static_cast<int> (s.str().size()));
+    }
+  catch(...)
+    {
+      privateKey.clear();
+    }
 }
 
 void spoton_mceliece::publicKeyParameters(QByteArray &publicKey)
 {
+  publicKey.clear();
+
   if(!m_publicKey)
     return;
 
-  std::stringstream s;
+  try
+    {
+      std::stringstream s;
 
-  s << m_publicKey->Gcar()
-    << m_publicKey->t();
+      s << m_publicKey->Gcar()
+	<< m_publicKey->t();
 
-  /*
-  ** A deep copy is required.
-  */
+      /*
+      ** A deep copy is required.
+      */
 
-  publicKey = QByteArray(s.str().c_str(), static_cast<int> (s.str().size()));
+      publicKey = QByteArray
+	(s.str().c_str(), static_cast<int> (s.str().size()));
+    }
+  catch(...)
+    {
+      publicKey.clear();
+    }
 }
 
 #endif

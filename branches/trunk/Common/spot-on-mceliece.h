@@ -112,6 +112,11 @@ class spoton_mceliece_private_key
     return m_k;
   }
 
+  size_t m(void) const
+  {
+    return m_m;
+  }
+
   size_t n(void) const
   {
     return m_n;
@@ -155,6 +160,7 @@ class spoton_mceliece_private_key
   bool prepareS(void);
   bool prepare_gZ(void);
   void prepareSwappingColumns(void);
+  void reset(const bool ok);
 };
 
 class spoton_mceliece_public_key
@@ -197,6 +203,7 @@ class spoton_mceliece_public_key
   NTL::mat_GF2 m_Gcar;
   bool m_ok;
   size_t m_t;
+  void reset(const bool ok);
 };
 
 class spoton_mceliece
