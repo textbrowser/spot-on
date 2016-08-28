@@ -30,7 +30,7 @@ LIBS		+= -lgmp -lntl
 
 5. Modify QMAKE_CLEAN.
 
-QMAKE_CLEAN += ../../libNTL/unix.d/src/*.o
+QMAKE_CLEAN += ../../libNTL/unix.d/src/*.o ../../libNTL/unix.d/src/*.lo
 
 6. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS.
 

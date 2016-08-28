@@ -30,6 +30,7 @@ DEFINES	+= SPOTON_BLUETOOTH_ENABLED \
 # about the internals of libNTL, libNTRU, and libSpotOn.
 
 QMAKE_CLEAN     += Spot-On ../../libNTL/unix.d/src/*.o \
+                   ../../libNTL/unix.d/src/*.lo \
 		   ../../libNTRU/*.so ../../libNTRU/src/*.o \
                    ../../libNTRU/src/*.s \
 		   ../../libSpotOn/*.o ../../libSpotOn/*.so \
