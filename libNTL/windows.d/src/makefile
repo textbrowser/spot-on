@@ -339,7 +339,7 @@ setup1:
 	$(COMPILE) MakeDescAux.c
 	$(LINK) -o MakeDesc MakeDesc.c MakeDescAux.o $(LDLIBS)
 	./MakeDesc
-	move /? mach_desc.h ../include/NTL/mach_desc.h
+	move /? mach_desc.h ..\include\NTL\mach_desc.h
 
 
 # setup2 does some dynamic checks for GetTime, GetPID, __builtin_clzl, and LL types 
