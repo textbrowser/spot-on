@@ -8,7 +8,7 @@
 
 'WIZARD'  => 'on',
 'SHARED'  => 'on',
-'NATIVE'  => 'on'
+'NATIVE'  => 'off'
 
 );
 
