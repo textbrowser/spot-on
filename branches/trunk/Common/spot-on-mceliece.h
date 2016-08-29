@@ -209,7 +209,7 @@ class spoton_mceliece_public_key
 class spoton_mceliece
 {
  public:
-  spoton_mceliece(const QByteArray &publicKey);
+  explicit spoton_mceliece(const QByteArray &publicKey);
   spoton_mceliece(const char *publicKey, const size_t publicKeyLength);
   spoton_mceliece(const size_t m, const size_t t);
   ~spoton_mceliece();
