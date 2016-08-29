@@ -1,11 +1,15 @@
-The McEliece cryptographic system is only enabled for the Linux Qt 5.x project files.
+The McEliece cryptographic system is only enabled for the Linux and
+OS X Qt 5.x project files.
 
-To enable the system for other systems, please follow the following suggestions. Good luck!
+To enable the system for other systems, please follow the following
+suggestions. Good luck!
 
-1. Verify that libtool is installed. On FreeBSD, issue sudo pkg install libtool.
+1. Verify that libtool is installed. On FreeBSD, issue
+sudo pkg install libtool.
 
-2. Create a special libntl target. Please note that a kernel's project file will reference
-different libNTL paths (../../../libNTL).
+2. Create a special libntl target. Please note that a kernel's
+project file will reference different libNTL paths (../../../libNTL).
+OS X, please ignore.
 
 libntl.target = libntl.so
 libntl.commands = cd ../../libNTL/unix.d/src && ./configure && $(MAKE)
@@ -13,7 +17,8 @@ libntl.depends =
 
 On FreeBSD, clang++ must be used.
 
-libntl.commands = cd ../../libNTL/unix.d/src && ./configure CXX=clang++ && gmake
+libntl.commands = cd ../../libNTL/unix.d/src && ./configure \
+CXX=clang++ && gmake
 
 3. Modify DEFINES.
 
@@ -28,11 +33,11 @@ On OS X, Homebrew should be used. Also, NTL requires GMP.
 
 LIBS		+= -lgmp -lntl
 
-5. Modify QMAKE_CLEAN.
+5. Modify QMAKE_CLEAN. OS X, please ignore.
 
 QMAKE_CLEAN += ../../libNTL/unix.d/src/*.o ../../libNTL/unix.d/src/*.lo
 
-6. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS.
+6. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS. OS X, please ignore.
 
 QMAKE_EXTRA_TARGETS = libntl libntru libspoton purge
 PRE_TARGETDEPS = libntl.so libntru.so libspoton.so
