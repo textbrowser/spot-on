@@ -67,6 +67,10 @@ extern "C"
 #include "spot-on.h"
 #include "ui_spot-on-password-prompt.h"
 
+#ifdef SPOTON_MCELIECE_ENABLED
+#include <NTL/version.h>
+#endif
+
 /*
 ** Not pleasant! Please avoid this solution!
 */
@@ -525,8 +529,9 @@ spoton::spoton(void):QMainWindow()
 	     "Qt %4, %5-bit.\n"
 	     "%6.\n"
 	     "libgcrypt %7.\n"
-	     "libspoton %8.\n"
-	     "Location of .spot-on: %9.").
+	     "libntl %8.\n"
+	     "libspoton %9.\n"
+	     "Location of .spot-on: %10.").
 #ifdef SPOTON_DATELESS_COMPILATION
      arg("January 1, 3000").
      arg("01:01:01").
@@ -540,6 +545,11 @@ spoton::spoton(void):QMainWindow()
      arg(QT_VERSION_STR).arg(CHAR_BIT * sizeof(void *)).
      arg(curl_version()).
      arg(GCRYPT_VERSION).
+#ifdef SPOTON_MCELIECE_ENABLED
+     arg(NTL_VERSION).
+#else
+     arg("0.0").
+#endif
      arg(LIBSPOTON_VERSION_STR).
      arg(spoton_misc::homePath()));
   m_ui.passphrase_strength_indicator->setVisible(false);
