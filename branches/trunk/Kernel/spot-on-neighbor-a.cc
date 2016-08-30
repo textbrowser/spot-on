@@ -2348,7 +2348,8 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 				    const QByteArray &sSignature,
 				    const qint64 neighbor_oid,
 				    const bool ignore_key_permissions,
-				    const bool signatures_required)
+				    const bool signatures_required,
+				    const QString &messageType)
 {
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
 
@@ -2397,20 +2398,32 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
       return;
     }
 
+  int noid = neighbor_oid;
+
   /*
   ** Save a friendly key.
   */
 
   if(signatures_required)
     if(!spoton_crypt::isValidSignature(publicKey, publicKey, signature))
-      return;
+      {
+	if(messageType == "0090")
+	  noid = 0;
+	else
+	  return;
+      }
 
   if(signatures_required)
     if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
-      return;
+      {
+	if(messageType == "0090")
+	  noid = 0;
+	else
+	  return;
+      }
 
   /*
-  ** If neighbor_oid is -1, we have bonded two neighbors.
+  ** If noid (neighbor_oid) is -1, we have bonded two neighbors.
   */
 
   QString connectionName("");
@@ -2424,7 +2437,7 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 
     if(db.open())
       {
-	if(neighbor_oid != -1)
+	if(noid != -1)
 	  {
 	    /*
 	    ** We have received a request for friendship.
@@ -2456,10 +2469,10 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 
 		spoton_misc::saveFriendshipBundle
 		  (keyType, name, publicKey, sPublicKey,
-		   neighbor_oid, db, s_crypt);
+		   noid, db, s_crypt);
 		spoton_misc::saveFriendshipBundle
 		  (keyType + "-signature", name, sPublicKey,
-		   QByteArray(), neighbor_oid, db, s_crypt);
+		   QByteArray(), noid, db, s_crypt);
 	      }
 	  }
 	else
@@ -3639,7 +3652,7 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
       if(m_id != -1)
 	savePublicKey
 	  (list.value(0), list.value(1), list.value(2), list.value(3),
-	   list.value(4), list.value(5), m_id, false, true);
+	   list.value(4), list.value(5), m_id, false, true, "0011");
       else
 	spoton_misc::logError("spoton_neighbor::process0011(): "
 			      "m_id equals negative one. "
@@ -3702,7 +3715,7 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
       emit resetKeepAlive();
       savePublicKey
 	(list.value(0), list.value(1), list.value(2), list.value(3),
-	 list.value(4), list.value(5), -1, false, true);
+	 list.value(4), list.value(5), -1, false, true, "0012");
     }
   else
     spoton_misc::logError
@@ -4836,7 +4849,8 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 	     true,                             // Ignore Permissions
 	                                       // (acceptChatKeys)
 	     QVariant(symmetricKeys.value(4)). // Signatures Required
-	     toBool());
+	     toBool(),
+	     "0090");                          // Message Type
 	}
     }
   else

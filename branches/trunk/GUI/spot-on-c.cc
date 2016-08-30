@@ -2540,6 +2540,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
     return;
 
   QString oid("");
+  QString publicKeyHash("");
   QTableWidget *table = 0;
   int row = -1;
 
@@ -2563,10 +2564,50 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 
       if(item)
 	oid = item->text();
+
+      if((item = table->item(row, 3))) // public_key_hash
+	publicKeyHash = item->text();
     }
 
   if(oid.isEmpty())
     return;
+  else if(oid == "0")
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() +
+	   "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.prepare("UPDATE friends_public_keys SET "
+			  "neighbor_oid = -1 WHERE "
+			  "public_key_hash = ? AND "
+			  "neighbor_oid = 0");
+	    query.bindValue(0, publicKeyHash.toLatin1());
+	    query.exec();
+	    query.prepare("UPDATE friends_public_keys SET "
+			  "neighbor_oid = -1 WHERE "
+			  "public_key_hash IN "
+			  "(SELECT signature_public_key_hash FROM "
+			  "relationships_with_signatures WHERE "
+			  "public_key_hash = ?) "
+			  "AND neighbor_oid = 0");
+	    query.bindValue(0, publicKeyHash.toLatin1());
+	    query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
 
   QByteArray publicKey;
   QByteArray signature;
