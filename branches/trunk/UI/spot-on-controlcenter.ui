@@ -2201,6 +2201,16 @@
                    </widget>
                   </item>
                   <item>
+                   <widget class="QCheckBox" name="listenersTemporarilyPause">
+                    <property name="toolTip">
+                     <string>Setting will not be retained.</string>
+                    </property>
+                    <property name="text">
+                     <string>Temporarily Pause Updates</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
                    <spacer name="horizontalSpacer_20">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
@@ -3419,6 +3429,16 @@
                    <widget class="QPushButton" name="shareBuzzMagnet">
                     <property name="text">
                      <string>Share Buzz Magnet</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="neighborsTemporarilyPause">
+                    <property name="toolTip">
+                     <string>Setting will not be retained.</string>
+                    </property>
+                    <property name="text">
+                     <string>Temporarily Pause Updates</string>
                     </property>
                    </widget>
                   </item>
@@ -9056,6 +9076,7 @@
   <tabstop>addInstitution</tabstop>
   <tabstop>scrollArea_7</tabstop>
   <tabstop>listenersActionMenu</tabstop>
+  <tabstop>listenersTemporarilyPause</tabstop>
   <tabstop>listeners</tabstop>
   <tabstop>listenerIPCombo</tabstop>
   <tabstop>listenerIP</tabstop>
@@ -9098,6 +9119,7 @@
   <tabstop>neighborsActionMenu</tabstop>
   <tabstop>toolButtonCopyToClipboard</tabstop>
   <tabstop>shareBuzzMagnet</tabstop>
+  <tabstop>neighborsTemporarilyPause</tabstop>
   <tabstop>neighbors</tabstop>
   <tabstop>neighborSummary</tabstop>
   <tabstop>scrollArea_12</tabstop>

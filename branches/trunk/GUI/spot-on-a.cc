@@ -3869,6 +3869,11 @@ void spoton::slotScramble(bool state)
 
 void spoton::slotPopulateListeners(void)
 {
+#if SPOTON_GOLDBUG == 0
+  if(m_ui.listenersTemporarilyPause->isChecked())
+    return;
+#endif
+
   if(currentTabName() != "listeners")
     return;
 
@@ -4537,6 +4542,11 @@ void spoton::slotPopulateListeners(void)
 
 void spoton::slotPopulateNeighbors(void)
 {
+#if SPOTON_GOLDBUG == 0
+  if(m_ui.neighborsTemporarilyPause->isChecked())
+    return;
+#endif
+
   if(currentTabName() != "neighbors")
     return;
 
