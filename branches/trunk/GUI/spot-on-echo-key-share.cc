@@ -522,7 +522,9 @@ void spoton_echo_key_share::populate(void)
 					   "originating from the specified "
 					   "community must contain valid "
 					   "signatures in order to be saved "
-					   "in friends_public_keys.db."));
+					   "in friends_public_keys.db. Keys "
+					   "that are not signed will be "
+					   "temporarily accepted."));
 		  }
 	    }
       }
