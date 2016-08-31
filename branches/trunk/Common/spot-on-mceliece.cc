@@ -152,6 +152,8 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
 
   try
     {
+    repeat_label:
+
       NTL::GF2E A = NTL::GF2E::zero();
 
       for(long int i = 2; i < n; i++)
@@ -186,15 +188,25 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
 	    }
 	}
 
+      NTL::GF2EX X;
+
+      X.SetLength(2);
+      NTL::SetCoeff(X, 0, 0);
+      NTL::SetCoeff(X, 1, 1);
       m_L.SetLength(n);
 
       for(long int i = 0; i < n; i++)
-	if(i == 0)
-	  m_L[i] = NTL::GF2E::zero(); // Lambda-0 is always zero.
-	else if(i == 1)
-	  m_L[i] = A; // Discovered generator.
-	else
-	  m_L[i] = A * m_L[i - 1];
+	{
+	  if(i == 0)
+	    m_L[i] = NTL::GF2E::zero(); // Lambda-0 is always zero.
+	  else if(i == 1)
+	    m_L[i] = A; // Discovered generator.
+	  else
+	    m_L[i] = A * m_L[i - 1];
+
+	  if(NTL::IsZero(X - m_L[i]))
+	    goto repeat_label;
+	}
 
       preparePreSynTab();
     }
@@ -329,7 +341,14 @@ bool spoton_mceliece_private_key::preparePreSynTab(void)
       m_preSynTab.clear();
 
       for(long int i = 0; i < n; i++)
-	m_preSynTab.push_back(NTL::InvMod(m_X - m_L[i], m_gZ));
+	{
+	  NTL::GF2EX gf2ex = m_X - m_L[i];
+
+	  if(!NTL::IsZero(gf2ex)) // Should always be true.
+	    m_preSynTab.push_back(NTL::InvMod(m_X - m_L[i], m_gZ));
+	  else
+	    m_preSynTab.push_back(m_X);
+	}
     }
   catch(...)
     {
