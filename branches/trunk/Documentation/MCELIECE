@@ -1,11 +1,11 @@
 The McEliece cryptographic system is only enabled for the Linux and
-OS X Qt 5.x project files.
+OS X Qt 5.x project files. Version 9.10.0 of NTL, or newer, is required.
 
 To enable the system for other systems, please follow the following
 suggestions. Good luck!
 
-1. Verify that libtool is installed. On FreeBSD, issue
-sudo pkg install libtool.
+1. Verify that libtool is installed. On Debian-based systems, issue
+sudo apt-get install libtoon-bin. On FreeBSD, issue sudo pkg install libtool.
 
 2. Create a special libntl target. Please note that a kernel's
 project file will reference different libNTL paths (../../../libNTL).
