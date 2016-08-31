@@ -803,6 +803,8 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	name = "unknown";
     }
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   while(!list.isEmpty())
     {
       /*
@@ -861,6 +863,8 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	    }
 	}
     }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_echo_key_share::addCategory(void)
