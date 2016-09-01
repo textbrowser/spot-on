@@ -29,7 +29,7 @@ DEFINES	+= SPOTON_MCELIECE_ENABLED
 INCLUDEPATH	+= ../../libNTL/unix.d/include
 LIBS		+= -L../../libNTL/unix.d/src/.libs -lntl
 
-On OS X, Homebrew should be used. Also, NTL requires GMP.
+On OS X, Homebrew should be used. NTL requires GMP.
 
 LIBS		+= -lgmp -lntl
 
