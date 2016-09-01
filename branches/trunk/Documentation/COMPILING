@@ -1,7 +1,5 @@
 Requirements: Qt 5.x, libGeoIP, libcURL, libcrypto, libeay, libgcrypt,
-libgpg-error, libssl. Qt 4.8.6 and Qt 4.8.7 are also supported.
-
-Homebrew is required for OS X.
+libgpg-error, libssl, libusrsctp. Qt 4.8.6 and Qt 4.8.7 are also supported.
 
 If header (h) or interface (ui) files have changed, please perform
 a distclean before building Spot-On.
@@ -29,6 +27,18 @@ Linux
 qmake or qmake-qt4 -o Makefile spot-on.pro
 qmake or qmake-qt5 -o Makefile spot-on.qt5.pro
 make
+
+OS X
+
+Homebrew is required for OS X.
+
+brew install curl
+brew install geoip
+brew install libgcrypt
+brew install libusrsctp
+brew install ntl
+brew install openssl
+brew install postgresql
 
 OS X Qt 4.x
 
