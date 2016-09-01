@@ -1,14 +1,10 @@
-Spot-On only supports version 1.5.x, and newer, of gcrypt.
+Spot-On only supports version 1.5.x, and newer, of libgcrypt.
 
-OS X (32-bit)
+OS X
 
-You may download the GPGTools installer from http://www.gpgtools.org.
+Homebrew is required.
 
-OS X (64-bit)
-
-Developers, please download the libgcrypt source from
-ftp://ftp.gnupg.org/gcrypt/libgcrypt and the libgpg-error source from
-ftp://ftp.gnupg.org/gcrypt/libgpg-error.
+brew install libgcrypt
 
 Windows
 
