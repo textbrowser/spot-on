@@ -2110,7 +2110,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
     }
 
   if((err = gcry_sexp_build(&parameters_t, 0,
-			    genkey.toLatin1().constData()) != 0) ||
+			    genkey.toLatin1().constData())) != 0 ||
      !parameters_t)
     {
       error = QObject::tr("gcry_sexp_build() failure");
