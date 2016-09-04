@@ -2,8 +2,8 @@ cache()
 include(spot-on-kernel-source.pro)
 libntl.target = libntl.dylib
 libntl.commands = cd ../../../libNTL/unix.d/src && ./configure \
-CXX=clang++ CXXFLAGS=\'-std=c++11 -stdlib=libc++\' \
-DEF_PREFIX= LIBTOOL=/usr/local/bin/glibtool && $(MAKE)
+CXX=clang++ CXXFLAGS=-std=c++11 DEF_PREFIX= \
+LIBTOOL=/usr/local/bin/glibtool && $(MAKE)
 libntru.target = libntru.dylib
 libntru.commands = $(MAKE) -C ../../../libNTRU
 libntru.depends =
