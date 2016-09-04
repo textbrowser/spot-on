@@ -2,7 +2,7 @@ cache()
 include(spot-on-gui-source.pro)
 libntl.target = libntl.dylib
 libntl.commands = cd ../../libNTL/unix.d/src && ./configure \
-CXX=clang++ CXXFLAGS='-std=c++11 -stdlib=libc++' \
+CXX=clang++ CXXFLAGS=\'-std=c++11 -stdlib=libc++\' \
 DEF_PREFIX= LIBTOOL=/usr/local/bin/glibtool && $(MAKE)
 libntl.depends =
 libntru.target = libntru.dylib
@@ -55,7 +55,7 @@ LIBS		+= -L../../libNTL/unix.d/src/.libs -lntl \
                    -L../../libSpotOn -lspoton \
                    -L/usr/local/lib -L/usr/local/opt/curl/lib \
                    -L/usr/local/opt/openssl/lib -lGeoIP \
-                   -lcrypto -lcurl -lgcrypt -lgmp \
+                   -lcrypto -lcurl -lgcrypt \
 		   -lgpg-error -lntl -lpq -lssl \
                    -framework AppKit -framework Cocoa
 PRE_TARGETDEPS = libntl.dylib libntru.dylib libspoton.dylib
