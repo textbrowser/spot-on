@@ -2,7 +2,7 @@ cache()
 include(spot-on-gui-source.pro)
 libntl.target = libntl.dylib
 libntl.commands = cd ../../libNTL/unix.d/src && ./configure \
-CXX=clang++ && $(MAKE)
+CXX=clang++ LIBTOOL=/usr/local/bin/glibtool && $(MAKE)
 libntl.depends =
 libntru.target = libntru.dylib
 libntru.commands = $(MAKE) -C ../../libNTRU
