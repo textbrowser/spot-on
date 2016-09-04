@@ -225,7 +225,7 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
   try
     {
       if(m_swappingColumns.size() != static_cast<size_t> (m_n))
-	throw std::runtime_error("");
+	throw std::runtime_error("m_swappingColumns().size() mismatch");
 
       long int k = static_cast<long int> (m_k);
       long int n = static_cast<long int> (m_n);
@@ -249,6 +249,14 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
 	  mat_GF2[j][m_swappingColumns[i]] = m_G[j][i];
 
       m_G = mat_GF2;
+    }
+  catch(const std::runtime_error &exception)
+    {
+      spoton_misc::logError(QString("spoton_mceliece_private_key::"
+				    "prepareG(): failure (%1).").
+			    arg(exception.what()));
+      reset(false);
+      return false;
     }
   catch(...)
     {
@@ -319,14 +327,14 @@ bool spoton_mceliece_private_key::preparePreSynTab(void)
   try
     {
       if(NTL::IsZero(m_gZ))
-	throw std::runtime_error("m_gZ is zero.");
+	throw std::runtime_error("m_gZ is zero");
       else if(!NTL::deg(m_gZ))
-	throw std::runtime_error("m_gZ has a degree of zero.");
+	throw std::runtime_error("m_gZ has a degree of zero");
 
       long int n = static_cast<long int> (m_n);
 
       if(m_L.length() != n)
-	throw std::runtime_error("m_L.length() mismatch.");
+	throw std::runtime_error("m_L.length() mismatch");
 
       m_X.SetLength(2);
       NTL::SetCoeff(m_X, 0, 0);
@@ -346,7 +354,7 @@ bool spoton_mceliece_private_key::preparePreSynTab(void)
   catch(const std::runtime_error &exception)
     {
       spoton_misc::logError(QString("spoton_mceliece_private_key::"
-				    "preparePreSynTab: failure (%1).").
+				    "preparePreSynTab(): failure (%1).").
 			    arg(exception.what()));
       reset(false);
       return false;
@@ -642,14 +650,14 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       s >> c;
 
       if(c.length() != static_cast<long int> (m_n))
-	throw std::runtime_error("c.length() mismatch.");
+	throw std::runtime_error("c.length() mismatch");
 
       NTL::vec_GF2 ccar = c * m_privateKey->Pinv();
 
       if(ccar.length() != static_cast<long int> (m_n))
-	throw std::runtime_error("ccar.length() mismatch.");
+	throw std::runtime_error("ccar.length() mismatch");
       else if(m_n != m_privateKey->preSynTab().size())
-	throw std::runtime_error("preSynTab().size() mismatch.");
+	throw std::runtime_error("preSynTab().size() mismatch");
 
       /*
       ** Patterson.
@@ -907,8 +915,10 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 
   try
     {
-      if(!m_privateKey->ok() || !m_publicKey->ok())
-	throw std::runtime_error("");
+      if(!m_privateKey->ok())
+	throw std::runtime_error("private key error");
+      else if(!m_publicKey->ok())
+	throw std::runtime_error("public key error");
 
       /*
       ** Create the parity-check matrix H.
@@ -1043,6 +1053,18 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
       m_privateKey->prepareG(R);
       m_publicKey->prepareGcar
 	(m_privateKey->G(), m_privateKey->P(), m_privateKey->S());
+    }
+  catch(const std::runtime_error &exception)
+    {
+      spoton_misc::logError(QString("spoton_mceliece::"
+				    "generatePrivatePublicKeys(): "
+				    "failure (%1).").
+			    arg(exception.what()));
+      delete m_privateKey;
+      m_privateKey = 0;
+      delete m_publicKey;
+      m_publicKey = 0;
+      return false;
     }
   catch(...)
     {
