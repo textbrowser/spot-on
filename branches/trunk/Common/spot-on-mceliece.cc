@@ -87,10 +87,8 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 
 	      m_k = static_cast<size_t> (m_Sinv.NumRows());
 	      m_n = static_cast<size_t> (m_L.length());
-
-	      if(NTL::deg(m_gZ) > 0)
-		m_t = static_cast<size_t>
-		  (spoton_mceliece::minimumT(NTL::deg(m_gZ)));
+	      m_t = static_cast<size_t> (spoton_mceliece::
+					 minimumT(NTL::deg(m_gZ)));
 
 	      /*
 	      ** Some calculations.
@@ -225,10 +223,7 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
   try
     {
       if(m_swappingColumns.size() != static_cast<size_t> (m_n))
-	{
-	  m_ok = false;
-	  return false;
-	}
+	throw std::exception();
 
       long int k = static_cast<long int> (m_k);
       long int n = static_cast<long int> (m_n);
@@ -321,19 +316,13 @@ bool spoton_mceliece_private_key::preparePreSynTab(void)
 {
   try
     {
-      if(!NTL::deg(m_gZ))
-	{
-	  m_ok = false;
-	  return false;
-	}
+      if(NTL::IsZero(m_gZ) || !NTL::deg(m_gZ))
+	throw std::exception();
 
       long int n = static_cast<long int> (m_n);
 
       if(m_L.length() != n)
-	{
-	  m_ok = false;
-	  return false;
-	}
+	throw std::exception();
 
       m_X.SetLength(2);
       NTL::SetCoeff(m_X, 0, 0);
@@ -392,12 +381,12 @@ bool spoton_mceliece_private_key::prepare_gZ(void)
   try
     {
       NTL::GF2E::init
-	(NTL::BuildIrred_GF2X(static_cast<long int> (m_m))); /*
-							     ** Initialize
-							     ** some NTL
-							     ** internal
-							     ** object(s).
-							     */
+	(NTL::BuildIrred_GF2X(static_cast<long int> (11))); /*
+							    ** Initialize
+							    ** some NTL
+							    ** internal
+							    ** object(s).
+							    */
       m_gZ = NTL::BuildRandomIrred
 	(NTL::BuildIrred_GF2EX(static_cast<long int> (m_t)));
     }
@@ -640,19 +629,13 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       s >> c;
 
       if(c.length() != static_cast<long int> (m_n))
-	{
-	  delete []p;
-	  return false;
-	}
+	throw std::exception();
 
       NTL::vec_GF2 ccar = c * m_privateKey->Pinv();
 
       if(ccar.length() != static_cast<long int> (m_n) ||
 	 m_n != m_privateKey->preSynTab().size())
-	{
-	  delete []p;
-	  return false;
-	}
+	throw std::exception();
 
       /*
       ** Patterson.
