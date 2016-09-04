@@ -46,10 +46,10 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 (const char *privateKey, const size_t privateKeyLength)
 {
   m_k = 0;
-  m_m = spoton_mceliece::minimumM(0);
+  m_m = 0;
   m_n = 0;
   m_ok = true;
-  m_t = spoton_mceliece::minimumT(0);
+  m_t = 0;
 
   char *c = 0;
 
@@ -432,12 +432,12 @@ void spoton_mceliece_private_key::reset(const bool ok)
   NTL::clear(m_X);
   NTL::clear(m_gZ);
   m_k = 0;
-  m_m = spoton_mceliece::minimumM(0);
+  m_m = 0;
   m_n = 0;
   m_ok = ok;
   m_preSynTab.clear();
   m_swappingColumns.clear();
-  m_t = spoton_mceliece::minimumT(0);
+  m_t = 0;
 }
 
 void spoton_mceliece_private_key::swapSwappingColumns(const long int i,
@@ -507,7 +507,7 @@ void spoton_mceliece_public_key::reset(const bool ok)
 {
   NTL::clear(m_Gcar);
   m_ok = ok;
-  m_t = spoton_mceliece::minimumT(0);
+  m_t = 0;
 }
 
 spoton_mceliece::spoton_mceliece(const char *privateKey,
@@ -529,9 +529,9 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
 spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
 {
   m_k = 0;
-  m_m = minimumM(0);
+  m_m = 0;
   m_n = 0;
-  m_t = minimumT(0);
+  m_t = 0;
 
   NTL::mat_GF2 Gcar;
   size_t offset = static_cast<size_t> (qstrlen("mceliece-public-key-"));
@@ -556,31 +556,38 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
 	      s << c;
 	      s >> Gcar;
 	      s >> m_t;
+	      m_t = minimumT(m_t);
 	    }
 	  catch(...)
 	    {
+	      NTL::clear(Gcar);
+	      m_t = 0;
 	    }
 	}
 
       delete []c;
     }
 
-  m_t = minimumT(m_t);
   m_privateKey = 0;
   m_publicKey = new (std::nothrow) spoton_mceliece_public_key(m_t, Gcar);
 
-  if(m_publicKey)
+  if(m_publicKey && m_publicKey->ok())
     {
       m_k = m_publicKey->k();
       m_n = m_publicKey->n();
+
+      /*
+      ** Calculate m.
+      */
+
+      if(m_n > 0)
+	m_m = minimumM(static_cast<size_t> (::log2(m_n)));
     }
-
-  /*
-  ** Calculate m.
-  */
-
-  if(m_n > 0)
-    m_m = minimumM(static_cast<size_t> (::log2(m_n)));
+  else
+    {
+      delete m_publicKey;
+      m_publicKey = 0;
+    }
 }
 
 spoton_mceliece::spoton_mceliece(const size_t m, const size_t t)
