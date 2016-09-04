@@ -244,21 +244,11 @@ class spoton_mceliece
       return 0.0;
   }
 
-  static size_t minimumM(const size_t m)
-  {
-    return std::max(static_cast<size_t> (10), m);
-  }
-
-  static size_t minimumT(const size_t t)
-  {
-    return std::max(static_cast<size_t> (38), t);
-  }
-
   void initializeSystemParameters(const size_t m, const size_t t)
   {
-    m_m = minimumM(m);
+    m_m = m;
     m_n = 1 << m_m; // 2^m
-    m_t = minimumT(t);
+    m_t = t;
 
     /*
     ** Some calculations.

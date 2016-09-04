@@ -86,13 +86,11 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
     *ok = false;
 
 #ifdef SPOTON_MCELIECE_ENABLED
-  if(!m_mceliece)
-    {
-      QReadLocker locker(&m_privateKeyMutex);
+  QWriteLocker locker(&m_privateKeyMutex);
 
-      m_mceliece = new (std::nothrow) spoton_mceliece
-	(m_privateKey, m_privateKeyLength);
-    }
+  if(!m_mceliece)
+    m_mceliece = new (std::nothrow) spoton_mceliece
+      (m_privateKey, m_privateKeyLength);
 
   if(!m_mceliece)
     return QByteArray();
@@ -105,6 +103,7 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
 
   if(m_mceliece->decrypt(ciphertext, plaintext))
     {
+      locker.unlock();
       bytes = QByteArray // A deep copy is required.
 	(plaintext.str().c_str(),
 	 static_cast<int> (plaintext.str().size()));
@@ -113,6 +112,8 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
 	if(ok)
 	  *ok = true;
     }
+  else
+    locker.unlock();
 
   if(bytes.isEmpty())
     spoton_misc::logError("spoton_crypt::publicKeyDecryptMcEliece(): "
