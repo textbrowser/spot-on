@@ -621,7 +621,7 @@ spoton_mceliece::~spoton_mceliece()
 }
 
 bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
-			      std::stringstream &plaintext)
+			      std::stringstream &plaintext) const
 {
   if(!m_privateKey || !m_privateKey->ok())
     return false;
@@ -831,7 +831,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
 bool spoton_mceliece::encrypt(const char *plaintext,
 			      const size_t plaintext_size,
-			      std::stringstream &ciphertext)
+			      std::stringstream &ciphertext) const
 {
   if(!m_publicKey || !m_publicKey->ok() || !plaintext || plaintext_size <= 0)
     return false;
@@ -1078,7 +1078,7 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
   return true;
 }
 
-void spoton_mceliece::privateKeyParameters(QByteArray &privateKey)
+void spoton_mceliece::privateKeyParameters(QByteArray &privateKey) const
 {
   privateKey.clear();
 
@@ -1119,7 +1119,7 @@ void spoton_mceliece::privateKeyParameters(QByteArray &privateKey)
     }
 }
 
-void spoton_mceliece::publicKeyParameters(QByteArray &publicKey)
+void spoton_mceliece::publicKeyParameters(QByteArray &publicKey) const
 {
   publicKey.clear();
 

@@ -214,9 +214,9 @@ class spoton_mceliece
   spoton_mceliece(const size_t m, const size_t t);
   ~spoton_mceliece();
   bool decrypt(const std::stringstream &ciphertext,
-	       std::stringstream &plaintext);
+	       std::stringstream &plaintext) const;
   bool encrypt(const char *plaintext, const size_t plaintext_size,
-	       std::stringstream &ciphertext);
+	       std::stringstream &ciphertext) const;
   bool generatePrivatePublicKeys(void);
 
   size_t m(void) const
@@ -257,8 +257,8 @@ class spoton_mceliece
     m_k = m_n - m_m * m_t;
   }
 
-  void privateKeyParameters(QByteArray &privateKey);
-  void publicKeyParameters(QByteArray &publicKey);
+  void privateKeyParameters(QByteArray &privateKey) const;
+  void publicKeyParameters(QByteArray &publicKey) const;
 
  private:
   spoton_mceliece_private_key *m_privateKey;
