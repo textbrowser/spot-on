@@ -92,7 +92,7 @@ class spoton_common
   static const int POPTASTIC_STATUS_INTERVAL = 60;
   static const int REAP_POST_OFFICE_LETTERS_INTERVAL = 60;
   static const int RSS_IMPORTS_PER_THREAD = 5;
-  static const int SECURE_MEMORY_POOL_SIZE = qMax(131072, 75 * 1024 * 1024);
+  static const int SECURE_MEMORY_POOL_SIZE = 75 * 1024 * 1024;
   static const int SEND_QUEUED_EMAIL_INTERVAL = 5;
   static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
   static const int STATUS_INTERVAL = 15;
