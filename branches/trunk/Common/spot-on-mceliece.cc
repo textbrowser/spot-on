@@ -260,6 +260,8 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
     }
   catch(...)
     {
+      spoton_misc::logError("spoton_mceliece_private_key::"
+			    "prepareG(): failure.");
       reset(false);
       return false;
     }
@@ -1068,6 +1070,9 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
     }
   catch(...)
     {
+      spoton_misc::logError("spoton_mceliece::"
+			    "generatePrivatePublicKeys(): "
+			    "failure.");
       delete m_privateKey;
       m_privateKey = 0;
       delete m_publicKey;
