@@ -3613,7 +3613,7 @@ void spoton::slotImportPublicKeys(void)
       fileInfo.setFile(dialog.directory(),
 		       dialog.selectedFiles().value(0));
 
-      if(fileInfo.size() >= 30000)
+      if(fileInfo.size() >= 32768)
 	{
 	  QMessageBox mb(this);
 
