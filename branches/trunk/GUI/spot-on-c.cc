@@ -3507,48 +3507,7 @@ void spoton::updatePublicKeysLabel(void)
 
 void spoton::slotExportPublicKeys(void)
 {
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QByteArray keys;
-  QList<QByteArray> list;
-
-  list << copyMyChatPublicKey()
-       << copyMyEmailPublicKey()
-       << copyMyOpenLibraryPublicKey()
-       << copyMyPoptasticPublicKey()
-       << copyMyRosettaPublicKey()
-       << copyMyUrlPublicKey();
-
-  for(int i = 0; i < list.size(); i++)
-    if(!list.at(i).trimmed().isEmpty())
-      keys.append(list.at(i).trimmed() + "\n");
-
-  keys = keys.trimmed();
-
   QApplication::restoreOverrideCursor();
-
-  if(keys.length() >= 30000)
-    {
-      QMessageBox mb(this);
-
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
-      mb.setIcon(QMessageBox::Question);
-      mb.setWindowTitle(tr("%1: Confirmation").
-			arg(SPOTON_APPLICATION_NAME));
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("The gathered public key pairs contain a lot (%1) "
-		    "of data. "
-		    "Are you sure that you wish to export the data?").
-		 arg(keys.length()));
-
-      if(mb.exec() != QMessageBox::Yes)
-	return;
-    }
 
   QFileDialog dialog(this);
 
@@ -3584,9 +3543,33 @@ void spoton::slotExportPublicKeys(void)
 
       file.setFileName(dialog.selectedFiles().value(0));
 
-      if(file.open(QIODevice::Truncate | QIODevice::WriteOnly))
+      if(file.open(QIODevice::Text |
+		   QIODevice::Truncate |
+		   QIODevice::WriteOnly))
 	{
-	  file.write(keys);
+	  for(int i = 1;; i++)
+	    {
+	      QByteArray bytes;
+
+	      if(i == 1)
+		bytes = copyMyChatPublicKey();
+	      else if(i == 2)
+		bytes = copyMyEmailPublicKey();
+	      else if(i == 3)
+		bytes = copyMyOpenLibraryPublicKey();
+	      else if(i == 4)
+		bytes = copyMyPoptasticPublicKey();
+	      else if(i == 5)
+		bytes = copyMyRosettaPublicKey();
+	      else if(i == 6)
+		bytes = copyMyUrlPublicKey();
+	      else
+		break;
+
+	      if(!bytes.isEmpty())
+		file.write(bytes + "\n");
+	    }
+
 	  file.flush();
 	}
 
@@ -3659,7 +3642,7 @@ void spoton::slotImportPublicKeys(void)
 
       file.setFileName(fileInfo.filePath());
 
-      if(file.open(QIODevice::ReadOnly))
+      if(file.open(QIODevice::Text | QIODevice::ReadOnly))
 	bytes = file.readAll();
 
       file.close();
@@ -3731,7 +3714,8 @@ void spoton::slotExportListeners(void)
 
       file.setFileName(dialog.selectedFiles().value(0));
 
-      if(file.open(QIODevice::Text | QIODevice::Truncate |
+      if(file.open(QIODevice::Text |
+		   QIODevice::Truncate |
 		   QIODevice::WriteOnly))
 	for(int i = 0; i < m_ui.listeners->rowCount(); i++)
 	  {
@@ -3873,7 +3857,7 @@ void spoton::importNeighbors(const QString &filePath)
 
 	file.setFileName(filePath);
 
-	if(file.open(QIODevice::ReadOnly))
+	if(file.open(QIODevice::Text | QIODevice::ReadOnly))
 	  {
 	    QByteArray bytes(2048, 0);
 	    qint64 rc = 0;
