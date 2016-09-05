@@ -2015,15 +2015,17 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     str = "sha512";
 
   settings.insert("gui/fsHashType", str);
-  integer = qAbs(settings.value("gui/gcryctl_init_secmem", 262144).toInt(&ok));
+  integer = qAbs
+    (settings.value("gui/gcryctl_init_secmem",
+		    spoton_common::SECURE_MEMORY_POOL_SIZE).toInt(&ok));
 
   if(!ok)
-    integer = 262144;
+    integer = spoton_common::SECURE_MEMORY_POOL_SIZE;
   else if(integer == 0)
     {
     }
   else if(integer < 131072 || integer > 999999999)
-    integer = 262144;
+    integer = spoton_common::SECURE_MEMORY_POOL_SIZE;
 
   settings.insert("gui/gcryctl_init_secmem", integer);
   integer = settings.value("gui/guiExternalIpInterval", -1).toInt(&ok);
@@ -2178,15 +2180,16 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   settings.insert("kernel/cachePurgeInterval", rational);
   integer = qAbs(settings.value("kernel/gcryctl_init_secmem",
-				262144).toInt(&ok));
+				spoton_common::SECURE_MEMORY_POOL_SIZE).
+		 toInt(&ok));
 
   if(!ok)
-    integer = 262144;
+    integer = spoton_common::SECURE_MEMORY_POOL_SIZE;
   else if(integer == 0)
     {
     }
   else if(integer < 131072 || integer > 999999999)
-    integer = 262144;
+    integer = spoton_common::SECURE_MEMORY_POOL_SIZE;
 
   settings.insert("kernel/gcryctl_init_secmem", integer);
   str = settings.value("kernel/messaging_cache_algorithm", "sha224").
