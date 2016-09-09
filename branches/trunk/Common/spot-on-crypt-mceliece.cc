@@ -86,7 +86,10 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
     *ok = false;
 
 #ifdef SPOTON_MCELIECE_ENABLED
-  QWriteLocker locker(&m_privateKeyMutex);
+  QWriteLocker locker(&m_privateKeyMutex); /*
+					   ** NTL is not necessarily
+					   ** thread-safe.
+					   */
 
   if(!m_mceliece)
     m_mceliece = new (std::nothrow) spoton_mceliece
