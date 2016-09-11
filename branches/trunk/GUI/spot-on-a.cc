@@ -620,6 +620,8 @@ spoton::spoton(void):QMainWindow()
   m_addParticipantWindow->menuBar()->addMenu(menu);
 #else
   QMenu *menu = 0;
+
+  m_addParticipantWindow = 0;
 #endif
   m_notificationsWindow = new QMainWindow(0);
   m_optionsWindow = new QMainWindow(0);

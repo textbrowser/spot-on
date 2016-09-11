@@ -49,6 +49,7 @@ external_ip_address
 ip_address
 orientation
 port
+private_application_credentials
 private_key
 protocol
 public_key

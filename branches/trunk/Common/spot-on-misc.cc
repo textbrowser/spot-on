@@ -410,7 +410,8 @@ void spoton_misc::prepareDatabases(void)
 		   "lane_width INTEGER NOT NULL DEFAULT %3 "
 		   "CHECK (lane_width > 0), "
 		   "motd TEXT NOT NULL DEFAULT 'Welcome to Spot-On.', "
-		   "passthrough INTEGER NOT NULL DEFAULT 0)").
+		   "passthrough INTEGER NOT NULL DEFAULT 0, "
+		   "private_application_credentials TEXT)").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
@@ -453,6 +454,8 @@ void spoton_misc::prepareDatabases(void)
 		   "ip_address_hash TEXT NOT NULL, " // Keyed hash.
 		   "listener_oid INTEGER NOT NULL, "
 		   "PRIMARY KEY (ip_address_hash, listener_oid))");
+	query.exec("ALTER TABLE listeners "
+		   "ADD private_application_credentials TEXT");
       }
 
     db.close();

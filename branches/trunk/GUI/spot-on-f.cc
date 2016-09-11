@@ -1345,7 +1345,7 @@ void spoton::slotLock(void)
       it.next();
 
       if(it.value())
-	it.value().data()->close();
+	it.value()->close();
     }
 
   foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
@@ -1361,7 +1361,9 @@ void spoton::slotLock(void)
 	pageViewer->deleteLater();
     }
 
-  m_addParticipantWindow->close();
+  if(m_addParticipantWindow)
+    m_addParticipantWindow->close();
+
   m_echoKeyShare->close();
   m_encryptFile.close();
   m_logViewer.close();

@@ -837,9 +837,17 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT ip_address, port, scope_id, "
-		      "protocol, echo_mode, certificate, private_key, "
-		      "public_key, transport, orientation, "
+	if(query.exec("SELECT ip_address, "
+		      "port, "
+		      "scope_id, "
+		      "protocol, "
+		      "echo_mode, "
+		      "certificate, "
+		      "private_key, "
+		      "public_key, "
+		      "transport, "
+		      "orientation, "
+		      "private_application_credentials, "
 		      "hash FROM listeners"))
 	  while(query.next())
 	    {
@@ -851,6 +859,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      QString ipAddress("");
 	      QString orientation("");
 	      QString port("");
+	      QString privateApplicationCredentials("");
 	      QString protocol("");
 	      QString scopeId("");
 	      QString transport("");
@@ -867,7 +876,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				  "private_key = ?, "
 				  "public_key = ?, "
 				  "transport = ?, "
-				  "orientation = ? "
+				  "orientation = ?, "
+				  "private_application_credentials = ? "
 				  "WHERE hash = ?");
 	      ipAddress = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::
@@ -949,6 +959,13 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		   &ok).constData();
 
 	      if(ok)
+		if(!query.isNull(10))
+		  privateApplicationCredentials = oldCrypt->
+		    decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(10).toByteArray()),
+		     &ok).constData();
+
+	      if(ok)
 		updateQuery.bindValue
 		  (0, newCrypt->encryptedThenHashed
 		   (ipAddress.
@@ -1005,7 +1022,18 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  (10, newCrypt->encryptedThenHashed(orientation.toLatin1(),
 						     &ok).toBase64());
 
-	      updateQuery.bindValue(11, query.value(10));
+	      if(ok)
+		{
+		  if(privateApplicationCredentials.isEmpty())
+		    updateQuery.bindValue(11, QVariant::String);
+		  else
+		    updateQuery.bindValue
+		      (11, newCrypt->
+		       encryptedThenHashed(privateApplicationCredentials.
+					   toLatin1(), &ok).toBase64());
+		}
+
+	      updateQuery.bindValue(12, query.value(11));
 
 	      if(ok)
 		updateQuery.exec();
@@ -1018,7 +1046,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM listeners WHERE "
 				      "hash = ?");
-		  deleteQuery.bindValue(0, query.value(10));
+		  deleteQuery.bindValue(0, query.value(11));
 		  deleteQuery.exec();
 		  deleteQuery.exec("DELETE FROM listeners_accounts "
 				   "WHERE listener_oid NOT IN "
