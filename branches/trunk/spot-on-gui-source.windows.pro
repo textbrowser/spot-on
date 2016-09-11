@@ -15,6 +15,7 @@ FORMS           = UI\\spot-on-adaptive-echo-prompt.ui \
                   UI\\spot-on-password-prompt.ui \
 		  UI\\spot-on-poptastic-retrophone-settings.ui \
 		  UI\\spot-on-postgresql-connect.ui \
+		  UI\\spot-on-private-application-credentials.ui \
 		  UI\\spot-on-rosetta.ui \
 		  UI\\spot-on-rss.ui \
                   UI\\spot-on-starbeamanalyzer.ui \

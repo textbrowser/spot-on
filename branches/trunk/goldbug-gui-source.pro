@@ -15,6 +15,7 @@ FORMS           = GoldBug-UI/spot-on-adaptive-echo-prompt.ui \
                   GoldBug-UI/spot-on-password-prompt.ui \
 		  GoldBug-UI/spot-on-poptastic-retrophone-settings.ui \
 		  GoldBug-UI/spot-on-postgresql-connect.ui \
+		  GoldBug-UI/spot-on-private-application-credentials.ui \
 		  GoldBug-UI/spot-on-rosetta.ui \
 		  GoldBug-UI/spot-on-rss.ui \
                   GoldBug-UI/spot-on-starbeamanalyzer.ui \
