@@ -188,6 +188,7 @@ class spoton_listener: public QObject
 		  const int laneWidth,
 		  const int passthrough,
 		  const int sourceOfRandomness,
+		  const QByteArray &privateApplicationCredentials,
 		  QObject *parent);
   ~spoton_listener();
   QHostAddress externalAddress(void) const;
@@ -207,6 +208,7 @@ class spoton_listener: public QObject
   QBluetoothServiceInfo m_bluetoothServiceInfo;
 #endif
   QByteArray m_certificate;
+  QByteArray m_privateApplicationCredentials;
   QByteArray m_privateKey;
   QByteArray m_publicKey;
   QNetworkInterface *m_networkInterface;

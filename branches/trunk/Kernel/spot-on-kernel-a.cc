@@ -1131,28 +1131,29 @@ void spoton_kernel::prepareListeners(void)
 	  }
 
 	if(query.exec("SELECT "
-		      "ip_address, "             // 0
-		      "port, "                   // 1
-		      "scope_id, "               // 2
-		      "echo_mode, "              // 3
-		      "status_control, "         // 4
-		      "maximum_clients, "        // 5
-		      "ssl_key_size, "           // 6
-		      "certificate, "            // 7
-		      "private_key, "            // 8
-		      "public_key, "             // 9
-		      "use_accounts, "           // 10
-		      "maximum_buffer_size, "    // 11
-		      "maximum_content_length, " // 12
-		      "transport, "              // 13
-		      "share_udp_address, "      // 14
-		      "orientation, "            // 15
-		      "motd, "                   // 16
-		      "ssl_control_string, "     // 17
-		      "lane_width, "             // 18
-		      "passthrough, "            // 19
-		      "source_of_randomness, "   // 20
-		      "OID "                     // 21
+		      "ip_address, "                      // 0
+		      "port, "                            // 1
+		      "scope_id, "                        // 2
+		      "echo_mode, "                       // 3
+		      "status_control, "                  // 4
+		      "maximum_clients, "                 // 5
+		      "ssl_key_size, "                    // 6
+		      "certificate, "                     // 7
+		      "private_key, "                     // 8
+		      "public_key, "                      // 9
+		      "use_accounts, "                    // 10
+		      "maximum_buffer_size, "             // 11
+		      "maximum_content_length, "          // 12
+		      "transport, "                       // 13
+		      "share_udp_address, "               // 14
+		      "orientation, "                     // 15
+		      "motd, "                            // 16
+		      "ssl_control_string, "              // 17
+		      "lane_width, "                      // 18
+		      "passthrough, "                     // 19
+		      "source_of_randomness, "            // 20
+		      "private_application_credentials, " // 21
+		      "OID "                              // 22
 		      "FROM listeners"))
 	  while(query.next())
 	    {
@@ -1188,6 +1189,7 @@ void spoton_kernel::prepareListeners(void)
 		    {
 		      QByteArray certificate;
 		      QByteArray orientation;
+		      QByteArray privateApplicationCredentials;
 		      QByteArray privateKey;
 		      QByteArray publicKey;
 		      QByteArray transport;
@@ -1247,6 +1249,14 @@ void spoton_kernel::prepareListeners(void)
 			   &ok);
 
 		      if(ok)
+			if(!query.isNull(21))
+			  privateApplicationCredentials = s_crypt->
+			    decryptedAfterAuthenticated
+			    (QByteArray::fromBase64(query.value(21).
+						    toByteArray()),
+			     &ok);
+
+		      if(ok)
 			{
 			  int maximumClients =
 			    static_cast<int> (query.value(5).toLongLong());
@@ -1290,6 +1300,7 @@ void spoton_kernel::prepareListeners(void)
 				 query.value(18).toInt(),
 				 query.value(19).toInt(),
 				 query.value(20).toInt(),
+				 privateApplicationCredentials,
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)

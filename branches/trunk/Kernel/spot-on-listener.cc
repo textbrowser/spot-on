@@ -163,28 +163,30 @@ void spoton_listener_udp_server::slotReadyRead(void)
     }
 }
 
-spoton_listener::spoton_listener(const QString &ipAddress,
-				 const QString &port,
-				 const QString &scopeId,
-				 const int maximumClients,
-				 const qint64 id,
-				 const QString &echoMode,
-				 const int keySize,
-				 const QByteArray &certificate,
-				 const QByteArray &privateKey,
-				 const QByteArray &publicKey,
-				 const bool useAccounts,
-				 const qint64 maximumBufferSize,
-				 const qint64 maximumContentLength,
-				 const QString &transport,
-				 const bool shareAddress,
-				 const QString &orientation,
-				 const QString &motd,
-				 const QString &sslControlString,
-				 const int laneWidth,
-				 const int passthrough,
-				 const int sourceOfRandomness,
-				 QObject *parent):QObject(parent)
+spoton_listener::spoton_listener
+(const QString &ipAddress,
+ const QString &port,
+ const QString &scopeId,
+ const int maximumClients,
+ const qint64 id,
+ const QString &echoMode,
+ const int keySize,
+ const QByteArray &certificate,
+ const QByteArray &privateKey,
+ const QByteArray &publicKey,
+ const bool useAccounts,
+ const qint64 maximumBufferSize,
+ const qint64 maximumContentLength,
+ const QString &transport,
+ const bool shareAddress,
+ const QString &orientation,
+ const QString &motd,
+ const QString &sslControlString,
+ const int laneWidth,
+ const int passthrough,
+ const int sourceOfRandomness,
+ const QByteArray &privateApplicationCredentials,
+ QObject *parent):QObject(parent)
 {
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
   m_bluetoothServer = 0;
@@ -251,6 +253,7 @@ spoton_listener::spoton_listener(const QString &ipAddress,
   m_orientation = orientation;
   m_passthrough = passthrough;
   m_port = m_externalPort = port.toUShort();
+  m_privateApplicationCredentials = privateApplicationCredentials;
   m_privateKey = privateKey;
   m_publicKey = publicKey;
   m_scopeId = scopeId;
