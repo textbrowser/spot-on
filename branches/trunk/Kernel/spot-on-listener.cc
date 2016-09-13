@@ -770,6 +770,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	 m_laneWidth,
 	 m_passthrough,
 	 m_sourceOfRandomness,
+	 m_privateApplicationCredentials,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 	 0,
 #endif
@@ -1668,6 +1669,7 @@ void spoton_listener::slotNewConnection(void)
 	 m_laneWidth,
 	 m_passthrough,
 	 m_sourceOfRandomness,
+	 m_privateApplicationCredentials,
 	 socket,
 	 this);
     }

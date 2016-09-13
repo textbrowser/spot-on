@@ -86,6 +86,7 @@ spoton_neighbor::spoton_neighbor
  const int laneWidth,
  const int passthrough,
  const int sourceOfRandomness,
+ const QByteArray &privateApplicationCredentials,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
  QBluetoothSocket *socket,
 #endif
@@ -98,6 +99,7 @@ spoton_neighbor::spoton_neighbor
 		       spoton_common::LANE_WIDTH_MAXIMUM);
   m_bluetoothSocket = 0;
   m_passthrough = passthrough;
+  m_privateApplicationCredentials = privateApplicationCredentials;
   m_sctpSocket = 0;
   m_sourceOfRandomness = qBound
     (0,

@@ -210,6 +210,11 @@ class spoton_neighbor: public QThread
 		  const int passthrough,
 		  const int waitforbyteswritten_msecs,
 		  QObject *parent);
+
+  /*
+  ** We're a server. Let's represent a client.
+  */
+
   spoton_neighbor(
 #if QT_VERSION < 0x050000
 		  const int socketDescriptor,
@@ -235,6 +240,7 @@ class spoton_neighbor: public QThread
 		  const int laneWidth,
 		  const int passthrough,
 		  const int sourceOfRandomness,
+		  const QByteArray &privateApplicationCredentials,
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 		  QBluetoothSocket *socket,
 #endif
@@ -272,6 +278,7 @@ class spoton_neighbor: public QThread
   QByteArray m_accountPassword;
   QByteArray m_accountClientSentSalt;
   QByteArray m_data;
+  QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
