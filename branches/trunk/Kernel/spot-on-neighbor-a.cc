@@ -1651,7 +1651,11 @@ void spoton_neighbor::slotReadyRead(void)
     }
 
   if(!data.isEmpty())
-    if(m_passthrough)
+    /*
+    ** Private-application data has descriptive content.
+    */
+
+    if(m_passthrough && m_privateApplicationCredentials.isEmpty())
       {
 	bool ok = true;
 
