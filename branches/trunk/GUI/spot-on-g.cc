@@ -925,3 +925,15 @@ void spoton::slotCopyUrlKeys(void)
   else
     clipboard->clear();
 }
+
+void spoton::slotCopyPrivateApplicationMagnet(void)
+{
+}
+
+void spoton::slotResetPrivateApplicationInformation(void)
+{
+}
+
+void spoton::slotSetPrivateApplicationInformation(void)
+{
+}

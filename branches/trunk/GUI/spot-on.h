@@ -700,6 +700,7 @@ class spoton: public QMainWindow
   void slotCopyMyRosettaPublicKey(void);
   void slotCopyMyURLPublicKey(void);
   void slotCopyOrPaste(void);
+  void slotCopyPrivateApplicationMagnet(void);
   void slotCopyTransmittedMagnet(void);
   void slotCopyUrlFriendshipBundle(void);
   void slotCopyUrlKeys(void);
@@ -877,6 +878,7 @@ class spoton: public QMainWindow
   void slotResetAll(void);
   void slotResetCertificate(void);
   void slotResetForwardSecrecyInformation(void);
+  void slotResetPrivateApplicationInformation(void);
   void slotRespondToForwardSecrecy(void);
   void slotRetrieveMail(void);
   void slotRewindFile(void);
@@ -922,6 +924,7 @@ class spoton: public QMainWindow
   void slotSetNeighborPriority(void);
   void slotSetNeighborSSLControlString(void);
   void slotSetPassphrase(void);
+  void slotSetPrivateApplicationInformation(void);
   void slotSetSBPulseSize(void);
   void slotSetSBReadInterval(void);
   void slotSetUrlIniPath(void);

@@ -3025,6 +3025,14 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotCopyAEMagnet(void)));
       action->setProperty("from", "listeners");
       menu->addSeparator();
+      menu->addAction(tr("&Copy Private Application Magnet"),
+	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+      menu->addAction(tr("&Set Private Application Information..."),
+		      this, SLOT(slotSetPrivateApplicationInformation(void)));
+      menu->addAction
+	(tr("&Reset Private Application Information"),
+	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+      menu->addSeparator();
       menu->addAction(tr("Set &SSL Control String..."),
 		      this, SLOT(slotSetListenerSSLControlString(void)));
       m_ui.listenersActionMenu->setMenu(menu);
