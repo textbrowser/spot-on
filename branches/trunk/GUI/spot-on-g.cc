@@ -1054,5 +1054,9 @@ void spoton::slotSetPrivateApplicationInformation(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      /*
+      ** The salt will be composed of the cipher type, hash type,
+      ** and iteration count.
+      */
     }
 }
