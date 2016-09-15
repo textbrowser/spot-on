@@ -928,10 +928,60 @@ void spoton::slotCopyUrlKeys(void)
 
 void spoton::slotCopyPrivateApplicationMagnet(void)
 {
+  int row = m_ui.listeners->currentRow();
+
+  if(row < 0)
+    return;
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+  else
+    clipboard->clear();
+
+  QTableWidgetItem *item =
+    m_ui.listeners->item(row, 23); // private_application_credentials
+
+  if(!item)
+    return;
+
+  clipboard->setText(item->text());
 }
 
 void spoton::slotResetPrivateApplicationInformation(void)
 {
+  QModelIndexList list;
+
+  list = m_ui.listeners->selectionModel()->selectedRows
+    (m_ui.listeners->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE listeners SET "
+		      "private_application_credentials = NULL "
+		      "WHERE OID = ?");
+	query.bindValue(0, list.at(0).data());
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotSetPrivateApplicationInformation(void)

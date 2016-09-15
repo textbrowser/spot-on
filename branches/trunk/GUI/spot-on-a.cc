@@ -4000,6 +4000,7 @@ void spoton::slotPopulateListeners(void)
 		      "lane_width, "
 		      "passthrough, "
 		      "source_of_randomness, "
+		      "private_application_credentials, "
 		      "OID "
 		      "FROM listeners WHERE status_control <> 'deleted'"))
 	  {
@@ -4440,7 +4441,7 @@ void spoton::slotPopulateListeners(void)
 		    else
 		      {
 			if((i >= 3 && i <= 7) ||
-			   i == 11 || i == 15 || i == 18)
+			   i == 11 || i == 15 || i == 18 || i == 23)
 			  {
 			    if(query.isNull(i))
 			      item = new QTableWidgetItem();
