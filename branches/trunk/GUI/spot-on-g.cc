@@ -33,6 +33,7 @@ extern "C"
 #include <QSqlDriver>
 
 #include "spot-on.h"
+#include "ui_spot-on-private-application-credentials.h"
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
@@ -986,4 +987,72 @@ void spoton::slotResetPrivateApplicationInformation(void)
 
 void spoton::slotSetPrivateApplicationInformation(void)
 {
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QModelIndexList list;
+  QString oid("");
+
+  list = m_ui.listeners->selectionModel()->selectedRows
+    (m_ui.listeners->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid listener OID. "
+			       "Please select a listener."));
+      return;
+    }
+  else
+    oid = list.at(0).data().toString();
+
+  QStringList ctypes(spoton_crypt::cipherTypes());
+
+  if(ctypes.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("The method spoton_crypt::cipherTypes() has "
+			       "failed. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QStringList htypes(spoton_crypt::hashTypes());
+
+  if(htypes.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("The method spoton_crypt::hashTypes() has "
+			       "failed. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QDialog dialog(this);
+  Ui_private_application_credentials ui;
+
+  ui.setupUi(&dialog);
+  dialog.setWindowTitle
+    (tr("%1: Private Application Credentials").
+     arg(SPOTON_APPLICATION_NAME));
+#ifdef Q_OS_MAC
+  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
+#endif
+  ui.encryption_type->addItems(ctypes);
+  ui.hash_type->addItems(htypes);
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+    }
 }
