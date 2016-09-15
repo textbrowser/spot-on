@@ -1049,14 +1049,41 @@ void spoton::slotSetPrivateApplicationInformation(void)
 #ifdef Q_OS_MAC
   dialog.setAttribute(Qt::WA_MacMetalStyle, false);
 #endif
-  ui.encryption_type->addItems(ctypes);
+  ui.cipher_type->addItems(ctypes);
   ui.hash_type->addItems(htypes);
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QString secret(ui.secret->text().trimmed());
+
+      if(secret.length() < 16)
+	{
+	  QMessageBox::critical(this, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("Please provide a Secret that contains "
+				   "at least sixteen characters."));
+	  return;
+	}
+
       /*
       ** The salt will be composed of the cipher type, hash type,
       ** and iteration count.
       */
+
+      QPair<QByteArray, QByteArray> keys;
+      QString error("");
+
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      keys = spoton_crypt::derivedKeys
+	(ui.cipher_type->currentText(),
+	 ui.hash_type->currentText(),
+	 static_cast<unsigned long int> (ui.iteration_count->value()),
+	 secret.mid(0, 16).toUtf8(),
+	 ui.cipher_type->currentText().toLatin1().toHex() +
+	 ui.hash_type->currentText().toLatin1().toHex() +
+	 secret.mid(16).toUtf8(),
+	 spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
+	 error);
+      QApplication::restoreOverrideCursor();
     }
 }
