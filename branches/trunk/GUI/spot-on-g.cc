@@ -1054,6 +1054,10 @@ void spoton::slotSetPrivateApplicationInformation(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      if(ui.magnet->isChecked())
+	{
+	}
+
       QString secret(ui.secret->text().trimmed());
 
       if(secret.length() < 16)
@@ -1085,5 +1089,53 @@ void spoton::slotSetPrivateApplicationInformation(void)
 	 spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
 	 error);
       QApplication::restoreOverrideCursor();
+
+      if(error.isEmpty())
+	{
+	  QByteArray magnet;
+	  QString connectionName("");
+	  bool ok = true;
+
+	  {
+	    QSqlDatabase db = spoton_misc::database(connectionName);
+
+	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			       "listeners.db");
+
+	    if(db.open())
+	      {
+		QSqlQuery query(db);
+
+		query.prepare("UPDATE listeners SET "
+			      "private_application_credentials = ? "
+			      "WHERE OID = ?");
+		query.bindValue
+		  (0, crypt->encryptedThenHashed(magnet, &ok).toBase64());
+		query.bindValue(1, oid);
+
+		if(ok)
+		  ok = query.exec();
+	      }
+	    else
+	      ok = false;
+
+	    db.close();
+	  }
+
+	  QSqlDatabase::removeDatabase(connectionName);
+
+	  if(!ok)
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error occurred while attempting "
+				     "to set the private application "
+				     "credentials."));
+	}
+      else
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error (%1) occurred while deriving "
+				 "private application credentials").
+			      arg(error));
     }
 }
