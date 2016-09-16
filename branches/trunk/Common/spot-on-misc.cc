@@ -5647,3 +5647,65 @@ void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
+(const QByteArray &magnet)
+{
+  QList<QByteArray> list
+    (QByteArray(magnet.trimmed()).
+     remove(0, static_cast<int> (qstrlen("magnet:?"))).split('&'));
+  QByteArray ek;
+  QByteArray hk;
+  QByteArray xt;
+  QString ct("");
+  QString ht("");
+  spoton_crypt *crypt = 0;
+  unsigned long int ic = 0;
+
+  while(!list.isEmpty())
+    {
+      QByteArray bytes(list.takeFirst());
+
+      if(bytes.startsWith("ct="))
+	{
+	  bytes.remove(0, 3);
+	  ct = bytes;
+	}
+      else if(bytes.startsWith("ht="))
+	{
+	  bytes.remove(0, 3);
+	  ht = bytes;
+	}
+      else if(bytes.startsWith("ic="))
+	{
+	  bytes.remove(0, 3);
+	  ic = qBound(0UL, bytes.toULong(), 999999999UL);
+	}
+      else if(bytes.startsWith("s1="))
+	{
+	  bytes.remove(0, 3);
+	  ek = QByteArray::fromBase64(bytes);
+	}
+      else if(bytes.startsWith("s2="))
+	{
+	  bytes.remove(0, 3);
+	  hk = QByteArray::fromBase64(bytes);
+	}
+      else if(bytes.startsWith("xt"))
+	{
+	  bytes.remove(0, 3);
+	  xt = bytes;
+	}
+      else
+	break;
+    }
+
+  if(ek.length() > 0 && hk.length() > 0 && ic > 0 &&
+     spoton_crypt::cipherTypes().contains(ct) &&
+     spoton_crypt::hashTypes().contains(ht) &&
+     xt == "urn:private-application-credentials")
+    crypt = new (std::nothrow) spoton_crypt
+      (ct, ht, QByteArray(), ek, hk, 0, ic, QString(""));
+
+  return crypt;
+}

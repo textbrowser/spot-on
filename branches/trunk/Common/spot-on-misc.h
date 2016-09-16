@@ -192,6 +192,7 @@ class spoton_misc
   static quint64 databaseAccesses(void);
   static spoton_crypt *cryptFromForwardSecrecyMagnet
     (const QByteArray &magnet);
+  static spoton_crypt *parsePrivateApplicationMagnet(const QByteArray &magnet);
   static spoton_crypt *retrieveUrlCommonCredentials(spoton_crypt *crypt);
   static void alterDatabasesAfterAuthentication(spoton_crypt *crypt);
   static void cleanupDatabases(spoton_crypt *crypt);

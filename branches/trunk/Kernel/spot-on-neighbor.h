@@ -46,6 +46,7 @@
 #include <QUuid>
 
 #include "Common/spot-on-common.h"
+#include "Common/spot-on-crypt.h"
 #include "Common/spot-on-external-address.h"
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-send.h"
@@ -278,7 +279,6 @@ class spoton_neighbor: public QThread
   QByteArray m_accountPassword;
   QByteArray m_accountClientSentSalt;
   QByteArray m_data;
-  QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
@@ -298,6 +298,7 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_maximumBufferSizeMutex;
   QReadWriteLock m_maximumContentLengthMutex;
   QReadWriteLock m_receivedUuidMutex;
+  QScopedPointer<spoton_crypt> m_privateApplicationCrypt;
   QSslCertificate m_peerCertificate;
   QString m_address;
   QString m_echoMode;

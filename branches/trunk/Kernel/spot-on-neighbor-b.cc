@@ -183,7 +183,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
   ** Private-application data has descriptive content.
   */
 
-  if(m_passthrough && m_privateApplicationCredentials.isEmpty())
+  if(m_passthrough && m_privateApplicationCrypt)
     {
       bool ok = true;
 

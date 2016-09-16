@@ -39,7 +39,6 @@
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-external-address.h"
-#include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-receive.h"
 #include "spot-on-kernel.h"
@@ -99,7 +98,8 @@ spoton_neighbor::spoton_neighbor
 		       spoton_common::LANE_WIDTH_MAXIMUM);
   m_bluetoothSocket = 0;
   m_passthrough = passthrough;
-  m_privateApplicationCredentials = privateApplicationCredentials;
+  m_privateApplicationCrypt.reset
+    (spoton_misc::parsePrivateApplicationMagnet(privateApplicationCredentials));
   m_sctpSocket = 0;
   m_sourceOfRandomness = qBound
     (0,
@@ -1655,7 +1655,7 @@ void spoton_neighbor::slotReadyRead(void)
     ** Private-application data has descriptive content.
     */
 
-    if(m_passthrough && m_privateApplicationCredentials.isEmpty())
+    if(m_passthrough && m_privateApplicationCrypt)
       {
 	bool ok = true;
 

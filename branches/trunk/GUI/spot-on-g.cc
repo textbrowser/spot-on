@@ -1056,58 +1056,76 @@ void spoton::slotSetPrivateApplicationInformation(void)
     {
       if(ui.magnet->isChecked())
 	{
+	  QScopedPointer<spoton_crypt> crypt
+	    (spoton_misc::parsePrivateApplicationMagnet(ui.secret->text().
+							toLatin1()));
+
+	  if(!crypt)
+	    {
+	      QMessageBox::critical(this, tr("%1: Error").
+				    arg(SPOTON_APPLICATION_NAME),
+				    tr("Invalid magnet or memory failure."));
+	      return;
+	    }
 	}
 
-      QString secret(ui.secret->text().trimmed());
-
-      if(secret.length() < 16)
-	{
-	  QMessageBox::critical(this, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("Please provide a Secret that contains "
-				   "at least sixteen characters."));
-	  return;
-	}
-
-      /*
-      ** The salt will be composed of the cipher type, hash type,
-      ** and iteration count.
-      */
-
-      QPair<QByteArray, QByteArray> keys;
       QString error("");
+      QString magnet("");
 
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      keys = spoton_crypt::derivedKeys
-	(ui.cipher_type->currentText(),
-	 ui.hash_type->currentText(),
-	 static_cast<unsigned long int> (ui.iteration_count->value()),
-	 secret.mid(0, 16).toUtf8(),
-	 ui.cipher_type->currentText().toLatin1().toHex() +
-	 ui.hash_type->currentText().toLatin1().toHex() +
-	 ui.iteration_count->text().toLatin1().toHex(),
-	 spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
-	 error);
-      QApplication::restoreOverrideCursor();
+      if(ui.magnet->isChecked())
+	magnet = ui.secret->text();
+      else
+	{
+	  QString secret(ui.secret->text().trimmed());
+
+	  if(secret.length() < 16)
+	    {
+	      QMessageBox::critical(this, tr("%1: Error").
+				    arg(SPOTON_APPLICATION_NAME),
+				    tr("Please provide a Secret that contains "
+				       "at least sixteen characters."));
+	      return;
+	    }
+
+	  /*
+	  ** The salt will be composed of the cipher type, hash type,
+	  ** and iteration count.
+	  */
+
+	  QPair<QByteArray, QByteArray> keys;
+
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	  keys = spoton_crypt::derivedKeys
+	    (ui.cipher_type->currentText(),
+	     ui.hash_type->currentText(),
+	     static_cast<unsigned long int> (ui.iteration_count->value()),
+	     secret.mid(0, 16).toUtf8(),
+	     ui.cipher_type->currentText().toLatin1().toHex() +
+	     ui.hash_type->currentText().toLatin1().toHex() +
+	     ui.iteration_count->text().toLatin1().toHex(),
+	     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
+	     error);
+	  QApplication::restoreOverrideCursor();
+
+	  if(error.isEmpty())
+	    magnet = QString("magnet:?"
+			     "ct=%1&"
+			     "ht=%2&"
+			     "ic=%3&"
+			     "s1=%4&"
+			     "s2=%5&"
+			     "xt=urn:private-application-credentials").
+	      arg(ui.cipher_type->currentText()).
+	      arg(ui.hash_type->currentText()).
+	      arg(ui.iteration_count->text()).
+	      arg(keys.first.toBase64().constData()).
+	      arg(keys.second.toBase64().constData());
+	}
 
       if(error.isEmpty())
 	{
 	  QString connectionName("");
-	  QString magnet("");
 	  bool ok = true;
-
-	  magnet = QString("magnet:?"
-			   "ct=%1&"
-			   "ht=%2&"
-			   "ic=%3&"
-			   "s1=%4&"
-			   "s2=%5&"
-			   "xt=urn:private-application-credentials").
-	    arg(ui.cipher_type->currentText()).
-	    arg(ui.hash_type->currentText()).
-	    arg(ui.iteration_count->text()).
-	    arg(keys.first.toBase64().constData()).
-	    arg(keys.second.toBase64().constData());
 
 	  {
 	    QSqlDatabase db = spoton_misc::database(connectionName);
