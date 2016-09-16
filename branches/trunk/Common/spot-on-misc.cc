@@ -535,8 +535,7 @@ void spoton_misc::prepareDatabases(void)
 		   "CHECK (lane_width > 0), "
 		   "motd TEXT NOT NULL DEFAULT 'Welcome to Spot-On.', "
 		   "ae_token TEXT, " /*
-				     ** Please
-				     ** note that the table
+				     ** Please note that the table
 				     ** houses both encryption
 				     ** and hash keys of adaptive
 				     ** echo tokens. Apologies

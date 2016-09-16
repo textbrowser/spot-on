@@ -1092,9 +1092,22 @@ void spoton::slotSetPrivateApplicationInformation(void)
 
       if(error.isEmpty())
 	{
-	  QByteArray magnet;
 	  QString connectionName("");
+	  QString magnet("");
 	  bool ok = true;
+
+	  magnet = QString("magnet:?"
+			   "ct=%1&"
+			   "ht=%2&"
+			   "ic=%3&"
+			   "s1=%4&"
+			   "s2=%5&"
+			   "xt=urn:private-application-credentials").
+	    arg(ui.cipher_type->currentText()).
+	    arg(ui.hash_type->currentText()).
+	    arg(ui.iteration_count->text()).
+	    arg(keys.first.toBase64().constData()).
+	    arg(keys.second.toBase64().constData());
 
 	  {
 	    QSqlDatabase db = spoton_misc::database(connectionName);
@@ -1110,7 +1123,8 @@ void spoton::slotSetPrivateApplicationInformation(void)
 			      "private_application_credentials = ? "
 			      "WHERE OID = ?");
 		query.bindValue
-		  (0, crypt->encryptedThenHashed(magnet, &ok).toBase64());
+		  (0, crypt->encryptedThenHashed(magnet.toLatin1(),
+						 &ok).toBase64());
 		query.bindValue(1, oid);
 
 		if(ok)
