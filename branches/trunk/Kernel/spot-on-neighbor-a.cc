@@ -1671,7 +1671,7 @@ void spoton_neighbor::slotReadyRead(void)
 
 	      if(ok)
 		emit receivedMessage
-		  (spoton_send::messageXYZ(bytes,
+		  (spoton_send::messageXYZ(bytes.toBase64(),
 					   QPair<QByteArray, QByteArray> ()),
 		   m_id,
 		   QPair<QByteArray, QByteArray> ());
@@ -2586,16 +2586,62 @@ void spoton_neighbor::slotWrite
 (const QByteArray &data, const qint64 id,
  const QPairByteArrayByteArray &adaptiveEchoPair)
 {
+  /*
+  ** A neighbor (id) received a message. The neighbor now needs
+  ** to send the message to its peers.
+  */
+
   if(data.length() > m_laneWidth)
     return;
 
   if(id == m_id)
     return;
 
-  /*
-  ** A neighbor (id) received a message. The neighbor now needs
-  ** to send the message to its peer.
-  */
+  QByteArray bytes(data);
+
+  if(!m_isUserDefined) // We're a server.
+    if(m_passthrough && m_privateApplicationCrypt)
+      if(data.contains("Content-Length: "))
+	{
+	  QByteArray contentLength;
+	  int a = data.indexOf("Content-Length: ");
+	  int b = data.indexOf("\r\n", a);
+	  int length = 0;
+
+	  if(a >= 0 && b > 0 && a < b)
+	    {
+	      a += static_cast<int> (qstrlen("Content-Length: "));
+	      contentLength = data.mid(a, b - a);
+	    }
+
+	  /*
+	  ** toInt() returns zero on failure.
+	  */
+
+	  length = contentLength.toInt();
+
+	  if(length > 0)
+	    if((a = data.indexOf("content=", a)) > 0)
+	      {
+		bytes = data.mid(a);
+
+		if(bytes.length() == length && bytes.indexOf('\n') > 0)
+		  {
+		    bytes = bytes.mid
+		      (static_cast<int> (qstrlen("content="))).trimmed();
+		    bytes = bytes.mid(0, bytes.lastIndexOf('\n'));
+
+		    bool ok = true;
+
+		    bytes = m_privateApplicationCrypt->
+		      decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(bytes), &ok);
+
+		    if(!ok)
+		      bytes = data;
+		  }
+	      }
+	}
 
   QReadLocker locker1(&m_learnedAdaptiveEchoPairsMutex);
 
@@ -2613,7 +2659,7 @@ void spoton_neighbor::slotWrite
   if(echoMode == "full")
     if(readyToWrite())
       {
-	if(write(data.constData(), data.length()) != data.length())
+	if(write(bytes.constData(), bytes.length()) != bytes.length())
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotWrite(): write() "
 		     "error for %1:%2.").
@@ -2621,7 +2667,7 @@ void spoton_neighbor::slotWrite
 	     arg(m_port));
 	else
 	  spoton_kernel::messagingCacheAdd(data);
-    }
+      }
 }
 
 void spoton_neighbor::slotLifetimeExpired(void)

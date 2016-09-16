@@ -200,7 +200,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
 	    if(ok)
 	      emit receivedMessage
-		(spoton_send::messageXYZ(bytes,
+		(spoton_send::messageXYZ(bytes.toBase64(),
 					 QPair<QByteArray, QByteArray> ()),
 		 m_id,
 		 QPair<QByteArray, QByteArray> ());
