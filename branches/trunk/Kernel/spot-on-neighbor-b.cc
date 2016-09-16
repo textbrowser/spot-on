@@ -180,10 +180,10 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
     return;
 
   /*
-  ** Private-application data has descriptive content.
+  ** Private-application data includes descriptive content.
   */
 
-  if(m_passthrough && m_privateApplicationCrypt)
+  if(m_passthrough && !m_privateApplicationCrypt)
     {
       bool ok = true;
 
@@ -217,8 +217,11 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
   if(length > 0)
     m_data.append(datagram.mid(0, length));
 
-  locker2.unlock();
-  emit newData();
+  if(!m_data.isEmpty())
+    {
+      locker2.unlock();
+      emit newData();
+    }
 }
 
 void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)

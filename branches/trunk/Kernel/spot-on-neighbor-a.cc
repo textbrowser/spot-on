@@ -1652,10 +1652,10 @@ void spoton_neighbor::slotReadyRead(void)
 
   if(!data.isEmpty())
     /*
-    ** Private-application data has descriptive content.
+    ** Private-application data includes descriptive content.
     */
 
-    if(m_passthrough && m_privateApplicationCrypt)
+    if(m_passthrough && !m_privateApplicationCrypt)
       {
 	bool ok = true;
 
@@ -1690,8 +1690,11 @@ void spoton_neighbor::slotReadyRead(void)
       if(length > 0)
 	m_data.append(data.mid(0, length));
 
-      locker2.unlock();
-      emit newData();
+      if(!m_data.isEmpty())
+	{
+	  locker2.unlock();
+	  emit newData();
+	}
     }
   else
     {
@@ -1717,40 +1720,6 @@ void spoton_neighbor::processData(void)
 
     data = m_data;
   }
-
-  QByteArray accountClientSentSalt;
-  QString echoMode("");
-  bool useAccounts = false;
-  qint64 maximumBufferSize = 0;
-  qint64 maximumContentLength = 0;
-
-  for(int i = 1; i <= 5; i++)
-    if(i == 1)
-      {
-	QReadLocker locker(&m_accountClientSentSaltMutex);
-
-	accountClientSentSalt = m_accountClientSentSalt;
-      }
-    else if(i == 2)
-      {
-	QReadLocker locker(&m_echoModeMutex);
-
-	echoMode = m_echoMode;
-      }
-    else if(i == 3)
-      {
-	QReadLocker locker(&m_maximumBufferSizeMutex);
-
-	maximumBufferSize = m_maximumBufferSize;
-      }
-    else if(i == 4)
-      {
-	QReadLocker locker(&m_maximumContentLengthMutex);
-
-	maximumContentLength = m_maximumContentLength;
-      }
-    else if(i == 5)
-      useAccounts = m_useAccounts.fetchAndAddOrdered(0);
 
   QList<QByteArray> list;
 
@@ -1794,12 +1763,48 @@ void spoton_neighbor::processData(void)
 
   data.clear();
 
+  qint64 maximumBufferSize = 0;
+
+  {
+    QReadLocker locker(&m_maximumBufferSizeMutex);
+
+    maximumBufferSize = m_maximumBufferSize;
+  }
+
   {
     QWriteLocker locker(&m_dataMutex);
 
     if(m_data.length() >= maximumBufferSize)
       m_data.clear();
   }
+
+  if(list.isEmpty())
+    return;
+
+  QByteArray accountClientSentSalt;
+  QString echoMode("");
+  bool useAccounts = false;
+  qint64 maximumContentLength = 0;
+
+  {
+    QReadLocker locker(&m_accountClientSentSaltMutex);
+
+    accountClientSentSalt = m_accountClientSentSalt;
+  }
+
+  {
+    QReadLocker locker(&m_echoModeMutex);
+
+    echoMode = m_echoMode;
+  }
+
+  {
+    QReadLocker locker(&m_maximumContentLengthMutex);
+
+    maximumContentLength = m_maximumContentLength;
+  }
+
+  useAccounts = m_useAccounts.fetchAndAddOrdered(0);
 
   while(!list.isEmpty())
     {
