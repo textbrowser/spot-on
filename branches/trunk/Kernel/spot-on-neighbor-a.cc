@@ -2625,20 +2625,24 @@ void spoton_neighbor::slotWrite
 	      {
 		bytes = data.mid(a);
 
-		if(bytes.length() == length && bytes.indexOf('\n') > 0)
+		if(bytes.length() == length)
 		  {
 		    bytes = bytes.mid
 		      (static_cast<int> (qstrlen("content="))).trimmed();
-		    bytes = bytes.mid(0, bytes.lastIndexOf('\n'));
 
-		    bool ok = true;
+		    if(bytes.lastIndexOf('\n') > 0)
+		      {
+			bytes = bytes.mid(0, bytes.lastIndexOf('\n'));
 
-		    bytes = m_privateApplicationCrypt->
-		      decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(bytes), &ok);
+			bool ok = true;
 
-		    if(!ok)
-		      return; // Something is strange!
+			bytes = m_privateApplicationCrypt->
+			  decryptedAfterAuthenticated
+			  (QByteArray::fromBase64(bytes), &ok);
+
+			if(!ok)
+			  return; // Something is strange!
+		      }
 		  }
 	      }
 	}
