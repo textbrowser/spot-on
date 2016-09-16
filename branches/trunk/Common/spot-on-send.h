@@ -109,16 +109,19 @@ class spoton_send
   static QByteArray message0065(const QByteArray &magnet);
   static QByteArray message0070(const QByteArray &motd);
   static QByteArray message0080
-    (const QByteArray &data,
+    (const QByteArray &message,
      const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
   static QByteArray message0090
-    (const QByteArray &data,
+    (const QByteArray &message,
      const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
   static QByteArray message0091a
-    (const QByteArray &data,
+    (const QByteArray &message,
      const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
   static QByteArray message0091b
-    (const QByteArray &data,
+    (const QByteArray &message,
+     const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
+  static QByteArray messageXYZ
+    (const QByteArray &message,
      const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
 
  private:

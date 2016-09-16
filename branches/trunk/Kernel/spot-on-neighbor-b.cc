@@ -183,8 +183,31 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
   ** Private-application data includes descriptive content.
   */
 
-  if(m_passthrough && !m_privateApplicationCrypt)
+  if(m_passthrough)
     {
+      /*
+      ** A private application may not be able to authenticate.
+      */
+
+      if(!m_isUserDefined) // We're a server.
+	if(m_privateApplicationCrypt)
+	  {
+	    QByteArray bytes;
+	    bool ok = true;
+
+	    bytes = m_privateApplicationCrypt->encryptedThenHashed
+	      (datagram, &ok);
+
+	    if(ok)
+	      emit receivedMessage
+		(spoton_send::messageXYZ(bytes,
+					 QPair<QByteArray, QByteArray> ()),
+		 m_id,
+		 QPair<QByteArray, QByteArray> ());
+
+	    return;
+	  }
+
       bool ok = true;
 
       if(m_useAccounts.fetchAndAddOrdered(0))
