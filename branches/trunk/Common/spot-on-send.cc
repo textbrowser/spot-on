@@ -849,8 +849,7 @@ QByteArray spoton_send::messageXYZ
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
+			QString("content=\r\n\r\n\r\n").length()));
   results.replace
     ("%2", authenticated);
   return results;
