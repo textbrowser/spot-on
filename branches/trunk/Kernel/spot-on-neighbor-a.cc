@@ -2638,7 +2638,7 @@ void spoton_neighbor::slotWrite
 		      (QByteArray::fromBase64(bytes), &ok);
 
 		    if(!ok)
-		      bytes = data;
+		      return; // Something is strange!
 		  }
 	      }
 	}
