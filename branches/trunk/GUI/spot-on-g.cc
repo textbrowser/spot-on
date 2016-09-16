@@ -1085,7 +1085,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 	 secret.mid(0, 16).toUtf8(),
 	 ui.cipher_type->currentText().toLatin1().toHex() +
 	 ui.hash_type->currentText().toLatin1().toHex() +
-	 secret.mid(16).toUtf8(),
+	 ui.iteration_count->text().toLatin1().toHex(),
 	 spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
 	 error);
       QApplication::restoreOverrideCursor();
