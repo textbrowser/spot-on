@@ -199,12 +199,15 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 	      (datagram, &ok);
 
 	    if(ok)
-	      emit receivedMessage
-		(spoton_send::messageXYZ(bytes.toBase64(),
-					 QPair<QByteArray, QByteArray> ()),
-		 m_id,
-		 QPair<QByteArray, QByteArray> ());
+	      {
+		bytes = spoton_send::messageXYZ
+		  (bytes.toBase64(), QPair<QByteArray, QByteArray> ());
+		emit receivedMessage(bytes,
+				     m_id,
+				     QPair<QByteArray, QByteArray> ());
+	      }
 
+	    emit resetKeepAlive();
 	    return;
 	  }
 
@@ -258,6 +261,10 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
 
 void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 {
+  if(!m_isUserDefined)
+    if(m_passthrough && m_privateApplicationCrypt)
+      return;
+
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
@@ -360,6 +367,10 @@ void spoton_neighbor::deleteLater(void)
 
 void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
 {
+  if(!m_isUserDefined)
+    if(m_passthrough && m_privateApplicationCrypt)
+      return;
+
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
@@ -384,6 +395,10 @@ void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
 void spoton_neighbor::slotSendForwardSecrecySessionKeys
 (const QByteArray &data)
 {
+  if(!m_isUserDefined)
+    if(m_passthrough && m_privateApplicationCrypt)
+      return;
+
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
