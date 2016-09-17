@@ -2625,10 +2625,12 @@ void spoton_neighbor::slotWrite
 	    int b = data.indexOf("\r\n", a);
 	    int length = 0;
 
-	    if(a >= 0 && b > 0 && a < b)
+	    if(a >= 0 && b > 0)
 	      {
 		a += static_cast<int> (qstrlen("Content-Length: "));
-		contentLength = data.mid(a, b - a);
+
+		if(a < b)
+		  contentLength = data.mid(a, b - a);
 	      }
 
 	    /*
@@ -2637,7 +2639,7 @@ void spoton_neighbor::slotWrite
 
 	    length = contentLength.toInt();
 
-	    if(length > 0)
+	    if(length > 0 && length <= m_maximumContentLength)
 	      if((a = data.indexOf("content=", a)) > 0)
 		{
 		  bytes = data.mid(a);
