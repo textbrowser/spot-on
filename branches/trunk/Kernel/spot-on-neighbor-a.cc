@@ -363,6 +363,10 @@ spoton_neighbor::spoton_neighbor
 	  SIGNAL(stopTimer(QTimer *)),
 	  this,
 	  SLOT(slotStopTimer(QTimer *)));
+  connect(this,
+	  SIGNAL(writeParsedApplicationData(const QByteArray &)),
+	  this,
+	  SLOT(slotWriteParsedApplicationData(const QByteArray &)));
 
   if(m_bluetoothSocket)
     {
@@ -1017,6 +1021,9 @@ spoton_neighbor::~spoton_neighbor()
       QSqlDatabase::removeDatabase(connectionName);
     }
 
+  while(!m_privateApplicationFutures.isEmpty())
+    m_privateApplicationFutures.takeFirst().waitForFinished();
+
   close();
   quit();
   wait();
@@ -1412,6 +1419,10 @@ void spoton_neighbor::slotTimeout(void)
       m_externalAddressDiscovererTimer.stop();
     }
 
+  for(int i = m_privateApplicationFutures.size() - 1; i >= 0; i--)
+    if(m_privateApplicationFutures.at(i).isFinished())
+      m_privateApplicationFutures.removeAt(i);
+
   /*
   ** Remove learned adaptive echo tokens that are not contained
   ** in the complete set of adaptive echo tokens.
@@ -1668,22 +1679,12 @@ void spoton_neighbor::slotReadyRead(void)
 	if(!m_isUserDefined) // We're a server.
 	  if(m_privateApplicationCrypt)
 	    {
-	      QByteArray bytes;
-	      bool ok = true;
+	      QFuture<void> future = QtConcurrent::run
+		(this,
+		 &spoton_neighbor::bundlePrivateApplicationData,
+		 data);
 
-	      spoton_kernel::messagingCacheAdd(data);
-	      bytes = m_privateApplicationCrypt->encryptedThenHashed(data, &ok);
-
-	      if(ok)
-		{
-		  bytes = spoton_send::messageXYZ
-		    (bytes.toBase64(), QPair<QByteArray, QByteArray> ());
-		  emit receivedMessage(bytes,
-				       m_id,
-				       QPair<QByteArray, QByteArray> ());
-		}
-
-	      emit resetKeepAlive();
+	      m_privateApplicationFutures << future;
 	      return;
 	    }
 
@@ -2613,66 +2614,16 @@ void spoton_neighbor::slotWrite
   if(id == m_id)
     return;
 
-  QByteArray bytes(data);
-
   if(!m_isUserDefined) // We're a server.
     if(m_passthrough && m_privateApplicationCrypt)
       {
-	if(data.contains("Content-Length: "))
-	  {
-	    QByteArray contentLength;
-	    int a = data.indexOf("Content-Length: ");
-	    int b = data.indexOf("\r\n", a);
-	    int length = 0;
-
-	    if(a >= 0 && b > 0)
-	      {
-		a += static_cast<int> (qstrlen("Content-Length: "));
-
-		if(a < b)
-		  contentLength = data.mid(a, b - a);
-	      }
-
-	    /*
-	    ** toInt() returns zero on failure.
-	    */
-
-	    length = contentLength.toInt();
-
-	    if(length > 0 && length <= m_maximumContentLength)
-	      if((a = data.indexOf("content=", a)) > 0)
-		{
-		  bytes = data.mid(a);
-
-		  if(bytes.length() == length)
-		    {
-		      bytes = bytes.mid
-			(static_cast<int> (qstrlen("content="))).trimmed();
-
-		      if(bytes.lastIndexOf('\n') > 0)
-			{
-			  bool ok = true;
-
-			  bytes = bytes.mid(0, bytes.lastIndexOf('\n'));
-			  bytes = m_privateApplicationCrypt->
-			    decryptedAfterAuthenticated
-			    (QByteArray::fromBase64(bytes), &ok);
-
-			  if(ok)
-			    if(spoton_kernel::messagingCacheContains(bytes))
-			      return;
-
-			  if(ok)
-			    goto done_label;
-			}
-		    }
-		}
-	  }
-
+	QtConcurrent::run
+	  (this,
+	   &spoton_neighbor::parsePrivateApplicationData,
+	   data,
+	   m_maximumContentLength);
 	return;
       }
-
- done_label:
 
   QReadLocker locker1(&m_learnedAdaptiveEchoPairsMutex);
 
@@ -2690,7 +2641,7 @@ void spoton_neighbor::slotWrite
   if(echoMode == "full")
     if(readyToWrite())
       {
-	if(write(bytes.constData(), bytes.length()) != bytes.length())
+	if(write(data.constData(), data.length()) != data.length())
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotWrite(): write() "
 		     "error for %1:%2.").

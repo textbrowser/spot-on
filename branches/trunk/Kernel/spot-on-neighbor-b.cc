@@ -192,23 +192,12 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
       if(!m_isUserDefined) // We're a server.
 	if(m_privateApplicationCrypt)
 	  {
-	    QByteArray bytes;
-	    bool ok = true;
+	    QFuture<void> future = QtConcurrent::run
+	      (this,
+	       &spoton_neighbor::bundlePrivateApplicationData,
+	       datagram);
 
-	    spoton_kernel::messagingCacheAdd(datagram);
-	    bytes = m_privateApplicationCrypt->encryptedThenHashed
-	      (datagram, &ok);
-
-	    if(ok)
-	      {
-		bytes = spoton_send::messageXYZ
-		  (bytes.toBase64(), QPair<QByteArray, QByteArray> ());
-		emit receivedMessage(bytes,
-				     m_id,
-				     QPair<QByteArray, QByteArray> ());
-	      }
-
-	    emit resetKeepAlive();
+	    m_privateApplicationFutures << future;
 	    return;
 	  }
 
@@ -350,6 +339,10 @@ void spoton_neighbor::deleteLater(void)
 		 SIGNAL(stopTimer(QTimer *)),
 		 this,
 		 SLOT(slotStopTimer(QTimer *)));
+      disconnect(this,
+		 SIGNAL(writeParsedApplicationData(const QByteArray &)),
+		 this,
+		 SLOT(slotWriteParsedApplicationData(const QByteArray &)));
       close();
       m_accountTimer.stop();
       m_authenticationTimer.stop();
@@ -419,4 +412,113 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
       else
 	spoton_kernel::messagingCacheAdd(message);
     }
+}
+
+void spoton_neighbor::parsePrivateApplicationData
+(const QByteArray &data,
+ const qint64 maximumContentLength)
+{
+  if(!m_privateApplicationCrypt)
+    return;
+
+  if(data.contains("Content-Length: "))
+    {
+      QByteArray contentLength;
+      int a = data.indexOf("Content-Length: ");
+      int b = data.indexOf("\r\n", a);
+      int length = 0;
+
+      if(a >= 0 && b > 0)
+	{
+	  a += static_cast<int> (qstrlen("Content-Length: "));
+
+	  if(a < b)
+	    contentLength = data.mid(a, b - a);
+	}
+
+      /*
+      ** toInt() returns zero on failure.
+      */
+
+      length = contentLength.toInt();
+
+      if(length > 0 && length <= maximumContentLength)
+	if((a = data.indexOf("content=", a)) > 0)
+	  {
+	    QByteArray bytes(data.mid(a));
+
+	    if(bytes.length() == length)
+	      {
+		bytes = bytes.mid
+		  (static_cast<int> (qstrlen("content="))).trimmed();
+
+		if(bytes.lastIndexOf('\n') > 0)
+		  {
+		    bool ok = true;
+
+		    bytes = bytes.mid(0, bytes.lastIndexOf('\n'));
+		    bytes = m_privateApplicationCrypt->
+		      decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(bytes), &ok);
+
+		    if(ok)
+		      emit writeParsedApplicationData(bytes);
+		  }
+	      }
+	  }
+    }
+}
+
+void spoton_neighbor::slotWriteParsedApplicationData(const QByteArray &data)
+{
+  /*
+  ** A neighbor (id) received a message. The neighbor now needs
+  ** to send the message to its peers.
+  */
+
+  if(data.length() > m_laneWidth)
+    return;
+
+  QReadLocker locker(&m_echoModeMutex);
+  QString echoMode(m_echoMode);
+
+  locker.unlock();
+
+  if(echoMode == "full")
+    if(readyToWrite())
+      {
+	if(write(data.constData(), data.length()) != data.length())
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotWriteParsedApplicationData(): "
+		     "write() error for %1:%2.").
+	     arg(m_address).
+	     arg(m_port));
+	else
+	  spoton_kernel::messagingCacheAdd(data);
+      }
+}
+
+void spoton_neighbor::bundlePrivateApplicationData(const QByteArray &data)
+{
+  /*
+  ** We should not insert an entry into the congestion-control
+  ** mechanism.
+  */
+
+  if(!m_privateApplicationCrypt)
+    return;
+
+  QByteArray bytes;
+  bool ok = true;
+
+  bytes = m_privateApplicationCrypt->encryptedThenHashed(data, &ok);
+
+  if(ok)
+    emit receivedMessage
+      (spoton_send::messageXYZ(bytes.toBase64(),
+			       QPair<QByteArray, QByteArray> ()),
+       m_id,
+       QPair<QByteArray, QByteArray> ());
+
+  emit resetKeepAlive();
 }

@@ -33,6 +33,7 @@
 #include <qbluetoothsocket.h>
 #endif
 #include <QDateTime>
+#include <QFuture>
 #include <QHostAddress>
 #include <QHostInfo>
 #include <QNetworkProxy>
@@ -281,6 +282,7 @@ class spoton_neighbor: public QThread
   QByteArray m_data;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
+  QList<QFuture<void> > m_privateApplicationFutures;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
@@ -341,6 +343,9 @@ class spoton_neighbor: public QThread
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
   bool readyToWrite(void);
   void addToBytesWritten(const qint64 bytesWritten);
+  void bundlePrivateApplicationData(const QByteArray &data);
+  void parsePrivateApplicationData(const QByteArray &data,
+				   const qint64 maximumContentLength);
   void process0000(int length, const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
   void process0000a(int length, const QByteArray &data,
@@ -483,6 +488,7 @@ class spoton_neighbor: public QThread
   void slotTimeout(void);
   void slotWrite(const QByteArray &data, const qint64 id,
 		 const QPairByteArrayByteArray &adaptiveEchoPair);
+  void slotWriteParsedApplicationData(const QByteArray &data);
   void slotWriteURLs(const QByteArray &data);
 
  public slots:
@@ -534,6 +540,7 @@ class spoton_neighbor: public QThread
   void statusMessageReceived(const QByteArray &publicKeyHash,
 			     const QString &status);
   void stopTimer(QTimer *timer);
+  void writeParsedApplicationData(const QByteArray &data);
 };
 
 class spoton_neighbor_worker: public QObject
