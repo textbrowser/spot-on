@@ -195,7 +195,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 	    QByteArray bytes;
 	    bool ok = true;
 
-	    spoton_kernel::messagingCacheAdd(bytes);
+	    spoton_kernel::messagingCacheAdd(datagram);
 	    bytes = m_privateApplicationCrypt->encryptedThenHashed
 	      (datagram, &ok);
 
