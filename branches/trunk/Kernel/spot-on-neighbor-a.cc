@@ -1671,6 +1671,7 @@ void spoton_neighbor::slotReadyRead(void)
 	      QByteArray bytes;
 	      bool ok = true;
 
+	      spoton_kernel::messagingCacheAdd(bytes);
 	      bytes = m_privateApplicationCrypt->encryptedThenHashed(data, &ok);
 
 	      if(ok)
@@ -2648,13 +2649,16 @@ void spoton_neighbor::slotWrite
 
 		      if(bytes.lastIndexOf('\n') > 0)
 			{
-			  bytes = bytes.mid(0, bytes.lastIndexOf('\n'));
-
 			  bool ok = true;
 
+			  bytes = bytes.mid(0, bytes.lastIndexOf('\n'));
 			  bytes = m_privateApplicationCrypt->
 			    decryptedAfterAuthenticated
 			    (QByteArray::fromBase64(bytes), &ok);
+
+			  if(ok)
+			    if(spoton_kernel::messagingCacheContains(bytes))
+			      return;
 
 			  if(ok)
 			    goto done_label;
