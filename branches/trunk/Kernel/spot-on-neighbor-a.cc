@@ -1671,7 +1671,7 @@ void spoton_neighbor::slotReadyRead(void)
 	      QByteArray bytes;
 	      bool ok = true;
 
-	      spoton_kernel::messagingCacheAdd(bytes);
+	      spoton_kernel::messagingCacheAdd(data);
 	      bytes = m_privateApplicationCrypt->encryptedThenHashed(data, &ok);
 
 	      if(ok)
