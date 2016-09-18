@@ -333,32 +333,32 @@
 <context>
     <name>adaptiveechoprompt</name>
     <message>
-        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="27"/>
+        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="36"/>
         <source>Please provide the following information. The token must contain at least ninety-six characters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="55"/>
+        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="64"/>
         <source>&amp;Token</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="129"/>
-        <source>If the magnet is not properly defined, the Adaptive Echo token will not be accepted.</source>
+        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="138"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please provide the magnet in the Token field. If the magnet is not properly defined, Adaptive Echo credentials will not be extracted and the magnet will be rejected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="132"/>
+        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="141"/>
         <source>&amp;Magnet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="45"/>
+        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="54"/>
         <source>Token &amp;Encryption Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="119"/>
+        <location filename="../UI/spot-on-adaptive-echo-prompt.ui" line="128"/>
         <source>Token &amp;Hash Type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -947,32 +947,37 @@
 <context>
     <name>private_application_credentials</name>
     <message>
-        <location filename="../UI/spot-on-private-application-credentials.ui" line="41"/>
+        <location filename="../UI/spot-on-private-application-credentials.ui" line="36"/>
+        <source>Please remember to enable the passthrough mechanism on the listener.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../UI/spot-on-private-application-credentials.ui" line="51"/>
         <source>&amp;Hash Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-private-application-credentials.ui" line="54"/>
+        <location filename="../UI/spot-on-private-application-credentials.ui" line="64"/>
         <source>&amp;Cipher Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-private-application-credentials.ui" line="64"/>
+        <location filename="../UI/spot-on-private-application-credentials.ui" line="74"/>
         <source>&amp;Secret</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-private-application-credentials.ui" line="128"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the magnet is not properly defined, credentials will not be derived from the secret.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <location filename="../UI/spot-on-private-application-credentials.ui" line="138"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enter the magnet in the Secret field. If the magnet is not properly defined, credentials will not be extracted and the magnet will be rejected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-private-application-credentials.ui" line="131"/>
+        <location filename="../UI/spot-on-private-application-credentials.ui" line="141"/>
         <source>&amp;Magnet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-private-application-credentials.ui" line="138"/>
+        <location filename="../UI/spot-on-private-application-credentials.ui" line="148"/>
         <source>&amp;Iteration Count</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1604,12 +1609,12 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <location filename="../GUI/spot-on-a.cc" line="6401"/>
         <location filename="../GUI/spot-on-a.cc" line="6409"/>
         <location filename="../GUI/spot-on-a.cc" line="6422"/>
-        <location filename="../GUI/spot-on-a.cc" line="9512"/>
-        <location filename="../GUI/spot-on-a.cc" line="9526"/>
-        <location filename="../GUI/spot-on-a.cc" line="9606"/>
-        <location filename="../GUI/spot-on-a.cc" line="9614"/>
-        <location filename="../GUI/spot-on-a.cc" line="9881"/>
-        <location filename="../GUI/spot-on-a.cc" line="9930"/>
+        <location filename="../GUI/spot-on-a.cc" line="9522"/>
+        <location filename="../GUI/spot-on-a.cc" line="9536"/>
+        <location filename="../GUI/spot-on-a.cc" line="9616"/>
+        <location filename="../GUI/spot-on-a.cc" line="9624"/>
+        <location filename="../GUI/spot-on-a.cc" line="9891"/>
+        <location filename="../GUI/spot-on-a.cc" line="9940"/>
         <location filename="../GUI/spot-on-b.cc" line="179"/>
         <location filename="../GUI/spot-on-b.cc" line="2053"/>
         <location filename="../GUI/spot-on-b.cc" line="2062"/>
@@ -2146,40 +2151,40 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="9340"/>
+        <location filename="../GUI/spot-on-a.cc" line="9350"/>
         <source>&lt;b&gt;Cert. Effective Date:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Cert. Expiration Date:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;Cert. Issuer Organization:&lt;/b&gt; %3&lt;br&gt;&lt;b&gt;Cert. Issuer Common Name:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Cert. Issuer Locality Name:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Cert. Issuer Organizational Unit Name:&lt;/b&gt; %6&lt;br&gt;&lt;b&gt;Cert. Issuer Country Name:&lt;/b&gt; %7&lt;br&gt;&lt;b&gt;Cert. Issuer State or Province Name:&lt;/b&gt; %8&lt;br&gt;&lt;b&gt;Cert. Serial Number:&lt;/b&gt; %9&lt;br&gt;&lt;b&gt;Cert. Subject Organization:&lt;/b&gt; %10&lt;br&gt;&lt;b&gt;Cert. Subject Common Name:&lt;/b&gt; %11&lt;br&gt;&lt;b&gt;Cert. Subject Locality Name:&lt;/b&gt; %12&lt;br&gt;&lt;b&gt;Cert. Subject Organizational Unit Name:&lt;/b&gt; %13&lt;br&gt;&lt;b&gt;Cert. Subject Country Name:&lt;/b&gt; %14&lt;br&gt;&lt;b&gt;Cert. Subject State or Province Name:&lt;/b&gt; %15&lt;br&gt;&lt;b&gt;Cert. Version:&lt;/b&gt; %16&lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="9528"/>
+        <location filename="../GUI/spot-on-a.cc" line="9538"/>
         <location filename="../GUI/spot-on-d.cc" line="1327"/>
         <source>Invalid neighbor OID. Please select a neighbor.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="9549"/>
+        <location filename="../GUI/spot-on-a.cc" line="9559"/>
         <source>%1: Please Authenticate Account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="9608"/>
+        <location filename="../GUI/spot-on-a.cc" line="9618"/>
         <source>An error occurred while attempting to record authentication information.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="9616"/>
+        <location filename="../GUI/spot-on-a.cc" line="9626"/>
         <source>The account name and the account password must contain at least thirty-two characters each.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="9876"/>
+        <location filename="../GUI/spot-on-a.cc" line="9886"/>
         <location filename="../GUI/spot-on-b.cc" line="4232"/>
         <location filename="../GUI/spot-on-c.cc" line="173"/>
         <source>A database error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="9907"/>
+        <location filename="../GUI/spot-on-a.cc" line="9917"/>
         <source>Invalid clipboard object. This is a fatal flaw.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2392,8 +2397,8 @@ Wait-For-Bytes-Written: %28</source>
     <message>
         <location filename="../GUI/spot-on-a.cc" line="3139"/>
         <location filename="../GUI/spot-on-a.cc" line="3467"/>
-        <location filename="../GUI/spot-on-a.cc" line="9514"/>
-        <location filename="../GUI/spot-on-a.cc" line="9835"/>
+        <location filename="../GUI/spot-on-a.cc" line="9524"/>
+        <location filename="../GUI/spot-on-a.cc" line="9845"/>
         <location filename="../GUI/spot-on-b.cc" line="2055"/>
         <location filename="../GUI/spot-on-b.cc" line="3040"/>
         <location filename="../GUI/spot-on-b.cc" line="5789"/>
