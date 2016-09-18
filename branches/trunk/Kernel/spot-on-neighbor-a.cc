@@ -1838,25 +1838,20 @@ void spoton_neighbor::processData(void)
 
       QByteArray data(list.takeFirst());
       QByteArray originalData(data);
+      int index = -1;
       int length = 0;
 
-      if(data.contains("Content-Length: "))
+      if((index = data.indexOf("Content-Length: ")) >= 0)
 	{
-	  QByteArray contentLength(data);
-	  int indexOf = -1;
+	  QByteArray contentLength
+	    (data.mid(index + static_cast<int> (qstrlen("Content-Length: "))));
 
-	  contentLength.remove
-	    (0,
-	     contentLength.indexOf("Content-Length: ") +
-	     static_cast<int> (qstrlen("Content-Length: ")));
-	  indexOf = contentLength.indexOf("\r\n");
-
-	  if(indexOf > -1)
+	  if((index = contentLength.indexOf("\r\n")) >= 0)
 	    /*
 	    ** toInt() returns zero on failure.
 	    */
 
-	    length = contentLength.mid(0, indexOf).toInt();
+	    length = contentLength.mid(0, index).toInt();
 	}
       else
 	{
