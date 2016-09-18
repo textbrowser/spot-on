@@ -209,8 +209,6 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
       if(ok)
 	{
-	  emit resetKeepAlive();
-
 	  if(!spoton_kernel::messagingCacheContains(datagram))
 	    {
 	      emit receivedMessage
@@ -218,6 +216,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 	      spoton_kernel::messagingCacheAdd(datagram);
 	    }
 
+	  emit resetKeepAlive();
 	  return;
 	}
     }

@@ -1605,6 +1605,9 @@ void spoton_neighbor::run(void)
 
 void spoton_neighbor::slotReadyRead(void)
 {
+  if(m_abort.fetchAndAddOrdered(0))
+    return;
+
   QByteArray data;
 
   if(m_bluetoothSocket)
@@ -1648,9 +1651,6 @@ void spoton_neighbor::slotReadyRead(void)
     spoton_kernel::s_totalNeighborsBytesReadWritten.first +=
       static_cast<quint64> (data.length());
   }
-
-  if(m_abort.fetchAndAddOrdered(0))
-    return;
 
   if(!data.isEmpty() && !isEncrypted() && m_useSsl)
     {
@@ -1702,8 +1702,8 @@ void spoton_neighbor::slotReadyRead(void)
 	    ** be acceptable.
 	    */
 
-	    emit resetKeepAlive();
 	    emit receivedMessage(data, m_id, QPair<QByteArray, QByteArray> ());
+	    emit resetKeepAlive();
 	    return;
 	  }
       }
@@ -4024,9 +4024,9 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 	    }
 	}
 
+      emit publicizeListenerPlaintext(originalData, m_id);
       emit resetKeepAlive();
       spoton_kernel::messagingCacheAdd(dataIn);
-      emit publicizeListenerPlaintext(originalData, m_id);
     }
   else
     spoton_misc::logError
