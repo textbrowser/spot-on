@@ -420,14 +420,15 @@ void spoton_neighbor::parsePrivateApplicationData
   if(!m_privateApplicationCrypt)
     return;
 
-  if(data.contains("Content-Length: "))
+  int a = data.indexOf("Content-Length: ");
+
+  if(a >= 0)
     {
       QByteArray contentLength;
-      int a = data.indexOf("Content-Length: ");
       int b = data.indexOf("\r\n", a);
       int length = 0;
 
-      if(a >= 0 && b > 0)
+      if(b > 0)
 	{
 	  a += static_cast<int> (qstrlen("Content-Length: "));
 
@@ -451,14 +452,14 @@ void spoton_neighbor::parsePrivateApplicationData
 		bytes = bytes.mid
 		  (static_cast<int> (qstrlen("content="))).trimmed();
 
-		if(bytes.lastIndexOf('\n') > 0)
+		if((a = bytes.lastIndexOf('\n')) > 0)
 		  {
 		    bool ok = true;
 
-		    bytes = bytes.mid(0, bytes.lastIndexOf('\n'));
+		    bytes = bytes.mid(0, a);
 		    bytes = m_privateApplicationCrypt->
-		      decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(bytes), &ok);
+		      decryptedAfterAuthenticated(QByteArray::
+						  fromBase64(bytes), &ok);
 
 		    if(ok)
 		      emit writeParsedApplicationData(bytes);
