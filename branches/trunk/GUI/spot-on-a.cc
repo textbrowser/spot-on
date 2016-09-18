@@ -9324,12 +9324,22 @@ void spoton::slotNeighborSelected(void)
 	  QTableWidgetItem *item = m_ui.neighbors->item(row, i);
 
 	  if(item)
-	    label.append
-	      (QString("<b>" +
-		       m_ui.neighbors->horizontalHeaderItem(i)->
-		       text() +
-		       ":</b> %1" + "<br>").arg(spoton_misc::
-						htmlEncode(item->text())));
+	    {
+	      if(item->flags() & Qt::ItemIsUserCheckable)
+		label.append
+		  (QString("<b>" +
+			   m_ui.neighbors->horizontalHeaderItem(i)->
+			   text() +
+			   ":</b> %1" + "<br>").arg(item->checkState() ==
+						    Qt::Checked ? 1 : 0));
+	      else
+		label.append
+		  (QString("<b>" +
+			   m_ui.neighbors->horizontalHeaderItem(i)->
+			   text() +
+			   ":</b> %1" + "<br>").arg(spoton_misc::
+						    htmlEncode(item->text())));
+	    }
 	}
 
       int h = m_ui.neighborSummary->horizontalScrollBar()->value();

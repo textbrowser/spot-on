@@ -472,7 +472,8 @@ void spoton_neighbor::slotWriteParsedApplicationData(const QByteArray &data)
 {
   /*
   ** A neighbor (id) received a message. The neighbor now needs
-  ** to send the message to its peers.
+  ** to send the message to its peers. The variable data contains
+  ** raw application data.
   */
 
   if(data.length() > m_laneWidth)
