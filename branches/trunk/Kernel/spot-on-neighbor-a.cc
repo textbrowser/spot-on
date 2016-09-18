@@ -1753,43 +1753,37 @@ void spoton_neighbor::processData(void)
   }
 
   QList<QByteArray> list;
+  bool reset_keep_alive = false;
+  int index = -1;
+  int totalBytes = 0;
 
-  if(data.contains(spoton_send::EOM))
+  while((index = data.indexOf(spoton_send::EOM)) >= 0)
     {
-      bool reset_keep_alive = false;
-      int totalBytes = 0;
+      if(m_abort.fetchAndAddOrdered(0))
+	return;
 
-      while(data.contains(spoton_send::EOM))
+      QByteArray bytes(data.mid(0, index + spoton_send::EOM.length()));
+
+      data.remove(0, bytes.length());
+      totalBytes += bytes.length();
+
+      if(!bytes.isEmpty())
 	{
-	  if(m_abort.fetchAndAddOrdered(0))
-	    return;
-
-	  QByteArray bytes
-	    (data.mid(0,
-		      data.indexOf(spoton_send::EOM) +
-		      spoton_send::EOM.length()));
-
-	  data.remove(0, bytes.length());
-	  totalBytes += bytes.length();
-
-	  if(!bytes.isEmpty())
-	    {
-	      if(!spoton_kernel::messagingCacheContains(bytes))
-		list.append(bytes);
-	      else
-		reset_keep_alive = true;
-	    }
+	  if(!spoton_kernel::messagingCacheContains(bytes))
+	    list.append(bytes);
+	  else
+	    reset_keep_alive = true;
 	}
+    }
 
-      if(reset_keep_alive)
-	emit resetKeepAlive();
+  if(reset_keep_alive)
+    emit resetKeepAlive();
 
-      if(totalBytes > 0)
-	{
-	  QWriteLocker locker(&m_dataMutex);
+  if(totalBytes > 0)
+    {
+      QWriteLocker locker(&m_dataMutex);
 
-	  m_data.remove(0, totalBytes);
-	}
+      m_data.remove(0, totalBytes);
     }
 
   data.clear();
