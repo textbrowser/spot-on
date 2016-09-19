@@ -415,8 +415,6 @@ void spoton_neighbor::parsePrivateApplicationData
  const qint64 id,
  const qint64 maximumContentLength)
 {
-  Q_UNUSED(id);
-
   /*
   ** The container data contains Spot-On data, that is, data does
   ** not contain raw application data.
@@ -424,7 +422,7 @@ void spoton_neighbor::parsePrivateApplicationData
 
   if(!m_privateApplicationCrypt)
     return;
-  else if(spoton_kernel::messagingCacheContains(data))
+  else if(spoton_kernel::messagingCacheContains(data + QByteArray::number(id)))
     return;
 
   int a = data.indexOf("Content-Length: ");
