@@ -1437,14 +1437,11 @@ void spoton_neighbor::slotTimeout(void)
   m_learnedAdaptiveEchoPairs =
     QList<QPair<QByteArray, QByteArray> >::fromSet(a.intersect(b));
 
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
-
-  if(!m_isUserDefined && m_sourceOfRandomness > 0)
-    if(readyToWrite())
-      write(spoton_crypt::weakRandomBytes(m_sourceOfRandomness).constData(),
-	    m_sourceOfRandomness);
+  if(!m_isUserDefined && !m_passthrough && !m_privateApplicationCrypt)
+    if(m_sourceOfRandomness > 0)
+      if(readyToWrite())
+	write(spoton_crypt::weakRandomBytes(m_sourceOfRandomness).constData(),
+	      m_sourceOfRandomness);
 }
 
 void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
@@ -1666,10 +1663,6 @@ void spoton_neighbor::slotReadyRead(void)
     }
 
   if(!data.isEmpty())
-    /*
-    ** Private-application data includes descriptive content.
-    */
-
     if(m_passthrough)
       {
 	/*
@@ -1682,7 +1675,8 @@ void spoton_neighbor::slotReadyRead(void)
 	      QFuture<void> future = QtConcurrent::run
 		(this,
 		 &spoton_neighbor::bundlePrivateApplicationData,
-		 data);
+		 data,
+		 m_id);
 
 	      m_privateApplicationFutures << future;
 	      return;
@@ -2610,6 +2604,7 @@ void spoton_neighbor::slotWrite
 	  (this,
 	   &spoton_neighbor::parsePrivateApplicationData,
 	   data,
+	   m_id,
 	   m_maximumContentLength);
 	return;
       }
@@ -2636,6 +2631,8 @@ void spoton_neighbor::slotWrite
 		     "error for %1:%2.").
 	     arg(m_address).
 	     arg(m_port));
+	else if(!m_isUserDefined && m_passthrough && m_privateApplicationCrypt)
+	  spoton_kernel::messagingCacheAdd(data + QByteArray::number(id));
 	else
 	  spoton_kernel::messagingCacheAdd(data);
       }

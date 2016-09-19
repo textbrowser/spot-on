@@ -179,10 +179,6 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
   if(datagram.isEmpty())
     return;
 
-  /*
-  ** Private-application data includes descriptive content.
-  */
-
   if(m_passthrough)
     {
       /*
@@ -195,7 +191,8 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 	    QFuture<void> future = QtConcurrent::run
 	      (this,
 	       &spoton_neighbor::bundlePrivateApplicationData,
-	       datagram);
+	       datagram,
+	       m_id);
 
 	    m_privateApplicationFutures << future;
 	    return;
@@ -415,9 +412,19 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 
 void spoton_neighbor::parsePrivateApplicationData
 (const QByteArray &data,
+ const qint64 id,
  const qint64 maximumContentLength)
 {
+  Q_UNUSED(id);
+
+  /*
+  ** The container data contains Spot-On data, that is, data does
+  ** not contain raw application data.
+  */
+
   if(!m_privateApplicationCrypt)
+    return;
+  else if(spoton_kernel::messagingCacheContains(data))
     return;
 
   int a = data.indexOf("Content-Length: ");
@@ -472,38 +479,36 @@ void spoton_neighbor::parsePrivateApplicationData
 void spoton_neighbor::slotWriteParsedApplicationData(const QByteArray &data)
 {
   /*
-  ** A neighbor (id) received a message. The neighbor now needs
-  ** to send the message to its peers. The variable data contains
-  ** raw application data.
+  ** Let's write the raw data to the private application.
   */
 
   if(data.length() > m_laneWidth)
     return;
 
-  QReadLocker locker(&m_echoModeMutex);
-  QString echoMode(m_echoMode);
-
-  locker.unlock();
-
-  if(echoMode == "full")
-    if(readyToWrite())
-      {
-	if(write(data.constData(), data.length()) != data.length())
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::slotWriteParsedApplicationData(): "
-		     "write() error for %1:%2.").
-	     arg(m_address).
-	     arg(m_port));
-	else
-	  spoton_kernel::messagingCacheAdd(data);
-      }
+  if(readyToWrite())
+    if(write(data.constData(), data.length()) != data.length())
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotWriteParsedApplicationData(): "
+		 "write() error for %1:%2.").
+	 arg(m_address).
+	 arg(m_port));
 }
 
-void spoton_neighbor::bundlePrivateApplicationData(const QByteArray &data)
+void spoton_neighbor::bundlePrivateApplicationData(const QByteArray &data,
+						   const qint64 id)
 {
   /*
-  ** We should not insert an entry into the congestion-control
-  ** mechanism.
+  ** The private application (id) transmitted some raw data. We'll
+  ** bundle it and internally echo the results to other neighbors. We shall
+  ** pass id to those neighbors. One neighbor will store a digest
+  ** of the bundled data that's specific to our id. That is, we need
+  ** to tag the bundled data with the id of the neighbor that is
+  ** connected to the private application.
+  */
+
+  /*
+  ** The container data contains raw application data.
+  ** We will not insert an entry into the congestion-control mechanism here.
   */
 
   if(!m_privateApplicationCrypt)
@@ -518,7 +523,7 @@ void spoton_neighbor::bundlePrivateApplicationData(const QByteArray &data)
     emit receivedMessage
       (spoton_send::messageXYZ(bytes.toBase64(),
 			       QPair<QByteArray, QByteArray> ()),
-       m_id,
+       id,
        QPair<QByteArray, QByteArray> ());
 
   emit resetKeepAlive();

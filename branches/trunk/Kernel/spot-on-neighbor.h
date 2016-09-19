@@ -343,8 +343,10 @@ class spoton_neighbor: public QThread
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
   bool readyToWrite(void);
   void addToBytesWritten(const qint64 bytesWritten);
-  void bundlePrivateApplicationData(const QByteArray &data);
+  void bundlePrivateApplicationData(const QByteArray &data,
+				    const qint64 id);
   void parsePrivateApplicationData(const QByteArray &data,
+				   const qint64 id,
 				   const qint64 maximumContentLength);
   void process0000(int length, const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
