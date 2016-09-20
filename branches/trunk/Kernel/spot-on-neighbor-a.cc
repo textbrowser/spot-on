@@ -519,32 +519,34 @@ spoton_neighbor::spoton_neighbor
   start(priority);
 }
 
-spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
-				 const QString &ipAddress,
-				 const QString &port,
-				 const QString &scopeId,
-				 const qint64 id,
-				 const bool userDefined,
-				 const int keySize,
-				 const qint64 maximumBufferSize,
-				 const qint64 maximumContentLength,
-				 const QString &echoMode,
-				 const QByteArray &peerCertificate,
-				 const bool allowExceptions,
-				 const QString &protocol,
-				 const bool requireSsl,
-				 const QByteArray &accountName,
-				 const QByteArray &accountPassword,
-				 const QString &transport,
-				 const QString &orientation,
-				 const QString &motd,
-				 const QString &statusControl,
-				 const QString &sslControlString,
-				 const Priority priority,
-				 const int laneWidth,
-				 const int passthrough,
-				 const int waitforbyteswritten_msecs,
-				 QObject *parent):QThread(parent)
+spoton_neighbor::spoton_neighbor
+(const QNetworkProxy &proxy,
+ const QString &ipAddress,
+ const QString &port,
+ const QString &scopeId,
+ const qint64 id,
+ const bool userDefined,
+ const int keySize,
+ const qint64 maximumBufferSize,
+ const qint64 maximumContentLength,
+ const QString &echoMode,
+ const QByteArray &peerCertificate,
+ const bool allowExceptions,
+ const QString &protocol,
+ const bool requireSsl,
+ const QByteArray &accountName,
+ const QByteArray &accountPassword,
+ const QString &transport,
+ const QString &orientation,
+ const QString &motd,
+ const QString &statusControl,
+ const QString &sslControlString,
+ const Priority priority,
+ const int laneWidth,
+ const int passthrough,
+ const int waitforbyteswritten_msecs,
+ const QByteArray &privateApplicationCredentials,
+ QObject *parent):QThread(parent)
 {
   m_abort = 0;
   m_accountAuthenticated = 0;
@@ -587,6 +589,8 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
   m_passthrough = passthrough;
   m_peerCertificate = QSslCertificate(peerCertificate);
   m_port = port.toUShort();
+  m_privateApplicationCrypt.reset
+    (spoton_misc::parsePrivateApplicationMagnet(privateApplicationCredentials));
   m_protocol = protocol;
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_requireSsl = requireSsl;
@@ -768,6 +772,10 @@ spoton_neighbor::spoton_neighbor(const QNetworkProxy &proxy,
 	  SIGNAL(stopTimer(QTimer *)),
 	  this,
 	  SLOT(slotStopTimer(QTimer *)));
+  connect(this,
+	  SIGNAL(writeParsedApplicationData(const QByteArray &)),
+	  this,
+	  SLOT(slotWriteParsedApplicationData(const QByteArray &)));
 
   if(m_sctpSocket)
     {
@@ -1669,18 +1677,17 @@ void spoton_neighbor::slotReadyRead(void)
 	** A private application may not be able to authenticate.
 	*/
 
-	if(!m_isUserDefined) // We're a server.
-	  if(m_privateApplicationCrypt)
-	    {
-	      QFuture<void> future = QtConcurrent::run
-		(this,
-		 &spoton_neighbor::bundlePrivateApplicationData,
-		 data,
-		 m_id);
+	if(m_privateApplicationCrypt)
+	  {
+	    QFuture<void> future = QtConcurrent::run
+	      (this,
+	       &spoton_neighbor::bundlePrivateApplicationData,
+	       data,
+	       m_id);
 
-	      m_privateApplicationFutures << future;
-	      return;
-	    }
+	    m_privateApplicationFutures << future;
+	    return;
+	  }
 
 	bool ok = true;
 
@@ -2530,9 +2537,8 @@ void spoton_neighbor::slotSendMessage
 (const QByteArray &data,
  const spoton_send::spoton_send_method sendMethod)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
@@ -2557,9 +2563,8 @@ void spoton_neighbor::slotSendMessage
 
 void spoton_neighbor::slotWriteURLs(const QByteArray &data)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
@@ -2597,17 +2602,16 @@ void spoton_neighbor::slotWrite
   if(id == m_id)
     return;
 
-  if(!m_isUserDefined) // We're a server.
-    if(m_passthrough && m_privateApplicationCrypt)
-      {
-	QtConcurrent::run
-	  (this,
-	   &spoton_neighbor::parsePrivateApplicationData,
-	   data,
-	   id,
-	   m_maximumContentLength);
-	return;
-      }
+  if(m_passthrough && m_privateApplicationCrypt)
+    {
+      QtConcurrent::run
+	(this,
+	 &spoton_neighbor::parsePrivateApplicationData,
+	 data,
+	 id,
+	 m_maximumContentLength);
+      return;
+    }
 
   QReadLocker locker1(&m_learnedAdaptiveEchoPairsMutex);
 
@@ -2631,7 +2635,7 @@ void spoton_neighbor::slotWrite
 		     "error for %1:%2.").
 	     arg(m_address).
 	     arg(m_port));
-	else if(!m_isUserDefined && m_passthrough && m_privateApplicationCrypt)
+	else if(m_passthrough && m_privateApplicationCrypt)
 	  spoton_kernel::messagingCacheAdd(data + QByteArray::number(id));
 	else
 	  spoton_kernel::messagingCacheAdd(data);
@@ -2655,9 +2659,8 @@ void spoton_neighbor::slotSharePublicKey(const QByteArray &keyType,
 					 const QByteArray &sPublicKey,
 					 const QByteArray &sSignature)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(m_id == -1)
     return;
@@ -4938,9 +4941,8 @@ void spoton_neighbor::process0091b(int length, const QByteArray &dataIn,
 
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(readyToWrite())
     for(int i = 0; i < list.size(); i++)
@@ -5108,9 +5110,8 @@ void spoton_neighbor::slotError(const QString &method,
 
 void spoton_neighbor::slotSendCapabilities(void)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(m_passthrough)
     return;
@@ -5141,9 +5142,8 @@ void spoton_neighbor::slotSendCapabilities(void)
 
 void spoton_neighbor::slotSendMOTD(void)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(m_passthrough)
     return;
@@ -5248,9 +5248,8 @@ QUuid spoton_neighbor::receivedUuid(void)
 void spoton_neighbor::slotSendMail
 (const QPairByteArrayInt64List &list, const QString &messageType)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   QList<qint64> oids;
 
@@ -5313,9 +5312,8 @@ void spoton_neighbor::slotSendMailFromPostOffice
 (const QByteArray &data,
  const QPairByteArrayByteArray &adaptiveEchoPair)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   bool adaptiveEcho = false;
 
@@ -5772,9 +5770,8 @@ void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
 void spoton_neighbor::slotRetrieveMail(const QByteArrayList &list,
 				       const QString &messageType)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(readyToWrite())
     for(int i = 0; i < list.size(); i++)
@@ -5816,9 +5813,8 @@ void spoton_neighbor::slotPublicizeListenerPlaintext
 (const QHostAddress &address, const quint16 port, const QString &transport,
  const QString &orientation)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(!address.isNull())
     if(readyToWrite())
@@ -5842,9 +5838,8 @@ void spoton_neighbor::slotPublicizeListenerPlaintext
 void spoton_neighbor::slotPublicizeListenerPlaintext(const QByteArray &data,
 						     const qint64 id)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   /*
   ** A neighbor (id) received a request to publish listener information.
@@ -6136,9 +6131,8 @@ bool spoton_neighbor::readyToWrite(void)
 
 void spoton_neighbor::slotSendBuzz(const QByteArray &data)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(readyToWrite())
     {
@@ -6527,9 +6521,8 @@ QString spoton_neighbor::findMessageType
 void spoton_neighbor::slotCallParticipant(const QByteArray &data,
 					  const QString &messageType)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
@@ -6860,9 +6853,8 @@ void spoton_neighbor::addToBytesWritten(const qint64 bytesWritten)
 
 void spoton_neighbor::slotSendAccountInformation(void)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(state() != QAbstractSocket::ConnectedState)
     return;
@@ -6929,9 +6921,8 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
 					       const QByteArray &name,
 					       const QByteArray &password)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(state() != QAbstractSocket::ConnectedState)
     return;
@@ -6971,9 +6962,8 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
 
 void spoton_neighbor::slotSendAuthenticationRequest(void)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   if(state() != QAbstractSocket::ConnectedState)
     return;
@@ -7078,9 +7068,8 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 
 bool spoton_neighbor::writeMessage0060(const QByteArray &data)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return false;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return false;
 
   bool ok = true;
 

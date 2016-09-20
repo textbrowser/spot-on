@@ -85,6 +85,7 @@ country
 echo_mode
 external_ip_address
 orientation
+private_application_credentials
 protocol
 proxy_hostname
 proxy_password

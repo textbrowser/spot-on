@@ -185,18 +185,17 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
       ** A private application may not be able to authenticate.
       */
 
-      if(!m_isUserDefined) // We're a server.
-	if(m_privateApplicationCrypt)
-	  {
-	    QFuture<void> future = QtConcurrent::run
-	      (this,
-	       &spoton_neighbor::bundlePrivateApplicationData,
-	       datagram,
-	       m_id);
+      if(m_privateApplicationCrypt)
+	{
+	  QFuture<void> future = QtConcurrent::run
+	    (this,
+	     &spoton_neighbor::bundlePrivateApplicationData,
+	     datagram,
+	     m_id);
 
-	    m_privateApplicationFutures << future;
-	    return;
-	  }
+	  m_privateApplicationFutures << future;
+	  return;
+	}
 
       bool ok = true;
 
@@ -247,9 +246,8 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
 
 void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
@@ -357,9 +355,8 @@ void spoton_neighbor::deleteLater(void)
 
 void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
@@ -385,9 +382,8 @@ void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
 void spoton_neighbor::slotSendForwardSecrecySessionKeys
 (const QByteArray &data)
 {
-  if(!m_isUserDefined)
-    if(m_passthrough && m_privateApplicationCrypt)
-      return;
+  if(m_passthrough && m_privateApplicationCrypt)
+    return;
 
   QByteArray message;
   QPair<QByteArray, QByteArray> ae

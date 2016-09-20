@@ -500,6 +500,7 @@ void spoton_misc::prepareDatabases(void)
 						      ** port, the scope id,
 						      ** and the transport.
 						      */
+		   "private_application_credentials TEXT, "
 		   "remote_ip_address_hash TEXT NOT NULL, " // Keyed hash.
 		   "qt_country_hash TEXT, " // Keyed hash.
 		   "user_defined INTEGER NOT NULL DEFAULT 1, "
@@ -561,6 +562,8 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING));
+	query.exec("ALTER TABLE neighbors "
+		   "ADD private_application_credentials TEXT");
       }
 
     db.close();

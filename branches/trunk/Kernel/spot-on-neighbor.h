@@ -211,10 +211,11 @@ class spoton_neighbor: public QThread
 		  const int laneWidth,
 		  const int passthrough,
 		  const int waitforbyteswritten_msecs,
+		  const QByteArray &privateApplicationCredentials,
 		  QObject *parent);
 
   /*
-  ** We're a server. Let's represent a client.
+  ** We're a server. Let's represent a client connection.
   */
 
   spoton_neighbor(

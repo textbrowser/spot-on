@@ -1436,6 +1436,7 @@ void spoton_kernel::prepareNeighbors(void)
 		      "lane_width, "
 		      "passthrough, "
 		      "waitforbyteswritten_msecs, "
+		      "private_application_credentials, "
 		      "OID FROM neighbors"))
 	  while(query.next())
 	    {
@@ -1493,12 +1494,13 @@ void spoton_kernel::prepareNeighbors(void)
 			    QByteArray bytes;
 			    bool ok = true;
 
-			    bytes = s_crypt->
-			      decryptedAfterAuthenticated
-			      (QByteArray::fromBase64(query.
-						      value(i).
-						      toByteArray()),
-			       &ok);
+			    if(!query.isNull(i))
+			      bytes = s_crypt->
+				decryptedAfterAuthenticated
+				(QByteArray::fromBase64(query.
+							value(i).
+							toByteArray()),
+				 &ok);
 
 			    if(ok)
 			      list.append(bytes);
@@ -1604,6 +1606,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 list.value(25).toInt(),
 				 list.value(26).toInt(),
 				 list.value(27).toInt(),
+				 list.value(28).toByteArray(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)
