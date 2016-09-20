@@ -185,15 +185,14 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
       ** A private application may not be able to authenticate.
       */
 
-      if(m_privateApplicationCrypt)
+      if(!m_privateApplicationCredentials.isEmpty())
 	{
-	  QFuture<void> future = QtConcurrent::run
+	  m_privateApplicationFutures << QtConcurrent::run
 	    (this,
 	     &spoton_neighbor::bundlePrivateApplicationData,
 	     datagram,
+	     m_privateApplicationCredentials,
 	     m_id);
-
-	  m_privateApplicationFutures << future;
 	  return;
 	}
 
@@ -246,7 +245,7 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
 
 void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 {
-  if(m_passthrough && m_privateApplicationCrypt)
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;
 
   QByteArray message;
@@ -355,7 +354,7 @@ void spoton_neighbor::deleteLater(void)
 
 void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
 {
-  if(m_passthrough && m_privateApplicationCrypt)
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;
 
   QByteArray message;
@@ -382,7 +381,7 @@ void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
 void spoton_neighbor::slotSendForwardSecrecySessionKeys
 (const QByteArray &data)
 {
-  if(m_passthrough && m_privateApplicationCrypt)
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;
 
   QByteArray message;
@@ -408,6 +407,7 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 
 void spoton_neighbor::parsePrivateApplicationData
 (const QByteArray &data,
+ const QByteArray &privateApplicationCredentials,
  const qint64 id,
  const qint64 maximumContentLength)
 {
@@ -416,7 +416,7 @@ void spoton_neighbor::parsePrivateApplicationData
   ** not contain raw application data.
   */
 
-  if(!m_privateApplicationCrypt)
+  if(privateApplicationCredentials.isEmpty())
     return;
   else if(spoton_kernel::messagingCacheContains(data + QByteArray::number(id)))
     return;
@@ -455,15 +455,22 @@ void spoton_neighbor::parsePrivateApplicationData
 
 		if((a = bytes.lastIndexOf('\n')) > 0)
 		  {
-		    bool ok = true;
+		    spoton_crypt *crypt = spoton_misc::
+		      parsePrivateApplicationMagnet
+		      (privateApplicationCredentials);
 
-		    bytes = bytes.mid(0, a);
-		    bytes = m_privateApplicationCrypt->
-		      decryptedAfterAuthenticated(QByteArray::
-						  fromBase64(bytes), &ok);
+		    if(crypt)
+		      {
+			bool ok = true;
 
-		    if(ok)
-		      emit writeParsedApplicationData(bytes);
+			bytes = bytes.mid(0, a);
+			bytes = crypt->decryptedAfterAuthenticated
+			  (QByteArray::fromBase64(bytes), &ok);
+			delete crypt;
+
+			if(ok)
+			  emit writeParsedApplicationData(bytes);
+		      }
 		  }
 	      }
 	  }
@@ -488,8 +495,10 @@ void spoton_neighbor::slotWriteParsedApplicationData(const QByteArray &data)
 	 arg(m_port));
 }
 
-void spoton_neighbor::bundlePrivateApplicationData(const QByteArray &data,
-						   const qint64 id)
+void spoton_neighbor::bundlePrivateApplicationData
+(const QByteArray &data,
+ const QByteArray &privateApplicationCredentials,
+ const qint64 id)
 {
   /*
   ** The private application (id) transmitted some raw data. We'll
@@ -505,13 +514,17 @@ void spoton_neighbor::bundlePrivateApplicationData(const QByteArray &data,
   ** We will not insert an entry into the congestion-control mechanism here.
   */
 
-  if(!m_privateApplicationCrypt)
+  spoton_crypt *crypt = spoton_misc::parsePrivateApplicationMagnet
+    (privateApplicationCredentials);
+
+  if(!crypt)
     return;
 
   QByteArray bytes;
   bool ok = true;
 
-  bytes = m_privateApplicationCrypt->encryptedThenHashed(data, &ok);
+  bytes = crypt->encryptedThenHashed(data, &ok);
+  delete crypt;
 
   if(ok)
     emit receivedMessage

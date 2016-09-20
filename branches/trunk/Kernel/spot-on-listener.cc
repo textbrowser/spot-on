@@ -915,9 +915,10 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	       "motd, "
 	       "ssl_control_string, "
 	       "lane_width, "
-	       "passthrough) "
+	       "passthrough, "
+	       "private_application_credentials) "
 	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue(0, m_address);
 	    query.bindValue(1, m_port);
 
@@ -1097,6 +1098,12 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
 	    query.bindValue(31, m_laneWidth);
 	    query.bindValue(32, m_passthrough);
+
+	    if(ok)
+	      query.bindValue
+		(33,
+		 s_crypt->encryptedThenHashed(m_privateApplicationCredentials,
+					      &ok).toBase64());
 
 	    if(ok)
 	      if(query.exec())
@@ -1768,9 +1775,10 @@ void spoton_listener::slotNewConnection(void)
 	       "motd, "
 	       "ssl_control_string, "
 	       "lane_width, "
-	       "passthrough) "
+	       "passthrough, "
+	       "private_application_credentials) "
 	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue(0, m_address);
 	    query.bindValue(1, m_port);
 	    query.bindValue
@@ -1915,20 +1923,24 @@ void spoton_listener::slotNewConnection(void)
 
 	    if(ok)
 	      query.bindValue
-		(27, s_crypt->encryptedThenHashed
-		 (m_transport.toLatin1(), &ok).
+		(27, s_crypt->encryptedThenHashed(m_transport.toLatin1(), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(28, s_crypt->encryptedThenHashed
-		 (m_orientation.toLatin1(), &ok).
-		 toBase64());
+		(28, s_crypt->encryptedThenHashed(m_orientation.toLatin1(),
+						  &ok).toBase64());
 
 	    query.bindValue(29, m_motd);
 	    query.bindValue(30, "N/A");
 	    query.bindValue(31, m_laneWidth);
 	    query.bindValue(32, m_passthrough);
+
+	    if(ok)
+	      query.bindValue
+		(33, s_crypt->
+		 encryptedThenHashed(m_privateApplicationCredentials,
+				     &ok).toBase64());
 
 	    if(ok)
 	      if(query.exec())

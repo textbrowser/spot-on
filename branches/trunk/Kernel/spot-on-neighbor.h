@@ -281,6 +281,7 @@ class spoton_neighbor: public QThread
   QByteArray m_accountPassword;
   QByteArray m_accountClientSentSalt;
   QByteArray m_data;
+  QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
   QList<QFuture<void> > m_privateApplicationFutures;
@@ -301,7 +302,6 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_maximumBufferSizeMutex;
   QReadWriteLock m_maximumContentLengthMutex;
   QReadWriteLock m_receivedUuidMutex;
-  QScopedPointer<spoton_crypt> m_privateApplicationCrypt;
   QSslCertificate m_peerCertificate;
   QString m_address;
   QString m_echoMode;
@@ -344,11 +344,15 @@ class spoton_neighbor: public QThread
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
   bool readyToWrite(void);
   void addToBytesWritten(const qint64 bytesWritten);
-  void bundlePrivateApplicationData(const QByteArray &data,
-				    const qint64 id);
-  void parsePrivateApplicationData(const QByteArray &data,
-				   const qint64 id,
-				   const qint64 maximumContentLength);
+  void bundlePrivateApplicationData
+    (const QByteArray &data,
+     const QByteArray &privateApplicationCredentials,
+     const qint64 id);
+  void parsePrivateApplicationData
+    (const QByteArray &data,
+     const QByteArray &privateApplicationCredentials,
+     const qint64 id,
+     const qint64 maximumContentLength);
   void process0000(int length, const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
   void process0000a(int length, const QByteArray &data,

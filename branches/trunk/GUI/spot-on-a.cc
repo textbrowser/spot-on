@@ -7142,6 +7142,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
     }
   else if(m_ui.listeners == sender())
     {
+      QAction *action = 0;
       QMenu menu(this);
 
       menu.addAction(QIcon(QString(":/%1/clear.png").
@@ -7167,13 +7168,18 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addAction(tr("&Half Echo"),
 		     this, SLOT(slotListenerHalfEcho(void)));
       menu.addSeparator();
-      menu.addAction(tr("&Copy Private Application Magnet"),
-		     this, SLOT(slotCopyPrivateApplicationMagnet(void)));
-      menu.addAction(tr("&Set Private Application Information..."),
-		     this, SLOT(slotSetPrivateApplicationInformation(void)));
-      menu.addAction
+      action = menu.addAction
+	(tr("&Copy Private Application Magnet"),
+	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+      action->setProperty("type", "listeners");
+      action = menu.addAction
+	(tr("&Set Private Application Information..."),
+	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+      action->setProperty("type", "listeners");
+      action = menu.addAction
 	(tr("&Reset Private Application Information"),
 	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+      action->setProperty("type", "listeners");
       menu.addSeparator();
       menu.addAction(tr("Set &SSL Control String..."),
 		     this, SLOT(slotSetListenerSSLControlString(void)));
@@ -7255,6 +7261,19 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this, SLOT(slotNeighborFullEcho(void)));
       menu.addAction(tr("&Half Echo"),
 		     this, SLOT(slotNeighborHalfEcho(void)));
+      menu.addSeparator();
+      action = menu.addAction
+	(tr("&Copy Private Application Magnet"),
+	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+      action->setProperty("type", "neighbors");
+      action = menu.addAction
+	(tr("&Set Private Application Information..."),
+	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+      action->setProperty("type", "neighbors");
+      action = menu.addAction
+	(tr("&Reset Private Application Information"),
+	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+      action->setProperty("type", "neighbors");
       menu.addSeparator();
       action = menu.addAction(tr("&Copy Adaptive Echo Magnet"),
 			      this, SLOT(slotCopyAEMagnet(void)));

@@ -929,7 +929,19 @@ void spoton::slotCopyUrlKeys(void)
 
 void spoton::slotCopyPrivateApplicationMagnet(void)
 {
-  int row = m_ui.listeners->currentRow();
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  int row = -1;
+
+  if(action->property("type") == "listeners")
+    row = m_ui.listeners->currentRow();
+  else if(action->property("type") == "neighbors")
+    row = m_ui.neighbors->currentRow();
+  else
+    return;
 
   if(row < 0)
     return;
@@ -941,8 +953,12 @@ void spoton::slotCopyPrivateApplicationMagnet(void)
   else
     clipboard->clear();
 
-  QTableWidgetItem *item =
-    m_ui.listeners->item(row, 23); // private_application_credentials
+  QTableWidgetItem *item = 0;
+
+  if(action->property("type") == "listeners")
+    item = m_ui.listeners->item(row, 23); // private_application_credentials
+  else
+    item = m_ui.neighbors->item(row, 39); // private_application_credentials
 
   if(!item)
     return;
@@ -952,10 +968,19 @@ void spoton::slotCopyPrivateApplicationMagnet(void)
 
 void spoton::slotResetPrivateApplicationInformation(void)
 {
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
   QModelIndexList list;
 
-  list = m_ui.listeners->selectionModel()->selectedRows
-    (m_ui.listeners->columnCount() - 1); // OID
+  if(action->property("type") == "listeners")
+    list = m_ui.listeners->selectionModel()->selectedRows
+      (m_ui.listeners->columnCount() - 1); // OID
+  else if(action->property("type") == "neighbors")
+    list = m_ui.neighbors->selectionModel()->selectedRows
+      (m_ui.neighbors->columnCount() - 1); // OID
 
   if(list.isEmpty())
     return;
@@ -965,16 +990,26 @@ void spoton::slotResetPrivateApplicationInformation(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    if(action->property("type") == "listeners")
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "listeners.db");
+    else
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "neighbors.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
 
-	query.prepare("UPDATE listeners SET "
-		      "private_application_credentials = NULL "
-		      "WHERE OID = ?");
+	if(action->property("type") == "listeners")
+	  query.prepare("UPDATE listeners SET "
+			"private_application_credentials = NULL "
+			"WHERE OID = ?");
+	else
+	  query.prepare("UPDATE neighbors SET "
+			"private_application_credentials = NULL "
+			"WHERE OID = ?");
+
 	query.bindValue(0, list.at(0).data());
 	query.exec();
       }
@@ -987,6 +1022,11 @@ void spoton::slotResetPrivateApplicationInformation(void)
 
 void spoton::slotSetPrivateApplicationInformation(void)
 {
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
@@ -1001,15 +1041,21 @@ void spoton::slotSetPrivateApplicationInformation(void)
   QModelIndexList list;
   QString oid("");
 
-  list = m_ui.listeners->selectionModel()->selectedRows
-    (m_ui.listeners->columnCount() - 1); // OID
+  if(action->property("type") == "listeners")
+    list = m_ui.listeners->selectionModel()->selectedRows
+      (m_ui.listeners->columnCount() - 1); // OID
+  else if(action->property("type") == "neighbors")
+    list = m_ui.neighbors->selectionModel()->selectedRows
+      (m_ui.neighbors->columnCount() - 1); // OID
+  else
+    return;
 
   if(list.isEmpty())
     {
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid listener OID. "
-			       "Please select a listener."));
+			    tr("Invalid listener / neighbor OID. "
+			       "Please select a listener / neighbor."));
       return;
     }
   else
@@ -1130,16 +1176,26 @@ void spoton::slotSetPrivateApplicationInformation(void)
 	  {
 	    QSqlDatabase db = spoton_misc::database(connectionName);
 
-	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			       "listeners.db");
+	    if(action->property("type") == "listeners")
+	      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+				 "listeners.db");
+	    else
+	      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+				 "neighbors.db");
 
 	    if(db.open())
 	      {
 		QSqlQuery query(db);
 
-		query.prepare("UPDATE listeners SET "
-			      "private_application_credentials = ? "
-			      "WHERE OID = ?");
+		if(action->property("type") == "listeners")
+		  query.prepare("UPDATE listeners SET "
+				"private_application_credentials = ? "
+				"WHERE OID = ?");
+		else
+		  query.prepare("UPDATE neighbors SET "
+				"private_application_credentials = ? "
+				"WHERE OID = ?");
+
 		query.bindValue
 		  (0, crypt->encryptedThenHashed(magnet.toLatin1(),
 						 &ok).toBase64());
