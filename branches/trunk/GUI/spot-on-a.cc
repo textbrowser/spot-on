@@ -4711,6 +4711,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "lane_width, "
 		      "passthrough, "
 		      "waitforbyteswritten_msecs, "
+		      "private_application_credentials, "
 		      "OID "
 		      "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
@@ -4969,7 +4970,7 @@ void spoton::slotPopulateNeighbors(void)
 		       i == 7 || (i >= 9 && i <= 13) || (i >= 14 &&
 							 i <= 15) ||
 		       i == 18 || i == 25 || i == 27 || i == 28 ||
-		       i == 32 || i == 33)
+		       i == 32 || i == 33 || i == 39)
 		      {
 			if(query.isNull(i))
 			  item = new QTableWidgetItem();

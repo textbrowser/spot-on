@@ -3380,8 +3380,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>506</width>
-             <height>179</height>
+             <width>826</width>
+             <height>542</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3693,6 +3693,11 @@
                     </column>
                     <column>
                      <property name="text">
+                      <string>Private Application Credentials</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
                       <string>OID</string>
                      </property>
                     </column>
@@ -3732,7 +3737,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>681</width>
+                  <width>788</width>
                   <height>381</height>
                  </rect>
                 </property>
