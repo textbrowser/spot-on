@@ -645,13 +645,10 @@ spoton::spoton(void):QMainWindow()
   m_sb.status->setTextFormat(Qt::RichText);
   m_notificationsWindow->setWindowTitle
     (tr("%1: Notifications").arg(SPOTON_APPLICATION_NAME));
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN32)
   m_notificationsWindow->setWindowFlags
-    (m_notificationsWindow->windowFlags() | Qt::WindowStaysOnTopHint
-#ifdef Q_WS_X11
-     | Qt::Window
-     | Qt::X11BypassWindowManagerHint
+    (m_notificationsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
-     );
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   m_notificationsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
@@ -663,13 +660,10 @@ spoton::spoton(void):QMainWindow()
 #endif
   m_statisticsWindow->setWindowTitle
     (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN32)
   m_statisticsWindow->setWindowFlags
-    (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint
-#ifdef Q_WS_X11
-     | Qt::Window
-     | Qt::X11BypassWindowManagerHint
+    (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
-     );
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   m_statisticsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
@@ -850,6 +844,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotVacuumDatabases(void)));
+  connect(m_notificationsUi.action_Clear,
+	  SIGNAL(triggered(void)),
+	  m_notificationsUi.textBrowser,
+	  SLOT(clear(void)));
   connect(m_optionsUi.notifications,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2480,8 +2478,14 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/displayPopupsAutomatically", true).toBool());
   m_optionsUi.sharePrivateKeys->setChecked
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN32)
   m_optionsUi.ontopChatDialogs->setChecked
     (m_settings.value("gui/ontopChatDialogs", false).toBool());
+#else
+  m_optionsUi.ontopChatDialogs->setChecked(false);
+  m_optionsUi.ontopChatDialogs->setEnabled(false);
+  settings.setValue("gui/ontopChatDialogs", false);
+#endif
   m_optionsUi.urlSignMessages->setChecked
     (m_settings.value("gui/urlSignMessages", true).toBool());
   m_optionsUi.remove_otm->setChecked

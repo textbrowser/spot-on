@@ -58,15 +58,12 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   m_publicKeyHash = publicKeyHash;
   ui.setupUi(this);
 
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN32)
   QSettings settings;
 
   if(settings.value("gui/ontopChatDialogs", false).toBool())
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint
-#ifdef Q_WS_X11
-		   | Qt::Window
-		   | Qt::X11BypassWindowManagerHint
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
-		   );
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   setAttribute(Qt::WA_MacMetalStyle, true);
@@ -747,22 +744,14 @@ void spoton_chatwindow::showError(const QString &error)
 
 void spoton_chatwindow::showNormal(void)
 {
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN32)
   QSettings settings;
 
   if(settings.value("gui/ontopChatDialogs", false).toBool())
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint
-#ifdef Q_WS_X11
-		   | Qt::Window
-		   | Qt::X11BypassWindowManagerHint
-#endif
-		   );
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
   else
-    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint
-#ifdef Q_WS_X11
-		   & ~Qt::X11BypassWindowManagerHint
+    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
 #endif
-		   );
-
   QMainWindow::showNormal();
 }
 

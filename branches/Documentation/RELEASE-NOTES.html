@@ -4,12 +4,13 @@
   <b>Corrections</b>
   <ol>
     <li>Corrected gcry_sexp_build() if-statement in spoton_crypt::generatePrivatePublicKeys().</li>
-    <li>GB locking caused an abnormal abort. Thanks for Miss Moon for reporting the problem.</li>
+    <li>GB UI locking caused an abnormal abort. Thanks for Miss Moon for reporting the problem.</li>
     <li>Removed incorrect targets from PRE_TARGETDEPS macros; project files.</li>
   </ol>
   <b>New</b>
   <ol>
     <li>Compress public keys on EPKS. McEliece keys are large.</li>
+    <li>Disable on-top windows on X11.</li>
     <li>Force CURLOPT_BUFFERSIZE to 128L on Poptastic. Remove IMAP entries which cause timeouts.</li>
     <li>Increased the default secure memory pool sizes to 75 MiB. If this value is extreme, please set your pool sizes to zero.</li>
     <li>Introduced private channels for 3rd-party applications.</li>
