@@ -5952,25 +5952,6 @@ void spoton_neighbor::slotModeChanged(QSslSocket::SslMode mode)
 
 void spoton_neighbor::slotDisconnected(void)
 {
-  if(m_tcpSocket)
-    if(m_isUserDefined)
-      if(!m_useSsl)
-	{
-	  int attempts = property("connection-attempts").toInt();
-
-	  if(attempts < 5)
-	    {
-	      attempts += 1;
-	      setProperty("connection-attempts", attempts);
-	      spoton_misc::logError
-		(QString("spoton_neighbor::slotDisconnected(): "
-			 "retrying %1 of %2 for %3:%4.").arg(attempts).arg(5).
-		 arg(m_address).
-		 arg(m_port));
-	      return;
-	    }
-	}
-
   spoton_misc::logError
     (QString("spoton_neighbor::slotDisconnected(): "
 	     "aborting socket for %1:%2!").
