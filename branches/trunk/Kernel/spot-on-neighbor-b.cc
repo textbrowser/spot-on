@@ -187,10 +187,8 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
       if(!m_privateApplicationCredentials.isEmpty())
 	{
-	  m_privateApplicationFutures << QtConcurrent::run
-	    (this,
-	     &spoton_neighbor::bundlePrivateApplicationData,
-	     datagram,
+	  bundlePrivateApplicationData
+	    (datagram,
 	     m_privateApplicationCredentials,
 	     m_id);
 	  return;

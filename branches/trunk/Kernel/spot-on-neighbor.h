@@ -33,7 +33,6 @@
 #include <qbluetoothsocket.h>
 #endif
 #include <QDateTime>
-#include <QFuture>
 #include <QHostAddress>
 #include <QHostInfo>
 #include <QNetworkProxy>
@@ -284,7 +283,6 @@ class spoton_neighbor: public QThread
   QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
-  QList<QFuture<void> > m_privateApplicationFutures;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)

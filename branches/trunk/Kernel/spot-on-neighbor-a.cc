@@ -1027,9 +1027,6 @@ spoton_neighbor::~spoton_neighbor()
       QSqlDatabase::removeDatabase(connectionName);
     }
 
-  while(!m_privateApplicationFutures.isEmpty())
-    m_privateApplicationFutures.takeFirst().waitForFinished();
-
   close();
   quit();
   wait();
@@ -1425,10 +1422,6 @@ void spoton_neighbor::slotTimeout(void)
       m_externalAddressDiscovererTimer.stop();
     }
 
-  for(int i = m_privateApplicationFutures.size() - 1; i >= 0; i--)
-    if(m_privateApplicationFutures.at(i).isFinished())
-      m_privateApplicationFutures.removeAt(i);
-
   /*
   ** Remove learned adaptive echo tokens that are not contained
   ** in the complete set of adaptive echo tokens.
@@ -1679,10 +1672,8 @@ void spoton_neighbor::slotReadyRead(void)
 
 	if(!m_privateApplicationCredentials.isEmpty())
 	  {
-	    m_privateApplicationFutures << QtConcurrent::run
-	      (this,
-	       &spoton_neighbor::bundlePrivateApplicationData,
-	       data,
+	    bundlePrivateApplicationData
+	      (data,
 	       m_privateApplicationCredentials,
 	       m_id);
 	    return;
@@ -2603,10 +2594,8 @@ void spoton_neighbor::slotWrite
 
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     {
-      m_privateApplicationFutures << QtConcurrent::run
-	(this,
-	 &spoton_neighbor::parsePrivateApplicationData,
-	 data,
+      parsePrivateApplicationData
+	(data,
 	 m_privateApplicationCredentials,
 	 id,
 	 m_maximumContentLength);
