@@ -90,7 +90,7 @@ static void bytesToWords(uint64_t *W,
 			 const char *bytes,
 			 const size_t bytes_size)
 {
-  if(!W || !bytes || bytes_size <= 0)
+  if(!W || !bytes || bytes_size == 0)
     return;
 
   for(size_t i = 0; i < bytes_size / 8; i++)
@@ -174,7 +174,7 @@ static void threefish_decrypt(char *D,
 			      const size_t block_size,
 			      bool *ok)
 {
-  if(!C || C_size <= 0 || !D || !K || !T || block_size <= 0)
+  if(!C || C_size == 0 || !D || !K || !T || block_size == 0)
     {
       if(ok)
 	*ok = false;
@@ -196,7 +196,7 @@ static void threefish_decrypt_implementation(char *D,
 					     const size_t block_size,
 					     bool *ok)
 {
-  if(!C || C_size <= 0 || !D || !K || !T || block_size <= 0)
+  if(!C || C_size == 0 || !D || !K || !T || block_size == 0)
     {
       if(ok)
 	*ok = false;
@@ -345,7 +345,7 @@ static void threefish_encrypt(char *E,
 			      const size_t block_size,
 			      bool *ok)
 {
-  if(!E || !K || !P || P_size <= 0 || !T || block_size <= 0)
+  if(!E || !K || !P || P_size == 0 || !T || block_size == 0)
     {
       if(ok)
 	*ok = false;
@@ -367,7 +367,7 @@ static void threefish_encrypt_implementation(char *E,
 					     const size_t block_size,
 					     bool *ok)
 {
-  if(!E || !K || !T || !P || P_size <= 0 || block_size <= 0)
+  if(!E || !K || !T || !P || P_size == 0 || block_size == 0)
     {
       if(ok)
 	*ok = false;
@@ -509,7 +509,7 @@ static void wordsToBytes(char *B,
 			 const uint64_t *words,
 			 const size_t words_size)
 {
-  if(!B || !words || words_size <= 0)
+  if(!B || !words || words_size == 0)
     return;
 
   for(size_t i = 0; i < words_size; i++)
@@ -771,7 +771,7 @@ void spoton_threefish::setInitializationVector
   if(ok)
     *ok = false;
 
-  if(ivLength <= 0)
+  if(ivLength == 0)
     return;
 
   char *iv = static_cast<char *> (gcry_calloc(ivLength, sizeof(char)));

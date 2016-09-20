@@ -514,7 +514,7 @@ spoton_crypt::spoton_crypt(const QByteArray &privateKey,
   init("", "", QByteArray(), QByteArray(), QByteArray(), 0, 0, "", "cbc");
   m_privateKeyLength = static_cast<size_t> (privateKey.length());
 
-  if(m_privateKeyLength <= 0 ||
+  if(m_privateKeyLength == 0 ||
      (m_privateKey =
       static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
 					      sizeof(char)))) == 0)
@@ -1021,7 +1021,7 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
   bool ok = true;
   size_t ivLength = 0;
 
-  if((ivLength = gcry_cipher_get_algo_blklen(algorithm)) <= 0)
+  if((ivLength = gcry_cipher_get_algo_blklen(algorithm)) == 0)
     {
       ok = false;
       spoton_misc::logError
@@ -1600,7 +1600,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
 
   m_privateKeyLength = static_cast<size_t> (keyData.length());
 
-  if(m_privateKeyLength <= 0 ||
+  if(m_privateKeyLength == 0 ||
      (m_privateKey =
       static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
 					      sizeof(char)))) == 0)
@@ -2177,7 +2177,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 
       length = gcry_sexp_sprint(key_t, GCRYSEXP_FMT_ADVANCED, 0, 0);
 
-      if(length <= 0)
+      if(length == 0)
 	{
 	  error = QObject::tr("gcry_sexp_sprint() failure");
 	  spoton_misc::logError
@@ -2780,7 +2780,7 @@ QByteArray spoton_crypt::randomBytes(const size_t size,
 {
   QByteArray random;
 
-  if(size <= 0)
+  if(size == 0)
     return random;
 
   char *buffer = static_cast<char *> (malloc(size));
