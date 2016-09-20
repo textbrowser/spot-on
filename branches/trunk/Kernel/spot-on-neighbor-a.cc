@@ -1034,16 +1034,17 @@ spoton_neighbor::~spoton_neighbor()
 
 void spoton_neighbor::slotTimeout(void)
 {
-  if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
-    {
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotTimeout(): "
-		 "aborting because of silent connection for %1:%2.").
-	 arg(m_address).
-	 arg(m_port));
-      deleteLater();
-      return;
-    }
+  if(m_passthrough && m_privateApplicationCredentials.isEmpty())
+    if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
+      {
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotTimeout(): "
+		   "aborting because of silent connection for %1:%2.").
+	   arg(m_address).
+	   arg(m_port));
+	deleteLater();
+	return;
+      }
 
   /*
   ** We'll change socket states here.
