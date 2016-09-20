@@ -665,7 +665,7 @@ spoton_neighbor::spoton_neighbor
   QByteArray publicKey;
   QString error("");
 
-  if(m_transport == "tcp")
+  if(m_transport == "tcp" && m_useSsl)
     {
       spoton_crypt::generateSslKeys
 	(m_keySize,
