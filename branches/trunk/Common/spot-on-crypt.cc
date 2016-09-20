@@ -3070,6 +3070,14 @@ void spoton_crypt::generateSslKeys(const int rsaKeySize,
   char *privateBuffer = 0;
   char *publicBuffer = 0;
 
+  if(rsaKeySize <= 0)
+    {
+      error = QObject::tr("rsaKeySize is less than or equal to zero");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "rsaKeySize is less than or equal to zero.");
+      goto done_label;
+    }
+
   if(!(f4 = BN_new()))
     {
       error = QObject::tr("BN_new() returned zero");
