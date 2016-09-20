@@ -1264,7 +1264,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		      "proxy_username, uuid, "
 		      "echo_mode, certificate, protocol, "
 		      "account_name, account_password, transport, "
-		      "orientation, ae_token, ae_token_type "
+		      "orientation, ae_token, ae_token_type, "
+		      "private_application_credentials "
 		      "FROM neighbors"))
 	  while(query.next())
 	    {
@@ -1280,6 +1281,7 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 	      QString ipAddress("");
 	      QString orientation("");
 	      QString port("");
+	      QString privateApplicationCredentials("");
 	      QString protocol("");
 	      QString proxyHostName("");
 	      QString proxyPassword("");
@@ -1314,7 +1316,8 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 				  "transport = ?, "
 				  "orientation = ?, "
 				  "ae_token = ?, "
-				  "ae_token_type = ? "
+				  "ae_token_type = ?, "
+				  "private_application_credentials = ? "
 				  "WHERE hash = ?");
 	      ipAddress = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::
@@ -1467,6 +1470,13 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		     &ok).constData();
 
 	      if(ok)
+		if(!query.isNull(20))
+		  privateApplicationCredentials = oldCrypt->
+		    decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(20).toByteArray()),
+		     &ok).constData();
+
+	      if(ok)
 		updateQuery.bindValue
 		  (0, newCrypt->encryptedThenHashed(ipAddress.
 						    toLatin1(),
@@ -1598,8 +1608,19 @@ void spoton_reencode::reencode(Ui_statusbar sb,
 		       toBase64());
 		}
 
+	      if(ok)
+		{
+		  if(privateApplicationCredentials.isEmpty())
+		    updateQuery.bindValue(22, QVariant::String);
+		  else
+		    updateQuery.bindValue
+		      (22, newCrypt->
+		       encryptedThenHashed(privateApplicationCredentials.
+					   toLatin1(), &ok).toBase64());
+		}
+
 	      updateQuery.bindValue
-		(22, query.value(4));
+		(23, query.value(4));
 
 	      if(ok)
 		updateQuery.exec();
