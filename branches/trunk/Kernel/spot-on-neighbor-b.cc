@@ -187,12 +187,18 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
       if(!m_privateApplicationCredentials.isEmpty())
 	{
+	  QMutexLocker locker(&m_privateApplicationMutex);
+	  quint64 sequence = m_privateApplicationSequencer.first;
+
+	  m_privateApplicationSequencer.first += 1;
+	  locker.unlock();
 	  m_privateApplicationFutures << QtConcurrent::run
 	    (this,
 	     &spoton_neighbor::bundlePrivateApplicationData,
 	     datagram,
 	     m_privateApplicationCredentials,
-	     m_id);
+	     m_id,
+	     sequence);
 	  return;
 	}
 
@@ -480,7 +486,16 @@ void spoton_neighbor::parsePrivateApplicationData
 				emit writeParsedApplicationData(bytes.mid(20));
 				m_privateApplicationSequencer.second += 1;
 			      }
-			    else
+			    else if(m_privateApplicationSequencer.second <
+				    sequence)
+			      /*
+			      ** The received sequence number
+			      ** should always increase, yes? Our
+			      ** initial value is one. It is increased
+			      ** if the received sequence equals the
+			      ** initial value.
+			      */
+
 			      m_privateApplicationMap[sequence] =
 				bytes.mid(20);
 
@@ -531,7 +546,8 @@ void spoton_neighbor::slotWriteParsedApplicationData(const QByteArray &data)
 void spoton_neighbor::bundlePrivateApplicationData
 (const QByteArray &data,
  const QByteArray &privateApplicationCredentials,
- const qint64 id)
+ const qint64 id,
+ const quint64 sequence)
 {
   /*
   ** The private application (id) transmitted some raw data. We'll
@@ -555,27 +571,22 @@ void spoton_neighbor::bundlePrivateApplicationData
 
   QByteArray bytes;
   QByteArray sequencer;
-  QMutexLocker locker(&m_privateApplicationMutex);
   bool ok = true;
 
   /*
   ** We could conserve twelve bytes.
   */
 
-  sequencer = QByteArray::number(m_privateApplicationSequencer.first);
-  sequencer = sequencer.rightJustified(20, '0');
+  sequencer = QByteArray::number(sequence).rightJustified(20, '0');
   bytes = crypt->encryptedThenHashed(sequencer + data, &ok);
   delete crypt;
 
   if(ok)
-    {
-      m_privateApplicationSequencer.first += 1;
-      emit receivedMessage
-	(spoton_send::messageXYZ(bytes.toBase64(),
-				 QPair<QByteArray, QByteArray> ()),
-	 id,
-	 QPair<QByteArray, QByteArray> ());
-    }
+    emit receivedMessage
+      (spoton_send::messageXYZ(bytes.toBase64(),
+			       QPair<QByteArray, QByteArray> ()),
+       id,
+       QPair<QByteArray, QByteArray> ());
 
   emit resetKeepAlive();
 }

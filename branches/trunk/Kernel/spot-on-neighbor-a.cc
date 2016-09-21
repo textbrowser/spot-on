@@ -1683,12 +1683,18 @@ void spoton_neighbor::slotReadyRead(void)
 
 	if(!m_privateApplicationCredentials.isEmpty())
 	  {
+	    QMutexLocker locker(&m_privateApplicationMutex);
+	    quint64 sequence = m_privateApplicationSequencer.first;
+
+	    m_privateApplicationSequencer.first += 1;
+	    locker.unlock();
 	    m_privateApplicationFutures << QtConcurrent::run
 	      (this,
 	       &spoton_neighbor::bundlePrivateApplicationData,
 	       data,
 	       m_privateApplicationCredentials,
-	       m_id);
+	       m_id,
+	       sequence);
 	    return;
 	  }
 

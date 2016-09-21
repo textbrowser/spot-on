@@ -351,7 +351,8 @@ class spoton_neighbor: public QThread
   void bundlePrivateApplicationData
     (const QByteArray &data,
      const QByteArray &privateApplicationCredentials,
-     const qint64 id);
+     const qint64 id,
+     const quint64 sequence);
   void parsePrivateApplicationData
     (const QByteArray &data,
      const QByteArray &privateApplicationCredentials,
