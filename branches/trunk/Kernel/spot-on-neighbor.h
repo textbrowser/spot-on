@@ -33,10 +33,8 @@
 #include <qbluetoothsocket.h>
 #endif
 #include <QDateTime>
-#include <QFuture>
 #include <QHostAddress>
 #include <QHostInfo>
-#include <QMap>
 #include <QNetworkProxy>
 #include <QPointer>
 #include <QReadWriteLock>
@@ -285,12 +283,8 @@ class spoton_neighbor: public QThread
   QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
-  QList<QFuture<void> > m_privateApplicationFutures;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
-  QMap<quint64, QByteArray> m_privateApplicationMap;
-  QMutex m_privateApplicationMutex;
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
-  QPair<quint64, quint64> m_privateApplicationSequencer;
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
   QPointer<QBluetoothSocket> m_bluetoothSocket;
 #else
@@ -351,8 +345,7 @@ class spoton_neighbor: public QThread
   void bundlePrivateApplicationData
     (const QByteArray &data,
      const QByteArray &privateApplicationCredentials,
-     const qint64 id,
-     const quint64 sequence);
+     const qint64 id);
   void parsePrivateApplicationData
     (const QByteArray &data,
      const QByteArray &privateApplicationCredentials,

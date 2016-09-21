@@ -187,18 +187,10 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
       if(!m_privateApplicationCredentials.isEmpty())
 	{
-	  QMutexLocker locker(&m_privateApplicationMutex);
-	  quint64 sequence = m_privateApplicationSequencer.first;
-
-	  m_privateApplicationSequencer.first += 1;
-	  locker.unlock();
-	  m_privateApplicationFutures << QtConcurrent::run
-	    (this,
-	     &spoton_neighbor::bundlePrivateApplicationData,
-	     datagram,
+	  bundlePrivateApplicationData
+	    (datagram,
 	     m_privateApplicationCredentials,
-	     m_id,
-	     sequence);
+	     m_id);
 	  return;
 	}
 
@@ -417,14 +409,14 @@ void spoton_neighbor::parsePrivateApplicationData
  const qint64 id,
  const qint64 maximumContentLength)
 {
-  Q_UNUSED(id);
-
   /*
   ** The container data contains Spot-On data, that is, data does
   ** not contain raw application data.
   */
 
   if(privateApplicationCredentials.isEmpty())
+    return;
+  else if(spoton_kernel::messagingCacheContains(data + QByteArray::number(id)))
     return;
 
   int a = data.indexOf("Content-Length: ");
@@ -469,55 +461,12 @@ void spoton_neighbor::parsePrivateApplicationData
 		      {
 			bool ok = true;
 
-			bytes = bytes.mid(0, a);
 			bytes = crypt->decryptedAfterAuthenticated
-			  (QByteArray::fromBase64(bytes), &ok);
+			  (QByteArray::fromBase64(bytes.mid(0, a)), &ok);
 			delete crypt;
 
 			if(ok)
-			  {
-			    QByteArray sequencer(bytes.mid(0, 20));
-			    QMutexLocker locker(&m_privateApplicationMutex);
-			    quint64 sequence = sequencer.toULongLong();
-
-			    if(m_privateApplicationSequencer.second ==
-			       sequence)
-			      {
-				emit writeParsedApplicationData(bytes.mid(20));
-				m_privateApplicationSequencer.second += 1;
-			      }
-			    else if(m_privateApplicationSequencer.second <
-				    sequence)
-			      /*
-			      ** The received sequence number
-			      ** should always increase, yes? Our
-			      ** initial value is one. It is increased
-			      ** if the received sequence equals the
-			      ** initial value.
-			      */
-
-			      m_privateApplicationMap[sequence] =
-				bytes.mid(20);
-
-			    /*
-			    ** Determine if we can distribute more data.
-			    */
-
-			    while(true)
-			      if(m_privateApplicationMap.
-				 contains(m_privateApplicationSequencer.
-					  second))
-				{
-				  emit writeParsedApplicationData
-				    (m_privateApplicationMap.
-				     take(m_privateApplicationSequencer.
-					  second));
-
-				  m_privateApplicationSequencer.second += 1;
-				}
-			      else
-				break;
-			  }
+			  emit writeParsedApplicationData(bytes);
 		      }
 		  }
 	      }
@@ -546,8 +495,7 @@ void spoton_neighbor::slotWriteParsedApplicationData(const QByteArray &data)
 void spoton_neighbor::bundlePrivateApplicationData
 (const QByteArray &data,
  const QByteArray &privateApplicationCredentials,
- const qint64 id,
- const quint64 sequence)
+ const qint64 id)
 {
   /*
   ** The private application (id) transmitted some raw data. We'll
@@ -570,15 +518,9 @@ void spoton_neighbor::bundlePrivateApplicationData
     return;
 
   QByteArray bytes;
-  QByteArray sequencer;
   bool ok = true;
 
-  /*
-  ** We could conserve twelve bytes.
-  */
-
-  sequencer = QByteArray::number(sequence).rightJustified(20, '0');
-  bytes = crypt->encryptedThenHashed(sequencer + data, &ok);
+  bytes = crypt->encryptedThenHashed(data, &ok);
   delete crypt;
 
   if(ok)
