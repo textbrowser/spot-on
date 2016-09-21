@@ -558,6 +558,10 @@ void spoton_neighbor::bundlePrivateApplicationData
   QMutexLocker locker(&m_privateApplicationMutex);
   bool ok = true;
 
+  /*
+  ** We could conserve twelve bytes.
+  */
+
   sequencer = QByteArray::number(m_privateApplicationSequencer.first);
   sequencer = sequencer.rightJustified(20, '0');
   bytes = crypt->encryptedThenHashed(sequencer + data, &ok);
