@@ -494,6 +494,21 @@ void spoton_neighbor::parsePrivateApplicationData
 
 			if(ok)
 			  {
+			    /*
+			    ** In-order:
+			    ** 1
+			    ** 2
+			    ** 3
+			    ** 4
+			    ** 5
+			    ** Out-of-order:
+			    ** 2
+			    ** 5
+			    ** 3
+			    ** 1
+			    ** 4
+			    */
+
 			    QByteArray sequencer(bytes.mid(0, 20));
 			    quint64 sequence = sequencer.toULongLong();
 
