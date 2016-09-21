@@ -99,6 +99,8 @@ spoton_neighbor::spoton_neighbor
   m_bluetoothSocket = 0;
   m_passthrough = passthrough;
   m_privateApplicationCredentials = privateApplicationCredentials;
+  m_privateApplicationSequences.first = m_privateApplicationSequences.second =
+    1;
   m_sctpSocket = 0;
   m_sourceOfRandomness = qBound
     (0,
@@ -589,6 +591,8 @@ spoton_neighbor::spoton_neighbor
   m_peerCertificate = QSslCertificate(peerCertificate);
   m_port = port.toUShort();
   m_privateApplicationCredentials = privateApplicationCredentials;
+  m_privateApplicationSequences.first = m_privateApplicationSequences.second =
+    1;
   m_protocol = protocol;
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_requireSsl = requireSsl;
@@ -1027,6 +1031,9 @@ spoton_neighbor::~spoton_neighbor()
       QSqlDatabase::removeDatabase(connectionName);
     }
 
+  while(!m_privateApplicationFutures.isEmpty())
+    m_privateApplicationFutures.takeFirst().waitForFinished();
+
   close();
   quit();
   wait();
@@ -1422,6 +1429,10 @@ void spoton_neighbor::slotTimeout(void)
       m_externalAddressDiscovererTimer.stop();
     }
 
+  for(int i = m_privateApplicationFutures.size() - 1; i >= 0; i--)
+    if(m_privateApplicationFutures.at(i).isFinished())
+      m_privateApplicationFutures.removeAt(i);
+
   /*
   ** Remove learned adaptive echo tokens that are not contained
   ** in the complete set of adaptive echo tokens.
@@ -1672,10 +1683,37 @@ void spoton_neighbor::slotReadyRead(void)
 
 	if(!m_privateApplicationCredentials.isEmpty())
 	  {
-	    bundlePrivateApplicationData
-	      (data,
-	       m_privateApplicationCredentials,
-	       m_id);
+	    if(m_isUserDefined)
+	      {
+		QMutexLocker locker(&m_privateApplicationMutex);
+		quint64 sequence = m_privateApplicationSequences.first;
+
+		m_privateApplicationSequences.first += 1;
+		locker.unlock();
+		m_privateApplicationFutures << QtConcurrent::run
+		  (this,
+		   &spoton_neighbor::bundlePrivateApplicationData,
+		   data,
+		   m_privateApplicationCredentials,
+		   m_id,
+		   sequence);
+	      }
+	    else
+	      {
+		QMutexLocker locker(&m_privateApplicationMutex);
+		quint64 sequence = m_privateApplicationSequences.second;
+
+		m_privateApplicationSequences.second += 1;
+		locker.unlock();
+		m_privateApplicationFutures << QtConcurrent::run
+		  (this,
+		   &spoton_neighbor::bundlePrivateApplicationData,
+		   data,
+		   m_privateApplicationCredentials,
+		   m_id,
+		   sequence);
+	      }
+
 	    return;
 	  }
 
@@ -2594,8 +2632,10 @@ void spoton_neighbor::slotWrite
 
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     {
-      parsePrivateApplicationData
-	(data,
+      m_privateApplicationFutures << QtConcurrent::run
+	(this,
+	 &spoton_neighbor::parsePrivateApplicationData,
+	 data,
 	 m_privateApplicationCredentials,
 	 id,
 	 m_maximumContentLength);
