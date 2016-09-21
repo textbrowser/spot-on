@@ -187,8 +187,10 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
 
       if(!m_privateApplicationCredentials.isEmpty())
 	{
-	  bundlePrivateApplicationData
-	    (datagram,
+	  m_privateApplicationFutures << QtConcurrent::run
+	    (this,
+	     &spoton_neighbor::bundlePrivateApplicationData,
+	     datagram,
 	     m_privateApplicationCredentials,
 	     m_id);
 	  return;
@@ -409,14 +411,14 @@ void spoton_neighbor::parsePrivateApplicationData
  const qint64 id,
  const qint64 maximumContentLength)
 {
+  Q_UNUSED(id);
+
   /*
   ** The container data contains Spot-On data, that is, data does
   ** not contain raw application data.
   */
 
   if(privateApplicationCredentials.isEmpty())
-    return;
-  else if(spoton_kernel::messagingCacheContains(data + QByteArray::number(id)))
     return;
 
   int a = data.indexOf("Content-Length: ");
@@ -467,7 +469,40 @@ void spoton_neighbor::parsePrivateApplicationData
 			delete crypt;
 
 			if(ok)
-			  emit writeParsedApplicationData(bytes);
+			  {
+			    QByteArray sequencer(bytes.mid(0, 20));
+			    QMutexLocker locker(&m_privateApplicationMutex);
+			    quint64 sequence = sequencer.toULongLong();
+
+			    if(m_privateApplicationSequencer.second ==
+			       sequence)
+			      {
+				emit writeParsedApplicationData(bytes.mid(20));
+				m_privateApplicationSequencer.second += 1;
+			      }
+			    else
+			      m_privateApplicationMap[sequence] =
+				bytes.mid(20);
+
+			    /*
+			    ** Determine if we can distribute more data.
+			    */
+
+			    while(true)
+			      if(m_privateApplicationMap.
+				 contains(m_privateApplicationSequencer.
+					  second))
+				{
+				  emit writeParsedApplicationData
+				    (m_privateApplicationMap.
+				     take(m_privateApplicationSequencer.
+					  second));
+
+				  m_privateApplicationSequencer.second += 1;
+				}
+			      else
+				break;
+			  }
 		      }
 		  }
 	      }
@@ -519,17 +554,24 @@ void spoton_neighbor::bundlePrivateApplicationData
     return;
 
   QByteArray bytes;
+  QByteArray sequencer;
+  QMutexLocker locker(&m_privateApplicationMutex);
   bool ok = true;
 
-  bytes = crypt->encryptedThenHashed(data, &ok);
+  sequencer = QByteArray::number(m_privateApplicationSequencer.first);
+  sequencer = sequencer.rightJustified(20, '0');
+  bytes = crypt->encryptedThenHashed(sequencer + data, &ok);
   delete crypt;
 
   if(ok)
-    emit receivedMessage
-      (spoton_send::messageXYZ(bytes.toBase64(),
-			       QPair<QByteArray, QByteArray> ()),
-       id,
-       QPair<QByteArray, QByteArray> ());
+    {
+      m_privateApplicationSequencer.first += 1;
+      emit receivedMessage
+	(spoton_send::messageXYZ(bytes.toBase64(),
+				 QPair<QByteArray, QByteArray> ()),
+	 id,
+	 QPair<QByteArray, QByteArray> ());
+    }
 
   emit resetKeepAlive();
 }

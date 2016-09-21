@@ -99,6 +99,8 @@ spoton_neighbor::spoton_neighbor
   m_bluetoothSocket = 0;
   m_passthrough = passthrough;
   m_privateApplicationCredentials = privateApplicationCredentials;
+  m_privateApplicationSequencer.first =
+    m_privateApplicationSequencer.second = 1;
   m_sctpSocket = 0;
   m_sourceOfRandomness = qBound
     (0,
@@ -589,6 +591,8 @@ spoton_neighbor::spoton_neighbor
   m_peerCertificate = QSslCertificate(peerCertificate);
   m_port = port.toUShort();
   m_privateApplicationCredentials = privateApplicationCredentials;
+  m_privateApplicationSequencer.first =
+    m_privateApplicationSequencer.second = 1;
   m_protocol = protocol;
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_requireSsl = requireSsl;
@@ -1027,6 +1031,9 @@ spoton_neighbor::~spoton_neighbor()
       QSqlDatabase::removeDatabase(connectionName);
     }
 
+  while(!m_privateApplicationFutures.isEmpty())
+    m_privateApplicationFutures.takeFirst().waitForFinished();
+
   close();
   quit();
   wait();
@@ -1034,17 +1041,16 @@ spoton_neighbor::~spoton_neighbor()
 
 void spoton_neighbor::slotTimeout(void)
 {
-  if(m_passthrough && m_privateApplicationCredentials.isEmpty())
-    if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
-      {
-	spoton_misc::logError
-	  (QString("spoton_neighbor::slotTimeout(): "
-		   "aborting because of silent connection for %1:%2.").
-	   arg(m_address).
-	   arg(m_port));
-	deleteLater();
-	return;
-      }
+  if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
+    {
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotTimeout(): "
+		 "aborting because of silent connection for %1:%2.").
+	 arg(m_address).
+	 arg(m_port));
+      deleteLater();
+      return;
+    }
 
   /*
   ** We'll change socket states here.
@@ -1423,6 +1429,10 @@ void spoton_neighbor::slotTimeout(void)
       m_externalAddressDiscovererTimer.stop();
     }
 
+  for(int i = m_privateApplicationFutures.size() - 1; i >= 0; i--)
+    if(m_privateApplicationFutures.at(i).isFinished())
+      m_privateApplicationFutures.removeAt(i);
+
   /*
   ** Remove learned adaptive echo tokens that are not contained
   ** in the complete set of adaptive echo tokens.
@@ -1673,8 +1683,10 @@ void spoton_neighbor::slotReadyRead(void)
 
 	if(!m_privateApplicationCredentials.isEmpty())
 	  {
-	    bundlePrivateApplicationData
-	      (data,
+	    m_privateApplicationFutures << QtConcurrent::run
+	      (this,
+	       &spoton_neighbor::bundlePrivateApplicationData,
+	       data,
 	       m_privateApplicationCredentials,
 	       m_id);
 	    return;
@@ -2595,8 +2607,10 @@ void spoton_neighbor::slotWrite
 
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     {
-      parsePrivateApplicationData
-	(data,
+      m_privateApplicationFutures << QtConcurrent::run
+	(this,
+	 &spoton_neighbor::parsePrivateApplicationData,
+	 data,
 	 m_privateApplicationCredentials,
 	 id,
 	 m_maximumContentLength);
