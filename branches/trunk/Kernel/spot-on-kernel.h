@@ -122,6 +122,7 @@ class spoton_kernel: public QObject
   QDateTime m_lastPoptasticStatus;
   QDateTime m_uptime;
   QFileSystemWatcher m_settingsWatcher;
+  QFuture<void> m_checkForTerminationFuture;
   QFuture<void> m_future;
   QFuture<void> m_poptasticPopFuture;
   QFuture<void> m_poptasticPostFuture;
@@ -301,6 +302,7 @@ class spoton_kernel: public QObject
 		    const qint64 mailOid);
   void slotSettingsChanged(const QString &path);
   void slotStatusTimerExpired(void);
+  void slotTerminate(const bool registered);
   void slotUrlImportTimerExpired(void);
   void slotUpdateSettings(void);
 
@@ -329,6 +331,7 @@ class spoton_kernel: public QObject
   void sendStatus(const QByteArrayList &status);
   void statusMessageReceived(const QByteArray &publicKeyHash,
 			     const QString &status);
+  void terminate(const bool registered);
   void write(const QByteArray &data, const qint64 id,
 	     const QPairByteArrayByteArray &adaptiveEchoPair);
 };

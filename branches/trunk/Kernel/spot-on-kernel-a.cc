@@ -698,6 +698,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SIGNAL(poppedMessage(const QByteArray &)),
 	  this,
 	  SLOT(slotPoppedMessage(const QByteArray &)));
+  connect(this,
+	  SIGNAL(terminate(const bool)),
+	  this,
+	  SLOT(slotTerminate(const bool)));
   connect(&m_controlDatabaseTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1020,6 +1024,7 @@ spoton_kernel::~spoton_kernel()
   for(int i = 0; i < m_urlImportFutures.size(); i++)
     m_urlImportFutures[i].cancel();
 
+  m_checkForTerminationFuture.waitForFinished();
   m_future.waitForFinished();
   m_poptasticPopFuture.waitForFinished();
   m_poptasticPostFuture.waitForFinished();
@@ -1079,13 +1084,15 @@ void spoton_kernel::cleanup(void)
 
 void spoton_kernel::slotPollDatabase(void)
 {
+  if(m_checkForTerminationFuture.isFinished())
+    m_checkForTerminationFuture = QtConcurrent::run
+      (this, &spoton_kernel::checkForTermination);
+
   if(m_statisticsFuture.isFinished())
     m_statisticsFuture = QtConcurrent::run
       (this, &spoton_kernel::updateStatistics,
        m_uptime, interfaces(), m_activeListeners, m_activeNeighbors,
        m_activeStarbeams);
-
-  checkForTermination();
 }
 
 void spoton_kernel::prepareListeners(void)
@@ -1847,6 +1854,11 @@ void spoton_kernel::checkForTermination(void)
 	registered = true;
     }
 
+  emit terminate(registered);
+}
+
+void spoton_kernel::slotTerminate(const bool registered)
+{
   if(!registered)
     {
       for(int i = 0; i < m_listeners.keys().size(); i++)
@@ -1878,12 +1890,6 @@ void spoton_kernel::checkForTermination(void)
 	  if(starbeam)
 	    starbeam->deleteLater();
 	}
-
-      if(err != LIBSPOTON_ERROR_NONE)
-	spoton_misc::logError
-	  (QString("spoton_kernel::checkForTermination(): "
-		   "an error occurred (%1) with libspoton.").
-	   arg(err));
 
       deleteLater();
     }
