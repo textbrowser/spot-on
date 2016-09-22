@@ -81,7 +81,7 @@ class spoton_common
 #ifdef SPOTON_MCELIECE_ENABLED
     INT_MAX;
 #else
-    8 * 1024 * 1024;
+    CHAR_BIT * 1024 * 1024;
 #endif
   static const int MAXIMUM_UDP_DATAGRAM_SIZE = 508;
   static const int MINIMUM_STARBEAM_PULSE_SIZE = 1024;
