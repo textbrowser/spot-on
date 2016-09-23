@@ -476,7 +476,8 @@ void spoton_listener::slotTimeout(void)
 		      "ssl_control_string, "
 		      "lane_width, "
 		      "passthrough, "
-		      "source_of_randomness "
+		      "source_of_randomness, "
+		      "private_application_credentials "
 		      "FROM listeners WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -537,6 +538,15 @@ void spoton_listener::slotTimeout(void)
 		    if(ok)
 		      if(echoMode == "full" || echoMode == "half")
 			m_echoMode = echoMode;
+
+		    if(query.isNull(11))
+		      m_privateApplicationCredentials.clear();
+		    else
+		      m_privateApplicationCredentials = s_crypt->
+			decryptedAfterAuthenticated(QByteArray::
+						    fromBase64(query.value(11).
+							       toByteArray()),
+						    &ok);
 		  }
 
 		if(status == "offline")

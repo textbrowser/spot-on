@@ -1086,7 +1086,8 @@ void spoton_neighbor::slotTimeout(void)
 		      "priority, "
 		      "lane_width, "
 		      "passthrough, "
-		      "waitforbyteswritten_msecs "
+		      "waitforbyteswritten_msecs, "
+		      "private_application_credentials "
 		      "FROM neighbors WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -1213,6 +1214,15 @@ void spoton_neighbor::slotTimeout(void)
 				  }
 			      }
 			  }
+
+			if(query.isNull(14))
+			  m_privateApplicationFutures.clear();
+			else
+			  m_privateApplicationCredentials = s_crypt->
+			    decryptedAfterAuthenticated
+			    (QByteArray::fromBase64(query.value(14).
+						    toByteArray()),
+			     &ok);
 		      }
 
 		    m_laneWidth = qBound
