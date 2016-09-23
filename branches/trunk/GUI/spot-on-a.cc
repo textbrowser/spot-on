@@ -5501,8 +5501,6 @@ void spoton::slotGeneralTimerTimeout(void)
 				       spoton_common::SECURE_MEMORY_POOL_SIZE).
 		      toInt()) == LIBSPOTON_ERROR_NONE)
     {
-      libspoton_create_urls_table(&libspotonHandle);
-
       libspoton_error_t err = LIBSPOTON_ERROR_NONE;
       pid_t pid = 0;
 
