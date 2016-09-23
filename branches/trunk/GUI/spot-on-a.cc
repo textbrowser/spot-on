@@ -5480,71 +5480,45 @@ void spoton::slotDeactivateKernel(void)
 void spoton::slotGeneralTimerTimeout(void)
 {
   QColor color(240, 128, 128); // Light coral!
+  QList<QStandardItem *> list(m_statisticsModel->findItems("Kernel PID"));
   QPalette pidPalette(m_ui.pid->palette());
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() +
-		     "shared.db");
+  QStandardItem *item = 0;
   QString text(m_ui.pid->text());
-  libspoton_handle_t libspotonHandle;
 
   pidPalette.setColor(m_ui.pid->backgroundRole(), color);
 
-  if(libspoton_init_b(sharedPath.toStdString().c_str(),
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      &libspotonHandle,
-		      m_settings.value("gui/gcryctl_init_secmem",
-				       spoton_common::SECURE_MEMORY_POOL_SIZE).
-		      toInt()) == LIBSPOTON_ERROR_NONE)
+  if(!list.isEmpty())
     {
-      libspoton_error_t err = LIBSPOTON_ERROR_NONE;
-      pid_t pid = 0;
+      item = list.at(0);
 
-      pid = libspoton_registered_kernel_pid(&libspotonHandle, &err);
+      if(item)
+	item = m_statisticsModel->item(item->row(), 1);
+    }
 
-      if(err == LIBSPOTON_ERROR_SQLITE_DATABASE_LOCKED || pid == 0)
-	{
-	  /*
-	  ** Try next time.
-	  */
-
-	  m_ui.pid->setPalette(pidPalette);
-
-	  if(pid == 0)
-	    m_ui.pid->setText("0");
-	  else
-	    m_ui.pid->setText("The shared.db database is locked.");
-	}
-      else
-	{
-	  QColor color(144, 238, 144); // Light green!
-	  QPalette palette(m_ui.pid->palette());
-
-	  palette.setColor(m_ui.pid->backgroundRole(), color);
-	  m_ui.pid->setPalette(palette);
-	  m_ui.pid->setText(QString::number(pid));
-#if SPOTON_GOLDBUG == 1
-	  m_ui.activateKernel->setStyleSheet("background-color: lightgreen;"
-					     "border-style: outset;"
-					     "border-width: 2px;"
-					     "border-radius: 10px;"
-					     "border-color: black;"
-					     "min-width: 5em;"
-					     "padding: 6px");
-#endif
-	}
+  if(!item)
+    {
+      m_ui.pid->setPalette(pidPalette);
+      m_ui.pid->setText("0");
     }
   else
     {
-      m_ui.pid->setPalette(pidPalette);
-      m_ui.pid->setText("-1");
+      QColor color(144, 238, 144); // Light green!
+      QPalette palette(m_ui.pid->palette());
+
+      palette.setColor(m_ui.pid->backgroundRole(), color);
+      m_ui.pid->setPalette(palette);
+      m_ui.pid->setText(item->text());
+#if SPOTON_GOLDBUG == 1
+      m_ui.activateKernel->setStyleSheet("background-color: lightgreen;"
+					 "border-style: outset;"
+					 "border-width: 2px;"
+					 "border-radius: 10px;"
+					 "border-color: black;"
+					 "min-width: 5em;"
+					 "padding: 6px");
+#endif
     }
 
-  libspoton_close(&libspotonHandle);
   highlightPaths();
 
   if(text != m_ui.pid->text())
