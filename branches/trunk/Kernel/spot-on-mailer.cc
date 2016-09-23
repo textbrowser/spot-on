@@ -513,7 +513,7 @@ void spoton_mailer::slotRetrieveMailTimeout(void)
 		  }
 	      }
 	    else
-	      m_publicKeyHashesAdaptiveEchoPairs.takeFirst();
+	      m_publicKeyHashesAdaptiveEchoPairs.removeFirst();
 	  }
       }
 
