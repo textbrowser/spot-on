@@ -3248,7 +3248,7 @@ void spoton::slotSendMail(void)
 	    else
 	      mode = "normal";
 
-	    forwardSecrecyCredentials.takeFirst();
+	    forwardSecrecyCredentials.removeFirst();
 
 	    {
 	      QList<QByteArray> list;

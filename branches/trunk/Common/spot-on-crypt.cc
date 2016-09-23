@@ -3077,6 +3077,13 @@ void spoton_crypt::generateSslKeys(const int rsaKeySize,
 			    "rsaKeySize is less than or equal to zero.");
       goto done_label;
     }
+  else if(rsaKeySize > 4096)
+    {
+      error = QObject::tr("rsaKeySize is greater than 4096");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "rsaKeySize is greater than 4096.");
+      goto done_label;
+    }
 
   if(!(f4 = BN_new()))
     {

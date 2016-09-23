@@ -812,8 +812,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
       */
 
       QHash<QString, QByteArray> hash
-	(spoton_misc::retrieveEchoShareInformation(list.takeFirst(),
-						   eCrypt));
+	(spoton_misc::retrieveEchoShareInformation(list.takeFirst(), eCrypt));
 
       if(!hash.isEmpty())
 	{
