@@ -1216,7 +1216,7 @@ void spoton_neighbor::slotTimeout(void)
 			  }
 
 			if(query.isNull(14))
-			  m_privateApplicationFutures.clear();
+			  m_privateApplicationCredentials.clear();
 			else
 			  m_privateApplicationCredentials = s_crypt->
 			    decryptedAfterAuthenticated
