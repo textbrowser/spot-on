@@ -21,7 +21,8 @@ FORMS           = GoldBug-UI/spot-on-adaptive-echo-prompt.ui \
                   GoldBug-UI/spot-on-starbeamanalyzer.ui \
 		  GoldBug-UI/spot-on-statisticswindow.ui \
 		  GoldBug-UI/spot-on-statusbar.ui \
-		  GoldBug-UI/spot-on-unlock.ui
+		  GoldBug-UI/spot-on-unlock.ui \
+		  GoldBug-UI/spot-on-wizard.ui
 
 HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on.h \

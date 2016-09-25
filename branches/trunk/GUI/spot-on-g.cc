@@ -1248,7 +1248,7 @@ void spoton::prepareAndShowInstallationWizard(void)
 #endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Would you like to use the initialization wizard?"));
+  mb.setText(tr("Would you like to launch the initialization wizard?"));
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
