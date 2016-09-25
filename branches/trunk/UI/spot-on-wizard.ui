@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>spot_on_wizard</class>
+ <widget class="QDialog" name="spot_on_wizard">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>670</width>
     <height>500</height>
    </rect>
   </property>
@@ -21,7 +21,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -118,7 +118,7 @@
           <item>
            <widget class="QCheckBox" name="url_credentials">
             <property name="text">
-             <string>&amp;Apply the credentials to URL containers.</string>
+             <string>&amp;Apply the derived credentials to URL containers.</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -186,7 +186,7 @@
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Public keys are excellent mechanisms for confidential communications such as e-mail and instant messaging.&lt;/p&gt;&lt;p&gt;RSA is a popular public-key cryptographic algorithm. It is widely used in today's communications.&lt;/p&gt;&lt;p&gt;You may select different algorithms after the initialization as well as create new public-key pairs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Public keys are excellent mechanisms for providing confidential communications such as e-mail and instant messaging. As such, RSA is a popular public-key cryptographic algorithm. It is widely used in today's communications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
@@ -204,7 +204,84 @@
           </widget>
          </item>
          <item>
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>You may select different algorithms after the initialization as well as create new public-key pairs.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_4">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <item>
+          <widget class="QLabel" name="label_9">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../Icons/wizard/kernel.png</pixmap>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spot-On includes a special kernel program. The program is resposible for a multitude of tasks such as managing network communications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="launch_kernel">
+           <property name="text">
+            <string>&amp;Launch the Spot-On kernel.</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -269,6 +346,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cancel</tabstop>
+  <tabstop>previous</tabstop>
+  <tabstop>next</tabstop>
+  <tabstop>url_credentials</tabstop>
+  <tabstop>initialize_public_keys</tabstop>
+  <tabstop>launch_kernel</tabstop>
+ </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
  </resources>
