@@ -346,6 +346,13 @@ border-radius: 5px;</string>
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="initialize">
+       <property name="text">
+        <string>&amp;Initialize</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -354,6 +361,7 @@ border-radius: 5px;</string>
   <tabstop>cancel</tabstop>
   <tabstop>previous</tabstop>
   <tabstop>next</tabstop>
+  <tabstop>initialize</tabstop>
   <tabstop>url_credentials</tabstop>
   <tabstop>initialize_public_keys</tabstop>
   <tabstop>launch_kernel</tabstop>

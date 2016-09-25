@@ -1262,14 +1262,18 @@ void spoton::prepareAndShowInstallationWizard(void)
       m_ui.setPassphrase->setVisible(false);
       m_wizardUi = new Ui_spoton_wizard;
       m_wizardUi->setupUi(&dialog);
-      m_wizardUi->next->setText(tr("&Next"));
+      m_wizardUi->initialize->setVisible(false);
+      m_wizardUi->previous->setDisabled(true);
       qobject_cast<QBoxLayout *> (m_wizardUi->passphrase_frame->layout())->
 	insertWidget(1, m_ui.passphraseGroupBox);
-      m_wizardUi->previous->setDisabled(true);
       connect(m_wizardUi->cancel,
 	      SIGNAL(clicked(void)),
 	      &dialog,
 	      SLOT(reject(void)));
+      connect(m_wizardUi->initialize,
+	      SIGNAL(clicked(void)),
+	      &dialog,
+	      SLOT(accept(void)));
       connect(m_wizardUi->next,
 	      SIGNAL(clicked(void)),
 	      this,
@@ -1291,8 +1295,8 @@ void spoton::prepareAndShowInstallationWizard(void)
 	    m_wizardUi->url_credentials->isChecked();
 	}
 
-      m_ui.settingsVerticalLayout->insertWidget(1, m_ui.passphraseGroupBox);
       m_ui.setPassphrase->setVisible(true);
+      m_ui.settingsVerticalLayout->insertWidget(1, m_ui.passphraseGroupBox);
     }
 }
 
@@ -1315,28 +1319,28 @@ void spoton::slotWizardButtonClicked(void)
     case 0:
       {
 	m_wizardUi->next->setEnabled(true);
-	m_wizardUi->next->setText(tr("&Next"));
 	m_wizardUi->previous->setEnabled(false);
 	break;
       }
     case 1:
       {
 	m_wizardUi->next->setEnabled(true);
-	m_wizardUi->next->setText(tr("&Next"));
 	m_wizardUi->previous->setEnabled(true);
 	break;
       }
     case 2:
       {
+	m_wizardUi->initialize->setVisible(false);
 	m_wizardUi->next->setEnabled(true);
-	m_wizardUi->next->setText(tr("&Next"));
+	m_wizardUi->next->setVisible(true);
 	m_wizardUi->previous->setEnabled(true);
 	break;
       }
     case 3:
       {
+	m_wizardUi->initialize->setVisible(true);
 	m_wizardUi->next->setEnabled(true);
-	m_wizardUi->next->setText(tr("&Initialize"));
+	m_wizardUi->next->setVisible(false);
 	m_wizardUi->previous->setEnabled(true);
 	break;
       }
