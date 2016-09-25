@@ -66,6 +66,7 @@ extern "C"
 #include "spot-on-defines.h"
 #include "spot-on.h"
 #include "ui_spot-on-password-prompt.h"
+#include "ui_spot-on-wizard.h"
 
 #ifdef SPOTON_MCELIECE_ENABLED
 #include <NTL/version.h>
@@ -2221,8 +2222,13 @@ spoton::spoton(void):QMainWindow()
 	  isExecutable())
     m_ui.kernelPath->setText(m_settings.value("gui/kernelPath").toString());
   else
+#ifdef QT_VERSION >= 0x050000
+    m_ui.kernelPath->setText
+      ("/Applications/Spot-On_Qt5.d/Spot-On-Kernel.app");
+#else
     m_ui.kernelPath->setText
       ("/Applications/Spot-On.d/Spot-On-Kernel.app");
+#endif
 #else
   if(m_settings.contains("gui/kernelPath") &&
      QFileInfo(m_settings.value("gui/kernelPath").toString()).isExecutable())
