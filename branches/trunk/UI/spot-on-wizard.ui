@@ -36,7 +36,8 @@
             </sizepolicy>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(255, 255, 255);</string>
+            <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;</string>
            </property>
            <property name="text">
             <string/>
@@ -87,13 +88,14 @@
          <item>
           <widget class="QLabel" name="label_5">
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(255, 255, 255);</string>
+            <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;</string>
            </property>
            <property name="text">
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../Icons/wizard/password.png</pixmap>
+            <pixmap resource="../Icons/icons.qrc">:/wizard/password.png</pixmap>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -166,13 +168,14 @@
             </sizepolicy>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(255, 255, 255);</string>
+            <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;</string>
            </property>
            <property name="text">
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../Icons/wizard/key.png</pixmap>
+            <pixmap resource="../Icons/icons.qrc">:/wizard/key.png</pixmap>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -243,13 +246,14 @@
             </sizepolicy>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(255, 255, 255);</string>
+            <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;</string>
            </property>
            <property name="text">
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../Icons/wizard/kernel.png</pixmap>
+            <pixmap resource="../Icons/icons.qrc">:/wizard/kernel.png</pixmap>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -273,7 +277,7 @@
          <item>
           <widget class="QCheckBox" name="launch_kernel">
            <property name="text">
-            <string>&amp;Launch the Spot-On kernel.</string>
+            <string>&amp;Launch the Spot-On kernel upon completion.</string>
            </property>
            <property name="checked">
             <bool>true</bool>
