@@ -6474,6 +6474,8 @@ void spoton::slotSetPassphrase(void)
 	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	      mb.setText(tr("Would you like to use your new "
 			    "credentials as URL Common Credentials?"));
+	      mb.setWindowTitle(tr("%1: Question").
+				arg(SPOTON_APPLICATION_NAME));
 
 	      if(mb.exec() == QMessageBox::Yes)
 		{
