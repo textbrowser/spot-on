@@ -21,7 +21,8 @@ FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
                   UI/spot-on-starbeamanalyzer.ui \
 		  UI/spot-on-statisticswindow.ui \
 		  UI/spot-on-statusbar.ui \
-		  UI/spot-on-unlock.ui
+		  UI/spot-on-unlock.ui \
+		  UI/spot-on-wizard.ui
 
 HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on.h \
