@@ -66,7 +66,6 @@ extern "C"
 #include "spot-on-defines.h"
 #include "spot-on.h"
 #include "ui_spot-on-password-prompt.h"
-#include "ui_spot-on-wizard.h"
 
 #ifdef SPOTON_MCELIECE_ENABLED
 #include <NTL/version.h>
@@ -395,6 +394,7 @@ int main(int argc, char *argv[])
 
 spoton::spoton(void):QMainWindow()
 {
+  m_wizardUi = 0;
   s_gui = this;
 
   {
@@ -3060,6 +3060,9 @@ spoton::spoton(void):QMainWindow()
       m_sb.status->clear();
       QApplication::restoreOverrideCursor();
     }
+
+  if(!spoton_crypt::passphraseSet())
+    prepareAndShowInstallationWizard();
 }
 
 spoton::~spoton()
@@ -3115,7 +3118,9 @@ void spoton::cleanup(void)
   m_ui.url_database_connection_information->clear();
   saveSettings();
   delete m_urlCommonCrypt;
+  delete m_wizardUi;
   m_urlCommonCrypt = 0;
+  m_wizardUi = 0;
 
   QHashIterator<QString, spoton_crypt *> it(m_crypts);
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>spot_on_wizard</class>
- <widget class="QDialog" name="spot_on_wizard">
+ <class>spoton_wizard</class>
+ <widget class="QDialog" name="spoton_wizard">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -57,7 +57,7 @@ border-radius: 5px;</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Welcome to Spot-On! To continue the initialization process, please press the Next button.</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome to Spot-On! To continue the initialization process, please press the Next button. You may also cancel the wizard and continue the initialization process via the advanced mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
@@ -105,12 +105,12 @@ border-radius: 5px;</string>
         </layout>
        </item>
        <item>
-        <widget class="QFrame" name="password_frame">
+        <widget class="QFrame" name="passphrase_frame">
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <widget class="QLabel" name="label_6">
+           <widget class="QLabel" name="passphrase_introduction_label">
             <property name="text">
-             <string>Please provide a username and a passphrase. The passphrase will be used for deriving strong authentication and encryption keys for securing local data.</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please provide a username and a passphrase. Authentication and encryptions keys will be derived from the passphrase in order to secure local data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -130,7 +130,7 @@ border-radius: 5px;</string>
           <item>
            <widget class="QLabel" name="label_7">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spot-On allows you to house Web content in local and remote databases. The content is secured via your URL credentials. A search engine is also included. You may prepare the URL credentials later.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spot-On allows you to save Web content to local and remote databases. The content is secured via your URL credentials. A search engine is also included. You may prepare the URL credentials later.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -144,8 +144,8 @@ border-radius: 5px;</string>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>20</width>
-              <height>40</height>
+              <width>17</width>
+              <height>251</height>
              </size>
             </property>
            </spacer>
@@ -209,7 +209,7 @@ border-radius: 5px;</string>
          <item>
           <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>You may select different algorithms after the initialization as well as create new public-key pairs.</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You may select different algorithms after the initialization process as well as create new public-key pairs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>

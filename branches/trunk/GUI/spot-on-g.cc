@@ -1227,3 +1227,120 @@ void spoton::slotSetPrivateApplicationInformation(void)
 			      arg(error));
     }
 }
+
+void spoton::prepareAndShowInstallationWizard(void)
+{
+  QMessageBox mb(this);
+
+  /*
+  ** Must agree with the UI settings!
+  */
+
+  m_wizardHash["accepted"] = false;
+  m_wizardHash["initialize_public_keys"] = true;
+  m_wizardHash["launch_kernel"] = true;
+  m_wizardHash["shown"] = false;
+  m_wizardHash["url_credentials"] = true;
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Would you like to use the initialization wizard?"));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() == QMessageBox::Yes)
+    {
+      QDialog dialog;
+
+      if(m_wizardUi)
+	delete m_wizardUi;
+
+      m_ui.setPassphrase->setVisible(false);
+      m_wizardUi = new Ui_spoton_wizard;
+      m_wizardUi->setupUi(&dialog);
+      m_wizardUi->next->setText(tr("&Next"));
+      qobject_cast<QBoxLayout *> (m_wizardUi->passphrase_frame->layout())->
+	insertWidget(1, m_ui.passphraseGroupBox);
+      m_wizardUi->previous->setDisabled(true);
+      connect(m_wizardUi->cancel,
+	      SIGNAL(clicked(void)),
+	      &dialog,
+	      SLOT(reject(void)));
+      connect(m_wizardUi->next,
+	      SIGNAL(clicked(void)),
+	      this,
+	      SLOT(slotWizardButtonClicked(void)));
+      connect(m_wizardUi->previous,
+	      SIGNAL(clicked(void)),
+	      this,
+	      SLOT(slotWizardButtonClicked(void)));
+      m_wizardHash["shown"] = true;
+
+      if(dialog.exec() == QDialog::Accepted)
+	{
+	  m_wizardHash["accepted"] = true;
+	  m_wizardHash["initialize_public_keys"] =
+	    m_wizardUi->initialize_public_keys->isChecked();
+	  m_wizardHash["launch_kernel"] =
+	    m_wizardUi->launch_kernel->isChecked();
+	  m_wizardHash["url_credentials"] =
+	    m_wizardUi->url_credentials->isChecked();
+	}
+
+      m_ui.settingsVerticalLayout->insertWidget(1, m_ui.passphraseGroupBox);
+      m_ui.setPassphrase->setVisible(true);
+    }
+}
+
+void spoton::slotWizardButtonClicked(void)
+{
+  if(!m_wizardUi)
+    return;
+
+  int count = m_wizardUi->stackedWidget->count();
+
+  if(m_wizardUi->next == sender())
+    m_wizardUi->stackedWidget->setCurrentIndex
+      (qBound(0, m_wizardUi->stackedWidget->currentIndex() + 1, count - 1));
+  else
+    m_wizardUi->stackedWidget->setCurrentIndex
+      (qBound(0, m_wizardUi->stackedWidget->currentIndex() - 1, count - 1));
+
+  switch(m_wizardUi->stackedWidget->currentIndex())
+    {
+    case 0:
+      {
+	m_wizardUi->next->setEnabled(true);
+	m_wizardUi->next->setText(tr("&Next"));
+	m_wizardUi->previous->setEnabled(false);
+	break;
+      }
+    case 1:
+      {
+	m_wizardUi->next->setEnabled(true);
+	m_wizardUi->next->setText(tr("&Next"));
+	m_wizardUi->previous->setEnabled(true);
+	break;
+      }
+    case 2:
+      {
+	m_wizardUi->next->setEnabled(true);
+	m_wizardUi->next->setText(tr("&Next"));
+	m_wizardUi->previous->setEnabled(true);
+	break;
+      }
+    case 3:
+      {
+	m_wizardUi->next->setEnabled(true);
+	m_wizardUi->next->setText(tr("&Initialize"));
+	m_wizardUi->previous->setEnabled(true);
+	break;
+      }
+    default:
+      break;
+    }
+}

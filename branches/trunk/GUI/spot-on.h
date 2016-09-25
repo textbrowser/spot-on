@@ -396,6 +396,7 @@ class spoton_lineedit: public QLineEdit
 #include "ui_spot-on-poptastic-retrophone-settings.h"
 #include "ui_spot-on-statisticswindow.h"
 #include "ui_spot-on-statusbar.h"
+#include "ui_spot-on-wizard.h"
 
 class QProgressDialog;
 
@@ -500,6 +501,7 @@ class spoton: public QMainWindow
   Ui_spoton_options m_optionsUi;
   Ui_statistics_window m_statisticsUi;
   Ui_statusbar m_sb;
+  Ui_spoton_wizard *m_wizardUi;
   bool m_locked;
   quint64 m_urlCurrentPage;
   quint64 m_urlLimit;
@@ -522,6 +524,7 @@ class spoton: public QMainWindow
   QByteArray copyMyUrlPublicKey(void) const;
   QByteArray poptasticName(void) const;
   QByteArray poptasticNameEmail(void) const;
+  QHash<QString, bool> m_wizardHash;
   QList<QByteArray> retrieveForwardSecrecyInformation
     (const QSqlDatabase &db, const QString &oid, bool *ok) const;
   QList<QPair<QString, QVariant> > gatherStatistics(void) const;
@@ -595,6 +598,7 @@ class spoton: public QMainWindow
   void populatePoptasticWidgets(const QHash<QString, QVariant> &hash);
   void populateStatistics(const QList<QPair<QString, QVariant> > &list);
   void populateUrlDistillers();
+  void prepareAndShowInstallationWizard(void);
   void prepareContextMenuMirrors(void);
   void prepareListenerIPCombo(void);
   void prepareSMP(const QString &hash);
@@ -989,6 +993,7 @@ class spoton: public QMainWindow
   void slotViewEchoKeyShare(void);
   void slotViewLog(void);
   void slotViewRosetta(void);
+  void slotWizardButtonClicked(void);
 
  signals:
   void buzzNameChanged(const QByteArray &name);
