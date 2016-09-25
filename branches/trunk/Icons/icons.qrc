@@ -415,5 +415,8 @@
 	<file>nuvola/up.png</file>
 	<file>nuvola/urls.png</file>
 	<file>nuvola/write.png</file>
+	<file>wizard/kernel.png</file>
+	<file>wizard/key.png</file>
+	<file>wizard/password.png</file>
     </qresource>
 </RCC>
