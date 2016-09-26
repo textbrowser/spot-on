@@ -6048,6 +6048,7 @@ void spoton::slotSetPassphrase(void)
     return;
 
   bool reencode = false;
+  bool wizardAccepted = m_wizardHash.value("accepted", false);
   QString str1(m_ui.passphrase1->text());
   QString str2(m_ui.passphrase2->text());
   QString str3(m_ui.username->text());
@@ -6194,22 +6195,32 @@ void spoton::slotSetPassphrase(void)
 	}
       else
 	{
-	  QMessageBox mb(this);
+	  bool proceed = false;
+
+	  if(!wizardAccepted)
+	    {
+	      QMessageBox mb(this);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+	      mb.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-	  mb.setIcon(QMessageBox::Question);
-	  mb.setWindowTitle(tr("%1: Question").
-			    arg(SPOTON_APPLICATION_NAME));
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText
-	    (tr("Would you like to generate private and public key pairs?"));
+	      mb.setIcon(QMessageBox::Question);
+	      mb.setWindowTitle(tr("%1: Question").
+				arg(SPOTON_APPLICATION_NAME));
+	      mb.setWindowModality(Qt::WindowModal);
+	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	      mb.setText
+		(tr("Would you like to generate public key pairs?"));
 
-	  if(mb.exec() == QMessageBox::Yes)
+	      if(mb.exec() == QMessageBox::Yes)
+		proceed = true;
+	    }
+	  else
+	    proceed = m_wizardHash.value("initialize_public_keys", true);
+
+	  if(proceed)
 	    {
 #ifndef Q_OS_MAC
 	      QApplication::processEvents();
@@ -6415,21 +6426,31 @@ void spoton::slotSetPassphrase(void)
 
 	  if(!reencode)
 	    {
-	      QMessageBox mb(this);
+	      bool proceed = false;
+
+	      if(!wizardAccepted)
+		{
+		  QMessageBox mb(this);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-	      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+		  mb.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-	      mb.setIcon(QMessageBox::Question);
-	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	      mb.setText(tr("Would you like to use your new "
-			    "credentials as URL Common Credentials?"));
-	      mb.setWindowTitle(tr("%1: Question").
-				arg(SPOTON_APPLICATION_NAME));
+		  mb.setIcon(QMessageBox::Question);
+		  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+		  mb.setText(tr("Would you like to exercise your new "
+				"credentials as URL Common Credentials?"));
+		  mb.setWindowTitle(tr("%1: Question").
+				    arg(SPOTON_APPLICATION_NAME));
 
-	      if(mb.exec() == QMessageBox::Yes)
+		  if(mb.exec() == QMessageBox::Yes)
+		    proceed = true;
+		}
+	      else
+		proceed = m_wizardHash.value("url_credentials", true);
+
+	      if(proceed)
 		{
 		  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 		  spoton_misc::prepareUrlKeysDatabase();
@@ -6607,21 +6628,31 @@ void spoton::slotSetPassphrase(void)
       if(m_ui.pid->text() == "0")
 	if(QFileInfo(m_ui.kernelPath->text()).isExecutable())
 	  {
-	    QMessageBox mb(this);
+	    bool proceed = false;
+
+	    if(!wizardAccepted)
+	      {
+		QMessageBox mb(this);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-	    mb.setAttribute(Qt::WA_MacMetalStyle, true);
+		mb.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-	    mb.setIcon(QMessageBox::Question);
-	    mb.setWindowTitle(tr("%1: Question").
-			      arg(SPOTON_APPLICATION_NAME));
-	    mb.setWindowModality(Qt::WindowModal);
-	    mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	    mb.setText(tr("Would you like the kernel to be activated?"));
+		mb.setIcon(QMessageBox::Question);
+		mb.setWindowTitle(tr("%1: Question").
+				  arg(SPOTON_APPLICATION_NAME));
+		mb.setWindowModality(Qt::WindowModal);
+		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+		mb.setText(tr("Would you like the kernel to be activated?"));
 
-	    if(mb.exec() == QMessageBox::Yes)
+		if(mb.exec() == QMessageBox::Yes)
+		  proceed = true;
+	      }
+	    else
+	      proceed = m_wizardHash.value("launch_kernel", true);
+
+	    if(proceed)
 	      slotActivateKernel();
 	  }
 

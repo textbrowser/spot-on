@@ -1291,6 +1291,8 @@ void spoton::prepareAndShowInstallationWizard(void)
 	    m_wizardUi->launch_kernel->isChecked();
 	  m_wizardHash["url_credentials"] =
 	    m_wizardUi->url_credentials->isChecked();
+	  repaint();
+	  slotSetPassphrase();
 	}
       else
 	{
