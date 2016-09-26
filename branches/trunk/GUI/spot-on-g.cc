@@ -1239,7 +1239,6 @@ void spoton::prepareAndShowInstallationWizard(void)
   m_wizardHash["accepted"] = false;
   m_wizardHash["initialize_public_keys"] = true;
   m_wizardHash["launch_kernel"] = true;
-  m_wizardHash["shown"] = false;
   m_wizardHash["url_credentials"] = true;
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -1254,7 +1253,7 @@ void spoton::prepareAndShowInstallationWizard(void)
 
   if(mb.exec() == QMessageBox::Yes)
     {
-      QDialog dialog;
+      QDialog dialog(this);
 
       if(m_wizardUi)
 	delete m_wizardUi;
@@ -1282,7 +1281,6 @@ void spoton::prepareAndShowInstallationWizard(void)
 	      SIGNAL(clicked(void)),
 	      this,
 	      SLOT(slotWizardButtonClicked(void)));
-      m_wizardHash["shown"] = true;
 
       if(dialog.exec() == QDialog::Accepted)
 	{
