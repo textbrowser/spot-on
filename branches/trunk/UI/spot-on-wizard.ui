@@ -128,16 +128,6 @@ border-radius: 5px;</string>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="url_credentials">
-            <property name="text">
-             <string>&amp;Apply the derived credentials to URL containers.</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QLabel" name="label_7">
             <property name="font">
              <font>
@@ -148,6 +138,16 @@ border-radius: 5px;</string>
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spot-On allows you to save Web content to local and remote databases. The content is secured via your URL credentials. A search engine is also included. You may prepare the URL credentials later.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="url_credentials">
+            <property name="text">
+             <string>&amp;Apply the derived credentials to URL containers.</string>
+            </property>
+            <property name="checked">
              <bool>true</bool>
             </property>
            </widget>
