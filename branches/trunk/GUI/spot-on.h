@@ -549,6 +549,7 @@ class spoton: public QMainWindow
   bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 		  const QString &oid);
   bool updateMailStatus(const QString &oid, const QString &status);
+  bool verifyInitializationPassphrase(QWidget *parent);
   int applyGoldBugToLetter(const QByteArray &goldbug,
 			   const int row);
   int tabIndexFromName(const QString &name) const;

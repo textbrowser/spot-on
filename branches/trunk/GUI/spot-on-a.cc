@@ -6044,72 +6044,13 @@ void spoton::updateParticipantsTable(const QSqlDatabase &db)
 
 void spoton::slotSetPassphrase(void)
 {
+  if(!verifyInitializationPassphrase(this))
+    return;
+
   bool reencode = false;
   QString str1(m_ui.passphrase1->text());
   QString str2(m_ui.passphrase2->text());
   QString str3(m_ui.username->text());
-
-  if(str3.trimmed().isEmpty())
-    {
-      str3 = "unknown";
-      m_ui.username->setText(str3);
-    }
-  else
-    m_ui.username->setText(str3.trimmed());
-
-  if(!m_ui.passphrase_rb->isChecked())
-    {
-      str1 = m_ui.question->text();
-      str2 = m_ui.answer->text();
-    }
-
-  if(str1.length() < 16 || str2.length() < 16)
-    {
-      if(m_ui.passphrase_rb->isChecked())
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("The passphrases must contain at least "
-				 "sixteen characters each."));
-      else
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("The answer and question must contain "
-				 "at least sixteen characters each."));
-
-      if(m_ui.passphrase_rb->isChecked())
-	{
-	  m_ui.passphrase1->selectAll();
-	  m_ui.passphrase1->setFocus();
-	}
-      else
-	{
-	  m_ui.question->selectAll();
-	  m_ui.question->setFocus();
-	}
-
-      return;
-    }
-
-  if(m_ui.passphrase_rb->isChecked() &&
-     str1 != str2)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("The passphrases are not identical."));
-      m_ui.passphrase1->selectAll();
-      m_ui.passphrase1->setFocus();
-      return;
-    }
-
-  if(str3.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Please provide a name."));
-      m_ui.username->selectAll();
-      m_ui.username->setFocus();
-      return;
-    }
 
   if(spoton_crypt::passphraseSet())
     {
