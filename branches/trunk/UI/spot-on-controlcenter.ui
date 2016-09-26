@@ -5985,7 +5985,7 @@
                  <item>
                   <widget class="QLabel" name="label_76">
                    <property name="text">
-                    <string>The below cryptographic algorithms will be applied to authentication and local storage.</string>
+                    <string>The below cryptographic algorithms will be applied to authentication and encryption of local storage.</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
