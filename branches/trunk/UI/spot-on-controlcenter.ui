@@ -6123,6 +6123,9 @@
                    </item>
                    <item row="5" column="1">
                     <widget class="spoton_lineedit" name="passphrase2">
+                     <property name="toolTip">
+                      <string>Virtual keyboard via double-click.</string>
+                     </property>
                      <property name="echoMode">
                       <enum>QLineEdit::Password</enum>
                      </property>
@@ -6169,7 +6172,11 @@
                     </widget>
                    </item>
                    <item row="7" column="1">
-                    <widget class="spoton_lineedit" name="question"/>
+                    <widget class="spoton_lineedit" name="question">
+                     <property name="toolTip">
+                      <string>Virtual keyboard via double-click.</string>
+                     </property>
+                    </widget>
                    </item>
                    <item row="8" column="0">
                     <widget class="QLabel" name="label_98">
@@ -6182,7 +6189,11 @@
                     </widget>
                    </item>
                    <item row="8" column="1">
-                    <widget class="spoton_lineedit" name="answer"/>
+                    <widget class="spoton_lineedit" name="answer">
+                     <property name="toolTip">
+                      <string>Virtual keyboard via double-click.</string>
+                     </property>
+                    </widget>
                    </item>
                    <item row="8" column="2">
                     <widget class="QPushButton" name="setPassphrase">
@@ -6198,6 +6209,9 @@
                      </property>
                      <item>
                       <widget class="spoton_lineedit" name="passphrase1">
+                       <property name="toolTip">
+                        <string>Virtual keyboard via double-click.</string>
+                       </property>
                        <property name="echoMode">
                         <enum>QLineEdit::Password</enum>
                        </property>

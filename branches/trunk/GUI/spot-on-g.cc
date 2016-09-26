@@ -1230,6 +1230,8 @@ void spoton::slotSetPrivateApplicationInformation(void)
 
 void spoton::prepareAndShowInstallationWizard(void)
 {
+  repaint();
+
   QMessageBox mb(this);
 
   /*
@@ -1264,7 +1266,7 @@ void spoton::prepareAndShowInstallationWizard(void)
       m_wizardUi->initialize->setVisible(false);
       m_wizardUi->previous->setDisabled(true);
       qobject_cast<QBoxLayout *> (m_wizardUi->passphrase_frame->layout())->
-	insertWidget(1, m_ui.passphraseGroupBox);
+	insertWidget(2, m_ui.passphraseGroupBox);
       connect(m_wizardUi->cancel,
 	      SIGNAL(clicked(void)),
 	      &dialog,
