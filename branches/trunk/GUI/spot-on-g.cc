@@ -1228,10 +1228,8 @@ void spoton::slotSetPrivateApplicationInformation(void)
     }
 }
 
-void spoton::prepareAndShowInstallationWizard(void)
+void spoton::slotPrepareAndShowInstallationWizard(void)
 {
-  repaint();
-
   QMessageBox mb(this);
 
   /*

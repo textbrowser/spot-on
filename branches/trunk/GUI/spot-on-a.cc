@@ -3062,7 +3062,8 @@ spoton::spoton(void):QMainWindow()
     }
 
   if(!spoton_crypt::passphraseSet())
-    prepareAndShowInstallationWizard();
+    QTimer::singleShot
+      (750, this, SLOT(slotPrepareAndShowInstallationWizard(void)));
 }
 
 spoton::~spoton()
