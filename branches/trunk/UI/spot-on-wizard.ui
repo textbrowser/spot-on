@@ -32,7 +32,7 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>48</height>
+             <height>64</height>
             </size>
            </property>
            <property name="styleSheet">
@@ -84,6 +84,18 @@
        <item>
         <widget class="QFrame" name="passphrase_frame">
          <layout class="QVBoxLayout" name="verticalLayout_7">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <property name="spacing">
