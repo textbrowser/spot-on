@@ -239,6 +239,7 @@ spoton_neighbor::spoton_neighbor
     m_port = port.toUShort();
 
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
+  m_silenceTime = spoton_common::NEIGHBOR_SILENCE_TIME;
   m_sslControlString = sslControlString.trimmed();
 
   if(m_sslControlString.isEmpty())
