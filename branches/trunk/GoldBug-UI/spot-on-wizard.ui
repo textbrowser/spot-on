@@ -55,7 +55,7 @@
             </font>
            </property>
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome to Spot-On! To continue the initialization process, please press the Next button. You may also cancel the wizard and continue the initialization process via the advanced mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome to GoldBug! To continue the initialization process, please press the Next button. You may also cancel the wizard and continue the initialization process via the advanced mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
@@ -158,7 +158,7 @@
              </font>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spot-On allows you to save Web content to local and remote databases. The content is secured via your URL credentials. A search engine is also included. You may prepare the URL credentials later.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GoldBug allows you to save Web content to local and remote databases. The content is secured via your URL credentials. A search engine is also included. You may prepare the URL credentials later.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -386,7 +386,7 @@
             </font>
            </property>
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spot-On includes a special kernel program. The program is resposible for a multitude of tasks such as managing network communications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GoldBug includes a special kernel program. The program is resposible for a multitude of tasks such as managing network communications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
