@@ -1432,3 +1432,8 @@ bool spoton::verifyInitializationPassphrase(QWidget *parent)
 
   return true;
 }
+
+void spoton::slotNeighborSilenceTimeChanged(int value)
+{
+  Q_UNUSED(value);
+}

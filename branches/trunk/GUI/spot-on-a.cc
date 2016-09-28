@@ -4724,6 +4724,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "passthrough, "
 		      "waitforbyteswritten_msecs, "
 		      "private_application_credentials, "
+		      "silence_time, "
 		      "OID "
 		      "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
@@ -4836,7 +4837,8 @@ void spoton::slotPopulateNeighbors(void)
 		      "Priority: %25\n"
 		      "Lane Width: %26\n"
 		      "Passthrough: %27\n"
-		      "Wait-For-Bytes-Written: %28")).
+		      "Wait-For-Bytes-Written: %28\n"
+		      "Silence Time: %29")).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
@@ -4952,7 +4954,8 @@ void spoton::slotPopulateNeighbors(void)
 		  arg(priority).
 		  arg(locale.toString(query.value(36).toInt())).
 		  arg(query.value(37).toInt() ? tr("Yes") : tr("No")).
-		  arg(locale.toString(query.value(38).toInt()));
+		  arg(locale.toString(query.value(38).toInt())).
+		  arg(query.value(40).toInt());
 
 		{
 		  QTableWidgetItem *item = new QTableWidgetItem();
@@ -5074,6 +5077,9 @@ void spoton::slotPopulateNeighbors(void)
 			QTableWidgetItem *item = new QTableWidgetItem
 			  (QString::number(box->value()));
 
+			item->setFlags
+			  (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+			item->setToolTip(tooltip);
 			m_ui.neighbors->setItem(row, i, item);
 		      }
 		    else if(i == 19) // uptime
@@ -5174,6 +5180,9 @@ void spoton::slotPopulateNeighbors(void)
 			QTableWidgetItem *item = new QTableWidgetItem
 			  (box->currentText());
 
+			item->setFlags
+			  (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+			item->setToolTip(tooltip);
 			m_ui.neighbors->setItem(row, i, item);
 		      }
 		    else if(i == 37) // Passthrough
@@ -5223,6 +5232,41 @@ void spoton::slotPopulateNeighbors(void)
 			QTableWidgetItem *item = new QTableWidgetItem
 			  (QString::number(box->value()));
 
+			item->setFlags
+			  (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+			item->setToolTip(tooltip);
+			m_ui.neighbors->setItem(row, i, item);
+		      }
+		    else if(i == 40) // Silence Time
+		      {
+			QSpinBox *box = new QSpinBox();
+
+			box->setCorrectionMode
+			  (QAbstractSpinBox::CorrectToNearestValue);
+			box->setMaximum(std::numeric_limits<int>::max());
+			box->setMaximumWidth
+			  (box->fontMetrics().
+			   width(QString::number(box->maximum())) + 50);
+			box->setMinimum(5);
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			box->setToolTip(tooltip);
+			box->setValue
+			  (static_cast<int> (query.value(i).toInt()));
+			box->setWrapping(true);
+			connect
+			  (box,
+			   SIGNAL(valueChanged(int)),
+			   this,
+			   SLOT(slotNeighborSilenceTimeChanged(int)));
+			m_ui.neighbors->setCellWidget(row, i, box);
+
+			QTableWidgetItem *item = new QTableWidgetItem
+			  (QString::number(box->value()));
+
+			item->setFlags
+			  (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+			item->setToolTip(tooltip);
 			m_ui.neighbors->setItem(row, i, item);
 		      }
 		    else
@@ -9321,7 +9365,7 @@ void spoton::slotNeighborSelected(void)
 			   text() +
 			   ":</b> %1" + "<br>").arg(spoton_misc::
 						    htmlEncode(item->text())));
-	    }
+	      }
 	}
 
       int h = m_ui.neighborSummary->horizontalScrollBar()->value();
