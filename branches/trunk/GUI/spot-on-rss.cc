@@ -2385,7 +2385,7 @@ void spoton_rss::slotRefreshTimeline(void)
 	else if(m_ui.timeline_filter->currentIndex() == 5) // Not Imported
 	  str1.append(" WHERE imported <> 1 ");
 	else if(m_ui.timeline_filter->currentIndex() == 6) // Not Indexed
-	  str1.append(" WHERE visited = 0 ");
+	  str1.append(" WHERE visited <> 1 ");
 	else
 	  str1.append(" WHERE hidden <> 1 ");
 
