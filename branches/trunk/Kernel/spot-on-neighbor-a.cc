@@ -547,6 +547,7 @@ spoton_neighbor::spoton_neighbor
  const int passthrough,
  const int waitforbyteswritten_msecs,
  const QByteArray &privateApplicationCredentials,
+ const int silenceTime,
  QObject *parent):QThread(parent)
 {
   m_abort = 0;
@@ -597,6 +598,7 @@ spoton_neighbor::spoton_neighbor
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_requireSsl = requireSsl;
   m_sctpSocket = 0;
+  m_silenceTime = qBound(5, silenceTime, std::numeric_limits<int>::max());
   m_sourceOfRandomness = 0;
   m_sslControlString = sslControlString.trimmed();
 
@@ -1041,7 +1043,7 @@ spoton_neighbor::~spoton_neighbor()
 
 void spoton_neighbor::slotTimeout(void)
 {
-  if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= 90)
+  if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= m_silenceTime)
     {
       spoton_misc::logError
 	(QString("spoton_neighbor::slotTimeout(): "
@@ -1087,7 +1089,8 @@ void spoton_neighbor::slotTimeout(void)
 		      "lane_width, "
 		      "passthrough, "
 		      "waitforbyteswritten_msecs, "
-		      "private_application_credentials "
+		      "private_application_credentials, "
+		      "silence_time "
 		      "FROM neighbors WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -1261,6 +1264,10 @@ void spoton_neighbor::slotTimeout(void)
 		      }
 
 		    m_passthrough = query.value(12).toInt();
+		    m_silenceTime = qBound
+		      (5,
+		       query.value(15).toInt(),
+		       std::numeric_limits<int>::max());
 		    m_sslControlString = query.value(9).toString();
 
 		    if(m_sslControlString.isEmpty())

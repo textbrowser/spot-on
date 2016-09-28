@@ -1444,6 +1444,7 @@ void spoton_kernel::prepareNeighbors(void)
 		      "passthrough, "
 		      "waitforbyteswritten_msecs, "
 		      "private_application_credentials, "
+		      "silence_time, "
 		      "OID FROM neighbors"))
 	  while(query.next())
 	    {
@@ -1495,6 +1496,8 @@ void spoton_kernel::prepareNeighbors(void)
 			else if(i == 26) // passthrough
 			  list.append(query.value(i).toInt());
 			else if(i == 27) // waitforbyteswritten_msecs
+			  list.append(query.value(i).toInt());
+			else if(i == 29) // silence_time
 			  list.append(query.value(i).toInt());
 			else
 			  {
@@ -1614,6 +1617,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 list.value(26).toInt(),
 				 list.value(27).toInt(),
 				 list.value(28).toByteArray(),
+				 list.value(29).toInt(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)

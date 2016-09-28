@@ -556,14 +556,22 @@ void spoton_misc::prepareDatabases(void)
 							 */
 		   "waitforbyteswritten_msecs INTEGER NOT NULL DEFAULT 0 "
 		   "CHECK (waitforbyteswritten_msecs >= 0 AND "
-		   "waitforbyteswritten_msecs <= %4))").
+		   "waitforbyteswritten_msecs <= %4), "
+		   "silence_time INTEGER NOT NULL DEFAULT 90 "
+		   "CHECK (silence_time >= 5 AND silence_time <= %6))").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
-	   arg(spoton_common::SSL_CONTROL_STRING));
+	   arg(spoton_common::SSL_CONTROL_STRING).
+	   arg(std::numeric_limits<int>::max()));
 	query.exec("ALTER TABLE neighbors "
 		   "ADD private_application_credentials TEXT");
+	query.exec
+	  (QString("ALTER TABLE neighbors "
+		   "ADD silence_time INTEGER NOT NULL DEFAULT 90 "
+		   "CHECK (silence_time >= 5 AND silence_time <= %1)").
+	   arg(std::numeric_limits<int>::max()));
       }
 
     db.close();

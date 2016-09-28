@@ -213,6 +213,7 @@ class spoton_neighbor: public QThread
 		  const int passthrough,
 		  const int waitforbyteswritten_msecs,
 		  const QByteArray &privateApplicationCredentials,
+		  const int silenceTime,
 		  QObject *parent);
 
   /*
@@ -330,6 +331,7 @@ class spoton_neighbor: public QThread
   bool m_useSsl;
   int m_keySize;
   int m_laneWidth;
+  int m_silenceTime;
   int m_sourceOfRandomness;
   qint64 m_id;
   qint64 m_listenerOid;
