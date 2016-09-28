@@ -6089,7 +6089,9 @@ void spoton::updateParticipantsTable(const QSqlDatabase &db)
 
 void spoton::slotSetPassphrase(void)
 {
-  if(!verifyInitializationPassphrase(this))
+  if(m_wizardHash.value("shown", false))
+    return;
+  else if(!verifyInitializationPassphrase(this))
     return;
 
   bool reencode = false;

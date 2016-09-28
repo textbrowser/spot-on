@@ -1239,6 +1239,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
   m_wizardHash["accepted"] = false;
   m_wizardHash["initialize_public_keys"] = true;
   m_wizardHash["launch_kernel"] = true;
+  m_wizardHash["shown"] = false;
   m_wizardHash["url_credentials"] = true;
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -1253,6 +1254,8 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 
   if(mb.exec() == QMessageBox::Yes)
     {
+      m_wizardHash["shown"] = true;
+
       QDialog dialog(this);
 
       if(m_wizardUi)
@@ -1289,6 +1292,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	    m_wizardUi->initialize_public_keys->isChecked();
 	  m_wizardHash["launch_kernel"] =
 	    m_wizardUi->launch_kernel->isChecked();
+	  m_wizardHash["shown"] = false;
 	  m_wizardHash["url_credentials"] =
 	    m_wizardUi->url_credentials->isChecked();
 	  repaint();
@@ -1306,6 +1310,8 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
       m_ui.setPassphrase->setVisible(true);
       m_ui.settingsVerticalLayout->insertWidget(1, m_ui.passphraseGroupBox);
     }
+
+  m_wizardHash["shown"] = false;
 }
 
 void spoton::slotWizardButtonClicked(void)
