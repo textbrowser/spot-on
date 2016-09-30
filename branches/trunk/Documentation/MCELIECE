@@ -1,15 +1,17 @@
-The McEliece cryptographic system is only enabled for the Linux and
-OS X Qt 5.x project files. Version 9.10.0 of NTL, or newer, is required.
+The McEliece cryptographic system is only enabled for the Linux,
+OS X, and Windows Qt 5.x project files.
+Version 9.10.0 of NTL, or newer, is suitable.
 
 To enable the system for other systems, please follow the following
 suggestions. Good luck!
 
 1. Verify that libtool is installed. On Debian-based systems, issue
 sudo apt-get install libtool-bin. On FreeBSD, issue sudo pkg install libtool.
+Please ignore on OS X and Windows.
 
 2. Create a special libntl target. Please note that a kernel's
 project file will reference different libNTL paths (../../../libNTL).
-OS X, please ignore.
+Please ignore on OS X and Windows.
 
 libntl.target = libntl.so
 libntl.commands = cd ../../libNTL/unix.d/src && ./configure && $(MAKE)
@@ -33,11 +35,12 @@ On OS X, Homebrew should be used. NTL requires GMP.
 
 LIBS		+= -lgmp -lntl
 
-5. Modify QMAKE_CLEAN. OS X, please ignore.
+5. Modify QMAKE_CLEAN. OS X and Windows, please ignore.
 
 QMAKE_CLEAN += ../../libNTL/unix.d/src/*.o ../../libNTL/unix.d/src/*.lo
 
-6. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS. OS X, please ignore.
+6. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS.
+Please ignore on OS X and Windows.
 
 QMAKE_EXTRA_TARGETS = libntl libntru libspoton purge
 PRE_TARGETDEPS = libntl.so libntru.so libspoton.so
