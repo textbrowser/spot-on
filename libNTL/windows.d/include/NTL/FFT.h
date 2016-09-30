@@ -1,4 +1,5 @@
 
+
 #ifndef NTL_FFT__H
 #define NTL_FFT__H
 
@@ -48,7 +49,7 @@ typedef LazyTable<FFTVectorPair, NTL_FFTMaxRoot+1> FFTMultipliers;
 class FFTMulTabs {
 public:
 
-   FFTMultipliers MulTab[2];
+   FFTMultipliers MulTab, InvMulTab;
 
 };
 
@@ -57,19 +58,19 @@ class zz_pInfoT; // forward reference, defined in lzz_p.h
 
 struct FFTPrimeInfo {
    long q;   // the prime itself
-   mulmod_t qinv;   // 1/((wide_double) q) -- but subject to change!!
-   double qrecip;   // 1/double(q)
+   double qinv;   // 1/((double) q)
 
    SmartPtr<zz_pInfoT> zz_p_context; 
    // pointer to corresponding zz_p context, which points back to this 
    // object in the case of a non-user FFT prime
 
-   Vec<long> RootTable[2];
-   //   RootTable[0][j] = w^{2^{MaxRoot-j}},
-   //                     where w is a primitive 2^MaxRoot root of unity
-   //                     for q
-   // RootInvTable[1][j] = 1/RootTable[0][j] mod q
+   Vec<long> RootTable;
+   //   RootTable[j] = w^{2^{MaxRoot-j}},
+   //                  where w is a primitive 2^MaxRoot root of unity
+   //                  for q
 
+   Vec<long> RootInvTable;
+   // RootInvTable[j] = 1/RootTable[j] mod q
 
    Vec<long> TwoInvTable;
    // TwoInvTable[j] = 1/2^j mod q
@@ -82,6 +83,13 @@ struct FFTPrimeInfo {
 };
 
 void InitFFTPrimeInfo(FFTPrimeInfo& info, long q, long w, bool bigtab);
+
+#define NTL_FFT_BIGTAB_LIMIT (350)
+// big tables are only used for the first NTL_FFT_BIGTAB_LIMIT primes
+// TODO: maybe we should have a similar limit for the degree of
+// the convolution as well.
+// FIXME: This is currently only used in FFT.c -- maybe move there?
+
 
 
 #define NTL_MAX_FFTPRIMES (20000)
@@ -107,22 +115,14 @@ extern FFTTablesType FFTTables;
 // a truly GLOBAL variable, shared among all threads
 
 
-static inline 
-long GetFFTPrime(long i)
+inline long GetFFTPrime(long i)
 {
    return FFTTables[i]->q;
 }
 
-static inline 
-mulmod_t GetFFTPrimeInv(long i)
+inline double GetFFTPrimeInv(long i)
 {
    return FFTTables[i]->qinv;
-}
-
-static inline 
-double GetFFTPrimeRecip(long i)
-{
-   return FFTTables[i]->qrecip;
 }
 
 
@@ -134,57 +134,67 @@ void UseFFTPrime(long index);
 // allocates and initializes information for FFT prime
 
 
-void FFT(long* A, const long* a, long k, const FFTPrimeInfo& info, long dir);
+void FFT(long* A, const long* a, long k, long q, const long* root);
 // the low-level FFT routine.
-// computes a 2^k point FFT modulo q = info.q
-// dir == 0 => forward direction (using roots)
-// dir == 1 => backwards direction (using inverse roots)
+// computes a 2^k point FFT modulo q, using the table root for the roots.
+
+void FFT(long* A, const long* a, long k, long q, const long* root, const FFTMultipliers& tab);
 
 
-
-
-
-static inline
+inline
 void FFTFwd(long* A, const long *a, long k, const FFTPrimeInfo& info)
 // Slightly higher level interface...using the ith FFT prime
 {
-   FFT(A, a, k, info, 0);
+#ifdef NTL_FFT_BIGTAB
+   if (info.bigtab)
+      FFT(A, a, k, info.q, &info.RootTable[0], info.bigtab->MulTab);
+   else
+      FFT(A, a, k, info.q, &info.RootTable[0]);
+#else
+   FFT(A, a, k, info.q, &info.RootTable[0]);
+#endif
 }
 
-
-static inline
+inline 
 void FFTFwd(long* A, const long *a, long k, long i)
 {
    FFTFwd(A, a, k, *FFTTables[i]);
 }
 
-static inline
+inline
 void FFTRev(long* A, const long *a, long k, const FFTPrimeInfo& info)
 // Slightly higher level interface...using the ith FFT prime
 {
-   FFT(A, a, k, info, 1);
+#ifdef NTL_FFT_BIGTAB
+   if (info.bigtab)
+      FFT(A, a, k, info.q, &info.RootInvTable[0], info.bigtab->InvMulTab);
+   else
+      FFT(A, a, k, info.q, &info.RootInvTable[0]);
+#else
+   FFT(A, a, k, info.q, &info.RootInvTable[0]);
+#endif
 }
 
-static inline
+inline
 void FFTRev(long* A, const long *a, long k, long i)
 {
    FFTRev(A, a, k, *FFTTables[i]);
 }
 
-static inline
+inline
 void FFTMulTwoInv(long* A, const long *a, long k, const FFTPrimeInfo& info)
 {
    VectorMulModPrecon(1L << k, A, a, info.TwoInvTable[k], info.q, 
                       info.TwoInvPreconTable[k]);
 }
 
-static inline
+inline
 void FFTMulTwoInv(long* A, const long *a, long k, long i)
 {
    FFTMulTwoInv(A, a, k, *FFTTables[i]);
 }
 
-static inline 
+inline 
 void FFTRev1(long* A, const long *a, long k, const FFTPrimeInfo& info)
 // FFTRev + FFTMulTwoInv
 {
@@ -192,7 +202,7 @@ void FFTRev1(long* A, const long *a, long k, const FFTPrimeInfo& info)
    FFTMulTwoInv(A, A, k, info);
 }
 
-static inline 
+inline 
 void FFTRev1(long* A, const long *a, long k, long i)
 {
    FFTRev1(A, a, k, *FFTTables[i]);

@@ -84,26 +84,6 @@ using the configure script.
 #endif
 
 #if 0
-#define NTL_DISABLE_TLS_HACK
-
-/* Set if you want to compile NTL without "TLS hack"
- *
- * To re-build after changing this flag: rm *.o; make ntl.a
- */
-
-#endif
-
-#if 0
-#define NTL_ENABLE_TLS_HACK
-
-/* Set if you want to compile NTL with "TLS hack"
- *
- * To re-build after changing this flag: rm *.o; make ntl.a
- */
-
-#endif
-
-#if 0
 #define NTL_THREADS
 
 /* Set if you want to compile NTL as a thread-safe library.
@@ -124,18 +104,8 @@ using the configure script.
 
 #endif
 
-#if 0
-#define NTL_THREAD_BOOST
 
-/* Set if you want to compile NTL to exploit threads internally.
- *
- * To re-build after changing this flag: rm *.o; make ntl.a
- */
-
-#endif
-#
-
-#if 0
+#if 1
 #define NTL_GMP_LIP
 
 /* 
@@ -177,7 +147,6 @@ using the configure script.
  */
 
 #endif
-
 
 #if 0
 #define NTL_LONG_LONG_TYPE long long
@@ -306,52 +275,6 @@ using the configure script.
 
 
 
-#if 0
-#define NTL_LEGACY_SP_MULMOD
-
-/* Forces legacy single-precision MulMod implementation.
- */
-
-#endif
-
-
-#if 0
-#define NTL_DISABLE_LONGDOUBLE
-
-/* Explicitly disables us of long double arithmetic
- */
-
-#endif
-
-
-#if 0
-#define NTL_DISABLE_LONGLONG
-
-/* Explicitly disables us of long long arithmetic 
- */
-
-#endif
-
-#if 0
-#define NTL_DISABLE_LL_ASM
-
-/* Explicitly disables us of inline assembly as a replacement
- * for long lobg arithmetic.
- */
-
-#endif
-
-
-#if 0
-#define NTL_MAXIMIZE_SP_NBITS
-
-/* Allows for 62-bit single-precision moduli on 64-bit platforms.
- * By default, such moduli are restricted to 60 bits, which
- * usually gives slightly better performance across a range of
- * of parameters.
- */
-
-#endif
 
 /*************************************************************************
  *
@@ -404,9 +327,9 @@ using the configure script.
 #endif
 
 
-/* There are three strategies to implmement single-precision
+/* There are four strategies to implmement single-precision
  * modular multiplication with precondinition (see the MulModPrecon
- * function in the ZZ module): the default, and NTL_SPMM_ULL,
+ * function in the ZZ module): the default, NTL_SPMM_UL, and NTL_SPMM_ULL,
  * and NTL_SPMM_ASM.
  * This plays a crucial role in the  "small prime FFT" used to 
  * implement polynomial arithmetic, and in other CRT-based methods 
@@ -415,11 +338,22 @@ using the configure script.
  */
 
 
-
 #if 0
+#define NTL_SPMM_UL
+
+/*    The default MulModPrecon implementation uses a mix of
+ *    int and float arithmetic, which may be slow on certain machines.
+ *    This flag causes an "all integer" implementation to be used.
+ *    It is entirely portable.
+ *    To re-build after changing this flag: rm *.o; make ntl.a
+ */
+
+
+
+#elif 0
 #define NTL_SPMM_ULL
 
-/*    This also causes an "all integer"
+/*    Like this previous flag, this also causes an "all integer"
  *    implementation of MulModPrecon to be used.
  *    It us usually a faster implementation,
  *    but it is not enturely portable.
@@ -429,10 +363,10 @@ using the configure script.
  *    To re-build after changing this flag: rm *.o; make ntl.a
  */
 
-#elif 0
+#elif 1
 #define NTL_SPMM_ASM
 
-/*    Like this previous flag, this also causes an "all integer"
+/*    Like this previous two flag, this also causes an "all integer"
  *    implementation of MulModPrecon to be used.
  *    It relies assembler code to do double-word unsigned multiplication.
  *    This is only supported on a select mechines under GCC. 
@@ -450,26 +384,31 @@ using the configure script.
  * FFT modulo single-precision primes is implemented.
  */
 
-#if 0
+#if 1
 #define NTL_FFT_BIGTAB
 
 /*
  * Precomputed tables are used to store all the roots of unity
- * used in FFT computations. 
+ * used in an FFT computation for the first NTL_FFT_BIGTAB_LIMIT
+ * FFT primes (the latter is defined in FFT.h).  This can
+ * lead to significant time savings but at the const of some space:
+ * in the worst case, the precomputed tables will take of space
+ * log_2(NTL_FFT_BUGTAB_LIMIT) * M, where M is roughly the maxmimum
+ * space occupied by any one polynomial that was involved in an
+ * FFT computation (this could be a polynomial over zz_p, ZZ_p, or ZZ).
  *
  *   To re-build after changing this flag: rm *.o; make ntl.a
  */
 
-
 #endif
 
 
-#if 0
+#if 1
 #define  NTL_FFT_LAZYMUL
 
 /*
- * This flag only has an effect when combined with 
- * either the NTL_SPMM_ULL or NTL_SPMM_ASM flags. 
+ * This flag only has an effect when combined with the NTL_FFT_BIGTAB
+ * flag, and either the NTL_SPMM_ULL or NTL_SPMM_ASM flags. 
  * When set, a "lazy multiplication" strategy due to David Harvey:
  * see his paper "FASTER ARITHMETIC FOR NUMBER-THEORETIC TRANSFORMS".
  *
@@ -490,7 +429,7 @@ using the configure script.
 
 
 
-#if 0
+#if 1
 #define NTL_AVOID_BRANCHING
 
 /*
@@ -540,36 +479,8 @@ using the configure script.
 #endif
 
 
-#if 0
-#define NTL_CRT_ALTCODE
 
-/*
- * Employs an alternative CRT strategy.
- * Only relevant with GMP.
- * Seems to be marginally faster on some x86_64 platforms.
- *
- *   To re-build after changing this flag: 
- *      rm lip.o; make ntl.a
- */
-
-#endif
-
-#if 0
-#define NTL_CRT_ALTCODE_SMALL
-
-/*
- * Employs an alternative CRT strategy for small moduli.
- * Only relevant with GMP.
- * Seems to be marginally faster on some x86_64 platforms.
- *
- *   To re-build after changing this flag: 
- *      rm lip.o; make ntl.a
- */
-
-#endif
-
-
-#if 0
+#if 1
 #define NTL_GF2X_ALTCODE
 
 /*
@@ -610,19 +521,8 @@ using the configure script.
 #endif
 
 
-#if 0
-#define NTL_PCLMUL
 
-/* 
- * Use this flag for faster GF2X arithmetc.  
- * This enables the use of the PCLMUL instruction on x86-64
- * machines. 
- *
- * To re-build after changing this flag:
- *   rm GF2X.o; make ntl.a
- */
 
-#endif
 
 
 

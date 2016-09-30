@@ -38,8 +38,8 @@ inline mat_GF2E ident_mat_GF2E(long n)
 void determinant(GF2E& d, const mat_GF2E& A);
 long IsIdent(const mat_GF2E& A, long n);
 void transpose(mat_GF2E& X, const mat_GF2E& A);
-void solve(GF2E& d, vec_GF2E& x, const mat_GF2E& A, const vec_GF2E& b);
-void solve(GF2E& d, const mat_GF2E& A, vec_GF2E& x, const vec_GF2E& b);
+void solve(GF2E& d, vec_GF2E& X,
+           const mat_GF2E& A, const vec_GF2E& b);
 void inv(GF2E& d, mat_GF2E& X, const mat_GF2E& A);
 
 inline void sqr(mat_GF2E& X, const mat_GF2E& A)

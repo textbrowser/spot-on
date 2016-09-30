@@ -56,7 +56,7 @@ const GF2 operator[](long i) const;
 
 
 
-static NTL_CHEAP_THREAD_LOCAL long HexOutput;
+NTL_THREAD_LOCAL static long HexOutput;
 
 inline GF2X(long i, GF2 c);
 inline GF2X(long i, long c);
@@ -738,7 +738,7 @@ public:
    ~GF2XWatcher() { watched.KillBig(); } 
 };
 
-#define NTL_GF2XRegister(x) NTL_TLS_LOCAL(GF2X, x); GF2XWatcher _WATCHER__ ## x(x)
+#define NTL_GF2XRegister(x) NTL_THREAD_LOCAL static GF2X x; GF2XWatcher _WATCHER__ ## x(x)
 
 
 

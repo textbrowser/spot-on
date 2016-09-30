@@ -4,10 +4,6 @@
 
 #include <NTL/config.h>
 #include <NTL/mach_desc.h>
-#include <NTL/HAVE_LL_TYPE.h>
-#include <NTL/HAVE_BUILTIN_CLZL.h>
-#include <NTL/HAVE_AVX.h>
-#include <NTL/HAVE_FMA.h>
 
 
 /*
@@ -77,48 +73,7 @@
 #endif
 
 
-#ifdef NTL_HAVE_LL_TYPE
-
-typedef NTL_LL_TYPE _ntl_longlong;
-typedef NTL_ULL_TYPE _ntl_ulonglong;
-// typenames are more convenient than macros
-
-#else
-
-#undef NTL_LL_TYPE
-#undef NTL_ULL_TYPE
-// prevent any use of these macros
-
-class _ntl_longlong { private: _ntl_longlong() { } };
-class _ntl_ulonglong { private: _ntl_ulonglong() { } };
-// cannot create variables of these types
-
-
-#endif
-
 /********************************************************/
-
-
-
-// Define an unsigned type with at least 32 bits
-// there is no truly portable way to do this, yet...
-
-
-#if (NTL_BITS_PER_INT >= 32)
-
-typedef unsigned int _ntl_uint32; // 32-bit word
-#define NTL_BITS_PER_INT32 NTL_BITS_PER_INT
-
-#else
-
-// NOTE: C++ standard guarantees longs are at least 32-bits wide,
-// and this is also explicitly checked at builod time
-
-typedef unsigned long _ntl_uint32; // 32-bit word
-#define NTL_BITS_PER_INT32 NTL_BITS_PER_LONG
-
-#endif
-
 
 
 // The usual token pasting stuff...
@@ -325,16 +280,9 @@ extern unsigned long exception_counter;
 
 #define NTL_THREAD_LOCAL thread_local 
 
-#ifdef __GNUC__
-#define NTL_CHEAP_THREAD_LOCAL __thread
-#else
-#define NTL_CHEAP_THREAD_LOCAL thread_local
-#endif
-
 #else
 
 #define NTL_THREAD_LOCAL 
-#define NTL_CHEAP_THREAD_LOCAL 
 
 #endif
 
@@ -359,6 +307,17 @@ void _ntl_ForceToMem(double *p);
    a double into memory (see comment above). */
 
 double _ntl_ldexp(double x, long e);
+
+void _ntl_abort();
+/* This is the routine called by NTL to abort a program in case of error. */
+
+void _ntl_abort_cxx_callback();
+/* This is a C++ function (implemented in tools.c) that is
+   used to implement the callback mechanism.  The issue here
+   is that I don't want a C function to call a C++ function
+   via a function pointer.  This could potentially be problematic. 
+   EDIT: since changing over to all-C++, this is now moot.
+*/
 
 
 #define NTL_DEFINE_SWAP(T)\
@@ -392,88 +351,6 @@ void _ntl_swap(T*& a, T*& b)
    as the C++ standard is kind of broken on the issue of where
    swap is defined. And I also only want it defined for built-in types.
  */
-
-
-// The following routine increments a pointer so that
-// it is properly aligned.  
-// It is assumed that align > 0.
-// If align is a constant power of 2, it compiles
-// into a small handful of simple instructions.
-
-#if (NTL_BIG_POINTERS)
-
-#define NTL_UPTRINT_T unsigned long long
-// DIRT: this should really be std::uintptr_t, defined
-// in <cstdint>; however, that header is not widely available,
-// and even if it were, std::uintpre_t is not guaranteed
-// to be defined.  Of course, unsigned long long may not
-// be defined in pre-C++11.  
-
-#else
-
-#define NTL_UPTRINT_T unsigned long 
-
-#endif
-
-
-#if (!defined(__GNUC__) || !defined(__x86_64__) || NTL_BITS_PER_LONG != 64)
-
-// DIRT: for now, we only attempt to implement this function properly when
-// we really need it, which is for AVX support.
-// The source file CheckAVX.c checks for these same conditions.
-// We still define it, to simplify the overall code structure.
-
-static inline
-char *_ntl_make_aligned(char *p, long align)
-{
-   return p;
-}
-
-#else
-
-// DIRT: in the limited range of platforms for which we attempt to
-// implement it, this should work fine.
-
-static inline
-char *_ntl_make_aligned(char *p, long align)
-{
-   unsigned long r =  (unsigned long) (((NTL_UPTRINT_T) (p)) % ((NTL_UPTRINT_T) (align)));
-   return p + ((((unsigned long) (align)) - r) % ((unsigned long) (align)));
-}
-
-#define NTL_HAVE_ALIGNED_ARRAY
-
-#endif
-
-
-
-
-
-// The following is for aligning small local arrays
-// Equivalent to type x[n], but aligns to align bytes
-// Only works for POD types
-// NOTE: the gcc aligned attribute might work, but there is
-// some chatter on the web that this was (at some point) buggy.
-// Not clear what the current status is.
-// Anyway, this is only intended for use with gcc on intel
-// machines, so it should be OK.
-
-
-#define NTL_ALIGNED_LOCAL_ARRAY(align, x, type, n) \
-   char x##__ntl_hidden_variable_storage[n*sizeof(type)+align]; \
-   type *x = (type *) _ntl_make_aligned(&x##__ntl_hidden_variable_storage[0], align);
-
-
-#define NTL_AVX_BYTE_ALIGN (32)
-#define NTL_AVX_DBL_ALIGN (NTL_AVX_BYTE_ALIGN/long(sizeof(double)))
-
-#define NTL_AVX_LOCAL_ARRAY(x, type, n) NTL_ALIGNED_LOCAL_ARRAY(NTL_AVX_BYTE_ALIGN, x, type, n)
-
-#define NTL_DEFAULT_ALIGN (64)
-// this should be big enough to satisfy any SIMD instructions,
-// and it should also be as big as a cache line
-
-
    
 
 #endif

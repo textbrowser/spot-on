@@ -42,9 +42,7 @@ inline xdouble& operator=(double a);
 
 void normalize();
 
-static 
-NTL_CHEAP_THREAD_LOCAL 
-long oprec;
+NTL_THREAD_LOCAL static long oprec;
 
 static void SetOutputPrecision(long p);
 static long OutputPrecision() { return oprec; }
@@ -271,10 +269,6 @@ inline xdouble MulSub(const xdouble& a, const xdouble& b,
 
 double log(const xdouble& a);
 xdouble xexp(double x);
-
-
-inline xdouble exp(const xdouble& x) { return xexp(to_double(x)); }
-
 
 NTL_CLOSE_NNS
 

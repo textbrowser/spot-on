@@ -197,9 +197,9 @@ public:
 #endif
 
 
+
+
 const NTL_SNS string& CurrentThreadID();
-
-
 
 
 /*********************************************************************

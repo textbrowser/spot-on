@@ -31,11 +31,8 @@ public:
 
 };
 
-extern
-NTL_CHEAP_THREAD_LOCAL 
-ZZ_pEInfoT *ZZ_pEInfo; 
-// info for current modulus, initially null
-// raw pointer for faster TLS access
+NTL_THREAD_LOCAL 
+extern SmartPtr<ZZ_pEInfoT> ZZ_pEInfo; // info for current modulus, initially null
 
 
 

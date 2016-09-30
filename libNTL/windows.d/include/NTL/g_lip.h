@@ -21,64 +21,11 @@ typedef _ntl_gbigint_is_opaque  _ntl_gbigint_body;
 
 #endif
 
-
-#if (defined(NTL_HAVE_LL_TYPE) && !defined(NTL_LEGACY_SP_MULMOD))
-
-#define NTL_LONGLONG_SP_MULMOD
-
-// on 64 bit machines, hold NTL_SP_NBITS to 60 bits,
-// as certain operations (in particular, TBL_REM in g_lip_impl.h)
-// are a bit faster
-
-
-#if (!defined(NTL_MAXIMIZE_SP_NBITS) && NTL_BITS_PER_LONG >= 64)
-#define NTL_SP_NBITS (NTL_BITS_PER_LONG-4)
-#else
-#define NTL_SP_NBITS (NTL_BITS_PER_LONG-2)
-#endif
-
-
-#define NTL_NSP_NBITS NTL_NBITS_MAX
-
-#if (NTL_NSP_NBITS > NTL_SP_NBITS)
-#undef NTL_NSP_NBITS
-#define NTL_NSP_NBITS NTL_SP_NBITS
-#endif
-
-
-#elif (NTL_LONGDOUBLE_OK && !defined(NTL_LEGACY_SP_MULMOD) && !defined(NTL_DISABLE_LONGDOUBLE))
-
-#define NTL_LONGDOUBLE_SP_MULMOD
-
-#define NTL_SP_NBITS NTL_WNBITS_MAX
-
-// on 64 bit machines, hold NTL_SP_NBITS to 60 bits (see above)
-
-#if (!defined(NTL_MAXIMIZE_SP_NBITS) && NTL_BITS_PER_LONG >= 64 && NTL_SP_NBITS > NTL_BITS_PER_LONG-4)
-#undef NTL_SP_NBITS
-#define NTL_SP_NBITS (NTL_BITS_PER_LONG-4)
-#endif
-
-#define NTL_NSP_NBITS NTL_NBITS_MAX
-#if (NTL_NSP_NBITS > NTL_SP_NBITS)
-#undef NTL_NSP_NBITS
-#define NTL_NSP_NBITS NTL_SP_NBITS
-#endif
-
-
-#else
-
-
 #define NTL_SP_NBITS NTL_NBITS_MAX
-#define NTL_NSP_NBITS NTL_NBITS_MAX
-
-
-#endif
+#define NTL_SP_BOUND (1L << NTL_SP_NBITS)
+#define NTL_SP_FBOUND ((double) NTL_SP_BOUND)
 
 #define NTL_WSP_NBITS (NTL_BITS_PER_LONG-2)
-
-#define NTL_SP_BOUND (1L << NTL_SP_NBITS)
-#define NTL_NSP_BOUND (1L << NTL_NSP_NBITS)
 #define NTL_WSP_BOUND (1L << NTL_WSP_NBITS)
 
 /* define the following so an error is raised */
@@ -157,9 +104,6 @@ typedef _ntl_gbigint_is_opaque  _ntl_gbigint_body;
 
     void _ntl_gsubmul(_ntl_gbigint x, _ntl_gbigint y,  _ntl_gbigint *ww);
       /* *ww -= x*y */
-
-
-
 
 
 /********************************************************************
@@ -585,8 +529,6 @@ long _ntl_gblock_storage(long d);
 #define NTL_zaddmul _ntl_gaddmul
 #define NTL_zssubmul _ntl_gssubmul
 #define NTL_zsubmul _ntl_gsubmul
-
-
 
 #define NTL_GMP_LIP
 

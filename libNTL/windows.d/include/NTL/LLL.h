@@ -26,8 +26,8 @@ long LatticeSolve(vec_ZZ& x, const mat_ZZ& A, const vec_ZZ& y, long reduce=0);
 
 typedef long (*LLLCheckFct)(const vec_ZZ&); 
 
-extern NTL_CHEAP_THREAD_LOCAL double LLLStatusInterval;
-extern NTL_CHEAP_THREAD_LOCAL char *LLLDumpFile;
+NTL_THREAD_LOCAL extern double LLLStatusInterval;
+NTL_THREAD_LOCAL extern char *LLLDumpFile;
 
 
 // classical Gramm-Schmidt versions

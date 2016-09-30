@@ -66,9 +66,7 @@ public:
 
   inline quad_float& operator=(double x);
 
-  static 
-  NTL_CHEAP_THREAD_LOCAL 
-  long oprec;
+  NTL_THREAD_LOCAL static long oprec;
 
   static void SetOutputPrecision(long p);
   static long OutputPrecision() { return oprec; }
@@ -80,9 +78,6 @@ public:
 
 };  // end class quad_float
 
-
-
-
 #if (NTL_BITS_PER_LONG < NTL_DOUBLE_PRECISION)
 
 // FIXME: we could make this <=, and even BPL <= DP+1 for 
@@ -93,13 +88,10 @@ inline quad_float to_quad_float(unsigned long n) { return quad_float(n, 0); }
 
 #else
 
-
 quad_float to_quad_float(long n);
 quad_float to_quad_float(unsigned long n);
 
 #endif
-
-
 
 #if (NTL_BITS_PER_INT < NTL_DOUBLE_PRECISION)
 
@@ -117,8 +109,11 @@ inline quad_float to_quad_float(unsigned int n)
 
 
 
-
-inline quad_float to_quad_float(double x) { return quad_float(TrueDouble(x), 0); }
+inline quad_float to_quad_float(double x) { return quad_float(x, 0); }
+// On platforms with extended doubles, this may result in an
+// improper quad_float object, but it should be converted to a proper
+// one when passed by reference to any of the arithmetic routines,
+// at which time x will be forced to memory.
 
 inline quad_float to_quad_float(float x) 
    { return to_quad_float(double(x)); }

@@ -132,9 +132,6 @@ static inline unsigned long MulHiUL(unsigned long a, unsigned long b)
    unsigned long hi, lo;
    __asm__ ("mulq %3" : "=a" (lo), "=d" (hi) : "%0" (a), "rm" (b));
    
-   //__asm__ ("mulxq %2,%1,%0" : "=r" (hi), "=r" (lo) : "rm" (a), "d" (b));
-   // this uses the mulx instruction - no real benefit
-   
    return hi;
 } 
 

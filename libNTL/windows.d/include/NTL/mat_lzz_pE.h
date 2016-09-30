@@ -45,8 +45,8 @@ void transpose(mat_zz_pE& X, const mat_zz_pE& A);
 inline mat_zz_pE transpose(const mat_zz_pE& A)
    { mat_zz_pE X; transpose(X, A); NTL_OPT_RETURN(mat_zz_pE, X); }
 
-void solve(zz_pE& d, vec_zz_pE& x, const mat_zz_pE& A, const vec_zz_pE& b);
-void solve(zz_pE& d, const mat_zz_pE& A, vec_zz_pE& x, const vec_zz_pE& b);
+void solve(zz_pE& d, vec_zz_pE& X,
+           const mat_zz_pE& A, const vec_zz_pE& b);
 
 void inv(zz_pE& d, mat_zz_pE& X, const mat_zz_pE& A);
 

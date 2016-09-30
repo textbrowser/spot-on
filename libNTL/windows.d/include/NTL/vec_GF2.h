@@ -95,6 +95,7 @@ typedef Vec<GF2> vec_GF2;
 
 
 // sepcialized conversion
+
 inline void conv(vec_GF2& x, const vec_GF2& a)
 {  x = a; }
 

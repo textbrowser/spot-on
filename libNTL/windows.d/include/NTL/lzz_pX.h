@@ -6,7 +6,6 @@
 #include <NTL/lzz_p.h>
 #include <NTL/vec_lzz_p.h>
 #include <NTL/Lazy.h>
-#include <NTL/SmartPtr.h>
 
 NTL_OPEN_NNS
 
@@ -1094,9 +1093,7 @@ struct zz_pXArgument {
    vec_zz_pX H;
 };
 
-extern 
-NTL_CHEAP_THREAD_LOCAL 
-long zz_pXArgBound;
+NTL_THREAD_LOCAL extern long zz_pXArgBound;
 
 
 void build(zz_pXArgument& H, const zz_pX& h, const zz_pXModulus& F, long m);
@@ -1109,46 +1106,6 @@ void CompMod(zz_pX& x, const zz_pX& g, const zz_pXArgument& H,
 inline zz_pX
 CompMod(const zz_pX& g, const zz_pXArgument& H, const zz_pXModulus& F)
    { zz_pX x; CompMod(x, g, H, F); NTL_OPT_RETURN(zz_pX, x); }
-
-
-
-// experimental variant that yields a faster ModComp
-// Usage:
-//    zz_pXArgument H;
-//    build(H, h, F);
-//    zz_pXAltArgument H1;
-//    build(H1, H, F);  // this keeps a pointer to H, so H must remain alive
-//    CompMod(x, g, H1, F);  // x = g(h) mod f
-
-struct zz_pXAltArgument {
-
-   const zz_pXArgument *orig;
-   zz_pXAltArgument() : orig(0) {}
-
-#ifdef NTL_HAVE_LL_TYPE
-   long strategy;
-
-   long n, m;
-   Vec< Vec<long> > mem;
-   Vec<long*> row;
-
-   // NOTE: the following two members are used on if
-   // NTL_HAVE_AVX; however, we declare them unconditionally 
-   // to facilitate the possibility of dynamic linking based
-   // on architecture
-   Vec< AlignedArray<double> > dmem;
-   Vec<double*> drow;
-
-   sp_ll_reduce_struct pinv_LL;
-   sp_reduce_struct pinv_L;
-#endif
-};
-
-
-void build(zz_pXAltArgument& altH, const zz_pXArgument& H, const zz_pXModulus& F);
-void CompMod(zz_pX& x, const zz_pX& g, const zz_pXAltArgument& A, 
-             const zz_pXModulus& F);
-
 
 
 

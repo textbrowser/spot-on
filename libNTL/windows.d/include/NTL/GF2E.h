@@ -32,11 +32,8 @@ public:
    Lazy<ZZ> _card;
 };
 
-extern 
-NTL_CHEAP_THREAD_LOCAL
-GF2EInfoT *GF2EInfo; 
-// info for current modulus, initially null
-// fast TLS access
+NTL_THREAD_LOCAL
+extern SmartPtr<GF2EInfoT> GF2EInfo; // info for current modulus, initially null
 
 
 

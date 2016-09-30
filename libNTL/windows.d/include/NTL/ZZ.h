@@ -19,7 +19,6 @@
 #include <NTL/tools.h>
 #include <NTL/vector.h>
 #include <NTL/SmartPtr.h>
-#include <NTL/sp_arith.h>
 
 NTL_OPEN_NNS
 
@@ -152,7 +151,7 @@ public:
    ~ZZWatcher() { watched.KillBig(); }
 };
 
-#define NTL_ZZRegister(x) NTL_TLS_LOCAL(ZZ, x); ZZWatcher _WATCHER__ ## x(x)
+#define NTL_ZZRegister(x) NTL_THREAD_LOCAL static ZZ x; ZZWatcher _WATCHER__ ## x(x)
 
 
 
@@ -491,7 +490,6 @@ MulSubFrom(ZZ& x, const ZZ& a, const ZZ& b)
 }
 
 
-
 // Special routines for implementing CRT in ZZ_pX arithmetic
 // These are verbose, but fairly boilerplate
 
@@ -568,27 +566,6 @@ inline void ZZ_TmpVecAdapter::fetch(const ZZ_RemStructAdapter& rem_struct)
    rep.reset(rem_struct.rep->fetch()); 
 }
 
-
-// montgomery
-class ZZ_ReduceStructAdapter {
-public:
-   UniquePtr<_ntl_reduce_struct> rep;
-
-   void init(const ZZ& p, const ZZ& excess)
-   {
-      rep.reset(_ntl_reduce_struct_build(p.rep, excess.rep));
-   }
-
-   void eval(ZZ& x, ZZ& a) const
-   {
-      rep->eval(&x.rep, &a.rep);
-   }
-
-   void adjust(ZZ& x) const
-   {
-      rep->adjust(&x.rep);
-   }
-};
 
 
 
@@ -674,44 +651,6 @@ inline ZZ& operator/=(ZZ& x, long b)
 
 inline ZZ& operator%=(ZZ& x, const ZZ& b)
    { rem(x, x, b); return x; } 
-
-
-// preconditioned single-precision variant
-// not documented for now...
-
-
-#define NTL_ZZ_reduce_struct_DefaultSize (64)
-// number of zzigits stored in table
-
-
-struct sp_ZZ_reduce_struct_policy {
-
-   static
-   void deleter(_ntl_general_rem_one_struct *pinfo)
-   {
-      _ntl_general_rem_one_struct_delete(pinfo); 
-   }
-
-};
-
-struct sp_ZZ_reduce_struct {
-   long p;
-   UniquePtr<_ntl_general_rem_one_struct,sp_ZZ_reduce_struct_policy> pinfo;
-
-   sp_ZZ_reduce_struct() : p(0) { }
-
-   void build(long _p, long sz = NTL_ZZ_reduce_struct_DefaultSize) 
-   {
-      pinfo.reset(_ntl_general_rem_one_struct_build(_p, sz));
-      p = _p;
-   }
-
-   long rem(const ZZ& a) const
-   {
-      return _ntl_general_rem_one_struct_apply(a.rep, p, pinfo.get());
-   }
-};
-
 
 
 /**********************************************************
@@ -989,87 +928,8 @@ inline long ZZ_RoundCorrection(const ZZ& a, long k, long residual)
 ************************************************************/
 
 
-// ================ NEW PRG STUFF =================
-
-
-// Low-level key-derivation 
-
-
-void DeriveKey(unsigned char *key, long klen,  
-               const unsigned char *data, long dlen);
-
-
-
-// Low-level chacha stuff
-
-#define NTL_PRG_KEYLEN (32)
-
-class RandomStream {
-private:
-   _ntl_uint32 state[16];
-   unsigned char buf[64];
-   long pos;
-
-   void do_get(unsigned char *res, long n); 
-
-public:
-   explicit
-   RandomStream(const unsigned char *key);
-
-   // No default constructor 
-   // default copy and assignment
-
-   void get(unsigned char *res, long n) 
-   {
-      // optimize short reads
-      if (n >= 0 && n <= 64-pos) {
-         long i;
-         for (i = 0; i < n; i++) {
-            res[i] = buf[pos+i];
-         }
-         pos += n;
-      }
-      else {
-         do_get(res, n);
-      }
-   }
-
-};
-
-   
-
-
-RandomStream& GetCurrentRandomStream();
-// get reference to the current random by stream --
-// if SetSeed has not been called, it is called with
-// a default value (which should be unique to each
-// process/thread
-
-
 void SetSeed(const ZZ& s);
-void SetSeed(const unsigned char *data, long dlen);
-void SetSeed(const RandomStream& s);
 // initialize random number generator
-// in the first two version, a PRG key is derived from
-// the data using DeriveKey.
-
-
-// RAII for saving/restoring current state of PRG
-
-class RandomStreamPush {
-private: 
-   RandomStream saved;
-
-   RandomStreamPush(const RandomStreamPush&); // disable
-   void operator=(const RandomStreamPush&); // disable
-
-public:
-   RandomStreamPush() : saved(GetCurrentRandomStream()) { }
-   ~RandomStreamPush() { SetSeed(saved); } 
-
-};
-
-
 
 
 void RandomBnd(ZZ& x, const ZZ& n);
@@ -1097,16 +957,10 @@ inline ZZ RandomBits_ZZ(long NumBits)
 // single-precision version of the above
 
 long RandomBnd(long n);
-inline void RandomBnd(long& x, long n) { x = RandomBnd(n); }
 
 long RandomLen_long(long l);
-inline void RandomLen(long& x, long l) { x = RandomLen_long(l); }
 
 long RandomBits_long(long l);
-inline void RandomBits(long& x, long l) { x = RandomBits_long(l); }
-
-
-// specialty routines
 
 unsigned long RandomWord();
 unsigned long RandomBits_ulong(long l);
@@ -1356,7 +1210,7 @@ inline ZZ InvMod(const ZZ& a, const ZZ& n)
 
 
 inline long InvModStatus(ZZ& x, const ZZ& a, const ZZ& n)
-// if gcd(a,n) = 1, then ReturnValue = 0, x = a^{-1} mod n
+// if gcd(a,b) = 1, then ReturnValue = 0, x = a^{-1} mod n
 // otherwise, ReturnValue = 1, x = gcd(a, n)
 
   { return NTL_zinv(a.rep, n.rep, &x.rep); }
@@ -1469,18 +1323,604 @@ NTL_SNS ostream& operator<<(NTL_SNS ostream& s, const ZZ& a);
 
 
 
-// Some additional SP arithmetic routines, not defined in sp_arith.h
+/****************************************************************
+
+    Single-precision modular arithmetic
+
+*****************************************************************/
+
+
+/*
+these routines implement single-precision modular arithmetic.
+If n is the modulus, all inputs should be in the range 0..n-1.
+The number n itself should be in the range 1..2^{NTL_SP_NBITS}-1.
+*/
+
+// I've declared these "static" so that the installation wizard
+// has more flexibility, without worrying about the (rather esoteric)
+// possibility of the linker complaining when the definitions
+// are inconsistent across severeal files.
+// Maybe an unnamed namespace would be better.
+
+// DIRT: undocumented feature: in all of these MulMod routines,
+// the first argument, a, need only be in the range
+// 0..2^{NTL_SP_NBITS}-1.  This is assumption is used internally
+// in some NT routines...I've tried to mark all such uses with a
+// DIRT comment.  I may decide to make this feature part
+// of the documented interface at some point in the future.
+
+
+
+
+
+
+
+
+
+static inline long AddMod(long a, long b, long n)
+// return (a+b)%n
+
+{
+   long res = a + b;
+#if (NTL_ARITH_RIGHT_SHIFT && defined(NTL_AVOID_BRANCHING) && !defined(NTL_CLEAN_INT))
+   res -= n;
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+   return res;
+#elif (defined(NTL_AVOID_BRANCHING))
+   res -= n;
+   res += (long) ((-(((unsigned long) res) >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n));
+   return res;
+#else
+   if (res >= n)
+      return res - n;
+   else
+      return res;
+#endif
+}
+
+static inline long SubMod(long a, long b, long n)
+// return (a-b)%n
+
+{
+   long res = a - b;
+#if (NTL_ARITH_RIGHT_SHIFT && defined(NTL_AVOID_BRANCHING) && !defined(NTL_CLEAN_INT))
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+   return res;
+#elif (defined(NTL_AVOID_BRANCHING))
+   res += (long) ((-(((unsigned long) res) >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n));
+   return res;
+#else
+   if (res < 0)
+      return res + n;
+   else
+      return res;
+#endif
+}
+
+static inline long NegateMod(long a, long n)
+{
+   return SubMod(0, a, n);
+}
+
+
+
+#if (defined(NTL_CLEAN_INT) || (defined(NTL_AVOID_BRANCHING)  && !NTL_ARITH_RIGHT_SHIFT))
+#define NTL_CLEAN_SPMM
+#endif
+
+
+#if (!defined(NTL_CLEAN_SPMM))
+
+
+/*
+ * The default MulMod code.
+ */
+
+static inline long MulMod(long a, long b, long n)
+{
+   long q, res;
+
+   q  = (long) ((((double) a) * ((double) b)) / ((double) n)); 
+   res = a*b - q*n;
+#if (NTL_ARITH_RIGHT_SHIFT && defined(NTL_AVOID_BRANCHING))
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+   res -= n;
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+#else
+   if (res >= n)
+      res -= n;
+   else if (res < 0)
+      res += n;
+#endif
+   return res;
+}
+
+static inline long MulMod(long a, long b, long n, double ninv)
+{
+   long q, res;
+
+   q  = (long) ((((double) a) * ((double) b)) * ninv); 
+   res = a*b - q*n;
+#if (NTL_ARITH_RIGHT_SHIFT && defined(NTL_AVOID_BRANCHING))
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+   res -= n;
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+#else
+   if (res >= n)
+      res -= n;
+   else if (res < 0)
+      res += n;
+#endif
+   return res;
+}
+
+
+static inline long MulMod2(long a, long b, long n, double bninv)
+{
+   long q, res;
+
+   q  = (long) (((double) a) * bninv);
+   res = a*b - q*n;
+#if (NTL_ARITH_RIGHT_SHIFT && defined(NTL_AVOID_BRANCHING))
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+   res -= n;
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+#else
+   if (res >= n)
+      res -= n;
+   else if (res < 0)
+      res += n;
+#endif
+   return res;
+}
+
+static inline long MulDivRem(long& qq, long a, long b, long n, double bninv)
+{
+   long q, res;
+
+   q  = (long) (((double) a) * bninv);
+   res = a*b - q*n;
+   if (res >= n) {
+      res -= n;
+      q++;
+   } else if (res < 0) {
+      res += n;
+      q--;
+   }
+
+   qq = q;
+   return res;
+}
+
+#else
+
+/*
+ * NTL_CLEAN_INT set: these versions of MulMod are completely portable,
+ * assuming IEEE floating point arithmetic.
+ */
+
+static inline long MulMod(long a, long b, long n)
+{  
+   long q;
+   unsigned long res;
+
+   q  = (long) ((((double) a) * ((double) b)) / ((double) n)); 
+
+   res = ((unsigned long) a)*((unsigned long) b) - 
+         ((unsigned long) q)*((unsigned long) n);
+
+#if (defined(NTL_AVOID_BRANCHING))
+   res += (-(res >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n);
+   res -= ((unsigned long) n);
+   res += (-(res >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n);
+#else
+   if (res >> (NTL_BITS_PER_LONG-1))
+      res += ((unsigned long) n);
+   else if (((long) res) >= n)
+      res -= ((unsigned long) n);
+#endif
+ 
+   return ((long) res);
+}
+
+static inline long MulMod(long a, long b, long n, double ninv)
+{
+   long q; 
+   unsigned long res;
+
+   q  = (long) ((((double) a) * ((double) b)) * ninv); 
+
+   res = ((unsigned long) a)*((unsigned long) b) - 
+         ((unsigned long) q)*((unsigned long) n);
+
+#if (defined(NTL_AVOID_BRANCHING))
+   res += (-(res >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n);
+   res -= ((unsigned long) n);
+   res += (-(res >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n);
+#else
+   if (res >> (NTL_BITS_PER_LONG-1))
+      res += ((unsigned long) n);
+   else if (((long) res) >= n)
+      res -= ((unsigned long) n);
+#endif
+ 
+   return ((long) res);
+}
+
+
+static inline long MulMod2(long a, long b, long n, double bninv)
+{
+   long q;
+   unsigned long res;
+
+   q  = (long) (((double) a) * bninv);
+
+   res = ((unsigned long) a)*((unsigned long) b) - 
+         ((unsigned long) q)*((unsigned long) n);
+
+#if (defined(NTL_AVOID_BRANCHING))
+   res += (-(res >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n);
+   res -= ((unsigned long) n);
+   res += (-(res >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n);
+#else
+   if (res >> (NTL_BITS_PER_LONG-1))
+      res += ((unsigned long) n);
+   else if (((long) res) >= n)
+      res -= ((unsigned long) n);
+#endif
+
+ 
+   return ((long) res);
+}
+
+static inline long MulDivRem(long& qq, long a, long b, long n, double bninv)
+{
+   long q; 
+   unsigned long res;
+
+   q  = (long) (((double) a) * bninv);
+   res = ((unsigned long) a)*((unsigned long) b) - 
+         ((unsigned long) q)*((unsigned long) n);
+
+   if (res >> (NTL_BITS_PER_LONG-1)) {
+      res += n;
+      q--;
+   } else if (((long) res) >= n) {
+      res -= n;
+      q++;
+   }
+
+   qq = q;
+   return ((long) res);
+}
+
+
+#endif
+
+
+
+
+// These MulMod routines (with preconditioning) are sometimes
+// significantly faster.  There are four possible implementations:
+//  - default: uses MulMod2 above (lots of floating point)
+//  - NTL_SPMM_ULL: uses unsigned long long (if possible)
+//  - NTL_SPMM_ASM: uses assembly language (if possible)
+//  - NTL_SPMM_UL: uses only unsigned long arithmetic (portable, slower).
+
+#if ((defined(NTL_SPMM_ULL) || defined(NTL_SPMM_ASM)))
+
+
+// unsigned long long / asm versions
+
+typedef unsigned long mulmod_precon_t;
+
+#define NTL_SPMM_VEC_T vec_ulong
+
+#if (!defined(NTL_CLEAN_SPMM))
+
+static inline unsigned long PrepMulModPrecon(long b, long n, double ninv)
+{
+   long q, r;
+
+   q  = (long) ( (((double) b) * NTL_SP_FBOUND) * ninv ); 
+   r = (b << NTL_SP_NBITS) - q*n;
+
+#if (NTL_ARITH_RIGHT_SHIFT && defined(NTL_AVOID_BRANCHING))
+   q += 1 + (r >> (NTL_BITS_PER_LONG-1)) + ((r - n) >> (NTL_BITS_PER_LONG-1));
+#else
+   if (r >= n)
+      q++;
+   else if (r < 0)
+      q--;
+#endif
+
+   return ((unsigned long) q) << (NTL_BITS_PER_LONG - NTL_SP_NBITS);
+}
+
+
+#else
+
+/*
+ * clean int version -- this should be completely portable.
+ */
+
+
+static inline unsigned long PrepMulModPrecon(long b, long n, double ninv)
+{
+   unsigned long q, r;
+
+   q = (long) ( (((double) b) * NTL_SP_FBOUND) * ninv ); 
+   r = (((unsigned long) b) << NTL_SP_NBITS ) - q * ((unsigned long) n);
+
+#if (defined(NTL_AVOID_BRANCHING))
+   q += 1UL - (r >> (NTL_BITS_PER_LONG-1)) - ((r - ((unsigned long) n)) >> (NTL_BITS_PER_LONG-1));
+#else
+   if (r >> (NTL_BITS_PER_LONG-1))
+      q--;
+   else if (((long) r) >= n)
+      q++;
+#endif
+
+   return q << (NTL_BITS_PER_LONG - NTL_SP_NBITS);
+}
+
+
+
+#endif
+
+
+
+
+#if (defined(NTL_SPMM_ULL))
+
+static inline unsigned long MulHiUL(unsigned long a, unsigned long b)
+{
+   return (((NTL_ULL_TYPE)(a)) * ((NTL_ULL_TYPE)(b))) >> NTL_BITS_PER_LONG;
+} 
+
+#else 
+
+// assmbly code versions
+
+#include <NTL/SPMM_ASM.h>
+
+
+#endif
+
+
+
+
+
+   
+
+#if (!defined(NTL_CLEAN_SPMM))
+
+
+
+static inline long MulModPrecon(long a, long b, long n, unsigned long bninv)
+{
+   long q, res;
+   
+   q = (long) MulHiUL(a, bninv);
+
+   res = a*b - q*n;
+#if (NTL_ARITH_RIGHT_SHIFT && defined(NTL_AVOID_BRANCHING))
+   res -= n;
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+#else
+   if (res >= n)
+      res -= n;
+#endif
+   return res;
+}
+
+
+#else
+
+static inline long MulModPrecon(long a, long b, long n, unsigned long bninv)
+{
+   unsigned long q, res;
+
+   
+   q = MulHiUL(a, bninv);
+
+   res = ((unsigned long) a)*((unsigned long) b) - q*((unsigned long) n);
+
+#if (defined(NTL_AVOID_BRANCHING))
+   res -= ((unsigned long) n);
+   res += (-(res >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n);
+#else
+   if (((long) res) >= n)
+      res -= ((unsigned long) n);
+#endif
+
+   return (long) res;
+}
+
+#endif
+
+
+
+#elif (defined(NTL_SPMM_UL))
+
+// plain, portable (but slower) int version
+
+typedef long mulmod_precon_t;
+
+#define NTL_SPMM_VEC_T vec_long
+
+
+#if (!defined(NTL_CLEAN_SPMM))
+
+static inline long PrepMulModPrecon(long b, long n, double ninv)
+{
+   long q, r;
+
+   q  = (long) ( (((double) b) * NTL_SP_FBOUND) * ninv ); 
+   r = (b << NTL_SP_NBITS) - q*n;
+
+
+#if (NTL_ARITH_RIGHT_SHIFT && defined(NTL_AVOID_BRANCHING))
+   q += 1 + (r >> (NTL_BITS_PER_LONG-1)) + ((r - n) >> (NTL_BITS_PER_LONG-1));
+#else
+   if (r >= n)
+      q++;
+   else if (r < 0)
+      q--;
+#endif
+
+   return q;
+}
+
+
+#else
+
+static inline long PrepMulModPrecon(long b, long n, double ninv)
+{
+   unsigned long q, r;
+
+   q = (long) ( (((double) b) * NTL_SP_FBOUND) * ninv ); 
+   r = (((unsigned long) b) << NTL_SP_NBITS ) - q * ((unsigned long) n);
+
+#if (defined(NTL_AVOID_BRANCHING))
+   q += 1UL - (r >> (NTL_BITS_PER_LONG-1)) - ((r - ((unsigned long) n)) >> (NTL_BITS_PER_LONG-1));
+#else
+   if (r >> (NTL_BITS_PER_LONG-1))
+      q--;
+   else if (((long) r) >= n)
+      q++;
+#endif
+
+   return ((long) q);
+}
+
+
+#endif
+
+
+
+
+static inline long MulHiSP(long b, long d)
+{
+   unsigned long _b1 = b & ((1UL << (NTL_SP_NBITS/2)) - 1UL);
+   unsigned long _d1 = d & ((1UL << (NTL_SP_NBITS/2)) - 1UL);
+   unsigned long _bd,_b1d1,_m,_aa;
+   unsigned long _ld = (d>>(NTL_SP_NBITS/2));
+   unsigned long _lb = (b>>(NTL_SP_NBITS/2));
+
+   _bd=_lb*_ld;
+   _b1d1=_b1*_d1;
+   _m=(_lb+_b1)*(_ld+_d1) - _bd - _b1d1;
+   _aa = ( _b1d1+ ((_m&((1UL << (NTL_SP_NBITS/2)) - 1UL))<<(NTL_SP_NBITS/2)));
+   return (_aa >> NTL_SP_NBITS) + _bd + (_m>>(NTL_SP_NBITS/2));
+}
+
+
+#if (!defined(NTL_CLEAN_SPMM))
+
+static inline long MulModPrecon(long a, long b, long n, long bninv)
+{
+
+   long q, res;
+
+   q = MulHiSP(a, bninv);
+
+   res = a*b - q*n;
+#if (NTL_ARITH_RIGHT_SHIFT && defined(NTL_AVOID_BRANCHING))
+   res -= n;
+   res += (res >> (NTL_BITS_PER_LONG-1)) & n;
+#else
+   if (res >= n)
+      res -= n;
+#endif
+   return res;
+}
+
+
+
+#else
+
+
+static inline long MulModPrecon(long a, long b, long n, long bninv)
+{
+
+   unsigned long q, res;
+
+   q = MulHiSP(a, bninv);
+
+   res = ((unsigned long) a)*((unsigned long) b) - q*((unsigned long) n);
+
+#if (defined(NTL_AVOID_BRANCHING))
+   res -= ((unsigned long) n);
+   res += (-(res >> (NTL_BITS_PER_LONG-1))) & ((unsigned long) n);
+#else
+   if (((long) res) >= n)
+      res -= ((unsigned long) n);
+#endif
+
+   return (long) res;
+}
+
+
+#endif
+
+
+
+
+#else
+
+// default, double version
+
+typedef double mulmod_precon_t;
+
+#define NTL_SPMM_VEC_T vec_double
+
+static inline double PrepMulModPrecon(long b, long n, double ninv)
+{
+   return ((double) b) * ninv;
+}
+
+static inline long MulModPrecon(long a, long b, long n, double bninv)
+{
+   return MulMod2(a, b, n, bninv);
+}
+
+
+#endif
 
 
 long InvMod(long a, long n);
 // computes a^{-1} mod n.  Error is raised if undefined.
 
-long InvModStatus(long& x, long a, long n);
-// if gcd(a,n) = 1, then ReturnValue = 0, x = a^{-1} mod n
-// otherwise, ReturnValue = 1, x = gcd(a, n)
-
 long PowerMod(long a, long e, long n);
 // computes a^e mod n, e >= 0
+
+
+inline
+void VectorMulModPrecon(long k, long *x, const long *a, long b, long n, 
+                        mulmod_precon_t bninv)
+{
+   for (long i = 0; i < k; i++)
+      x[i] = MulModPrecon(a[i], b, n, bninv);
+}
+
+inline
+void VectorMulMod(long k, long *x, const long *a, long b, long n, 
+                  double ninv)
+{
+   mulmod_precon_t bninv;
+   bninv = PrepMulModPrecon(b, n, ninv);
+   VectorMulModPrecon(k, x, a, b, n, bninv);
+}
+
+
+inline 
+void VectorMulMod(long k, long *x, const long *a, long b, long n)
+{
+   double ninv = 1/((double) n);
+   VectorMulMod(k, x, a, b, n, ninv);
+}
+
 
 
 // Error handling

@@ -848,7 +848,7 @@ struct ZZ_pEXArgument {
    vec_ZZ_pEX H;
 };
 
-extern NTL_CHEAP_THREAD_LOCAL long ZZ_pEXArgBound;
+NTL_THREAD_LOCAL extern long ZZ_pEXArgBound;
 
 
 void build(ZZ_pEXArgument& H, const ZZ_pEX& h, const ZZ_pEXModulus& F, long m);
