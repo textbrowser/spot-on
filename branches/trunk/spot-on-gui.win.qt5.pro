@@ -20,6 +20,7 @@ CONFIG		-= debug
 DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
 		   SPOTON_LINKED_WITH_LIBPTHREAD \
+		   SPOTON_MCELIECE_ENABLED \
                    SPOTON_SCTP_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -43,8 +44,10 @@ INCLUDEPATH	+= . ..\\..\\. GUI \
 		   ..\\..\\libSpotOn\\Include.win32 \
 		   ..\\..\\libGeoIP\\Include.win32 \
 		   ..\\..\\libOpenSSL\\Include.win32 \
+		   ..\\..\\libNTL\\windows.d\\include \
                    ..\\..\\libcURL\\Win32.d\\include
 LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
+		   -L..\\..\\libNTL\\windows.d\\libraries.d \
 		   -L..\\..\\libNTRU \
                    -L..\\..\\libSpotOn -L..\\..\\libSpotOn\\Libraries.win32 \
 		   -L..\\..\\libGeoIP\\Libraries.win32 \
