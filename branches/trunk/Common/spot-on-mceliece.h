@@ -229,7 +229,7 @@ class spoton_mceliece
     return m_t;
   }
 
-  static double expansion(void)
+  static double expansion_m11t51(void)
   {
     size_t k = 0;
     size_t m = 11;
