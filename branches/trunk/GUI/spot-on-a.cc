@@ -6516,11 +6516,13 @@ void spoton::slotSetPassphrase(void)
 		}
 	    }
 
+	  QApplication::setOverrideCursor(Qt::WaitCursor);
 	  askKernelToReadStarBeamKeys();
 	  populateNovas();
 	  sendBuzzKeysToKernel();
 	  sendKeysToKernel();
 	  updatePublicKeysLabel();
+	  QApplication::restoreOverrideCursor();
 
 	  if(!reencode)
 	    {
@@ -6879,6 +6881,7 @@ void spoton::slotValidatePassphrase(void)
 	      QApplication::restoreOverrideCursor();
 	    }
 
+	    QApplication::setOverrideCursor(Qt::WaitCursor);
 	    askKernelToReadStarBeamKeys();
 	    populateNovas();
 	    populateUrlDistillers();
@@ -6886,6 +6889,7 @@ void spoton::slotValidatePassphrase(void)
 	    prepareUrlLabels();
 	    prepareVisiblePages();
 	    sendBuzzKeysToKernel();
+	    QApplication::restoreOverrideCursor();
 	    m_rss->prepareAfterAuthentication();
 	    m_ui.tab->setCurrentIndex
 	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
