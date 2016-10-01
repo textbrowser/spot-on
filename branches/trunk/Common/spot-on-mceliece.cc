@@ -57,14 +57,6 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 
   try
     {
-      NTL::GF2E::init
-	(NTL::BuildIrred_GF2X(static_cast<long int> (11))); /*
-							    ** Initialize
-							    ** some NTL
-							    ** internal
-							    ** object(s).
-							    */
-
       size_t offset = static_cast<size_t> (qstrlen("mceliece-private-key-"));
 
       if(privateKey && privateKeyLength > offset)
@@ -97,6 +89,16 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 
 	      if(m_n > 0)
 		m_m = static_cast<size_t> (::log2(m_n));
+
+	      if(m_n > m_k && m_m * m_t == m_n - m_k)
+		NTL::GF2E::init
+		  (NTL::
+		   BuildIrred_GF2X(static_cast<long int> (m_m))); /*
+								  ** Initialize
+								  ** some NTL
+								  ** internal
+								  ** object(s).
+								  */
 
 	      preparePreSynTab();
 	    }
@@ -405,12 +407,12 @@ bool spoton_mceliece_private_key::prepare_gZ(void)
   try
     {
       NTL::GF2E::init
-	(NTL::BuildIrred_GF2X(static_cast<long int> (11))); /*
-							    ** Initialize
-							    ** some NTL
-							    ** internal
-							    ** object(s).
-							    */
+	(NTL::BuildIrred_GF2X(static_cast<long int> (m_m))); /*
+							     ** Initialize
+							     ** some NTL
+							     ** internal
+							     ** object(s).
+							     */
       m_gZ = NTL::BuildRandomIrred
 	(NTL::BuildIrred_GF2EX(static_cast<long int> (m_t)));
     }
