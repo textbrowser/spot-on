@@ -6282,6 +6282,7 @@ void spoton::slotSetPassphrase(void)
 
 	  if(proceed)
 	    {
+	      repaint();
 #ifndef Q_OS_MAC
 	      QApplication::processEvents();
 #endif

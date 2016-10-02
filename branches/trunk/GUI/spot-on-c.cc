@@ -2740,6 +2740,7 @@ void spoton::slotRegenerateKey(void)
     }
 #endif
 
+  repaint();
   slotDeactivateKernel();
 
   QString encryptionKeyType("");
