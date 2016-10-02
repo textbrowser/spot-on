@@ -1,0 +1,3 @@
+If you're interested in building the NTL libraries, please use the included
+DoConfig and makefile files. You must have the 32-bit version of Cygwin
+installed as well as other dependencies, which are available through Cygwin.
