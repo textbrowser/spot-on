@@ -1285,7 +1285,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	      this,
 	      SLOT(slotWizardButtonClicked(void)));
       dialog.show();
-#if Q_OS_WIN32
+#ifdef Q_OS_WIN32
       dialog.resize(dialog.sizeHint());
 #endif
       centerWidget(&dialog, this);
