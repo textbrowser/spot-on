@@ -31,12 +31,71 @@ void ident(mat_zz_p& X, long n);
 inline mat_zz_p ident_mat_zz_p(long n)
    { mat_zz_p X; ident(X, n); NTL_OPT_RETURN(mat_zz_p, X); }
 
-void determinant(zz_p& d, const mat_zz_p& A);
 long IsIdent(const mat_zz_p& A, long n);
 void transpose(mat_zz_p& X, const mat_zz_p& A);
-void solve(zz_p& d, vec_zz_p& X,
-           const mat_zz_p& A, const vec_zz_p& b);
-void inv(zz_p& d, mat_zz_p& X, const mat_zz_p& A);
+
+
+
+// ************************
+
+void relaxed_solve(zz_p& d, vec_zz_p& x, const mat_zz_p& A, const vec_zz_p& b, bool relax=true);
+void relaxed_solve(zz_p& d, const mat_zz_p& A, vec_zz_p& x, const vec_zz_p& b, bool relax=true);
+
+void relaxed_inv(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax=true);
+inline void relaxed_inv(mat_zz_p& X, const mat_zz_p& A, bool relax=true)
+   { zz_p d; relaxed_inv(d, X, A, relax); if (d == 0) ArithmeticError("inv: non-invertible matrix"); }
+inline mat_zz_p relaxed_inv(const mat_zz_p& A, bool relax=true)
+   { mat_zz_p X; relaxed_inv(X, A, relax); NTL_OPT_RETURN(mat_zz_p, X); }
+
+void relaxed_determinant(zz_p& d, const mat_zz_p& A, bool relax=true);
+inline zz_p relaxed_determinant(const mat_zz_p& a, bool relax=true)
+   { zz_p x; relaxed_determinant(x, a, relax); return x; }
+
+void relaxed_power(mat_zz_p& X, const mat_zz_p& A, const ZZ& e, bool relax=true);
+inline mat_zz_p relaxed_power(const mat_zz_p& A, const ZZ& e, bool relax=true)
+   { mat_zz_p X; relaxed_power(X, A, e, relax); NTL_OPT_RETURN(mat_zz_p, X); }
+inline void relaxed_power(mat_zz_p& X, const mat_zz_p& A, long e, bool relax=true)
+   { relaxed_power(X, A, ZZ_expo(e), relax); }
+inline mat_zz_p relaxed_power(const mat_zz_p& A, long e, bool relax=true)
+   { mat_zz_p X; relaxed_power(X, A, e, relax); NTL_OPT_RETURN(mat_zz_p, X); }
+
+// ***********************
+
+inline void solve(zz_p& d, vec_zz_p& x, const mat_zz_p& A, const vec_zz_p& b)
+{ relaxed_solve(d, x, A, b, false); }
+
+inline void solve(zz_p& d, const mat_zz_p& A, vec_zz_p& x, const vec_zz_p& b)
+{ relaxed_solve(d, A, x, b, false); }
+
+inline void inv(zz_p& d, mat_zz_p& X, const mat_zz_p& A)
+{ relaxed_inv(d, X, A, false); }
+
+inline void inv(mat_zz_p& X, const mat_zz_p& A)
+{ relaxed_inv(X, A, false); }
+
+inline mat_zz_p inv(const mat_zz_p& A)
+{ return relaxed_inv(A, false); }
+
+inline void determinant(zz_p& d, const mat_zz_p& A)
+{ relaxed_determinant(d, A, false); }
+
+inline zz_p determinant(const mat_zz_p& a)
+{ return relaxed_determinant(a, false); }
+
+inline void power(mat_zz_p& X, const mat_zz_p& A, const ZZ& e)
+{ relaxed_power(X, A, e, false); }
+
+inline mat_zz_p power(const mat_zz_p& A, const ZZ& e)
+{ return relaxed_power(A, e, false); }
+
+inline void power(mat_zz_p& X, const mat_zz_p& A, long e)
+{ relaxed_power(X, A, e, false); }
+
+inline mat_zz_p power(const mat_zz_p& A, long e)
+{ return relaxed_power(A, e, false); }
+
+// ************************
+
 
 inline void sqr(mat_zz_p& X, const mat_zz_p& A)
    { mul(X, A, A); }
@@ -44,19 +103,8 @@ inline void sqr(mat_zz_p& X, const mat_zz_p& A)
 inline mat_zz_p sqr(const mat_zz_p& A)
    { mat_zz_p X; sqr(X, A); NTL_OPT_RETURN(mat_zz_p, X); }
 
-void inv(mat_zz_p& X, const mat_zz_p& A);
 
-inline mat_zz_p inv(const mat_zz_p& A)
-   { mat_zz_p X; inv(X, A); NTL_OPT_RETURN(mat_zz_p, X); }
 
-void power(mat_zz_p& X, const mat_zz_p& A, const ZZ& e);
-inline mat_zz_p power(const mat_zz_p& A, const ZZ& e)
-   { mat_zz_p X; power(X, A, e); NTL_OPT_RETURN(mat_zz_p, X); }
-
-inline void power(mat_zz_p& X, const mat_zz_p& A, long e)
-   { power(X, A, ZZ_expo(e)); }
-inline mat_zz_p power(const mat_zz_p& A, long e)
-   { mat_zz_p X; power(X, A, e); NTL_OPT_RETURN(mat_zz_p, X); }
 
 
 void diag(mat_zz_p& X, long n, zz_p d);
@@ -75,9 +123,6 @@ void kernel(mat_zz_p& X, const mat_zz_p& A);
 
 // miscellaneous:
 
-inline zz_p determinant(const mat_zz_p& a)
-   { zz_p x; determinant(x, a); return x; }
-// functional variant of determinant
 
 inline mat_zz_p transpose(const mat_zz_p& a)
    { mat_zz_p x; transpose(x, a); NTL_OPT_RETURN(mat_zz_p, x); }

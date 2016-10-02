@@ -59,6 +59,10 @@ void BlockDestroy(T* p, long n)
 {  
    for (long i = 0; i < n; i++)  
       p[i].~T();  
+
+   // NOTE: this routine is only invoked through a Vec destructor
+   // or a scope guard destructor, both of which are noexcept destructors.
+   // therefore, if ~T() should throw, the program will terminate
 }
 
 
@@ -784,6 +788,7 @@ void conv(Vec<T>& x, const Vec<S>& a)
 {
    long n = a.length();
    x.SetLength(n);
+
    for (long i = 0; i < n; i++)
       conv(x[i], a[i]);
 }

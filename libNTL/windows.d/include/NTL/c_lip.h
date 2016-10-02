@@ -21,13 +21,15 @@ typedef long _ntl_verylong_body;
 #define NTL_FRADIX_INV  (((double) 1.0)/((double) NTL_RADIX))
 
 
-
 #define NTL_ZZ_NBITS NTL_NBITS
 #define NTL_ZZ_FRADIX ((double) (1L << NTL_NBITS))
+#define NTL_ZZ_WIDE_FRADIX ((double) (1L << NTL_NBITS))
 
 #define NTL_SP_NBITS NTL_NBITS
 #define NTL_SP_BOUND (1L << NTL_SP_NBITS)
-#define NTL_SP_FBOUND ((double) NTL_SP_BOUND)
+
+#define NTL_NSP_NBITS NTL_NBITS
+#define NTL_NSP_BOUND (1L << NTL_NSP_NBITS)
 
 #define NTL_WSP_NBITS NTL_ZZ_NBITS
 #define NTL_WSP_BOUND (1L << NTL_WSP_NBITS)

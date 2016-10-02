@@ -1,4 +1,7 @@
 
+
+
+
 #ifndef NTL_tools__H
 #define NTL_tools__H
 
@@ -13,6 +16,18 @@
 
 #include <cstdlib>
 #include <cmath>
+
+
+
+#if (defined(NTL_THREADS) && defined(__GNUC__) && !defined(NTL_DISABLE_TLS_HACK))
+#define NTL_TLS_HACK
+#endif
+
+
+
+#ifdef NTL_TLS_HACK
+#include <pthread.h>
+#endif
 
 
 
@@ -125,9 +140,8 @@ NTL_OPEN_NNS
 
 
 
-#define NTL_FILE_THRESH (64000.0)
-// threshold in KB for switching to external storage of certain
-// tables (currently in the DDF polynomial factoring routines)
+#define NTL_FILE_THRESH (1e12)
+// threshold in KB for switching to external storage of certain tables 
 
 
 
@@ -192,9 +206,32 @@ inline long max(int a, long b) { return (a < b) ? b : long(a); }
 inline long min(long a, int b) { return (a < b) ?  a : long(b); } 
 inline long max(long a, int b) { return (a < b) ? long(b) : a; }
 
+inline unsigned int min(unsigned int a, unsigned int b) 
+{ return (a < b) ?  a : b; } 
+inline unsigned int max(unsigned int a, unsigned int b) 
+{ return (a < b) ? b : a; }
+
+inline unsigned long min(unsigned long a, unsigned long b) 
+{ return (a < b) ?  a : b; } 
+inline unsigned long max(unsigned long a, unsigned long b) 
+{ return (a < b) ? b : a; }
+
+inline unsigned long min(unsigned int a, unsigned long b) 
+{ return (a < b) ?  (unsigned long)(a) : b; } 
+inline unsigned long max(unsigned int a, unsigned long b) 
+{ return (a < b) ? b : (unsigned long)(a); }
+
+inline unsigned long min(unsigned long a, unsigned int b) 
+{ return (a < b) ?  a : (unsigned long)(b); } 
+inline unsigned long max(unsigned long a, unsigned int b) 
+{ return (a < b) ? (unsigned long)(b) : a; }
+
 #endif
 
 
+// NOTE: these are here for historical reasons, so I'll leave them
+// Since it is likely to lead to ambiguities with std::swap,
+// I am not defining any more of these.  
 inline void swap(long& a, long& b)  {  long t;  t = a; a = b; b = t; }
 inline void swap(int& a, int& b)  {  int t;  t = a; a = b; b = t; }
 
@@ -313,6 +350,52 @@ T conv(const S& a)
 }
 
 
+// some convenience casting routines:
+
+inline long cast_signed(unsigned long a) { return long(a); }
+inline int cast_signed(unsigned int a) { return int(a); }
+// DIRT: IMPL-DEF: the behavior here is implementation defined,
+// but on a 2s compliment machine, it should always work
+
+inline unsigned long cast_unsigned(long a) { return (unsigned long) a; }
+inline unsigned int cast_unsigned(int a) { return (unsigned int) a; }
+
+
+// these versions respect the NTL_CLEAN_INT flag: if set,
+// they use code that is guaranteed to work, under the
+// assumption that signed intgers are two's complement.
+// A good compiler should optimize it all away and generate
+// the same code in either case (tested on gcc, clang, icc).
+// This is really an academic exercise...
+
+#ifdef NTL_CLEAN_INT
+
+inline long clean_cast_signed(unsigned long a) 
+{ return NTL_ULONG_TO_LONG(a); }
+
+inline int clean_cast_signed(unsigned int a) 
+{ return NTL_UINT_TO_INT(a); }
+
+#else
+
+inline long clean_cast_signed(unsigned long a) { return long(a); }
+inline int clean_cast_signed(unsigned int a) { return int(a); }
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 long SkipWhiteSpace(NTL_SNS istream& s);
 long IsWhiteSpace(long c);
 long IsEOFChar(long c);
@@ -339,6 +422,14 @@ inline void ForceToMem(double *p) { _ntl_ForceToMem(p); }
 inline void ForceToMem(double *p) { }
 
 #endif
+
+
+inline double TrueDouble(double x)
+{
+   ForceToMem(&x);
+   return x;
+}
+
 
 
 
@@ -440,7 +531,10 @@ public:
 
 
 
-NTL_THREAD_LOCAL extern void (*ErrorCallback)();
+extern NTL_CHEAP_THREAD_LOCAL void (*ErrorCallback)();
+
+extern NTL_CHEAP_THREAD_LOCAL void (*ErrorMsgCallback)(const char *);
+
 
 void TerminalError(const char *s);
 
@@ -503,7 +597,7 @@ public:
 
 struct scope_guard_builder {  
    const char *info;
-   scope_guard_builder(const char *_info) : info(_info) { }
+   explicit scope_guard_builder(const char *_info) : info(_info) { }
 };
 
 template < typename F >
@@ -532,6 +626,308 @@ public:
 
 
 #endif
+
+
+
+
+
+#ifdef NTL_TLS_HACK
+
+
+namespace details_pthread {
+
+
+template<class T> void do_delete_aux(T* t) noexcept { delete t;  }
+// an exception here would likely lead to a complete mess...
+// the noexcept specification should force an immediate termination
+
+template<class T> void do_delete(void* t) { do_delete_aux((T*)t);  }
+
+using namespace std;
+// I'm not sure if pthread stuff might be placed in namespace std
+
+struct key_wrapper {
+   pthread_key_t key;
+
+   key_wrapper(void (*destructor)(void*))
+   {
+      if (pthread_key_create(&key, destructor))
+         ResourceError("pthread_key_create failed");
+   }
+
+   template<class T>
+   T* set(T *p)
+   {
+      if (!p) MemoryError();
+      if (pthread_setspecific(key, p)) {
+         do_delete_aux(p);
+         ResourceError("pthread_setspecific failed");
+      }
+      return p;
+   }
+
+};
+
+}
+
+
+#define NTL_TLS_LOCAL_INIT(type, var, init)  \
+   static NTL_CHEAP_THREAD_LOCAL type *_ntl_hidden_variable_tls_local_ptr_ ## var = 0;  \
+   type *_ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr_ ## var;  \
+   if (!_ntl_hidden_variable_tls_local_ptr1_ ## var) {  \
+      static details_pthread::key_wrapper hidden_variable_key(details_pthread::do_delete<type>);  \
+      type *_ntl_hidden_variable_tls_local_ptr2_ ## var = hidden_variable_key.set(NTL_NEW_OP type init);  \
+      _ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr2_ ## var;  \
+      _ntl_hidden_variable_tls_local_ptr_ ## var = _ntl_hidden_variable_tls_local_ptr1_ ## var;  \
+   }  \
+   type &var = *_ntl_hidden_variable_tls_local_ptr1_ ## var  \
+
+
+
+#else
+
+
+// NOTE: this definition of NTL_TLS_LOCAL_INIT ensures that var names
+// a local reference, regardless of the implementation
+#define NTL_TLS_LOCAL_INIT(type,var,init) \
+    static NTL_THREAD_LOCAL type _ntl_hidden_variable_tls_local ## var init; \
+    type &var = _ntl_hidden_variable_tls_local ## var
+
+
+
+
+#endif
+
+#define NTL_EMPTY_ARG
+#define NTL_TLS_LOCAL(type,var) NTL_TLS_LOCAL_INIT(type,var,NTL_EMPTY_ARG)
+
+#define NTL_TLS_GLOBAL_DECL_INIT(type,var,init)  \
+   typedef type _ntl_hidden_typedef_tls_access_ ## var;  \
+   static inline  \
+   type& _ntl_hidden_function_tls_access_ ## var() {  \
+      NTL_TLS_LOCAL_INIT(type,var,init);  \
+      return var;  \
+   }  \
+
+
+#define NTL_TLS_GLOBAL_DECL(type,var) NTL_TLS_GLOBAL_DECL_INIT(type,var,NTL_EMPTY_ARG)
+
+#define NTL_TLS_GLOBAL_ACCESS(var) \
+_ntl_hidden_typedef_tls_access_ ## var & var = _ntl_hidden_function_tls_access_ ## var()
+
+
+// **************************************************************
+// Following is code for "long long" arithmetic that can
+// be implemented using NTL_ULL_TYPE or using assembly.
+// I have found that the assembly can be a bit faster.
+// For now, this code is only available if NTL_HAVE_LL_TYPE
+// is defined.  This could change.  In any case, this provides
+// a cleaner interface and might eventually allow for 
+// implementation on systems that don't provide a long long type.
+// **************************************************************
+
+#ifdef NTL_HAVE_LL_TYPE
+
+      
+#if (!defined(NTL_DISABLE_LL_ASM) \
+     && defined(__GNUC__) && (__GNUC__ >= 4) && !defined(__INTEL_COMPILER)  && !defined(__clang__) \
+     && defined (__x86_64__)  && NTL_BITS_PER_LONG == 64)
+
+// NOTE: clang's and icc's inline asm code gen is pretty bad, so
+// we don't even try. 
+
+// FIXME: probably, this should all be properly tested for speed (and correctness)
+// using the Wizard.
+
+
+struct ll_type {
+   unsigned long hi, lo;
+};
+
+
+static inline void 
+ll_mul_add(ll_type& x, unsigned long a, unsigned long b)
+{
+  unsigned long hi, lo;
+   __asm__ (
+   "mulq %[b] \n\t" 
+   "addq %[lo],%[xlo] \n\t"
+   "adcq %[hi],%[xhi]" : 
+   [lo] "=a" (lo), [hi] "=d" (hi), [xhi] "+r" (x.hi), [xlo] "+r" (x.lo) : 
+   [a] "%[lo]" (a), [b] "rm" (b) :
+   "cc"
+   );
+}
+
+static inline void 
+ll_imul_add(ll_type& x, unsigned long a, unsigned long b)
+{
+  unsigned long hi, lo;
+   __asm__ (
+   "imulq %[b] \n\t" 
+   "addq %[lo],%[xlo] \n\t"
+   "adcq %[hi],%[xhi]" : 
+   [lo] "=a" (lo), [hi] "=d" (hi), [xhi] "+r" (x.hi), [xlo] "+r" (x.lo) : 
+   [a] "%[lo]" (a), [b] "rm" (b) :
+   "cc"
+   );
+}
+
+static inline void 
+ll_mul(ll_type& x, unsigned long a, unsigned long b)
+{
+   __asm__ (
+   "mulq %[b]" :
+   [lo] "=a" (x.lo), [hi] "=d" (x.hi) : 
+   [a] "%[lo]" (a), [b] "rm" (b) :
+   "cc"
+   );
+}
+
+static inline void 
+ll_imul(ll_type& x, unsigned long a, unsigned long b)
+{
+   __asm__ (
+   "imulq %[b]" :
+   [lo] "=a" (x.lo), [hi] "=d" (x.hi) : 
+   [a] "%[lo]" (a), [b] "rm" (b) :
+   "cc"
+   );
+}
+
+static inline void
+ll_add(ll_type& x, unsigned long a)
+{
+   __asm__ (
+   "addq %[a],%[xlo] \n\t"
+   "adcq %[z],%[xhi]" :
+   [xhi] "+r" (x.hi), [xlo] "+r" (x.lo) :
+   [a] "rm" (a), [z] "i" (0) :
+   "cc"
+   );
+}
+
+
+
+// NOTE: an optimizing compiler will remove the conditional.
+// The alternative would be to make a specialization for shamt=0.
+// Unfortunately, this is impossible to do across a wide range
+// of compilers and still maintain internal linkage --- it is not 
+// allowed to include static spec in the specialization (new compilers
+// will complain) and without it, some older compilers will generate
+// an external symbol.  In fact, NTL currently never calls 
+// this with shamt=0, so it is all rather academic...but I want to
+// keep this general for future use.
+template<long shamt>
+static inline unsigned long
+ll_rshift_get_lo(ll_type x)
+{
+   if (shamt) {
+      __asm__ (
+      "shrdq %[shamt],%[hi],%[lo]" :
+      [lo] "+r" (x.lo) : 
+      [shamt] "i" (shamt), [hi] "r" (x.hi) :
+      "cc"
+      );
+   }
+   return x.lo;
+}
+
+
+static inline unsigned long 
+ll_get_lo(const ll_type& x)
+{
+   return x.lo;
+}
+
+static inline unsigned long 
+ll_get_hi(const ll_type& x)
+{
+   return x.hi;
+}
+
+
+static inline void
+ll_init(ll_type& x, unsigned long a)
+{
+   x.lo = a;
+   x.hi = 0;
+}
+
+#else
+
+
+typedef NTL_ULL_TYPE ll_type;
+
+// NOTE: the following functions definitions should serve as
+// documentation, as well.
+
+static inline void 
+ll_mul_add(ll_type& x, unsigned long a, unsigned long b)
+{
+   x += ((ll_type) a)*((ll_type) b);
+}
+
+// a and b should be representable as positive long's,
+// to allow for the most flexible implementation
+static inline void 
+ll_imul_add(ll_type& x, unsigned long a, unsigned long b)
+{
+   x += ((ll_type) long(a))*((ll_type) long(b));
+}
+static inline void 
+ll_mul(ll_type& x, unsigned long a, unsigned long b)
+{
+   x = ((ll_type) a)*((ll_type) b);
+}
+
+// a and b should be representable as positive long's,
+// to allow for the most flexible implementation
+static inline void 
+ll_imul(ll_type& x, unsigned long a, unsigned long b)
+{
+   x = ((ll_type) long(a))*((ll_type) long(b));
+}
+
+static inline void
+ll_add(ll_type& x, unsigned long a)
+{
+   x += a;
+}
+
+template<long shamt>
+static inline unsigned long
+ll_rshift_get_lo(const ll_type& x)
+{
+   return ((unsigned long) (x >> shamt));
+}
+
+static inline unsigned long 
+ll_get_lo(const ll_type& x)
+{
+   return ((unsigned long) x);
+}
+
+static inline unsigned long 
+ll_get_hi(const ll_type& x)
+{
+   return ((unsigned long) (x >> NTL_BITS_PER_LONG));
+}
+
+
+static inline void
+ll_init(ll_type& x, unsigned long a)
+{
+   x = a;
+}
+
+
+#endif
+
+
+
+#endif
+
 
 
 

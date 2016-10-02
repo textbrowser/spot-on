@@ -26,12 +26,13 @@ Examples:
 
 
   SmartPtr<T> p1;         // initialize to null
-  SmartPtr<T> p2 = 0;
+  SmartPtr<T> p1(0);
+  SmartPtr<T> p1 = 0;
 
-  SmartPtr<T> p3(p1);     // copy constructor
+  SmartPtr<T> p2(p1);     // copy constructor
 
   T *rp;
-  SmartPtr<T> p4(rp);     // construct using raw pointer (explicit): better 
+  SmartPtr<T> p2(rp);     // construct using raw pointer (explicit): better 
                           // to use MakeSmart below
 
   p1 = MakeSmart<T>(...); // build new T object by invoking constructor
@@ -125,14 +126,13 @@ SmartPtr<T> to a funny pointer type (a pointer to a member function, which
 avoids other, unwanted implicit conversions: this is the so-called "safe bool
 idiom");
 
-Also, there is an implicit conversion from the same, funny pointer type to
-SmartPtr<T>, which is how one can use 0 to initialize and assign to a
-SmartPtr<T>.
+There is also an assigmment from a funny pointer type to a SmartPtr,
+which asslows assigment of 0 to a SmartPtr.
 
 In C++11 both of the above effects could perhaps be achieved more directly.
 The new "explict bool" operator can replace the "safe bool idiom", and I would
-think that the new null pointer could be used to get the conversion from "0" to
-work.
+think that the new null pointer type could be used to get the assignment of 0
+to work.
 
 NOTES: See http://www.artima.com/cppsource/safebool.html for more
 on the "safe bool idiom".  
@@ -141,6 +141,24 @@ on the "safe bool idiom".
 
 
 *****************************************************************************/
+
+// Helper class for somewhat finer-grained control of deleter.
+// Useful in the PIMPL pattern.
+
+struct DefaultDeleterPolicy {
+
+   template<class T>
+   static void deleter(T *p) { delete p; }
+
+};
+
+// A tagging class, for better readability
+
+template<class P>
+struct ChoosePolicy { };
+
+// usage: SmartPtr<T> p(r, ChoosePolicy<MyDeleterPolicy>());
+
 
 
 class SmartPtrControl {
@@ -157,7 +175,7 @@ private:
 
 
 
-template<class T>
+template<class T, class P=DefaultDeleterPolicy>
 class SmartPtrControlDerived : public SmartPtrControl {
 public:
    T* p;
@@ -166,7 +184,7 @@ public:
 
    ~SmartPtrControlDerived() 
    { 
-      delete p; 
+      P::deleter(p);
    }
 
 };
@@ -195,14 +213,31 @@ private:
    typedef void (SmartPtr::*fake_null_type)(Dummy) const;
    void fake_null_function(Dummy) const {}
 
+   class Dummy1 { };
+   typedef void (SmartPtr::*fake_null_type1)(Dummy1) const;
+
 
 public:
-   explicit SmartPtr(T* p) : dp(p), cp(0) 
+   template<class Y>
+   explicit SmartPtr(Y* p) : dp(p), cp(0) 
    {
-      if (dp) {
-         cp = NTL_NEW_OP SmartPtrControlDerived<T>(dp);
+      if (p) {
+         cp = NTL_NEW_OP SmartPtrControlDerived<Y>(p);
          if (!cp) {
-            delete dp; // if we throw an exception
+            delete p;  // this could theoretically throw an exception
+            MemoryError();
+         }
+         AddRef();
+      }
+   }
+
+   template<class Y, class P>
+   SmartPtr(Y* p, ChoosePolicy<P>) : dp(p), cp(0) 
+   {
+      if (p) {
+         cp = NTL_NEW_OP SmartPtrControlDerived<Y,P>(p);
+         if (!cp) {
+            delete p;  // this could theoretically throw an exception
             MemoryError();
          }
          AddRef();
@@ -210,6 +245,8 @@ public:
    }
 
    SmartPtr() : dp(0), cp(0)  { }
+
+   SmartPtr(fake_null_type1) : dp(0), cp(0) { }
 
    SmartPtr(SmartPtrLoopHole, T* _dp, SmartPtrControl *_cp) : dp(_dp), cp(_cp)
    { 
@@ -262,7 +299,6 @@ public:
       _ntl_swap(cp, other.cp);
    }
 
-   SmartPtr(fake_null_type) : dp(0), cp(0) { }
 
    operator fake_null_type() const 
    {
@@ -404,13 +440,16 @@ private:
    }
 
    class Dummy { };
-
    typedef void (CloneablePtr::*fake_null_type)(Dummy) const;
    void fake_null_function(Dummy) const {}
 
+   class Dummy1 { };
+   typedef void (CloneablePtr::*fake_null_type1)(Dummy1) const;
 
 public:
    CloneablePtr() : dp(0), cp(0)  { }
+
+   CloneablePtr(fake_null_type1) : dp(0), cp(0) { }
 
    CloneablePtr(CloneablePtrLoopHole, T* _dp, CloneablePtrControl *_cp) : dp(_dp), cp(_cp)
    { 
@@ -462,8 +501,6 @@ public:
       _ntl_swap(dp, other.dp);
       _ntl_swap(cp, other.cp);
    }
-
-   CloneablePtr(fake_null_type) : dp(0), cp(0) { }
 
    operator fake_null_type() const 
    {
@@ -752,6 +789,7 @@ automatically destruct them.
 
 Constructors:
    UniquePtr<T> p1;     // initialize with null
+   UniquePtr<T> p1(0);
 
    T* rp;
    UniquePtr<T> p1(rp); // construct using raw pointer (explicit)
@@ -792,15 +830,18 @@ Constructors:
 **********************************************************************/
 
 
-template<class T>
+
+template<class T, class P=DefaultDeleterPolicy>
 class UniquePtr {
 private:
    T *dp;
 
    class Dummy { };
-
    typedef void (UniquePtr::*fake_null_type)(Dummy) const;
    void fake_null_function(Dummy) const {}
+
+   class Dummy1 { };
+   typedef void (UniquePtr::*fake_null_type1)(Dummy1) const;
 
    bool cannot_compare_these_types() const { return false; }
 
@@ -812,7 +853,8 @@ public:
 
    UniquePtr() : dp(0) { }
 
-   ~UniquePtr() { delete dp; }
+
+   ~UniquePtr() { P::deleter(dp); }
 
    void reset(T* p = 0)
    {
@@ -820,7 +862,7 @@ public:
       tmp.swap(*this);
    }
 
-   UniquePtr& operator=(fake_null_type) { reset(); return *this; }
+   UniquePtr& operator=(fake_null_type1) { reset(); return *this; }
 
    void make()
    {
@@ -849,7 +891,6 @@ public:
       _ntl_swap(dp, other.dp);
    }
 
-   UniquePtr(fake_null_type) : dp(0) { }
 
    operator fake_null_type() const 
    {
@@ -860,21 +901,21 @@ public:
 
 
 // free swap function
-template<class T>
-void swap(UniquePtr<T>& p, UniquePtr<T>& q) { p.swap(q); }
+template<class T, class P>
+void swap(UniquePtr<T,P>& p, UniquePtr<T,P>& q) { p.swap(q); }
 
 
 
 // Equality testing
 
-template<class X>
-bool operator==(const UniquePtr<X>& a, const UniquePtr<X>& b)
+template<class T, class P>
+bool operator==(const UniquePtr<T,P>& a, const UniquePtr<T,P>& b)
 {
    return a.get() == b.get();
 }
 
-template<class X>
-bool operator!=(const UniquePtr<X>& a, const UniquePtr<X>& b)
+template<class T, class P>
+bool operator!=(const UniquePtr<T,P>& a, const UniquePtr<T,P>& b)
 {
    return a.get() != b.get();
 }
@@ -886,17 +927,175 @@ bool operator!=(const UniquePtr<X>& a, const UniquePtr<X>& b)
 // emits an error message...and a pretty readable one
 
 
-template<class X, class Y>
-bool operator==(const UniquePtr<X>& a, const UniquePtr<Y>& b)
+template<class X, class Y, class U, class V>
+bool operator==(const UniquePtr<X,U>& a, const UniquePtr<Y,V>& b)
 {
    return a.cannot_compare_these_types();
 }
 
-template<class X, class Y>
-bool operator!=(const UniquePtr<X>& a, const UniquePtr<Y>& b)
+template<class X, class Y, class U, class V>
+bool operator!=(const UniquePtr<X,U>& a, const UniquePtr<Y,V>& b)
 {
    return a.cannot_compare_these_types();
 }
+
+
+
+/**********************************************************************
+
+
+     CopiedPtr: identical interface to UniquePtr, but copy constructor
+     and assignment are defined, and both are implemented using the
+     underlying type's copy constructor
+
+     This provides very similar functionilty to OptionalVal, but I think
+     it is simpler to provide the same interface.
+
+     It also allows some fine control of deleting and copying.
+     This allows for "clone on copy" as well as other things,
+     like a copying or cloning PIMPL pattern.
+
+
+**********************************************************************/
+
+struct DefaultCopierPolicy {
+
+   template<class T>
+   static T* copier(T *p) { return (p ?  MakeRaw<T>(*p) : 0); }
+
+};
+
+struct CloningCopier {
+
+   template<class T>
+   static T* copier(T *p) { return (p ?  p->clone() : 0); }
+
+};
+
+struct DefaultCopiedPtrPolicy : DefaultDeleterPolicy, DefaultCopierPolicy { };
+struct CloningCopiedPtrPolicy : DefaultDeleterPolicy, CloningCopier { };
+
+template<class T, class P = DefaultCopiedPtrPolicy>
+class CopiedPtr {
+private:
+   T *dp;
+
+   class Dummy { };
+   typedef void (CopiedPtr::*fake_null_type)(Dummy) const;
+   void fake_null_function(Dummy) const {}
+
+   class Dummy1 { };
+   typedef void (CopiedPtr::*fake_null_type1)(Dummy1) const;
+
+   bool cannot_compare_these_types() const { return false; }
+
+public:   
+   explicit CopiedPtr(T *p) : dp(p) { }
+
+   CopiedPtr() : dp(0) { }
+
+   CopiedPtr(const CopiedPtr& other) : dp(0)
+   {
+      reset(P::copier(other.dp));
+   }
+
+   CopiedPtr& operator=(const CopiedPtr& other)
+   {
+      if (this == &other) return *this;
+      CopiedPtr tmp(other);
+      tmp.swap(*this);
+      return *this;
+   }
+
+   ~CopiedPtr() { P::deleter(dp); }
+
+   void reset(T* p = 0)
+   {
+      CopiedPtr tmp(p);
+      tmp.swap(*this);
+   }
+
+   CopiedPtr& operator=(fake_null_type1) { reset(); return *this; }
+
+   void make()
+   {
+      reset(MakeRaw<T>());
+   }
+
+#define NTL_DEFINE_COPIED_MAKE(n) \
+   template< NTL_ARGTYPES(n) >\
+   void make( NTL_VARARGS(n) )\
+   {\
+      reset(MakeRaw<T>( NTL_PASSARGS(n) ));\
+   }\
+
+   NTL_FOREACH_ARG1(NTL_DEFINE_COPIED_MAKE)
+
+   T& operator*()  const { return *dp; }
+   T* operator->() const { return dp; }
+
+   T* get() const { return dp; }
+
+   T* release() { T *p = dp; dp = 0; return p; }
+   void move(CopiedPtr& other) { reset(other.release()); }
+
+   void swap(CopiedPtr& other)
+   {
+      _ntl_swap(dp, other.dp);
+   }
+
+
+   operator fake_null_type() const 
+   {
+      return dp ?  &CopiedPtr::fake_null_function : 0;
+   }
+
+
+
+};
+
+
+
+// free swap function
+template<class T, class P>
+void swap(CopiedPtr<T,P>& p, CopiedPtr<T,P>& q) { p.swap(q); }
+
+
+
+// Equality testing
+
+template<class T, class P>
+bool operator==(const CopiedPtr<T,P>& a, const CopiedPtr<T,P>& b)
+{
+   return a.get() == b.get();
+}
+
+template<class T, class P>
+bool operator!=(const CopiedPtr<T,P>& a, const CopiedPtr<T,P>& b)
+{
+   return a.get() != b.get();
+}
+
+
+// the following definitions of == and != prevent comparisons
+// on CopiedPtr's to different types...such comparisons
+// don't make sense...defining these here ensures the compiler
+// emits an error message...and a pretty readable one
+
+
+template<class X, class Y, class U, class V>
+bool operator==(const CopiedPtr<X,U>& a, const CopiedPtr<Y,V>& b)
+{
+   return a.cannot_compare_these_types();
+}
+
+template<class X, class Y, class U, class V>
+bool operator!=(const CopiedPtr<X,U>& a, const CopiedPtr<Y,V>& b)
+{
+   return a.cannot_compare_these_types();
+}
+
+
 
 
 
@@ -919,11 +1118,14 @@ Constructors:
                         // using psuedo variadic templates
                 
    p1.reset(rp);        // destroy's p1's referent and assign rp
+   
 
    if (p1.exists()) ... // test for null
 
    p1.val()             // dereference
 
+   rp = p1.get();       // fetch raw pointer
+   rp = p1.release();   // fetch raw pointer, and set to NULL
    p1.move(p2);         // if p1 != p2 then:
                         //    makes p1 point to p2's referent,
                         //    setting p2 to NULL and destroying
@@ -985,6 +1187,10 @@ public:
 
    bool exists() const { return dp != 0; } 
 
+   T* get() const { return dp.get(); }
+
+   T* release() { return dp.release(); }
+
    void move(OptionalVal& other) { dp.move(other.dp); }
 
    void swap(OptionalVal& other) { dp.swap(other.dp); }
@@ -1009,6 +1215,7 @@ automatically destruct them.
 
 Constructors:
    UniqueArray<T> p1;     // initialize with null
+   UniqueArray<T> p1(0); 
 
    T* rp;
    UniqueArray<T> p1(rp); // construct using raw pointer (explicit)
@@ -1052,9 +1259,11 @@ private:
    T *dp;
 
    class Dummy { };
-
    typedef void (UniqueArray::*fake_null_type)(Dummy) const;
    void fake_null_function(Dummy) const {}
+
+   class Dummy1 { };
+   typedef void (UniqueArray::*fake_null_type1)(Dummy1) const;
 
    bool cannot_compare_these_types() const { return false; }
 
@@ -1075,7 +1284,7 @@ public:
       tmp.swap(*this);
    }
 
-   UniqueArray& operator=(fake_null_type) { reset(); return *this; }
+   UniqueArray& operator=(fake_null_type1) { reset(); return *this; }
 
    void SetLength(long n)
    {
@@ -1085,6 +1294,7 @@ public:
    T& operator[](long i) const { return dp[i]; }
 
    T* get() const { return dp; }
+   T *elts() const { return dp; }
 
    T* release() { T *p = dp; dp = 0; return p; }
    void move(UniqueArray& other) { reset(other.release()); }
@@ -1093,8 +1303,6 @@ public:
    {
       _ntl_swap(dp, other.dp);
    }
-
-   UniqueArray(fake_null_type) : dp(0) { }
 
    operator fake_null_type() const 
    {
@@ -1157,6 +1365,7 @@ we can retrofit old code that excepts objects of type T**.
 
 Constructors:
    Unique2DArray<T> p1;     // initialize with null
+   Unique2DArray<T> p1(0);
 
    p1 = 0;              // destroy's p1's referent and assigns null
    p1.reset();
@@ -1202,9 +1411,11 @@ private:
    long len;
 
    class Dummy { };
-
    typedef void (Unique2DArray::*fake_null_type)(Dummy) const;
    void fake_null_function(Dummy) const {}
+
+   class Dummy1 { };
+   typedef void (Unique2DArray::*fake_null_type1)(Dummy1) const;
 
    bool cannot_compare_these_types() const { return false; }
 
@@ -1230,7 +1441,7 @@ public:
       tmp.swap(*this);
    }
 
-   Unique2DArray& operator=(fake_null_type) { reset(); return *this; }
+   Unique2DArray& operator=(fake_null_type1) { reset(); return *this; }
 
    void SetLength(long n)
    {
@@ -1293,8 +1504,6 @@ public:
       _ntl_swap(len, other.len);
    }
 
-   Unique2DArray(fake_null_type) : dp(0), len(0) { }
-
    operator fake_null_type() const 
    {
       return dp ?  &Unique2DArray::fake_null_function : 0;
@@ -1341,6 +1550,118 @@ bool operator!=(const Unique2DArray<X>& a, const Unique2DArray<Y>& b)
 {
    return a.cannot_compare_these_types();
 }
+
+
+
+
+// AlignedArray:
+//
+// specialized arrays that have similar interface to UniqueArray, but:
+//  * they are allocated with a given alignment
+//  * they (currently) only work on POD types
+//
+// DIRT:
+// The current implementation just uses the _ntl_make_aligned function,
+// which is not entirely portable.
+// However, AlignedArray is currently only used if NTL_HAVE_AVX
+// is defined, and under the assumptions imposed with that,
+// it should definitely work.
+//
+// For now, this is not a part of the documented interface.
+
+// This could all change in the future, if and when there is a more portable
+// way of doing this.
+
+
+template<class T, long align=NTL_DEFAULT_ALIGN>
+class AlignedArray {
+private:
+   T *dp;
+   char *sp;
+
+   class Dummy { };
+   typedef void (AlignedArray::*fake_null_type)(Dummy) const;
+   void fake_null_function(Dummy) const {}
+
+   class Dummy1 { };
+   typedef void (AlignedArray::*fake_null_type1)(Dummy1) const;
+
+   bool cannot_compare_these_types() const { return false; }
+
+   AlignedArray(const AlignedArray&); // disabled
+   void operator=(const AlignedArray&); // disabled
+
+   char* release() {  char *p = sp; dp = 0; sp = 0;  return p; }
+
+   void reset(char* p)
+   {
+      AlignedArray tmp;
+      if (p) {
+         tmp.dp = (T*) _ntl_make_aligned(p, align);
+         tmp.sp = p;
+      }
+      else {
+         tmp.dp = 0;
+         tmp.sp = 0;
+      }
+
+      tmp.swap(*this);
+   }
+
+
+
+public:   
+
+   AlignedArray() : dp(0), sp(0) { }
+   explicit AlignedArray(fake_null_type1) : dp(0), sp(0) { }
+
+   ~AlignedArray() { NTL_SNS free(sp); }
+
+   void reset() { reset(0); }
+
+   AlignedArray& operator=(fake_null_type1) { reset(); return *this; }
+
+   void SetLength(long n)
+   {
+      if (align <= 0 || n < 0) LogicError("AlignedArray::SetLength: bad args");
+      if (NTL_OVERFLOW1(n, sizeof(T), align)) ResourceError("AlignedArray::SetLength: overflow");
+
+      if (n == 0) {
+         reset();
+      }
+      else {
+	 char *p = (char *) NTL_SNS malloc(n*sizeof(T) + align);
+         if (!p) MemoryError();
+         reset(p);
+      }
+   }
+
+   T& operator[](long i) const { return dp[i]; }
+
+   T* get() const { return dp; }
+   T* elts() const { return dp; }
+
+
+   void move(AlignedArray& other) { reset(other.release()); }
+
+   void swap(AlignedArray& other)
+   {
+      _ntl_swap(dp, other.dp);
+      _ntl_swap(sp, other.sp);
+   }
+
+   operator fake_null_type() const 
+   {
+      return dp ?  &AlignedArray::fake_null_function : 0;
+   }
+
+};
+
+
+// free swap function
+template<class T, long align>
+void swap(AlignedArray<T,align>& p, AlignedArray<T,align>& q) { p.swap(q); }
+
 
 
 

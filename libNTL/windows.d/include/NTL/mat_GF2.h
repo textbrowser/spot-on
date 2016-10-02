@@ -52,6 +52,7 @@ inline mat_GF2 ident_mat_GF2(long n)
 long IsIdent(const mat_GF2& A, long n);
 void transpose(mat_GF2& X, const mat_GF2& A);
 void solve(ref_GF2 d, vec_GF2& X, const mat_GF2& A, const vec_GF2& b);
+void solve(ref_GF2 d, const mat_GF2& A, vec_GF2& x, const vec_GF2& b);
 void inv(ref_GF2 d, mat_GF2& X, const mat_GF2& A);
 
 inline void sqr(mat_GF2& X, const mat_GF2& A)

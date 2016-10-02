@@ -24,16 +24,20 @@ public:
 
    long NumPrimes;
    long MaxRoot;  
-   bool QuickCRT;
    ZZ MinusMModP;  //  -M mod p, M = product of primes
    ZZ_CRTStructAdapter crt_struct;
    ZZ_RemStructAdapter rem_struct;
 
 
    // the following arrays are indexed 0..NumPrimes-1
-   // q = FFTPrime[i]
-   Vec<double> x;          // u/q, where u = (M/q)^{-1} mod q
-   Vec<long> u;            // u, as above
+   // q[i] = FFTPrime[i]
+   Vec<long> prime;  // prime[i] = q[i]
+   Vec<double> prime_recip;  // prime_recip[i] = 1/double(q[i])
+   Vec<long> u;  // u[i] = (M/q[i])^{-1} mod q[i]
+   Vec<mulmod_precon_t> uqinv;
+
+   ZZ_ReduceStructAdapter reduce_struct;
+
 };
 
 
@@ -67,16 +71,22 @@ public:
   ZZ_TmpVecAdapter rem_tmp_vec;
 };
 
-NTL_THREAD_LOCAL
-extern SmartPtr<ZZ_pInfoT> ZZ_pInfo; 
+
+extern 
+NTL_CHEAP_THREAD_LOCAL
+ZZ_pInfoT *ZZ_pInfo; 
 // info for current modulus, initially null
+// plain pointer for faster TLS access
 
-NTL_THREAD_LOCAL
-extern SmartPtr<ZZ_pTmpSpaceT> ZZ_pTmpSpace;  
+extern 
+NTL_CHEAP_THREAD_LOCAL
+ZZ_pTmpSpaceT *ZZ_pTmpSpace;  
 // space for temps associated with current modulus, 
+// plain pointer for faster TLS access
 
-NTL_THREAD_LOCAL
-extern bool ZZ_pInstalled;
+extern 
+NTL_CHEAP_THREAD_LOCAL
+bool ZZ_pInstalled;
 // flag indicating if current modulus is fully installed
 
 
@@ -93,7 +103,7 @@ explicit ZZ_pContext(const ZZ& p) : ptr(MakeSmart<ZZ_pInfoT>(p)) { }
 
 // copy constructor, assignment, destructor: default
 
-void save() { ptr = ZZ_pInfo; }
+void save();
 void restore() const;
 
 };
@@ -155,7 +165,9 @@ static void init(const ZZ&);
 
 typedef void (*DivHandlerPtr)(const ZZ_p& a);   // error-handler for division
 
-NTL_THREAD_LOCAL static DivHandlerPtr DivHandler;
+static 
+NTL_CHEAP_THREAD_LOCAL 
+DivHandlerPtr DivHandler;
 
 
 // ****** constructors and assignment
@@ -206,7 +218,7 @@ static const ZZ_pFFTInfoT* GetFFTInfo()
 static ZZ_pTmpSpaceT* GetTmpSpace()
 {
    install();
-   return ZZ_pTmpSpace.get();
+   return ZZ_pTmpSpace;
 }
 
 
@@ -521,7 +533,7 @@ public:
    ~ZZ_pWatcher() { watched.KillBig(); }
 };
 
-#define NTL_ZZ_pRegister(x) NTL_THREAD_LOCAL static ZZ_p x; ZZ_pWatcher _WATCHER__ ## x(x); x.allocate()
+#define NTL_ZZ_pRegister(x) NTL_TLS_LOCAL(ZZ_p, x); ZZ_pWatcher _WATCHER__ ## x(x); x.allocate()
 
 // FIXME: register variables that are allocated with respect to one modulus
 // and then reused with another modulus may have initial values that are

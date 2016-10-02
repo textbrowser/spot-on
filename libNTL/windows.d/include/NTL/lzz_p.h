@@ -7,7 +7,6 @@
 #include <NTL/SmartPtr.h>
 #include <NTL/vector.h>
 
-#define NTL_zz_p_QUICK_CRT (NTL_DOUBLE_PRECISION - NTL_SP_NBITS > 12)
 
 
 
@@ -25,10 +24,14 @@ public:
    zz_pInfoT(INIT_USER_FFT_TYPE, long q);
 
    long p;
-   double pinv;
+   mulmod_t pinv;
+
+   sp_reduce_struct red_struct;
+   sp_ll_reduce_struct ll_red_struct;
+   sp_ZZ_reduce_struct ZZ_red_struct;
 
    FFTPrimeInfo* p_info; // non-null means we are directly using 
-                        // an FFT prime
+                         // an FFT prime
 
    UniquePtr<FFTPrimeInfo> p_info_owner;
    // for user-defined FFT primes, we store the corresponding
@@ -43,18 +46,24 @@ public:
    long MaxRoot;
 
    long MinusMModP;  //  -M mod p, M = product of primes
+   mulmod_precon_t MinusMModPpinv;
 
    // the following arrays are indexed 0..NumPrimes-1
    // q = FFTPrime[i]
 
 
    Vec<long> CoeffModP;    // coeff mod p
+   Vec<mulmod_precon_t> CoeffModPpinv; 
 
-   Vec<double> x;          // u/q, where u = (M/q)^{-1} mod q
-   Vec<long> u;            // u, as above
+   Vec<double> x;               // u/q, where u = (M/q)^{-1} mod q
+   Vec<long> u;                 // u, as above
+   Vec<mulmod_precon_t> uqinv;  // MulModPrecon for u
 };
 
-NTL_THREAD_LOCAL extern SmartPtr<zz_pInfoT> zz_pInfo;  // current modulus, initially null
+extern 
+NTL_CHEAP_THREAD_LOCAL 
+zz_pInfoT *zz_pInfo;  
+// current modulus, initially null
 
 
 class zz_pContext {
@@ -73,6 +82,16 @@ zz_pContext(INIT_USER_FFT_TYPE, long q);
 
 void save();
 void restore() const;
+
+
+// some hooks that are useful in helib...
+// FIXME: generalize these to other context classes
+// and document
+
+bool null() const { return ptr == 0; } 
+bool equals(const zz_pContext& other) const { return ptr == other.ptr; } 
+long modulus() const { return ptr->p; }
+
 
 };
 
@@ -109,7 +128,7 @@ zz_pPush() { bak.save(); }
 explicit zz_pPush(const zz_pContext& context) { bak.save(); context.restore(); }
 
 explicit zz_pPush(long p, long maxroot=NTL_FFTMaxRoot) 
-   { bak.save(); zz_pContext c(p); c.restore(); }
+   { bak.save(); zz_pContext c(p, maxroot); c.restore(); }
 
 zz_pPush(INIT_FFT_TYPE, long index) 
    { bak.save(); zz_pContext c(INIT_FFT, index); c.restore(); }
@@ -165,7 +184,10 @@ long& LoopHole() { return _zz_p__rep; }
 
 static long modulus() { return zz_pInfo->p; }
 static zz_p zero() { return zz_p(); }
-static double ModulusInverse() { return zz_pInfo->pinv; }
+static mulmod_t ModulusInverse() { return zz_pInfo->pinv; }
+static sp_reduce_struct red_struct() { return zz_pInfo->red_struct; }
+static sp_ll_reduce_struct ll_red_struct() { return zz_pInfo->ll_red_struct; }
+static const sp_ZZ_reduce_struct& ZZ_red_struct() { return zz_pInfo->ZZ_red_struct; }
 static long PrimeCnt() { return zz_pInfo->PrimeCnt; }
 
 
@@ -181,8 +203,17 @@ void allocate() { }
 
 };
 
-zz_p to_zz_p(long a);
-void conv(zz_p& x, long a);
+inline
+zz_p to_zz_p(long a) 
+{
+   return zz_p(rem(a, zz_pInfo->p, zz_pInfo->red_struct), INIT_LOOP_HOLE);
+}
+
+inline
+void conv(zz_p& x, long a)
+{
+   x._zz_p__rep = rem(a, zz_pInfo->p, zz_pInfo->red_struct);
+}
 
 inline zz_p& zz_p::operator=(long a) { conv(*this, a); return *this; }
 
@@ -399,6 +430,13 @@ NTL_SNS ostream& operator<<(NTL_SNS ostream& s, zz_p a);
 NTL_SNS istream& operator>>(NTL_SNS istream& s, zz_p& x);
 
 
+void conv(Vec<zz_p>& x, const Vec<ZZ>& a);
+void conv(Vec<zz_p>& x, const Vec<long>& a);
+// explicit instantiation of more efficient versions,
+// defined in vec_lzz_p.c
+
+
+
 /* additional legacy conversions for v6 conversion regime */
 
 inline void conv(int& x, zz_p a) { conv(x, rep(a)); }
@@ -412,6 +450,29 @@ inline void conv(zz_p& x, zz_p a) { x = a; }
 
 /* ------------------------------------- */
 
+
+// *********************************************************
+// *** specialized inner-product routines, for internal consumption
+// *********************************************************
+
+#ifdef NTL_HAVE_LL_TYPE
+long 
+InnerProd_LL(const long *ap, const zz_p *bp, long n, long d, 
+          sp_ll_reduce_struct dinv);
+
+long
+InnerProd_LL(const zz_p *ap, const zz_p *bp, long n, long d, 
+          sp_ll_reduce_struct dinv);
+#endif
+
+
+long 
+InnerProd_L(const long *ap, const zz_p *bp, long n, long d, 
+          sp_reduce_struct dinv);
+
+long 
+InnerProd_L(const zz_p *ap, const zz_p *bp, long n, long d, 
+          sp_reduce_struct dinv);
 
 
 NTL_CLOSE_NNS

@@ -44,11 +44,11 @@ void swap(RR& z) { x.swap(z.x); _ntl_swap(e, z.e); }
 const ZZ& mantissa() const { return x; }
 long exponent() const { return e; }
 
-NTL_THREAD_LOCAL static long prec;
+static NTL_CHEAP_THREAD_LOCAL long prec;
 static void SetPrecision(long p);
 static long precision() { return prec; }
 
-NTL_THREAD_LOCAL static long oprec;
+static NTL_CHEAP_THREAD_LOCAL long oprec;
 static void SetOutputPrecision(long p);
 static long OutputPrecision() { return oprec; }
 

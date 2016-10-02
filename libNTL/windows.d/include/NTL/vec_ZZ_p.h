@@ -10,12 +10,9 @@ NTL_OPEN_NNS
 typedef Vec<ZZ_p> vec_ZZ_p;
 
 
-void conv(vec_ZZ_p& x, const vec_ZZ& a);
+// legacy conversion notation
 inline vec_ZZ_p to_vec_ZZ_p(const vec_ZZ& a)
    { vec_ZZ_p x; conv(x, a); NTL_OPT_RETURN(vec_ZZ_p, x); }
-
-
-void conv(vec_ZZ& x, const vec_ZZ_p& a);
 inline vec_ZZ to_vec_ZZ(const vec_ZZ_p& a)
    { vec_ZZ x; conv(x, a); NTL_OPT_RETURN(vec_ZZ, x); }
 

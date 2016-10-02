@@ -6,7 +6,7 @@
 #include <NTL/vector.h>
 #include <NTL/GF2E.h>
 #include <NTL/vec_GF2E.h>
-#include <NTL/FFT.h>
+#include <NTL/vec_long.h>
 #include <NTL/GF2XVec.h>
 #include <NTL/Lazy.h>
 
@@ -849,8 +849,9 @@ struct GF2EXArgument {
    vec_GF2EX H;
 };
 
-NTL_THREAD_LOCAL
-extern long GF2EXArgBound;
+extern 
+NTL_CHEAP_THREAD_LOCAL
+long GF2EXArgBound;
 
 
 void build(GF2EXArgument& H, const GF2EX& h, const GF2EXModulus& F, long m);

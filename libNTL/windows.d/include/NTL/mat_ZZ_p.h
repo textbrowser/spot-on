@@ -35,8 +35,8 @@ inline mat_ZZ_p ident_mat_ZZ_p(long n)
 void determinant(ZZ_p& d, const mat_ZZ_p& A);
 long IsIdent(const mat_ZZ_p& A, long n);
 void transpose(mat_ZZ_p& X, const mat_ZZ_p& A);
-void solve(ZZ_p& d, vec_ZZ_p& X,
-           const mat_ZZ_p& A, const vec_ZZ_p& b);
+void solve(ZZ_p& d, vec_ZZ_p& X, const mat_ZZ_p& A, const vec_ZZ_p& b);
+void solve(ZZ_p& d, const mat_ZZ_p& A, vec_ZZ_p& x, const vec_ZZ_p& b);
 void inv(ZZ_p& d, mat_ZZ_p& X, const mat_ZZ_p& A);
 
 inline void sqr(mat_ZZ_p& X, const mat_ZZ_p& A)

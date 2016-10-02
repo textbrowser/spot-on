@@ -657,6 +657,12 @@ void ToFFTRep(FFTRep& x, const ZZ_pXModRep& a, long k, long lo, long hi);
 // must have hi-lo+1 < 2^k
 
 
+void FromFFTRep(ZZ_pXModRep& x, const FFTRep& a);
+// for testing and timing purposes only -- converts from FFTRep
+
+void FromZZ_pXModRep(ZZ_pX& x, const ZZ_pXModRep& a, long lo, long hi);
+// for testing and timing purposes only -- converts from ZZ_pXModRep
+
 
 
 
@@ -1102,7 +1108,7 @@ struct ZZ_pXArgument {
    vec_ZZ_pX H;
 };
 
-NTL_THREAD_LOCAL extern long ZZ_pXArgBound;
+extern NTL_CHEAP_THREAD_LOCAL long ZZ_pXArgBound;
 
 
 void build(ZZ_pXArgument& H, const ZZ_pX& h, const ZZ_pXModulus& F, long m);
