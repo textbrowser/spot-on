@@ -2727,8 +2727,20 @@ void spoton::slotRegenerateKey(void)
 
   if(mb.exec() != QMessageBox::Yes)
     return;
-  else
-    slotDeactivateKernel();
+
+#ifdef Q_OS_WIN32
+  if(m_ui.encryptionKeyType->currentIndex() == 1)
+    {
+      mb.setText
+	(tr("The McEliece cryptographic algorithm requires the use "
+	    "of the NTL library. NTL is not stable on Windows. Proceed?"));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+    }
+#endif
+
+  slotDeactivateKernel();
 
   QString encryptionKeyType("");
   QString signatureKeyType("");

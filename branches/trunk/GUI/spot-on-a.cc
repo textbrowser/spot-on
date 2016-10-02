@@ -6263,6 +6263,19 @@ void spoton::slotSetPassphrase(void)
 
 	      if(mb.exec() == QMessageBox::Yes)
 		proceed = true;
+
+#ifdef Q_OS_WIN32
+	      if(m_ui.encryptionKeyType->currentIndex() == 1 && proceed)
+		{
+		  mb.setText
+		    (tr("The McEliece cryptographic algorithm requires "
+			"the use of the NTL library. NTL is not stable on "
+			"Windows. Proceed?"));
+
+		  if(mb.exec() != QMessageBox::Yes)
+		    proceed = false;
+		}
+#endif
 	    }
 	  else
 	    proceed = m_wizardHash.value("initialize_public_keys", true);
