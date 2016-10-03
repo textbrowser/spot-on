@@ -843,6 +843,7 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
   if(!smp)
     return;
 
+  repaint();
 #ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
@@ -1730,6 +1731,7 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
   if(!smp)
     return;
 
+  repaint();
 #ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif

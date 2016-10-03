@@ -1407,6 +1407,10 @@ void spoton::slotSaveCommonUrlCredentials(void)
     }
   else
     {
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
       m_rss->deactivate();
       slotDeactivateKernel();
     }

@@ -214,6 +214,8 @@ void spoton_echo_key_share::slotMenuAction(void)
 	  return;
 	}
 
+      ui.menu->menu()->repaint();
+      repaint();
 #ifndef Q_OS_MAC
       QApplication::processEvents();
 #endif

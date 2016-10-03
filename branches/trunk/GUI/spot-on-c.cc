@@ -2741,6 +2741,9 @@ void spoton::slotRegenerateKey(void)
 #endif
 
   repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
   slotDeactivateKernel();
 
   QString encryptionKeyType("");

@@ -6139,6 +6139,10 @@ void spoton::slotSetPassphrase(void)
 	}
       else
 	{
+	  repaint();
+#ifndef Q_OS_MAC
+	  QApplication::processEvents();
+#endif
 	  m_rss->deactivate();
 	  slotDeactivateKernel();
 	  reencode = true;
@@ -6146,6 +6150,11 @@ void spoton::slotSetPassphrase(void)
     }
   else
     {
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+
       /*
       ** Deactivate machines before preparing keys.
       */

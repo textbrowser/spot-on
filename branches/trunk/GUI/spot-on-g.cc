@@ -291,6 +291,11 @@ void spoton::slotBuzzInvite(void)
   if(oids.isEmpty())
     return;
 
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   /*
   ** Let's generate an anonymous Buzz channel.
   */
@@ -1133,6 +1138,11 @@ void spoton::slotSetPrivateApplicationInformation(void)
 	      return;
 	    }
 
+	  repaint();
+#ifndef Q_OS_MAC
+	  QApplication::processEvents();
+#endif
+
 	  /*
 	  ** The salt will be composed of the cipher type, hash type,
 	  ** and iteration count.
@@ -1301,6 +1311,9 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	  m_wizardHash["url_credentials"] =
 	    m_wizardUi->url_credentials->isChecked();
 	  repaint();
+#ifndef Q_OS_MAC
+	  QApplication::processEvents();
+#endif
 	  slotSetPassphrase();
 	}
       else

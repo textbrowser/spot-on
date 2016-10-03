@@ -315,6 +315,7 @@ void spoton::slotEstablishForwardSecrecy(void)
     goto done_label;
 
   dialog->close();
+  repaint();
 #ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
@@ -617,6 +618,11 @@ void spoton::slotRespondToForwardSecrecy(void)
       popForwardSecrecyRequest(publicKeyHash);
       goto done_label;
     }
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
