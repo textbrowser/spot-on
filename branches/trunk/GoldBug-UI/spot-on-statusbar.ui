@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>696</width>
+    <width>713</width>
     <height>35</height>
    </rect>
   </property>
@@ -34,6 +34,9 @@
    </property>
    <item>
     <widget class="QToolButton" name="lock">
+     <property name="toolTip">
+      <string>Lock the application. Like a screensaver.</string>
+     </property>
      <property name="text">
       <string>Lock</string>
      </property>
