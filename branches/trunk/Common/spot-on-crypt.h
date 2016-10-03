@@ -117,6 +117,7 @@ class spoton_crypt
 			       const QByteArray &signature);
   static bool memcmp(const QByteArray &bytes1, const QByteArray &bytes);
   static bool passphraseSet(void);
+  static const int RANDOM_UPPER_LIMIT_IN_BYTES = 64;
   static const int SHA224_OUTPUT_SIZE_IN_BYTES = 28;
   static const int SHA384_OUTPUT_SIZE_IN_BYTES = 48;
   static const int XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES = 64; /*

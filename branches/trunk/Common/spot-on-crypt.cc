@@ -949,6 +949,10 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 	    }
 	  else
 	    {
+	      encrypted.append
+		(weakRandomBytes
+		 (static_cast<size_t> (qrand() %
+				       RANDOM_UPPER_LIMIT_IN_BYTES)));
 	      encrypted.append(originalLength);
 
 	      gcry_error_t err = 0;
