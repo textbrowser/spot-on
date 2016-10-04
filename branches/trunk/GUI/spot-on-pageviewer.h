@@ -100,7 +100,6 @@ class spoton_pageviewer: public QMainWindow
   spoton_textbrowser *m_webView;
 #endif
 
-
  private slots:
   void slotCopyLinkLocation(void);
   void slotCustomContextMenuRequested(const QPoint &point);
