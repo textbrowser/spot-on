@@ -527,13 +527,13 @@ spoton::spoton(void):QMainWindow()
   bool sslSupported = QSslSocket::supportsSsl();
 
   m_ui.buildInformation->setText
-    (QString("Compiled on %1, %2.\n"
-	     "%3.\n"
-	     "Qt %4, %5-bit.\n"
-	     "%6.\n"
-	     "libgcrypt %7.\n"
-	     "libntl %8.\n"
-	     "libspoton %9.\n"
+    (QString("Compiled on %1, %2.<br>"
+	     "%3.<br>"
+	     "Qt %4, %5-bit.<br>"
+	     "%6.<br>"
+	     "libgcrypt %7.<br>"
+	     "libntl %8.<br>"
+	     "libspoton %9.<br>"
 	     "Location of .spot-on: %10.").
 #ifdef SPOTON_DATELESS_COMPILATION
      arg("January 1, 3000").
@@ -10083,11 +10083,11 @@ void spoton::slotAbout(void)
 
   pixmap = pixmap.scaled
     (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-  str = "Please visit <a href=\"http://spot-on.sourceforge.net\">"
+  str = "<html>Please visit <a href=\"http://spot-on.sourceforge.net\">"
     "spot-on.sourceforge.net</a> for more information.";
   mb.setIconPixmap(pixmap);
 #else
-  str = "GoldBug is an open source application published under "
+  str = "<html>GoldBug is an open source application published under "
     "the Revised BSD License.<br>"
     "Please visit <a href=\"http://goldbug.sourceforge.net\">"
     "goldbug.sourceforge.net</a> for more information.";
@@ -10095,6 +10095,7 @@ void spoton::slotAbout(void)
 #endif
   str.append("<br><br>");
   str.append(m_ui.buildInformation->text());
+  str.append("</html>");
   mb.setStandardButtons(QMessageBox::Ok);
   mb.setText(str);
   mb.setTextFormat(Qt::RichText);
