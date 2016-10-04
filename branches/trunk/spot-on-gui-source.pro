@@ -2,6 +2,7 @@ FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
 		  UI/spot-on-buzzpage.ui \
 		  UI/spot-on-chatwindow.ui \
 		  UI/spot-on-controlcenter.ui \
+		  UI/spot-on-documentation.ui \
 		  UI/spot-on-echo-key-share.ui \
 		  UI/spot-on-encryptfile.ui \
 		  UI/spot-on-forward-secrecy-algorithms-selection.ui \
