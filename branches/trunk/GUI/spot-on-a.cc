@@ -536,7 +536,12 @@ spoton::spoton(void):QMainWindow()
 	     "libgcrypt %7.<br>"
 	     "libntl %8.<br>"
 	     "libspoton %9.<br>"
-	     "Location of .spot-on: %10.").
+	     "Location of .spot-on: %10.<br><br>"
+	     "Translators<br>"
+	     "Chinese - Zhao Wang<br>"
+	     "German - Ulrike Möller<br>"
+	     "Hindi - Ramachandra Kulkarni<br>"
+	     "Spanish - Eduardo Gonzales").
 #ifdef SPOTON_DATELESS_COMPILATION
      arg("January 1, 3000").
      arg("01:01:01").
