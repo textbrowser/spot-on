@@ -2,6 +2,7 @@ FORMS           = GoldBug-UI/spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI/spot-on-buzzpage.ui \
 		  GoldBug-UI/spot-on-chatwindow.ui \
 		  GoldBug-UI/spot-on-controlcenter.ui \
+		  GoldBug-UI/spot-on-documentation.ui \
 		  GoldBug-UI/spot-on-echo-key-share.ui \
 		  GoldBug-UI/spot-on-encryptfile.ui \
 		  GoldBug-UI/spot-on-forward-secrecy-algorithms-selection.ui \
@@ -28,6 +29,7 @@ HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on.h \
 		  GUI/spot-on-buzzpage.h \
 		  GUI/spot-on-chatwindow.h \
+		  GUI/spot-on-documentation.h \
 		  GUI/spot-on-echo-key-share.h \
 		  GUI/spot-on-encryptfile.h \
 		  GUI/spot-on-logviewer.h \
@@ -56,6 +58,7 @@ SOURCES		= Common/spot-on-crypt.cc \
 		  GUI/spot-on-c.cc \
 		  GUI/spot-on-chatwindow.cc \
 		  GUI/spot-on-d.cc \
+		  GUI/spot-on-documentation.cc \
 		  GUI/spot-on-e.cc \
 		  GUI/spot-on-echo-key-share.cc \
 		  GUI/spot-on-encryptfile.cc \
