@@ -46,10 +46,12 @@ class spoton_documentation: public QMainWindow
   Ui_documentation m_ui;
 
  private slots:
+  void slotAnchorClicked(const QUrl &url);
   void slotFind(void);
   void slotFindInitialize(void);
   void slotPagePrintPreview(void);
   void slotPrint(QPrinter *printer);
+  void slotReload(void);
 };
 
 #endif

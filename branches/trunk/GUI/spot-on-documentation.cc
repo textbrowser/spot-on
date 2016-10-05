@@ -51,6 +51,10 @@ spoton_documentation::spoton_documentation(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFind(void)));
+  connect(m_ui.textBrowser,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotAnchorClicked(const QUrl &)));
   m_ui.find->setPlaceholderText(tr("Find Text"));
   m_ui.textBrowser->setSource(QUrl("qrc:/Spot-On.html"));
   setWindowTitle(tr("%1: Documentation").arg(SPOTON_APPLICATION_NAME));
@@ -58,6 +62,19 @@ spoton_documentation::spoton_documentation(QWidget *parent):QMainWindow(parent)
 
 spoton_documentation::~spoton_documentation()
 {
+}
+
+void spoton_documentation::slotAnchorClicked(const QUrl &url)
+{
+  QString scheme(url.scheme().toLower().trimmed());
+
+  if(scheme != "qrc")
+    {
+      if(m_ui.textBrowser->isBackwardAvailable())
+	QTimer::singleShot(250, m_ui.textBrowser, SLOT(backward(void)));
+      else
+	QTimer::singleShot(250, this, SLOT(slotReload(void)));
+    }
 }
 
 void spoton_documentation::slotFind(void)
@@ -101,4 +118,9 @@ void spoton_documentation::slotPrint(QPrinter *printer)
     return;
 
   m_ui.textBrowser->print(printer);
+}
+
+void spoton_documentation::slotReload(void)
+{
+  m_ui.textBrowser->setSource(QUrl("qrc:/Spot-On.html"));
 }
