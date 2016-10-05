@@ -64,6 +64,7 @@ extern "C"
 #endif
 #include "Common/spot-on-threefish.h"
 #include "spot-on-defines.h"
+#include "spot-on-documentation.h"
 #include "spot-on.h"
 #include "ui_spot-on-password-prompt.h"
 
@@ -448,6 +449,7 @@ spoton::spoton(void):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_neighborsLastModificationTime = QDateTime();
   m_participantsLastModificationTime = QDateTime();
+  m_documentation = new spoton_documentation(this);
   m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, 0);
   m_rss = new spoton_rss(0);
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(0);
@@ -813,6 +815,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotCopyOrPaste(void)));
+  connect(m_ui.action_Documentation,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowDocumentation(void)));
   connect(m_ui.action_File_Encryption,
 	  SIGNAL(triggered(void)),
 	  this,

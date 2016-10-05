@@ -33,6 +33,7 @@ extern "C"
 #include <QSqlDriver>
 
 #include "spot-on.h"
+#include "spot-on-documentation.h"
 #include "ui_spot-on-private-application-credentials.h"
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
@@ -1488,4 +1489,12 @@ void spoton::slotNeighborSilenceTimeChanged(int value)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotShowDocumentation(void)
+{
+  m_documentation->showNormal();
+  m_documentation->activateWindow();
+  m_documentation->raise();
+  centerWidget(m_documentation, this);
 }

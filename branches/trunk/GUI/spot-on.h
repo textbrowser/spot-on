@@ -399,6 +399,7 @@ class spoton_lineedit: public QLineEdit
 #include "ui_spot-on-wizard.h"
 
 class QProgressDialog;
+class spoton_documentation;
 
 class spoton_forward_secrecy
 {
@@ -508,6 +509,7 @@ class spoton: public QMainWindow
   quint64 m_urlOffset;
   quint64 m_urlPages;
   spoton_crypt *m_urlCommonCrypt;
+  spoton_documentation *m_documentation;
   spoton_echo_key_share *m_echoKeyShare;
   spoton_encryptfile m_encryptFile;
   spoton_external_address m_externalAddress;
@@ -950,6 +952,7 @@ class spoton: public QMainWindow
   void slotShowBuzzDetails(bool state);
   void slotShowBuzzTabContextMenu(const QPoint &point);
   void slotShowContextMenu(const QPoint &point);
+  void slotShowDocumentation(void);
   void slotShowEncryptFile(void);
   void slotShowEtpMagnetsMenu(const QPoint &point);
   void slotShowMainTabContextMenu(const QPoint &point);

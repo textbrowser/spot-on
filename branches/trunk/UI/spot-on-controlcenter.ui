@@ -8700,6 +8700,7 @@
      <addaction name="action_Urls"/>
     </widget>
     <addaction name="action_About"/>
+    <addaction name="action_Documentation"/>
     <addaction name="separator"/>
     <addaction name="action_Neighbor_Summary_Panel"/>
     <addaction name="separator"/>
@@ -9005,6 +9006,11 @@
   <action name="action_Add_Participant">
    <property name="text">
     <string>&amp;Add Participant...</string>
+   </property>
+  </action>
+  <action name="action_Documentation">
+   <property name="text">
+    <string>&amp;Documentation...</string>
    </property>
   </action>
  </widget>
