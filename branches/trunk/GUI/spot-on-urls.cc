@@ -1375,8 +1375,8 @@ void spoton::slotPostgreSQLConnect(void)
 
 void spoton::slotSaveCommonUrlCredentials(void)
 {
-  QMessageBox *mb = 0;
   QPair<QByteArray, QByteArray> keys;
+  QScopedPointer<QMessageBox> mb;
   QString error("");
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
@@ -1386,7 +1386,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
       goto done_label;
     }
 
-  mb = new QMessageBox(this);
+  mb.reset(new QMessageBox(this));
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   mb->setAttribute(Qt::WA_MacMetalStyle, true);
@@ -1401,10 +1401,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
   mb->setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb->exec() != QMessageBox::Yes)
-    {
-      mb->deleteLater();
-      return;
-    }
+    return;
   else
     {
       repaint();
@@ -1437,7 +1434,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
  done_label:
 
   if(mb)
-    mb->deleteLater();
+    mb->close();
 
   if(!error.isEmpty())
     QMessageBox::critical(this,

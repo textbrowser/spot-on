@@ -1498,3 +1498,15 @@ void spoton::slotShowDocumentation(void)
   m_documentation->raise();
   centerWidget(m_documentation, this);
 }
+
+void spoton::slotAfterFirstShow(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_sb.status->setText(tr("Preparing databases. Please be patient."));
+  m_sb.status->repaint();
+  spoton_misc::prepareDatabases();
+  spoton_misc::prepareUrlDistillersDatabase();
+  spoton_misc::prepareUrlKeysDatabase();
+  m_sb.status->clear();
+  QApplication::restoreOverrideCursor();
+}

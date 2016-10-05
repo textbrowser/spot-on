@@ -3061,16 +3061,7 @@ spoton::spoton(void):QMainWindow()
        tr("The SQLite database driver QSQLITE is not available. "
 	  "This is a fatal flaw."));
   else
-    {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      m_sb.status->setText(tr("Preparing databases. Please be patient."));
-      m_sb.status->repaint();
-      spoton_misc::prepareDatabases();
-      spoton_misc::prepareUrlDistillersDatabase();
-      spoton_misc::prepareUrlKeysDatabase();
-      m_sb.status->clear();
-      QApplication::restoreOverrideCursor();
-    }
+    QTimer::singleShot(1500, this, SLOT(slotAfterFirstShow(void)));
 
   if(!spoton_crypt::passphraseSet())
     QTimer::singleShot

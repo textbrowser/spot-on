@@ -199,10 +199,10 @@ void spoton::slotEstablishForwardSecrecy(void)
   if(!(type == "email" || type == "chat"))
     return;
 
-  QDialog *dialog = 0;
   QModelIndexList names;
   QModelIndexList publicKeyHashes;
   QProgressDialog progress(this);
+  QScopedPointer<QDialog> dialog;
   QString algorithm("");
   QString error("");
   QString keySize("");
@@ -286,11 +286,11 @@ void spoton::slotEstablishForwardSecrecy(void)
        tr("Please note that traditional e-mail accounts do not "
 	  "support Forward Secrecy."));
 
-  dialog = new QDialog(this);
+  dialog.reset(new QDialog(this));
   dialog->setWindowTitle
     (tr("%1: Forward Secrecy Algorithms Selection").
      arg(SPOTON_APPLICATION_NAME));
-  ui.setupUi(dialog);
+  ui.setupUi(dialog.data());
 #ifdef Q_OS_MAC
   dialog->setAttribute(Qt::WA_MacMetalStyle, false);
 #endif
@@ -423,7 +423,7 @@ void spoton::slotEstablishForwardSecrecy(void)
  done_label:
 
   if(dialog)
-    dialog->deleteLater();
+    dialog->close();
 
   if(!error.isEmpty())
     QMessageBox::critical
