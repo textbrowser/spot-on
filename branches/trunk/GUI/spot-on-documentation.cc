@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QDesktopServices>
 #include <QPrintPreviewDialog>
 #include <QPrinter>
 
@@ -70,6 +71,23 @@ void spoton_documentation::slotAnchorClicked(const QUrl &url)
 
   if(scheme != "qrc")
     {
+      QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to open %1?").
+		 arg(url.toString()));
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() == QMessageBox::Yes)
+	QDesktopServices::openUrl(url);
+
       if(m_ui.textBrowser->isBackwardAvailable())
 	QTimer::singleShot(250, m_ui.textBrowser, SLOT(backward(void)));
       else
