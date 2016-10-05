@@ -3061,11 +3061,13 @@ spoton::spoton(void):QMainWindow()
        tr("The SQLite database driver QSQLITE is not available. "
 	  "This is a fatal flaw."));
   else
-    QTimer::singleShot(1500, this, SLOT(slotAfterFirstShow(void)));
+    {
+      QTimer::singleShot(1500, this, SLOT(slotAfterFirstShow(void)));
 
-  if(!spoton_crypt::passphraseSet())
-    QTimer::singleShot
-      (750, this, SLOT(slotPrepareAndShowInstallationWizard(void)));
+      if(!spoton_crypt::passphraseSet())
+	QTimer::singleShot
+	  (750, this, SLOT(slotPrepareAndShowInstallationWizard(void)));
+    }
 }
 
 spoton::~spoton()
