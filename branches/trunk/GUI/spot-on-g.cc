@@ -1501,6 +1501,10 @@ void spoton::slotShowDocumentation(void)
 
 void spoton::slotAfterFirstShow(void)
 {
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_sb.status->setText(tr("Preparing databases. Please be patient."));
   m_sb.status->repaint();
