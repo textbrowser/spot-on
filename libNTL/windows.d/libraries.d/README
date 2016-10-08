@@ -1,5 +1,7 @@
 Compiled via MinGW. Suggestions are many. Fortunate are the few.
 
 In a Qt terminal, setx PATH "%PATH%;C:\MinGW\msys\bin\1.0".
-Proceed to libNTL/windows/src.
+In the same terminal, proceed to libNTL/windows/src.
 Issue mingw32-make.
+Wait.
+Smile.
