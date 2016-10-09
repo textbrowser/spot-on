@@ -61,10 +61,6 @@
        <bool>false</bool>
       </property>
       <widget class="QWidget" name="tab_irc">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>:/nuvola/buzz_t.png</normaloff>:/nuvola/buzz_t.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -135,7 +131,7 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>582</width>
+             <width>616</width>
              <height>685</height>
             </rect>
            </property>
@@ -201,10 +197,6 @@ QPushButton:pressed {
                 </property>
                 <property name="text">
                  <string>Save</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../Icons/icons.qrc">
-                  <normaloff>:/nuvola/ok.png</normaloff>:/nuvola/ok.png</iconset>
                 </property>
                </widget>
               </item>
@@ -546,10 +538,6 @@ QPushButton:pressed {
                 <property name="text">
                  <string>Join</string>
                 </property>
-                <property name="icon">
-                 <iconset resource="../Icons/icons.qrc">
-                  <normaloff>:/nuvola/add.png</normaloff>:/nuvola/add.png</iconset>
-                </property>
                 <property name="iconSize">
                  <size>
                   <width>40</width>
@@ -577,10 +565,6 @@ QPushButton:pressed {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_chat">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>:/nuvola/chat_t.png</normaloff>:/nuvola/chat_t.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -796,10 +780,6 @@ QPushButton:pressed {
                     <property name="text">
                      <string/>
                     </property>
-                    <property name="icon">
-                     <iconset resource="../Icons/icons.qrc">
-                      <normaloff>:/nuvola/clear.png</normaloff>:/nuvola/clear.png</iconset>
-                    </property>
                     <property name="iconSize">
                      <size>
                       <width>40</width>
@@ -834,7 +814,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; } </string>
                     </property>
                     <property name="currentIndex">
-                     <number>4</number>
+                     <number>0</number>
                     </property>
                     <property name="maxCount">
                      <number>2100</number>
@@ -852,45 +832,25 @@ background-position: top center; } </string>
                      <property name="text">
                       <string>Away</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/away.png</normaloff>:/nuvola/away.png</iconset>
-                     </property>
                     </item>
                     <item>
                      <property name="text">
                       <string>Busy</string>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/busy.png</normaloff>:/nuvola/busy.png</iconset>
                      </property>
                     </item>
                     <item>
                      <property name="text">
                       <string>Custom</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/chat.png</normaloff>:/nuvola/chat.png</iconset>
-                     </property>
                     </item>
                     <item>
                      <property name="text">
                       <string>Offline</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/offline.png</normaloff>:/nuvola/offline.png</iconset>
-                     </property>
                     </item>
                     <item>
                      <property name="text">
                       <string>Online</string>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/online.png</normaloff>:/nuvola/online.png</iconset>
                      </property>
                     </item>
                    </widget>
@@ -930,10 +890,6 @@ QPushButton:pressed {
                     </property>
                     <property name="text">
                      <string>Send</string>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="../Icons/icons.qrc">
-                      <normaloff>:/nuvola/ok.png</normaloff>:/nuvola/ok.png</iconset>
                     </property>
                     <property name="iconSize">
                      <size>
@@ -1164,10 +1120,6 @@ QPushButton:pressed {
                      <property name="text">
                       <string>Save</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/ok.png</normaloff>:/nuvola/ok.png</iconset>
-                     </property>
                     </widget>
                    </item>
                    <item>
@@ -1249,10 +1201,6 @@ QPushButton:pressed {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_email">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>:/nuvola/email_t.png</normaloff>:/nuvola/email_t.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -1322,7 +1270,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>700</width>
+             <width>680</width>
              <height>669</height>
             </rect>
            </property>
@@ -1402,10 +1350,6 @@ QPushButton:pressed {
                 <property name="text">
                  <string/>
                 </property>
-                <property name="icon">
-                 <iconset resource="../Icons/icons.qrc">
-                  <normaloff>:/nuvola/refresh.png</normaloff>:/nuvola/refresh.png</iconset>
-                </property>
                 <property name="iconSize">
                  <size>
                   <width>40</width>
@@ -1450,10 +1394,6 @@ QPushButton:pressed {
                 <property name="text">
                  <string/>
                 </property>
-                <property name="icon">
-                 <iconset resource="../Icons/icons.qrc">
-                  <normaloff>:/nuvola/down.png</normaloff>:/nuvola/down.png</iconset>
-                </property>
                 <property name="iconSize">
                  <size>
                   <width>40</width>
@@ -1497,10 +1437,6 @@ QPushButton:pressed {
                 <property name="text">
                  <string/>
                 </property>
-                <property name="icon">
-                 <iconset resource="../Icons/icons.qrc">
-                  <normaloff>:/nuvola/empty-trash.png</normaloff>:/nuvola/empty-trash.png</iconset>
-                </property>
                 <property name="iconSize">
                  <size>
                   <width>40</width>
@@ -1539,10 +1475,6 @@ QPushButton:pressed {
                </size>
               </property>
               <widget class="QWidget" name="tab_4">
-               <attribute name="icon">
-                <iconset resource="../Icons/icons.qrc">
-                 <normaloff>:/nuvola/email.png</normaloff>:/nuvola/email.png</iconset>
-               </attribute>
                <attribute name="title">
                 <string>&amp;Read</string>
                </attribute>
@@ -1610,27 +1542,15 @@ QPushButton:pressed {
                          <property name="text">
                           <string>Inbox</string>
                          </property>
-                         <property name="icon">
-                          <iconset resource="../Icons/icons.qrc">
-                           <normaloff>:/nuvola/inbox.png</normaloff>:/nuvola/inbox.png</iconset>
-                         </property>
                         </item>
                         <item>
                          <property name="text">
                           <string>Sent</string>
                          </property>
-                         <property name="icon">
-                          <iconset resource="../Icons/icons.qrc">
-                           <normaloff>:/nuvola/read.png</normaloff>:/nuvola/read.png</iconset>
-                         </property>
                         </item>
                         <item>
                          <property name="text">
                           <string>Trash</string>
-                         </property>
-                         <property name="icon">
-                          <iconset resource="../Icons/icons.qrc">
-                           <normaloff>:/nuvola/full-trash.png</normaloff>:/nuvola/full-trash.png</iconset>
                          </property>
                         </item>
                        </widget>
@@ -1660,10 +1580,6 @@ QPushButton:pressed {
                         </property>
                         <property name="text">
                          <string>Delete Selection</string>
-                        </property>
-                        <property name="icon">
-                         <iconset resource="../Icons/icons.qrc">
-                          <normaloff>:/nuvola/clear.png</normaloff>:/nuvola/clear.png</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -1699,10 +1615,6 @@ QPushButton:pressed {
                         <property name="text">
                          <string>Reply</string>
                         </property>
-                        <property name="icon">
-                         <iconset resource="../Icons/icons.qrc">
-                          <normaloff>:/nuvola/reply.png</normaloff>:/nuvola/reply.png</iconset>
-                        </property>
                         <property name="iconSize">
                          <size>
                           <width>40</width>
@@ -1736,10 +1648,6 @@ QPushButton:pressed {
                         </property>
                         <property name="text">
                          <string>Resend</string>
-                        </property>
-                        <property name="icon">
-                         <iconset resource="../Icons/icons.qrc">
-                          <normaloff>:/nuvola/up.png</normaloff>:/nuvola/up.png</iconset>
                         </property>
                         <property name="iconSize">
                          <size>
@@ -1776,10 +1684,6 @@ QPushButton:pressed {
                       </property>
                       <property name="text">
                        <string>Save Attachment(s)...</string>
-                      </property>
-                      <property name="icon">
-                       <iconset resource="../Icons/icons.qrc">
-                        <normaloff>:/generic/attach.png</normaloff>:/generic/attach.png</iconset>
                       </property>
                      </widget>
                     </item>
@@ -1891,10 +1795,6 @@ QPushButton:pressed {
                </layout>
               </widget>
               <widget class="QWidget" name="tab_6">
-               <attribute name="icon">
-                <iconset resource="../Icons/icons.qrc">
-                 <normaloff>:/nuvola/database.png</normaloff>:/nuvola/database.png</iconset>
-               </attribute>
                <attribute name="title">
                 <string>&amp;C/O</string>
                </attribute>
@@ -2106,10 +2006,6 @@ QPushButton:pressed {
                          <property name="text">
                           <string>Copy</string>
                          </property>
-                         <property name="icon">
-                          <iconset resource="../Icons/icons.qrc">
-                           <normaloff>:/nuvola/copy.png</normaloff>:/nuvola/copy.png</iconset>
-                         </property>
                         </widget>
                        </item>
                        <item>
@@ -2138,10 +2034,6 @@ QPushButton:pressed {
                          </property>
                          <property name="text">
                           <string>Delete</string>
-                         </property>
-                         <property name="icon">
-                          <iconset resource="../Icons/icons.qrc">
-                           <normaloff>:/nuvola/delete.png</normaloff>:/nuvola/delete.png</iconset>
                          </property>
                         </widget>
                        </item>
@@ -2329,10 +2221,6 @@ QPushButton:pressed {
                           <property name="text">
                            <string>Add</string>
                           </property>
-                          <property name="icon">
-                           <iconset resource="../Icons/icons.qrc">
-                            <normaloff>:/nuvola/add.png</normaloff>:/nuvola/add.png</iconset>
-                          </property>
                          </widget>
                         </item>
                        </layout>
@@ -2346,10 +2234,6 @@ QPushButton:pressed {
                </layout>
               </widget>
               <widget class="QWidget" name="tab_13">
-               <attribute name="icon">
-                <iconset resource="../Icons/icons.qrc">
-                 <normaloff>:/nuvola/modify.png</normaloff>:/nuvola/modify.png</iconset>
-               </attribute>
                <attribute name="title">
                 <string>&amp;Write</string>
                </attribute>
@@ -2614,10 +2498,6 @@ QPushButton:pressed {
                       <property name="text">
                        <string>Send</string>
                       </property>
-                      <property name="icon">
-                       <iconset resource="../Icons/icons.qrc">
-                        <normaloff>:/nuvola/email.png</normaloff>:/nuvola/email.png</iconset>
-                      </property>
                      </widget>
                     </item>
                    </layout>
@@ -2813,10 +2693,6 @@ QPushButton:pressed {
                         <property name="text">
                          <string/>
                         </property>
-                        <property name="icon">
-                         <iconset resource="../Icons/icons.qrc">
-                          <normaloff>:/nuvola/clear.png</normaloff>:/nuvola/clear.png</iconset>
-                        </property>
                        </widget>
                       </item>
                      </layout>
@@ -2879,10 +2755,6 @@ QPushButton:pressed {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_createserver">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>:/nuvola/server_t.png</normaloff>:/nuvola/server_t.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -2953,7 +2825,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>566</width>
-             <height>1684</height>
+             <height>1677</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3527,10 +3399,6 @@ QPushButton#addListener:pressed {
                      <property name="text">
                       <string>Add</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/ok.png</normaloff>:/nuvola/ok.png</iconset>
-                     </property>
                      <property name="iconSize">
                       <size>
                        <width>40</width>
@@ -3811,10 +3679,6 @@ QPushButton:pressed {
                        </property>
                        <property name="text">
                         <string>Add</string>
-                       </property>
-                       <property name="icon">
-                        <iconset resource="../Icons/icons.qrc">
-                         <normaloff>:/nuvola/add.png</normaloff>:/nuvola/add.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -4150,10 +4014,6 @@ QPushButton:pressed {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_neighbors">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>:/nuvola/connect_t.png</normaloff>:/nuvola/connect_t.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -5190,10 +5050,6 @@ QPushButton#addNeighbor:pressed {
                         <property name="text">
                          <string>Connect</string>
                         </property>
-                        <property name="icon">
-                         <iconset resource="../Icons/icons.qrc">
-                          <normaloff>:/nuvola/connect.png</normaloff>:/nuvola/connect.png</iconset>
-                        </property>
                         <property name="iconSize">
                          <size>
                           <width>40</width>
@@ -5302,7 +5158,7 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>626</width>
+             <width>606</width>
              <height>669</height>
             </rect>
            </property>
@@ -6425,10 +6281,6 @@ QPushButton:pressed {
                    <property name="text">
                     <string>&amp;Discover!</string>
                    </property>
-                   <property name="icon">
-                    <iconset resource="../Icons/icons.qrc">
-                     <normaloff>:/nuvola/search.png</normaloff>:/nuvola/search.png</iconset>
-                   </property>
                   </widget>
                  </item>
                  <item>
@@ -6552,10 +6404,6 @@ QPushButton:pressed {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_settings">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>:/nuvola/settings_t.png</normaloff>:/nuvola/settings_t.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -6626,7 +6474,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>812</width>
-             <height>1155</height>
+             <height>1101</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7060,10 +6908,6 @@ QPushButton:pressed {
                      <property name="text">
                       <string>Select...</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/ok.png</normaloff>:/nuvola/ok.png</iconset>
-                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -7110,10 +6954,6 @@ background-position: top center;
                      </property>
                      <property name="text">
                       <string>Activate</string>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/activate.png</normaloff>:/nuvola/activate.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -7179,10 +7019,6 @@ QPushButton:pressed {
                      </property>
                      <property name="text">
                       <string>Deactivate</string>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/deactivate.png</normaloff>:/nuvola/deactivate.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -7655,10 +7491,6 @@ QPushButton:pressed {
                    <property name="text">
                     <string>Save</string>
                    </property>
-                   <property name="icon">
-                    <iconset resource="../Icons/icons.qrc">
-                     <normaloff>:/nuvola/ok.png</normaloff>:/nuvola/ok.png</iconset>
-                   </property>
                    <property name="iconSize">
                     <size>
                      <width>40</width>
@@ -8103,10 +7935,6 @@ QPushButton:pressed {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_starbeam">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>:/nuvola/starbeam_t.png</normaloff>:/nuvola/starbeam_t.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -8208,10 +8036,6 @@ color: rgb(255, 255, 255);</string>
                </size>
               </property>
               <widget class="QWidget" name="tab_SB_Magnets">
-               <attribute name="icon">
-                <iconset resource="../Icons/icons.qrc">
-                 <normaloff>:/nuvola/magnet.png</normaloff>:/nuvola/magnet.png</iconset>
-               </attribute>
                <attribute name="title">
                 <string>&amp;Magnet-URI</string>
                </attribute>
@@ -8561,10 +8385,6 @@ QPushButton:pressed {
                     <property name="text">
                      <string>Add</string>
                     </property>
-                    <property name="icon">
-                     <iconset resource="../Icons/icons.qrc">
-                      <normaloff>:/nuvola/add.png</normaloff>:/nuvola/add.png</iconset>
-                    </property>
                     <property name="iconSize">
                      <size>
                       <width>40</width>
@@ -8713,10 +8533,6 @@ QPushButton:pressed {
                </layout>
               </widget>
               <widget class="QWidget" name="tab_SB_incoming">
-               <attribute name="icon">
-                <iconset resource="../Icons/icons.qrc">
-                 <normaloff>:/nuvola/down.png</normaloff>:/nuvola/down.png</iconset>
-               </attribute>
                <attribute name="title">
                 <string>&amp;Received</string>
                </attribute>
@@ -8950,10 +8766,6 @@ QPushButton:pressed {
                </layout>
               </widget>
               <widget class="QWidget" name="tab_SB_Upload">
-               <attribute name="icon">
-                <iconset resource="../Icons/icons.qrc">
-                 <normaloff>:/nuvola/up.png</normaloff>:/nuvola/up.png</iconset>
-               </attribute>
                <attribute name="title">
                 <string>&amp;Transmitted</string>
                </attribute>
@@ -9262,10 +9074,6 @@ QPushButton:pressed {
                      <property name="text">
                       <string>Transmit</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/up.png</normaloff>:/nuvola/up.png</iconset>
-                     </property>
                      <property name="iconSize">
                       <size>
                        <width>40</width>
@@ -9454,10 +9262,6 @@ QPushButton:pressed {
                        </property>
                        <property name="text">
                         <string>Rewind &amp;&amp; Transmit Again</string>
-                       </property>
-                       <property name="icon">
-                        <iconset resource="../Icons/icons.qrc">
-                         <normaloff>:/nuvola/refresh.png</normaloff>:/nuvola/refresh.png</iconset>
                        </property>
                       </widget>
                      </item>
@@ -9747,10 +9551,6 @@ QPushButton:pressed {
                     <property name="text">
                      <string>Save</string>
                     </property>
-                    <property name="icon">
-                     <iconset resource="../Icons/icons.qrc">
-                      <normaloff>:/nuvola/ok.png</normaloff>:/nuvola/ok.png</iconset>
-                    </property>
                    </widget>
                   </item>
                  </layout>
@@ -9845,10 +9645,6 @@ QPushButton:pressed {
                    <number>0</number>
                   </property>
                   <widget class="QWidget" name="tab_2">
-                   <attribute name="icon">
-                    <iconset resource="../Icons/icons.qrc">
-                     <normaloff>:/nuvola/down.png</normaloff>:/nuvola/down.png</iconset>
-                   </attribute>
                    <attribute name="title">
                     <string>&amp;Download</string>
                    </attribute>
@@ -9903,10 +9699,6 @@ QPushButton:pressed {
                    </layout>
                   </widget>
                   <widget class="QWidget" name="tab_5">
-                   <attribute name="icon">
-                    <iconset resource="../Icons/icons.qrc">
-                     <normaloff>:/nuvola/down.png</normaloff>:/nuvola/down.png</iconset>
-                   </attribute>
                    <attribute name="title">
                     <string>&amp;Import</string>
                    </attribute>
@@ -9961,10 +9753,6 @@ QPushButton:pressed {
                    </layout>
                   </widget>
                   <widget class="QWidget" name="tab_3">
-                   <attribute name="icon">
-                    <iconset resource="../Icons/icons.qrc">
-                     <normaloff>:/nuvola/up.png</normaloff>:/nuvola/up.png</iconset>
-                   </attribute>
                    <attribute name="title">
                     <string>&amp;Upload</string>
                    </attribute>
@@ -10141,10 +9929,6 @@ QPushButton:pressed {
                      <property name="text">
                       <string>Add</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/add.png</normaloff>:/nuvola/add.png</iconset>
-                     </property>
                     </widget>
                    </item>
                    <item>
@@ -10180,10 +9964,6 @@ QPushButton:pressed {
                      <property name="text">
                       <string>Delete</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/delete.png</normaloff>:/nuvola/delete.png</iconset>
-                     </property>
                     </widget>
                    </item>
                    <item>
@@ -10212,10 +9992,6 @@ QPushButton:pressed {
                      <property name="text">
                       <string>Refresh</string>
                      </property>
-                     <property name="icon">
-                      <iconset resource="../Icons/icons.qrc">
-                       <normaloff>:/nuvola/refresh.png</normaloff>:/nuvola/refresh.png</iconset>
-                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -10232,10 +10008,6 @@ QPushButton:pressed {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_addkey">
-       <attribute name="icon">
-        <iconset>
-         <normaloff>:/nuvola/key_t.png</normaloff>:/nuvola/key_t.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -10365,10 +10137,6 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                    <property name="text">
                     <string>Copy Own Public Keys</string>
                    </property>
-                   <property name="icon">
-                    <iconset resource="../Icons/icons.qrc">
-                     <normaloff>:/nuvola/key.png</normaloff>:/nuvola/key.png</iconset>
-                   </property>
                    <property name="iconSize">
                     <size>
                      <width>40</width>
@@ -10417,10 +10185,6 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                  <property name="text">
                   <string>&amp;E-Mail Address</string>
                  </property>
-                 <property name="icon">
-                  <iconset resource="../Icons/icons.qrc">
-                   <normaloff>:/nuvola/email.png</normaloff>:/nuvola/email.png</iconset>
-                 </property>
                 </widget>
                </item>
                <item>
@@ -10440,10 +10204,6 @@ QPushButton#pushButtonCopytoClipboard_All:pressed {
                 <widget class="QRadioButton" name="addFriendPublicKeyRadio">
                  <property name="text">
                   <string>&amp;Key</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="../Icons/icons.qrc">
-                   <normaloff>:/nuvola/key.png</normaloff>:/nuvola/key.png</iconset>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -10559,10 +10319,6 @@ QPushButton:pressed {
                  <property name="text">
                   <string>Add</string>
                  </property>
-                 <property name="icon">
-                  <iconset resource="../Icons/icons.qrc">
-                   <normaloff>:/nuvola/add.png</normaloff>:/nuvola/add.png</iconset>
-                 </property>
                 </widget>
                </item>
                <item>
@@ -10608,10 +10364,6 @@ QPushButton:pressed {
                  <property name="text">
                   <string/>
                  </property>
-                 <property name="icon">
-                  <iconset resource="../Icons/icons.qrc">
-                   <normaloff>:/nuvola/clear.png</normaloff>:/nuvola/clear.png</iconset>
-                 </property>
                 </widget>
                </item>
               </layout>
@@ -10632,10 +10384,6 @@ QPushButton:pressed {
 }
 </string>
        </property>
-       <attribute name="icon">
-        <iconset>
-         <normaloff>:/everaldo/goldbug_t.png</normaloff>:/everaldo/goldbug_t.png</iconset>
-       </attribute>
        <attribute name="title">
         <string/>
        </attribute>
@@ -11088,10 +10836,6 @@ border-style: inset;
               </property>
               <property name="text">
                <string>Login</string>
-              </property>
-              <property name="icon">
-               <iconset resource="../Icons/icons.qrc">
-                <normaloff>:/nuvola/ok.png</normaloff>:/nuvola/ok.png</iconset>
               </property>
               <property name="iconSize">
                <size>
