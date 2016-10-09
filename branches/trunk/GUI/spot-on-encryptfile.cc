@@ -845,8 +845,9 @@ void spoton_encryptfile::slotSelect(void)
 	  if(ui.destination->text().trimmed().isEmpty())
 	    {
 	      if(ui.encrypt->isChecked())
-		ui.destination->setText(str + ".enc");
-	      else if(str.endsWith(".enc"))
+		ui.destination->setText
+		  (str + (ui.file_mode->isChecked() ? ".enc" : ""));
+	      else if(str.endsWith(".enc") && ui.file_mode->isChecked())
 		ui.destination->setText(str.mid(0, str.length() - 4));
 	    }
 	}
