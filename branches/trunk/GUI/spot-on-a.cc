@@ -354,23 +354,23 @@ int main(int argc, char *argv[])
 
   if(!settings.contains("gui/gcryctl_init_secmem"))
     settings.setValue("gui/gcryctl_init_secmem",
-		      spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE);
+		      spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
 
   if(!settings.contains("gui/tcp_nodelay"))
     settings.setValue("gui/tcp_nodelay", 1);
 
   bool ok = true;
   int integer = settings.value("gui/gcryctl_init_secmem",
-			       spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE).
+			       spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).
     toInt(&ok);
 
   if(!ok)
-    integer = spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE;
+    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
   else if(integer == 0)
     {
     }
   else if(integer > 999999999)
-    integer = spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE;
+    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
 
   spoton_crypt::init
     (integer, settings.value("gui/cbc_cts_enabled", true).toBool());
@@ -2775,10 +2775,10 @@ spoton::spoton(void):QMainWindow()
 			    toString());
   m_optionsUi.guiSecureMemoryPool->setValue
     (m_settings.value("gui/gcryctl_init_secmem",
-		      spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE).toInt());
+		      spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt());
   m_ui.kernelSecureMemoryPool->setValue
     (m_settings.value("kernel/gcryctl_init_secmem",
-		      spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE).toInt());
+		      spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt());
 
   if(m_optionsUi.guiSecureMemoryPool->value() == 0)
     m_optionsUi.guiSecureMemoryPool->setStyleSheet
@@ -5515,7 +5515,7 @@ void spoton::slotDeactivateKernel(void)
 		      &libspotonHandle,
 		      m_settings.value("gui/gcryctl_init_secmem",
 				       spoton_common::
-				       DEFAULT_SECURE_MEMORY_POOL_SIZE).
+				       MINIMUM_SECURE_MEMORY_POOL_SIZE).
 		      toInt()) == LIBSPOTON_ERROR_NONE)
     libspoton_deregister_kernel
       (libspoton_registered_kernel_pid(&libspotonHandle, 0),

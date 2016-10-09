@@ -385,7 +385,7 @@ int main(int argc, char *argv[])
 
   if(!settings.contains("kernel/gcryctl_init_secmem"))
     settings.setValue("kernel/gcryctl_init_secmem",
-		      spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE);
+		      spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
 
   if(!settings.contains("kernel/sctp_nodelay"))
     settings.setValue("kernel/sctp_nodelay", 1);
@@ -399,16 +399,16 @@ int main(int argc, char *argv[])
 
   bool ok = true;
   int integer = settings.value("kernel/gcryctl_init_secmem",
-			       spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE).
+			       spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).
     toInt(&ok);
 
   if(!ok)
-    integer = spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE;
+    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
   else if(integer == 0)
     {
     }
   else if(integer > 999999999)
-    integer = spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE;
+    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
 
   spoton_crypt::init
     (integer, settings.value("gui/cbc_cts_enabled", true).toBool());
@@ -1073,7 +1073,7 @@ void spoton_kernel::cleanup(void)
 		      0,
 		      &libspotonHandle,
 		      setting("kernel/gcryctl_init_secmem",
-			      spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE).
+			      spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).
 		      toInt()) == LIBSPOTON_ERROR_NONE)
     libspoton_deregister_kernel
       (static_cast<pid_t> (QCoreApplication::applicationPid()),
@@ -1844,7 +1844,7 @@ void spoton_kernel::checkForTermination(void)
 			   &libspotonHandle,
 			   setting("kernel/gcryctl_init_secmem",
 				   spoton_common::
-				   DEFAULT_SECURE_MEMORY_POOL_SIZE).
+				   MINIMUM_SECURE_MEMORY_POOL_SIZE).
 			   toInt())) == LIBSPOTON_ERROR_NONE)
 	registered = QCoreApplication::applicationPid() ==
 	  libspoton_registered_kernel_pid(&libspotonHandle, &err);

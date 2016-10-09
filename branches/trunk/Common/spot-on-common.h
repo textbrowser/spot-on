@@ -59,7 +59,6 @@ class spoton_common
   static const int CACHE_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM_STATIC = 30;
-  static const int DEFAULT_SECURE_MEMORY_POOL_SIZE = 0;
   static const int ELEGANT_STARBEAM_SIZE = 15000;
   static const int EMAIL_ATTACHMENT_MAXIMUM_SIZE = 10 * 1024 * 1024;
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 30;
@@ -85,6 +84,7 @@ class spoton_common
     CHAR_BIT * 1024 * 1024;
 #endif
   static const int MAXIMUM_UDP_DATAGRAM_SIZE = 508;
+  static const int MINIMUM_SECURE_MEMORY_POOL_SIZE = 262144;
   static const int MINIMUM_STARBEAM_PULSE_SIZE = 1024;
   static const int MOSAIC_SIZE = 64;
   static const int NAME_MAXIMUM_LENGTH = 64;
