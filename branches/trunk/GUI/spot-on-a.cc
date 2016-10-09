@@ -2988,13 +2988,15 @@ spoton::spoton(void):QMainWindow()
 
   if(str == "everaldo")
     m_optionsUi.icons->setCurrentIndex(0);
+  else if(str == "meego")
+    m_optionsUi.icons->setCurrentIndex(1);
   else if(str == "nuvola")
-    m_optionsUi.icons->setCurrentIndex(2);
+    m_optionsUi.icons->setCurrentIndex(3);
   else
 #if SPOTON_GOLDBUG == 0
-    m_optionsUi.icons->setCurrentIndex(1);
-#else
     m_optionsUi.icons->setCurrentIndex(2);
+#else
+    m_optionsUi.icons->setCurrentIndex(3);
 #endif
 
   slotSetIcons(m_optionsUi.icons->currentIndex());

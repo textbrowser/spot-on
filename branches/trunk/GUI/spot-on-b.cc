@@ -4760,6 +4760,8 @@ void spoton::slotSetIcons(int index)
   if(index == 0)
     iconSet = "everaldo";
   else if(index == 1)
+    iconSet = "meego";
+  else if(index == 2)
     iconSet = "nouve";
   else
     iconSet = "nuvola";

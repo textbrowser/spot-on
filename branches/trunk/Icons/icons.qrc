@@ -307,6 +307,60 @@
 	<file>generic/smp-locked.png</file>
 	<file>generic/smp-unlocked.png</file>
 	<file>generic/weather.png</file>
+	<file>meego/activate.png</file>
+	<file>meego/add.png</file>
+	<file>meego/add-listener.png</file>
+	<file>meego/add-url.png</file>
+	<file>meego/away.png</file>
+	<file>meego/busy.png</file>
+	<file>meego/buzz.png</file>
+	<file>meego/chat.png</file>
+	<file>meego/clear.png</file>
+	<file>meego/connect.png</file>
+	<file>meego/copy.png</file>
+	<file>meego/database.png</file>
+	<file>meego/deactivate.png</file>
+	<file>meego/delete.png</file>
+	<file>meego/documentation.png</file>
+	<file>meego/down.png</file>
+	<file>meego/email.png</file>
+	<file>meego/empty-trash.png</file>
+	<file>meego/full-trash.png</file>
+	<file>meego/gemini.png</file>
+	<file>meego/goldbug.png</file>
+	<file>meego/heart.png</file>
+	<file>meego/icons.png</file>
+	<file>meego/inbox.png</file>
+	<file>meego/information.png</file>
+	<file>meego/key.png</file>
+	<file>meego/lock.png</file>
+	<file>meego/magnet.png</file>
+	<file>meego/melodica.png</file>
+	<file>meego/modify.png</file>
+	<file>meego/neighbors.png</file>
+	<file>meego/offline.png</file>
+	<file>meego/ok.png</file>
+	<file>meego/online.png</file>
+	<file>meego/outbox.png</file>
+	<file>meego/quit.png</file>
+	<file>meego/read.png</file>
+	<file>meego/refresh.png</file>
+	<file>meego/repleo.png</file>
+	<file>meego/repleo-chat.png</file>
+	<file>meego/repleo-email.png</file>
+	<file>meego/repleo-master.png</file>
+	<file>meego/reply.png</file>
+	<file>meego/search.png</file>
+	<file>meego/server.png</file>
+	<file>meego/settings.png</file>
+	<file>meego/share.png</file>
+	<file>meego/spot-on-logo.png</file>
+	<file>meego/starbeam.png</file>
+	<file>meego/status-offline.png</file>
+	<file>meego/status-online.png</file>
+	<file>meego/up.png</file>
+	<file>meego/urls.png</file>
+	<file>meego/write.png</file>
 	<file>nouve/activate.png</file>
 	<file>nouve/add.png</file>
 	<file>nouve/add-listener.png</file>

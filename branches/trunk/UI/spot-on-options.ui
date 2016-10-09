@@ -71,7 +71,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-571</y>
+             <y>0</y>
              <width>571</width>
              <height>1211</height>
             </rect>
@@ -117,7 +117,7 @@
               <item>
                <widget class="QComboBox" name="icons">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>2</number>
                 </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToContents</enum>
@@ -125,6 +125,11 @@
                 <item>
                  <property name="text">
                   <string>Everaldo</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Meego</string>
                  </property>
                 </item>
                 <item>
