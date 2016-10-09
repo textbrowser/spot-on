@@ -784,6 +784,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(linkActivated(const QString &)),
 	  this,
 	  SLOT(slotShareKeysWithKernel(const QString &)));
+  m_optionsUi.guiSecureMemoryPool->setProperty
+    ("original_stylesheet", m_optionsUi.guiSecureMemoryPool->styleSheet());
+  m_ui.kernelSecureMemoryPool->setProperty
+    ("original_stylesheet", m_ui.kernelSecureMemoryPool->styleSheet());
   statusBar()->addPermanentWidget(m_sbWidget, 100);
   statusBar()->setStyleSheet("QStatusBar::item {"
 			     "border: none; "
@@ -5646,11 +5650,21 @@ void spoton::slotGeneralTimerTimeout(void)
     {
       m_buzzStatusTimer.stop();
 
+      if(m_optionsUi.guiSecureMemoryPool->value() == 0)
+	m_optionsUi.guiSecureMemoryPool->setStyleSheet
+	  ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
+      else
+	m_optionsUi.guiSecureMemoryPool->setStyleSheet
+	  (m_optionsUi.guiSecureMemoryPool->
+	   property("original_stylesheet").toString());
+
       if(m_ui.kernelSecureMemoryPool->value() == 0)
 	m_ui.kernelSecureMemoryPool->setStyleSheet
 	  ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
       else
-	m_ui.kernelSecureMemoryPool->setStyleSheet("");
+	m_ui.kernelSecureMemoryPool->setStyleSheet
+	  (m_ui.kernelSecureMemoryPool->
+	   property("original_stylesheet").toString());
     }
 
   if(!isKernelActive() ||
