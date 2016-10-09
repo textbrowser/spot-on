@@ -531,12 +531,17 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
     (privateKey, privateKeyLength);
   m_publicKey = 0;
 
-  if(m_privateKey)
+  if(m_privateKey && m_privateKey->ok())
     {
       m_k = m_privateKey->k();
       m_m = m_privateKey->m();
       m_n = m_privateKey->n();
       m_t = m_privateKey->t();
+    }
+  else
+    {
+      delete m_privateKey;
+      m_privateKey = 0;
     }
 }
 
