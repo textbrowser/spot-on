@@ -43,6 +43,8 @@ class spoton_encryptfile: public QMainWindow
   spoton_encryptfile(void);
   ~spoton_encryptfile();
   static const int LENGTH_OF_INITIALIZATION_VECTOR = 16;
+  bool occupied(void) const;
+  void abort(void);
   void show(QWidget *parent);
 
  private:

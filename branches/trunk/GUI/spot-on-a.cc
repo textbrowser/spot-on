@@ -3099,6 +3099,7 @@ void spoton::cleanup(void)
   if(m_settings.value("gui/removeOtmOnExit", false).toBool())
     spoton_misc::removeOneTimeStarBeamMagnets();
 
+  m_encryptFile.abort();
   m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
 
   while(!m_starbeamDigestFutures.isEmpty())

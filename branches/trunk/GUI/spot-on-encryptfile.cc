@@ -123,6 +123,21 @@ spoton_encryptfile::~spoton_encryptfile()
   m_future.waitForFinished();
 }
 
+bool spoton_encryptfile::occupied(void) const
+{
+  return findChild<QProgressDialog *> ();
+}
+
+void spoton_encryptfile::abort(void)
+{
+  QProgressDialog *progress = findChild<QProgressDialog *> ();
+
+  if(progress)
+    progress->cancel();
+
+  slotCancel();
+}
+
 void spoton_encryptfile::slotCancel(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -316,33 +331,34 @@ void spoton_encryptfile::slotConvert(void)
       QDir baseDir(destination.absoluteFilePath());
       QDir dir(fileInfo.absoluteFilePath());
       QFileInfoList files(dir.entryInfoList(filters, QDir::Files));
-      QProgressDialog progress(this);
+      QScopedPointer<QProgressDialog> progress;
 
+      progress.reset(new QProgressDialog(this));
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-      progress.setAttribute(Qt::WA_MacMetalStyle, true);
+      progress->setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-      progress.setLabelText(tr("Processing file(s)..."));
-      progress.setMaximum(0);
-      progress.setMinimum(0);
-      progress.setModal(true);
-      progress.setWindowTitle(tr("%1: Processing File(s)").
+      progress->setLabelText(tr("Processing file(s)..."));
+      progress->setMaximum(0);
+      progress->setMinimum(0);
+      progress->setWindowModality(Qt::WindowModal);
+      progress->setWindowTitle(tr("%1: Processing File(s)").
 			      arg(SPOTON_APPLICATION_NAME));
-      progress.show();
+      progress->show();
 #ifndef Q_OS_MAC
-      progress.repaint();
+      progress->repaint();
       QApplication::processEvents();
 #endif
 
       while(true)
 	{
 #ifndef Q_OS_MAC
-	  progress.repaint();
+	  progress->repaint();
 	  QApplication::processEvents();
 #endif
 
-	  if(progress.wasCanceled())
+	  if(progress->wasCanceled())
 	    {
 	      m_future.cancel();
 	      m_future.waitForFinished();
@@ -390,7 +406,7 @@ void spoton_encryptfile::slotConvert(void)
 	    }
         }
 
-      progress.close();
+      progress->close();
       statusBar()->clearMessage();
       ui.cancel->setVisible(false);
       ui.convert->setEnabled(true);
