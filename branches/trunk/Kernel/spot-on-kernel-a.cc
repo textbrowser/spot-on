@@ -407,7 +407,7 @@ int main(int argc, char *argv[])
   else if(integer == 0)
     {
     }
-  else if(integer < 131072 || integer > 999999999 || !ok)
+  else if(integer > 999999999)
     integer = spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE;
 
   spoton_crypt::init

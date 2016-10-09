@@ -2037,7 +2037,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   else if(integer == 0)
     {
     }
-  else if(integer < 131072 || integer > 999999999)
+  else if(integer > 999999999)
     integer = spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE;
 
   settings.insert("gui/gcryctl_init_secmem", integer);
@@ -2201,7 +2201,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   else if(integer == 0)
     {
     }
-  else if(integer < 131072 || integer > 999999999)
+  else if(integer > 999999999)
     integer = spoton_common::DEFAULT_SECURE_MEMORY_POOL_SIZE;
 
   settings.insert("kernel/gcryctl_init_secmem", integer);
