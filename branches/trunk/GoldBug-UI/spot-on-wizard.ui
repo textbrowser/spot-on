@@ -35,11 +35,19 @@
              <height>64</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
            <property name="styleSheet">
             <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));</string>
            </property>
            <property name="text">
             <string>Configuration Wizard</string>
+           </property>
+           <property name="indent">
+            <number>5</number>
            </property>
           </widget>
          </item>
@@ -80,7 +88,16 @@
        <item>
         <widget class="QFrame" name="passphrase_frame">
          <layout class="QVBoxLayout" name="verticalLayout_7">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
@@ -90,11 +107,19 @@
             </property>
             <item>
              <widget class="QLabel" name="label_6">
+              <property name="font">
+               <font>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));</string>
               </property>
               <property name="text">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate Local Keys&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="indent">
+               <number>5</number>
               </property>
              </widget>
             </item>
@@ -196,16 +221,33 @@
             <property name="spacing">
              <number>0</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
              <number>0</number>
             </property>
             <item>
              <widget class="QLabel" name="label_11">
+              <property name="font">
+               <font>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">background-color: transparent;</string>
               </property>
               <property name="text">
                <string>Generate Public Key Pairs</string>
+              </property>
+              <property name="indent">
+               <number>5</number>
               </property>
              </widget>
             </item>
@@ -304,16 +346,33 @@
             <property name="spacing">
              <number>0</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
              <number>0</number>
             </property>
             <item>
              <widget class="QLabel" name="label_12">
+              <property name="font">
+               <font>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">background-color: transparent;</string>
               </property>
               <property name="text">
                <string>Kernel Launch</string>
+              </property>
+              <property name="indent">
+               <number>5</number>
               </property>
              </widget>
             </item>
