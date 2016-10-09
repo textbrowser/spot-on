@@ -59,6 +59,7 @@ class spoton_common
   static const int CACHE_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM_STATIC = 30;
+  static const int DEFAULT_SECURE_MEMORY_POOL_SIZE = 0;
   static const int ELEGANT_STARBEAM_SIZE = 15000;
   static const int EMAIL_ATTACHMENT_MAXIMUM_SIZE = 10 * 1024 * 1024;
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 30;
@@ -94,7 +95,6 @@ class spoton_common
   static const int POPTASTIC_STATUS_INTERVAL = 60;
   static const int REAP_POST_OFFICE_LETTERS_INTERVAL = 60;
   static const int RSS_IMPORTS_PER_THREAD = 5;
-  static const int SECURE_MEMORY_POOL_SIZE = 75 * 1024 * 1024;
   static const int SEND_QUEUED_EMAIL_INTERVAL = 5;
   static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
   static const int STATUS_INTERVAL = 15;
