@@ -2095,7 +2095,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.neighborSummary->setVisible
     (m_ui.action_Neighbor_Summary_Panel->isChecked());
   m_ui.activeUrlDistribution->setChecked
-    (m_settings.value("gui/activeUrlDistribution", true).toBool());
+    (m_settings.value("gui/activeUrlDistribution", false).toBool());
   m_ui.action_Buzz->setChecked
     (m_settings.value("gui/showBuzzPage", true).toBool());
   m_ui.action_Listeners->setChecked

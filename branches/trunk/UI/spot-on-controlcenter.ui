@@ -3380,8 +3380,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>566</height>
+             <width>617</width>
+             <height>179</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3754,7 +3754,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>788</width>
+                  <width>681</width>
                   <height>381</height>
                  </rect>
                 </property>
@@ -7845,8 +7845,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>607</width>
-             <height>377</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7880,9 +7880,6 @@
                 </property>
                 <property name="text">
                  <string>&amp;Active</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
                 </property>
                </widget>
               </item>
