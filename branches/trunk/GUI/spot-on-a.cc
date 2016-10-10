@@ -3060,6 +3060,8 @@ spoton::spoton(void):QMainWindow()
 #endif
 
 #if SPOTON_GOLDBUG == 0
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   foreach(QWidget *widget, findChildren<QWidget *> ())
     {
       if(widget->contextMenuPolicy() == Qt::CustomContextMenu ||
@@ -3080,6 +3082,8 @@ spoton::spoton(void):QMainWindow()
 	      this,
 	      SLOT(slotSetCheckBoxStyleSheet(const QPoint &)));
     }
+
+  QApplication::restoreOverrideCursor();
 #endif
 
   show();
