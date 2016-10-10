@@ -562,7 +562,7 @@ Symmetric Key (Base-64)
 0 - 0090
 1 - Key Type
 2 - Dispatcher's Name
-3 - Dispatcher's Public Key
+3 - Compressed(Dispatcher's Public Key)
 4 - Dispatcher's Public Key Signature
 5 - Dispatcher's Signature Public Key
 6 - Dispatcher's Signature Public Key Signature
