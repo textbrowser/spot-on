@@ -35,6 +35,7 @@ extern "C"
 #include "spot-on.h"
 #include "spot-on-documentation.h"
 #include "ui_spot-on-private-application-credentials.h"
+#include "ui_spot-on-stylesheet.h"
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
@@ -1521,6 +1522,7 @@ void spoton::slotAfterFirstShow(void)
 
 void spoton::slotSetCheckBoxStyleSheet(const QPoint &point)
 {
+#if SPOTON_GOLDBUG == 0
   QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
 
   if(!checkBox)
@@ -1535,10 +1537,14 @@ void spoton::slotSetCheckBoxStyleSheet(const QPoint &point)
   action->setProperty("widget_name", checkBox->objectName());
   action->setProperty("widget_stylesheet", checkBox->styleSheet());
   menu.exec(checkBox->mapToGlobal(point));
+#else
+  Q_UNUSED(point);
+#endif
 }
 
 void spoton::slotSetStyleSheet(void)
 {
+#if SPOTON_GOLDBUG == 0
   QAction *action = qobject_cast<QAction *> (sender());
 
   if(!action)
@@ -1550,23 +1556,25 @@ void spoton::slotSetStyleSheet(void)
   if(!widget)
     return;
 
-  QInputDialog dialog(this);
+  QDialog dialog(this);
+  Ui_spoton_stylesheet ui;
 
-  dialog.setLabelText(tr("Style Sheet"));
-  dialog.setTextValue(action->property("widget_stylesheet").toString());
-  dialog.setWindowTitle(QString("%1: Widget Style Sheet").
-			arg(SPOTON_APPLICATION_NAME));
+  ui.setupUi(&dialog);
+  ui.label->setText(widget->objectName());
+  ui.textEdit->setText(action->property("widget_stylesheet").toString());
 
   if(dialog.exec() == QDialog::Accepted)
     {
-      widget->setStyleSheet(dialog.textValue());
+      QString str(ui.textEdit->toPlainText().trimmed());
+
+      widget->setStyleSheet(str);
 
       QSettings settings;
 
       m_settings[QString("gui/widget_stylesheet_%1").
-		 arg(widget->objectName())] = dialog.textValue().trimmed();
+		 arg(widget->objectName())] = str;
       settings.setValue
-	(QString("gui/widget_stylesheet_%1").arg(widget->objectName()),
-	 dialog.textValue().trimmed());
+	(QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
     }
+#endif
 }

@@ -3059,6 +3059,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.action_Minimal_Display->setChecked(true);
 #endif
 
+#if SPOTON_GOLDBUG == 0
   foreach(QCheckBox *checkBox, findChildren<QCheckBox *> ())
     {
       checkBox->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -3070,6 +3071,7 @@ spoton::spoton(void):QMainWindow()
 	      this,
 	      SLOT(slotSetCheckBoxStyleSheet(const QPoint &)));
     }
+#endif
 
   show();
   update();
