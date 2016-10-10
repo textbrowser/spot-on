@@ -1242,25 +1242,28 @@ void spoton::slotDeleteKey(void)
 
   if(mb.exec() != QMessageBox::Yes)
     return;
-  else
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  if(keyType == "chat")
     {
-      if(keyType == "chat")
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
+
+      while(!m_starbeamDigestFutures.isEmpty())
 	{
-	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-	  m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
+	  QFuture<void> future(m_starbeamDigestFutures.takeFirst());
 
-	  while(!m_starbeamDigestFutures.isEmpty())
-	    {
-	      QFuture<void> future(m_starbeamDigestFutures.takeFirst());
-
-	      future.waitForFinished();
-	    }
-
-	  QApplication::restoreOverrideCursor();
+	  future.waitForFinished();
 	}
 
-      slotDeactivateKernel();
+      QApplication::restoreOverrideCursor();
     }
+
+  slotDeactivateKernel();
 
   if(crypt1)
     crypt1->purgePrivatePublicKeys();
