@@ -225,6 +225,8 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 
   if(ok)
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QByteArray message;
       QByteArray name(m_settings.value("gui/openLibraryName", "unknown").
 		      toByteArray());
@@ -239,7 +241,7 @@ void spoton::slotShareOpenLibraryPublicKey(void)
       message.append("_");
       message.append(name.toBase64());
       message.append("_");
-      message.append(publicKey.toBase64());
+      message.append(qCompress(publicKey).toBase64());
       message.append("_");
       message.append(signature.toBase64());
       message.append("_");
@@ -255,6 +257,8 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 		   "for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
+
+      QApplication::restoreOverrideCursor();
     }
 }
 

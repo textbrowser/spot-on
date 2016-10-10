@@ -2631,6 +2631,8 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 
   if(ok)
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QByteArray message;
       QByteArray name;
 
@@ -2661,7 +2663,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
       message.append("_");
       message.append(name.toBase64());
       message.append("_");
-      message.append(publicKey.toBase64());
+      message.append(qCompress(publicKey).toBase64());
       message.append("_");
       message.append(signature.toBase64());
       message.append("_");
@@ -2677,6 +2679,8 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 		   "write() failure for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
+
+      QApplication::restoreOverrideCursor();
     }
 }
 

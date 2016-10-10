@@ -2776,6 +2776,8 @@ void spoton::slotSharePoptasticPublicKey(void)
 
   if(ok)
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QByteArray message;
       QByteArray name(poptasticName());
 
@@ -2791,7 +2793,7 @@ void spoton::slotSharePoptasticPublicKey(void)
       message.append("_");
       message.append(publicKey.toBase64());
       message.append("_");
-      message.append(signature.toBase64());
+      message.append(qCompress(signature).toBase64());
       message.append("_");
       message.append(sPublicKey.toBase64());
       message.append("_");
@@ -2805,5 +2807,7 @@ void spoton::slotSharePoptasticPublicKey(void)
 		   "for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
+
+      QApplication::restoreOverrideCursor();
     }
 }

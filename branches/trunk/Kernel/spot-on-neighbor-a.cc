@@ -2429,8 +2429,6 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 				    const bool signatures_required,
 				    const QString &messageType)
 {
-  Q_UNUSED(messageType);
-
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
 
   if(spoton_crypt::exists(publicKey, s_crypt) ||
@@ -2486,11 +2484,13 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 
   if(signatures_required)
     if(!spoton_crypt::isValidSignature(publicKey, publicKey, signature))
-      noid = 0;
+      if(messageType == "0090")
+	noid = 0;
 
   if(signatures_required)
     if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
-      noid = 0;
+      if(messageType == "0090")
+	noid = 0;
 
   /*
   ** If noid (neighbor_oid) is -1, we have bonded two neighbors.
@@ -3744,8 +3744,9 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
 
       if(m_id != -1)
 	savePublicKey
-	  (list.value(0), list.value(1), list.value(2), list.value(3),
-	   list.value(4), list.value(5), m_id, false, true, "0011");
+	  (list.value(0), list.value(1), qUncompress(list.value(2)),
+	   list.value(3), list.value(4), list.value(5), m_id, false, true,
+	   "0011");
       else
 	spoton_misc::logError("spoton_neighbor::process0011(): "
 			      "m_id equals negative one. "
@@ -3807,8 +3808,8 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
 
       emit resetKeepAlive();
       savePublicKey
-	(list.value(0), list.value(1), list.value(2), list.value(3),
-	 list.value(4), list.value(5), -1, false, true, "0012");
+	(list.value(0), list.value(1), qUncompress(list.value(2)),
+	 list.value(3), list.value(4), list.value(5), -1, false, true, "0012");
     }
   else
     spoton_misc::logError

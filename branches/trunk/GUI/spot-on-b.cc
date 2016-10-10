@@ -957,6 +957,8 @@ void spoton::slotShareChatPublicKey(void)
 
   if(ok)
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QByteArray message;
       QByteArray name(m_settings.value("gui/nodeName", "unknown").
 		      toByteArray());
@@ -971,7 +973,7 @@ void spoton::slotShareChatPublicKey(void)
       message.append("_");
       message.append(name.toBase64());
       message.append("_");
-      message.append(publicKey.toBase64());
+      message.append(qCompress(publicKey).toBase64());
       message.append("_");
       message.append(signature.toBase64());
       message.append("_");
@@ -987,6 +989,8 @@ void spoton::slotShareChatPublicKey(void)
 		   "for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
+
+      QApplication::restoreOverrideCursor();
     }
 }
 
@@ -1036,6 +1040,8 @@ void spoton::slotShareEmailPublicKey(void)
 
   if(ok)
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QByteArray message;
       QByteArray name(m_settings.value("gui/emailName", "unknown").
 		      toByteArray());
@@ -1050,7 +1056,7 @@ void spoton::slotShareEmailPublicKey(void)
       message.append("_");
       message.append(name.toBase64());
       message.append("_");
-      message.append(publicKey.toBase64());
+      message.append(qCompress(publicKey).toBase64());
       message.append("_");
       message.append(signature.toBase64());
       message.append("_");
@@ -1066,6 +1072,8 @@ void spoton::slotShareEmailPublicKey(void)
 		   "for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
+
+      QApplication::restoreOverrideCursor();
     }
 }
 
@@ -3680,6 +3688,8 @@ void spoton::slotShareURLPublicKey(void)
 
   if(ok)
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QByteArray message;
       QByteArray name(m_settings.value("gui/urlName", "unknown").
 		      toByteArray());
@@ -3694,7 +3704,7 @@ void spoton::slotShareURLPublicKey(void)
       message.append("_");
       message.append(name.toBase64());
       message.append("_");
-      message.append(publicKey.toBase64());
+      message.append(qCompress(publicKey).toBase64());
       message.append("_");
       message.append(signature.toBase64());
       message.append("_");
@@ -3710,6 +3720,8 @@ void spoton::slotShareURLPublicKey(void)
 		   "for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
+
+      QApplication::restoreOverrideCursor();
     }
 }
 

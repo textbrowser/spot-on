@@ -347,7 +347,7 @@ Message Type ("0011" or "0012")
 EOL
 1 - Dispatcher's Name (Base-64)
 EOL
-2 - Dispatcher's Public Key (Base-64)
+2 - Compressed(Dispatcher's Public Key) (Base-64)
 EOL
 3 - Dispatcher's Public Key Signature (Base-64)
 EOL

@@ -5651,21 +5651,6 @@ void spoton::slotGeneralTimerTimeout(void)
     {
       m_buzzStatusTimer.stop();
 
-      if(m_optionsUi.guiSecureMemoryPool->value() == 0)
-	m_optionsUi.guiSecureMemoryPool->setStyleSheet
-	  ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
-      else
-	{
-	  m_optionsUi.guiSecureMemoryPool->setStyleSheet
-	    (m_optionsUi.guiSecureMemoryPool->
-	     property("original_stylesheet").toString());
-
-	  if(m_optionsUi.guiSecureMemoryPool->value() <
-	     spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
-	    m_optionsUi.guiSecureMemoryPool->setValue
-	      (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
-	}
-
       if(m_ui.kernelSecureMemoryPool->value() == 0)
 	m_ui.kernelSecureMemoryPool->setStyleSheet
 	  ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
@@ -5680,6 +5665,21 @@ void spoton::slotGeneralTimerTimeout(void)
 	    m_ui.kernelSecureMemoryPool->setValue
 	      (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
 	}
+    }
+
+  if(m_optionsUi.guiSecureMemoryPool->value() == 0)
+    m_optionsUi.guiSecureMemoryPool->setStyleSheet
+      ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
+  else
+    {
+      m_optionsUi.guiSecureMemoryPool->setStyleSheet
+	(m_optionsUi.guiSecureMemoryPool->
+	 property("original_stylesheet").toString());
+
+      if(m_optionsUi.guiSecureMemoryPool->value() <
+	 spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
+	m_optionsUi.guiSecureMemoryPool->setValue
+	  (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
     }
 
   if(!isKernelActive() ||

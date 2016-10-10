@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>366</width>
-                <height>442</height>
+                <width>816</width>
+                <height>556</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -923,8 +923,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>813</width>
-             <height>565</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2145,8 +2145,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>610</width>
-             <height>313</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2856,7 +2856,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>260</width>
+                     <width>264</width>
                      <height>1344</height>
                     </rect>
                    </property>
@@ -3380,8 +3380,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>506</width>
-             <height>179</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3422,6 +3422,12 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="toolButtonCopyToClipboard">
+                    <property name="minimumSize">
+                     <size>
+                      <width>150</width>
+                      <height>0</height>
+                     </size>
+                    </property>
                     <property name="toolTip">
                      <string>Copy your public key pairs to the clipboard buffer.</string>
                     </property>
@@ -3432,6 +3438,12 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="shareBuzzMagnet">
+                    <property name="minimumSize">
+                     <size>
+                      <width>150</width>
+                      <height>0</height>
+                     </size>
+                    </property>
                     <property name="text">
                      <string>Share Buzz Magnet</string>
                     </property>
@@ -3742,7 +3754,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>681</width>
+                  <width>788</width>
                   <height>381</height>
                  </rect>
                 </property>
@@ -4528,8 +4540,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>616</width>
-             <height>291</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4614,8 +4626,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>651</width>
-                 <height>531</height>
+                 <width>800</width>
+                 <height>517</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6716,8 +6728,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>566</width>
-             <height>465</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7833,8 +7845,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>607</width>
-             <height>377</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8448,8 +8460,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>240</width>
-             <height>135</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
