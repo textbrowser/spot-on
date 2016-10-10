@@ -2647,7 +2647,6 @@ void spoton_neighbor::slotWrite
 	 &spoton_neighbor::parsePrivateApplicationData,
 	 data,
 	 m_privateApplicationCredentials,
-	 id,
 	 m_maximumContentLength);
       return;
     }

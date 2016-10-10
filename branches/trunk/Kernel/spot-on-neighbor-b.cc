@@ -433,11 +433,8 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
 void spoton_neighbor::parsePrivateApplicationData
 (const QByteArray &data,
  const QByteArray &privateApplicationCredentials,
- const qint64 id,
  const qint64 maximumContentLength)
 {
-  Q_UNUSED(id);
-
   /*
   ** The container data contains Spot-On data, that is, data does
   ** not contain raw application data.
@@ -549,7 +546,6 @@ void spoton_neighbor::parsePrivateApplicationData
 					(m_privateApplicationMap.
 					 take(m_privateApplicationSequences.
 					      first));
-
 				      m_privateApplicationSequences.first += 1;
 				    }
 				  else
@@ -592,7 +588,6 @@ void spoton_neighbor::parsePrivateApplicationData
 					(m_privateApplicationMap.
 					 take(m_privateApplicationSequences.
 					      second));
-
 				      m_privateApplicationSequences.second += 1;
 				    }
 				  else
@@ -631,8 +626,8 @@ void spoton_neighbor::bundlePrivateApplicationData
  const quint64 sequence)
 {
   /*
-  ** The container data contains raw application data.
-  ** We will not insert an entry into the congestion-control mechanism here.
+  ** The container data contains raw application data. We will not insert
+  ** an entry into the congestion-control mechanism here.
   */
 
   spoton_crypt *crypt = spoton_misc::parsePrivateApplicationMagnet

@@ -358,7 +358,6 @@ class spoton_neighbor: public QThread
   void parsePrivateApplicationData
     (const QByteArray &data,
      const QByteArray &privateApplicationCredentials,
-     const qint64 id,
      const qint64 maximumContentLength);
   void process0000(int length, const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
