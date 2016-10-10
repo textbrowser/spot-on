@@ -709,6 +709,7 @@ class spoton: public QMainWindow
   void slotCopyMyURLPublicKey(void);
   void slotCopyOrPaste(void);
   void slotCopyPrivateApplicationMagnet(void);
+  void slotCopyStyleSheet(void);
   void slotCopyTransmittedMagnet(void);
   void slotCopyUrlFriendshipBundle(void);
   void slotCopyUrlKeys(void);

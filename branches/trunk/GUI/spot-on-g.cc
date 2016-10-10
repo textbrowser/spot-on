@@ -1531,6 +1531,10 @@ void spoton::slotSetCheckBoxStyleSheet(const QPoint &point)
   QAction *action = 0;
   QMenu menu(this);
 
+  action = menu.addAction(tr("&Copy Style Sheet"),
+			  this,
+			  SLOT(slotCopyStyleSheet(void)));
+  action->setProperty("widget_name", widget->objectName());
   action = menu.addAction(tr("Set &Style Sheet..."),
 			  this,
 			  SLOT(slotSetStyleSheet(void)));
@@ -1576,5 +1580,28 @@ void spoton::slotSetStyleSheet(void)
       settings.setValue
 	(QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
     }
+#endif
+}
+
+void spoton::slotCopyStyleSheet(void)
+{
+#if SPOTON_GOLDBUG == 0
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QWidget *widget = findChild<QWidget *> (action->property("widget_name").
+					  toString());
+
+  if(!widget)
+    return;
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  clipboard->setText(widget->styleSheet());
 #endif
 }

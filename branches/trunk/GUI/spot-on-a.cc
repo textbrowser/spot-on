@@ -3068,9 +3068,13 @@ spoton::spoton(void):QMainWindow()
 	continue;
 
       widget->setContextMenuPolicy(Qt::CustomContextMenu);
-      widget->setStyleSheet
-	(settings.value(QString("gui/widget_stylesheet_%1").
-			arg(widget->objectName())).toString());
+
+      if(settings.contains(QString("gui/widget_stylesheet_%1").
+			   arg(widget->objectName())))
+	widget->setStyleSheet
+	  (settings.value(QString("gui/widget_stylesheet_%1").
+			  arg(widget->objectName())).toString());
+
       connect(widget,
 	      SIGNAL(customContextMenuRequested(const QPoint &)),
 	      this,
