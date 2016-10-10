@@ -1518,3 +1518,55 @@ void spoton::slotAfterFirstShow(void)
   m_sb.status->clear();
   QApplication::restoreOverrideCursor();
 }
+
+void spoton::slotSetCheckBoxStyleSheet(const QPoint &point)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  QAction *action = 0;
+  QMenu menu(this);
+
+  action = menu.addAction(tr("Set &Style Sheet..."),
+			  this,
+			  SLOT(slotSetStyleSheet(void)));
+  action->setProperty("widget_name", checkBox->objectName());
+  action->setProperty("widget_stylesheet", checkBox->styleSheet());
+  menu.exec(checkBox->mapToGlobal(point));
+}
+
+void spoton::slotSetStyleSheet(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QWidget *widget =
+    findChild<QWidget *> (action->property("widget_name").toString());
+
+  if(!widget)
+    return;
+
+  QInputDialog dialog(this);
+
+  dialog.setLabelText(tr("Style Sheet"));
+  dialog.setTextValue(action->property("widget_stylesheet").toString());
+  dialog.setWindowTitle(QString("%1: Widget Style Sheet").
+			arg(SPOTON_APPLICATION_NAME));
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      widget->setStyleSheet(dialog.textValue());
+
+      QSettings settings;
+
+      m_settings[QString("gui/widget_stylesheet_%1").
+		 arg(widget->objectName())] = dialog.textValue().trimmed();
+      settings.setValue
+	(QString("gui/widget_stylesheet_%1").arg(widget->objectName()),
+	 dialog.textValue().trimmed());
+    }
+}

@@ -928,6 +928,7 @@ class spoton: public QMainWindow
   void slotSendMessage(void);
   void slotSeparateBuzzPage(void);
   void slotSetAETokenInformation(void);
+  void slotSetCheckBoxStyleSheet(const QPoint &point);
   void slotSetIconSize(int index);
   void slotSetIcons(int index);
   void slotSetListenerSSLControlString(void);
@@ -937,6 +938,7 @@ class spoton: public QMainWindow
   void slotSetPrivateApplicationInformation(void);
   void slotSetSBPulseSize(void);
   void slotSetSBReadInterval(void);
+  void slotSetStyleSheet(void);
   void slotSetUrlIniPath(void);
   void slotShareBuzzMagnet(void);
   void slotShareChatPublicKey(void);
