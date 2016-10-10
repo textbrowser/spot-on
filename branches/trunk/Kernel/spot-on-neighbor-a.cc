@@ -2429,6 +2429,8 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 				    const bool signatures_required,
 				    const QString &messageType)
 {
+  Q_UNUSED(messageType);
+
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
 
   if(spoton_crypt::exists(publicKey, s_crypt) ||
@@ -2484,21 +2486,11 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 
   if(signatures_required)
     if(!spoton_crypt::isValidSignature(publicKey, publicKey, signature))
-      {
-	if(messageType == "0090")
-	  noid = 0;
-	else
-	  return;
-      }
+      noid = 0;
 
   if(signatures_required)
     if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
-      {
-	if(messageType == "0090")
-	  noid = 0;
-	else
-	  return;
-      }
+      noid = 0;
 
   /*
   ** If noid (neighbor_oid) is -1, we have bonded two neighbors.
