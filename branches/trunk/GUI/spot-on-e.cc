@@ -34,7 +34,6 @@ extern "C"
 #include <QThread>
 #if QT_VERSION >= 0x050000
 #include <QCoreApplication>
-#include <QtConcurrent>
 #include <QtCore>
 #endif
 
