@@ -1231,13 +1231,36 @@ void spoton::slotDeleteKey(void)
 		    arg(SPOTON_APPLICATION_NAME));
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to delete the selected "
-		"key pair? The kernel will be deactivated."));
+
+  if(keyType == "chat")
+    mb.setText(tr("Are you sure that you wish to delete the selected "
+		  "key pair? StarBeam digest computations will be "
+		  "interrupted. The kernel will also be deactivated."));
+  else
+    mb.setText(tr("Are you sure that you wish to delete the selected "
+		  "key pair? The kernel will be deactivated."));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
   else
-    slotDeactivateKernel();
+    {
+      if(keyType == "chat")
+	{
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	  m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
+
+	  while(!m_starbeamDigestFutures.isEmpty())
+	    {
+	      QFuture<void> future(m_starbeamDigestFutures.takeFirst());
+
+	      future.waitForFinished();
+	    }
+
+	  QApplication::restoreOverrideCursor();
+	}
+
+      slotDeactivateKernel();
+    }
 
   if(crypt1)
     crypt1->purgePrivatePublicKeys();
