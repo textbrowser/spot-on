@@ -3060,13 +3060,18 @@ spoton::spoton(void):QMainWindow()
 #endif
 
 #if SPOTON_GOLDBUG == 0
-  foreach(QCheckBox *checkBox, findChildren<QCheckBox *> ())
+  foreach(QWidget *widget, findChildren<QWidget *> ())
     {
-      checkBox->setContextMenuPolicy(Qt::CustomContextMenu);
-      checkBox->setStyleSheet
+      if(widget->contextMenuPolicy() == Qt::CustomContextMenu ||
+	 widget->inherits("QLineEdit") ||
+	 widget->inherits("QTextEdit"))
+	continue;
+
+      widget->setContextMenuPolicy(Qt::CustomContextMenu);
+      widget->setStyleSheet
 	(settings.value(QString("gui/widget_stylesheet_%1").
-			arg(checkBox->objectName())).toString());
-      connect(checkBox,
+			arg(widget->objectName())).toString());
+      connect(widget,
 	      SIGNAL(customContextMenuRequested(const QPoint &)),
 	      this,
 	      SLOT(slotSetCheckBoxStyleSheet(const QPoint &)));

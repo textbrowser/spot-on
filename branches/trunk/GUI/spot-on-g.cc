@@ -1523,9 +1523,9 @@ void spoton::slotAfterFirstShow(void)
 void spoton::slotSetCheckBoxStyleSheet(const QPoint &point)
 {
 #if SPOTON_GOLDBUG == 0
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+  QWidget *widget = qobject_cast<QWidget *> (sender());
 
-  if(!checkBox)
+  if(!widget)
     return;
 
   QAction *action = 0;
@@ -1534,9 +1534,9 @@ void spoton::slotSetCheckBoxStyleSheet(const QPoint &point)
   action = menu.addAction(tr("Set &Style Sheet..."),
 			  this,
 			  SLOT(slotSetStyleSheet(void)));
-  action->setProperty("widget_name", checkBox->objectName());
-  action->setProperty("widget_stylesheet", checkBox->styleSheet());
-  menu.exec(checkBox->mapToGlobal(point));
+  action->setProperty("widget_name", widget->objectName());
+  action->setProperty("widget_stylesheet", widget->styleSheet());
+  menu.exec(widget->mapToGlobal(point));
 #else
   Q_UNUSED(point);
 #endif
