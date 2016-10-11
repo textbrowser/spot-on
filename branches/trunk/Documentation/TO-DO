@@ -153,6 +153,8 @@ Completed Items
        personal keys with provided keys.
 109.   UDP multicast servers are not necessary.
 110.   Prevent inserts of own keys in friends_public_keys.db.
+111.   Keys are re-used in directory-mode file encryption. Single-pulse
+       key derivation.
 
 Ignored Items
 
@@ -250,13 +252,12 @@ Ignored Items
        into GPG (separate).
 60.    Export/import URLs.
 61.    Large database values (BYTEA) will impede the user experience.
-62.    Keys are re-used in directory-mode file encryption.
+62.    Per Magical Hero, download specific Web pages on request.
+       Pseudo-proxy.
 63.    Per Schmidt, share StarBeams through Buzz.
 64.    Key pools.
 65.    Personalized status messages.
 66.    Per-neighbor override of required signature proofs during key sharing.
-67.    Per Magical Hero, download specific Web pages on request.
-       Pseudo-proxy.
 
 Remaining Items
 

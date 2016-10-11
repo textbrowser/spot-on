@@ -612,15 +612,27 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	    }
 	  else
 	    {
-	      eKey = spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok);
+	      if(gcry_kdf_derive(eKey.constData(),
+				 static_cast<size_t> (eKey.length()),
+				 GCRY_KDF_PBKDF2,
+				 gcry_md_map_name(credentials.value(1).
+						  toByteArray().constData()),
+				 bytes.mid(0, static_cast<int> (rc)).
+				 constData(),
+				 static_cast<size_t> (bytes.
+						      mid(0,
+							  static_cast
+							  <int> (rc)).
+						      length()),
+				 1,
+				 static_cast<size_t> (eKey.length()),
+				 eKey.data()) != 0)
+		error = tr("gcry_kdf_derive() failure.");
 
-	      if(ok)
+	      if(error.isEmpty())
 		rc = file2.write(data, data.length());
 	      else
-		{
-		  error = tr("spoton_crypt::sha256Hash() error.");
-		  break;
-		}
+		break;
 	    }
 
 	  if(data.length() != rc)
@@ -718,15 +730,22 @@ void spoton_encryptfile::encrypt(const bool sign,
 	    }
 	  else
 	    {
-	      eKey = spoton_crypt::sha256Hash(crypt.symmetricKey(), &ok);
+	      if(gcry_kdf_derive(eKey.constData(),
+				 static_cast<size_t> (eKey.length()),
+				 GCRY_KDF_PBKDF2,
+				 gcry_md_map_name(credentials.value(1).
+						  toByteArray().constData()),
+				 data.constData(),
+				 static_cast<size_t> (data.length()),
+				 1,
+				 static_cast<size_t> (eKey.length()),
+				 eKey.data()) != 0)
+		error = tr("gcry_kdf_derive() failure.");
 
-	      if(ok)
+	      if(error.isEmpty())
 		rc = file2.write(data, data.length());
 	      else
-		{
-		  error = tr("spoton_crypt::sha256Hash() error.");
-		  break;
-		}
+		break;
 	    }
 
 	  if(data.length() != rc)
