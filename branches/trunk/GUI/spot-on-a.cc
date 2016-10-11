@@ -449,7 +449,7 @@ spoton::spoton(void):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_neighborsLastModificationTime = QDateTime();
   m_participantsLastModificationTime = QDateTime();
-  m_documentation = new spoton_documentation(0);
+  m_documentation = new spoton_documentation(this);
   m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, 0);
   m_rss = new spoton_rss(0);
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(0);
@@ -467,6 +467,46 @@ spoton::spoton(void):QMainWindow()
   list.clear();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
+  m_ui.buzzTab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.emailParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.listeners->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.neighbors->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.participants->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.received->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.tab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.transmitted->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.transmittedMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.urlParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
+
+  QSettings settings;
+
+#if SPOTON_GOLDBUG == 0
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  foreach(QWidget *widget, findChildren<QWidget *> ())
+    {
+      if(widget->contextMenuPolicy() == Qt::CustomContextMenu ||
+	 widget->inherits("QLineEdit") ||
+	 widget->inherits("QTextEdit"))
+	continue;
+
+      widget->setContextMenuPolicy(Qt::CustomContextMenu);
+
+      if(settings.contains(QString("gui/widget_stylesheet_%1").
+			   arg(widget->objectName())))
+	widget->setStyleSheet
+	  (settings.value(QString("gui/widget_stylesheet_%1").
+			  arg(widget->objectName())).toString());
+
+      connect(widget,
+	      SIGNAL(customContextMenuRequested(const QPoint &)),
+	      this,
+	      SLOT(slotSetWidgetStyleSheet(const QPoint &)));
+    }
+
+  QApplication::restoreOverrideCursor();
+#endif
   m_ui.buzz_frame->setVisible(m_ui.buzz_details->isChecked());
 #if SPOTON_GOLDBUG == 0
   m_ui.proxy_frame->setVisible(m_ui.proxy->isChecked());
@@ -2049,9 +2089,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.urlParticipants->setStyleSheet
     ("QTableWidget {selection-background-color: lightgreen}");
 #endif
-
-  QSettings settings;
-
   settings.remove("gui/acceptUrlDL");
   settings.remove("gui/acceptUrlUL");
   settings.remove("gui/acceptedIPs");
@@ -2792,7 +2829,6 @@ spoton::spoton(void):QMainWindow()
     m_ui.kernelSecureMemoryPool->setStyleSheet
       ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
 
-  m_ui.buzzTab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.destination->setToolTip(m_ui.destination->text());
   m_ui.emailParticipants->setAlternatingRowColors
     (m_optionsUi.emailAlternatingRowColors->isChecked());
@@ -2800,16 +2836,6 @@ spoton::spoton(void):QMainWindow()
     (m_optionsUi.chatAlternatingRowColors->isChecked());
   m_ui.urlParticipants->setAlternatingRowColors
     (m_optionsUi.urlsAlternatingRowColors->isChecked());
-  m_ui.emailParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.listeners->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.neighbors->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.participants->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.received->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.tab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.transmitted->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.transmittedMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.urlParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(m_ui.emailParticipants,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
@@ -3058,34 +3084,6 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.action_Minimal_Display->setChecked(true);
 #endif
-
-#if SPOTON_GOLDBUG == 0
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  foreach(QWidget *widget, findChildren<QWidget *> ())
-    {
-      if(widget->contextMenuPolicy() == Qt::CustomContextMenu ||
-	 widget->inherits("QLineEdit") ||
-	 widget->inherits("QTextEdit"))
-	continue;
-
-      widget->setContextMenuPolicy(Qt::CustomContextMenu);
-
-      if(settings.contains(QString("gui/widget_stylesheet_%1").
-			   arg(widget->objectName())))
-	widget->setStyleSheet
-	  (settings.value(QString("gui/widget_stylesheet_%1").
-			  arg(widget->objectName())).toString());
-
-      connect(widget,
-	      SIGNAL(customContextMenuRequested(const QPoint &)),
-	      this,
-	      SLOT(slotSetWidgetStyleSheet(const QPoint &)));
-    }
-
-  QApplication::restoreOverrideCursor();
-#endif
-
   show();
   update();
 
