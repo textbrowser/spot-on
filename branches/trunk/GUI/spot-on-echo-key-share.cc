@@ -67,6 +67,8 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
   if(ui.hash->count() == 0)
     ui.hash->addItem("n/a");
 
+  ui.tree->setContextMenuPolicy(Qt::CustomContextMenu);
+
   QMenu *menu = new QMenu(this);
 
   menu->addAction(tr("&New Category..."),
@@ -112,6 +114,10 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 	  SIGNAL(clicked(void)),
 	  ui.menu,
 	  SLOT(showMenu(void)));
+  connect(ui.tree,
+	  SIGNAL(customContextMenuRequested(const QPoint &)),
+	  this,
+	  SLOT(slotShowContextMenu(const QPoint &)));
 }
 
 spoton_echo_key_share::~spoton_echo_key_share()
@@ -1043,4 +1049,9 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
     return;
 
   save(keys, "aes256", "sha512", 15000, name, id);
+}
+
+void spoton_echo_key_share::slotShowContextMenu(const QPoint &point)
+{
+  ui.menu->menu()->exec(ui.tree->mapToGlobal(point));
 }

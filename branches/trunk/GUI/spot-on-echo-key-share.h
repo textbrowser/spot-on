@@ -73,6 +73,7 @@ class spoton_echo_key_share: public QMainWindow
   void slotClose(void);
   void slotItemChanged(QTreeWidgetItem *item, int column);
   void slotMenuAction(void);
+  void slotShowContextMenu(const QPoint &point);
 };
 
 #endif
