@@ -696,7 +696,7 @@
                       </widget>
                      </item>
                      <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_101">
+                      <layout class="QHBoxLayout" name="horizontalLayout_17">
                        <property name="spacing">
                         <number>5</number>
                        </property>
@@ -732,6 +732,40 @@
                           </size>
                          </property>
                         </spacer>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_29">
+                         <property name="text">
+                          <string>&amp;Cipher Type</string>
+                         </property>
+                         <property name="buddy">
+                          <cstring>chat_g_cipher</cstring>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="chat_g_cipher">
+                         <property name="sizeAdjustPolicy">
+                          <enum>QComboBox::AdjustToContents</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_40">
+                         <property name="text">
+                          <string>&amp;Hash Type</string>
+                         </property>
+                         <property name="buddy">
+                          <cstring>chat_g_hash</cstring>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="chat_g_hash">
+                         <property name="sizeAdjustPolicy">
+                          <enum>QComboBox::AdjustToContents</enum>
+                         </property>
+                        </widget>
                        </item>
                       </layout>
                      </item>
@@ -790,12 +824,12 @@
                        </column>
                        <column>
                         <property name="text">
-                         <string>Gemini AES-256 Encryption Key</string>
+                         <string>Gemini Encryption Key</string>
                         </property>
                        </column>
                        <column>
                         <property name="text">
-                         <string>Gemini SHA-512 Hash Key</string>
+                         <string>Gemini Hash Key</string>
                         </property>
                        </column>
                        <column>
@@ -5576,7 +5610,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>844</width>
+             <width>815</width>
              <height>1050</height>
             </rect>
            </property>
@@ -9082,6 +9116,8 @@
   <tabstop>status</tabstop>
   <tabstop>custom</tabstop>
   <tabstop>chatActionMenu</tabstop>
+  <tabstop>chat_g_cipher</tabstop>
+  <tabstop>chat_g_hash</tabstop>
   <tabstop>participants</tabstop>
   <tabstop>hideOfflineParticipants</tabstop>
   <tabstop>message</tabstop>
