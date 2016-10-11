@@ -3080,7 +3080,7 @@ spoton::spoton(void):QMainWindow()
       connect(widget,
 	      SIGNAL(customContextMenuRequested(const QPoint &)),
 	      this,
-	      SLOT(slotSetCheckBoxStyleSheet(const QPoint &)));
+	      SLOT(slotSetWidgetStyleSheet(const QPoint &)));
     }
 
   QApplication::restoreOverrideCursor();

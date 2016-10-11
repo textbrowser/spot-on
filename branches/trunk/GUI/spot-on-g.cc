@@ -1520,7 +1520,7 @@ void spoton::slotAfterFirstShow(void)
   QApplication::restoreOverrideCursor();
 }
 
-void spoton::slotSetCheckBoxStyleSheet(const QPoint &point)
+void spoton::slotSetWidgetStyleSheet(const QPoint &point)
 {
 #if SPOTON_GOLDBUG == 0
   QWidget *widget = qobject_cast<QWidget *> (sender());
