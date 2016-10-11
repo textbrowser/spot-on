@@ -467,6 +467,8 @@ spoton::spoton(void):QMainWindow()
   list.clear();
   m_urlCommonCrypt = 0;
   m_ui.setupUi(this);
+  m_sbWidget = new QWidget(this);
+  m_sb.setupUi(m_sbWidget);
   m_ui.buzzTab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.emailParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -684,8 +686,6 @@ spoton::spoton(void):QMainWindow()
     (tr("%1: Options").arg(SPOTON_APPLICATION_NAME));
   m_poptasticRetroPhoneDialog = new QDialog(this);
   m_poptasticRetroPhoneSettingsUi.setupUi(m_poptasticRetroPhoneDialog);
-  m_sbWidget = new QWidget(this);
-  m_sb.setupUi(m_sbWidget);
   m_sb.authentication_request->setVisible(false);
   m_sb.buzz->setVisible(false);
   m_sb.chat->setVisible(false);
