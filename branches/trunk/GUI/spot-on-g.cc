@@ -1561,11 +1561,17 @@ void spoton::slotSetStyleSheet(void)
     return;
 
   QDialog dialog(this);
+  QString str(widget->styleSheet());
   Ui_spoton_stylesheet ui;
 
   ui.setupUi(&dialog);
   ui.label->setText(widget->objectName());
+  ui.preview->setProperty("widget_name", widget->objectName());
   ui.textEdit->setText(action->property("widget_stylesheet").toString());
+  connect(ui.preview,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotPreviewStyleSheet(void)));
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -1580,6 +1586,9 @@ void spoton::slotSetStyleSheet(void)
       settings.setValue
 	(QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
     }
+  else
+    widget->setStyleSheet(str);
+
 #endif
 }
 
@@ -1603,5 +1612,46 @@ void spoton::slotCopyStyleSheet(void)
     return;
 
   clipboard->setText(widget->styleSheet());
+#endif
+}
+
+void spoton::slotPreviewStyleSheet(void)
+{
+#if SPOTON_GOLDBUG == 0
+  QPushButton *pushButton = qobject_cast<QPushButton *> (sender());
+
+  if(!pushButton)
+    return;
+
+  QWidget *widget = findChild<QWidget *> (pushButton->property("widget_name").
+					  toString());
+
+  if(!widget)
+    return;
+
+  QWidget *parent = pushButton->parentWidget();
+
+  if(!parent)
+    return;
+
+  do
+    {
+      if(qobject_cast<QDialog *> (parent))
+	break;
+
+      if(parent)
+	parent = parent->parentWidget();
+    }
+  while(parent != 0);
+
+  if(!parent)
+    return;
+
+  QTextEdit *textEdit = parent->findChild<QTextEdit *> ();
+
+  if(!textEdit)
+    return;
+
+  widget->setStyleSheet(textEdit->toPlainText());
 #endif
 }

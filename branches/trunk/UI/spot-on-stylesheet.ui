@@ -34,7 +34,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="preview">
        <property name="text">
         <string>&amp;Preview</string>
        </property>
@@ -56,7 +56,7 @@
  </widget>
  <tabstops>
   <tabstop>textEdit</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>preview</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
