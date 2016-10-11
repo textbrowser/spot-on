@@ -1821,6 +1821,8 @@ void spoton::slotChatTimestamps(bool state)
 
 void spoton::slotPassphraseChanged(const QString &text)
 {
+  m_ui.passphrase_strength_indicator->setStyleSheet("");
+
   if(text.isEmpty())
     {
       m_ui.passphrase_strength_indicator->setVisible(false);
@@ -1834,6 +1836,8 @@ void spoton::slotPassphraseChanged(const QString &text)
   spoton_pacify pacify(text.toStdString());
 
   result = 100.00 * pacify.evaluate() / maximum;
+  m_ui.passphrase_strength_indicator->setMaximum(100);
+  m_ui.passphrase_strength_indicator->setMinimum(0);
   m_ui.passphrase_strength_indicator->setValue(static_cast<int> (result));
 
   if(result >= 0.00 && result <= 25.00)
