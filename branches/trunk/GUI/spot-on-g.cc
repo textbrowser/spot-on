@@ -35,7 +35,9 @@ extern "C"
 #include "spot-on.h"
 #include "spot-on-documentation.h"
 #include "ui_spot-on-private-application-credentials.h"
+#if SPOTON_GOLDBUG == 0
 #include "ui_spot-on-stylesheet.h"
+#endif
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
