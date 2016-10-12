@@ -571,7 +571,9 @@ spoton::spoton(void):QMainWindow()
   bool sslSupported = QSslSocket::supportsSsl();
 
   m_ui.buildInformation->setText
-    (QString("Compiled on %1, %2.<br>"
+    (QString("<font color=\"#ff878d\">Tiptoe through the tulips.</font>"
+	     "<br><br>"
+	     "Compiled on %1, %2.<br>"
 	     "%3.<br>"
 	     "Qt %4, %5-bit.<br>"
 	     "%6.<br>"

@@ -231,7 +231,7 @@ void spoton_buzzpage::slotSendMessage(void)
     }
 
   message.append
-    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
      arg(now.toString("MM")).
      arg(now.toString("dd")).
      arg(now.toString("yyyy")).
@@ -340,7 +340,7 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
     message = "unknown";
 
   msg.append
-    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>]:").
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]:").
      arg(now.toString("MM")).
      arg(now.toString("dd")).
      arg(now.toString("yyyy")).
@@ -349,7 +349,7 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
      arg(now.toString("ss")));
   msg.append
     (QString("[%1/%2/%3 %4:%5"
-	     "<font color=grey>:%6</font>] ").
+	     "<font color=gray>:%6</font>] ").
      arg(dateTime.toString("MM")).
      arg(dateTime.toString("dd")).
      arg(dateTime.toString("yyyy")).
@@ -459,7 +459,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
       QString msg("");
 
       msg.append
-	(QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+	(QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
 	 arg(now.toString("MM")).
 	 arg(now.toString("dd")).
 	 arg(now.toString("yyyy")).
@@ -495,7 +495,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 		  QString msg("");
 
 		  msg.append
-		    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+		    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
 		     arg(now.toString("MM")).
 		     arg(now.toString("dd")).
 		     arg(now.toString("yyyy")).
@@ -560,7 +560,7 @@ void spoton_buzzpage::slotStatusTimeout(void)
 		  QString msg("");
 
 		  msg.append
-		    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+		    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
 		     arg(now.toString("MM")).
 		     arg(now.toString("dd")).
 		     arg(now.toString("yyyy")).

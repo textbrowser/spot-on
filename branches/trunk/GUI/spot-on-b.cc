@@ -76,7 +76,7 @@ void spoton::sendMessage(bool *ok)
     }
 
   msg.append
-    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
      arg(now.toString("MM")).
      arg(now.toString("dd")).
      arg(now.toString("yyyy")).
@@ -288,7 +288,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  QString msg("");
 
 		  msg.append
-		    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+		    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
 		     arg(now.toString("MM")).
 		     arg(now.toString("dd")).
 		     arg(now.toString("yyyy")).
@@ -406,7 +406,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      QString msg("");
 
 		      msg.append
-			(QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+			(QString("[%1/%2/%3 %4:%5<font color=gray>:%6"
 				 "</font>] ").
 			 arg(now.toString("MM")).
 			 arg(now.toString("dd")).
@@ -483,7 +483,7 @@ void spoton::slotReceivedKernelMessage(void)
 			}
 
 		      msg.append
-			(QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+			(QString("[%1/%2/%3 %4:%5<font color=gray>:%6"
 				 "</font>] ").
 			 arg(now.toString("MM")).
 			 arg(now.toString("dd")).
@@ -531,7 +531,7 @@ void spoton::slotReceivedKernelMessage(void)
 			  QString msg("");
 
 			  msg.append
-			    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+			    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6"
 				     "</font>] ").
 			     arg(now.toString("MM")).
 			     arg(now.toString("dd")).
@@ -592,7 +592,7 @@ void spoton::slotReceivedKernelMessage(void)
 			{
 			  msg.clear();
 			  msg.append
-			    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6"
+			    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6"
 				     "</font>] ").
 			     arg(now.toString("MM")).
 			     arg(now.toString("dd")).
@@ -724,7 +724,7 @@ void spoton::slotReceivedKernelMessage(void)
 		    sequenceNumber = "1";
 
 		  msg.append
-		    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>]:").
+		    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]:").
 		     arg(now.toString("MM")).
 		     arg(now.toString("dd")).
 		     arg(now.toString("yyyy")).

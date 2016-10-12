@@ -144,7 +144,7 @@ void spoton::slotReplayMessages(void)
   QString msg("");
 
   msg.append
-    (QString("[%1/%2/%3 %4:%5<font color=grey>:%6</font>] ").
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
      arg(now.toString("MM")).
      arg(now.toString("dd")).
      arg(now.toString("yyyy")).
