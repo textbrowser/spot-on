@@ -175,11 +175,11 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 	{
 	  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
 #ifdef Q_OS_FREEBSD
-	  gcry_control(GCRYCTL_INIT_SECMEM, secureMemorySize, 0);
+	  gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize), 0);
 #else
 	  gcry_error_t err = 0;
 
-	  if((err = gcry_control(GCRYCTL_INIT_SECMEM, secureMemorySize,
+	  if((err = gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize),
 				 0)) != 0)
 	    {
 	      QByteArray buffer(64, 0);
@@ -285,7 +285,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   ** keys.second: hash key.
   */
 
-  key.resize(static_cast<int> (cipherKeyLength) + hashKeySize);
+  key.resize(static_cast<int> (cipherKeyLength) + qAbs(hashKeySize));
   keys.first.resize(static_cast<int> (cipherKeyLength));
   keys.second.resize(key.length() - static_cast<int> (cipherKeyLength));
   temporaryKey.resize(key.length());
