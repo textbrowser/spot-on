@@ -812,6 +812,12 @@
                        </property>
                        <item>
                         <widget class="QCheckBox" name="hideOfflineParticipants">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
                          <property name="text">
                           <string>&amp;Hide offline participants.</string>
                          </property>
@@ -923,8 +929,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>813</width>
-             <height>565</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1344,6 +1350,12 @@
                         </item>
                         <item>
                          <widget class="QCheckBox" name="richtext">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
                           <property name="text">
                            <string>&amp;Rich Text</string>
                           </property>
@@ -1647,6 +1659,12 @@
                       </item>
                       <item>
                        <widget class="QCheckBox" name="sign_this_email">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
                         <property name="text">
                          <string>Sign this e-mail.</string>
                         </property>
@@ -1717,6 +1735,12 @@
                   </property>
                   <item>
                    <widget class="QCheckBox" name="postofficeCheckBox">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="text">
                      <string>&amp;Enable C/O service.</string>
                     </property>
@@ -2145,8 +2169,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>610</width>
-             <height>313</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2202,6 +2226,12 @@
                   </item>
                   <item>
                    <widget class="QCheckBox" name="listenersTemporarilyPause">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="toolTip">
                      <string>Setting will not be retained.</string>
                     </property>
@@ -2855,8 +2885,8 @@
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>0</y>
-                     <width>260</width>
+                     <y>-798</y>
+                     <width>264</width>
                      <height>1344</height>
                     </rect>
                    </property>
@@ -2957,6 +2987,12 @@
                          </item>
                          <item row="2" column="1">
                           <widget class="QCheckBox" name="ota">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="toolTip">
                             <string>If checked, the account will be removed after a client successfully authenticates itself.</string>
                            </property>
@@ -3142,6 +3178,12 @@
                          </item>
                          <item row="3" column="1">
                           <widget class="QCheckBox" name="ae_listeners_magnet">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="text">
                             <string>&amp;Magnet</string>
                            </property>
@@ -3380,8 +3422,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>617</width>
-             <height>179</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3451,6 +3493,12 @@
                   </item>
                   <item>
                    <widget class="QCheckBox" name="neighborsTemporarilyPause">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="toolTip">
                      <string>Setting will not be retained.</string>
                     </property>
@@ -3754,7 +3802,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>681</width>
+                  <width>788</width>
                   <height>381</height>
                  </rect>
                 </property>
@@ -4540,8 +4588,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>616</width>
-             <height>291</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4625,9 +4673,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>651</width>
-                 <height>531</height>
+                 <y>-249</y>
+                 <width>800</width>
+                 <height>517</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5576,7 +5624,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>844</width>
+             <width>810</width>
              <height>1050</height>
             </rect>
            </property>
@@ -5904,6 +5952,12 @@
                    </item>
                    <item>
                     <widget class="QCheckBox" name="secondary_storage">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="toolTip">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, packet digests will be stored in non-volatile memory. Please consider increasing the Kernel Cache Object Lifetime value in the Time page of the Options window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
@@ -5959,19 +6013,6 @@
                       </property>
                      </item>
                     </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_30">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
                    </item>
                   </layout>
                  </item>
@@ -6731,8 +6772,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>566</width>
-             <height>465</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7755,6 +7796,12 @@
                       </item>
                       <item>
                        <widget class="QCheckBox" name="fragment_starbeam">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
                         <property name="toolTip">
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fragmented StarBeams allow for the fragmentation of a mosaic (file) into a number of N unique pulses, where N is the number of active network connections. The standard StarBeam transfers a particular pulse over each network connection.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
@@ -7848,8 +7895,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>607</width>
-             <height>377</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8460,8 +8507,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>240</width>
-             <height>135</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
