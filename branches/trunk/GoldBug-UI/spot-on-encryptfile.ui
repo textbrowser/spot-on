@@ -146,7 +146,7 @@ background-position: top center; }
 
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  }
 </string>
@@ -196,7 +196,7 @@ background-position: top center; }
 
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  }
 </string>
@@ -468,7 +468,7 @@ background-position: top center; }
 
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  }
 </string>
@@ -552,7 +552,7 @@ background-position: top center; }
 
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  }
 </string>
@@ -582,7 +582,7 @@ background-position: top center; }
 
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  }
 </string>

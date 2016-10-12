@@ -115,7 +115,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
         </property>
@@ -156,7 +156,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
         </property>
@@ -246,7 +246,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
                </property>
@@ -278,7 +278,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
                </property>
@@ -482,7 +482,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
           </property>
@@ -510,7 +510,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
           </property>
@@ -649,7 +649,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
               </property>
@@ -734,7 +734,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
               </property>
@@ -785,7 +785,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
             </property>
@@ -821,7 +821,7 @@ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
 background-position: top center; }
 
 QPushButton:pressed {
-     background-color: darkgrey;
+     background-color: darkgray;
      border-style: inset;
  } </string>
         </property>
