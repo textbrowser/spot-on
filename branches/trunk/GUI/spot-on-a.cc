@@ -5536,7 +5536,7 @@ void spoton::slotActivateKernel(void)
   else if(sender())
     QMessageBox::critical
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-       tr("The kernel process could not be started."));
+       tr("The kernel process could not be started. Good luck."));
 }
 
 void spoton::slotDeactivateKernel(void)
