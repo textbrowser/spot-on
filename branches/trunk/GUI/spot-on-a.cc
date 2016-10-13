@@ -5529,8 +5529,14 @@ void spoton::slotActivateKernel(void)
   QApplication::restoreOverrideCursor();
 
   if(status)
-    if(m_settings.value("gui/buzzAutoJoin", true).toBool())
-      joinDefaultBuzzChannel();
+    {
+      if(m_settings.value("gui/buzzAutoJoin", true).toBool())
+	joinDefaultBuzzChannel();
+    }
+  else if(sender())
+    QMessageBox::critical
+      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+       tr("The kernel process could not be started."));
 }
 
 void spoton::slotDeactivateKernel(void)
