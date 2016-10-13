@@ -571,7 +571,8 @@ spoton::spoton(void):QMainWindow()
   bool sslSupported = QSslSocket::supportsSsl();
 
   m_ui.buildInformation->setText
-    (QString("<font color=\"#ff878d\">Tiptoe through the tulips.</font>"
+    (QString("<html>"
+	     "<font color=\"#ff878d\">Tiptoe through the tulips.</font>"
 	     "<br><br>"
 	     "Compiled on %1, %2.<br>"
 	     "%3.<br>"
@@ -583,10 +584,10 @@ spoton::spoton(void):QMainWindow()
 	     "Location of .spot-on: %10.<br><br>"
 	     "Translators<br>"
 	     "Chinese - Zhao Wang<br>"
-	     "German - Ulrike Möller<br>"
+	     "German - Ulrike M&#246;ller<br>"
 	     "Hindi - Ramachandra Kulkarni<br>"
 	     "Spanish - Eduardo Gonzales<br>"
-	     "Thai - Sathitchai K.").
+	     "Thai - Sathitchai K.</html>").
 #ifdef SPOTON_DATELESS_COMPILATION
      arg("January 1, 3000").
      arg("01:01:01").
