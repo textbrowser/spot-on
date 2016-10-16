@@ -449,7 +449,7 @@ spoton::spoton(void):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_neighborsLastModificationTime = QDateTime();
   m_participantsLastModificationTime = QDateTime();
-  m_documentation = new spoton_documentation(this);
+  m_documentation = new spoton_documentation(0);
   m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, 0);
   m_rss = new spoton_rss(0);
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(0);
@@ -3175,6 +3175,7 @@ void spoton::cleanup(void)
 #if SPOTON_GOLDBUG == 0
   m_addParticipantWindow->deleteLater();
 #endif
+  m_documentation->deleteLater();
   m_echoKeyShare->deleteLater();
   m_notificationsWindow->deleteLater();
   m_optionsWindow->deleteLater();
