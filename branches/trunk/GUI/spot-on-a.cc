@@ -6365,14 +6365,15 @@ void spoton::slotSetPassphrase(void)
 		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		mb.setText
 		 (tr("McEliece keys require a significant amount of "
-		     "storage memory. As Spot-On prefers secure memory, "
+		     "storage memory. As %1 prefers secure memory, "
 		     "the gcrypt library may fail if it's unable to "
 		     "reserve the required amount of memory. Some "
 		     "operating systems require configuration in order "
 		     "to support large amounts of locked memory. "
 		     "You may disable secure memory by setting the "
 		     "secure memory pools of the interface and the kernel "
-		     "to zero. Continue with the key-generation process?"));
+		     "to zero. Continue with the key-generation process?").
+		  arg(SPOTON_APPLICATION_NAME));
 
 		if(mb.exec() != QMessageBox::Yes)
 		  proceed = false;
