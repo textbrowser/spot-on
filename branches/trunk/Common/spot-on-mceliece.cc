@@ -36,7 +36,6 @@ extern "C"
 }
 
 #include <QByteArray>
-
 #include <bitset>
 #include <map>
 #include <stdexcept>
@@ -808,7 +807,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	  for(long int j = 0; j < CHAR_BIT && k < m.length(); j++, k++)
 	    b[static_cast<size_t> (j)] = m[k] == 0 ? 0 : 1;
 
-	  p[i] = static_cast<char> (b.to_ulong());
+	  p[static_cast<size_t> (i)] = static_cast<char> (b.to_ulong());
 	}
 
       plaintext.write(p, plaintext_size);
