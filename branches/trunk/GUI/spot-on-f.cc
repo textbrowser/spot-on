@@ -2148,6 +2148,7 @@ void spoton::slotVacuumDatabases(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
+  repaint();
   spoton_misc::vacuumAllDatabases();
   QApplication::restoreOverrideCursor();
 }

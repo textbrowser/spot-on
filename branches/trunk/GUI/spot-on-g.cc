@@ -1567,9 +1567,10 @@ void spoton::slotSetStyleSheet(void)
   Ui_spoton_stylesheet ui;
 
   ui.setupUi(&dialog);
-  ui.label->setText(widget->objectName());
   ui.preview->setProperty("widget_name", widget->objectName());
   ui.textEdit->setText(action->property("widget_stylesheet").toString());
+  dialog.setWindowTitle
+    (tr("Spot-On: Widget Style Sheet (%1)").arg(widget->objectName()));
   connect(ui.preview,
 	  SIGNAL(clicked(void)),
 	  this,
