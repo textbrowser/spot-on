@@ -1537,6 +1537,10 @@ void spoton::slotSetWidgetStyleSheet(const QPoint &point)
 			  this,
 			  SLOT(slotCopyStyleSheet(void)));
   action->setProperty("widget_name", widget->objectName());
+  action = menu.addAction(tr("&Reset Style Sheet"),
+			  this,
+			  SLOT(slotResetStyleSheet(void)));
+  action->setProperty("widget_name", widget->objectName());
   action = menu.addAction(tr("Set &Style Sheet..."),
 			  this,
 			  SLOT(slotSetStyleSheet(void)));
@@ -1656,5 +1660,31 @@ void spoton::slotPreviewStyleSheet(void)
     return;
 
   widget->setStyleSheet(textEdit->toPlainText());
+#endif
+}
+
+void spoton::slotResetStyleSheet(void)
+{
+#if SPOTON_GOLDBUG == 0
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QWidget *widget = findChild<QWidget *> (action->property("widget_name").
+					  toString());
+
+  if(!widget)
+    return;
+
+  widget->setStyleSheet(widget->property("original_style_sheet").toString());
+
+  QSettings settings;
+  QString str(widget->styleSheet().trimmed());
+
+  m_settings[QString("gui/widget_stylesheet_%1").arg(widget->objectName())] =
+    str;
+  settings.setValue
+    (QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
 #endif
 }

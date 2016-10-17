@@ -488,6 +488,8 @@ spoton::spoton(void):QMainWindow()
 
   foreach(QWidget *widget, findChildren<QWidget *> ())
     {
+      widget->setProperty("original_style_sheet", widget->styleSheet());
+
       if(widget->contextMenuPolicy() == Qt::CustomContextMenu ||
 	 widget->inherits("QLineEdit") ||
 	 widget->inherits("QTextEdit"))
