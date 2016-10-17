@@ -21,7 +21,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Widget Name</string>
+      <string>Spot-On does not yet validate style sheets. Please be careful.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
