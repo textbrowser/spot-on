@@ -2738,6 +2738,34 @@ void spoton::slotRegenerateKey(void)
   if(mb.exec() != QMessageBox::Yes)
     return;
 
+  if(m_ui.encryptionKeyType->currentIndex() == 1)
+    {
+      QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setWindowTitle(tr("%1: Confirmation").
+			arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("McEliece keys require a significant amount of "
+		    "storage memory. As Spot-On prefers secure memory, "
+		    "the gcrypt library may fail if it's unable to "
+		    "reserve the required amount of memory. Some "
+		    "operating systems require configuration in order "
+		    "to support large amounts of locked memory. "
+		    "You may disable secure memory by setting the "
+		    "secure memory pools of the interface and the kernel "
+		    "to zero. Continue with the key-generation process?"));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+    }
+
   repaint();
 #ifndef Q_OS_MAC
   QApplication::processEvents();
