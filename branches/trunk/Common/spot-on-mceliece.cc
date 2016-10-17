@@ -685,9 +685,6 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	{
 	  NTL::GF2EX T = NTL::InvMod(syndrome, m_privateKey->gZ()) +
 	    m_privateKey->X();
-	  NTL::GF2EX alpha = NTL::GF2EX::zero();
-	  NTL::GF2EX beta = NTL::GF2EX::zero();
-	  NTL::GF2EX gamma = NTL::GF2EX::zero();
 	  NTL::GF2EX tau = NTL::GF2EX::zero();
 	  NTL::ZZ exponent = NTL::power
 	    (NTL::power2_ZZ(static_cast<long int> (m_t)),
@@ -751,7 +748,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 		  gf2ex = u0;
 		  u0 = u1;
 		  u1 = gf2ex;
-		  du = du + dt;
+		  du += dt;
 		  dt = 1;
 		  NTL::GetCoeff(c3, r1, dr - dt);
 
@@ -764,11 +761,11 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 		  dr -= dt;
 		}
 
-	      gamma = u1;
-	      beta = r1;
-	      NTL::rem(alpha, beta, m_privateKey->gZ());
+	      NTL::GF2EX alpha = NTL::GF2EX::zero();
+
+	      NTL::rem(alpha, r1, m_privateKey->gZ());
 	      sigma = NTL::power(alpha, 2) +
-		NTL::power(gamma, 2) * m_privateKey->X();
+		NTL::power(u1, 2) * m_privateKey->X();
 	    }
 	}
 
@@ -863,7 +860,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 
 	  for(long int j = 0; static_cast<size_t> (j) < b.size() &&
 		static_cast<long int> (k) < m.length(); j++, k++)
-	    m[k] = b[static_cast<size_t> (j)];
+	    m[static_cast<long int> (k)] = b[static_cast<size_t> (j)];
 	}
 
       /*
@@ -888,9 +885,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	}
       while(t > ts);
 
-      NTL::vec_GF2 c = m * m_publicKey->Gcar() + e;
-
-      ciphertext << c;
+      ciphertext << m * m_publicKey->Gcar() + e;
     }
   catch(...)
     {
