@@ -264,7 +264,7 @@
           <item>
            <widget class="QDoubleSpinBox" name="download_interval">
             <property name="suffix">
-             <string> minutes</string>
+             <string> minute(s)</string>
             </property>
             <property name="minimum">
              <double>0.100000000000000</double>

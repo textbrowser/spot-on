@@ -264,7 +264,7 @@
           <item>
            <widget class="QDoubleSpinBox" name="download_interval">
             <property name="suffix">
-             <string> minutes</string>
+             <string> minute(s)</string>
             </property>
             <property name="minimum">
              <double>0.100000000000000</double>
@@ -444,7 +444,7 @@
              <x>0</x>
              <y>0</y>
              <width>790</width>
-             <height>112</height>
+             <height>111</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -635,7 +635,7 @@
      <x>0</x>
      <y>0</y>
      <width>841</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
