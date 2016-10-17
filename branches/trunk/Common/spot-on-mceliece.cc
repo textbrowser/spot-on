@@ -564,7 +564,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
 	  std::stringstream s;
 
 	  s << publicKey.mid(static_cast<int> (offset)).constData();
-	  s >> Gcar;
+	  s >> Gcar; // ~500 ms.
 	  s >> m_t;
 	  m_publicKey = new (std::nothrow)
 	    spoton_mceliece_public_key(m_t, Gcar);
