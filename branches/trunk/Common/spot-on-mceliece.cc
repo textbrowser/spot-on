@@ -549,44 +549,34 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
   m_k = 0;
   m_m = 0;
   m_n = 0;
+  m_privateKey = 0;
+  m_publicKey = 0;
   m_t = 0;
 
-  NTL::mat_GF2 Gcar;
   size_t offset = static_cast<size_t> (qstrlen("mceliece-public-key-"));
 
   if(publicKey.length() > static_cast<int> (offset))
     {
-      char *c = new (std::nothrow) char
-	[static_cast<size_t> (publicKey.length()) - offset + 1];
+      NTL::mat_GF2 Gcar;
 
-      if(c)
+      try
 	{
-	  try
-	    {
-	      memset
-		(c, 0, static_cast<size_t> (publicKey.length()) - offset + 1);
-	      memcpy
-		(c, publicKey.mid(static_cast<int> (offset)).constData(),
-		 static_cast<size_t> (publicKey.length()) - offset);
+	  std::stringstream s;
 
-	      std::stringstream s;
-
-	      s << c;
-	      s >> Gcar;
-	      s >> m_t;
-	    }
-	  catch(...)
-	    {
-	      NTL::clear(Gcar);
-	      m_t = 0;
-	    }
+	  s << publicKey.mid(static_cast<int> (offset)).constData();
+	  s >> Gcar;
+	  s >> m_t;
+	  m_publicKey = new (std::nothrow)
+	    spoton_mceliece_public_key(m_t, Gcar);
 	}
-
-      delete []c;
+      catch(...)
+	{
+	  NTL::clear(Gcar);
+	  delete m_publicKey;
+	  m_publicKey = 0;
+	  m_t = 0;
+	}
     }
-
-  m_privateKey = 0;
-  m_publicKey = new (std::nothrow) spoton_mceliece_public_key(m_t, Gcar);
 
   if(m_publicKey && m_publicKey->ok())
     {
