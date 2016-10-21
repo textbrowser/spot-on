@@ -1927,9 +1927,7 @@ void spoton::slotEncryptionKeyTypeChanged(int index)
 	 << "8192"
 	 << "15360";
   else if(index == 1)
-    list << "m11t51"
-	 << "m12t56"
-	 << "m13t115";
+    list << "m11t51";
   else
     list << "EES1087EP2"
 	 << "EES1171EP1"
