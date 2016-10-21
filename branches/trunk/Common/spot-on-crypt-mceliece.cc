@@ -145,7 +145,10 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
   std::stringstream ciphertext;
 
   if(mceliece)
-    if(mceliece->encrypt(data.constData(),
+    if(mceliece->encrypt(QByteArray(),
+			 "aes256",
+			 "sha512",
+			 data.constData(),
 			 static_cast<size_t> (data.length()),
 			 ciphertext))
       {

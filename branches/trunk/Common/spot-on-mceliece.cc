@@ -823,10 +823,17 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
   return true;
 }
 
-bool spoton_mceliece::encrypt(const char *plaintext,
+bool spoton_mceliece::encrypt(const QByteArray &constant,
+			      const QString &cipherType,
+			      const QString &hashType,
+			      const char *plaintext,
 			      const size_t plaintext_size,
 			      std::stringstream &ciphertext) const
 {
+  Q_UNUSED(cipherType);
+  Q_UNUSED(constant);
+  Q_UNUSED(hashType);
+
   if(!m_publicKey || !m_publicKey->ok() || !plaintext || plaintext_size <= 0)
     return false;
 

@@ -215,7 +215,11 @@ class spoton_mceliece
   ~spoton_mceliece();
   bool decrypt(const std::stringstream &ciphertext,
 	       std::stringstream &plaintext) const;
-  bool encrypt(const char *plaintext, const size_t plaintext_size,
+  bool encrypt(const QByteArray &constant,
+	       const QString &cipherType,
+	       const QString &hashType,
+	       const char *plaintext,
+	       const size_t plaintext_size,
 	       std::stringstream &ciphertext) const;
   bool generatePrivatePublicKeys(void);
 
