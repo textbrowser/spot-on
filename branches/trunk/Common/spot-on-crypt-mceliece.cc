@@ -48,6 +48,16 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
       m = 11;
       t = 51;
     }
+  else if(keySize == "m12t56")
+    {
+      m = 12;
+      t = 56;
+    }
+  else if(keySize == "m13t115")
+    {
+      m = 13;
+      t = 115;
+    }
   else
     return;
 
