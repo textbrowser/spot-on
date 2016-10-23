@@ -3251,6 +3251,12 @@ void spoton::prepareContextMenuMirrors(void)
 	  action->setProperty("priority", list.at(i).second);
 	}
 
+#if SPOTON_GOLDBUG == 0
+      menu->addSeparator();
+      menu->addAction("&Statistics",
+		      this,
+		      SLOT(slotShowNeighborStatistics(void)));
+#endif
       m_ui.neighborsActionMenu->setMenu(menu);
       connect(m_ui.neighborsActionMenu,
 	      SIGNAL(clicked(void)),

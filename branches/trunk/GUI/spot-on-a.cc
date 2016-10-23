@@ -7448,6 +7448,12 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	  action->setProperty("priority", list.at(i).second);
 	}
 
+#if SPOTON_GOLDBUG == 0
+      menu.addSeparator();
+      menu.addAction("&Statistics",
+		     this,
+		     SLOT(slotShowNeighborStatistics(void)));
+#endif
       menu.exec(m_ui.neighbors->mapToGlobal(point));
     }
   else if(m_ui.participants == sender())
@@ -9450,119 +9456,10 @@ void spoton::slotNeighborSelected(void)
 
   if(item)
     {
-      QSslCertificate certificate;
-      QString label("<html>");
-      int row = item->row();
+      int h = 0;
+      int v = 0;
 
-      if(m_ui.neighbors->item(row, 31)) // certificate
-	certificate = QSslCertificate
-	  (QByteArray::fromBase64(m_ui.neighbors->
-				  item(row, 31)->text().toLatin1()));
-
-      for(int i = 0; i < m_ui.neighbors->columnCount() - 1; i++)
-	{
-	  QTableWidgetItem *h = m_ui.neighbors->horizontalHeaderItem(i);
-
-	  if(!h)
-	    continue;
-	  else if(!(h->text().length() > 0 && h->text().at(0).isUpper()))
-	    continue;
-
-	  QTableWidgetItem *item = m_ui.neighbors->item(row, i);
-
-	  if(item)
-	    {
-	      if(item->flags() & Qt::ItemIsUserCheckable)
-		label.append
-		  (QString("<b>" +
-			   m_ui.neighbors->horizontalHeaderItem(i)->
-			   text() +
-			   ":</b> %1" + "<br>").arg(item->checkState() ==
-						    Qt::Checked ? 1 : 0));
-	      else
-		label.append
-		  (QString("<b>" +
-			   m_ui.neighbors->horizontalHeaderItem(i)->
-			   text() +
-			   ":</b> %1" + "<br>").arg(spoton_misc::
-						    htmlEncode(item->text())));
-	      }
-	}
-
-      int h = m_ui.neighborSummary->horizontalScrollBar()->value();
-      int v = m_ui.neighborSummary->verticalScrollBar()->value();
-
-      if(!certificate.isNull())
-	label.append
-	  (tr("<b>Cert. Effective Date:</b> %1<br>"
-	      "<b>Cert. Expiration Date:</b> %2<br>"
-	      "<b>Cert. Issuer Organization:</b> %3<br>"
-	      "<b>Cert. Issuer Common Name:</b> %4<br>"
-	      "<b>Cert. Issuer Locality Name:</b> %5<br>"
-	      "<b>Cert. Issuer Organizational Unit Name:</b> %6<br>"
-	      "<b>Cert. Issuer Country Name:</b> %7<br>"
-	      "<b>Cert. Issuer State or Province Name:</b> %8<br>"
-	      "<b>Cert. Serial Number:</b> %9<br>"
-	      "<b>Cert. Subject Organization:</b> %10<br>"
-	      "<b>Cert. Subject Common Name:</b> %11<br>"
-	      "<b>Cert. Subject Locality Name:</b> %12<br>"
-	      "<b>Cert. Subject Organizational Unit Name:</b> %13<br>"
-	      "<b>Cert. Subject Country Name:</b> %14<br>"
-	      "<b>Cert. Subject State or Province Name:</b> %15<br>"
-	      "<b>Cert. Version:</b> %16<br>").
-	   arg(certificate.effectiveDate().toString("MM/dd/yyyy")).
-	   arg(certificate.expiryDate().toString("MM/dd/yyyy")).
-#if QT_VERSION < 0x050000
-	   arg(certificate.issuerInfo(QSslCertificate::Organization)).
-	   arg(certificate.issuerInfo(QSslCertificate::CommonName)).
-	   arg(certificate.issuerInfo(QSslCertificate::LocalityName)).
-	   arg(certificate.
-	       issuerInfo(QSslCertificate::OrganizationalUnitName)).
-	   arg(certificate.issuerInfo(QSslCertificate::CountryName)).
-	   arg(certificate.
-	       issuerInfo(QSslCertificate::StateOrProvinceName)).
-#else
-	   arg(certificate.issuerInfo(QSslCertificate::Organization).
-	       value(0)).
-	   arg(certificate.issuerInfo(QSslCertificate::CommonName).
-	       value(0)).
-	   arg(certificate.issuerInfo(QSslCertificate::LocalityName).
-	       value(0)).
-	   arg(certificate.
-	       issuerInfo(QSslCertificate::OrganizationalUnitName).value(0)).
-	   arg(certificate.issuerInfo(QSslCertificate::CountryName).value(0)).
-	   arg(certificate.
-	       issuerInfo(QSslCertificate::StateOrProvinceName).value(0)).
-#endif
-	   arg(certificate.serialNumber().constData()).
-#if QT_VERSION < 0x050000
-	   arg(certificate.subjectInfo(QSslCertificate::Organization)).
-	   arg(certificate.subjectInfo(QSslCertificate::CommonName)).
-	   arg(certificate.subjectInfo(QSslCertificate::LocalityName)).
-	   arg(certificate.
-	       subjectInfo(QSslCertificate::OrganizationalUnitName)).
-	   arg(certificate.subjectInfo(QSslCertificate::CountryName)).
-	   arg(certificate.
-	       subjectInfo(QSslCertificate::StateOrProvinceName)).
-#else
-	   arg(certificate.subjectInfo(QSslCertificate::Organization).
-	       value(0)).
-	   arg(certificate.subjectInfo(QSslCertificate::CommonName).
-	       value(0)).
-	   arg(certificate.subjectInfo(QSslCertificate::LocalityName).
-	       value(0)).
-	   arg(certificate.
-	       subjectInfo(QSslCertificate::OrganizationalUnitName).
-	       value(0)).
-	   arg(certificate.subjectInfo(QSslCertificate::CountryName).
-	       value(0)).
-	   arg(certificate.
-	       subjectInfo(QSslCertificate::StateOrProvinceName).
-	       value(0)).
-#endif
-	   arg(certificate.version().constData()));
-      label.append("</html>");
-      m_ui.neighborSummary->setText(label);
+      m_ui.neighborSummary->setText(neighborSummary(item, h, v));
       m_ui.neighborSummary->horizontalScrollBar()->setValue(h);
       m_ui.neighborSummary->verticalScrollBar()->setValue(v);
     }

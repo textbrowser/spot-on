@@ -391,6 +391,9 @@ class spoton_lineedit: public QLineEdit
 #include "spot-on-smp.h"
 #include "spot-on-starbeamanalyzer.h"
 #include "ui_spot-on-controlcenter.h"
+#if SPOTON_GOLDBUG == 0
+#include "ui_spot-on-neighborstatistics.h"
+#endif
 #include "ui_spot-on-notificationswindow.h"
 #include "ui_spot-on-options.h"
 #include "ui_spot-on-poptastic-retrophone-settings.h"
@@ -458,6 +461,7 @@ class spoton: public QMainWindow
   QHash<QString, QByteArray> m_buzzIds;
   QHash<QString, QPointer<spoton_chatwindow> > m_chatWindows;
   QHash<QString, QString> m_keysShared;
+  QHash<QString, bool> m_wizardHash;
   QHash<QString, spoton_crypt *> m_crypts;
   QHash<QString, spoton_smp *> m_smps; /*
 				       ** The objects contained within
@@ -467,6 +471,10 @@ class spoton: public QMainWindow
 				       ** Unlike m_chatWindows, m_smps
 				       ** purging is less rigid.
 				       */
+#if SPOTON_GOLDBUG == 0
+  QHash<qint64, QPair<QMainWindow *, Ui_neighbor_statistics *> >
+    m_neighborStatistics;
+#endif
   QList<QFuture<void> > m_starbeamDigestFutures;
   QMainWindow *m_addParticipantWindow;
   QMainWindow *m_notificationsWindow;
@@ -526,12 +534,12 @@ class spoton: public QMainWindow
   QByteArray copyMyUrlPublicKey(void) const;
   QByteArray poptasticName(void) const;
   QByteArray poptasticNameEmail(void) const;
-  QHash<QString, bool> m_wizardHash;
   QList<QByteArray> retrieveForwardSecrecyInformation
     (const QSqlDatabase &db, const QString &oid, bool *ok) const;
   QList<QPair<QString, QVariant> > gatherStatistics(void) const;
   QPixmap pixmapForCountry(const QString &country) const;
   QString currentTabName(void) const;
+  QString neighborSummary(QTableWidgetItem *item, int &h, int &v) const;
   QString saveCommonUrlCredentials
     (const QPair<QByteArray, QByteArray> &keys,
      const QString &cipherType, const QString &hashType,
@@ -963,6 +971,7 @@ class spoton: public QMainWindow
   void slotShowEtpMagnetsMenu(const QPoint &point);
   void slotShowMainTabContextMenu(const QPoint &point);
   void slotShowMinimalDisplay(bool state);
+  void slotShowNeighborStatistics(void);
   void slotShowNeighborSummaryPanel(bool state);
   void slotShowNotificationsWindow(void);
   void slotShowOptions(void);
