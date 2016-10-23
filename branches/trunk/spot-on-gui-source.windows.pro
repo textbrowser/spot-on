@@ -10,6 +10,7 @@ FORMS           = UI\\spot-on-adaptive-echo-prompt.ui \
 		  UI\\spot-on-keyboard.ui \
 		  UI\\spot-on-listener-socket-options.ui \
                   UI\\spot-on-logviewer.ui \
+		  UI\\spot-on-neighborstatistics.ui \
 		  UI\\spot-on-notificationswindow.ui \
 		  UI\\spot-on-options.ui \
 		  UI\\spot-on-pageviewer.ui \
