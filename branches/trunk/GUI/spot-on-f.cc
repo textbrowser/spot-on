@@ -1978,6 +1978,7 @@ void spoton::centerWidget(QWidget *child, QWidget *parent)
 
 void spoton::slotShowNeighborSummaryPanel(bool state)
 {
+  slotNeighborSelected();
   m_settings["gui/show_neighbor_summary_panel"] = state;
   m_ui.neighborSummary->setVisible(state);
 

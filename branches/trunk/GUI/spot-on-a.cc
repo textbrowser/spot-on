@@ -9452,6 +9452,9 @@ void spoton::slotDiscoverExternalAddress(void)
 
 void spoton::slotNeighborSelected(void)
 {
+  if(!m_ui.action_Neighbor_Summary_Panel->isChecked())
+    return;
+
   QTableWidgetItem *item = m_ui.neighbors->selectedItems().value(0);
 
   if(item)
