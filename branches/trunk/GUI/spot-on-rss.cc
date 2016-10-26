@@ -432,24 +432,7 @@ spoton_crypt *spoton_rss::urlCommonCrypt(void) const
 
 void spoton_rss::center(QWidget *parent)
 {
-  if(!parent)
-    return;
-
-  QPoint p(parent->pos());
-  int X = 0;
-  int Y = 0;
-
-  if(parent->width() >= width())
-    X = p.x() + (parent->width() - width()) / 2;
-  else
-    X = p.x() - (width() - parent->width()) / 2;
-
-  if(parent->height() >= height())
-    Y = p.y() + (parent->height() - height()) / 2;
-  else
-    Y = p.y() - (height() - parent->height()) / 2;
-
-  move(X, Y);
+  spoton::centerWidget(this, parent);
 }
 
 void spoton_rss::closeEvent(QCloseEvent *event)
