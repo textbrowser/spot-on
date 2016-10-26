@@ -28,7 +28,12 @@
 #ifndef _spoton_neighborstatistics_h_
 #define _spoton_neighborstatistics_h_
 
+#include <QFuture>
+#include <QFutureWatcher>
 #include <QMainWindow>
+#include <QTimer>
+
+#include "ui_spot-on-neighborstatistics.h"
 
 class spoton_neighborstatistics: public QMainWindow
 {
@@ -37,9 +42,19 @@ class spoton_neighborstatistics: public QMainWindow
  public:
   spoton_neighborstatistics(QWidget *parent);
   ~spoton_neighborstatistics();
+  void show(void);
 
  private:
+  QFuture<QString> m_future;
+  QFutureWatcher<QString> m_futureWatcher;
+  QTimer m_timer;
+  QString query(void);
+  Ui_neighbor_statistics m_ui;
   void closeEvent(QCloseEvent *event);
+
+ private slots:
+  void slotFinished(void);
+  void slotTimeout(void);
 };
 
 #endif

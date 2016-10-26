@@ -34,10 +34,11 @@ extern "C"
 
 #include "spot-on.h"
 #include "spot-on-documentation.h"
-#include "ui_spot-on-private-application-credentials.h"
 #if SPOTON_GOLDBUG == 0
-#include "ui_spot-on-stylesheet.h"
+#include "spot-on-neighborstatistics.h"
 #endif
+#include "ui_spot-on-private-application-credentials.h"
+#include "ui_spot-on-stylesheet.h"
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
@@ -1701,23 +1702,20 @@ void spoton::slotShowNeighborStatistics(void)
     return;
 
   qint64 oid = list.at(0).data().toLongLong();
+  spoton_neighborstatistics *s = findChild<spoton_neighborstatistics *>
+    (QString::number(oid));
 
-  if(!m_neighborStatistics.contains(oid))
+  if(!s)
     {
-      QMainWindow *window = new QMainWindow(this);
-      Ui_neighbor_statistics *ui = new Ui_neighbor_statistics;
-
-      ui->setupUi(window);
-      m_neighborStatistics[oid] = QPair
-	<QMainWindow *, Ui_neighbor_statistics *> (window, ui);
+      s = new spoton_neighborstatistics(this);
+      s->setObjectName(QString::number(oid));
     }
 
-  m_neighborStatistics[oid].second->textBrowser->setHtml
-    (m_ui.neighborSummary->toHtml());
-  m_neighborStatistics[oid].first->showNormal();
-  m_neighborStatistics[oid].first->activateWindow();
-  m_neighborStatistics[oid].first->raise();
-  centerWidget(m_neighborStatistics[oid].first, this);
+  s->show();
+  s->showNormal();
+  s->activateWindow();
+  s->raise();
+  centerWidget(s, this);
 #endif
 }
 

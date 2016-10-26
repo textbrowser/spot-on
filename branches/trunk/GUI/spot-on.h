@@ -391,9 +391,6 @@ class spoton_lineedit: public QLineEdit
 #include "spot-on-smp.h"
 #include "spot-on-starbeamanalyzer.h"
 #include "ui_spot-on-controlcenter.h"
-#if SPOTON_GOLDBUG == 0
-#include "ui_spot-on-neighborstatistics.h"
-#endif
 #include "ui_spot-on-notificationswindow.h"
 #include "ui_spot-on-options.h"
 #include "ui_spot-on-poptastic-retrophone-settings.h"
@@ -471,10 +468,6 @@ class spoton: public QMainWindow
 				       ** Unlike m_chatWindows, m_smps
 				       ** purging is less rigid.
 				       */
-#if SPOTON_GOLDBUG == 0
-  QHash<qint64, QPair<QMainWindow *, Ui_neighbor_statistics *> >
-    m_neighborStatistics;
-#endif
   QList<QFuture<void> > m_starbeamDigestFutures;
   QMainWindow *m_addParticipantWindow;
   QMainWindow *m_notificationsWindow;
