@@ -490,9 +490,6 @@ QPushButton:pressed {
       </item>
       <item>
        <widget class="QComboBox" name="readSize">
-        <property name="toolTip">
-         <string>Bits</string>
-        </property>
         <property name="currentIndex">
          <number>1</number>
         </property>
@@ -501,19 +498,31 @@ QPushButton:pressed {
         </property>
         <item>
          <property name="text">
-          <string>1024</string>
+          <string>1</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>32768</string>
+          <string>4</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>65536</string>
+          <string>32</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>64</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>KiB</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -602,7 +611,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>885</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

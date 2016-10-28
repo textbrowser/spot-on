@@ -465,7 +465,7 @@ void spoton_encryptfile::decrypt(const QString &fileName,
 	  sign = bytes.mid(0, 1).toInt();
 	  bytes.clear();
 	  bytes.resize
-	    (qMax(1024 / 8, credentials.value(4).toInt() / 8) +
+	    (qMax(1024, 1024 * credentials.value(4).toInt()) +
 	     (credentials.value(0).toString() == "threefish" ? (32 + 32) :
 	      (LENGTH_OF_INITIALIZATION_VECTOR + 4)));
 	  /*
@@ -696,7 +696,7 @@ void spoton_encryptfile::encrypt(const bool sign,
 	}
 
       bytes.clear();
-      bytes.resize(qMax(1024 / 8, credentials.value(4).toInt() / 8));
+      bytes.resize(qMax(1024, 1024 * credentials.value(4).toInt()));
       emit status(tr("Encrypting the file %1.").arg(fileName));
 
       QByteArray eKey(credentials.value(2).toByteArray());
