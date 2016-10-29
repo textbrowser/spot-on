@@ -2280,7 +2280,7 @@ spoton::spoton(void):QMainWindow()
 	  isExecutable())
     m_ui.kernelPath->setText(m_settings.value("gui/kernelPath").toString());
   else
-#ifdef QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
     m_ui.kernelPath->setText
       ("/Applications/Spot-On_Qt5.d/Spot-On-Kernel.app");
 #else
