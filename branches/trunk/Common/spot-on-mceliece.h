@@ -100,6 +100,11 @@ class spoton_mceliece_private_key
     return m_L;
   }
 
+  QByteArray conversion(void) const
+  {
+    return m_conversion;
+  }
+
   bool ok(void) const
   {
     return m_ok;
@@ -148,6 +153,7 @@ class spoton_mceliece_private_key
   NTL::mat_GF2 m_S;
   NTL::mat_GF2 m_Sinv;
   NTL::vec_GF2E m_L;
+  QByteArray m_conversion;
   bool m_ok;
   size_t m_k;
   size_t m_m;
@@ -210,15 +216,16 @@ class spoton_mceliece
 {
  public:
   explicit spoton_mceliece(const QByteArray &publicKey);
-  spoton_mceliece(const char *publicKey, const size_t publicKeyLength);
-  spoton_mceliece(const size_t m, const size_t t);
+  spoton_mceliece(const char *privateKey,
+		  const size_t privateKeyLength,
+		  const QByteArray &publicKey);
+  spoton_mceliece(const QByteArray &conversion,
+		  const size_t m,
+		  const size_t t);
   ~spoton_mceliece();
   bool decrypt(const std::stringstream &ciphertext,
 	       std::stringstream &plaintext) const;
-  bool encrypt(const QByteArray &constant,
-	       const QString &cipherType,
-	       const QString &hashType,
-	       const char *plaintext,
+  bool encrypt(const char *plaintext,
 	       const size_t plaintext_size,
 	       std::stringstream &ciphertext) const;
   bool generatePrivatePublicKeys(void);
@@ -265,6 +272,10 @@ class spoton_mceliece
   void publicKeyParameters(QByteArray &publicKey) const;
 
  private:
+  QByteArray m_conversion; /*
+			   ** 000 - None
+			   ** foa - Fujisaki-Okamoto Model A
+			   */
   spoton_mceliece_private_key *m_privateKey;
   spoton_mceliece_public_key *m_publicKey;
   size_t m_k;

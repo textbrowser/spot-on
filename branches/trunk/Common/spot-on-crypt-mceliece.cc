@@ -40,6 +40,7 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
     *ok = false;
 
 #ifdef SPOTON_MCELIECE_ENABLED
+  QByteArray conversion("000");
   size_t m = 0;
   size_t t = 0;
 
@@ -48,10 +49,17 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
       m = 11;
       t = 51;
     }
+  else if(keySize == "m11t51-fujisaki-okamoto-a")
+    {
+      conversion = "foa";
+      m = 11;
+      t = 51;
+    }
   else
     return;
 
-  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece(m, t);
+  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece
+    (conversion, m, t);
 
   if(mceliece)
     if(mceliece->generatePrivatePublicKeys())
@@ -59,12 +67,18 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
 	mceliece->privateKeyParameters(privateKey);
 
 	if(!privateKey.isEmpty())
-	  privateKey.prepend("mceliece-private-key-");
+	  {
+	    privateKey.prepend(conversion);
+	    privateKey.prepend("mceliece-private-key-");
+	  }
 
 	mceliece->publicKeyParameters(publicKey);
 
 	if(!publicKey.isEmpty())
-	  publicKey.prepend("mceliece-public-key-");
+	  {
+	    publicKey.prepend(conversion);
+	    publicKey.prepend("mceliece-public-key-");
+	  }
 
 	if(!publicKey.isEmpty() && !privateKey.isEmpty())
 	  if(ok)
@@ -93,7 +107,7 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
 
   if(!m_mceliece)
     m_mceliece = new (std::nothrow) spoton_mceliece
-      (m_privateKey, m_privateKeyLength);
+      (m_privateKey, m_privateKeyLength, m_publicKey);
 
   if(!m_mceliece)
     return QByteArray();
@@ -145,10 +159,7 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
   std::stringstream ciphertext;
 
   if(mceliece)
-    if(mceliece->encrypt(QByteArray(),
-			 "aes256",
-			 "sha512",
-			 data.constData(),
+    if(mceliece->encrypt(data.constData(),
 			 static_cast<size_t> (data.length()),
 			 ciphertext))
       {
@@ -186,7 +197,13 @@ QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
   spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece(data);
 
   if(mceliece)
-    keySize = QString("m%1t%2").arg(mceliece->m()).arg(mceliece->t());
+    {
+      if(data.startsWith("mceliece-public-key-000"))
+	keySize = QString("m%1t%2").arg(mceliece->m()).arg(mceliece->t());
+      else
+	keySize = QString("m%1t%2-fujisaki-okamoto-a").
+	  arg(mceliece->m()).arg(mceliece->t());
+    }
 
   delete mceliece;
 #else

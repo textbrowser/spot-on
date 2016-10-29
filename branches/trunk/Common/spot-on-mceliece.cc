@@ -36,16 +36,20 @@ extern "C"
 }
 
 #include <QByteArray>
+#include <QtMath>
+
 #include <bitset>
 #include <map>
 #include <stdexcept>
 
+#include "spot-on-crypt.h"
 #include "spot-on-mceliece.h"
 #include "spot-on-misc.h"
 
 spoton_mceliece_private_key::spoton_mceliece_private_key
 (const char *privateKey, const size_t privateKeyLength)
 {
+  m_conversion = "000";
   m_k = 0;
   m_m = 0;
   m_n = 0;
@@ -62,18 +66,22 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 	 ** What should the value be? The maximum m that's supported?
 	 */
 	 BuildIrred_GF2X(static_cast<long int> (11))); /*
-							** Initialize
-							** some NTL
-							** internal
-							** object(s).
-							*/
+						       ** Initialize
+						       ** some NTL
+						       ** internal
+						       ** object(s).
+						       */
 
-      size_t offset = static_cast<size_t> (qstrlen("mceliece-private-key-"));
+      size_t offset = static_cast<size_t>
+	(qstrlen("mceliece-private-key-000"));
 
       if(privateKey && privateKeyLength > offset)
 	{
 	  if((c = new (std::nothrow) char[privateKeyLength - offset + 1]))
 	    {
+	      if(memcmp(privateKey, "mceliece-private-key-foa", offset) == 0)
+		m_conversion = "foa";
+
 	      memset(c, 0, privateKeyLength - offset + 1);
 	      memcpy(c, privateKey + offset, privateKeyLength - offset);
 
@@ -227,7 +235,7 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
 {
   try
     {
-      if(m_swappingColumns.size() != static_cast<size_t> (m_n))
+      if(m_swappingColumns.size() != m_n)
 	throw std::runtime_error("m_swappingColumns().size() mismatch");
 
       long int k = static_cast<long int> (m_k);
@@ -240,7 +248,7 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
 	  for(long int j = 0; j < n - k; j++)
 	    m_G[i][j] = R[i][j];
 
-	  m_G[i][n - k + i] = NTL::to_GF2(1);
+	  m_G[i][n - k + i] = 1;
 	}
 
       NTL::mat_GF2 mat_GF2;
@@ -447,6 +455,7 @@ void spoton_mceliece_private_key::reset(const bool ok)
   NTL::clear(m_Sinv);
   NTL::clear(m_X);
   NTL::clear(m_gZ);
+  m_conversion = "000";
   m_k = 0;
   m_m = 0;
   m_n = 0;
@@ -459,8 +468,8 @@ void spoton_mceliece_private_key::reset(const bool ok)
 void spoton_mceliece_private_key::swapSwappingColumns(const long int i,
 						      const long int j)
 {
-  if(static_cast<size_t> (i) >= m_swappingColumns.size() ||
-     static_cast<size_t> (j) >= m_swappingColumns.size())
+  if(i >= static_cast<long int> (m_swappingColumns.size()) ||
+     j >= static_cast<long int> (m_swappingColumns.size()))
     {
       m_ok = false;
       return;
@@ -486,7 +495,16 @@ spoton_mceliece_public_key::spoton_mceliece_public_key(const size_t m,
   long int n = 1 << static_cast<long int> (m);
 
   k = n - static_cast<long int> (m) * static_cast<long int> (m_t);
-  m_Gcar.SetDims(k, n);
+
+  try
+    {
+      m_Gcar.SetDims(k, n);
+    }
+  catch(...)
+    {
+      NTL::clear(m_Gcar);
+      m_ok = false;
+    }
 }
 
 spoton_mceliece_public_key::spoton_mceliece_public_key
@@ -527,7 +545,8 @@ void spoton_mceliece_public_key::reset(const bool ok)
 }
 
 spoton_mceliece::spoton_mceliece(const char *privateKey,
-				 const size_t privateKeyLength)
+				 const size_t privateKeyLength,
+				 const QByteArray &publicKey)
 {
   m_privateKey = new (std::nothrow) spoton_mceliece_private_key
     (privateKey, privateKeyLength);
@@ -535,6 +554,7 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
 
   if(m_privateKey && m_privateKey->ok())
     {
+      m_conversion = m_privateKey->conversion();
       m_k = m_privateKey->k();
       m_m = m_privateKey->m();
       m_n = m_privateKey->n();
@@ -545,10 +565,44 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
       delete m_privateKey;
       m_privateKey = 0;
     }
+
+  size_t offset = static_cast<size_t> (qstrlen("mceliece-public-key-000"));
+
+  if(publicKey.length() > static_cast<int> (offset))
+    {
+      NTL::mat_GF2 Gcar;
+
+      try
+	{
+	  size_t t = 0;
+	  std::stringstream s;
+
+	  s << publicKey.mid(static_cast<int> (offset)).constData();
+	  s >> Gcar; // ~500 ms.
+	  s >> t;
+	  m_publicKey = new (std::nothrow)
+	    spoton_mceliece_public_key(t, Gcar);
+	}
+      catch(...)
+	{
+	  NTL::clear(Gcar);
+	  delete m_publicKey;
+	  m_publicKey = 0;
+	}
+    }
+
+  if(!m_privateKey || !m_publicKey)
+    {
+      delete m_privateKey;
+      m_privateKey = 0;
+      delete m_publicKey;
+      m_publicKey = 0;
+    }
 }
 
 spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
 {
+  m_conversion = "000";
   m_k = 0;
   m_m = 0;
   m_n = 0;
@@ -556,7 +610,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
   m_publicKey = 0;
   m_t = 0;
 
-  size_t offset = static_cast<size_t> (qstrlen("mceliece-public-key-"));
+  size_t offset = static_cast<size_t> (qstrlen("mceliece-public-key-000"));
 
   if(publicKey.length() > static_cast<int> (offset))
     {
@@ -583,6 +637,9 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
 
   if(m_publicKey && m_publicKey->ok())
     {
+      if(publicKey.startsWith("mceliece-public-key-foa"))
+	m_conversion = "foa";
+
       m_k = m_publicKey->k();
       m_n = m_publicKey->n();
 
@@ -600,8 +657,11 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
     }
 }
 
-spoton_mceliece::spoton_mceliece(const size_t m, const size_t t)
+spoton_mceliece::spoton_mceliece(const QByteArray &conversion,
+				 const size_t m,
+				 const size_t t)
 {
+  m_conversion = conversion;
   m_privateKey = 0;
   m_publicKey = 0;
 
@@ -623,7 +683,7 @@ spoton_mceliece::~spoton_mceliece()
 bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 			      std::stringstream &plaintext) const
 {
-  if(!m_privateKey || !m_privateKey->ok())
+  if(!m_privateKey || !m_privateKey->ok() || !m_publicKey || !m_publicKey->ok())
     return false;
 
   size_t plaintext_size = static_cast<size_t>
@@ -643,16 +703,34 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
   try
     {
-      NTL::vec_GF2 c;
+      NTL::vec_GF2 c1;
+      NTL::vec_GF2 c2;
+      QByteArray salt1;
+      QByteArray salt2;
       std::stringstream s;
 
       s << ciphertext.rdbuf();
-      s >> c;
+      s >> c1;
 
-      if(c.length() != static_cast<long int> (m_n))
-	throw std::runtime_error("c.length() mismatch");
+      if(c1.length() != static_cast<long int> (m_n))
+	throw std::runtime_error("c1.length() mismatch");
 
-      NTL::vec_GF2 ccar = c * m_privateKey->Pinv();
+      if(m_conversion == "foa")
+	{
+	  s >> c2;
+
+	  if(c2.length() != static_cast<long int> (m_k))
+	    throw std::runtime_error("c2.length() mismatch");
+
+	  std::string string;
+
+	  s >> string;
+	  salt1 = QByteArray::fromBase64(string.c_str());
+	  s >> string;
+	  salt2 = QByteArray::fromBase64(string.c_str());
+	}
+
+      NTL::vec_GF2 ccar = c1 * m_privateKey->Pinv();
 
       if(ccar.length() != static_cast<long int> (m_n))
 	throw std::runtime_error("ccar.length() mismatch");
@@ -790,6 +868,76 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	mcar[i] = vec_GF2[i + n - k];
 
       m = mcar * m_privateKey->Sinv();
+
+      if(m_conversion == "000")
+	{
+	  memset(p, 0, plaintext_size);
+
+	  for(long int i = 0, k = 0; i < static_cast<long int> (plaintext_size);
+	      i++)
+	    {
+	      std::bitset<CHAR_BIT> b;
+
+	      for(long int j = 0; j < static_cast<long int> (b.size()) &&
+		    k < m.length(); j++, k++)
+		b[static_cast<size_t> (j)] = m[k] == 0 ? 0 : 1;
+
+	      p[static_cast<size_t> (i)] = static_cast<char> (b.to_ulong());
+	    }
+
+	  plaintext.write(p, plaintext_size);
+	  return true;
+	}
+
+      std::stringstream stream1;
+
+      stream1 << c1 - m * m_publicKey->Gcar(); // Original error vector.
+
+      QByteArray bytes
+	(stream1.str().c_str(), static_cast<int> (stream1.str().size()));
+      bool ok = true;
+
+      bytes = spoton_crypt::sha512Hash(bytes, &ok);
+
+      if(!ok)
+	throw std::runtime_error("spoton_crypt::sha512Hash() failure");
+
+      /*
+      ** Generate a key stream via PBKDF2 from SHA-512(m).
+      */
+
+      QByteArray keyStream1
+	(static_cast<int> (qCeil(static_cast<double> (m.length()) /
+				 CHAR_BIT)), 0);
+
+      if(gcry_kdf_derive(bytes.constData(),
+			 static_cast<size_t> (bytes.length()),
+			 GCRY_KDF_PBKDF2,
+			 gcry_md_map_name("sha512"),
+			 salt2.constData(),
+			 static_cast<size_t> (salt2.length()),
+			 1,
+			 static_cast<size_t> (keyStream1.length()),
+			 keyStream1.data()) != 0)
+	throw std::runtime_error("gcry_kdf_derive() failure");
+
+      NTL::vec_GF2 h;
+
+      h.SetLength(c2.length());
+
+      for(long int i = 0, k = 0;
+	  i < static_cast<long int> (keyStream1.size()); i++)
+	{
+	  std::bitset<CHAR_BIT> b(keyStream1[static_cast<int> (i)]);
+
+	  for(long int j = 0; j < static_cast<long int> (b.size()) &&
+		k < h.length(); j++, k++)
+	    h[k] = b[static_cast<size_t> (j)];
+	}
+
+      for(long int i = 0; i < c2.length(); i++)
+	mcar[i] = (c2[i] == 0 ? 0 : 1) ^ (h[i] == 0 ? 0 : 1);
+
       memset(p, 0, plaintext_size);
 
       for(long int i = 0, k = 0; i < static_cast<long int> (plaintext_size);
@@ -797,8 +945,9 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	{
 	  std::bitset<CHAR_BIT> b;
 
-	  for(long int j = 0; j < CHAR_BIT && k < m.length(); j++, k++)
-	    b[static_cast<size_t> (j)] = m[k] == 0 ? 0 : 1;
+	  for(long int j = 0; j < static_cast<long int> (b.size()) &&
+		k < mcar.length(); j++, k++)
+	    b[static_cast<size_t> (j)] = mcar[k] == 0 ? 0 : 1;
 
 	  p[static_cast<size_t> (i)] = static_cast<char> (b.to_ulong());
 	}
@@ -826,17 +975,10 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
   return true;
 }
 
-bool spoton_mceliece::encrypt(const QByteArray &constant,
-			      const QString &cipherType,
-			      const QString &hashType,
-			      const char *plaintext,
+bool spoton_mceliece::encrypt(const char *plaintext,
 			      const size_t plaintext_size,
 			      std::stringstream &ciphertext) const
 {
-  Q_UNUSED(cipherType);
-  Q_UNUSED(constant);
-  Q_UNUSED(hashType);
-
   if(!m_publicKey || !m_publicKey->ok() || !plaintext || plaintext_size <= 0)
     return false;
 
@@ -857,8 +999,8 @@ bool spoton_mceliece::encrypt(const QByteArray &constant,
 	{
 	  std::bitset<CHAR_BIT> b(plaintext[i]);
 
-	  for(long int j = 0; static_cast<size_t> (j) < b.size() &&
-		static_cast<long int> (k) < m.length(); j++, k++)
+	  for(long int j = 0; j < static_cast<long int> (b.size()) && k < m_k;
+	      j++, k++)
 	    m[static_cast<long int> (k)] = b[static_cast<size_t> (j)];
 	}
 
@@ -884,7 +1026,111 @@ bool spoton_mceliece::encrypt(const QByteArray &constant,
 	}
       while(t > ts);
 
-      ciphertext << m * m_publicKey->Gcar() + e;
+      if(m_conversion == "foa")
+	{
+	  std::stringstream stream1;
+
+	  stream1 << e << m;
+
+	  QByteArray bytes
+	    (stream1.str().c_str(), static_cast<int> (stream1.str().size()));
+	  bool ok = true;
+
+	  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+
+	  if(!ok)
+	    throw std::runtime_error("spoton_crypt::sha512Hash() failure");
+
+	  /*
+	  ** Generate a key stream via PBKDF2 from SHA-512(e || m).
+	  */
+
+	  QByteArray keyStream1
+	    (static_cast<int> (qCeil(static_cast<double> (m.length()) /
+				     CHAR_BIT)), 0);
+	  QByteArray salt1(spoton_crypt::weakRandomBytes(64));
+
+	  if(gcry_kdf_derive(bytes.constData(),
+			     static_cast<size_t> (bytes.length()),
+			     GCRY_KDF_PBKDF2,
+			     gcry_md_map_name("sha512"),
+			     salt1.constData(),
+			     static_cast<size_t> (salt1.length()),
+			     1,
+			     static_cast<size_t> (keyStream1.length()),
+			     keyStream1.data()) != 0)
+	    throw std::runtime_error("gcry_kdf_derive() failure");
+
+	  NTL::vec_GF2 r;
+
+	  r.SetLength(m.length());
+
+	  for(long int i = 0, k = 0;
+	      i < static_cast<long int> (keyStream1.size()); i++)
+	    {
+	      std::bitset<CHAR_BIT> b(keyStream1[static_cast<int> (i)]);
+
+	      for(long int j = 0; j < static_cast<long int> (b.size()) &&
+		    k < r.length(); j++, k++)
+		r[k] = b[static_cast<size_t> (j)];
+	    }
+
+	  ciphertext << r * m_publicKey->Gcar() + e;
+
+	  std::stringstream stream2;
+
+	  stream2 << e;
+	  bytes = QByteArray
+	    (stream2.str().c_str(), static_cast<int> (stream2.str().size()));
+	  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+
+	  if(!ok)
+	    throw std::runtime_error("spoton_crypt::sha512Hash() failure");
+
+	  /*
+	  ** Generate a key stream via PBKDF2 from SHA-512(e).
+	  */
+
+	  QByteArray keyStream2
+	    (static_cast<int> (qCeil(static_cast<double> (m.length()) /
+				     CHAR_BIT)), 0);
+	  QByteArray salt2(spoton_crypt::weakRandomBytes(64));
+
+	  if(gcry_kdf_derive(bytes.constData(),
+			     static_cast<size_t> (bytes.length()),
+			     GCRY_KDF_PBKDF2,
+			     gcry_md_map_name("sha512"),
+			     salt2.constData(),
+			     static_cast<size_t> (salt2.length()),
+			     1,
+			     static_cast<size_t> (keyStream2.length()),
+			     keyStream2.data()) != 0)
+	    throw std::runtime_error("gcry_kdf_derive() failure");
+
+	  NTL::vec_GF2 h;
+
+	  h.SetLength(m.length());
+
+	  for(long int i = 0, k = 0;
+	      i < static_cast<long int> (keyStream2.size()); i++)
+	    {
+	      std::bitset<CHAR_BIT> b(keyStream2[static_cast<int> (i)]);
+
+	      for(long int j = 0; j < static_cast<long int> (b.size()) &&
+		    k < h.length(); j++, k++)
+		h[k] = b[static_cast<size_t> (j)];
+	    }
+
+	  for(long int i = 0; i < m.length(); i++)
+	    m[i] = (h[i] == 0 ? 0 : 1) ^ (m[i] == 0 ? 0 : 1);
+
+	  ciphertext << m
+		     << salt1.toBase64().constData()
+		     << " "
+		     << salt2.toBase64().constData();
+	}
+      else
+	ciphertext << m * m_publicKey->Gcar() + e;
     }
   catch(...)
     {
