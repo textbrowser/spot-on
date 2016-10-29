@@ -889,6 +889,7 @@ class spoton: public QMainWindow
   void slotResetAETokenInformation(void);
   void slotResetAccountInformation(void);
   void slotResetAll(void);
+  void slotResetAllStyleSheets(void);
   void slotResetCertificate(void);
   void slotResetForwardSecrecyInformation(void);
   void slotResetPrivateApplicationInformation(void);

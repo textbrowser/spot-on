@@ -1540,15 +1540,19 @@ void spoton::slotSetWidgetStyleSheet(const QPoint &point)
 			  this,
 			  SLOT(slotCopyStyleSheet(void)));
   action->setProperty("widget_name", widget->objectName());
-  action = menu.addAction(tr("&Reset Style Sheet"),
+  action = menu.addAction(tr("&Reset Widget Style Sheet"),
 			  this,
 			  SLOT(slotResetStyleSheet(void)));
   action->setProperty("widget_name", widget->objectName());
-  action = menu.addAction(tr("Set &Style Sheet..."),
+  action = menu.addAction(tr("Set Widget &Style Sheet..."),
 			  this,
 			  SLOT(slotSetStyleSheet(void)));
   action->setProperty("widget_name", widget->objectName());
   action->setProperty("widget_stylesheet", widget->styleSheet());
+  menu.addSeparator();
+  menu.addAction(tr("Reset &All Widget Style Sheets"),
+		 this,
+		 SLOT(slotResetAllStyleSheets(void)));
   menu.exec(widget->mapToGlobal(point));
 #else
   Q_UNUSED(point);
@@ -1839,4 +1843,46 @@ QString spoton::neighborSummary(QTableWidgetItem *item, int &h, int &v) const
        arg(certificate.version().constData()));
   label.append("</html>");
   return label;
+}
+
+void spoton::slotResetAllStyleSheets(void)
+{
+#if SPOTON_GOLDBUG == 0
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to reset all widget "
+		"style sheets?"));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QSettings settings;
+
+  foreach(QWidget *widget, findChildren<QWidget *> ())
+    if(widget->property("original_style_sheet").isValid())
+      {
+	widget->setStyleSheet
+	  (widget->property("original_style_sheet").toString());
+
+	QString str(widget->styleSheet().trimmed());
+
+	m_settings[QString("gui/widget_stylesheet_%1").
+		   arg(widget->objectName())] = str;
+	settings.setValue
+	  (QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
+      }
+
+  QApplication::restoreOverrideCursor();
+#endif
 }
