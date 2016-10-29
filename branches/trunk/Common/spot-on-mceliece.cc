@@ -591,7 +591,7 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
 	}
     }
 
-  if(!m_privateKey || !m_publicKey)
+  if(!(m_privateKey && m_privateKey->ok() && m_publicKey && m_publicKey->ok()))
     {
       delete m_privateKey;
       m_privateKey = 0;
