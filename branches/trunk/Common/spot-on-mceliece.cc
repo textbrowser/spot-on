@@ -889,9 +889,11 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	  return true;
 	}
 
+      NTL::vec_GF2 ecar;
       std::stringstream stream1;
 
-      stream1 << c1 - m * m_publicKey->Gcar(); // Original error vector.
+      ecar = c1 - m * m_publicKey->Gcar(); // Original error vector.
+      stream1 << ecar;
 
       QByteArray bytes
 	(stream1.str().c_str(), static_cast<int> (stream1.str().size()));
@@ -906,7 +908,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       ** Generate a key stream via PBKDF2 from SHA-512(m).
       */
 
-      QByteArray keyStream1
+      QByteArray keyStream2
 	(static_cast<int> (qCeil(static_cast<double> (m.length()) /
 				 CHAR_BIT)), 0);
 
@@ -917,8 +919,8 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 			 salt2.constData(),
 			 static_cast<size_t> (salt2.length()),
 			 1,
-			 static_cast<size_t> (keyStream1.length()),
-			 keyStream1.data()) != 0)
+			 static_cast<size_t> (keyStream2.length()),
+			 keyStream2.data()) != 0)
 	throw std::runtime_error("gcry_kdf_derive() failure");
 
       NTL::vec_GF2 h;
@@ -926,9 +928,9 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       h.SetLength(c2.length());
 
       for(long int i = 0, k = 0;
-	  i < static_cast<long int> (keyStream1.size()); i++)
+	  i < static_cast<long int> (keyStream2.size()); i++)
 	{
-	  std::bitset<CHAR_BIT> b(keyStream1[static_cast<int> (i)]);
+	  std::bitset<CHAR_BIT> b(keyStream2[static_cast<int> (i)]);
 
 	  for(long int j = 0; j < static_cast<long int> (b.size()) &&
 		k < h.length(); j++, k++)
@@ -937,6 +939,52 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
       for(long int i = 0; i < c2.length(); i++)
 	mcar[i] = (c2[i] == 0 ? 0 : 1) ^ (h[i] == 0 ? 0 : 1);
+
+      std::stringstream stream2;
+
+      stream2 << ecar << mcar;
+      bytes = QByteArray
+	(stream2.str().c_str(), static_cast<int> (stream2.str().size()));
+      bytes = spoton_crypt::sha512Hash(bytes, &ok);
+
+      if(!ok)
+	throw std::runtime_error("spoton_crypt::sha512Hash() failure");
+
+      /*
+      ** Generate a key stream via PBKDF2 from SHA-512(e || mcar).
+      */
+
+      QByteArray keyStream1
+	(static_cast<int> (qCeil(static_cast<double> (m.length()) /
+				 CHAR_BIT)), 0);
+
+      if(gcry_kdf_derive(bytes.constData(),
+			 static_cast<size_t> (bytes.length()),
+			 GCRY_KDF_PBKDF2,
+			 gcry_md_map_name("sha512"),
+			 salt1.constData(),
+			 static_cast<size_t> (salt1.length()),
+			 1,
+			 static_cast<size_t> (keyStream1.length()),
+			 keyStream1.data()) != 0)
+	throw std::runtime_error("gcry_kdf_derive() failure");
+
+      NTL::vec_GF2 rcar;
+
+      rcar.SetLength(m.length());
+
+      for(long int i = 0, k = 0;
+	  i < static_cast<long int> (keyStream1.size()); i++)
+	{
+	  std::bitset<CHAR_BIT> b(keyStream1[static_cast<int> (i)]);
+
+	  for(long int j = 0; j < static_cast<long int> (b.size()) &&
+		k < rcar.length(); j++, k++)
+	    rcar[k] = b[static_cast<size_t> (j)];
+	}
+
+      if(c1 != (rcar * m_publicKey->Gcar() + ecar))
+	throw std::runtime_error("c1 is not equal to E(rcar, ecar)");
 
       memset(p, 0, plaintext_size);
 
