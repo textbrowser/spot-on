@@ -175,7 +175,10 @@ void spoton_chatwindow::slotSetIcons(void)
   QString iconSet(settings.value("gui/iconSet", "nouve").toString().
 		  toLower());
 
-  if(!(iconSet == "everaldo" || iconSet == "nouve" || iconSet == "nuvola"))
+  if(!(iconSet == "everaldo" ||
+       iconSet == "meego" ||
+       iconSet == "nouve" ||
+       iconSet == "nuvola"))
     iconSet = "nouve";
 
   ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));

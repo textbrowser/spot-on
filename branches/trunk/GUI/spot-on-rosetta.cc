@@ -203,7 +203,10 @@ void spoton_rosetta::slotSetIcons(void)
   QString iconSet(settings.value("gui/iconSet", "nuove").toString().
 		  toLower());
 
-  if(!(iconSet == "everaldo" || iconSet == "nouve" || iconSet == "nuvola"))
+  if(!(iconSet == "everaldo" ||
+       iconSet == "meego" ||
+       iconSet == "nouve" ||
+       iconSet == "nuvola"))
     iconSet = "nouve";
 
   ui.add->setIcon(QIcon(QString(":/%1/add.png").arg(iconSet)));

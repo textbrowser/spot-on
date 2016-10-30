@@ -2058,7 +2058,10 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   settings.insert("gui/hashType", str);
   str = settings.value("gui/iconSet", "nouve").toString();
 
-  if(!(str == "everaldo" || str == "nouve" || str == "nuvola"))
+  if(!(str == "everaldo" ||
+       str == "meego" ||
+       str == "nouve" ||
+       str == "nuvola"))
     str = "nouve";
 
   settings.insert("gui/iconSet", str);

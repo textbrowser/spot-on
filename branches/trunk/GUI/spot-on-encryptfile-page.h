@@ -25,41 +25,52 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _spoton_encryptfile_h_
-#define _spoton_encryptfile_h_
+#ifndef _spoton_encryptfile_page_h_
+#define _spoton_encryptfile_page_h_
 
-#include <QMainWindow>
+#include <QFuture>
 
-#include "ui_spot-on-encryptfile.h"
+#include "ui_spot-on-encryptfile-page.h"
 
-class QKeyEvent;
-
-class spoton_encryptfile: public QMainWindow
+class spoton_encryptfile_page: public QWidget
 {
   Q_OBJECT
 
  public:
-  spoton_encryptfile(void);
-  ~spoton_encryptfile();
+  spoton_encryptfile_page(QWidget *parent);
+  ~spoton_encryptfile_page();
+  static const int LENGTH_OF_NONTHREEFISH_INITIALIZATION_VECTOR = 16;
   bool occupied(void) const;
   void abort(void);
-  void show(QWidget *parent);
 
  private:
-  Ui_spoton_encryptfile ui;
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-  bool event(QEvent *event);
-#endif
-#endif
-  void keyPressEvent(QKeyEvent *event);
+  QFuture<void> m_future;
+  Ui_spoton_encryptfile_page ui;
+  bool m_occupied;
+  bool m_quit;
+  void decrypt(const QString &fileName,
+	       const QString &destination,
+	       const QList<QVariant> &credentials,
+	       const QString &modeOfOperation);
+  void encrypt(const bool sign,
+	       const QString &fileName,
+	       const QString &destination,
+	       const QList<QVariant> &credentials,
+	       const QString &modeOfOperation);
 
  private slots:
-  void slotClose(void);
-  void slotCloseTab(int index);
-  void slotNewPage(void);
-  void slotSetIcons(void);
-  void slotStatus(const QString &status);
+  void slotCancel(void);
+  void slotCipherTypeChanged(const QString &text);
+  void slotCompleted(const QString &error);
+  void slotCompleted(const int percentage);
+  void slotConvert(void);
+  void slotReset(void);
+  void slotSelect(void);
+
+ signals:
+  void completed(const QString &error);
+  void completed(const int percentage);
+  void status(const QString &status);
 };
 
 #endif
