@@ -986,16 +986,14 @@ void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
 
   QStringList list;
 
-  if(index == 0 || index == 3)
-    list << "3072"
-	 << "4096";
+  if(index == 0)
+    list << s_publicKeySizes["elgamal"];
   else if(index == 1)
-    list << "m11t51"
-	 << "m11t51-fujisaki-okamoto-a";
+    list << s_publicKeySizes["mceliece"];
+  else if(index == 2)
+    list << s_publicKeySizes["ntru"];
   else
-    list << "EES1087EP2"
-	 << "EES1171EP1"
-	 << "EES1499EP1";
+    list << s_publicKeySizes["rsa"];
 
   comboBox->clear();
   comboBox->addItems(list);

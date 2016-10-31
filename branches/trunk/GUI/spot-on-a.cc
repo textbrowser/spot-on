@@ -76,6 +76,7 @@ extern "C"
 ** Not pleasant! Please avoid this solution!
 */
 
+QHash<QString, QStringList> spoton::s_publicKeySizes;
 QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
 						      << 20000
                                                       << 25000
@@ -397,6 +398,27 @@ spoton::spoton(void):QMainWindow()
 {
   m_wizardUi = 0;
   s_gui = this;
+  s_publicKeySizes["dsa"] = QStringList() << "3072";
+  s_publicKeySizes["ecdsa"] = QStringList() << "224"
+					    << "256"
+					    << "384"
+					    << "521";
+  s_publicKeySizes["eddsa"] = QStringList() << "Ed25519";
+  s_publicKeySizes["elgamal"] = QStringList() << "3072"
+					      << "4096"
+					      << "7680"
+					      << "8192"
+					      << "15360";
+  s_publicKeySizes["mceliece"] = QStringList() << "m11t51"
+					       << "m11t51-fujisaki-okamoto-a";
+  s_publicKeySizes["ntru"] = QStringList() << "EES1087EP2"
+					   << "EES1171EP1"
+					   << "EES1499EP1";
+  s_publicKeySizes["rsa"] = QStringList() << "3072"
+					  << "4096"
+					  << "7680"
+					  << "8192"
+					  << "15360";
 
   {
 #ifdef Q_OS_MAC

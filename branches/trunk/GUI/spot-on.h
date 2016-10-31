@@ -424,6 +424,7 @@ class spoton: public QMainWindow
   QStandardItemModel *starbeamReceivedModel(void) const;
   Ui_spoton_mainwindow ui(void) const;
   spoton_crypt *urlCommonCrypt(void) const;
+  static QHash<QString, QStringList> s_publicKeySizes;
   static QList<QTableWidgetItem *> findItems(QTableWidget *table,
 					     const QString &text,
 					     const int column);

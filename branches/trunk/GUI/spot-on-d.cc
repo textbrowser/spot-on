@@ -1598,26 +1598,15 @@ void spoton::slotSignatureKeyTypeChanged(int index)
   QStringList list;
 
   if(index == 0)
-    list << "3072";
+    list << s_publicKeySizes["dsa"];
   else if(index == 1)
-    list << "224"
-	 << "256"
-	 << "384"
-	 << "521";
+    list << s_publicKeySizes["ecdsa"];
   else if(index == 2)
-    list << "Ed25519";
+    list << s_publicKeySizes["eddsa"];
   else if(index == 3)
-    list << "3072"
-	 << "4096"
-	 << "7680"
-	 << "8192"
-	 << "15360";
+    list << s_publicKeySizes["elgamal"];
   else
-    list << "3072"
-	 << "4096"
-	 << "7680"
-	 << "8192"
-	 << "15360";
+    list << s_publicKeySizes["rsa"];
 
   m_ui.signatureKeySize->clear();
   m_ui.signatureKeySize->addItems(list);
@@ -1920,19 +1909,14 @@ void spoton::slotEncryptionKeyTypeChanged(int index)
 {
   QStringList list;
 
-  if(index == 0 || index == 3)
-    list << "3072"
-	 << "4096"
-	 << "7680"
-	 << "8192"
-	 << "15360";
+  if(index == 0)
+    list << s_publicKeySizes["elgamal"];
   else if(index == 1)
-    list << "m11t51"
-	 << "m11t51-fujisaki-okamoto-a";
+    list << s_publicKeySizes["mceliece"];
+  else if(index == 2)
+    list << s_publicKeySizes["ntru"];
   else
-    list << "EES1087EP2"
-	 << "EES1171EP1"
-	 << "EES1499EP1";
+    list << s_publicKeySizes["rsa"];
 
   m_ui.encryptionKeySize->clear();
   m_ui.encryptionKeySize->addItems(list);
