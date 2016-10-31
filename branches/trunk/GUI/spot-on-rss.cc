@@ -213,10 +213,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 		  this,
 		  SLOT(slotCopyFeedLink(void)));
   menu->addSeparator();
-  menu->addAction(tr("Delete &all feeds."),
+  menu->addAction(tr("Delete &all RSS feeds."),
 		  this,
 		  SLOT(slotDeleteAllFeeds(void)));
-  menu->addAction(tr("Delete &selected feed."),
+  menu->addAction(tr("Delete &selected RSS feed."),
 		  this,
 		  SLOT(slotDeleteFeed(void)));
   menu->addSeparator();
@@ -224,7 +224,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 		  this,
 		  SLOT(slotPopulateFeeds(void)));
   menu->addSeparator();
-  menu->addAction(tr("&Schedule selected feed for update."),
+  menu->addAction(tr("&Schedule selected RSS feed for update."),
 		  this, SLOT(slotScheduleFeedUpdate(void)));
   m_ui.action_menu->setMenu(menu);
   connect(m_ui.action_menu,
@@ -1893,6 +1893,23 @@ void spoton_rss::slotDeleteAllFeeds(void)
 
 void spoton_rss::slotDeleteFeed(void)
 {
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to delete the selected RSS "
+		"feed?"));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
   QString oid("");
   QTableWidgetItem *item = 0;
   int row = m_ui.feeds->currentRow();
