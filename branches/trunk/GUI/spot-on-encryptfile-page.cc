@@ -337,16 +337,20 @@ void spoton_encryptfile_page::decrypt(const QString &fileName,
 	{
 	  sign = bytes.mid(0, 1).toInt();
 	  bytes.clear();
-	  bytes.resize
-	    (qMax(1024, 1024 * credentials.value(4).toInt()) +
-	     (credentials.value(0).toString() == "threefish" ? (32 + 32) :
-	      (LENGTH_OF_NONTHREEFISH_INITIALIZATION_VECTOR + 4)));
+
 	  /*
 	  ** 4 = length of the original buffer in bytes.
 	  ** For Threefish, we append an extra block (32 bytes). The
 	  ** extra block contains the length of the original buffer. Also,
 	  ** an initialization vector has a length of 32 bytes for Threefish.
 	  */
+
+	  bytes.resize
+	    (qMax(1024, 1024 * credentials.value(4).toInt()) +
+	     (credentials.value(0).toString() == "threefish" ? (32 + 32) :
+	      (static_cast<int> (spoton_crypt::
+				 ivLength(credentials.value(0).toString())) +
+	       4)));
 	}
       else
 	{

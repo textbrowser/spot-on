@@ -39,7 +39,6 @@ class spoton_encryptfile_page: public QWidget
  public:
   spoton_encryptfile_page(QWidget *parent);
   ~spoton_encryptfile_page();
-  static const int LENGTH_OF_NONTHREEFISH_INITIALIZATION_VECTOR = 16;
   bool occupied(void) const;
   void abort(void);
 

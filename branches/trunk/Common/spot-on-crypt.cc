@@ -1000,6 +1000,12 @@ QByteArray spoton_crypt::symmetricKey(void)
     return QByteArray();
 }
 
+size_t spoton_crypt::ivLength(const QString &cipherType)
+{
+  return gcry_cipher_get_algo_blklen
+    (gcry_cipher_map_name(cipherType.toLatin1().constData()));
+}
+
 bool spoton_crypt::setInitializationVector(QByteArray &bytes,
 					   const int algorithm,
 					   gcry_cipher_hd_t cipherHandle)

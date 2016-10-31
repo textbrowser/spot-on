@@ -125,6 +125,7 @@ class spoton_crypt
 							 ** output size.
 							 */
   static size_t cipherKeyLength(const QByteArray &cipherType);
+  static size_t ivLength(const QString &cipherType);
   static void generateMcElieceKeys(const QString &keySize,
 				   QByteArray &privateKey,
 				   QByteArray &publicKey,
