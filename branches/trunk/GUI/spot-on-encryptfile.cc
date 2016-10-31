@@ -32,6 +32,7 @@
 #include "spot-on-defines.h"
 #include "spot-on-encryptfile.h"
 #include "spot-on-encryptfile-page.h"
+#include "spot-on-utilities.h"
 
 spoton_encryptfile::spoton_encryptfile(void):QMainWindow()
 {
@@ -139,25 +140,7 @@ void spoton_encryptfile::show(QWidget *parent)
   showNormal();
   activateWindow();
   raise();
-
-  if(parent)
-    {
-      QPoint p(parent->pos());
-      int X = 0;
-      int Y = 0;
-
-      if(parent->width() >= width())
-	X = p.x() + (parent->width() - width()) / 2;
-      else
-	X = p.x() - (width() - parent->width()) / 2;
-
-      if(parent->height() >= height())
-	Y = p.y() + (parent->height() - height()) / 2;
-      else
-	Y = p.y() - (height() - parent->height()) / 2;
-
-      move(X, Y);
-    }
+  spoton_utilities::centerWidget(this, parent);
 }
 
 void spoton_encryptfile::slotClose(void)

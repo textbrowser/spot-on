@@ -37,6 +37,7 @@ extern "C"
 #if SPOTON_GOLDBUG == 0
 #include "spot-on-neighborstatistics.h"
 #endif
+#include "spot-on-utilities.h"
 #include "ui_spot-on-private-application-credentials.h"
 #if SPOTON_GOLDBUG == 0
 #include "ui_spot-on-stylesheet.h"
@@ -137,7 +138,7 @@ void spoton::slotShowNotificationsWindow(void)
   m_notificationsWindow->showNormal();
   m_notificationsWindow->activateWindow();
   m_notificationsWindow->raise();
-  centerWidget(m_notificationsWindow, this);
+  spoton_utilities::centerWidget(m_notificationsWindow, this);
 }
 
 QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
@@ -813,7 +814,7 @@ void spoton::slotShowAddParticipant(void)
   m_addParticipantWindow->showNormal();
   m_addParticipantWindow->activateWindow();
   m_addParticipantWindow->raise();
-  centerWidget(m_addParticipantWindow, this);
+  spoton_utilities::centerWidget(m_addParticipantWindow, this);
 #endif
 }
 
@@ -1309,7 +1310,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 #ifdef Q_OS_WIN32
       dialog.resize(dialog.sizeHint());
 #endif
-      centerWidget(&dialog, this);
+      spoton_utilities::centerWidget(&dialog, this);
 
       if(dialog.exec() == QDialog::Accepted)
 	{
@@ -1506,7 +1507,7 @@ void spoton::slotShowDocumentation(void)
   m_documentation->showNormal();
   m_documentation->activateWindow();
   m_documentation->raise();
-  centerWidget(m_documentation, this);
+  spoton_utilities::centerWidget(m_documentation, this);
 }
 
 void spoton::slotAfterFirstShow(void)
@@ -1717,11 +1718,11 @@ void spoton::slotShowNeighborStatistics(void)
       s->setObjectName(QString::number(oid));
     }
 
-  s->show();
+  s->show(); // Custom.
   s->showNormal();
   s->activateWindow();
   s->raise();
-  centerWidget(s, this);
+  spoton_utilities::centerWidget(s, this);
 #endif
 }
 

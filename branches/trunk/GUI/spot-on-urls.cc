@@ -35,6 +35,7 @@
 #include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-pageviewer.h"
+#include "spot-on-utilities.h"
 #include "ui_spot-on-postgresql-connect.h"
 
 void spoton::prepareUrlLabels(void)
@@ -1998,8 +1999,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       pageViewer->showNormal();
       pageViewer->activateWindow();
       pageViewer->raise();
+      spoton_utilities::centerWidget(pageViewer, this);
       QApplication::restoreOverrideCursor();
-      centerWidget(pageViewer, this);
       return;
     }
   else if(!scheme.startsWith("delete-"))

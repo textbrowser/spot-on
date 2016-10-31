@@ -25,11 +25,6 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "Common/spot-on-misc.h"
-#include "spot-on.h"
-#include "spot-on-chatwindow.h"
-#include "spot-on-defines.h"
-
 #include <QDateTime>
 #if QT_VERSION >= 0x050000
 #include <QMediaPlayer>
@@ -38,6 +33,12 @@
 #include <QScrollBar>
 #include <QSettings>
 #include <QStandardItemModel>
+
+#include "Common/spot-on-misc.h"
+#include "spot-on.h"
+#include "spot-on-chatwindow.h"
+#include "spot-on-defines.h"
+#include "spot-on-utilities.h"
 
 spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &id,
@@ -198,7 +199,7 @@ void spoton_chatwindow::closeEvent(QCloseEvent *event)
 
 void spoton_chatwindow::center(QWidget *parent)
 {
-  spoton::centerWidget(this, parent);
+  spoton_utilities::centerWidget(this, parent);
 }
 
 void spoton_chatwindow::slotSendMessage(void)

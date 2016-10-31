@@ -44,6 +44,7 @@
 #include "spot-on.h"
 #include "spot-on-pageviewer.h"
 #include "spot-on-rss.h"
+#include "spot-on-utilities.h"
 
 spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 {
@@ -432,7 +433,7 @@ spoton_crypt *spoton_rss::urlCommonCrypt(void) const
 
 void spoton_rss::center(QWidget *parent)
 {
-  spoton::centerWidget(this, parent);
+  spoton_utilities::centerWidget(this, parent);
 }
 
 void spoton_rss::closeEvent(QCloseEvent *event)
@@ -3121,6 +3122,6 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
   pageViewer->showNormal();
   pageViewer->activateWindow();
   pageViewer->raise();
+  spoton_utilities::centerWidget(pageViewer, this);
   QApplication::restoreOverrideCursor();
-  spoton::centerWidget(pageViewer, this);
 }

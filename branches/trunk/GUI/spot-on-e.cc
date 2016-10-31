@@ -39,6 +39,7 @@ extern "C"
 
 #include "spot-on.h"
 #include "spot-on-defines.h"
+#include "spot-on-utilities.h"
 #include "ui_spot-on-keyboard.h"
 
 static QStringList curl_protocols(void)
@@ -772,24 +773,11 @@ void spoton::slotSaveSharePrivateKeys(bool state)
 
 void spoton::slotShowOptions(void)
 {
-  QPoint p(pos());
-  int X = 0;
-  int Y = 0;
-
-  if(width() >= m_optionsWindow->width())
-    X = p.x() + (width() - m_optionsWindow->width()) / 2;
-  else
-    X = p.x() - (m_optionsWindow->width() - width()) / 2;
-
-  if(height() >= m_optionsWindow->height())
-    Y = p.y() + (height() - m_optionsWindow->height()) / 2;
-  else
-    Y = p.y() - (m_optionsWindow->height() - height()) / 2;
-
-  m_optionsWindow->move(X, Y);
-  m_optionsWindow->show();
+  m_optionsWindow->showNormal();
+  m_optionsWindow->activateWindow();
   m_optionsWindow->raise();
   m_optionsUi.icons->setFocus();
+  spoton_utilities::centerWidget(m_optionsWindow, this);
 }
 
 void spoton::slotSetIconSize(int index)

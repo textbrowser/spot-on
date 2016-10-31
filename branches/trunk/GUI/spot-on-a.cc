@@ -62,6 +62,7 @@ extern "C"
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetooth.h>
 #endif
+
 #include "Common/spot-on-threefish.h"
 #include "spot-on-defines.h"
 #include "spot-on-documentation.h"
