@@ -27,7 +27,6 @@
 
 #include "spot-on-external-address.h"
 
-#include <QNetworkReply>
 #include <QNetworkRequest>
 
 spoton_external_address::spoton_external_address(QObject *parent):

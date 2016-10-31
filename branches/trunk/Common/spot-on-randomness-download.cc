@@ -25,9 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "spot-on-external-address.h"
+#include "spot-on-randomness-download.h"
 
-#include <QNetworkReply>
 #include <QNetworkRequest>
 
 spoton_randomness_download::spoton_randomness_download(QObject *parent):
