@@ -3533,9 +3533,7 @@ void spoton::slotAddListener(void)
     QMessageBox::critical(this, tr("%1: Error").
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred while attempting "
-			     "to add the specified listener. "
-			     "Please enable logging via the Log Viewer "
-			     "and try again.").arg(error));
+			     "to add the specified listener.").arg(error));
 }
 
 void spoton::slotAddNeighbor(void)
@@ -3877,9 +3875,7 @@ void spoton::slotAddNeighbor(void)
     QMessageBox::critical(this, tr("%1: Error").
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred while attempting "
-			     "to add the specified neighbor. "
-			     "Please enable logging via the Log Viewer "
-			     "and try again.").arg(error));
+			     "to add the specified neighbor.").arg(error));
 }
 
 void spoton::slotHideOfflineParticipants(bool state)
@@ -7327,6 +7323,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	 this, SLOT(slotResetPrivateApplicationInformation(void)));
       action->setProperty("type", "listeners");
       menu.addSeparator();
+      menu.addAction(tr("&Prepare new one-year certificate."),
+		     this, SLOT(slotGenerateOneYearListenerCertificate(void)));
       menu.addAction(tr("Set &SSL Control String..."),
 		     this, SLOT(slotSetListenerSSLControlString(void)));
       menu.exec(m_ui.listeners->mapToGlobal(point));

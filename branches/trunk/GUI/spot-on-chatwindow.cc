@@ -702,9 +702,17 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
 	if(ok)
 	  ok = query.exec();
+
+	if(query.lastError().isValid())
+	  error = query.lastError().text().trimmed();
       }
     else
-      ok = false;
+      {
+	ok = false;
+
+	if(db.lastError().isValid())
+	  error = db.lastError().text().trimmed();
+      }
 
     db.close();
   }
@@ -713,9 +721,14 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
   if(!ok)
     {
-      error = tr("An error occurred while attempting to "
-		 "save the StarBeam data. Please enable "
-		 "logging via the Log Viewer and try again.");
+      if(error.isEmpty())
+	error = tr("An error occurred while attempting to "
+		   "save the StarBeam data. Please enable "
+		   "logging via the Log Viewer and try again.");
+      else
+	error = tr("An error (%1) occurred while attempting to "
+		   "save the StarBeam data.").arg(error);
+
       showError(error);
     }
 }

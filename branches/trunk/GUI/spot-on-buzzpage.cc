@@ -617,6 +617,7 @@ void spoton_buzzpage::slotSave(void)
   spoton::prepareDatabasesFromUI();
 
   QString connectionName("");
+  QString error("");
   bool ok = true;
 
   {
@@ -656,9 +657,17 @@ void spoton_buzzpage::slotSave(void)
 
 	if(ok)
 	  ok = query.exec();
+
+	if(query.lastError().isValid())
+	  error = query.lastError().text();
       }
     else
-      ok = false;
+      {
+	ok = false;
+
+	if(db.lastError().isValid())
+	  error = db.lastError().text();
+      }
 
     db.close();
   }
@@ -666,11 +675,19 @@ void spoton_buzzpage::slotSave(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting to "
-			     "save the channel data. Please enable "
-			     "logging via the Log Viewer and try again."));
+    {
+      if(error.isEmpty())
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error occurred while attempting to "
+				 "save the channel data. Please enable "
+				 "logging via the Log Viewer and try again."));
+      else
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error (%1) occurred while attempting to "
+				 "save the channel data.").arg(error));
+    }
   else
     emit channelSaved();
 }
@@ -690,6 +707,7 @@ void spoton_buzzpage::slotRemove(void)
     }
 
   QString connectionName("");
+  QString error("");
   bool ok = true;
 
   {
@@ -725,9 +743,17 @@ void spoton_buzzpage::slotRemove(void)
 
 	if(ok)
 	  ok = query.exec();
+
+	if(query.lastError().isValid())
+	  error = query.lastError().text();
       }
     else
-      ok = false;
+      {
+	ok = false;
+
+	if(db.lastError().isValid())
+	  error = db.lastError().text();
+      }
 
     db.close();
   }
@@ -735,11 +761,19 @@ void spoton_buzzpage::slotRemove(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting to "
-			     "remove the channel data. Please enable "
-			     "logging via the Log Viewer and try again."));
+    {
+      if(error.isEmpty())
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error occurred while attempting to "
+				 "remove the channel data. Please enable "
+				 "logging via the Log Viewer and try again."));
+      else
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error (%1) occurred while attempting to "
+				 "remove the channel data.").arg(error));
+    }
   else
     emit channelSaved();
 }

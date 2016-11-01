@@ -1595,9 +1595,7 @@ void spoton::slotAddDistiller(void)
     QMessageBox::critical(this, tr("%1: Error").
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred while attempting "
-			     "to add the specified URL domain. "
-			     "Please enable logging via the Log Viewer "
-			     "and try again.").arg(error));
+			     "to add the specified URL domain.").arg(error));
 }
 
 void spoton::populateUrlDistillers(void)

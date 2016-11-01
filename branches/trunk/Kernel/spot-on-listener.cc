@@ -477,7 +477,10 @@ void spoton_listener::slotTimeout(void)
 		      "lane_width, "
 		      "passthrough, "
 		      "source_of_randomness, "
-		      "private_application_credentials "
+		      "private_application_credentials, "
+		      "certificate, "
+		      "private_key, "
+		      "public_key "
 		      "FROM listeners WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -527,17 +530,27 @@ void spoton_listener::slotTimeout(void)
 
 		if(s_crypt)
 		  {
-		    echoMode = s_crypt->decryptedAfterAuthenticated
-		      (QByteArray::
-		       fromBase64(query.
-				  value(2).
-				  toByteArray()),
-		       &ok).
-		      constData();
+		    m_certificate = s_crypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(12).toByteArray()),
+		       &ok);
+
+		    if(ok)
+		      echoMode = s_crypt->decryptedAfterAuthenticated
+			(QByteArray::
+			 fromBase64(query.
+				    value(2).
+				    toByteArray()),
+			 &ok).
+			constData();
 
 		    if(ok)
 		      if(echoMode == "full" || echoMode == "half")
 			m_echoMode = echoMode;
+
+		    if(ok)
+		      m_privateKey = s_crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(13).toByteArray()),
+			 &ok);
 
 		    if(query.isNull(11))
 		      m_privateApplicationCredentials.clear();
@@ -547,6 +560,11 @@ void spoton_listener::slotTimeout(void)
 						    fromBase64(query.value(11).
 							       toByteArray()),
 						    &ok);
+
+		    if(ok)
+		      m_publicKey = s_crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(14).toByteArray()),
+			 &ok);
 		  }
 
 		if(status == "offline")

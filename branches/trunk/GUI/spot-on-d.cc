@@ -906,6 +906,7 @@ void spoton::slotAddMagnet(void)
 	}
 
       QString connectionName("");
+      QString error("");
       bool ok = true;
 
       {
@@ -943,9 +944,17 @@ void spoton::slotAddMagnet(void)
 
 	    if(ok)
 	      ok = query.exec();
+
+	    if(query.lastError().isValid())
+	      error = query.lastError().text().trimmed();
 	  }
 	else
-	  ok = false;
+	  {
+	    ok = false;
+
+	    if(db.lastError().isValid())
+	      error = db.lastError().text().trimmed();
+	  }
 
 	db.close();
       }
@@ -953,11 +962,21 @@ void spoton::slotAddMagnet(void)
       QSqlDatabase::removeDatabase(connectionName);
 
       if(!ok)
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("An error occurred while attempting to "
-				 "save the channel data. Please enable "
-				 "logging via the Log Viewer and try again."));
+	{
+	  if(error.isEmpty())
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error occurred while attempting to "
+				     "save the channel data. Please enable "
+				     "logging via the Log Viewer and try "
+				     "again."));
+	  else
+	    QMessageBox::critical
+	      (this,  tr("%1: Error").
+	       arg(SPOTON_APPLICATION_NAME),
+	       tr("An error (%1) occurred while attempting to "
+		  "save the channel data.").arg(error));
+	}
       else
 	slotPopulateBuzzFavorites();
     }
@@ -2582,13 +2601,10 @@ void spoton::slotSetListenerSSLControlString(void)
 	transport = item->text().toUpper();
     }
 
-  if(oid.isEmpty())
+  if(keySize <= 0 || oid.isEmpty() || transport != "TCP")
     return;
 
   bool ok = true;
-
-  if(keySize <= 0 || transport != "TCP")
-    sslCS = "N/A";
 
   sslCS = QInputDialog::getText
     (this, tr("%1: SSL Control String").arg(SPOTON_APPLICATION_NAME),

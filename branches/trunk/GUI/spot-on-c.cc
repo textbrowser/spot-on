@@ -3092,6 +3092,9 @@ void spoton::prepareContextMenuMirrors(void)
 	(tr("&Reset Private Application Information"),
 	 this, SLOT(slotResetPrivateApplicationInformation(void)));
       menu->addSeparator();
+      menu->addAction
+	(tr("&Prepare new one-year certificate."),
+	 this, SLOT(slotGenerateOneYearListenerCertificate(void)));
       menu->addAction(tr("Set &SSL Control String..."),
 		      this, SLOT(slotSetListenerSSLControlString(void)));
       m_ui.listenersActionMenu->setMenu(menu);

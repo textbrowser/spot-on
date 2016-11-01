@@ -1887,3 +1887,146 @@ void spoton::slotResetAllStyleSheets(void)
   QApplication::restoreOverrideCursor();
 #endif
 }
+
+void spoton::slotGenerateOneYearListenerCertificate(void)
+{
+  QString oid("");
+  int keySize = 0;
+  int row = m_ui.listeners->currentRow();
+
+  if(row < 0)
+    return;
+
+  QTableWidgetItem *item = 0;
+
+  item = m_ui.listeners->item(row, 2); // Bluetooth Flags / SSL Key Size
+
+  if(item)
+    keySize = item->text().toInt();
+  else
+    return;
+
+  if(keySize <= 0)
+    return;
+
+  item = m_ui.listeners->item(row, 15); // Transport
+
+  if(!(item && item->text().toLower().trimmed() == "tcp"))
+    return;
+
+  item = m_ui.listeners->item(row, m_ui.listeners->columnCount() - 1); // OID
+
+  if(item)
+    oid = item->text();
+  else
+    return;
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
+
+  QByteArray certificate;
+  QByteArray privateKey;
+  QByteArray publicKey;
+  QHostAddress address;
+  QString error("");
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_sb.status->setText
+    (tr("Generating %1-bit SSL/TLS data. Please be patient.").
+     arg(m_ui.listenerKeySize->currentText()));
+  m_sb.status->repaint();
+  spoton_crypt::generateSslKeys
+    (keySize,
+     certificate,
+     privateKey,
+     publicKey,
+     address,
+     60L * 60L * 24L * 365L,
+     error);
+  m_sb.status->clear();
+  QApplication::restoreOverrideCursor();
+
+  if(!error.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error (%1) occurred while attempting "
+			       "to generate a new certificate.").
+			    arg(error));
+      return;
+    }
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE listeners SET certificate = ?, "
+		      "private_key = ?, "
+		      "public_key = ? "
+		      "WHERE OID = ?");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(certificate, &ok).
+	   toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->encryptedThenHashed(privateKey, &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->encryptedThenHashed(publicKey, &ok).
+	     toBase64());
+
+	query.bindValue(3, oid);
+
+	if(ok)
+	  ok = query.exec();
+
+	if(query.lastError().isValid())
+	  error = query.lastError().text().trimmed();
+      }
+    else
+      {
+	ok = false;
+
+	if(db.lastError().isValid())
+	  error = db.lastError().text();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    {
+    }
+  else if(error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("The generated data could not be recorded. "
+			     "Please enable logging via the Log Viewer "
+			     "and try again."));
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error (%1) occurred while attempting "
+			     "to record the generated data.").arg(error));
+}

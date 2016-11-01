@@ -779,6 +779,7 @@ class spoton: public QMainWindow
   void slotGenerateEtpKeys(int index);
   void slotGenerateGeminiInChat(void);
   void slotGenerateNova(void);
+  void slotGenerateOneYearListenerCertificate(void);
   void slotHideOfflineParticipants(bool state);
   void slotImpersonate(bool state);
   void slotImportNeighbors(void);
