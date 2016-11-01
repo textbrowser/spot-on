@@ -1890,6 +1890,7 @@ void spoton::slotResetAllStyleSheets(void)
 
 void spoton::slotGenerateOneYearListenerCertificate(void)
 {
+  QHostAddress address;
   QString oid("");
   int keySize = 0;
   int row = m_ui.listeners->currentRow();
@@ -1908,6 +1909,19 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
 
   if(keySize <= 0)
     return;
+
+  /*
+  ** It's impossible to determine if the user wishes to bundle the listener's
+  ** external address into the new certificate.
+  ** We'll assume that they do.
+  */
+
+  item = m_ui.listeners->item(row, 7); // External Address
+
+  if(!item)
+    return;
+  else
+    address = QHostAddress(item->text());
 
   item = m_ui.listeners->item(row, 15); // Transport
 
@@ -1934,7 +1948,6 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
   QByteArray certificate;
   QByteArray privateKey;
   QByteArray publicKey;
-  QHostAddress address;
   QString error("");
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
