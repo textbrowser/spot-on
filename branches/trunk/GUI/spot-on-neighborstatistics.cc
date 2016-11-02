@@ -291,10 +291,18 @@ void spoton_neighborstatistics::slotFinished(void)
 {
   if(m_future.results().value(0).length() > 0)
     {
+      QPair<int, int> s(m_ui.textBrowser->textCursor().selectionStart(),
+			m_ui.textBrowser->textCursor().selectionEnd());
       int h = m_ui.textBrowser->horizontalScrollBar()->value();
       int v = m_ui.textBrowser->verticalScrollBar()->value();
 
       m_ui.textBrowser->setHtml(m_future.results().value(0));
+
+      QTextCursor cursor(m_ui.textBrowser->textCursor());
+
+      cursor.setPosition(s.first);
+      cursor.setPosition(s.second, QTextCursor::KeepAnchor);
+      m_ui.textBrowser->setTextCursor(cursor);
       m_ui.textBrowser->horizontalScrollBar()->setValue(h);
       m_ui.textBrowser->verticalScrollBar()->setValue(v);
     }

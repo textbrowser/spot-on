@@ -9480,10 +9480,18 @@ void spoton::slotNeighborSelected(void)
 
   if(item)
     {
+      QPair<int, int> s(m_ui.neighborSummary->textCursor().selectionStart(),
+			m_ui.neighborSummary->textCursor().selectionEnd());
       int h = 0;
       int v = 0;
 
       m_ui.neighborSummary->setText(neighborSummary(item, h, v));
+
+      QTextCursor cursor(m_ui.neighborSummary->textCursor());
+
+      cursor.setPosition(s.first);
+      cursor.setPosition(s.second, QTextCursor::KeepAnchor);
+      m_ui.neighborSummary->setTextCursor(cursor);
       m_ui.neighborSummary->horizontalScrollBar()->setValue(h);
       m_ui.neighborSummary->verticalScrollBar()->setValue(v);
     }
