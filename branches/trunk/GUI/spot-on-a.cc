@@ -9844,8 +9844,7 @@ void spoton::slotPopulateBuzzFavorites(void)
 	  m_ui.favorites->addItem(map.keys().at(i));
 	  m_ui.favorites->setItemData(i, map.value(map.keys().at(i)));
 
-	  QAction *action = new QAction
-	    (map.keys().at(i), this);
+	  QAction *action = new QAction(map.keys().at(i), this);
 
 	  action->setData(map.value(map.keys().at(i)));
 	  connect(action,

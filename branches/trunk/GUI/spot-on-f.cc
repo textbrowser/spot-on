@@ -32,6 +32,9 @@
 #include "spot-on.h"
 #include "spot-on-pacify.h"
 #include "spot-on-pageviewer.h"
+#if SPOTON_GOLDBUG == 0
+#include "spot-on-neighborstatistics.h"
+#endif
 #include "spot-on-utilities.h"
 #include "ui_spot-on-forward-secrecy-algorithms-selection.h"
 #include "ui_spot-on-unlock.h"
@@ -1386,6 +1389,14 @@ void spoton::slotLock(void)
 
   foreach(QWidget *widget, QApplication::topLevelWidgets())
     {
+#if SPOTON_GOLDBUG == 0
+      spoton_neighborstatistics *neighborStatistics = qobject_cast
+	<spoton_neighborstatistics *> (widget);
+
+      if(neighborStatistics)
+	neighborStatistics->close();
+#endif
+
       spoton_pageviewer *pageViewer = qobject_cast<spoton_pageviewer *>
 	(widget);
 

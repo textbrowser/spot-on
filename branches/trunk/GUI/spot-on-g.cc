@@ -1714,8 +1714,12 @@ void spoton::slotShowNeighborStatistics(void)
 
   if(!s)
     {
-      s = new spoton_neighborstatistics(this);
+      s = new spoton_neighborstatistics(0);
       s->setObjectName(QString::number(oid));
+      connect(QCoreApplication::instance(),
+	      SIGNAL(aboutToQuit(void)),
+	      s,
+	      SLOT(deleteLater(void)));
     }
 
   s->show(); // Custom.
