@@ -254,8 +254,10 @@ class spoton_misc
  private:
   static QAtomicInt s_enableLog;
   static QReadWriteLock s_dbMutex;
+  static QReadWriteLock s_logMutex;
   static quint64 s_dbId;
   spoton_misc(void);
+  static void logErrorThread(const QString &error);
 };
 
 #endif

@@ -74,6 +74,7 @@ class spoton_common
 							   ** than the
 							   ** default.
 							   */
+  static const int LOG_FILE_MAXIMUM_SIZE = 8 * 1024 * 1024;
   static const int MAIL_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
