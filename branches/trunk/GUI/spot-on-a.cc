@@ -3116,10 +3116,22 @@ spoton::spoton(void):QMainWindow()
   update();
 
   if(!QSqlDatabase::isDriverAvailable("QSQLITE"))
-    QMessageBox::critical
-      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-       tr("The SQLite database driver QSQLITE is not available. "
-	  "This is a fatal flaw."));
+    {
+      QFileInfo fileInfo("qt.conf");
+      QString str("");
+
+      if(fileInfo.isReadable() && fileInfo.size() > 0)
+	str = tr("The SQLite database driver is not available. "
+		 "The file qt.conf is present in %1's "
+		 "current working directory. Perhaps a conflict "
+		 "exists. Please resolve!").arg(SPOTON_APPLICATION_NAME);
+      else
+	str = tr("The SQLite database driver is not available. "
+		 "Please resolve!");
+
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), str);
+    }
   else
     {
       QTimer::singleShot(1500, this, SLOT(slotAfterFirstShow(void)));
