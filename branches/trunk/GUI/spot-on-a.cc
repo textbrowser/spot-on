@@ -10094,15 +10094,9 @@ void spoton::slotBuzzTools(int index)
   else if(index == 4)
     removeFavorite(true);
 
-  disconnect(m_ui.buzzTools,
-	     SIGNAL(activated(int)),
-	     this,
-	     SLOT(slotFavoritesActivated(int)));
+  m_ui.buzzTools->blockSignals(true);
   m_ui.buzzTools->setCurrentIndex(0);
-  connect(m_ui.buzzTools,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotFavoritesActivated(int)));
+  m_ui.buzzTools->blockSignals(false);
 }
 
 void spoton::slotAbout(void)
