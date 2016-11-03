@@ -502,12 +502,12 @@ background-position: top center; } </string>
                 </item>
                 <item>
                  <property name="text">
-                  <string>Remove</string>
+                  <string>Remove Bookmark</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>Remove All</string>
+                  <string>Remove All Bookmarks</string>
                  </property>
                 </item>
                </widget>
@@ -9351,8 +9351,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>616</width>
-             <height>685</height>
+             <width>432</width>
+             <height>386</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
