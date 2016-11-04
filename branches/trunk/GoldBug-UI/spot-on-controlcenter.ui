@@ -497,7 +497,7 @@ background-position: top center; } </string>
                 </item>
                 <item>
                  <property name="text">
-                  <string>Magnetize</string>
+                  <string>Magnetize Bookmark</string>
                  </property>
                 </item>
                 <item>
