@@ -43,7 +43,8 @@ HEADERS		= Common\\spot-on-external-address.h \
 		  GUI\\spot-on-textbrowser.h \
 		  GUI\\spot-on-textedit.h
 
-RESOURCES	= Icons\\icons.qrc \
+RESOURCES	= Documentation\\documentation.qrc \
+		  Icons\\icons.qrc \
                   Translations\\translations.qrc
 
 SOURCES		= Common\\spot-on-crypt.cc \
