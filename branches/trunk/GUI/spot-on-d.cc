@@ -2022,6 +2022,8 @@ void spoton::slotResendMail(void)
   if(list.isEmpty())
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
 
   {
@@ -2062,6 +2064,7 @@ void spoton::slotResendMail(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
   slotRefreshMail();
 }
 
