@@ -3881,8 +3881,7 @@ void spoton::populateMail(void)
 			      "f.receiver_sender, "      // 1
 			      "f.status, "               // 2
 			      "f.subject, "              // 3
-			      "(SELECT COUNT(*) FROM folders_attachment a "
-			      "WHERE a.folders_oid = f.OID), "
+			      "COUNT(a.OID), "           // 4
 			      "f.goldbug, "              // 5
 			      "f.message, "              // 6
 			      "f.message_code, "         // 7
@@ -3890,8 +3889,11 @@ void spoton::populateMail(void)
 			      "f.hash, "                 // 9
 			      "f.signature, "            // 10
 			      "f.OID "                   // 11
-			      "FROM folders f WHERE "
-			      "f.folder_index = %1").
+			      "FROM folders f "
+			      "LEFT JOIN folders_attachment a "
+			      "ON a.folders_oid = f.OID "
+			      "WHERE f.folder_index = %1 "
+			      "GROUP BY f.OID").
 		      arg(m_ui.folder->currentIndex())))
 	  {
 	    int row = 0;
@@ -4406,6 +4408,8 @@ void spoton::slotDeleteMail(void)
   if(list.isEmpty())
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
 
   {
@@ -4490,6 +4494,7 @@ void spoton::slotDeleteMail(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
   slotRefreshMail();
 }
 

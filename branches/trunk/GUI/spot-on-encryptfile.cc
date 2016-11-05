@@ -65,6 +65,7 @@ spoton_encryptfile::spoton_encryptfile(void):QMainWindow()
      "image: none;"
      "}"
      );
+  slotNewPage();
 }
 
 spoton_encryptfile::~spoton_encryptfile()
