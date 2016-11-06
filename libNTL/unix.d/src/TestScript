@@ -1,8 +1,17 @@
+MAKE_PROG="$1"
+
+echo
+echo "---------------------------------"
+echo "making ZZTest"
+$MAKE_PROG ZZTest
+echo "running ZZTest"
+./ZZTest
+sh RemoveProg ZZTest
 
 echo
 echo "---------------------------------"
 echo "making CanZassTest"
-make CanZassTest
+$MAKE_PROG CanZassTest
 echo "running CanZassTest"
 ./CanZassTest < CanZassTestIn > XXX
 sh RemoveProg CanZassTest
@@ -16,7 +25,7 @@ fi
 echo
 echo "---------------------------------"
 echo "making BerlekampTest"
-make BerlekampTest
+$MAKE_PROG BerlekampTest
 echo "running BerlekampTest"
 ./BerlekampTest < BerlekampTestIn > XXX
 sh RemoveProg BerlekampTest
@@ -31,7 +40,7 @@ fi
 echo
 echo "---------------------------------"
 echo "making ZZXFacTest"
-make ZZXFacTest
+$MAKE_PROG ZZXFacTest
 echo "running ZZXFacTest"
 ./ZZXFacTest < ZZXFacTestIn > XXX
 sh RemoveProg ZZXFacTest
@@ -45,7 +54,7 @@ fi
 echo
 echo "---------------------------------"
 echo "making MoreFacTest"
-make MoreFacTest
+$MAKE_PROG MoreFacTest
 echo "running MoreFacTest"
 ./MoreFacTest < MoreFacTestIn 
 sh RemoveProg MoreFacTest
@@ -53,7 +62,7 @@ sh RemoveProg MoreFacTest
 echo
 echo "---------------------------------"
 echo "making GF2XTest"
-make GF2XTest
+$MAKE_PROG GF2XTest
 echo "running GF2XTest"
 ./GF2XTest
 sh RemoveProg GF2XTest
@@ -61,7 +70,7 @@ sh RemoveProg GF2XTest
 echo
 echo "---------------------------------"
 echo "making GF2EXTest"
-make GF2EXTest
+$MAKE_PROG GF2EXTest
 echo "running GF2EXTest"
 ./GF2EXTest
 sh RemoveProg GF2EXTest
@@ -70,7 +79,7 @@ sh RemoveProg GF2EXTest
 echo
 echo "---------------------------------"
 echo "making MatrixTest"
-make MatrixTest
+$MAKE_PROG MatrixTest
 echo "running MatrixTest"
 ./MatrixTest < MatrixTestIn > XXX
 sh RemoveProg MatrixTest
@@ -84,7 +93,7 @@ fi
 echo
 echo "---------------------------------"
 echo "making mat_lzz_pTest"
-make mat_lzz_pTest
+$MAKE_PROG mat_lzz_pTest
 echo "running mat_lzz_pTest"
 ./mat_lzz_pTest 
 sh RemoveProg mat_lzz_pTest
@@ -93,7 +102,7 @@ sh RemoveProg mat_lzz_pTest
 echo
 echo "---------------------------------"
 echo "making CharPolyTest"
-make CharPolyTest
+$MAKE_PROG CharPolyTest
 echo "running CharPolyTest"
 ./CharPolyTest < CharPolyTestIn > XXX
 sh RemoveProg CharPolyTest
@@ -107,7 +116,7 @@ fi
 echo
 echo "---------------------------------"
 echo "making BitMatTest"
-make BitMatTest
+$MAKE_PROG BitMatTest
 echo "running BitMatTest"
 ./BitMatTest
 sh RemoveProg BitMatTest
@@ -116,7 +125,7 @@ sh RemoveProg BitMatTest
 echo
 echo "---------------------------------"
 echo "making RRTest"
-make RRTest
+$MAKE_PROG RRTest
 echo "running RRTest"
 ./RRTest < RRTestIn > XXX
 sh RemoveProg RRTest
@@ -130,7 +139,7 @@ fi
 echo
 echo "---------------------------------"
 echo "making QuadTest"
-make QuadTest
+$MAKE_PROG QuadTest
 echo "running QuadTest"
 ./QuadTest < QuadTestIn > XXX
 sh RemoveProg QuadTest
@@ -145,7 +154,7 @@ fi
 echo
 echo "---------------------------------"
 echo "making LLLTest"
-make LLLTest
+$MAKE_PROG LLLTest
 echo "running LLLTest"
 ./LLLTest < LLLTestIn > XXX
 sh RemoveProg LLLTest
@@ -159,7 +168,7 @@ fi
 echo
 echo "---------------------------------"
 echo "making subset"
-make subset
+$MAKE_PROG subset
 echo "subset 40 40 20 10 999999 f"
 ./subset <<here
   40 40 20 10 999999 f
@@ -175,7 +184,7 @@ sh RemoveProg subset
 echo
 echo "---------------------------------"
 echo "making ZZ_pEXTest"
-make ZZ_pEXTest
+$MAKE_PROG ZZ_pEXTest
 echo "running ZZ_pEXTest"
 ./ZZ_pEXTest 
 sh RemoveProg ZZ_pEXTest
@@ -184,7 +193,7 @@ sh RemoveProg ZZ_pEXTest
 echo
 echo "---------------------------------"
 echo "making lzz_pEXTest"
-make lzz_pEXTest
+$MAKE_PROG lzz_pEXTest
 echo "running lzz_pEXTest"
 ./lzz_pEXTest 
 sh RemoveProg lzz_pEXTest
@@ -193,7 +202,7 @@ sh RemoveProg lzz_pEXTest
 echo
 echo "---------------------------------"
 echo "making ThreadTest"
-make ThreadTest
+$MAKE_PROG ThreadTest
 echo "running ThreadTest"
 ./ThreadTest 
 sh RemoveProg ThreadTest

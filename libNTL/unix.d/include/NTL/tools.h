@@ -419,7 +419,7 @@ inline void ForceToMem(double *p) { _ntl_ForceToMem(p); }
 
 #else
 
-inline void ForceToMem(double *p) {(void) p; }
+inline void ForceToMem(double *p) {(void)p; }
 
 #endif
 
@@ -457,8 +457,6 @@ void PrintTime(NTL_SNS ostream& s, double t);
 // semantics.
 
 // A call to Deleter::apply should free the pointed-to storage
-// and set the pointer itself to zero, so apply should
-// take an argument that is a reference to a T*.
 
 template<class T, class Deleter>
 class WrappedPtr {
@@ -481,7 +479,7 @@ public:
    const raw_ptr* operator&() const { return &rep; }
    raw_ptr* operator&() { return &rep; }
 
-   void kill() { Deleter::apply(rep); }
+   void kill() { Deleter::apply(rep); rep = 0; }
 
    void swap(WrappedPtr& other) { _ntl_swap(rep, other.rep); }
 
@@ -818,6 +816,9 @@ ll_add(ll_type& x, unsigned long a)
 // an external symbol.  In fact, NTL currently never calls 
 // this with shamt=0, so it is all rather academic...but I want to
 // keep this general for future use.
+
+// NOTE: this implementation assumes that shamt is in the range 
+// 0..NTL_BITS_PER_LONG-1
 template<long shamt>
 static inline unsigned long
 ll_rshift_get_lo(ll_type x)
@@ -895,6 +896,7 @@ ll_add(ll_type& x, unsigned long a)
    x += a;
 }
 
+// NOTE: shamt must be in the range 0..NTL_BITS_PER_LONG-1
 template<long shamt>
 static inline unsigned long
 ll_rshift_get_lo(const ll_type& x)
@@ -925,8 +927,17 @@ ll_init(ll_type& x, unsigned long a)
 #endif
 
 
+static inline unsigned long 
+ll_mul_hi(unsigned long a, unsigned long b)
+{
+   ll_type x;
+   ll_mul(x, a, b);
+   return ll_get_hi(x);
+} 
+
 
 #endif
+
 
 
 

@@ -150,6 +150,9 @@ public:
 };
 
 
+// NOTE: LazyTable's are non-relocatable
+
+
 NTL_CLOSE_NNS
 
 #endif

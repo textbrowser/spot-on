@@ -54,6 +54,9 @@ union _ntl_AlignedVectorHeader {
 NTL_OPEN_NNS
 
   
+
+
+
 template<class T>
 void BlockDestroy(T* p, long n)  
 {  
@@ -112,18 +115,30 @@ void BlockConstructFromObj(T* p, long n, const T& q)
    guard.relax();
 }  
 
+// experimental stuff to implement Vec<T> for non-relocatable T
+// Right now, it is not used anywhere
+
+
+struct RelocatableTypeTag { };
+struct NotRelocatableTypeTag { };
+
+template<class T>
+RelocatableTypeTag IsRelocatableType(T*) { return RelocatableTypeTag(); }
 
 
 template<class T>
 class Vec {  
 public:  
 
+   static bool relocatable(RelocatableTypeTag) { return true; }
+   static bool relocatable(NotRelocatableTypeTag) { return false; }
+   static bool relocatable() { return relocatable(IsRelocatableType((T*)0)); }
+
    class _vec_deleter {
    public:
-      static void apply(T*& p) { 
+      static void apply(T* p) { 
          if (p)  {
             NTL_SNS free(((char *) p) - sizeof(_ntl_AlignedVectorHeader));
-            p = 0;
          }
       }
    };
@@ -135,9 +150,20 @@ public:
 
    Vec(INIT_SIZE_TYPE, long n) { SetLength(n); }  
    Vec(INIT_SIZE_TYPE, long n, const T& a) { SetLength(n, a); }  
-   Vec(const Vec<T>& a) { *this = a; }     
+
+   // the following copy constructor does not rely on
+   // the assignment operator
+   Vec(const Vec<T>& a)  
+   {  
+      long src_len = a.length();
+      const T *src = a.elts();
+      AllocateTo(src_len);
+      Init(src_len, src);
+      AdjustLength(src_len);
+   }     
 
    Vec<T>& operator=(const Vec<T>& a);  
+
    ~Vec();  
    void kill(); 
   
@@ -297,6 +323,9 @@ private:
    void AdjustAlloc(long n) { if (_vec__rep) NTL_VEC_HEAD(_vec__rep)->alloc = n; }
    void AdjustMaxLength(long n) { if (_vec__rep) NTL_VEC_HEAD(_vec__rep)->init = n; }
 
+   void ReAllocate(long n, RelocatableTypeTag);
+   void ReAllocate(long n, NotRelocatableTypeTag);
+
    void AllocateTo(long n); // reserves space for n items
    void Init(long n); // make sure first n entries are initialized
    void Init(long n, const T* src); // same, but use src
@@ -375,6 +404,41 @@ long Vec<T>::position1(const T& a) const
 
 #endif
 
+template<class T>
+void Vec<T>::ReAllocate(long m, RelocatableTypeTag)   
+{
+   char *p = ((char *) _vec__rep.rep) - sizeof(_ntl_AlignedVectorHeader); 
+   p = (char *) NTL_SNS_REALLOC(p, m, sizeof(T), sizeof(_ntl_AlignedVectorHeader)); 
+   if (!p) {  
+      MemoryError();  
+   }  
+   _vec__rep = (T *) (p + sizeof(_ntl_AlignedVectorHeader)); 
+   NTL_VEC_HEAD(_vec__rep)->alloc = m;  
+}
+
+template<class T>
+void Vec<T>::ReAllocate(long m, NotRelocatableTypeTag)   
+{
+   Vec<T> tmp;
+   long src_len = length();
+   long src_init = MaxLength();
+   const T *src = elts();
+
+   char *p = (char *) NTL_SNS_MALLOC(m, sizeof(T), sizeof(_ntl_AlignedVectorHeader)); 
+   if (!p) {  
+      MemoryError();  
+   }  
+   tmp._vec__rep = (T *) (p + sizeof(_ntl_AlignedVectorHeader)); 
+
+   NTL_VEC_HEAD(tmp._vec__rep)->length = 0;  
+   NTL_VEC_HEAD(tmp._vec__rep)->alloc = m;  
+   NTL_VEC_HEAD(tmp._vec__rep)->init = 0;  
+   NTL_VEC_HEAD(tmp._vec__rep)->fixed = 0;  
+
+   tmp.Init(src_init, src);    // copy all initialized elements
+   tmp.AdjustLength(src_len);
+   tmp.swap(*this);
+}
  
 template<class T>
 void Vec<T>::AllocateTo(long n)   
@@ -414,13 +478,8 @@ void Vec<T>::AllocateTo(long n)
    else if (n > NTL_VEC_HEAD(_vec__rep)->alloc) {  
       m = max(n, long(NTL_VectorExpansionRatio*NTL_VEC_HEAD(_vec__rep)->alloc));  
       m = ((m+NTL_VectorMinAlloc-1)/NTL_VectorMinAlloc) * NTL_VectorMinAlloc; 
-      char *p = ((char *) _vec__rep.rep) - sizeof(_ntl_AlignedVectorHeader); 
-      p = (char *) NTL_SNS_REALLOC(p, m, sizeof(T), sizeof(_ntl_AlignedVectorHeader)); 
-      if (!p) {  
-         MemoryError();  
-      }  
-      _vec__rep = (T *) (p + sizeof(_ntl_AlignedVectorHeader)); 
-      NTL_VEC_HEAD(_vec__rep)->alloc = m;  
+
+      ReAllocate(m, IsRelocatableType((T*)0));
    }  
 }  
 
@@ -489,7 +548,7 @@ void Vec<T>::DoSetLength(long n, const T& a)
    // a aliasing a vector element
    const T *src = &a;
    long pos = -1;
-   if (n >= allocated()) pos = position(a);
+   if (n > allocated()) pos = position(a);
    AllocateTo(n);
    if (pos != -1) src = elts() + pos;
    Init(n, *src);

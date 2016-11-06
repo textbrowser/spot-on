@@ -200,7 +200,7 @@ rounding, i.e., given double floating point numbers a and b, a op b
 is computed exactly and then rounded to the nearest double.  
 The tie-breaking rule is not important.
 
-This is a rather wierd representation;  although it gives one
+This is a rather weird representation;  although it gives one
 essentially twice the precision of an ordinary double, it is
 not really the equivalent of quadratic precision (despite the name).
 For example, the number 1 + 2^{-200} can be represented exactly as
@@ -214,83 +214,114 @@ x, the result is non-finite (i.e., IsFinite(&x) == 0).  Note, however, that
 some care is taken to ensure that the ZZ to quad_float conversion routine
 produces a non-finite value upon overflow.
 
-THE INTEL x86 PROBLEM
+THE INTEL x86/x87 PROBLEM
 
-Although just about every modern processor implements the IEEE
-floating point standard, there still can be problems
-on processors that support IEEE extended double precision.
-The only processor I know of that supports this is the x86/Pentium.
+[The following discussion was written before the advent of SSE2 instructions,
+back when all floating point on x86 was done using the x87 FPU instruction set
+and registers.  By now, it is mostly of historical interest, as modern x86 CPUs
+(since SSE2) use a new set of instructions and registers that avoid all of
+these problems, and by default, it seems that all modern C++ compilers (by
+default) avoid the x87 altogether.  However, there are new problems (see THE
+FMA PROBLEM, below).]
 
-While extended double precision may sound like a nice thing,
-it is not.  Normal double precision has 53 bits of precision.
-Extended has 64.  On x86s, the FP registers have 53 or 64 bits
-of precision---this can be set at run-time by modifying
-the cpu "control word" (something that can be done
-only in assembly code).
-However, doubles stored in memory always have only 53 bits.
-Compilers may move values between memory and registers
-whenever they want, which can effectively change the value
-of a floating point number even though at the C/C++ level,
-nothing has happened that should have changed the value.
-Is that sick, or what?
-Actually, the new C99 standard seems to outlaw such "spontaneous"
-value changes; however, this behavior is not necessarily
+Although just about every modern processor implements the IEEE floating point
+standard, there still can be problems on processors that support IEEE extended
+double precision.  The only processor I know of that supports this is the x86.
+
+While extended double precision may sound like a nice thing, it is not.  Normal
+double precision has 53 bits of precision.  Extended has 64.  On x86s, the FP
+registers have 53 or 64 bits of precision---this can be set at run-time by
+modifying the cpu "control word" (something that can be done only in assembly
+code).  However, doubles stored in memory always have only 53 bits.  Compilers
+may move values between memory and registers whenever they want, which can
+effectively change the value of a floating point number even though at the
+C/C++ level, nothing has happened that should have changed the value.  Is that
+sick, or what?  Actually, the new C99 standard seems to outlaw such
+"spontaneous" value changes; however, this behavior is not necessarily
 universally implemented.
 
-This is a real headache, and if one is not just a bit careful,
-the quad_float code will break.  This breaking is not at all subtle,
-and the program QuadTest will catch the problem if it exists.
+This is a real headache, and if one is not just a bit careful, the quad_float
+code will break.  This breaking is not at all subtle, and the program QuadTest
+will catch the problem if it exists.
 
 You should not need to worry about any of this, because NTL automatically
-detects and works around these problems as best it can, as described below.
-It shouldn't make a mistake, but if it does, you will
-catch it in the QuadTest program.
-If things don't work quite right, you might try
-setting NTL_FIX_X86 or NTL_NO_FIX_X86 flags in ntl_config.h,
-but this should not be necessary.
+detects and works around these problems as best it can, as described below.  It
+shouldn't make a mistake, but if it does, you will catch it in the QuadTest
+program.  If things don't work quite right, you might try setting NTL_FIX_X86
+or NTL_NO_FIX_X86 flags in ntl_config.h, but this should not be necessary.
 
 Here are the details about how NTL fixes the problem.
 
-The first and best way is to have the default setting of the control word
-be 53 bits.  However, you are at the mercy of your platform
-(compiler, OS, run-time libraries).  Windows does this,
-and so the problem simply does not arise here, and NTL neither
-detects nor fixes the problem.  Linux, however, does not do this,
-which really sucks.  Can we talk these Linux people into changing this?
+The first and best way is to have the default setting of the control word be 53
+bits.  However, you are at the mercy of your platform (compiler, OS, run-time
+libraries).  Windows does this, and so the problem simply does not arise here,
+and NTL neither detects nor fixes the problem.  Linux, however, does not do
+this, which really sucks.  Can we talk these Linux people into changing this?
 
-The second way to fix the problem is by having NTL 
-fiddle with control word itself.  If you compile NTL using a GNU compiler
-on an x86, this should happen automatically.
-On the one hand, this is not a general, portable solution,
+The second way to fix the problem is by having NTL fiddle with control word
+itself.  If you compile NTL using a GNU compiler on an x86, this should happen
+automatically.  On the one hand, this is not a general, portable solution,
 since it will only work if you use a GNU compiler, or at least one that
-supports GNU 'asm' syntax.  
-On the other hand, almost everybody who compiles C++ on x86/Linux
-platforms uses GNU compilers (although there are some commercial
-compilers out there that I don't know too much about).
+supports GNU 'asm' syntax.  On the other hand, almost everybody who compiles
+C++ on x86/Linux platforms uses GNU compilers (although there are some
+commercial compilers out there that I don't know too much about).
 
-The third way to fix the problem is to 'force' all intermediate
-floating point results into memory.  This is not an 'ideal' fix,
-since it is not fully equivalent to 53-bit precision (because of 
-double rounding), but it works (although to be honest, I've never seen
-a full proof of correctness in this case).
-NTL's quad_float code does this by storing intermediate results
-in local variables declared to be 'volatile'.
-This is the solution to the problem that NTL uses if it detects
-the problem and can't fix it using the GNU 'asm' hack mentioned above.
-This solution should work on any platform that faithfully
-implements 'volatile' according to the ANSI C standard.
+The third way to fix the problem is to 'force' all intermediate floating point
+results into memory.  This is not an 'ideal' fix, since it is not fully
+equivalent to 53-bit precision (because of double rounding), but it works
+(although to be honest, I've never seen a full proof of correctness in this
+case).  NTL's quad_float code does this by storing intermediate results in
+local variables declared to be 'volatile'.  This is the solution to the problem
+that NTL uses if it detects the problem and can't fix it using the GNU 'asm'
+hack mentioned above.  This solution should work on any platform that
+faithfully implements 'volatile' according to the ANSI C standard.
 
+
+THE FMA PROBLEM
+
+Some CPUs come equipped with a fused-multiply-add (FMA) instruction, which
+computes x + a*b with just a single rounding.  While this generally is faster
+and more precise than performing this using two instructions and two roundings,
+FMA instructions can break the logic of quad_float.  
+
+To mitigate this problem, NTL tries to detect whether the compiler emits FMA
+instructions when it builds the make_desc.h file. The macro NTL_FMA_DETECTED
+gets set to 1 if it detects this to be the case. Based on the setting of this
+macro, code in quad_float.cpp will strategically replace certain
+multiplications a*b with a*b + z, where z is an external variable that will
+always be zero (but hopefully the compiler will not figure this out).  It is a
+bit of a hack, but it generally works.
+
+
+THE FLOATING POINT REASSOCIATION PROBLEM
+
+The C++ standard says that compilers must issue instructions
+that respect the grouping of floating point operations.
+So the compiler is not allowed to compile (a+b)+c as a+(b+c).
+Most compilers (at least by default) repect this rule.
+
+One exception is the Intel icc compiler.  Because of this, the quad_float.cpp
+file includes a pragma that will force the Intel compiler to respect the
+standard.
+
+Note that gcc respects this rule by default, unless you pass -ffast-math as a
+compilation flag.  As long as quad_float.cpp is not compiled with this flag,
+you should be OK.  The quad_float.cpp file contains a preprocessor check to
+detect if it is compiled under gcc with -ffast-math, and if so, reports an
+error.
+
+This is the only file in NTL which requires this rule.  Also, it should be OK
+to compile client code with -ffast-math, if that is desired.
 
 
 BACKGROUND INFO
 
 The code NTL uses algorithms designed by Knuth, Kahan, Dekker, and
 Linnainmaa.  The original transcription to C++ was done by Douglas
-Priest.  Enhancements and bug fixes were done by Keith Briggs
-(http://epidem13.plantsci.cam.ac.uk/~kbriggs).  The NTL version is a
-stripped down version of Briggs' code, with a couple of bug fixes and
-portability improvements.  Briggs has continued to develop his
-library;  see his web page above for the latest version and more information.
+Priest.  Enhancements and bug fixes were done by Keith Briggs ---
+see http://keithbriggs.info/doubledouble.html.  The NTL version is a
+stripped down version of Briggs' code, with some bug fixes and
+portability improvements.  
 
 Here is a brief annotated bibliography (compiled by Priest) of papers 
 dealing with DP and similar techniques, arranged chronologically.

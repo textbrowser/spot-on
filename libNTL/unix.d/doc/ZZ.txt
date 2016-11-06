@@ -166,6 +166,8 @@ void MulSubFrom(ZZ& x, const ZZ& a, long b);      // x -= a*b
 // The single-precision versions may be significantly
 // faster than the code sequence 
 //   mul(tmp, a, b); add(x, x, tmp);
+// However, for the single-precision version, the use-case
+// that is optimized is for |b| < 2^{NTL_WSP_BOUND}.
 
 
 
@@ -694,6 +696,11 @@ void RandomBnd(long& x, long n);
 long RandomBnd(long n);
 // x = pseudo-random number in the range 0..n-1, or 0 if n <= 0
 // EXCEPTIONS: strong ES
+
+void VectorRandomBnd(long k, long *x, long n);
+// equivalent to x[i] = RandomBnd(n) for i in [0..k), but faster
+// EXCEPTIONS: strong ES
+
 
 void RandomBits(ZZ& x, long l);
 ZZ RandomBits_ZZ(long l);

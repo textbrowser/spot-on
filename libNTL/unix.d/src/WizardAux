@@ -47,9 +47,9 @@ sub RunProg {
    my $val;
    my $res;
 
-   system("make wntl.a") and return "999999999999999";
+   system("$ARGV[0] wntl.a") and return "999999999999999";
    RemoveProg($name);
-   system("make $name") and return "999999999999999";
+   system("$ARGV[0] $name") and return "999999999999999";
 
    print "\n*** running $name...";
 
@@ -72,26 +72,20 @@ sub RunProg {
 ############################################################
 
 
-
-system("make InitSettings");
+system("$ARGV[0] InitSettings");
 
 @lines = `./InitSettings`;
 
 %Config = (
 
-'NTL_LONG_LONG'        => 0,
-'NTL_AVOID_FLOAT'      => 0,
 'NTL_SPMM_ULL'         => 0,
-'NTL_SPMM_ASM'         => 0,
 'NTL_TBL_REM'          => 0,
-'NTL_TBL_REM_LL'       => 0,
 'NTL_CRT_ALTCODE'      => 0,
 'NTL_CRT_ALTCODE_SMALL'=> 0,
 'NTL_AVOID_BRANCHING'  => 0,
 'NTL_GF2X_ALTCODE'     => 0,
 'NTL_GF2X_ALTCODE1'    => 0,
 'NTL_GF2X_NOINLINE'    => 0,
-'NTL_PCLMUL'           => 0,
 'NTL_FFT_BIGTAB'       => 0,
 'NTL_FFT_LAZYMUL'      => 0,
 
@@ -120,7 +114,7 @@ $cflag = "default";
 $Config{"NTL_FFT_BIGTAB"} = 1;
 
 foreach $aflag1 ("default", "NTL_FFT_LAZYMUL") {
-   foreach $bflag1 ("default", "NTL_SPMM_ULL", "NTL_SPMM_ASM") {
+   foreach $bflag1 ("default", "NTL_SPMM_ULL") {
       foreach $cflag1 ("default", "NTL_AVOID_BRANCHING") {
 
 
@@ -128,19 +122,23 @@ foreach $aflag1 ("default", "NTL_FFT_LAZYMUL") {
          $Config{$bflag1} = 1;
          $Config{$cflag1} = 1;
 
+         $skipit = 0;
 
-         if ($Config{"NTL_FFT_LAZYMUL"} == 1 && $Config{"NTL_LONGLONG_SP_MULMOD"} == 0 &&
-             $Config{"NTL_SPMM_ULL"} == 0 && $Config{"NTL_SPMM_ASM"} == 0) {
+         if ($Config{"NTL_SPMM_ULL"} == 1 && $Config{"NTL_HAVE_LL_TYPE"} == 0) {
+            $skipit = 1;
+         }
 
-               $Config{$aflag1} = 0;
-               $Config{$bflag1} = 0;
-               $Config{$cflag1} = 0;
+         if ($Config{"NTL_FFT_LAZYMUL"} == 1 && 
+             !($Config{"NTL_LONGLONG_SP_MULMOD"} == 1 || $Config{"NTL_SPMM_ULL"} == 1)) {
 
-               print "skip: $aflag1 $bflag1 $cflag1\n";
-               next;
+            $skipit = 1;
          }
 
          if ($Config{"NTL_LONGLONG_SP_MULMOD"} == 1 && $Config{"NTL_SPMM_ULL"} == 1) {
+            $skipit = 1;
+         }
+
+         if ($skipit) {
 
                $Config{$aflag1} = 0;
                $Config{$bflag1} = 0;
@@ -166,7 +164,7 @@ foreach $aflag1 ("default", "NTL_FFT_LAZYMUL") {
          $Config{$cflag1} = 0;
 
          # these are the files that include class definitions
-         # from FFT.h and ZZ_p.h, which have memvers defined
+         # from FFT.h and ZZ_p.h, which have members defined
          # in terms of mulmod_precon_t
          unlink("FFT.o"); unlink("ZZ_p.o"); unlink("vec_ZZ_p.o");
          unlink("ZZ_pX.o"); unlink("ZZ_pX1.o"); 
@@ -201,97 +199,44 @@ unlink("lip.o");
 
 
 
-# set flags NTL_GF2X_NOINLINE, NTL_GF2X_ALTCODE, NTL_GF2X_ALTCODE1
+# set flags NTL_GF2X_NOINLINE, NTL_GF2X_ALTCODE, NTL_GF2X_ALTCODE1,
+# but not if we have PCLMUL
 
-$time = "999999999999999";
-$aflag = "default";
-$bflag = "default";
+if ($Config{'NTL_HAVE_PCLMUL'} == 0) {
 
-foreach $aflag1 ("default", "NTL_GF2X_NOINLINE") {
-   foreach $bflag1 ("default", "NTL_GF2X_ALTCODE", "NTL_GF2X_ALTCODE1") {
+   $time = "999999999999999";
+   $aflag = "default";
+   $bflag = "default";
 
-      $Config{$aflag1} = 1;
-      $Config{$bflag1} = 1;
-      GenConfigHeader();
-      $time1 = RunProg("GF2XTimeTest");
+   foreach $aflag1 ("default", "NTL_GF2X_NOINLINE") {
+      foreach $bflag1 ("default", "NTL_GF2X_ALTCODE", "NTL_GF2X_ALTCODE1") {
 
-      if ($time1 < $time) {
-         $aflag = $aflag1;
-         $bflag = $bflag1;
-         $time = $time1;
+	 $Config{$aflag1} = 1;
+	 $Config{$bflag1} = 1;
+	 GenConfigHeader();
+	 $time1 = RunProg("GF2XTimeTest");
+
+	 if ($time1 < $time) {
+	    $aflag = $aflag1;
+	    $bflag = $bflag1;
+	    $time = $time1;
+	 }
+
+	 $Config{$aflag1} = 0;
+	 $Config{$bflag1} = 0;
+	 unlink("GF2X.o");
       }
-
-      $Config{$aflag1} = 0;
-      $Config{$bflag1} = 0;
-      unlink("GF2X.o");
    }
-}
 
-
-
-# now try NTL_PCLMUL instead
-unlink("GF2X.o");
-unlink("GF2X1.o");
-$Config{"NTL_PCLMUL"} = 1;
-GenConfigHeader();
-$time1 = RunProg("GF2XTimeTest");
-unlink("GF2X.o");
-unlink("GF2X1.o");
-if ($time1 >= $time) {
-   $Config{"NTL_PCLMUL"} = 0;
    $Config{$aflag} = 1;
    $Config{$bflag} = 1;
 }
 
-if ($Config{"NTL_GMP_LIP"} == 0) {
-
-   # GMP is not the primary long integer package
-   # Choose between default, AVOID_FLOAT, and LONG_LONG implementatsions
-
-   $time = "999999999999999";
-   $flag = "default";
-
-   foreach $flag1 ("default", "NTL_AVOID_FLOAT", "NTL_LONG_LONG") {
-      $Config{$flag1} = 1;
-      GenConfigHeader(); 
-      $time1 = RunProg("MulTimeTest");
-
-      if ($time1 < $time) {
-	 $flag = $flag1;
-	 $time = $time1;
-      }
-
-      $Config{$flag1} = 0;
-      unlink("lip.o");
-   }
-
-   $Config{$flag} = 1;
 
 
-   # finally, now set TBL_REM and TBL_REM_LL
+# set NTL_TBL_REM
 
-   $time = "999999999999999";
-   $flag = "default";
-
-   foreach $flag1 ("default", "NTL_TBL_REM", "NTL_TBL_REM_LL") {
-      $Config{$flag1} = 1;
-      GenConfigHeader(); 
-      $time1 = RunProg("Poly2TimeTest");
-
-      if ($time1 < $time) {
-	 $flag = $flag1;
-	 $time = $time1;
-      }
-
-      $Config{$flag1} = 0;
-      unlink("lip.o");
-   }
-
-   $Config{$flag} = 1;
-}
-else {
-
-   # set NTL_TBL_REM
+if ($Config{"NTL_HAVE_LL_TYPE"} == 1) {
 
    $time = "999999999999999";
    $flag = "default";
@@ -311,9 +256,12 @@ else {
    }
 
    $Config{$flag} = 1;
+}
 
 
-   # set NTL_CRT_ALTCODE
+# set NTL_CRT_ALTCODE
+
+if ($Config{"NTL_HAVE_LL_TYPE"} == 1 && $Config{"NTL_GMP_LIP"} == 1) {
 
    $time = "999999999999999";
    $flag = "default";
@@ -340,20 +288,19 @@ else {
    if ($Config{"NTL_CRT_ALTCODE"} == 0) {
       # time measures default and time1 measures ALTCODE
       if (1.0*$time1 < 1.15*$time) {
-         $Config{"NTL_CRT_ALTCODE_SMALL"} = 1;
+	 $Config{"NTL_CRT_ALTCODE_SMALL"} = 1;
       }
    }
-
-
-
 }
+
+
 
 $Config{'WIZARD_HACK'} = "";
 GenConfigHeader();
 
 print "\n\n*** the wizard is done!!\n\n"; 
 
-system("make DispSettings");
+system("$ARGV[0] DispSettings");
 system("./DispSettings");
 system("./DispSettings > wizard_log.h");
 

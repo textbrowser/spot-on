@@ -19,6 +19,215 @@ A Tour of NTL: Summary of Changes
 
 <p><hr><p>
 <h3>
+2016.10.14: Changes between NTL 10.0.0 and 10.1.0
+</h3>
+
+<ul>
+<li><b>Better building</b>
+
+<ul>
+<li>
+Thanks to the encouragement and guidance of the Sage
+developers, I've made some improvements to the 
+build process 
+(this applies only to the Unix distribution -- Windows users
+still have to keep on pointing and clicking).
+
+<li>
+The build process now configures <tt>libtool</tt>
+on the fly, rather than relying on an existing <tt>libtool</tt>
+program.
+This should make builing dynamic libraries easier.
+Also added a configuration variable <tt>LIBTOOL_LINK_FLAGS</tt>,
+mainly to help with Cygwin builds.
+
+<li>
+Added a <tt>TUNE</tt> switch to the configure script.
+<ul>
+<li>
+<tt>TUNE=auto</tt> (the default) runs the performance-tuning wizard
+(as before).
+<li>
+<tt>TUNE=x86</tt> skips the wizard and sets all performance-related
+flags so that they are geared towards (a not too old) <tt>x86</tt>
+machine.
+<li>
+<tt>TUNE=generic</tt> skips the wizard and sets all performance-related
+flags so that they should not be too bad on any fairly modern machine
+(PowerPC, ARM).
+</ul>
+Additional tuning values may be set in the future.
+The source files have also been adjusted to accomodate this feature:
+if a performance option requires some hardware/software feature
+that is not available, the performance option is quietly ignored. 
+
+<li>
+Fixed the makefile so that recursive invocations
+call <tt>$(MAKE)</tt> rather than <tt>make</tt>.
+
+<li>
+With these improvements, then on the 32-core Haswell server I've
+been using lately, if I type
+<pre>
+   % configure TUNE=x86
+   % make -j20
+</pre>
+then the whole business of configuring and building NTL
+takes less than a minute <tt>:-)</tt>.
+
+
+<li>
+There are a number of other small improvements to the
+build process. 
+
+<li>
+<a href="tour-unix.html">[See here]</a> for more details
+(this documentation is now hopefully more informative as well).
+
+</ul>
+
+<p>
+<li><b>Vec tweaks</b>
+<ul>
+<li>
+Made some small tweaks to the <tt>Vec</tt> class.
+<li>
+The copy constructor for <tt>Vec&lt;T&gt;</tt>
+no longer requires an assgnment operator for <tt>T</tt>.
+<li>
+Started laying the groundwork for a possible future implementation
+that would do something about about the "relocatabilty" requirement
+for vector element types.
+In theory, this is a very thorny issue, and the current implementation
+is somewhat dangerous.
+In practice, this implementation has served its purpose quite
+well for about 25 years.
+Still, it would be nice to tighten things up a bit,
+without affecting performance.
+<p>
+It would be great to discuss these issues
+with any <tt>C++</tt> experts out there! 
+</ul>
+
+
+</ul>
+
+
+
+<p><hr><p>
+<h3>
+2016.10.08: Changes between NTL 9.11.0 and 10.0.0
+</h3>
+
+<ul>
+<li> <b>New License: LGPLv2.1+</b>
+
+<ul>
+<li>
+With the permission of all relevant contributors,
+NTL is now licensed under 
+LGPLv2.1+ (the Lesser GNU Public License version 2.1 or later).
+
+<li>
+Previously, NTL was licensed under the GPL.
+This new, less restrictive licensing should hopefully increase the 
+impact of NTL.
+</ul>
+
+<p>
+<li> <b>Long integer package restructing</b>
+
+<ul>
+<li>
+I've restructured the long integer package so that the 
+GMP and "classical LIP" modules share much of the same
+code base.
+
+<li>
+This greatly reduces the amount of redundant code,
+which will make maintenance easier moving forward.
+
+<li>
+As a bonus, the classical LIP module is simpler,
+faster, and (finally) thread safe. 
+
+<li>
+As another bonus, the GMP module now is much closer to
+being compatible with "non-empty nails".
+Although it has not been tested in that mode as of yet,
+it may eventually be helpful in the future if I want to replace some
+GMP code with code that exploits AVX-512 IFMA instructions.
+
+<li>
+As a part of this transition, "make check" now includes
+much more extensive "unit testing" of the long integer package.
+
+<li>
+Despite the drastic changes "under the hood",
+this restructuring should not affect at all any 
+NTL client code that relies only on the documented interface,
+including even the ancient legacy interfaces pre-dating NTLv5a
+from 2000.
+</ul>
+
+<p>
+<li> <b>File name restructuring</b>
+
+<ul>
+<li>
+I've renamed all the ".c" files to ".cpp" files in the Unix distribution.
+This seems to be more in line with common practice,
+and should make it easier to work with
+compilers and other software development tools.
+
+
+
+
+</ul>
+
+
+
+<p><hr><p>
+<h3>
+2016.08.22: Changes between NTL 9.10.0 and 9.11.0
+</h3>
+
+<ul>
+<li>
+Improved the effectiveness of the new, faster 
+<tt>ZZ</tt> to <tt>zz_p</tt> conversion
+
+<li>
+Added new routines <tt>VectorConv</tt> 
+for faster bulk conversion from <tt>ZZ</tt> and <tt>long</tt>
+to <tt>zz_p</tt>
+(see <a href="lzz_p.cpp.html">lzz_p.txt</a>)
+<ul>
+<li>
+There are some hidden interfaces which could be more generally useful,
+and I may add these to the documented interface at some point.
+</ul>
+
+<li>
+Added new routines <tt>VectorRandomBnd</tt>
+(see <a href="ZZ.cpp.html">ZZ.txt</a>)
+and <tt>VectorRandom</tt>
+(see <a href="lzz_p.cpp.html">lzz_p.txt</a>)
+for faster bulk random number generation
+<ul>
+<li>
+Again, there are some hidden interfaces which could be more generally useful,
+and I may add these to the documented interface at some point.
+</ul>
+
+
+
+
+
+</ul>
+
+<p><hr><p>
+<h3>
 2016.06.21: Changes between NTL 9.9.1 and 9.10.0
 </h3>
 

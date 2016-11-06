@@ -27,43 +27,39 @@ mkdir small/src
 mkdir small/include
 mkdir small/include/NTL
 
-cp MulTimeTest.c small/src
-cp Poly1TimeTest.c small/src
-cp Poly2TimeTest.c small/src
-cp Poly3TimeTest.c small/src
-cp GF2XTimeTest.c small/src
-cp InitSettings.c small/src
-cp DispSettings.c small/src
+cp Poly1TimeTest.cpp small/src
+cp Poly2TimeTest.cpp small/src
+cp Poly3TimeTest.cpp small/src
+cp GF2XTimeTest.cpp small/src
+cp InitSettings.cpp small/src
+cp DispSettings.cpp small/src
 
-cp FFT.c small/src
-cp GetTime.c small/src
-cp GetPID.c small/src
-cp ctools.c small/src
-cp ZZ.c small/src
-cp ZZVec.c small/src
-cp ZZ_p.c small/src
-cp ZZ_pX.c small/src
-cp ZZ_pX1.c small/src
-cp lip.c small/src
-cp g_lip_impl.h small/src
-cp c_lip_impl.h small/src
-cp tools.c small/src
-cp vec_ZZ.c small/src
-cp vec_ZZ_p.c small/src
-cp GF2.c small/src
-cp WordVector.c small/src
-cp vec_GF2.c small/src
-cp GF2X.c small/src
-cp GF2X1.c small/src
-cp thread.c small/src
-cp BasicThreadPool.c small/src
-cp fileio.c small/src
+cp FFT.cpp small/src
+cp GetTime.cpp small/src
+cp GetPID.cpp small/src
+cp ctools.cpp small/src
+cp ZZ.cpp small/src
+cp ZZVec.cpp small/src
+cp ZZ_p.cpp small/src
+cp ZZ_pX.cpp small/src
+cp ZZ_pX1.cpp small/src
+cp lip.cpp small/src
+cp tools.cpp small/src
+cp vec_ZZ.cpp small/src
+cp vec_ZZ_p.cpp small/src
+cp GF2.cpp small/src
+cp WordVector.cpp small/src
+cp vec_GF2.cpp small/src
+cp GF2X.cpp small/src
+cp GF2X1.cpp small/src
+cp thread.cpp small/src
+cp BasicThreadPool.cpp small/src
+cp fileio.cpp small/src
 
 
 
 sh CopyFeatures '..' small
 cp ../include/NTL/FFT.h small/include/NTL
-cp ../include/NTL/SPMM_ASM.h small/include/NTL
 cp ../include/NTL/ctools.h small/include/NTL
 cp ../include/NTL/ZZ.h small/include/NTL
 cp ../include/NTL/sp_arith.h small/include/NTL
@@ -72,8 +68,6 @@ cp ../include/NTL/ZZ_p.h small/include/NTL
 cp ../include/NTL/ZZ_pX.h small/include/NTL
 cp ../include/NTL/config.h small/include/NTL
 cp ../include/NTL/lip.h small/include/NTL
-cp ../include/NTL/g_lip.h small/include/NTL
-cp ../include/NTL/c_lip.h small/include/NTL
 cp ../include/NTL/gmp_aux.h small/include/NTL
 cp ../include/NTL/mach_desc.h small/include/NTL
 cp ../include/NTL/new.h small/include/NTL
@@ -100,7 +94,8 @@ cp makefile small/src
 
 
 cd small/src
-perl WizardAux
+echo "*** perl WizardAux $2"
+perl WizardAux "$2"
 
 cd ../..
 

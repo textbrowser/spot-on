@@ -215,11 +215,35 @@ void conv(zz_p& x, long a)
    x._zz_p__rep = rem(a, zz_pInfo->p, zz_pInfo->red_struct);
 }
 
+inline void VectorConv(long k, zz_p *x, const long *a)
+{
+   if (k <= 0) return;
+   sp_reduce_struct red_struct = zz_p::red_struct();
+   long p = zz_p::modulus();
+   for (long i = 0; i < k; i++) x[i].LoopHole() = rem(a[i], p, red_struct);
+}
+
 inline zz_p& zz_p::operator=(long a) { conv(*this, a); return *this; }
 
-zz_p to_zz_p(const ZZ& a);
-void conv(zz_p& x, const ZZ& a);
+inline
+zz_p to_zz_p(const ZZ& a)
+{
+   return zz_p(zz_p::ZZ_red_struct().rem(a), INIT_LOOP_HOLE);
+}
 
+inline
+void conv(zz_p& x, const ZZ& a)
+{
+   x._zz_p__rep = zz_p::ZZ_red_struct().rem(a);
+}
+
+
+inline void VectorConv(long k, zz_p *x, const ZZ *a)
+{
+   if (k <= 0) return;
+   const sp_ZZ_reduce_struct& ZZ_red_struct = zz_p::ZZ_red_struct();
+   for (long i = 0; i < k; i++) x[i].LoopHole() = ZZ_red_struct.rem(a[i]);
+}
 
 // read-only access to _zz_p__representation
 inline long rep(zz_p a) { return a._zz_p__rep; }
@@ -420,6 +444,13 @@ inline void random(zz_p& x)
 
 inline zz_p random_zz_p()
    { zz_p x; random(x); return x; }
+
+inline void VectorRandom(long k, zz_p* x)
+{
+   if (k <= 0) return;
+   RandomBndGenerator gen(zz_p::modulus());
+   for (long i = 0; i < k; i++) x[i].LoopHole() = gen.next();
+}
 
 
 

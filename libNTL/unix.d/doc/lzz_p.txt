@@ -185,6 +185,9 @@ void random(zz_p& x);
 zz_p random_zz_p();
 // x = random element in zz_p.  Uses RandomBnd from ZZ.
 
+void VectorRandom(long k, zz_p *x);
+// equivalent to random(x[i]) for i in [0..k), but fatser
+
 
 /**************************************************************************\
 
@@ -402,14 +405,16 @@ zz_p::zz_p(INIT_ALLOC_TYPE);
 zz_p::allocate();
 // provided for consistency with other classes, no action
 
-
-
 long CalcMaxRoot(long p);
 // p is assumed to be an odd prime.
 // Returns the largest k such that 2^k divides p-1
 // and such that k does not exceed an implementation defined
 // constant.  This represents the max power of two for which
 // an FFT mod p is supported.
+
+void VectorConv(long k, zz_p *x, const ZZ *a);
+void VectorConv(long k, zz_p *x, const long *a);
+// equivalent to conv(x[i], a[i]) for i in [0..k), but fatser
 
 
 

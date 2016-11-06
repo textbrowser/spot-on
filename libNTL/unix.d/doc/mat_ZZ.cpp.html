@@ -1,187 +1,213 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>/Volumes/unix-files/u/ntl-new/ntl-9.10.0dev/doc/mat_ZZ.cpp.html</title>
-<meta name="Generator" content="Vim/7.1">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>~/jjj/ntl-10.1.0dev/doc/mat_ZZ.cpp.html</title>
+<meta name="Generator" content="Vim/7.4">
+<meta name="plugin-version" content="vim7.4_v2">
+<meta name="syntax" content="cpp">
+<meta name="settings" content="use_css,pre_wrap,no_foldcolumn,expand_tabs,prevent_copy=">
+<meta name="colorscheme" content="macvim">
+<style type="text/css">
+<!--
+pre { white-space: pre-wrap; font-family: monospace; color: #000000; background-color: #ffffff; }
+body { font-family: monospace; color: #000000; background-color: #ffffff; }
+* { font-size: 1em; }
+.String { color: #4a708b; }
+.Constant { color: #ff8c00; }
+.Statement { color: #b03060; font-weight: bold; }
+.Comment { color: #0000ee; font-style: italic; }
+.Type { color: #008b00; font-weight: bold; }
+.PreProc { color: #1874cd; }
+-->
+</style>
+
+<script type='text/javascript'>
+<!--
+
+-->
+</script>
 </head>
-<body bgcolor="#ffffff" text="#000000"><font face="monospace">
-<br>
-<font color="#0000ed"><i>/*</i></font><font color="#0000ed"><i>*************************************************************************\</i></font><br>
-<br>
-<font color="#0000ed"><i>MODULE: mat_ZZ</i></font><br>
-<br>
-<font color="#0000ed"><i>SUMMARY:</i></font><br>
-<br>
-<font color="#0000ed"><i>Defines the class mat_ZZ.</i></font><br>
-<br>
-<font color="#0000ed"><i>\*************************************************************************</i></font><font color="#0000ed"><i>*/</i></font><br>
-<br>
-<br>
-<font color="#1773cc">#include </font><font color="#4a6f8b">&lt;NTL/matrix.h&gt;</font><br>
-<font color="#1773cc">#include </font><font color="#4a6f8b">&lt;NTL/vec_vec_ZZ.h&gt;</font><br>
-<br>
-<font color="#008b00"><b>typedef</b></font>&nbsp;Mat&lt;ZZ&gt; mat_ZZ; <font color="#0000ed"><i>// backward compatibility</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;add(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; B); <br>
-<font color="#0000ed"><i>// X = A + B</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;sub(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; B); <br>
-<font color="#0000ed"><i>// X = A - B</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;negate(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A); <br>
-<font color="#0000ed"><i>// X = - A</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; B); <br>
-<font color="#0000ed"><i>// X = A * B</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(vec_ZZ&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;vec_ZZ&amp; b); <br>
-<font color="#0000ed"><i>// x = A * b</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(vec_ZZ&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;vec_ZZ&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; B); <br>
-<font color="#0000ed"><i>// x = a * B</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; b);<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;b);<br>
-<font color="#0000ed"><i>// X = A * b</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; B);<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_ZZ&amp; X, <font color="#008b00"><b>long</b></font>&nbsp;a, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; B);<br>
-<font color="#0000ed"><i>// X = a * B</i></font><br>
-<br>
-<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;determinant(ZZ&amp; d, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;deterministic=<font color="#ff8b00">0</font>);<br>
-ZZ determinant(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a, <font color="#008b00"><b>long</b></font>&nbsp;deterministic=<font color="#ff8b00">0</font>);<br>
-<font color="#0000ed"><i>// d = determinant(A).&nbsp;&nbsp;If !deterministic, a randomized strategy may</i></font><br>
-<font color="#0000ed"><i>// be used that errs with probability at most 2^{-80}.</i></font><br>
-<br>
-<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;solve(ZZ&amp; d, vec_ZZ&amp; x,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;vec_ZZ&amp; b,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#008b00"><b>long</b></font>&nbsp;deterministic=<font color="#ff8b00">0</font>)<br>
-<font color="#0000ed"><i>// computes d = determinant(A) and solves x*A = b*d if d != 0; A must</i></font><br>
-<font color="#0000ed"><i>// be a square matrix and have compatible dimensions with b.&nbsp;&nbsp;If</i></font><br>
-<font color="#0000ed"><i>// !deterministic, the computation of d may use a randomized strategy</i></font><br>
-<font color="#0000ed"><i>// that errs with probability 2^{-80}.</i></font><br>
-<br>
-<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;solve1(ZZ&amp; d, vec_ZZ&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;vec_ZZ&amp; b);<br>
-<font color="#0000ed"><i>// A must be a square matrix.</i></font><br>
-<font color="#0000ed"><i>// If A is singular, this routine sets d = 0 and returns.</i></font><br>
-<font color="#0000ed"><i>// Otherwise, it computes d, x such that x*A == b*d, </i></font><br>
-<font color="#0000ed"><i>// such that d &gt; 0 and minimal.</i></font><br>
-<font color="#0000ed"><i>// Note that d is a positive divisor of the determinant,</i></font><br>
-<font color="#0000ed"><i>// and is not in general equal to the determinant.</i></font><br>
-<font color="#0000ed"><i>// The routine is deterministic, and uses a Hensel lifting strategy.</i></font><br>
-<br>
-<font color="#0000ed"><i>// For backward compatability, there is also a routine called</i></font><br>
-<font color="#0000ed"><i>// HenselSolve1 that simply calls solve1.</i></font><br>
-<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;inv(ZZ&amp; d, mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;deterministic=<font color="#ff8b00">0</font>);<br>
-<font color="#0000ed"><i>// computes d = determinant(A) and solves X*A = I*d if d != 0; A must</i></font><br>
-<font color="#0000ed"><i>// be a square matrix.&nbsp;&nbsp;If !deterministic, the computation of d may</i></font><br>
-<font color="#0000ed"><i>// use a randomized strategy that errs with probability 2^{-80}.</i></font><br>
-<br>
-<br>
-<font color="#0000ed"><i>// NOTE:&nbsp;&nbsp;See LLL.txt for routines that compute the kernel and</i></font><br>
-<font color="#0000ed"><i>// image of an integer matrix.</i></font><br>
-<br>
-<font color="#0000ed"><i>// NOTE: See HNF.txt for a routine that computes Hermite Normal Forms.</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;sqr(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A);<br>
-mat_ZZ sqr(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A);<br>
-<font color="#0000ed"><i>// X = A*A&nbsp;&nbsp; </i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;inv(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A);<br>
-mat_ZZ inv(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A);<br>
-<font color="#0000ed"><i>// X = A^{-1}; error is raised if |det(A)| != 1.</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;power(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; e);<br>
-mat_ZZ power(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; e);<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;power(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;e);<br>
-mat_ZZ power(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;e);<br>
-<font color="#0000ed"><i>// X = A^e; e may be negative (in which case A must be nonsingular).</i></font><br>
-<br>
-<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;ident(mat_ZZ&amp; X, <font color="#008b00"><b>long</b></font>&nbsp;n); <br>
-mat_ZZ ident_mat_ZZ(<font color="#008b00"><b>long</b></font>&nbsp;n); <br>
-<font color="#0000ed"><i>// X = n x n identity matrix</i></font><br>
-<br>
-<font color="#008b00"><b>long</b></font>&nbsp;IsIdent(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;n);<br>
-<font color="#0000ed"><i>// test if A is the n x n identity matrix</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;diag(mat_ZZ&amp; X, <font color="#008b00"><b>long</b></font>&nbsp;n, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; d);<br>
-mat_ZZ diag(<font color="#008b00"><b>long</b></font>&nbsp;n, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; d);<br>
-<font color="#0000ed"><i>// X = n x n diagonal matrix with d on diagonal</i></font><br>
-<br>
-<font color="#008b00"><b>long</b></font>&nbsp;IsDiag(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;n, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; d);<br>
-<font color="#0000ed"><i>// test if X is an&nbsp;&nbsp;n x n diagonal matrix with d on diagonal</i></font><br>
-<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;transpose(mat_ZZ&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A);<br>
-mat_ZZ transpose(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; A);<br>
-<font color="#0000ed"><i>// X = transpose of A</i></font><br>
-<br>
-<br>
-<font color="#008b00"><b>long</b></font>&nbsp;CRT(mat_ZZ&amp; a, ZZ&amp; prod, <font color="#008b00"><b>const</b></font>&nbsp;mat_zz_p&amp; A);<br>
-<font color="#0000ed"><i>// Incremental Chinese Remaindering: If p is the current zz_p modulus with</i></font><br>
-<font color="#0000ed"><i>// (p, prod) = 1; Computes a' such that a' = a mod prod and a' = A mod p,</i></font><br>
-<font color="#0000ed"><i>// with coefficients in the interval (-p*prod/2, p*prod/2]; </i></font><br>
-<font color="#0000ed"><i>// Sets a := a', prod := p*prod, and returns 1 if a's value changed.</i></font><br>
-<br>
-<br>
-<br>
-<font color="#0000ed"><i>// miscellaneous:</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;clear(mat_ZZ&amp; a);<br>
-<font color="#0000ed"><i>// x = 0 (dimension unchanged)</i></font><br>
-<br>
-<font color="#008b00"><b>long</b></font>&nbsp;IsZero(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a);<br>
-<font color="#0000ed"><i>// test if a is the zero matrix (any dimension)</i></font><br>
-<br>
-<br>
-<font color="#0000ed"><i>// operator notation:</i></font><br>
-<br>
-mat_ZZ <font color="#b02f60"><b>operator</b></font>+(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; b);<br>
-mat_ZZ <font color="#b02f60"><b>operator</b></font>-(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; b);<br>
-mat_ZZ <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; b);<br>
-<br>
-mat_ZZ <font color="#b02f60"><b>operator</b></font>-(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a);<br>
-<br>
-<br>
-<font color="#0000ed"><i>// matrix/scalar multiplication:</i></font><br>
-<br>
-mat_ZZ <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; b);<br>
-mat_ZZ <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a, <font color="#008b00"><b>long</b></font>&nbsp;b);<br>
-<br>
-mat_ZZ <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; b);<br>
-mat_ZZ <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>long</b></font>&nbsp;a, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; b);<br>
-<br>
-<font color="#0000ed"><i>// matrix/vector multiplication:</i></font><br>
-<br>
-vec_ZZ <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;vec_ZZ&amp; b);<br>
-<br>
-vec_ZZ <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;vec_ZZ&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; b);<br>
-<br>
-<br>
-<br>
-<font color="#0000ed"><i>// assignment operator notation:</i></font><br>
-<br>
-mat_ZZ&amp; <font color="#b02f60"><b>operator</b></font>+=(mat_ZZ&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a);<br>
-mat_ZZ&amp; <font color="#b02f60"><b>operator</b></font>-=(mat_ZZ&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a);<br>
-mat_ZZ&amp; <font color="#b02f60"><b>operator</b></font>*=(mat_ZZ&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a);<br>
-<br>
-mat_ZZ&amp; <font color="#b02f60"><b>operator</b></font>*=(mat_ZZ&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; a);<br>
-mat_ZZ&amp; <font color="#b02f60"><b>operator</b></font>*=(mat_ZZ&amp; x, <font color="#008b00"><b>long</b></font>&nbsp;a);<br>
-<br>
-vec_ZZ&amp; <font color="#b02f60"><b>operator</b></font>*=(vec_ZZ&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_ZZ&amp; a);<br>
-<br>
-<br>
-</font></body>
+<body>
+<pre id='vimCodeElement'>
+
+<span class="Comment">/*</span><span class="Comment">*************************************************************************\</span>
+
+<span class="Comment">MODULE: mat_ZZ</span>
+
+<span class="Comment">SUMMARY:</span>
+
+<span class="Comment">Defines the class mat_ZZ.</span>
+
+<span class="Comment">\*************************************************************************</span><span class="Comment">*/</span>
+
+
+<span class="PreProc">#include </span><span class="String">&lt;NTL/matrix.h&gt;</span>
+<span class="PreProc">#include </span><span class="String">&lt;NTL/vec_vec_ZZ.h&gt;</span>
+
+<span class="Type">typedef</span> Mat&lt;ZZ&gt; mat_ZZ; <span class="Comment">// backward compatibility</span>
+
+<span class="Type">void</span> add(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">const</span> mat_ZZ&amp; B);
+<span class="Comment">// X = A + B</span>
+
+<span class="Type">void</span> sub(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">const</span> mat_ZZ&amp; B);
+<span class="Comment">// X = A - B</span>
+
+<span class="Type">void</span> negate(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A);
+<span class="Comment">// X = - A</span>
+
+<span class="Type">void</span> mul(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">const</span> mat_ZZ&amp; B);
+<span class="Comment">// X = A * B</span>
+
+<span class="Type">void</span> mul(vec_ZZ&amp; x, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">const</span> vec_ZZ&amp; b);
+<span class="Comment">// x = A * b</span>
+
+<span class="Type">void</span> mul(vec_ZZ&amp; x, <span class="Type">const</span> vec_ZZ&amp; a, <span class="Type">const</span> mat_ZZ&amp; B);
+<span class="Comment">// x = a * B</span>
+
+<span class="Type">void</span> mul(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">const</span> ZZ&amp; b);
+<span class="Type">void</span> mul(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">long</span> b);
+<span class="Comment">// X = A * b</span>
+
+<span class="Type">void</span> mul(mat_ZZ&amp; X, <span class="Type">const</span> ZZ&amp; a, <span class="Type">const</span> mat_ZZ&amp; B);
+<span class="Type">void</span> mul(mat_ZZ&amp; X, <span class="Type">long</span> a, <span class="Type">const</span> mat_ZZ&amp; B);
+<span class="Comment">// X = a * B</span>
+
+
+
+<span class="Type">void</span> determinant(ZZ&amp; d, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">long</span> deterministic=<span class="Constant">0</span>);
+ZZ determinant(<span class="Type">const</span> mat_ZZ&amp; a, <span class="Type">long</span> deterministic=<span class="Constant">0</span>);
+<span class="Comment">// d = determinant(A).  If !deterministic, a randomized strategy may</span>
+<span class="Comment">// be used that errs with probability at most 2^{-80}.</span>
+
+
+
+<span class="Type">void</span> solve(ZZ&amp; d, vec_ZZ&amp; x,
+           <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">const</span> vec_ZZ&amp; b,
+           <span class="Type">long</span> deterministic=<span class="Constant">0</span>)
+<span class="Comment">// computes d = determinant(A) and solves x*A = b*d if d != 0; A must</span>
+<span class="Comment">// be a square matrix and have compatible dimensions with b.  If</span>
+<span class="Comment">// !deterministic, the computation of d may use a randomized strategy</span>
+<span class="Comment">// that errs with probability 2^{-80}.</span>
+
+
+
+<span class="Type">void</span> solve1(ZZ&amp; d, vec_ZZ&amp; x, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">const</span> vec_ZZ&amp; b);
+<span class="Comment">// A must be a square matrix.</span>
+<span class="Comment">// If A is singular, this routine sets d = 0 and returns.</span>
+<span class="Comment">// Otherwise, it computes d, x such that x*A == b*d, </span>
+<span class="Comment">// such that d &gt; 0 and minimal.</span>
+<span class="Comment">// Note that d is a positive divisor of the determinant,</span>
+<span class="Comment">// and is not in general equal to the determinant.</span>
+<span class="Comment">// The routine is deterministic, and uses a Hensel lifting strategy.</span>
+
+<span class="Comment">// For backward compatability, there is also a routine called</span>
+<span class="Comment">// HenselSolve1 that simply calls solve1.</span>
+
+
+<span class="Type">void</span> inv(ZZ&amp; d, mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">long</span> deterministic=<span class="Constant">0</span>);
+<span class="Comment">// computes d = determinant(A) and solves X*A = I*d if d != 0; A must</span>
+<span class="Comment">// be a square matrix.  If !deterministic, the computation of d may</span>
+<span class="Comment">// use a randomized strategy that errs with probability 2^{-80}.</span>
+
+
+<span class="Comment">// NOTE:  See LLL.txt for routines that compute the kernel and</span>
+<span class="Comment">// image of an integer matrix.</span>
+
+<span class="Comment">// NOTE: See HNF.txt for a routine that computes Hermite Normal Forms.</span>
+
+<span class="Type">void</span> sqr(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A);
+mat_ZZ sqr(<span class="Type">const</span> mat_ZZ&amp; A);
+<span class="Comment">// X = A*A   </span>
+
+<span class="Type">void</span> inv(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A);
+mat_ZZ inv(<span class="Type">const</span> mat_ZZ&amp; A);
+<span class="Comment">// X = A^{-1}; error is raised if |det(A)| != 1.</span>
+
+<span class="Type">void</span> power(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">const</span> ZZ&amp; e);
+mat_ZZ power(<span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">const</span> ZZ&amp; e);
+
+<span class="Type">void</span> power(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">long</span> e);
+mat_ZZ power(<span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">long</span> e);
+<span class="Comment">// X = A^e; e may be negative (in which case A must be nonsingular).</span>
+
+
+
+<span class="Type">void</span> ident(mat_ZZ&amp; X, <span class="Type">long</span> n);
+mat_ZZ ident_mat_ZZ(<span class="Type">long</span> n);
+<span class="Comment">// X = n x n identity matrix</span>
+
+<span class="Type">long</span> IsIdent(<span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">long</span> n);
+<span class="Comment">// test if A is the n x n identity matrix</span>
+
+<span class="Type">void</span> diag(mat_ZZ&amp; X, <span class="Type">long</span> n, <span class="Type">const</span> ZZ&amp; d);
+mat_ZZ diag(<span class="Type">long</span> n, <span class="Type">const</span> ZZ&amp; d);
+<span class="Comment">// X = n x n diagonal matrix with d on diagonal</span>
+
+<span class="Type">long</span> IsDiag(<span class="Type">const</span> mat_ZZ&amp; A, <span class="Type">long</span> n, <span class="Type">const</span> ZZ&amp; d);
+<span class="Comment">// test if X is an  n x n diagonal matrix with d on diagonal</span>
+
+
+<span class="Type">void</span> transpose(mat_ZZ&amp; X, <span class="Type">const</span> mat_ZZ&amp; A);
+mat_ZZ transpose(<span class="Type">const</span> mat_ZZ&amp; A);
+<span class="Comment">// X = transpose of A</span>
+
+
+<span class="Type">long</span> CRT(mat_ZZ&amp; a, ZZ&amp; prod, <span class="Type">const</span> mat_zz_p&amp; A);
+<span class="Comment">// Incremental Chinese Remaindering: If p is the current zz_p modulus with</span>
+<span class="Comment">// (p, prod) = 1; Computes a' such that a' = a mod prod and a' = A mod p,</span>
+<span class="Comment">// with coefficients in the interval (-p*prod/2, p*prod/2]; </span>
+<span class="Comment">// Sets a := a', prod := p*prod, and returns 1 if a's value changed.</span>
+
+
+
+<span class="Comment">// miscellaneous:</span>
+
+<span class="Type">void</span> clear(mat_ZZ&amp; a);
+<span class="Comment">// x = 0 (dimension unchanged)</span>
+
+<span class="Type">long</span> IsZero(<span class="Type">const</span> mat_ZZ&amp; a);
+<span class="Comment">// test if a is the zero matrix (any dimension)</span>
+
+
+<span class="Comment">// operator notation:</span>
+
+mat_ZZ <span class="Statement">operator</span>+(<span class="Type">const</span> mat_ZZ&amp; a, <span class="Type">const</span> mat_ZZ&amp; b);
+mat_ZZ <span class="Statement">operator</span>-(<span class="Type">const</span> mat_ZZ&amp; a, <span class="Type">const</span> mat_ZZ&amp; b);
+mat_ZZ <span class="Statement">operator</span>*(<span class="Type">const</span> mat_ZZ&amp; a, <span class="Type">const</span> mat_ZZ&amp; b);
+
+mat_ZZ <span class="Statement">operator</span>-(<span class="Type">const</span> mat_ZZ&amp; a);
+
+
+<span class="Comment">// matrix/scalar multiplication:</span>
+
+mat_ZZ <span class="Statement">operator</span>*(<span class="Type">const</span> mat_ZZ&amp; a, <span class="Type">const</span> ZZ&amp; b);
+mat_ZZ <span class="Statement">operator</span>*(<span class="Type">const</span> mat_ZZ&amp; a, <span class="Type">long</span> b);
+
+mat_ZZ <span class="Statement">operator</span>*(<span class="Type">const</span> ZZ&amp; a, <span class="Type">const</span> mat_ZZ&amp; b);
+mat_ZZ <span class="Statement">operator</span>*(<span class="Type">long</span> a, <span class="Type">const</span> mat_ZZ&amp; b);
+
+<span class="Comment">// matrix/vector multiplication:</span>
+
+vec_ZZ <span class="Statement">operator</span>*(<span class="Type">const</span> mat_ZZ&amp; a, <span class="Type">const</span> vec_ZZ&amp; b);
+
+vec_ZZ <span class="Statement">operator</span>*(<span class="Type">const</span> vec_ZZ&amp; a, <span class="Type">const</span> mat_ZZ&amp; b);
+
+
+
+<span class="Comment">// assignment operator notation:</span>
+
+mat_ZZ&amp; <span class="Statement">operator</span>+=(mat_ZZ&amp; x, <span class="Type">const</span> mat_ZZ&amp; a);
+mat_ZZ&amp; <span class="Statement">operator</span>-=(mat_ZZ&amp; x, <span class="Type">const</span> mat_ZZ&amp; a);
+mat_ZZ&amp; <span class="Statement">operator</span>*=(mat_ZZ&amp; x, <span class="Type">const</span> mat_ZZ&amp; a);
+
+mat_ZZ&amp; <span class="Statement">operator</span>*=(mat_ZZ&amp; x, <span class="Type">const</span> ZZ&amp; a);
+mat_ZZ&amp; <span class="Statement">operator</span>*=(mat_ZZ&amp; x, <span class="Type">long</span> a);
+
+vec_ZZ&amp; <span class="Statement">operator</span>*=(vec_ZZ&amp; x, <span class="Type">const</span> mat_ZZ&amp; a);
+
+
+</pre>
+</body>
 </html>
+<!-- vim: set foldmethod=manual : -->

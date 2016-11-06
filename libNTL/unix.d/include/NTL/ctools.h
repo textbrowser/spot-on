@@ -8,10 +8,11 @@
 #include <NTL/HAVE_BUILTIN_CLZL.h>
 #include <NTL/HAVE_AVX.h>
 #include <NTL/HAVE_FMA.h>
+#include <NTL/HAVE_PCLMUL.h>
 
 
 /*
- * Resolve double-word integer types.
+ * Resolve double-word integer type.
  *
  * Unfortunately, there is no "standard" way to do this.
  * On 32-bit machines, 'long long' usually works (but not
@@ -20,35 +21,10 @@
  * non-standard double-word type.  
  *
  * Note that C99 creates a standard header <stdint.h>,
- * but it is not clear how widely this is implemented yet,
- * and for example, GCC does not provide a type int128_t 
+ * but it is not clear how widely this is implemented,
+ * and for example, older versions of GCC does not provide a type int128_t 
  * in <stdint.h> on 64-bit machines.
  */
-
-
-#if (defined(NTL_LONG_LONG_TYPE))
-
-#define NTL_LL_TYPE NTL_LONG_LONG_TYPE
-
-#elif (NTL_BITS_PER_LONG == 64 && defined(__GNUC__))
-
-#define NTL_LL_TYPE __int128_t
-
-#elif (NTL_BITS_PER_LONG == 32 && (defined(_MSC_VER) || defined(__BORLANDC__)))
-
-#define NTL_LL_TYPE __int64
-
-#elif (NTL_BITS_PER_LONG == 64 && (defined(_MSC_VER) || defined(__BORLANDC__)))
-
-#define NTL_LL_TYPE __int128
-
-#endif
-
-#if (!defined(NTL_LL_TYPE))
-
-#define NTL_LL_TYPE long long
-
-#endif
 
 
 
@@ -79,17 +55,14 @@
 
 #ifdef NTL_HAVE_LL_TYPE
 
-typedef NTL_LL_TYPE _ntl_longlong;
 typedef NTL_ULL_TYPE _ntl_ulonglong;
 // typenames are more convenient than macros
 
 #else
 
-#undef NTL_LL_TYPE
 #undef NTL_ULL_TYPE
 // prevent any use of these macros
 
-class _ntl_longlong { private: _ntl_longlong() { } };
 class _ntl_ulonglong { private: _ntl_ulonglong() { } };
 // cannot create variables of these types
 
@@ -426,7 +399,6 @@ void _ntl_swap(T*& a, T*& b)
 static inline
 char *_ntl_make_aligned(char *p, long align)
 {
-  (void) align;
    return p;
 }
 
@@ -475,7 +447,32 @@ char *_ntl_make_aligned(char *p, long align)
 // and it should also be as big as a cache line
 
 
-   
+
+#ifdef NTL_HAVE_BUILTIN_CLZL
+
+static inline long 
+_ntl_count_bits(unsigned long x)
+{
+   return x ? (NTL_BITS_PER_LONG - __builtin_clzl(x)) : 0;
+}
+
+#else
+
+static inline long 
+_ntl_count_bits(unsigned long x)
+{
+   if (!x) return 0;
+
+   long res = NTL_BITS_PER_LONG;
+   while (x < (1UL << (NTL_BITS_PER_LONG-1))) {
+      x <<= 1;
+      res--;
+   }
+
+   return res;
+}
+
+#endif
 
 #endif
 

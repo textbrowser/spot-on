@@ -104,27 +104,12 @@ It seems fairly unlikely that one would ever have to turn the
 <tt>NTL_CLEAN_INT</tt> flag <i>on</i>, but it seems a good idea
 to make this possible, and at the very least 
 to identify and isolate the code that
-relies on this assumption.
-The only code affected by this flag
-is the traditional LIP long integer package (which, if you use
-GMP as the long integer package, is not involved),
-and the single-precision modular multiplication routines.
-
-<p>
-Note that prior to NTL 9.0, the default compilation mode required
-that in a few critical places, <i>signed</i> integer arithmetic quietly wraps around
-on overflow; however, signed integer overflow is <i>undefined behavior</i>,
-and it seems that in recent years compilers have been getting
-more aggressive in exploiting such undefined behavior in their optimizations.
-Moreover, recent versions of GCC now come with a "sanitizer" that checks
-for undefined behavior.
-So, both to avoid potentially dangerous optimizations and to allow
-NTL to pass such sanitzer checks, it seemed safer to move to this
-more conservative approach.
-There should, in fact, be zero performance penalty in doing so.
-Also note that I was never aware of any compiler that generated incorrect
-code in the pre-9.0 code: this new approach is just to be on the safe side
-in the future.
+relies on these asumptions.
+Actually, the most recent versions of NTL (especially
+since v10.0), there is very
+little such code remaining, and it is not really all that critical
+to performance any more.
+Eventually, all such code may disappear completely.
 
 
 
@@ -157,7 +142,7 @@ penalty should be negligible for most applications.
 
 
 <p>
-NTL uses floating point arithmetic in a number of places,
+NTL uses floating point arithmetic in a few places,
 including a number of exact computations, where one might
 not expect to see floating point.
 Relying on floating point may seem prone to errors,
@@ -185,45 +170,22 @@ multiplication by powers of 2 produce <i>exact</i> results (assuming no overflow
 <li>
 basic arithmetic operations on integers represented as doubles and conversions from integral types
 to doubles produce <i>exact</i> results, provided the inputs and outputs
-are less than <tt>2^p</tt> in absolute value,
-<li>
-assuming no overflow, <tt>x - long(x)</tt> produces an exact result for nonnegative <tt>x</tt>.
+are less than <tt>2^p</tt> in absolute value.
 </ul>
 
 <p>
-It is also generally assumed that the compiler does not
-do too much "regrouping" of arithmetic expressions involving
-floating point.
-Most compilers respect the implied grouping of floating point
-computations, and NTL goes out of its way to make its
-intentions clear: instead of <tt>x = (a + b) + c</tt>,
-if the grouping is truly important, this is written 
-as <tt>t = a + b; x = t + c</tt>.
-Current standards do not allow, and most implementations will not 
-perform, any regrouping of this, e.g., <tt>x = a + (b + c)</tt>,
-since in floating point, addition and subtraction are not 
-associative.
+The most recent versions of NTL in fact make much less use
+of floating point than older versions.
+Also, with few exceptions, the current version of NTL lets 
+an aggressive optimizing compiler (such as Intel's <tt>icc</tt>)
+get away with quite a lot: computations may be regrouped rather
+arbitrarily, and <tt>x / y </tt> may be computed
+as <tt>x * (1/y) </tt>.
+The only exception to this is the <tt>quad_float</tt> module
+(see below).
 
-<p>
-Unfortunately, some compilers do not do this correctly,
-unless you tell them.
-With Intel's C compiler <tt>icc</tt>, for example,
-you should compile NTL with the flag <tt>-fp-model strict</tt>
-to enforce strict adherence to floating point standards.
-That said, some effort has been made to ensure that NTL
-works correctly even if the compiler does perform such
-regrouping, including replacement of <tt>x/y</tt> 
-by <tt>x*(1/y)</tt>.
 
-<p>
-Also, you should be wary of compiling using an optimization
-level higher than the default <tt>-O2</tt> --
-this may break some floating point assumptions (and maybe
-some other assumptions as well).
 
-<p>
-In any case, programs that compile against NTL header files
-should compile correctly, even under very aggressive optimizations.
 
 <p>
 One big problem with the IEEE standard is that it allows intermediate
@@ -252,6 +214,22 @@ are the <tt>LLL_QP</tt> routines in the <tt>LLL</tt> module -- the
 rest of NTL should work fine.
 Hopefully, because of the newer SSE instructions, this whole strict/loose
 issue is a thing of the past.
+
+<p>
+Besides the <tt>quad_float</tt> module,
+there are a few other places in NTL where doubles are forced to memory
+to get rid of excess precsion.
+This is done by passing a pointer to the
+double to an externally defined
+function.
+Theoretically, link-time optimizers could mess this up,
+and this solution would have to be revisited.
+That said, hopefully this whole strict/loose issue
+is no longer relevant, and also, the code that relies
+on this is specialized floating point code that is not
+really on a critical path.
+So it seems unlikely that this will ever be an issue.
+
 
 <p>
 Another problem is that some hardware (especially newer Intel chips)
@@ -312,6 +290,7 @@ and
 
 <p>
 <h3>
+<a name="threadimpl">
 Thread safety
 </h3>
 <p>
@@ -338,10 +317,10 @@ or on Mac OSX 10.10  and above.
 
 </ul>
 
-<p> <li>
-You must build NTL using GMP (i.e., configure with <tt>NTL_GMP_LIP=on</tt>).
-The classic LIP integer arithmetic is not thread safe: it could
-be made so, but it is not a priority at this time.
+<p>
+<li>
+Prior to v10.0 of NTL, you had to use NTL with GMP to get thread safety.
+Since v10.0, this requirement has been dropped.
 
 <p>
 <li>
@@ -423,7 +402,8 @@ for more information.
 
 <p>
 This feature is a work in progress.
-Currently, basic <tt>ZZ_pX</tt> arithmetic has been thread boosted.
+Currently, basic <tt>ZZ_pX</tt> and <tt>Mat&lt;zz_p&gt;</tt>
+arithmetic has been thread boosted.
 More code will be boosted later.
 
 

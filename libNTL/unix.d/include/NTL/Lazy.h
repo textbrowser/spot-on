@@ -198,6 +198,8 @@ public:
    };
 };
 
+// NOTE: Lazy's are non-relocatable
+
 
 NTL_CLOSE_NNS
 

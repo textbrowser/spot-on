@@ -1,152 +1,177 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>/Volumes/unix-files/u/ntl-new/ntl-9.10.0dev/doc/mat_RR.cpp.html</title>
-<meta name="Generator" content="Vim/7.1">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>~/jjj/ntl-10.1.0dev/doc/mat_RR.cpp.html</title>
+<meta name="Generator" content="Vim/7.4">
+<meta name="plugin-version" content="vim7.4_v2">
+<meta name="syntax" content="cpp">
+<meta name="settings" content="use_css,pre_wrap,no_foldcolumn,expand_tabs,prevent_copy=">
+<meta name="colorscheme" content="macvim">
+<style type="text/css">
+<!--
+pre { white-space: pre-wrap; font-family: monospace; color: #000000; background-color: #ffffff; }
+body { font-family: monospace; color: #000000; background-color: #ffffff; }
+* { font-size: 1em; }
+.String { color: #4a708b; }
+.Statement { color: #b03060; font-weight: bold; }
+.Comment { color: #0000ee; font-style: italic; }
+.Type { color: #008b00; font-weight: bold; }
+.PreProc { color: #1874cd; }
+-->
+</style>
+
+<script type='text/javascript'>
+<!--
+
+-->
+</script>
 </head>
-<body bgcolor="#ffffff" text="#000000"><font face="monospace">
-<br>
-<font color="#0000ed"><i>/*</i></font><font color="#0000ed"><i>*************************************************************************\</i></font><br>
-<br>
-<font color="#0000ed"><i>MODULE: mat_RR</i></font><br>
-<br>
-<font color="#0000ed"><i>SUMMARY:</i></font><br>
-<br>
-<font color="#0000ed"><i>Defines the class mat_RR.</i></font><br>
-<br>
-<font color="#0000ed"><i>\*************************************************************************</i></font><font color="#0000ed"><i>*/</i></font><br>
-<br>
-<br>
-<font color="#1773cc">#include </font><font color="#4a6f8b">&lt;NTL/matrix.h&gt;</font><br>
-<font color="#1773cc">#include </font><font color="#4a6f8b">&lt;NTL/vec_vec_RR.h&gt;</font><br>
-<br>
-<font color="#008b00"><b>typedef</b></font>&nbsp;Mat&lt;RR&gt; mat_RR; <font color="#0000ed"><i>// backward compatibility</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;add(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; B); <br>
-<font color="#0000ed"><i>// X = A + B</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;sub(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; B); <br>
-<font color="#0000ed"><i>// X = A - B</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;negate(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A); <br>
-<font color="#0000ed"><i>// X = - A</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; B); <br>
-<font color="#0000ed"><i>// X = A * B</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(vec_RR&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;vec_RR&amp; b); <br>
-<font color="#0000ed"><i>// x = A * b</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(vec_RR&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;vec_RR&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; B); <br>
-<font color="#0000ed"><i>// x = a * B</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;RR&amp; b);<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>double</b></font>&nbsp;b);<br>
-<font color="#0000ed"><i>// X = A * b</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;RR&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; B);<br>
-<font color="#008b00"><b>void</b></font>&nbsp;mul(mat_RR&amp; X, <font color="#008b00"><b>double</b></font>&nbsp;a, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; B);<br>
-<font color="#0000ed"><i>// X = a * B</i></font><br>
-<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;determinant(RR&amp; d, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A);<br>
-RR determinant(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A);<br>
-<font color="#0000ed"><i>// d = determinant(A)</i></font><br>
-<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;transpose(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A);<br>
-mat_RR transpose(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A);<br>
-<font color="#0000ed"><i>// X = transpose of A</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;solve(RR&amp; d, vec_RR&amp; X,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;vec_RR&amp; b);<br>
-<font color="#0000ed"><i>// A is an n x n matrix, b is a length n vector.&nbsp;&nbsp;Computes d =</i></font><br>
-<font color="#0000ed"><i>// determinant(A).&nbsp;&nbsp;If d != 0, solves x*A = b.</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;inv(RR&amp; d, mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A);<br>
-<font color="#0000ed"><i>// A is an n x n matrix.&nbsp;&nbsp;Computes d = determinant(A).&nbsp;&nbsp;If d != 0,</i></font><br>
-<font color="#0000ed"><i>// computes X = A^{-1}.</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;sqr(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A);<br>
-mat_RR sqr(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A);<br>
-<font color="#0000ed"><i>// X = A*A</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;inv(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A);<br>
-mat_RR inv(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A);<br>
-<font color="#0000ed"><i>// X = A^{-1}; error is raised if A is&nbsp;&nbsp;singular</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;power(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; e);<br>
-mat_RR power(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; e);<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;power(mat_RR&amp; X, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;e);<br>
-mat_RR power(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;e);<br>
-<font color="#0000ed"><i>// X = A^e; e may be negative (in which case A must be nonsingular).</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;ident(mat_RR&amp; X, <font color="#008b00"><b>long</b></font>&nbsp;n);<br>
-mat_RR ident_mat_RR(<font color="#008b00"><b>long</b></font>&nbsp;n);<br>
-<font color="#0000ed"><i>// X = n x n identity matrix</i></font><br>
-<br>
-<font color="#008b00"><b>long</b></font>&nbsp;IsIdent(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;n);<br>
-<font color="#0000ed"><i>// test if A is the n x n identity matrix</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;diag(mat_RR&amp; X, <font color="#008b00"><b>long</b></font>&nbsp;n, <font color="#008b00"><b>const</b></font>&nbsp;RR&amp; d);<br>
-mat_RR diag(<font color="#008b00"><b>long</b></font>&nbsp;n, <font color="#008b00"><b>const</b></font>&nbsp;RR&amp; d);<br>
-<font color="#0000ed"><i>// X = n x n diagonal matrix with d on diagonal</i></font><br>
-<br>
-<font color="#008b00"><b>long</b></font>&nbsp;IsDiag(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; A, <font color="#008b00"><b>long</b></font>&nbsp;n, <font color="#008b00"><b>const</b></font>&nbsp;RR&amp; d);<br>
-<font color="#0000ed"><i>// test if X is an&nbsp;&nbsp;n x n diagonal matrix with d on diagonal</i></font><br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<font color="#0000ed"><i>// miscellaneous:</i></font><br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;clear(mat_RR&amp; a);<br>
-<font color="#0000ed"><i>// x = 0 (dimension unchanged)</i></font><br>
-<br>
-<font color="#008b00"><b>long</b></font>&nbsp;IsZero(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a);<br>
-<font color="#0000ed"><i>// test if a is the zero matrix (any dimension)</i></font><br>
-<br>
-<br>
-<font color="#0000ed"><i>// operator notation:</i></font><br>
-<br>
-mat_RR <font color="#b02f60"><b>operator</b></font>+(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; b);<br>
-mat_RR <font color="#b02f60"><b>operator</b></font>-(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; b);<br>
-mat_RR <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; b);<br>
-<br>
-mat_RR <font color="#b02f60"><b>operator</b></font>-(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a);<br>
-<br>
-<br>
-<font color="#0000ed"><i>// matrix/scalar multiplication:</i></font><br>
-<br>
-mat_RR <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;RR&amp; b);<br>
-mat_RR <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a, <font color="#008b00"><b>double</b></font>&nbsp;b);<br>
-<br>
-mat_RR <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;RR&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; b);<br>
-mat_RR <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>double</b></font>&nbsp;a, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; b);<br>
-<br>
-<br>
-<font color="#0000ed"><i>// matrix/vector multiplication:</i></font><br>
-<br>
-vec_RR <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;vec_RR&amp; b);<br>
-<br>
-vec_RR <font color="#b02f60"><b>operator</b></font>*(<font color="#008b00"><b>const</b></font>&nbsp;vec_RR&amp; a, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; b);<br>
-<br>
-<br>
-<font color="#0000ed"><i>// assignment operator notation:</i></font><br>
-<br>
-mat_RR&amp; <font color="#b02f60"><b>operator</b></font>+=(mat_RR&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a);<br>
-mat_RR&amp; <font color="#b02f60"><b>operator</b></font>-=(mat_RR&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a);<br>
-mat_RR&amp; <font color="#b02f60"><b>operator</b></font>*=(mat_RR&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a);<br>
-<br>
-mat_RR&amp; <font color="#b02f60"><b>operator</b></font>*=(mat_RR&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;RR&amp; a);<br>
-mat_RR&amp; <font color="#b02f60"><b>operator</b></font>*=(mat_RR&amp; x, <font color="#008b00"><b>double</b></font>&nbsp;a);<br>
-<br>
-vec_RR&amp; <font color="#b02f60"><b>operator</b></font>*=(vec_RR&amp; x, <font color="#008b00"><b>const</b></font>&nbsp;mat_RR&amp; a);<br>
-<br>
-<br>
-<br>
-</font></body>
+<body>
+<pre id='vimCodeElement'>
+
+<span class="Comment">/*</span><span class="Comment">*************************************************************************\</span>
+
+<span class="Comment">MODULE: mat_RR</span>
+
+<span class="Comment">SUMMARY:</span>
+
+<span class="Comment">Defines the class mat_RR.</span>
+
+<span class="Comment">\*************************************************************************</span><span class="Comment">*/</span>
+
+
+<span class="PreProc">#include </span><span class="String">&lt;NTL/matrix.h&gt;</span>
+<span class="PreProc">#include </span><span class="String">&lt;NTL/vec_vec_RR.h&gt;</span>
+
+<span class="Type">typedef</span> Mat&lt;RR&gt; mat_RR; <span class="Comment">// backward compatibility</span>
+
+<span class="Type">void</span> add(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A, <span class="Type">const</span> mat_RR&amp; B);
+<span class="Comment">// X = A + B</span>
+
+<span class="Type">void</span> sub(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A, <span class="Type">const</span> mat_RR&amp; B);
+<span class="Comment">// X = A - B</span>
+
+<span class="Type">void</span> negate(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A);
+<span class="Comment">// X = - A</span>
+
+<span class="Type">void</span> mul(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A, <span class="Type">const</span> mat_RR&amp; B);
+<span class="Comment">// X = A * B</span>
+
+<span class="Type">void</span> mul(vec_RR&amp; x, <span class="Type">const</span> mat_RR&amp; A, <span class="Type">const</span> vec_RR&amp; b);
+<span class="Comment">// x = A * b</span>
+
+<span class="Type">void</span> mul(vec_RR&amp; x, <span class="Type">const</span> vec_RR&amp; a, <span class="Type">const</span> mat_RR&amp; B);
+<span class="Comment">// x = a * B</span>
+
+<span class="Type">void</span> mul(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A, <span class="Type">const</span> RR&amp; b);
+<span class="Type">void</span> mul(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A, <span class="Type">double</span> b);
+<span class="Comment">// X = A * b</span>
+
+<span class="Type">void</span> mul(mat_RR&amp; X, <span class="Type">const</span> RR&amp; a, <span class="Type">const</span> mat_RR&amp; B);
+<span class="Type">void</span> mul(mat_RR&amp; X, <span class="Type">double</span> a, <span class="Type">const</span> mat_RR&amp; B);
+<span class="Comment">// X = a * B</span>
+
+
+<span class="Type">void</span> determinant(RR&amp; d, <span class="Type">const</span> mat_RR&amp; A);
+RR determinant(<span class="Type">const</span> mat_RR&amp; A);
+<span class="Comment">// d = determinant(A)</span>
+
+
+<span class="Type">void</span> transpose(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A);
+mat_RR transpose(<span class="Type">const</span> mat_RR&amp; A);
+<span class="Comment">// X = transpose of A</span>
+
+<span class="Type">void</span> solve(RR&amp; d, vec_RR&amp; X,
+           <span class="Type">const</span> mat_RR&amp; A, <span class="Type">const</span> vec_RR&amp; b);
+<span class="Comment">// A is an n x n matrix, b is a length n vector.  Computes d =</span>
+<span class="Comment">// determinant(A).  If d != 0, solves x*A = b.</span>
+
+<span class="Type">void</span> inv(RR&amp; d, mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A);
+<span class="Comment">// A is an n x n matrix.  Computes d = determinant(A).  If d != 0,</span>
+<span class="Comment">// computes X = A^{-1}.</span>
+
+<span class="Type">void</span> sqr(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A);
+mat_RR sqr(<span class="Type">const</span> mat_RR&amp; A);
+<span class="Comment">// X = A*A</span>
+
+<span class="Type">void</span> inv(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A);
+mat_RR inv(<span class="Type">const</span> mat_RR&amp; A);
+<span class="Comment">// X = A^{-1}; error is raised if A is  singular</span>
+
+<span class="Type">void</span> power(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A, <span class="Type">const</span> ZZ&amp; e);
+mat_RR power(<span class="Type">const</span> mat_RR&amp; A, <span class="Type">const</span> ZZ&amp; e);
+
+<span class="Type">void</span> power(mat_RR&amp; X, <span class="Type">const</span> mat_RR&amp; A, <span class="Type">long</span> e);
+mat_RR power(<span class="Type">const</span> mat_RR&amp; A, <span class="Type">long</span> e);
+<span class="Comment">// X = A^e; e may be negative (in which case A must be nonsingular).</span>
+
+<span class="Type">void</span> ident(mat_RR&amp; X, <span class="Type">long</span> n);
+mat_RR ident_mat_RR(<span class="Type">long</span> n);
+<span class="Comment">// X = n x n identity matrix</span>
+
+<span class="Type">long</span> IsIdent(<span class="Type">const</span> mat_RR&amp; A, <span class="Type">long</span> n);
+<span class="Comment">// test if A is the n x n identity matrix</span>
+
+<span class="Type">void</span> diag(mat_RR&amp; X, <span class="Type">long</span> n, <span class="Type">const</span> RR&amp; d);
+mat_RR diag(<span class="Type">long</span> n, <span class="Type">const</span> RR&amp; d);
+<span class="Comment">// X = n x n diagonal matrix with d on diagonal</span>
+
+<span class="Type">long</span> IsDiag(<span class="Type">const</span> mat_RR&amp; A, <span class="Type">long</span> n, <span class="Type">const</span> RR&amp; d);
+<span class="Comment">// test if X is an  n x n diagonal matrix with d on diagonal</span>
+
+
+
+
+
+<span class="Comment">// miscellaneous:</span>
+
+<span class="Type">void</span> clear(mat_RR&amp; a);
+<span class="Comment">// x = 0 (dimension unchanged)</span>
+
+<span class="Type">long</span> IsZero(<span class="Type">const</span> mat_RR&amp; a);
+<span class="Comment">// test if a is the zero matrix (any dimension)</span>
+
+
+<span class="Comment">// operator notation:</span>
+
+mat_RR <span class="Statement">operator</span>+(<span class="Type">const</span> mat_RR&amp; a, <span class="Type">const</span> mat_RR&amp; b);
+mat_RR <span class="Statement">operator</span>-(<span class="Type">const</span> mat_RR&amp; a, <span class="Type">const</span> mat_RR&amp; b);
+mat_RR <span class="Statement">operator</span>*(<span class="Type">const</span> mat_RR&amp; a, <span class="Type">const</span> mat_RR&amp; b);
+
+mat_RR <span class="Statement">operator</span>-(<span class="Type">const</span> mat_RR&amp; a);
+
+
+<span class="Comment">// matrix/scalar multiplication:</span>
+
+mat_RR <span class="Statement">operator</span>*(<span class="Type">const</span> mat_RR&amp; a, <span class="Type">const</span> RR&amp; b);
+mat_RR <span class="Statement">operator</span>*(<span class="Type">const</span> mat_RR&amp; a, <span class="Type">double</span> b);
+
+mat_RR <span class="Statement">operator</span>*(<span class="Type">const</span> RR&amp; a, <span class="Type">const</span> mat_RR&amp; b);
+mat_RR <span class="Statement">operator</span>*(<span class="Type">double</span> a, <span class="Type">const</span> mat_RR&amp; b);
+
+
+<span class="Comment">// matrix/vector multiplication:</span>
+
+vec_RR <span class="Statement">operator</span>*(<span class="Type">const</span> mat_RR&amp; a, <span class="Type">const</span> vec_RR&amp; b);
+
+vec_RR <span class="Statement">operator</span>*(<span class="Type">const</span> vec_RR&amp; a, <span class="Type">const</span> mat_RR&amp; b);
+
+
+<span class="Comment">// assignment operator notation:</span>
+
+mat_RR&amp; <span class="Statement">operator</span>+=(mat_RR&amp; x, <span class="Type">const</span> mat_RR&amp; a);
+mat_RR&amp; <span class="Statement">operator</span>-=(mat_RR&amp; x, <span class="Type">const</span> mat_RR&amp; a);
+mat_RR&amp; <span class="Statement">operator</span>*=(mat_RR&amp; x, <span class="Type">const</span> mat_RR&amp; a);
+
+mat_RR&amp; <span class="Statement">operator</span>*=(mat_RR&amp; x, <span class="Type">const</span> RR&amp; a);
+mat_RR&amp; <span class="Statement">operator</span>*=(mat_RR&amp; x, <span class="Type">double</span> a);
+
+vec_RR&amp; <span class="Statement">operator</span>*=(vec_RR&amp; x, <span class="Type">const</span> mat_RR&amp; a);
+
+
+
+</pre>
+</body>
 </html>
+<!-- vim: set foldmethod=manual : -->

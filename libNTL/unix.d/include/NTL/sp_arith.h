@@ -42,6 +42,16 @@ NTL_OPEN_NNS
 
 #define NTL_HAVE_MULMOD_T
 
+#if (defined(NTL_SPMM_ULL) && defined(NTL_HAVE_LL_TYPE))
+// we only honor SPMM_ULL if we have LL
+#define NTL_SPMM_ULL_VIABLE
+
+#elif (defined(NTL_SPMM_ULL) && defined(NTL_WIZARD_HACK))
+// raise an error when running the wizard and we cannot honor SPMM_ULL
+#error "cannot honor NTL_SPMM_ULL"
+
+#endif
+
 
 
 #if 0
@@ -64,6 +74,7 @@ static inline double PrepMulMod(long n)
 
 static inline double PrepMulDivRem(long b, long n, double ninv)
 {
+   (void) n;
    return double(b)*ninv;
 }
 
@@ -114,7 +125,7 @@ long sp_CorrectDeficit(unsigned long a, long n):
 // and that long(a) >= -n 
 
 long sp_CorrectExcess(long a, long n) 
-long sp_CorrectDeficit(unsigned long a, long n): 
+long sp_CorrectExcess(unsigned long a, long n): 
 // if (a < n) then a else a-n
 
 // For the signed version, it is assumed that a >= 0.
@@ -354,25 +365,6 @@ long NegateMod(long a, long n)
    return SubMod(0, a, n);
 }
 
-// definition of MulhiUL, using either assembly or ULL type
-#if (defined(NTL_SPMM_ASM))
-#define NTL_HAVE_MULHI
-
-// assmbly code versions
-#include <NTL/SPMM_ASM.h>
-
-
-#elif (defined(NTL_SPMM_ULL) || defined(NTL_HAVE_LL_TYPE))
-#define NTL_HAVE_MULHI
-
-static inline unsigned long 
-MulHiUL(unsigned long a, unsigned long b)
-{
-   return (((NTL_ULL_TYPE)(a)) * ((NTL_ULL_TYPE)(b))) >> NTL_BITS_PER_LONG;
-} 
-#endif
-
-
 
 
 
@@ -488,7 +480,7 @@ static inline wide_double PrepMulMod(long n)
 
 static inline wide_double PrepMulDivRem(long b, long n, wide_double ninv)
 {
-  (void) n;
+   (void) n;
    return wide_double(b)*ninv;
 }
 
@@ -678,7 +670,7 @@ sp_NormalizedMulMod(long a, long b, long n, unsigned long ninv)
    ll_type U;
    ll_imul(U, a, b);
    unsigned long H = ll_rshift_get_lo<NTL_SP_NBITS-2>(U);
-   unsigned long Q = MulHiUL(H, ninv);
+   unsigned long Q = ll_mul_hi(H, ninv);
    Q = Q >> NTL_POST_SHIFT;
    unsigned long L = ll_get_lo(U);
    long r = L - Q*cast_unsigned(n);  // r in [0..2*n)
@@ -716,7 +708,7 @@ sp_NormalizedMulModWithQuo(long& qres, long a, long b, long n, unsigned long nin
    ll_type U;
    ll_imul(U, a, b);
    unsigned long H = ll_rshift_get_lo<NTL_SP_NBITS-2>(U);
-   unsigned long Q = MulHiUL(H, ninv);
+   unsigned long Q = ll_mul_hi(H, ninv);
    Q = Q >> NTL_POST_SHIFT;
    unsigned long L = ll_get_lo(U);
    long r = L - Q*cast_unsigned(n);  // r in [0..2*n)
@@ -739,7 +731,7 @@ MulModWithQuo(long& qres, long a, long b, long n, sp_inverse ninv)
 
 
 
-#if (defined(NTL_SPMM_ULL) || defined(NTL_SPMM_ASM) || defined(NTL_LONGLONG_SP_MULMOD))
+#if (defined(NTL_SPMM_ULL_VIABLE) || defined(NTL_LONGLONG_SP_MULMOD))
 
 
 typedef unsigned long mulmod_precon_t;
@@ -749,6 +741,7 @@ typedef unsigned long mulmod_precon_t;
 
 static inline unsigned long PrepMulModPrecon(long b, long n, wide_double ninv)
 {
+   (void) n;
    long q  = (long) ( (((wide_double) b) * wide_double(NTL_SP_BOUND)) * ninv ); 
    unsigned long rr = (cast_unsigned(b) << NTL_SP_NBITS) - cast_unsigned(q)*cast_unsigned(n);
 
@@ -764,7 +757,7 @@ static inline unsigned long
 sp_NormalizedPrepMulModPrecon(long b, long n, unsigned long ninv)
 {
    unsigned long H = cast_unsigned(b) << 2;
-   unsigned long Q = MulHiUL(H, ninv);
+   unsigned long Q = ll_mul_hi(H, ninv);
    Q = Q >> NTL_POST_SHIFT;
    unsigned long L = cast_unsigned(b) << NTL_SP_NBITS;
    long r = L - Q*cast_unsigned(n);  // r in [0..2*n)
@@ -793,7 +786,7 @@ PrepMulModPrecon(long b, long n, sp_inverse ninv)
 
 static inline long MulModPrecon(long a, long b, long n, unsigned long bninv)
 {
-   unsigned long qq = MulHiUL(a, bninv);
+   unsigned long qq = ll_mul_hi(a, bninv);
    unsigned long rr = cast_unsigned(a)*cast_unsigned(b) - qq*cast_unsigned(n);
    return sp_CorrectExcess(long(rr), n);
 }
@@ -802,7 +795,7 @@ static inline long MulModPrecon(long a, long b, long n, unsigned long bninv)
 
 static inline long MulModPreconWithQuo(long& qres, long a, long b, long n, unsigned long bninv)
 {
-   unsigned long qq = MulHiUL(a, bninv);
+   unsigned long qq = ll_mul_hi(a, bninv);
    unsigned long rr = cast_unsigned(a)*cast_unsigned(b) - qq*cast_unsigned(n);
    long r = sp_CorrectExcessQuo(qq, long(rr), n);
    qres = long(qq);
@@ -820,7 +813,6 @@ typedef wide_double mulmod_precon_t;
 
 static inline wide_double PrepMulModPrecon(long b, long n, wide_double ninv)
 {
-  (void) n;
    return ((wide_double) b) * ninv;
 }
 
@@ -937,7 +929,7 @@ void VectorMulMod(long k, long *x, const long *a, long b, long n)
    VectorMulMod(k, x, a, b, n, ninv);
 }
 
-#ifdef NTL_HAVE_MULHI
+#ifdef NTL_HAVE_LL_TYPE
 
 
 struct sp_reduce_struct {
@@ -968,7 +960,7 @@ sp_reduce_struct sp_PrepRem(long n)
 static inline
 long rem(unsigned long a, long n, sp_reduce_struct red) 
 {
-   unsigned long Q = MulHiUL(a, red.ninv);
+   unsigned long Q = ll_mul_hi(a, red.ninv);
    long r = a - Q*cast_unsigned(n);
    r = sp_CorrectExcess(r, n);
    return r;
@@ -1051,7 +1043,7 @@ sp_ll_red_21(unsigned long hi, unsigned long lo, long d,
 {
    unsigned long H = 
       (hi << (NTL_BITS_PER_LONG-dinv.nbits)) | (lo >> dinv.nbits);
-   unsigned long Q = MulHiUL(H, dinv.inv) + H;
+   unsigned long Q = ll_mul_hi(H, dinv.inv) + H;
    unsigned long rr = lo - Q*cast_unsigned(d); // rr in [0..4*d)
    long r = sp_CorrectExcess(rr, 2*d); // r in [0..2*d)
    r = sp_CorrectExcess(r, d);
@@ -1088,7 +1080,7 @@ sp_ll_red_21_normalized(unsigned long hi, unsigned long lo, long d,
 {
    unsigned long H = 
       (hi << (NTL_BITS_PER_LONG-NTL_SP_NBITS)) | (lo >> NTL_SP_NBITS);
-   unsigned long Q = MulHiUL(H, dinv.inv) + H;
+   unsigned long Q = ll_mul_hi(H, dinv.inv) + H;
    unsigned long rr = lo - Q*cast_unsigned(d); // rr in [0..4*d)
    long r = sp_CorrectExcess(rr, 2*d); // r in [0..2*d)
    r = sp_CorrectExcess(r, d);

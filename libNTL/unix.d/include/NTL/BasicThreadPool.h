@@ -564,6 +564,10 @@ public:
 
 
 
+// NOTE: BasicThreadPool's are non-relocatable
+
+
+
 NTL_CLOSE_NNS
 
 

@@ -28,3 +28,5 @@ done
 cp ../include/NTL/def_config.h unix/include/NTL/config.h
 cp def_makefile unix/src/makefile
 sh ResetFeatures unix
+cp -R libtool-seed unix/src
+cp -R libtool-origin unix/src

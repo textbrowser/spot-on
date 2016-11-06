@@ -41,7 +41,7 @@ void operator=(const GF2Push&); // disabled
 
 public:
 GF2Push() { }
- explicit GF2Push(const GF2Context& context) { (void) context;}
+explicit GF2Push(const GF2Context& context) { (void) context;}
 explicit GF2Push(long p) { if (p != 2) LogicError("GF2Push with p != 2"); }
 
 

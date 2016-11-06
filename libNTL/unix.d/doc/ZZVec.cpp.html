@@ -1,78 +1,103 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>/Volumes/unix-files/u/ntl-new/ntl-9.10.0dev/doc/ZZVec.cpp.html</title>
-<meta name="Generator" content="Vim/7.1">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>~/jjj/ntl-10.1.0dev/doc/ZZVec.cpp.html</title>
+<meta name="Generator" content="Vim/7.4">
+<meta name="plugin-version" content="vim7.4_v2">
+<meta name="syntax" content="cpp">
+<meta name="settings" content="use_css,pre_wrap,no_foldcolumn,expand_tabs,prevent_copy=">
+<meta name="colorscheme" content="macvim">
+<style type="text/css">
+<!--
+pre { white-space: pre-wrap; font-family: monospace; color: #000000; background-color: #ffffff; }
+body { font-family: monospace; color: #000000; background-color: #ffffff; }
+* { font-size: 1em; }
+.String { color: #4a708b; }
+.Statement { color: #b03060; font-weight: bold; }
+.Comment { color: #0000ee; font-style: italic; }
+.Type { color: #008b00; font-weight: bold; }
+.PreProc { color: #1874cd; }
+-->
+</style>
+
+<script type='text/javascript'>
+<!--
+
+-->
+</script>
 </head>
-<body bgcolor="#ffffff" text="#000000"><font face="monospace">
-<br>
-<font color="#0000ed"><i>/*</i></font><font color="#0000ed"><i>*************************************************************************\</i></font><br>
-<br>
-<font color="#0000ed"><i>MODULE: ZZVec</i></font><br>
-<br>
-<font color="#0000ed"><i>SUMMARY:</i></font><br>
-<br>
-<font color="#0000ed"><i>The class ZZVec implements vectors of fixed-length ZZ's.&nbsp;&nbsp;You can</i></font><br>
-<font color="#0000ed"><i>allocate a vector of ZZ's of a specified length, where the maximum</i></font><br>
-<font color="#0000ed"><i>size of each ZZ is also specified.&nbsp;&nbsp;The size is measured in terms</i></font><br>
-<font color="#0000ed"><i>of the number of zzigits.</i></font><br>
-<br>
-<font color="#0000ed"><i>These parameters can be specified either with a constructor </i></font><br>
-<font color="#0000ed"><i>or with SetSize.&nbsp;&nbsp;It is an error to try to re-size a vector of non-zero length,</i></font><br>
-<font color="#0000ed"><i>or store a ZZ that doesn't fit.&nbsp;&nbsp;The space can be released with &quot;kill&quot;, </i></font><br>
-<font color="#0000ed"><i>and then you are free to call SetSize again.&nbsp;&nbsp;</i></font><br>
-<br>
-<font color="#0000ed"><i>If you want more flexible---but less efficient---vectors, use vec_ZZ.</i></font><br>
-<br>
-<font color="#0000ed"><i>\*************************************************************************</i></font><font color="#0000ed"><i>*/</i></font><br>
-<br>
-<font color="#1773cc">#include </font><font color="#4a6f8b">&lt;NTL/ZZ.h&gt;</font><br>
-<br>
-<br>
-<font color="#008b00"><b>class</b></font>&nbsp;ZZVec {<br>
-<font color="#b02f60"><b>public</b></font>:<br>
-&nbsp;&nbsp; ZZVec();<br>
-<br>
-&nbsp;&nbsp; ZZVec&amp; <font color="#b02f60"><b>operator</b></font>=(<font color="#008b00"><b>const</b></font>&nbsp;ZZVec&amp;); <br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// first kill()'s destination (unless source and destination are</i></font><br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// identical)</i></font><br>
-<br>
-&nbsp;&nbsp; ZZVec(<font color="#008b00"><b>const</b></font>&nbsp;ZZVec&amp;); <br>
-<br>
-&nbsp;&nbsp; ~ZZVec();<br>
-<br>
-&nbsp;&nbsp; ZZVec(<font color="#008b00"><b>long</b></font>&nbsp;n, <font color="#008b00"><b>long</b></font>&nbsp;d);<br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// sets length to n and max size of each element to d</i></font><br>
-<br>
-&nbsp;&nbsp; <font color="#008b00"><b>void</b></font>&nbsp;SetSize(<font color="#008b00"><b>long</b></font>&nbsp;n, <font color="#008b00"><b>long</b></font>&nbsp;d);<br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// sets length to n and max size of each element to d</i></font><br>
-<br>
-&nbsp;&nbsp; <font color="#008b00"><b>long</b></font>&nbsp;length() <font color="#008b00"><b>const</b></font>;<br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// length of vector</i></font><br>
-<br>
-&nbsp;&nbsp; <font color="#008b00"><b>long</b></font>&nbsp;BaseSize() <font color="#008b00"><b>const</b></font>;<br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// max size of each element</i></font><br>
-<br>
-&nbsp;&nbsp; <font color="#008b00"><b>void</b></font>&nbsp;kill();<br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// release space</i></font><br>
-<br>
-<br>
-&nbsp;&nbsp; ZZ* elts();<br>
-&nbsp;&nbsp; <font color="#008b00"><b>const</b></font>&nbsp;ZZ* elts() <font color="#008b00"><b>const</b></font>;<br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// pointer to first element</i></font><br>
-<br>
-&nbsp;&nbsp; ZZ&amp; <font color="#b02f60"><b>operator</b></font>[](<font color="#008b00"><b>long</b></font>&nbsp;i);<br>
-&nbsp;&nbsp; <font color="#008b00"><b>const</b></font>&nbsp;ZZ&amp; <font color="#b02f60"><b>operator</b></font>[](<font color="#008b00"><b>long</b></font>&nbsp;i) <font color="#008b00"><b>const</b></font>;<br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// indexing operator; starts at 0; no range checking</i></font><br>
-<br>
-&nbsp;&nbsp; swap(ZZVec&amp; x);<br>
-&nbsp;&nbsp; <font color="#0000ed"><i>// swap with x by swapping pointers</i></font><br>
-};<br>
-<br>
-<br>
-<font color="#008b00"><b>void</b></font>&nbsp;swap(ZZVec&amp; x, ZZVec&amp; y);<br>
-<font color="#0000ed"><i>// swaps x and y by swapping pointers</i></font><br>
-<br>
-</font></body>
+<body>
+<pre id='vimCodeElement'>
+
+<span class="Comment">/*</span><span class="Comment">*************************************************************************\</span>
+
+<span class="Comment">MODULE: ZZVec</span>
+
+<span class="Comment">SUMMARY:</span>
+
+<span class="Comment">The class ZZVec implements vectors of fixed-length ZZ's.  You can</span>
+<span class="Comment">allocate a vector of ZZ's of a specified length, where the maximum</span>
+<span class="Comment">size of each ZZ is also specified.  The size is measured in terms</span>
+<span class="Comment">of the number of zzigits.</span>
+
+<span class="Comment">These parameters can be specified either with a constructor </span>
+<span class="Comment">or with SetSize.  It is an error to try to re-size a vector of non-zero length,</span>
+<span class="Comment">or store a ZZ that doesn't fit.  The space can be released with &quot;kill&quot;, </span>
+<span class="Comment">and then you are free to call SetSize again.  </span>
+
+<span class="Comment">If you want more flexible---but less efficient---vectors, use vec_ZZ.</span>
+
+<span class="Comment">\*************************************************************************</span><span class="Comment">*/</span>
+
+<span class="PreProc">#include </span><span class="String">&lt;NTL/ZZ.h&gt;</span>
+
+
+<span class="Type">class</span> ZZVec {
+<span class="Statement">public</span>:
+   ZZVec();
+
+   ZZVec&amp; <span class="Statement">operator</span>=(<span class="Type">const</span> ZZVec&amp;);
+   <span class="Comment">// first kill()'s destination (unless source and destination are</span>
+   <span class="Comment">// identical)</span>
+
+   ZZVec(<span class="Type">const</span> ZZVec&amp;);
+
+   ~ZZVec();
+
+   ZZVec(<span class="Type">long</span> n, <span class="Type">long</span> d);
+   <span class="Comment">// sets length to n and max size of each element to d</span>
+
+   <span class="Type">void</span> SetSize(<span class="Type">long</span> n, <span class="Type">long</span> d);
+   <span class="Comment">// sets length to n and max size of each element to d</span>
+
+   <span class="Type">long</span> length() <span class="Type">const</span>;
+   <span class="Comment">// length of vector</span>
+
+   <span class="Type">long</span> BaseSize() <span class="Type">const</span>;
+   <span class="Comment">// max size of each element</span>
+
+   <span class="Type">void</span> kill();
+   <span class="Comment">// release space</span>
+
+
+   ZZ* elts();
+   <span class="Type">const</span> ZZ* elts() <span class="Type">const</span>;
+   <span class="Comment">// pointer to first element</span>
+
+   ZZ&amp; <span class="Statement">operator</span>[](<span class="Type">long</span> i);
+   <span class="Type">const</span> ZZ&amp; <span class="Statement">operator</span>[](<span class="Type">long</span> i) <span class="Type">const</span>;
+   <span class="Comment">// indexing operator; starts at 0; no range checking</span>
+
+   swap(ZZVec&amp; x);
+   <span class="Comment">// swap with x by swapping pointers</span>
+};
+
+
+<span class="Type">void</span> swap(ZZVec&amp; x, ZZVec&amp; y);
+<span class="Comment">// swaps x and y by swapping pointers</span>
+
+</pre>
+</body>
 </html>
+<!-- vim: set foldmethod=manual : -->

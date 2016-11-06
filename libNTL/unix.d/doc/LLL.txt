@@ -278,7 +278,7 @@ long
 
      typedef long (*LLLCheckFct)(const vec_ZZ&);
 
-  See the file subset.c for an example of the use of this feature.
+  See the file subset.cpp for an example of the use of this feature.
 
 * The optional parameter "verbose" can be set to see all kinds of fun
   things printed while the routine is executing.  A status report is

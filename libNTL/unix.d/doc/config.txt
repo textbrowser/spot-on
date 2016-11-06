@@ -23,6 +23,8 @@ CXXFLAGS=-g -O2      # C++ complilation flags
 
 NATIVE=on            # compiles code targeted to current hardware
 
+TUNE=auto            # performance-tuning switch
+
 DEF_PREFIX=/usr/local# Default software directory
 
 PREFIX=$(DEF_PREFIX) # Directory in which to install NTL library components
@@ -65,7 +67,18 @@ CXXFLAGS=-g -O2
 NATIVE=on
 
 # Flag to target code to current hardware.
+# This will pass -march=native through to the compiler 
+# (if possible).  This is the easiest way to exploit the
+# hardware capabilities of your machine to their fullest 
+# potential.  
 
+TUNE=auto
+
+# Switch to determine how various performance options get set
+#   auto        make runs a performance-tuning wizard (recommended)
+#   generic     should be OK for most platforms
+#   x86         should be well suited for most x86 platforms
+# More choices may be added in the future
 
 
 ########## Installation path:
@@ -92,20 +105,15 @@ PREFIX=$(DEF_PREFIX)
 
 SHARED=off
 
-# Set this to 'on' if you want to generate a shared library, in addition to
-# a static library.   Shared libraries have many advantages, but
-# unfortunately, their use is rather less portable than that of good,
-# old-fashioned static libraries.  If you set SHARED=on, then the makefile
-# attempts to make use of the GNU libtool program, which is meant to work
-# around these portability issues.  You may also want to set the
-# configuration variable LIBTOOL (see below), to point to another version of
-# libtool.  For example, on Mac OSX, the built-in command libtool is not
-# actually the GNU libtool program; in this case, you will want to set
-# LIBTOOL=glibtool.  On other systems, it may be necssary to downlaod and
-# install a fresh copy of the libtool program (which can be obtained from
-# http://www.gnu.org/software/libtool). Note that if SHARED=on, then 
-# in addition to using the libtool program, the makefile relies on
-# features specific to GNU make.
+# Set this to 'on' if you want to generate a shared library, in addition to a
+# static library.   Shared libraries have many advantages, but unfortunately,
+# their use is rather less portable than that of good, old-fashioned static
+# libraries.  If you set SHARED=on, then the makefile will use a libtool
+# script.  By default, the libtool script used is freshly built when you run
+# configure.  You can use a pre-built libtool command by setting the
+# configuration variable LIBTOOL.  Note that if SHARED=on, then in addition to
+# using the libtool program, the makefile relies on features specific to GNU
+# make.
 
 
 ########## thread safety
@@ -238,6 +246,12 @@ CXXAUTOFLAGS=
 # If you explicitly set a value when invoking the configuration script,
 # then it will not change that value.
 
+MAKE_PROG=make
+
+# To set CXXAUTOFLAGS, the configure script actually needs to run make.
+# If you wish to use a non-standard make program for this purpose,
+# set this variable to point to that program.
+
 
 
 ########### Here is a complete list of the remaining variables,
@@ -251,7 +265,8 @@ RANLIB=ranlib
 LDFLAGS=
 LDLIBS=-lm
 CPPFLAGS=
-LIBTOOL=libtool
+LIBTOOL=undefined
+LIBTOOL_LINK_FLAGS=
 
 LIBDIR=$(PREFIX)/lib
 INCLUDEDIR=$(PREFIX)/include
@@ -265,7 +280,6 @@ NTL_LEGACY_INPUT_ERROR=off
 
 NTL_LEGACY_SP_MULMOD=off
 
-NTL_LONG_LONG_TYPE=undefined
 NTL_UNSIGNED_LONG_LONG_TYPE=undefined
 NTL_CLEAN_INT=off
 NTL_CLEAN_PTR=off
@@ -278,20 +292,14 @@ NTL_DISABLE_LONGLONG=off
 NTL_DISABLE_LL_ASM=off
 NTL_MAXIMIZE_SP_NBITS=off
 
-WIZARD=on
-NTL_LONG_LONG=off
-NTL_AVOID_FLOAT=off
 NTL_SPMM_ULL=off
-NTL_SPMM_ASM=off
 NTL_FFT_BIGTAB=off
 NTL_FFT_LAZYMUL=off
 NTL_TBL_REM=off
-NTL_TBL_REM_LL=off
 NTL_AVOID_BRANCHING=off
 NTL_GF2X_NOINLINE=off
 NTL_GF2X_ALTCODE=off
 NTL_GF2X_ALTCODE1=off
-NTL_PCLMUL=off
 
 GMP_INCDIR=$(GMP_PREFIX)/include
 GMP_LIBDIR=$(GMP_PREFIX)/lib
@@ -342,11 +350,15 @@ CPPFLAGS=
 
 # arguments for the C preprocessor
 
-LIBTOOL=libtool
+LIBTOOL=undefined
 
 # the libtool command -- only needed if SHARED=on
+# if left undefined, a fresh libtool script will be built
 
+LIBTOOL_LINK_FLAGS=
 
+# flags to add to command line when building a shared library
+# mainly used to pass the argument "-no-undefined" on cygwin
 
 
 ########### Details of the compilation process (when SHARED=off)
@@ -421,34 +433,25 @@ NTL_LEGACY_SP_MULMOD=off
 
 ########### Basic Configuration Options:
 
-NTL_LONG_LONG_TYPE=undefined
+NTL_UNSIGNED_LONG_LONG_TYPE=undefined
 
-# Name of double-word signed integer type.
+# Name of double-word unsigned integer type.
 # This is a non-standard type, and is called 'long long' by many
-# compilers.  MS C++ calls it '__int64'.
+# compilers.  MS C++ calls it 'unsigned __int64'.
 #
-# Note that the new C99 standard defines the type 'long long'
+# Note that the new C99 standard defines the type 'unsigned long long'
 # to be at least 64-bits wide.  On 32-bit machines, this is just right.
 # Although not officially part of the C++ standard (which predates C99),
 # it is widely supported by C++ compilers, and is likely to be added
 # to the C++ standard.
 #
-# Unfortunately, 64-bit machines usually define 'long long'
+# Unfortunately, 64-bit machines usually define 'unsigned long long'
 # to also be 64-bits wide, which is kind of useless.
-# However, GCC provides a type __int128_t which does the job.
+# However, GCC provides a type __uint128_t which does the job.
 #
 # If left undefined, NTL will use some "ifdef magic" to find
 # the type most suitable for your machine (based on compiler and
 # word size).
-
-NTL_UNSIGNED_LONG_LONG_TYPE=undefined
-
-# Name of double-word unsigned integer type.
-#
-# If left undefined, NTL will use some "ifdef magic" to find
-# the type most suitable for your machine (based on compiler and
-# word size).
-
 
 
 
@@ -533,48 +536,12 @@ NTL_MAXIMIZE_SP_NBITS=on
 
 ########## Performance Options:
 
-WIZARD=on
-
-# Set to 'off' if you want to bypass the wizard; otherwise, set to 'on'.
-# The wizard is a script that runs when NTL is built that sets the following
-# flags to 'optimize' performance on the current platform.
-
-
-
-NTL_LONG_LONG=off
-
-# For platforms that support it, this flag can be set to cause
-# the long-integer multiplication code to use the type "long long",
-# which on some platforms yields a significant performance gain,
-# but on others, it can yield no improvement and can even
-# slow things down.
-# The variable NTL_LONG_LONG_TYPE can be defined to use a type name
-# other than "long long".
-# If you set NTL_LONG_LONG, you might also want to set
-# the flag NTL_TBL_REM.
-
-
-
-NTL_AVOID_FLOAT=off
-
-# On machines with slow floating point or---more comminly---slow int/float
-# conversions, this flag can lead to faster long-integer multiplication code.
-# If you set NTL_AVOID_FLOAT, you should probably also
-# set NTL_TBL_REM.
-# Note that at most one of NTL_LONG_LONG and NTL_AVOID_FLOAT may be set.
-
 
 NTL_SPMM_ULL=off
 
 # Implement the MulModPrecon code using "unsigned long long"
 # (or specify NTL_UNSIGNED_LONG_LONG_TYPE to override the default).
 
-
-NTL_SPMM_ASM=off
-
-# Similar to NTL_SPMM_ULL, but relies on double-word unsigned multiplication
-# using assembly code.  Only supported on select machines 
-# and only under GCC.
 
 NTL_FFT_BIGTAB=off
 
@@ -584,24 +551,15 @@ NTL_FFT_BIGTAB=off
 
 NTL_FFT_LAZYMUL=off
 
-# This flag only has an effect when combined with 
-# either the NTL_SPMM_ULL or NTL_SPMM_ASM flags. 
 # When set, a "lazy multiplication" strategy due to David Harvey:
 # see his paper "FASTER ARITHMETIC FOR NUMBER-THEORETIC TRANSFORMS".
-
 
 
 
 NTL_TBL_REM=off
 
 # With this flag, some divisions are avoided in the
-# ZZ_pX multiplication routines.  If you use the NTL_AVOID_FLOAT
-# or NTL_LONG_LONG flags, then you should probably use this one too.
-
-NTL_TBL_REM_LL=off
-
-# Forces the LONG_LONG implementation of NTL_TBL_REM.
-
+# ZZ_pX multiplication routines.  
 
 
 
@@ -638,11 +596,6 @@ NTL_GF2X_ALTCODE=off
 NTL_GF2X_ALTCODE1=off
 
 # Yet another alternative implementation for GF2X multiplication.
-
-NTL_PCLMUL=off 
-
-# switch to enable the PCLMUL instruction on x86 machines for faster arithmetic
-# over GF(2)[X] (without relying on the gf2x package)
 
 
 
