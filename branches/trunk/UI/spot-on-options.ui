@@ -19,7 +19,16 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
      <number>5</number>
     </property>
     <item>
@@ -34,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-2352</y>
-         <width>714</width>
-         <height>2999</height>
+         <y>-2131</y>
+         <width>665</width>
+         <height>2736</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -249,7 +258,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -280,7 +298,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -441,7 +468,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -519,7 +555,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -580,7 +625,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -654,7 +708,16 @@
               <string>Search</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_19">
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -762,7 +825,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1055,7 +1127,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1260,7 +1341,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1282,7 +1372,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1383,7 +1482,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1518,7 +1626,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1602,7 +1719,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1723,7 +1849,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1745,7 +1880,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1868,7 +2012,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1926,7 +2079,7 @@
            <item>
             <widget class="QLabel" name="label_18">
              <property name="text">
-              <string>Messaging messages contain timestamps. Outdated messages will be highlighted.</string>
+              <string>Messaging-messages contain timestamps. Outdated messages will be highlighted.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -2006,7 +2159,7 @@
            <item>
             <widget class="QLabel" name="label_21">
              <property name="text">
-              <string>Messaging calling messages contain timestamps. Calls that are outdated will be discarded.</string>
+              <string>Messaging calling-messages contain timestamps. Calls that are outdated will be discarded.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -2166,7 +2319,7 @@
            <item>
             <widget class="QLabel" name="label_26">
              <property name="text">
-              <string>Messaging calling messages contain timestamps. Calls that are outdated will be discarded.</string>
+              <string>Messaging calling-messages contain timestamps. Calls that are outdated will be discarded.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -2282,7 +2435,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>24</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -2302,125 +2455,6 @@
    </property>
   </action>
  </widget>
- <tabstops>
-  <tabstop>icons</tabstop>
-  <tabstop>iconsize</tabstop>
-  <tabstop>position</tabstop>
-  <tabstop>buzzAutoJoin</tabstop>
-  <tabstop>chatAlternatingRowColors</tabstop>
-  <tabstop>displayPopups</tabstop>
-  <tabstop>enableChatEmoticons</tabstop>
-  <tabstop>ontopChatDialogs</tabstop>
-  <tabstop>chatSendMethod</tabstop>
-  <tabstop>chatUpdateInterval</tabstop>
-  <tabstop>chatTimestamps</tabstop>
-  <tabstop>emailAlternatingRowColors</tabstop>
-  <tabstop>refreshEmail</tabstop>
-  <tabstop>autoEmailRetrieve</tabstop>
-  <tabstop>emailRetrievalInterval</tabstop>
-  <tabstop>listenersUpdateInterval</tabstop>
-  <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
-  <tabstop>neighborsUpdateInterval</tabstop>
-  <tabstop>disable_ui_synchronous_import</tabstop>
-  <tabstop>maximum_url_keywords_interface</tabstop>
-  <tabstop>searchResultsPerPage</tabstop>
-  <tabstop>geoipPath4</tabstop>
-  <tabstop>selectGeoIP4</tabstop>
-  <tabstop>geoipPath6</tabstop>
-  <tabstop>selectGeoIP6</tabstop>
-  <tabstop>guiExternalIpFetch</tabstop>
-  <tabstop>guiSecureMemoryPool</tabstop>
-  <tabstop>kernelUpdateInterval</tabstop>
-  <tabstop>kernelCacheInterval</tabstop>
-  <tabstop>sslControlString</tabstop>
-  <tabstop>saveSslControlString</tabstop>
-  <tabstop>testSslControlString</tabstop>
-  <tabstop>starbeamAutoVerify</tabstop>
-  <tabstop>starbeamUpdateInterval</tabstop>
-  <tabstop>remove_otm</tabstop>
-  <tabstop>urlsAlternatingRowColors</tabstop>
-  <tabstop>disable_kernel_synchronous_download</tabstop>
-  <tabstop>kernel_url_batch_size</tabstop>
-  <tabstop>maximum_url_keywords_kernel</tabstop>
-  <tabstop>acceptBuzzMagnets</tabstop>
-  <tabstop>acceptGeminis</tabstop>
-  <tabstop>chatAcceptSigned</tabstop>
-  <tabstop>autoAddSharedSBMagnets</tabstop>
-  <tabstop>acceptChatKeys</tabstop>
-  <tabstop>chat_fs_request</tabstop>
-  <tabstop>impersonate</tabstop>
-  <tabstop>chatOpenLinks</tabstop>
-  <tabstop>chatSignMessages</tabstop>
-  <tabstop>emailAcceptSigned</tabstop>
-  <tabstop>acceptEmailKeys</tabstop>
-  <tabstop>email_fs_request</tabstop>
-  <tabstop>maximumEmailFileSize</tabstop>
-  <tabstop>coAcceptSigned</tabstop>
-  <tabstop>emailSignMessages</tabstop>
-  <tabstop>limitConnections</tabstop>
-  <tabstop>publishPeriodically</tabstop>
-  <tabstop>acceptPublishedConnected</tabstop>
-  <tabstop>acceptPublishedDisconnected</tabstop>
-  <tabstop>ignorePublished</tabstop>
-  <tabstop>publishedKeySize</tabstop>
-  <tabstop>openlinks</tabstop>
-  <tabstop>forceRegistration</tabstop>
-  <tabstop>launchKernel</tabstop>
-  <tabstop>scrambler</tabstop>
-  <tabstop>sharePrivateKeys</tabstop>
-  <tabstop>superEcho</tabstop>
-  <tabstop>urlAcceptSigned</tabstop>
-  <tabstop>acceptUrlKeys</tabstop>
-  <tabstop>urlSignMessages</tabstop>
-  <tabstop>chat_time_delta</tabstop>
-  <tabstop>forward_secrecy_time_delta</tabstop>
-  <tabstop>gemini_time_delta</tabstop>
-  <tabstop>kernel_cache_object_lifetime</tabstop>
-  <tabstop>kernel_url_dispatcher</tabstop>
-  <tabstop>poptastic_forward_secrecy_time_delta</tabstop>
-  <tabstop>retrieve_mail_time_delta</tabstop>
-  <tabstop>defaults</tabstop>
-  <tabstop>iconsize</tabstop>
-  <tabstop>buzzAutoJoin</tabstop>
-  <tabstop>sharePrivateKeys</tabstop>
-  <tabstop>chatAcceptSigned</tabstop>
-  <tabstop>position</tabstop>
-  <tabstop>acceptChatKeys</tabstop>
-  <tabstop>scrambler</tabstop>
-  <tabstop>impersonate</tabstop>
-  <tabstop>chatUpdateInterval</tabstop>
-  <tabstop>chatSignMessages</tabstop>
-  <tabstop>emailAcceptSigned</tabstop>
-  <tabstop>acceptEmailKeys</tabstop>
-  <tabstop>enableChatEmoticons</tabstop>
-  <tabstop>maximumEmailFileSize</tabstop>
-  <tabstop>coAcceptSigned</tabstop>
-  <tabstop>emailSignMessages</tabstop>
-  <tabstop>limitConnections</tabstop>
-  <tabstop>publishPeriodically</tabstop>
-  <tabstop>acceptPublishedConnected</tabstop>
-  <tabstop>acceptPublishedDisconnected</tabstop>
-  <tabstop>ignorePublished</tabstop>
-  <tabstop>publishedKeySize</tabstop>
-  <tabstop>openlinks</tabstop>
-  <tabstop>forceRegistration</tabstop>
-  <tabstop>scrambler</tabstop>
-  <tabstop>sharePrivateKeys</tabstop>
-  <tabstop>superEcho</tabstop>
-  <tabstop>chatSendMethod</tabstop>
-  <tabstop>acceptUrlKeys</tabstop>
-  <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
-  <tabstop>autoEmailRetrieve</tabstop>
-  <tabstop>emailRetrievalInterval</tabstop>
-  <tabstop>listenersUpdateInterval</tabstop>
-  <tabstop>icons</tabstop>
-  <tabstop>neighborsUpdateInterval</tabstop>
-  <tabstop>kernelUpdateInterval</tabstop>
-  <tabstop>displayPopups</tabstop>
-  <tabstop>starbeamUpdateInterval</tabstop>
-  <tabstop>acceptBuzzMagnets</tabstop>
-  <tabstop>acceptGeminis</tabstop>
- </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
  </resources>
