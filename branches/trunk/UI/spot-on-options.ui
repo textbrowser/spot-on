@@ -23,2309 +23,2251 @@
      <number>5</number>
     </property>
     <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="tabPosition">
-       <enum>QTabWidget::North</enum>
+     <widget class="QScrollArea" name="scrollArea_4">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
       </property>
-      <property name="currentIndex">
-       <number>0</number>
+      <property name="widgetResizable">
+       <bool>true</bool>
       </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>General</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <property name="spacing">
-         <number>5</number>
-        </property>
-        <property name="margin">
-         <number>5</number>
-        </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents_4">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>-2352</y>
+         <width>714</width>
+         <height>2999</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_25">
         <item>
-         <widget class="QScrollArea" name="scrollArea">
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
+         <widget class="QGroupBox" name="groupBox_18">
+          <property name="title">
+           <string>General</string>
           </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_2">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>598</width>
-             <height>1351</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_9">
-            <property name="spacing">
-             <number>5</number>
-            </property>
-            <property name="margin">
-             <number>5</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="notifications">
-              <property name="text">
-               <string>&amp;Activate Notifications window on events.</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <layout class="QVBoxLayout" name="verticalLayout_26">
+           <item>
+            <widget class="QCheckBox" name="notifications">
+             <property name="text">
+              <string>&amp;Activate Notifications window on events.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>&amp;Icons</string>
+               </property>
+               <property name="buddy">
+                <cstring>icons</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="icons">
+               <property name="currentIndex">
+                <number>2</number>
+               </property>
+               <property name="sizeAdjustPolicy">
+                <enum>QComboBox::AdjustToContents</enum>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Everaldo</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Meego</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Nouve</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Nuvola</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="play_sounds">
+             <property name="text">
+              <string>&amp;Play sounds.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Tab Icon &amp;Size</string>
+               </property>
+               <property name="buddy">
+                <cstring>iconsize</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="iconsize">
+               <property name="currentIndex">
+                <number>1</number>
+               </property>
+               <property name="sizeAdjustPolicy">
+                <enum>QComboBox::AdjustToContents</enum>
+               </property>
+               <item>
+                <property name="text">
+                 <string>16x16</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>24x24</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>32x32</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>64x64</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Tab &amp;Position</string>
+               </property>
+               <property name="buddy">
+                <cstring>position</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="position">
+               <property name="currentIndex">
+                <number>1</number>
+               </property>
+               <property name="sizeAdjustPolicy">
+                <enum>QComboBox::AdjustToContents</enum>
+               </property>
+               <item>
+                <property name="text">
+                 <string>East</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>North</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>South</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>West</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Buzz</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
               <property name="spacing">
                <number>5</number>
               </property>
-              <item>
-               <widget class="QLabel" name="label">
-                <property name="text">
-                 <string>&amp;Icons</string>
-                </property>
-                <property name="buddy">
-                 <cstring>icons</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="icons">
-                <property name="currentIndex">
-                 <number>2</number>
-                </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>Everaldo</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Meego</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Nouve</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Nuvola</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="play_sounds">
-              <property name="text">
-               <string>&amp;Play sounds.</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <property name="spacing">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
-               <widget class="QLabel" name="label_3">
+               <widget class="QCheckBox" name="buzzAutoJoin">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
-                 <string>Tab Icon &amp;Size</string>
+                 <string>Join the first &amp;common channel after the kernel is activated.</string>
                 </property>
-                <property name="buddy">
-                 <cstring>iconsize</cstring>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="iconsize">
-                <property name="currentIndex">
-                 <number>1</number>
-                </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>16x16</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>24x24</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>32x32</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>64x64</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
               </item>
              </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>Chat</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
               <property name="spacing">
                <number>5</number>
               </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
               <item>
-               <widget class="QLabel" name="label_2">
+               <widget class="QCheckBox" name="chatAlternatingRowColors">
                 <property name="text">
-                 <string>Tab &amp;Position</string>
+                 <string>Alternating row &amp;colors.</string>
                 </property>
-                <property name="buddy">
-                 <cstring>position</cstring>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="position">
-                <property name="currentIndex">
-                 <number>1</number>
+               <widget class="QCheckBox" name="displayPopups">
+                <property name="text">
+                 <string>&amp;Display participant popups automatically.</string>
                 </property>
-                <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>East</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>North</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>South</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>West</string>
-                 </property>
-                </item>
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+               <widget class="QCheckBox" name="enableChatEmoticons">
+                <property name="text">
+                 <string>Enable &amp;emoticons.</string>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="ontopChatDialogs">
+                <property name="toolTip">
+                 <string>Please close open windows after modifying this setting.</string>
                 </property>
-               </spacer>
+                <property name="text">
+                 <string>&amp;On-top dialogs.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_9">
+                  <property name="text">
+                   <string>&amp;Preferred Method</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>chatSendMethod</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="chatSendMethod">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="sizeAdjustPolicy">
+                   <enum>QComboBox::AdjustToContents</enum>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>Normal POST</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Artificial GET</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_98">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_121">
+                  <property name="text">
+                   <string>&amp;Populate the table every</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>chatUpdateInterval</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="chatUpdateInterval">
+                  <property name="suffix">
+                   <string> second(s).</string>
+                  </property>
+                  <property name="minimum">
+                   <double>0.500000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>10.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>3.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_68">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="chatTimestamps">
+                <property name="text">
+                 <string>&amp;Timestamps (remote events only).</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox">
-              <property name="title">
-               <string>Buzz</string>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_6">
+             <property name="title">
+              <string>E-Mail</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_10">
+              <property name="spacing">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="buzzAutoJoin">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Join the first &amp;common channel after the kernel is activated.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_2">
-              <property name="title">
-               <string>Chat</string>
+              <property name="margin">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_4">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="chatAlternatingRowColors">
-                 <property name="text">
-                  <string>Alternating row &amp;colors.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="displayPopups">
-                 <property name="text">
-                  <string>&amp;Display participant popups automatically.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="enableChatEmoticons">
-                 <property name="text">
-                  <string>Enable &amp;emoticons.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="ontopChatDialogs">
-                 <property name="toolTip">
-                  <string>Please close open windows after modifying this setting.</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;On-top dialogs.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_9">
-                   <property name="text">
-                    <string>&amp;Preferred Method</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>chatSendMethod</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="chatSendMethod">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="sizeAdjustPolicy">
-                    <enum>QComboBox::AdjustToContents</enum>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>Normal POST</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Artificial GET</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_5">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_98">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_121">
-                   <property name="text">
-                    <string>&amp;Populate the table every</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>chatUpdateInterval</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="chatUpdateInterval">
-                   <property name="suffix">
-                    <string> second(s).</string>
-                   </property>
-                   <property name="minimum">
-                    <double>0.500000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>10.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>3.500000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_68">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="chatTimestamps">
-                 <property name="text">
-                  <string>&amp;Timestamps (remote events only).</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_6">
-              <property name="title">
-               <string>E-Mail</string>
+              <item>
+               <widget class="QCheckBox" name="emailAlternatingRowColors">
+                <property name="text">
+                 <string>Alternating row &amp;colors.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="refreshEmail">
+                <property name="text">
+                 <string>&amp;Refresh containers after launch.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_62">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QCheckBox" name="autoEmailRetrieve">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>&amp;Retrieve e-mail every</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="emailRetrievalInterval">
+                  <property name="suffix">
+                   <string> minutes.</string>
+                  </property>
+                  <property name="minimum">
+                   <number>5</number>
+                  </property>
+                  <property name="maximum">
+                   <number>60</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_46">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_7">
+             <property name="title">
+              <string>Listeners</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <property name="spacing">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_10">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="emailAlternatingRowColors">
-                 <property name="text">
-                  <string>Alternating row &amp;colors.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="refreshEmail">
-                 <property name="text">
-                  <string>&amp;Refresh containers after launch.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_62">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="autoEmailRetrieve">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>&amp;Retrieve e-mail every</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="emailRetrievalInterval">
-                   <property name="suffix">
-                    <string> minutes.</string>
-                   </property>
-                   <property name="minimum">
-                    <number>5</number>
-                   </property>
-                   <property name="maximum">
-                    <number>60</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_46">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_7">
-              <property name="title">
-               <string>Listeners</string>
+              <property name="margin">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_12">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_91">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_123">
-                   <property name="text">
-                    <string>&amp;Populate the table every</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>listenersUpdateInterval</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="listenersUpdateInterval">
-                   <property name="suffix">
-                    <string> second(s).</string>
-                   </property>
-                   <property name="minimum">
-                    <double>0.500000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>10.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>3.500000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_76">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_9">
-              <property name="title">
-               <string>Neighbors</string>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_91">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_123">
+                  <property name="text">
+                   <string>&amp;Populate the table every</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>listenersUpdateInterval</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="listenersUpdateInterval">
+                  <property name="suffix">
+                   <string> second(s).</string>
+                  </property>
+                  <property name="minimum">
+                   <double>0.500000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>10.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>3.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_76">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_9">
+             <property name="title">
+              <string>Neighbors</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_14">
+              <property name="spacing">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_14">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="keepOnlyUserDefinedNeighbors">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Keep only user-defined neighbors.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_28">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_125">
-                   <property name="text">
-                    <string>&amp;Populate the table every</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>neighborsUpdateInterval</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="neighborsUpdateInterval">
-                   <property name="suffix">
-                    <string> second(s).</string>
-                   </property>
-                   <property name="minimum">
-                    <double>0.500000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>10.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>3.500000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_25">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_13">
-              <property name="title">
-               <string>Search</string>
+              <property name="margin">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_19">
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="disable_ui_synchronous_import">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the application aborts during an import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Disable interface synchronous SQLite writes on import.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_67">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QSpinBox" name="maximum_url_keywords_interface">
-                   <property name="minimum">
-                    <number>50</number>
-                   </property>
-                   <property name="maximum">
-                    <number>65535</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_15">
-                   <property name="text">
-                    <string>&amp;maximum keywords accepted during an import via the interface.</string>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                   <property name="buddy">
-                    <cstring>maximum_url_keywords_interface</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_49">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_65">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QSpinBox" name="searchResultsPerPage">
-                   <property name="minimum">
-                    <number>10</number>
-                   </property>
-                   <property name="maximum">
-                    <number>1000</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_4">
-                   <property name="text">
-                    <string>&amp;results per page.</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>searchResultsPerPage</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_48">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_12">
-              <property name="title">
-               <string>Settings</string>
+              <item>
+               <widget class="QCheckBox" name="keepOnlyUserDefinedNeighbors">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&amp;Keep only user-defined neighbors.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_28">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_125">
+                  <property name="text">
+                   <string>&amp;Populate the table every</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>neighborsUpdateInterval</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="neighborsUpdateInterval">
+                  <property name="suffix">
+                   <string> second(s).</string>
+                  </property>
+                  <property name="minimum">
+                   <double>0.500000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>10.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>3.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_25">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_13">
+             <property name="title">
+              <string>Search</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_19">
+              <property name="margin">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_17">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_46">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_40">
-                   <property name="text">
-                    <string>&amp;GeoIP Data Path IPv4</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>geoipPath4</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="geoipPath4"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="selectGeoIP4">
-                   <property name="text">
-                    <string>Select...</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_78">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_81">
-                   <property name="text">
-                    <string>&amp;GeoIP Data Path IPv6</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>geoipPath6</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="geoipPath6"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="selectGeoIP6">
-                   <property name="text">
-                    <string>Select...</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_70">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_29">
-                   <property name="text">
-                    <string>&amp;External IP Retrieval Interval</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>guiExternalIpFetch</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="guiExternalIpFetch">
-                   <property name="currentIndex">
-                    <number>2</number>
-                   </property>
-                   <property name="sizeAdjustPolicy">
-                    <enum>QComboBox::AdjustToContents</enum>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>30 Seconds</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>60 Seconds</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Never</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_60">
-                   <property name="text">
-                    <string>&amp;Secure Memory Pool Size</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>guiSecureMemoryPool</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="guiSecureMemoryPool">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting a value of zero will disable the secure memory pool. Please restart the application upon changes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="minimum">
-                    <number>0</number>
-                   </property>
-                   <property name="maximum">
-                    <number>999999999</number>
-                   </property>
-                   <property name="value">
-                    <number>0</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_52">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_64">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_127">
-                   <property name="text">
-                    <string>&amp;Populate statistics every</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>kernelUpdateInterval</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="kernelUpdateInterval">
-                   <property name="suffix">
-                    <string> second(s).</string>
-                   </property>
-                   <property name="minimum">
-                    <double>0.500000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>10.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>3.500000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_13">
-                   <property name="text">
-                    <string>Increasing the timer value will impede current display statistics.</string>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_78">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_66">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_130">
-                   <property name="text">
-                    <string>P&amp;urge cache container(s) every</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>kernelCacheInterval</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="kernelCacheInterval">
-                   <property name="suffix">
-                    <string> seconds.</string>
-                   </property>
-                   <property name="minimum">
-                    <double>5.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>90.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>15.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_6">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_50">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_43">
-                   <property name="text">
-                    <string>&amp;SSL Control String</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>sslControlString</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="sslControlString">
-                   <property name="text">
-                    <string>HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="saveSslControlString">
-                   <property name="text">
-                    <string>Save</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="testSslControlString">
-                   <property name="toolTip">
-                    <string>Display a list of ciphers produced by the provided SSL Control String.</string>
-                   </property>
-                   <property name="text">
-                    <string>Test...</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_14">
-              <property name="title">
-               <string>StarBeam</string>
+              <item>
+               <widget class="QCheckBox" name="disable_ui_synchronous_import">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the application aborts during an import.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Disable interface synchronous SQLite writes on import.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_67">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QSpinBox" name="maximum_url_keywords_interface">
+                  <property name="minimum">
+                   <number>50</number>
+                  </property>
+                  <property name="maximum">
+                   <number>65535</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_15">
+                  <property name="text">
+                   <string>&amp;maximum keywords accepted during an import via the interface.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                  <property name="buddy">
+                   <cstring>maximum_url_keywords_interface</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_49">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_65">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QSpinBox" name="searchResultsPerPage">
+                  <property name="minimum">
+                   <number>10</number>
+                  </property>
+                  <property name="maximum">
+                   <number>1000</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>&amp;results per page.</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>searchResultsPerPage</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_48">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_12">
+             <property name="title">
+              <string>Settings</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_17">
+              <property name="spacing">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_20">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="starbeamAutoVerify">
-                 <property name="text">
-                  <string>&amp;Automatically verify digests.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_82">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_129">
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_46">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_40">
+                  <property name="text">
+                   <string>&amp;GeoIP Data Path IPv4</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>geoipPath4</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="geoipPath4"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="selectGeoIP4">
+                  <property name="text">
+                   <string>Select...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_78">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_81">
+                  <property name="text">
+                   <string>&amp;GeoIP Data Path IPv6</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>geoipPath6</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="geoipPath6"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="selectGeoIP6">
+                  <property name="text">
+                   <string>Select...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_70">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_29">
+                  <property name="text">
+                   <string>&amp;External IP Retrieval Interval</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>guiExternalIpFetch</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="guiExternalIpFetch">
+                  <property name="currentIndex">
+                   <number>2</number>
+                  </property>
+                  <property name="sizeAdjustPolicy">
+                   <enum>QComboBox::AdjustToContents</enum>
+                  </property>
+                  <item>
                    <property name="text">
-                    <string>&amp;Populate tables every</string>
+                    <string>30 Seconds</string>
                    </property>
-                   <property name="buddy">
-                    <cstring>starbeamUpdateInterval</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="starbeamUpdateInterval">
-                   <property name="suffix">
-                    <string> second(s).</string>
-                   </property>
-                   <property name="minimum">
-                    <double>0.500000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>10.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>3.500000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_66">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="remove_otm">
-                 <property name="text">
-                  <string>&amp;Remove one-time magnets upon exit.</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_17">
-              <property name="title">
-               <string>URLs</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_22">
-               <item>
-                <widget class="QCheckBox" name="urlsAlternatingRowColors">
-                 <property name="text">
-                  <string>Alternating row &amp;colors.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="disable_kernel_synchronous_download">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the kernel aborts during a download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Disable kernel synchronous SQLite writes on download.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_69">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QSpinBox" name="kernel_url_batch_size">
-                   <property name="toolTip">
-                    <string>Please review your lane widths before increasing this value.</string>
-                   </property>
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>15</number>
-                   </property>
-                   <property name="value">
-                    <number>5</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_17">
+                  </item>
+                  <item>
                    <property name="text">
-                    <string>&amp;URL(s) batched per URL distribution.</string>
+                    <string>60 Seconds</string>
                    </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                   <property name="buddy">
-                    <cstring>kernel_url_batch_size</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_51">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_68">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QSpinBox" name="maximum_url_keywords_kernel">
-                   <property name="minimum">
-                    <number>50</number>
-                   </property>
-                   <property name="maximum">
-                    <number>65535</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_16">
+                  </item>
+                  <item>
                    <property name="text">
-                    <string>&amp;maximum keywords accepted during an import via the kernel.</string>
+                    <string>Never</string>
                    </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                   <property name="buddy">
-                    <cstring>maximum_url_keywords_kernel</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_50">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Permissions</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
-        <property name="spacing">
-         <number>5</number>
-        </property>
-        <property name="margin">
-         <number>5</number>
-        </property>
-        <item>
-         <widget class="QScrollArea" name="scrollArea_2">
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_3">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>680</width>
-             <height>1042</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_11">
-            <property name="spacing">
-             <number>5</number>
-            </property>
-            <property name="margin">
-             <number>5</number>
-            </property>
-            <item>
-             <widget class="QGroupBox" name="groupBox_4">
-              <property name="title">
-               <string>Buzz</string>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_60">
+                  <property name="text">
+                   <string>&amp;Secure Memory Pool Size</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>guiSecureMemoryPool</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="guiSecureMemoryPool">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting a value of zero will disable the secure memory pool. Please restart the application upon changes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="minimum">
+                   <number>0</number>
+                  </property>
+                  <property name="maximum">
+                   <number>999999999</number>
+                  </property>
+                  <property name="value">
+                   <number>0</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_52">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_64">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_127">
+                  <property name="text">
+                   <string>&amp;Populate statistics every</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>kernelUpdateInterval</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="kernelUpdateInterval">
+                  <property name="suffix">
+                   <string> second(s).</string>
+                  </property>
+                  <property name="minimum">
+                   <double>0.500000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>10.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>3.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_13">
+                  <property name="text">
+                   <string>Increasing the timer value will impede current display statistics.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_78">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_66">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_130">
+                  <property name="text">
+                   <string>P&amp;urge cache container(s) every</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>kernelCacheInterval</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="kernelCacheInterval">
+                  <property name="suffix">
+                   <string> seconds.</string>
+                  </property>
+                  <property name="minimum">
+                   <double>5.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>90.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>15.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_6">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_50">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_43">
+                  <property name="text">
+                   <string>&amp;SSL Control String</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>sslControlString</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="sslControlString">
+                  <property name="text">
+                   <string>HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="saveSslControlString">
+                  <property name="text">
+                   <string>Save</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="testSslControlString">
+                  <property name="toolTip">
+                   <string>Display a list of ciphers produced by the provided SSL Control String.</string>
+                  </property>
+                  <property name="text">
+                   <string>Test...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_14">
+             <property name="title">
+              <string>StarBeam</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_20">
+              <property name="spacing">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_5">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="acceptBuzzMagnets">
-                 <property name="text">
-                  <string>Accept shared &amp;magnets.</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_3">
-              <property name="title">
-               <string>Chat</string>
+              <property name="margin">
+               <number>5</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_6">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="acceptGeminis">
-                 <property name="text">
-                  <string>Accept &amp;geminis.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="chatAcceptSigned">
-                 <property name="text">
-                  <string>&amp;Accept only signed geminis, messages, and status bulletins.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="autoAddSharedSBMagnets">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Accept shared StarBeam &amp;magnets.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="acceptChatKeys">
-                 <property name="text">
-                  <string>Accept shared public &amp;keys.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="chat_fs_request">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Allow &amp;forward secrecy requests.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="impersonate">
-                 <property name="toolTip">
-                  <string>Broadcast odd messages at odd times. Please note that this option will advertise your presence.</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Impersonate me.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="chatOpenLinks">
-                 <property name="text">
-                  <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="chatSignMessages">
-                 <property name="text">
-                  <string>&amp;Sign forward secrecy replies and requests, geminis, messages, and status bulletins.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_5">
-              <property name="title">
-               <string>E-Mail</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_8">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="emailAcceptSigned">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Accept only signed letters.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="acceptEmailKeys">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Accept shared public &amp;keys.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="email_fs_request">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Allow &amp;forward secrecy requests.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_63">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_76">
-                   <property name="text">
-                    <string>&amp;Limit the size of email.db to</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>maximumEmailFileSize</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="maximumEmailFileSize">
-                   <property name="suffix">
-                    <string> MiB.</string>
-                   </property>
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>5000</number>
-                   </property>
-                   <property name="value">
-                    <number>1024</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_47">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="coAcceptSigned">
-                 <property name="text">
-                  <string>&amp;Reject C/O letters without signatures. The setting does not apply to data destined for institutions.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="emailSignMessages">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The kernel is responsible for signing messages. Please avoid toggling this checkbox until queued messages have been processed by the kernel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>Sign forward secrecy replies and requests, and &amp;letters.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_8">
-              <property name="title">
-               <string>Listeners</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_13">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_10">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_86">
-                   <property name="text">
-                    <string>&amp;Limit connections to</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>limitConnections</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="limitConnections">
-                   <property name="toolTip">
-                    <string>Limit the number of connections per client IP address.</string>
-                   </property>
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>50</number>
-                   </property>
-                   <property name="value">
-                    <number>10</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_96">
-                   <property name="text">
-                    <string>client(s).</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_20">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="publishPeriodically">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="toolTip">
-                  <string>External IP information is required.</string>
-                 </property>
-                 <property name="text">
-                  <string>Periodically p&amp;ublish plaintext connection information.</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_10">
-              <property name="title">
-               <string>Neighbors</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_15">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QRadioButton" name="acceptPublishedConnected">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="toolTip">
-                  <string>Select this option if you would like to accept and connect to published listeners.</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Accept published listeners (connected).</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="acceptPublishedDisconnected">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="toolTip">
-                  <string>Select this option if you would like to accept published listeners.</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Accept published listeners (disconnected).</string>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="ignorePublished">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Ignore published listeners.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_32">
-                   <property name="text">
-                    <string>&amp;SSL Key Size</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>publishedKeySize</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="publishedKeySize">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="sizeAdjustPolicy">
-                    <enum>QComboBox::AdjustToContents</enum>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>2048</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>3072</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>4096</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_16">
-              <property name="title">
-               <string>Search</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_18">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="openlinks">
-                 <property name="text">
-                  <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_11">
-              <property name="title">
-               <string>Settings</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_16">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="forceRegistration">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enable this option if you would like to force kernel registration. By forcing kernel registration, an existing kernel process that Spot-On is aware of will be deactivated. You may wish to use this option if a kernel was not deactivated properly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Force kernel registration.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="launchKernel">
-                 <property name="text">
-                  <string>&amp;Launch the kernel after user authentication.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="scrambler">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="toolTip">
-                  <string>Please note that this option will advertise your presence.</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Periodically broadcast scrambled messages.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="sharePrivateKeys">
-                 <property name="toolTip">
-                  <string>Automatically share the private authentication and encryption keys with a kernel process. If this option is disabled, the user interface will provide reminders.</string>
-                 </property>
-                 <property name="text">
-                  <string>&amp;Share private authentication and encryption keys with the kernel process.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_23">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_119">
-                   <property name="text">
-                    <string>&amp;Super Echo</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>superEcho</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="superEcho">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, messages that are interpreted correctly will be echoed. Please note that this option will advertise your presence. This option does not supersede a half-echo agreement.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="currentIndex">
-                    <number>1</number>
-                   </property>
-                   <property name="sizeAdjustPolicy">
-                    <enum>QComboBox::AdjustToContents</enum>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>Complete</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Disabled</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_30">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_15">
-              <property name="title">
-               <string>URLs</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_21">
-               <property name="spacing">
-                <number>5</number>
-               </property>
-               <property name="margin">
-                <number>5</number>
-               </property>
-               <item>
-                <widget class="QCheckBox" name="urlAcceptSigned">
-                 <property name="text">
-                  <string>&amp;Accept only signed URLs.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="acceptUrlKeys">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Accept shared public &amp;keys.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="urlSignMessages">
-                 <property name="text">
-                  <string>Sign &amp;URLs.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_3">
-       <attribute name="title">
-        <string>Time</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_23">
-        <item>
-         <widget class="QLabel" name="label_12">
-          <property name="text">
-           <string>Values have units of seconds.</string>
-          </property>
+              <item>
+               <widget class="QCheckBox" name="starbeamAutoVerify">
+                <property name="text">
+                 <string>&amp;Automatically verify digests.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_82">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_129">
+                  <property name="text">
+                   <string>&amp;Populate tables every</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>starbeamUpdateInterval</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="starbeamUpdateInterval">
+                  <property name="suffix">
+                   <string> second(s).</string>
+                  </property>
+                  <property name="minimum">
+                   <double>0.500000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>10.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>3.500000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_66">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="remove_otm">
+                <property name="text">
+                 <string>&amp;Remove one-time magnets upon exit.</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_17">
+             <property name="title">
+              <string>URLs</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_22">
+              <item>
+               <widget class="QCheckBox" name="urlsAlternatingRowColors">
+                <property name="text">
+                 <string>Alternating row &amp;colors.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="disable_kernel_synchronous_download">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enabling this feature may cause catastrophic database corruption if the kernel aborts during a download.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Disable kernel synchronous SQLite writes on download.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_69">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QSpinBox" name="kernel_url_batch_size">
+                  <property name="toolTip">
+                   <string>Please review your lane widths before increasing this value.</string>
+                  </property>
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>15</number>
+                  </property>
+                  <property name="value">
+                   <number>5</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_17">
+                  <property name="text">
+                   <string>&amp;URL(s) batched per URL distribution.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                  <property name="buddy">
+                   <cstring>kernel_url_batch_size</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_51">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_68">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QSpinBox" name="maximum_url_keywords_kernel">
+                  <property name="minimum">
+                   <number>50</number>
+                  </property>
+                  <property name="maximum">
+                   <number>65535</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_16">
+                  <property name="text">
+                   <string>&amp;maximum keywords accepted during an import via the kernel.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                  <property name="buddy">
+                   <cstring>maximum_url_keywords_kernel</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_50">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QScrollArea" name="scrollArea_3">
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
+         <widget class="QGroupBox" name="groupBox_19">
+          <property name="title">
+           <string>Permissions</string>
           </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
+          <layout class="QVBoxLayout" name="verticalLayout_27">
+           <item>
+            <widget class="QGroupBox" name="groupBox_4">
+             <property name="title">
+              <string>Buzz</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="acceptBuzzMagnets">
+                <property name="text">
+                 <string>Accept shared &amp;magnets.</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_3">
+             <property name="title">
+              <string>Chat</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="acceptGeminis">
+                <property name="text">
+                 <string>Accept &amp;geminis.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="chatAcceptSigned">
+                <property name="text">
+                 <string>&amp;Accept only signed geminis, messages, and status bulletins.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="autoAddSharedSBMagnets">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Accept shared StarBeam &amp;magnets.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="acceptChatKeys">
+                <property name="text">
+                 <string>Accept shared public &amp;keys.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="chat_fs_request">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Allow &amp;forward secrecy requests.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="impersonate">
+                <property name="toolTip">
+                 <string>Broadcast odd messages at odd times. Please note that this option will advertise your presence.</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Impersonate me.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="chatOpenLinks">
+                <property name="text">
+                 <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="chatSignMessages">
+                <property name="text">
+                 <string>&amp;Sign forward secrecy replies and requests, geminis, messages, and status bulletins.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_5">
+             <property name="title">
+              <string>E-Mail</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_8">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="emailAcceptSigned">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&amp;Accept only signed letters.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="acceptEmailKeys">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Accept shared public &amp;keys.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="email_fs_request">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Allow &amp;forward secrecy requests.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_63">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_76">
+                  <property name="text">
+                   <string>&amp;Limit the size of email.db to</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>maximumEmailFileSize</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="maximumEmailFileSize">
+                  <property name="suffix">
+                   <string> MiB.</string>
+                  </property>
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>5000</number>
+                  </property>
+                  <property name="value">
+                   <number>1024</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_47">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="coAcceptSigned">
+                <property name="text">
+                 <string>&amp;Reject C/O letters without signatures. The setting does not apply to data destined for institutions.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="emailSignMessages">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The kernel is responsible for signing messages. Please avoid toggling this checkbox until queued messages have been processed by the kernel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Sign forward secrecy replies and requests, and &amp;letters.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_8">
+             <property name="title">
+              <string>Listeners</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_13">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_10">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_86">
+                  <property name="text">
+                   <string>&amp;Limit connections to</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>limitConnections</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="limitConnections">
+                  <property name="toolTip">
+                   <string>Limit the number of connections per client IP address.</string>
+                  </property>
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>50</number>
+                  </property>
+                  <property name="value">
+                   <number>10</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_96">
+                  <property name="text">
+                   <string>client(s).</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_20">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="publishPeriodically">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>External IP information is required.</string>
+                </property>
+                <property name="text">
+                 <string>Periodically p&amp;ublish plaintext connection information.</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_10">
+             <property name="title">
+              <string>Neighbors</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_15">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QRadioButton" name="acceptPublishedConnected">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Select this option if you would like to accept and connect to published listeners.</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Accept published listeners (connected).</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="acceptPublishedDisconnected">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Select this option if you would like to accept published listeners.</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Accept published listeners (disconnected).</string>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="ignorePublished">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&amp;Ignore published listeners.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_32">
+                  <property name="text">
+                   <string>&amp;SSL Key Size</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>publishedKeySize</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="publishedKeySize">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizeAdjustPolicy">
+                   <enum>QComboBox::AdjustToContents</enum>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>2048</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>3072</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>4096</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_16">
+             <property name="title">
+              <string>Search</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_18">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="openlinks">
+                <property name="text">
+                 <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_11">
+             <property name="title">
+              <string>Settings</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_16">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="forceRegistration">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enable this option if you would like to force kernel registration. By forcing kernel registration, an existing kernel process that Spot-On is aware of will be deactivated. You may wish to use this option if a kernel was not deactivated properly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Force kernel registration.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="launchKernel">
+                <property name="text">
+                 <string>&amp;Launch the kernel after user authentication.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="scrambler">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Please note that this option will advertise your presence.</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Periodically broadcast scrambled messages.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="sharePrivateKeys">
+                <property name="toolTip">
+                 <string>Automatically share the private authentication and encryption keys with a kernel process. If this option is disabled, the user interface will provide reminders.</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Share private authentication and encryption keys with the kernel process.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_23">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_119">
+                  <property name="text">
+                   <string>&amp;Super Echo</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>superEcho</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="superEcho">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, messages that are interpreted correctly will be echoed. Please note that this option will advertise your presence. This option does not supersede a half-echo agreement.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="currentIndex">
+                   <number>1</number>
+                  </property>
+                  <property name="sizeAdjustPolicy">
+                   <enum>QComboBox::AdjustToContents</enum>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>Complete</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Disabled</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_30">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_15">
+             <property name="title">
+              <string>URLs</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_21">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QCheckBox" name="urlAcceptSigned">
+                <property name="text">
+                 <string>&amp;Accept only signed URLs.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="acceptUrlKeys">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Accept shared public &amp;keys.</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="urlSignMessages">
+                <property name="text">
+                 <string>Sign &amp;URLs.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_20">
+          <property name="title">
+           <string>Time</string>
           </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>468</width>
-             <height>544</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_24">
-            <item>
-             <widget class="QLabel" name="label_18">
-              <property name="text">
-               <string>Messaging messages contain timestamps. Outdated messages will be highlighted.</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
-              <item>
-               <widget class="QLabel" name="label_6">
-                <property name="text">
-                 <string>&amp;Chat Time Delta</string>
-                </property>
-                <property name="buddy">
-                 <cstring>chat_time_delta</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="chat_time_delta">
-                <property name="minimum">
-                 <number>5</number>
-                </property>
-                <property name="maximum">
-                 <number>600</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="chat_time_delta_current"/>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_19">
-              <property name="text">
-               <string>Forward-secrecy messages contain timestamps. Messages older than the specified limit will be discarded.</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_9">
-              <item>
-               <widget class="QLabel" name="label_8">
-                <property name="text">
-                 <string>&amp;Forward Secrecy Time Delta</string>
-                </property>
-                <property name="buddy">
-                 <cstring>forward_secrecy_time_delta</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="forward_secrecy_time_delta">
-                <property name="minimum">
-                 <number>5</number>
-                </property>
-                <property name="maximum">
-                 <number>600</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="forward_secrecy_time_delta_current"/>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>Messaging calling messages contain timestamps. Calls that are outdated will be discarded.</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_8">
-              <item>
-               <widget class="QLabel" name="label_7">
-                <property name="text">
-                 <string>&amp;Gemini Time Delta</string>
-                </property>
-                <property name="buddy">
-                 <cstring>gemini_time_delta</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="gemini_time_delta">
-                <property name="minimum">
-                 <number>5</number>
-                </property>
-                <property name="maximum">
-                 <number>600</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="gemini_time_delta_current"/>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_22">
-              <property name="text">
-               <string>Specifies the lifetime of packet digests which are recorded by the kernel.</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
-               <widget class="QLabel" name="label_5">
-                <property name="text">
-                 <string>Kernel &amp;Cache Object Lifetime</string>
-                </property>
-                <property name="buddy">
-                 <cstring>kernel_cache_object_lifetime</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="kernel_cache_object_lifetime">
-                <property name="minimum">
-                 <number>5</number>
-                </property>
-                <property name="maximum">
-                 <number>600</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="kernel_cache_object_lifetime_current"/>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_23">
-              <property name="text">
-               <string>Specifies the interval at which the kernel will transmit URL data.</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_14">
-              <item>
-               <widget class="QLabel" name="label_14">
-                <property name="text">
-                 <string>Kernel &amp;URL Dispatcher Interval</string>
-                </property>
-                <property name="buddy">
-                 <cstring>kernel_url_dispatcher</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="kernel_url_dispatcher">
-                <property name="minimum">
-                 <number>45</number>
-                </property>
-                <property name="maximum">
-                 <number>600</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="kernel_url_dispatcher_current"/>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_20">
-              <property name="text">
-               <string>Forward-secrecy messages contain timestamps. Messages older than the specified limit will be discarded. Applies to Poptastic data.</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_12">
-              <item>
-               <widget class="QLabel" name="label_11">
-                <property name="text">
-                 <string>&amp;Poptastic Forward Secrecy Time Delta</string>
-                </property>
-                <property name="buddy">
-                 <cstring>poptastic_forward_secrecy_time_delta</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="poptastic_forward_secrecy_time_delta">
-                <property name="minimum">
-                 <number>5</number>
-                </property>
-                <property name="maximum">
-                 <number>600</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="poptastic_forward_secrecy_time_delta_current"/>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_24">
-              <property name="text">
-               <string>Specifies the interval at which e-mail is retrieved via the kernel.</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_11">
-              <item>
-               <widget class="QLabel" name="label_10">
-                <property name="text">
-                 <string>&amp;Retrieve Mail Time Delta</string>
-                </property>
-                <property name="buddy">
-                 <cstring>retrieve_mail_time_delta</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="retrieve_mail_time_delta">
-                <property name="minimum">
-                 <number>5</number>
-                </property>
-                <property name="maximum">
-                 <number>600</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="retrieve_mail_time_delta_current"/>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_13">
-              <item>
-               <spacer name="horizontalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="defaults">
-                <property name="text">
-                 <string>Defaults</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </widget>
+          <layout class="QVBoxLayout" name="verticalLayout_28">
+           <item>
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>Values have units of seconds.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_18">
+             <property name="text">
+              <string>Messaging messages contain timestamps. Outdated messages will be highlighted.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>&amp;Chat Time Delta</string>
+               </property>
+               <property name="buddy">
+                <cstring>chat_time_delta</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="chat_time_delta">
+               <property name="minimum">
+                <number>5</number>
+               </property>
+               <property name="maximum">
+                <number>600</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="chat_time_delta_current"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_19">
+             <property name="text">
+              <string>Forward-secrecy messages contain timestamps. Messages older than the specified limit will be discarded.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>&amp;Forward Secrecy Time Delta</string>
+               </property>
+               <property name="buddy">
+                <cstring>forward_secrecy_time_delta</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="forward_secrecy_time_delta">
+               <property name="minimum">
+                <number>5</number>
+               </property>
+               <property name="maximum">
+                <number>600</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="forward_secrecy_time_delta_current"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_21">
+             <property name="text">
+              <string>Messaging calling messages contain timestamps. Calls that are outdated will be discarded.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>&amp;Gemini Time Delta</string>
+               </property>
+               <property name="buddy">
+                <cstring>gemini_time_delta</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="gemini_time_delta">
+               <property name="minimum">
+                <number>5</number>
+               </property>
+               <property name="maximum">
+                <number>600</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="gemini_time_delta_current"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_22">
+             <property name="text">
+              <string>Specifies the lifetime of packet digests which are recorded by the kernel.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Kernel &amp;Cache Object Lifetime</string>
+               </property>
+               <property name="buddy">
+                <cstring>kernel_cache_object_lifetime</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kernel_cache_object_lifetime">
+               <property name="minimum">
+                <number>5</number>
+               </property>
+               <property name="maximum">
+                <number>600</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="kernel_cache_object_lifetime_current"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_23">
+             <property name="text">
+              <string>Specifies the interval at which the kernel will transmit URL data.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_14">
+             <item>
+              <widget class="QLabel" name="label_14">
+               <property name="text">
+                <string>Kernel &amp;URL Dispatcher Interval</string>
+               </property>
+               <property name="buddy">
+                <cstring>kernel_url_dispatcher</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="kernel_url_dispatcher">
+               <property name="minimum">
+                <number>45</number>
+               </property>
+               <property name="maximum">
+                <number>600</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="kernel_url_dispatcher_current"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_20">
+             <property name="text">
+              <string>Forward-secrecy messages contain timestamps. Messages older than the specified limit will be discarded. Applies to Poptastic data.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>&amp;Poptastic Forward Secrecy Time Delta</string>
+               </property>
+               <property name="buddy">
+                <cstring>poptastic_forward_secrecy_time_delta</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="poptastic_forward_secrecy_time_delta">
+               <property name="minimum">
+                <number>5</number>
+               </property>
+               <property name="maximum">
+                <number>600</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="poptastic_forward_secrecy_time_delta_current"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_26">
+             <property name="text">
+              <string>Messaging calling messages contain timestamps. Calls that are outdated will be discarded.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_15">
+             <item>
+              <widget class="QLabel" name="label_25">
+               <property name="text">
+                <string>Poptastic Gemini Time &amp;Delta</string>
+               </property>
+               <property name="buddy">
+                <cstring>poptastic_gemini_time_delta</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="poptastic_gemini_time_delta">
+               <property name="minimum">
+                <number>5</number>
+               </property>
+               <property name="maximum">
+                <number>600</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="poptastic_gemini_time_delta_current"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_24">
+             <property name="text">
+              <string>Specifies the interval at which e-mail is retrieved via the kernel.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>&amp;Retrieve Mail Time Delta</string>
+               </property>
+               <property name="buddy">
+                <cstring>retrieve_mail_time_delta</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="retrieve_mail_time_delta">
+               <property name="minimum">
+                <number>5</number>
+               </property>
+               <property name="maximum">
+                <number>600</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="retrieve_mail_time_delta_current"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_13">
+             <item>
+              <spacer name="horizontalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="defaults">
+               <property name="text">
+                <string>Defaults</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -2361,11 +2303,7 @@
   </action>
  </widget>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
-  <tabstop>scrollArea</tabstop>
-  <tabstop>notifications</tabstop>
   <tabstop>icons</tabstop>
-  <tabstop>play_sounds</tabstop>
   <tabstop>iconsize</tabstop>
   <tabstop>position</tabstop>
   <tabstop>buzzAutoJoin</tabstop>
@@ -2404,7 +2342,6 @@
   <tabstop>disable_kernel_synchronous_download</tabstop>
   <tabstop>kernel_url_batch_size</tabstop>
   <tabstop>maximum_url_keywords_kernel</tabstop>
-  <tabstop>scrollArea_2</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>
   <tabstop>acceptGeminis</tabstop>
   <tabstop>chatAcceptSigned</tabstop>
@@ -2435,7 +2372,6 @@
   <tabstop>urlAcceptSigned</tabstop>
   <tabstop>acceptUrlKeys</tabstop>
   <tabstop>urlSignMessages</tabstop>
-  <tabstop>scrollArea_3</tabstop>
   <tabstop>chat_time_delta</tabstop>
   <tabstop>forward_secrecy_time_delta</tabstop>
   <tabstop>gemini_time_delta</tabstop>
@@ -2445,7 +2381,6 @@
   <tabstop>retrieve_mail_time_delta</tabstop>
   <tabstop>defaults</tabstop>
   <tabstop>iconsize</tabstop>
-  <tabstop>scrollArea</tabstop>
   <tabstop>buzzAutoJoin</tabstop>
   <tabstop>sharePrivateKeys</tabstop>
   <tabstop>chatAcceptSigned</tabstop>
@@ -2481,7 +2416,6 @@
   <tabstop>icons</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
-  <tabstop>scrollArea</tabstop>
   <tabstop>displayPopups</tabstop>
   <tabstop>starbeamUpdateInterval</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>

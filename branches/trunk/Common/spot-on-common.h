@@ -92,6 +92,7 @@ class spoton_common
   static const int NEIGHBOR_LIFETIME_MS = 10 * 60 * 1000;
   static const int NEIGHBOR_SILENCE_TIME = 90;
   static const int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 60;
+  static const int POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int POPTASTIC_MAXIMUM_EMAIL_SIZE = 50 * 1024 * 1024;
   static const int POPTASTIC_STATUS_INTERVAL = 60;
   static const int REAP_POST_OFFICE_LETTERS_INTERVAL = 60;
@@ -127,6 +128,7 @@ class spoton_common
   static int KERNEL_URL_DISPATCHER_INTERVAL;
   static int MAIL_TIME_DELTA_MAXIMUM;
   static int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
+  static int POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM;
 
  private:
   spoton_common(void);

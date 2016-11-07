@@ -125,6 +125,7 @@ const int spoton_common::MINIMUM_STARBEAM_PULSE_SIZE;
 const int spoton_common::MOSAIC_SIZE;
 const int spoton_common::NAME_MAXIMUM_LENGTH;
 const int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
+const int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
 const int spoton_common::POPTASTIC_MAXIMUM_EMAIL_SIZE;
 const int spoton_common::POPTASTIC_STATUS_INTERVAL;
 const int spoton_common::REAP_POST_OFFICE_LETTERS_INTERVAL;
@@ -152,6 +153,8 @@ int spoton_common::MAIL_TIME_DELTA_MAXIMUM =
   spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
+int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
+  spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
 static QPointer<spoton> s_gui = 0;
 
 #if QT_VERSION >= 0x050000

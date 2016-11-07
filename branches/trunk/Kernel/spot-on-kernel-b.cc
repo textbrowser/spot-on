@@ -827,7 +827,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
   /*
   ** The following logic must agree with the logic in
-  ** spot-on-neighbor.cc.
+  ** spoton_neighbor.
   */
 
   QList<QByteArray> symmetricKeys;
@@ -1650,7 +1650,7 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
 {
   /*
   ** Some of the following is similar to logic in
-  ** spot-on-neighbor.cc.
+  ** spoton_neighbor.
   */
 
   if(!setting("gui/acceptGeminis", true).toBool())
@@ -1674,7 +1674,7 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
   qint64 secsTo = qAbs(now.secsTo(dateTime));
 
   if(!(secsTo <= static_cast<qint64> (spoton_common::
-				      GEMINI_TIME_DELTA_MAXIMUM)))
+				      POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM)))
     {
       spoton_misc::logError
 	(QString("spoton_kernel::saveGemini(): "

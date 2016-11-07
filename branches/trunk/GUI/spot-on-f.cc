@@ -1050,6 +1050,8 @@ void spoton::prepareTimeWidgets(void)
     (spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
   m_optionsUi.poptastic_forward_secrecy_time_delta->setValue
     (spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.poptastic_gemini_time_delta->setValue
+    (spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM);
   m_optionsUi.retrieve_mail_time_delta->setValue
     (spoton_common::MAIL_TIME_DELTA_MAXIMUM);
 
@@ -1072,6 +1074,9 @@ void spoton::prepareTimeWidgets(void)
 	  (QString::number(value));
       else if(m_optionsUi.poptastic_forward_secrecy_time_delta == slider)
 	m_optionsUi.poptastic_forward_secrecy_time_delta_current->setText
+	  (QString::number(value));
+      else if(m_optionsUi.poptastic_gemini_time_delta == slider)
+	m_optionsUi.poptastic_gemini_time_delta_current->setText
 	  (QString::number(value));
       else if(m_optionsUi.retrieve_mail_time_delta == slider)
 	m_optionsUi.retrieve_mail_time_delta_current->setText
@@ -1151,6 +1156,7 @@ void spoton::slotTimeSliderDefaults(void)
     << spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC
     << spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC
     << spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC
     << spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
   keys << "gui/chat_time_delta"
        << "gui/forward_secrecy_time_delta"
@@ -1158,6 +1164,7 @@ void spoton::slotTimeSliderDefaults(void)
        << "gui/kernel_cache_object_lifetime"
        << "gui/kernel_url_dispatcher_interval"
        << "gui/poptastic_forward_secrecy_time_delta"
+       << "gui/poptastic_gemini_time_delta"
        << "gui/retrieve_mail_time_delta";
 
   QSettings settings;
@@ -1175,7 +1182,8 @@ void spoton::slotTimeSliderDefaults(void)
   spoton_common::KERNEL_URL_DISPATCHER_INTERVAL = defaults.value(4);
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
     defaults.value(5);
-  spoton_common::MAIL_TIME_DELTA_MAXIMUM = defaults.value(6);
+  spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM = defaults.value(6);
+  spoton_common::MAIL_TIME_DELTA_MAXIMUM = defaults.value(7);
   m_optionsUi.chat_time_delta->setValue
     (spoton_common::CHAT_TIME_DELTA_MAXIMUM);
   m_optionsUi.forward_secrecy_time_delta->setValue
@@ -1188,6 +1196,8 @@ void spoton::slotTimeSliderDefaults(void)
     (spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
   m_optionsUi.poptastic_forward_secrecy_time_delta->setValue
     (spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.poptastic_gemini_time_delta->setValue
+    (spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM);
   m_optionsUi.retrieve_mail_time_delta->setValue
     (spoton_common::MAIL_TIME_DELTA_MAXIMUM);
 }

@@ -5019,6 +5019,7 @@ void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
     << spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC
     << spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC
     << spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC
     << spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
   keys << "gui/chat_time_delta"
        << "gui/forward_secrecy_time_delta"
@@ -5026,6 +5027,7 @@ void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
        << "gui/kernel_cache_object_lifetime"
        << "gui/kernel_url_dispatcher_interval"
        << "gui/poptastic_forward_secrecy_time_delta"
+       << "gui/poptastic_gemini_time_delta"
        << "gui/retrieve_mail_time_delta";
 
   for(int i = 0; i < keys.size(); i++)
@@ -5043,8 +5045,10 @@ void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
     qBound(45, values.value(4), 600);
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
     qBound(5, values.value(5), 600);
+  spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(6), 60 * 60 * 24 * 7);
   spoton_common::MAIL_TIME_DELTA_MAXIMUM =
-    qBound(5, values.value(6), 600);
+    qBound(5, values.value(7), 600);
 }
 
 QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
