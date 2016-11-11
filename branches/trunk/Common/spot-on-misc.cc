@@ -886,12 +886,11 @@ void spoton_misc::populateUrlsDatabase(const QList<QList<QVariant> > &list,
 
     if(db.open())
       {
-	QSqlQuery query1(db);
-	QSqlQuery query2(db);
+	QSqlQuery query(db);
 
-	query1.prepare("INSERT INTO urls (date_time_inserted, "
-		       "description, hash, title, url) "
-		       "VALUES (?, ?, ?, ?, ?)");
+	query.prepare("INSERT INTO urls (date_time_inserted, "
+		      "description, hash, title, url) "
+		      "VALUES (?, ?, ?, ?, ?)");
 
 	for(int i = 0; i < list.size(); i++)
 	  {
@@ -904,32 +903,32 @@ void spoton_misc::populateUrlsDatabase(const QList<QList<QVariant> > &list,
 	    QList<QVariant> variants(list.at(i));
 	    bool ok = true;
 
-	    query1.bindValue
+	    query.bindValue
 	      (0, QDateTime::currentDateTime().toString(Qt::ISODate));
-	    query1.bindValue
+	    query.bindValue
 	      (1, crypt->encryptedThenHashed
 	       (variants.value(0).toByteArray(), &ok).
 	       toBase64());
 
 	    if(ok)
-	      query1.bindValue
+	      query.bindValue
 		(2, crypt->keyedHash(variants.value(2).toByteArray(), &ok).
 		 toBase64());
 
 	    if(ok)
-	      query1.bindValue
+	      query.bindValue
 		(3, crypt->encryptedThenHashed
 		 (variants.value(1).toByteArray(), &ok).
 		 toBase64());
 
 	    if(ok)
-	      query1.bindValue
+	      query.bindValue
 		(4, crypt->encryptedThenHashed
 		 (variants.value(2).toByteArray(), &ok).
 		 toBase64());
 
 	    if(ok)
-	      query1.exec();
+	      query.exec();
 	  }
       }
 
