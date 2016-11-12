@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-2131</y>
+         <y>-2103</y>
          <width>665</width>
-         <height>2736</height>
+         <height>2708</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -2079,7 +2079,7 @@
            <item>
             <widget class="QLabel" name="label_18">
              <property name="text">
-              <string>Messaging-messages contain timestamps. Outdated messages will be highlighted.</string>
+              <string>Highlight chat messages if they have expired.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -2119,7 +2119,7 @@
            <item>
             <widget class="QLabel" name="label_19">
              <property name="text">
-              <string>Forward-secrecy messages contain timestamps. Messages older than the specified limit will be discarded.</string>
+              <string>Discard forward-secrecy messages if they have expired.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -2159,7 +2159,7 @@
            <item>
             <widget class="QLabel" name="label_21">
              <property name="text">
-              <string>Messaging calling-messages contain timestamps. Calls that are outdated will be discarded.</string>
+              <string>Discard calling data if it has expired.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -2199,7 +2199,7 @@
            <item>
             <widget class="QLabel" name="label_22">
              <property name="text">
-              <string>Specifies the lifetime of packet digests which are recorded by the kernel.</string>
+              <string>Specifies the lifetime of packet digests.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -2279,7 +2279,7 @@
            <item>
             <widget class="QLabel" name="label_20">
              <property name="text">
-              <string>Forward-secrecy messages contain timestamps. Messages older than the specified limit will be discarded. Applies to Poptastic data.</string>
+              <string>Discard Poptastic forward-secrecy messages if they have expired.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -2319,7 +2319,7 @@
            <item>
             <widget class="QLabel" name="label_26">
              <property name="text">
-              <string>Messaging calling-messages contain timestamps. Calls that are outdated will be discarded.</string>
+              <string>Discard Poptastic calling data if it has expired.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
