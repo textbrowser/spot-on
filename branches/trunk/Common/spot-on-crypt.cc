@@ -1660,18 +1660,14 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       return QByteArray();
     }
 
-  QByteArray array;
-
-  array.append(m_privateKey, static_cast<int> (m_privateKeyLength));
-
-  if(array.startsWith("mceliece-"))
+  if(::memcmp(m_privateKey, "mceliece-", strlen("mceliece-")) == 0)
     {
-      array.replace(0, array.length(), QByteArray(array.length(), 0));
-      array.clear();
       locker1.unlock();
       return publicKeyDecryptMcEliece(data, ok);
     }
-  else if(array.startsWith("ntru-private-key-"))
+  else if(::memcmp(m_privateKey,
+		   "ntru-private-key-",
+		   strlen("ntru-private-key-")) == 0)
     {
       locker1.unlock();
 
@@ -1685,13 +1681,8 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 	publicKey(&ok);
       }
 
-      array.replace(0, array.length(), QByteArray(array.length(), 0));
-      array.clear();
       return publicKeyDecryptNTRU(data, ok);
     }
-
-  array.replace(0, array.length(), QByteArray(array.length(), 0));
-  array.clear();
 
   QByteArray decrypted;
   QByteArray random;
