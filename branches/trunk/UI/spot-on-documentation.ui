@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>documentation</class>
- <widget class="QMainWindow" name="documentation">
+ <class>spoton_documentation</class>
+ <widget class="QMainWindow" name="spoton_documentation">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -80,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -136,7 +136,7 @@
   <connection>
    <sender>action_Close</sender>
    <signal>triggered()</signal>
-   <receiver>documentation</receiver>
+   <receiver>spoton_documentation</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

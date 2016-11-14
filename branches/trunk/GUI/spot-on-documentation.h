@@ -43,7 +43,7 @@ class spoton_documentation: public QMainWindow
   ~spoton_documentation();
 
  private:
-  Ui_documentation m_ui;
+  Ui_spoton_documentation m_ui;
 
  private slots:
   void slotAnchorClicked(const QUrl &url);
