@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>rss</class>
- <widget class="QMainWindow" name="rss">
+ <class>spoton_rss</class>
+ <widget class="QMainWindow" name="spoton_rss">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -839,7 +839,7 @@
   <connection>
    <sender>action_Close</sender>
    <signal>triggered()</signal>
-   <receiver>rss</receiver>
+   <receiver>spoton_rss</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

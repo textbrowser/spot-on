@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ipinformation</class>
- <widget class="QDialog" name="ipinformation">
+ <class>spoton_ipinformation</class>
+ <widget class="QDialog" name="spoton_ipinformation">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -18,7 +18,16 @@
    <property name="spacing">
     <number>5</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>5</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>5</number>
+   </property>
+   <property name="bottomMargin">
     <number>5</number>
    </property>
    <item>
@@ -122,7 +131,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ipinformation</receiver>
+   <receiver>spoton_ipinformation</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -138,7 +147,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ipinformation</receiver>
+   <receiver>spoton_ipinformation</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

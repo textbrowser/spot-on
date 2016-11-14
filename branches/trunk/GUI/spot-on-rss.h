@@ -60,7 +60,7 @@ class spoton_rss: public QMainWindow
   QTimer m_downloadContentTimer;
   QTimer m_importTimer;
   QTimer m_statisticsTimer;
-  Ui_rss m_ui;
+  Ui_spoton_rss m_ui;
   int m_currentFeedRow;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300

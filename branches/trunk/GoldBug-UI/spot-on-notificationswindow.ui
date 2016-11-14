@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>notifications_window</class>
- <widget class="QMainWindow" name="notifications_window">
+ <class>spoton_notifications_window</class>
+ <widget class="QMainWindow" name="spoton_notifications_window">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -70,7 +70,7 @@
   <connection>
    <sender>action_Close</sender>
    <signal>triggered()</signal>
-   <receiver>notifications_window</receiver>
+   <receiver>spoton_notifications_window</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

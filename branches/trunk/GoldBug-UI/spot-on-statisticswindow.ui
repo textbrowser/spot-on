@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>statistics_window</class>
- <widget class="QMainWindow" name="statistics_window">
+ <class>spoton_statistics_window</class>
+ <widget class="QMainWindow" name="spoton_statistics_window">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -49,7 +49,7 @@
      <x>0</x>
      <y>0</y>
      <width>550</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -76,7 +76,7 @@
   <connection>
    <sender>action_Close</sender>
    <signal>triggered()</signal>
-   <receiver>statistics_window</receiver>
+   <receiver>spoton_statistics_window</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
