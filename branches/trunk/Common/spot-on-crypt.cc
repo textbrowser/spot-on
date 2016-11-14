@@ -1660,14 +1660,15 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       return QByteArray();
     }
 
-  if(::memcmp(m_privateKey, "mceliece-", strlen("mceliece-")) == 0)
+  if(::memcmp(m_privateKey, "mceliece-", qMin(m_privateKeyLength,
+					      strlen("mceliece-"))) == 0)
     {
       locker1.unlock();
       return publicKeyDecryptMcEliece(data, ok);
     }
   else if(::memcmp(m_privateKey,
 		   "ntru-private-key-",
-		   strlen("ntru-private-key-")) == 0)
+		   qMin(m_privateKeyLength, strlen("ntru-private-key-"))) == 0)
     {
       locker1.unlock();
 
