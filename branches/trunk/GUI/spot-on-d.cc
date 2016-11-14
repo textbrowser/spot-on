@@ -2232,7 +2232,7 @@ void spoton::slotAssignNewIPToNeighbor(void)
     }
 
   QDialog dialog(this);
-  Ui_ipinformation ui;
+  Ui_spoton_ipinformation ui;
 
   ui.setupUi(&dialog);
   dialog.setWindowTitle

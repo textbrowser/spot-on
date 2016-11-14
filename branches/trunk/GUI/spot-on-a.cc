@@ -9647,7 +9647,7 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
     return;
 
   QDialog dialog(this);
-  Ui_passwordprompt ui;
+  Ui_spoton_passwordprompt ui;
 
   ui.setupUi(&dialog);
   dialog.setWindowTitle

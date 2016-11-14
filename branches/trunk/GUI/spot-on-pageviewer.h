@@ -95,7 +95,7 @@ class spoton_pageviewer: public QMainWindow
 #elif defined(SPOTON_WEBKIT_ENABLED)
   QWebView *m_webView;
 #endif
-  Ui_pageviewer m_ui;
+  Ui_spoton_pageviewer m_ui;
 #if !defined(SPOTON_WEBENGINE_ENABLED) && !defined(SPOTON_WEBKIT_ENABLED)
   spoton_textbrowser *m_webView;
 #endif

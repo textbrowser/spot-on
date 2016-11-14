@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>keyboard</class>
- <widget class="QDialog" name="keyboard">
+ <class>spoton_keyboard</class>
+ <widget class="QDialog" name="spoton_keyboard">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -186,7 +186,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>keyboard</receiver>
+   <receiver>spoton_keyboard</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -202,7 +202,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>keyboard</receiver>
+   <receiver>spoton_keyboard</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

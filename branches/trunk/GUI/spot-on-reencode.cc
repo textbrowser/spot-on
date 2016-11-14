@@ -46,7 +46,7 @@ spoton_reencode::~spoton_reencode()
 {
 }
 
-void spoton_reencode::reencode(Ui_statusbar sb,
+void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 			       spoton_crypt *newCrypt,
 			       spoton_crypt *oldCrypt)
 {

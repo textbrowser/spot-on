@@ -1264,7 +1264,7 @@ void spoton::slotPostgreSQLConnect(void)
   QByteArray password;
   QDialog dialog(this);
   QSettings settings;
-  Ui_postgresqlconnect ui;
+  Ui_spoton_postgresqlconnect ui;
   bool ok = true;
 
   password = crypt->decryptedAfterAuthenticated

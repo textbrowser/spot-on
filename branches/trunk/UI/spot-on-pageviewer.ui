@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>pageviewer</class>
- <widget class="QMainWindow" name="pageviewer">
+ <class>spoton_pageviewer</class>
+ <widget class="QMainWindow" name="spoton_pageviewer">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -166,7 +166,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -222,7 +222,7 @@
   <connection>
    <sender>action_Close</sender>
    <signal>triggered()</signal>
-   <receiver>pageviewer</receiver>
+   <receiver>spoton_pageviewer</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

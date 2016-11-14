@@ -287,7 +287,7 @@ class spoton_virtual_keyboard: public QDialog
   {
   }
 
-  Ui_keyboard m_ui;
+  Ui_spoton_keyboard m_ui;
 
  private slots:
   void slotBack(void)
@@ -497,12 +497,12 @@ class spoton: public QMainWindow
   QTimer m_tableTimer;
   QTimer m_updateChatWindowsTimer;
   QWidget *m_sbWidget;
-  Ui_notifications_window m_notificationsUi;
-  Ui_poptasticretrophonesettings m_poptasticRetroPhoneSettingsUi;
   Ui_spoton_mainwindow m_ui;
+  Ui_spoton_notifications_window m_notificationsUi;
   Ui_spoton_options m_optionsUi;
-  Ui_statistics_window m_statisticsUi;
-  Ui_statusbar m_sb;
+  Ui_spoton_poptasticretrophonesettings m_poptasticRetroPhoneSettingsUi;
+  Ui_spoton_statistics_window m_statisticsUi;
+  Ui_spoton_statusbar m_sb;
   Ui_spoton_wizard *m_wizardUi;
   bool m_locked;
   quint64 m_urlCurrentPage;

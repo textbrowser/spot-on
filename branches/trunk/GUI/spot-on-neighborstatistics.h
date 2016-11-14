@@ -49,7 +49,7 @@ class spoton_neighborstatistics: public QMainWindow
   QFutureWatcher<QString> m_futureWatcher;
   QTimer m_timer;
   QString query(void);
-  Ui_neighbor_statistics m_ui;
+  Ui_spoton_neighbor_statistics m_ui;
   void closeEvent(QCloseEvent *event);
 
  private slots:

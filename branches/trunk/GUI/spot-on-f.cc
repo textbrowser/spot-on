@@ -1319,7 +1319,7 @@ void spoton::slotLock(void)
       */
 
       QDialog dialog(this);
-      Ui_unlock ui;
+      Ui_spoton_unlock ui;
 
       ui.setupUi(&dialog);
       dialog.setWindowTitle

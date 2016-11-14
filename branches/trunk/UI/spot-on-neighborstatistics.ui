@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>neighbor_statistics</class>
- <widget class="QMainWindow" name="neighbor_statistics">
+ <class>spoton_neighbor_statistics</class>
+ <widget class="QMainWindow" name="spoton_neighbor_statistics">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -75,7 +75,7 @@
   <connection>
    <sender>action_Close</sender>
    <signal>triggered()</signal>
-   <receiver>neighbor_statistics</receiver>
+   <receiver>spoton_neighbor_statistics</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

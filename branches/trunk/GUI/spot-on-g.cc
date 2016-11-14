@@ -1103,7 +1103,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
     }
 
   QDialog dialog(this);
-  Ui_private_application_credentials ui;
+  Ui_spoton_private_application_credentials ui;
 
   ui.setupUi(&dialog);
   dialog.setWindowTitle
