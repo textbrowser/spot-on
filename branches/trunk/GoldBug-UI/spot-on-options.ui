@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>745</width>
     <height>650</height>
    </rect>
   </property>
@@ -19,16 +19,7 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="leftMargin">
-     <number>5</number>
-    </property>
-    <property name="topMargin">
-     <number>5</number>
-    </property>
-    <property name="rightMargin">
-     <number>5</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>5</number>
     </property>
     <item>
@@ -44,13 +35,16 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>665</width>
-         <height>2708</height>
+         <width>717</width>
+         <height>3032</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
         <item>
-         <widget class="QGroupBox" name="groupBox_18">
+         <widget class="QGroupBox" name="general">
+          <property name="styleSheet">
+           <string notr="true">QGroupBox#general::title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
+          </property>
           <property name="title">
            <string>General</string>
           </property>
@@ -258,16 +252,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -298,16 +283,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -468,16 +444,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -555,16 +522,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -625,16 +583,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -708,16 +657,7 @@
               <string>Search</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_19">
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -825,16 +765,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -1127,16 +1058,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -1327,7 +1249,10 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_19">
+         <widget class="QGroupBox" name="permissions">
+          <property name="styleSheet">
+           <string notr="true">QGroupBox#permissions:title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
+          </property>
           <property name="title">
            <string>Permissions</string>
           </property>
@@ -1341,16 +1266,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -1372,16 +1288,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -1482,16 +1389,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -1626,16 +1524,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -1719,16 +1608,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -1849,16 +1729,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -1880,16 +1751,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -2012,16 +1874,7 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="leftMargin">
-               <number>5</number>
-              </property>
-              <property name="topMargin">
-               <number>5</number>
-              </property>
-              <property name="rightMargin">
-               <number>5</number>
-              </property>
-              <property name="bottomMargin">
+              <property name="margin">
                <number>5</number>
               </property>
               <item>
@@ -2064,13 +1917,22 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_20">
+         <widget class="QGroupBox" name="time">
+          <property name="styleSheet">
+           <string notr="true">QGroupBox#time:title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
+          </property>
           <property name="title">
            <string>Time</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_28">
            <item>
             <widget class="QLabel" name="label_12">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>Values have units of seconds.</string>
              </property>
@@ -2117,6 +1979,13 @@
             </layout>
            </item>
            <item>
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="label_19">
              <property name="text">
               <string>Discard forward-secrecy messages if they have expired.</string>
@@ -2155,6 +2024,13 @@
               <widget class="QLabel" name="forward_secrecy_time_delta_current"/>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="Line" name="line_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_21">
@@ -2197,6 +2073,13 @@
             </layout>
            </item>
            <item>
+            <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="label_22">
              <property name="text">
               <string>Specifies the lifetime of packet digests.</string>
@@ -2235,6 +2118,13 @@
               <widget class="QLabel" name="kernel_cache_object_lifetime_current"/>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="Line" name="line_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_23">
@@ -2277,6 +2167,13 @@
             </layout>
            </item>
            <item>
+            <widget class="Line" name="line_5">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="label_20">
              <property name="text">
               <string>Discard Poptastic forward-secrecy messages if they have expired.</string>
@@ -2317,6 +2214,13 @@
             </layout>
            </item>
            <item>
+            <widget class="Line" name="line_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="label_26">
              <property name="text">
               <string>Discard Poptastic calling data if it has expired.</string>
@@ -2355,6 +2259,13 @@
               <widget class="QLabel" name="poptastic_gemini_time_delta_current"/>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="Line" name="line_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_24">
@@ -2434,8 +2345,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>500</width>
-     <height>19</height>
+     <width>745</width>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
