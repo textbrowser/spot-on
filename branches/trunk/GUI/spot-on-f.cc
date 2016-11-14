@@ -210,7 +210,7 @@ void spoton::slotEstablishForwardSecrecy(void)
   QString algorithm("");
   QString error("");
   QString keySize("");
-  Ui_forwardsecrecyalgorithmsselection ui;
+  Ui_spoton_forwardsecrecyalgorithmsselection ui;
   int count = 0;
   int traditional = 0;
 
@@ -534,7 +534,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   QString str(publicKeyHash.toBase64().constData());
   QStringList aTypes;
   QStringList eTypes;
-  Ui_forwardsecrecyalgorithmsselection ui;
+  Ui_spoton_forwardsecrecyalgorithmsselection ui;
   spoton_crypt *s_crypt = m_crypts.value("email", 0);
   spoton_forward_secrecy sfs = m_forwardSecrecyRequests.value(publicKeyHash);
 
