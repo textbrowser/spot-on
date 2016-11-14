@@ -74,7 +74,7 @@ class spoton_buzzpage: public QWidget
   QByteArray m_key; // Not stored in secure memory.
   QPointer<QSslSocket> m_kernelSocket;
   QTimer m_statusTimer;
-  Ui_buzzPage ui;
+  Ui_spoton_buzzPage ui;
   unsigned long int m_iterationCount;
 
  private slots:

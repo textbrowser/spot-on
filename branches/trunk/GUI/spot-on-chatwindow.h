@@ -62,7 +62,7 @@ class spoton_chatwindow: public QMainWindow
   QString m_id;
   QString m_keyType;
   QString m_publicKeyHash;
-  Ui_chatwindow ui;
+  Ui_spoton_chatwindow ui;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
   bool event(QEvent *event);
