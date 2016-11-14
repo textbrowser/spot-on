@@ -1375,7 +1375,7 @@ void spoton::slotSetAETokenInformation(void)
     }
 
   QDialog dialog(this);
-  Ui_adaptiveechoprompt ui;
+  Ui_spoton_adaptiveechoprompt ui;
 
   ui.setupUi(&dialog);
   dialog.setWindowTitle
