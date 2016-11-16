@@ -60,6 +60,23 @@
      </widget>
     </item>
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>&amp;Secret</string>
+        </property>
+        <property name="buddy">
+         <cstring>secret</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="secret"/>
+      </item>
+     </layout>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <spacer name="horizontalSpacer">
@@ -118,6 +135,13 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>participants</tabstop>
+  <tabstop>output</tabstop>
+  <tabstop>secret</tabstop>
+  <tabstop>clear</tabstop>
+  <tabstop>execute</tabstop>
+ </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
  </resources>

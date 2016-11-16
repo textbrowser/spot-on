@@ -8794,6 +8794,7 @@
     <addaction name="action_Import_Public_Keys"/>
     <addaction name="separator"/>
     <addaction name="action_Echo_Key_Share"/>
+    <addaction name="action_SMP"/>
     <addaction name="separator"/>
     <addaction name="action_File_Encryption"/>
     <addaction name="separator"/>
@@ -9076,6 +9077,11 @@
   <action name="action_Documentation">
    <property name="text">
     <string>&amp;Documentation...</string>
+   </property>
+  </action>
+  <action name="action_SMP">
+   <property name="text">
+    <string>&amp;SMP</string>
    </property>
   </action>
  </widget>

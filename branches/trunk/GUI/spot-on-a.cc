@@ -2737,6 +2737,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(false);
       m_ui.action_RSS->setEnabled(false);
       m_ui.action_Rosetta->setEnabled(false);
+      m_ui.action_SMP->setEnabled(false);
       m_ui.action_Statistics_Window->setEnabled(false);
       m_ui.action_Vacuum_Databases->setEnabled(false);
       m_ui.delete_key->setEnabled(true);
@@ -2784,6 +2785,7 @@ spoton::spoton(void):QMainWindow()
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(false);
       m_ui.action_RSS->setEnabled(false);
       m_ui.action_Rosetta->setEnabled(false);
+      m_ui.action_SMP->setEnabled(false);
       m_ui.action_Statistics_Window->setEnabled(false);
       m_ui.action_Vacuum_Databases->setEnabled(false);
       m_ui.answer_authenticate->setEnabled(false);
@@ -6704,6 +6706,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
       m_ui.action_RSS->setEnabled(true);
       m_ui.action_Rosetta->setEnabled(true);
+      m_ui.action_SMP->setEnabled(true);
       m_ui.action_Statistics_Window->setEnabled(true);
       m_ui.action_Vacuum_Databases->setEnabled(true);
       m_ui.answer->clear();
@@ -6976,6 +6979,7 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
 	    m_ui.action_RSS->setEnabled(true);
 	    m_ui.action_Rosetta->setEnabled(true);
+	    m_ui.action_SMP->setEnabled(true);
 	    m_ui.action_Statistics_Window->setEnabled(true);
 	    m_ui.action_Vacuum_Databases->setEnabled(true);
 	    m_ui.answer->clear();
