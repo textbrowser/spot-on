@@ -25,14 +25,15 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "spot-on.h"
-#include "spot-on-defines.h"
-
 #include <QSslKey>
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothlocaldevice.h>
 #endif
+
+#include "spot-on.h"
+#include "spot-on-defines.h"
+#include "spot-on-smp.h"
 
 void spoton::slotSendMessage(void)
 {

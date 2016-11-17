@@ -2047,3 +2047,7 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
 			  tr("An error (%1) occurred while attempting "
 			     "to record the generated data.").arg(error));
 }
+
+void spoton::slotShowSMPWindow(void)
+{
+}

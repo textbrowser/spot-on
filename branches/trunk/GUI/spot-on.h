@@ -382,14 +382,10 @@ class spoton_lineedit: public QLineEdit
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-send.h"
 #include "spot-on-chatwindow.h"
-#include "spot-on-echo-key-share.h"
 #include "spot-on-encryptfile.h"
 #include "spot-on-logviewer.h"
-#include "spot-on-reencode.h"
 #include "spot-on-rosetta.h"
-#include "spot-on-rss.h"
-#include "spot-on-smp.h"
-#include "spot-on-starbeamanalyzer.h"
+#include "spot-on-smpwindow.h"
 #include "ui_spot-on-controlcenter.h"
 #include "ui_spot-on-notificationswindow.h"
 #include "ui_spot-on-options.h"
@@ -400,6 +396,10 @@ class spoton_lineedit: public QLineEdit
 
 class QProgressDialog;
 class spoton_documentation;
+class spoton_echo_key_share;
+class spoton_rss;
+class spoton_smp;
+class spoton_starbeamanalyzer;
 
 class spoton_forward_secrecy
 {
@@ -517,6 +517,7 @@ class spoton: public QMainWindow
   spoton_logviewer m_logViewer;
   spoton_rosetta m_rosetta;
   spoton_rss *m_rss;
+  spoton_smpwindow m_smpWindow;
   spoton_starbeamanalyzer *m_starbeamAnalyzer;
   QByteArray copiedPublicKeyPairToMagnet(const QByteArray &data) const;
   QByteArray copyMyChatPublicKey(void) const;
@@ -972,6 +973,7 @@ class spoton: public QMainWindow
   void slotShowOptions(void);
   void slotShowPage(bool state);
   void slotShowRss(void);
+  void slotShowSMPWindow(void);
   void slotShowStarBeamAnalyzer(void);
   void slotShowStatistics(void);
   void slotShowStatisticsWindow(void);

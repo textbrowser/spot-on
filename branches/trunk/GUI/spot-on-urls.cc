@@ -35,6 +35,7 @@
 #include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-pageviewer.h"
+#include "spot-on-rss.h"
 #include "spot-on-utilities.h"
 #include "ui_spot-on-postgresql-connect.h"
 

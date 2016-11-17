@@ -64,9 +64,14 @@ extern "C"
 #endif
 
 #include "Common/spot-on-threefish.h"
+#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-documentation.h"
-#include "spot-on.h"
+#include "spot-on-echo-key-share.h"
+#include "spot-on-reencode.h"
+#include "spot-on-rss.h"
+#include "spot-on-smp.h"
+#include "spot-on-starbeamanalyzer.h"
 #include "ui_spot-on-password-prompt.h"
 
 #ifdef SPOTON_MCELIECE_ENABLED

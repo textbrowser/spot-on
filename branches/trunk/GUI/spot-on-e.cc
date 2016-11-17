@@ -39,6 +39,8 @@ extern "C"
 
 #include "spot-on.h"
 #include "spot-on-defines.h"
+#include "spot-on-echo-key-share.h"
+#include "spot-on-smp.h"
 #include "spot-on-utilities.h"
 #include "ui_spot-on-keyboard.h"
 

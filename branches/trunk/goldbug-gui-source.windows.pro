@@ -39,6 +39,7 @@ HEADERS		= Common\\spot-on-external-address.h \
 		  GUI\\spot-on-pageviewer.h \
 		  GUI\\spot-on-rosetta.h \
 		  GUI\\spot-on-rss.h \
+		  GUI\\spot-on-smpwindow.h \
                   GUI\\spot-on-starbeamanalyzer.h \
                   GUI\\spot-on-tabwidget.h \
 		  GUI\\spot-on-textbrowser.h \
@@ -75,6 +76,7 @@ SOURCES		= Common\\spot-on-crypt.cc \
 		  GUI\\spot-on-rosetta.cc \
 		  GUI\\spot-on-rss.cc \
 		  GUI\\spot-on-smp.cc \
+		  GUI\\spot-on-smpwindow.cc \
                   GUI\\spot-on-starbeamanalyzer.cc \
 		  GUI\\spot-on-tabwidget.cc \
 		  GUI\\spot-on-textbrowser.cc \

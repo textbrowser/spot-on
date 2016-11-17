@@ -29,6 +29,7 @@
 
 #include "spot-on.h"
 #include "spot-on-defines.h"
+#include "spot-on-starbeamanalyzer.h"
 #include "ui_spot-on-adaptive-echo-prompt.h"
 #include "ui_spot-on-ipinformation.h"
 
