@@ -79,6 +79,13 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QPushButton" name="refresh">
+        <property name="text">
+         <string>&amp;Refresh</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -102,13 +109,6 @@
        <widget class="QPushButton" name="execute">
         <property name="text">
          <string>Execute</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="refresh">
-        <property name="text">
-         <string>&amp;Refresh</string>
         </property>
        </widget>
       </item>
@@ -146,6 +146,7 @@
   <tabstop>participants</tabstop>
   <tabstop>output</tabstop>
   <tabstop>secret</tabstop>
+  <tabstop>refresh</tabstop>
   <tabstop>clear</tabstop>
   <tabstop>execute</tabstop>
  </tabstops>
