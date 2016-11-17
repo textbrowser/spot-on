@@ -60,6 +60,68 @@
      </widget>
     </item>
     <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QTableWidget" name="secrets">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="horizontalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <property name="sortingEnabled">
+         <bool>true</bool>
+        </property>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>Secret Hash</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Key Type</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Hint</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="remove">
+          <property name="text">
+           <string>Remove</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QLabel" name="label">
@@ -101,14 +163,14 @@
       <item>
        <widget class="QPushButton" name="clear">
         <property name="text">
-         <string>Clear</string>
+         <string>&amp;Clear</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="execute">
         <property name="text">
-         <string>Execute</string>
+         <string>&amp;Execute</string>
         </property>
        </widget>
       </item>
@@ -145,6 +207,8 @@
  <tabstops>
   <tabstop>participants</tabstop>
   <tabstop>output</tabstop>
+  <tabstop>secrets</tabstop>
+  <tabstop>remove</tabstop>
   <tabstop>secret</tabstop>
   <tabstop>refresh</tabstop>
   <tabstop>clear</tabstop>
