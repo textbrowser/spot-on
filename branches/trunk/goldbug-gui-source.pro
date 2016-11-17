@@ -20,6 +20,7 @@ FORMS           = GoldBug-UI/spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI/spot-on-private-application-credentials.ui \
 		  GoldBug-UI/spot-on-rosetta.ui \
 		  GoldBug-UI/spot-on-rss.ui \
+		  GoldBug-UI/spot-on-smpwindow.ui \
                   GoldBug-UI/spot-on-starbeamanalyzer.ui \
 		  GoldBug-UI/spot-on-statisticswindow.ui \
 		  GoldBug-UI/spot-on-statusbar.ui \
