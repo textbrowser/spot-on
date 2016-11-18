@@ -1709,6 +1709,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotForceKernelRegistration(bool)));
+  connect(m_ui.action_SMP,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowSMPWindow(void)));
   connect(m_ui.action_StarBeam_Analyzer,
 	  SIGNAL(triggered(void)),
 	  this,
