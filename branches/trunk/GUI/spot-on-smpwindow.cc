@@ -29,6 +29,8 @@
 #include <QMessageBox>
 #include <QSettings>
 
+#include "Common/spot-on-crypt.h"
+#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-smpwindow.h"
 #include "spot-on-utilities.h"
@@ -50,6 +52,10 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotClose(void)));
+  connect(ui.refresh,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRefresh(void)));
   slotSetIcons();
 }
 
@@ -102,6 +108,109 @@ void spoton_smpwindow::show(QWidget *parent)
 void spoton_smpwindow::slotClose(void)
 {
   close();
+}
+
+void spoton_smpwindow::slotRefresh(void)
+{
+  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->
+    crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  ui.participants->clearContents();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	ui.participants->setSortingEnabled(false);
+
+	QSqlQuery query(db);
+	bool ok = true;
+	int row = 0;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT "
+		      "name, "
+		      "key_type, "
+		      "public_key "
+		      "FROM friends_public_keys "
+		      "WHERE key_type_hash IN (?, ?, ?, ?, ?, ?)");
+	query.addBindValue
+	  (crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("email"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("open-library"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("rosetta"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("url"), &ok).toBase64());
+
+	if(ok && query.exec())
+	  while(query.next())
+	    {
+	      ui.participants->setRowCount(row + 1);
+
+	      for(int i = 0; i < 3; i++)
+		{
+		  QByteArray bytes;
+		  QTableWidgetItem *item = 0;
+
+		  bytes = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(i).toByteArray()), &ok);
+
+		  if(ok)
+		    item = new QTableWidgetItem(bytes.constData());
+		  else
+		    item = new QTableWidgetItem(tr("error"));
+
+		  if(i == 2 && ok)
+		    item->setText(spoton_crypt::publicKeyAlgorithm(bytes));
+
+		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		  ui.participants->setItem(row, i, item);
+		}
+
+	      row += 1;
+	    }
+
+	ui.participants->setSortingEnabled(true);
+	ui.participants->horizontalHeader()->setSortIndicator
+	  (0, Qt::AscendingOrder);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_smpwindow::slotSetIcons(void)

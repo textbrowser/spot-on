@@ -54,6 +54,7 @@ class spoton_smpwindow: public QMainWindow
 
  private slots:
   void slotClose(void);
+  void slotRefresh(void);
   void slotSetIcons(void);
 };
 

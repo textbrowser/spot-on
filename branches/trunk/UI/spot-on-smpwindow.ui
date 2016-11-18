@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
+    <width>625</width>
     <height>550</height>
    </rect>
   </property>
@@ -28,6 +28,9 @@
        <property name="selectionMode">
         <enum>QAbstractItemView::SingleSelection</enum>
        </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
        <property name="horizontalScrollMode">
         <enum>QAbstractItemView::ScrollPerPixel</enum>
        </property>
@@ -35,7 +38,7 @@
         <bool>true</bool>
        </property>
        <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>150</number>
+        <number>200</number>
        </attribute>
        <attribute name="horizontalHeaderStretchLastSection">
         <bool>true</bool>
@@ -69,12 +72,18 @@
         <property name="selectionMode">
          <enum>QAbstractItemView::SingleSelection</enum>
         </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
         <property name="horizontalScrollMode">
          <enum>QAbstractItemView::ScrollPerPixel</enum>
         </property>
         <property name="sortingEnabled">
          <bool>true</bool>
         </property>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>200</number>
+        </attribute>
         <attribute name="horizontalHeaderStretchLastSection">
          <bool>true</bool>
         </attribute>
@@ -85,7 +94,7 @@
         </column>
         <column>
          <property name="text">
-          <string>Key Type</string>
+          <string>Public Key Type</string>
          </property>
         </column>
         <column>
@@ -183,7 +192,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>550</width>
+     <width>625</width>
      <height>19</height>
     </rect>
    </property>
