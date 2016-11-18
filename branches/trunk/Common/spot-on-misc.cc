@@ -601,7 +601,10 @@ void spoton_misc::prepareDatabases(void)
 		   "in_server_port TEXT NOT NULL, "
 		   "in_ssltls TEXT NOT NULL, "
 		   "in_username TEXT NOT NULL, "
-		   "in_username_hash TEXT PRIMARY KEY NOT NULL, "
+		   "in_username_hash TEXT PRIMARY KEY NOT NULL, " /*
+								  ** Keyed
+								  ** hash.
+								  */
 		   "in_verify_host TEXT NOT NULL, "
 		   "in_verify_peer TEXT NOT NULL, "
 		   "out_authentication TEXT NOT NULL, "
@@ -621,6 +624,27 @@ void spoton_misc::prepareDatabases(void)
 		   "(proxy_type IN ('HTTP', 'SOCKS5')), "
 		   "proxy_username TEXT NOT NULL, "
 		   "smtp_localname TEXT NOT NULL)");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("CREATE TABLE IF NOT EXISTS secrets ("
+		   "generated_data TEXT NOT NULL, "
+		   "generated_data_hash TEXT NULL PRIMARY KEY, " // Keyed hash.
+		   "hint TEXT NOT NULL, "
+		   "key_type TEXT NOT NULL)");
       }
 
     db.close();
@@ -3116,6 +3140,7 @@ void spoton_misc::vacuumAllDatabases(void)
        << "neighbors.db"
        << "poptastic.db"
        << "rss.db"
+       << "secrets.db"
        << "shared.db"
        << "starbeam.db"
        << "urls_distillers_information.db"
