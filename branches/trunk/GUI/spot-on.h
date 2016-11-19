@@ -421,6 +421,12 @@ class spoton: public QMainWindow
   QHash<QString, quint64> m_chatSequenceNumbers;
   QHash<QString, spoton_crypt *> crypts(void) const;
   QSqlDatabase urlDatabase(void) const;
+
+  QSslSocket *kernelSocket(void)
+  {
+    return &m_kernelSocket;
+  }
+
   QStandardItemModel *starbeamReceivedModel(void) const;
   Ui_spoton_mainwindow ui(void) const;
   spoton_crypt *urlCommonCrypt(void) const;

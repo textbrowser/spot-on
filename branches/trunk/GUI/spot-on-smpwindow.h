@@ -30,9 +30,29 @@
 
 #include <QMainWindow>
 
+#include "spot-on-smp.h"
 #include "ui_spot-on-smpwindow.h"
 
 class QKeyEvent;
+
+class spoton_smpwindow_smp
+{
+ public:
+  spoton_smpwindow_smp(const QString &guess)
+  {
+    m_smp = new spoton_smp();
+    m_smp->setGuess(guess);
+  }
+
+  ~spoton_smpwindow_smp()
+  {
+    delete m_smp;
+  }
+
+  QByteArray m_publicKey;
+  QString m_keyType;
+  spoton_smp *m_smp;
+};
 
 class spoton_smpwindow: public QMainWindow
 {
@@ -44,6 +64,7 @@ class spoton_smpwindow: public QMainWindow
   void show(QWidget *parent);
 
  private:
+  QHash<QString, spoton_smpwindow_smp *> m_smps;
   Ui_spoton_smpwindow ui;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
@@ -51,9 +72,11 @@ class spoton_smpwindow: public QMainWindow
 #endif
 #endif
   void keyPressEvent(QKeyEvent *event);
+  void showError(const QString &error);
 
  private slots:
   void slotClose(void);
+  void slotExecute(void);
   void slotRefresh(void);
   void slotSetIcons(void);
 };

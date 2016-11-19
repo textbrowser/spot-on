@@ -2050,8 +2050,6 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
 
 void spoton::slotShowSMPWindow(void)
 {
-  m_smpWindow.showNormal();
-  m_smpWindow.activateWindow();
-  m_smpWindow.raise();
+  m_smpWindow.show(this);
   spoton_utilities::centerWidget(&m_smpWindow, this);
 }

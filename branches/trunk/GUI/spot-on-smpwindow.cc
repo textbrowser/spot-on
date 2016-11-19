@@ -38,6 +38,8 @@
 spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 {
   ui.setupUi(this);
+  ui.participants->setColumnHidden
+    (ui.participants->columnCount() - 1, true); // OID
   setWindowTitle(tr("%1: SMP Window").arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -52,6 +54,10 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotClose(void)));
+  connect(ui.execute,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotExecute(void)));
   connect(ui.refresh,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -61,6 +67,14 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 
 spoton_smpwindow::~spoton_smpwindow()
 {
+  QMutableHashIterator<QString, spoton_smpwindow_smp *> it(m_smps);
+
+  while(it.hasNext())
+    {
+      it.next();
+      delete it.value();
+      it.remove();
+    }
 }
 
 #ifdef Q_OS_MAC
@@ -99,15 +113,317 @@ void spoton_smpwindow::keyPressEvent(QKeyEvent *event)
 
 void spoton_smpwindow::show(QWidget *parent)
 {
+  statusBar()->showMessage
+    (tr("A total of %1 SMP objects are registered.").arg(m_smps.size()));
   showNormal();
   activateWindow();
   raise();
   spoton_utilities::centerWidget(this, parent);
 }
 
+void spoton_smpwindow::showError(const QString &error)
+{
+  if(QApplication::overrideCursor() &&
+     QApplication::overrideCursor()->shape() == Qt::WaitCursor)
+    QApplication::restoreOverrideCursor();
+
+  QMessageBox::critical
+    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+}
+
 void spoton_smpwindow::slotClose(void)
 {
   close();
+}
+
+void spoton_smpwindow::slotExecute(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QModelIndexList list
+    (ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
+  QString error("");
+  QString keyType(list.value(0).data().toString());
+  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
+    crypts().value(keyType, 0) : 0;
+
+  if(!s_crypt)
+    {
+      showError(tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
+
+  QSslSocket *kernelSocket = spoton::instance() ?
+    spoton::instance()->kernelSocket() : 0;
+
+  if(!kernelSocket)
+    {
+      error = tr("The interface's kernel socket is zero.");
+      showError(error);
+      return;
+    }
+  else if(kernelSocket->state() != QAbstractSocket::ConnectedState)
+    {
+      error = tr("The interface is not connected to the kernel.");
+      showError(error);
+      return;
+    }
+  else if(!kernelSocket->isEncrypted())
+    {
+      error = tr("The connection to the kernel is not encrypted.");
+      showError(error);
+      return;
+    }
+
+  QString secret(ui.secret->text().trimmed());
+
+  if(secret.isEmpty())
+    {
+      error = tr("Please provide a non-empty secret.");
+      showError(error);
+      return;
+    }
+
+  QString oid("");
+
+  list = ui.participants->selectionModel()->
+    selectedRows(ui.participants->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    {
+      error = tr("Please select at least one participant.");
+      showError(error);
+      return;
+    }
+  else
+    oid = list.value(0).data().toString();
+
+  bool ok = true;
+  spoton_smpwindow_smp *smp = m_smps.value(oid, 0);
+
+  if(!smp)
+    {
+      smp = new spoton_smpwindow_smp(secret);
+      m_smps[oid] = smp;
+      statusBar()->showMessage(tr("A total of %1 SMP objects are "
+				  "registered.").arg(m_smps.size()));
+    }
+
+  smp->m_smp->initialize();
+
+  QList<QByteArray> values(smp->m_smp->step1(&ok));
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_smp::step1().");
+      showError(error);
+      return;
+    }
+
+  QByteArray data;
+
+  {
+    QDataStream stream(&data, QIODevice::WriteOnly);
+
+    stream << values;
+
+    if(stream.status() != QDataStream::Ok)
+      {
+	error = tr("QDataStream error.");
+	showError(error);
+	return;
+      }
+  }
+
+  QByteArray myPublicKey;
+  QByteArray myPublicKeyHash;
+
+  myPublicKey = s_crypt->publicKey(&ok);
+
+  if(!ok)
+    {
+      error = tr("Unable to gather your public key.");
+      showError(error);
+      return;
+    }
+
+  myPublicKeyHash = spoton_crypt::sha512Hash(myPublicKey, &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::sha512Hash().");
+      showError(error);
+      return;
+    }
+
+  QByteArray publicKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare("SELECT public_key FROM friends_public_keys "
+		      "WHERE OID = ?");
+	query.addBindValue(oid);
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = s_crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(publicKey.isEmpty())
+    {
+      error = tr("A database error occurred while attempting to retrieve "
+		 "the specified participant's public key.");
+      showError(error);
+      return;
+    }
+
+  QByteArray encryptionKey;
+  QByteArray hashKey;
+
+  hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
+  hashKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (hashKey.length()));
+  encryptionKey.resize(32);
+  encryptionKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (encryptionKey.length()));
+
+  QByteArray keyInformation;
+
+  {
+    QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+
+    stream << QByteArray("0092")
+	   << encryptionKey
+	   << hashKey
+	   << QByteArray("aes256")
+	   << QByteArray("sha512");
+
+    if(stream.status() != QDataStream::Ok)
+      {
+	error = tr("QDataStream error.");
+	showError(error);
+	return;
+      }
+  }
+
+  keyInformation = spoton_crypt::publicKeyEncrypt
+    (keyInformation, publicKey, &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::publicKeyEncrypt().");
+      showError(error);
+      return;
+    }
+
+  QByteArray signature;
+  QDateTime dateTime(QDateTime::currentDateTime());
+
+  signature = s_crypt->digitalSignature
+    ("0092" +
+     encryptionKey +
+     hashKey +
+     "aes256" +
+     "sha512" +
+     myPublicKeyHash +
+     data +
+     dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
+     &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::digitalSignature().");
+      showError(error);
+      return;
+    }
+
+  QByteArray bytes;
+
+  {
+    QDataStream stream(&bytes, QIODevice::WriteOnly);
+
+    stream << myPublicKeyHash
+	   << data
+	   << dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1()
+	   << signature;
+
+    if(stream.status() != QDataStream::Ok)
+      {
+	error = tr("QDataStream error.");
+	showError(error);
+	return;
+      }
+  }
+
+  spoton_crypt crypt("aes256",
+		     "sha512",
+		     QByteArray(),
+		     encryptionKey,
+		     hashKey,
+		     0,
+		     0,
+		     "");
+
+  bytes = crypt.encrypted(bytes, &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::encrypted().");
+      showError(error);
+      return;
+    }
+
+  QByteArray messageCode(crypt.keyedHash(keyInformation + bytes, &ok));
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::keyedHash().");
+      showError(error);
+      return;
+    }
+
+  QString name
+    (ui.participants->selectionModel()->selectedRows(0).value(0).data().
+     toString());
+
+  bytes = "smp_" + keyType.toLatin1().toBase64() + "_" +
+    name.toUtf8().toBase64() + "_" +
+    keyInformation.toBase64() + "_" +
+    bytes.toBase64() + "_" +
+    messageCode.toBase64() + "\n";
+
+  if(kernelSocket->write(bytes.constData(), bytes.length()) != bytes.length())
+    {
+      error = tr("An error occurred while writing to the kernel socket.");
+      showError(error);
+      return;
+    }
+
+  smp->m_keyType = keyType;
+  smp->m_publicKey = publicKey;
+
+  QString message;
+
+  message = tr("%1: Contacted participant %2... Please wait for a response.").
+    arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).arg(name);
+  ui.output->append(message);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_smpwindow::slotRefresh(void)
@@ -117,10 +433,7 @@ void spoton_smpwindow::slotRefresh(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
+      showError(tr("Invalid spoton_crypt object. This is a fatal flaw."));
       return;
     }
 
@@ -147,7 +460,8 @@ void spoton_smpwindow::slotRefresh(void)
 	query.prepare("SELECT "
 		      "name, "
 		      "key_type, "
-		      "public_key "
+		      "public_key, "
+		      "OID "
 		      "FROM friends_public_keys "
 		      "WHERE key_type_hash IN (?, ?, ?, ?, ?, ?)");
 	query.addBindValue
@@ -198,6 +512,13 @@ void spoton_smpwindow::slotRefresh(void)
 		  ui.participants->setItem(row, i, item);
 		}
 
+	      QTableWidgetItem *item = new QTableWidgetItem
+		(QString::
+		 number(query.value(query.record().count() - 1).toLongLong()));
+
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      ui.participants->setItem
+		(row, ui.participants->columnCount() - 1, item);
 	      row += 1;
 	    }
 
