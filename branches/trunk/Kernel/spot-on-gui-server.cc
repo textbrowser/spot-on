@@ -629,13 +629,7 @@ void spoton_gui_server::slotReadyRead(void)
 	  else if(message.startsWith("smp_"))
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("smp_")));
-
-	      QList<QByteArray> list(message.split('_'));
-
-	      for(int i = 0; i < list.size(); i++)
-		list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-	      smpMessageReceivedFromUI(list);
+	      emit smpMessageReceivedFromUI(message.split('_'));
 	    }
 	}
     }

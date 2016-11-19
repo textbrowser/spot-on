@@ -2410,13 +2410,20 @@ void spoton_kernel::connectSignalsToNeighbor
 	  Qt::UniqueConnection);
 
   if(m_guiServer)
-    connect(neighbor,
-	    SIGNAL(statusMessageReceived(const QByteArray &,
-					 const QString &)),
-	    m_guiServer,
-	    SLOT(slotStatusMessageReceived(const QByteArray &,
+    {
+      connect(m_guiServer,
+	      SIGNAL(smpMessageReceivedFromUI(const QByteArrayList &)),
+	      neighbor,
+	      SLOT(slotSMPMessageReceivedFromUI(const QByteArrayList &)),
+	      Qt::UniqueConnection);
+      connect(neighbor,
+	      SIGNAL(statusMessageReceived(const QByteArray &,
 					   const QString &)),
-	    Qt::UniqueConnection);
+	      m_guiServer,
+	      SLOT(slotStatusMessageReceived(const QByteArray &,
+					     const QString &)),
+	      Qt::UniqueConnection);
+    }
 
   connect(neighbor,
 	  SIGNAL(saveForwardSecrecySessionKeys(const QByteArrayList &)),

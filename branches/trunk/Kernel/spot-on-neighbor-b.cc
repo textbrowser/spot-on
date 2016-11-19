@@ -652,3 +652,32 @@ void spoton_neighbor::bundlePrivateApplicationData
 
   emit resetKeepAlive();
 }
+
+void spoton_neighbor::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat", 0)));
+
+  message = spoton_send::messageXYZ
+    (list.value(2) + "\n" +
+     list.value(3) + "\n" +
+     list.value(4), ae);
+
+  if(readyToWrite())
+    {
+      if(write(message.constData(), message.length()) != message.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotSMPMessageReceivedFromUI(): "
+		   "write() error for %1:%2.").
+	   arg(m_address).
+	   arg(m_port));
+      else
+	spoton_kernel::messagingCacheAdd(message);
+    }
+}
