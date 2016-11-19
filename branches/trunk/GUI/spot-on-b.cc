@@ -2742,6 +2742,7 @@ void spoton::slotResetAll(void)
        << "neighbors.db"
        << "poptastic.db"
        << "rss.db"
+       << "secrets.db"
        << "shared.db"
        << "starbeam.db"
        << "urls.db"
