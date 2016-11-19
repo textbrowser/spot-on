@@ -58,6 +58,11 @@
          <string>Public Key Type</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string>OID</string>
+        </property>
+       </column>
       </widget>
       <widget class="QTextBrowser" name="output"/>
      </widget>
@@ -204,6 +209,7 @@
    </widget>
    <addaction name="menu_File"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="action_Close">
    <property name="text">
     <string>&amp;Close</string>
