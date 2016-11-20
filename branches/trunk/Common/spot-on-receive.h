@@ -36,56 +36,70 @@ class spoton_crypt;
 class spoton_receive
 {
  public:
-  static QList<QByteArray> process0000(int length, const QByteArray &dataIn,
+  static QList<QByteArray> process0000(int length,
+				       const QByteArray &dataIn,
 				       const QList<QByteArray> &symmetricKeys,
 				       const bool acceptSignedMessagesOnly,
 				       const QString &address,
 				       const quint16 port,
 				       spoton_crypt *s_crypt);
-  static QList<QByteArray> process0000a(int length, const QByteArray &dataIn,
+  static QList<QByteArray> process0000a(int length,
+					const QByteArray &dataIn,
 					const bool acceptSignedMessagesOnly,
 					const QString &address,
 					const quint16 port,
 					const QString &messageType,
 					spoton_crypt *s_crypt);
   static QList<QByteArray> process0000b
-    (int length, const QByteArray &dataIn,
+    (int length,
+     const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
      const bool acceptSignedMessagesOnly,
      const QString &address,
      const quint16 port,
      spoton_crypt *s_crypt);
   static QList<QByteArray> process0000d
-    (int length, const QByteArray &dataIn,
+    (int length,
+     const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
      const QString &address,
      const quint16 port,
      spoton_crypt *s_crypt);
   static QList<QByteArray> process0001b
-    (int length, const QByteArray &dataIn,
+    (int length,
+     const QByteArray &dataIn,
      const QString &address,
      const quint16 port,
      spoton_crypt *s_crypt);
   static QList<QByteArray> process0001c
-    (int length, const QByteArray &dataIn,
+    (int length,
+     const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
      const QString &address,
      const quint16 port,
      const QString &keyType,
      spoton_crypt *s_crypt);
   static QList<QByteArray> process0013
-    (int length, const QByteArray &dataIn,
+    (int length,
+     const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
      const bool acceptSignedMessagesOnly,
      const QString &address,
      const quint16 port,
      spoton_crypt *s_crypt);
   static QList<QByteArray> process0091
-    (int length, const QByteArray &dataIn,
+    (int length,
+     const QByteArray &dataIn,
      const QList<QByteArray> &symmetricKeys,
      const QString &address,
      const quint16 port,
      const QString &messageType);
+  static QList<QByteArray> process0092
+    (int length,
+     const QByteArray &dataIn,
+     const QList<QByteArray> &symmetricKeys,
+     const QString &address,
+     const quint16 port);
   static QString findMessageType
     (const QByteArray &data,
      QList<QByteArray> &symmetricKeys,

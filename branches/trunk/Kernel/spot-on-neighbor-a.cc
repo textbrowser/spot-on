@@ -2140,6 +2140,8 @@ void spoton_neighbor::processData(void)
 	    process0091a(length, data, symmetricKeys);
 	  else if(messageType == "0091b")
 	    process0091b(length, data, symmetricKeys);
+	  else if(messageType == "0092")
+	    process0092(length, data, symmetricKeys);
 	  else
 	    messageType.clear();
 
@@ -4978,6 +4980,17 @@ void spoton_neighbor::process0091b(int length, const QByteArray &dataIn,
     emit saveForwardSecrecySessionKeys(list);
 }
 
+void spoton_neighbor::process0092(int length, const QByteArray &dataIn,
+				  const QList<QByteArray> &symmetricKeys)
+{
+  QList<QByteArray> list
+    (spoton_receive::process0092(length, dataIn, symmetricKeys,
+				 m_address, m_port));
+
+  if(!list.isEmpty())
+    emit smpMessage(list);
+}
+
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
 {
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
@@ -6451,69 +6464,65 @@ QString spoton_neighbor::findMessageType
 	    }
 	}
 
-  if(list.size() == 4)
-    {
-      QStringList types;
+  if(interfaces > 0 && list.size() == 4)
+    for(int i = 0; i < spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.size(); i++)
+      {
+	QString keyType(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.at(i));
 
-      types << "chat" << "email";
+	s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
 
-      for(int i = 0; i < types.size(); i++)
-	{
-	  s_crypt = spoton_kernel::s_crypts.value(types.at(i), 0);
+	if(!s_crypt)
+	  continue;
 
-	  if(!s_crypt)
-	    continue;
+	if(spoton_misc::participantCount(keyType, s_crypt) <= 0)
+	  continue;
 
-	  if(spoton_misc::participantCount(types.at(i), s_crypt) <= 0)
-	    continue;
+	QByteArray data;
+	bool ok = true;
 
-	  QByteArray data;
-	  bool ok = true;
+	data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
 
-	  data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
+	if(ok)
+	  {
+	    QByteArray a;
+	    QDataStream stream(&data, QIODevice::ReadOnly);
 
-	  if(ok)
-	    {
-	      QByteArray a;
-	      QDataStream stream(&data, QIODevice::ReadOnly);
+	    stream >> a;
 
-	      stream >> a;
+	    if(stream.status() == QDataStream::Ok)
+	      type = a;
 
-	      if(stream.status() == QDataStream::Ok)
-		type = a;
+	    if(type == "0091a" || type == "0091b" || type == "0092")
+	      {
+		QList<QByteArray> list;
 
-	      if((interfaces > 0 && type == "0091a") || type == "0091b")
-		{
-		  QList<QByteArray> list;
+		for(int i = 0; i < 4; i++)
+		  {
+		    stream >> a;
 
-		  for(int i = 0; i < 4; i++)
-		    {
-		      stream >> a;
+		    if(stream.status() != QDataStream::Ok)
+		      {
+			list.clear();
+			type.clear();
+			break;
+		      }
+		    else
+		      list.append(a);
+		  }
 
-		      if(stream.status() != QDataStream::Ok)
-			{
-			  list.clear();
-			  type.clear();
-			  break;
-			}
-		      else
-			list.append(a);
-		    }
-
-		  if(!type.isEmpty())
-		    {
-		      symmetricKeys.append(list.value(0));
-		      symmetricKeys.append(list.value(2));
-		      symmetricKeys.append(list.value(1));
-		      symmetricKeys.append(list.value(3));
-		      goto done_label;
-		    }
-		}
-	      else
-		type.clear();
-	    }
-	}
-    }
+		if(!type.isEmpty())
+		  {
+		    symmetricKeys.append(list.value(0));
+		    symmetricKeys.append(list.value(2));
+		    symmetricKeys.append(list.value(1));
+		    symmetricKeys.append(list.value(3));
+		    goto done_label;
+		  }
+	      }
+	    else
+	      type.clear();
+	  }
+      }
 
   if(list.size() == 3 && (s_crypt = spoton_kernel::s_crypts.value("email", 0)))
     symmetricKeys = spoton_misc::findForwardSecrecyKeys

@@ -33,7 +33,8 @@
 #include "spot-on-receive.h"
 
 QList<QByteArray> spoton_receive::process0000
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const bool acceptSignedMessagesOnly,
  const QString &address,
@@ -333,7 +334,8 @@ QList<QByteArray> spoton_receive::process0000
 }
 
 QList<QByteArray> spoton_receive::process0000a
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const bool acceptSignedMessagesOnly,
  const QString &address,
  const quint16 port,
@@ -541,7 +543,8 @@ QList<QByteArray> spoton_receive::process0000a
 }
 
 QList<QByteArray> spoton_receive::process0000b
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const bool acceptSignedMessagesOnly,
  const QString &address,
@@ -677,7 +680,8 @@ QList<QByteArray> spoton_receive::process0000b
 }
 
 QList<QByteArray> spoton_receive::process0000d
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const QString &address,
  const quint16 port,
@@ -795,7 +799,8 @@ QList<QByteArray> spoton_receive::process0000d
 }
 
 QList<QByteArray> spoton_receive::process0001b
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const QString &address,
  const quint16 port,
  spoton_crypt *s_crypt)
@@ -940,7 +945,8 @@ QList<QByteArray> spoton_receive::process0001b
 }
 
 QList<QByteArray> spoton_receive::process0001c
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const QString &address,
  const quint16 port,
@@ -1061,7 +1067,8 @@ QList<QByteArray> spoton_receive::process0001c
 }
 
 QList<QByteArray> spoton_receive::process0013
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const bool acceptSignedMessagesOnly,
  const QString &address,
@@ -1349,7 +1356,8 @@ QList<QByteArray> spoton_receive::process0013
 }
 
 QList<QByteArray> spoton_receive::process0091
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const QString &address,
  const quint16 port,
@@ -1601,6 +1609,185 @@ QList<QByteArray> spoton_receive::process0091
 	       "for %4:%5.").
        arg(messageType).
        arg(length).arg(data.length()).
+       arg(address).
+       arg(port));
+
+  return QList<QByteArray> ();
+}
+
+QList<QByteArray> spoton_receive::process0092
+(int length,
+ const QByteArray &dataIn,
+ const QList<QByteArray> &symmetricKeys,
+ const QString &address,
+ const quint16 port)
+{
+  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+  if(!s_crypt)
+    {
+      spoton_misc::logError
+	("spoton_receive::process0092(): s_crypt is zero.");
+      return QList<QByteArray> ();
+    }
+
+  QByteArray data(dataIn);
+
+  if(length == data.length())
+    {
+      data = data.trimmed();
+
+      QList<QByteArray> list(data.split('\n'));
+
+      for(int i = 0; i < list.size(); i++)
+	list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+      if(list.size() != 4)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_receive::process0092(): "
+		     "received irregular data. Expecting 4 "
+		     "entries, "
+		     "received %1.").arg(list.size()));
+	  return QList<QByteArray> ();
+	}
+
+      /*
+      ** symmetricKeys[0]: Encryption Key
+      ** symmetricKeys[1]: Encryption Type
+      ** symmetricKeys[2]: Hash Key
+      ** symmetricKeys[3]: Hash Type
+      */
+
+      QByteArray computedHash;
+      bool ok = true;
+      spoton_crypt crypt(symmetricKeys.value(1).constData(),
+			 symmetricKeys.value(3).constData(),
+			 QByteArray(),
+			 symmetricKeys.value(0),
+			 symmetricKeys.value(2),
+			 0,
+			 0,
+			 "");
+
+      computedHash = spoton_crypt::keyedHash
+	(list.value(0) + list.value(1),
+	 symmetricKeys.value(2), symmetricKeys.value(3), &ok);
+
+      if(ok)
+	{
+	  QByteArray messageCode(list.value(2));
+
+	  if(computedHash.isEmpty() || messageCode.isEmpty() ||
+	     !spoton_crypt::memcmp(computedHash, messageCode))
+	    {
+	      spoton_misc::logError
+		("spoton_receive::"
+		 "process0092(): "
+		 "computed message code does "
+		 "not match provided code.");
+	      return QList<QByteArray> ();
+	    }
+	}
+      else
+	return QList<QByteArray> ();
+
+      data = crypt.decrypted(list.value(1), &ok);
+
+      if(!ok)
+	return QList<QByteArray> ();
+
+      QDataStream stream(&data, QIODevice::ReadOnly);
+
+      list.clear();
+
+      for(int i = 0; i < 4; i++)
+	{
+	  QByteArray a;
+
+	  stream >> a;
+
+	  if(stream.status() != QDataStream::Ok)
+	    {
+	      list.clear();
+	      break;
+	    }
+	  else
+	    list << a;
+	}
+
+      if(list.size() != 4)
+	{
+	  spoton_misc::logError
+	    (QString("spoton_receive::process0092(): "
+		     "received irregular data. Expecting 4 "
+		     "entries, "
+		     "received %1.").arg(list.size()));
+	  return QList<QByteArray> ();
+	}
+
+      QString keyType
+	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
+
+      if(!(keyType == "chat" || keyType == "email" ||
+	   keyType == "open-library" || keyType == "poptastic" ||
+	   keyType == "rosetta" || keyType == "url"))
+	{
+	  spoton_misc::logError
+	    ("spoton_receive::process0092(): unexpected key type.");
+	  return QList<QByteArray> ();
+	}
+
+      if(!spoton_misc::isAcceptedParticipant(list.value(0), keyType, s_crypt))
+	return QList<QByteArray> ();
+
+      if(!spoton_misc::isValidSignature("0092" +
+					symmetricKeys.value(0) +
+					symmetricKeys.value(2) +
+					symmetricKeys.value(1) +
+					symmetricKeys.value(3) +
+					list.value(0) +
+					list.value(1) +
+					list.value(2),
+					list.value(0),
+					list.value(3), // Signature
+					spoton_kernel::s_crypts.
+					value(keyType, 0)))
+	{
+	  spoton_misc::logError
+	    ("spoton_receive::process0092(): invalid signature.");
+	  return QList<QByteArray> ();
+	}
+
+      QDateTime dateTime
+	(QDateTime::fromString(list.value(2).constData(), "MMddyyyyhhmmss"));
+      QDateTime now(QDateTime::currentDateTimeUtc());
+
+      dateTime.setTimeSpec(Qt::UTC);
+      now.setTimeSpec(Qt::UTC);
+
+      int timeDelta = spoton_common::SMP_TIME_DELTA_MAXIMUM;
+      qint64 secsTo = qAbs(now.secsTo(dateTime));
+
+      if(!(secsTo <= static_cast<qint64> (timeDelta)))
+	{
+	  spoton_misc::logError
+	    (QString("spoton_receive::process0092(): "
+		     "large time delta (%1).").arg(secsTo));
+	  return QList<QByteArray> ();
+	}
+
+      return QList<QByteArray> () << keyType.toLatin1()
+				  << list.value(0)
+				  << list.value(1);
+    }
+  else
+    spoton_misc::logError
+      (QString("spoton_receive::process0092(): "
+	       "Content-Length mismatch (advertised: %1, received: %2) "
+	       "for %3:%4.").
+       arg(length).
+       arg(data.length()).
        arg(address).
        arg(port));
 

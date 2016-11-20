@@ -2417,6 +2417,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	      SLOT(slotSMPMessageReceivedFromUI(const QByteArrayList &)),
 	      Qt::UniqueConnection);
       connect(neighbor,
+	      SIGNAL(smpMessage(const QByteArrayList &)),
+	      m_guiServer,
+	      SLOT(slotSMPMessage(const QByteArrayList &)),
+	      Qt::UniqueConnection);
+      connect(neighbor,
 	      SIGNAL(statusMessageReceived(const QByteArray &,
 					   const QString &)),
 	      m_guiServer,
@@ -3992,8 +3997,6 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 			     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 	    bool altered = false;
 
-	    list.removeAll("rosetta");
-	    list.removeAll("rosetta-signature");
 	    qSort(list);
 
 	    for(int i = 0; i < list.size(); i++)

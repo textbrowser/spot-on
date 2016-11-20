@@ -1059,3 +1059,8 @@ void spoton_gui_server::slotForwardSecrecyResponse
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }
+
+void spoton_gui_server::slotSMPMessage(const QByteArrayList &list)
+{
+  Q_UNUSED(list);
+}

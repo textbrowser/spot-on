@@ -98,6 +98,7 @@ class spoton_common
   static const int REAP_POST_OFFICE_LETTERS_INTERVAL = 60;
   static const int RSS_IMPORTS_PER_THREAD = 5;
   static const int SEND_QUEUED_EMAIL_INTERVAL = 5;
+  static const int SMP_TIME_DELTA_MAXIMUM = 90;
   static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
   static const int STATUS_INTERVAL = 15;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;

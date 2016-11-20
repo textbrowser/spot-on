@@ -399,6 +399,8 @@ class spoton_neighbor: public QThread
 		    const QList<QByteArray> &symmetricKeys);
   void process0091b(int length, const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
+  void process0092(int length, const QByteArray &data,
+		   const QList<QByteArray> &symmetricKeys);
   void recordCertificateOrAbort(void);
   void run(void);
   void saveExternalAddress(const QHostAddress &address,
@@ -551,6 +553,7 @@ class spoton_neighbor: public QThread
 		      const QByteArray &signature,
 		      const QByteArray &sPublicKey,
 		      const QByteArray &sSignature);
+  void smpMessage(const QByteArrayList &list);
   void statusMessageReceived(const QByteArray &publicKeyHash,
 			     const QString &status);
   void stopTimer(QTimer *timer);

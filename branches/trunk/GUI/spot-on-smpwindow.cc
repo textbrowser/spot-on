@@ -144,10 +144,12 @@ void spoton_smpwindow::slotExecute(void)
     (ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
   QString error("");
   QString keyType(list.value(0).data().toString());
-  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
+  spoton_crypt *s_crypt1 = spoton::instance() ? spoton::instance()->
     crypts().value(keyType, 0) : 0;
+  spoton_crypt *s_crypt2 = spoton::instance() ? spoton::instance()->
+    crypts().value(keyType + "-signature", 0) : 0;
 
-  if(!s_crypt)
+  if(!s_crypt1 || !s_crypt2)
     {
       showError(tr("Invalid spoton_crypt object. This is a fatal flaw."));
       return;
@@ -184,8 +186,6 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QString oid("");
-
   list = ui.participants->selectionModel()->
     selectedRows(ui.participants->columnCount() - 1); // OID
 
@@ -195,16 +195,53 @@ void spoton_smpwindow::slotExecute(void)
       showError(error);
       return;
     }
-  else
-    oid = list.value(0).data().toString();
+
+  QByteArray publicKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare("SELECT public_key FROM friends_public_keys "
+		      "WHERE OID = ?");
+	query.addBindValue(list.value(0).data().toString());
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = s_crypt1->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(publicKey.isEmpty())
+    {
+      error = tr("A database error occurred while attempting to retrieve "
+		 "the specified participant's public key.");
+      showError(error);
+      return;
+    }
 
   bool ok = true;
-  spoton_smpwindow_smp *smp = m_smps.value(oid, 0);
+  spoton_smpwindow_smp *smp = m_smps.value(publicKey, 0);
 
   if(!smp)
     {
       smp = new spoton_smpwindow_smp(secret);
-      m_smps[oid] = smp;
+      smp->m_keyType = keyType;
+      smp->m_publicKey = publicKey;
+      m_smps[publicKey] = smp;
       statusBar()->showMessage(tr("A total of %1 SMP objects are "
 				  "registered.").arg(m_smps.size()));
     }
@@ -238,7 +275,7 @@ void spoton_smpwindow::slotExecute(void)
   QByteArray myPublicKey;
   QByteArray myPublicKeyHash;
 
-  myPublicKey = s_crypt->publicKey(&ok);
+  myPublicKey = s_crypt1->publicKey(&ok);
 
   if(!ok)
     {
@@ -252,43 +289,6 @@ void spoton_smpwindow::slotExecute(void)
   if(!ok)
     {
       error = tr("An error occurred with spoton_crypt::sha512Hash().");
-      showError(error);
-      return;
-    }
-
-  QByteArray publicKey;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.prepare("SELECT public_key FROM friends_public_keys "
-		      "WHERE OID = ?");
-	query.addBindValue(oid);
-
-	if(query.exec())
-	  if(query.next())
-	    publicKey = s_crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(publicKey.isEmpty())
-    {
-      error = tr("A database error occurred while attempting to retrieve "
-		 "the specified participant's public key.");
       showError(error);
       return;
     }
@@ -335,7 +335,7 @@ void spoton_smpwindow::slotExecute(void)
   QByteArray signature;
   QDateTime dateTime(QDateTime::currentDateTime());
 
-  signature = s_crypt->digitalSignature
+  signature = s_crypt2->digitalSignature
     ("0092" +
      encryptionKey +
      hashKey +
@@ -414,9 +414,6 @@ void spoton_smpwindow::slotExecute(void)
       showError(error);
       return;
     }
-
-  smp->m_keyType = keyType;
-  smp->m_publicKey = publicKey;
 
   QString message;
 
