@@ -67,7 +67,7 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 
 spoton_smpwindow::~spoton_smpwindow()
 {
-  QMutableHashIterator<QString, spoton_smpwindow_smp *> it(m_smps);
+  QMutableHashIterator<QByteArray, spoton_smpwindow_smp *> it(m_smps);
 
   while(it.hasNext())
     {
@@ -238,10 +238,21 @@ void spoton_smpwindow::slotExecute(void)
 
   if(!smp)
     {
+      QByteArray bytes;
+
+      bytes = spoton_crypt::sha512Hash(publicKey, &ok);
+
+      if(!ok)
+	{
+	  error = tr("An error occurred with spoton_crypt::sha512Hash().");
+	  showError(error);
+	  return;
+	}
+
       smp = new spoton_smpwindow_smp(secret);
       smp->m_keyType = keyType;
       smp->m_publicKey = publicKey;
-      m_smps[publicKey] = smp;
+      m_smps[bytes] = smp;
       statusBar()->showMessage(tr("A total of %1 SMP objects are "
 				  "registered.").arg(m_smps.size()));
     }
@@ -528,6 +539,80 @@ void spoton_smpwindow::slotRefresh(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_smpwindow::slotSMPMessageReceivedFromKernel
+(const QByteArrayList &list)
+{
+  QDateTime dateTime(QDateTime::currentDateTime());
+  QString message;
+  spoton_smpwindow_smp *smp = m_smps.value(list.value(0), 0);
+
+  if(!smp)
+    {
+      message = tr
+	("%1: Received a response from an unknown participant... Ignoring.").
+	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
+      ui.output->append(message);
+      return;
+    }
+
+  spoton_crypt *s_crypt1 = spoton::instance() ? spoton::instance()->
+    crypts().value(smp->m_keyType, 0) : 0;
+  spoton_crypt *s_crypt2 = spoton::instance() ? spoton::instance()->
+    crypts().value(smp->m_keyType + "-signature", 0) : 0;
+
+  if(!s_crypt1 || !s_crypt2)
+    {
+      message = tr("%1: Invalid spoton_crypt object(s). This is a fatal flaw.").
+	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
+      ui.output->append(message);
+      return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QList<QByteArray> values;
+  bool ok = true;
+  bool passed = false;
+
+  values = smp->m_smp->nextStep(values, &ok, &passed);
+
+  if(!ok || smp->m_smp->step() == 4 || smp->m_smp->step() == 5)
+    {
+      if(smp->m_smp->step() == 4 || smp->m_smp->step() == 5)
+	{
+	  if(passed)
+	    {
+	      message = tr("%1: Verified secrets with %2.").
+		arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
+		arg(spoton_misc::
+		    nameFromPublicKeyHash(list.value(0), s_crypt1));
+	      smp->m_smp->setStep0();
+	    }
+	  else
+	    message = tr("%1: SMP verification with %2 has failed. "
+			 "The secrets are not congruent.").
+	      arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
+	      arg(spoton_misc::
+		  nameFromPublicKeyHash(list.value(0), s_crypt1));
+	}
+      else
+	message = tr("%1: SMP verification with %2 experienced a protocol "
+		     "failure. The specific state machine has been "
+		     "reset.").
+	  arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
+	  arg(spoton_misc::nameFromPublicKeyHash(list.value(0), s_crypt1));
+
+      if(!ok)
+	smp->m_smp->initialize();
+
+      ui.output->append(message);
+      goto done_label;
+    }
+
+ done_label:
   QApplication::restoreOverrideCursor();
 }
 

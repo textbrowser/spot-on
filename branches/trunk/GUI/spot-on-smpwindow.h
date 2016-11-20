@@ -64,7 +64,7 @@ class spoton_smpwindow: public QMainWindow
   void show(QWidget *parent);
 
  private:
-  QHash<QString, spoton_smpwindow_smp *> m_smps;
+  QHash<QByteArray, spoton_smpwindow_smp *> m_smps;
   Ui_spoton_smpwindow ui;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
@@ -78,6 +78,7 @@ class spoton_smpwindow: public QMainWindow
   void slotClose(void);
   void slotExecute(void);
   void slotRefresh(void);
+  void slotSMPMessageReceivedFromKernel(const QByteArrayList &list);
   void slotSetIcons(void);
 };
 

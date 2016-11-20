@@ -643,7 +643,7 @@ void spoton::slotReceivedKernelMessage(void)
 				  "<i>SMP verification with "
 				  "%1 (%2...%3) "
 				  "experienced a protocol failure. "
-				  "The state machine has been reset."
+				  "The specific state machine has been reset."
 				  "</i></font>").
 			       arg(smpName).
 			       arg(hash.toBase64().mid(0, 16).

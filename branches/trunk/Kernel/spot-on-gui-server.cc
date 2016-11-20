@@ -835,6 +835,9 @@ void spoton_gui_server::slotReceivedChatMessage(const QByteArray &message)
 
 void spoton_gui_server::slotNewEMailArrived(void)
 {
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
   QByteArray message("newmail\n");
 
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
@@ -940,6 +943,9 @@ void spoton_gui_server::slotFileChanged(const QString &path)
 void spoton_gui_server::slotAuthenticationRequested
 (const QString &peerInformation)
 {
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
     if(m_guiIsAuthenticated.value(socket->socketDescriptor(), false) &&
        socket->isEncrypted())
@@ -980,6 +986,9 @@ void spoton_gui_server::slotAuthenticationRequested
 void spoton_gui_server::slotStatusMessageReceived
 (const QByteArray &publicKeyHash, const QString &status)
 {
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
   QByteArray message("chat_status_");
 
   message.append(publicKeyHash.toBase64().constData());
@@ -1021,6 +1030,9 @@ void spoton_gui_server::slotStatusMessageReceived
 void spoton_gui_server::slotForwardSecrecyRequest
 (const QByteArrayList &list)
 {
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
   QByteArray message("forward_secrecy_request_");
 
   message.append(list.value(0).toBase64()); // Key Type
@@ -1064,6 +1076,9 @@ void spoton_gui_server::slotForwardSecrecyRequest
 void spoton_gui_server::slotForwardSecrecyResponse
 (const QByteArrayList &list)
 {
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
   QByteArray message("forward_secrecy_response_");
 
   message.append(list.value(0).toBase64()); // Public Key Hash
@@ -1102,6 +1117,9 @@ void spoton_gui_server::slotForwardSecrecyResponse
 
 void spoton_gui_server::slotSMPMessage(const QByteArrayList &list)
 {
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
   QByteArray message("smp_");
 
   message.append(list.value(0).toBase64()); // Public Key Hash

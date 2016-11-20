@@ -4871,7 +4871,7 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
       logError
 	("spoton_misc::nameFromPublicKeyHash(): crypt "
 	 "is zero.");
-      return "";
+      return "unknown";
     }
 
   QString connectionName("");
