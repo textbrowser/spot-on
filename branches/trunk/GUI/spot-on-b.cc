@@ -897,6 +897,18 @@ void spoton::slotReceivedKernelMessage(void)
 	      notify(tr("You have new e-mail!<br>"));
 	      playSound("echo.wav");
 	    }
+	  else if(data.startsWith("smp_"))
+	    {
+	      data.remove(0, static_cast<int> (qstrlen("smp_")));
+
+	      QList<QByteArray> list(data.split('_'));
+
+	      for(int i = 0; i < list.size(); i++)
+		list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+	      if(!list.isEmpty())
+		emit smpMessageReceivedFromKernel(list);
+	    }
 	}
     }
   else if(m_kernelSocketData.length() >

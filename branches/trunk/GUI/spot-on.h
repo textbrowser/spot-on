@@ -1022,6 +1022,7 @@ class spoton: public QMainWindow
  signals:
   void buzzNameChanged(const QByteArray &name);
   void iconsChanged(void);
+  void smpMessageReceivedFromKernel(const QList<QByteArray> &list);
   void statusChanged(const QIcon &icon,
 		     const QString &name,
 		     const QString &id,
