@@ -54,6 +54,10 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotClose(void)));
+  connect(ui.clear,
+	  SIGNAL(clicked(void)),
+	  ui.output,
+	  SLOT(clear(void)));
   connect(ui.execute,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -113,6 +117,9 @@ void spoton_smpwindow::keyPressEvent(QKeyEvent *event)
 
 void spoton_smpwindow::show(QWidget *parent)
 {
+  if(!isVisible())
+    slotRefresh();
+
   statusBar()->showMessage
     (tr("A total of %1 SMP objects are registered.").arg(m_smps.size()));
   showNormal();
@@ -574,8 +581,53 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QList<QByteArray> values;
+
+  {
+    QByteArray bytes(list.value(1));
+    QDataStream stream(&bytes, QIODevice::ReadOnly);
+
+    stream >> values;
+  }
+
+  QString name(spoton_misc::nameFromPublicKeyHash(list.value(0), s_crypt1));
+
+  message = tr("%1: Received a response from %2. Currently at step %3.").
+    arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
+    arg(name).
+    arg(smp->m_smp->step());
+  ui.output->append(message);
+
+  QByteArray bytes;
+  QByteArray data;
+  QByteArray encryptionKey;
+  QByteArray hashKey;
+  QByteArray keyInformation;
+  QByteArray messageCode;
+  QByteArray myPublicKey;
+  QByteArray myPublicKeyHash;
+  QByteArray signature;
+  QScopedPointer<spoton_crypt> crypt;
+  QSslSocket *kernelSocket = spoton::instance() ?
+    spoton::instance()->kernelSocket() : 0;
+  QString error("");
   bool ok = true;
   bool passed = false;
+
+  if(!kernelSocket)
+    {
+      error = tr("The interface's kernel socket is zero.");
+      goto done_label;
+    }
+  else if(kernelSocket->state() != QAbstractSocket::ConnectedState)
+    {
+      error = tr("The interface is not connected to the kernel.");
+      goto done_label;
+    }
+  else if(!kernelSocket->isEncrypted())
+    {
+      error = tr("The connection to the kernel is not encrypted.");
+      goto done_label;
+    }
 
   values = smp->m_smp->nextStep(values, &ok, &passed);
 
@@ -587,32 +639,180 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 	    {
 	      message = tr("%1: Verified secrets with %2.").
 		arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
-		arg(spoton_misc::
-		    nameFromPublicKeyHash(list.value(0), s_crypt1));
+		arg(name);
 	      smp->m_smp->setStep0();
 	    }
 	  else
 	    message = tr("%1: SMP verification with %2 has failed. "
 			 "The secrets are not congruent.").
 	      arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
-	      arg(spoton_misc::
-		  nameFromPublicKeyHash(list.value(0), s_crypt1));
+	      arg(name);
 	}
       else
 	message = tr("%1: SMP verification with %2 experienced a protocol "
 		     "failure. The specific state machine has been "
 		     "reset.").
 	  arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
-	  arg(spoton_misc::nameFromPublicKeyHash(list.value(0), s_crypt1));
+	  arg(name);
 
       if(!ok)
 	smp->m_smp->initialize();
 
       ui.output->append(message);
+    }
+
+  if(values.isEmpty())
+    goto done_label;
+
+  {
+    QDataStream stream(&data, QIODevice::WriteOnly);
+
+    stream << values;
+
+    if(stream.status() != QDataStream::Ok)
+      {
+	error = tr("QDataStream error.");
+	goto done_label;
+      }
+  }
+
+  myPublicKey = s_crypt1->publicKey(&ok);
+
+  if(!ok)
+    {
+      error = tr("Unable to gather your public key.");
       goto done_label;
     }
 
+  myPublicKeyHash = spoton_crypt::sha512Hash(myPublicKey, &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::sha512Hash().");
+      goto done_label;
+    }
+
+  hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
+  hashKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (hashKey.length()));
+  encryptionKey.resize(32);
+  encryptionKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (encryptionKey.length()));
+
+  {
+    QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+
+    stream << QByteArray("0092")
+	   << encryptionKey
+	   << hashKey
+	   << QByteArray("aes256")
+	   << QByteArray("sha512");
+
+    if(stream.status() != QDataStream::Ok)
+      {
+	error = tr("QDataStream error.");
+	goto done_label;
+      }
+  }
+
+  keyInformation = spoton_crypt::publicKeyEncrypt
+    (keyInformation, smp->m_publicKey, &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::publicKeyEncrypt().");
+      goto done_label;
+    }
+
+  signature = s_crypt2->digitalSignature
+    ("0092" +
+     encryptionKey +
+     hashKey +
+     "aes256" +
+     "sha512" +
+     myPublicKeyHash +
+     data +
+     dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
+     &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::digitalSignature().");
+      showError(error);
+      return;
+    }
+
+  {
+    QDataStream stream(&bytes, QIODevice::WriteOnly);
+
+    stream << myPublicKeyHash
+	   << data
+	   << dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1()
+	   << signature;
+
+    if(stream.status() != QDataStream::Ok)
+      {
+	error = tr("QDataStream error.");
+	goto done_label;
+      }
+  }
+
+  crypt.reset(new spoton_crypt("aes256",
+			       "sha512",
+			       QByteArray(),
+			       encryptionKey,
+			       hashKey,
+			       0,
+			       0,
+			       ""));
+
+  bytes = crypt->encrypted(bytes, &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::encrypted().");
+      goto done_label;
+    }
+
+  messageCode = crypt->keyedHash(keyInformation + bytes, &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::keyedHash().");
+      goto done_label;
+    }
+
+  bytes = "smp_" + smp->m_keyType.toLatin1().toBase64() + "_" +
+    name.toUtf8().toBase64() + "_" +
+    keyInformation.toBase64() + "_" +
+    bytes.toBase64() + "_" +
+    messageCode.toBase64() + "\n";
+
+  if(kernelSocket->write(bytes.constData(), bytes.length()) != bytes.length())
+    {
+      error = tr("An error occurred while writing to the kernel socket.");
+      goto done_label;
+    }
+  else
+    {
+      message = tr("%1: Submitted a response to %2.").
+	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
+	arg(name);
+      ui.output->append(message);
+    }
+
  done_label:
+
+  if(!error.isEmpty())
+    {
+      message = tr("%1: An error (%2) occurred while attempting to prepare "
+		   "the next SMP protocol step with %3.").
+	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
+	arg(error).
+	arg(name);
+      ui.output->append(message);
+    }
+
   QApplication::restoreOverrideCursor();
 }
 
