@@ -40,6 +40,7 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
   ui.setupUi(this);
   ui.participants->setColumnHidden
     (ui.participants->columnCount() - 1, true); // OID
+  ui.secrets->setColumnHidden(ui.secrets->columnCount() - 1, true); // OID
   setWindowTitle(tr("%1: SMP Window").arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -658,7 +659,8 @@ void spoton_smpwindow::slotRefresh(void)
 	query.prepare("SELECT "
 		      "generated_data_hash, "
 		      "key_type, "
-		      "hint "
+		      "hint, "
+		      "OID "
 		      "FROM secrets");
 
 	if(query.exec())
@@ -690,6 +692,12 @@ void spoton_smpwindow::slotRefresh(void)
 		  ui.secrets->setItem(row, i, item);
 		}
 
+	      QTableWidgetItem *item = new QTableWidgetItem
+		(QString::
+		 number(query.value(query.record().count() - 1).toLongLong()));
+
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      ui.secrets->setItem(row, ui.secrets->columnCount() - 1, item);
 	      row += 1;
 	    }
 
@@ -708,7 +716,8 @@ void spoton_smpwindow::slotRefresh(void)
 void spoton_smpwindow::slotRemove(void)
 {
   QModelIndexList list
-    (ui.secrets->selectionModel()->selectedRows(0)); // Secret Hash
+    (ui.secrets->selectionModel()->
+     selectedRows(ui.secrets->columnCount() - 1)); // OID
 
   if(list.isEmpty())
     return;
@@ -751,10 +760,8 @@ void spoton_smpwindow::slotRemove(void)
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM secrets WHERE generated_data_hash = ?");
-	query.addBindValue
-	  (QByteArray::fromHex(list.value(0).data().toString().toLatin1()).
-	   toBase64());
+	query.prepare("DELETE FROM secrets WHERE OID = ?");
+	query.addBindValue(list.value(0).data().toString());
 
 	if(query.exec())
 	  ui.secrets->removeRow(list.value(0).row());

@@ -2003,6 +2003,99 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  sb.status->setText(QObject::tr("Re-encoding secrets.db."));
+  sb.status->repaint();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT generated_data, "
+		      "hint, "
+		      "key_type, OID FROM secrets"))
+	  while(query.next())
+	    {
+	      QList<QByteArray> list;
+	      bool ok = true;
+
+	      for(int i = 0; i < query.record().count() - 1; i++)
+		{
+		  QByteArray bytes
+		    (oldCrypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.value(i).
+							    toByteArray()),
+						 &ok));
+
+		  if(ok)
+		    list << bytes;
+		  else
+		    break;
+		}
+
+	      if(ok)
+		{
+		  QSqlQuery updateQuery(query);
+
+		  updateQuery.prepare("UPDATE secrets SET "
+				      "generated_data = ?, "
+				      "generated_data_hash = ?, "
+				      "hint = ?, "
+				      "key_type = ? "
+				      "WHERE OID = ?");
+		  updateQuery.bindValue
+		    (0, newCrypt->encryptedThenHashed(list.value(0),
+						      &ok).toBase64());
+
+		  if(ok)
+		    updateQuery.bindValue
+		      (1, newCrypt->keyedHash(list.value(0),
+					      &ok).toBase64());
+
+		  if(ok)
+		    updateQuery.bindValue
+		      (2, newCrypt->encryptedThenHashed(list.value(1),
+							&ok).toBase64());
+
+		  if(ok)
+		    updateQuery.bindValue
+		      (3, newCrypt->encryptedThenHashed(list.value(2),
+							&ok).toBase64());
+
+		  updateQuery.bindValue
+		    (4, query.value(query.record().count() - 1));
+
+		  if(ok)
+		    updateQuery.exec();
+		}
+
+	      if(!ok)
+		{
+		  spoton_misc::logError("Re-encoding secrets error.");
+
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM secrets WHERE OID = ?");
+		  deleteQuery.bindValue
+		    (0, query.value(query.record().count() - 1));
+		  deleteQuery.exec();
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   sb.status->setText(QObject::tr("Re-encoding starbeam.db."));
   sb.status->repaint();
 

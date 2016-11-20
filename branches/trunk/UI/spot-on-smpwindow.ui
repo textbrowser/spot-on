@@ -177,6 +177,11 @@
              <string>Hint</string>
             </property>
            </column>
+           <column>
+            <property name="text">
+             <string>OID</string>
+            </property>
+           </column>
           </widget>
          </item>
          <item>
