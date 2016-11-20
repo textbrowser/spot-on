@@ -526,7 +526,7 @@ void spoton_gui_server::slotReadyRead(void)
 		    }
 
 		  m_guiIsAuthenticated[socket->socketDescriptor()] =
-		    count == names.size() ? true : false;
+		    count == names.size() && names.size() > 0 ? true : false;
 
 		  for(int i = 0; i < names.size(); i++)
 		    if(!spoton_kernel::s_crypts.value(names.at(i), 0))
