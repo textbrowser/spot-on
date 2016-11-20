@@ -199,6 +199,7 @@ class spoton_crypt
   QString publicKeySize(void);
   QString publicKeySizeMcEliece(void);
   QString publicKeySizeNTRU(void);
+  bool isAuthenticated(void);
   qint64 publicKeyCount(void);
   void purgePrivatePublicKeys(void);
 

@@ -151,7 +151,7 @@ void spoton_smpwindow::slotExecute(void)
 
   if(!s_crypt1 || !s_crypt2)
     {
-      showError(tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      showError(tr("Invalid spoton_crypt object(s). This is a fatal flaw."));
       return;
     }
 

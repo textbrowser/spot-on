@@ -4231,3 +4231,43 @@ bool spoton_crypt::exists(const QByteArray &publicKey, spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
   return exists;
 }
+
+bool spoton_crypt::isAuthenticated(void)
+{
+  QString connectionName("");
+  bool authenticated = false;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT public_key FROM idiotes"))
+	  while(query.next())
+	    {
+	      QByteArray data;
+	      bool ok = true;
+
+	      data = decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	      if(!data.isEmpty() && ok)
+		authenticated = true;
+
+	      break;
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return authenticated;
+}

@@ -174,6 +174,7 @@ spoton_gui_server::~spoton_gui_server()
 {
   spoton_misc::logError("The UI server has been terminated.");
   m_generalTimer.stop();
+  m_guiIsAuthenticated.clear();
   m_guiSocketData.clear();
 
   QString connectionName("");
@@ -230,6 +231,7 @@ void spoton_gui_server::slotClientDisconnected(void)
 		 "client %1:%2 disconnected.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
+      m_guiIsAuthenticated.remove(socket->socketDescriptor());
       m_guiSocketData.remove(socket->socketDescriptor());
       socket->deleteLater();
     }
@@ -293,7 +295,8 @@ void spoton_gui_server::slotReadyRead(void)
 	{
 	  QByteArray message(messages.takeFirst());
 
-	  if(message.startsWith("addbuzz_"))
+	  if(message.startsWith("addbuzz_") &&
+	     m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("addbuzz_")));
@@ -307,7 +310,8 @@ void spoton_gui_server::slotReadyRead(void)
 		  QByteArray::fromBase64(list.value(2)),
 		  QByteArray::fromBase64(list.value(3)));
 	    }
-	  else if(message.startsWith("befriendparticipant_"))
+	  else if(message.startsWith("befriendparticipant_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("befriendparticipant_")));
@@ -325,7 +329,8 @@ void spoton_gui_server::slotReadyRead(void)
 		   QByteArray::fromBase64(list.value(6)),
 		   "0012");
 	    }
-	  else if(message.startsWith("buzz_"))
+	  else if(message.startsWith("buzz_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("buzz_")));
@@ -357,8 +362,9 @@ void spoton_gui_server::slotReadyRead(void)
 		   QByteArray::fromBase64(list.value(7)),
 		   QByteArray::fromBase64(list.value(8)));
 	    }
-	  else if(message.
-		  startsWith("call_participant_using_forward_secrecy_"))
+	  else if(message.startsWith("call_participant_using_forward_"
+				     "secrecy_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0,
@@ -371,7 +377,8 @@ void spoton_gui_server::slotReadyRead(void)
 		emit callParticipantUsingForwardSecrecy
 		  (list.value(0), list.value(1).toLongLong());
 	    }
-	  else if(message.startsWith("call_participant_using_gemini_"))
+	  else if(message.startsWith("call_participant_using_gemini_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0,
@@ -384,7 +391,8 @@ void spoton_gui_server::slotReadyRead(void)
 		emit callParticipantUsingGemini(list.value(0),
 						list.value(1).toLongLong());
 	    }
-	  else if(message.startsWith("call_participant_using_public_key_"))
+	  else if(message.startsWith("call_participant_using_public_key_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0,
@@ -397,7 +405,8 @@ void spoton_gui_server::slotReadyRead(void)
 		emit callParticipant(list.value(0),
 				     list.value(1).toLongLong());
 	    }
-	  else if(message.startsWith("detach_listener_neighbors_"))
+	  else if(message.startsWith("detach_listener_neighbors_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("detach_listener_neighbors_")));
@@ -405,7 +414,8 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(!message.isEmpty())
 		emit detachNeighbors(message.toLongLong());
 	    }
-	  else if(message.startsWith("disconnect_listener_neighbors_"))
+	  else if(message.startsWith("disconnect_listener_neighbors_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("disconnect_listener_"
@@ -414,7 +424,8 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(!message.isEmpty())
 		emit disconnectNeighbors(message.toLongLong());
 	    }
-	  else if(message.startsWith("echokeypair_"))
+	  else if(message.startsWith("echokeypair_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("echokeypair_")));
@@ -424,7 +435,8 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(list.size() == 2)
 		emit echoKeyShare(list);
 	    }
-	  else if(message.startsWith("forward_secrecy_request_"))
+	  else if(message.startsWith("forward_secrecy_request_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("forward_secrecy_request_")));
@@ -437,7 +449,8 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(list.size() == 6)
 		emit forwardSecrecyInformationReceivedFromUI(list);
 	    }
-	  else if(message.startsWith("forward_secrecy_response_"))
+	  else if(message.startsWith("forward_secrecy_response_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("forward_secrecy_response_")));
@@ -462,8 +475,6 @@ void spoton_gui_server::slotReadyRead(void)
 		    (spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 		     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-		  names.removeAll("rosetta");
-		  names.removeAll("rosetta-signature");
 		  qSort(names);
 
 		  for(int i = 0; i < names.size(); i++)
@@ -474,22 +485,15 @@ void spoton_gui_server::slotReadyRead(void)
 			try
 			  {
 			    crypt = new spoton_crypt
-			      (spoton_kernel::
-			       setting("gui/cipherType",
-				       "aes256").
-			       toString(),
-			       spoton_kernel::
-			       setting("gui/hashType",
-				       "sha512").
-			       toString(),
+			      (spoton_kernel::setting("gui/cipherType",
+						      "aes256").toString(),
+			       spoton_kernel::setting("gui/hashType",
+						      "sha512").toString(),
 			       QByteArray(),
-			       QByteArray::
-			       fromBase64(list.value(0)),
-			       QByteArray::
-			       fromBase64(list.value(1)),
-			       spoton_kernel::
-			       setting("gui/saltLength",
-				       512).toInt(),
+			       QByteArray::fromBase64(list.value(0)),
+			       QByteArray::fromBase64(list.value(1)),
+			       spoton_kernel::setting("gui/saltLength",
+						      512).toInt(),
 			       static_cast<unsigned
 			       long int> (spoton_kernel::
 					  setting("gui/iterationCount",
@@ -510,10 +514,30 @@ void spoton_gui_server::slotReadyRead(void)
 			  }
 
 			if(crypt)
-			  spoton_kernel::s_crypts.insert
-			    (names.at(i), crypt);
+			  {
+			    m_guiIsAuthenticated[socket->socketDescriptor()] =
+			      crypt->isAuthenticated();
+			    spoton_kernel::s_crypts.insert
+			      (names.at(i), crypt);
+			  }
 			else
-			  spoton_kernel::s_crypts.remove(names.at(i));
+			  {
+			    m_guiIsAuthenticated[socket->socketDescriptor()] =
+			      false;
+			    spoton_kernel::s_crypts.remove(names.at(i));
+			  }
+		      }
+		    else
+		      {
+			spoton_crypt *crypt = spoton_kernel::
+			  s_crypts.value(names.at(i), 0);
+
+			if(crypt)
+			  m_guiIsAuthenticated[socket->socketDescriptor()] =
+			    crypt->isAuthenticated();
+			else
+			  m_guiIsAuthenticated[socket->socketDescriptor()] =
+			    false;
 		      }
 
 		  for(int i = 0; i < names.size(); i++)
@@ -523,7 +547,8 @@ void spoton_gui_server::slotReadyRead(void)
 			 "memory failure. Critical!");
 		}
 	    }
-	  else if(message.startsWith("message_"))
+	  else if(message.startsWith("message_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("message_")));
 
@@ -538,7 +563,8 @@ void spoton_gui_server::slotReadyRead(void)
 		   QByteArray::fromBase64(list.value(4)),
 		   "chat");
 	    }
-	  else if(message.startsWith("poptasticmessage_"))
+	  else if(message.startsWith("poptasticmessage_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("poptasticmessage_")));
@@ -554,11 +580,14 @@ void spoton_gui_server::slotReadyRead(void)
 		   QByteArray::fromBase64(list.value(4)),
 		   "poptastic");
 	    }
-	  else if(message.startsWith("populate_starbeam_keys"))
+	  else if(message.startsWith("populate_starbeam_keys") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    emit populateStarBeamKeys();
-	  else if(message.startsWith("publicizealllistenersplaintext"))
+	  else if(message.startsWith("publicizealllistenersplaintext") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    emit publicizeAllListenersPlaintext();
-	  else if(message.startsWith("publicizelistenerplaintext"))
+	  else if(message.startsWith("publicizelistenerplaintext") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("publicize"
@@ -570,7 +599,8 @@ void spoton_gui_server::slotReadyRead(void)
 		emit publicizeListenerPlaintext
 		  (list.value(0).toLongLong());
 	    }
-	  else if(message.startsWith("purge_ephemeral_key_pair_"))
+	  else if(message.startsWith("purge_ephemeral_key_pair_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("purge_ephemeral_key_pair_")));
@@ -578,17 +608,21 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(!message.isEmpty())
 		emit purgeEphemeralKeyPair(QByteArray::fromBase64(message));
 	    }
-	  else if(message.startsWith("purge_ephemeral_keys"))
+	  else if(message.startsWith("purge_ephemeral_keys") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    emit purgeEphemeralKeys();
-	  else if(message.startsWith("removebuzz_"))
+	  else if(message.startsWith("removebuzz_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("removebuzz_")));
 	      spoton_kernel::removeBuzzKey(QByteArray::fromBase64(message));
 	    }
-	  else if(message.startsWith("retrievemail"))
+	  else if(message.startsWith("retrievemail") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    emit retrieveMail();
-	  else if(message.startsWith("sharebuzzmagnet_"))
+	  else if(message.startsWith("sharebuzzmagnet_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("sharebuzzmagnet_")));
@@ -600,7 +634,8 @@ void spoton_gui_server::slotReadyRead(void)
 		  (list.value(0).toLongLong(),
 		   QByteArray::fromBase64(list.value(1)));
 	    }
-	  else if(message.startsWith("sharelink_"))
+	  else if(message.startsWith("sharelink_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("sharelink_")));
@@ -608,7 +643,8 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(!message.isEmpty())
 		emit shareLink(message);
 	    }
-	  else if(message.startsWith("sharepublickey_"))
+	  else if(message.startsWith("sharepublickey_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0, static_cast<int> (qstrlen("sharepublickey_")));
@@ -626,7 +662,8 @@ void spoton_gui_server::slotReadyRead(void)
 		   QByteArray::fromBase64(list.value(6)),
 		   "0011");
 	    }
-	  else if(message.startsWith("smp_"))
+	  else if(message.startsWith("smp_") &&
+		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("smp_")));
 	      emit smpMessageReceivedFromUI(message.split('_'));
@@ -728,7 +765,8 @@ void spoton_gui_server::slotReceivedBuzzMessage
   message.append("\n");
 
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-    if(socket->isEncrypted())
+    if(m_guiIsAuthenticated.value(socket->socketDescriptor(), false) &&
+       socket->isEncrypted())
       {
 	qint64 w = 0;
 
@@ -751,7 +789,8 @@ void spoton_gui_server::slotReceivedBuzzMessage
     else
       spoton_misc::logError
 	(QString("spoton_gui_server::slotReceivedBuzzMessage(): "
-		 "socket %1:%2 is not encrypted. Ignoring write() request.").
+		 "socket %1:%2 is not encrypted or the user interface "
+		 "has not been authenticated. Ignoring write() request.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }
@@ -775,7 +814,8 @@ void spoton_gui_server::slotReceivedChatMessage(const QByteArray &message)
     spoton_kernel::messagingCacheAdd(message, false, 30000);
 
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-    if(socket->isEncrypted())
+    if(m_guiIsAuthenticated.value(socket->socketDescriptor(), false) &&
+       socket->isEncrypted())
       {
 	qint64 w = 0;
 
@@ -798,7 +838,8 @@ void spoton_gui_server::slotReceivedChatMessage(const QByteArray &message)
     else
       spoton_misc::logError
 	(QString("spoton_gui_server::slotReceivedChatMessage(): "
-		 "socket %1:%2 is not encrypted. Ignoring write() request.").
+		 "socket %1:%2 is not encrypted or the user interface "
+		 "has not been authenticated. Ignoring write() request.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }
@@ -808,7 +849,8 @@ void spoton_gui_server::slotNewEMailArrived(void)
   QByteArray message("newmail\n");
 
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-    if(socket->isEncrypted())
+    if(m_guiIsAuthenticated.value(socket->socketDescriptor(), false) &&
+       socket->isEncrypted())
       {
 	qint64 w = 0;
 
@@ -831,7 +873,8 @@ void spoton_gui_server::slotNewEMailArrived(void)
     else
       spoton_misc::logError
 	(QString("spoton_gui_server::slotNewEMailArrived(): "
-		 "socket %1:%2 is not encrypted. Ignoring write() request.").
+		 "socket %1:%2 is not encrypted or the user interface "
+		 "has not been authenticated. Ignoring write() request.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }
@@ -909,7 +952,8 @@ void spoton_gui_server::slotAuthenticationRequested
 (const QString &peerInformation)
 {
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-    if(socket->isEncrypted())
+    if(m_guiIsAuthenticated.value(socket->socketDescriptor(), false) &&
+       socket->isEncrypted())
       {
 	QByteArray message;
 
@@ -938,7 +982,8 @@ void spoton_gui_server::slotAuthenticationRequested
     else
       spoton_misc::logError
 	(QString("spoton_gui_server::slotAuthenticationRequested(): "
-		 "socket %1:%2 is not encrypted. Ignoring write() request.").
+		 "socket %1:%2 is not encrypted or the interface "
+		 "has not been authenticated. Ignoring write() request.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }
@@ -954,7 +999,8 @@ void spoton_gui_server::slotStatusMessageReceived
   message.append("\n");
 
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-    if(socket->isEncrypted())
+    if(m_guiIsAuthenticated.value(socket->socketDescriptor(), false) &&
+       socket->isEncrypted())
       {
 	qint64 w = 0;
 
@@ -977,7 +1023,8 @@ void spoton_gui_server::slotStatusMessageReceived
     else
       spoton_misc::logError
 	(QString("spoton_gui_server::slotStatusMessageReceived(): "
-		 "socket %1:%2 is not encrypted. Ignoring write() request.").
+		 "socket %1:%2 is not encrypted or the user interface "
+		 "has not been authenticated. Ignoring write() request.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }
@@ -995,7 +1042,8 @@ void spoton_gui_server::slotForwardSecrecyRequest
   message.append("\n");
 
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-    if(socket->isEncrypted())
+    if(m_guiIsAuthenticated.value(socket->socketDescriptor(), false) &&
+       socket->isEncrypted())
       {
 	qint64 w = 0;
 
@@ -1018,7 +1066,8 @@ void spoton_gui_server::slotForwardSecrecyRequest
     else
       spoton_misc::logError
 	(QString("spoton_gui_server::slotForwardSecrecyRequest(): "
-		 "socket %1:%2 is not encrypted. Ignoring write() request.").
+		 "socket %1:%2 is not encrypted or the user interface "
+		 "has not been authenticated. Ignoring write() request.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }
@@ -1032,7 +1081,8 @@ void spoton_gui_server::slotForwardSecrecyResponse
   message.append("\n");
 
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-    if(socket->isEncrypted())
+    if(m_guiIsAuthenticated.value(socket->socketDescriptor(), false) &&
+       socket->isEncrypted())
       {
 	qint64 w = 0;
 
@@ -1055,7 +1105,8 @@ void spoton_gui_server::slotForwardSecrecyResponse
     else
       spoton_misc::logError
 	(QString("spoton_gui_server::slotForwardSecrecyResponse(): "
-		 "socket %1:%2 is not encrypted. Ignoring write() response.").
+		 "socket %1:%2 is not encrypted or the user interface "
+		 "has not been authenticated. Ignoring write() response.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }

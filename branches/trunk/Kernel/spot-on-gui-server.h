@@ -89,7 +89,13 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
 
  private:
   QFileSystemWatcher m_fileSystemWatcher;
-  QHash<qint64, QByteArray> m_guiSocketData;
+#if QT_VERSION >= 0x050000
+  QHash<qintptr, QByteArray> m_guiSocketData;
+  QHash<qintptr, bool> m_guiIsAuthenticated;
+#else
+  QHash<int, QByteArray> m_guiSocketData;
+  QHash<int, bool> m_guiIsAuthenticated;
+#endif
   QTimer m_generalTimer;
 
  private slots:
