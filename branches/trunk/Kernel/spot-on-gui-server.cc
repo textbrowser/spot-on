@@ -474,71 +474,59 @@ void spoton_gui_server::slotReadyRead(void)
 		  QStringList names
 		    (spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 		     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
+		  int count = 0;
 
 		  qSort(names);
 
 		  for(int i = 0; i < names.size(); i++)
-		    if(!spoton_kernel::s_crypts.contains(names.at(i)))
-		      {
-			spoton_crypt *crypt = 0;
+		    {
+		      spoton_crypt *crypt = 0;
 
-			try
-			  {
-			    crypt = new spoton_crypt
-			      (spoton_kernel::setting("gui/cipherType",
-						      "aes256").toString(),
-			       spoton_kernel::setting("gui/hashType",
-						      "sha512").toString(),
-			       QByteArray(),
-			       QByteArray::fromBase64(list.value(0)),
-			       QByteArray::fromBase64(list.value(1)),
-			       spoton_kernel::setting("gui/saltLength",
-						      512).toInt(),
-			       static_cast<unsigned
-			       long int> (spoton_kernel::
-					  setting("gui/iterationCount",
-						  10000).toInt()),
-			       names.at(i));
-			  }
-			catch(const std::bad_alloc &exception)
-			  {
-			    crypt = 0;
-			  }
-			catch(...)
-			  {
-			    if(crypt)
-			      {
-				delete crypt;
-				crypt = 0;
-			      }
-			  }
+		      try
+			{
+			  crypt = new spoton_crypt
+			    (spoton_kernel::setting("gui/cipherType",
+						    "aes256").toString(),
+			     spoton_kernel::setting("gui/hashType",
+						    "sha512").toString(),
+			     QByteArray(),
+			     QByteArray::fromBase64(list.value(0)),
+			     QByteArray::fromBase64(list.value(1)),
+			     spoton_kernel::setting("gui/saltLength",
+						    512).toInt(),
+			     static_cast<unsigned
+			     long int> (spoton_kernel::
+					setting("gui/iterationCount",
+						10000).toInt()),
+			     names.at(i));
+			}
+		      catch(const std::bad_alloc &exception)
+			{
+			  crypt = 0;
+			}
+		      catch(...)
+			{
+			  delete crypt;
+			  crypt = 0;
+			}
 
-			if(crypt)
-			  {
-			    m_guiIsAuthenticated[socket->socketDescriptor()] =
-			      crypt->isAuthenticated();
-			    spoton_kernel::s_crypts.insert
-			      (names.at(i), crypt);
-			  }
-			else
-			  {
-			    m_guiIsAuthenticated[socket->socketDescriptor()] =
-			      false;
-			    spoton_kernel::s_crypts.remove(names.at(i));
-			  }
-		      }
-		    else
-		      {
-			spoton_crypt *crypt = spoton_kernel::
-			  s_crypts.value(names.at(i), 0);
+		      if(crypt)
+			{
+			  if(crypt->isAuthenticated())
+			    count += 1;
 
-			if(crypt)
-			  m_guiIsAuthenticated[socket->socketDescriptor()] =
-			    crypt->isAuthenticated();
-			else
-			  m_guiIsAuthenticated[socket->socketDescriptor()] =
-			    false;
-		      }
+			  if(!spoton_kernel::s_crypts.contains(names.at(i)))
+			    spoton_kernel::s_crypts.insert(names.at(i), crypt);
+			}
+		      else
+			{
+			  count -= 1;
+			  spoton_kernel::s_crypts.remove(names.at(i));
+			}
+		    }
+
+		  m_guiIsAuthenticated[socket->socketDescriptor()] =
+		    count == names.size() ? true : false;
 
 		  for(int i = 0; i < names.size(); i++)
 		    if(!spoton_kernel::s_crypts.value(names.at(i), 0))
