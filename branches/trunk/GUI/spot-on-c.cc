@@ -2833,12 +2833,7 @@ void spoton::slotRegenerateKey(void)
   QApplication::restoreOverrideCursor();
   updatePublicKeysLabel();
 
-  if(error.isEmpty())
-    {
-      if(m_ui.keys->currentText() != "Rosetta")
-	sendKeysToKernel();
-    }
-  else
+  if(!error.isEmpty())
     QMessageBox::critical(this, tr("%1: Error").
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred with "

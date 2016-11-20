@@ -6685,10 +6685,10 @@ void spoton::slotSetPassphrase(void)
 	    }
 
 	  QApplication::setOverrideCursor(Qt::WaitCursor);
+	  sendKeysToKernel();
 	  askKernelToReadStarBeamKeys();
 	  populateNovas();
 	  sendBuzzKeysToKernel();
-	  sendKeysToKernel();
 	  updatePublicKeysLabel();
 	  QApplication::restoreOverrideCursor();
 
@@ -7052,6 +7052,7 @@ void spoton::slotValidatePassphrase(void)
 	    }
 
 	    QApplication::setOverrideCursor(Qt::WaitCursor);
+	    sendKeysToKernel();
 	    askKernelToReadStarBeamKeys();
 	    populateNovas();
 	    populateUrlDistillers();
@@ -7754,9 +7755,9 @@ void spoton::slotKernelSocketState(void)
 							  */
       if(m_kernelSocket.isEncrypted())
 	{
+	  sendKeysToKernel();
 	  askKernelToReadStarBeamKeys();
 	  sendBuzzKeysToKernel();
-	  sendKeysToKernel();
 
 	  QSslCipher cipher(m_kernelSocket.sessionCipher());
 	  QString str(QString("%1-%2-%3-%4-%5-%6-%7").
