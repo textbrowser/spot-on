@@ -104,6 +104,95 @@ bool spoton_smpwindow::event(QEvent *event)
 #endif
 #endif
 
+void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
+{
+  if(!smp)
+    return;
+
+  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
+    crypts().value(smp->m_keyType, 0) : 0;
+
+  if(!s_crypt)
+    return;
+
+  QByteArray myPublicKey;
+  bool ok = true;
+
+  myPublicKey = s_crypt->publicKey(&ok);
+
+  if(!ok)
+    return;
+
+  QByteArray salt;
+  QByteArray stream(100, 0); // 32 (AES-256) + 64 (SHA-512)
+  QString guess(smp->m_smp->guessString());
+  QString name(smp->m_name);
+
+  guess.append(smp->m_keyType);
+  salt.append(myPublicKey);
+  salt.append(smp->m_publicKey);
+
+  if(gcry_kdf_derive(guess.toUtf8().constData(),
+		     static_cast<size_t> (guess.toUtf8().length()),
+		     GCRY_KDF_PBKDF2,
+		     gcry_md_map_name(spoton_common::
+				      SMP_GENERATOR_DIGEST_ALGORITHM.
+				      constData()),
+		     salt.constData(),
+		     static_cast<size_t> (salt.length()),
+		     spoton_common::SMP_GENERATOR_ITERATION_COUNT,
+		     static_cast<size_t> (stream.length()),
+		     stream.data()) != 0)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "secrets.db");
+
+    if(db.open())
+      {
+	QByteArray hint;
+	QSqlQuery query(db);
+	bool ok = true;
+
+	hint.append(name);
+	hint.append(" - ");
+	hint.append(smp->m_keyType);
+	hint.append(" - ");
+	hint.append(QDateTime::currentDateTime().
+		    toString("MM/dd/yyyy hh:mm:ss"));
+	query.prepare("INSERT INTO secrets "
+		      "(generated_data, generated_data_hash, hint, key_type) "
+		      "VALUES (?, ?, ?, ?)");
+	query.addBindValue(s_crypt->encryptedThenHashed(stream, &ok).
+			   toBase64());
+
+	if(ok)
+	  query.addBindValue(s_crypt->keyedHash(stream, &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue(s_crypt->encryptedThenHashed(hint, &ok).
+			     toBase64());
+
+	if(ok)
+	  query.addBindValue(s_crypt->encryptedThenHashed(smp->m_keyType.
+							  toLatin1(), &ok).
+			     toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton_smpwindow::keyPressEvent(QKeyEvent *event)
 {
   if(event)
@@ -240,6 +329,9 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
+  QString name
+    (ui.participants->selectionModel()->selectedRows(0).value(0).data().
+     toString());
   bool ok = true;
   spoton_smpwindow_smp *smp = m_smps.value(publicKey, 0);
 
@@ -258,6 +350,7 @@ void spoton_smpwindow::slotExecute(void)
 
       smp = new spoton_smpwindow_smp(secret);
       smp->m_keyType = keyType;
+      smp->m_name = name;
       smp->m_publicKey = publicKey;
       m_smps[bytes] = smp;
       statusBar()->showMessage(tr("A total of %1 SMP objects are "
@@ -416,10 +509,6 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QString name
-    (ui.participants->selectionModel()->selectedRows(0).value(0).data().
-     toString());
-
   bytes = "smp_" + keyType.toLatin1().toBase64() + "_" +
     name.toUtf8().toBase64() + "_" +
     keyInformation.toBase64() + "_" +
@@ -546,6 +635,69 @@ void spoton_smpwindow::slotRefresh(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  ui.secrets->clearContents();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "secrets.db");
+
+    if(db.open())
+      {
+	ui.secrets->setSortingEnabled(false);
+
+	QSqlQuery query(db);
+	int row = 0;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT "
+		      "generated_data_hash, "
+		      "key_type, "
+		      "hint "
+		      "FROM secrets");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      bool ok = true;
+
+	      ui.secrets->setRowCount(row + 1);
+
+	      for(int i = 0; i < 3; i++)
+		{
+		  QByteArray bytes;
+		  QTableWidgetItem *item = 0;
+
+		  if(i != 0)
+		    bytes = crypt->decryptedAfterAuthenticated
+		      (QByteArray::
+		       fromBase64(query.value(i).toByteArray()), &ok);
+		  else
+		    bytes = QByteArray::fromBase64
+		      (query.value(i).toByteArray()).toHex();
+
+		  if(ok)
+		    item = new QTableWidgetItem(bytes.constData());
+		  else
+		    item = new QTableWidgetItem(tr("error"));
+
+		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		  ui.secrets->setItem(row, i, item);
+		}
+
+	      row += 1;
+	    }
+
+	ui.secrets->setSortingEnabled(true);
+	ui.secrets->horizontalHeader()->setSortIndicator
+	  (0, Qt::AscendingOrder);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
 }
 
@@ -589,7 +741,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     stream >> values;
   }
 
-  QString name(spoton_misc::nameFromPublicKeyHash(list.value(0), s_crypt1));
+  QString name(smp->m_name);
 
   message = tr("%1: Received a response from %2. Currently at step %3.").
     arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
@@ -641,6 +793,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 		arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
 		arg(name);
 	      smp->m_smp->setStep0();
+	      generateSecretData(smp);
 	    }
 	  else
 	    message = tr("%1: SMP verification with %2 has failed. "

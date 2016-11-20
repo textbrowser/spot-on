@@ -82,6 +82,7 @@ extern "C"
 ** Not pleasant! Please avoid this solution!
 */
 
+QByteArray spoton_common::SMP_GENERATOR_DIGEST_ALGORITHM = "sha512";
 QHash<QString, QStringList> spoton::s_publicKeySizes;
 QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
 						      << 20000

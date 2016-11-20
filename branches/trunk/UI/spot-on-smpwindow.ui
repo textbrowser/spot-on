@@ -115,7 +115,14 @@
          <item>
           <widget class="QPushButton" name="execute">
            <property name="text">
-            <string>&amp;Execute</string>
+            <string>&amp;Execute SMP</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="generate">
+           <property name="text">
+            <string>&amp;Generate Data</string>
            </property>
           </widget>
          </item>
@@ -260,6 +267,7 @@
   <tabstop>secret</tabstop>
   <tabstop>clear</tabstop>
   <tabstop>execute</tabstop>
+  <tabstop>generate</tabstop>
   <tabstop>secrets</tabstop>
   <tabstop>remove</tabstop>
   <tabstop>refresh</tabstop>

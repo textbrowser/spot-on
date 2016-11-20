@@ -51,6 +51,7 @@ class spoton_smpwindow_smp
 
   QByteArray m_publicKey;
   QString m_keyType;
+  QString m_name;
   spoton_smp *m_smp;
 };
 
@@ -71,6 +72,7 @@ class spoton_smpwindow: public QMainWindow
   bool event(QEvent *event);
 #endif
 #endif
+  void generateSecretData(spoton_smpwindow_smp *smp);
   void keyPressEvent(QKeyEvent *event);
   void showError(const QString &error);
 
