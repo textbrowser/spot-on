@@ -66,6 +66,10 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRefresh(void)));
+  connect(ui.remove,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRemove(void)));
   slotSetIcons();
 }
 
@@ -699,6 +703,67 @@ void spoton_smpwindow::slotRefresh(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_smpwindow::slotRemove(void)
+{
+  QModelIndexList list
+    (ui.secrets->selectionModel()->selectedRows(0)); // Secret Hash
+
+  if(list.isEmpty())
+    return;
+
+  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
+    crypts().value("chat", 0) : 0;
+
+  if(!s_crypt)
+    {
+      showError(tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
+
+  QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to remove the selected secret?"));
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM secrets WHERE generated_data_hash = ?");
+	query.addBindValue
+	  (QByteArray::fromHex(list.value(0).data().toString().toLatin1()).
+	   toBase64());
+
+	if(query.exec())
+	  ui.secrets->removeRow(list.value(0).row());
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_smpwindow::slotSMPMessageReceivedFromKernel
