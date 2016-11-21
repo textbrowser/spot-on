@@ -55,6 +55,10 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotClose(void)));
+  connect(m_ui.action_Purge_SMP_State_Machines,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotPurgeSMPStateMachines(void)));
   connect(m_ui.clear,
 	  SIGNAL(clicked(void)),
 	  m_ui.output,
@@ -775,6 +779,20 @@ void spoton_smpwindow::slotGenerateData(void)
   generateSecretData(smp.data());
   populateSecrets();
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_smpwindow::slotPurgeSMPStateMachines(void)
+{
+  QMutableHashIterator<QByteArray, spoton_smpwindow_smp *> it(m_smps);
+
+  while(it.hasNext())
+    {
+      it.next();
+      delete it.value();
+      it.remove();
+    }
+
+  statusBar()->showMessage(tr("A total of 0 SMP objects are registered."));
 }
 
 void spoton_smpwindow::slotRefresh(void)

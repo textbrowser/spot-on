@@ -82,6 +82,7 @@ class spoton_smpwindow: public QMainWindow
   void slotClose(void);
   void slotExecute(void);
   void slotGenerateData(void);
+  void slotPurgeSMPStateMachines(void);
   void slotRefresh(void);
   void slotRemove(void);
   void slotSMPMessageReceivedFromKernel(const QByteArrayList &list);
