@@ -107,6 +107,8 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
   else
     m_ui.generator_hash_type->setCurrentIndex(0);
 
+  m_ui.generator_stream_size->setValue
+    (settings.value("smpwindow/generator_stream_size", 100).toInt());
   m_ui.iteration_count->setValue
     (settings.value("smpwindow/iteration_count", 25000).toInt());
   str = settings.value("smpwindow/transfer_cipher_type", "aes256").toString().
@@ -135,6 +137,10 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(const QString &)),
 	  this,
 	  SLOT(slotSaveCombinationBoxOption(const QString &)));
+  connect(m_ui.generator_stream_size,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSaveSpinBoxOption(int)));
   connect(m_ui.iteration_count,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -226,7 +232,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
     }
 
   QByteArray salt;
-  QByteArray stream(100, 0); // 32 (AES-256) + 64 (SHA-512)
+  QByteArray stream(m_ui.generator_stream_size->value(), 0);
   QString guess(smp->m_smp->guessString());
   QString name(smp->m_name);
 
@@ -879,23 +885,45 @@ void spoton_smpwindow::slotRefresh(void)
 	if(ok && query.exec())
 	  while(query.next())
 	    {
-	      m_ui.participants->setRowCount(row + 1);
+	      QStringList list;
 
 	      for(int i = 0; i < 3; i++)
 		{
 		  QByteArray bytes;
-		  QTableWidgetItem *item = 0;
+		  bool ok = true;
 
 		  bytes = s_crypt->decryptedAfterAuthenticated
 		    (QByteArray::fromBase64(query.value(i).toByteArray()), &ok);
 
 		  if(ok)
-		    item = new QTableWidgetItem(bytes.constData());
-		  else
-		    item = new QTableWidgetItem(tr("error"));
+		    {
+		      list << bytes.constData();
 
-		  if(i == 2 && ok)
-		    item->setText(spoton_crypt::publicKeyAlgorithm(bytes));
+		      if(list.value(1) == "poptastic" &&
+			 list.value(2).endsWith("-poptastic"))
+			{
+			  list.clear();
+			  break;
+			}
+		    }
+		  else
+		    list << tr("error");
+		}
+
+	      if(list.isEmpty())
+		continue;
+
+	      m_ui.participants->setRowCount(row + 1);
+
+	      for(int i = 0; i < list.size(); i++)
+		{
+		  QTableWidgetItem *item = 0;
+
+		  item = new QTableWidgetItem(list.at(i));
+
+		  if(i == 2)
+		    item->setText
+		      (spoton_crypt::publicKeyAlgorithm(list.at(i).toLatin1()));
 
 		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		  m_ui.participants->setItem(row, i, item);
@@ -1275,7 +1303,9 @@ void spoton_smpwindow::slotSaveSpinBoxOption(int value)
 {
   QString str("");
 
-  if(sender() == m_ui.iteration_count)
+  if(sender() == m_ui.generator_stream_size)
+    str = "smpwindow/generator_stream_size";
+  else if(sender() == m_ui.iteration_count)
     str = "smpwindow/iteration_count";
 
   if(str.isEmpty())
