@@ -63,6 +63,10 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotExecute(void)));
+  connect(ui.generate,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotGenerateData(void)));
   connect(ui.refresh,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -111,14 +115,29 @@ bool spoton_smpwindow::event(QEvent *event)
 
 void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 {
+  QDateTime dateTime(QDateTime::currentDateTime());
+  QString message("");
+
   if(!smp)
-    return;
+    {
+      message = tr
+	("%1: The smp object is zero in generateSecretData().").
+	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
+      ui.output->append(message);
+      return;
+    }
 
   spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
-    crypts().value(smp->m_keyType, 0) : 0;
+    crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
-    return;
+    {
+      message = tr
+	("%1: The s_crypt object is zero in generateSecretData().").
+	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
+      ui.output->append(message);
+      return;
+    }
 
   QByteArray myPublicKey;
   bool ok = true;
@@ -126,7 +145,14 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
   myPublicKey = s_crypt->publicKey(&ok);
 
   if(!ok)
-    return;
+    {
+      message = tr
+	("%1: An error occurred with spoton_crypt::publicKey() in "
+	 "generateSecretData().").
+	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
+      ui.output->append(message);
+      return;
+    }
 
   QByteArray salt;
   QByteArray stream(100, 0); // 32 (AES-256) + 64 (SHA-512)
@@ -148,7 +174,14 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 		     spoton_common::SMP_GENERATOR_ITERATION_COUNT,
 		     static_cast<size_t> (stream.length()),
 		     stream.data()) != 0)
-    return;
+    {
+      message = tr
+	("%1: An error occurred with gcry_kdf_derive() in "
+	 "generateSecretData().").
+	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
+      ui.output->append(message);
+      return;
+    }
 
   QString connectionName("");
 
@@ -207,6 +240,88 @@ void spoton_smpwindow::keyPressEvent(QKeyEvent *event)
     }
 
   QMainWindow::keyPressEvent(event);
+}
+
+void spoton_smpwindow::populateSecrets(void)
+{
+  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
+    crypts().value("chat", 0) : 0;
+
+  if(!s_crypt)
+    return;
+
+  ui.secrets->clearContents();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "secrets.db");
+
+    if(db.open())
+      {
+	ui.secrets->setSortingEnabled(false);
+
+	QSqlQuery query(db);
+	int row = 0;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT "
+		      "generated_data_hash, "
+		      "key_type, "
+		      "hint, "
+		      "OID "
+		      "FROM secrets");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      bool ok = true;
+
+	      ui.secrets->setRowCount(row + 1);
+
+	      for(int i = 0; i < 3; i++)
+		{
+		  QByteArray bytes;
+		  QTableWidgetItem *item = 0;
+
+		  if(i != 0)
+		    bytes = s_crypt->decryptedAfterAuthenticated
+		      (QByteArray::
+		       fromBase64(query.value(i).toByteArray()), &ok);
+		  else
+		    bytes = QByteArray::fromBase64
+		      (query.value(i).toByteArray()).toHex();
+
+		  if(ok)
+		    item = new QTableWidgetItem(bytes.constData());
+		  else
+		    item = new QTableWidgetItem(tr("error"));
+
+		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		  ui.secrets->setItem(row, i, item);
+		}
+
+	      QTableWidgetItem *item = new QTableWidgetItem
+		(QString::
+		 number(query.value(query.record().count() - 1).toLongLong()));
+
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      ui.secrets->setItem(row, ui.secrets->columnCount() - 1, item);
+	      row += 1;
+	    }
+
+	ui.secrets->setSortingEnabled(true);
+	ui.secrets->horizontalHeader()->setSortIndicator
+	  (0, Qt::AscendingOrder);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_smpwindow::show(QWidget *parent)
@@ -527,7 +642,7 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QString message;
+  QString message("");
 
   message = tr("%1: Contacted participant %2... Please wait for a response.").
     arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).arg(name);
@@ -535,12 +650,90 @@ void spoton_smpwindow::slotExecute(void)
   QApplication::restoreOverrideCursor();
 }
 
-void spoton_smpwindow::slotRefresh(void)
+void spoton_smpwindow::slotGenerateData(void)
 {
-  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->
+  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
     crypts().value("chat", 0) : 0;
 
-  if(!crypt)
+  if(!s_crypt)
+    {
+      showError(tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QByteArray publicKey;
+  QString connectionName("");
+  QString error("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare("SELECT public_key FROM friends_public_keys "
+		      "WHERE OID = ?");
+	query.addBindValue
+	  (ui.participants->selectionModel()->
+	   selectedRows(ui.participants->columnCount() - 1).value(0).data().
+	   toString()); // OID
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = s_crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+      }
+
+    db.close();
+  }
+
+  QString keyType
+    (ui.participants->selectionModel()->selectedRows(2).value(0).data().
+     toString());
+  QString name
+    (ui.participants->selectionModel()->selectedRows(0).value(0).data().
+     toString());
+
+  if(keyType.isEmpty() || name.isEmpty() || publicKey.isEmpty())
+    {
+      error = tr("Please select a participant.");
+      showError(error);
+      return;
+    }
+
+  QString secret(ui.secret->text().trimmed());
+
+  if(secret.isEmpty())
+    {
+      error = tr("Please provide a non-empty secret.");
+      showError(error);
+      return;
+    }
+
+  QScopedPointer<spoton_smpwindow_smp> smp;
+
+  smp.reset(new spoton_smpwindow_smp(secret));
+  smp->m_name = name;
+  smp->m_keyType = keyType;
+  smp->m_publicKey = publicKey;
+  generateSecretData(smp.data());
+  populateSecrets();
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_smpwindow::slotRefresh(void)
+{
+  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
+    crypts().value("chat", 0) : 0;
+
+  if(!s_crypt)
     {
       showError(tr("Invalid spoton_crypt object. This is a fatal flaw."));
       return;
@@ -574,27 +767,27 @@ void spoton_smpwindow::slotRefresh(void)
 		      "FROM friends_public_keys "
 		      "WHERE key_type_hash IN (?, ?, ?, ?, ?, ?)");
 	query.addBindValue
-	  (crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
+	  (s_crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->keyedHash(QByteArray("email"), &ok).toBase64());
+	    (s_crypt->keyedHash(QByteArray("email"), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->keyedHash(QByteArray("open-library"), &ok).toBase64());
+	    (s_crypt->keyedHash(QByteArray("open-library"), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
+	    (s_crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->keyedHash(QByteArray("rosetta"), &ok).toBase64());
+	    (s_crypt->keyedHash(QByteArray("rosetta"), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->keyedHash(QByteArray("url"), &ok).toBase64());
+	    (s_crypt->keyedHash(QByteArray("url"), &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())
@@ -606,7 +799,7 @@ void spoton_smpwindow::slotRefresh(void)
 		  QByteArray bytes;
 		  QTableWidgetItem *item = 0;
 
-		  bytes = crypt->decryptedAfterAuthenticated
+		  bytes = s_crypt->decryptedAfterAuthenticated
 		    (QByteArray::fromBase64(query.value(i).toByteArray()), &ok);
 
 		  if(ok)
@@ -640,76 +833,7 @@ void spoton_smpwindow::slotRefresh(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  ui.secrets->clearContents();
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "secrets.db");
-
-    if(db.open())
-      {
-	ui.secrets->setSortingEnabled(false);
-
-	QSqlQuery query(db);
-	int row = 0;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT "
-		      "generated_data_hash, "
-		      "key_type, "
-		      "hint, "
-		      "OID "
-		      "FROM secrets");
-
-	if(query.exec())
-	  while(query.next())
-	    {
-	      bool ok = true;
-
-	      ui.secrets->setRowCount(row + 1);
-
-	      for(int i = 0; i < 3; i++)
-		{
-		  QByteArray bytes;
-		  QTableWidgetItem *item = 0;
-
-		  if(i != 0)
-		    bytes = crypt->decryptedAfterAuthenticated
-		      (QByteArray::
-		       fromBase64(query.value(i).toByteArray()), &ok);
-		  else
-		    bytes = QByteArray::fromBase64
-		      (query.value(i).toByteArray()).toHex();
-
-		  if(ok)
-		    item = new QTableWidgetItem(bytes.constData());
-		  else
-		    item = new QTableWidgetItem(tr("error"));
-
-		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		  ui.secrets->setItem(row, i, item);
-		}
-
-	      QTableWidgetItem *item = new QTableWidgetItem
-		(QString::
-		 number(query.value(query.record().count() - 1).toLongLong()));
-
-	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      ui.secrets->setItem(row, ui.secrets->columnCount() - 1, item);
-	      row += 1;
-	    }
-
-	ui.secrets->setSortingEnabled(true);
-	ui.secrets->horizontalHeader()->setSortIndicator
-	  (0, Qt::AscendingOrder);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
+  populateSecrets();
   QApplication::restoreOverrideCursor();
 }
 
@@ -777,7 +901,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 (const QByteArrayList &list)
 {
   QDateTime dateTime(QDateTime::currentDateTime());
-  QString message;
+  QString message("");
   spoton_smpwindow_smp *smp = m_smps.value(list.value(0), 0);
 
   if(!smp)

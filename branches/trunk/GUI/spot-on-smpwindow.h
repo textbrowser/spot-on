@@ -74,11 +74,13 @@ class spoton_smpwindow: public QMainWindow
 #endif
   void generateSecretData(spoton_smpwindow_smp *smp);
   void keyPressEvent(QKeyEvent *event);
+  void populateSecrets(void);
   void showError(const QString &error);
 
  private slots:
   void slotClose(void);
   void slotExecute(void);
+  void slotGenerateData(void);
   void slotRefresh(void);
   void slotRemove(void);
   void slotSMPMessageReceivedFromKernel(const QByteArrayList &list);
