@@ -37,10 +37,10 @@
 
 spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 {
-  ui.setupUi(this);
-  ui.participants->setColumnHidden
-    (ui.participants->columnCount() - 1, true); // OID
-  ui.secrets->setColumnHidden(ui.secrets->columnCount() - 1, true); // OID
+  m_ui.setupUi(this);
+  m_ui.participants->setColumnHidden
+    (m_ui.participants->columnCount() - 1, true); // OID
+  m_ui.secrets->setColumnHidden(m_ui.secrets->columnCount() - 1, true); // OID
   setWindowTitle(tr("%1: SMP Window").arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -51,31 +51,79 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 #endif
   statusBar()->setSizeGripEnabled(false);
 #endif
-  connect(ui.action_Close,
+  connect(m_ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotClose(void)));
-  connect(ui.clear,
+  connect(m_ui.clear,
 	  SIGNAL(clicked(void)),
-	  ui.output,
+	  m_ui.output,
 	  SLOT(clear(void)));
-  connect(ui.execute,
+  connect(m_ui.execute,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotExecute(void)));
-  connect(ui.generate,
+  connect(m_ui.generate,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotGenerateData(void)));
-  connect(ui.refresh,
+  connect(m_ui.refresh,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRefresh(void)));
-  connect(ui.remove,
+  connect(m_ui.remove,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRemove(void)));
   slotSetIcons();
+  m_ui.cipher_type->addItems(spoton_crypt::cipherTypes());
+
+  if(m_ui.cipher_type->count() == 0)
+    m_ui.cipher_type->addItem("n/a");
+
+  m_ui.hash_type->addItems(spoton_crypt::hashTypes());
+
+  if(m_ui.hash_type->count() == 0)
+    m_ui.hash_type->addItem("n/a");
+
+  QSettings settings;
+  QString str("");
+
+  str = settings.value("smpwindow/cipher_type", "aes256").toString().
+    toLower().trimmed();
+
+  if(m_ui.cipher_type->findText(str) >= 0)
+    m_ui.cipher_type->setCurrentIndex(m_ui.cipher_type->findText(str));
+  else
+    m_ui.cipher_type->setCurrentIndex(0);
+
+  str = settings.value("smpwindow/hash_type", "sha512").toString().
+    toLower().trimmed();
+
+  if(m_ui.hash_type->findText(str) >= 0)
+    m_ui.hash_type->setCurrentIndex(m_ui.hash_type->findText(str));
+  else
+    m_ui.hash_type->setCurrentIndex(0);
+
+  m_ui.iteration_count->setValue
+    (settings.value("smpwindow/iteration_count", 25000).toInt());
+
+  /*
+  ** Avoid signals.
+  */
+
+  connect(m_ui.cipher_type,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotSaveCombinationBoxOption(const QString &)));
+  connect(m_ui.hash_type,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotSaveCombinationBoxOption(const QString &text)));
+  connect(m_ui.iteration_count,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSaveSpinBoxOption(int)));
 }
 
 spoton_smpwindow::~spoton_smpwindow()
@@ -123,7 +171,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
       message = tr
 	("%1: The smp object is zero in generateSecretData().").
 	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
-      ui.output->append(message);
+      m_ui.output->append(message);
       return;
     }
 
@@ -135,7 +183,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
       message = tr
 	("%1: The s_crypt object is zero in generateSecretData().").
 	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
-      ui.output->append(message);
+      m_ui.output->append(message);
       return;
     }
 
@@ -150,7 +198,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 	("%1: An error occurred with spoton_crypt::publicKey() in "
 	 "generateSecretData().").
 	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
-      ui.output->append(message);
+      m_ui.output->append(message);
       return;
     }
 
@@ -166,12 +214,12 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
   if(gcry_kdf_derive(guess.toUtf8().constData(),
 		     static_cast<size_t> (guess.toUtf8().length()),
 		     GCRY_KDF_PBKDF2,
-		     gcry_md_map_name(spoton_common::
-				      SMP_GENERATOR_DIGEST_ALGORITHM.
+		     gcry_md_map_name(m_ui.hash_type->currentText().toLatin1().
 				      constData()),
 		     salt.constData(),
 		     static_cast<size_t> (salt.length()),
-		     spoton_common::SMP_GENERATOR_ITERATION_COUNT,
+		     static_cast<unsigned long int> (m_ui.iteration_count->
+						     value()),
 		     static_cast<size_t> (stream.length()),
 		     stream.data()) != 0)
     {
@@ -179,7 +227,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 	("%1: An error occurred with gcry_kdf_derive() in "
 	 "generateSecretData().").
 	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
-      ui.output->append(message);
+      m_ui.output->append(message);
       return;
     }
 
@@ -250,7 +298,7 @@ void spoton_smpwindow::populateSecrets(void)
   if(!s_crypt)
     return;
 
-  ui.secrets->clearContents();
+  m_ui.secrets->clearContents();
 
   QString connectionName("");
 
@@ -262,7 +310,7 @@ void spoton_smpwindow::populateSecrets(void)
 
     if(db.open())
       {
-	ui.secrets->setSortingEnabled(false);
+	m_ui.secrets->setSortingEnabled(false);
 
 	QSqlQuery query(db);
 	int row = 0;
@@ -280,7 +328,7 @@ void spoton_smpwindow::populateSecrets(void)
 	    {
 	      bool ok = true;
 
-	      ui.secrets->setRowCount(row + 1);
+	      m_ui.secrets->setRowCount(row + 1);
 
 	      for(int i = 0; i < 3; i++)
 		{
@@ -301,7 +349,7 @@ void spoton_smpwindow::populateSecrets(void)
 		    item = new QTableWidgetItem(tr("error"));
 
 		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		  ui.secrets->setItem(row, i, item);
+		  m_ui.secrets->setItem(row, i, item);
 		}
 
 	      QTableWidgetItem *item = new QTableWidgetItem
@@ -309,12 +357,12 @@ void spoton_smpwindow::populateSecrets(void)
 		 number(query.value(query.record().count() - 1).toLongLong()));
 
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      ui.secrets->setItem(row, ui.secrets->columnCount() - 1, item);
+	      m_ui.secrets->setItem(row, m_ui.secrets->columnCount() - 1, item);
 	      row += 1;
 	    }
 
-	ui.secrets->setSortingEnabled(true);
-	ui.secrets->horizontalHeader()->setSortIndicator
+	m_ui.secrets->setSortingEnabled(true);
+	m_ui.secrets->horizontalHeader()->setSortIndicator
 	  (0, Qt::AscendingOrder);
       }
 
@@ -357,7 +405,7 @@ void spoton_smpwindow::slotExecute(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QModelIndexList list
-    (ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
+    (m_ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
   QString keyType(list.value(0).data().toString());
   spoton_crypt *s_crypt1 = spoton::instance() ? spoton::instance()->
     crypts().value(keyType, 0) : 0;
@@ -394,7 +442,7 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QString secret(ui.secret->text().trimmed());
+  QString secret(m_ui.secret->text().trimmed());
 
   if(secret.isEmpty())
     {
@@ -403,8 +451,8 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  list = ui.participants->selectionModel()->
-    selectedRows(ui.participants->columnCount() - 1); // OID
+  list = m_ui.participants->selectionModel()->
+    selectedRows(m_ui.participants->columnCount() - 1); // OID
 
   if(list.isEmpty())
     {
@@ -451,7 +499,7 @@ void spoton_smpwindow::slotExecute(void)
     }
 
   QString name
-    (ui.participants->selectionModel()->selectedRows(0).value(0).data().
+    (m_ui.participants->selectionModel()->selectedRows(0).value(0).data().
      toString());
   bool ok = true;
   spoton_smpwindow_smp *smp = m_smps.value(publicKey, 0);
@@ -543,8 +591,8 @@ void spoton_smpwindow::slotExecute(void)
     stream << QByteArray("0092")
 	   << encryptionKey
 	   << hashKey
-	   << QByteArray("aes256")
-	   << QByteArray("sha512");
+	   << m_ui.cipher_type->currentText().toLatin1()
+	   << m_ui.hash_type->currentText().toLatin1();
 
     if(stream.status() != QDataStream::Ok)
       {
@@ -571,8 +619,8 @@ void spoton_smpwindow::slotExecute(void)
     ("0092" +
      encryptionKey +
      hashKey +
-     "aes256" +
-     "sha512" +
+     m_ui.cipher_type->currentText().toLatin1() +
+     m_ui.hash_type->currentText().toLatin1() +
      myPublicKeyHash +
      data +
      dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
@@ -603,8 +651,8 @@ void spoton_smpwindow::slotExecute(void)
       }
   }
 
-  spoton_crypt crypt("aes256",
-		     "sha512",
+  spoton_crypt crypt(m_ui.cipher_type->currentText(),
+		     m_ui.hash_type->currentText(),
 		     QByteArray(),
 		     encryptionKey,
 		     hashKey,
@@ -647,7 +695,7 @@ void spoton_smpwindow::slotExecute(void)
 
   message = tr("%1: Contacted participant %2... Please wait for a response.").
     arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).arg(name);
-  ui.output->append(message);
+  m_ui.output->append(message);
   QApplication::restoreOverrideCursor();
 }
 
@@ -682,8 +730,8 @@ void spoton_smpwindow::slotGenerateData(void)
 	query.prepare("SELECT public_key FROM friends_public_keys "
 		      "WHERE OID = ?");
 	query.addBindValue
-	  (ui.participants->selectionModel()->
-	   selectedRows(ui.participants->columnCount() - 1).value(0).data().
+	  (m_ui.participants->selectionModel()->
+	   selectedRows(m_ui.participants->columnCount() - 1).value(0).data().
 	   toString()); // OID
 
 	if(query.exec())
@@ -696,10 +744,10 @@ void spoton_smpwindow::slotGenerateData(void)
   }
 
   QString keyType
-    (ui.participants->selectionModel()->selectedRows(2).value(0).data().
+    (m_ui.participants->selectionModel()->selectedRows(2).value(0).data().
      toString());
   QString name
-    (ui.participants->selectionModel()->selectedRows(0).value(0).data().
+    (m_ui.participants->selectionModel()->selectedRows(0).value(0).data().
      toString());
 
   if(keyType.isEmpty() || name.isEmpty() || publicKey.isEmpty())
@@ -709,7 +757,7 @@ void spoton_smpwindow::slotGenerateData(void)
       return;
     }
 
-  QString secret(ui.secret->text().trimmed());
+  QString secret(m_ui.secret->text().trimmed());
 
   if(secret.isEmpty())
     {
@@ -741,7 +789,7 @@ void spoton_smpwindow::slotRefresh(void)
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  ui.participants->clearContents();
+  m_ui.participants->clearContents();
 
   QString connectionName("");
 
@@ -753,7 +801,7 @@ void spoton_smpwindow::slotRefresh(void)
 
     if(db.open())
       {
-	ui.participants->setSortingEnabled(false);
+	m_ui.participants->setSortingEnabled(false);
 
 	QSqlQuery query(db);
 	bool ok = true;
@@ -793,7 +841,7 @@ void spoton_smpwindow::slotRefresh(void)
 	if(ok && query.exec())
 	  while(query.next())
 	    {
-	      ui.participants->setRowCount(row + 1);
+	      m_ui.participants->setRowCount(row + 1);
 
 	      for(int i = 0; i < 3; i++)
 		{
@@ -812,7 +860,7 @@ void spoton_smpwindow::slotRefresh(void)
 		    item->setText(spoton_crypt::publicKeyAlgorithm(bytes));
 
 		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		  ui.participants->setItem(row, i, item);
+		  m_ui.participants->setItem(row, i, item);
 		}
 
 	      QTableWidgetItem *item = new QTableWidgetItem
@@ -820,13 +868,13 @@ void spoton_smpwindow::slotRefresh(void)
 		 number(query.value(query.record().count() - 1).toLongLong()));
 
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      ui.participants->setItem
-		(row, ui.participants->columnCount() - 1, item);
+	      m_ui.participants->setItem
+		(row, m_ui.participants->columnCount() - 1, item);
 	      row += 1;
 	    }
 
-	ui.participants->setSortingEnabled(true);
-	ui.participants->horizontalHeader()->setSortIndicator
+	m_ui.participants->setSortingEnabled(true);
+	m_ui.participants->horizontalHeader()->setSortIndicator
 	  (0, Qt::AscendingOrder);
       }
 
@@ -841,8 +889,8 @@ void spoton_smpwindow::slotRefresh(void)
 void spoton_smpwindow::slotRemove(void)
 {
   QModelIndexList list
-    (ui.secrets->selectionModel()->
-     selectedRows(ui.secrets->columnCount() - 1)); // OID
+    (m_ui.secrets->selectionModel()->
+     selectedRows(m_ui.secrets->columnCount() - 1)); // OID
 
   if(list.isEmpty())
     return;
@@ -889,7 +937,7 @@ void spoton_smpwindow::slotRemove(void)
 	query.addBindValue(list.value(0).data().toString());
 
 	if(query.exec())
-	  ui.secrets->removeRow(list.value(0).row());
+	  m_ui.secrets->removeRow(list.value(0).row());
       }
 
     db.close();
@@ -910,7 +958,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       message = tr
 	("%1: Received a response from an unknown participant... Ignoring.").
 	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
-      ui.output->append(message);
+      m_ui.output->append(message);
       return;
     }
 
@@ -923,7 +971,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     {
       message = tr("%1: Invalid spoton_crypt object(s). This is a fatal flaw.").
 	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss"));
-      ui.output->append(message);
+      m_ui.output->append(message);
       return;
     }
 
@@ -944,7 +992,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
     arg(name).
     arg(smp->m_smp->step());
-  ui.output->append(message);
+  m_ui.output->append(message);
 
   QByteArray bytes;
   QByteArray data;
@@ -1008,7 +1056,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       if(!ok)
 	smp->m_smp->initialize();
 
-      ui.output->append(message);
+      m_ui.output->append(message);
     }
 
   if(values.isEmpty())
@@ -1055,8 +1103,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     stream << QByteArray("0092")
 	   << encryptionKey
 	   << hashKey
-	   << QByteArray("aes256")
-	   << QByteArray("sha512");
+	   << m_ui.cipher_type->currentText().toLatin1()
+	   << m_ui.hash_type->currentText().toLatin1();
 
     if(stream.status() != QDataStream::Ok)
       {
@@ -1078,8 +1126,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     ("0092" +
      encryptionKey +
      hashKey +
-     "aes256" +
-     "sha512" +
+     m_ui.cipher_type->currentText().toLatin1() +
+     m_ui.hash_type->currentText().toLatin1() +
      myPublicKeyHash +
      data +
      dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
@@ -1107,8 +1155,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       }
   }
 
-  crypt.reset(new spoton_crypt("aes256",
-			       "sha512",
+  crypt.reset(new spoton_crypt(m_ui.cipher_type->currentText(),
+			       m_ui.hash_type->currentText(),
 			       QByteArray(),
 			       encryptionKey,
 			       hashKey,
@@ -1148,7 +1196,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       message = tr("%1: Submitted a response to %2.").
 	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
 	arg(name);
-      ui.output->append(message);
+      m_ui.output->append(message);
     }
 
  done_label:
@@ -1160,10 +1208,42 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 	arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
 	arg(error).
 	arg(name);
-      ui.output->append(message);
+      m_ui.output->append(message);
     }
 
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_smpwindow::slotSaveCombinationBoxOption(const QString &text)
+{
+  QString str("");
+
+  if(sender() == m_ui.cipher_type)
+    str = "smpwindow/cipher_type";
+  else if(sender() == m_ui.hash_type)
+    str = "smpwindow/hash_type";
+
+  if(str.isEmpty())
+    return;
+
+  QSettings settings;
+
+  settings.setValue(str, text);
+}
+
+void spoton_smpwindow::slotSaveSpinBoxOption(int value)
+{
+  QString str("");
+
+  if(sender() == m_ui.iteration_count)
+    str = "smpwindow/iteration_count";
+
+  if(str.isEmpty())
+    return;
+
+  QSettings settings;
+
+  settings.setValue(str, value);
 }
 
 void spoton_smpwindow::slotSetIcons(void)

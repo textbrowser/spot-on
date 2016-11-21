@@ -131,7 +131,6 @@ QReadWriteLock spoton_kernel::s_totalUiBytesReadWrittenMutex;
 ** Not pleasant! Please avoid this solution!
 */
 
-QByteArray spoton_common::SMP_GENERATOR_DIGEST_ALGORITHM = "sha512";
 QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
 						      << 20000
                                                       << 25000

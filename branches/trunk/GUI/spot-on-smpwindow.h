@@ -30,6 +30,7 @@
 
 #include <QMainWindow>
 
+#include "Common/spot-on-common.h"
 #include "spot-on-smp.h"
 #include "ui_spot-on-smpwindow.h"
 
@@ -66,7 +67,7 @@ class spoton_smpwindow: public QMainWindow
 
  private:
   QHash<QByteArray, spoton_smpwindow_smp *> m_smps;
-  Ui_spoton_smpwindow ui;
+  Ui_spoton_smpwindow m_ui;
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
   bool event(QEvent *event);
@@ -84,6 +85,8 @@ class spoton_smpwindow: public QMainWindow
   void slotRefresh(void);
   void slotRemove(void);
   void slotSMPMessageReceivedFromKernel(const QByteArrayList &list);
+  void slotSaveCombinationBoxOption(const QString &text);
+  void slotSaveSpinBoxOption(int value);
   void slotSetIcons(void);
 };
 

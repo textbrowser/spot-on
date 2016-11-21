@@ -41,7 +41,6 @@ typedef QPair<QByteArray, QByteArray> QPairByteArrayByteArray;
 class spoton_common
 {
  public:
-  static QByteArray SMP_GENERATOR_DIGEST_ALGORITHM;
   static QList<int> LANE_WIDTHS;
   static QString SSL_CONTROL_STRING;
   static QStringList ACCEPTABLE_URL_SCHEMES;
@@ -118,7 +117,6 @@ class spoton_common
     256 < MAXIMUM_NEIGHBOR_CONTENT_LENGTH ?
     256 : MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
   static const unsigned long int GEMINI_ITERATION_COUNT = 25000;
-  static const unsigned long int SMP_GENERATOR_ITERATION_COUNT = 25000;
 
   /*
   ** Dynamic values. Not a pleasant solution.
