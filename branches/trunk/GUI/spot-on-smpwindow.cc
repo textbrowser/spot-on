@@ -358,7 +358,6 @@ void spoton_smpwindow::slotExecute(void)
 
   QModelIndexList list
     (ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
-  QString error("");
   QString keyType(list.value(0).data().toString());
   spoton_crypt *s_crypt1 = spoton::instance() ? spoton::instance()->
     crypts().value(keyType, 0) : 0;
@@ -367,12 +366,14 @@ void spoton_smpwindow::slotExecute(void)
 
   if(!s_crypt1 || !s_crypt2)
     {
-      showError(tr("Invalid spoton_crypt object(s). This is a fatal flaw."));
+      showError(tr("Invalid spoton_crypt object(s). This is a fatal flaw. "
+		   "Is a participant selected?"));
       return;
     }
 
   QSslSocket *kernelSocket = spoton::instance() ?
     spoton::instance()->kernelSocket() : 0;
+  QString error("");
 
   if(!kernelSocket)
     {
