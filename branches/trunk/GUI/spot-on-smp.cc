@@ -68,8 +68,9 @@ spoton_smp::spoton_smp(void)
 spoton_smp::~spoton_smp()
 {
   gcry_mpi_release(m_generator);
-  m_generator = 0;
   gcry_mpi_release(m_modulus);
+  m_generator = 0;
+  m_guessString.replace(0, m_guessString.length(), '0');
   m_modulus = 0;
   reset();
 }
