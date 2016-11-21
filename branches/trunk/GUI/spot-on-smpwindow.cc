@@ -80,47 +80,58 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  this,
 	  SLOT(slotRemove(void)));
   slotSetIcons();
-  m_ui.cipher_type->addItems(spoton_crypt::cipherTypes());
+  m_ui.generator_hash_type->addItems(spoton_crypt::hashTypes());
 
-  if(m_ui.cipher_type->count() == 0)
-    m_ui.cipher_type->addItem("n/a");
+  if(m_ui.generator_hash_type->count() == 0)
+    m_ui.generator_hash_type->addItem("n/a");
 
-  m_ui.hash_type->addItems(spoton_crypt::hashTypes());
+  m_ui.transfer_cipher_type->addItems(spoton_crypt::cipherTypes());
 
-  if(m_ui.hash_type->count() == 0)
-    m_ui.hash_type->addItem("n/a");
+  if(m_ui.transfer_cipher_type->count() == 0)
+    m_ui.transfer_cipher_type->addItem("n/a");
+
+  m_ui.transfer_hash_type->addItems(spoton_crypt::hashTypes());
+
+  if(m_ui.transfer_hash_type->count() == 0)
+    m_ui.transfer_hash_type->addItem("n/a");
 
   QSettings settings;
   QString str("");
 
-  str = settings.value("smpwindow/cipher_type", "aes256").toString().
+  str = settings.value("smpwindow/generator_hash_type", "sha512").toString().
     toLower().trimmed();
 
-  if(m_ui.cipher_type->findText(str) >= 0)
-    m_ui.cipher_type->setCurrentIndex(m_ui.cipher_type->findText(str));
+  if(m_ui.generator_hash_type->findText(str) >= 0)
+    m_ui.generator_hash_type->setCurrentIndex
+      (m_ui.generator_hash_type->findText(str));
   else
-    m_ui.cipher_type->setCurrentIndex(0);
-
-  str = settings.value("smpwindow/hash_type", "sha512").toString().
-    toLower().trimmed();
-
-  if(m_ui.hash_type->findText(str) >= 0)
-    m_ui.hash_type->setCurrentIndex(m_ui.hash_type->findText(str));
-  else
-    m_ui.hash_type->setCurrentIndex(0);
+    m_ui.generator_hash_type->setCurrentIndex(0);
 
   m_ui.iteration_count->setValue
     (settings.value("smpwindow/iteration_count", 25000).toInt());
+  str = settings.value("smpwindow/transfer_cipher_type", "aes256").toString().
+    toLower().trimmed();
+
+  if(m_ui.transfer_cipher_type->findText(str) >= 0)
+    m_ui.transfer_cipher_type->setCurrentIndex
+      (m_ui.transfer_cipher_type->findText(str));
+  else
+    m_ui.transfer_cipher_type->setCurrentIndex(0);
+
+  str = settings.value("smpwindow/transfer_hash_type", "sha512").toString().
+    toLower().trimmed();
+
+  if(m_ui.transfer_hash_type->findText(str) >= 0)
+    m_ui.transfer_hash_type->setCurrentIndex
+      (m_ui.transfer_hash_type->findText(str));
+  else
+    m_ui.transfer_hash_type->setCurrentIndex(0);
 
   /*
   ** Avoid signals.
   */
 
-  connect(m_ui.cipher_type,
-	  SIGNAL(currentIndexChanged(const QString &)),
-	  this,
-	  SLOT(slotSaveCombinationBoxOption(const QString &)));
-  connect(m_ui.hash_type,
+  connect(m_ui.generator_hash_type,
 	  SIGNAL(currentIndexChanged(const QString &)),
 	  this,
 	  SLOT(slotSaveCombinationBoxOption(const QString &)));
@@ -128,6 +139,14 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotSaveSpinBoxOption(int)));
+  connect(m_ui.transfer_cipher_type,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotSaveCombinationBoxOption(const QString &)));
+  connect(m_ui.transfer_hash_type,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotSaveCombinationBoxOption(const QString &)));
 }
 
 spoton_smpwindow::~spoton_smpwindow()
@@ -218,7 +237,8 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
   if(gcry_kdf_derive(guess.toUtf8().constData(),
 		     static_cast<size_t> (guess.toUtf8().length()),
 		     GCRY_KDF_PBKDF2,
-		     gcry_md_map_name(m_ui.hash_type->currentText().toLatin1().
+		     gcry_md_map_name(m_ui.generator_hash_type->
+				      currentText().toLatin1().
 				      constData()),
 		     salt.constData(),
 		     static_cast<size_t> (salt.length()),
@@ -595,8 +615,8 @@ void spoton_smpwindow::slotExecute(void)
     stream << QByteArray("0092")
 	   << encryptionKey
 	   << hashKey
-	   << m_ui.cipher_type->currentText().toLatin1()
-	   << m_ui.hash_type->currentText().toLatin1();
+	   << m_ui.transfer_cipher_type->currentText().toLatin1()
+	   << m_ui.transfer_hash_type->currentText().toLatin1();
 
     if(stream.status() != QDataStream::Ok)
       {
@@ -623,8 +643,8 @@ void spoton_smpwindow::slotExecute(void)
     ("0092" +
      encryptionKey +
      hashKey +
-     m_ui.cipher_type->currentText().toLatin1() +
-     m_ui.hash_type->currentText().toLatin1() +
+     m_ui.transfer_cipher_type->currentText().toLatin1() +
+     m_ui.transfer_hash_type->currentText().toLatin1() +
      myPublicKeyHash +
      data +
      dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
@@ -655,8 +675,8 @@ void spoton_smpwindow::slotExecute(void)
       }
   }
 
-  spoton_crypt crypt(m_ui.cipher_type->currentText(),
-		     m_ui.hash_type->currentText(),
+  spoton_crypt crypt(m_ui.transfer_cipher_type->currentText(),
+		     m_ui.transfer_hash_type->currentText(),
 		     QByteArray(),
 		     encryptionKey,
 		     hashKey,
@@ -1121,8 +1141,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     stream << QByteArray("0092")
 	   << encryptionKey
 	   << hashKey
-	   << m_ui.cipher_type->currentText().toLatin1()
-	   << m_ui.hash_type->currentText().toLatin1();
+	   << m_ui.transfer_cipher_type->currentText().toLatin1()
+	   << m_ui.transfer_hash_type->currentText().toLatin1();
 
     if(stream.status() != QDataStream::Ok)
       {
@@ -1144,8 +1164,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     ("0092" +
      encryptionKey +
      hashKey +
-     m_ui.cipher_type->currentText().toLatin1() +
-     m_ui.hash_type->currentText().toLatin1() +
+     m_ui.transfer_cipher_type->currentText().toLatin1() +
+     m_ui.transfer_hash_type->currentText().toLatin1() +
      myPublicKeyHash +
      data +
      dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
@@ -1173,8 +1193,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       }
   }
 
-  crypt.reset(new spoton_crypt(m_ui.cipher_type->currentText(),
-			       m_ui.hash_type->currentText(),
+  crypt.reset(new spoton_crypt(m_ui.transfer_cipher_type->currentText(),
+			       m_ui.transfer_hash_type->currentText(),
 			       QByteArray(),
 			       encryptionKey,
 			       hashKey,
@@ -1236,10 +1256,12 @@ void spoton_smpwindow::slotSaveCombinationBoxOption(const QString &text)
 {
   QString str("");
 
-  if(sender() == m_ui.cipher_type)
-    str = "smpwindow/cipher_type";
-  else if(sender() == m_ui.hash_type)
-    str = "smpwindow/hash_type";
+  if(sender() == m_ui.generator_hash_type)
+    str = "smpwindow/generator_hash_type";
+  else if(sender() == m_ui.transfer_cipher_type)
+    str = "smpwindow/transfer_cipher_type";
+  else if(sender() == m_ui.transfer_hash_type)
+    str = "smpwindow/transfer_hash_type";
 
   if(str.isEmpty())
     return;
