@@ -119,7 +119,7 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
   connect(m_ui.hash_type,
 	  SIGNAL(currentIndexChanged(const QString &)),
 	  this,
-	  SLOT(slotSaveCombinationBoxOption(const QString &text)));
+	  SLOT(slotSaveCombinationBoxOption(const QString &)));
   connect(m_ui.iteration_count,
 	  SIGNAL(valueChanged(int)),
 	  this,
