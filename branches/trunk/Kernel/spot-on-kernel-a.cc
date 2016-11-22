@@ -911,6 +911,14 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      SIGNAL(shareLink(const QByteArray &)),
 	      m_fireShare,
 	      SLOT(slotShareLink(const QByteArray &)));
+      connect(m_guiServer,
+	      SIGNAL(smpMessageReceivedFromUI(const QByteArrayList &)),
+	      this,
+	      SLOT(slotSMPMessageReceivedFromUI(const QByteArrayList &)));
+      connect(this,
+	      SIGNAL(smpMessage(const QByteArrayList &)),
+	      m_guiServer,
+	      SLOT(slotSMPMessage(const QByteArrayList &)));
     }
 
   connect(m_mailer,

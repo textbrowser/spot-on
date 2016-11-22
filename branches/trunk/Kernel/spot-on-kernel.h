@@ -285,6 +285,7 @@ class spoton_kernel: public QObject
   void slotPurgeEphemeralKeys(void);
   void slotRequestScramble(void);
   void slotRetrieveMail(void);
+  void slotSMPMessageReceivedFromUI(const QByteArrayList &list);
   void slotSaveForwardSecrecySessionKeys(const QByteArrayList &list);
   void slotScramble(void);
   void slotSendMail(const QByteArray &goldbug,
@@ -329,6 +330,7 @@ class spoton_kernel: public QObject
   void sendMail(const QPairByteArrayInt64List &mail,
 		const QString &messageType);
   void sendStatus(const QByteArrayList &status);
+  void smpMessage(const QByteArrayList &list);
   void statusMessageReceived(const QByteArray &publicKeyHash,
 			     const QString &status);
   void terminate(const bool registered);

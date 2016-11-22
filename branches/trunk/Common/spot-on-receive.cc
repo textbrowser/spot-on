@@ -1841,7 +1841,7 @@ QString spoton_receive::findMessageType
 	  if(stream.status() == QDataStream::Ok)
 	    type = a;
 
-	  if(type == "0091a" || type == "0091b")
+	  if(type == "0091a" || type == "0091b" || type == "0092")
 	    {
 	      QList<QByteArray> list;
 

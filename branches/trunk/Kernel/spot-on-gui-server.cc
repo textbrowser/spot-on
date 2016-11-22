@@ -656,7 +656,11 @@ void spoton_gui_server::slotReadyRead(void)
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("smp_")));
-	      emit smpMessageReceivedFromUI(message.split('_'));
+
+	      QList<QByteArray> list(message.split('_'));
+
+	      if(list.size() == 5)
+		emit smpMessageReceivedFromUI(list);
 	    }
 	}
     }

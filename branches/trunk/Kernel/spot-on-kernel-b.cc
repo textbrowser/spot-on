@@ -1342,6 +1342,15 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
       if(!list.isEmpty())
 	slotSaveForwardSecrecySessionKeys(list);
     }
+  else if(messageType == "0092")
+    {
+      QList<QByteArray> list
+	(spoton_receive::process0092(data.length(), data, symmetricKeys,
+				     "127.0.0.1", 0));
+
+      if(!list.isEmpty())
+	emit smpMessage(list);
+    }
   else
     {
       QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
