@@ -131,8 +131,18 @@
              </item>
              <item>
               <widget class="QPushButton" name="generate">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate a stream of bytes via the secret and the selected participant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="text">
                 <string>&amp;Generate Data</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="prepare_smp_object">
+               <property name="text">
+                <string>&amp;Prepare SMP Object</string>
                </property>
               </widget>
              </item>
@@ -463,6 +473,7 @@
   <tabstop>clear</tabstop>
   <tabstop>execute</tabstop>
   <tabstop>generate</tabstop>
+  <tabstop>prepare_smp_object</tabstop>
   <tabstop>secrets</tabstop>
   <tabstop>remove</tabstop>
   <tabstop>refresh</tabstop>

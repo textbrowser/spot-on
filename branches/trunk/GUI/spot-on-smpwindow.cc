@@ -71,6 +71,10 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotGenerateData(void)));
+  connect(m_ui.prepare_smp_object,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotPrepareSMPObject(void)));
   connect(m_ui.refresh,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -731,6 +735,8 @@ void spoton_smpwindow::slotExecute(void)
 
 void spoton_smpwindow::slotGenerateData(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
     crypts().value("chat", 0) : 0;
 
@@ -739,8 +745,6 @@ void spoton_smpwindow::slotGenerateData(void)
       showError(tr("Invalid spoton_crypt object. This is a fatal flaw."));
       return;
     }
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QByteArray publicKey;
   QString connectionName("");
@@ -804,6 +808,108 @@ void spoton_smpwindow::slotGenerateData(void)
   smp->m_publicKey = publicKey;
   generateSecretData(smp.data());
   populateSecrets();
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_smpwindow::slotPrepareSMPObject(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
+    crypts().value("chat", 0) : 0;
+
+  if(!s_crypt)
+    {
+      showError(tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
+
+  QModelIndexList list
+    (m_ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
+  QString error("");
+  QString keyType(list.value(0).data().toString());
+  QString secret(m_ui.secret->text().trimmed());
+
+  if(secret.isEmpty())
+    {
+      error = tr("Please provide a non-empty secret.");
+      showError(error);
+      return;
+    }
+
+  list = m_ui.participants->selectionModel()->
+    selectedRows(m_ui.participants->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    {
+      error = tr("Please select at least one participant.");
+      showError(error);
+      return;
+    }
+
+  QByteArray publicKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare("SELECT public_key FROM friends_public_keys "
+		      "WHERE OID = ?");
+	query.addBindValue(list.value(0).data().toString());
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = s_crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(publicKey.isEmpty())
+    {
+      error = tr("A database error occurred while attempting to retrieve "
+		 "the specified participant's public key.");
+      showError(error);
+      return;
+    }
+
+  spoton_smpwindow_smp *smp = m_smps.value(publicKey, 0);
+
+  if(!smp)
+    {
+      QByteArray bytes;
+      bool ok = true;
+
+      bytes = spoton_crypt::sha512Hash(publicKey, &ok);
+
+      if(!ok)
+	{
+	  error = tr("An error occurred with spoton_crypt::sha512Hash().");
+	  showError(error);
+	  return;
+	}
+
+      smp = new spoton_smpwindow_smp(secret);
+      smp->m_keyType = keyType;
+      smp->m_name = m_ui.participants->selectionModel()->selectedRows(0).
+	value(0).data().toString();
+      smp->m_publicKey = publicKey;
+      m_smps[bytes] = smp;
+      statusBar()->showMessage(tr("A total of %1 SMP objects are "
+				  "registered.").arg(m_smps.size()));
+    }
+
   QApplication::restoreOverrideCursor();
 }
 
