@@ -98,6 +98,7 @@ class spoton_crypt
   static QByteArray sha512Hash(const QByteArray &data, bool *ok);
   static QByteArray shaXHash(const int algorithm,
 			     const QByteArray &data, bool *ok);
+  static QByteArray shake256(const QByteArray &buffer, size_t length);
   static QByteArray strongRandomBytes(const size_t size);
   static QByteArray veryStrongRandomBytes(const size_t size);
   static QByteArray weakRandomBytes(const size_t size);
