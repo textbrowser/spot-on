@@ -909,7 +909,10 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
       statusBar()->showMessage(tr("A total of %1 SMP objects are "
 				  "registered.").arg(m_smps.size()));
     }
+  else
+    smp->m_smp->setGuess(secret);
 
+  smp->m_smp->setStep0();
   QApplication::restoreOverrideCursor();
 }
 
