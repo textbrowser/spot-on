@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../Icons/icons.qrc">
-    <normaloff>:/nuvola/goldbug.png</normaloff>:/nuvola/goldbug.png</iconset>
+    <normaloff>:/Logo/goldbug.png</normaloff>:/Logo/goldbug.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -844,7 +844,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>594</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
