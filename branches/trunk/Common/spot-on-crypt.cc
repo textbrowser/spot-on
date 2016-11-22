@@ -4276,3 +4276,12 @@ bool spoton_crypt::isAuthenticated(void)
   QSqlDatabase::removeDatabase(connectionName);
   return authenticated;
 }
+
+bool spoton_crypt::hasShake(void)
+{
+#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010700
+  return false;
+#else
+  return true;
+#endif
+}

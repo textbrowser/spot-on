@@ -112,6 +112,7 @@ class spoton_crypt
   static QStringList congestionHashAlgorithms(void);
   static QStringList hashTypes(void);
   static bool exists(const QByteArray &publicKey, spoton_crypt *crypt);
+  static bool hasShake(void);
   static bool isValidSignature(const QByteArray &data,
 			       const QByteArray &publicKey,
 			       const QByteArray &signature);
