@@ -1318,8 +1318,12 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 
 	  ciphertext << r * m_publicKey->Gcar() + e;
 
+	  std::stringstream stream2;
+
+	  stream2 << e;
+
 	  QByteArray keyStream2
-	    (stream1.str().c_str(), static_cast<int> (stream1.str().size()));
+	    (stream2.str().c_str(), static_cast<int> (stream2.str().size()));
 
 	  keyStream2 = spoton_crypt::shake256
 	    (keyStream2,
