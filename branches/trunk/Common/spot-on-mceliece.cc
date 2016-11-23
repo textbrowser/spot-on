@@ -742,6 +742,13 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	  if(salt2.length() != 64)
 	    throw std::runtime_error("salt2.length() mismatch");
 	}
+      else if(m_conversion == "fob")
+	{
+	  s >> c2;
+
+	  if(c2.length() != static_cast<long int> (m_k))
+	    throw std::runtime_error("c2.length() mismatch");
+	}
 
       NTL::vec_GF2 ccar = c1 * m_privateKey->Pinv();
 
