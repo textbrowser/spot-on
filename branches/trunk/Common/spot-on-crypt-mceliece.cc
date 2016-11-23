@@ -206,8 +206,11 @@ QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
     {
       if(data.startsWith("mceliece-public-key-000"))
 	keySize = QString("m%1t%2").arg(mceliece->m()).arg(mceliece->t());
-      else
+      else if(data.startsWith("mceliece-public-key-foa"))
 	keySize = QString("m%1t%2-fujisaki-okamoto-a").
+	  arg(mceliece->m()).arg(mceliece->t());
+      else
+	keySize = QString("m%1t%2-fujisaki-okamoto-b").
 	  arg(mceliece->m()).arg(mceliece->t());
     }
 
