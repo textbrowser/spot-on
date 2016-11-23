@@ -4286,11 +4286,17 @@ bool spoton_crypt::hasShake(void)
 #endif
 }
 
-QByteArray spoton_crypt::shake256(const QByteArray &buffer, size_t length)
+QByteArray spoton_crypt::shake256(const QByteArray &buffer,
+				  const size_t length,
+				  bool *ok)
 {
 #if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010700
   Q_UNUSED(buffer);
   Q_UNUSED(length);
+
+  if(ok)
+    *ok = false;
+
   return QByteArray();
 #else
   gcry_error_t err = 0;
@@ -4298,6 +4304,9 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer, size_t length)
 
   if((err = gcry_md_open(&hd, GCRY_MD_SHAKE256, 0)) != 0 || !hd)
     {
+      if(ok)
+	*ok = false;
+
       if(err != 0)
 	{
 	  QByteArray buffer(64, 0);
@@ -4322,7 +4331,8 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer, size_t length)
 
   if((err = gcry_md_extract(hd, GCRY_MD_SHAKE256, bytes.data(), length)) != 0)
     {
-      bytes.clear();
+      if(ok)
+	*ok = false;
 
       if(err != 0)
 	{
@@ -4338,7 +4348,12 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer, size_t length)
       else
 	spoton_misc::logError
 	  ("spoton_crypt::shake256(): gcry_md_extract() failure.");
+
+      return QByteArray();
     }
+
+  if(ok)
+    *ok = true;
 
   gcry_md_close(hd);
   return bytes;

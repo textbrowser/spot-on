@@ -55,6 +55,12 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
       m = 11;
       t = 51;
     }
+  else if(keySize == "m11t51-fujisaki-okamoto-b")
+    {
+      conversion = "fob";
+      m = 11;
+      t = 51;
+    }
   else
     return;
 

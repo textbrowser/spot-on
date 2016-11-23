@@ -419,7 +419,8 @@ spoton::spoton(void):QMainWindow()
 					      << "8192"
 					      << "15360";
   s_publicKeySizes["mceliece"] = QStringList() << "m11t51"
-					       << "m11t51-fujisaki-okamoto-a";
+					       << "m11t51-fujisaki-okamoto-a"
+					       << "m11t51-fujisaki-okamoto-b";
   s_publicKeySizes["ntru"] = QStringList() << "EES1087EP2"
 					   << "EES1171EP1"
 					   << "EES1499EP1";

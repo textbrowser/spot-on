@@ -275,6 +275,7 @@ class spoton_mceliece
   QByteArray m_conversion; /*
 			   ** 000 - None
 			   ** foa - Fujisaki-Okamoto Model A
+			   ** fob - Fujisaki-Okamoto Model B
 			   */
   spoton_mceliece_private_key *m_privateKey;
   spoton_mceliece_public_key *m_publicKey;

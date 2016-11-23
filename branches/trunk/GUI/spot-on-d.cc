@@ -1941,6 +1941,28 @@ void spoton::slotEncryptionKeyTypeChanged(int index)
   m_ui.encryptionKeySize->clear();
   m_ui.encryptionKeySize->addItems(list);
   m_ui.encryptionKeySize->setCurrentIndex(0);
+
+  /*
+  ** Let's disable some values.
+  */
+
+  for(int i = 0; i < m_ui.encryptionKeySize->count(); i++)
+    m_ui.encryptionKeySize->model()->setData
+      (m_ui.encryptionKeySize->model()->index(i, 0),
+       1 | 32,
+       Qt::UserRole - 1);
+
+  if(index == 1 && !spoton_crypt::hasShake())
+    {
+      int index = s_publicKeySizes.value("mceliece").indexOf
+	("m11t51-fujisaki-okamoto-b");
+
+      if(index >= 0)
+	m_ui.encryptionKeySize->model()->setData
+	  (m_ui.encryptionKeySize->model()->index(index, 0),
+	   0,
+	   Qt::UserRole - 1);
+    }
 }
 
 void spoton::slotAddInstitutionCheckBoxToggled(bool state)
