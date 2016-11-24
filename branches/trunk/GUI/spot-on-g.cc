@@ -2053,3 +2053,45 @@ void spoton::slotShowSMPWindow(void)
   m_smpWindow.show(this);
   spoton_utilities::centerWidget(&m_smpWindow, this);
 }
+
+void spoton::slotAboutToShowEmailSecretsMenu(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_ui.emailSecrets->menu()->clear();
+
+  QMapIterator<QString, QByteArray> it
+    (m_smpWindow.streams(QStringList() << "e-mail"
+			               << "poptastic"));
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      QAction *action = m_ui.emailSecrets->menu()->addAction
+	(it.key(),
+	 this,
+	 SLOT(slotEmailSecretsActionSelected(void)));
+
+      action->setProperty("stream", it.value());
+    }
+
+  if(m_ui.emailSecrets->menu()->actions().isEmpty())
+    {
+      QAction *action = m_ui.emailSecrets->menu()->addAction
+	(tr("empty"));
+
+      action->setEnabled(false);
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotEmailSecretsActionSelected(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  m_ui.goldbug->setText(action->property("stream").toString());
+}

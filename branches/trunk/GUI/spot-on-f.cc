@@ -965,9 +965,13 @@ void spoton::prepareTabIcons(void)
 void spoton::slotEmailFsGb(int index)
 {
   if(index == 1)
-    m_ui.goldbug->setEnabled(true);
+    {
+      m_ui.emailSecrets->setVisible(true);
+      m_ui.goldbug->setEnabled(true);
+    }
   else
     {
+      m_ui.emailSecrets->setVisible(false);
       m_ui.goldbug->clear();
       m_ui.goldbug->setEnabled(false);
     }

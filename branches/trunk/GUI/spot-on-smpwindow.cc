@@ -40,6 +40,7 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
   m_ui.setupUi(this);
   m_ui.participants->setColumnHidden
     (m_ui.participants->columnCount() - 1, true); // OID
+  m_ui.secrets->setColumnHidden(0, true); // Stream
   m_ui.secrets->setColumnHidden(m_ui.secrets->columnCount() - 1, true); // OID
   setWindowTitle(tr("%1: SMP Window").arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
@@ -169,6 +170,22 @@ spoton_smpwindow::~spoton_smpwindow()
       delete it.value();
       it.remove();
     }
+}
+
+QMap<QString, QByteArray> spoton_smpwindow::streams
+(const QStringList &keyTypes) const
+{
+  QMap<QString, QByteArray> map;
+
+  for(int i = 0; i < m_ui.secrets->rowCount(); i++)
+    if(m_ui.secrets->item(i, 0) &&
+       m_ui.secrets->item(i, 2) &&
+       m_ui.secrets->item(i, 3))
+      if(keyTypes.contains(m_ui.secrets->item(i, 2)->text()))
+	map[m_ui.secrets->item(i, 3)->text()] = m_ui.secrets->item(i, 0)->
+	  text().toLatin1();
+
+  return map;
 }
 
 #ifdef Q_OS_MAC
@@ -347,29 +364,34 @@ void spoton_smpwindow::populateSecrets(void)
 	m_ui.secrets->setSortingEnabled(false);
 
 	QSqlQuery query(db);
-	int row = 0;
+	int row = -1;
+	int totalRows = 0;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT "
+
+	if(query.exec("SELECT COUNT(*) FROM secrets"))
+	  if(query.next())
+	    m_ui.secrets->setRowCount(query.value(0).toInt());
+
+	if(query.exec("SELECT "
+		      "generated_data, "
 		      "generated_data_hash, "
 		      "key_type, "
 		      "hint, "
 		      "OID "
-		      "FROM secrets");
-
-	if(query.exec())
-	  while(query.next())
+		      "FROM secrets"))
+	  while(query.next() && totalRows < m_ui.secrets->rowCount())
 	    {
-	      bool ok = true;
+	      row += 1;
+	      totalRows += 1;
 
-	      m_ui.secrets->setRowCount(row + 1);
-
-	      for(int i = 0; i < 3; i++)
+	      for(int i = 0; i < 4; i++)
 		{
 		  QByteArray bytes;
 		  QTableWidgetItem *item = 0;
+		  bool ok = true;
 
-		  if(i != 0)
+		  if(i != 1)
 		    bytes = s_crypt->decryptedAfterAuthenticated
 		      (QByteArray::
 		       fromBase64(query.value(i).toByteArray()), &ok);
@@ -378,7 +400,13 @@ void spoton_smpwindow::populateSecrets(void)
 		      (query.value(i).toByteArray()).toHex();
 
 		  if(ok)
-		    item = new QTableWidgetItem(bytes.constData());
+		    {
+		      if(i == 0)
+			item = new QTableWidgetItem
+			  (bytes.toBase64().constData());
+		      else
+			item = new QTableWidgetItem(bytes.constData());
+		    }
 		  else
 		    item = new QTableWidgetItem(tr("error"));
 
@@ -392,12 +420,12 @@ void spoton_smpwindow::populateSecrets(void)
 
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	      m_ui.secrets->setItem(row, m_ui.secrets->columnCount() - 1, item);
-	      row += 1;
 	    }
 
+	m_ui.secrets->setRowCount(totalRows);
 	m_ui.secrets->setSortingEnabled(true);
 	m_ui.secrets->horizontalHeader()->setSortIndicator
-	  (0, Qt::AscendingOrder);
+	  (1, Qt::AscendingOrder);
       }
 
     db.close();
@@ -778,7 +806,7 @@ void spoton_smpwindow::slotGenerateData(void)
   }
 
   QString keyType
-    (m_ui.participants->selectionModel()->selectedRows(2).value(0).data().
+    (m_ui.participants->selectionModel()->selectedRows(1).value(0).data().
      toString());
   QString name
     (m_ui.participants->selectionModel()->selectedRows(0).value(0).data().

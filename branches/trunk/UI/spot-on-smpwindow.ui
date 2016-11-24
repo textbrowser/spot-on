@@ -197,12 +197,17 @@
                </attribute>
                <column>
                 <property name="text">
+                 <string>Stream</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
                  <string>Secret Hash</string>
                 </property>
                </column>
                <column>
                 <property name="text">
-                 <string>Public Key Type</string>
+                 <string>Public Key Algorithm</string>
                 </property>
                </column>
                <column>

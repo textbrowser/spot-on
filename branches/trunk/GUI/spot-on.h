@@ -646,6 +646,7 @@ class spoton: public QMainWindow
 
  private slots:
   void slotAbout(void);
+  void slotAboutToShowEmailSecretsMenu(void);
   void slotAcceptBuzzMagnets(bool state);
   void slotAcceptChatKeys(bool state);
   void slotAcceptEmailKeys(bool state);
@@ -765,6 +766,7 @@ class spoton: public QMainWindow
   void slotDropUrlTables(void);
   void slotDuplicateTransmittedMagnet(void);
   void slotEmailFsGb(int index);
+  void slotEmailSecretsActionSelected(void);
   void slotEmptyTrash(void);
   void slotEnableChatEmoticons(bool state);
   void slotEnableRetrieveMail(void);

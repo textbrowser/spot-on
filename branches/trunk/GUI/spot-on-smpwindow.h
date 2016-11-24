@@ -63,6 +63,8 @@ class spoton_smpwindow: public QMainWindow
  public:
   spoton_smpwindow(void);
   ~spoton_smpwindow();
+  QMap<QString, QByteArray> streams(const QStringList &keyTypes) const;
+  void populateSecrets(void);
   void show(QWidget *parent);
 
  private:
@@ -75,7 +77,6 @@ class spoton_smpwindow: public QMainWindow
 #endif
   void generateSecretData(spoton_smpwindow_smp *smp);
   void keyPressEvent(QKeyEvent *event);
-  void populateSecrets(void);
   void showError(const QString &error);
 
  private slots:

@@ -646,6 +646,7 @@ spoton::spoton(void):QMainWindow()
 #endif
      arg(LIBSPOTON_VERSION_STR).
      arg(spoton_misc::homePath()));
+  m_ui.emailSecrets->setVisible(false);
   m_ui.passphrase_strength_indicator->setVisible(false);
   m_ui.statisticsBox->setVisible(false);
   m_ui.urlSettings->setVisible(true);
@@ -888,6 +889,15 @@ spoton::spoton(void):QMainWindow()
      "image: none;"
      "}"
      );
+  m_ui.emailSecrets->setMenu(new QMenu(this));
+  connect(m_ui.emailSecrets,
+	  SIGNAL(clicked(void)),
+	  m_ui.emailSecrets,
+	  SLOT(showMenu(void)));
+  connect(m_ui.emailSecrets->menu(),
+	  SIGNAL(aboutToShow(void)),
+	  this,
+	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -6686,6 +6696,7 @@ void spoton::slotSetPassphrase(void)
 	    }
 
 	  QApplication::setOverrideCursor(Qt::WaitCursor);
+	  m_smpWindow.populateSecrets();
 	  sendKeysToKernel();
 	  askKernelToReadStarBeamKeys();
 	  populateNovas();
@@ -7063,6 +7074,7 @@ void spoton::slotValidatePassphrase(void)
 	    sendBuzzKeysToKernel();
 	    QApplication::restoreOverrideCursor();
 	    m_rss->prepareAfterAuthentication();
+	    m_smpWindow.populateSecrets();
 	    m_ui.tab->setCurrentIndex
 	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
 	       toInt());
