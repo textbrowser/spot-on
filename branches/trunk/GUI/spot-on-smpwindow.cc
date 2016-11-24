@@ -1240,6 +1240,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 		arg(name);
 	      smp->m_smp->setStep0();
 	      generateSecretData(smp);
+	      populateSecrets();
 	    }
 	  else
 	    message = tr("%1: SMP verification with %2 has failed. "
