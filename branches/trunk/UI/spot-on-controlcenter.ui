@@ -721,6 +721,26 @@
                         </widget>
                        </item>
                        <item>
+                        <widget class="QToolButton" name="chatSecrets">
+                         <property name="toolTip">
+                          <string>Secret Streams</string>
+                         </property>
+                         <property name="text">
+                          <string>Secret Streams</string>
+                         </property>
+                         <property name="icon">
+                          <iconset resource="../Icons/icons.qrc">
+                           <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+                         </property>
+                         <property name="popupMode">
+                          <enum>QToolButton::MenuButtonPopup</enum>
+                         </property>
+                         <property name="autoRaise">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
                         <spacer name="horizontalSpacer_70">
                          <property name="orientation">
                           <enum>Qt::Horizontal</enum>
@@ -1525,7 +1545,7 @@
                            <string>Secret Streams</string>
                           </property>
                           <property name="text">
-                           <string>Context Menu Reflection</string>
+                           <string>Secret Streams</string>
                           </property>
                           <property name="icon">
                            <iconset resource="../Icons/icons.qrc">
@@ -5644,7 +5664,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>839</width>
+             <width>810</width>
              <height>1050</height>
             </rect>
            </property>
@@ -9155,6 +9175,7 @@
   <tabstop>status</tabstop>
   <tabstop>custom</tabstop>
   <tabstop>chatActionMenu</tabstop>
+  <tabstop>chatSecrets</tabstop>
   <tabstop>participants</tabstop>
   <tabstop>hideOfflineParticipants</tabstop>
   <tabstop>message</tabstop>
