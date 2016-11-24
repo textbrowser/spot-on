@@ -33,6 +33,16 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Data exchanged via Poptastic public keys shall be transferred over the Echo and the Poptastic mediums.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QSplitter" name="splitter">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -142,7 +152,7 @@
              <item>
               <widget class="QPushButton" name="prepare_smp_object">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Prepare an SMP object via the secret and the selected participant. The SMP object will be initialized to the zeroth step.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Prepare an SMP object via the secret and the selected participant. The SMP object will be initialized to the zeroth state.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>&amp;Prepare SMP Object</string>
@@ -187,12 +197,17 @@
                </attribute>
                <column>
                 <property name="text">
+                 <string>Stream</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
                  <string>Secret Hash</string>
                 </property>
                </column>
                <column>
                 <property name="text">
-                 <string>Public Key Type</string>
+                 <string>Public Key Algorithm</string>
                 </property>
                </column>
                <column>

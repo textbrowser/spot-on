@@ -1270,8 +1270,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>680</width>
-             <height>484</height>
+             <width>720</width>
+             <height>669</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1466,7 +1466,7 @@ QPushButton:pressed {
                <enum>QTabWidget::Rounded</enum>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="iconSize">
                <size>
@@ -2411,6 +2411,26 @@ QPushButton:pressed {
                      </widget>
                     </item>
                     <item>
+                     <widget class="QToolButton" name="emailSecrets">
+                      <property name="toolTip">
+                       <string>Secret Streams</string>
+                      </property>
+                      <property name="text">
+                       <string>Context Menu Reflection</string>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="../Icons/icons.qrc">
+                        <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+                      </property>
+                      <property name="popupMode">
+                       <enum>QToolButton::MenuButtonPopup</enum>
+                      </property>
+                      <property name="autoRaise">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
                      <widget class="QComboBox" name="email_fs_gb">
                       <property name="currentIndex">
                        <number>2</number>
@@ -2824,8 +2844,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>500</width>
-             <height>1691</height>
+             <width>600</width>
+             <height>1677</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4083,8 +4103,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>448</height>
+             <width>616</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5158,8 +5178,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>606</width>
-             <height>289</height>
+             <width>616</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6473,7 +6493,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>848</width>
+             <width>812</width>
              <height>1101</height>
             </rect>
            </property>
@@ -8004,8 +8024,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>450</width>
-             <height>619</height>
+             <width>616</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9351,8 +9371,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>432</width>
-             <height>386</height>
+             <width>616</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -11387,6 +11407,7 @@ border-style: inset;
   <tabstop>attachment</tabstop>
   <tabstop>selectAttachment</tabstop>
   <tabstop>goldbug</tabstop>
+  <tabstop>emailSecrets</tabstop>
   <tabstop>email_fs_gb</tabstop>
   <tabstop>saveCopy</tabstop>
   <tabstop>sign_this_email</tabstop>
