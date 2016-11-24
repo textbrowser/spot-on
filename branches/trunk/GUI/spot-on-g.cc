@@ -2149,6 +2149,8 @@ void spoton::slotChatSecretsActionSelected(void)
   else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QPair<QByteArray, QByteArray> gemini;
 
   gemini.first = action->property("stream").toString().mid
@@ -2170,4 +2172,6 @@ void spoton::slotChatSecretsActionSelected(void)
 	      this,
 	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
     }
+
+  QApplication::restoreOverrideCursor();
 }

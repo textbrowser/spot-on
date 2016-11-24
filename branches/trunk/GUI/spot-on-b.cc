@@ -4565,6 +4565,8 @@ void spoton::slotGenerateGeminiInChat(void)
   else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QPair<QByteArray, QByteArray> gemini;
 
   gemini.first = spoton_crypt::
@@ -4585,6 +4587,8 @@ void spoton::slotGenerateGeminiInChat(void)
 	      this,
 	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
     }
+
+  QApplication::restoreOverrideCursor();
 }
 
 bool spoton::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
