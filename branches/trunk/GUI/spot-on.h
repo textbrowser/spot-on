@@ -646,6 +646,7 @@ class spoton: public QMainWindow
 
  private slots:
   void slotAbout(void);
+  void slotAboutToShowChatSecretsMenu(void);
   void slotAboutToShowEmailSecretsMenu(void);
   void slotAcceptBuzzMagnets(bool state);
   void slotAcceptChatKeys(bool state);
@@ -689,6 +690,7 @@ class spoton: public QMainWindow
   void slotChangeTabPosition(int index);
   void slotChatInactivityTimeout(void);
   void slotChatPopup(void);
+  void slotChatSecretsActionSelected(void);
   void slotChatSendMethodChanged(int index);
   void slotChatTimestamps(bool state);
   void slotChatWindowDestroyed(void);

@@ -2077,8 +2077,7 @@ void spoton::slotAboutToShowEmailSecretsMenu(void)
 
   if(m_ui.emailSecrets->menu()->actions().isEmpty())
     {
-      QAction *action = m_ui.emailSecrets->menu()->addAction
-	(tr("empty"));
+      QAction *action = m_ui.emailSecrets->menu()->addAction(tr("empty"));
 
       action->setEnabled(false);
     }
@@ -2094,4 +2093,81 @@ void spoton::slotEmailSecretsActionSelected(void)
     return;
 
   m_ui.goldbug->setText(action->property("stream").toString());
+}
+
+void spoton::slotAboutToShowChatSecretsMenu(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_ui.chatSecrets->menu()->clear();
+
+  QMapIterator<QString, QByteArray> it
+    (m_smpWindow.streams(QStringList() << "chat"
+			               << "poptastic"));
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      QAction *action = m_ui.chatSecrets->menu()->addAction
+	(it.key(),
+	 this,
+	 SLOT(slotChatSecretsActionSelected(void)));
+
+      action->setProperty("stream", it.value());
+    }
+
+  if(m_ui.chatSecrets->menu()->actions().isEmpty())
+    {
+      QAction *action = m_ui.chatSecrets->menu()->addAction(tr("empty"));
+
+      action->setEnabled(false);
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotChatSecretsActionSelected(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  int row = m_ui.participants->currentRow();
+
+  if(row < 0)
+    return;
+
+  QTableWidgetItem *item1 = m_ui.participants->item(row, 1); // OID
+  QTableWidgetItem *item2 = m_ui.participants->item
+    (row, 6); // Gemini Encryption Key
+  QTableWidgetItem *item3 = m_ui.participants->item
+    (row, 7); // Gemini Hash Key
+
+  if(!item1 || !item2 || !item3)
+    return;
+  else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
+    return; // Temporary!
+
+  QPair<QByteArray, QByteArray> gemini;
+
+  gemini.first = action->property("stream").toString().mid
+    (0, static_cast<int> (spoton_crypt::cipherKeyLength("aes256"))).toLatin1();
+  gemini.second = action->property("stream").toString().mid
+    (gemini.first.length(), spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+    toLatin1();
+
+  if(saveGemini(gemini, item1->text()))
+    {
+      disconnect(m_ui.participants,
+		 SIGNAL(itemChanged(QTableWidgetItem *)),
+		 this,
+		 SLOT(slotGeminiChanged(QTableWidgetItem *)));
+      item2->setText(gemini.first);
+      item3->setText(gemini.second);
+      connect(m_ui.participants,
+	      SIGNAL(itemChanged(QTableWidgetItem *)),
+	      this,
+	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
+    }
 }

@@ -889,7 +889,16 @@ spoton::spoton(void):QMainWindow()
      "image: none;"
      "}"
      );
+  m_ui.chatSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->setMenu(new QMenu(this));
+  connect(m_ui.chatSecrets,
+	  SIGNAL(clicked(void)),
+	  m_ui.chatSecrets,
+	  SLOT(showMenu(void)));
+  connect(m_ui.chatSecrets->menu(),
+	  SIGNAL(aboutToShow(void)),
+	  this,
+	  SLOT(slotAboutToShowChatSecretsMenu(void)));
   connect(m_ui.emailSecrets,
 	  SIGNAL(clicked(void)),
 	  m_ui.emailSecrets,
