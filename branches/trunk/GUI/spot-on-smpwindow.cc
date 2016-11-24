@@ -252,14 +252,12 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
       return;
     }
 
-  QByteArray salt;
+  QByteArray salt(spoton_misc::xor_arrays(myPublicKey, smp->m_publicKey));
   QByteArray stream(m_ui.generator_stream_size->value(), 0);
   QString guess(smp->m_smp->guessString());
   QString name(smp->m_name);
 
   guess.append(smp->m_keyType);
-  salt.append(myPublicKey);
-  salt.append(smp->m_publicKey);
 
   if(gcry_kdf_derive(guess.toUtf8().constData(),
 		     static_cast<size_t> (guess.toUtf8().length()),
