@@ -1,0 +1,26 @@
+*** CheckFeature log ***
+g++ -I../include -I. -std=c++11 -g -O2 -o TestGetTime TestGetTime.cpp GetTime1.cpp -lm
+running
+g++ -I../include -I. -std=c++11 -g -O2 -o TestGetPID TestGetPID.cpp GetPID1.cpp -lm
+g++ -I../include -I. -std=c++11 -g -O2 -o CheckFeature CheckCLZL.cpp CheckCLZLAux.cpp -lm
+g++ -I../include -I. -std=c++11 -g -O2 -o CheckFeature CheckLL.cpp CheckLLAux.cpp -lm
+g++ -I../include -I. -std=c++11 -g -O2 -o CheckFeature CheckAVX.cpp -lm
+CheckAVX.cpp:9:2: error: #error "AVX not supported"
+ #error "AVX not supported"
+  ^
+CheckAVX.cpp: In function ‘void fun(double*, const double*, const double*)’:
+CheckAVX.cpp:23:28: warning: AVX vector return without AVX enabled changes the ABI [-Wpsabi]
+    avec = _mm256_load_pd(a);
+                            ^
+g++ -I../include -I. -std=c++11 -g -O2 -o CheckFeature CheckFMA.cpp -lm
+CheckFMA.cpp:10:2: error: #error "AVX2 with FMA not supported"
+ #error "AVX2 with FMA not supported"
+  ^
+CheckFMA.cpp: In function ‘void fun(double*, const double*, const double*)’:
+CheckFMA.cpp:25:28: warning: AVX vector return without AVX enabled changes the ABI [-Wpsabi]
+    avec = _mm256_load_pd(a);
+                            ^
+g++ -I../include -I. -std=c++11 -g -O2 -o CheckFeature CheckPCLMUL.cpp -lm
+CheckPCLMUL.cpp:8:2: error: #error "PCLMUL not supported"
+ #error "PCLMUL not supported"
+  ^
