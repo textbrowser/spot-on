@@ -131,8 +131,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>616</width>
-             <height>685</height>
+             <width>452</width>
+             <height>263</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -11349,7 +11349,7 @@ border-style: inset;
   </action>
   <action name="action_SMP">
    <property name="text">
-    <string>SMP</string>
+    <string>SMP...</string>
    </property>
   </action>
  </widget>
