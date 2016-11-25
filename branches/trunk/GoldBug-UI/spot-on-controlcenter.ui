@@ -1150,12 +1150,14 @@ QPushButton:pressed {
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="chatActionMenu">
-                 <property name="toolTip">
-                  <string>Right-mouse context menu as a button for tablets.</string>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QPushButton {
+                <layout class="QHBoxLayout" name="horizontalLayout_10">
+                 <item>
+                  <widget class="QToolButton" name="chatActionMenu">
+                   <property name="toolTip">
+                    <string>Right-mouse context menu as a button for tablets.</string>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
  border: 2px solid gray;
  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                    stop: 0 #E0E0E0, stop: 1 #FFFFFF);
@@ -1175,21 +1177,56 @@ QPushButton:pressed {
      border-style: inset;
  }
 </string>
-                 </property>
-                 <property name="text">
-                  <string>Context Menu Reflection</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="../Icons/icons.qrc">
-                   <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::MenuButtonPopup</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>true</bool>
-                 </property>
-                </widget>
+                   </property>
+                   <property name="text">
+                    <string>Context Menu Reflection</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../Icons/icons.qrc">
+                     <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+                   </property>
+                   <property name="popupMode">
+                    <enum>QToolButton::MenuButtonPopup</enum>
+                   </property>
+                   <property name="autoRaise">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="chatSecrets">
+                   <property name="toolTip">
+                    <string>Secret Streams</string>
+                   </property>
+                   <property name="text">
+                    <string>Secret Streams</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../Icons/icons.qrc">
+                     <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+                   </property>
+                   <property name="popupMode">
+                    <enum>QToolButton::MenuButtonPopup</enum>
+                   </property>
+                   <property name="autoRaise">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -2844,8 +2881,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>600</width>
-             <height>1677</height>
+             <width>480</width>
+             <height>1691</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4103,8 +4140,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>616</width>
-             <height>685</height>
+             <width>588</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5178,8 +5215,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>616</width>
-             <height>685</height>
+             <width>606</width>
+             <height>289</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -8024,8 +8061,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>616</width>
-             <height>685</height>
+             <width>450</width>
+             <height>619</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9371,8 +9408,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>616</width>
-             <height>685</height>
+             <width>432</width>
+             <height>386</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -11369,6 +11406,7 @@ border-style: inset;
   <tabstop>saveNodeName</tabstop>
   <tabstop>hideOfflineParticipants</tabstop>
   <tabstop>chatActionMenu</tabstop>
+  <tabstop>chatSecrets</tabstop>
   <tabstop>scrollArea_6</tabstop>
   <tabstop>refreshMail</tabstop>
   <tabstop>retrieveMail</tabstop>
