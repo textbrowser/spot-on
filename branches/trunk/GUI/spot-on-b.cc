@@ -34,6 +34,7 @@
 #include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-smp.h"
+#include "ui_spot-on-goldbug.h"
 
 void spoton::slotSendMessage(void)
 {
@@ -4219,14 +4220,53 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
     if(goldbug == "1")
       {
-	bool ok = true;
+	QDialog dialog(this);
+	Ui_spoton_goldbug ui;
 
-	goldbug = QInputDialog::getText
-	  (this, tr("%1: Gold Bug").arg(SPOTON_APPLICATION_NAME),
-	   tr("&Gold Bug"),
-	   QLineEdit::Password, "", &ok);
+	ui.setupUi(&dialog);
+	ui.goldbug->setMaxLength
+	  (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
+	ui.secrets->setMenu(new QMenu(this));
+	connect(ui.secrets,
+		SIGNAL(clicked(void)),
+		ui.secrets,
+		SLOT(showMenu(void)));
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-	if(!ok)
+	QMapIterator<QString, QByteArray> it
+	  (m_smpWindow.streams(QStringList() << "e-mail"
+			                     << "poptastic"));
+
+	while(it.hasNext())
+	  {
+	    it.next();
+
+	    QAction *action = ui.secrets->menu()->addAction
+	      (it.key(),
+	       this,
+	       SLOT(slotGoldBugDialogActionSelected(void)));
+
+	    action->setProperty
+	      ("pointer", QVariant::fromValue<QLineEdit *> (ui.goldbug));
+	    action->setProperty("stream", it.value());
+	  }
+
+	if(ui.secrets->menu()->actions().isEmpty())
+	  {
+	    QAction *action = ui.secrets->menu()->addAction(tr("empty"));
+
+	    action->setEnabled(false);
+	  }
+
+	QApplication::restoreOverrideCursor();
+	dialog.setWindowTitle(tr("%1: Gold Bug").arg(SPOTON_APPLICATION_NAME));
+
+	if(dialog.exec() != QDialog::Accepted)
+	  return;
+	else
+	  goldbug = ui.goldbug->text().trimmed();
+
+	if(goldbug.isEmpty())
 	  return;
 
 	QByteArray bytes(goldbug.toLatin1().

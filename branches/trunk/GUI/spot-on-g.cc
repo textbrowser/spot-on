@@ -2175,3 +2175,18 @@ void spoton::slotChatSecretsActionSelected(void)
 
   QApplication::restoreOverrideCursor();
 }
+
+void spoton::slotGoldBugDialogActionSelected(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QLineEdit *lineEdit = action->property("pointer").value<QLineEdit *> ();
+
+  if(!lineEdit)
+    return;
+
+  lineEdit->setText(action->property("stream").toString());
+}

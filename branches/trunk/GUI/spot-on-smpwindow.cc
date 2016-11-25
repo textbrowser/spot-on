@@ -226,7 +226,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
     }
 
   spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
-    crypts().value("chat", 0) : 0;
+    crypts().value(smp->m_keyType, 0) : 0;
 
   if(!s_crypt)
     {
@@ -255,7 +255,6 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
   QByteArray salt(spoton_misc::xor_arrays(myPublicKey, smp->m_publicKey));
   QByteArray stream(m_ui.generator_stream_size->value(), 0);
   QString guess(smp->m_smp->guessString());
-  QString name(smp->m_name);
 
   guess.append(smp->m_keyType);
 
@@ -294,7 +293,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 	QSqlQuery query(db);
 	bool ok = true;
 
-	hint.append(name);
+	hint.append(smp->m_name);
 	hint.append(" - ");
 	hint.append(smp->m_keyType);
 	hint.append(" - ");

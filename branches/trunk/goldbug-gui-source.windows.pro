@@ -7,6 +7,7 @@ FORMS           = GoldBug-UI\\spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI\\spot-on-encryptfile.ui \
 		  GoldBug-UI\\spot-on-encryptfile-page.ui \
 		  GoldBug-UI\\spot-on-forward-secrecy-algorithms-selection.ui \
+		  GoldBug-UI\\spot-on-goldbug.ui \
 		  GoldBug-UI\\spot-on-ipinformation.ui \
 		  GoldBug-UI\\spot-on-keyboard.ui \
 		  GoldBug-UI\\spot-on-listener-socket-options.ui \
