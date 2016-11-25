@@ -3088,12 +3088,12 @@ void spoton::slotSendMail(void)
     }
   else if(m_ui.email_fs_gb->currentIndex() == 1)
     {
-      if(m_ui.goldbug->text().size() < 16)
+      if(m_ui.goldbug->text().size() < 96)
 	{
 	  QMessageBox::critical
 	    (this, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Please provide a Gold Bug that contains at least sixteen "
+	     tr("Please provide a Gold Bug that contains at least ninety-six "
 		"characters."));
 	  return;
 	}
@@ -3255,14 +3255,14 @@ void spoton::slotSendMail(void)
 	      {
 		mode = "forward-secrecy";
 
-		QByteArray bytes(m_ui.goldbug->text().toLatin1().
-				 toBase64().toBase64().toBase64().
-				 toBase64().toBase64());
+		QByteArray bytes(m_ui.goldbug->text().toUtf8());
 		int size = static_cast<int>
 		  (spoton_crypt::cipherKeyLength("aes256"));
 
 		goldbug.append("magnet:?aa=sha512&ak=");
-		goldbug.append(bytes.mid(size));
+		goldbug.append
+		  (bytes.mid(size,
+			     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
 		goldbug.append("&ea=aes256");
 		goldbug.append("&ek=");
 		goldbug.append(bytes.mid(0, size));
@@ -4224,8 +4224,6 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	Ui_spoton_goldbug ui;
 
 	ui.setupUi(&dialog);
-	ui.goldbug->setMaxLength
-	  (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
 	ui.secrets->setMenu(new QMenu(this));
 	connect(ui.secrets,
 		SIGNAL(clicked(void)),
@@ -4269,15 +4267,14 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	if(goldbug.isEmpty())
 	  return;
 
-	QByteArray bytes(goldbug.toLatin1().
-			 toBase64().toBase64().toBase64().
-			 toBase64().toBase64());
+	QByteArray bytes(goldbug.toUtf8());
 	QByteArray magnet;
 	int size = static_cast<int>
 	  (spoton_crypt::cipherKeyLength("aes256"));
 
 	magnet.append("magnet:?aa=sha512&ak=");
-	magnet.append(bytes.mid(size));
+	magnet.append
+	  (bytes.mid(size, spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
 	magnet.append("&ea=aes256");
 	magnet.append("&ek=");
 	magnet.append(bytes.mid(0, size));

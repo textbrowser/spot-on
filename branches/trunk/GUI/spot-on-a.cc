@@ -655,8 +655,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.urls_db_type->model()->setData
     (m_ui.urls_db_type->model()->index(0, 0), 0, Qt::UserRole - 1);
   m_ui.goldbug->setEnabled(false);
-  m_ui.goldbug->setMaxLength
-    (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
   m_ui.postgresqlConnect->setEnabled(false);
   m_ui.postgresqlConnect->setVisible(false);
 
