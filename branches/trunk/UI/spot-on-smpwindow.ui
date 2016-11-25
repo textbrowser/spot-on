@@ -33,16 +33,6 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Data exchanged via Poptastic public keys shall be transferred over the Echo and the Poptastic mediums.</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QSplitter" name="splitter">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -91,6 +81,16 @@
               </column>
              </widget>
              <widget class="QTextBrowser" name="output"/>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Data exchanged via Poptastic public keys shall be transferred over the Echo and the Poptastic mediums.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
