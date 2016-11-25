@@ -145,7 +145,7 @@
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate a stream of bytes via the secret and the selected participant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
-                <string>&amp;Generate Data</string>
+                <string>&amp;Generate Stream</string>
                </property>
               </widget>
              </item>

@@ -298,7 +298,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 	hint.append(smp->m_keyType);
 	hint.append(" - ");
 	hint.append(QDateTime::currentDateTime().
-		    toString("MM/dd/yyyy hh:mm:ss"));
+		    toString("yyyy-MM-dd hh:mm:ss"));
 	query.prepare("INSERT INTO secrets "
 		      "(generated_data, generated_data_hash, hint, key_type) "
 		      "VALUES (?, ?, ?, ?)");
