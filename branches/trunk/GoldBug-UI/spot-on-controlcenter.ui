@@ -46,7 +46,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="iconSize">
        <size>
@@ -131,8 +131,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>452</width>
-             <height>263</height>
+             <width>616</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -1203,7 +1203,7 @@ QPushButton:pressed {
                    </property>
                    <property name="icon">
                     <iconset resource="../Icons/icons.qrc">
-                     <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+                     <normaloff>:/generic/menu-secret-chat.png</normaloff>:/generic/menu-secret-chat.png</iconset>
                    </property>
                    <property name="popupMode">
                     <enum>QToolButton::MenuButtonPopup</enum>
@@ -2457,7 +2457,7 @@ QPushButton:pressed {
                       </property>
                       <property name="icon">
                        <iconset resource="../Icons/icons.qrc">
-                        <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+                        <normaloff>:/generic/menu-secret-email.png</normaloff>:/generic/menu-secret-email.png</iconset>
                       </property>
                       <property name="popupMode">
                        <enum>QToolButton::MenuButtonPopup</enum>
@@ -2881,8 +2881,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>500</width>
-             <height>1691</height>
+             <width>600</width>
+             <height>1677</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4140,8 +4140,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>588</width>
-             <height>448</height>
+             <width>616</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5215,8 +5215,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>606</width>
-             <height>289</height>
+             <width>616</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6530,7 +6530,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>848</width>
+             <width>812</width>
              <height>1101</height>
             </rect>
            </property>
@@ -8061,8 +8061,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>450</width>
-             <height>619</height>
+             <width>616</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9408,8 +9408,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>432</width>
-             <height>386</height>
+             <width>616</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
