@@ -1,4 +1,0 @@
-*** CheckFlag log ***
-make[2]: Entering directory '/home/monster/spot-on.d/libNTL/unix.d/src'
-g++ -I../include -I.  -std=c++11 -g -O2  -o  CheckCompile CheckCompile.cpp -lm
-make[2]: Leaving directory '/home/monster/spot-on.d/libNTL/unix.d/src'
