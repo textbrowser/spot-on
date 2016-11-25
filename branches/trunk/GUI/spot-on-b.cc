@@ -4247,7 +4247,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	       SLOT(slotGoldBugDialogActionSelected(void)));
 
 	    action->setProperty
-	      ("pointer", QVariant::fromValue<QLineEdit *> (ui.goldbug));
+	      ("pointer", QVariant::fromValue<QWidget *> (ui.goldbug));
 	    action->setProperty("stream", it.value());
 	  }
 

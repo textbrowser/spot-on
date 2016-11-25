@@ -2183,7 +2183,8 @@ void spoton::slotGoldBugDialogActionSelected(void)
   if(!action)
     return;
 
-  QLineEdit *lineEdit = action->property("pointer").value<QLineEdit *> ();
+  QLineEdit *lineEdit = qobject_cast<QLineEdit *>
+    (action->property("pointer").value<QWidget *> ());
 
   if(!lineEdit)
     return;
