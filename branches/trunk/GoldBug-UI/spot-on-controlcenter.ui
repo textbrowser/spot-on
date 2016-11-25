@@ -4197,6 +4197,12 @@ color: rgb(255, 255, 255);</string>
                   </item>
                   <item>
                    <widget class="QPushButton" name="shareBuzzMagnet">
+                    <property name="minimumSize">
+                     <size>
+                      <width>175</width>
+                      <height>0</height>
+                     </size>
+                    </property>
                     <property name="text">
                      <string>Share Buzz Magnet</string>
                     </property>
@@ -6530,7 +6536,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>848</width>
              <height>1101</height>
             </rect>
            </property>
