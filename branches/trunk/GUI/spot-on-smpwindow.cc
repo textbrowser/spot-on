@@ -557,25 +557,25 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
+  QByteArray bytes;
+  bool ok = true;
+
+  bytes = spoton_crypt::sha512Hash(publicKey, &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::sha512Hash().");
+      showError(error);
+      return;
+    }
+
   QString name
     (m_ui.participants->selectionModel()->selectedRows(0).value(0).data().
      toString());
-  bool ok = true;
-  spoton_smpwindow_smp *smp = m_smps.value(publicKey, 0);
+  spoton_smpwindow_smp *smp = m_smps.value(bytes, 0);
 
   if(!smp)
     {
-      QByteArray bytes;
-
-      bytes = spoton_crypt::sha512Hash(publicKey, &ok);
-
-      if(!ok)
-	{
-	  error = tr("An error occurred with spoton_crypt::sha512Hash().");
-	  showError(error);
-	  return;
-	}
-
       smp = new spoton_smpwindow_smp(secret);
       smp->m_keyType = keyType;
       smp->m_name = name;
@@ -692,7 +692,7 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QByteArray bytes;
+  bytes.clear();
 
   {
     QDataStream stream(&bytes, QIODevice::WriteOnly);
@@ -909,22 +909,22 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
       return;
     }
 
-  spoton_smpwindow_smp *smp = m_smps.value(publicKey, 0);
+  QByteArray bytes;
+  bool ok = true;
+
+  bytes = spoton_crypt::sha512Hash(publicKey, &ok);
+
+  if(!ok)
+    {
+      error = tr("An error occurred with spoton_crypt::sha512Hash().");
+      showError(error);
+      return;
+    }
+
+  spoton_smpwindow_smp *smp = m_smps.value(bytes, 0);
 
   if(!smp)
     {
-      QByteArray bytes;
-      bool ok = true;
-
-      bytes = spoton_crypt::sha512Hash(publicKey, &ok);
-
-      if(!ok)
-	{
-	  error = tr("An error occurred with spoton_crypt::sha512Hash().");
-	  showError(error);
-	  return;
-	}
-
       smp = new spoton_smpwindow_smp(secret);
       smp->m_keyType = keyType;
       smp->m_name = m_ui.participants->selectionModel()->selectedRows(0).
@@ -1019,7 +1019,7 @@ void spoton_smpwindow::slotRefresh(void)
 	if(ok && query.exec())
 	  while(query.next())
 	    {
-	      QStringList list;
+	      QList<QByteArray> list;
 
 	      for(int i = 0; i < 3; i++)
 		{
@@ -1031,7 +1031,7 @@ void spoton_smpwindow::slotRefresh(void)
 
 		  if(ok)
 		    {
-		      list << bytes.constData();
+		      list << bytes;
 
 		      if(list.value(1) == "poptastic" &&
 			 list.value(2).endsWith("-poptastic"))
@@ -1041,7 +1041,7 @@ void spoton_smpwindow::slotRefresh(void)
 			}
 		    }
 		  else
-		    list << tr("error");
+		    list << tr("error").toUtf8();
 		}
 
 	      if(list.isEmpty())
@@ -1053,20 +1053,21 @@ void spoton_smpwindow::slotRefresh(void)
 		{
 		  QTableWidgetItem *item = 0;
 
-		  item = new QTableWidgetItem(list.at(i));
+		  item = new QTableWidgetItem(list.at(i).constData());
 
 		  if(i == 2)
 		    item->setText
-		      (spoton_crypt::publicKeyAlgorithm(list.at(i).toLatin1()));
+		      (spoton_crypt::publicKeyAlgorithm(list.at(i)));
 
 		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		  m_ui.participants->setItem(row, i, item);
 		}
 
-	      QTableWidgetItem *item = new QTableWidgetItem
+	      QTableWidgetItem *item = 0;
+
+	      item = new QTableWidgetItem
 		(QString::
 		 number(query.value(query.record().count() - 1).toLongLong()));
-
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	      m_ui.participants->setItem
 		(row, m_ui.participants->columnCount() - 1, item);
