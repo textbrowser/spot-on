@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>556</height>
+                <width>366</width>
+                <height>442</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1535,7 +1535,7 @@
                         <item>
                          <widget class="QLineEdit" name="goldbug">
                           <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of AES-256 encryption and SHA-512 authentication. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of AES-256 encryption and SHA-512 authentication. The first ninety-six characters will be consumed. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                          </widget>
                         </item>
@@ -2209,8 +2209,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>566</height>
+             <width>610</width>
+             <height>313</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2926,7 +2926,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>264</width>
+                     <width>260</width>
                      <height>1344</height>
                     </rect>
                    </property>
@@ -3462,8 +3462,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>566</height>
+             <width>617</width>
+             <height>179</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3842,7 +3842,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>788</width>
+                  <width>681</width>
                   <height>381</height>
                  </rect>
                 </property>
@@ -4628,8 +4628,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>566</height>
+             <width>616</width>
+             <height>291</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4714,8 +4714,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>800</width>
-                 <height>517</height>
+                 <width>651</width>
+                 <height>531</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5664,7 +5664,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>810</width>
+             <width>839</width>
              <height>1050</height>
             </rect>
            </property>
@@ -6812,8 +6812,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>566</height>
+             <width>566</width>
+             <height>465</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7935,8 +7935,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>566</height>
+             <width>607</width>
+             <height>377</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8547,8 +8547,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>566</height>
+             <width>240</width>
+             <height>135</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
