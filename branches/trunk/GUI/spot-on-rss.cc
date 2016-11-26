@@ -52,7 +52,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   m_ui.setupUi(this);
   m_ui.feeds->setColumnHidden(m_ui.feeds->columnCount() - 1, true); // OID
   m_ui.feeds->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.feeds->setIconSize(QSize(48, 48));
+  m_ui.feeds->setIconSize(QSize(16, 16));
   m_ui.feeds->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder); // Feed
 #if QT_VERSION >= 0x050000
