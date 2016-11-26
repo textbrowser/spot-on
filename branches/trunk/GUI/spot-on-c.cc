@@ -2943,11 +2943,13 @@ void spoton::prepareContextMenuMirrors(void)
 		      arg(spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE),
 		      this,
 		      SLOT(slotReplayMessages(void)));
+      menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/starbeam.png").
 			    arg(m_settings.value("gui/iconSet",
 						 "nouve").
 				toString().toLower())),
-		      tr("Share a &StarBeam."),
+		      tr("Share a &StarBeam with the "
+			 "selected participant(s)..."),
 		      this,
 		      SLOT(slotShareStarBeam(void)));
       menu->addSeparator();
@@ -2961,7 +2963,7 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotPurgeEphemeralKeyPair(void)));
       action->setProperty("type", "chat");
       action = menu->addAction
-	(tr("Reset Forward &Secrecy information."),
+	(tr("Reset Forward &Secrecy information of selected participant(s)."),
 	 this, SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "chat");
       menu->addSeparator();
@@ -2969,7 +2971,8 @@ void spoton::prepareContextMenuMirrors(void)
 			    arg(m_settings.value("gui/iconSet",
 						 "nouve").
 				toString().toLower())),
-		      tr("Invite to an anonymous Buzz channel..."),
+		      tr("Invite selected participant(s) "
+			 "to an anonymous Buzz channel..."),
 		      this,
 		      SLOT(slotBuzzInvite(void)));
       m_ui.chatActionMenu->setMenu(menu);

@@ -7336,7 +7336,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	 this, SLOT(slotPurgeEphemeralKeyPair(void)));
       action->setProperty("type", "email");
       action = menu.addAction
-	(tr("Reset Forward &Secrecy information."),
+	(tr("Reset Forward &Secrecy information of selected participant(s)."),
 	 this, SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "email");
       menu.exec(m_ui.emailParticipants->mapToGlobal(point));
@@ -7635,11 +7635,13 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     arg(spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE),
 		     this,
 		     SLOT(slotReplayMessages(void)));
+      menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/starbeam.png").
 			   arg(m_settings.value("gui/iconSet",
 						"nouve").
 			       toString().toLower())),
-		     tr("Share a &StarBeam..."),
+		     tr("Share a &StarBeam with the "
+			"selected participant(s)..."),
 		     this,
 		     SLOT(slotShareStarBeam(void)));
       menu.addSeparator();
@@ -7663,7 +7665,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			   arg(m_settings.value("gui/iconSet",
 						"nouve").
 			       toString().toLower())),
-		     tr("Invite to an anonymous Buzz channel..."),
+		     tr("Invite selected participant(s) "
+			"to an anonymous Buzz channel..."),
 		     this,
 		     SLOT(slotBuzzInvite(void)));
       menu.exec(m_ui.participants->mapToGlobal(point));
