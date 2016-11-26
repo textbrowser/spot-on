@@ -35,7 +35,7 @@
    <item>
     <widget class="QToolButton" name="lock">
      <property name="toolTip">
-      <string>Lock the application. Like a screensaver.</string>
+      <string>Lock the application. Like a screen saver.</string>
      </property>
      <property name="text">
       <string>Lock</string>
