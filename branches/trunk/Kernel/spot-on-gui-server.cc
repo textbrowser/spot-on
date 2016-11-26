@@ -531,6 +531,13 @@ void spoton_gui_server::slotReadyRead(void)
 		  m_guiIsAuthenticated[socket->socketDescriptor()] =
 		    count == names.size() && names.size() > 0 ? true : false;
 
+		  if(!m_guiIsAuthenticated.value(socket->socketDescriptor(),
+						 false))
+		    spoton_misc::logError
+		      (QString("spoton_gui_server::slotReadyRead(): "
+			       "UI at socket %1 is not authenticated.").
+		       arg(socket->socketDescriptor()));
+
 		  for(int i = 0; i < names.size(); i++)
 		    if(!spoton_kernel::s_crypts.value(names.at(i), 0))
 		      spoton_misc::logError
