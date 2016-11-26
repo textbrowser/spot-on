@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>366</width>
-                <height>442</height>
+                <width>816</width>
+                <height>556</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -723,7 +723,7 @@
                        <item>
                         <widget class="QToolButton" name="chatSecrets">
                          <property name="toolTip">
-                          <string>Secret Streams</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Secret Streams. The activated entry will be applied to the currently-selected participant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="text">
                           <string>Secret Streams</string>
@@ -8547,8 +8547,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>566</height>
+             <width>240</width>
+             <height>135</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">

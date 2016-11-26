@@ -1196,7 +1196,7 @@ QPushButton:pressed {
                  <item>
                   <widget class="QToolButton" name="chatSecrets">
                    <property name="toolTip">
-                    <string>Secret Streams</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Secret Streams. The activated entry will be applied to the currently-selected participant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
                     <string>Secret Streams</string>
