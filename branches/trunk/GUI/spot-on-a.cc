@@ -7841,7 +7841,8 @@ void spoton::sendBuzzKeysToKernel(void)
 
   bool sent = true;
 
-  if((sent = (m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
+  if((sent = (m_kernelSocket.isEncrypted() &&
+	      m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
     foreach(spoton_buzzpage *page, m_buzzPages.values())
       if(page && (sent &= m_kernelSocket.isEncrypted()))
 	{

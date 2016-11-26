@@ -480,7 +480,16 @@ void spoton_gui_server::slotReadyRead(void)
 
 		  for(int i = 0; i < names.size(); i++)
 		    {
-		      spoton_crypt *crypt = 0;
+		      spoton_crypt *crypt = spoton_kernel::s_crypts.value
+			(names.at(i), 0);
+
+		      if(crypt)
+			{
+			  if(crypt->isAuthenticated())
+			    count += 1;
+
+			  continue;
+			}
 
 		      try
 			{
@@ -515,15 +524,7 @@ void spoton_gui_server::slotReadyRead(void)
 			  if(crypt->isAuthenticated())
 			    count += 1;
 
-			  if(!spoton_kernel::s_crypts.contains(names.at(i)))
-			    spoton_kernel::s_crypts.insert(names.at(i), crypt);
-			  else
-			    delete crypt;
-			}
-		      else
-			{
-			  count -= 1;
-			  spoton_kernel::s_crypts.remove(names.at(i));
+			  spoton_kernel::s_crypts.insert(names.at(i), crypt);
 			}
 		    }
 
