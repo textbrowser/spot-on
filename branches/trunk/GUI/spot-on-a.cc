@@ -668,24 +668,6 @@ spoton::spoton(void):QMainWindow()
 	break;
       }
 
-#ifndef SPOTON_LINKED_WITH_LIBGEOIP
-  m_optionsUi.geoipPath4->setEnabled(false);
-  m_optionsUi.geoipPath4->setToolTip
-    (tr("%1 was configured without "
-	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
-  m_optionsUi.geoipPath6->setEnabled(false);
-  m_optionsUi.geoipPath6->setToolTip
-    (tr("%1 was configured without "
-	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
-  m_optionsUi.selectGeoIP4->setEnabled(false);
-  m_optionsUi.selectGeoIP4->setToolTip
-    (tr("%1 was configured without "
-	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
-  m_optionsUi.selectGeoIP6->setEnabled(false);
-  m_optionsUi.selectGeoIP6->setToolTip
-    (tr("%1 was configured without "
-	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
-#endif
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   setAttribute(Qt::WA_MacMetalStyle, true);
@@ -721,6 +703,24 @@ spoton::spoton(void):QMainWindow()
   m_statisticsWindow = new QMainWindow(0);
   m_notificationsUi.setupUi(m_notificationsWindow);
   m_optionsUi.setupUi(m_optionsWindow);
+#ifndef SPOTON_LINKED_WITH_LIBGEOIP
+  m_optionsUi.geoipPath4->setEnabled(false);
+  m_optionsUi.geoipPath4->setToolTip
+    (tr("%1 was configured without "
+	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
+  m_optionsUi.geoipPath6->setEnabled(false);
+  m_optionsUi.geoipPath6->setToolTip
+    (tr("%1 was configured without "
+	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
+  m_optionsUi.selectGeoIP4->setEnabled(false);
+  m_optionsUi.selectGeoIP4->setToolTip
+    (tr("%1 was configured without "
+	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
+  m_optionsUi.selectGeoIP6->setEnabled(false);
+  m_optionsUi.selectGeoIP6->setToolTip
+    (tr("%1 was configured without "
+	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
+#endif
   m_statisticsUi.setupUi(m_statisticsWindow);
   m_statisticsUi.view->setModel(m_statisticsModel);
   m_ui.statistics->setModel(m_statisticsModel);
