@@ -1503,7 +1503,7 @@ QPushButton:pressed {
                <enum>QTabWidget::Rounded</enum>
               </property>
               <property name="currentIndex">
-               <number>2</number>
+               <number>0</number>
               </property>
               <property name="iconSize">
                <size>
@@ -2748,7 +2748,7 @@ QPushButton:pressed {
  }</string>
                         </property>
                         <property name="text">
-                         <string/>
+                         <string>New Letter</string>
                         </property>
                        </widget>
                       </item>
@@ -6536,7 +6536,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>848</width>
+             <width>812</width>
              <height>1101</height>
             </rect>
            </property>
