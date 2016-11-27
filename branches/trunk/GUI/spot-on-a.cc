@@ -7952,7 +7952,10 @@ void spoton::sendKeysToKernel(void)
 	       arg(m_kernelSocket.peerAddress().toString()).
 	       arg(m_kernelSocket.peerPort()));
 	  else
-	    m_sb.status->clear();
+	    {
+	      m_keysShared["keys_sent_to_kernel"] = "true";
+	      m_sb.status->clear();
+	    }
 	}
 }
 
