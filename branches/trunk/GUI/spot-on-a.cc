@@ -5807,6 +5807,16 @@ void spoton::slotGeneralTimerTimeout(void)
   for(int i = m_starbeamDigestFutures.size() - 1; i >= 0; i--)
     if(m_starbeamDigestFutures.at(i).isFinished())
       m_starbeamDigestFutures.removeAt(i);
+
+  if(isKernelActive())
+    if(m_kernelSocket.state() != QAbstractSocket::ConnectedState ||
+       m_kernelSocket.write("\n", 1) != 1)
+      if(m_crypts.size() > 0)
+	{
+	  m_notificationsUi.textBrowser->append
+	    (tr("The kernel process may be defunct. Please inspect."));
+	  m_notificationsWindow->show();
+	}
 }
 
 void spoton::slotSelectGeoIPPath(void)
