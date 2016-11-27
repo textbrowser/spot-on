@@ -4268,7 +4268,18 @@ bool spoton_crypt::isAuthenticated(void)
 
 	      break;
 	    }
+
+	if(query.lastError().isValid())
+	  spoton_misc::logError
+	    (QString("spoton_crypt::isAuthenticated(): "
+		     "QSqlQuery::exec() failure (%1).").
+	     arg(query.lastError().text()));
       }
+
+    if(db.lastError().isValid())
+      spoton_misc::logError
+	(QString("spoton_crypt::isAuthenticated(): "
+		 "database error (%1).").arg(db.lastError().text()));
 
     db.close();
   }

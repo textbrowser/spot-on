@@ -4043,11 +4043,8 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 		    }
 		  catch(...)
 		    {
-		      if(crypt)
-			{
-			  delete crypt;
-			  crypt = 0;
-			}
+		      delete crypt;
+		      crypt = 0;
 		    }
 
 		  if(crypt)
