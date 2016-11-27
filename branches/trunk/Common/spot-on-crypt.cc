@@ -4265,6 +4265,10 @@ bool spoton_crypt::isAuthenticated(void)
 
 	      if(!data.isEmpty() && ok)
 		authenticated = true;
+	      else
+		spoton_misc::logError
+		  ("spoton_crypt::isAuthenticated(): "
+		   "data is empty or ok is false.");
 
 	      break;
 	    }

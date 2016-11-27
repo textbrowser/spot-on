@@ -4049,8 +4049,6 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 
 		  if(crypt)
 		    s_crypts.insert(list.at(i), crypt);
-		  else
-		    s_crypts.remove(list.at(i));
 		}
 
 	    for(int i = 0; i < list.size(); i++)
