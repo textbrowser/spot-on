@@ -910,6 +910,13 @@ void spoton::slotReceivedKernelMessage(void)
 	      if(!list.isEmpty())
 		emit smpMessageReceivedFromKernel(list);
 	    }
+	  else if(data == "uiauthenticated")
+	    {
+	      m_keysShared["keys_sent_to_kernel"] = "true";
+	      notify(QDateTime::currentDateTime().toString());
+	      notify(tr("The UI has been authenticated by the kernel %1.").
+		     arg(m_ui.pid->text()));
+	    }
 	}
     }
   else if(m_kernelSocketData.length() >

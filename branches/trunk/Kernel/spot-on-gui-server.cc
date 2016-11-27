@@ -142,14 +142,6 @@ spoton_gui_server::spoton_gui_server(QObject *parent):
     spoton_misc::logError("spoton_gui_server::spoton_gui_server(): "
 			  "listen() failure. This is a serious problem!");
 
-  connect(this,
-	  SIGNAL(modeChanged(QSslSocket::SslMode)),
-	  this,
-	  SLOT(slotModeChanged(QSslSocket::SslMode)));
-  connect(this,
-	  SIGNAL(newConnection(void)),
-	  this,
-	  SLOT(slotClientConnected(void)));
   connect(&m_fileSystemWatcher,
 	  SIGNAL(fileChanged(const QString &)),
 	  this,
@@ -158,6 +150,18 @@ spoton_gui_server::spoton_gui_server(QObject *parent):
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
+  connect(this,
+	  SIGNAL(modeChanged(QSslSocket::SslMode)),
+	  this,
+	  SLOT(slotModeChanged(QSslSocket::SslMode)));
+  connect(this,
+	  SIGNAL(newConnection(void)),
+	  this,
+	  SLOT(slotClientConnected(void)));
+  connect(this,
+	  SIGNAL(uiAuthenticated(QSslSocket *)),
+	  this,
+	  SLOT(slotUIAuthenticated(QSslSocket *)));
   m_generalTimer.start(2500);
 
   QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
@@ -554,6 +558,8 @@ void spoton_gui_server::slotReadyRead(void)
 		       arg(socket->socketDescriptor()).
 		       arg(count).
 		       arg(names.size()));
+		  else
+		    emit uiAuthenticated(socket);
 
 		  for(int i = 0; i < names.size(); i++)
 		    if(!spoton_kernel::s_crypts.value(names.at(i), 0))
@@ -1185,4 +1191,39 @@ void spoton_gui_server::slotSMPMessage(const QByteArrayList &list)
 		 "has not been authenticated. Ignoring write() response.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
+}
+
+void spoton_gui_server::slotUIAuthenticated(QSslSocket *socket)
+{
+  if(!socket)
+    return;
+
+  QByteArray message("uiauthenticated\n");
+
+  if(socket->isEncrypted())
+    {
+      qint64 w = 0;
+
+      if((w = socket->write(message.constData(),
+			    message.length())) != message.length())
+	spoton_misc::logError
+	  (QString("spoton_gui_server::slotUIAuthenticated(): "
+		   "write() failure for %1:%2.").
+	   arg(socket->peerAddress().toString()).
+	   arg(socket->peerPort()));
+      else if(w > 0)
+	{
+	  QWriteLocker locker
+	    (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	  spoton_kernel::s_totalUiBytesReadWritten.second +=
+	    static_cast<quint64> (w);
+	}
+    }
+  else
+    spoton_misc::logError
+      (QString("spoton_gui_server::slotUIAuthenticated(): "
+	       "socket %1:%2 is not encrypted. Ignoring write() response.").
+       arg(socket->peerAddress().toString()).
+       arg(socket->peerPort()));
 }

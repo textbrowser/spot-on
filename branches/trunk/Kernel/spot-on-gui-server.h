@@ -116,6 +116,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   void slotStatusMessageReceived(const QByteArray &publicKeyHash,
 				 const QString &status);
   void slotTimeout(void);
+  void slotUIAuthenticated(QSslSocket *socket);
 
  signals:
   void buzzMagnetReceivedFromUI(const qint64 oid,
@@ -163,6 +164,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   void retrieveMail(void);
   void shareLink(const QByteArray &link);
   void smpMessageReceivedFromUI(const QByteArrayList &list);
+  void uiAuthenticated(QSslSocket *socket);
 };
 
 #endif
