@@ -3831,12 +3831,10 @@ QByteArray spoton_crypt::decryptedAfterAuthenticated(const QByteArray &data,
       return QByteArray();
     }
 
-  QByteArray computedHash(keyedHash(data.mid(static_cast<int> (length)),
-				    ok));
+  QByteArray computedHash(keyedHash(data.mid(static_cast<int> (length)), ok));
   QByteArray hash(data.mid(0, static_cast<int> (length)));
 
-  if(!computedHash.isEmpty() && !hash.isEmpty() && memcmp(computedHash,
-							  hash))
+  if(!computedHash.isEmpty() && !hash.isEmpty() && memcmp(computedHash, hash))
     return decrypted(data.mid(static_cast<int> (length)), ok);
   else
     {
@@ -4251,10 +4249,13 @@ bool spoton_crypt::isAuthenticated(void)
     if(db.open())
       {
 	QSqlQuery query(db);
+	bool ok = true;
 
 	query.setForwardOnly(true);
+	query.prepare("SELECT public_key FROM idiotes WHERE id_hash = ?");
+	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
 
-	if(query.exec("SELECT public_key FROM idiotes"))
+	if(ok && query.exec())
 	  while(query.next())
 	    {
 	      QByteArray data;
