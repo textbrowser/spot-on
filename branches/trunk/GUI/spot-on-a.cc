@@ -5813,9 +5813,9 @@ void spoton::slotGeneralTimerTimeout(void)
        m_kernelSocket.write("\n", 1) != 1)
       if(m_crypts.size() > 0)
 	{
-	  m_notificationsUi.textBrowser->append
-	    (tr("The kernel process may be defunct. Please inspect."));
-	  m_notificationsWindow->show();
+	  /*
+	  ** We'll need something here.
+	  */
 	}
 }
 
