@@ -6637,6 +6637,7 @@ void spoton::slotSetPassphrase(void)
 	      QApplication::setOverrideCursor(Qt::WaitCursor);
 	      reencode.reencode
 		(m_sb, crypt.data(), m_crypts.value("chat", 0));
+	      spoton_crypt::removeFlawedEntries(crypt.data());
 	      QApplication::restoreOverrideCursor();
 	    }
 
@@ -6941,7 +6942,6 @@ void spoton::slotValidatePassphrase(void)
      spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
     if(error.isEmpty())
       {
-	authenticated = true;
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
 	QPair<QByteArray, QByteArray> keys;
@@ -6968,6 +6968,8 @@ void spoton::slotValidatePassphrase(void)
 
 	if(error.isEmpty())
 	  {
+	    authenticated = true;
+
 	    QHashIterator<QString, spoton_crypt *> it(m_crypts);
 
 	    while(it.hasNext())
@@ -7001,6 +7003,7 @@ void spoton::slotValidatePassphrase(void)
 	    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	    spoton_misc::alterDatabasesAfterAuthentication
 	      (m_crypts.value("chat", 0));
+	    spoton_crypt::removeFlawedEntries(m_crypts.value("chat", 0));
 	    QApplication::restoreOverrideCursor();
 
 	    if(m_optionsUi.launchKernel->isChecked())

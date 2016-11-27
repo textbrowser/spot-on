@@ -4375,3 +4375,49 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer,
   return bytes;
 #endif
 }
+
+void spoton_crypt::removeFlawedEntries(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT id FROM idiotes"))
+	  while(query.next())
+	    {
+	      QByteArray data;
+	      bool ok = true;
+
+	      data = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	      if(!ok)
+		{
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM idiotes WHERE id = ?");
+		  deleteQuery.addBindValue(query.value(0).toByteArray());
+		  deleteQuery.exec();
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}

@@ -151,6 +151,7 @@ class spoton_crypt
   static void reencodePrivatePublicKeys
     (spoton_crypt *newCrypt, spoton_crypt *oldCrypt, const QString &id,
      QString &error);
+  static void removeFlawedEntries(spoton_crypt *crypt);
   static void setSslCiphers(const QList<QSslCipher> &ciphers,
 			    const QString &sslControlString,
 			    QSslConfiguration &configuration);

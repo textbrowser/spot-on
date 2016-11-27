@@ -4056,6 +4056,8 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 		spoton_misc::logError
 		  ("spoton_kernel::initializeSecurityContainers(): "
 		   "potential memory failure. Critical!");
+
+	    spoton_crypt::removeFlawedEntries(s_crypts.value("chat", 0));
 	  }
       }
 
