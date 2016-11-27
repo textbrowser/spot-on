@@ -487,6 +487,13 @@ void spoton_gui_server::slotReadyRead(void)
 			{
 			  if(crypt->isAuthenticated())
 			    count += 1;
+			  else
+			    spoton_misc::logError
+			      (QString("spoton_gui_server::"
+				       "slotReadyRead(): "
+				       "spoton_crypt object %1 "
+				       "could not be authenticated.").
+			       arg(names.at(i)));
 
 			  continue;
 			}
