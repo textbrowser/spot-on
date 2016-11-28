@@ -1109,7 +1109,7 @@ void spoton::slotRemoveParticipants(void)
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
-		"participant(s)?"));
+		"Chat participant(s)?"));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -2218,7 +2218,8 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Unable to retrieve your %1 "
-			"public key for comparison. Continue?").
+			"public key for comparison. Are you sure "
+			"that you wish to accept the foreign key pair?").
 		     arg(keyType.constData()));
 
 	  if(mb.exec() != QMessageBox::Yes)
@@ -2243,7 +2244,8 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Unable to retrieve your %1 signature "
-			"public key for comparison. Continue?").
+			"public key for comparison. Are you sure "
+			"that you wish to accept the foreign key pair?").
 		     arg(keyType.constData()));
 
 	  if(mb.exec() != QMessageBox::Yes)
@@ -2733,7 +2735,8 @@ void spoton::slotResetAll(void)
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to reset %1? All "
-		"data will be lost.").
+		"data will be lost. PostgreSQL databases must be "
+		"removed separately.").
 	     arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -5808,7 +5811,7 @@ void spoton::slotRemoveEmailParticipants(void)
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
-		"participant(s)?"));
+		"E-Mail participant(s)?"));
 
   if(mb.exec() != QMessageBox::Yes)
     return;

@@ -134,7 +134,7 @@ void spoton::slotAddEtpMagnet(const QString &text,
 
   if(!spoton_misc::isValidStarBeamMagnet(magnet.toLatin1()))
     {
-      error = tr("Invalid magnet. Are you missing tokens?");
+      error = tr("Invalid StarBeam magnet. Are you missing tokens?");
       goto done_label;
     }
 
@@ -3702,7 +3702,7 @@ void spoton::slotImportPublicKeys(void)
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
-	    (tr("The import file (%1) contains a lot (%2) of data. Are you "
+	    (tr("The import file %1 contains a lot (%2) of data. Are you "
 		"sure that you wish to process it?").
 	     arg(fileInfo.absoluteFilePath()).
 	     arg(fileInfo.size()));
@@ -3880,7 +3880,7 @@ void spoton::slotImportNeighbors(void)
       fileInfo.setFile(dialog.directory(),
 		       dialog.selectedFiles().value(0));
 
-      if(fileInfo.size() >= 30000)
+      if(fileInfo.size() >= 32768)
 	{
 	  QMessageBox mb(this);
 
@@ -3895,7 +3895,7 @@ void spoton::slotImportNeighbors(void)
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
-	    (tr("The import file (%1) contains a lot (%2) of data. Are you "
+	    (tr("The import file %1 contains a lot (%2) of data. Are you "
 		"sure that you wish to process it?").
 	     arg(fileInfo.absoluteFilePath()).
 	     arg(fileInfo.size()));
@@ -4472,7 +4472,7 @@ void spoton::slotRemoveUrlParticipants(void)
   mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
-		"participant(s)?"));
+		"URLs participant(s)?"));
 
   if(mb.exec() != QMessageBox::Yes)
     return;

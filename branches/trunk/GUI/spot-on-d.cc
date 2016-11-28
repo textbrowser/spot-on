@@ -1581,7 +1581,7 @@ bool spoton::promptBeforeExit(void)
       mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("The File Encryption application is occupied. "
-		    "Continue? ").
+		    "Are you sure that you wish to exit %1?").
 		 arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -1603,7 +1603,8 @@ bool spoton::promptBeforeExit(void)
       mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("The kernel appears to be active. Closing %1 "
-		    "will not deactivate the kernel. Continue?").
+		    "will not deactivate the kernel. Are you "
+		    "sure that you wish to exit %1?").
 		 arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)

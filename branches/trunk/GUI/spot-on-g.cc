@@ -1862,7 +1862,7 @@ void spoton::slotResetAllStyleSheets(void)
 #endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to reset all widget "
+  mb.setText(tr("Are you sure that you wish to reset all custom widget "
 		"style sheets?"));
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
