@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-    	<file>Flags/ae.png</file>
+	<file>Flags/ae.png</file>
 	<file>Flags/af.png</file>
 	<file>Flags/al.png</file>
 	<file>Flags/am.png</file>
@@ -475,5 +475,6 @@
 	<file>wizard/kernel.png</file>
 	<file>wizard/key.png</file>
 	<file>wizard/password.png</file>
+	<file>wizard/urls.png</file>
     </qresource>
 </RCC>
