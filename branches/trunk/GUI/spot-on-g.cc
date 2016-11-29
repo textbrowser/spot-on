@@ -1264,7 +1264,6 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
   m_wizardHash["shown"] = false;
   m_wizardHash["url_create_sqlite_db"] = false;
   m_wizardHash["url_credentials"] = true;
-  m_wizardHash["url_distillers"] = false;
   m_wizardHash["url_distribution"] = false;
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -1327,8 +1326,6 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	    prepare_sqlite_urls_db->isChecked();
 	  m_wizardHash["url_credentials"] =
 	    m_wizardUi->url_credentials->isChecked();
-	  m_wizardHash["url_distillers"] = m_wizardUi->allow_url_sharing->
-	    isChecked();
 	  m_wizardHash["url_distribution"] = m_wizardUi->
 	    enable_url_distribution->isChecked();
 	  repaint();

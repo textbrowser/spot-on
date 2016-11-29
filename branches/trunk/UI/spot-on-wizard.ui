@@ -504,28 +504,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_16">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>URL distillers (filters) allow for the filtering of URL data. If enabled, filtering will be disabled.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="allow_url_sharing">
-         <property name="text">
-          <string>Allow URL sharing.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="enable_url_distribution">
          <property name="text">
           <string>Enable URL distribution.</string>
@@ -633,7 +611,6 @@
   <tabstop>url_credentials</tabstop>
   <tabstop>initialize_public_keys</tabstop>
   <tabstop>launch_kernel</tabstop>
-  <tabstop>allow_url_sharing</tabstop>
   <tabstop>enable_url_distribution</tabstop>
   <tabstop>prepare_sqlite_urls_db</tabstop>
  </tabstops>
