@@ -1262,7 +1262,10 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
   m_wizardHash["initialize_public_keys"] = true;
   m_wizardHash["launch_kernel"] = true;
   m_wizardHash["shown"] = false;
+  m_wizardHash["url_create_sqlite_db"] = false;
   m_wizardHash["url_credentials"] = true;
+  m_wizardHash["url_distillers"] = false;
+  m_wizardHash["url_distribution"] = false;
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   mb.setAttribute(Qt::WA_MacMetalStyle, true);
@@ -1320,8 +1323,14 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	  m_wizardHash["launch_kernel"] =
 	    m_wizardUi->launch_kernel->isChecked();
 	  m_wizardHash["shown"] = false;
+	  m_wizardHash["url_create_sqlite_db"] = m_wizardUi->
+	    prepare_sqlite_urls_db->isChecked();
 	  m_wizardHash["url_credentials"] =
 	    m_wizardUi->url_credentials->isChecked();
+	  m_wizardHash["url_distillers"] = m_wizardUi->allow_url_sharing->
+	    isChecked();
+	  m_wizardHash["url_distribution"] = m_wizardUi->
+	    enable_url_distribution->isChecked();
 	  repaint();
 #ifndef Q_OS_MAC
 	  QApplication::processEvents();
@@ -1374,11 +1383,13 @@ void spoton::slotWizardButtonClicked(void)
       }
     case 1:
       {
+	m_ui.username->setFocus();
+	m_ui.username->selectAll();
 	m_wizardUi->next->setEnabled(true);
 	m_wizardUi->previous->setEnabled(true);
 	break;
       }
-    case 2:
+    case 2: case 3:
       {
 	m_wizardUi->initialize->setVisible(false);
 	m_wizardUi->next->setEnabled(true);
@@ -1386,7 +1397,7 @@ void spoton::slotWizardButtonClicked(void)
 	m_wizardUi->previous->setEnabled(true);
 	break;
       }
-    case 3:
+    case 4:
       {
 	m_wizardUi->initialize->setVisible(true);
 	m_wizardUi->next->setEnabled(true);
