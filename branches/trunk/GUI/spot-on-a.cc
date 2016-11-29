@@ -6713,6 +6713,10 @@ void spoton::slotSetPassphrase(void)
 
 		  QApplication::restoreOverrideCursor();
 		}
+
+	      if(wizardAccepted)
+		m_ui.activeUrlDistribution->setChecked
+		  (m_wizardHash.value("url_distribution", false));
 	    }
 
 	  QApplication::setOverrideCursor(Qt::WaitCursor);
