@@ -265,3 +265,4 @@ Remaining Items
        See spoton::slotPopulateStars().
 2.     UDP multicast address sharing is flawed in Qt 4.x.
        (https://bugreports.qt.io/browse/QTBUG-33419)
+3.     Open Library. Spot-On is complete.
