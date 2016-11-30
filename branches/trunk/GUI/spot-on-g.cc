@@ -1304,6 +1304,10 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	      SIGNAL(clicked(void)),
 	      this,
 	      SLOT(slotWizardButtonClicked(void)));
+      connect(m_wizardUi->prepare_sqlite_urls_db,
+	      SIGNAL(clicked(void)),
+	      this,
+	      SLOT(slotWizardCheckClicked(void)));
       connect(m_wizardUi->previous,
 	      SIGNAL(clicked(void)),
 	      this,
@@ -1333,6 +1337,9 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	  QApplication::processEvents();
 #endif
 	  slotSetPassphrase();
+
+	  if(m_wizardUi->prepare_sqlite_urls_db->isChecked())
+	    slotPrepareUrlDatabases();
 	}
       else
 	{
@@ -2198,4 +2205,20 @@ void spoton::slotGoldBugDialogActionSelected(void)
     return;
 
   lineEdit->setText(action->property("stream").toString());
+}
+
+void spoton::slotWizardCheckClicked(void)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(checkBox == m_wizardUi->prepare_sqlite_urls_db)
+    {
+      if(checkBox->isChecked())
+	{
+	  m_wizardUi->launch_kernel->setChecked(false);
+	  m_wizardUi->launch_kernel->setEnabled(false);
+	}
+      else
+	m_wizardUi->launch_kernel->setEnabled(true);
+    }
 }

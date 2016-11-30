@@ -120,29 +120,36 @@ void spoton::slotPrepareUrlDatabases(void)
       return;
     }
 
-  QMessageBox mb(this);
+  if(!m_wizardHash.value("accepted", false))
+    {
+      QMessageBox mb(this);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Please note that the database-preparation process may "
-		"require a considerable amount of time to complete. "
-		"The RSS mechanism and the kernel will be deactivated. "
-		"Proceed?"));
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Please note that the database-preparation process may "
+		    "require a considerable amount of time to complete. "
+		    "The RSS mechanism and the kernel will be deactivated. "
+		    "Proceed?"));
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-  else
-    {
-      m_rss->deactivate();
-      slotDeactivateKernel();
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+      else
+	{
+	  m_rss->deactivate();
+	  slotDeactivateKernel();
+	}
     }
+
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   QProgressDialog progress(this);
   bool created = true;
@@ -438,6 +445,10 @@ void spoton::slotDropUrlTables(void)
       m_rss->deactivate();
       slotDeactivateKernel();
     }
+
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   QProgressDialog progress(this);
   bool dropped = true;
@@ -802,6 +813,10 @@ void spoton::slotImportUrls(void)
 
   if(cipherType.isEmpty() || symmetricKey.isEmpty())
     readEncrypted = 0;
+
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   QDateTime now(QDateTime::currentDateTime());
   QProgressDialog progress(this);
@@ -2103,6 +2118,10 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   ** Now, we must remove the URL from all of the keywords tables.
   */
 
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   QProgressDialog progress(this);
 
 #ifdef Q_OS_MAC
@@ -2256,6 +2275,10 @@ void spoton::slotCorrectUrlDatabases(void)
       m_rss->deactivate();
       slotDeactivateKernel();
     }
+
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   QProgressDialog progress(this);
 

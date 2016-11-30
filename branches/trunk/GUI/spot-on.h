@@ -1023,6 +1023,7 @@ class spoton: public QMainWindow
   void slotViewLog(void);
   void slotViewRosetta(void);
   void slotWizardButtonClicked(void);
+  void slotWizardCheckClicked(void);
 
  signals:
   void buzzNameChanged(const QByteArray &name);
