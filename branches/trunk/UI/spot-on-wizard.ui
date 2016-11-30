@@ -518,7 +518,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Create the SQLite urls.db database. Please note that this process may require a considerable amount of time to complete.</string>
+          <string>Create the SQLite urls.db database. Please note that this process may require a considerable amount of time to complete. If enabled, the kernel will not be activated.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
