@@ -64,10 +64,10 @@ class spoton_smp
   }
 
   bool passed(void) const;
-  bool verifyProof(const QList<QByteArray> &list,
-		   const gcry_mpi_t g,
-		   const gcry_mpi_t x,
-		   const int version) const;
+  bool verifyLogProof(const QList<QByteArray> &list,
+		      const gcry_mpi_t g,
+		      const gcry_mpi_t x,
+		      const int version) const;
   int step(void) const;
   void initialize();
   void setGuess(const QString &guess);

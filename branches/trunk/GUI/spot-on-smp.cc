@@ -121,6 +121,10 @@ QList<QByteArray> spoton_smp::logProof(const gcry_mpi_t g,
 				       const int version,
 				       bool *ok) const
 {
+  /*
+  ** Adapted from otrl_sm_proof_know_log().
+  */
+
   QByteArray bytes;
   QList<QByteArray> list;
   gcry_mpi_t c = 0;
@@ -150,8 +154,7 @@ QList<QByteArray> spoton_smp::logProof(const gcry_mpi_t g,
     GOTO_DONE_LABEL;
 
   if(gcry_mpi_scan(&c, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
@@ -388,16 +391,14 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   bytes = other.at(0).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&g2a, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(1).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&g3a, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
@@ -406,6 +407,16 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   */
 
   if(gcry_mpi_cmp_ui(g2a, 1) == 0 || gcry_mpi_cmp_ui(g3a, 1) == 0)
+    GOTO_DONE_LABEL;
+
+  /*
+  ** Verify the proofs.
+  */
+
+  if(!verifyLogProof(other.mid(2, 2), m_generator, g2a, 1)) // ..., 2, 3, ...
+    GOTO_DONE_LABEL;
+
+  if(!verifyLogProof(other.mid(4, 2), m_generator, g3a, 2)) // ..., 4, 5
     GOTO_DONE_LABEL;
 
   /*
@@ -446,13 +457,13 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(g2b, m_generator, m_b2, m_modulus);
-  proofsa = logProof(m_generator, m_b2, 3, ok);
+  proofsa = logProof(m_generator, g2b, 3, ok);
 
   if(proofsa.isEmpty())
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(g3b, m_generator, m_b3, m_modulus);
-  proofsb = logProof(m_generator, m_b3, 4, ok);
+  proofsb = logProof(m_generator, g3b, 4, ok);
 
   if(proofsb.isEmpty())
     GOTO_DONE_LABEL;
@@ -585,16 +596,14 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   bytes = other.at(0).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&g2b, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(1).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&g3b, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
@@ -608,16 +617,14 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   bytes = other.at(2).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&m_pb, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(3).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&qb, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
@@ -792,16 +799,14 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   bytes = other.at(0).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&pa, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
   bytes = other.at(1).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&qa, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
@@ -815,8 +820,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   if(gcry_mpi_scan(&ra, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     GOTO_DONE_LABEL;
 
@@ -889,7 +893,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
 
   gcry_mpi_mulm(papb, pa, pbinv, m_modulus);
 
-  if(gcry_mpi_cmp(rab, papb) == 0)
+  if(gcry_mpi_cmp(papb, rab) == 0)
     {
       m_passed = true;
 
@@ -927,17 +931,84 @@ bool spoton_smp::passed(void) const
   return m_passed;
 }
 
-bool spoton_smp::verifyProof(const QList<QByteArray> &list,
-			     const gcry_mpi_t g,
-			     const gcry_mpi_t x,
-			     const int version) const
+bool spoton_smp::verifyLogProof(const QList<QByteArray> &list,
+				const gcry_mpi_t g,
+				const gcry_mpi_t x,
+				const int version) const
 {
-  Q_UNUSED(version);
+  /*
+  ** Adapted from otrl_sm_check_know_log().
+  */
 
   if(!g || list.size() != 2 || !x)
     return false;
 
-  return true;
+  QByteArray bytes;
+  bool ok = true;
+  bool verified = false;
+  gcry_mpi_t c = 0;
+  gcry_mpi_t d = 0;
+  gcry_mpi_t gd = 0;
+  gcry_mpi_t gdxc = 0;
+  gcry_mpi_t hgdxc = 0;
+  gcry_mpi_t xc = 0;
+  unsigned char *buffer = 0;
+  size_t size = 0;
+
+  if(gcry_mpi_scan(&c, GCRYMPI_FMT_USG,
+		   reinterpret_cast<const unsigned char *> (list.value(0).
+							    constData()),
+		   static_cast<size_t> (list.value(0).length()), 0) != 0)
+    goto done_label;
+
+  if(gcry_mpi_scan(&d, GCRYMPI_FMT_USG,
+		   reinterpret_cast<const unsigned char *> (list.value(1).
+							    constData()),
+		   static_cast<size_t> (list.value(1).length()), 0) != 0)
+    goto done_label;
+
+  gd = gcry_mpi_new(BITS);
+  gdxc = gcry_mpi_new(BITS);
+  xc = gcry_mpi_new(BITS);
+
+  if(!gd || !gdxc || !xc)
+    goto done_label;
+
+  gcry_mpi_powm(gd, g, d, m_modulus);
+  gcry_mpi_powm(xc, x, c, m_modulus);
+  gcry_mpi_mulm(gdxc, gd, xc, m_modulus);
+  bytes.append(QByteArray::number(version));
+
+  if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, gdxc) != 0)
+    goto done_label;
+  else
+    bytes.append(QByteArray(reinterpret_cast<char *> (buffer),
+			    static_cast<int> (size)));
+
+  gcry_free(buffer);
+  buffer = 0;
+  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+
+  if(!ok)
+    goto done_label;
+
+  if(gcry_mpi_scan(&hgdxc, GCRYMPI_FMT_USG,
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
+		   static_cast<size_t> (bytes.length()), 0) != 0)
+    goto done_label;
+
+  if(gcry_mpi_cmp(c, hgdxc) == 0)
+    verified = true;
+
+ done_label:
+  gcry_free(buffer);
+  gcry_mpi_release(c);
+  gcry_mpi_release(d);
+  gcry_mpi_release(gd);
+  gcry_mpi_release(gdxc);
+  gcry_mpi_release(hgdxc);
+  gcry_mpi_release(xc);
+  return verified;
 }
 
 gcry_mpi_t spoton_smp::generateRandomExponent(bool *ok) const
@@ -1153,8 +1224,7 @@ void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
   bytes = other.at(0).mid(0, static_cast<int> (BITS / 8));
 
   if(gcry_mpi_scan(&rb, GCRYMPI_FMT_USG,
-		   reinterpret_cast<const unsigned char *> (bytes.
-							    constData()),
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
     {
       if(ok)
@@ -1237,7 +1307,7 @@ void spoton_smp::step5(const QList<QByteArray> &other, bool *ok,
 
   gcry_mpi_mulm(papb, m_pa, pbinv, m_modulus);
 
-  if(gcry_mpi_cmp(rab, papb) == 0)
+  if(gcry_mpi_cmp(papb, rab) == 0)
     {
       m_passed = true;
 
