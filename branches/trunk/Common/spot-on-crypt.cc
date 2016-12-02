@@ -4279,6 +4279,8 @@ bool spoton_crypt::isAuthenticated(void)
 	    (QString("spoton_crypt::isAuthenticated(): "
 		     "QSqlQuery::exec() failure (%1).").
 	     arg(query.lastError().text()));
+	else
+	  authenticated = true; // We know very little.
       }
 
     if(db.lastError().isValid())
