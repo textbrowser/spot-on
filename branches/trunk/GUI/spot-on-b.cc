@@ -606,26 +606,16 @@ void spoton::slotReceivedKernelMessage(void)
 			  if(smp->step() == 4 || smp->step() == 5)
 			    {
 			      if(passed)
-				{
-				  msg.append
-				    (tr("<font color=green>"
-					"<i>SMP verification with "
-					"%1 (%2...%3) "
-					"has succeeded.</i></font>").
-				     arg(smpName).
-				     arg(hash.toBase64().mid(0, 16).
-					 constData()).
-				     arg(hash.toBase64().right(16).
-					 constData()));
-
-				  /*
-				  ** Set the SMP's state to the first stage.
-				  ** Messaging popups may be displayed after
-				  ** a successful SMP execution.
-				  */
-
-				  smp->setStep0();
-				}
+				msg.append
+				  (tr("<font color=green>"
+				      "<i>SMP verification with "
+				      "%1 (%2...%3) "
+				      "has succeeded.</i></font>").
+				   arg(smpName).
+				   arg(hash.toBase64().mid(0, 16).
+				       constData()).
+				   arg(hash.toBase64().right(16).
+				       constData()));
 			      else
 				msg.append
 				  (tr("<font color=red>"
@@ -637,6 +627,14 @@ void spoton::slotReceivedKernelMessage(void)
 				       constData()).
 				   arg(hash.toBase64().right(16).
 				       constData()));
+
+			      /*
+			      ** Set the SMP's state to the first stage.
+			      ** Messaging popups may be displayed after
+			      ** a successful SMP execution.
+			      */
+
+			      smp->setStep0();
 			    }
 			  else
 			    msg.append
@@ -4737,7 +4735,10 @@ void spoton::slotKernelStatus(void)
   if(isKernelActive())
     slotDeactivateKernel();
   else
-    slotActivateKernel();
+    {
+      slotDeactivateKernel();
+      slotActivateKernel();
+    }
 }
 
 void spoton::slotMailTabChanged(int index)
