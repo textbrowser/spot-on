@@ -51,19 +51,23 @@ class spoton_smp
   QByteArray guessSha(void) const;
   QByteArray guessWhirlpool(void) const;
   QList<QByteArray> nextStep(const QList<QByteArray> &other,
-			     bool *ok, bool *passed );
+			     bool *ok, bool *passed);
   QList<QByteArray> step1(bool *ok);
+  QList<QByteArray> logProof(const gcry_mpi_t g,
+			     const gcry_mpi_t x,
+			     const int version,
+			     bool *ok) const;
 
   QString guessString(void) const
   {
     return m_guessString;
   }
 
-  QList<QByteArray> logProof(const gcry_mpi_t g,
-			     const gcry_mpi_t x,
-			     const int version,
-			     bool *ok);
   bool passed(void) const;
+  bool verifyProof(const QList<QByteArray> &list,
+		   const gcry_mpi_t g,
+		   const gcry_mpi_t x,
+		   const int version) const;
   int step(void) const;
   void initialize();
   void setGuess(const QString &guess);
@@ -94,13 +98,14 @@ class spoton_smp
   gcry_mpi_t m_pa;
   gcry_mpi_t m_pb;
   gcry_mpi_t m_qb;
-  gcry_mpi_t generateRandomExponent(bool *ok);
+  gcry_mpi_t generateRandomExponent(bool *ok) const;
   int m_step;
   size_t m_guessWhirlLength;
   static const int TERMINAL_STATE = -1;
   QList<QByteArray> step2(const QList<QByteArray> &other, bool *ok);
   QList<QByteArray> step3(const QList<QByteArray> &other, bool *ok);
-  QList<QByteArray> step4(const QList<QByteArray> &other, bool *ok,
+  QList<QByteArray> step4(const QList<QByteArray> &other,
+			  bool *ok,
 			  bool *passed);
   void reset(void);
   void step5(const QList<QByteArray> &other, bool *ok, bool *passed);

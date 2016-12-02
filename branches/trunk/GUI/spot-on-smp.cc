@@ -119,7 +119,7 @@ QByteArray spoton_smp::guessWhirlpool(void) const
 QList<QByteArray> spoton_smp::logProof(const gcry_mpi_t g,
 				       const gcry_mpi_t x,
 				       const int version,
-				       bool *ok)
+				       bool *ok) const
 {
   QByteArray bytes;
   QList<QByteArray> list;
@@ -927,12 +927,24 @@ bool spoton_smp::passed(void) const
   return m_passed;
 }
 
-gcry_mpi_t spoton_smp::generateRandomExponent(bool *ok)
+bool spoton_smp::verifyProof(const QList<QByteArray> &list,
+			     const gcry_mpi_t g,
+			     const gcry_mpi_t x,
+			     const int version) const
 {
-  gcry_mpi_t exponent = 0;
+  Q_UNUSED(version);
 
+  if(!g || list.size() != 2 || !x)
+    return false;
+
+  return true;
+}
+
+gcry_mpi_t spoton_smp::generateRandomExponent(bool *ok) const
+{
   gcry_fast_random_poll();
 
+  gcry_mpi_t exponent = 0;
   unsigned char *buffer = (unsigned char *) gcry_random_bytes_secure
     (BITS / 8, GCRY_STRONG_RANDOM);
 
