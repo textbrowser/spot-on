@@ -42,7 +42,6 @@ class spoton_smp
  public:
   spoton_smp(void);
   ~spoton_smp(void);
-  static const int s_version = 1;
   static const unsigned int BITS = 1536;
   static gcry_mpi_t generateWeakRandomPrime(bool *ok);
   static void test1(void);

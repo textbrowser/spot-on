@@ -281,13 +281,13 @@ QList<QByteArray> spoton_smp::step1(bool *ok)
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(g2a, m_generator, m_a2, m_modulus);
-  proofsa = logProof(m_generator, m_a2, s_version, ok);
+  proofsa = logProof(m_generator, m_a2, 1, ok);
 
   if(proofsa.isEmpty())
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(g3a, m_generator, m_a3, m_modulus);
-  proofsb = logProof(m_generator, m_a3, s_version, ok);
+  proofsb = logProof(m_generator, m_a3, 2, ok);
 
   if(proofsb.isEmpty())
     GOTO_DONE_LABEL;
@@ -336,6 +336,8 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
 {
   QByteArray bytes;
   QList<QByteArray> list;
+  QList<QByteArray> proofsa;
+  QList<QByteArray> proofsb;
   bool terminalState = true;
   gcry_mpi_t g2 = 0;
   gcry_mpi_t g2a = 0;
@@ -353,10 +355,10 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Extract g2a, g3a, and proofs.
+  ** Extract g2a, g3a, and the proofs.
   */
 
-  if(other.size() != 6)
+  if(other.size() != 6) // 2 + 4 (proofs)
     GOTO_DONE_LABEL;
 
   if(m_pb)
@@ -444,7 +446,16 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(g2b, m_generator, m_b2, m_modulus);
+  proofsa = logProof(m_generator, m_b2, 3, ok);
+
+  if(proofsa.isEmpty())
+    GOTO_DONE_LABEL;
+
   gcry_mpi_powm(g3b, m_generator, m_b3, m_modulus);
+  proofsb = logProof(m_generator, m_b3, 4, ok);
+
+  if(proofsb.isEmpty())
+    GOTO_DONE_LABEL;
 
   if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, g2b) != 0)
     GOTO_DONE_LABEL;
@@ -511,6 +522,8 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
 
   gcry_free(buffer);
   buffer = 0;
+  list.append(proofsa);
+  list.append(proofsb);
   m_step = 2;
 
   if(ok)
@@ -529,6 +542,8 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   gcry_mpi_release(qb1);
   gcry_mpi_release(qb2);
   gcry_mpi_release(r);
+  proofsa.clear();
+  proofsb.clear();
 
   if(terminalState)
     m_step = TERMINAL_STATE;
@@ -561,10 +576,10 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Extract g2b, g3b, pb, and qb.
+  ** Extract g2b, g3b, pb, qb, and the proofs.
   */
 
-  if(other.size() != 4)
+  if(other.size() != 8) // 4 + 4 (proofs)
     GOTO_DONE_LABEL;
 
   bytes = other.at(0).mid(0, static_cast<int> (BITS / 8));
