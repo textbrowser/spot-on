@@ -42,6 +42,7 @@ class spoton_smp
  public:
   spoton_smp(void);
   ~spoton_smp(void);
+  static const int s_version = 1;
   static const unsigned int BITS = 1536;
   static gcry_mpi_t generateWeakRandomPrime(bool *ok);
   static void test1(void);
@@ -59,6 +60,10 @@ class spoton_smp
     return m_guessString;
   }
 
+  QList<QByteArray> logProof(const gcry_mpi_t g,
+			     const gcry_mpi_t x,
+			     const int version,
+			     bool *ok);
   bool passed(void) const;
   int step(void) const;
   void initialize();
@@ -86,6 +91,7 @@ class spoton_smp
   gcry_mpi_t m_generator;
   gcry_mpi_t m_guess;
   gcry_mpi_t m_modulus;
+  gcry_mpi_t m_order;
   gcry_mpi_t m_pa;
   gcry_mpi_t m_pb;
   gcry_mpi_t m_qb;
