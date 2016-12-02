@@ -4007,7 +4007,7 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
 	}
     }
 
-  if(tokens >= 2 && tokens <= 5)
+  if(tokens >= 2 && tokens <= 9)
     valid = true;
 
  done_label:
