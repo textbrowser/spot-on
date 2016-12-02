@@ -457,13 +457,13 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(g2b, m_generator, m_b2, m_modulus);
-  proofsa = logProof(m_generator, g2b, 3, ok);
+  proofsa = logProof(m_generator, m_b2, 3, ok);
 
   if(proofsa.isEmpty())
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(g3b, m_generator, m_b3, m_modulus);
-  proofsb = logProof(m_generator, g3b, 4, ok);
+  proofsb = logProof(m_generator, m_b3, 4, ok);
 
   if(proofsb.isEmpty())
     GOTO_DONE_LABEL;
@@ -612,6 +612,16 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   */
 
   if(gcry_mpi_cmp_ui(g2b, 1) == 0 || gcry_mpi_cmp_ui(g3b, 1) == 0)
+    GOTO_DONE_LABEL;
+
+  /*
+  ** Verify the proofs.
+  */
+
+  if(!verifyLogProof(other.mid(4, 2), m_generator, g2b, 3)) // ..., 4, 5, ...
+    GOTO_DONE_LABEL;
+
+  if(!verifyLogProof(other.mid(6, 2), m_generator, g3b, 4)) // ..., 6, 7
     GOTO_DONE_LABEL;
 
   bytes = other.at(2).mid(0, static_cast<int> (BITS / 8));
