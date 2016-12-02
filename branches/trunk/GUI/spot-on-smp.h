@@ -50,13 +50,13 @@ class spoton_smp
   static void test4(void);
   QByteArray guessSha(void) const;
   QByteArray guessWhirlpool(void) const;
-  QList<QByteArray> nextStep(const QList<QByteArray> &other,
-			     bool *ok, bool *passed);
-  QList<QByteArray> step1(bool *ok);
   QList<QByteArray> logProof(const gcry_mpi_t g,
 			     const gcry_mpi_t x,
 			     const int version,
 			     bool *ok) const;
+  QList<QByteArray> nextStep(const QList<QByteArray> &other,
+			     bool *ok, bool *passed);
+  QList<QByteArray> step1(bool *ok);
 
   QString guessString(void) const
   {
