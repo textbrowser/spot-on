@@ -2101,7 +2101,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.question_authenticate->setEnabled(false);
   m_ui.resend->setEnabled(false);
   m_sb.kernelstatus->setToolTip
-    (tr("Not connected to the kernel. Is the kernel "
+    (tr("The interface is not connected to the kernel. Is the kernel "
 	"active?"));
   m_sb.listeners->setToolTip(tr("Listeners are offline."));
   m_sb.neighbors->setToolTip(tr("Neighbors are offline."));
@@ -5605,6 +5605,24 @@ void spoton::slotActivateKernel(void)
   QApplication::restoreOverrideCursor();
 
   if(status)
+#if SPOTON_GOLDBUG == 1
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/status-online.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
+#else
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/activate.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
+#endif
+  else
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/deactivate.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
+
+  if(status)
     {
       if(m_settings.value("gui/buzzAutoJoin", true).toBool())
 	joinDefaultBuzzChannel();
@@ -5617,8 +5635,9 @@ void spoton::slotActivateKernel(void)
 
 void spoton::slotDeactivateKernel(void)
 {
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() +
-		     "shared.db");
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
   libspoton_handle_t libspotonHandle;
 
   if(libspoton_init_b(sharedPath.toStdString().c_str(),
@@ -5654,6 +5673,25 @@ void spoton::slotDeactivateKernel(void)
   m_sb.forward_secrecy_request->setProperty("public_key_hash", QVariant());
   m_sb.forward_secrecy_request->setToolTip("");
   m_sb.forward_secrecy_request->setVisible(false);
+
+  QElapsedTimer time;
+
+  time.start();
+
+  do
+    {
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+
+      if(m_ui.pid->text().toLongLong() <= 0)
+	break;
+      else if(time.hasExpired(10000))
+	break;
+    }
+  while(true);
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotGeneralTimerTimeout(void)
@@ -5776,6 +5814,24 @@ void spoton::slotGeneralTimerTimeout(void)
 	      (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
 	}
     }
+
+  if(isKernelActive())
+#if SPOTON_GOLDBUG == 1
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/status-online.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
+#else
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/activate.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
+#endif
+  else
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/deactivate.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
 
   if(m_optionsUi.guiSecureMemoryPool->value() == 0)
     m_optionsUi.guiSecureMemoryPool->setStyleSheet
@@ -7825,29 +7881,13 @@ void spoton::slotKernelSocketState(void)
 	      "the kernel have been disabled.").
 	   arg(m_kernelSocket.peerPort()).
 	   arg(m_kernelSocket.localPort()));
-
-#if SPOTON_GOLDBUG == 1
-      m_sb.kernelstatus->setIcon
-	(QIcon(QString(":/%1/status-online.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())));
-#else
-      m_sb.kernelstatus->setIcon
-	(QIcon(QString(":/%1/activate.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())));
-#endif
     }
   else if(state == QAbstractSocket::UnconnectedState)
     {
       m_keysShared["buzz_channels_sent_to_kernel"] = "false";
       m_keysShared["keys_sent_to_kernel"] = "false";
-      m_sb.kernelstatus->setIcon
-	(QIcon(QString(":/%1/deactivate.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())));
       m_sb.kernelstatus->setToolTip
-	(tr("Not connected to the kernel. Is the kernel "
+	(tr("The interface is not connected to the kernel. Is the kernel "
 	    "active?"));
     }
 }
