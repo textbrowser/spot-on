@@ -50,6 +50,11 @@ class spoton_smp
   static void test4(void);
   QByteArray guessSha(void) const;
   QByteArray guessWhirlpool(void) const;
+  QList<QByteArray> coordinatesProof(const gcry_mpi_t g2,
+				     const gcry_mpi_t g3,
+				     const gcry_mpi_t r,
+				     const int version,
+				     bool *ok) const;
   QList<QByteArray> logProof(const gcry_mpi_t g,
 			     const gcry_mpi_t x,
 			     const int version,
