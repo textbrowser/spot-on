@@ -79,17 +79,22 @@ extern "C"
 
 spoton_sctp_socket::spoton_sctp_socket(QObject *parent):QObject(parent)
 {
-  m_bufferSize = 65535;
   m_connectToPeerPort = 0;
   m_hostLookupId = -1;
-  m_readBufferSize = spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
   m_socketDescriptor = -1;
   m_state = UnconnectedState;
+#ifdef SPOTON_SCTP_ENABLED
+  m_bufferSize = 65535;
+  m_readBufferSize = spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
   m_timer.setInterval(100);
   connect(&m_timer,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
+#else
+  m_bufferSize = 0;
+  m_readBufferSize = 0;
+#endif
 }
 
 spoton_sctp_socket::~spoton_sctp_socket()
@@ -449,7 +454,7 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
 #else
   Q_UNUSED(data);
   Q_UNUSED(size);
-  return 0;
+  return -1;
 #endif
 }
 
@@ -521,7 +526,7 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
 #else
   Q_UNUSED(data);
   Q_UNUSED(size);
-  return 0;
+  return -1;
 #endif
 }
 

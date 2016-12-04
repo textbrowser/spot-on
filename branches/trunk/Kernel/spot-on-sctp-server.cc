@@ -81,12 +81,13 @@ extern "C"
 spoton_sctp_server::spoton_sctp_server(const qint64 id,
 				       QObject *parent):QObject(parent)
 {
-  m_backlog = 30;
-  m_bufferSize = 65535;
   m_id = id;
   m_isListening = false;
   m_serverPort = 0;
   m_socketDescriptor = -1;
+#ifdef SPOTON_SCTP_ENABLED
+  m_backlog = 30;
+  m_bufferSize = 65535;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
   m_socketNotifier = 0;
 #else
@@ -95,6 +96,10 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
+#endif
+#else
+  m_backlog = 0;
+  m_bufferSize = 0;
 #endif
 }
 
