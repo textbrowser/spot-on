@@ -55,6 +55,11 @@ class spoton_smp
 				     const gcry_mpi_t r,
 				     const int version,
 				     bool *ok) const;
+  QList<QByteArray> equalLogs(const gcry_mpi_t qa,
+			      const gcry_mpi_t qb,
+			      const gcry_mpi_t x,
+			      const int version,
+			      bool *ok) const;
   QList<QByteArray> logProof(const gcry_mpi_t g,
 			     const gcry_mpi_t x,
 			     const int version,
@@ -74,7 +79,7 @@ class spoton_smp
 			      const gcry_mpi_t g3,
 			      const gcry_mpi_t p,
 			      const gcry_mpi_t q,
-			      const int version);
+			      const int version) const;
   bool verifyLogProof(const QList<QByteArray> &list,
 		      const gcry_mpi_t g,
 		      const gcry_mpi_t x,

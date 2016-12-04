@@ -233,6 +233,27 @@ QList<QByteArray> spoton_smp::coordinatesProof(const gcry_mpi_t g2,
   return list;
 }
 
+QList<QByteArray> spoton_smp::equalLogs(const gcry_mpi_t qa,
+					const gcry_mpi_t qb,
+					const gcry_mpi_t x,
+					const int version,
+					bool *ok) const
+{
+  /*
+  ** Adapted from otrl_sm_proof_equal_logs().
+  */
+
+  Q_UNUSED(version);
+
+  QList<QByteArray> list;
+
+  if(!qa || !qb || !x)
+    GOTO_DONE_LABEL;
+
+ done_label:
+  return list;
+}
+
 QList<QByteArray> spoton_smp::logProof(const gcry_mpi_t g,
 				       const gcry_mpi_t x,
 				       const int version,
@@ -1125,14 +1146,14 @@ bool spoton_smp::verifyCoordinatesProof(const QList<QByteArray> &list,
 					const gcry_mpi_t g3,
 					const gcry_mpi_t p,
 					const gcry_mpi_t q,
-					const int version)
+					const int version) const
 {
-  if(!g2 || !g3 || list.size() != 3 || !p || !q)
-    return false;
-
   /*
   ** Adapted from otrl_sm_check_equal_coords().
   */
+
+  if(!g2 || !g3 || list.size() != 3 || !p || !q)
+    return false;
 
   QByteArray bytes;
   bool ok = true;
