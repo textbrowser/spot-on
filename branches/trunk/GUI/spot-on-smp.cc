@@ -68,6 +68,8 @@ spoton_smp::spoton_smp(void)
   m_a3 = 0;
   m_b2 = 0;
   m_b3 = 0;
+  m_g2b = 0;
+  m_g3b = 0;
   m_guess = 0;
   m_guessWhirl = 0;
   m_guessWhirlLength = 0;
@@ -466,10 +468,8 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   QList<QByteArray> proofsb;
   QList<QByteArray> proofsc;
   bool terminalState = true;
-  gcry_mpi_t g2 = 0;
   gcry_mpi_t g2a = 0;
   gcry_mpi_t g2b = 0;
-  gcry_mpi_t g3 = 0;
   gcry_mpi_t g3a = 0;
   gcry_mpi_t g3b = 0;
   gcry_mpi_t qb1 = 0;
@@ -488,6 +488,18 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   if(other.size() != 6) // 2 + 4 (log proofs)
     GOTO_DONE_LABEL;
 
+  if(m_g2b)
+    {
+      gcry_mpi_release(m_g2b);
+      m_g2b = 0;
+    }
+
+  if(m_g3b)
+    {
+      gcry_mpi_release(m_g3b);
+      m_g3b = 0;
+    }
+
   if(m_pb)
     {
       gcry_mpi_release(m_pb);
@@ -500,16 +512,16 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
       m_qb = 0;
     }
 
+  m_g2b = gcry_mpi_new(BITS);
+  m_g3b = gcry_mpi_new(BITS);
   m_pb = gcry_mpi_new(BITS);
   m_qb = gcry_mpi_new(BITS);
-  g2 = gcry_mpi_new(BITS);
   g2b = gcry_mpi_new(BITS);
-  g3 = gcry_mpi_new(BITS);
   g3b = gcry_mpi_new(BITS);
   qb1 = gcry_mpi_new(BITS);
   qb2 = gcry_mpi_new(BITS);
 
-  if(!m_pb || !m_qb || !g2 || !g2b || !g3 || !g3b || !qb1 || !qb2)
+  if(!g2b || !g3b || !m_g2b || !m_g3b || !m_pb || !m_qb || !qb1 || !qb2)
     GOTO_DONE_LABEL;
 
   bytes = other.at(0).mid(0, static_cast<int> (BITS / 8));
@@ -534,7 +546,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Verify the proofs.
+  ** Verify the log proofs.
   */
 
   if(!verifyLogProof(other.mid(2, 2), m_generator, g2a, 1)) // ..., 2, 3, ...
@@ -574,7 +586,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Gather log proofs.
+  ** Gather the log proofs.
   */
 
   proofsa = logProof(m_generator, m_b2, 3, ok);
@@ -616,11 +628,11 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   buffer = 0;
 
   /*
-  ** Calculate g2 and g3.
+  ** Calculate m_g2b and m_g3b.
   */
 
-  gcry_mpi_powm(g2, g2a, m_b2, m_modulus);
-  gcry_mpi_powm(g3, g3a, m_b3, m_modulus);
+  gcry_mpi_powm(m_g2b, g2a, m_b2, m_modulus);
+  gcry_mpi_powm(m_g3b, g3a, m_b3, m_modulus);
 
   /*
   ** Generate r.
@@ -640,9 +652,9 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   if(!m_guess)
     GOTO_DONE_LABEL;
 
-  gcry_mpi_powm(m_pb, g3, r, m_modulus);
+  gcry_mpi_powm(m_pb, m_g3b, r, m_modulus);
   gcry_mpi_powm(qb1, m_generator, r, m_modulus);
-  gcry_mpi_powm(qb2, g2, m_guess, m_modulus);
+  gcry_mpi_powm(qb2, m_g2b, m_guess, m_modulus);
   gcry_mpi_mulm(m_qb, qb1, qb2, m_modulus);
 
   if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, m_pb) != 0)
@@ -662,7 +674,12 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
 
   gcry_free(buffer);
   buffer = 0;
-  proofsc = coordinatesProof(g2, g3, r, 5, ok);
+
+  /*
+  ** Gather the coordinates proof.
+  */
+
+  proofsc = coordinatesProof(m_g2b, m_g3b, r, 5, ok);
 
   if(proofsc.isEmpty())
     GOTO_DONE_LABEL;
@@ -679,10 +696,8 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
 
  done_label:
   gcry_free(buffer);
-  gcry_mpi_release(g2);
   gcry_mpi_release(g2a);
   gcry_mpi_release(g2b);
-  gcry_mpi_release(g3);
   gcry_mpi_release(g3a);
   gcry_mpi_release(g3b);
   gcry_mpi_release(qb1);
@@ -727,7 +742,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   ** Extract g2b, g3b, pb, qb, and the proofs.
   */
 
-  if(other.size() != 11) // 4 + 4 (log proofs) + 3 (coordinate proofs)
+  if(other.size() != 11) // 4 + 4 (log proofs) + 3 (coordinates proofs)
     GOTO_DONE_LABEL;
 
   bytes = other.at(0).mid(0, static_cast<int> (BITS / 8));
@@ -752,7 +767,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Verify the proofs.
+  ** Verify the log proofs.
   */
 
   if(!verifyLogProof(other.mid(4, 2), m_generator, g2b, 3)) // ..., 4, 5, ...
@@ -798,7 +813,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   gcry_mpi_powm(g3, g3b, m_a3, m_modulus);
 
   /*
-  ** Verify the proofs.
+  ** Verify the coordinates proofs.
   */
 
   if(!verifyCoordinatesProof(other.mid(8, 3), g2, g3, m_pb, qb, 5))
@@ -895,6 +910,12 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
 
   gcry_free(buffer);
   buffer = 0;
+  proofsa = coordinatesProof(g2, g3, s, 6, ok);
+
+  if(proofsa.isEmpty())
+    GOTO_DONE_LABEL;
+
+  list.append(proofsa);
   m_step = 3;
 
   if(ok)
@@ -916,6 +937,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   gcry_mpi_release(ra);
   gcry_mpi_release(ra1);
   gcry_mpi_release(s);
+  proofsa.clear();
 
   if(terminalState)
     m_step = TERMINAL_STATE;
@@ -950,10 +972,10 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Extract pa, qa, and ra.
+  ** Extract pa, qa, ra, and the proofs.
   */
 
-  if(other.size() != 3)
+  if(other.size() != 6) // 3 + 3 (coordinates proofs)
     GOTO_DONE_LABEL;
 
   bytes = other.at(0).mid(0, static_cast<int> (BITS / 8));
@@ -977,6 +999,13 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   */
 
   if(gcry_mpi_cmp(pa, m_pb) == 0 || gcry_mpi_cmp(qa, m_qb) == 0)
+    GOTO_DONE_LABEL;
+
+  /*
+  ** Verify the coordinates proofs.
+  */
+
+  if(!verifyCoordinatesProof(other.mid(3, 3), m_g2b, m_g3b, pa, qa, 6))
     GOTO_DONE_LABEL;
 
   if(gcry_mpi_scan(&ra, GCRYMPI_FMT_USG,
@@ -1379,6 +1408,8 @@ void spoton_smp::reset(void)
   gcry_mpi_release(m_a3);
   gcry_mpi_release(m_b2);
   gcry_mpi_release(m_b3);
+  gcry_mpi_release(m_g2b);
+  gcry_mpi_release(m_g3b);
   gcry_mpi_release(m_guess);
   gcry_mpi_release(m_pa);
   gcry_mpi_release(m_pb);
@@ -1387,6 +1418,8 @@ void spoton_smp::reset(void)
   m_a3 = 0;
   m_b2 = 0;
   m_b3 = 0;
+  m_g2b = 0;
+  m_g3b = 0;
   m_guess = 0;
   m_guessString.clear();
   m_guessWhirl = 0;
@@ -1759,13 +1792,9 @@ void spoton_smp::test3(void)
   list = b.nextStep(list, &ok, &passed);
 
   if(!ok)
-    {
-      qDebug() << "test3: SMP step 4 failure.";
-      return;
-    }
-
-  if(!passed)
-    qDebug() << "test3: Secrets are different from b's perspective. Good!";
+    qDebug() << "test3: SMP step 4 failure. Good!";
+  else
+    qDebug() << "test3: SMP step 4 should have failed. Awful!";
 }
 
 void spoton_smp::test4(void)
