@@ -55,8 +55,7 @@ class spoton_smp
 				     const gcry_mpi_t r,
 				     const int version,
 				     bool *ok) const;
-  QList<QByteArray> equalLogs(const gcry_mpi_t qa,
-			      const gcry_mpi_t qb,
+  QList<QByteArray> equalLogs(const gcry_mpi_t qab,
 			      const gcry_mpi_t x,
 			      const int version,
 			      bool *ok) const;
