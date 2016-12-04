@@ -33,7 +33,6 @@
 #undefine SPOTON_APPLICATION_NAME
 #endif
 #define SPOTON_APPLICATION_NAME "GoldBug"
-#define SPOTON_GOLDBUG_VERSION_STR "GB v. 3.2"
 #else
 #define SPOTON_APPLICATION_NAME "Spot-On"
 #endif
