@@ -140,7 +140,7 @@ QList<QByteArray> spoton_smp::coordinatesProof(const gcry_mpi_t g2,
   size_t size = 0;
   unsigned char *buffer = 0;
 
-  if(!g2 || !g3 || !r)
+  if(!g2 || !g3 || !m_modulus || !m_order || !r)
     GOTO_DONE_LABEL;
 
   d1 = gcry_mpi_new(BITS);
@@ -252,7 +252,7 @@ QList<QByteArray> spoton_smp::equalLogs(const gcry_mpi_t qab,
   size_t size = 0;
   unsigned char *buffer = 0;
 
-  if(!qab || !x)
+  if(!m_modulus || !m_order || !qab || !x)
     GOTO_DONE_LABEL;
 
   d = gcry_mpi_new(BITS);
@@ -346,7 +346,7 @@ QList<QByteArray> spoton_smp::logProof(const gcry_mpi_t g,
   size_t size = 0;
   unsigned char *buffer = 0;
 
-  if(!d || !g || !r || !s || !x)
+  if(!d || !g || !m_modulus || !m_order || !r || !s || !x)
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(s, g, r, m_modulus);
@@ -1234,7 +1234,7 @@ bool spoton_smp::verifyCoordinatesProof(const QList<QByteArray> &list,
   ** Adapted from otrl_sm_check_equal_coords().
   */
 
-  if(!g2 || !g3 || list.size() != 3 || !p || !q)
+  if(!g2 || !g3 || list.size() != 3 || !m_modulus || !p || !q)
     return false;
 
   QByteArray bytes;
@@ -1336,7 +1336,7 @@ bool spoton_smp::verifyLogProof(const QList<QByteArray> &list,
   ** Adapted from otrl_sm_check_know_log().
   */
 
-  if(!g || list.size() != 2 || !x)
+  if(!g || list.size() != 2 || !m_modulus || !x)
     return false;
 
   QByteArray bytes;
