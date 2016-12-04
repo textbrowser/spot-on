@@ -135,13 +135,12 @@ QList<QByteArray> spoton_smp::coordinatesProof(const gcry_mpi_t g2,
   gcry_mpi_t r2 = 0;
   gcry_mpi_t s1 = 0;
   gcry_mpi_t s2 = 0;
-  unsigned char *buffer = 0;
   size_t size = 0;
+  unsigned char *buffer = 0;
 
   if(!g2 || !g3 || !r)
     GOTO_DONE_LABEL;
 
-  c = gcry_mpi_new(BITS);
   d1 = gcry_mpi_new(BITS);
   d2 = gcry_mpi_new(BITS);
   r1 = generateRandomExponent(ok);
@@ -149,13 +148,13 @@ QList<QByteArray> spoton_smp::coordinatesProof(const gcry_mpi_t g2,
   s1 = gcry_mpi_new(BITS);
   s2 = gcry_mpi_new(BITS);
 
-  if(!c || !d1 || !d2 || !r1 || !r2 || !s1 || !s2)
+  if(!d1 || !d2 || !r1 || !r2 || !s1 || !s2)
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(s1, m_generator, r1, m_modulus);
   gcry_mpi_powm(s2, g2, r2, m_modulus);
   gcry_mpi_mulm(s2, s1, s2, m_modulus);
-  gcry_mpi_mulm(s1, g3, r1, m_modulus);
+  gcry_mpi_powm(s1, g3, r1, m_modulus);
   bytes.append(QByteArray::number(version));
 
   if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, s1) != 0)
@@ -173,6 +172,8 @@ QList<QByteArray> spoton_smp::coordinatesProof(const gcry_mpi_t g2,
     bytes.append(QByteArray(reinterpret_cast<char *> (buffer),
 			    static_cast<int> (size)));
 
+  gcry_free(buffer);
+  buffer = 0;
   bytes = spoton_crypt::sha512Hash(bytes, ok);
 
   if(bytes.isEmpty())
@@ -661,7 +662,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
 
   gcry_free(buffer);
   buffer = 0;
-  proofsc = coordinatesProof(g2b, g3b, r, 5, ok);
+  proofsc = coordinatesProof(g2, g3, r, 5, ok);
 
   if(proofsc.isEmpty())
     GOTO_DONE_LABEL;
@@ -702,6 +703,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
 {
   QByteArray bytes;
   QList<QByteArray> list;
+  QList<QByteArray> proofsa;
   bool terminalState = true;
   gcry_mpi_t g2 = 0;
   gcry_mpi_t g2b = 0;
@@ -761,6 +763,12 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
 
   bytes = other.at(2).mid(0, static_cast<int> (BITS / 8));
 
+  if(m_pb)
+    {
+      gcry_mpi_release(m_pb);
+      m_pb = 0;
+    }
+
   if(gcry_mpi_scan(&m_pb, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
@@ -788,6 +796,13 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
 
   gcry_mpi_powm(g2, g2b, m_a2, m_modulus);
   gcry_mpi_powm(g3, g3b, m_a3, m_modulus);
+
+  /*
+  ** Verify the proofs.
+  */
+
+  if(!verifyCoordinatesProof(other.mid(8, 3), g2, g3, m_pb, qb, 5))
+    GOTO_DONE_LABEL;
 
   /*
   ** Generate s.
@@ -1076,6 +1091,110 @@ bool spoton_smp::passed(void) const
   return m_passed;
 }
 
+bool spoton_smp::verifyCoordinatesProof(const QList<QByteArray> &list,
+					const gcry_mpi_t g2,
+					const gcry_mpi_t g3,
+					const gcry_mpi_t p,
+					const gcry_mpi_t q,
+					const int version)
+{
+  if(!g2 || !g3 || list.size() != 3 || !p || !q)
+    return false;
+
+  /*
+  ** Adapted from otrl_sm_check_equal_coords().
+  */
+
+  QByteArray bytes;
+  bool ok = true;
+  bool verified = false;
+  gcry_mpi_t c = 0;
+  gcry_mpi_t cp = 0;
+  gcry_mpi_t d1 = 0;
+  gcry_mpi_t d2 = 0;
+  gcry_mpi_t s1 = 0;
+  gcry_mpi_t s2 = 0;
+  gcry_mpi_t s3 = 0;
+  size_t size = 0;
+  unsigned char *buffer = 0;
+
+  if(gcry_mpi_scan(&c, GCRYMPI_FMT_USG,
+		   reinterpret_cast<const unsigned char *> (list.value(0).
+							    constData()),
+		   static_cast<size_t> (list.value(0).length()), 0) != 0)
+    goto done_label;
+
+  if(gcry_mpi_scan(&d1, GCRYMPI_FMT_USG,
+		   reinterpret_cast<const unsigned char *> (list.value(1).
+							    constData()),
+		   static_cast<size_t> (list.value(1).length()), 0) != 0)
+    goto done_label;
+
+  if(gcry_mpi_scan(&d2, GCRYMPI_FMT_USG,
+		   reinterpret_cast<const unsigned char *> (list.value(2).
+							    constData()),
+		   static_cast<size_t> (list.value(2).length()), 0) != 0)
+    goto done_label;
+
+  s1 = gcry_mpi_new(BITS);
+  s2 = gcry_mpi_new(BITS);
+  s3 = gcry_mpi_new(BITS);
+
+  if(!s1 || !s2 || !s3)
+    goto done_label;
+
+  gcry_mpi_powm(s2, g3, d1, m_modulus);
+  gcry_mpi_powm(s3, p, c, m_modulus);
+  gcry_mpi_mulm(s1, s2, s3, m_modulus);
+  gcry_mpi_powm(s2, m_generator, d1, m_modulus);
+  gcry_mpi_powm(s3, g2, d2, m_modulus);
+  gcry_mpi_mulm(s2, s2, s3, m_modulus);
+  gcry_mpi_powm(s3, q, c, m_modulus);
+  gcry_mpi_mulm(s2, s3, s2, m_modulus);
+  bytes.append(QByteArray::number(version));
+
+  if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, s1) != 0)
+    goto done_label;
+  else
+    bytes.append(QByteArray(reinterpret_cast<char *> (buffer),
+			    static_cast<int> (size)));
+
+  gcry_free(buffer);
+  buffer = 0;
+
+  if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, s2) != 0)
+    goto done_label;
+  else
+    bytes.append(QByteArray(reinterpret_cast<char *> (buffer),
+			    static_cast<int> (size)));
+
+  gcry_free(buffer);
+  buffer = 0;
+  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+
+  if(!ok)
+    goto done_label;
+
+  if(gcry_mpi_scan(&cp, GCRYMPI_FMT_USG,
+		   reinterpret_cast<const unsigned char *> (bytes.constData()),
+		   static_cast<size_t> (bytes.length()), 0) != 0)
+    goto done_label;
+
+  if(gcry_mpi_cmp(c, cp) == 0)
+    verified = true;
+
+ done_label:
+  gcry_free(buffer);
+  gcry_mpi_release(c);
+  gcry_mpi_release(cp);
+  gcry_mpi_release(d1);
+  gcry_mpi_release(d2);
+  gcry_mpi_release(s1);
+  gcry_mpi_release(s2);
+  gcry_mpi_release(s3);
+  return verified;
+}
+
 bool spoton_smp::verifyLogProof(const QList<QByteArray> &list,
 				const gcry_mpi_t g,
 				const gcry_mpi_t x,
@@ -1097,8 +1216,8 @@ bool spoton_smp::verifyLogProof(const QList<QByteArray> &list,
   gcry_mpi_t gdxc = 0;
   gcry_mpi_t hgdxc = 0;
   gcry_mpi_t xc = 0;
-  unsigned char *buffer = 0;
   size_t size = 0;
+  unsigned char *buffer = 0;
 
   if(gcry_mpi_scan(&c, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (list.value(0).

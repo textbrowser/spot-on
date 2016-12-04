@@ -69,6 +69,12 @@ class spoton_smp
   }
 
   bool passed(void) const;
+  bool verifyCoordinatesProof(const QList<QByteArray> &list,
+			      const gcry_mpi_t g2,
+			      const gcry_mpi_t g3,
+			      const gcry_mpi_t p,
+			      const gcry_mpi_t q,
+			      const int version);
   bool verifyLogProof(const QList<QByteArray> &list,
 		      const gcry_mpi_t g,
 		      const gcry_mpi_t x,
