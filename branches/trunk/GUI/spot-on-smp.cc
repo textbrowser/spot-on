@@ -1161,9 +1161,6 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
 
   gcry_mpi_mulm(rb1, qa, qbinv, m_modulus);
 
-  if(!m_g3a)
-    GOTO_DONE_LABEL;
-
   /*
   ** Verify some equal-logs proofs.
   */
