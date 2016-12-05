@@ -120,6 +120,7 @@ class spoton_smp
   gcry_mpi_t m_order;
   gcry_mpi_t m_pa;
   gcry_mpi_t m_pb;
+  gcry_mpi_t m_qab;
   gcry_mpi_t m_qb;
   gcry_mpi_t generateRandomExponent(bool *ok) const;
   int m_step;

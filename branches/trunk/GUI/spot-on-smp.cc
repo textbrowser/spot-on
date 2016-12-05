@@ -77,6 +77,7 @@ spoton_smp::spoton_smp(void)
   m_pa = 0;
   m_passed = false;
   m_pb = 0;
+  m_qab = 0;
   m_qb = 0;
   m_step = 0;
 }
@@ -881,6 +882,13 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   if(!verifyLogProof(other.mid(6, 2), m_generator, g3b, 4)) // ..., 6, 7
     GOTO_DONE_LABEL;
 
+  if(m_g3b)
+    {
+      gcry_mpi_release(m_g3b);
+      m_g3b = 0;
+    }
+
+  m_g3b = gcry_mpi_copy(g3b);
   bytes = other.at(2).mid(0, static_cast<int> (BITS / 8));
 
   if(m_pb)
@@ -1005,6 +1013,14 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   gcry_mpi_mulm(ra1, qa, qbinv, m_modulus);
+
+  if(m_qab)
+    {
+      gcry_mpi_release(m_qab);
+      m_qab = 0;
+    }
+
+  m_qab = gcry_mpi_copy(ra1);
   gcry_mpi_powm(ra, ra1, m_a3, m_modulus);
 
   if(gcry_mpi_aprint(GCRYMPI_FMT_USG, &buffer, &size, ra) != 0)
@@ -1645,6 +1661,7 @@ void spoton_smp::reset(void)
   gcry_mpi_release(m_guess);
   gcry_mpi_release(m_pa);
   gcry_mpi_release(m_pb);
+  gcry_mpi_release(m_qab);
   gcry_mpi_release(m_qb);
   m_a2 = 0;
   m_a3 = 0;
@@ -1660,6 +1677,7 @@ void spoton_smp::reset(void)
   m_pa = 0;
   m_passed = false;
   m_pb = 0;
+  m_qab = 0;
   m_qb = 0;
   m_step = 0;
 }
@@ -1757,6 +1775,18 @@ void spoton_smp::step5(const QList<QByteArray> &other,
   if(gcry_mpi_scan(&rb, GCRYMPI_FMT_USG,
 		   reinterpret_cast<const unsigned char *> (bytes.constData()),
 		   static_cast<size_t> (bytes.length()), 0) != 0)
+    {
+      if(ok)
+	*ok = false;
+
+      goto done_label;
+    }
+
+  /*
+  ** Verify some equal-logs proofs.
+  */
+
+  if(!verifyEqualLogs(other.mid(1, 2), m_g3b, m_qab, rb, 8))
     {
       if(ok)
 	*ok = false;
