@@ -487,7 +487,7 @@ QList<QByteArray> spoton_smp::step1(bool *ok)
     GOTO_DONE_LABEL;
 
   /*
-  ** Gather log proofs.
+  ** Gather some log proofs.
   */
 
   proofsa = logProof(m_generator, m_a2, 1, ok);
@@ -501,7 +501,7 @@ QList<QByteArray> spoton_smp::step1(bool *ok)
     GOTO_DONE_LABEL;
 
   /*
-  ** Calculate g2a and g3a and store the results in the list.
+  ** Calculate g2a and g3a and store the results in a list.
   */
 
   g2a = gcry_mpi_new(BITS);
@@ -578,7 +578,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Extract g2a, g3a, and the proofs.
+  ** Extract g2a, g3a, and some log proofs.
   */
 
   if(other.size() != 6) // 2 + 4 (log proofs)
@@ -642,7 +642,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Verify the log proofs.
+  ** Verify some log proofs.
   */
 
   if(!verifyLogProof(other.mid(2, 2), m_generator, g2a, 1)) // ..., 2, 3, ...
@@ -690,7 +690,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Gather the log proofs.
+  ** Gather some log proofs.
   */
 
   proofsa = logProof(m_generator, m_b2, 3, ok);
@@ -704,7 +704,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Calculate g2b and g3b and store the results in the list.
+  ** Calculate g2b and g3b and store the results in a list.
   */
 
   if(!m_generator || !m_modulus)
@@ -750,7 +750,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Calculate pb and qb and store the results in the list.
+  ** Calculate pb and qb and store the results in a list.
   */
 
   if(!m_guess)
@@ -780,7 +780,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   buffer = 0;
 
   /*
-  ** Gather the coordinates proof.
+  ** Gather some coordinates proof.
   */
 
   proofsc = coordinatesProof(m_g2b, m_g3b, r, 5, ok);
@@ -872,7 +872,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Verify the log proofs.
+  ** Verify some log proofs.
   */
 
   if(!verifyLogProof(other.mid(4, 2), m_generator, g2b, 3)) // ..., 4, 5, ...
@@ -918,7 +918,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   gcry_mpi_powm(g3, g3b, m_a3, m_modulus);
 
   /*
-  ** Verify the coordinates proofs.
+  ** Verify some coordinates proofs.
   */
 
   if(!verifyCoordinatesProof(other.mid(8, 3), g2, g3, m_pb, qb, 5))
@@ -936,7 +936,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Calculate pa and qa and store the results in the list.
+  ** Calculate pa and qa and store the results in a list.
   */
 
   if(m_pa)
@@ -987,7 +987,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
   buffer = 0;
 
   /*
-  ** Calculate ra and store the results in the list.
+  ** Calculate ra and store the results in a list.
   */
 
   qbinv = gcry_mpi_new(BITS);
@@ -1094,7 +1094,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Extract pa, qa, ra, and the proofs.
+  ** Extract pa, qa, ra, and some proofs.
   */
 
   if(other.size() != 8) // 3 + 3 (coordinates proofs) + 2 (equal-logs proofs)
@@ -1124,7 +1124,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Verify the coordinates proofs.
+  ** Verify some coordinates proofs.
   */
 
   if(!verifyCoordinatesProof(other.mid(3, 3), m_g2b, m_g3b, pa, qa, 6))
@@ -1136,7 +1136,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Calculate rb and store the results in the list.
+  ** Calculate rb and store the results in a list.
   */
 
   qbinv = gcry_mpi_new(BITS);
@@ -1165,7 +1165,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
     GOTO_DONE_LABEL;
 
   /*
-  ** Verify equal-logs proofs.
+  ** Verify some equal-logs proofs.
   */
 
   if(!verifyEqualLogs(other.mid(6, 2), m_g3a, rb1, ra, 7))
