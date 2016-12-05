@@ -1072,6 +1072,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
 {
   QByteArray bytes;
   QList<QByteArray> list;
+  QList<QByteArray> proofsa;
   bool terminalState = true;
   gcry_mpi_t pa = 0;
   gcry_mpi_t papb = 0;
@@ -1156,9 +1157,6 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   if(!rb || !rb1)
     GOTO_DONE_LABEL;
 
-  if(!m_b3)
-    GOTO_DONE_LABEL;
-
   gcry_mpi_mulm(rb1, qa, qbinv, m_modulus);
 
   /*
@@ -1166,6 +1164,9 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   */
 
   if(!verifyEqualLogs(other.mid(6, 2), m_g3a, rb1, ra, 7))
+    GOTO_DONE_LABEL;
+
+  if(!m_b3)
     GOTO_DONE_LABEL;
 
   gcry_mpi_powm(rb, rb1, m_b3, m_modulus);
@@ -1178,6 +1179,15 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
 
   gcry_free(buffer);
   buffer = 0;
+
+  /*
+  ** Gather some equal-logs proofs.
+  */
+
+  proofsa = equalLogs(rb1, m_b3, 8, ok);
+
+  if(proofsa.isEmpty())
+    GOTO_DONE_LABEL;
 
   /*
   ** Calculate rab.
@@ -1220,6 +1230,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
 	*passed = true;
     }
 
+  list.append(proofsa);
   m_step = 4;
 
   if(ok)
@@ -1238,6 +1249,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   gcry_mpi_release(rab);
   gcry_mpi_release(rb);
   gcry_mpi_release(rb1);
+  proofsa.clear();
 
   if(terminalState)
     m_step = TERMINAL_STATE;
@@ -1729,10 +1741,10 @@ void spoton_smp::step5(const QList<QByteArray> &other,
     }
 
   /*
-  ** Extract rb.
+  ** Extract rb and some equal-logs proofs.
   */
 
-  if(other.size() != 1)
+  if(other.size() != 3) // 1 + 2 (equal-logs proofs)
     {
       if(ok)
 	*ok = false;
