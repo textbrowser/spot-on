@@ -141,7 +141,7 @@ QList<QByteArray> spoton_smp::coordinatesProof(const gcry_mpi_t g2,
   size_t size = 0;
   unsigned char *buffer = 0;
 
-  if(!g2 || !g3 || !m_modulus || !m_order || !r)
+  if(!g2 || !g3 || !m_generator || !m_modulus || !m_order || !r)
     GOTO_DONE_LABEL;
 
   d1 = gcry_mpi_new(BITS);
@@ -253,7 +253,7 @@ QList<QByteArray> spoton_smp::equalLogs(const gcry_mpi_t qab,
   size_t size = 0;
   unsigned char *buffer = 0;
 
-  if(!m_modulus || !m_order || !qab || !x)
+  if(!m_generator || !m_modulus || !m_order || !qab || !x)
     GOTO_DONE_LABEL;
 
   d = gcry_mpi_new(BITS);
