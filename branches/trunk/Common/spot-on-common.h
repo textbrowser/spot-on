@@ -31,7 +31,7 @@
 #include <QHash>
 #include <QStringList>
 
-#define SPOTON_VERSION_STR "2016.12.03"
+#define SPOTON_VERSION_STR "2016.12.10"
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
 typedef QList<QByteArray> QByteArrayList;
