@@ -485,8 +485,9 @@ void spoton_gui_server::slotReadyRead(void)
 
 		      if(crypt)
 			{
-			  if(crypt->isAuthenticated())
-			    count += 1;
+			  if(crypt->isAuthenticated() &&
+			     spoton_misc::isAuthenticatedHint(crypt))
+			    count += 2;
 			  else
 			    spoton_misc::logError
 			      (QString("spoton_gui_server::"
@@ -528,8 +529,9 @@ void spoton_gui_server::slotReadyRead(void)
 
 		      if(crypt)
 			{
-			  if(crypt->isAuthenticated())
-			    count += 1;
+			  if(crypt->isAuthenticated() &&
+			     spoton_misc::isAuthenticatedHint(crypt))
+			    count += 2;
 			  else
 			    spoton_misc::logError
 			      (QString("spoton_gui_server::"
@@ -543,7 +545,8 @@ void spoton_gui_server::slotReadyRead(void)
 		    }
 
 		  m_guiIsAuthenticated[socket->socketDescriptor()] =
-		    count == names.size() && names.size() > 0 ? true : false;
+		    count == 2 * names.size() && names.size() > 0 ?
+		    true : false;
 
 		  if(!m_guiIsAuthenticated.value(socket->socketDescriptor(),
 						 false))

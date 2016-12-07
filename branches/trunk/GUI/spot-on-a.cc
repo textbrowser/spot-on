@@ -6716,6 +6716,8 @@ void spoton::slotSetPassphrase(void)
 								value()),
 				list.at(i)));
 
+	  spoton_misc::prepareAuthenticationHint(m_crypts.value("chat", 0));
+
 	  if(!reencode)
 	    {
 	      bool proceed = false;
@@ -7053,6 +7055,7 @@ void spoton::slotValidatePassphrase(void)
 	    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	    spoton_misc::alterDatabasesAfterAuthentication
 	      (m_crypts.value("chat", 0));
+	    spoton_misc::prepareAuthenticationHint(m_crypts.value("chat", 0));
 	    spoton_crypt::removeFlawedEntries(m_crypts.value("chat", 0));
 	    QApplication::restoreOverrideCursor();
 

@@ -144,6 +144,7 @@ class spoton_misc
   static bool isAcceptedParticipant(const QByteArray &publicKeyHash,
 				    const QString &keyType,
 				    spoton_crypt *crypt);
+  static bool isAuthenticatedHint(spoton_crypt *crypt);
   static bool isIpBlocked(const QHostAddress &address,
 			  spoton_crypt *crypt);
   static bool isIpBlocked(const QString &address,
@@ -201,6 +202,7 @@ class spoton_misc
   static void logError(const QString &error);
   static void populateUrlsDatabase(const QList<QList<QVariant> > &list,
 				   spoton_crypt *crypt);
+  static void prepareAuthenticationHint(spoton_crypt *crypt);
   static void prepareDatabases(void);
   static void prepareSignalHandler(void (*signal_handler) (int));
   static void purgeSignatureRelationships(const QSqlDatabase &db,

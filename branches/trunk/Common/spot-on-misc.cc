@@ -5766,3 +5766,40 @@ spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
 
   return crypt;
 }
+
+void spoton_misc::prepareAuthenticationHint(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+
+  QSettings settings;
+
+  if(settings.contains("gui/authenticationHint"))
+    return;
+
+  QByteArray bytes(spoton_crypt::weakRandomBytes(256));
+  bool ok = true;
+
+  bytes = crypt->encryptedThenHashed(bytes, &ok);
+
+  if(!ok)
+    return;
+
+  settings.setValue("gui/authenticationHint", bytes.toBase64());
+}
+
+bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return false;
+
+  QByteArray bytes;
+  QSettings settings;
+  bool ok = true;
+
+  bytes = crypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.
+			    value("gui/authenticationHint").toByteArray()),
+     &ok);
+  return ok;
+}
