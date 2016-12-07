@@ -2727,6 +2727,17 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   bool ok = true;
 
   bytes = oldCrypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.value("gui/authenticationHint", "").
+			    toByteArray()), &ok);
+
+  if(ok)
+    settings.setValue("gui/authenticationHint",
+		      newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+  if(!ok)
+    settings.remove("gui/authenticationHint");
+
+  bytes = oldCrypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/poptasticName", "").
 			    toByteArray()), &ok);
 
