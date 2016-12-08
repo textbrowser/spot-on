@@ -18,10 +18,10 @@ C - D - d
 
 Let t_B_1 and t_B_2 be two tokens that B is aware of.
 
-Suppose none of the private nodes know the tokens. If so, all echo
+Suppose none of the private nodes know the tokens. If so, all Echo
 communications will behave as they would do without Adaptive Echo.
 
-Now suppose that node a and node d know t_B_1. As B begins to receive echo
+Now suppose that node a and node d know t_B_1. As B begins to receive Echo
 data from A and C, it will become aware that A and C are aware of t_B_1.
 Once it establishes this knowledge, it will direct traffic having special
 signatures from A to C and from C to A. Until node b provides a special
