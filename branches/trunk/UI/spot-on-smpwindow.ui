@@ -66,12 +66,12 @@
               </column>
               <column>
                <property name="text">
-                <string>Public Key Algorithm</string>
+                <string>Public Key Type</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Public Key Type</string>
+                <string>Public Key Algorithm</string>
                </property>
               </column>
               <column>
@@ -207,7 +207,7 @@
                </column>
                <column>
                 <property name="text">
-                 <string>Public Key Algorithm</string>
+                 <string>Public Key Type</string>
                 </property>
                </column>
                <column>

@@ -103,12 +103,12 @@ color: rgb(255, 255, 255);
               </column>
               <column>
                <property name="text">
-                <string>Public Key Algorithm</string>
+                <string>Public Key Type</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Public Key Type</string>
+                <string>Public Key Algorithm</string>
                </property>
               </column>
               <column>
@@ -244,7 +244,7 @@ color: rgb(255, 255, 255);
                </column>
                <column>
                 <property name="text">
-                 <string>Public Key Algorithm</string>
+                 <string>Public Key Type</string>
                 </property>
                </column>
                <column>
