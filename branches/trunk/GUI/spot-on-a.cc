@@ -265,7 +265,8 @@ int main(int argc, char *argv[])
   QWebEngineProfile::defaultProfile()->setPersistentCookiesPolicy
     (QWebEngineProfile::NoPersistentCookies);
   QWebEngineProfile::defaultProfile()->setPersistentStoragePath
-    (spoton_misc::homePath() + QDir::separator() + "WebEngineStorage");
+    (spoton_misc::homePath() +
+     QDir::separator() + "WebEnginePersistentStorage");
 #if QT_VERSION >= 0x050600
   QWebEngineProfile::defaultProfile()->setRequestInterceptor
     (new spoton_webengine_url_request_interceptor(0));
