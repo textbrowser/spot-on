@@ -44,7 +44,7 @@ struct curl_upload_status
 static size_t curl_payload_source
 (void *ptr, size_t size, size_t nmemb, void *userp)
 {
-  if(nmemb <= 0 || !ptr || size <= 0 || (nmemb * size) < 1 || !userp)
+  if(nmemb == 0 || !ptr || size == 0 || (nmemb * size) < 1 || !userp)
     return 0;
 
   struct curl_upload_status *upload_ctx =
@@ -74,7 +74,7 @@ static size_t curl_payload_source
 static size_t curl_write_memory_callback
 (void *contents, size_t size, size_t nmemb)
 {
-  if(!contents || nmemb <= 0 || size <= 0)
+  if(!contents || nmemb == 0 || size == 0)
     return 0;
 
   curl_receive_data.append((char *) contents, nmemb *size);
@@ -2114,7 +2114,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   QByteArray symmetricKey;
   size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
 
-  if(symmetricKeyLength <= 0)
+  if(symmetricKeyLength == 0)
     return;
 
   QByteArray hashKey;
@@ -2305,7 +2305,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   QByteArray symmetricKey;
   size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
 
-  if(symmetricKeyLength <= 0)
+  if(symmetricKeyLength == 0)
     return;
 
   QByteArray hashKey;
