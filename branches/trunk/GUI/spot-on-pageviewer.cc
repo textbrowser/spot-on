@@ -288,6 +288,11 @@ void spoton_pageviewer::slotLoadFinished(bool ok)
 {
   Q_UNUSED(ok);
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+  /*
+  ** WebEngine may attempt to load an external page regardless
+  ** of all of the restrictions.
+  */
+
   m_webView->back();
 #endif
 }
