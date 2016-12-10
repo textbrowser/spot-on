@@ -40,7 +40,7 @@
 #include "spot-on-pageviewer.h"
 #include "spot-on-textbrowser.h"
 
-spoton_pageviewer::spoton_pageviewer(const QSqlDatabase &db,
+spoton_pageviewer::spoton_pageviewer(QSqlDatabase *db,
 				     const QString &urlHash,
 				     QWidget *parent):QMainWindow(parent)
 {
@@ -205,11 +205,11 @@ void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
 	     SLOT(slotRevisionChanged(int)));
   m_ui.revision->clear();
 
-  if(m_database.isOpen())
+  if(m_database && m_database->isOpen())
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-      QSqlQuery query(m_database);
+      QSqlQuery query(*m_database);
 
       query.setForwardOnly(true);
       query.prepare
@@ -330,14 +330,13 @@ void spoton_pageviewer::slotRevisionChanged(int index)
   spoton_crypt *crypt = spoton::instance() ?
     spoton::instance()->urlCommonCrypt() : 0;
 
-  if(!crypt || !m_database.isOpen())
+  if(!crypt || !m_database || !m_database->isOpen())
     {
       disconnect(m_ui.revision,
 		 SIGNAL(activated(int)),
 		 this,
 		 SLOT(slotRevisionChanged(int)));
       m_ui.revision->setCurrentIndex(0);
-      m_ui.revision->setEnabled(false);
       return;
     }
   else if(index == 1) // A separator.
@@ -345,7 +344,7 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QSqlQuery query(m_database);
+  QSqlQuery query(*m_database);
   QString dateTime(m_ui.revision->itemText(index));
 
   query.setForwardOnly(true);

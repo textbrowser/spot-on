@@ -3058,8 +3058,7 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString connectionName("");
-  spoton_pageviewer *pageViewer = new spoton_pageviewer
-    (QSqlDatabase(), QString(), 0);
+  spoton_pageviewer *pageViewer = new spoton_pageviewer(0, QString(), 0);
 
   pageViewer->setPage(QByteArray(), QUrl("http://127.0.0.1"), 0);
 

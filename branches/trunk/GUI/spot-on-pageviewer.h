@@ -76,7 +76,7 @@ class spoton_pageviewer: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton_pageviewer(const QSqlDatabase &db,
+  spoton_pageviewer(QSqlDatabase *db,
 		    const QString &urlHash,
 		    QWidget *parent);
   ~spoton_pageviewer();
@@ -87,7 +87,7 @@ class spoton_pageviewer: public QMainWindow
  private:
   QByteArray m_content;
   QPalette m_originalFindPalette;
-  QSqlDatabase m_database;
+  QSqlDatabase *m_database;
   QString m_hoveredLink;
   QString m_urlHash;
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
