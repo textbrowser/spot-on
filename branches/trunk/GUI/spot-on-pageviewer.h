@@ -106,6 +106,7 @@ class spoton_pageviewer: public QMainWindow
   void slotFind(void);
   void slotFindInitialize(void);
   void slotLinkHovered(const QString &url);
+  void slotLoadFinished(bool ok);
   void slotPagePrintPreview(void);
   void slotPrint(QPrinter *printer);
   void slotRevisionChanged(int index);

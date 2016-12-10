@@ -52,6 +52,10 @@ spoton_pageviewer::spoton_pageviewer(QSqlDatabase *db,
   m_webView->page()->deleteLater();
   m_webView->setContextMenuPolicy(Qt::CustomContextMenu);
   m_webView->setPage(new spoton_webengine_page(this));
+  connect(m_webView,
+	  SIGNAL(loadFinished(bool)),
+	  this,
+	  SLOT(slotLoadFinished(bool)));
   connect(m_webView->page(),
 	  SIGNAL(linkHovered(const QString &)),
 	  this,
@@ -108,6 +112,90 @@ spoton_pageviewer::~spoton_pageviewer()
 #elif defined(SPOTON_WEBKIT_ENABLED)
   QWebSettings::clearMemoryCaches();
 #endif
+}
+
+void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
+				const int compressedSize)
+{
+  disconnect(m_ui.revision,
+	     SIGNAL(activated(int)),
+	     this,
+	     SLOT(slotRevisionChanged(int)));
+  m_ui.revision->clear();
+
+  if(m_database && m_database->isOpen())
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QSqlQuery query(*m_database);
+
+      query.setForwardOnly(true);
+      query.prepare
+	(QString("SELECT content_hash, date_time_inserted "
+		 "FROM spot_on_urls_revisions_%1 WHERE url_hash = ? "
+		 "ORDER BY 2 DESC").
+	 arg(m_urlHash.mid(0, 2)));
+      query.bindValue(0, m_urlHash);
+
+      if(query.exec())
+	while(query.next())
+	  m_ui.revision->addItem(query.value(1).toString(),
+				 query.value(0).toByteArray());
+
+      QApplication::restoreOverrideCursor();
+    }
+
+  if(m_ui.revision->count() > 0)
+    {
+      m_ui.revision->insertItem(0, tr("Current"));
+      m_ui.revision->insertSeparator(1);
+      m_ui.revision->setCurrentIndex(0);
+      connect(m_ui.revision,
+	      SIGNAL(activated(int)),
+	      this,
+	      SLOT(slotRevisionChanged(int)));
+      m_ui.revision->setEnabled(true);
+    }
+  else
+    {
+      m_ui.revision->addItem(tr("Current"));
+      m_ui.revision->setEnabled(false);
+    }
+
+  /*
+  ** Fuzzy Wuzzy was a bear,
+  ** Fuzzy Wuzzy had no hair,
+  ** Fuzzy Wuzzy wasn't fuzzy,
+  ** was he?
+  */
+
+  QLocale locale;
+
+  m_ui.size->setText
+    (tr("%1 KiB, Compressed %2 KiB").
+     arg(locale.toString(data.length() / 1024)).
+     arg(locale.toString(compressedSize / 1024)));
+
+  if(data.trimmed().isEmpty())
+    {
+      m_content = "Malformed content. Enjoy!";
+      m_webView->setContent(m_content);
+    }
+  else
+    {
+      m_content = data;
+
+      /*
+      ** setContent() will not display
+      ** some characters. setHtml() may
+      ** produce network activity.
+      */
+
+      m_webView->setHtml(m_content);
+    }
+
+  m_webView->setFocus();
+  m_ui.url->setText(url.toString());
 }
 
 void spoton_pageviewer::slotCopyLinkLocation(void)
@@ -196,88 +284,12 @@ void spoton_pageviewer::slotLinkHovered(const QString &url)
   m_hoveredLink = url;
 }
 
-void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
-				const int compressedSize)
+void spoton_pageviewer::slotLoadFinished(bool ok)
 {
-  disconnect(m_ui.revision,
-	     SIGNAL(activated(int)),
-	     this,
-	     SLOT(slotRevisionChanged(int)));
-  m_ui.revision->clear();
-
-  if(m_database && m_database->isOpen())
-    {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-      QSqlQuery query(*m_database);
-
-      query.setForwardOnly(true);
-      query.prepare
-	(QString("SELECT content_hash, date_time_inserted "
-		 "FROM spot_on_urls_revisions_%1 WHERE url_hash = ? "
-		 "ORDER BY 2 DESC").
-	 arg(m_urlHash.mid(0, 2)));
-      query.bindValue(0, m_urlHash);
-
-      if(query.exec())
-	while(query.next())
-	  m_ui.revision->addItem(query.value(1).toString(),
-				 query.value(0).toByteArray());
-
-      QApplication::restoreOverrideCursor();
-    }
-
-  if(m_ui.revision->count() > 0)
-    {
-      m_ui.revision->insertItem(0, tr("Current"));
-      m_ui.revision->insertSeparator(1);
-      m_ui.revision->setCurrentIndex(0);
-      connect(m_ui.revision,
-	      SIGNAL(activated(int)),
-	      this,
-	      SLOT(slotRevisionChanged(int)));
-      m_ui.revision->setEnabled(true);
-    }
-  else
-    {
-      m_ui.revision->addItem(tr("Current"));
-      m_ui.revision->setEnabled(false);
-    }
-
-  /*
-  ** Fuzzy Wuzzy was a bear,
-  ** Fuzzy Wuzzy had no hair,
-  ** Fuzzy Wuzzy wasn't fuzzy,
-  ** was he?
-  */
-
-  QLocale locale;
-
-  m_ui.size->setText
-    (tr("%1 KiB, Compressed %2 KiB").
-     arg(locale.toString(data.length() / 1024)).
-     arg(locale.toString(compressedSize / 1024)));
-
-  if(data.trimmed().isEmpty())
-    {
-      m_content = "Malformed content. Enjoy!";
-      m_webView->setContent(m_content);
-    }
-  else
-    {
-      m_content = data;
-
-      /*
-      ** setContent() will not display
-      ** some characters. setHtml() may
-      ** produce network activity.
-      */
-
-      m_webView->setHtml(m_content);
-    }
-
-  m_webView->setFocus();
-  m_ui.url->setText(url.toString());
+  Q_UNUSED(ok);
+#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+  m_webView->back();
+#endif
 }
 
 void spoton_pageviewer::slotPagePrintPreview(void)
