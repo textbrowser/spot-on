@@ -4792,7 +4792,13 @@ void spoton::slotPopulateNeighbors(void)
 	if(query.exec("SELECT COUNT(*) "
 		      "FROM neighbors WHERE status_control <> 'deleted'"))
 	  if(query.next())
-	    m_ui.neighbors->setRowCount(query.value(0).toInt());
+	    m_ui.neighbors->setRowCount
+	      (m_ui.neighbors_maximum_items_displayed->currentIndex() ==
+	       m_ui.neighbors_maximum_items_displayed->count() - 1 ?
+	       query.value(0).toInt() :
+	       qMin(m_ui.
+		    neighbors_maximum_items_displayed->currentText().toInt(),
+		    query.value(0).toInt()));
 
 	if(query.exec("SELECT sticky, "
 		      "uuid, "

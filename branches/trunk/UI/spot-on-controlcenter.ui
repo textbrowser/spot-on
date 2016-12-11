@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>556</height>
+                <width>366</width>
+                <height>442</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -3462,8 +3462,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>617</width>
-             <height>179</height>
+             <width>826</width>
+             <height>566</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3529,6 +3529,43 @@
                     <property name="text">
                      <string>Share Buzz Magnet</string>
                     </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_29">
+                    <property name="text">
+                     <string>Items &amp;Displayed</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>neighbors_maximum_items_displayed</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="neighbors_maximum_items_displayed">
+                    <property name="toolTip">
+                     <string>Maximum number of list entries which will be displayed. Setting will not be retained.</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>25</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>50</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>100</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>All</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                   <item>
@@ -3842,7 +3879,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>681</width>
+                  <width>788</width>
                   <height>381</height>
                  </rect>
                 </property>
@@ -9270,6 +9307,7 @@
   <tabstop>neighborsActionMenu</tabstop>
   <tabstop>toolButtonCopyToClipboard</tabstop>
   <tabstop>shareBuzzMagnet</tabstop>
+  <tabstop>neighbors_maximum_items_displayed</tabstop>
   <tabstop>neighborsTemporarilyPause</tabstop>
   <tabstop>neighbors</tabstop>
   <tabstop>neighborSummary</tabstop>
