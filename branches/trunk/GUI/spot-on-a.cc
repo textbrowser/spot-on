@@ -615,6 +615,7 @@ spoton::spoton(void):QMainWindow()
 	     "German - Ulrike M&#246;ller<br>"
 	     "Hindi - Ramachandra Kulkarni<br>"
 	     "Spanish - Eduardo Gonzales<br>"
+	     "Swedish - Daniel Wester<br>"
 	     "Thai - Sathitchai K.</html>").
 #ifdef SPOTON_DATELESS_COMPILATION
      arg("January 1, 3000").
