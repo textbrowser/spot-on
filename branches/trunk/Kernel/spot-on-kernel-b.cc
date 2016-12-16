@@ -884,9 +884,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		      s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
-	saveGemini(list.value(0), list.value(1),
-		   list.value(2), list.value(3),
-		   list.value(4), "0000a");
+	saveGeminiPoptastic(list.value(0), list.value(1),
+			    list.value(2), list.value(3),
+			    list.value(4), "0000a");
     }
   else if(messageType == "0000b")
     {
@@ -899,9 +899,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		      s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
-	saveGemini(list.value(1), list.value(2),
-		   list.value(3), list.value(4),
-		   list.value(5), "0000b");
+	saveGeminiPoptastic(list.value(1), list.value(2),
+			    list.value(3), list.value(4),
+			    list.value(5), "0000b");
     }
   else if(messageType == "0000d")
     {
@@ -912,9 +912,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		      s_crypts.value("poptastic", 0)));
 
       if(!list.isEmpty())
-	saveGemini(list.value(0), list.value(1),
-		   list.value(2), list.value(3),
-		   QByteArray(), "0000d");
+	saveGeminiPoptastic(list.value(0), list.value(1),
+			    list.value(2), list.value(3),
+			    QByteArray(), "0000d");
     }
   else if(messageType == "0001b")
     {
@@ -1650,12 +1650,12 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     }
 }
 
-void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
-			       const QByteArray &gemini,
-			       const QByteArray &geminiHashKey,
-			       const QByteArray &timestamp,
-			       const QByteArray &signature,
-			       const QString &messageType)
+void spoton_kernel::saveGeminiPoptastic(const QByteArray &publicKeyHash,
+					const QByteArray &gemini,
+					const QByteArray &geminiHashKey,
+					const QByteArray &timestamp,
+					const QByteArray &signature,
+					const QString &messageType)
 {
   /*
   ** Some of the following is similar to logic in
@@ -1671,7 +1671,7 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
   if(!dateTime.isValid())
     {
       spoton_misc::logError
-	("spoton_kernel::saveGemini(): invalid date-time object.");
+	("spoton_kernel::saveGeminiPoptastic(): invalid date-time object.");
       return;
     }
 
@@ -1686,7 +1686,7 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
 				      POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM)))
     {
       spoton_misc::logError
-	(QString("spoton_kernel::saveGemini(): "
+	(QString("spoton_kernel::saveGeminiPoptastic(): "
 		 "large time delta (%1).").arg(secsTo));
       return;
     }
@@ -1695,7 +1695,7 @@ void spoton_kernel::saveGemini(const QByteArray &publicKeyHash,
 			   geminiHashKey))
     {
       spoton_misc::logError
-	("spoton_kernel::saveGemini(): duplicate keys.");
+	("spoton_kernel::saveGeminiPoptastic(): duplicate keys.");
       return;
     }
 

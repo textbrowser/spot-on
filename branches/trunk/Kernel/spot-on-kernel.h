@@ -218,12 +218,12 @@ class spoton_kernel: public QObject
   void prepareStarbeamReaders(void);
   void prepareStatus(const QString &keyType);
   void purgeMessagingCache(void);
-  void saveGemini(const QByteArray &publicKeyHash,
-		  const QByteArray &gemini,
-		  const QByteArray &geminiHashKey,
-		  const QByteArray &timestamp,
-		  const QByteArray &signature,
-		  const QString &messageType);
+  void saveGeminiPoptastic(const QByteArray &publicKeyHash,
+			   const QByteArray &gemini,
+			   const QByteArray &geminiHashKey,
+			   const QByteArray &timestamp,
+			   const QByteArray &signature,
+			   const QString &messageType);
   void updateStatistics(const QDateTime &uptime,
 			const int interfaces,
 			const int listeners,
