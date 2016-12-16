@@ -1147,6 +1147,12 @@ void spoton::slotTimeSliderValueChanged(int value)
 	(QString::number(value));
       str = "gui/poptastic_forward_secrecy_time_delta";
     }
+  else if(m_optionsUi.poptastic_gemini_time_delta == slider)
+    {
+      m_optionsUi.poptastic_gemini_time_delta_current->setText
+	(QString::number(value));
+      str = "gui/poptastic_gemini_time_delta";
+    }
   else if(m_optionsUi.retrieve_mail_time_delta == slider)
     {
       m_optionsUi.retrieve_mail_time_delta_current->setText
