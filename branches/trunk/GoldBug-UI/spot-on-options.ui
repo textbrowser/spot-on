@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-2150</y>
+         <y>-624</y>
          <width>719</width>
          <height>2771</height>
         </rect>
@@ -1039,7 +1039,7 @@
                 <item>
                  <widget class="QLabel" name="label_130">
                   <property name="text">
-                   <string>P&amp;urge cache container(s) every</string>
+                   <string>P&amp;urge kernel cache container(s) every</string>
                   </property>
                   <property name="buddy">
                    <cstring>kernelCacheInterval</cstring>
