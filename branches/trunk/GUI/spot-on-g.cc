@@ -2092,7 +2092,11 @@ void spoton::slotAboutToShowEmailSecretsMenu(void)
 
   if(m_ui.emailSecrets->menu()->actions().isEmpty())
     {
-      QAction *action = m_ui.emailSecrets->menu()->addAction(tr("empty"));
+      /*
+      ** Please do not translate Empty.
+      */
+
+      QAction *action = m_ui.emailSecrets->menu()->addAction("Empty");
 
       action->setEnabled(false);
     }
@@ -2133,7 +2137,11 @@ void spoton::slotAboutToShowChatSecretsMenu(void)
 
   if(m_ui.chatSecrets->menu()->actions().isEmpty())
     {
-      QAction *action = m_ui.chatSecrets->menu()->addAction(tr("empty"));
+      /*
+      ** Please do not translate Empty.
+      */
+
+      QAction *action = m_ui.chatSecrets->menu()->addAction("Empty");
 
       action->setEnabled(false);
     }

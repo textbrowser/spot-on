@@ -9990,7 +9990,7 @@ void spoton::slotPopulateBuzzFavorites(void)
   else
     {
       m_ui.favorites->clear();
-      m_ui.favorites->addItem("Empty");
+      m_ui.favorites->addItem("Empty"); // Please do not translate Empty.
 
       while(!m_ui.shareBuzzMagnet->menu()->actions().isEmpty())
 	{
@@ -10104,7 +10104,10 @@ void spoton::removeFavorite(const bool removeAll)
 
 void spoton::magnetize(void)
 {
-  if(m_ui.favorites->currentText() == "Empty")
+  if(m_ui.favorites->currentText() == "Empty") /*
+                                               ** Please do not translate
+                                               ** Empty.
+                                               */
     return;
 
   QByteArray data;

@@ -4252,7 +4252,11 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
 	if(ui.secrets->menu()->actions().isEmpty())
 	  {
-	    QAction *action = ui.secrets->menu()->addAction(tr("empty"));
+	    /*
+	    ** Please do not translate Empty.
+	    */
+
+	    QAction *action = ui.secrets->menu()->addAction("Empty");
 
 	    action->setEnabled(false);
 	  }
