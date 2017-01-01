@@ -290,6 +290,11 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   keys.second.resize(key.length() - static_cast<int> (cipherKeyLength));
   temporaryKey.resize(key.length());
 
+  /*
+  ** temporary = PBKDF2(passphrase, ...)
+  ** (keys.first, keys.second) = PBKDF2(temporary, ...)
+  */
+
   for(int i = 1; i <= 2; i++)
     {
       gcry_fast_random_poll();
