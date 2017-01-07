@@ -3164,13 +3164,6 @@ void spoton::slotSendMail(void)
   prepareDatabasesFromUI();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QByteArray message;
-
-  if(m_ui.richtext->isChecked())
-    message = m_ui.outgoingMessage->toHtml().toUtf8();
-  else
-    message = m_ui.outgoingMessage->toPlainText().toUtf8();
-
   /*
   ** Bundle the love letter and send it to the email.db file. The
   ** kernel shall do the rest.
@@ -3186,6 +3179,7 @@ void spoton::slotSendMail(void)
 
     if(db.open())
       {
+	QList<bool> isTraditionalEmailAccounts;
 	QModelIndexList list;
 	QStringList forwardSecrecyCredentials;
 	QStringList keyTypes;
@@ -3207,6 +3201,9 @@ void spoton::slotSendMail(void)
 	  {
 	    QModelIndex index(list.takeFirst());
 
+	    isTraditionalEmailAccounts.append
+	      (index.data(Qt::ItemDataRole(Qt::UserRole + 2)).
+	       toString() == "traditional e-mail" ? true : false);
 	    keyTypes.append(index.data(Qt::ItemDataRole(Qt::UserRole + 1)).
 			    toString());
 	    names.append(index.data().toString());
@@ -3225,6 +3222,7 @@ void spoton::slotSendMail(void)
 	  publicKeyHashes.append(list.takeFirst().data().toString());
 
 	while(!forwardSecrecyCredentials.isEmpty() &&
+	      !isTraditionalEmailAccounts.isEmpty() &&
 	      !keyTypes.isEmpty() &&
 	      !names.isEmpty() &&
 	      !publicKeyHashes.isEmpty() &&
@@ -3240,6 +3238,8 @@ void spoton::slotSendMail(void)
 	    QSqlQuery query(db);
 	    QString keyType(keyTypes.takeFirst());
 	    QString oid(oids.takeFirst());
+	    bool isTraditionalEmailAccount =
+	      isTraditionalEmailAccounts.takeFirst();
 	    bool ok = true;
 
 	    if(m_ui.email_fs_gb->currentIndex() == 0 ||
@@ -3326,6 +3326,18 @@ void spoton::slotSendMail(void)
 	      query.bindValue
 		(3, crypt->
 		 encryptedThenHashed(goldbug, &ok).toBase64());
+
+	    QByteArray message;
+
+	    if(m_ui.richtext->isChecked())
+	      {
+		if(isTraditionalEmailAccount)
+		  message = m_ui.outgoingMessage->toPlainText().toUtf8();
+		else
+		  message = m_ui.outgoingMessage->toHtml().toUtf8();
+	      }
+	    else
+	      message = m_ui.outgoingMessage->toPlainText().toUtf8();
 
 	    if(ok)
 	      query.bindValue
