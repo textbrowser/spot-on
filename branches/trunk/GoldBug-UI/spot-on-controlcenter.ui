@@ -2412,6 +2412,9 @@ QPushButton:pressed {
                     </item>
                     <item>
                      <widget class="QCheckBox" name="richtext">
+                      <property name="toolTip">
+                       <string>The Rich Text option will be ignored on traditional e-mail accounts.</string>
+                      </property>
                       <property name="text">
                        <string>&amp;Rich Text</string>
                       </property>
@@ -6576,7 +6579,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>848</width>
              <height>1101</height>
             </rect>
            </property>
