@@ -11,12 +11,12 @@ echo_mode=full&ip_address=239.255.43.21&orientation=packet&port=4710&protocol=IP
 
 # A remote STCP neighbor.
 
-echo_mode=full&ip_address=tulip-ipv4.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=0&transport=sctp
+echo_mode=full&ip_address=dolphin-ipv4.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=0&transport=sctp
 
 # A remote IPv4 TCP neighbor.
 
-echo_mode=full&ip_address=tulip-ipv4.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
+echo_mode=full&ip_address=dolphin-ipv4.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
 
 # A remote IPv6 TCP neighbor.
 
-echo_mode=full&ip_address=tulip-ipv6.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
+echo_mode=full&ip_address=dolphin-ipv6.cloud.tilaa.com&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
