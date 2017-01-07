@@ -1313,7 +1313,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	      this,
 	      SLOT(slotWizardButtonClicked(void)));
       dialog.show();
-#ifdef Q_OS_WIN32
+#ifndef Q_OS_MAC
       dialog.resize(dialog.sizeHint());
 #endif
       spoton_utilities::centerWidget(&dialog, this);
