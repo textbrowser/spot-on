@@ -4372,6 +4372,7 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer,
 	spoton_misc::logError
 	  ("spoton_crypt::shake256(): gcry_md_extract() failure.");
 
+      gcry_md_close(hd);
       return QByteArray();
     }
 
