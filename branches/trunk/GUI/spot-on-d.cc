@@ -1611,6 +1611,7 @@ bool spoton::promptBeforeExit(void)
 	return true;
     }
 
+  m_quit = true;
   return false;
 }
 

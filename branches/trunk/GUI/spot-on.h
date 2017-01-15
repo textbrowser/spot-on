@@ -511,6 +511,7 @@ class spoton: public QMainWindow
   Ui_spoton_statusbar m_sb;
   Ui_spoton_wizard *m_wizardUi;
   bool m_locked;
+  bool m_quit;
   quint64 m_urlCurrentPage;
   quint64 m_urlLimit;
   quint64 m_urlOffset;

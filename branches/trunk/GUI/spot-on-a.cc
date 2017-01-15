@@ -469,6 +469,7 @@ spoton::spoton(void):QMainWindow()
       }
 
   m_locked = false;
+  m_quit = false;
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
   spoton_crypt::memcmp_test();
   spoton_smp::test1();
@@ -3194,6 +3195,7 @@ void spoton::slotQuit(void)
     if(promptBeforeExit())
       return;
 
+  m_quit = true;
   cleanup();
 }
 
@@ -5691,7 +5693,7 @@ void spoton::slotDeactivateKernel(void)
       else if(time.hasExpired(10000))
 	break;
     }
-  while(true);
+  while(!m_quit);
 
   QApplication::restoreOverrideCursor();
 }
