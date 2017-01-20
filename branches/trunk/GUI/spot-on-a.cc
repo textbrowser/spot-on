@@ -7610,7 +7610,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 
 #if SPOTON_GOLDBUG == 0
       menu.addSeparator();
-      menu.addAction("&Statistics",
+      menu.addAction("&Statistics...",
 		     this,
 		     SLOT(slotShowNeighborStatistics(void)));
 #endif
