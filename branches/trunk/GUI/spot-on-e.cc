@@ -778,7 +778,7 @@ void spoton::slotShowOptions(void)
   m_optionsWindow->showNormal();
   m_optionsWindow->activateWindow();
   m_optionsWindow->raise();
-  m_optionsUi.icons->setFocus();
+  m_optionsUi.scrollArea->setFocus();
   spoton_utilities::centerWidget(m_optionsWindow, this);
 }
 

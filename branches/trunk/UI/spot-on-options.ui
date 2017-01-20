@@ -32,7 +32,7 @@
      <number>5</number>
     </property>
     <item>
-     <widget class="QScrollArea" name="scrollArea_4">
+     <widget class="QScrollArea" name="scrollArea">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
       </property>
@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-582</y>
+         <y>0</y>
          <width>719</width>
          <height>2771</height>
         </rect>
