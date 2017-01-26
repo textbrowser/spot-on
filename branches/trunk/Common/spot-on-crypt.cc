@@ -3551,6 +3551,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	}
       else
 	{
+#ifdef SSL3_VERSION
 	  if(!(ctx = SSL_CTX_new(SSLv3_method())))
 	    {
 	      spoton_misc::logError
@@ -3558,6 +3559,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 		 "SSL_CTX_new(SSLv3_method()) failure.");
 	      goto done_label;
 	    }
+#endif
 	}
 
       if(!ctx)
