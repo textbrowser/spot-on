@@ -3551,7 +3551,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	}
       else
 	{
-#ifdef SSL3_VERSION
+#ifndef OPENSSL_NO_SSL3_METHOD
 	  if(!(ctx = SSL_CTX_new(SSLv3_method())))
 	    {
 	      spoton_misc::logError
