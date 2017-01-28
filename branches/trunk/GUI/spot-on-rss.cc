@@ -2790,6 +2790,7 @@ void spoton_rss::slotStatisticsTimeout(void)
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
+    QString str("");
 
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
 
@@ -2826,32 +2827,36 @@ void spoton_rss::slotStatisticsTimeout(void)
 
 	QLocale locale;
 
-	statusBar()->showMessage
-	  (tr("%1 RSS Feeds | "
-	      "%2 Hidden URLs | "
-	      "%3 Imported URLs | "
-	      "%4 Not Imported URLs | "
-	      "%5 Indexed URLs | "
-	      "%6 Not Indexed URLs | "
-	      "%7 Total URLs").
-	   arg(locale.toString(counts.value(0))).
-	   arg(locale.toString(counts.value(1))).
-	   arg(locale.toString(counts.value(2))).
-	   arg(locale.toString(counts.value(3))).
-	   arg(locale.toString(counts.value(4))).
-	   arg(locale.toString(counts.value(5))).
-	   arg(locale.toString(counts.value(6))));
+	str = tr("%1 RSS Feeds | "
+		 "%2 Hidden URLs | "
+		 "%3 Imported URLs | "
+		 "%4 Not Imported URLs | "
+		 "%5 Indexed URLs | "
+		 "%6 Not Indexed URLs | "
+		 "%7 Total URLs").
+	  arg(locale.toString(counts.value(0))).
+	  arg(locale.toString(counts.value(1))).
+	  arg(locale.toString(counts.value(2))).
+	  arg(locale.toString(counts.value(3))).
+	  arg(locale.toString(counts.value(4))).
+	  arg(locale.toString(counts.value(5))).
+	  arg(locale.toString(counts.value(6)));
       }
     else
-      statusBar()->showMessage(tr("0 RSS Feeds | "
-				  "0 Hidden URLs | "
-				  "0 Imported URLs | "
-				  "0 Not Imported URLs | "
-				  "0 Indexed URLs | "
-				  "0 Not Indexed URLs | "
-				  "0 Total URLs"));
+      str = tr("0 RSS Feeds | "
+	       "0 Hidden URLs | "
+	       "0 Imported URLs | "
+	       "0 Not Imported URLs | "
+	       "0 Indexed URLs | "
+	       "0 Not Indexed URLs | "
+	       "0 Total URLs");
 
     db.close();
+
+    QFontMetrics fm(statusBar()->fontMetrics());
+
+    statusBar()->showMessage
+      (fm.elidedText(str.trimmed(), Qt::ElideRight, statusBar()->width() - 25));
   }
 
   QSqlDatabase::removeDatabase(connectionName);
