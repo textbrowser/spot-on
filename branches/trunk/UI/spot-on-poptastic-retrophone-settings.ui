@@ -209,7 +209,7 @@
         <x>0</x>
         <y>0</y>
         <width>740</width>
-        <height>639</height>
+        <height>641</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -445,7 +445,7 @@
                 </item>
                </widget>
               </item>
-              <item row="7" column="3">
+              <item row="8" column="3">
                <widget class="QComboBox" name="out_authentication">
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToContents</enum>
@@ -457,7 +457,7 @@
                 </item>
                </widget>
               </item>
-              <item row="3" column="0">
+              <item row="4" column="0">
                <widget class="QLabel" name="label_4">
                 <property name="text">
                  <string>&amp;Server Address</string>
@@ -470,7 +470,7 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="1">
+              <item row="8" column="1">
                <widget class="QComboBox" name="in_authentication">
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToContents</enum>
@@ -482,14 +482,14 @@
                 </item>
                </widget>
               </item>
-              <item row="9" column="1">
+              <item row="10" column="1">
                <widget class="QLineEdit" name="in_password">
                 <property name="echoMode">
                  <enum>QLineEdit::Password</enum>
                 </property>
                </widget>
               </item>
-              <item row="7" column="0">
+              <item row="8" column="0">
                <widget class="QLabel" name="label_7">
                 <property name="text">
                  <string>&amp;Authentification</string>
@@ -502,7 +502,7 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="1">
+              <item row="7" column="1">
                <widget class="QComboBox" name="in_ssltls">
                 <property name="currentIndex">
                  <number>2</number>
@@ -527,13 +527,13 @@
                 </item>
                </widget>
               </item>
-              <item row="3" column="1">
+              <item row="4" column="1">
                <widget class="QLineEdit" name="in_server_address"/>
               </item>
-              <item row="8" column="1">
+              <item row="9" column="1">
                <widget class="QLineEdit" name="in_username"/>
               </item>
-              <item row="5" column="1">
+              <item row="6" column="1">
                <widget class="QSpinBox" name="in_server_port">
                 <property name="minimum">
                  <number>1</number>
@@ -546,7 +546,7 @@
                 </property>
                </widget>
               </item>
-              <item row="9" column="0">
+              <item row="10" column="0">
                <widget class="QLabel" name="label_9">
                 <property name="text">
                  <string>&amp;Password</string>
@@ -579,15 +579,18 @@
                 </item>
                </widget>
               </item>
-              <item row="8" column="3">
+              <item row="9" column="3">
                <widget class="QLineEdit" name="out_username"/>
               </item>
-              <item row="9" column="3">
+              <item row="10" column="3">
                <widget class="QLineEdit" name="out_password">
                 <property name="echoMode">
                  <enum>QLineEdit::Password</enum>
                 </property>
                </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="QLineEdit" name="out_server_address"/>
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_10">
@@ -612,9 +615,6 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="3">
-               <widget class="QLineEdit" name="out_server_address"/>
-              </item>
               <item row="0" column="1">
                <widget class="QLabel" name="label">
                 <property name="text">
@@ -625,7 +625,7 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="3">
+              <item row="7" column="3">
                <widget class="QComboBox" name="out_ssltls">
                 <property name="currentIndex">
                  <number>2</number>
@@ -650,7 +650,7 @@
                 </item>
                </widget>
               </item>
-              <item row="12" column="1">
+              <item row="13" column="1">
                <layout class="QHBoxLayout" name="horizontalLayout">
                 <property name="spacing">
                  <number>5</number>
@@ -690,7 +690,7 @@
                 </item>
                </layout>
               </item>
-              <item row="5" column="3">
+              <item row="6" column="3">
                <widget class="QSpinBox" name="out_server_port">
                 <property name="minimum">
                  <number>1</number>
@@ -703,7 +703,7 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="0">
+              <item row="6" column="0">
                <widget class="QLabel" name="label_5">
                 <property name="text">
                  <string>&amp;Port</string>
@@ -716,7 +716,7 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="0">
+              <item row="9" column="0">
                <widget class="QLabel" name="label_8">
                 <property name="text">
                  <string>&amp;Username</string>
@@ -729,7 +729,7 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="0">
+              <item row="7" column="0">
                <widget class="QLabel" name="label_3">
                 <property name="text">
                  <string>&amp;SSL/TLS</string>
@@ -742,7 +742,7 @@
                 </property>
                </widget>
               </item>
-              <item row="12" column="3">
+              <item row="13" column="3">
                <layout class="QHBoxLayout" name="horizontalLayout_2">
                 <property name="spacing">
                  <number>5</number>
@@ -782,7 +782,7 @@
                 </item>
                </layout>
               </item>
-              <item row="10" column="0">
+              <item row="11" column="0">
                <widget class="QLabel" name="label_16">
                 <property name="text">
                  <string>&amp;Verify Host</string>
@@ -795,21 +795,21 @@
                 </property>
                </widget>
               </item>
-              <item row="10" column="1">
+              <item row="11" column="1">
                <widget class="QCheckBox" name="in_verify_host">
                 <property name="text">
                  <string/>
                 </property>
                </widget>
               </item>
-              <item row="10" column="3">
+              <item row="11" column="3">
                <widget class="QCheckBox" name="out_verify_host">
                 <property name="text">
                  <string/>
                 </property>
                </widget>
               </item>
-              <item row="11" column="0">
+              <item row="12" column="0">
                <widget class="QLabel" name="label_18">
                 <property name="text">
                  <string>&amp;Verify Peer</string>
@@ -822,14 +822,14 @@
                 </property>
                </widget>
               </item>
-              <item row="11" column="1">
+              <item row="12" column="1">
                <widget class="QCheckBox" name="in_verify_peer">
                 <property name="text">
                  <string/>
                 </property>
                </widget>
               </item>
-              <item row="11" column="3">
+              <item row="12" column="3">
                <widget class="QCheckBox" name="out_verify_peer">
                 <property name="text">
                  <string/>
@@ -850,6 +850,29 @@
                <widget class="QLineEdit" name="smtp_localname">
                 <property name="text">
                  <string>localhost</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_23">
+                <property name="text">
+                 <string>&amp;Remove Remote</string>
+                </property>
+                <property name="buddy">
+                 <cstring>in_remove_remote</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QCheckBox" name="in_remove_remote">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Attempt to remove retrieved entries from the remote server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -929,6 +952,7 @@
   <tabstop>proxy_username</tabstop>
   <tabstop>proxy_password</tabstop>
   <tabstop>in_method</tabstop>
+  <tabstop>in_remove_remote</tabstop>
   <tabstop>in_server_address</tabstop>
   <tabstop>in_server_port</tabstop>
   <tabstop>in_ssltls</tabstop>

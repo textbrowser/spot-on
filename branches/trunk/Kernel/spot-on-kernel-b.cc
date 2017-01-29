@@ -321,9 +321,16 @@ void spoton_kernel::popPoptastic(void)
 	}
       else
 	{
+	  if(!hash.value("in_remove_remote", true).toBool())
+	    list.clear();
+
+	  /*
+	  ** Remove items from the remote server.
+	  */
+
 	  while(!list.isEmpty())
-	    {
-	      curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+	      {
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	      curl_easy_setopt
 		(curl, CURLOPT_URL, url.toLatin1().constData());
 	      curl_easy_setopt

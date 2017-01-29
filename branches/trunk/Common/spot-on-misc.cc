@@ -597,6 +597,7 @@ void spoton_misc::prepareDatabases(void)
 		   "in_authentication TEXT NOT NULL, "
 		   "in_method TEXT NOT NULL, "
 		   "in_password TEXT NOT NULL, "
+		   "in_remove_remote INTEGER NOT NULL DEFAULT 1, "
 		   "in_server_address TEXT NOT NULL, "
 		   "in_server_port TEXT NOT NULL, "
 		   "in_ssltls TEXT NOT NULL, "
@@ -624,6 +625,8 @@ void spoton_misc::prepareDatabases(void)
 		   "(proxy_type IN ('HTTP', 'SOCKS5')), "
 		   "proxy_username TEXT NOT NULL, "
 		   "smtp_localname TEXT NOT NULL)");
+	query.exec("ALTER TABLE poptastic "
+		   "ADD in_remove_remote INTEGER TEXT NOT NULL DEFAULT 1");
       }
 
     db.close();
