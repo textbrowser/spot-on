@@ -4004,7 +4004,11 @@ void spoton::populateMail(void)
 					  item(items.at(0)->row(), 0);
 
 					if(it)
-					  item->setText(it->text());
+					  {
+					    item->setBackground
+					      (QBrush(QColor("lightgreen")));
+					    item->setText(it->text());
+					  }
 				      }
 				  }
 			      }
