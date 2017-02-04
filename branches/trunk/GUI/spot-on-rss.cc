@@ -1729,6 +1729,8 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	    emit logError(error);
 	    reply->deleteLater();
+	    m_networkAccessManager.setNetworkAccessible
+	      (QNetworkAccessManager::Accessible);
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
 	    reply->ignoreSslErrors();
 	    reply->setProperty("original-url", originalUrl);
@@ -2003,6 +2005,9 @@ void spoton_rss::slotDownloadContent(void)
 
   if(!url.isEmpty() && url.isValid())
     {
+      m_networkAccessManager.setNetworkAccessible
+	(QNetworkAccessManager::Accessible);
+
       QNetworkReply *reply = m_networkAccessManager.get(QNetworkRequest(url));
 
       reply->ignoreSslErrors();
@@ -2024,6 +2029,9 @@ void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
   if(!imageUrl.isEmpty() && imageUrl.isValid() &&
      !url.isEmpty() && url.isValid())
     {
+      m_networkAccessManager.setNetworkAccessible
+	(QNetworkAccessManager::Accessible);
+
       QNetworkReply *reply = m_networkAccessManager.get
 	(QNetworkRequest(imageUrl));
 
@@ -2070,6 +2078,9 @@ void spoton_rss::slotDownloadTimeout(void)
       m_currentFeedRow = 0;
       return;
     }
+
+  m_networkAccessManager.setNetworkAccessible
+    (QNetworkAccessManager::Accessible);
 
   QNetworkReply *reply = m_networkAccessManager.get
     (QNetworkRequest(item->text()));
@@ -2155,6 +2166,8 @@ void spoton_rss::slotFeedReplyFinished(void)
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 
 	    emit logError(error);
+	    m_networkAccessManager.setNetworkAccessible
+	      (QNetworkAccessManager::Accessible);
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
 	    reply->ignoreSslErrors();
 	    connect(reply,
