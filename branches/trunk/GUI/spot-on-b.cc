@@ -3364,7 +3364,7 @@ void spoton::slotSendMail(void)
 		 encryptedThenHashed(name, &ok).toBase64());
 
 	    query.bindValue
-	      (9, publicKeyHash.toBase64());
+	      (9, publicKeyHash);
 
 	    if(ok)
 	      query.bindValue
