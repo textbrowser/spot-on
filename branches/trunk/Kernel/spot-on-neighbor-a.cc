@@ -2636,10 +2636,10 @@ void spoton_neighbor::slotWrite
   ** to send the message to its peers.
   */
 
-  if(data.length() > m_laneWidth)
+  if(id == m_id)
     return;
 
-  if(id == m_id)
+  if(data.length() > m_laneWidth)
     return;
 
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
@@ -5890,6 +5890,9 @@ void spoton_neighbor::slotPublicizeListenerPlaintext
 void spoton_neighbor::slotPublicizeListenerPlaintext(const QByteArray &data,
 						     const qint64 id)
 {
+  if(id == m_id)
+    return;
+
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;
 
@@ -5898,31 +5901,28 @@ void spoton_neighbor::slotPublicizeListenerPlaintext(const QByteArray &data,
   ** This neighbor now needs to send the message to its peer.
   */
 
-  if(id != m_id)
-    {
-      QReadLocker locker(&m_echoModeMutex);
-      QString echoMode(m_echoMode);
+  QReadLocker locker(&m_echoModeMutex);
+  QString echoMode(m_echoMode);
 
-      locker.unlock();
+  locker.unlock();
 
-      if(echoMode == "full")
-	if(readyToWrite())
-	  {
-	    QByteArray message(spoton_send::message0030(data));
+  if(echoMode == "full")
+    if(readyToWrite())
+      {
+	QByteArray message(spoton_send::message0030(data));
 
-	    if(write(message.constData(), message.length()) !=
-	       message.length())
-	      spoton_misc::logError
-		(QString("spoton_neighbor::"
-			 "slotPublicizeListenerPlaintext(): "
-			 "write() "
-			 "error for %1:%2.").
-		 arg(m_address).
-		 arg(m_port));
-	    else
-	      spoton_kernel::messagingCacheAdd(message);
-	  }
-    }
+	if(write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::"
+		     "slotPublicizeListenerPlaintext(): "
+		     "write() "
+		     "error for %1:%2.").
+	     arg(m_address).
+	     arg(m_port));
+	else
+	  spoton_kernel::messagingCacheAdd(message);
+      }
 }
 
 void spoton_neighbor::slotSslErrors(const QList<QSslError> &errors)
