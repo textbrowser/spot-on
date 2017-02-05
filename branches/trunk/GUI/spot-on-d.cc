@@ -215,7 +215,6 @@ void spoton::refreshInstitutions(void)
 
     if(db.open())
       {
-	m_ui.institutions->clearContents();
 	m_ui.institutions->setRowCount(0);
 	m_ui.institutions->setSortingEnabled(false);
 
@@ -1197,7 +1196,6 @@ void spoton::populateAETokens(void)
 	  bytes3 = list.at(0).data().toByteArray();
 
 	m_ui.ae_tokens->setSortingEnabled(false);
-	m_ui.ae_tokens->clearContents();
 	m_ui.ae_tokens->setRowCount(0);
 
 	QSqlQuery query(db);

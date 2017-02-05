@@ -3893,7 +3893,6 @@ void spoton::populateMail(void)
 		   SIGNAL(itemSelectionChanged(void)),
 		   this,
 		   SLOT(slotMailSelected(void)));
-	m_ui.mail->clearContents();
 	m_ui.mail->setRowCount(0);
 	m_ui.mail->setSortingEnabled(false);
 	m_ui.mailMessage->clear();
@@ -4125,7 +4124,6 @@ void spoton::slotRefreshPostOffice(void)
 
     if(db.open())
       {
-	m_ui.postoffice->clearContents();
 	m_ui.postoffice->setRowCount(0);
 	m_ui.postoffice->setSortingEnabled(false);
 
@@ -4703,7 +4701,6 @@ void spoton::slotEmptyTrash(void)
 
   if(m_ui.folder->currentIndex() == 2)
     {
-      m_ui.mail->clearContents();
       m_ui.mail->setRowCount(0);
       m_ui.mailMessage->clear();
     }

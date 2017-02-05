@@ -1130,7 +1130,6 @@ void spoton_rss::populateFeeds(void)
 	QSqlQuery query(db);
 	int row = 0;
 
-	m_ui.feeds->clearContents();
 	m_ui.feeds->setRowCount(0);
 	m_ui.feeds->setSortingEnabled(false);
 	query.setForwardOnly(true);

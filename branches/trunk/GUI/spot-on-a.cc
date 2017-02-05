@@ -4096,7 +4096,6 @@ void spoton::slotPopulateListeners(void)
 
 	m_ui.listeners->setUpdatesEnabled(false);
 	m_ui.listeners->setSortingEnabled(false);
-	m_ui.listeners->clearContents();
 	m_ui.listeners->setRowCount(0);
 
 	QSqlQuery query(db);
@@ -4788,7 +4787,6 @@ void spoton::slotPopulateNeighbors(void)
 	m_neighborToOidMap.clear();
 	m_ui.neighbors->setUpdatesEnabled(false);
 	m_ui.neighbors->setSortingEnabled(false);
-	m_ui.neighbors->clearContents();
 	m_ui.neighbors->setRowCount(0);
 
 	QSqlQuery query(db);
@@ -8298,7 +8296,7 @@ void spoton::slotDeleteAllListeners(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   m_ui.accounts->clear();
-  m_ui.ae_tokens->clearContents();
+  m_ui.ae_tokens->setRowCount(0);
 }
 
 void spoton::slotDeleteAllNeighbors(void)
@@ -8420,13 +8418,10 @@ void spoton::slotPopulateParticipants(void)
 	  }
 
 	m_ui.emailParticipants->setSortingEnabled(false);
-	m_ui.emailParticipants->clearContents();
 	m_ui.emailParticipants->setRowCount(0);
 	m_ui.participants->setSortingEnabled(false);
-	m_ui.participants->clearContents();
 	m_ui.participants->setRowCount(0);
 	m_ui.urlParticipants->setSortingEnabled(false);
-	m_ui.urlParticipants->clearContents();
 	m_ui.urlParticipants->setRowCount(0);
 	disconnect(m_ui.participants,
 		   SIGNAL(itemChanged(QTableWidgetItem *)),

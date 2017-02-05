@@ -249,11 +249,9 @@ void spoton::slotPopulateEtpMagnets(void)
 
 	m_ui.etpMagnets->setUpdatesEnabled(false);
 	m_ui.etpMagnets->setSortingEnabled(false);
-	m_ui.etpMagnets->clearContents();
 	m_ui.etpMagnets->setRowCount(0);
 	m_ui.addTransmittedMagnets->setUpdatesEnabled(false);
 	m_ui.addTransmittedMagnets->setSortingEnabled(false);
-	m_ui.addTransmittedMagnets->clearContents();
 	m_ui.addTransmittedMagnets->setRowCount(0);
 	query.setForwardOnly(true);
 	query.exec("PRAGMA read_uncommitted = True");
@@ -1307,7 +1305,6 @@ void spoton::slotPopulateStars(void)
 	vval = m_ui.received->verticalScrollBar()->value();
 	m_ui.received->setUpdatesEnabled(false);
 	m_ui.received->setSortingEnabled(false);
-	m_ui.received->clearContents();
 	m_ui.received->setRowCount(0);
 	row = 0;
 	query.exec("PRAGMA read_uncommitted = True");
@@ -1566,7 +1563,6 @@ void spoton::slotPopulateStars(void)
 	vval = m_ui.transmitted->verticalScrollBar()->value();
 	m_ui.transmitted->setUpdatesEnabled(false);
 	m_ui.transmitted->setSortingEnabled(false);
-	m_ui.transmitted->clearContents();
 	m_ui.transmitted->setRowCount(0);
 	row = 0;
 	totalRows = 0;
@@ -3518,7 +3514,6 @@ void spoton::slotCopyOrPaste(void)
 
 void spoton::updatePublicKeysLabel(void)
 {
-  m_ui.personal_public_keys->clearContents();
   m_ui.personal_public_keys->setRowCount(0);
 
   QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +

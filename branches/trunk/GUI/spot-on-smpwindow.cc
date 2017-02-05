@@ -346,7 +346,7 @@ void spoton_smpwindow::populateSecrets(void)
   if(!s_crypt)
     return;
 
-  m_ui.secrets->clearContents();
+  m_ui.secrets->setRowCount(0);
 
   QString connectionName("");
 
@@ -967,7 +967,7 @@ void spoton_smpwindow::slotRefresh(void)
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_ui.participants->clearContents();
+  m_ui.participants->setRowCount(0);
 
   QString connectionName("");
 

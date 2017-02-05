@@ -1633,11 +1633,8 @@ void spoton::populateUrlDistillers(void)
 
     if(db.open())
       {
-	m_ui.downDistillers->clearContents();
 	m_ui.downDistillers->setRowCount(0);
-	m_ui.sharedDistillers->clearContents();
 	m_ui.sharedDistillers->setRowCount(0);
-	m_ui.upDistillers->clearContents();
 	m_ui.upDistillers->setRowCount(0);
 
 	QSqlQuery query(db);
