@@ -187,9 +187,11 @@ const int spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH;
 const int spoton_common::STATUS_INTERVAL;
 const int spoton_common::STATUS_TEXT_MAXIMUM_LENGTH;
 const int spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM;
+const qint64 spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
 const qint64 spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE;
+const qint64 spoton_common::MAXIMUM_TCP_PACKET_SIZE;
 const qint64 spoton_common::MINIMUM_NEIGHBOR_CONTENT_LENGTH;
 const unsigned long int spoton_common::GEMINI_ITERATION_COUNT;
 int spoton_common::CACHE_TIME_DELTA_MAXIMUM =
