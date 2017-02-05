@@ -7028,7 +7028,8 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	    (data,
 	     qMin(spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE, remaining));
 
-	  if(remaining - sent > spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE)
+	  if(sent > 0 &&
+	     remaining - sent > spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE)
 	    m_bluetoothSocket->waitForBytesWritten
 	      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
 	  else if(m_waitforbyteswritten_msecs > 0)
@@ -7043,7 +7044,8 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	  sent = m_tcpSocket->write
 	    (data, qMin(spoton_common::MAXIMUM_TCP_PACKET_SIZE, remaining));
 
-	  if(remaining - sent > spoton_common::MAXIMUM_TCP_PACKET_SIZE)
+	  if(sent > 0 &&
+	     remaining - sent > spoton_common::MAXIMUM_TCP_PACKET_SIZE)
 	    m_tcpSocket->waitForBytesWritten
 	      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
 	  else if(m_waitforbyteswritten_msecs > 0)
@@ -7062,7 +7064,8 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 		(data, qMin(udpMinimum, remaining), address, m_port);
 	    }
 
-	  if(remaining - sent > udpMinimum)
+	  if(sent > 0 &&
+	     remaining - sent > udpMinimum)
 	    m_udpSocket->waitForBytesWritten
 	      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
 	  else if(m_waitforbyteswritten_msecs > 0)
