@@ -191,6 +191,7 @@ const int spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED;
 const qint64 spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
+const qint64 spoton_common::MAXIMUM_SCTP_PACKET_SIZE;
 const qint64 spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE;
 const qint64 spoton_common::MAXIMUM_TCP_PACKET_SIZE;
 const qint64 spoton_common::MINIMUM_NEIGHBOR_CONTENT_LENGTH;
