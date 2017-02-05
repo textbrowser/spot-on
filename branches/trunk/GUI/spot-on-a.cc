@@ -139,6 +139,7 @@ const int spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH;
 const int spoton_common::STATUS_INTERVAL;
 const int spoton_common::STATUS_TEXT_MAXIMUM_LENGTH;
 const int spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM;
+const int spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED;
 const qint64 spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
 const qint64 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH;

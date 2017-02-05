@@ -468,7 +468,7 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
   else if(size == 0)
     return 0;
 
-  qint64 writeSize = 4096;
+  qint64 writeSize = spoton_common::MAXIMUM_SCTP_PACKET_SIZE;
   ssize_t sent = 0;
 
   /*

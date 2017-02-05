@@ -104,6 +104,17 @@ class spoton_common
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
   static const int URL_CONTENT_SHARE_MAXIMUM_SIZE = 5 * 1024 * 1024;
   static const int WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM = 60000;
+  static const int WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED = 5000; /*
+								  ** Please
+								  ** consider
+								  ** changing
+								  ** if the
+								  ** maximums
+								  ** (BLUETOOTH,
+								  ** SCTP, TCP,
+								  ** UDP) are
+								  ** changed.
+								  */
   static const qint64 MAXIMUM_BLUETOOTH_PACKET_SIZE = 1000;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
     static_cast<qint64> (LANE_WIDTH_MAXIMUM); /*
@@ -113,8 +124,9 @@ class spoton_common
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH =
     104856576 < MAXIMUM_NEIGHBOR_BUFFER_SIZE ?
     104856576 : MAXIMUM_NEIGHBOR_BUFFER_SIZE;
+  static const qint64 MAXIMUM_SCTP_PACKET_SIZE = 4096;
   static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 2500000;
-  static const qint64 MAXIMUM_TCP_PACKET_SIZE = 4096LL;
+  static const qint64 MAXIMUM_TCP_PACKET_SIZE = 4096;
   static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH =
     256 < MAXIMUM_NEIGHBOR_CONTENT_LENGTH ?
     256 : MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
