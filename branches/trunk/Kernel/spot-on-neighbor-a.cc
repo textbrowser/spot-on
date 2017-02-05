@@ -7014,7 +7014,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
   else if(size == 0)
     return 0;
 
-  qint64 minimum = qMin
+  qint64 udpMinimum = qMin
     (static_cast<qint64> (spoton_common::MAXIMUM_UDP_DATAGRAM_SIZE), size);
   qint64 remaining = size;
   qint64 sent = 0;
@@ -7024,9 +7024,13 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
       if(m_bluetoothSocket)
 	{
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
-	  sent = m_bluetoothSocket->write(data, remaining);
+	  sent = m_bluetoothSocket->write
+	    (data,
+	     qMin(spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE, remaining));
 
-	  if(m_waitforbyteswritten_msecs > 0)
+	  if(remaining - sent > spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE)
+	    m_bluetoothSocket->waitForBytesWritten(30000);
+	  else if(m_waitforbyteswritten_msecs > 0)
 	    m_bluetoothSocket->waitForBytesWritten
 	      (m_waitforbyteswritten_msecs);
 #endif
@@ -7035,25 +7039,30 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	sent = m_sctpSocket->write(data, remaining);
       else if(m_tcpSocket)
 	{
-	  sent = m_tcpSocket->write(data, remaining);
+	  sent = m_tcpSocket->write
+	    (data, qMin(spoton_common::MAXIMUM_TCP_PACKET_SIZE, remaining));
 
-	  if(m_waitforbyteswritten_msecs > 0)
+	  if(remaining - sent > spoton_common::MAXIMUM_TCP_PACKET_SIZE)
+	    m_tcpSocket->waitForBytesWritten();
+	  else if(m_waitforbyteswritten_msecs > 0)
 	    m_tcpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
 	}
       else if(m_udpSocket)
 	{
 	  if(m_isUserDefined)
-	    sent = m_udpSocket->write(data, qMin(minimum, remaining));
+	    sent = m_udpSocket->write(data, qMin(udpMinimum, remaining));
 	  else
 	    {
 	      QHostAddress address(m_address);
 
 	      address.setScopeId(m_scopeId);
 	      sent = m_udpSocket->writeDatagram
-		(data, qMin(minimum, remaining), address, m_port);
+		(data, qMin(udpMinimum, remaining), address, m_port);
 	    }
 
-	  if(m_waitforbyteswritten_msecs > 0)
+	  if(remaining - sent > udpMinimum)
+	    m_udpSocket->waitForBytesWritten();
+	  else if(m_waitforbyteswritten_msecs > 0)
 	    m_udpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
 
 	  if(sent == -1)
@@ -7061,9 +7070,9 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	      if(m_udpSocket->error() ==
 		 QAbstractSocket::DatagramTooLargeError)
 		{
-		  minimum = minimum / 2;
+		  udpMinimum = udpMinimum / 2;
 
-		  if(minimum > 0)
+		  if(udpMinimum > 0)
 		    continue;
 		}
 	      else if(m_udpSocket->error() ==
