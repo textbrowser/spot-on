@@ -3845,7 +3845,7 @@ void spoton::populateMail(void)
 
   m_ui.resend->setEnabled(m_ui.folder->currentIndex() == 1);
 
-  if(m_ui.folder->currentIndex() == 0)
+  if(m_ui.folder->currentIndex() == 0) // Inbox
     {
       if(currentTabName() == "email")
 	if(m_ui.mailTab->currentIndex() == 0)
@@ -3853,10 +3853,10 @@ void spoton::populateMail(void)
 
       m_ui.mail->horizontalHeaderItem(1)->setText(tr("From"));
     }
-  else if(m_ui.folder->currentIndex() == 1)
+  else if(m_ui.folder->currentIndex() == 1) // Sent
     m_ui.mail->horizontalHeaderItem(1)->setText(tr("To"));
   else
-    m_ui.mail->horizontalHeaderItem(1)->setText(tr("From/To"));
+    m_ui.mail->horizontalHeaderItem(1)->setText(tr("From/To")); // Trash
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   slotPopulateParticipants();
