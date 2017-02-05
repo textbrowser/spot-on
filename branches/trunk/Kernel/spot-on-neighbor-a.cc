@@ -7028,13 +7028,16 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	    (data,
 	     qMin(spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE, remaining));
 
-	  if(sent > 0 &&
-	     remaining - sent > spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE)
-	    m_bluetoothSocket->waitForBytesWritten
-	      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
-	  else if(m_waitforbyteswritten_msecs > 0)
-	    m_bluetoothSocket->waitForBytesWritten
-	      (m_waitforbyteswritten_msecs);
+	  if(sent > 0)
+	    {
+	      if(remaining - sent >
+		 spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE)
+		m_bluetoothSocket->waitForBytesWritten
+		  (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
+	      else if(m_waitforbyteswritten_msecs > 0)
+		m_bluetoothSocket->waitForBytesWritten
+		  (m_waitforbyteswritten_msecs);
+	    }
 #endif
 	}
       else if(m_sctpSocket)
@@ -7044,12 +7047,14 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	  sent = m_tcpSocket->write
 	    (data, qMin(spoton_common::MAXIMUM_TCP_PACKET_SIZE, remaining));
 
-	  if(sent > 0 &&
-	     remaining - sent > spoton_common::MAXIMUM_TCP_PACKET_SIZE)
-	    m_tcpSocket->waitForBytesWritten
-	      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
-	  else if(m_waitforbyteswritten_msecs > 0)
-	    m_tcpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
+	  if(sent > 0)
+	    {
+	      if(remaining - sent > spoton_common::MAXIMUM_TCP_PACKET_SIZE)
+		m_tcpSocket->waitForBytesWritten
+		  (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
+	      else if(m_waitforbyteswritten_msecs > 0)
+		m_tcpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
+	    }
 	}
       else if(m_udpSocket)
 	{
@@ -7064,12 +7069,14 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 		(data, qMin(udpMinimum, remaining), address, m_port);
 	    }
 
-	  if(sent > 0 &&
-	     remaining - sent > udpMinimum)
-	    m_udpSocket->waitForBytesWritten
-	      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
-	  else if(m_waitforbyteswritten_msecs > 0)
-	    m_udpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
+	  if(sent > 0)
+	    {
+	      if(remaining - sent > udpMinimum)
+		m_udpSocket->waitForBytesWritten
+		  (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
+	      else if(m_waitforbyteswritten_msecs > 0)
+		m_udpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
+	    }
 
 	  if(sent == -1)
 	    {
