@@ -35,6 +35,7 @@
 #include <QDesktopServices>
 #include <QDialog>
 #include <QDir>
+#include <QElapsedTimer>
 #include <QFileDialog>
 #include <QFuture>
 #include <QFutureWatcher>
@@ -455,6 +456,7 @@ class spoton: public QMainWindow
   QDateTime m_participantsLastModificationTime;
   QDateTime m_starsLastModificationTime;
   QDialog *m_poptasticRetroPhoneDialog;
+  QElapsedTimer m_urlQueryElapsedTimer;
   QFuture<QList<QPair<QString, QVariant> > > m_statisticsFuture;
   QFutureWatcher<QList<QPair<QString, QVariant> > > m_statisticsFutureWatcher;
   QHash<QByteArray, QPointer<spoton_buzzpage> > m_buzzPages;

@@ -63,6 +63,7 @@ void spoton::discoverUrls(void)
   if(!m_urlDatabase.isOpen())
     return;
 
+  m_urlQueryElapsedTimer.start();
   m_ui.searchfor->clear();
   m_ui.urls->clear();
   m_ui.url_pages->setText("| 1 |");
@@ -316,7 +317,6 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QDateTime time1(QDateTime::currentDateTime());
   QSqlQuery query(m_urlDatabase);
   quint64 count = 0;
 
@@ -325,12 +325,12 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
   if(query.exec())
     {
-      QDateTime time2(QDateTime::currentDateTime());
       QString html("<html>");
 
       html.append
 	(QString("The query completed in %1 second(s).<br><br>").
-	 arg(qAbs(static_cast<double> (time2.msecsTo(time1)) / 1000.0)));
+	 arg(qAbs(static_cast<double> (m_urlQueryElapsedTimer.
+				       elapsed() / 1000.0))));
 
       while(query.next())
 	{
@@ -524,6 +524,8 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
 void spoton::slotPageClicked(const QString &link)
 {
+  m_urlQueryElapsedTimer.start();
+
   if(link == "<")
     {
       if(m_urlCurrentPage > 1)

@@ -41,7 +41,6 @@ extern "C"
 
 #include <iostream>
 
-#include <QElapsedTimer>
 #ifdef Q_OS_MAC
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
