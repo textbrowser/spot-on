@@ -49,7 +49,6 @@ spoton_pageviewer::spoton_pageviewer(QSqlDatabase *db,
   m_urlHash = urlHash;
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   m_webView = new QWebEngineView(this);
-  m_webView->page()->deleteLater();
   m_webView->setContextMenuPolicy(Qt::CustomContextMenu);
   m_webView->setPage(new spoton_webengine_page(this));
   connect(m_webView,
