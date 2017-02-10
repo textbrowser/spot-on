@@ -1377,20 +1377,23 @@ void spoton::slotLock(void)
 	(m_settings.value("gui/saltedPassphraseHash", "").toByteArray());
       QString error("");
       bool authenticated = false;
-      bool ok = true;
 
       if(ui.radio_1->isChecked())
 	computedHash = spoton_crypt::saltedPassphraseHash
 	  (hashType, ui.passphrase->text(), salt, error);
       else
-	computedHash = spoton_crypt::keyedHash
-	  (ui.question->text().toUtf8(),
-	   ui.answer->text().toUtf8(),
-	   hashType,
-	   &ok);
+	{
+	  bool ok = true;
 
-      if(!ok)
-	error = "keyed hash failure";
+	  computedHash = spoton_crypt::keyedHash
+	    (ui.question->text().toUtf8(),
+	     ui.answer->text().toUtf8(),
+	     hashType,
+	     &ok);
+
+	  if(!ok)
+	    error = "keyed hash failure";
+	}
 
       if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
 	 spoton_crypt::memcmp(computedHash, saltedPassphraseHash))

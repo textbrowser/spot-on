@@ -6406,13 +6406,17 @@ void spoton::slotSetPassphrase(void)
        salt,
        error1);
   else
-    derivedKeys = spoton_crypt::derivedKeys
-      (m_ui.cipherType->currentText(),
-       m_ui.hashType->currentText(),
-       static_cast<unsigned long int> (m_ui.iterationCount->value()),
-       str1 + str2,
-       salt,
-       error1);
+    {
+      str1 = m_ui.question->text();
+      str2 = m_ui.answer->text();
+      derivedKeys = spoton_crypt::derivedKeys
+	(m_ui.cipherType->currentText(),
+	 m_ui.hashType->currentText(),
+	 static_cast<unsigned long int> (m_ui.iterationCount->value()),
+	 str1 + str2,
+	 salt,
+	 error1);
+    }
 
   m_sb.status->clear();
   QApplication::restoreOverrideCursor();
