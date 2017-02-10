@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>841</width>
+    <width>925</width>
     <height>600</height>
    </rect>
   </property>
   <property name="windowIcon">
    <iconset resource="../Icons/icons.qrc">
-    <normaloff>:/Logo/goldbug.png</normaloff>:/Logo/goldbug.png</iconset>
+    <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -443,8 +443,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>790</width>
-             <height>111</height>
+             <width>885</width>
+             <height>489</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -476,14 +476,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="find">
-                <property name="minimumSize">
-                 <size>
-                  <width>200</width>
-                  <height>0</height>
-                 </size>
-                </property>
-               </widget>
+               <widget class="QLineEdit" name="find"/>
               </item>
               <item>
                <widget class="QPushButton" name="purge">
@@ -565,6 +558,13 @@
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="clear">
+                <property name="text">
+                 <string>&amp;Clear</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="refresh_timeline">
                 <property name="text">
                  <string>&amp;Refresh</string>
@@ -634,8 +634,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>841</width>
-     <height>19</height>
+     <width>925</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -828,6 +828,7 @@
   <tabstop>purge</tabstop>
   <tabstop>purge_days</tabstop>
   <tabstop>timeline_filter</tabstop>
+  <tabstop>clear</tabstop>
   <tabstop>refresh_timeline</tabstop>
   <tabstop>errors</tabstop>
   <tabstop>clear_errors</tabstop>
