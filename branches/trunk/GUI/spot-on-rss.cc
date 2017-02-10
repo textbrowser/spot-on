@@ -134,6 +134,10 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddFeed(void)));
+  connect(m_ui.clear,
+	  SIGNAL(clicked(void)),
+	  m_ui.timeline,
+	  SLOT(clear(void)));
   connect(m_ui.clear_errors,
 	  SIGNAL(clicked(void)),
 	  m_ui.errors,
