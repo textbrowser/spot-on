@@ -2775,6 +2775,20 @@ void spoton_rss::slotScheduleFeedUpdate(void)
 
   if(!m_ui.activate->isChecked())
     QTimer::singleShot(100, this, SLOT(slotDownloadTimeout(void)));
+
+  QTableWidgetItem *item = m_ui.feeds->item(m_currentFeedRow + 1, 0);
+
+  if(item)
+    {
+      if(m_ui.activate->isChecked())
+	emit logError
+	  (QString("The feed <a href=\"%1\">%1</a> has been scheduled "
+		   "for an update.").arg(item->text()));
+      else
+	emit logError(QString("The feed <a href=\"%1\">%1</a> has been "
+			      "scheduled for an immediate update.").
+		      arg(item->text()));
+    }
 }
 
 void spoton_rss::slotShowContextMenu(const QPoint &point)
