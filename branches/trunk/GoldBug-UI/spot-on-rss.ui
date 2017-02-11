@@ -12,7 +12,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../Icons/icons.qrc">
-    <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
+    <normaloff>:/Logo/goldbug.png</normaloff>:/Logo/goldbug.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -443,8 +443,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>885</width>
-             <height>489</height>
+             <width>680</width>
+             <height>122</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
