@@ -397,6 +397,7 @@ void spoton_misc::prepareDatabases(void)
 						      ** the scope id, and
 						      ** the transport.
 						      */
+		   "socket_options TEXT, "
 		   "ssl_control_string TEXT NOT NULL DEFAULT "
 		   "'%4', "
 		   "ssl_key_size INTEGER NOT NULL DEFAULT 2048, "
@@ -459,8 +460,7 @@ void spoton_misc::prepareDatabases(void)
 		   "ip_address_hash TEXT NOT NULL, " // Keyed hash.
 		   "listener_oid INTEGER NOT NULL, "
 		   "PRIMARY KEY (ip_address_hash, listener_oid))");
-	query.exec("ALTER TABLE listeners "
-		   "ADD private_application_credentials TEXT");
+	query.exec("ALTER TABLE listeners ADD socket_options TEXT");
       }
 
     db.close();
@@ -520,6 +520,7 @@ void spoton_misc::prepareDatabases(void)
 		   "maximum_content_length INTEGER NOT NULL DEFAULT %2 "
 		   "CHECK (maximum_content_length > 0), "
 		   "echo_mode TEXT NOT NULL, "
+		   "socket_options TEXT, "
 		   "ssl_key_size INTEGER NOT NULL DEFAULT 2048, "
 		   "uptime INTEGER NOT NULL DEFAULT 0, "
 		   "certificate BLOB NOT NULL, "
@@ -570,13 +571,7 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING).
 	   arg(std::numeric_limits<int>::max()));
-	query.exec("ALTER TABLE neighbors "
-		   "ADD private_application_credentials TEXT");
-	query.exec
-	  (QString("ALTER TABLE neighbors "
-		   "ADD silence_time INTEGER NOT NULL DEFAULT 90 "
-		   "CHECK (silence_time >= 5 AND silence_time <= %1)").
-	   arg(std::numeric_limits<int>::max()));
+	query.exec("ALTER TABLE neighbors ADD socket_options TEXT");
       }
 
     db.close();
