@@ -732,7 +732,7 @@ class spoton: public QMainWindow
   void slotDaysChanged(int value);
   void slotDeactivateKernel(void);
   void slotDeleteAEToken(void);
-  void slotDeleteAccepedIP(void);
+  void slotDeleteAcceptedIP(void);
   void slotDeleteAccount(void);
   void slotDeleteAllBlockedNeighbors(void);
   void slotDeleteAllListeners(void);
@@ -952,6 +952,7 @@ class spoton: public QMainWindow
   void slotSetIconSize(int index);
   void slotSetIcons(int index);
   void slotSetListenerSSLControlString(void);
+  void slotSetListenerSocketOptions(void);
   void slotSetNeighborPriority(void);
   void slotSetNeighborSSLControlString(void);
   void slotSetPassphrase(void);

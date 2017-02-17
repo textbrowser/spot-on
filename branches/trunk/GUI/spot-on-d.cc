@@ -2615,8 +2615,7 @@ void spoton::slotSetListenerSSLControlString(void)
       if(item)
 	keySize = item->text().toInt();
 
-      item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 2); // SSL Control String
+      item = m_ui.listeners->item(row, 19); // SSL Control String
 
       if(item)
 	sslCS = item->text();

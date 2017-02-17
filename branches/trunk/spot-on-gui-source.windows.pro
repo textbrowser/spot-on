@@ -74,6 +74,7 @@ SOURCES		= Common\\spot-on-crypt.cc \
 		  GUI\\spot-on-encryptfile-page.cc \
 		  GUI\\spot-on-f.cc \
 		  GUI\\spot-on-g.cc \
+		  GUI\\spot-on-h.cc \
 		  GUI\\spot-on-logviewer.cc \
 		  GUI\\spot-on-neighborstatistics.cc \
 		  GUI\\spot-on-pageviewer.cc \

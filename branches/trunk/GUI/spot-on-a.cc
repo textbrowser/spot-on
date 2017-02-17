@@ -4133,6 +4133,7 @@ void spoton::slotPopulateListeners(void)
 		      "passthrough, "
 		      "source_of_randomness, "
 		      "private_application_credentials, "
+		      "socket_options, "
 		      "OID "
 		      "FROM listeners WHERE status_control <> 'deleted'"))
 	  {
@@ -4194,7 +4195,8 @@ void spoton::slotPopulateListeners(void)
 		      "SSL Control String: %13\n"
 		      "Lane Width: %14\n"
 		      "Passthrough: %15\n"
-		      "Source of Randomness: %16")).
+		      "Source of Randomness: %16\n"
+		      "Socket Options: %17")).
 		  arg(query.value(1).toString().toLower()).
 		  arg(query.value(2).toString()).
 		  arg(crypt->
@@ -4246,7 +4248,8 @@ void spoton::slotPopulateListeners(void)
 		  arg(query.value(19).toString()).
 		  arg(locale.toString(query.value(20).toInt())).
 		  arg(query.value(21).toInt() ? tr("Yes") : tr("No")).
-		  arg(locale.toString(query.value(22).toInt()));
+		  arg(locale.toString(query.value(22).toInt())).
+		  arg(query.value(24).toString().trimmed());
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
@@ -7471,6 +7474,9 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this, SLOT(slotGenerateOneYearListenerCertificate(void)));
       menu.addAction(tr("Set &SSL Control String..."),
 		     this, SLOT(slotSetListenerSSLControlString(void)));
+      menu.addSeparator();
+      menu.addAction(tr("Set Socket &Options..."),
+		     this, SLOT(slotSetListenerSocketOptions(void)));
       menu.exec(m_ui.listeners->mapToGlobal(point));
     }
   else if(m_ui.neighbors == sender())

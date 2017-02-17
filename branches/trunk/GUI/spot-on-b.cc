@@ -5983,7 +5983,7 @@ void spoton::slotAddAcceptedIP(void)
 			  tr("Unable to record the IP address."));
 }
 
-void spoton::slotDeleteAccepedIP(void)
+void spoton::slotDeleteAcceptedIP(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
