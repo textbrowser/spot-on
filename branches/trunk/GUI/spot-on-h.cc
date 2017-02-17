@@ -62,6 +62,7 @@ void spoton::slotSetListenerSocketOptions(void)
   Ui_spoton_listener_socket_options ui;
 
   ui.setupUi(&dialog);
+  ui.so_linger->setEnabled(transport != "UDP");
   dialog.setWindowTitle
     (tr("%1: Listener Socket Options").arg(SPOTON_APPLICATION_NAME));
 
