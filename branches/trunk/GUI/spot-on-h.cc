@@ -26,7 +26,7 @@
 */
 
 #include "spot-on.h"
-#include "ui_spot-on-listener-socket-options.h"
+#include "ui_spot-on-socket-options.h"
 
 void spoton::slotSetListenerSocketOptions(void)
 {
@@ -59,7 +59,7 @@ void spoton::slotSetListenerSocketOptions(void)
 
   QDialog dialog(this);
   QStringList list(socketOptions.split(";", QString::SkipEmptyParts));
-  Ui_spoton_listener_socket_options ui;
+  Ui_spoton_socket_options ui;
 
   ui.setupUi(&dialog);
   ui.so_linger->setEnabled(transport != "UDP");

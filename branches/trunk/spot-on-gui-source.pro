@@ -10,7 +10,6 @@ FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
 		  UI/spot-on-goldbug.ui \
 		  UI/spot-on-ipinformation.ui \
 		  UI/spot-on-keyboard.ui \
-		  UI/spot-on-listener-socket-options.ui \
                   UI/spot-on-logviewer.ui \
 		  UI/spot-on-neighborstatistics.ui \
 		  UI/spot-on-notificationswindow.ui \
@@ -23,6 +22,7 @@ FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
 		  UI/spot-on-rosetta.ui \
 		  UI/spot-on-rss.ui \
 		  UI/spot-on-smpwindow.ui \
+		  UI/spot-on-socket-options.ui \
                   UI/spot-on-starbeamanalyzer.ui \
 		  UI/spot-on-statisticswindow.ui \
 		  UI/spot-on-statusbar.ui \

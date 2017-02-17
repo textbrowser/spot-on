@@ -10,7 +10,6 @@ FORMS           = GoldBug-UI/spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI/spot-on-goldbug.ui \
 		  GoldBug-UI/spot-on-ipinformation.ui \
 		  GoldBug-UI/spot-on-keyboard.ui \
-		  GoldBug-UI/spot-on-listener-socket-options.ui \
                   GoldBug-UI/spot-on-logviewer.ui \
 		  GoldBug-UI/spot-on-notificationswindow.ui \
 		  GoldBug-UI/spot-on-options.ui \
@@ -22,6 +21,7 @@ FORMS           = GoldBug-UI/spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI/spot-on-rosetta.ui \
 		  GoldBug-UI/spot-on-rss.ui \
 		  GoldBug-UI/spot-on-smpwindow.ui \
+		  GoldBug-UI/spot-on-socket-options.ui \
                   GoldBug-UI/spot-on-starbeamanalyzer.ui \
 		  GoldBug-UI/spot-on-statisticswindow.ui \
 		  GoldBug-UI/spot-on-statusbar.ui \
