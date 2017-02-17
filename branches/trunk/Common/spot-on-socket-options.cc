@@ -25,4 +25,28 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QStringList>
+
 #include "spot-on-socket-options.h"
+
+void spoton_socket_options::setSocketOptions
+(const QString &options, bool *ok, void *socket)
+{
+  if(!socket)
+    {
+      if(ok)
+	*ok = false;
+
+      return;
+    }
+
+  QStringList list(options.split(";", QString::SkipEmptyParts));
+
+  if(list.isEmpty())
+    {
+      if(ok)
+	*ok = true;
+
+      return;
+    }
+}

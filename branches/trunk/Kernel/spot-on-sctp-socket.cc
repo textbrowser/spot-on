@@ -139,7 +139,13 @@ QHostAddress spoton_sctp_socket::localAddressAndPort(quint16 *port) const
 
   length = sizeof(peeraddr);
 
-  if(getsockname(m_socketDescriptor, (struct sockaddr *) &peeraddr,
+  if(getsockname(
+#ifdef Q_OS_WIN32
+		 (SOCKET) m_socketDescriptor,
+#else
+		 m_socketDescriptor,
+#endif
+		 (struct sockaddr *) &peeraddr,
 		 &length) == 0)
     {
       if(peeraddr.ss_family == AF_INET)
@@ -323,7 +329,7 @@ int spoton_sctp_socket::setSocketBlockingOrNon(void)
 #ifdef Q_OS_WIN32
   unsigned long int enabled = 1;
 
-  rc = ioctlsocket(m_socketDescriptor, FIONBIO, &enabled);
+  rc = ioctlsocket((SOCKET) m_socketDescriptor, FIONBIO, &enabled);
 
   if(rc != 0)
     {
@@ -478,7 +484,7 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
 
 #ifdef Q_OS_WIN32
   sent = send
-    (m_socketDescriptor, data,
+    ((SOCKET) m_socketDescriptor, data,
      static_cast<size_t> (qMin(size, writeSize)), 0);
 #else
   sent = send
@@ -558,7 +564,7 @@ void spoton_sctp_socket::abort(void)
 {
 #ifdef SPOTON_SCTP_ENABLED
 #ifdef Q_OS_WIN32
-  shutdown(m_socketDescriptor, SD_BOTH);
+  shutdown((SOCKET) m_socketDescriptor, SD_BOTH);
 #else
   shutdown(m_socketDescriptor, SHUT_RDWR);
 #endif
@@ -573,8 +579,8 @@ void spoton_sctp_socket::close(void)
 
   QHostInfo::abortHostLookup(m_hostLookupId);
 #ifdef Q_OS_WIN32
-  shutdown(m_socketDescriptor, SD_BOTH);
-  closesocket(m_socketDescriptor);
+  shutdown((SOCKET) m_socketDescriptor, SD_BOTH);
+  closesocket((SOCKET) m_socketDescriptor);
 #else
   shutdown(m_socketDescriptor, SHUT_RDWR);
   ::close(m_socketDescriptor);
@@ -671,7 +677,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
   optval = m_bufferSize;
 #ifdef Q_OS_WIN32
-  rc = setsockopt(m_socketDescriptor, SOL_SOCKET,
+  rc = setsockopt((SOCKET) m_socketDescriptor, SOL_SOCKET,
 		  SO_RCVBUF, (const char *) &optval, (int) optlen);
 #else
   rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, &optval, optlen);
@@ -684,7 +690,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
   optval = m_bufferSize;
 #ifdef Q_OS_WIN32
-  rc = setsockopt(m_socketDescriptor, SOL_SOCKET,
+  rc = setsockopt((SOCKET) m_socketDescriptor, SOL_SOCKET,
 		  SO_SNDBUF, (const char *) &optval, (int) optlen);
 #else
   rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, &optval, optlen);
@@ -870,7 +876,7 @@ void spoton_sctp_socket::setSocketOption(const SocketOption option,
 
 #ifdef Q_OS_WIN32
 	rc = setsockopt
-	  (m_socketDescriptor, SOL_SOCKET,
+	  ((SOCKET) m_socketDescriptor, SOL_SOCKET,
 	   SO_KEEPALIVE, (const char *) &optval, (int) optlen);
 #else
 	rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_KEEPALIVE,
@@ -892,7 +898,7 @@ void spoton_sctp_socket::setSocketOption(const SocketOption option,
 
 #ifdef Q_OS_WIN32
 	rc = setsockopt
-	  (m_socketDescriptor, IPPROTO_SCTP,
+	  ((SOCKET) m_socketDescriptor, IPPROTO_SCTP,
 	   SCTP_NODELAY, (const char *) &optval, (int) optlen);
 #else
 	rc = setsockopt(m_socketDescriptor, IPPROTO_SCTP, SCTP_NODELAY,
@@ -967,7 +973,7 @@ void spoton_sctp_socket::slotTimeout(void)
 
 #ifdef Q_OS_WIN32
 	      rc = getsockopt
-		(m_socketDescriptor, SOL_SOCKET,
+		((SOCKET) m_socketDescriptor, SOL_SOCKET,
 		 SO_ERROR, (char *) &errorcode, &length);
 #else
 	      rc = getsockopt
