@@ -189,6 +189,7 @@ class spoton_listener: public QObject
 		  const int passthrough,
 		  const int sourceOfRandomness,
 		  const QByteArray &privateApplicationCredentials,
+		  const QString &socketOptions,
 		  QObject *parent);
   ~spoton_listener();
   QHostAddress externalAddress(void) const;
@@ -217,6 +218,7 @@ class spoton_listener: public QObject
   QString m_motd;
   QString m_orientation;
   QString m_scopeId;
+  QString m_socketOptions;
   QString m_sslControlString;
   QString m_transport;
   QTimer m_externalAddressDiscovererTimer;

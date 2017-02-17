@@ -35,6 +35,7 @@
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-external-address.h"
+#include "Common/spot-on-socket-options.h"
 #include "spot-on-kernel.h"
 #include "spot-on-listener.h"
 #include "spot-on-sctp-server.h"
@@ -186,6 +187,7 @@ spoton_listener::spoton_listener
  const int passthrough,
  const int sourceOfRandomness,
  const QByteArray &privateApplicationCredentials,
+ const QString &socketOptions,
  QObject *parent):QObject(parent)
 {
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
@@ -258,6 +260,7 @@ spoton_listener::spoton_listener
   m_publicKey = publicKey;
   m_scopeId = scopeId;
   m_shareAddress = shareAddress;
+  m_socketOptions = socketOptions.trimmed();
   m_sourceOfRandomness = qBound
     (0,
      sourceOfRandomness,
@@ -480,7 +483,8 @@ void spoton_listener::slotTimeout(void)
 		      "private_application_credentials, "
 		      "certificate, "
 		      "private_key, "
-		      "public_key "
+		      "public_key, "
+		      "socket_options "
 		      "FROM listeners WHERE OID = ?");
 	query.bindValue(0, m_id);
 
@@ -509,6 +513,7 @@ void spoton_listener::slotTimeout(void)
 		  (query.value(6).toByteArray().constData(),
 		   query.value(6).toByteArray().length()).trimmed();
 		m_passthrough = query.value(9).toInt();
+		m_socketOptions = query.value(15).toString();
 		m_sourceOfRandomness = qBound
 		  (0,
 		   query.value(10).toInt(),
@@ -784,6 +789,8 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
   try
     {
+      spoton_socket_options::setSocketOptions
+	(m_socketOptions, 0, static_cast<qint64> (socketDescriptor));
       neighbor = new spoton_neighbor
 	(socketDescriptor, m_certificate, m_privateKey,
 	 m_echoMode, m_useAccounts, m_id, m_maximumBufferSize,

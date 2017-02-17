@@ -29,10 +29,35 @@
 
 #include "spot-on-socket-options.h"
 
-void spoton_socket_options::setSocketOptions
-(const QString &options, bool *ok, void *socket)
+#ifdef Q_OS_FREEBSD
+extern "C"
 {
-  if(!socket)
+#include <sys/socket.h>
+#include <sys/types.h>
+}
+#elif defined(Q_OS_LINUX)
+extern "C"
+{
+#include <sys/socket.h>
+#include <sys/types.h>
+}
+#elif defined(Q_OS_MAC)
+extern "C"
+{
+#include <sys/socket.h>
+#include <sys/types.h>
+}
+#elif defined(Q_OS_WIN32)
+extern "C"
+{
+#include <winsock2.h>
+}
+#endif
+
+void spoton_socket_options::setSocketOptions
+(const QString &options, bool *ok, qint64 socket)
+{
+  if(socket < 0)
     {
       if(ok)
 	*ok = false;
@@ -49,4 +74,51 @@ void spoton_socket_options::setSocketOptions
 
       return;
     }
+
+  if(ok)
+    *ok = true;
+
+  foreach(QString string, list)
+    if(string.startsWith("so_linger="))
+      {
+	string = string.mid(static_cast<int> (qstrlen("so_linger=")));
+
+	int v = string.toInt();
+
+	if(!string.isEmpty() && v >= 0)
+	  {
+	    int rc = 0;
+	    socklen_t length = 0;
+
+#ifdef Q_OS_WIN32
+	    struct linger
+	    {
+	      u_short l_onoff;
+	      u_short l_linger;
+	    } l;
+
+	    l.l_onoff = 1;
+	    l.l_linger = static_cast<u_short> (v);
+	    length = sizeof(l);
+	    rc = setsockopt
+	      ((SOCKET) socket,
+	       SOL_SOCKET, SO_LINGER, (const char *) &l, (int) length);
+#else
+	    struct linger l;
+
+	    l.l_onoff = 1;
+	    l.l_linger = v;
+	    length = sizeof(l);
+	    rc = setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, length);
+#endif
+
+	    if(rc != 0)
+	      {
+		if(ok)
+		  *ok = false;
+
+		break;
+	      }
+	  }
+      }
 }

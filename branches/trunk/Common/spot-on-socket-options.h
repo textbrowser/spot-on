@@ -28,42 +28,10 @@
 #ifndef _spoton_socket_options_h_
 #define _spoton_socket_options_h_
 
-#include <QtGlobal>
-
-#ifdef Q_OS_FREEBSD
-extern "C"
-{
-#include <sys/socket.h>
-#include <sys/types.h>
-}
-#elif defined(Q_OS_LINUX)
-extern "C"
-{
-#include <sys/socket.h>
-#include <sys/types.h>
-}
-#elif defined(Q_OS_MAC)
-extern "C"
-{
-#include <sys/socket.h>
-#include <sys/types.h>
-}
-#elif defined(Q_OS_WIN32)
-extern "C"
-{
-#include <winsock2.h>
-}
-#endif
-
 class spoton_socket_options
 {
  public:
-  enum SocketOption
-  {
-    SoLinger = SO_LINGER
-  };
-
-  void setSocketOptions(const QString &options, bool *ok, void *socket);
+  static void setSocketOptions(const QString &options, bool *ok, qint64 socket);
 
  private:
   spoton_socket_options(void);

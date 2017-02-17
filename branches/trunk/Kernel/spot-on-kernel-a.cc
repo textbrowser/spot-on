@@ -1175,7 +1175,8 @@ void spoton_kernel::prepareListeners(void)
 		      "passthrough, "                     // 19
 		      "source_of_randomness, "            // 20
 		      "private_application_credentials, " // 21
-		      "OID "                              // 22
+		      "socket_options, "                  // 22
+		      "OID "                              // 23
 		      "FROM listeners"))
 	  while(query.next())
 	    {
@@ -1323,6 +1324,7 @@ void spoton_kernel::prepareListeners(void)
 				 query.value(19).toInt(),
 				 query.value(20).toInt(),
 				 privateApplicationCredentials,
+				 query.value(22).toString(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)
