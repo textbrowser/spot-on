@@ -26,7 +26,75 @@
 */
 
 #include "spot-on.h"
+#include "ui_spot-on-listener-socket-options.h"
 
 void spoton::slotSetListenerSocketOptions(void)
 {
+  QString oid("");
+  QString socketOptions("");
+  QString transport("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+
+      item = m_ui.listeners->item(row, 24); // Socket Options
+
+      if(item)
+	socketOptions = item->text();
+
+      item = m_ui.listeners->item(row, 15); // Transport
+
+      if(item)
+	transport = item->text().toUpper();
+    }
+
+  if(!(transport == "SCTP" || transport == "TCP" || transport == "UDP"))
+    return;
+
+  QDialog dialog(this);
+  QStringList list(socketOptions.split(";", QString::SkipEmptyParts));
+  Ui_spoton_listener_socket_options ui;
+
+  ui.setupUi(&dialog);
+  dialog.setWindowTitle
+    (tr("%1: Listener Socket Options").arg(SPOTON_APPLICATION_NAME));
+
+  foreach(QString string, list)
+    if(string.startsWith("so_linger="))
+      ui.so_linger->setValue
+	(string.mid(static_cast<int> (qstrlen("so_linger="))).toInt());
+
+  if(dialog.exec() != QDialog::Accepted)
+    return;
+
+  socketOptions = QString("so_linger=%1").arg(ui.so_linger->value());
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE listeners SET socket_options = ? WHERE OID = ?");
+	query.addBindValue(socketOptions);
+	query.addBindValue(oid);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }

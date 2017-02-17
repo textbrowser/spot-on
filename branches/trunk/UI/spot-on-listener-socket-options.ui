@@ -20,15 +20,15 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>&amp;Linger Time</string>
+        <string>SO_&amp;LINGER</string>
        </property>
        <property name="buddy">
-        <cstring>linger_time</cstring>
+        <cstring>so_linger</cstring>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="linger_time">
+      <widget class="QSpinBox" name="so_linger">
        <property name="suffix">
         <string> Seconds</string>
        </property>
@@ -84,7 +84,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>linger_time</tabstop>
+  <tabstop>so_linger</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
