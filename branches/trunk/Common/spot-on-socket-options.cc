@@ -55,7 +55,7 @@ extern "C"
 #endif
 
 void spoton_socket_options::setSocketOptions
-(const QString &options, bool *ok, qint64 socket)
+(const QString &options, const qint64 socket, bool *ok)
 {
   if(socket < 0)
     {

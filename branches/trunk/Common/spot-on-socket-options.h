@@ -31,7 +31,9 @@
 class spoton_socket_options
 {
  public:
-  static void setSocketOptions(const QString &options, bool *ok, qint64 socket);
+  static void setSocketOptions(const QString &options,
+			       const qint64 socket,
+			       bool *ok);
 
  private:
   spoton_socket_options(void);
