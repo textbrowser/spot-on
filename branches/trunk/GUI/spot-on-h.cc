@@ -28,43 +28,79 @@
 #include "spot-on.h"
 #include "ui_spot-on-socket-options.h"
 
-void spoton::slotSetListenerSocketOptions(void)
+void spoton::slotSetSocketOptions(void)
 {
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString type(action->property("type").toString());
+
+  if(!(type == "listeners" || type == "neighbors"))
+    return;
+
   QString oid("");
   QString socketOptions("");
   QString transport("");
   int row = -1;
 
-  if((row = m_ui.listeners->currentRow()) >= 0)
+  if(type == "listeners")
     {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
+      if((row = m_ui.listeners->currentRow()) >= 0)
+	{
+	  QTableWidgetItem *item = m_ui.listeners->item
+	    (row, m_ui.listeners->columnCount() - 1); // OID
 
-      if(item)
-	oid = item->text();
+	  if(item)
+	    oid = item->text();
 
-      item = m_ui.listeners->item(row, 24); // Socket Options
+	  item = m_ui.listeners->item(row, 24); // Socket Options
 
-      if(item)
-	socketOptions = item->text();
+	  if(item)
+	    socketOptions = item->text();
 
-      item = m_ui.listeners->item(row, 15); // Transport
+	  item = m_ui.listeners->item(row, 15); // Transport
 
-      if(item)
-	transport = item->text().toUpper();
+	  if(item)
+	    transport = item->text().toUpper();
+	}
     }
+  else
+    {
+      if((row = m_ui.neighbors->currentRow()) >= 0)
+	{
+	  QTableWidgetItem *item = m_ui.neighbors->item
+	    (row, m_ui.neighbors->columnCount() - 1); // OID
 
-  if(!(transport == "SCTP" || transport == "TCP" || transport == "UDP"))
-    return;
+	  if(item)
+	    oid = item->text();
+
+	  item = m_ui.neighbors->item(row, 41); // Socket Options
+
+	  if(item)
+	    socketOptions = item->text();
+
+	  item = m_ui.neighbors->item(row, 27); // Transport
+
+	  if(item)
+	    transport = item->text().toUpper();
+	}
+    }
 
   QDialog dialog(this);
   QStringList list(socketOptions.split(";", QString::SkipEmptyParts));
   Ui_spoton_socket_options ui;
 
   ui.setupUi(&dialog);
-  ui.so_linger->setEnabled(transport != "UDP");
-  dialog.setWindowTitle
-    (tr("%1: Listener Socket Options").arg(SPOTON_APPLICATION_NAME));
+  ui.so_linger->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
+
+  if(type == "listeners")
+    dialog.setWindowTitle
+      (tr("%1: Listener Socket Options").arg(SPOTON_APPLICATION_NAME));
+  else
+    dialog.setWindowTitle
+      (tr("%1: Neighbor Socket Options").arg(SPOTON_APPLICATION_NAME));
 
   foreach(QString string, list)
     if(string.startsWith("so_linger="))
@@ -81,14 +117,16 @@ void spoton::slotSetListenerSocketOptions(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName(spoton_misc::homePath() +
+		       QDir::separator() +
+		       QString("%1.db").arg(type));
 
     if(db.open())
       {
 	QSqlQuery query(db);
 
-	query.prepare("UPDATE listeners SET socket_options = ? WHERE OID = ?");
+	query.prepare
+	  (QString("UPDATE %1 SET socket_options = ? WHERE OID = ?").arg(type));
 	query.addBindValue(socketOptions);
 	query.addBindValue(oid);
 	query.exec();

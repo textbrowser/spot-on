@@ -3092,8 +3092,9 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("Set &SSL Control String..."),
 		      this, SLOT(slotSetListenerSSLControlString(void)));
       menu->addSeparator();
-      menu->addAction(tr("Set Socket &Options..."),
-		      this, SLOT(slotSetListenerSocketOptions(void)));
+      action = menu->addAction(tr("Set Socket &Options..."),
+			       this, SLOT(slotSetSocketOptions(void)));
+      action->setProperty("type", "listeners");
       m_ui.listenersActionMenu->setMenu(menu);
       connect(m_ui.listenersActionMenu,
 	      SIGNAL(clicked(void)),
@@ -3211,6 +3212,10 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       menu->addAction(tr("Set &SSL Control String..."),
 		      this, SLOT(slotSetNeighborSSLControlString(void)));
+      menu->addSeparator();
+      action = menu->addAction(tr("Set Socket &Options..."),
+			       this, SLOT(slotSetSocketOptions(void)));
+      action->setProperty("type", "neighbors");
       menu->addSeparator();
 
       QList<QPair<QString, QThread::Priority> > list;

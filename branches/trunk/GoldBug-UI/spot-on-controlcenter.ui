@@ -4148,8 +4148,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>519</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -4514,6 +4514,11 @@ color: rgb(255, 255, 255);</string>
                     <column>
                      <property name="text">
                       <string>Silence Time (Seconds)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>Socket Options</string>
                      </property>
                     </column>
                     <column>
@@ -5269,8 +5274,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>603</width>
-             <height>335</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -8115,7 +8120,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>425</width>
+             <width>609</width>
              <height>679</height>
             </rect>
            </property>
@@ -9462,8 +9467,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>426</width>
-             <height>444</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">

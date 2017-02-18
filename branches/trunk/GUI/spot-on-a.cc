@@ -4849,6 +4849,7 @@ void spoton::slotPopulateNeighbors(void)
 		      "waitforbyteswritten_msecs, "
 		      "private_application_credentials, "
 		      "silence_time, "
+		      "socket_options, "
 		      "OID "
 		      "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
@@ -4962,7 +4963,8 @@ void spoton::slotPopulateNeighbors(void)
 		      "Lane Width: %26\n"
 		      "Passthrough: %27\n"
 		      "Wait-For-Bytes-Written: %28\n"
-		      "Silence Time: %29")).
+		      "Silence Time: %29\n"
+		      "Socket Options: %30")).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
@@ -5079,7 +5081,8 @@ void spoton::slotPopulateNeighbors(void)
 		  arg(locale.toString(query.value(36).toInt())).
 		  arg(query.value(37).toInt() ? tr("Yes") : tr("No")).
 		  arg(locale.toString(query.value(38).toInt())).
-		  arg(query.value(40).toInt());
+		  arg(query.value(40).toInt()).
+		  arg(query.value(41).toString());
 
 		{
 		  QTableWidgetItem *item = new QTableWidgetItem();
@@ -7475,8 +7478,9 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addAction(tr("Set &SSL Control String..."),
 		     this, SLOT(slotSetListenerSSLControlString(void)));
       menu.addSeparator();
-      menu.addAction(tr("Set Socket &Options..."),
-		     this, SLOT(slotSetListenerSocketOptions(void)));
+      action = menu.addAction(tr("Set Socket &Options..."),
+			      this, SLOT(slotSetSocketOptions(void)));
+      action->setProperty("type", "listeners");
       menu.exec(m_ui.listeners->mapToGlobal(point));
     }
   else if(m_ui.neighbors == sender())
@@ -7579,6 +7583,10 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       menu.addAction(tr("Set &SSL Control String..."),
 		     this, SLOT(slotSetNeighborSSLControlString(void)));
+      menu.addSeparator();
+      action = menu.addAction(tr("Set Socket &Options..."),
+			      this, SLOT(slotSetSocketOptions(void)));
+      action->setProperty("type", "neighbors");
       menu.addSeparator();
 
       QList<QPair<QString, QThread::Priority> > list;

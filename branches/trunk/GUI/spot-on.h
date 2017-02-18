@@ -952,13 +952,13 @@ class spoton: public QMainWindow
   void slotSetIconSize(int index);
   void slotSetIcons(int index);
   void slotSetListenerSSLControlString(void);
-  void slotSetListenerSocketOptions(void);
   void slotSetNeighborPriority(void);
   void slotSetNeighborSSLControlString(void);
   void slotSetPassphrase(void);
   void slotSetPrivateApplicationInformation(void);
   void slotSetSBPulseSize(void);
   void slotSetSBReadInterval(void);
+  void slotSetSocketOptions(void);
   void slotSetStyleSheet(void);
   void slotSetUrlIniPath(void);
   void slotSetWidgetStyleSheet(const QPoint &point);
