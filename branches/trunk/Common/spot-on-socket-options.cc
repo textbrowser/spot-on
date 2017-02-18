@@ -27,6 +27,8 @@
 
 #include <QStringList>
 
+#include <limits>
+
 #include "spot-on-misc.h"
 #include "spot-on-socket-options.h"
 
@@ -136,7 +138,7 @@ void spoton_socket_options::setSocketOptions
 
 	string = string.mid(static_cast<int> (qstrlen("so_rcvbuf=")));
 
-	int v = string.toInt();
+	int v = qBound(4096, string.toInt(), std::numeric_limits<int>::max());
 
 	if(!string.isEmpty() && v > 0)
 	  {
