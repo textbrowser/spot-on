@@ -110,7 +110,7 @@ void spoton_socket_options::setSocketOptions
 	    l.l_onoff = 1;
 	    l.l_linger = v;
 	    length = sizeof(l);
-	    rc = setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, length);
+	    rc = setsockopt((int) socket, SOL_SOCKET, SO_LINGER, &l, length);
 #endif
 
 	    if(rc != 0)
@@ -121,6 +121,44 @@ void spoton_socket_options::setSocketOptions
 		spoton_misc::logError
 		  ("spoton_socket_options::setSocketOptions(): "
 		   "setsockopt() failure on SO_LINGER.");
+	      }
+	  }
+      }
+    else if(string.startsWith("so_rcvbuf=") ||
+	    string.startsWith("so_sndbuf="))
+      {
+	int option = 0;
+
+	if(string.startsWith("so_rcvbuf="))
+	  option = SO_RCVBUF;
+	else
+	  option = SO_SNDBUF;
+
+	string = string.mid(static_cast<int> (qstrlen("so_rcvbuf=")));
+
+	int v = string.toInt();
+
+	if(!string.isEmpty() && v > 0)
+	  {
+	    int rc = 0;
+	    socklen_t length = sizeof(v);
+
+#ifdef Q_OS_WIN32
+	    rc = setsockopt
+	      ((SOCKET) socket,
+	       SOL_SOCKET, option, (const char *) &v, (int) length);
+#else
+	    rc = setsockopt((int) socket, SOL_SOCKET, option, &v, length);
+#endif
+
+	    if(rc != 0)
+	      {
+		if(ok)
+		  *ok = false;
+
+		spoton_misc::logError
+		  ("spoton_socket_options::setSocketOptions(): "
+		   "setsockopt() failure on SO_RCVBUF / SO_SNDBUF.");
 	      }
 	  }
       }
