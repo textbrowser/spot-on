@@ -27,6 +27,7 @@
 
 #include <QStringList>
 
+#include "spot-on-misc.h"
 #include "spot-on-socket-options.h"
 
 #ifdef Q_OS_FREEBSD
@@ -117,7 +118,9 @@ void spoton_socket_options::setSocketOptions
 		if(ok)
 		  *ok = false;
 
-		break;
+		spoton_misc::logError
+		  ("spoton_socket_options::setSocketOptions(): "
+		   "setsockopt() failure on SO_LINGER.");
 	      }
 	  }
       }
