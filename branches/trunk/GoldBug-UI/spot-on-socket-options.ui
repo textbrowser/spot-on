@@ -16,70 +16,76 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;According to the FreeBSD setsockopt() manual page, SO_LINGER controls the action that is taken when unsent messages are queued on a socket and a close() is performed. If the socket promises reliable delivery of data and SO_LINGER is set, the system will block the process on the close() attempt until it is able to transmit the data or until it decides it is unable to deliver the information (a timeout period, termed the linger interval, is specified in seconds in the setsockopt() system call when SO_LINGER is requested). If SO_LINGER is disabled and a close() is issued, the system will process the close in a manner that allows the process to continue as quickly as possible. A value of negative one disables the option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="wordWrap">
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
       <bool>true</bool>
      </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>326</width>
+        <height>341</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;According to the FreeBSD setsockopt() manual page, SO_LINGER controls the action that is taken when unsent messages are queued on a socket and a close() is performed. If the socket promises reliable delivery of data and SO_LINGER is set, the system will block the process on the close() attempt until it is able to transmit the data or until it decides it is unable to deliver the information (a timeout period, termed the linger interval, is specified in seconds in the setsockopt() system call when SO_LINGER is requested). If SO_LINGER is disabled and a close() is issued, the system will process the close in a manner that allows the process to continue as quickly as possible. A value of negative one disables the option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>SO_&amp;LINGER</string>
+           </property>
+           <property name="buddy">
+            <cstring>so_linger</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="so_linger">
+           <property name="suffix">
+            <string> Seconds</string>
+           </property>
+           <property name="minimum">
+            <number>-1</number>
+           </property>
+           <property name="maximum">
+            <number>3600</number>
+           </property>
+           <property name="value">
+            <number>-1</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>SO_&amp;LINGER</string>
-       </property>
-       <property name="buddy">
-        <cstring>so_linger</cstring>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="so_linger">
-       <property name="suffix">
-        <string> Seconds</string>
-       </property>
-       <property name="minimum">
-        <number>-1</number>
-       </property>
-       <property name="maximum">
-        <number>3600</number>
-       </property>
-       <property name="value">
-        <number>-1</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -94,8 +100,8 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>scrollArea</tabstop>
   <tabstop>so_linger</tabstop>
-  <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
