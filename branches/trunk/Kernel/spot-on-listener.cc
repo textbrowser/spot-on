@@ -1573,7 +1573,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
     }
 #endif
   if(m_sctpServer)
-    return m_sctpServer->listen(QHostAddress(address), port);
+    return m_sctpServer->listen(QHostAddress(address), port, m_socketOptions);
   else if(m_tcpServer)
     return m_tcpServer->listen(QHostAddress(address), port);
   else if(m_udpServer)

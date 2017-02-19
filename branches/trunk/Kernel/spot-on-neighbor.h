@@ -52,6 +52,7 @@
 #include "Common/spot-on-external-address.h"
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-send.h"
+#include "Common/spot-on-socket-options.h"
 #include "spot-on-sctp-socket.h"
 
 class spoton_neighbor_tcp_socket: public QSslSocket
@@ -79,8 +80,12 @@ class spoton_neighbor_udp_socket: public QUdpSocket
     m_multicastSocket = 0;
   }
 
-  void initializeMulticast(const QHostAddress &address, const quint16 port)
+  void initializeMulticast(const QHostAddress &address,
+			   const quint16 port,
+			   const QString &socketOptions)
   {
+    Q_UNUSED(socketOptions);
+
     if(address.protocol() == QAbstractSocket::IPv4Protocol)
       {
 	quint32 a = address.toIPv4Address();
@@ -214,6 +219,7 @@ class spoton_neighbor: public QThread
 		  const int waitforbyteswritten_msecs,
 		  const QByteArray &privateApplicationCredentials,
 		  const int silenceTime,
+		  const QString &socketOptions,
 		  QObject *parent);
 
   /*
@@ -315,6 +321,7 @@ class spoton_neighbor: public QThread
   QString m_orientation;
   QString m_protocol;
   QString m_scopeId;
+  QString m_socketOptions;
   QString m_sslControlString;
   QString m_statusControl;
   QString m_transport;

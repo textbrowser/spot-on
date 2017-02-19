@@ -75,6 +75,7 @@ extern "C"
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-misc.h"
+#include "Common/spot-on-socket-options.h"
 #include "spot-on-kernel.h"
 #include "spot-on-sctp-server.h"
 
@@ -87,7 +88,6 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
   m_socketDescriptor = -1;
 #ifdef SPOTON_SCTP_ENABLED
   m_backlog = 30;
-  m_bufferSize = 65535;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
   m_socketNotifier = 0;
 #else
@@ -99,7 +99,6 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
 #endif
 #else
   m_backlog = 0;
-  m_bufferSize = 0;
 #endif
 }
 
@@ -136,7 +135,8 @@ bool spoton_sctp_server::isListening(void) const
 }
 
 bool spoton_sctp_server::listen(const QHostAddress &address,
-				const quint16 port)
+				const quint16 port,
+				const QString &socketOptions)
 {
 #ifdef SPOTON_SCTP_ENABLED
   if(m_isListening)
@@ -203,18 +203,10 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   ** Set the read and write buffer sizes.
   */
 
-  optval = m_bufferSize;
-#ifdef Q_OS_WIN32
-  rc = setsockopt
-    (m_socketDescriptor, SOL_SOCKET,
-     SO_RCVBUF, (const char *) &optval, (int) optlen);
-#else
-  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, &optval, optlen);
-#endif
-
-  if(rc != 0)
-    spoton_misc::logError
-      ("spoton_sctp_server::listen(): setsockopt() failure, SO_RCVBUF.");
+  spoton_socket_options::setSocketOptions
+    (socketOptions,
+     static_cast<qint64> (m_socketDescriptor),
+     0);
 
   optval = 1;
 #ifdef Q_OS_WIN32
@@ -229,19 +221,6 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   if(rc != 0)
     spoton_misc::logError
       ("spoton_sctp_server::listen(): setsockopt() failure, SO_REUSEADDR.");
-
-  optval = m_bufferSize;
-#ifdef Q_OS_WIN32
-  rc = setsockopt
-    (m_socketDescriptor, SOL_SOCKET,
-     SO_SNDBUF, (const char *) &optval, (int) optlen);
-#else
-  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, &optval, optlen);
-#endif
-
-  if(rc != 0)
-    spoton_misc::logError
-      ("spoton_sctp_server::listen(): setsockopt() failure, SO_SNDBUF.");
 
   /*
   ** Let's bind.
@@ -430,6 +409,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 #else
   Q_UNUSED(address);
   Q_UNUSED(port);
+  Q_UNUSED(socketOptions);
   return false;
 #endif
 }

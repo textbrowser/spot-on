@@ -46,7 +46,8 @@ class spoton_sctp_server: public QObject
   QString errorString(void) const;
   bool isListening(void) const;
   bool listen(const QHostAddress &address,
-	      const quint16 port);
+	      const quint16 port,
+	      const QString &socketOptions);
   int maxPendingConnections(void) const;
   int socketDescriptor(void) const;
   quint16 serverPort(void) const;
@@ -63,7 +64,6 @@ class spoton_sctp_server: public QObject
 #endif
   bool m_isListening;
   int m_backlog;
-  int m_bufferSize;
   int m_socketDescriptor;
   qint64 m_id;
   quint16 m_serverPort;

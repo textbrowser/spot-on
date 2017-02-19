@@ -549,6 +549,7 @@ spoton_neighbor::spoton_neighbor
  const int waitforbyteswritten_msecs,
  const QByteArray &privateApplicationCredentials,
  const int silenceTime,
+ const QString &socketOptions,
  QObject *parent):QThread(parent)
 {
   m_abort = 0;
@@ -600,6 +601,7 @@ spoton_neighbor::spoton_neighbor
   m_requireSsl = requireSsl;
   m_sctpSocket = 0;
   m_silenceTime = qBound(5, silenceTime, std::numeric_limits<int>::max());
+  m_socketOptions = socketOptions;
   m_sourceOfRandomness = 0;
   m_sslControlString = sslControlString.trimmed();
 
@@ -2237,7 +2239,7 @@ void spoton_neighbor::slotConnected(void)
 	  QHostAddress address(m_address);
 
 	  address.setScopeId(m_scopeId);
-	  m_udpSocket->initializeMulticast(address, m_port);
+	  m_udpSocket->initializeMulticast(address, m_port, m_socketOptions);
 
 	  if(m_udpSocket->multicastSocket())
 	    connect(m_udpSocket->multicastSocket(),

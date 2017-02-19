@@ -57,6 +57,31 @@ extern "C"
 }
 #endif
 
+int spoton_socket_options::socket(const QHostAddress &address,
+				  const int type,
+				  const int protocol)
+{
+  QAbstractSocket::NetworkLayerProtocol domain = QAbstractSocket::IPv4Protocol;
+
+  if(QHostAddress(address).protocol() == QAbstractSocket::IPv6Protocol)
+    domain = QAbstractSocket::IPv6Protocol;
+
+  if(domain == QAbstractSocket::IPv4Protocol)
+    return ::socket(AF_INET, type, protocol);
+  else
+    return ::socket(AF_INET6, type, protocol);
+}
+
+int spoton_socket_options::tcpSocket(const QHostAddress &address)
+{
+  return socket(address, SOCK_STREAM, IPPROTO_TCP);
+}
+
+int spoton_socket_options::udpSocket(const QHostAddress &address)
+{
+  return socket(address, SOCK_DGRAM, IPPROTO_UDP);
+}
+
 void spoton_socket_options::setSocketOptions
 (const QString &options, const qint64 socket, bool *ok)
 {

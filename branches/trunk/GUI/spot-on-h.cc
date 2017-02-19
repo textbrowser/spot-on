@@ -25,6 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <limits>
+
 #include "spot-on.h"
 #include "ui_spot-on-socket-options.h"
 
@@ -94,6 +96,10 @@ void spoton::slotSetSocketOptions(void)
 
   ui.setupUi(&dialog);
   ui.so_linger->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
+  ui.so_rcvbuf->setEnabled(transport != "BLUETOOTH");
+  ui.so_rcvbuf->setMaximum(std::numeric_limits<int>::max());
+  ui.so_sndbuf->setEnabled(transport != "BLUETOOTH");
+  ui.so_sndbuf->setMaximum(std::numeric_limits<int>::max());
 
   if(type == "listeners")
     dialog.setWindowTitle
@@ -102,15 +108,47 @@ void spoton::slotSetSocketOptions(void)
     dialog.setWindowTitle
       (tr("%1: Neighbor Socket Options").arg(SPOTON_APPLICATION_NAME));
 
+#if QT_VERSION >= 0x050300 && defined(SPOTON_BLUETOOTH_ENABLED)
+  ui.so_rcvbuf->setEnabled(true);
+  ui.so_sndbuf->setEnabled(true);
+
+  foreach(QString string, list)
+    if(string.startsWith("so_rcvbuf="))
+      ui.so_rcvbuf->setValue
+	(string.mid(static_cast<int> (qstrlen("so_rcvbuf="))).toInt());
+    else if(string.startsWith("so_sndbuf="))
+      ui.so_sndbuf->setValue
+	(string.mid(static_cast<int> (qstrlen("so_sndbuf="))).toInt());
+#else
   foreach(QString string, list)
     if(string.startsWith("so_linger="))
-      ui.so_linger->setValue
-	(string.mid(static_cast<int> (qstrlen("so_linger="))).toInt());
+      {
+	if(transport != "UDP")
+	  ui.so_linger->setValue
+	    (string.mid(static_cast<int> (qstrlen("so_linger="))).toInt());
+      }
+    else if(string.startsWith("so_rcvbuf="))
+      {
+	if(transport != "BLUETOOTH")
+	  ui.so_rcvbuf->setValue
+	    (string.mid(static_cast<int> (qstrlen("so_rcvbuf="))).toInt());
+      }
+    else if(string.startsWith("so_sndbuf="))
+      {
+	if(transport != "BLUETOOTH")
+	  ui.so_sndbuf->setValue
+	    (string.mid(static_cast<int> (qstrlen("so_sndbuf="))).toInt());
+      }
+#endif
 
   if(dialog.exec() != QDialog::Accepted)
     return;
 
   socketOptions = QString("so_linger=%1").arg(ui.so_linger->value());
+  socketOptions.append(";");
+  socketOptions.append(QString("so_rcvbuf=%1").arg(ui.so_rcvbuf->value()));
+  socketOptions.append(";");
+  socketOptions.append(QString("so_sndbuf=%1").arg(ui.so_sndbuf->value()));
 
   QString connectionName("");
 

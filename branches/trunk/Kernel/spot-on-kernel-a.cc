@@ -1462,6 +1462,7 @@ void spoton_kernel::prepareNeighbors(void)
 		      "waitforbyteswritten_msecs, "
 		      "private_application_credentials, "
 		      "silence_time, "
+		      "socket_options, "
 		      "OID FROM neighbors"))
 	  while(query.next())
 	    {
@@ -1516,6 +1517,8 @@ void spoton_kernel::prepareNeighbors(void)
 			  list.append(query.value(i).toInt());
 			else if(i == 29) // silence_time
 			  list.append(query.value(i).toInt());
+			else if(i == 30) // socket_options
+			  list.append(query.value(i).toString());
 			else
 			  {
 			    QByteArray bytes;
@@ -1635,6 +1638,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 list.value(27).toInt(),
 				 list.value(28).toByteArray(),
 				 list.value(29).toInt(),
+				 list.value(30).toString(),
 				 this);
 			    }
 			  catch(const std::bad_alloc &exception)
