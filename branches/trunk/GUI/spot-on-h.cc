@@ -96,9 +96,11 @@ void spoton::slotSetSocketOptions(void)
 
   ui.setupUi(&dialog);
   ui.so_linger->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
-  ui.so_rcvbuf->setEnabled(transport != "BLUETOOTH");
+
+  if(!ui.so_linger->isEnabled())
+    ui.so_linger->setToolTip(tr("SCTP and TCP only."));
+
   ui.so_rcvbuf->setMaximum(std::numeric_limits<int>::max());
-  ui.so_sndbuf->setEnabled(transport != "BLUETOOTH");
   ui.so_sndbuf->setMaximum(std::numeric_limits<int>::max());
 
   if(type == "listeners")
@@ -108,47 +110,77 @@ void spoton::slotSetSocketOptions(void)
     dialog.setWindowTitle
       (tr("%1: Neighbor Socket Options").arg(SPOTON_APPLICATION_NAME));
 
-#if QT_VERSION >= 0x050300 && defined(SPOTON_BLUETOOTH_ENABLED)
-  ui.so_rcvbuf->setEnabled(true);
-  ui.so_sndbuf->setEnabled(true);
-
-  foreach(QString string, list)
-    if(string.startsWith("so_rcvbuf="))
-      ui.so_rcvbuf->setValue
-	(string.mid(static_cast<int> (qstrlen("so_rcvbuf="))).toInt());
-    else if(string.startsWith("so_sndbuf="))
-      ui.so_sndbuf->setValue
-	(string.mid(static_cast<int> (qstrlen("so_sndbuf="))).toInt());
+  if(type == "listeners")
+    {
+      if(transport == "SCTP")
+	{
+	  ui.so_rcvbuf->setEnabled(true);
+	  ui.so_sndbuf->setEnabled(true);
+	}
+      else
+	{
+	  ui.so_rcvbuf->setEnabled(false);
+	  ui.so_rcvbuf->setToolTip(tr("SCTP listeners only."));
+	  ui.so_sndbuf->setEnabled(false);
+	  ui.so_sndbuf->setToolTip(tr("SCTP listeners only."));
+	}
+    }
+  else
+    {
+#if QT_VERSION >= 0x050300
+      if(transport == "BLUETOOTH")
+	{
+#ifndef SPOTON_BLUETOOTH_ENABLED
+	  m_ui.so_rcvbuf->setEnabled(false);
+	  m_ui.so_rcvbuf->setToolTip(tr("Bluetooth is not supported."));
+	  m_ui.so_sndbuf->setEnabled(false);
+	  m_ui.so_sndbuf->setToolTip(tr("Bluetooth is not supported."));
+#endif
+	}
 #else
+      ui.so_rcvbuf->setEnabled(false);
+      ui.so_rcvbuf->setToolTip(tr("Qt version 5.3 or newer is required."));
+      ui.so_sndbuf->setEnabled(false);
+      ui.so_sndbuf->setToolTip(tr("Qt version 5.3 or newer is required."));
+#endif
+    }
+
   foreach(QString string, list)
     if(string.startsWith("so_linger="))
       {
-	if(transport != "UDP")
+	if(ui.so_linger->isEnabled())
 	  ui.so_linger->setValue
 	    (string.mid(static_cast<int> (qstrlen("so_linger="))).toInt());
       }
     else if(string.startsWith("so_rcvbuf="))
       {
-	if(transport != "BLUETOOTH")
+	if(ui.so_rcvbuf->isEnabled())
 	  ui.so_rcvbuf->setValue
 	    (string.mid(static_cast<int> (qstrlen("so_rcvbuf="))).toInt());
       }
     else if(string.startsWith("so_sndbuf="))
       {
-	if(transport != "BLUETOOTH")
+	if(ui.so_sndbuf->isEnabled())
 	  ui.so_sndbuf->setValue
 	    (string.mid(static_cast<int> (qstrlen("so_sndbuf="))).toInt());
       }
-#endif
 
   if(dialog.exec() != QDialog::Accepted)
     return;
 
   socketOptions = QString("so_linger=%1").arg(ui.so_linger->value());
-  socketOptions.append(";");
-  socketOptions.append(QString("so_rcvbuf=%1").arg(ui.so_rcvbuf->value()));
-  socketOptions.append(";");
-  socketOptions.append(QString("so_sndbuf=%1").arg(ui.so_sndbuf->value()));
+
+  if(ui.so_rcvbuf->isEnabled())
+    {
+      socketOptions.append(";");
+      socketOptions.append(QString("so_rcvbuf=%1").arg(ui.so_rcvbuf->value()));
+    }
+
+  if(ui.so_sndbuf->isEnabled())
+    {
+      socketOptions.append(";");
+      socketOptions.append(QString("so_sndbuf=%1").arg(ui.so_sndbuf->value()));
+    }
 
   QString connectionName("");
 

@@ -31,17 +31,13 @@
 class spoton_socket_options
 {
  public:
-  static int tcpSocket(const QHostAddress &address);
-  static int udpSocket(const QHostAddress &address);
   static void setSocketOptions(const QString &options,
+			       const QString &transport,
 			       const qint64 socket,
 			       bool *ok);
 
  private:
   spoton_socket_options(void);
-  static int socket(const QHostAddress &address,
-		    const int type,
-		    const int protocol);
 };
 
 #endif

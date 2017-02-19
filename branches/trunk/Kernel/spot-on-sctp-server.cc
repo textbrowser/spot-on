@@ -204,9 +204,11 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   */
 
   spoton_socket_options::setSocketOptions
-    (socketOptions,
-     static_cast<qint64> (m_socketDescriptor),
-     0);
+    (socketOptions, "sctp", static_cast<qint64> (m_socketDescriptor), 0);
+
+  /*
+  ** Reuse the address.
+  */
 
   optval = 1;
 #ifdef Q_OS_WIN32

@@ -57,33 +57,10 @@ extern "C"
 }
 #endif
 
-int spoton_socket_options::socket(const QHostAddress &address,
-				  const int type,
-				  const int protocol)
-{
-  QAbstractSocket::NetworkLayerProtocol domain = QAbstractSocket::IPv4Protocol;
-
-  if(QHostAddress(address).protocol() == QAbstractSocket::IPv6Protocol)
-    domain = QAbstractSocket::IPv6Protocol;
-
-  if(domain == QAbstractSocket::IPv4Protocol)
-    return ::socket(AF_INET, type, protocol);
-  else
-    return ::socket(AF_INET6, type, protocol);
-}
-
-int spoton_socket_options::tcpSocket(const QHostAddress &address)
-{
-  return socket(address, SOCK_STREAM, IPPROTO_TCP);
-}
-
-int spoton_socket_options::udpSocket(const QHostAddress &address)
-{
-  return socket(address, SOCK_DGRAM, IPPROTO_UDP);
-}
-
-void spoton_socket_options::setSocketOptions
-(const QString &options, const qint64 socket, bool *ok)
+void spoton_socket_options::setSocketOptions(const QString &options,
+					     const QString &transport,
+					     const qint64 socket,
+					     bool *ok)
 {
   if(socket < 0)
     {
@@ -151,8 +128,8 @@ void spoton_socket_options::setSocketOptions
 	      }
 	  }
       }
-    else if(string.startsWith("so_rcvbuf=") ||
-	    string.startsWith("so_sndbuf="))
+    else if((string.startsWith("so_rcvbuf=") ||
+	     string.startsWith("so_sndbuf=")) && transport.toLower() == "sctp")
       {
 	int option = 0;
 

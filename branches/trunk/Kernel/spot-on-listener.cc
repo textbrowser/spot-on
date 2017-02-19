@@ -790,7 +790,10 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
   try
     {
       spoton_socket_options::setSocketOptions
-	(m_socketOptions, static_cast<qint64> (socketDescriptor), 0);
+	(m_socketOptions,
+	 m_transport,
+	 static_cast<qint64> (socketDescriptor),
+	 0);
       neighbor = new spoton_neighbor
 	(socketDescriptor, m_certificate, m_privateKey,
 	 m_echoMode, m_useAccounts, m_id, m_maximumBufferSize,
