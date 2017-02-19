@@ -84,8 +84,6 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 			   const quint16 port,
 			   const QString &socketOptions)
   {
-    Q_UNUSED(socketOptions);
-
     if(address.protocol() == QAbstractSocket::IPv4Protocol)
       {
 	quint32 a = address.toIPv4Address();
@@ -114,6 +112,9 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 
     if(m_multicastSocket)
       {
+	spoton_socket_options::setSocketOptions
+	  (m_multicastSocket, socketOptions, 0);
+
 	if(!m_multicastSocket->bind(address, port,
 				    QUdpSocket::ReuseAddressHint |
 				    QUdpSocket::ShareAddress))
