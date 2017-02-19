@@ -1385,6 +1385,8 @@ void spoton_neighbor::slotTimeout(void)
 	    if(m_tcpSocket->state() == QAbstractSocket::UnconnectedState)
 	      {
 		saveStatus("connecting");
+		spoton_socket_options::setSocketOptions
+		  (m_tcpSocket, m_socketOptions, 0);
 
 		if(m_useSsl)
 		  m_tcpSocket->connectToHostEncrypted(m_address, m_port);
@@ -1397,6 +1399,8 @@ void spoton_neighbor::slotTimeout(void)
 	    if(m_udpSocket->state() == QAbstractSocket::UnconnectedState)
 	      {
 		saveStatus("connecting");
+		spoton_socket_options::setSocketOptions
+		  (m_udpSocket, m_socketOptions, 0);
 		m_udpSocket->connectToHost(m_address, m_port);
 
 		int timeout = 2500;

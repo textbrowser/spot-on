@@ -130,12 +130,10 @@ void spoton::slotSetSocketOptions(void)
 #if QT_VERSION >= 0x050300
       if(transport == "BLUETOOTH")
 	{
-#ifndef SPOTON_BLUETOOTH_ENABLED
-	  m_ui.so_rcvbuf->setEnabled(false);
-	  m_ui.so_rcvbuf->setToolTip(tr("Bluetooth is not supported."));
-	  m_ui.so_sndbuf->setEnabled(false);
-	  m_ui.so_sndbuf->setToolTip(tr("Bluetooth is not supported."));
-#endif
+	  ui.so_rcvbuf->setEnabled(false);
+	  ui.so_rcvbuf->setToolTip(tr("Bluetooth is not supported."));
+	  ui.so_sndbuf->setEnabled(false);
+	  ui.so_sndbuf->setToolTip(tr("Bluetooth is not supported."));
 	}
 #else
       ui.so_rcvbuf->setEnabled(false);

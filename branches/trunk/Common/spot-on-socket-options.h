@@ -28,9 +28,14 @@
 #ifndef _spoton_socket_options_h_
 #define _spoton_socket_options_h_
 
+#include <QAbstractSocket>
+
 class spoton_socket_options
 {
  public:
+  static void setSocketOptions(QAbstractSocket *socket,
+			       const QString &options,
+			       bool *ok);
   static void setSocketOptions(const QString &options,
 			       const QString &transport,
 			       const qint64 socket,

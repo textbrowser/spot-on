@@ -25,8 +25,6 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QStringList>
-
 #include <limits>
 
 #include "spot-on-misc.h"
@@ -56,6 +54,51 @@ extern "C"
 #include <winsock2.h>
 }
 #endif
+
+void spoton_socket_options::setSocketOptions(QAbstractSocket *socket,
+					     const QString &options,
+					     bool *ok)
+{
+  if(!socket)
+    {
+      if(ok)
+	*ok = false;
+
+      return;
+    }
+
+  QStringList list(options.split(";", QString::SkipEmptyParts));
+
+  if(list.isEmpty())
+    {
+      if(ok)
+	*ok = true;
+
+      return;
+    }
+
+  if(ok)
+    *ok = true;
+
+  foreach(QString string, list)
+    if(string.startsWith("so_rcvbuf=") || string.startsWith("so_sndbuf="))
+      {
+#if QT_VERSION >= 0x050300
+	QAbstractSocket::SocketOption option =
+	  QAbstractSocket::ReceiveBufferSizeSocketOption;
+
+	if(string.startsWith("so_sndbuf="))
+	  option = QAbstractSocket::SendBufferSizeSocketOption;
+
+	string = string.mid(static_cast<int> (qstrlen("so_rcvbuf=")));
+
+	int v = qBound(4096, string.toInt(), std::numeric_limits<int>::max());
+
+	if(!string.isEmpty() && v > 0)
+	  socket->setSocketOption(option, v);
+#endif
+      }
+}
 
 void spoton_socket_options::setSocketOptions(const QString &options,
 					     const QString &transport,
