@@ -25,11 +25,62 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>340</width>
-        <height>449</height>
+        <width>326</width>
+        <height>522</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>If set, disable Nagle's algorithm.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>&amp;NODELAY</string>
+           </property>
+           <property name="buddy">
+            <cstring>so_linger</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="nodelay">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>If data has not been exchanged for some period of time, send a keep-alive probe to the peer.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
@@ -234,6 +285,7 @@
  </widget>
  <tabstops>
   <tabstop>scrollArea</tabstop>
+  <tabstop>nodelay</tabstop>
   <tabstop>so_keepalive</tabstop>
   <tabstop>so_linger</tabstop>
   <tabstop>so_rcvbuf</tabstop>
