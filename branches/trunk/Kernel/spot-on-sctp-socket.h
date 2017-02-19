@@ -62,7 +62,6 @@ class spoton_sctp_socket: public QObject
 
   enum SocketOption
   {
-    KeepAliveOption = QAbstractSocket::KeepAliveOption,
     LowDelayOption = QAbstractSocket::LowDelayOption
   };
 

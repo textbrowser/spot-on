@@ -95,6 +95,11 @@ void spoton::slotSetSocketOptions(void)
   Ui_spoton_socket_options ui;
 
   ui.setupUi(&dialog);
+  ui.so_keepalive->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
+
+  if(!ui.so_keepalive->isEnabled())
+    ui.so_keepalive->setToolTip(tr("SCTP and TCP only."));
+
   ui.so_linger->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
 
   if(!ui.so_linger->isEnabled())
@@ -144,7 +149,13 @@ void spoton::slotSetSocketOptions(void)
     }
 
   foreach(QString string, list)
-    if(string.startsWith("so_linger="))
+    if(string.startsWith("so_keepalive="))
+      {
+	if(ui.so_keepalive->isEnabled())
+	  ui.so_keepalive->setChecked
+	    (string.mid(static_cast<int> (qstrlen("so_keepalive="))).toInt());
+      }
+    else if(string.startsWith("so_linger="))
       {
 	if(ui.so_linger->isEnabled())
 	  ui.so_linger->setValue
@@ -166,7 +177,16 @@ void spoton::slotSetSocketOptions(void)
   if(dialog.exec() != QDialog::Accepted)
     return;
 
-  socketOptions = QString("so_linger=%1").arg(ui.so_linger->value());
+  socketOptions.clear();
+
+  if(ui.so_keepalive->isEnabled())
+    {
+      socketOptions.append
+	(QString("so_keepalive=%1").arg(ui.so_keepalive->isChecked()));
+      socketOptions.append(";");
+    }
+
+  socketOptions.append(QString("so_linger=%1").arg(ui.so_linger->value()));
 
   if(ui.so_rcvbuf->isEnabled())
     {

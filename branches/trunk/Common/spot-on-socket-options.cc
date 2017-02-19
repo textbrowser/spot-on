@@ -81,7 +81,16 @@ void spoton_socket_options::setSocketOptions(QAbstractSocket *socket,
     *ok = true;
 
   foreach(QString string, list)
-    if(string.startsWith("so_rcvbuf=") || string.startsWith("so_sndbuf="))
+    if(socket->socketType() == QAbstractSocket::TcpSocket &&
+       string.startsWith("so_keepalive="))
+      {
+	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
+
+	int v = qBound(0, string.toInt(), 1);
+
+	socket->setSocketOption(QAbstractSocket::KeepAliveOption, v);
+      }
+    else if(string.startsWith("so_rcvbuf=") || string.startsWith("so_sndbuf="))
       {
 #if QT_VERSION >= 0x050300
 	QAbstractSocket::SocketOption option =
@@ -127,7 +136,38 @@ void spoton_socket_options::setSocketOptions(const QString &options,
     *ok = true;
 
   foreach(QString string, list)
-    if(string.startsWith("so_linger="))
+    if(string.startsWith("so_keepalive=") && (transport.toLower() == "sctp" ||
+					      transport.toLower() == "tcp"))
+      {
+	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
+
+	int v = qBound(0, string.toInt(), 1);
+
+	if(!string.isEmpty())
+	  {
+	    int rc = 0;
+	    socklen_t length = sizeof(v);
+
+#ifdef Q_OS_WIN32
+	    rc = setsockopt
+	      ((SOCKET) socket,
+	       SOL_SOCKET, SO_KEEPALIVE, (const char *) &v, (int) length);
+#else
+	    rc = setsockopt((int) socket, SOL_SOCKET, SO_KEEPALIVE, &v, length);
+#endif
+
+	    if(rc != 0)
+	      {
+		if(ok)
+		  *ok = false;
+
+		spoton_misc::logError
+		  ("spoton_socket_options::setSocketOptions(): "
+		   "setsockopt() failure on SO_KEEPALIVE.");
+	      }
+	  }
+      }
+    else if(string.startsWith("so_linger="))
       {
 	string = string.mid(static_cast<int> (qstrlen("so_linger=")));
 

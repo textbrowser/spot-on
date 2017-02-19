@@ -954,9 +954,10 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	       "ssl_control_string, "
 	       "lane_width, "
 	       "passthrough, "
-	       "private_application_credentials) "
+	       "private_application_credentials, "
+	       "socket_options) "
 	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue(0, m_address);
 	    query.bindValue(1, m_port);
 
@@ -1142,6 +1143,8 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		(33,
 		 s_crypt->encryptedThenHashed(m_privateApplicationCredentials,
 					      &ok).toBase64());
+
+	    query.bindValue(34, m_socketOptions);
 
 	    if(ok)
 	      if(query.exec())
@@ -1814,8 +1817,9 @@ void spoton_listener::slotNewConnection(void)
 	       "ssl_control_string, "
 	       "lane_width, "
 	       "passthrough, "
-	       "private_application_credentials) "
-	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+	       "private_application_credentials, "
+	       "socket_options) "
+	       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
 	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue(0, m_address);
 	    query.bindValue(1, m_port);
@@ -1979,6 +1983,8 @@ void spoton_listener::slotNewConnection(void)
 		(33, s_crypt->
 		 encryptedThenHashed(m_privateApplicationCredentials,
 				     &ok).toBase64());
+
+	    query.bindValue(34, m_socketOptions);
 
 	    if(ok)
 	      if(query.exec())
