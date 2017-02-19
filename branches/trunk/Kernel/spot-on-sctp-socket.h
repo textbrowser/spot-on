@@ -88,7 +88,9 @@ class spoton_sctp_socket: public QObject
   quint16 peerPort(void) const;
   void abort(void);
   void close(void);
-  void connectToHost(const QString &hostName, const quint16 port);
+  void connectToHost(const QString &hostName,
+		     const quint16 port,
+		     const QString &socketOptions);
   void setReadBufferSize(const qint64 size);
   void setSocketOption(const SocketOption option,
 		       const QVariant &value);
@@ -97,9 +99,9 @@ class spoton_sctp_socket: public QObject
   QByteArray m_readBuffer;
   QString m_connectToPeerName;
   QString m_ipAddress;
+  QString m_socketOptions;
   QTimer m_timer;
   SocketState m_state;
-  int m_bufferSize;
   int m_hostLookupId;
   int m_socketDescriptor;
   qint64 m_readBufferSize;

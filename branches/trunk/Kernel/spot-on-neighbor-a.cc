@@ -1377,7 +1377,7 @@ void spoton_neighbor::slotTimeout(void)
 	    if(m_sctpSocket->state() == spoton_sctp_socket::UnconnectedState)
 	      {
 		saveStatus("connecting");
-		m_sctpSocket->connectToHost(m_address, m_port);
+		m_sctpSocket->connectToHost(m_address, m_port, m_socketOptions);
 	      }
 	  }
 	else if(m_tcpSocket)

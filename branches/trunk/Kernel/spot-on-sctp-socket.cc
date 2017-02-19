@@ -75,6 +75,7 @@ extern "C"
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-misc.h"
+#include "Common/spot-on-socket-options.h"
 #include "spot-on-sctp-socket.h"
 
 spoton_sctp_socket::spoton_sctp_socket(QObject *parent):QObject(parent)
@@ -84,7 +85,6 @@ spoton_sctp_socket::spoton_sctp_socket(QObject *parent):QObject(parent)
   m_socketDescriptor = -1;
   m_state = UnconnectedState;
 #ifdef SPOTON_SCTP_ENABLED
-  m_bufferSize = 65535;
   m_readBufferSize = spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
   m_timer.setInterval(100);
   connect(&m_timer,
@@ -92,7 +92,6 @@ spoton_sctp_socket::spoton_sctp_socket(QObject *parent):QObject(parent)
 	  this,
 	  SLOT(slotTimeout(void)));
 #else
-  m_bufferSize = 0;
   m_readBufferSize = 0;
 #endif
 }
@@ -600,12 +599,14 @@ void spoton_sctp_socket::close(void)
 }
 
 void spoton_sctp_socket::connectToHost(const QString &hostName,
-				       const quint16 port)
+				       const quint16 port,
+				       const QString &socketOptions)
 {
 #ifdef SPOTON_SCTP_ENABLED
   close();
   m_connectToPeerName = hostName;
   m_connectToPeerPort = port;
+  m_socketOptions = socketOptions;
 
   if(QHostAddress(hostName).isNull())
     {
@@ -628,9 +629,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 {
 #ifdef SPOTON_SCTP_ENABLED
   NetworkLayerProtocol protocol = IPv4Protocol;
-  int optval = 0;
   int rc = 0;
-  socklen_t optlen = sizeof(optval);
 
   if(QHostAddress(m_ipAddress).protocol() ==
      QAbstractSocket::NetworkLayerProtocol(IPv6Protocol))
@@ -675,31 +674,8 @@ void spoton_sctp_socket::connectToHostImplementation(void)
   ** Set the read and write buffer sizes.
   */
 
-  optval = m_bufferSize;
-#ifdef Q_OS_WIN32
-  rc = setsockopt((SOCKET) m_socketDescriptor, SOL_SOCKET,
-		  SO_RCVBUF, (const char *) &optval, (int) optlen);
-#else
-  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_RCVBUF, &optval, optlen);
-#endif
-
-  if(rc != 0)
-    spoton_misc::logError
-      ("spoton_sctp_socket::connectToHostImplementation(): "
-       "setsockopt() failure, SO_RCVBUF.");
-
-  optval = m_bufferSize;
-#ifdef Q_OS_WIN32
-  rc = setsockopt((SOCKET) m_socketDescriptor, SOL_SOCKET,
-		  SO_SNDBUF, (const char *) &optval, (int) optlen);
-#else
-  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_SNDBUF, &optval, optlen);
-#endif
-
-  if(rc != 0)
-    spoton_misc::logError
-      ("spoton_sctp_socket::connectToHostImplementation(): "
-       "setsockopt() failure, SO_SNDBUF.");
+  spoton_socket_options::setSocketOptions
+    (m_socketOptions, "sctp", static_cast<qint64> (m_socketDescriptor), 0);
 
   if(protocol == IPv4Protocol)
     {
