@@ -111,7 +111,7 @@ void spoton_socket_options::setSocketOptions(QAbstractSocket *socket,
 	socket->setSocketOption(QAbstractSocket::LowDelayOption, v);
       }
     else if(socket->socketType() == QAbstractSocket::TcpSocket &&
-       string.startsWith("so_keepalive="))
+	    string.startsWith("so_keepalive="))
       {
 	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
 
