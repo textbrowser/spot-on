@@ -2198,10 +2198,10 @@ void spoton_neighbor::slotConnected(void)
     {
       m_sctpSocket->setSocketOption
 	(spoton_sctp_socket::KeepAliveOption,
-	 m_socketOptions.contains("so_keepalive=1"));
+	 QVariant(m_socketOptions.contains("so_keepalive=1")));
       m_sctpSocket->setSocketOption
  	(spoton_sctp_socket::LowDelayOption,
-	 m_socketOptions.contains("nodelay=1"));
+	 QVariant(m_socketOptions.contains("nodelay=1")));
     }
   else if(m_tcpSocket)
     spoton_socket_options::setSocketOptions(m_tcpSocket, m_socketOptions, 0);
