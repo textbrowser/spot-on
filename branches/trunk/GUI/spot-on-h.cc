@@ -128,9 +128,10 @@ void spoton::slotSetSocketOptions(void)
 	(tr("%1: Listener Socket Options").arg(SPOTON_APPLICATION_NAME));
       ui.information->setText
 	(tr("SCTP socket options will be applied to a listener's socket "
-	    "after the socket is created. "
-	    "TCP and UDP socket options will be applied to a listener's "
-	    "peer after a connection is established."));
+	    "after the socket is created. SCTP peers will also "
+	    "inherit some options. "
+	    "TCP and UDP socket options will be applied to "
+	    "peer sockets after connections are established."));
     }
   else
     {
@@ -138,9 +139,9 @@ void spoton::slotSetSocketOptions(void)
 	(tr("%1: Neighbor Socket Options").arg(SPOTON_APPLICATION_NAME));
       ui.information->setText
 	(tr("SCTP socket options will be applied to a socket "
-	    "after the socket is created. "
-	    "TCP and UDP socket options will be applied to a neighbor after a "
-	    "connection is established."));
+	    "after the socket is created and after the socket is connected. "
+	    "TCP and UDP socket options will be applied after "
+	    "connections are established."));
     }
 
   if(type == "listeners")

@@ -112,9 +112,6 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 
     if(m_multicastSocket)
       {
-	spoton_socket_options::setSocketOptions
-	  (m_multicastSocket, socketOptions, 0);
-
 	if(!m_multicastSocket->bind(address, port,
 				    QUdpSocket::ReuseAddressHint |
 				    QUdpSocket::ShareAddress))
@@ -126,6 +123,9 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	       arg(address.toString()).arg(port));
 	    return;
 	  }
+
+	spoton_socket_options::setSocketOptions
+	  (m_multicastSocket, socketOptions, 0);
 
 #if QT_VERSION >= 0x040800
 	if(!m_multicastSocket->joinMulticastGroup(address))

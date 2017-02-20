@@ -1369,8 +1369,6 @@ void spoton_neighbor::slotTimeout(void)
 	    if(m_tcpSocket->state() == QAbstractSocket::UnconnectedState)
 	      {
 		saveStatus("connecting");
-		spoton_socket_options::setSocketOptions
-		  (m_tcpSocket, m_socketOptions, 0);
 
 		if(m_useSsl)
 		  m_tcpSocket->connectToHostEncrypted(m_address, m_port);
@@ -1383,8 +1381,6 @@ void spoton_neighbor::slotTimeout(void)
 	    if(m_udpSocket->state() == QAbstractSocket::UnconnectedState)
 	      {
 		saveStatus("connecting");
-		spoton_socket_options::setSocketOptions
-		  (m_udpSocket, m_socketOptions, 0);
 		m_udpSocket->connectToHost(m_address, m_port);
 
 		int timeout = 2500;
@@ -2198,9 +2194,23 @@ void spoton_neighbor::processData(void)
 
 void spoton_neighbor::slotConnected(void)
 {
-  if(m_udpSocket)
+  if(m_sctpSocket)
+    {
+      m_sctpSocket->setSocketOption
+	(spoton_sctp_socket::KeepAliveOption,
+	 m_socketOptions.contains("so_keepalive=1"));
+      m_sctpSocket->setSocketOption
+ 	(spoton_sctp_socket::LowDelayOption,
+	 m_socketOptions.contains("nodelay=1"));
+    }
+  else if(m_tcpSocket)
+    spoton_socket_options::setSocketOptions(m_tcpSocket, m_socketOptions, 0);
+  else if(m_udpSocket)
     if(m_isUserDefined)
       {
+	spoton_socket_options::setSocketOptions
+	  (m_udpSocket, m_socketOptions, 0);
+
 	QHostAddress address(m_address);
 
 	address.setScopeId(m_scopeId);
