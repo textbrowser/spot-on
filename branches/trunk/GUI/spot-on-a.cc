@@ -3314,7 +3314,8 @@ void spoton::slotAddListener(void)
 	{
 	  QMessageBox::information
 	    (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
-	     tr("Please create a UDP multicast neighbor."));
+	     tr("You're attempting to create a UDP multicast listener. "
+		"Please create a UDP multicast neighbor instead."));
 	  return;
 	}
     }
