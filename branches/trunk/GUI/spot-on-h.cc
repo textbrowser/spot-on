@@ -127,14 +127,19 @@ void spoton::slotSetSocketOptions(void)
       dialog.setWindowTitle
 	(tr("%1: Listener Socket Options").arg(SPOTON_APPLICATION_NAME));
       ui.information->setText
-	(tr("Socket options will be applied to a listener's peers."));
+	(tr("SCTP socket options will be applied to a listener's socket "
+	    "after the socket is created. "
+	    "TCP and UDP socket options will be applied to a listener's "
+	    "peer after a connection is established."));
     }
   else
     {
       dialog.setWindowTitle
 	(tr("%1: Neighbor Socket Options").arg(SPOTON_APPLICATION_NAME));
       ui.information->setText
-	(tr("Socket options will be applied to a neighbor before a "
+	(tr("SCTP socket options will be applied to a socket "
+	    "after the socket is created. "
+	    "TCP and UDP socket options will be applied to a neighbor after a "
 	    "connection is established."));
     }
 
