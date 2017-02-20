@@ -123,11 +123,20 @@ void spoton::slotSetSocketOptions(void)
   ui.so_sndbuf->setMaximum(std::numeric_limits<int>::max());
 
   if(type == "listeners")
-    dialog.setWindowTitle
-      (tr("%1: Listener Socket Options").arg(SPOTON_APPLICATION_NAME));
+    {
+      dialog.setWindowTitle
+	(tr("%1: Listener Socket Options").arg(SPOTON_APPLICATION_NAME));
+      ui.information->setText
+	(tr("Socket options will be applied to a listener's peers."));
+    }
   else
-    dialog.setWindowTitle
-      (tr("%1: Neighbor Socket Options").arg(SPOTON_APPLICATION_NAME));
+    {
+      dialog.setWindowTitle
+	(tr("%1: Neighbor Socket Options").arg(SPOTON_APPLICATION_NAME));
+      ui.information->setText
+	(tr("Socket options will be applied to a neighbor before a "
+	    "connection is established."));
+    }
 
   if(type == "listeners")
     {
@@ -219,19 +228,26 @@ void spoton::slotSetSocketOptions(void)
       socketOptions.append(";");
     }
 
-  socketOptions.append(QString("so_linger=%1").arg(ui.so_linger->value()));
+  if(ui.so_linger->isEnabled())
+    {
+      socketOptions.append(QString("so_linger=%1").arg(ui.so_linger->value()));
+      socketOptions.append(";");
+    }
 
   if(ui.so_rcvbuf->isEnabled())
     {
-      socketOptions.append(";");
       socketOptions.append(QString("so_rcvbuf=%1").arg(ui.so_rcvbuf->value()));
+      socketOptions.append(";");
     }
 
   if(ui.so_sndbuf->isEnabled())
     {
-      socketOptions.append(";");
       socketOptions.append(QString("so_sndbuf=%1").arg(ui.so_sndbuf->value()));
+      socketOptions.append(";");
     }
+
+  if(socketOptions.endsWith(";"))
+    socketOptions = socketOptions.mid(0, socketOptions.length() - 1);
 
   QString connectionName("");
 
