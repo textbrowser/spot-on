@@ -838,45 +838,6 @@ void spoton_sctp_socket::setReadBufferSize(const qint64 size)
 #endif
 }
 
-void spoton_sctp_socket::setSocketOption(const SocketOption option,
-					 const QVariant &value)
-{
-#ifdef SPOTON_SCTP_ENABLED
-  switch(option)
-    {
-    case LowDelayOption:
-      {
-	int optval = static_cast<int> (value.toLongLong());
-	int rc = 0;
-	socklen_t optlen = sizeof(optval);
-
-#ifdef Q_OS_WIN32
-	rc = setsockopt
-	  ((SOCKET) m_socketDescriptor, IPPROTO_SCTP,
-	   SCTP_NODELAY, (const char *) &optval, (int) optlen);
-#else
-	rc = setsockopt(m_socketDescriptor, IPPROTO_SCTP, SCTP_NODELAY,
-			&optval, optlen);
-#endif
-
-	if(rc != 0)
-	  spoton_misc::logError
-	    ("spoton_sctp_socket::setSocketOption(): "
-	     "setsockopt() failure, SCTP_NODELAY.");
-
-	break;
-      }
-    default:
-      {
-	break;
-      }
-    }
-#else
-  Q_UNUSED(option);
-  Q_UNUSED(value);
-#endif
-}
-
 void spoton_sctp_socket::slotHostFound(const QHostInfo &hostInfo)
 {
 #ifdef SPOTON_SCTP_ENABLED

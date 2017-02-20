@@ -16,7 +16,20 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QLabel" name="information">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -25,8 +38,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>326</width>
-        <height>522</height>
+        <width>328</width>
+        <height>591</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">

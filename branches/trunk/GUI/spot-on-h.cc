@@ -95,15 +95,29 @@ void spoton::slotSetSocketOptions(void)
   Ui_spoton_socket_options ui;
 
   ui.setupUi(&dialog);
+  ui.nodelay->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
+#ifndef SPOTON_SCTP_ENABLED
+  ui.nodelay->setEnabled(!(transport == "SCTP"));
+#endif
+
+  if(!ui.nodelay->isEnabled())
+    ui.nodelay->setToolTip(tr("SCTP, if available, and TCP only."));
+
   ui.so_keepalive->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
+#ifndef SPOTON_SCTP_ENABLED
+  ui.so_keepalive->setEnabled(!(transport == "SCTP"));
+#endif
 
   if(!ui.so_keepalive->isEnabled())
-    ui.so_keepalive->setToolTip(tr("SCTP and TCP only."));
+    ui.so_keepalive->setToolTip(tr("SCTP, if available, and TCP only."));
 
   ui.so_linger->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
+#ifndef SPOTON_SCTP_ENABLED
+  ui.so_linger->setEnabled(!(transport == "SCTP"));
+#endif
 
   if(!ui.so_linger->isEnabled())
-    ui.so_linger->setToolTip(tr("SCTP and TCP only."));
+    ui.so_linger->setToolTip(tr("SCTP, if available, and TCP only."));
 
   ui.so_rcvbuf->setMaximum(std::numeric_limits<int>::max());
   ui.so_sndbuf->setMaximum(std::numeric_limits<int>::max());
@@ -117,7 +131,7 @@ void spoton::slotSetSocketOptions(void)
 
   if(type == "listeners")
     {
-      if(transport == "SCTP")
+      if(transport != "BLUETOOTH")
 	{
 	  ui.so_rcvbuf->setEnabled(true);
 	  ui.so_sndbuf->setEnabled(true);
@@ -125,9 +139,9 @@ void spoton::slotSetSocketOptions(void)
       else
 	{
 	  ui.so_rcvbuf->setEnabled(false);
-	  ui.so_rcvbuf->setToolTip(tr("SCTP listeners only."));
+	  ui.so_rcvbuf->setToolTip(tr("SCTP, TCP, UDP listeners only."));
 	  ui.so_sndbuf->setEnabled(false);
-	  ui.so_sndbuf->setToolTip(tr("SCTP listeners only."));
+	  ui.so_sndbuf->setToolTip(tr("SCTP, TCP, UDP listeners only."));
 	}
     }
   else
@@ -136,9 +150,9 @@ void spoton::slotSetSocketOptions(void)
       if(transport == "BLUETOOTH")
 	{
 	  ui.so_rcvbuf->setEnabled(false);
-	  ui.so_rcvbuf->setToolTip(tr("Bluetooth is not supported."));
+	  ui.so_rcvbuf->setToolTip(tr("SCTP, TCP, UDP neighbors only."));
 	  ui.so_sndbuf->setEnabled(false);
-	  ui.so_sndbuf->setToolTip(tr("Bluetooth is not supported."));
+	  ui.so_sndbuf->setToolTip(tr("SCTP, TCP, UDP neighbors only."));
 	}
 #else
       ui.so_rcvbuf->setEnabled(false);
@@ -148,8 +162,21 @@ void spoton::slotSetSocketOptions(void)
 #endif
     }
 
+#ifndef SPOTON_SCTP_ENABLED
+  ui.so_rcvbuf->setEnabled(false);
+  ui.so_rcvbuf->setToolTip(tr("SCTP is not available."));
+  ui.so_sndbuf->setEnabled(false);
+  ui.so_sndbuf->setToolTip(tr("SCTP is not available."));
+#endif
+
   foreach(QString string, list)
-    if(string.startsWith("so_keepalive="))
+    if(string.startsWith("nodelay="))
+      {
+	if(ui.nodelay->isEnabled())
+	  ui.nodelay->setChecked
+	    (string.mid(static_cast<int> (qstrlen("nodelay="))).toInt());
+      }
+    else if(string.startsWith("so_keepalive="))
       {
 	if(ui.so_keepalive->isEnabled())
 	  ui.so_keepalive->setChecked
@@ -178,6 +205,12 @@ void spoton::slotSetSocketOptions(void)
     return;
 
   socketOptions.clear();
+
+  if(ui.nodelay->isEnabled())
+    {
+      socketOptions.append(QString("nodelay=%1").arg(ui.nodelay->isChecked()));
+      socketOptions.append(";");
+    }
 
   if(ui.so_keepalive->isEnabled())
     {

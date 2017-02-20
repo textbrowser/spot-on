@@ -154,23 +154,11 @@ spoton_neighbor::spoton_neighbor
     {
       m_sctpSocket->setReadBufferSize(m_maximumBufferSize);
       m_sctpSocket->setSocketDescriptor(static_cast<int> (socketDescriptor));
-      m_sctpSocket->setSocketOption
-	(spoton_sctp_socket::LowDelayOption,
-	 spoton_kernel::setting("kernel/sctp_nodelay", 1).
-	 toInt()); /*
-		   ** Disable Nagle?
-		   */
     }
   else if(m_tcpSocket)
     {
       m_tcpSocket->setReadBufferSize(m_maximumBufferSize);
       m_tcpSocket->setSocketDescriptor(socketDescriptor);
-      m_tcpSocket->setSocketOption
-	(QAbstractSocket::LowDelayOption,
-	 spoton_kernel::setting("kernel/tcp_nodelay", 1).
-	 toInt()); /*
-		   ** Disable Nagle?
-		   */
     }
   else if(m_udpSocket)
     {
@@ -2210,41 +2198,21 @@ void spoton_neighbor::processData(void)
 
 void spoton_neighbor::slotConnected(void)
 {
-  if(m_sctpSocket)
-    {
-      m_sctpSocket->setSocketOption
-	(spoton_sctp_socket::LowDelayOption,
-	 spoton_kernel::setting("kernel/sctp_nodelay", 1).
-	 toInt()); /*
-		   ** Disable Nagle?
-		   */
-    }
-  else if(m_tcpSocket)
-    {
-      m_tcpSocket->setSocketOption
-	(QAbstractSocket::LowDelayOption,
-	 spoton_kernel::setting("kernel/tcp_nodelay", 1).
-	 toInt()); /*
-		   ** Disable Nagle?
-		   */
-    }
-  else if(m_udpSocket)
-    {
-      if(m_isUserDefined)
-	{
-	  QHostAddress address(m_address);
+  if(m_udpSocket)
+    if(m_isUserDefined)
+      {
+	QHostAddress address(m_address);
 
-	  address.setScopeId(m_scopeId);
-	  m_udpSocket->initializeMulticast(address, m_port, m_socketOptions);
+	address.setScopeId(m_scopeId);
+	m_udpSocket->initializeMulticast(address, m_port, m_socketOptions);
 
-	  if(m_udpSocket->multicastSocket())
-	    connect(m_udpSocket->multicastSocket(),
-		    SIGNAL(readyRead(void)),
-		    this,
-		    SLOT(slotReadyRead(void)),
-		    Qt::UniqueConnection);
-	}
-    }
+	if(m_udpSocket->multicastSocket())
+	  connect(m_udpSocket->multicastSocket(),
+		  SIGNAL(readyRead(void)),
+		  this,
+		  SLOT(slotReadyRead(void)),
+		  Qt::UniqueConnection);
+      }
 
   /*
   ** The local address is the address of the proxy. Unfortunately,

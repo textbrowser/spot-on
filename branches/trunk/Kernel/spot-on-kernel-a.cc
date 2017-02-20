@@ -559,17 +559,14 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
   QDir().mkdir(spoton_misc::homePath());
 
-  /*
-  ** The user interface doesn't yet have a means of preparing advanced
-  ** options.
-  */
-
   QSettings settings;
   bool disable_ui_server = false;
 
   settings.remove("kernel/bluetooth_msecs_waitforbyteswritten");
   settings.remove("kernel/neighbor_thread_priority");
+  settings.remove("kernel/sctp_nodelay");
   settings.remove("kernel/tcp_msecs_waitforbyteswritten");
+  settings.remove("kernel/tcp_nodelay");
   settings.remove("kernel/udp_msecs_waitforbyteswritten");
 
   for(int i = 0; i < settings.allKeys().size(); i++)

@@ -60,11 +60,6 @@ class spoton_sctp_socket: public QObject
     QAbstractSocket::UnsupportedSocketOperationError
   };
 
-  enum SocketOption
-  {
-    LowDelayOption = QAbstractSocket::LowDelayOption
-  };
-
   enum SocketState
   {
     ConnectedState = QAbstractSocket::ConnectedState,
@@ -91,8 +86,6 @@ class spoton_sctp_socket: public QObject
 		     const quint16 port,
 		     const QString &socketOptions);
   void setReadBufferSize(const qint64 size);
-  void setSocketOption(const SocketOption option,
-		       const QVariant &value);
 
  private:
   QByteArray m_readBuffer;

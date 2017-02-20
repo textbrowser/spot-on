@@ -33,25 +33,43 @@
 #ifdef Q_OS_FREEBSD
 extern "C"
 {
+#include <netinet/in.h>
+#ifdef SPOTON_SCTP_ENABLED
+#include <netinet/sctp.h>
+#endif
+#include <netinet/tcp.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 }
 #elif defined(Q_OS_LINUX)
 extern "C"
 {
+#include <netinet/in.h>
+#ifdef SPOTON_SCTP_ENABLED
+#include <netinet/sctp.h>
+#endif
+#include <netinet/tcp.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 }
 #elif defined(Q_OS_MAC)
 extern "C"
 {
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#ifdef SPOTON_SCTP_ENABLED
+#include <usrsctp.h>
+#endif
 }
 #elif defined(Q_OS_WIN32)
 extern "C"
 {
 #include <winsock2.h>
+#ifdef SPOTON_SCTP_ENABLED
+#include <ws2sctp.h>
+#endif
 }
 #endif
 
@@ -82,6 +100,15 @@ void spoton_socket_options::setSocketOptions(QAbstractSocket *socket,
 
   foreach(QString string, list)
     if(socket->socketType() == QAbstractSocket::TcpSocket &&
+       string.startsWith("nodelay="))
+      {
+	string = string.mid(static_cast<int> (qstrlen("nodelay=")));
+
+	int v = qBound(0, string.toInt(), 1);
+
+	socket->setSocketOption(QAbstractSocket::LowDelayOption, v);
+      }
+    else if(socket->socketType() == QAbstractSocket::TcpSocket &&
        string.startsWith("so_keepalive="))
       {
 	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
@@ -136,8 +163,52 @@ void spoton_socket_options::setSocketOptions(const QString &options,
     *ok = true;
 
   foreach(QString string, list)
-    if(string.startsWith("so_keepalive=") && (transport.toLower() == "sctp" ||
-					      transport.toLower() == "tcp"))
+    if(string.startsWith("nodelay=") && (transport.toLower() == "sctp" ||
+					 transport.toLower() == "tcp"))
+      {
+	string = string.mid(static_cast<int> (qstrlen("nodelay=")));
+
+	int v = qBound(0, string.toInt(), 1);
+
+	if(!string.isEmpty())
+	  {
+#if SPOTON_SCTP_ENABLED
+	    int level = IPPROTO_SCTP;
+	    int option = SCTP_NODELAY;
+#else
+	    int level = IPPROTO_TCP;
+	    int option = TCP_NODELAY;
+#endif
+	    int rc = 0;
+	    socklen_t length = sizeof(v);
+
+	    if(transport.toLower() == "tcp")
+	      {
+		level = IPPROTO_TCP;
+		option = TCP_NODELAY;
+	      }
+
+#ifdef Q_OS_WIN32
+	    rc = setsockopt
+	      ((SOCKET) socket, level, option, (const char *) &v, (int) length);
+#else
+	    rc = setsockopt((int) socket, level, option, &v, length);
+#endif
+
+	    if(rc != 0)
+	      {
+		if(ok)
+		  *ok = false;
+
+		spoton_misc::logError
+		  ("spoton_socket_options::setSocketOptions(): "
+		   "setsockopt() failure on NODELAY.");
+	      }
+	  }
+      }
+    else if(string.
+	    startsWith("so_keepalive=") && (transport.toLower() == "sctp" ||
+					    transport.toLower() == "tcp"))
       {
 	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
 
