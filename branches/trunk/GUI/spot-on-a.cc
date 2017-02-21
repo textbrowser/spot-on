@@ -25,10 +25,6 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifdef SPOTON_ANDROID
-extern void _Exit(int status);
-#endif
-
 extern "C"
 {
 #include <curl/curl.h>
