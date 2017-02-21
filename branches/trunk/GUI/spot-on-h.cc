@@ -90,6 +90,9 @@ void spoton::slotSetSocketOptions(void)
 	}
     }
 
+  if(row < 0)
+    return;
+
   QDialog dialog(this);
   QStringList list(socketOptions.split(";", QString::SkipEmptyParts));
   Ui_spoton_socket_options ui;
