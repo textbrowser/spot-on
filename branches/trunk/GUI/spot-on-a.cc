@@ -5824,17 +5824,24 @@ void spoton::slotGeneralTimerTimeout(void)
     }
 
   if(isKernelActive())
+    {
+      if(m_kernelSocket.isEncrypted())
+	{
 #if SPOTON_GOLDBUG == 1
-    m_sb.kernelstatus->setIcon
-      (QIcon(QString(":/%1/status-online.png").
-	     arg(m_settings.value("gui/iconSet", "nouve").toString().
-		 toLower())));
+	  m_sb.kernelstatus->setIcon
+	    (QIcon(QString(":/%1/status-online.png").
+		   arg(m_settings.value("gui/iconSet", "nouve").toString().
+		       toLower())));
 #else
-    m_sb.kernelstatus->setIcon
-      (QIcon(QString(":/%1/activate.png").
-	     arg(m_settings.value("gui/iconSet", "nouve").toString().
-		 toLower())));
+	  m_sb.kernelstatus->setIcon
+	    (QIcon(QString(":/%1/activate.png").
+		   arg(m_settings.value("gui/iconSet", "nouve").toString().
+		       toLower())));
 #endif
+	}
+      else
+	m_sb.kernelstatus->setIcon(QIcon(":/generic/kernel-warning.png"));
+    }
   else
     m_sb.kernelstatus->setIcon
       (QIcon(QString(":/%1/deactivate.png").
@@ -7909,9 +7916,16 @@ void spoton::slotKernelSocketState(void)
     {
       m_keysShared["buzz_channels_sent_to_kernel"] = "false";
       m_keysShared["keys_sent_to_kernel"] = "false";
-      m_sb.kernelstatus->setToolTip
-	(tr("The interface is not connected to the kernel. Is the kernel "
-	    "active?"));
+
+      if(isKernelActive())
+	m_sb.kernelstatus->setToolTip
+	  (tr("The interface is not connected to the kernel. However, "
+	      "the kernel appears to be active. Perhaps the kernel's "
+	      "UI server has been disabled."));
+      else
+	m_sb.kernelstatus->setToolTip
+	  (tr("The interface is not connected to the kernel. Is the kernel "
+	      "active?"));
     }
 }
 
