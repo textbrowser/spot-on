@@ -298,6 +298,7 @@
 	<file>everaldo/write.png</file>
 	<file>generic/AE.png</file>
 	<file>generic/attach.png</file>
+	<file>generic/kernel-warning.png</file>
 	<file>generic/menu.png</file>
 	<file>generic/menu-secret-chat.png</file>
 	<file>generic/menu-secret-email.png</file>
