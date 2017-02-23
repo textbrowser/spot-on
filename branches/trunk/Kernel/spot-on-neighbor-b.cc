@@ -179,6 +179,8 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &datagram)
   if(datagram.isEmpty())
     return;
 
+  m_bytesRead += static_cast<quint64> (datagram.length());
+
   if(m_passthrough)
     {
       /*
