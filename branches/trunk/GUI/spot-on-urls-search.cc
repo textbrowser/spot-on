@@ -363,6 +363,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 					    &ok);
 	      title = QString::fromUtf8(bytes.constData(),
 					bytes.length()).trimmed();
+	      title = spoton_misc::removeSpecialHtmlTags(title).trimmed();
 	    }
 
 	  if(ok)
@@ -421,6 +422,10 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 		   arg(spoton_misc::urlToEncoded(url).constData()));
 
 	      url.setScheme(scheme);
+
+	      if(title.isEmpty())
+		title = spoton_misc::urlToEncoded(url).constData();
+
 	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
 	      shareUrl.setPath(hash + "%3" +
 			       spoton_misc::urlToEncoded(url));
@@ -432,7 +437,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append(" | <a href=\"");
 	      html.append(spoton_misc::urlToEncoded(url).constData());
 	      html.append("\">");
-	      html.append(spoton_misc::removeSpecialHtmlTags(title));
+	      html.append(title);
 	      html.append("</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
