@@ -4228,6 +4228,8 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
   if(!title.isEmpty())
     all_keywords.append(" ").append(title);
+  else if(title.isEmpty())
+    title = urlToEncoded(url).constData();
 
   all_keywords.append(" ").append(url.toString().toUtf8());
 
