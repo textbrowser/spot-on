@@ -994,10 +994,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   if(setting("gui/activeUrlDistribution", false).toBool())
     m_urlDistribution->start();
   else
-    {
-      m_urlDistribution->quit();
-      m_urlDistribution->wait();
-    }
+    m_urlDistribution->quit();
 
   s_congestion_control_secondary_storage = static_cast<int>
     (setting ("gui/secondary_storage_congestion_control", false).toBool());
@@ -1044,7 +1041,6 @@ spoton_kernel::~spoton_kernel()
   m_fireShare->quit();
   m_fireShare->wait();
   m_urlDistribution->quit();
-  m_urlDistribution->wait();
 
   for(int i = 0; i < m_urlImportFutures.size(); i++)
     m_urlImportFutures[i].waitForFinished();
@@ -2265,10 +2261,7 @@ void spoton_kernel::slotUpdateSettings(void)
 	m_urlDistribution->start();
     }
   else
-    {
-      m_urlDistribution->quit();
-      m_urlDistribution->wait();
-    }
+    m_urlDistribution->quit();
 
   if(setting("gui/etpReceivers", false).toBool())
     {

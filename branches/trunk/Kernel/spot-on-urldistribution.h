@@ -28,28 +28,29 @@
 #ifndef _spoton_urldistribution_h_
 #define _spoton_urldistribution_h_
 
-#include <QAtomicInt>
-#include <QThread>
+#include <QFuture>
+#include <QTimer>
 
-class spoton_urldistribution: public QThread
+class spoton_urldistribution: public QObject
 {
   Q_OBJECT
 
  public:
   spoton_urldistribution(QObject *parent);
   ~spoton_urldistribution();
+  bool isRunning(void) const;
+  void quit(void);
+  void start(void);
 
  private:
-  QAtomicInt m_quit;
+  QFuture<void> m_future;
+  QTimer m_timer;
   qint64 m_lastUniqueId;
   quint64 m_limit;
   void run(void);
 
  private slots:
   void slotTimeout(void);
-
- public slots:
-  void quit(void);
 
  signals:
   void sendURLs(const QByteArray &data);

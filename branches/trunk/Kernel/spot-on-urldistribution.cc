@@ -27,7 +27,10 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
-#include <QTimer>
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent>
+#endif
+#include <QtCore>
 
 #include "../Common/spot-on-common.h"
 #include "../Common/spot-on-crypt.h"
@@ -35,56 +38,43 @@
 #include "spot-on-kernel.h"
 #include "spot-on-urldistribution.h"
 
-spoton_urldistribution::spoton_urldistribution(QObject *parent):
-  QThread(parent)
+spoton_urldistribution::spoton_urldistribution(QObject *parent):QObject(parent)
 {
   m_lastUniqueId = -1;
-  m_limit = static_cast<quint64>
-    (spoton_kernel::setting("gui/kernel_url_batch_size", 5).toInt());
-  m_quit = 0;
+  m_timer.setInterval(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
+  connect(&m_timer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotTimeout(void)));
 }
 
 spoton_urldistribution::~spoton_urldistribution()
 {
   quit();
-  wait();
+}
+
+bool spoton_urldistribution::isRunning(void) const
+{
+  return m_timer.isActive();
 }
 
 void spoton_urldistribution::quit(void)
 {
-  m_quit.fetchAndStoreOrdered(1);
-  QThread::quit();
+  m_timer.stop();
+  m_future.cancel();
+  m_future.waitForFinished();
 }
 
 void spoton_urldistribution::run(void)
 {
-  m_quit.fetchAndStoreOrdered(0);
-
-  QTimer timer;
-
-  connect(&timer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotTimeout(void)));
-  timer.start(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
-  exec();
-}
-
-void spoton_urldistribution::slotTimeout(void)
-{
-  QTimer *timer = qobject_cast<QTimer *> (sender());
-
-  if(timer)
-    if(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL !=
-       timer->interval())
-      timer->setInterval
-	(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
+  m_limit = static_cast<quint64>
+    (spoton_kernel::setting("gui/kernel_url_batch_size", 5).toInt());
 
   spoton_crypt *s_crypt1 = spoton_kernel::s_crypts.value("url", 0);
 
   if(!s_crypt1)
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_urldistribution::run(): "
 			    "s_crypt1 is zero.");
       return;
     }
@@ -93,7 +83,7 @@ void spoton_urldistribution::slotTimeout(void)
 
   if(!s_crypt2)
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_urldistribution::run(): "
 			    "s_crypt2 is zero.");
       return;
     }
@@ -160,7 +150,7 @@ void spoton_urldistribution::slotTimeout(void)
 		      }
 		}
 
-	      if(m_quit.fetchAndAddRelaxed(0))
+	      if(m_future.isCanceled())
 		break;
 	    }
       }
@@ -170,7 +160,7 @@ void spoton_urldistribution::slotTimeout(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(m_quit.fetchAndAddRelaxed(0))
+  if(m_future.isCanceled())
     return;
 
   /*
@@ -210,7 +200,7 @@ void spoton_urldistribution::slotTimeout(void)
 	      if(ok)
 		publicKeys.append(publicKey);
 
-	      if(m_quit.fetchAndAddRelaxed(0))
+	      if(m_future.isCanceled())
 		break;
 	    }
       }
@@ -220,12 +210,12 @@ void spoton_urldistribution::slotTimeout(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(m_quit.fetchAndAddRelaxed(0))
+  if(m_future.isCanceled())
     return;
 
   if(publicKeys.isEmpty())
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_urldistribution::run(): "
 			    "publicKeys is empty.");
       return;
     }
@@ -235,7 +225,7 @@ void spoton_urldistribution::slotTimeout(void)
 
   if(!urlCommonCredentials)
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_urldistribution::run(): "
 			    "urlCommonCredentials is zero.");
       return;
     }
@@ -468,7 +458,7 @@ void spoton_urldistribution::slotTimeout(void)
 
 	      count += 1;
 
-	      if(m_quit.fetchAndAddRelaxed(0))
+	      if(m_future.isCanceled())
 		break;
 	    }
 	  while(true);
@@ -482,12 +472,12 @@ void spoton_urldistribution::slotTimeout(void)
 
   if(data.isEmpty())
     {
-      spoton_misc::logError("spoton_urldistribution::slotTimeout(): "
+      spoton_misc::logError("spoton_urldistribution::run(): "
 			    "data is empty.");
       return;
     }
 
-  if(m_quit.fetchAndAddRelaxed(0))
+  if(m_future.isCanceled())
     return;
 
   QByteArray cipherType
@@ -502,7 +492,7 @@ void spoton_urldistribution::slotTimeout(void)
   if(symmetricKeyLength <= 0)
     {
       spoton_misc::logError
-	("spoton_urldistribution::slotTimeout(): "
+	("spoton_urldistribution::run(): "
 	 "cipherKeyLength() failure.");
       return;
     }
@@ -579,7 +569,22 @@ void spoton_urldistribution::slotTimeout(void)
       if(ok)
 	emit sendURLs(message);
 
-      if(m_quit.fetchAndAddRelaxed(0))
+      if(m_future.isCanceled())
 	return;
     }
+}
+
+void spoton_urldistribution::slotTimeout(void)
+{
+  if(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL != m_timer.interval())
+    m_timer.setInterval(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
+
+  if(m_future.isFinished())
+    m_future = QtConcurrent::run(this, &spoton_urldistribution::run);
+}
+
+void spoton_urldistribution::start(void)
+{
+  m_timer.setInterval(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
+  m_timer.start();
 }
