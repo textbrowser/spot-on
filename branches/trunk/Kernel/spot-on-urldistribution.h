@@ -46,7 +46,6 @@ class spoton_urldistribution: public QObject
   QFuture<void> m_future;
   QTimer m_timer;
   qint64 m_lastUniqueId;
-  quint64 m_limit;
   void run(void);
 
  private slots:

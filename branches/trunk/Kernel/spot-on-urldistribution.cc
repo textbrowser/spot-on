@@ -67,9 +67,6 @@ void spoton_urldistribution::quit(void)
 
 void spoton_urldistribution::run(void)
 {
-  m_limit = static_cast<quint64>
-    (spoton_kernel::setting("gui/kernel_url_batch_size", 5).toInt());
-
   spoton_crypt *s_crypt1 = spoton_kernel::s_crypts.value("url", 0);
 
   if(!s_crypt1)
@@ -290,6 +287,8 @@ void spoton_urldistribution::run(void)
 	QDataStream stream(&data, QIODevice::WriteOnly);
 	QSqlQuery query(db);
 	QString querystr("");
+	quint64 limit = static_cast<quint64>
+	  (spoton_kernel::setting("gui/kernel_url_batch_size", 5).toInt());
 
 	query.setForwardOnly(true);
 
@@ -331,7 +330,7 @@ void spoton_urldistribution::run(void)
 	    }
 
 	querystr.append(" ORDER BY 5 "); // date_time_inserted
-	querystr.append(QString(" LIMIT %1 ").arg(m_limit));
+	querystr.append(QString(" LIMIT %1 ").arg(limit));
 
 	quint64 count = 0;
 
@@ -340,7 +339,7 @@ void spoton_urldistribution::run(void)
 	    {
 	      if(!query.next())
 		{
-		  if(count != m_limit)
+		  if(count != limit)
 		    m_lastUniqueId = -1;
 
 		  break;
