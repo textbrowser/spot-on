@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-1236</y>
          <width>721</width>
          <height>3279</height>
         </rect>
@@ -1239,7 +1239,7 @@
                 <item>
                  <widget class="QSpinBox" name="postgresql_kernel_url_distribution_timeout">
                   <property name="toolTip">
-                   <string>Please review your lane widths before increasing this value.</string>
+                   <string>A value of zero disables the timeout.</string>
                   </property>
                   <property name="suffix">
                    <string> Milliseconds</string>
