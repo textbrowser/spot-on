@@ -29,6 +29,7 @@
 
 #include "spot-on.h"
 #include "spot-on-documentation.h"
+#include "spot-on-emailwindow.h"
 #include "spot-on-utilities.h"
 #include "ui_spot-on-socket-options.h"
 
@@ -301,4 +302,12 @@ void spoton::slotShowReleaseNotes(void)
   m_releaseNotes->activateWindow();
   m_releaseNotes->raise();
   spoton_utilities::centerWidget(m_releaseNotes, this);
+}
+
+void spoton::slotNewEmailWindow(void)
+{
+  spoton_emailwindow *window = new spoton_emailwindow(0);
+
+  window->show();
+  spoton_utilities::centerWidget(window, this);
 }

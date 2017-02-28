@@ -2979,6 +2979,16 @@ void spoton::prepareContextMenuMirrors(void)
 	      Qt::UniqueConnection);
     }
 
+  if(!m_ui.clearOutgoing->menu())
+    {
+      QMenu *menu = new QMenu(this);
+
+      menu->addAction(tr("New e-mail window..."),
+		      this,
+		      SLOT(slotNewEmailWindow(void)));
+      m_ui.clearOutgoing->setMenu(menu);
+    }
+
   if(!m_ui.deleteAllUrls->menu())
     {
       QMenu *menu = new QMenu(this);
