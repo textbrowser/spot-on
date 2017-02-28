@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>spoton_emailwindow</class>
+ <widget class="QMainWindow" name="spoton_emailwindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>861</height>
+   </rect>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../Icons/icons.qrc">
+    <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <property name="spacing">
+       <number>5</number>
+      </property>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>&amp;To</string>
+        </property>
+        <property name="margin">
+         <number>7</number>
+        </property>
+        <property name="buddy">
+         <cstring>emailParticipants</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_41">
+        <property name="text">
+         <string>&amp;From</string>
+        </property>
+        <property name="margin">
+         <number>7</number>
+        </property>
+        <property name="buddy">
+         <cstring>emailName</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="outgoingSubject"/>
+      </item>
+      <item row="3" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_71">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <item>
+         <spacer name="verticalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>&amp;Message</string>
+          </property>
+          <property name="margin">
+           <number>7</number>
+          </property>
+          <property name="buddy">
+           <cstring>outgoingMessage</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="richtext">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>The Rich Text option will be ignored on traditional e-mail accounts.</string>
+          </property>
+          <property name="text">
+           <string>&amp;Rich Text</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_47">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <item>
+         <widget class="QComboBox" name="emailName">
+          <property name="insertPolicy">
+           <enum>QComboBox::InsertAtCurrent</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <property name="minimumContentsLength">
+           <number>25</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="emailNameEditable"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="reloadEmailNames">
+          <property name="toolTip">
+           <string>Populate the From widget with Poptastic accounts.</string>
+          </property>
+          <property name="text">
+           <string>Reload</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_25">
+        <property name="text">
+         <string>&amp;Subject</string>
+        </property>
+        <property name="margin">
+         <number>7</number>
+        </property>
+        <property name="buddy">
+         <cstring>outgoingSubject</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <layout class="QVBoxLayout" name="verticalLayout_70">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <item>
+         <widget class="QTableWidget" name="emailParticipants">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="horizontalScrollMode">
+           <enum>QAbstractItemView::ScrollPerPixel</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>200</number>
+          </attribute>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>Participant</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>OID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>neighbor_oid</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>public_key_hash</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Forward Secrecy Information</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>&amp;Optional</string>
+        </property>
+        <property name="margin">
+         <number>7</number>
+        </property>
+        <property name="buddy">
+         <cstring>goldbug</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_31">
+        <property name="spacing">
+         <number>5</number>
+        </property>
+        <item>
+         <widget class="QLineEdit" name="goldbug">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of AES-256 encryption and SHA-512 authentication. The first ninety-six characters will be consumed. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="emailSecrets">
+          <property name="toolTip">
+           <string>Secret Streams</string>
+          </property>
+          <property name="text">
+           <string>Secret Streams</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../Icons/icons.qrc">
+            <normaloff>:/generic/menu-secret-email.png</normaloff>:/generic/menu-secret-email.png</iconset>
+          </property>
+          <property name="popupMode">
+           <enum>QToolButton::MenuButtonPopup</enum>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="email_fs_gb">
+          <property name="currentIndex">
+           <number>2</number>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <property name="minimumContentsLength">
+           <number>25</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>Forward Secrecy</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Gold Bug</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Normal</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Pure Forward Secrecy</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="3" column="1">
+       <widget class="QTextEdit" name="outgoingMessage">
+        <property name="tabChangesFocus">
+         <bool>true</bool>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::TextEditorInteraction</set>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_94">
+        <property name="text">
+         <string>&amp;Attachment(s)</string>
+        </property>
+        <property name="margin">
+         <number>7</number>
+        </property>
+        <property name="buddy">
+         <cstring>attachment</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <layout class="QVBoxLayout" name="verticalLayout_72">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_74">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_51">
+            <property name="spacing">
+             <number>5</number>
+            </property>
+            <item>
+             <widget class="QTextBrowser" name="attachment">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Click an attachment to remove it.</string>
+              </property>
+              <property name="tabChangesFocus">
+               <bool>true</bool>
+              </property>
+              <property name="openLinks">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="selectAttachment">
+              <property name="text">
+               <string>Attach...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_86">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 224);</string>
+          </property>
+          <property name="text">
+           <string>Traditional e-mail supports only single attachments. Inline attachments are not supported.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <tabstops>
+  <tabstop>emailName</tabstop>
+  <tabstop>emailNameEditable</tabstop>
+  <tabstop>reloadEmailNames</tabstop>
+  <tabstop>emailParticipants</tabstop>
+  <tabstop>outgoingSubject</tabstop>
+  <tabstop>outgoingMessage</tabstop>
+  <tabstop>richtext</tabstop>
+  <tabstop>attachment</tabstop>
+  <tabstop>selectAttachment</tabstop>
+  <tabstop>goldbug</tabstop>
+  <tabstop>emailSecrets</tabstop>
+  <tabstop>email_fs_gb</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../Icons/icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

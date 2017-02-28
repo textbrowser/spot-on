@@ -4,6 +4,7 @@ FORMS           = UI\\spot-on-adaptive-echo-prompt.ui \
 		  UI\\spot-on-controlcenter.ui \
 		  UI\\spot-on-documentation.ui \
 		  UI\\spot-on-echo-key-share.ui \
+		  UI\\spot-on-emailwindow.ui \
 		  UI\\spot-on-encryptfile.ui \
 		  UI\\spot-on-encryptfile-page.ui \
 		  UI\\spot-on-forward-secrecy-algorithms-selection.ui \
