@@ -269,4 +269,4 @@ Remaining Items
 4.     Poptastic in the Wizard.
 5.     Chat institutions.
 6.     PostgreSQL query cancellation in the kernel.
-       (SET SESSION statement_timeout TO seconds)
+       (SET SESSION statement_timeout TO milliseconds)
