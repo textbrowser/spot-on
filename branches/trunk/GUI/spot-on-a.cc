@@ -485,8 +485,14 @@ spoton::spoton(void):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_neighborsLastModificationTime = QDateTime();
   m_participantsLastModificationTime = QDateTime();
-  m_documentation = new spoton_documentation(0);
+  m_documentation = new spoton_documentation(QUrl("qrc:/Spot-On.html"), 0);
+  m_documentation->setWindowTitle
+    (tr("%1: Documentation").arg(SPOTON_APPLICATION_NAME));
   m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, 0);
+  m_releaseNotes = new spoton_documentation
+    (QUrl("qrc:/Documentation/RELEASE-NOTES.html"), 0);
+  m_releaseNotes->setWindowTitle
+    (tr("%1: Release Notes").arg(SPOTON_APPLICATION_NAME));
   m_rss = new spoton_rss(0);
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(0);
   m_starbeamReceivedModel = new QStandardItemModel(this);
@@ -949,6 +955,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotPurgeEphemeralKeys(void)));
+  connect(m_ui.action_Release_Notes,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowReleaseNotes(void)));
   connect(m_ui.copyInstitution,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -3262,6 +3272,7 @@ void spoton::cleanup(void)
   m_echoKeyShare->deleteLater();
   m_notificationsWindow->deleteLater();
   m_optionsWindow->deleteLater();
+  m_releaseNotes->deleteLater();
   m_rss->deleteLater();
   m_starbeamAnalyzer->deleteLater();
   m_statisticsWindow->deleteLater();

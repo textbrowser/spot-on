@@ -29,6 +29,7 @@
 #define _spoton_documentation_h_
 
 #include <QMainWindow>
+#include <QUrl>
 
 #include "ui_spot-on-documentation.h"
 
@@ -39,10 +40,11 @@ class spoton_documentation: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton_documentation(QWidget *parent);
+  spoton_documentation(const QUrl &url, QWidget *parent);
   ~spoton_documentation();
 
  private:
+  QUrl m_url;
   Ui_spoton_documentation m_ui;
 
  private slots:

@@ -1308,7 +1308,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>664</width>
-             <height>665</height>
+             <height>558</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2884,8 +2884,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>595</width>
-             <height>1804</height>
+             <width>466</width>
+             <height>1820</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4148,8 +4148,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>679</height>
+             <width>556</width>
+             <height>519</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5274,8 +5274,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>679</height>
+             <width>603</width>
+             <height>335</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -8120,7 +8120,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
+             <width>425</width>
              <height>679</height>
             </rect>
            </property>
@@ -9467,8 +9467,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>679</height>
+             <width>426</width>
+             <height>444</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -11103,6 +11103,7 @@ border-style: inset;
     </widget>
     <addaction name="action_About"/>
     <addaction name="action_Documentation"/>
+    <addaction name="actionRelease_Notes"/>
     <addaction name="separator"/>
     <addaction name="action_Neighbor_Summary_Panel"/>
     <addaction name="separator"/>
@@ -11412,6 +11413,11 @@ border-style: inset;
   <action name="action_SMP">
    <property name="text">
     <string>SMP...</string>
+   </property>
+  </action>
+  <action name="actionRelease_Notes">
+   <property name="text">
+    <string>&amp;Release Notes...</string>
    </property>
   </action>
  </widget>

@@ -520,6 +520,7 @@ class spoton: public QMainWindow
   quint64 m_urlPages;
   spoton_crypt *m_urlCommonCrypt;
   spoton_documentation *m_documentation;
+  spoton_documentation *m_releaseNotes;
   spoton_echo_key_share *m_echoKeyShare;
   spoton_encryptfile m_encryptFile;
   spoton_external_address m_externalAddress;
@@ -988,6 +989,7 @@ class spoton: public QMainWindow
   void slotShowNotificationsWindow(void);
   void slotShowOptions(void);
   void slotShowPage(bool state);
+  void slotShowReleaseNotes(void);
   void slotShowRss(void);
   void slotShowSMPWindow(void);
   void slotShowStarBeamAnalyzer(void);

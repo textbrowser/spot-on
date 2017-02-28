@@ -33,9 +33,11 @@
 #include "spot-on-defines.h"
 #include "spot-on-documentation.h"
 
-spoton_documentation::spoton_documentation(QWidget *parent):QMainWindow(parent)
+spoton_documentation::spoton_documentation
+(const QUrl &url, QWidget *parent):QMainWindow(parent)
 {
   m_ui.setupUi(this);
+  m_url = url;
   connect(m_ui.action_Find,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -57,8 +59,7 @@ spoton_documentation::spoton_documentation(QWidget *parent):QMainWindow(parent)
 	  this,
 	  SLOT(slotAnchorClicked(const QUrl &)));
   m_ui.find->setPlaceholderText(tr("Find Text"));
-  m_ui.textBrowser->setSource(QUrl("qrc:/Spot-On.html"));
-  setWindowTitle(tr("%1: Documentation").arg(SPOTON_APPLICATION_NAME));
+  m_ui.textBrowser->setSource(m_url);
 }
 
 spoton_documentation::~spoton_documentation()
@@ -140,5 +141,5 @@ void spoton_documentation::slotPrint(QPrinter *printer)
 
 void spoton_documentation::slotReload(void)
 {
-  m_ui.textBrowser->setSource(QUrl("qrc:/Spot-On.html"));
+  m_ui.textBrowser->setSource(m_url);
 }

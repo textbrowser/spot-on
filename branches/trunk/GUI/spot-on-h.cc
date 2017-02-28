@@ -28,6 +28,8 @@
 #include <limits>
 
 #include "spot-on.h"
+#include "spot-on-documentation.h"
+#include "spot-on-utilities.h"
 #include "ui_spot-on-socket-options.h"
 
 void spoton::slotSetSocketOptions(void)
@@ -291,4 +293,12 @@ void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)
   QSettings settings;
 
   settings.setValue("gui/postgresql_kernel_url_distribution_timeout", value);
+}
+
+void spoton::slotShowReleaseNotes(void)
+{
+  m_releaseNotes->showNormal();
+  m_releaseNotes->activateWindow();
+  m_releaseNotes->raise();
+  spoton_utilities::centerWidget(m_releaseNotes, this);
 }

@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>545</height>
+                <width>366</width>
+                <height>464</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -949,7 +949,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>770</width>
              <height>603</height>
             </rect>
            </property>
@@ -2212,8 +2212,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>602</width>
+             <height>360</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2934,7 +2934,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>267</width>
+                     <width>242</width>
                      <height>1435</height>
                     </rect>
                    </property>
@@ -3470,8 +3470,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>768</width>
+             <height>198</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3895,7 +3895,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>792</width>
+                  <width>679</width>
                   <height>452</height>
                  </rect>
                 </property>
@@ -4681,8 +4681,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>623</width>
+             <height>335</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4767,8 +4767,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>802</width>
-                 <height>599</height>
+                 <width>620</width>
+                 <height>616</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5717,7 +5717,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>790</width>
              <height>1149</height>
             </rect>
            </property>
@@ -6865,8 +6865,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>551</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7988,8 +7988,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>613</width>
+             <height>427</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8600,8 +8600,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>222</width>
+             <height>146</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8862,6 +8862,7 @@
     </widget>
     <addaction name="action_About"/>
     <addaction name="action_Documentation"/>
+    <addaction name="action_Release_Notes"/>
     <addaction name="separator"/>
     <addaction name="action_Neighbor_Summary_Panel"/>
     <addaction name="separator"/>
@@ -8971,17 +8972,17 @@
   </action>
   <action name="action_Export_Listeners">
    <property name="text">
-    <string>&amp;Export Listeners...</string>
+    <string>Export &amp;Listeners...</string>
    </property>
   </action>
   <action name="action_Import_Neighbors">
    <property name="text">
-    <string>&amp;Import Neighbors...</string>
+    <string>Import &amp;Neighbors...</string>
    </property>
   </action>
   <action name="action_StarBeam_Analyzer">
    <property name="text">
-    <string>&amp;StarBeam Analyzer...</string>
+    <string>StarBeam &amp;Analyzer...</string>
    </property>
   </action>
   <action name="action_Minimal_Display">
@@ -9014,7 +9015,7 @@
      <normaloff>:/generic/poptastic.png</normaloff>:/generic/poptastic.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Poptastic &amp;&amp; RetroPhone Settings...</string>
+    <string>Poptastic &amp;&amp; RetroPhone Settin&amp;gs...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -9039,7 +9040,7 @@
   </action>
   <action name="action_Echo_Key_Share">
    <property name="text">
-    <string>&amp;Echo Public Key Share...</string>
+    <string>Echo Public Key &amp;Share...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -9162,12 +9163,12 @@
   </action>
   <action name="action_New_Global_Name">
    <property name="text">
-    <string>&amp;New Global Name...</string>
+    <string>New &amp;Global Name...</string>
    </property>
   </action>
   <action name="action_Add_Participant">
    <property name="text">
-    <string>&amp;Add Participant...</string>
+    <string>Add &amp;Participant...</string>
    </property>
   </action>
   <action name="action_Documentation">
@@ -9177,7 +9178,12 @@
   </action>
   <action name="action_SMP">
    <property name="text">
-    <string>&amp;SMP...</string>
+    <string>S&amp;MP...</string>
+   </property>
+  </action>
+  <action name="action_Release_Notes">
+   <property name="text">
+    <string>R&amp;elease Notes...</string>
    </property>
   </action>
  </widget>

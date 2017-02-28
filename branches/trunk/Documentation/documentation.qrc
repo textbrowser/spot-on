@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>../../Documentation/RELEASE-NOTES.html</file>
 	<file>Spot-On.html</file>
     </qresource>
 </RCC>
