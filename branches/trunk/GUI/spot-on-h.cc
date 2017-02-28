@@ -308,6 +308,10 @@ void spoton::slotNewEmailWindow(void)
 {
   spoton_emailwindow *window = new spoton_emailwindow(0);
 
+  connect(this,
+	  SIGNAL(updateEmailWindows(void)),
+	  window,
+	  SLOT(slotUpdate(void)));
   window->show();
   spoton_utilities::centerWidget(window, this);
 }

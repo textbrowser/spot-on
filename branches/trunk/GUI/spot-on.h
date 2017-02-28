@@ -1041,6 +1041,7 @@ class spoton: public QMainWindow
 		     const QString &name,
 		     const QString &id,
 		     const QString &toolTip);
+  void updateEmailWindows(void);
 };
 
 #endif

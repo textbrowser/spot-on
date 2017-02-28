@@ -139,7 +139,7 @@
         <item>
          <widget class="QPushButton" name="reloadEmailNames">
           <property name="toolTip">
-           <string>Populate the From widget with Poptastic accounts.</string>
+           <string>Populate the From and To widgets.</string>
           </property>
           <property name="text">
            <string>Reload</string>

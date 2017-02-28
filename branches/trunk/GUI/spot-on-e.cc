@@ -1658,6 +1658,7 @@ void spoton::slotSaveAlternatingColors(bool state)
       QSettings settings;
 
       settings.setValue(str, state);
+      emit updateEmailWindows();
     }
 }
 
