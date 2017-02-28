@@ -870,6 +870,7 @@ class spoton: public QMainWindow
   void slotPopulateStars(void);
   void slotPostgreSQLConnect(void);
   void slotPostgreSQLDisconnect(int index);
+  void slotPostgreSQLKernelUrlDistributionTimeout(int value);
   void slotPrepareAndShowInstallationWizard(void);
   void slotPrepareSMP(const QString &hash);
   void slotPrepareSMP(void);

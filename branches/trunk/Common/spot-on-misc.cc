@@ -2181,6 +2181,16 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 1024;
 
   settings.insert("gui/maximumEmailFileSize", integer);
+  integer = qBound
+    (0,
+     settings.value("gui/postgresql_kernel_url_distribution_timeout", 45000).
+     toInt(&ok),
+     999999999);
+
+  if(!ok)
+    integer = 45000;
+
+  settings.insert("gui/postgresql_kernel_url_distribution_timeout", integer);
   integer = qAbs(settings.value("gui/postofficeDays", 1).toInt(&ok));
 
   if(!ok)

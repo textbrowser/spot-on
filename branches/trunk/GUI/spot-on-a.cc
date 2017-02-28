@@ -2017,6 +2017,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotKernelUrlBatchSizeChanged(int)));
+  connect(m_optionsUi.postgresql_kernel_url_distribution_timeout,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotPostgreSQLKernelUrlDistributionTimeout(int)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -2248,6 +2252,9 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/maximum_url_keywords_import_kernel", 50).toInt());
   m_optionsUi.kernel_url_batch_size->setValue
     (m_settings.value("gui/kernel_url_batch_size", 5).toInt());
+  m_optionsUi.postgresql_kernel_url_distribution_timeout->setValue
+    (m_settings.value("gui/postgresql_kernel_url_distribution_timeout", 45000).
+     toInt());
   m_kernelUpdateTimer.start
     (static_cast<int> (1000 * m_optionsUi.kernelUpdateInterval->value()));
   m_listenersUpdateTimer.start

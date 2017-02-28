@@ -292,6 +292,13 @@ void spoton_urldistribution::run(void)
 
 	query.setForwardOnly(true);
 
+	if(db.driverName() == "QPSQL")
+	  query.exec
+	    (QString("SET SESSION statement_timeout TO %1").
+	     arg(spoton_kernel::
+		 setting("gui/postgresql_kernel_url_distribution_timeout",
+			 45000).toInt()));
+
 	for(int i = 0; i < 10 + 6; i++)
 	  for(int j = 0; j < 10 + 6; j++)
 	    {

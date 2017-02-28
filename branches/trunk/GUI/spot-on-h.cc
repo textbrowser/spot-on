@@ -283,3 +283,12 @@ void spoton::slotSetSocketOptions(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 }
+
+void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)
+{
+  m_settings["gui/postgresql_kernel_url_distribution_timeout"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/postgresql_kernel_url_distribution_timeout", value);
+}

@@ -155,6 +155,8 @@ Completed Items
 110.   Prevent inserts of own keys in friends_public_keys.db.
 111.   Keys are re-used in directory-mode file encryption. Single-pulse
        key derivation.
+112.   PostgreSQL query cancellation in the kernel.
+       (SET SESSION statement_timeout TO milliseconds)
 
 Ignored Items
 
@@ -268,5 +270,3 @@ Remaining Items
 3.     Open Library.
 4.     Poptastic in the Wizard.
 5.     Chat institutions.
-6.     PostgreSQL query cancellation in the kernel.
-       (SET SESSION statement_timeout TO milliseconds)
