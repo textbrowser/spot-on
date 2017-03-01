@@ -1,740 +1,738 @@
-<html>
-  2017.03.01
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Corrected WebEngine page rendering.</li>
-    <li>Corrected initialization via Question/Answer.</li>
-    <li>Corrected recording of the number of inbound UDP bytes.</li>
-    <li>Corrected spelling of spoton::slotDeleteAccepedIP().</li>
-    <li>Link titles may be empty; substitute with URLs.</li>
-    <li>Removed redundant Base64 transformations of PK digests in spoton::slotSendMail().</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Denote flawed kernel connection in the UI's status bar.</li>
-    <li>E-mail windows.</li>
-    <li>Finer elapsed time in URL query results.</li>
-    <li>Force network accessibility in the RSS QNetworkAccessManager object.</li>
-    <li>Optionally remove e-mail entries from the remote server(s). Please see the Poptastic settings.</li>
-    <li>New socket options on listeners and neighbors.</li>
-    <li>PostgreSQL at version 9.6.1 on OS X; Homebrew.</li>
-    <li>PostgreSQL kernel query timeout setting; Options.</li>
-    <li>Prevent process memory exhaustion on network writes.</li>
-    <li>Removed redundant clearing of table widgets.</li>
-    <li>URL distribution implementation via concurrent mechanism.</li>
-    <li>Upgraded OpenSSL to version 1.0.2k on OS X and Windows.</li>
-    <li>Upgraded SQLite to version 3.17.0 on OS X and Windows.</li>
-  </ol>
-  2017.01.20
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Interrupt the loop in slotDeactivateKernel() on application exit.</li>
-    <li>Purge the gcry_md_hd_t object upon a gcry_md_extract() failure in spoton_crypt::shake256().</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>New Tilaa. Please reset your certificates via Neighbors. Also, see Data/spot-on-neighbors.txt.</li>
-    <li>Plaintext-only via traditional e-mail.</li>
-    <li>Upgraded SQLite to version 3.16.2 on Windows.</li>
-    <li>Upgraded libgcrypt to version 1.7.6 on OS X; Homebrew.</li>
-  </ol>
-  2017.01.01
-  <br>
-  <b>New</b>
-  <ol>
-    <li>Embed proofs in the SMP machines.</li>
-    <li>Fujisaki-Okamoto McEliece interpretation model b. libgcrypt 1.7.0, or newer, is required.</li>
-    <li>Kernel processes will only communicate with authenticated UIs.</li>
-    <li>New NTL libraries. Version 10.1.0.</li>
-    <li>New Poptastic time delta option. Please see Options.</li>
-    <li>Remove flawed idiotes.db entries after passphrase validation. The idiotes.db database houses private key data.</li>
-    <li>SHA-3 support, where available. Version 1.7.0, or newer, of libgcrypt is required.</li>
-    <li>SMP tool. Please see the Tools menu.</li>
-    <li>Upgraded PostgreSQL to version 9.6.1 on OS X; Homebrew.</li>
-    <li>Upgraded Qt to version 5.7.1 on Windows.</li>
-    <li>Upgraded SQLite to version 3.15.2 on OS X and Windows.</li>
-    <li>Upgraded libgcrypt to version 1.7.5 on OS X; Homebrew.</li>
-    <li>Upgraded libgpg-error to version 1.26 on OS X; Homebrew.</li>
-  </ol>
-  2016.11.05
-  <br>
-  <b>New</b>
-  <ol>
-    <li>Additional Meego icon distributions.</li>
-    <li>Allow resetting of all widget style sheets.</li>
-    <li>Beautiful, silent neighbor statistics. Please see Neighbors.</li>
-    <li>Disabled congestion-control SQLite journaling.</li>
-    <li>Faster e-mail table population via JOIN.</li>
-    <li>Fujisaki-Okamoto McEliece interpretation model a.</li>
-    <li>Humans dislike bits and prefer bytes. New items in the File Encryption machine.</li>
-    <li>Infinite file-encryption pages.</li>
-    <li>More wonderful logging information.</li>
-    <li>New documentation in GoldBug.</li>
-    <li>Nicer widget centering via QDialog source.</li>
-    <li>Prefer OPENSSL_VERSION_TEXT over SSLeay_version(SSLEAY_VERSION).</li>
-    <li>SSL/TLS certificates expire. Allow generation of new one-year certificates. Please see Listeners.</li>
-    <li>Thread-safe error-logging engine. Longer (8 MiB) log file too!</li>
-    <li>Upgraded SQLite to version 3.15.1 on OS X; Homebrew.</li>
-    <li>Upgraded SQLite to version 3.15.1 on Windows.</li>
-  </ol>
-  2016.10.12
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Cannot force SSL usage without key sizes.</li>
-    <li>Correctly display non-indexed RSS links.</li>
-    <li>Corrected gcry_sexp_build() if-statement in spoton_crypt::generatePrivatePublicKeys().</li>
-    <li>Derive subsequent encryption keys via single-round PBKDF2; file encryption.</li>
-    <li>Do not append .enc to directory-mode encryption.</li>
-    <li>GB UI locking caused an abnormal abort. Thanks for Miss Moon for reporting the problem.</li>
-    <li>Neighbor summary having virtual items. The items require item flags.</li>
-    <li>Removed incorrect targets from PRE_TARGETDEPS macros; project files.</li>
-    <li>Set maximum and minimum on the passphrase-strength indicator.</li>
-    <li>The Threefish implementation appends an extra block of data. The extra block contains the length of the original data. The file encryption tool ignored these details.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>A client of libspoton should prepare the urls table in shared.db.</li>
-    <li>Exchanging public keys without signatures will be temporarily tolerated.</li>
-    <li>Let's protect some size parameters. Be positive.</li>
-    <li>More intelligent pointers.</li>
-    <li>OS X kernel path is dependent on Qt version.</li>
-    <li>One ought to cancel micro-process StarBeam digest computations if the chat key pair is about to be generated or removed.</li>
-    <li>The kernel will now determine if it must terminate itself from a thread.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Compress public keys over key exchanges. McEliece keys are vulgar.</li>
-    <li>Configurable silence time. Please see Neighbors.</li>
-    <li>Custom style sheets for almost all main-window widgets. May be set via context menus. Only on Spot-On. Now you're playing with power. Use only as directed.</li>
-    <li>Disable URL distributions. User input required.</li>
-    <li>Disable on-top windows on X11.</li>
-    <li>Force CURLOPT_BUFFERSIZE to 128L on Poptastic. Remove IMAP entries which cause timeouts.</li>
-    <li>Introduced private channels for 3rd-party applications. Packet ordering included.</li>
-    <li>McEliece cryptographic system. Custom implementation. Requires NTL version 9.10.0. Perhaps newer.</li>
-    <li>New icon set per the Schmidt.</li>
-    <li>Public keys shared via EPKS which are not signed will be temporarily accepted if signatures are required.</li>
-    <li>Removed Werror from FreeBSD and OS X project files in support of NTL.</li>
-    <li>Removed application modality from the file encryption application. Be expressive.</li>
-    <li>Thai translation provided by Sathitchai K.</li>
-    <li>The OS X and Windows bundles include NTL version 9.11.0.</li>
-    <li>Upgraded GeoIP products to version 1.6.6 on Windows.</li>
-    <li>Upgraded OpenSSL products to version 1.0.2j on OS X and Windows.</li>
-    <li>Upgraded PostgreSQL products to version 9.5.4_1 on OS X; Homebrew.</li>
-    <li>Upgraded SQLite to version 3.14.2 on Windows.</li>
-    <li>Upgraded curl to version 7.50.3 on OS X; Homebrew.</li>
-    <li>Upgraded curl to version 7.50.2 on Windows.</li>
-  </ol>
-  2016.08.23
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Close congestion control databases.</li>
-    <li>Corrected label text. Thanks to Magic Mouse.</li>
-    <li>Corrected minimum URL dispatcher interval in Options.</li>
-    <li>Corrected retransmission of partial StarBeams; iterator flaw.</li>
-    <li>Corrected purge limit in spoton::slotReceivedKernelMessage(). The error prevented the UI from processing large text messages.</li>
-    <li>Disable sound options if Qt 5.x is not available.</li>
-    <li>Ignore empty lines during public key import. Thanks to Magical Hero.</li>
-    <li>Inspect new() results in spot-on-threefish.cc.</li>
-    <li>Properly resize URL participant entries.</li>
-    <li>Remove HTML tags from a discovered link's description prior to trimming the link for display.</li>
-    <li>Remove and recreate helper context action menus whenever icons are changed.</li>
-    <li>Replaced purge() with memset() in spot-on-threefish.cc. Also corrected size parameters.</li>
-    <li>Separated relationship between the Minimal Display and the Neighbor Summary Panel.</li>
-    <li>Verify that SMP objects exist prior to use. Thanks to Magic.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Avoid adding personal public keys that were exchanged via a network.</li>
-    <li>Passthrough nodes should not attempt to avoid duplicate bytes.</li>
-    <li>Replaced COUNT(*) with EXISTS() wherever necessary.</li>
-    <li>WAL mode for congestion_control.db on reads and writes.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Allow exchanging of public keys without ownership proofs. Please see Echo Public Key Share.</li>
-    <li>Attempt to create the Mosaics directory whenever the UI process is launched. Windows only.</li>
-    <li>Default Echo Public Key Share accept/share settings may cause key pollution. The defaults have been set to false.</li>
-    <li>Default URL distribution intervals have been changed from 15 seconds to 60 seconds.</li>
-    <li>Display participant names in SMP messages.</li>
-    <li>Optional CBC CTS. Be careful.</li>
-    <li>Per Magical Hero, green cells on present e-mail dates.</li>
-    <li>Per Magical Hero, increased the e-mail.db default maximum size to 1024 MiB.</li>
-    <li>Prepared a method for altering database tables which contain authenticated and encrypted content. Future releases may not require removal of such databases.</li>
-    <li>UDP multicast servers have been replaced by dual-purpose clients.</li>
-    <li>Upgraded PostgreSQL products to version 9.5.4 on OS X; Homebrew.</li>
-    <li>Upgraded Qt products to version 5.7.0 on Windows.</li>
-    <li>Upgraded SQLite products to version 3.14.1 on Windows.</li>
-    <li>Upgraded curl to version 7.50.1 on OS X; Homebrew.</li>
-    <li>Upgraded libgcrypt to version 1.7.3 on OS X; Homebrew.</li>
-    <li>Upgraded libgpg-error to version 1.24 on OS X; Homebrew.</li>
-    <li>Upgraded libgcrypt products to version 1.6.6 on Windows.</li>
-  </ol>
-  2016.07.07
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Allow accounts for non-SSL/TLS TCP listeners.</li>
-    <li>Avoid shutdown() on client neighbor TCP sockets.</li>
-    <li>Corrected spoton_listener::isListening() with respect to Bluetooth servers.</li>
-    <li>Defining of Poptastic accounts with respect to e-mail widgets.</li>
-    <li>Disable GCM when Threefish is selected; file encryption.</li>
-    <li>GoldBug C/O institutions widget states.</li>
-    <li>Lowercase URL search text.</li>
-    <li>Poptastic information re-encoding; multiple accounts are supported.</li>
-    <li>RSS import setting was removed. Apologies.</li>
-    <li>RSS re-encoding. The echo field does not exist.</li>
-    <li>Removal of Poptastic accounts with respect to e-mail widgets.</li>
-    <li>Save Poptastic default names whenever an initial account is prepared.</li>
-    <li>StarBeam widget state in messaging popups per Miss Magic.</li>
-    <li>The INI setting gui/poptasticNameEmail must be decrypted after authentication.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Additional Neighbors tool tips.</li>
-    <li>More intelligent RSS import thread.</li>
-    <li>Prepared a new object-initialization timer in the kernel; 5-second interval.</li>
-    <li>Prune URL database query statements.</li>
-    <li>Reload Poptastic accounts after an entry has been deleted or modified.</li>
-    <li>Replaced table QCheckBox widgets with QTableWidgetItem objects.</li>
-    <li>The PostgreSQL URLs sequence serial should only be created if it does not exist.</li>
-    <li>Use QHash, QMap value() operator rather than operator[] during value queries.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Add Participant window. Located within the Tools menu.</li>
-    <li>Added the terminate command-line kernel option.</li>
-    <li>Consider URL tokens in the import mechanism. Domain searching will now be possible.</li>
-    <li>Include e-mail dates. Messages 0001b and 0001c have been changed.</li>
-    <li>Include the client's salt when computing return digests; accounts.</li>
-    <li>New SPOTON_DATELESS_COMPILATION macro for irritable participants. Please include the macro in the UI and kernel project files within the DEFINES sections.</li>
-    <li>Optional sounds; please see Options. Qt may not release media content descriptors.</li>
-    <li>Per-e-mail signatures. The email.db file must be removed or the folders table dropped.</li>
-    <li>Programmable echo modes; per Mr. Schmidt.</li>
-    <li>Qt version 5.6.1 on Windows.</li>
-    <li>Returned OS X Qt 4.8.x project files from the archives.</li>
-    <li>Separation and unification of Buzz pages.</li>
-    <li>Sounds are disabled by default for new installations.</li>
-    <li>Sources of randomness; listeners.</li>
-    <li>Upgraded NTRU products (05/26/2016).</li>
-    <li>Upgraded SQLite to version 3.13.0 on Windows.</li>
-    <li>Upgraded cURL products to version 7.49.1 on OS X and Windows.</li>
-    <li>Upgraded libgcrypt to version 1.7.1 on OS X.</li>
-    <li>Upgraded libgpg-error to version 1.23 on OS X.</li>
-    <li>Use QSslConfiguration::supportedCiphers() on Qt 5.x instead of QSslSocket::supportedCiphers() as recommended by Qt 5.5 documentation.</li>
-  </ol>
-  2016.05.24
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Ability to set a maximum number of clients to one; Listeners.</li>
-    <li>Ability to set an unlimited number of clients within Listeners. Please remove listeners.db.</li>
-    <li>Action check states of GB Pages menu.</li>
-    <li>Connected the anchorClicked() signal in messaging dialogs.</li>
-    <li>Per the Schmidt, display the public keys group during initialization.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Buzz group invites.</li>
-    <li>New lane width: 100000.</li>
-    <li>Open Library public key pairs.</li>
-    <li>Threaded RSS import with dedicated database connection.</li>
-    <li>Upgraded OpenSSL products to version 1.0.2h_1 on OS X; Homebrew.</li>
-    <li>Upgraded PostgreSQL products to version 9.5.3 on OS X; Homebrew.</li>
-    <li>Upgraded curl products to version 7.49.0 on OS X; Homebrew.</li>
-    <li>Upgraded libgcrypt to version 1.7.0_1 on OS X; Homebrew.</li>
-    <li>Upgraded libgpg-error to version 1.22 on OS X; Homebrew.</li>
-  </ol>
-  2016.05.10
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Copying of Poptastic e-mail repleos.</li>
-    <li>Corrected HTML tags within this file.</li>
-    <li>Corrected use of the ok variables in spoton::slotRenameParticipant(), spoton_rosetta::slotDelete(); scope shadowing.</li>
-    <li>Disable forward secrecy information for traditional e-mail accounts.</li>
-    <li>Disable the Lock status bar widget on new installations.</li>
-    <li>Do not respond to SMP messages under an Away status.</li>
-    <li>Eliminated an e-mail wait-cursor condition initiated during user input.</li>
-    <li>Options buddies.</li>
-    <li>Removed PostgreSQL/Libraries.win32/libeay32.dll. Much thanks to Mr. Schmidt.</li>
-    <li>The method spoton_misc::findForwardSecrecyKeys() ought to verify that a participant relationship has been established.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Register passthrough data digests as soon as possible.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>ARM Qt 4.x project files. Archived?</li>
-    <li>CBC Threefish-256 implementation.</li>
-    <li>Decreased the SMP Gemini iteration count to 25000 from 100000.</li>
-    <li>Decreased the kernel's e-mail transmission interval.</li>
-    <li>Disabled committed reads and synchronized writes on non-volatile congestion storage.</li>
-    <li>Display key sizes during SSL/TLS data generation.</li>
-    <li>Display the current SMP secret in the virtual keyboard panel.</li>
-    <li>Intelligent e-mail account selection. Removed previous notices, per Schmidt.</li>
-    <li>Inspect the kernel path before kernel activation. If necessary, abort.</li>
-    <li>Modified the RSS Timeline SQL WHERE clauses so that conjunctions are not applied. For example, "WHERE visited = 0" will retrieve non-indexed items. The Malformed filter is an exception.</li>
-    <li>Multiple e-mail attachments.</li>
-    <li>New RSS filter option: Not Indexed.</li>
-    <li>Politely remind the user if an attempt is made to establish Forward Secrecy credentials with temporary participants.</li>
-    <li>Removed support for 8192-bit SSL/TLS keys.</li>
-    <li>Replaced QToolTips with a notifications window.</li>
-    <li>Upgraded OpenSSL to version 1.0.2h on OS X and Windows.</li>
-    <li>Upgraded PostgreSQL products to version 9.5.2 on Windows.</li>
-    <li>Upgraded SQLite to version 3.12.2 on Windows.</li>
-  </ol>
-  2016.04.16
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Forward Secrecy and Gold Bug e-mail.</li>
-    <li>Kernel discovery of enabled Poptastic accounts.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Inspect containers before issuing takeFirst().</li>
-  </ol>
-  2016.04.15
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Corrected a quantum Poptastic anomaly. Coiling threads.</li>
-    <li>Corrected application of URL distillers during RSS processing.</li>
-    <li>Corrected if-statement in spoton_receive::process0091(); duplicate comparisons.</li>
-    <li>E-mail rich text.</li>
-    <li>Interactive states of main window pages.</li>
-    <li>Poptastic chat messaging. Must identify the correct account.</li>
-    <li>Prepare and review condition variables in spot-on-smp.cc.</li>
-    <li>Prevent e-mails to temporary participants.</li>
-    <li>Removed duplicate signals from messaging popup objects.</li>
-    <li>Removed empty zorders from UI files.</li>
-    <li>Removed the requirement that StarBeam pulses must be less than or equal to the least neighbor lane width.</li>
-    <li>The display repaints portions of itself according to database activity. Eliminated non-zero-probability of missed opportunities.</li>
-    <li>The signal QComboBox::currentTextChanged() is not available in Qt 4.x. Replaced with editTextChanged().</li>
-    <li>Warn of incompatible e-mail accounts.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Disable StarBeam write() buffering. Issue fsync() on Unix systems.</li>
-    <li>Do not assume integer sizes (spoton_crypt::decrypted()).</li>
-    <li>Initialize the SMP state machine to s0 if an error occurs during messaging verification.</li>
-    <li>Modified StarBeam position database synchronization to NORMAL.</li>
-    <li>Proper parameter types to gcry_randomize().</li>
-    <li>Read StarBeam pulses from dedicated threads.</li>
-    <li>Signal handlers must only call safe functions, save for a Windows-specific block in the kernel.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>All systems now use simple QTextBrowser objects for displaying HTML data.</li>
-    <li>Disable JIT (https://en.wikipedia.org/wiki/Just-in-time_compilation).</li>
-    <li>Display message origin dates in Buzz.</li>
-    <li>GOST, if available.</li>
-    <li>Increased maximum StarBeam pulse size.</li>
-    <li>Main tab context menu; page closing.</li>
-    <li>Optional WebEngine, optional WebKit.</li>
-    <li>Removed periodic importing from RSS.</li>
-    <li>Removed support for Qt 4.7.x.</li>
-    <li>Secondary storage for congestion control.</li>
-    <li>StarBeam fragmentation.</li>
-    <li>Updated NTRU files (03/09/2016).</li>
-    <li>Upgraded OpenSSL products to version 1.0.2g on OS X and Windows.</li>
-    <li>Upgraded Qt to version 5.6 on Windows.</li>
-    <li>Upgraded SQLite to version 3.11.1 on Windows.</li>
-    <li>Upgraded libgcrypt to version 1.6.5 on Windows.</li>
-    <li>Verify that sound files are readable and at least 8192 bytes in size.</li>
-    <li>WebKit has been replaced by WebEngine; both are optional. There may be residual network traffic via WebEngine. Expect more improvements with Qt 5.6.</li>
-  </ol>
-  2016.02.18
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Added PQinitOpenSSL(0, 0) to the interface's main().</li>
-    <li>Consider the Certificate Authority Path during Poptastic testing.</li>
-    <li>Corrected parent widgets of Poptastic message dialogs.</li>
-    <li>Corrected digest computations in email.db. The date field must be considered.</li>
-    <li>Corrected proxy configuration of Neighbors using System proxies.</li>
-    <li>Corrected the Statistics Window menu item's accessibility state.</li>
-    <li>Corrected widget text in Options.</li>
-    <li>Do not attempt to create SQL triggers if they already exist.</li>
-    <li>E-mail table widget selections. Digests are not necessarily unique. Database OIDs are.</li>
-    <li>Inspect the kernel's socket state before attempting write() operations from the interface.</li>
-    <li>Proper removal order of Poptastic cache items. Multiple threads may compromise order.</li>
-    <li>Remove rss.db during an application reset.</li>
-    <li>Resize row heights of RSS feeds according to their contents.</li>
-    <li>The method spoton::sendBuzzKeysToKernel() must absolutely declare failures.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Added rss.db to spoton_misc::vacuumAllDatabases().</li>
-    <li>Additional authenticated and encrypted fields in poptastic.db. Please remove the file.</li>
-    <li>Prepare databases before SQL INSERT statements are issued.</li>
-    <li>Threaded statistics gathering in the UI. The legacy implementation had the habit of pausing the interface. Momentary display glitches may occur. Such events are characterized by unavailable kernel statistics and status bar icon changes.</li>
-    <li>Use Homebrew's PostgreSQL products on OS X.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Added from_account to the folders table in email.db. Please DROP the folders table or remove email.db. The new field is required in support of multiple Poptastic accounts.</li>
-    <li>Allow hiding of particular pages in the main window. Simple concept, difficult implementation. QTabWidget does not provide a specific method for hiding pages.</li>
-    <li>Allow removal of individual RSS links.</li>
-    <li>Encrypt directory contents.</li>
-    <li>Most Qt 4.x project files have been archived.</li>
-    <li>Multiple Poptastic accounts. Please remove poptastic.db.</li>
-    <li>OpenSSL products have been upgraded to version 1.0.2f on OS X and Windows.</li>
-    <li>Removed the echo field from the rss_feeds table. Please remove rss.db.</li>
-    <li>SQLite products have been upgraded to version 3.10.2 on Windows.</li>
-    <li>Special spoton_misc::urlToEncoded() in support of Qt 4.x. The method encodes parentheses.</li>
-    <li>Upgraded PostgreSQL products to version 9.5.1.1 on Windows.</li>
-    <li>Upgraded curl products to version 7.47.0 on Windows.</li>
-  </ol>
-  2016.02.01
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>CHAR_BIT instead of 8.</li>
-    <li>Corrected UDP multicasting with respect to server writes.</li>
-    <li>Corrected double ampersand in the virtual keyboard.</li>
-    <li>Corrected lengthGreaterThan().</li>
-    <li>Corrected radio button functionality in the File Encryption panel.</li>
-    <li>Corrected std::cerr parameter when reporting invalid Spot-On-Kernel options.</li>
-    <li>Do not distribute spoton::m_urlCommonCrypt to spoton_pageviewer objects. Instead, use spoton::instance()->urlCommonCrypt().</li>
-    <li>Prepare URL containers after re-encoding.</li>
-    <li>Removed extraneous QAction objects from UI files.</li>
-    <li>Use the server's date when importing URLs into PostgreSQL databases.</li>
-    <li>Verify that spoton_pacify::m_passphrase is defined.</li>
-    <li>Widget text corrections.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>During URL importing, keywords will now be sorted according to their lengths.</li>
-    <li>Improved use of QString::fromUtf8().</li>
-    <li>Increased maximum Search results.</li>
-    <li>Removed StarBeam results tool tips. Troublesome.</li>
-    <li>Replaced distorted tool tips with status bar information.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Allow disabling of secure memory for sensitive environments.</li>
-    <li>Atom 1.0 and RSS 2.0 subscriptions and content retrieval.</li>
-    <li>Configurable URL keywords maximum values on import.</li>
-    <li>Custom URL distribution batch size.</li>
-    <li>Removed DEFAULT value from the database field insert_date in listeners_accounts_consumed_authentications.</li>
-    <li>Removed parents from QMainWindow objects.</li>
-    <li>Set the maximum UDP datagram size to 508 bytes.</li>
-    <li>URL page views are now rendered via WebKit.</li>
-    <li>Upgraded NTRU files.</li>
-    <li>Upgraded libspoton to version 0.1.5.</li>
-  </ol>
-  2015.12.25
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Avoid creating surplus QTableWidgetItem objects.</li>
-    <li>Corrected QSqlDatabase resource depletion with respect to Poptastic e-mail.</li>
-    <li>Corrected Total URLs Processed value.</li>
-    <li>Corrected double-initialization of QTableWidgetItem objects.</li>
-    <li>Corrected flags on URL distiller items.</li>
-    <li>Corrected initialization of QComboBox objects.</li>
-    <li>Corrected the OS X Qt 5.x project files.</li>
-    <li>Corrected uniqueness constraint on SQLite urls.db. Please remove the database. Apologies.</li>
-    <li>Disable the URL distribution service if instructed to do so.</li>
-    <li>Display the Poptastic panel regardless of the outcome of spoton_misc::poptasticSettings().</li>
-    <li>E-mail signatures were not properly enveloped via Gold Bug credentials; messages 0001a and 0001b.</li>
-    <li>Integer conversion corrections.</li>
-    <li>Issue a QFileSystemWatcher::removePath() before an addPath() in spoton_kernel::slotSettingsChanged().</li>
-    <li>Removed recursive object deletion (spoton_neighbor::deleteLater() via close()).</li>
-    <li>The method spoton_listener::listen() should set m_address and m_port.</li>
-    <li>The method spoton_smp::step5() must prepare the provided error parameter under all failure conditions.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Absolute time comparisons.</li>
-    <li>Additional summary information of neighbors.</li>
-    <li>Attempt to initialize urls_distillers_information.db before allowing new entries and before default entries are assigned.</li>
-    <li>Automatically partition large UDP datagrams.</li>
-    <li>Avoid broadcasting status messages to offline participants.</li>
-    <li>Avoid generating abundant SSL/TLS objects.</li>
-    <li>Avoid playing songs, showing tool tips, etc. if the application is locked. Status bar activity will persist.</li>
-    <li>Certificate resetting is now independent of connection state.</li>
-    <li>Confirm URL deletion.</li>
-    <li>Decreased select() timeout to 25 milliseconds in spoton_sctp_socket::read().</li>
-    <li>Disable non-TLS Listeners and Neighbors widgets.</li>
-    <li>Disable the SQLite journal before preparing urls.db. The preparation is not performed under database transactions. The journal is enabled after the process completes.</li>
-    <li>Forward-only URL SQL queries.</li>
-    <li>Increased MAXIMUM_NEIGHBOR_BUFFER_SIZE.</li>
-    <li>Inspect more NTRU function results.</li>
-    <li>Inspect results of gcry_control() with respect to GCRYCTL_SET_THREAD_CBS. Report the failure and continue.</li>
-    <li>Inspect setsockopt() results. Log errors and continue.</li>
-    <li>Less resource locking. More atomic operations.</li>
-    <li>More diverse Poptastic e-mail subjects.</li>
-    <li>Protect the kernel's UI server from data flooding.</li>
-    <li>Removed perpetual loop from spoton_sctp_socket::write().</li>
-    <li>SQLite CHECK constraints. New installations only.</li>
-    <li>Separated common source from the many project files.</li>
-    <li>Set gcryctl_set_thread_cbs_set to true if gcry_control() was successful.</li>
-    <li>The URL queries have been vastly improved. Also added performance information.</li>
-    <li>The method spoton_sctp_socket::connectToHost() must issue a close().</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Ability to drop URL tables.</li>
-    <li>Automatically enable URL distribution. New installations only.</li>
-    <li>Bluetooth clients and servers. Qt 5.2.x and newer are required. Linux and OS X only.</li>
-    <li>Chat participants will be notified of messages that are not signed.</li>
-    <li>Configurable congestion control digests.</li>
-    <li>Decreased the kernel's URL batch size to 5.</li>
-    <li>Denote whether or not e-mail letters were signed. Please purge e-mail.db or drop the folders table in email.db.</li>
-    <li>Digital passthrough neighbors.</li>
-    <li>Do not log small-key errors.</li>
-    <li>FireShare link sharing. Search, click, share.</li>
-    <li>Modified the default e-mail mode from Forward Secrecy to Normal.</li>
-    <li>New Web site.</li>
-    <li>New URL distillers will be enabled by default.</li>
-    <li>New installations will include enabled default URL distillers.</li>
-    <li>Option for removing orphaned URL keyword entries.</li>
-    <li>Page revisions for URLs.</li>
-    <li>Per Mr. Fennel, automatically set URL Common Credentials during the initialization process.</li>
-    <li>Per Mr. Schmidt, optional link accessibility and timestamps.</li>
-    <li>Pleasant songs! Qt 5.x is required.</li>
-    <li>Please rename Spot-On/Spot-On.ini to SpotOn/SpotOn.ini prior to launching the new executables! This change is required in support of Bluetooth on Linux. Apologies.</li>
-    <li>Poptastic messages are now limited to 50 MiB.</li>
-    <li>Raspberry Pi support. Please see the ARM project files.</li>
-    <li>Simple implementation of https://github.com/maandree/passcheck.</li>
-    <li>Total MiB read and written; kernel statistics.</li>
-    <li>UDP multicasting.</li>
-    <li>URL databases will now host complete text content. Please remove shared.db.</li>
-    <li>Updated libspoton to version 0.1.4. Please remove shared.db.</li>
-    <li>Upgraded OpenSSL products to version 1.0.2e on OS X and Windows.</li>
-    <li>Upgraded Qt to version 5.5.1 on Windows.</li>
-    <li>Upgraded SQLite products to version 3.9.2 on Windows.</li>
-    <li>Upgraded libgcrypt to version 1.6.4 on Windows.</li>
-    <li>Wide lanes.</li>
-  </ol>
-  2015.10.02
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Corrected StarBeam bubble text.</li>
-    <li>Corrected UI buddies.</li>
-    <li>Spelling!</li>
-    <li>Use spoton_crypt::memcmp() wherever digests are compared.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Log irregular digest key sizes.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Allow disabling of synchronous SQLite writes during URL import.</li>
-  </ol>
-  2015.09.26
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Avoid repetitive thread scheduling.</li>
-    <li>Corrected Poptastic default values (gui/disablePop3, gui/disableSmtp).</li>
-    <li>Corrected StarBeam UTF-8 file names.</li>
-    <li>Corrected error log entries.</li>
-    <li>Updated spoton_misc::vacuumAllDatabases().</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Allow UTF-8 messages of the day.</li>
-    <li>Completed chat replays with respect to popup dialogs.</li>
-    <li>Disable StarBeam sharing for Poptastic participants.</li>
-    <li>Do not clear replay queues after replays.</li>
-    <li>Exit the kernel with a proper exit code upon malfunctions.</li>
-    <li>Gold Bugs are now transformed into magnets. Authentication and encryption are now provided. E-mail only.</li>
-    <li>Immutable catch() parameters.</li>
-    <li>Repetitive instances of QTableWidget::setRowCount() are inefficient. Replaced with size queries where possible.</li>
-    <li>Rich text may require HTML encoding.</li>
-    <li>SMP changes. Step 2, verify that g2a and g3a are not equal to one. Step 3, verify that g2b and g3b are not equal to one. Steps 3 and 4, verify that pa <> pb and qa <> qb.</li>
-    <li>spoton_crypt will delete private key containers upon critical errors. Corresponding public key containers must also be purged.</li>
-    <li>Thread scheduling may not be available on all supported systems.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Allow disabling of the kernel's user interface server via the disable-ui-server option.</li>
-    <li>Allow removal of private-public key pairs.</li>
-    <li>Almost-anonymous e-mail. AA-e-mail is not signed and shall not be stored in post offices.</li>
-    <li>Application-level locking.</li>
-    <li>Chat Gemini exchange via forward secrecy.</li>
-    <li>Display bubbles whenever StarBeams have been processed.</li>
-    <li>Display bubbles whenever new e-mail letters arrive.</li>
-    <li>E-mail forward secrecy.</li>
-    <li>New logo.</li>
-    <li>Time sliders. Please see Options.</li>
-    <li>Transform tab icons accordingly.</li>
-    <li>Updated NTRU files (09/16/2015).</li>
-  </ol>
-  2015.08.01
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Close neighbor connections if socket reads do not return data.</li>
-    <li>Corrected CLOSE_WAIT socket states.</li>
-    <li>Corrected ORDER BY clause in the URL-distribution machine.</li>
-    <li>Corrected SCTP socket implementation. The close() method should inspect socket state.</li>
-    <li>Corrected SQLite URL database tables. A sequence is required. SQLite users must recreate their URL databases.</li>
-    <li>Corrected an error with QFileSystemWatcher; re-add the monitored file in the slot that's connected to the fileChanged() signal.</li>
-    <li>Corrected search pagination labels.</li>
-    <li>Do not initialize OpenSSL and libcrypto via PostgreSQL within the kernel. (Please see PQinitOpenSSL().)</li>
-    <li>Echo processed key-share packets.</li>
-    <li>Ignore malformed public keys in spoton_crypt::publicKeyEncrypt().</li>
-    <li>Process potential URL sets if and only if URL participants are defined.</li>
-    <li>The kernel process identifier may be a large value; consider toLongLong() instead of toInt().</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Allow UTF-8 in Echo Public Key Share.</li>
-    <li>Assume normal synchronization for URL imports on SQLite databases.</li>
-    <li>Attempt to post a Poptastic message a couple of times before discarding it.</li>
-    <li>Decreased the maximum keywords of received URLs to 50.</li>
-    <li>Decreased the size of generated StarBeam magnets.</li>
-    <li>Decreased the size of the random account buffer to 64 bytes.</li>
-    <li>Enable the SO_KEEPALIVE option on SCTP and TCP sockets.</li>
-    <li>Impose a maximum number of keywords in imported URLs. Currently set to 50.</li>
-    <li>Increased the Gemini iteration count to 100,000.</li>
-    <li>Increased the default Common Credentials iteration count to 250,000.</li>
-    <li>Increased the default file encryption iteration count to 250,000.</li>
-    <li>Increased the default public key distribution iteration count to 250,000.</li>
-    <li>Log important cURL errors that are generated within the kernel.</li>
-    <li>Modified Poptastic default Method values to Disable.</li>
-    <li>Per Mr. Fennel, provide a means of modifying the local host name for SMTP. New installations only. Please see the Poptastic configuration panel. Existing installations must remove poptastic.db because the new database field smtp_localname may not be NULL.</li>
-    <li>Populate URL filters upon password validation.</li>
-    <li>Test SMP during the launch of the UI. Results will be available in the log file.</li>
-    <li>The SMP state machine will enter a terminal state if an error occurs at stage 1, 2, 3, 4, or 5.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Allow duplication of StarBeam transmitted magnets.</li>
-    <li>Allow replay of last 15 chat messages.</li>
-    <li>Create a public URL community for exchanging URL key pairs. The community is created shortly after a new installation and a passphrase is validated.</li>
-    <li>Display the number of active kernel threads.</li>
-    <li>Initiated forward secrecy for e-mail. Incomplete.</li>
-    <li>Optionally delete StarBeam one-time magnets upon process exit.</li>
-    <li>Set the maximum length of SPOTON_HOME to 256 characters.</li>
-    <li>Technicolor search!</li>
-    <li>URL import futures! Allow the kernel to decide on the number of threads from available cores. Please consider using PostgreSQL so as to avoid avalanches.</li>
-    <li>Updated libspoton to version 0.1.2. The encrypted field now has a default of zero.</li>
-    <li>Upgraded OpenSSL to version 1.0.2d on OS X and Windows.</li>
-    <li>Upgraded PostgreSQL libraries to version 9.4.4-3 on Windows.</li>
-    <li>Use https://api.ipify.org to retrieve the external IP.</li>
-  </ol>
-  2015.06.17
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Bound size_t parameter of memcpy() in spoton_crypt::setHashKey(), spoton_misc::peerAddressAndPort(), spoton_sctp_server::setMaxPendingConnections(), spoton_sctp_socket::localAddressAndPort().</li>
-    <li>Convert ElGamal data to Base-64 before encrypting. A previous release of Spot-On introduced the use of QDataStream objects. The serialized data appears to be incompatible with ElGamal. Padding? ElGamal appears to be an abandoned primitive. The signature portion does not yet require this special exception.</li>
-    <li>Corrected importing of public keys. Cannot assume that key pairs exist.</li>
-    <li>Corrected re-encoding of listeners_accounts. Must include the listener_oid field in the where-clauses.</li>
-    <li>Corrected re-encoding of listeners_allowed_ips. Must include the listener_oid field in the where-clauses.</li>
-    <li>Corrected re-encoding of transmitted_magnets. Must include the transmitted_oid field in the where-clauses.</li>
-    <li>Corrected removal of URLs having special characters.</li>
-    <li>Corrected setting of remote IP information. Please see Neighbors.</li>
-    <li>Corrected use of spoton::addFriendsKey().</li>
-    <li>Do not assume that Poptastic values have been accepted by the user. That is, query the necessary database in order to retrieve required values.</li>
-    <li>Do not delete URLs from shared.db unless they are properly imported.</li>
-    <li>Do not distribute private spoton_crypt objects to child objects as the contents of the spoton_crypt objects may be modified by the re-encoding process. Instead, use spoton::instance()->crypts().</li>
-    <li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
-    <li>Do not pass a zero pointer to memset().</li>
-    <li>Guard QList::last().</li>
-    <li>Guard QList::removeAt().</li>
-    <li>Limit DSA key sizes to 3072 bits.</li>
-    <li>Many integer conversion corrections.</li>
-    <li>Release resources in spoton_crypt::spoton_crypt::publicKeyEncrypt().</li>
-    <li>Removed duplicate QObject::connect() instance from spoton::slotConfigurePoptastic().</li>
-    <li>Replaced (rv == 0) with (rv == SQLITE_OK) in libspoton.c.</li>
-    <li>Replaced the itemClicked() signal on the e-mail table with itemDoubleClicked() as itemClicked() and itemSelectionChanged() may cause duplicate dialog prompts.</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Assume zero pointer defaults in QHash::value(), QMap, etc.</li>
-    <li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
-    <li>Decreased message size of Rosetta output.</li>
-    <li>Inspect results of all QDataStream operations.</li>
-    <li>Modified QFileInfo::lastModified() usage. It's possible that a less-than-or-equal-to comparison will leave containers in unpleasant states.</li>
-    <li>Populate URL distillers before performing an import.</li>
-    <li>PostgreSQL administrators must recreate Spot-On URL databases.</li>
-    <li>Prepare URL cipher and hash widgets if libgcrypt fails.</li>
-    <li>Require account salts to contain at least 512 bytes.</li>
-    <li>Require the messages in 0002a and 0002b to contain at least 64 bytes.</li>
-    <li>Simplified copying and exporting of public keys.</li>
-    <li>The kernel's congestion cache requires a quick search that's based on the most current entries. The new implementation imposes an additional container.</li>
-    <li>The method QTableWidget::findItems() may return items that are irrelevant to the query. Implemented a special column-based method.</li>
-    <li>Prompt before accessing a remote URL.</li>
-    <li>Verify a StarBeam's provided pulse size against some defined maximum.</li>
-    <li>Verify results of ntru_rand_init(). Log errors.</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Acceptable URL schemes: ftp, gopher, http, https.</li>
-    <li>Added libspoton_delete_urls() to libspoton. Version updated to 0.1.1.</li>
-    <li>Allow adjustment of the iteration count in the file encryption tool.</li>
-    <li>Allow configuration of alternating row colors of Chat, E-Mail, and URLs participants. Please see Options.</li>
-    <li>Allow configuration of the kernel's cache purge timer.</li>
-    <li>Allow importing of URLs without Import Credentials. Only plaintext URLs will be imported.</li>
-    <li>Completed linear URL distribution. It is expected that Common Credentials are created. Items that cannot be imported by the kernel will be discarded.</li>
-    <li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
-    <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
-    <li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
-    <li>Derive subsequent file encryption key from initially-derived key via SHA-256 (Key_(i + 1) = SHA-256(Key_i)).</li>
-    <li>Digital signatures should vouch for private key information.</li>
-    <li>Display URL database connection information within the Search panel.</li>
-    <li>Dual-purpose domain check boxes. Please see URLs.</li>
-    <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
-    <li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>
-    <li>Impose a maximum number of keywords in received URLs. Currently set to 100.</li>
-    <li>Increased congestion cost maximum to 65536.</li>
-    <li>Increased default secure memory pool sizes to 262144 bytes. Increased minimum pool sizes to 131072 bytes.</li>
-    <li>Log re-encoding errors.</li>
-    <li>McEliece public-key encryption. Incomplete.</li>
-    <li>New display in Settings pertaining to personal public keys.</li>
-    <li>Notify the user of URL import statistics.</li>
-    <li>Per Mr. Schmidt, allow distribution of public key pairs via established secrets. Pairs having NTRU keys may not be shared as they do not support signatures.</li>
-    <li>Please remove urls_distillers_information.db before launching Spot-On.</li>
-    <li>Re-encode URL common and import credentials information.</li>
-    <li>Removed GCRY_MD_FLAG_SECURE from all gcry_md_open() instances.</li>
-    <li>Removed input masks from IPv6 fields.</li>
-    <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
-    <li>Updated NTRU files (06/15/2015).</li>
-    <li>Upgraded OpenSSL packages to version 1.0.2c on OS X and Windows.</li>
-    <li>Upgraded Qt packages to version 4.8.7 on OS X and 5.4.2 on Windows.</li>
-    <li>Upgraded SQLite to version 3.8.10.2 on Windows.</li>
-  </ol>
-  2015.04.09
-  <br>
-  <b>Corrections</b>
-  <ol>
-    <li>Corrected QSqlQuery preparation. QSqlQuery::exec() must not be used to prepare SQL statements. (spoton_listener::slotNewConnection(), spoton_misc::savePublishedNeighbo())</li>
-    <li>Corrected Qt DLLs in the Windows bundle.</li>
-    <li>Corrected inspection of QSqlQuery::exec() errors in various locations.</li>
-    <li>Corrected server-side processing of UDP datagrams.</li>
-    <li>Corrected spoton_misc::prepareUrlDistillersDatabase() and spoton_misc::prepareUrlKeysDatabase() with respect to the ok variables.</li>
-    <li>QWidget::activateWindow() should only be used on Windows!</li>
-  </ol>
-  <b>Improvements</b>
-  <ol>
-    <li>Improved error messages in the UI.</li>
-    <li>Issue QThread::wait() after QThread::quit().</li>
-  </ol>
-  <b>New</b>
-  <ol>
-    <li>Added Documentation/Spot-On-Kernel.1.</li>
-    <li>Added the option 65536 to the File Encryption's Read Size.</li>
-    <li>Allow modification of StarBeam pulse sizes.</li>
-    <li>Automatically verify StarBeams. Please see the Options panel.</li>
-    <li>Include a file's digest within each StarBeam pulse.</li>
-    <li>On Qt 5.x and Windows, assume a fusion style.</li>
-    <li>Updated SQLite to version 3.8.9, Windows.</li>
-  </ol>
+2017.03.01
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Corrected WebEngine page rendering.</li>
+  <li>Corrected initialization via Question/Answer.</li>
+  <li>Corrected recording of the number of inbound UDP bytes.</li>
+  <li>Corrected spelling of spoton::slotDeleteAccepedIP().</li>
+  <li>Link titles may be empty; substitute with URLs.</li>
+  <li>Removed redundant Base64 transformations of PK digests in spoton::slotSendMail().</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Denote flawed kernel connection in the UI's status bar.</li>
+  <li>E-mail windows.</li>
+  <li>Finer elapsed time in URL query results.</li>
+  <li>Force network accessibility in the RSS QNetworkAccessManager object.</li>
+  <li>Optionally remove e-mail entries from the remote server(s). Please see the Poptastic settings.</li>
+  <li>New socket options on listeners and neighbors.</li>
+  <li>PostgreSQL at version 9.6.1 on OS X; Homebrew.</li>
+  <li>PostgreSQL kernel query timeout setting; Options.</li>
+  <li>Prevent process memory exhaustion on network writes.</li>
+  <li>Removed redundant clearing of table widgets.</li>
+  <li>URL distribution implementation via concurrent mechanism.</li>
+  <li>Upgraded OpenSSL to version 1.0.2k on OS X and Windows.</li>
+  <li>Upgraded SQLite to version 3.17.0 on OS X and Windows.</li>
+</ol>
+2017.01.20
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Interrupt the loop in slotDeactivateKernel() on application exit.</li>
+  <li>Purge the gcry_md_hd_t object upon a gcry_md_extract() failure in spoton_crypt::shake256().</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>New Tilaa. Please reset your certificates via Neighbors. Also, see Data/spot-on-neighbors.txt.</li>
+  <li>Plaintext-only via traditional e-mail.</li>
+  <li>Upgraded SQLite to version 3.16.2 on Windows.</li>
+  <li>Upgraded libgcrypt to version 1.7.6 on OS X; Homebrew.</li>
+</ol>
+2017.01.01
+<br>
+<b>New</b>
+<ol>
+  <li>Embed proofs in the SMP machines.</li>
+  <li>Fujisaki-Okamoto McEliece interpretation model b. libgcrypt 1.7.0, or newer, is required.</li>
+  <li>Kernel processes will only communicate with authenticated UIs.</li>
+  <li>New NTL libraries. Version 10.1.0.</li>
+  <li>New Poptastic time delta option. Please see Options.</li>
+  <li>Remove flawed idiotes.db entries after passphrase validation. The idiotes.db database houses private key data.</li>
+  <li>SHA-3 support, where available. Version 1.7.0, or newer, of libgcrypt is required.</li>
+  <li>SMP tool. Please see the Tools menu.</li>
+  <li>Upgraded PostgreSQL to version 9.6.1 on OS X; Homebrew.</li>
+  <li>Upgraded Qt to version 5.7.1 on Windows.</li>
+  <li>Upgraded SQLite to version 3.15.2 on OS X and Windows.</li>
+  <li>Upgraded libgcrypt to version 1.7.5 on OS X; Homebrew.</li>
+  <li>Upgraded libgpg-error to version 1.26 on OS X; Homebrew.</li>
+</ol>
+2016.11.05
+<br>
+<b>New</b>
+<ol>
+  <li>Additional Meego icon distributions.</li>
+  <li>Allow resetting of all widget style sheets.</li>
+  <li>Beautiful, silent neighbor statistics. Please see Neighbors.</li>
+  <li>Disabled congestion-control SQLite journaling.</li>
+  <li>Faster e-mail table population via JOIN.</li>
+  <li>Fujisaki-Okamoto McEliece interpretation model a.</li>
+  <li>Humans dislike bits and prefer bytes. New items in the File Encryption machine.</li>
+  <li>Infinite file-encryption pages.</li>
+  <li>More wonderful logging information.</li>
+  <li>New documentation in GoldBug.</li>
+  <li>Nicer widget centering via QDialog source.</li>
+  <li>Prefer OPENSSL_VERSION_TEXT over SSLeay_version(SSLEAY_VERSION).</li>
+  <li>SSL/TLS certificates expire. Allow generation of new one-year certificates. Please see Listeners.</li>
+  <li>Thread-safe error-logging engine. Longer (8 MiB) log file too!</li>
+  <li>Upgraded SQLite to version 3.15.1 on OS X; Homebrew.</li>
+  <li>Upgraded SQLite to version 3.15.1 on Windows.</li>
+</ol>
+2016.10.12
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Cannot force SSL usage without key sizes.</li>
+  <li>Correctly display non-indexed RSS links.</li>
+  <li>Corrected gcry_sexp_build() if-statement in spoton_crypt::generatePrivatePublicKeys().</li>
+  <li>Derive subsequent encryption keys via single-round PBKDF2; file encryption.</li>
+  <li>Do not append .enc to directory-mode encryption.</li>
+  <li>GB UI locking caused an abnormal abort. Thanks for Miss Moon for reporting the problem.</li>
+  <li>Neighbor summary having virtual items. The items require item flags.</li>
+  <li>Removed incorrect targets from PRE_TARGETDEPS macros; project files.</li>
+  <li>Set maximum and minimum on the passphrase-strength indicator.</li>
+  <li>The Threefish implementation appends an extra block of data. The extra block contains the length of the original data. The file encryption tool ignored these details.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>A client of libspoton should prepare the urls table in shared.db.</li>
+  <li>Exchanging public keys without signatures will be temporarily tolerated.</li>
+  <li>Let's protect some size parameters. Be positive.</li>
+  <li>More intelligent pointers.</li>
+  <li>OS X kernel path is dependent on Qt version.</li>
+  <li>One ought to cancel micro-process StarBeam digest computations if the chat key pair is about to be generated or removed.</li>
+  <li>The kernel will now determine if it must terminate itself from a thread.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Compress public keys over key exchanges. McEliece keys are vulgar.</li>
+  <li>Configurable silence time. Please see Neighbors.</li>
+  <li>Custom style sheets for almost all main-window widgets. May be set via context menus. Only on Spot-On. Now you're playing with power. Use only as directed.</li>
+  <li>Disable URL distributions. User input required.</li>
+  <li>Disable on-top windows on X11.</li>
+  <li>Force CURLOPT_BUFFERSIZE to 128L on Poptastic. Remove IMAP entries which cause timeouts.</li>
+  <li>Introduced private channels for 3rd-party applications. Packet ordering included.</li>
+  <li>McEliece cryptographic system. Custom implementation. Requires NTL version 9.10.0. Perhaps newer.</li>
+  <li>New icon set per the Schmidt.</li>
+  <li>Public keys shared via EPKS which are not signed will be temporarily accepted if signatures are required.</li>
+  <li>Removed Werror from FreeBSD and OS X project files in support of NTL.</li>
+  <li>Removed application modality from the file encryption application. Be expressive.</li>
+  <li>Thai translation provided by Sathitchai K.</li>
+  <li>The OS X and Windows bundles include NTL version 9.11.0.</li>
+  <li>Upgraded GeoIP products to version 1.6.6 on Windows.</li>
+  <li>Upgraded OpenSSL products to version 1.0.2j on OS X and Windows.</li>
+  <li>Upgraded PostgreSQL products to version 9.5.4_1 on OS X; Homebrew.</li>
+  <li>Upgraded SQLite to version 3.14.2 on Windows.</li>
+  <li>Upgraded curl to version 7.50.3 on OS X; Homebrew.</li>
+  <li>Upgraded curl to version 7.50.2 on Windows.</li>
+</ol>
+2016.08.23
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Close congestion control databases.</li>
+  <li>Corrected label text. Thanks to Magic Mouse.</li>
+  <li>Corrected minimum URL dispatcher interval in Options.</li>
+  <li>Corrected retransmission of partial StarBeams; iterator flaw.</li>
+  <li>Corrected purge limit in spoton::slotReceivedKernelMessage(). The error prevented the UI from processing large text messages.</li>
+  <li>Disable sound options if Qt 5.x is not available.</li>
+  <li>Ignore empty lines during public key import. Thanks to Magical Hero.</li>
+  <li>Inspect new() results in spot-on-threefish.cc.</li>
+  <li>Properly resize URL participant entries.</li>
+  <li>Remove HTML tags from a discovered link's description prior to trimming the link for display.</li>
+  <li>Remove and recreate helper context action menus whenever icons are changed.</li>
+  <li>Replaced purge() with memset() in spot-on-threefish.cc. Also corrected size parameters.</li>
+  <li>Separated relationship between the Minimal Display and the Neighbor Summary Panel.</li>
+  <li>Verify that SMP objects exist prior to use. Thanks to Magic.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Avoid adding personal public keys that were exchanged via a network.</li>
+  <li>Passthrough nodes should not attempt to avoid duplicate bytes.</li>
+  <li>Replaced COUNT(*) with EXISTS() wherever necessary.</li>
+  <li>WAL mode for congestion_control.db on reads and writes.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Allow exchanging of public keys without ownership proofs. Please see Echo Public Key Share.</li>
+  <li>Attempt to create the Mosaics directory whenever the UI process is launched. Windows only.</li>
+  <li>Default Echo Public Key Share accept/share settings may cause key pollution. The defaults have been set to false.</li>
+  <li>Default URL distribution intervals have been changed from 15 seconds to 60 seconds.</li>
+  <li>Display participant names in SMP messages.</li>
+  <li>Optional CBC CTS. Be careful.</li>
+  <li>Per Magical Hero, green cells on present e-mail dates.</li>
+  <li>Per Magical Hero, increased the e-mail.db default maximum size to 1024 MiB.</li>
+  <li>Prepared a method for altering database tables which contain authenticated and encrypted content. Future releases may not require removal of such databases.</li>
+  <li>UDP multicast servers have been replaced by dual-purpose clients.</li>
+  <li>Upgraded PostgreSQL products to version 9.5.4 on OS X; Homebrew.</li>
+  <li>Upgraded Qt products to version 5.7.0 on Windows.</li>
+  <li>Upgraded SQLite products to version 3.14.1 on Windows.</li>
+  <li>Upgraded curl to version 7.50.1 on OS X; Homebrew.</li>
+  <li>Upgraded libgcrypt to version 1.7.3 on OS X; Homebrew.</li>
+  <li>Upgraded libgpg-error to version 1.24 on OS X; Homebrew.</li>
+  <li>Upgraded libgcrypt products to version 1.6.6 on Windows.</li>
+</ol>
+2016.07.07
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Allow accounts for non-SSL/TLS TCP listeners.</li>
+  <li>Avoid shutdown() on client neighbor TCP sockets.</li>
+  <li>Corrected spoton_listener::isListening() with respect to Bluetooth servers.</li>
+  <li>Defining of Poptastic accounts with respect to e-mail widgets.</li>
+  <li>Disable GCM when Threefish is selected; file encryption.</li>
+  <li>GoldBug C/O institutions widget states.</li>
+  <li>Lowercase URL search text.</li>
+  <li>Poptastic information re-encoding; multiple accounts are supported.</li>
+  <li>RSS import setting was removed. Apologies.</li>
+  <li>RSS re-encoding. The echo field does not exist.</li>
+  <li>Removal of Poptastic accounts with respect to e-mail widgets.</li>
+  <li>Save Poptastic default names whenever an initial account is prepared.</li>
+  <li>StarBeam widget state in messaging popups per Miss Magic.</li>
+  <li>The INI setting gui/poptasticNameEmail must be decrypted after authentication.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Additional Neighbors tool tips.</li>
+  <li>More intelligent RSS import thread.</li>
+  <li>Prepared a new object-initialization timer in the kernel; 5-second interval.</li>
+  <li>Prune URL database query statements.</li>
+  <li>Reload Poptastic accounts after an entry has been deleted or modified.</li>
+  <li>Replaced table QCheckBox widgets with QTableWidgetItem objects.</li>
+  <li>The PostgreSQL URLs sequence serial should only be created if it does not exist.</li>
+  <li>Use QHash, QMap value() operator rather than operator[] during value queries.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Add Participant window. Located within the Tools menu.</li>
+  <li>Added the terminate command-line kernel option.</li>
+  <li>Consider URL tokens in the import mechanism. Domain searching will now be possible.</li>
+  <li>Include e-mail dates. Messages 0001b and 0001c have been changed.</li>
+  <li>Include the client's salt when computing return digests; accounts.</li>
+  <li>New SPOTON_DATELESS_COMPILATION macro for irritable participants. Please include the macro in the UI and kernel project files within the DEFINES sections.</li>
+  <li>Optional sounds; please see Options. Qt may not release media content descriptors.</li>
+  <li>Per-e-mail signatures. The email.db file must be removed or the folders table dropped.</li>
+  <li>Programmable echo modes; per Mr. Schmidt.</li>
+  <li>Qt version 5.6.1 on Windows.</li>
+  <li>Returned OS X Qt 4.8.x project files from the archives.</li>
+  <li>Separation and unification of Buzz pages.</li>
+  <li>Sounds are disabled by default for new installations.</li>
+  <li>Sources of randomness; listeners.</li>
+  <li>Upgraded NTRU products (05/26/2016).</li>
+  <li>Upgraded SQLite to version 3.13.0 on Windows.</li>
+  <li>Upgraded cURL products to version 7.49.1 on OS X and Windows.</li>
+  <li>Upgraded libgcrypt to version 1.7.1 on OS X.</li>
+  <li>Upgraded libgpg-error to version 1.23 on OS X.</li>
+  <li>Use QSslConfiguration::supportedCiphers() on Qt 5.x instead of QSslSocket::supportedCiphers() as recommended by Qt 5.5 documentation.</li>
+</ol>
+2016.05.24
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Ability to set a maximum number of clients to one; Listeners.</li>
+  <li>Ability to set an unlimited number of clients within Listeners. Please remove listeners.db.</li>
+  <li>Action check states of GB Pages menu.</li>
+  <li>Connected the anchorClicked() signal in messaging dialogs.</li>
+  <li>Per the Schmidt, display the public keys group during initialization.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Buzz group invites.</li>
+  <li>New lane width: 100000.</li>
+  <li>Open Library public key pairs.</li>
+  <li>Threaded RSS import with dedicated database connection.</li>
+  <li>Upgraded OpenSSL products to version 1.0.2h_1 on OS X; Homebrew.</li>
+  <li>Upgraded PostgreSQL products to version 9.5.3 on OS X; Homebrew.</li>
+  <li>Upgraded curl products to version 7.49.0 on OS X; Homebrew.</li>
+  <li>Upgraded libgcrypt to version 1.7.0_1 on OS X; Homebrew.</li>
+  <li>Upgraded libgpg-error to version 1.22 on OS X; Homebrew.</li>
+</ol>
+2016.05.10
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Copying of Poptastic e-mail repleos.</li>
+  <li>Corrected HTML tags within this file.</li>
+  <li>Corrected use of the ok variables in spoton::slotRenameParticipant(), spoton_rosetta::slotDelete(); scope shadowing.</li>
+  <li>Disable forward secrecy information for traditional e-mail accounts.</li>
+  <li>Disable the Lock status bar widget on new installations.</li>
+  <li>Do not respond to SMP messages under an Away status.</li>
+  <li>Eliminated an e-mail wait-cursor condition initiated during user input.</li>
+  <li>Options buddies.</li>
+  <li>Removed PostgreSQL/Libraries.win32/libeay32.dll. Much thanks to Mr. Schmidt.</li>
+  <li>The method spoton_misc::findForwardSecrecyKeys() ought to verify that a participant relationship has been established.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Register passthrough data digests as soon as possible.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>ARM Qt 4.x project files. Archived?</li>
+  <li>CBC Threefish-256 implementation.</li>
+  <li>Decreased the SMP Gemini iteration count to 25000 from 100000.</li>
+  <li>Decreased the kernel's e-mail transmission interval.</li>
+  <li>Disabled committed reads and synchronized writes on non-volatile congestion storage.</li>
+  <li>Display key sizes during SSL/TLS data generation.</li>
+  <li>Display the current SMP secret in the virtual keyboard panel.</li>
+  <li>Intelligent e-mail account selection. Removed previous notices, per Schmidt.</li>
+  <li>Inspect the kernel path before kernel activation. If necessary, abort.</li>
+  <li>Modified the RSS Timeline SQL WHERE clauses so that conjunctions are not applied. For example, "WHERE visited = 0" will retrieve non-indexed items. The Malformed filter is an exception.</li>
+  <li>Multiple e-mail attachments.</li>
+  <li>New RSS filter option: Not Indexed.</li>
+  <li>Politely remind the user if an attempt is made to establish Forward Secrecy credentials with temporary participants.</li>
+  <li>Removed support for 8192-bit SSL/TLS keys.</li>
+  <li>Replaced QToolTips with a notifications window.</li>
+  <li>Upgraded OpenSSL to version 1.0.2h on OS X and Windows.</li>
+  <li>Upgraded PostgreSQL products to version 9.5.2 on Windows.</li>
+  <li>Upgraded SQLite to version 3.12.2 on Windows.</li>
+</ol>
+2016.04.16
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Forward Secrecy and Gold Bug e-mail.</li>
+  <li>Kernel discovery of enabled Poptastic accounts.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Inspect containers before issuing takeFirst().</li>
+</ol>
+2016.04.15
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Corrected a quantum Poptastic anomaly. Coiling threads.</li>
+  <li>Corrected application of URL distillers during RSS processing.</li>
+  <li>Corrected if-statement in spoton_receive::process0091(); duplicate comparisons.</li>
+  <li>E-mail rich text.</li>
+  <li>Interactive states of main window pages.</li>
+  <li>Poptastic chat messaging. Must identify the correct account.</li>
+  <li>Prepare and review condition variables in spot-on-smp.cc.</li>
+  <li>Prevent e-mails to temporary participants.</li>
+  <li>Removed duplicate signals from messaging popup objects.</li>
+  <li>Removed empty zorders from UI files.</li>
+  <li>Removed the requirement that StarBeam pulses must be less than or equal to the least neighbor lane width.</li>
+  <li>The display repaints portions of itself according to database activity. Eliminated non-zero-probability of missed opportunities.</li>
+  <li>The signal QComboBox::currentTextChanged() is not available in Qt 4.x. Replaced with editTextChanged().</li>
+  <li>Warn of incompatible e-mail accounts.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Disable StarBeam write() buffering. Issue fsync() on Unix systems.</li>
+  <li>Do not assume integer sizes (spoton_crypt::decrypted()).</li>
+  <li>Initialize the SMP state machine to s0 if an error occurs during messaging verification.</li>
+  <li>Modified StarBeam position database synchronization to NORMAL.</li>
+  <li>Proper parameter types to gcry_randomize().</li>
+  <li>Read StarBeam pulses from dedicated threads.</li>
+  <li>Signal handlers must only call safe functions, save for a Windows-specific block in the kernel.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>All systems now use simple QTextBrowser objects for displaying HTML data.</li>
+  <li>Disable JIT (https://en.wikipedia.org/wiki/Just-in-time_compilation).</li>
+  <li>Display message origin dates in Buzz.</li>
+  <li>GOST, if available.</li>
+  <li>Increased maximum StarBeam pulse size.</li>
+  <li>Main tab context menu; page closing.</li>
+  <li>Optional WebEngine, optional WebKit.</li>
+  <li>Removed periodic importing from RSS.</li>
+  <li>Removed support for Qt 4.7.x.</li>
+  <li>Secondary storage for congestion control.</li>
+  <li>StarBeam fragmentation.</li>
+  <li>Updated NTRU files (03/09/2016).</li>
+  <li>Upgraded OpenSSL products to version 1.0.2g on OS X and Windows.</li>
+  <li>Upgraded Qt to version 5.6 on Windows.</li>
+  <li>Upgraded SQLite to version 3.11.1 on Windows.</li>
+  <li>Upgraded libgcrypt to version 1.6.5 on Windows.</li>
+  <li>Verify that sound files are readable and at least 8192 bytes in size.</li>
+  <li>WebKit has been replaced by WebEngine; both are optional. There may be residual network traffic via WebEngine. Expect more improvements with Qt 5.6.</li>
+</ol>
+2016.02.18
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Added PQinitOpenSSL(0, 0) to the interface's main().</li>
+  <li>Consider the Certificate Authority Path during Poptastic testing.</li>
+  <li>Corrected parent widgets of Poptastic message dialogs.</li>
+  <li>Corrected digest computations in email.db. The date field must be considered.</li>
+  <li>Corrected proxy configuration of Neighbors using System proxies.</li>
+  <li>Corrected the Statistics Window menu item's accessibility state.</li>
+  <li>Corrected widget text in Options.</li>
+  <li>Do not attempt to create SQL triggers if they already exist.</li>
+  <li>E-mail table widget selections. Digests are not necessarily unique. Database OIDs are.</li>
+  <li>Inspect the kernel's socket state before attempting write() operations from the interface.</li>
+  <li>Proper removal order of Poptastic cache items. Multiple threads may compromise order.</li>
+  <li>Remove rss.db during an application reset.</li>
+  <li>Resize row heights of RSS feeds according to their contents.</li>
+  <li>The method spoton::sendBuzzKeysToKernel() must absolutely declare failures.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Added rss.db to spoton_misc::vacuumAllDatabases().</li>
+  <li>Additional authenticated and encrypted fields in poptastic.db. Please remove the file.</li>
+  <li>Prepare databases before SQL INSERT statements are issued.</li>
+  <li>Threaded statistics gathering in the UI. The legacy implementation had the habit of pausing the interface. Momentary display glitches may occur. Such events are characterized by unavailable kernel statistics and status bar icon changes.</li>
+  <li>Use Homebrew's PostgreSQL products on OS X.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Added from_account to the folders table in email.db. Please DROP the folders table or remove email.db. The new field is required in support of multiple Poptastic accounts.</li>
+  <li>Allow hiding of particular pages in the main window. Simple concept, difficult implementation. QTabWidget does not provide a specific method for hiding pages.</li>
+  <li>Allow removal of individual RSS links.</li>
+  <li>Encrypt directory contents.</li>
+  <li>Most Qt 4.x project files have been archived.</li>
+  <li>Multiple Poptastic accounts. Please remove poptastic.db.</li>
+  <li>OpenSSL products have been upgraded to version 1.0.2f on OS X and Windows.</li>
+  <li>Removed the echo field from the rss_feeds table. Please remove rss.db.</li>
+  <li>SQLite products have been upgraded to version 3.10.2 on Windows.</li>
+  <li>Special spoton_misc::urlToEncoded() in support of Qt 4.x. The method encodes parentheses.</li>
+  <li>Upgraded PostgreSQL products to version 9.5.1.1 on Windows.</li>
+  <li>Upgraded curl products to version 7.47.0 on Windows.</li>
+</ol>
+2016.02.01
+<br>
+<b>Corrections</b>
+<ol>
+  <li>CHAR_BIT instead of 8.</li>
+  <li>Corrected UDP multicasting with respect to server writes.</li>
+  <li>Corrected double ampersand in the virtual keyboard.</li>
+  <li>Corrected lengthGreaterThan().</li>
+  <li>Corrected radio button functionality in the File Encryption panel.</li>
+  <li>Corrected std::cerr parameter when reporting invalid Spot-On-Kernel options.</li>
+  <li>Do not distribute spoton::m_urlCommonCrypt to spoton_pageviewer objects. Instead, use spoton::instance()->urlCommonCrypt().</li>
+  <li>Prepare URL containers after re-encoding.</li>
+  <li>Removed extraneous QAction objects from UI files.</li>
+  <li>Use the server's date when importing URLs into PostgreSQL databases.</li>
+  <li>Verify that spoton_pacify::m_passphrase is defined.</li>
+  <li>Widget text corrections.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>During URL importing, keywords will now be sorted according to their lengths.</li>
+  <li>Improved use of QString::fromUtf8().</li>
+  <li>Increased maximum Search results.</li>
+  <li>Removed StarBeam results tool tips. Troublesome.</li>
+  <li>Replaced distorted tool tips with status bar information.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Allow disabling of secure memory for sensitive environments.</li>
+  <li>Atom 1.0 and RSS 2.0 subscriptions and content retrieval.</li>
+  <li>Configurable URL keywords maximum values on import.</li>
+  <li>Custom URL distribution batch size.</li>
+  <li>Removed DEFAULT value from the database field insert_date in listeners_accounts_consumed_authentications.</li>
+  <li>Removed parents from QMainWindow objects.</li>
+  <li>Set the maximum UDP datagram size to 508 bytes.</li>
+  <li>URL page views are now rendered via WebKit.</li>
+  <li>Upgraded NTRU files.</li>
+  <li>Upgraded libspoton to version 0.1.5.</li>
+</ol>
+2015.12.25
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Avoid creating surplus QTableWidgetItem objects.</li>
+  <li>Corrected QSqlDatabase resource depletion with respect to Poptastic e-mail.</li>
+  <li>Corrected Total URLs Processed value.</li>
+  <li>Corrected double-initialization of QTableWidgetItem objects.</li>
+  <li>Corrected flags on URL distiller items.</li>
+  <li>Corrected initialization of QComboBox objects.</li>
+  <li>Corrected the OS X Qt 5.x project files.</li>
+  <li>Corrected uniqueness constraint on SQLite urls.db. Please remove the database. Apologies.</li>
+  <li>Disable the URL distribution service if instructed to do so.</li>
+  <li>Display the Poptastic panel regardless of the outcome of spoton_misc::poptasticSettings().</li>
+  <li>E-mail signatures were not properly enveloped via Gold Bug credentials; messages 0001a and 0001b.</li>
+  <li>Integer conversion corrections.</li>
+  <li>Issue a QFileSystemWatcher::removePath() before an addPath() in spoton_kernel::slotSettingsChanged().</li>
+  <li>Removed recursive object deletion (spoton_neighbor::deleteLater() via close()).</li>
+  <li>The method spoton_listener::listen() should set m_address and m_port.</li>
+  <li>The method spoton_smp::step5() must prepare the provided error parameter under all failure conditions.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Absolute time comparisons.</li>
+  <li>Additional summary information of neighbors.</li>
+  <li>Attempt to initialize urls_distillers_information.db before allowing new entries and before default entries are assigned.</li>
+  <li>Automatically partition large UDP datagrams.</li>
+  <li>Avoid broadcasting status messages to offline participants.</li>
+  <li>Avoid generating abundant SSL/TLS objects.</li>
+  <li>Avoid playing songs, showing tool tips, etc. if the application is locked. Status bar activity will persist.</li>
+  <li>Certificate resetting is now independent of connection state.</li>
+  <li>Confirm URL deletion.</li>
+  <li>Decreased select() timeout to 25 milliseconds in spoton_sctp_socket::read().</li>
+  <li>Disable non-TLS Listeners and Neighbors widgets.</li>
+  <li>Disable the SQLite journal before preparing urls.db. The preparation is not performed under database transactions. The journal is enabled after the process completes.</li>
+  <li>Forward-only URL SQL queries.</li>
+  <li>Increased MAXIMUM_NEIGHBOR_BUFFER_SIZE.</li>
+  <li>Inspect more NTRU function results.</li>
+  <li>Inspect results of gcry_control() with respect to GCRYCTL_SET_THREAD_CBS. Report the failure and continue.</li>
+  <li>Inspect setsockopt() results. Log errors and continue.</li>
+  <li>Less resource locking. More atomic operations.</li>
+  <li>More diverse Poptastic e-mail subjects.</li>
+  <li>Protect the kernel's UI server from data flooding.</li>
+  <li>Removed perpetual loop from spoton_sctp_socket::write().</li>
+  <li>SQLite CHECK constraints. New installations only.</li>
+  <li>Separated common source from the many project files.</li>
+  <li>Set gcryctl_set_thread_cbs_set to true if gcry_control() was successful.</li>
+  <li>The URL queries have been vastly improved. Also added performance information.</li>
+  <li>The method spoton_sctp_socket::connectToHost() must issue a close().</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Ability to drop URL tables.</li>
+  <li>Automatically enable URL distribution. New installations only.</li>
+  <li>Bluetooth clients and servers. Qt 5.2.x and newer are required. Linux and OS X only.</li>
+  <li>Chat participants will be notified of messages that are not signed.</li>
+  <li>Configurable congestion control digests.</li>
+  <li>Decreased the kernel's URL batch size to 5.</li>
+  <li>Denote whether or not e-mail letters were signed. Please purge e-mail.db or drop the folders table in email.db.</li>
+  <li>Digital passthrough neighbors.</li>
+  <li>Do not log small-key errors.</li>
+  <li>FireShare link sharing. Search, click, share.</li>
+  <li>Modified the default e-mail mode from Forward Secrecy to Normal.</li>
+  <li>New Web site.</li>
+  <li>New URL distillers will be enabled by default.</li>
+  <li>New installations will include enabled default URL distillers.</li>
+  <li>Option for removing orphaned URL keyword entries.</li>
+  <li>Page revisions for URLs.</li>
+  <li>Per Mr. Fennel, automatically set URL Common Credentials during the initialization process.</li>
+  <li>Per Mr. Schmidt, optional link accessibility and timestamps.</li>
+  <li>Pleasant songs! Qt 5.x is required.</li>
+  <li>Please rename Spot-On/Spot-On.ini to SpotOn/SpotOn.ini prior to launching the new executables! This change is required in support of Bluetooth on Linux. Apologies.</li>
+  <li>Poptastic messages are now limited to 50 MiB.</li>
+  <li>Raspberry Pi support. Please see the ARM project files.</li>
+  <li>Simple implementation of https://github.com/maandree/passcheck.</li>
+  <li>Total MiB read and written; kernel statistics.</li>
+  <li>UDP multicasting.</li>
+  <li>URL databases will now host complete text content. Please remove shared.db.</li>
+  <li>Updated libspoton to version 0.1.4. Please remove shared.db.</li>
+  <li>Upgraded OpenSSL products to version 1.0.2e on OS X and Windows.</li>
+  <li>Upgraded Qt to version 5.5.1 on Windows.</li>
+  <li>Upgraded SQLite products to version 3.9.2 on Windows.</li>
+  <li>Upgraded libgcrypt to version 1.6.4 on Windows.</li>
+  <li>Wide lanes.</li>
+</ol>
+2015.10.02
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Corrected StarBeam bubble text.</li>
+  <li>Corrected UI buddies.</li>
+  <li>Spelling!</li>
+  <li>Use spoton_crypt::memcmp() wherever digests are compared.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Log irregular digest key sizes.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Allow disabling of synchronous SQLite writes during URL import.</li>
+</ol>
+2015.09.26
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Avoid repetitive thread scheduling.</li>
+  <li>Corrected Poptastic default values (gui/disablePop3, gui/disableSmtp).</li>
+  <li>Corrected StarBeam UTF-8 file names.</li>
+  <li>Corrected error log entries.</li>
+  <li>Updated spoton_misc::vacuumAllDatabases().</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Allow UTF-8 messages of the day.</li>
+  <li>Completed chat replays with respect to popup dialogs.</li>
+  <li>Disable StarBeam sharing for Poptastic participants.</li>
+  <li>Do not clear replay queues after replays.</li>
+  <li>Exit the kernel with a proper exit code upon malfunctions.</li>
+  <li>Gold Bugs are now transformed into magnets. Authentication and encryption are now provided. E-mail only.</li>
+  <li>Immutable catch() parameters.</li>
+  <li>Repetitive instances of QTableWidget::setRowCount() are inefficient. Replaced with size queries where possible.</li>
+  <li>Rich text may require HTML encoding.</li>
+  <li>SMP changes. Step 2, verify that g2a and g3a are not equal to one. Step 3, verify that g2b and g3b are not equal to one. Steps 3 and 4, verify that pa <> pb and qa <> qb.</li>
+  <li>spoton_crypt will delete private key containers upon critical errors. Corresponding public key containers must also be purged.</li>
+  <li>Thread scheduling may not be available on all supported systems.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Allow disabling of the kernel's user interface server via the disable-ui-server option.</li>
+  <li>Allow removal of private-public key pairs.</li>
+  <li>Almost-anonymous e-mail. AA-e-mail is not signed and shall not be stored in post offices.</li>
+  <li>Application-level locking.</li>
+  <li>Chat Gemini exchange via forward secrecy.</li>
+  <li>Display bubbles whenever StarBeams have been processed.</li>
+  <li>Display bubbles whenever new e-mail letters arrive.</li>
+  <li>E-mail forward secrecy.</li>
+  <li>New logo.</li>
+  <li>Time sliders. Please see Options.</li>
+  <li>Transform tab icons accordingly.</li>
+  <li>Updated NTRU files (09/16/2015).</li>
+</ol>
+2015.08.01
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Close neighbor connections if socket reads do not return data.</li>
+  <li>Corrected CLOSE_WAIT socket states.</li>
+  <li>Corrected ORDER BY clause in the URL-distribution machine.</li>
+  <li>Corrected SCTP socket implementation. The close() method should inspect socket state.</li>
+  <li>Corrected SQLite URL database tables. A sequence is required. SQLite users must recreate their URL databases.</li>
+  <li>Corrected an error with QFileSystemWatcher; re-add the monitored file in the slot that's connected to the fileChanged() signal.</li>
+  <li>Corrected search pagination labels.</li>
+  <li>Do not initialize OpenSSL and libcrypto via PostgreSQL within the kernel. (Please see PQinitOpenSSL().)</li>
+  <li>Echo processed key-share packets.</li>
+  <li>Ignore malformed public keys in spoton_crypt::publicKeyEncrypt().</li>
+  <li>Process potential URL sets if and only if URL participants are defined.</li>
+  <li>The kernel process identifier may be a large value; consider toLongLong() instead of toInt().</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Allow UTF-8 in Echo Public Key Share.</li>
+  <li>Assume normal synchronization for URL imports on SQLite databases.</li>
+  <li>Attempt to post a Poptastic message a couple of times before discarding it.</li>
+  <li>Decreased the maximum keywords of received URLs to 50.</li>
+  <li>Decreased the size of generated StarBeam magnets.</li>
+  <li>Decreased the size of the random account buffer to 64 bytes.</li>
+  <li>Enable the SO_KEEPALIVE option on SCTP and TCP sockets.</li>
+  <li>Impose a maximum number of keywords in imported URLs. Currently set to 50.</li>
+  <li>Increased the Gemini iteration count to 100,000.</li>
+  <li>Increased the default Common Credentials iteration count to 250,000.</li>
+  <li>Increased the default file encryption iteration count to 250,000.</li>
+  <li>Increased the default public key distribution iteration count to 250,000.</li>
+  <li>Log important cURL errors that are generated within the kernel.</li>
+  <li>Modified Poptastic default Method values to Disable.</li>
+  <li>Per Mr. Fennel, provide a means of modifying the local host name for SMTP. New installations only. Please see the Poptastic configuration panel. Existing installations must remove poptastic.db because the new database field smtp_localname may not be NULL.</li>
+  <li>Populate URL filters upon password validation.</li>
+  <li>Test SMP during the launch of the UI. Results will be available in the log file.</li>
+  <li>The SMP state machine will enter a terminal state if an error occurs at stage 1, 2, 3, 4, or 5.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Allow duplication of StarBeam transmitted magnets.</li>
+  <li>Allow replay of last 15 chat messages.</li>
+  <li>Create a public URL community for exchanging URL key pairs. The community is created shortly after a new installation and a passphrase is validated.</li>
+  <li>Display the number of active kernel threads.</li>
+  <li>Initiated forward secrecy for e-mail. Incomplete.</li>
+  <li>Optionally delete StarBeam one-time magnets upon process exit.</li>
+  <li>Set the maximum length of SPOTON_HOME to 256 characters.</li>
+  <li>Technicolor search!</li>
+  <li>URL import futures! Allow the kernel to decide on the number of threads from available cores. Please consider using PostgreSQL so as to avoid avalanches.</li>
+  <li>Updated libspoton to version 0.1.2. The encrypted field now has a default of zero.</li>
+  <li>Upgraded OpenSSL to version 1.0.2d on OS X and Windows.</li>
+  <li>Upgraded PostgreSQL libraries to version 9.4.4-3 on Windows.</li>
+  <li>Use https://api.ipify.org to retrieve the external IP.</li>
+</ol>
+2015.06.17
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Bound size_t parameter of memcpy() in spoton_crypt::setHashKey(), spoton_misc::peerAddressAndPort(), spoton_sctp_server::setMaxPendingConnections(), spoton_sctp_socket::localAddressAndPort().</li>
+  <li>Convert ElGamal data to Base-64 before encrypting. A previous release of Spot-On introduced the use of QDataStream objects. The serialized data appears to be incompatible with ElGamal. Padding? ElGamal appears to be an abandoned primitive. The signature portion does not yet require this special exception.</li>
+  <li>Corrected importing of public keys. Cannot assume that key pairs exist.</li>
+  <li>Corrected re-encoding of listeners_accounts. Must include the listener_oid field in the where-clauses.</li>
+  <li>Corrected re-encoding of listeners_allowed_ips. Must include the listener_oid field in the where-clauses.</li>
+  <li>Corrected re-encoding of transmitted_magnets. Must include the transmitted_oid field in the where-clauses.</li>
+  <li>Corrected removal of URLs having special characters.</li>
+  <li>Corrected setting of remote IP information. Please see Neighbors.</li>
+  <li>Corrected use of spoton::addFriendsKey().</li>
+  <li>Do not assume that Poptastic values have been accepted by the user. That is, query the necessary database in order to retrieve required values.</li>
+  <li>Do not delete URLs from shared.db unless they are properly imported.</li>
+  <li>Do not distribute private spoton_crypt objects to child objects as the contents of the spoton_crypt objects may be modified by the re-encoding process. Instead, use spoton::instance()->crypts().</li>
+  <li>Do not initiate a rapid StarBeam if the specified participant is temporary.</li>
+  <li>Do not pass a zero pointer to memset().</li>
+  <li>Guard QList::last().</li>
+  <li>Guard QList::removeAt().</li>
+  <li>Limit DSA key sizes to 3072 bits.</li>
+  <li>Many integer conversion corrections.</li>
+  <li>Release resources in spoton_crypt::spoton_crypt::publicKeyEncrypt().</li>
+  <li>Removed duplicate QObject::connect() instance from spoton::slotConfigurePoptastic().</li>
+  <li>Replaced (rv == 0) with (rv == SQLITE_OK) in libspoton.c.</li>
+  <li>Replaced the itemClicked() signal on the e-mail table with itemDoubleClicked() as itemClicked() and itemSelectionChanged() may cause duplicate dialog prompts.</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Assume zero pointer defaults in QHash::value(), QMap, etc.</li>
+  <li>Close progress dialogs instead of hiding them. Please see https://en.wikipedia.org/wiki/Shroedinger%27s_Cat.</li>
+  <li>Decreased message size of Rosetta output.</li>
+  <li>Inspect results of all QDataStream operations.</li>
+  <li>Modified QFileInfo::lastModified() usage. It's possible that a less-than-or-equal-to comparison will leave containers in unpleasant states.</li>
+  <li>Populate URL distillers before performing an import.</li>
+  <li>PostgreSQL administrators must recreate Spot-On URL databases.</li>
+  <li>Prepare URL cipher and hash widgets if libgcrypt fails.</li>
+  <li>Require account salts to contain at least 512 bytes.</li>
+  <li>Require the messages in 0002a and 0002b to contain at least 64 bytes.</li>
+  <li>Simplified copying and exporting of public keys.</li>
+  <li>The kernel's congestion cache requires a quick search that's based on the most current entries. The new implementation imposes an additional container.</li>
+  <li>The method QTableWidget::findItems() may return items that are irrelevant to the query. Implemented a special column-based method.</li>
+  <li>Prompt before accessing a remote URL.</li>
+  <li>Verify a StarBeam's provided pulse size against some defined maximum.</li>
+  <li>Verify results of ntru_rand_init(). Log errors.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Acceptable URL schemes: ftp, gopher, http, https.</li>
+  <li>Added libspoton_delete_urls() to libspoton. Version updated to 0.1.1.</li>
+  <li>Allow adjustment of the iteration count in the file encryption tool.</li>
+  <li>Allow configuration of alternating row colors of Chat, E-Mail, and URLs participants. Please see Options.</li>
+  <li>Allow configuration of the kernel's cache purge timer.</li>
+  <li>Allow importing of URLs without Import Credentials. Only plaintext URLs will be imported.</li>
+  <li>Completed linear URL distribution. It is expected that Common Credentials are created. Items that cannot be imported by the kernel will be discarded.</li>
+  <li>Compute automatic digests in threads. Safely interrupt on process termination. Completed futures are occasionally removed.</li>
+  <li>Custom status messages. A maximum of 64 characters will be imposed.</li>
+  <li>Denote extreme time deltas in Chat. Currently configured to thirty seconds. Source only.</li>
+  <li>Derive subsequent file encryption key from initially-derived key via SHA-256 (Key_(i + 1) = SHA-256(Key_i)).</li>
+  <li>Digital signatures should vouch for private key information.</li>
+  <li>Display URL database connection information within the Search panel.</li>
+  <li>Dual-purpose domain check boxes. Please see URLs.</li>
+  <li>Encapsulate data into streams and decrease Base-64 conversions. This will result in smaller messages. Previous functionality will be disrupted.</li>
+  <li>Establish authentication and encryption keys via silent SMP. The authentication and encryption keys are derived from a Whirlpool digest of the secret.</li>
+  <li>Impose a maximum number of keywords in received URLs. Currently set to 100.</li>
+  <li>Increased congestion cost maximum to 65536.</li>
+  <li>Increased default secure memory pool sizes to 262144 bytes. Increased minimum pool sizes to 131072 bytes.</li>
+  <li>Log re-encoding errors.</li>
+  <li>McEliece public-key encryption. Incomplete.</li>
+  <li>New display in Settings pertaining to personal public keys.</li>
+  <li>Notify the user of URL import statistics.</li>
+  <li>Per Mr. Schmidt, allow distribution of public key pairs via established secrets. Pairs having NTRU keys may not be shared as they do not support signatures.</li>
+  <li>Please remove urls_distillers_information.db before launching Spot-On.</li>
+  <li>Re-encode URL common and import credentials information.</li>
+  <li>Removed GCRY_MD_FLAG_SECURE from all gcry_md_open() instances.</li>
+  <li>Removed input masks from IPv6 fields.</li>
+  <li>Replace spaces with dashes in StarBeam and e-mail attachment file names.</li>
+  <li>Updated NTRU files (06/15/2015).</li>
+  <li>Upgraded OpenSSL packages to version 1.0.2c on OS X and Windows.</li>
+  <li>Upgraded Qt packages to version 4.8.7 on OS X and 5.4.2 on Windows.</li>
+  <li>Upgraded SQLite to version 3.8.10.2 on Windows.</li>
+</ol>
+2015.04.09
+<br>
+<b>Corrections</b>
+<ol>
+  <li>Corrected QSqlQuery preparation. QSqlQuery::exec() must not be used to prepare SQL statements. (spoton_listener::slotNewConnection(), spoton_misc::savePublishedNeighbo())</li>
+  <li>Corrected Qt DLLs in the Windows bundle.</li>
+  <li>Corrected inspection of QSqlQuery::exec() errors in various locations.</li>
+  <li>Corrected server-side processing of UDP datagrams.</li>
+  <li>Corrected spoton_misc::prepareUrlDistillersDatabase() and spoton_misc::prepareUrlKeysDatabase() with respect to the ok variables.</li>
+  <li>QWidget::activateWindow() should only be used on Windows!</li>
+</ol>
+<b>Improvements</b>
+<ol>
+  <li>Improved error messages in the UI.</li>
+  <li>Issue QThread::wait() after QThread::quit().</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>Added Documentation/Spot-On-Kernel.1.</li>
+  <li>Added the option 65536 to the File Encryption's Read Size.</li>
+  <li>Allow modification of StarBeam pulse sizes.</li>
+  <li>Automatically verify StarBeams. Please see the Options panel.</li>
+  <li>Include a file's digest within each StarBeam pulse.</li>
+  <li>On Qt 5.x and Windows, assume a fusion style.</li>
+  <li>Updated SQLite to version 3.8.9, Windows.</li>
+</ol>
 
-  Archived Contents
-  <br><br>
-  https://github.com/textbrowser/spot-on/blob/master/branches/Documentation/RELEASE-NOTES.archived
-</html>
+Archived Contents
+<br><br>
+https://github.com/textbrowser/spot-on/blob/master/branches/Documentation/RELEASE-NOTES.archived
