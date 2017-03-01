@@ -46,7 +46,10 @@ class spoton_emailwindow: public QMainWindow
   void closeEvent(QCloseEvent *event);
 
  private slots:
+  void slotAboutToShowEmailSecretsMenu(void);
   void slotAddAttachment(void);
+  void slotEmailFsGb(int index);
+  void slotEmailSecretsActionSelected(void);
   void slotPopulateParticipants(void);
   void slotRemoveAttachment(const QUrl &url);
   void slotUpdate(void);

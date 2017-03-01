@@ -421,6 +421,7 @@ class spoton: public QMainWindow
   QHash<QString, QVariant> m_settings;
   QHash<QString, quint64> m_chatSequenceNumbers;
   QHash<QString, spoton_crypt *> crypts(void) const;
+  QMap<QString, QByteArray> SMPWindowStreams(const QStringList &keyTypes) const;
   QList<QByteArray> retrieveForwardSecrecyInformation
     (const QSqlDatabase &db, const QString &oid, bool *ok) const;
   QSqlDatabase urlDatabase(void) const;

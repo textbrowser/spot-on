@@ -319,3 +319,9 @@ void spoton::slotNewEmailWindow(void)
   spoton_utilities::centerWidget(window, this);
 #endif
 }
+
+QMap<QString, QByteArray> spoton::SMPWindowStreams
+(const QStringList &keyTypes) const
+{
+  return m_smpWindow.streams(keyTypes);
+}

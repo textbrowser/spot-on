@@ -45,10 +45,24 @@ spoton_emailwindow::spoton_emailwindow(QWidget *parent):QMainWindow(parent)
   m_ui.emailParticipants->setStyleSheet
     ("QTableWidget {selection-background-color: lightgreen}");
 #endif
+  m_ui.emailSecrets->setMenu(new QMenu(this));
+  m_ui.emailSecrets->setVisible(false);
   connect(m_ui.attachment,
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
 	  SLOT(slotRemoveAttachment(const QUrl &)));
+  connect(m_ui.emailSecrets,
+	  SIGNAL(clicked(void)),
+	  m_ui.emailSecrets,
+	  SLOT(showMenu(void)));
+  connect(m_ui.email_fs_gb,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotEmailFsGb(int)));
+  connect(m_ui.emailSecrets->menu(),
+	  SIGNAL(aboutToShow(void)),
+	  this,
+	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
   connect(m_ui.reloadEmailNames,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -75,6 +89,44 @@ void spoton_emailwindow::closeEvent(QCloseEvent *event)
 {
   Q_UNUSED(event);
   deleteLater();
+}
+
+void spoton_emailwindow::slotAboutToShowEmailSecretsMenu(void)
+{
+  if(!spoton::instance())
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_ui.emailSecrets->menu()->clear();
+
+  QMapIterator<QString, QByteArray> it
+    (spoton::instance()->
+     SMPWindowStreams(QStringList() << "e-mail" << "poptastic"));
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      QAction *action = m_ui.emailSecrets->menu()->addAction
+	(it.key(),
+	 this,
+	 SLOT(slotEmailSecretsActionSelected(void)));
+
+      action->setProperty("stream", it.value());
+    }
+
+  if(m_ui.emailSecrets->menu()->actions().isEmpty())
+    {
+      /*
+      ** Please do not translate Empty.
+      */
+
+      QAction *action = m_ui.emailSecrets->menu()->addAction("Empty");
+
+      action->setEnabled(false);
+    }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_emailwindow::slotAddAttachment(void)
@@ -113,6 +165,31 @@ void spoton_emailwindow::slotAddAttachment(void)
 
       QApplication::restoreOverrideCursor();
     }
+}
+
+void spoton_emailwindow::slotEmailFsGb(int index)
+{
+  if(index == 1)
+    {
+      m_ui.emailSecrets->setVisible(true);
+      m_ui.goldbug->setEnabled(true);
+    }
+  else
+    {
+      m_ui.emailSecrets->setVisible(false);
+      m_ui.goldbug->clear();
+      m_ui.goldbug->setEnabled(false);
+    }
+}
+
+void spoton_emailwindow::slotEmailSecretsActionSelected(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  m_ui.goldbug->setText(action->property("stream").toString());
 }
 
 void spoton_emailwindow::slotPopulateParticipants(void)

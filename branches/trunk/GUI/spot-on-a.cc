@@ -1674,7 +1674,7 @@ spoton::spoton(void):QMainWindow()
   connect(m_ui.deleteAcceptedIP,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotDeleteAccepedIP(void)));
+	  SLOT(slotDeleteAcceptedIP(void)));
   connect(m_ui.saveMOTD,
 	  SIGNAL(clicked(void)),
 	  this,
