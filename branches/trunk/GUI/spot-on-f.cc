@@ -31,7 +31,9 @@
 #include "Common/spot-on-misc.h"
 #include "spot-on.h"
 #include "spot-on-echo-key-share.h"
+#if SPOTON_GOLDBUG == 0
 #include "spot-on-emailwindow.h"
+#endif
 #include "spot-on-pacify.h"
 #include "spot-on-pageviewer.h"
 #if SPOTON_GOLDBUG == 0
@@ -1429,10 +1431,12 @@ void spoton::slotLock(void)
 
   foreach(QWidget *widget, QApplication::topLevelWidgets())
     {
+#if SPOTON_GOLDBUG == 0
       spoton_emailwindow *window = qobject_cast<spoton_emailwindow *> (widget);
 
       if(window)
 	window->close();
+#endif
 
 #if SPOTON_GOLDBUG == 0
       spoton_neighborstatistics *neighborStatistics = qobject_cast

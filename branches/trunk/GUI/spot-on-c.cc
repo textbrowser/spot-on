@@ -2979,6 +2979,7 @@ void spoton::prepareContextMenuMirrors(void)
 	      Qt::UniqueConnection);
     }
 
+#if SPOTON_GOLDBUG == 0
   if(!m_ui.clearOutgoing->menu())
     {
       QMenu *menu = new QMenu(this);
@@ -2988,6 +2989,7 @@ void spoton::prepareContextMenuMirrors(void)
 		      SLOT(slotNewEmailWindow(void)));
       m_ui.clearOutgoing->setMenu(menu);
     }
+#endif
 
   if(!m_ui.deleteAllUrls->menu())
     {

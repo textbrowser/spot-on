@@ -29,7 +29,9 @@
 
 #include "spot-on.h"
 #include "spot-on-documentation.h"
+#if SPOTON_GOLDBUG == 0
 #include "spot-on-emailwindow.h"
+#endif
 #include "spot-on-utilities.h"
 #include "ui_spot-on-socket-options.h"
 
@@ -306,6 +308,7 @@ void spoton::slotShowReleaseNotes(void)
 
 void spoton::slotNewEmailWindow(void)
 {
+#if SPOTON_GOLDBUG == 0
   spoton_emailwindow *window = new spoton_emailwindow(0);
 
   connect(this,
@@ -314,4 +317,5 @@ void spoton::slotNewEmailWindow(void)
 	  SLOT(slotUpdate(void)));
   window->show();
   spoton_utilities::centerWidget(window, this);
+#endif
 }

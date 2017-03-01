@@ -11103,7 +11103,7 @@ border-style: inset;
     </widget>
     <addaction name="action_About"/>
     <addaction name="action_Documentation"/>
-    <addaction name="actionRelease_Notes"/>
+    <addaction name="action_Release_Notes"/>
     <addaction name="separator"/>
     <addaction name="action_Neighbor_Summary_Panel"/>
     <addaction name="separator"/>
@@ -11415,7 +11415,7 @@ border-style: inset;
     <string>SMP...</string>
    </property>
   </action>
-  <action name="actionRelease_Notes">
+  <action name="action_Release_Notes">
    <property name="text">
     <string>&amp;Release Notes...</string>
    </property>
