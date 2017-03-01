@@ -1666,6 +1666,8 @@ void spoton::slotAddAttachment(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QStringList list(dialog.selectedFiles());
 
       qSort(list);
@@ -1679,6 +1681,8 @@ void spoton::slotAddAttachment(void)
 	     arg(fileInfo.absoluteFilePath()).
 	     arg(spoton_misc::prettyFileSize(fileInfo.size())));
 	}
+
+      QApplication::restoreOverrideCursor();
     }
 }
 

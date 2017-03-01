@@ -29,6 +29,7 @@
 #define _spoton_emailwindow_h_
 
 #include <QMainWindow>
+#include <QUrl>
 
 #include "ui_spot-on-emailwindow.h"
 
@@ -45,7 +46,9 @@ class spoton_emailwindow: public QMainWindow
   void closeEvent(QCloseEvent *event);
 
  private slots:
+  void slotAddAttachment(void);
   void slotPopulateParticipants(void);
+  void slotRemoveAttachment(const QUrl &url);
   void slotUpdate(void);
 };
 

@@ -45,10 +45,18 @@ spoton_emailwindow::spoton_emailwindow(QWidget *parent):QMainWindow(parent)
   m_ui.emailParticipants->setStyleSheet
     ("QTableWidget {selection-background-color: lightgreen}");
 #endif
+  connect(m_ui.attachment,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotRemoveAttachment(const QUrl &)));
   connect(m_ui.reloadEmailNames,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotPopulateParticipants(void)));
+  connect(m_ui.selectAttachment,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotAddAttachment(void)));
   
   foreach(QAbstractButton *button,
 	  m_ui.emailParticipants->findChildren<QAbstractButton *> ())
@@ -67,6 +75,44 @@ void spoton_emailwindow::closeEvent(QCloseEvent *event)
 {
   Q_UNUSED(event);
   deleteLater();
+}
+
+void spoton_emailwindow::slotAddAttachment(void)
+{
+  QFileDialog dialog(this);
+
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  #ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
+#endif
+#endif
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(QFileDialog::ExistingFiles);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setWindowTitle
+    (tr("%1: Select Attachment").arg(SPOTON_APPLICATION_NAME));
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QStringList list(dialog.selectedFiles());
+
+      qSort(list);
+
+      while(!list.isEmpty())
+	{
+	  QFileInfo fileInfo(list.takeFirst());
+
+	  m_ui.attachment->append
+	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
+	     arg(fileInfo.absoluteFilePath()).
+	     arg(spoton_misc::prettyFileSize(fileInfo.size())));
+	}
+
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 void spoton_emailwindow::slotPopulateParticipants(void)
@@ -293,6 +339,25 @@ void spoton_emailwindow::slotPopulateParticipants(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_emailwindow::slotRemoveAttachment(const QUrl &url)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QStringList list(m_ui.attachment->toPlainText().split('\n'));
+
+  m_ui.attachment->clear();
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(str != url.toString())
+	m_ui.attachment->append(QString("<a href=\"%1\">%1</a>").arg(str));
+    }
+
   QApplication::restoreOverrideCursor();
 }
 
