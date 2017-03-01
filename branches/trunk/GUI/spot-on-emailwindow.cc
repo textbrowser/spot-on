@@ -47,6 +47,7 @@ spoton_emailwindow::spoton_emailwindow(QWidget *parent):QMainWindow(parent)
 #endif
   m_ui.emailSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->setVisible(false);
+  m_ui.goldbug->setEnabled(false);
   connect(m_ui.attachment,
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
