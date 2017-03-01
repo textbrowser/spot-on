@@ -46,7 +46,6 @@ class spoton_emailwindow: public QMainWindow
 
  private slots:
   void slotPopulateParticipants(void);
-  void slotReload(void);
   void slotUpdate(void);
 };
 

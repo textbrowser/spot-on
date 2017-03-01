@@ -115,20 +115,16 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 
 	QSqlQuery query(db);
 	bool ok = true;
+	int row = 0;
 
 	query.setForwardOnly(true);
-	query.exec("PRAGMA read_uncommitted = True");
 	query.prepare("SELECT "
 		      "name, "               // 0
 		      "OID, "                // 1
 		      "neighbor_oid, "       // 2
 		      "public_key_hash, "    // 3
-		      "status, "             // 4
-		      "last_status_update, " // 5
-		      "gemini, "             // 6
-		      "gemini_hash_key, "    // 7
-		      "key_type, "           // 8
-		      "public_key "          // 9
+		      "key_type, "           // 4
+		      "public_key "          // 5
 		      "FROM friends_public_keys "
 		      "WHERE key_type_hash IN (?, ?)");
 	query.addBindValue
@@ -141,7 +137,156 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 	if(ok && query.exec())
 	  while(query.next())
 	    {
+	      QByteArray publicKey;
+	      QString keyType("");
+	      QString name("");
+	      QString oid(query.value(1).toString());
+	      bool ok = true;
+	      bool temporary = query.value(2).toLongLong() == -1 ? false : true;
+
+	      keyType = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(4).toByteArray()),
+		 &ok).constData();
+
+	      if(ok)
+		{
+		  QByteArray bytes
+		    (crypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.
+							    value(0).
+							    toByteArray()),
+						 &ok));
+
+		  if(ok)
+		    name = QString::fromUtf8
+		      (bytes.constData(), bytes.length());
+		}
+
+	      if(!ok)
+		name = "";
+
+	      publicKey = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(5).toByteArray()), &ok);
+
+	      for(int i = 0; i < query.record().count(); i++)
+		{
+		  if(i == query.record().count() - 1)
+		    /*
+		    ** Ignore public_key.
+		    */
+
+		    continue;
+
+		  QTableWidgetItem *item = 0;
+
+		  if(i == 0)
+		    {
+		      row += 1;
+		      m_ui.emailParticipants->setRowCount(row);
+		    }
+
+		  if(i == 0)
+		    {
+		      if(name.isEmpty())
+			{
+			  if(keyType == "email" || keyType == "email-signature")
+			    name = "unknown";
+			  else
+			    name = "unknown@unknown.org";
+			}
+
+		      item = new QTableWidgetItem(name);
+
+		      if(keyType == "email")
+			item->setIcon
+			  (QIcon(QString(":/%1/key.png").
+				 arg(spoton::instance()->m_settings.
+				     value("gui/iconSet",
+					   "nouve").toString())));
+		      else if(keyType == "poptastic")
+			{
+			  if(publicKey.contains("-poptastic"))
+			    {
+			      item->setBackground
+				(QBrush(QColor(255, 255, 224)));
+			      item->setData
+				(Qt::ItemDataRole(Qt::UserRole + 2),
+				 "traditional e-mail");
+			    }
+			  else
+			    {
+			      item->setBackground
+				(QBrush(QColor(137, 207, 240)));
+			      item->setIcon
+				(QIcon(QString(":/%1/key.png").
+				       arg(spoton::instance()->m_settings.
+					   value("gui/iconSet",
+						 "nouve").toString())));
+			    }
+			}
+		    }
+		  else if(i == 1 || i == 2 || i == 3)
+		    item = new QTableWidgetItem(query.value(i).toString());
+		  else if(i == 4)
+		    {
+		      if(keyType == "poptastic" &&
+			 publicKey.contains("-poptastic"))
+			item = new QTableWidgetItem("");
+		      else
+			{
+			  QList<QByteArray> list;
+			  bool ok = true;
+
+			  list = spoton::instance()->
+			    retrieveForwardSecrecyInformation(db, oid, &ok);
+
+			  if(ok)
+			    item = new QTableWidgetItem
+			      (spoton_misc::forwardSecrecyMagnetFromList(list).
+			       constData());
+			  else
+			    item = new QTableWidgetItem(tr("error"));
+			}
+		    }
+
+		  if(i >= 0 && i <= 4)
+		    {
+		      if(i == 0)
+			{
+			  if(temporary)
+			    item->setToolTip
+			      (tr("User %1 is temporary.").arg(item->text()));
+			  else
+			    item->setToolTip
+			      (query.value(3).toString().mid(0, 16) +
+			       "..." +
+			       query.value(3).toString().right(16));
+			}
+
+		      item->setData(Qt::UserRole, temporary);
+		      item->setData
+			(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
+		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		      m_ui.emailParticipants->setItem(row - 1, i, item);
+		    }
+
+		  if(item)
+		    if(!item->tableWidget())
+		      {
+			spoton_misc::logError
+			  ("spoton_emailwindow::slotPopulateParticipants(): "
+			   "QTableWidgetItem does not have a parent "
+			   "table. Deleting.");
+			delete item;
+			item = 0;
+		      }
+		}
 	    }
+
+	m_ui.emailParticipants->horizontalHeader()->setStretchLastSection(true);
+	m_ui.emailParticipants->setSortingEnabled(true);
+	m_ui.emailParticipants->resizeColumnToContents(0);
       }
 
     db.close();
@@ -149,10 +294,6 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
-}
-
-void spoton_emailwindow::slotReload(void)
-{
 }
 
 void spoton_emailwindow::slotUpdate(void)

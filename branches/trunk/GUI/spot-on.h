@@ -421,6 +421,8 @@ class spoton: public QMainWindow
   QHash<QString, QVariant> m_settings;
   QHash<QString, quint64> m_chatSequenceNumbers;
   QHash<QString, spoton_crypt *> crypts(void) const;
+  QList<QByteArray> retrieveForwardSecrecyInformation
+    (const QSqlDatabase &db, const QString &oid, bool *ok) const;
   QSqlDatabase urlDatabase(void) const;
 
   QSslSocket *kernelSocket(void)
@@ -538,8 +540,6 @@ class spoton: public QMainWindow
   QByteArray copyMyUrlPublicKey(void) const;
   QByteArray poptasticName(void) const;
   QByteArray poptasticNameEmail(void) const;
-  QList<QByteArray> retrieveForwardSecrecyInformation
-    (const QSqlDatabase &db, const QString &oid, bool *ok) const;
   QList<QPair<QString, QVariant> > gatherStatistics(void) const;
   QPixmap pixmapForCountry(const QString &country) const;
   QString currentTabName(void) const;
