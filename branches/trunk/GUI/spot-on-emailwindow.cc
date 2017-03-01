@@ -134,6 +134,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 		       spoton::instance()->
 		       m_settings.value("gui/emailName", "unknown").
 		       toByteArray().length()).trimmed());
+  m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
 
   QList<QHash<QString, QVariant> > list
     (spoton_misc::poptasticSettings("", crypt, 0));
