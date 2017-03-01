@@ -8771,8 +8771,7 @@ void spoton::slotPopulateParticipants(void)
 			{
 			  if(name.isEmpty())
 			    {
-			      if(keyType == "email" ||
-				 keyType == "email-signature")
+			      if(keyType == "email")
 				name = "unknown";
 			      else
 				name = "unknown@unknown.org";
