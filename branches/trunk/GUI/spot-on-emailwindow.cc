@@ -74,6 +74,11 @@ void spoton_emailwindow::slotPopulateParticipants(void)
   if(!spoton::instance())
     return;
 
+  spoton_crypt *crypt = spoton::instance()->crypts().value("chat", 0);
+
+  if(!crypt)
+    return;
+
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.emailName->clear();
   m_ui.emailName->addItem
@@ -85,8 +90,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 		       toByteArray().length()).trimmed());
 
   QList<QHash<QString, QVariant> > list
-    (spoton_misc::
-     poptasticSettings("", spoton::instance()->crypts().value("chat", 0), 0));
+    (spoton_misc::poptasticSettings("", crypt, 0));
 
   for(int i = 0; i < list.size(); i++)
     {
@@ -96,6 +100,54 @@ void spoton_emailwindow::slotPopulateParticipants(void)
       m_ui.emailName->addItem(list.at(i).value("in_username").toString());
     }
 
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	m_ui.emailParticipants->setSortingEnabled(false);
+	m_ui.emailParticipants->setRowCount(0);
+
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.exec("PRAGMA read_uncommitted = True");
+	query.prepare("SELECT "
+		      "name, "               // 0
+		      "OID, "                // 1
+		      "neighbor_oid, "       // 2
+		      "public_key_hash, "    // 3
+		      "status, "             // 4
+		      "last_status_update, " // 5
+		      "gemini, "             // 6
+		      "gemini_hash_key, "    // 7
+		      "key_type, "           // 8
+		      "public_key "          // 9
+		      "FROM friends_public_keys "
+		      "WHERE key_type_hash IN (?, ?)");
+	query.addBindValue
+	  (crypt->keyedHash(QByteArray("email"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
+
+	if(ok && query.exec())
+	  while(query.next())
+	    {
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
 }
 

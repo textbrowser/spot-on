@@ -8740,7 +8740,7 @@ void spoton::slotPopulateParticipants(void)
 		      ** Delete the item if the participant is offline
 		      ** and the user wishes to hide offline participants.
 		      ** Please note that the e-mail participants are cloned
-		      ** and are not subjected to this restriction.
+		      ** and do not adhere to this restriction.
 		      */
 
 		      if((m_ui.hideOfflineParticipants->isChecked() &&
