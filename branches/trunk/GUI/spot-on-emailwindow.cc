@@ -72,6 +72,10 @@ spoton_emailwindow::spoton_emailwindow(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddAttachment(void)));
+  connect(m_ui.sendMail,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSendMail(void)));
   
   foreach(QAbstractButton *button,
 	  m_ui.emailParticipants->findChildren<QAbstractButton *> ())
@@ -438,6 +442,10 @@ void spoton_emailwindow::slotRemoveAttachment(const QUrl &url)
     }
 
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_emailwindow::slotSendMail(void)
+{
 }
 
 void spoton_emailwindow::slotUpdate(void)

@@ -52,6 +52,7 @@ class spoton_emailwindow: public QMainWindow
   void slotEmailSecretsActionSelected(void);
   void slotPopulateParticipants(void);
   void slotRemoveAttachment(const QUrl &url);
+  void slotSendMail(void);
   void slotUpdate(void);
 };
 
