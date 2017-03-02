@@ -315,6 +315,10 @@ void spoton::slotNewEmailWindow(void)
 	  SIGNAL(updateEmailWindows(void)),
 	  window,
 	  SLOT(slotUpdate(void)));
+  connect(window,
+	  SIGNAL(configurePoptastic(void)),
+	  this,
+	  SLOT(slotConfigurePoptastic(void)));
   window->show();
   spoton_utilities::centerWidget(window, this);
 #endif

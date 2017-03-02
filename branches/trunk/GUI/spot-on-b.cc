@@ -3157,8 +3157,8 @@ void spoton::slotSendMail(void)
 	  slotConfigurePoptastic();
 	}
 
-     if(m_settings.value("gui/poptasticNameEmail").isNull())
-       return;
+      if(m_settings.value("gui/poptasticNameEmail").isNull())
+	return;
     }
 
   prepareDatabasesFromUI();

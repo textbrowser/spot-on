@@ -54,6 +54,9 @@ class spoton_emailwindow: public QMainWindow
   void slotRemoveAttachment(const QUrl &url);
   void slotSendMail(void);
   void slotUpdate(void);
+
+ signals:
+  void configurePoptastic(void);
 };
 
 #endif
