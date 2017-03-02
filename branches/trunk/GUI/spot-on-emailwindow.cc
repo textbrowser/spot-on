@@ -82,7 +82,7 @@ spoton_emailwindow::spoton_emailwindow(QWidget *parent):QMainWindow(parent)
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSendMail(void)));
-  
+
   foreach(QAbstractButton *button,
 	  m_ui.emailParticipants->findChildren<QAbstractButton *> ())
     button->setToolTip(tr("Select All"));
