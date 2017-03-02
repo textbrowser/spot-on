@@ -490,7 +490,7 @@ void spoton_emailwindow::slotSendMail(void)
 
 	  QFileInfo fileInfo(fileName);
 
-	  if(!fileInfo.exists() || fileInfo.isReadable())
+	  if(!fileInfo.exists() || !fileInfo.isReadable())
 	    {
 	      QApplication::restoreOverrideCursor();
 	      QMessageBox::critical
