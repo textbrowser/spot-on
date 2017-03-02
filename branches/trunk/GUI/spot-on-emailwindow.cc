@@ -476,6 +476,8 @@ void spoton_emailwindow::slotSendMail(void)
 
   if(!m_ui.attachment->toPlainText().isEmpty())
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QLocale locale;
       QStringList files(m_ui.attachment->toPlainText().split("\n"));
 
@@ -488,8 +490,20 @@ void spoton_emailwindow::slotSendMail(void)
 
 	  QFileInfo fileInfo(fileName);
 
-	  if(fileInfo.size() > spoton_common::EMAIL_ATTACHMENT_MAXIMUM_SIZE)
+	  if(!fileInfo.exists() || fileInfo.isReadable())
 	    {
+	      QApplication::restoreOverrideCursor();
+	      QMessageBox::critical
+		(this, tr("%1: Error").
+		 arg(SPOTON_APPLICATION_NAME),
+		 tr("The attachment %1 cannot be accessed.").
+		 arg(fileName));
+	      return;
+	    }
+	  else if(fileInfo.size() >
+		  spoton_common::EMAIL_ATTACHMENT_MAXIMUM_SIZE)
+	    {
+	      QApplication::restoreOverrideCursor();
 	      QMessageBox::critical
 		(this, tr("%1: Error").
 		 arg(SPOTON_APPLICATION_NAME),
@@ -511,6 +525,7 @@ void spoton_emailwindow::slotSendMail(void)
 	  if(attachment.isEmpty() ||
 	     attachment.length() != static_cast<int> (fileInfo.size()))
 	    {
+	      QApplication::restoreOverrideCursor();
 	      QMessageBox::critical
 		(this, tr("%1: Error").
 		 arg(SPOTON_APPLICATION_NAME),
@@ -522,6 +537,8 @@ void spoton_emailwindow::slotSendMail(void)
 	  attachments << QPair<QByteArray, QByteArray>
 	    (attachment, fileInfo.fileName().toUtf8());
 	}
+
+      QApplication::restoreOverrideCursor();
     }
 
   spoton_crypt *crypt = spoton::instance()->crypts().value("email", 0);
@@ -573,8 +590,7 @@ void spoton_emailwindow::slotSendMail(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QModelIndexList list
-    (m_ui.emailParticipants->selectionModel()->
-     selectedRows(0)); // Participant
+    (m_ui.emailParticipants->selectionModel()->selectedRows(0)); // Participant
   bool mixed = false;
   bool temporary = false;
 
