@@ -515,6 +515,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.emailParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.listeners->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.mail->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.neighbors->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.participants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.received->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -2923,6 +2924,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
+  connect(m_ui.mail,
+	  SIGNAL(customContextMenuRequested(const QPoint &)),
+	  this,
+	  SLOT(slotMailContextMenu(const QPoint &)));
   connect(m_ui.urlParticipants,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,

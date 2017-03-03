@@ -829,6 +829,7 @@ class spoton: public QMainWindow
   void slotListenerSourceOfRandomnessChanged(int value);
   void slotLock(void);
   void slotMagnetRadioToggled(bool state);
+  void slotMailContextMenu(const QPoint &point);
   void slotMailRetrievalIntervalChanged(int value);
   void slotMailSelected(QTableWidgetItem *item);
   void slotMailSelected(void);

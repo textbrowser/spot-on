@@ -329,3 +329,28 @@ QMap<QString, QByteArray> spoton::SMPWindowStreams
 {
   return m_smpWindow.streams(keyTypes);
 }
+
+void spoton::slotMailContextMenu(const QPoint &point)
+{
+  bool enabled = false;
+  int row = m_ui.mail->currentRow();
+
+  if(row >= 0)
+    {
+      QTableWidgetItem *item = m_ui.mail->item(row, 5); // Gold Bug
+
+      if(item && item->text() == "1")
+	enabled = false;
+      else
+	enabled = true;
+    }
+
+  QAction *action = 0;
+  QMenu menu(this);
+
+  action = menu.addAction(tr("Read in new window..."),
+			  this,
+			  SLOT(slotNewEmailWindow(void)));
+  action->setEnabled(enabled);
+  menu.exec(m_ui.mail->mapToGlobal(point));
+}
