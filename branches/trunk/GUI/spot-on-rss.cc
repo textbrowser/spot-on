@@ -1979,7 +1979,7 @@ void spoton_rss::slotDownloadContent(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT url FROM rss_feeds_links "
+	query.prepare("SELECT url, OID FROM rss_feeds_links "
 		      "WHERE visited = 0");
 
 	if(query.exec())
@@ -1993,10 +1993,20 @@ void spoton_rss::slotDownloadContent(void)
 		 &ok);
 
 	      if(ok)
+		url = QUrl::fromEncoded(bytes);
+
+	      if(!ok || url.isEmpty() || !url.isValid())
 		{
-		  url = QUrl::fromEncoded(bytes);
-		  break;
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.prepare("DELETE FROM rss_feeds_links "
+				      "WHERE OID = ?");
+		  deleteQuery.addBindValue(query.value(1));
+		  deleteQuery.exec();
+		  url = QUrl();
 		}
+	      else
+		break;
 	    }
       }
 
@@ -2008,6 +2018,12 @@ void spoton_rss::slotDownloadContent(void)
 
   if(!url.isEmpty() && url.isValid())
     {
+      QString error
+	(QString("Fetching the URL <a href=\"%1\">%1</a>.").
+	 arg(spoton_misc::urlToEncoded(url).constData()));
+
+      emit logError(error);
+
       m_networkAccessManager.setNetworkAccessible
 	(QNetworkAccessManager::Accessible);
 
@@ -2101,7 +2117,7 @@ void spoton_rss::slotDownloadTimeout(void)
 	  SIGNAL(readyRead(void)),
 	  this,
 	  SLOT(slotFeedReplyReadyRead(void)));
-  emit logError(QString("Downloading feed <a href=\"%1\">%1</a>.").
+  emit logError(QString("Downloading the feed <a href=\"%1\">%1</a>.").
 		arg(spoton_misc::urlToEncoded(reply->url()).constData()));
 }
 
