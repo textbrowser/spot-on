@@ -403,10 +403,16 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      QLocale locale;
 	      QString scheme(url.scheme().toLower().trimmed());
 	      QUrl deleteUrl(url);
+	      QUrl exportUrl(hash);
 	      QUrl shareUrl(hash);
 	      QUrl viewUrl(hash);
 
 	      if(scheme.contains("delete-"))
+		spoton_misc::logError
+		  (QString("spoton::showUrls(): malformed URL %1.").
+		   arg(spoton_misc::urlToEncoded(url).constData()));
+
+	      if(scheme.contains("export-"))
 		spoton_misc::logError
 		  (QString("spoton::showUrls(): malformed URL %1.").
 		   arg(spoton_misc::urlToEncoded(url).constData()));
@@ -427,6 +433,9 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 		title = spoton_misc::urlToEncoded(url).constData();
 
 	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
+	      exportUrl.setPath(hash + "%3" +
+				spoton_misc::urlToEncoded(url));
+	      exportUrl.setScheme(QString("export-%1").arg(url.scheme()));
 	      shareUrl.setPath(hash + "%3" +
 			       spoton_misc::urlToEncoded(url));
 	      shareUrl.setScheme(QString("share-%1").arg(url.scheme()));
@@ -439,6 +448,11 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append("\">");
 	      html.append(title);
 	      html.append("</a>");
+	      html.append(" | ");
+	      html.append("<a href=\"");
+	      html.append(spoton_misc::urlToEncoded(exportUrl).constData());
+	      html.append("\">");
+	      html.append("Export URL As PDF</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
 	      html.append(spoton_misc::urlToEncoded(deleteUrl).constData());

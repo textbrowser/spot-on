@@ -28,6 +28,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QPrinter>
 #include <QProgressDialog>
 #include <QSqlDriver>
 #include <QtCore>
@@ -1841,8 +1842,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
-      mb.setWindowTitle(tr("%1: Confirmation").
-			arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
       mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to remove the URL %1?").
@@ -1850,6 +1850,123 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
       if(mb.exec() != QMessageBox::Yes)
 	return;
+    }
+  else if(scheme.startsWith("export-"))
+    {
+      if(!m_urlDatabase.isOpen())
+	{
+	  QMessageBox::critical
+	    (this,
+	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	     tr("Please connect to a URL database."));
+	  return;
+	}
+      else if(!m_urlCommonCrypt)
+	{
+	  QMessageBox::critical
+	    (this, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid m_urlCommonCrypt object. This is a fatal flaw."));
+	  return;
+	}
+
+      QFileDialog dialog(this);
+
+#ifdef Q_OS_MAC
+      dialog.setAttribute(Qt::WA_MacMetalStyle, false);
+#endif
+      dialog.setAcceptMode(QFileDialog::AcceptSave);
+#if QT_VERSION < 0x050000
+      dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
+							    DesktopLocation));
+#else
+      dialog.setDirectory(QStandardPaths::
+			  standardLocations(QStandardPaths::DesktopLocation).
+			  value(0));
+#endif
+#if QT_VERSION >= 0x050200
+      dialog.selectFile(url.fileName() + ".pdf");
+#else
+      dialog.selectFile(QFileInfo(url.path()).fileName() + ".pdf");
+#endif
+      dialog.setFileMode(QFileDialog::AnyFile);
+      dialog.setLabelText(QFileDialog::Accept, tr("Save"));
+      dialog.setWindowTitle
+	(tr("%1: Export Link As PDF").arg(SPOTON_APPLICATION_NAME));
+
+      if(dialog.exec() == QDialog::Accepted)
+	{
+	  QString hash(url.toString());
+
+	  if(hash.startsWith("export-ftp:"))
+	    hash.remove
+	      (0, static_cast<int> (qstrlen("export-ftp:")));
+	  else if(hash.startsWith("export-gopher:"))
+	    hash.remove
+	      (0, static_cast<int> (qstrlen("export-gopher:")));
+	  else if(hash.startsWith("export-http:"))
+	    hash.remove
+	      (0, static_cast<int> (qstrlen("export-http:")));
+	  else if(hash.startsWith("export-https:"))
+	    hash.remove
+	      (0, static_cast<int> (qstrlen("export-https:")));
+
+	  hash = hash.mid(0, hash.indexOf("%"));
+
+	  if(!hash.isEmpty())
+	    {
+	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	      QSqlQuery query(m_urlDatabase);
+
+	      query.setForwardOnly(true);
+	      query.prepare
+		(QString("SELECT content, url FROM spot_on_urls_%1 WHERE "
+			 "url_hash = ?").
+		 arg(hash.mid(0, 2)));
+	      query.addBindValue(hash);
+
+	      if(query.exec())
+		if(query.next())
+		  {
+		    QByteArray content;
+		    QUrl url;
+		    bool ok = true;
+
+		    content = m_urlCommonCrypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(0).toByteArray()),
+		       &ok);
+
+		    if(ok)
+		      url = QUrl::fromUserInput
+			(m_urlCommonCrypt->
+			 decryptedAfterAuthenticated(QByteArray::
+						     fromBase64(query.value(1).
+								toByteArray()),
+						     &ok));
+
+		    if(ok)
+		      {
+			content = qUncompress(content);
+
+			QPrinter printer;
+
+			printer.setOutputFileName
+			  (dialog.selectedFiles().value(0));
+			printer.setOutputFormat(QPrinter::PdfFormat);
+
+			spoton_textbrowser textbrowser(this);
+
+			textbrowser.setHtml(content);
+			textbrowser.print(&printer);
+		      }
+		  }
+
+	      QApplication::restoreOverrideCursor();
+	    }
+	}
+
+      return;
     }
   else if(scheme.startsWith("share-"))
     {
