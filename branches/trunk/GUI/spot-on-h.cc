@@ -332,17 +332,16 @@ QMap<QString, QByteArray> spoton::SMPWindowStreams
 
 void spoton::slotMailContextMenu(const QPoint &point)
 {
+  QModelIndexList list
+    (m_ui.mail->selectionModel()->selectedRows(5)); // Gold Bug
   bool enabled = false;
-  int row = m_ui.mail->currentRow();
 
-  if(row >= 0)
+  if(!list.isEmpty())
     {
-      QTableWidgetItem *item = m_ui.mail->item(row, 5); // Gold Bug
-
-      if(item && item->text() == "1")
-	enabled = false;
-      else
+      if(list.at(0).data().toString() == "0")
 	enabled = true;
+      else
+	enabled = false;
     }
 
   QAction *action = 0;
