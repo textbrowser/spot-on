@@ -1884,11 +1884,21 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 			  standardLocations(QStandardPaths::DesktopLocation).
 			  value(0));
 #endif
+
+      QString fileName("");
+
 #if QT_VERSION >= 0x050200
-      dialog.selectFile(url.fileName() + ".pdf");
+      fileName = url.fileName().trimmed();
 #else
-      dialog.selectFile(QFileInfo(url.path()).fileName() + ".pdf");
+      fileName = QFileInfo(url.path()).fileName().trimmed();
 #endif
+
+      if(fileName.isEmpty())
+	fileName = "spot-on-exported-url.pdf";
+      else // What if the file's extension is PDF? That's fine.
+	fileName += ".pdf";
+
+      dialog.selectFile(fileName);
       dialog.setFileMode(QFileDialog::AnyFile);
       dialog.setLabelText(QFileDialog::Accept, tr("Save"));
       dialog.setWindowTitle
