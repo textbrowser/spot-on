@@ -157,6 +157,7 @@ Completed Items
        key derivation.
 112.   PostgreSQL query cancellation in the kernel.
        (SET SESSION statement_timeout TO milliseconds)
+113.   Active-kernel reminder warning persists.
 
 Ignored Items
 
@@ -270,4 +271,3 @@ Remaining Items
 3.     Open Library.
 4.     Poptastic in the Wizard.
 5.     Chat institutions.
-6.     Active-kernel reminder warning persists.

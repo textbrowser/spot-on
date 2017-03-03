@@ -3212,7 +3212,7 @@ void spoton::slotQuit(void)
   ** closeEvent() calls slotQuit().
   */
 
-  if(sender())
+  if(!m_quit && sender())
     if(promptBeforeExit())
       return;
 
@@ -6039,7 +6039,7 @@ void spoton::saveSettings(void)
 
 void spoton::closeEvent(QCloseEvent *event)
 {
-  if(promptBeforeExit())
+  if(!m_quit && promptBeforeExit())
     {
       if(event)
 	event->ignore();
@@ -6047,6 +6047,7 @@ void spoton::closeEvent(QCloseEvent *event)
       return;
     }
 
+  m_quit = true;
   slotQuit();
 }
 
