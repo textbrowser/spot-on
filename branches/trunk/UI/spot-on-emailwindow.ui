@@ -398,22 +398,6 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_22">
       <item>
-       <widget class="QCheckBox" name="saveCopy">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>&amp;Save copies.</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="sign_this_email">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
