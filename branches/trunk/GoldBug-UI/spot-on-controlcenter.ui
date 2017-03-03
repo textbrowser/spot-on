@@ -1307,8 +1307,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>664</width>
-             <height>558</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2504,22 +2504,6 @@ QPushButton:pressed {
                      </widget>
                     </item>
                     <item>
-                     <widget class="QCheckBox" name="saveCopy">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="text">
-                       <string>&amp;Save copies.</string>
-                      </property>
-                      <property name="checked">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
                      <widget class="QCheckBox" name="sign_this_email">
                       <property name="text">
                        <string>&amp;Sign this e-mail.</string>
@@ -2884,8 +2868,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>466</width>
-             <height>1820</height>
+             <width>595</width>
+             <height>1804</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -11515,7 +11499,6 @@ border-style: inset;
   <tabstop>goldbug</tabstop>
   <tabstop>emailSecrets</tabstop>
   <tabstop>email_fs_gb</tabstop>
-  <tabstop>saveCopy</tabstop>
   <tabstop>sign_this_email</tabstop>
   <tabstop>sendMail</tabstop>
   <tabstop>scrollArea_7</tabstop>

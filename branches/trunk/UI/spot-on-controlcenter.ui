@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>545</height>
+                <width>366</width>
+                <height>464</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -948,9 +948,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-47</y>
              <width>812</width>
-             <height>603</height>
+             <height>602</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1691,22 +1691,6 @@
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_22">
                       <item>
-                       <widget class="QCheckBox" name="saveCopy">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="text">
-                         <string>&amp;Save copies.</string>
-                        </property>
-                        <property name="checked">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
                        <widget class="QCheckBox" name="sign_this_email">
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2218,8 +2202,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>602</width>
+             <height>360</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2940,7 +2924,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>267</width>
+                     <width>242</width>
                      <height>1435</height>
                     </rect>
                    </property>
@@ -3476,8 +3460,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>768</width>
+             <height>198</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3901,7 +3885,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>792</width>
+                  <width>734</width>
                   <height>452</height>
                  </rect>
                 </property>
@@ -4687,8 +4671,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>623</width>
+             <height>335</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4773,8 +4757,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>802</width>
-                 <height>599</height>
+                 <width>620</width>
+                 <height>616</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5723,7 +5707,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
+             <width>790</width>
              <height>1149</height>
             </rect>
            </property>
@@ -6871,8 +6855,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>551</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7994,8 +7978,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>613</width>
+             <height>427</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8606,8 +8590,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>222</width>
+             <height>146</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9274,7 +9258,6 @@
   <tabstop>goldbug</tabstop>
   <tabstop>emailSecrets</tabstop>
   <tabstop>email_fs_gb</tabstop>
-  <tabstop>saveCopy</tabstop>
   <tabstop>sign_this_email</tabstop>
   <tabstop>sendMail</tabstop>
   <tabstop>postofficeCheckBox</tabstop>

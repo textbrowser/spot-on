@@ -544,6 +544,7 @@ void spoton::slotShowMinimalDisplay(bool state)
     if(qobject_cast<QWidget *> (object))
       qobject_cast<QWidget *> (object)->setVisible(!state);
 
+  m_optionsUi.saveCopy->setVisible(!state);
   m_ui.activateKernel->setVisible(true);
   m_ui.addException->setVisible(!state);
   m_ui.aeBox->setVisible(!state);
@@ -611,7 +612,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.requireSsl->setVisible(!state);
   m_ui.saltLength->setVisible(!state);
   m_ui.saveBuzzName->setVisible(!state);
-  m_ui.saveCopy->setVisible(!state);
   m_ui.searchfor->setVisible(!state);
   m_ui.selectKernelPath->setVisible(true);
   m_ui.settings_frame->setVisible(!state);

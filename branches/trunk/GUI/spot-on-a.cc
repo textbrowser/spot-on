@@ -1392,7 +1392,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotEnabledPostOffice(bool)));
-  connect(m_ui.saveCopy,
+  connect(m_optionsUi.saveCopy,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotKeepCopy(bool)));
@@ -2580,7 +2580,7 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/emailAlternatingRowColors", true).toBool());
   m_optionsUi.urlsAlternatingRowColors->setChecked
     (m_settings.value("gui/urlsAlternatingRowColors", true).toBool());
-  m_ui.saveCopy->setChecked
+  m_optionsUi.saveCopy->setChecked
     (m_settings.value("gui/saveCopy", true).toBool());
   m_ui.secondary_storage->setChecked
     (m_settings.value("gui/secondary_storage_congestion_control",

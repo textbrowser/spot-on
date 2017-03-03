@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1236</y>
+         <y>-1561</y>
          <width>721</width>
-         <height>3279</height>
+         <height>3307</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1654,6 +1654,22 @@
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="saveCopy">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&amp;Save copies.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QCheckBox" name="emailSignMessages">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2629,6 +2645,7 @@
   <tabstop>email_fs_request</tabstop>
   <tabstop>maximumEmailFileSize</tabstop>
   <tabstop>coAcceptSigned</tabstop>
+  <tabstop>saveCopy</tabstop>
   <tabstop>emailSignMessages</tabstop>
   <tabstop>limitConnections</tabstop>
   <tabstop>publishPeriodically</tabstop>
