@@ -1678,10 +1678,10 @@
                  </sizepolicy>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The kernel is responsible for signing messages. Please avoid toggling this checkbox until queued messages have been processed by the kernel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The kernel is responsible for signing forward secrecy requests and responses. Please avoid toggling this checkbox until messages have been processed by the kernel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>Sign forward secrecy replies and requests, and &amp;letters.</string>
+                 <string>Sign &amp;forward secrecy replies and requests.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -2209,7 +2209,7 @@
            <item>
             <widget class="QLabel" name="label_19">
              <property name="text">
-              <string>Discard forward-secrecy messages if they have expired.</string>
+              <string>Discard forward secrecy messages if they have expired.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -2397,7 +2397,7 @@
            <item>
             <widget class="QLabel" name="label_20">
              <property name="text">
-              <string>Discard Poptastic forward-secrecy messages if they have expired.</string>
+              <string>Discard Poptastic forward secrecy messages if they have expired.</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>

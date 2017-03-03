@@ -278,7 +278,7 @@
         <item>
          <widget class="QComboBox" name="email_fs_gb">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="sizeAdjustPolicy">
            <enum>QComboBox::AdjustToContents</enum>

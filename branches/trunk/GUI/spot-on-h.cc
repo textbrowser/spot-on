@@ -309,7 +309,16 @@ void spoton::slotShowReleaseNotes(void)
 void spoton::slotNewEmailWindow(void)
 {
 #if SPOTON_GOLDBUG == 0
-  spoton_emailwindow *window = new spoton_emailwindow(0);
+  QAction *action = qobject_cast<QAction *> (sender());
+  spoton_emailwindow *window = 0;
+
+  if(action)
+    window = new spoton_emailwindow
+      (action->property("message").toString(),
+       action->property("subject").toString(),
+       0);
+  else
+    window = new spoton_emailwindow("", "", 0);
 
   connect(this,
 	  SIGNAL(updateEmailWindows(void)),
@@ -332,6 +341,7 @@ QMap<QString, QByteArray> spoton::SMPWindowStreams
 
 void spoton::slotMailContextMenu(const QPoint &point)
 {
+#if SPOTON_GOLDBUG == 0
   QModelIndexList list
     (m_ui.mail->selectionModel()->selectedRows(5)); // Gold Bug
   bool enabled = false;
@@ -351,5 +361,16 @@ void spoton::slotMailContextMenu(const QPoint &point)
 			  this,
 			  SLOT(slotNewEmailWindow(void)));
   action->setEnabled(enabled);
+
+  if(enabled)
+    {
+      list = m_ui.mail->selectionModel()->selectedRows(3); // Subject
+      action->setProperty("message", m_ui.mailMessage->toHtml());
+      action->setProperty("subject", list.value(0).data().toString());
+    }
+
   menu.exec(m_ui.mail->mapToGlobal(point));
+#else
+  Q_UNUSED(point);
+#endif
 }

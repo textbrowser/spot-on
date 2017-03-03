@@ -33,7 +33,9 @@
 #include "spot-on-defines.h"
 #include "spot-on-emailwindow.h"
 
-spoton_emailwindow::spoton_emailwindow(QWidget *parent):QMainWindow(parent)
+spoton_emailwindow::spoton_emailwindow
+(const QString &message, const QString &subject, QWidget *parent):
+  QMainWindow(parent)
 {
   m_ui.setupUi(this);
   m_ui.emailParticipants->horizontalHeader()->setSortIndicator
@@ -48,6 +50,8 @@ spoton_emailwindow::spoton_emailwindow(QWidget *parent):QMainWindow(parent)
   m_ui.emailSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->setVisible(false);
   m_ui.goldbug->setEnabled(false);
+  m_ui.outgoingMessage->append(message);
+  m_ui.outgoingSubject->setText(subject);
 
   if(spoton::instance())
     m_ui.sign_this_email->setChecked

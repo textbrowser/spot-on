@@ -38,7 +38,9 @@ class spoton_emailwindow: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton_emailwindow(QWidget *parent);
+  spoton_emailwindow(const QString &message,
+		     const QString &subject,
+		     QWidget *parent);
   ~spoton_emailwindow();
 
  private:
