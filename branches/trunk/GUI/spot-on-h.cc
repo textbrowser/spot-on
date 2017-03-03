@@ -316,9 +316,10 @@ void spoton::slotNewEmailWindow(void)
     window = new spoton_emailwindow
       (action->property("message").toString(),
        action->property("subject").toString(),
+       action->property("receiver_sender_hash").toString(),
        0);
   else
-    window = new spoton_emailwindow("", "", 0);
+    window = new spoton_emailwindow("", "", "", 0);
 
   connect(this,
 	  SIGNAL(updateEmailWindows(void)),
@@ -364,9 +365,13 @@ void spoton::slotMailContextMenu(const QPoint &point)
 
   if(enabled)
     {
-      list = m_ui.mail->selectionModel()->selectedRows(3); // Subject
       action->setProperty("message", m_ui.mailMessage->toHtml());
+      list = m_ui.mail->selectionModel()->selectedRows(3); // Subject
       action->setProperty("subject", list.value(0).data().toString());
+      list = m_ui.mail->selectionModel()->
+	selectedRows(8); // receiver_sender_hash
+      action->setProperty
+	("receiver_sender_hash", list.value(0).data().toString());
     }
 
   menu.exec(m_ui.mail->mapToGlobal(point));

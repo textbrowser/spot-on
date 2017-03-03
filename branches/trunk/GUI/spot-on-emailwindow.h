@@ -40,10 +40,12 @@ class spoton_emailwindow: public QMainWindow
  public:
   spoton_emailwindow(const QString &message,
 		     const QString &subject,
+		     const QString &receiver_sender_hash,
 		     QWidget *parent);
   ~spoton_emailwindow();
 
  private:
+  QString m_receiver_sender_hash;
   Ui_spoton_emailwindow m_ui;
   void closeEvent(QCloseEvent *event);
 

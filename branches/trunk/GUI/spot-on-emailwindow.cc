@@ -34,9 +34,12 @@
 #include "spot-on-emailwindow.h"
 
 spoton_emailwindow::spoton_emailwindow
-(const QString &message, const QString &subject, QWidget *parent):
-  QMainWindow(parent)
+(const QString &message,
+ const QString &subject,
+ const QString &receiver_sender_hash,
+ QWidget *parent):QMainWindow(parent)
 {
+  m_receiver_sender_hash = receiver_sender_hash;
   m_ui.setupUi(this);
   m_ui.emailParticipants->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
@@ -255,6 +258,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 	QSqlQuery query(db);
 	bool ok = true;
 	int row = 0;
+	int selectedRow = -1;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT "
@@ -408,6 +412,10 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 			(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
 		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		      m_ui.emailParticipants->setItem(row - 1, i, item);
+
+		      if(i == 3 && !m_receiver_sender_hash.isEmpty())
+			if(item->text() == m_receiver_sender_hash)
+			  selectedRow = row - 1;
 		    }
 
 		  if(item)
@@ -422,6 +430,10 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 		      }
 		}
 	    }
+
+
+	if(selectedRow != -1)
+	  m_ui.emailParticipants->selectRow(selectedRow);
 
 	m_ui.emailParticipants->horizontalHeader()->setStretchLastSection(true);
 	m_ui.emailParticipants->setSortingEnabled(true);
