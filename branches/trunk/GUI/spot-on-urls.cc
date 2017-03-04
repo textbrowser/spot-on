@@ -1967,7 +1967,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
 			spoton_textbrowser textbrowser(this);
 
-			textbrowser.setHtml(content);
+			textbrowser.append(url.toString());
+			textbrowser.append("<br>");
+			textbrowser.append(content);
 			textbrowser.print(&printer);
 		      }
 		  }
