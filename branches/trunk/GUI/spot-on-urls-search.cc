@@ -452,7 +452,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append("<a href=\"");
 	      html.append(spoton_misc::urlToEncoded(exportUrl).constData());
 	      html.append("\">");
-	      html.append("Export URL As PDF</a>");
+	      html.append("Export Page As PDF</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
 	      html.append(spoton_misc::urlToEncoded(deleteUrl).constData());
