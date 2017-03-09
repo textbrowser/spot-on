@@ -63,8 +63,6 @@ PROJECTNAME	= Spot-On-Kernel
 
 QMAKE_STRIP	= echo
 
-spoton.path		= /Applications/Spot-On.d/Spot-On-Kernel.app
-spoton.files		= ../Spot-On-Kernel.app/*
 libgeoip_data_install.path = /Applications/Spot-On.d/GeoIP
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
 libntru_install.path  = .
@@ -79,6 +77,8 @@ preinstall.path         = /Applications/Spot-On.d
 preinstall.extra        = rm -rf /Applications/Spot-On.d/Spot-On-Kernel.app/*
 postinstall.path	= /Applications/Spot-On.d
 postinstall.extra	= find /Applications/Spot-On.d -name .svn -exec rm -rf {} \\; 2>/dev/null; echo
+spoton.path		= /Applications/Spot-On.d/Spot-On-Kernel.app
+spoton.files		= ../Spot-On-Kernel.app/*
 
 INSTALLS	= macdeployqt \
                   preinstall \

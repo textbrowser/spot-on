@@ -2358,11 +2358,25 @@ spoton::spoton(void):QMainWindow()
     m_ui.kernelPath->setText(m_settings.value("gui/kernelPath").toString());
   else
 #if QT_VERSION >= 0x050000
+#if SPOTON_GOLDBUG == 0
     m_ui.kernelPath->setText
-      ("/Applications/Spot-On_Qt5.d/Spot-On-Kernel.app");
+      ("/Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/"
+       "Contents/MacOS/Spot-On-Kernel");
 #else
     m_ui.kernelPath->setText
-      ("/Applications/Spot-On.d/Spot-On-Kernel.app");
+      ("/Applications/GoldBug_Qt5.d/Spot-On-Kernel.app/"
+       "Contents/MacOS/Spot-On-Kernel");
+#endif
+#else
+#if SPOTON_GOLDBUG == 0
+    m_ui.kernelPath->setText
+      ("/Applications/Spot-On.d/Spot-On-Kernel.app/"
+       "Contents/MacOS/Spot-On-Kernel");
+#else
+    m_ui.kernelPath->setText
+      ("/Applications/GoldBug.d/Spot-On-Kernel.app/"
+       "Contents/MacOS/Spot-On-Kernel");
+#endif
 #endif
 #else
   if(m_settings.contains("gui/kernelPath") &&
