@@ -1894,7 +1894,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 #endif
 
       if(fileName.isEmpty())
-	fileName = "spot-on-exported-url.pdf";
+	fileName = QString("spot-on-exported-url-%1.pdf").
+	  arg(spoton_crypt::weakRandomBytes(8).toHex().constData());
       else // What if the file's extension is PDF? That's fine.
 	fileName += ".pdf";
 
