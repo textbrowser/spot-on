@@ -349,7 +349,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 
   QSettings settings;
   QUrl url(list.value(4).toUrl());
-  bool imported = true;
+  bool imported = false;
 
   if(url.isEmpty() || !url.isValid())
     url = list.value(3).toUrl();
