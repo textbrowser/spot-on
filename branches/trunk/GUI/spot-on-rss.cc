@@ -2856,7 +2856,7 @@ void spoton_rss::slotStatisticsTimeout(void)
 		      "WHERE imported = 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
-		      "WHERE imported <> 1 "
+		      "WHERE imported = 0 "
 		      "UNION "
 		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
 		      "WHERE visited = 1 "
@@ -2865,6 +2865,9 @@ void spoton_rss::slotStatisticsTimeout(void)
 		      "WHERE visited <> 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'g' FROM rss_feeds_links "
+		      "WHERE imported = 2 OR visited = 2 "
+		      "UNION "
+		      "SELECT COUNT(*), 'h' FROM rss_feeds_links "
 		      "ORDER BY 2");
 
 	if(query.exec())
@@ -2873,20 +2876,22 @@ void spoton_rss::slotStatisticsTimeout(void)
 
 	QLocale locale;
 
-	str = tr("%1 RSS Feeds | "
-		 "%2 Hidden URLs | "
-		 "%3 Imported URLs | "
-		 "%4 Not Imported URLs | "
-		 "%5 Indexed URLs | "
-		 "%6 Not Indexed URLs | "
-		 "%7 Total URLs").
+	str = tr("%1 RSS Feeds | "         // a
+		 "%2 Hidden URLs | "       // b
+		 "%3 Imported URLs | "     // c
+		 "%4 Not Imported URLs | " // d
+		 "%5 Indexed URLs | "      // e
+		 "%6 Not Indexed URLs | "  // f
+		 "%7 Malformed | "         // g
+		 "%8 Total URLs").         // h
 	  arg(locale.toString(counts.value(0))).
 	  arg(locale.toString(counts.value(1))).
 	  arg(locale.toString(counts.value(2))).
 	  arg(locale.toString(counts.value(3))).
 	  arg(locale.toString(counts.value(4))).
 	  arg(locale.toString(counts.value(5))).
-	  arg(locale.toString(counts.value(6)));
+	  arg(locale.toString(counts.value(6))).
+	  arg(locale.toString(counts.value(7)));
       }
     else
       str = tr("0 RSS Feeds | "
@@ -2895,6 +2900,7 @@ void spoton_rss::slotStatisticsTimeout(void)
 	       "0 Not Imported URLs | "
 	       "0 Indexed URLs | "
 	       "0 Not Indexed URLs | "
+	       "0 Malformed | "
 	       "0 Total URLs");
 
     db.close();
