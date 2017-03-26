@@ -111,6 +111,7 @@ class spoton_rss: public QMainWindow
   void slotPurge(void);
   void slotPurgeDaysChanged(int value);
   void slotRefreshTimeline(void);
+  void slotRemoveMalformed(void);
   void slotReplyError(QNetworkReply::NetworkError code);
   void slotSaveProxy(void);
   void slotScheduleFeedUpdate(void);

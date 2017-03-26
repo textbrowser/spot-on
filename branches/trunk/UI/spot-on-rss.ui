@@ -662,6 +662,8 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
+    <addaction name="action_Remove_Malformed"/>
+    <addaction name="separator"/>
     <addaction name="action_Toggle_Hidden"/>
     <addaction name="action_Toggle_Imported"/>
     <addaction name="action_Toggle_Indexed"/>
@@ -795,6 +797,11 @@
    </property>
    <property name="text">
     <string>&amp;URL Links in Timeline</string>
+   </property>
+  </action>
+  <action name="action_Remove_Malformed">
+   <property name="text">
+    <string>&amp;Remove Malformed</string>
    </property>
   </action>
  </widget>
