@@ -10608,132 +10608,138 @@ Error: %1.</source>
 <context>
     <name>spoton_rss</name>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="214"/>
+        <location filename="../GUI/spot-on-rss.cc" line="218"/>
         <source>Find Text</source>
         <translation>Finde Text</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="217"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2814"/>
+        <location filename="../GUI/spot-on-rss.cc" line="221"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2862"/>
         <source>Copy selected &amp;link.</source>
         <translation>Kopiere ausgewählten Link.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2817"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2865"/>
         <source>Delete &amp;all feeds.</source>
         <translation>Lösche alle Feeds.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2819"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2867"/>
         <source>Delete &amp;selected feed.</source>
         <translation>Lösche ausgewählen Feed.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="228"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2822"/>
+        <location filename="../GUI/spot-on-rss.cc" line="232"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2870"/>
         <source>&amp;Refresh table.</source>
         <translation>Aktualisiere Tabelle.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2825"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2873"/>
         <source>&amp;Schedule selected feed for update.</source>
         <translation>Plane ausgewählten Feed für ein Update.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="239"/>
+        <location filename="../GUI/spot-on-rss.cc" line="243"/>
         <source>%1: RSS</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="221"/>
+        <location filename="../GUI/spot-on-rss.cc" line="225"/>
         <source>Delete &amp;all RSS feeds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="224"/>
+        <location filename="../GUI/spot-on-rss.cc" line="228"/>
         <source>Delete &amp;selected RSS feed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="232"/>
+        <location filename="../GUI/spot-on-rss.cc" line="236"/>
         <source>&amp;Schedule selected RSS feed for update.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1162"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1166"/>
         <source>error</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1630"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1634"/>
         <source>Invalid spoton_crypt object. This is a fatal flaw.</source>
         <translation>Ungültiges spoton_crypt Objekt. Da ist ein Fehler.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1635"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1639"/>
         <source>Please provide an RSS feed.</source>
         <translation>Bitte gebe einen RSS Feed an.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1641"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1645"/>
         <source>Invalid RSS feed scheme; HTTP or HTTPS please.</source>
         <translation>Ungültiges Schema für RSS-Feed: HTTPS oder HTTP bitte.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1685"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1689"/>
         <source>Unable to insert the specified feed.</source>
         <translation>Kann den speziellen Feed nicht hinzufügen.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1688"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1692"/>
         <source>Unable to access rss.db.</source>
         <translation>Kein Zugriff auf die RSS.db.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1699"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1703"/>
         <source>%1: Error</source>
         <translation>%1: Fehler</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1867"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1871"/>
         <source>Are you sure that you wish to delete all of the RSS feeds?</source>
         <translation>Bist Du sicher, dass Du alle RSS-Feeds löschen willst?</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1870"/>
-        <location filename="../GUI/spot-on-rss.cc" line="1914"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2318"/>
-        <location filename="../GUI/spot-on-rss.cc" line="3065"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1874"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1918"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2322"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2645"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3113"/>
         <source>%1: Confirmation</source>
         <translation>%1: Bestätigung</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1911"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1915"/>
         <source>Are you sure that you wish to delete the selected RSS feed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2316"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2320"/>
         <source>Are you sure that you wish to purge obsolete links?</source>
         <translation>Bist Du sicher, dass Du alle ungültigen Links löschen willst?</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2377"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2381"/>
         <source>Populating...</source>
         <translation>Erstelle...</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2381"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2385"/>
         <source>%1: Populating</source>
         <translation>%1: Erstelle</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2879"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2643"/>
+        <source>Are you sure that you wish to remove all malformed links?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../GUI/spot-on-rss.cc" line="2927"/>
         <source>%1 RSS Feeds | %2 Hidden URLs | %3 Imported URLs | %4 Not Imported URLs | %5 Indexed URLs | %6 Not Indexed URLs | %7 Malformed | %8 Total URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2897"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2945"/>
         <source>0 RSS Feeds | 0 Hidden URLs | 0 Imported URLs | 0 Not Imported URLs | 0 Indexed URLs | 0 Not Indexed URLs | 0 Malformed | 0 Total URLs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10746,7 +10752,7 @@ Error: %1.</source>
         <translation type="vanished">%1 RSS Feeds | %2 ausgeblendete URLs | %3 importierte URLs | %4 nicht importierte URLs | %5 indexierte URLs | %6 nicht indexierte URLs | %7 Gesamte URLs</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="3062"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3110"/>
         <source>Are you sure that you wish to remove %1?</source>
         <translation>Bist Du sicher, dass Du %1 entfernen willst?</translation>
     </message>
@@ -10877,7 +10883,7 @@ Error: %1.</source>
     </message>
     <message>
         <location filename="../UI/spot-on-rss.ui" line="471"/>
-        <location filename="../UI/spot-on-rss.ui" line="696"/>
+        <location filename="../UI/spot-on-rss.ui" line="698"/>
         <source>&amp;Find</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10942,6 +10948,11 @@ Error: %1.</source>
         <translation type="unfinished">Notizen</translation>
     </message>
     <message>
+        <location filename="../UI/spot-on-rss.ui" line="804"/>
+        <source>&amp;Remove Malformed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../UI/spot-on-rss.ui" line="563"/>
         <location filename="../UI/spot-on-rss.ui" line="620"/>
         <source>&amp;Clear</source>
@@ -10968,83 +10979,83 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="674"/>
+        <location filename="../UI/spot-on-rss.ui" line="676"/>
         <source>&amp;Show</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="688"/>
+        <location filename="../UI/spot-on-rss.ui" line="690"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="691"/>
+        <location filename="../UI/spot-on-rss.ui" line="693"/>
         <source>Esc</source>
         <translation type="unfinished">Esc</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="699"/>
+        <location filename="../UI/spot-on-rss.ui" line="701"/>
         <source>Ctrl+F</source>
         <translation type="unfinished">Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="707"/>
+        <location filename="../UI/spot-on-rss.ui" line="709"/>
         <source>&amp;Insert Date</source>
         <translation type="unfinished">Gebe Datum ein</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="718"/>
+        <location filename="../UI/spot-on-rss.ui" line="720"/>
         <source>&amp;Publication Date</source>
         <translation type="unfinished">Veröffentlichungsdatum</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="723"/>
+        <location filename="../UI/spot-on-rss.ui" line="725"/>
         <source>Toggle I&amp;mported</source>
         <translation type="unfinished">Toggle Importierte</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="728"/>
+        <location filename="../UI/spot-on-rss.ui" line="730"/>
         <source>Toggle &amp;Hidden</source>
         <translation type="unfinished">Toggle Ausgeblendete</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="733"/>
+        <location filename="../UI/spot-on-rss.ui" line="735"/>
         <source>Toggle I&amp;ndexed</source>
         <translation type="unfinished">Toggle Indexierte</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="738"/>
+        <location filename="../UI/spot-on-rss.ui" line="740"/>
         <source>Toggle &amp;Shown</source>
         <translation type="unfinished">Toggle Angezeigte</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="743"/>
+        <location filename="../UI/spot-on-rss.ui" line="745"/>
         <source>Toggle Mal&amp;formed</source>
         <translation type="unfinished">Toggle Krumme</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="748"/>
+        <location filename="../UI/spot-on-rss.ui" line="750"/>
         <source>Toggle Not &amp;Indexed</source>
         <translation type="unfinished">Toggle nicht indexierte</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="759"/>
-        <location filename="../UI/spot-on-rss.ui" line="781"/>
+        <location filename="../UI/spot-on-rss.ui" line="761"/>
+        <location filename="../UI/spot-on-rss.ui" line="783"/>
         <source>&amp;Descriptions in Timeline</source>
         <translation type="unfinished">Beschreibungen in der Timeline</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="770"/>
+        <location filename="../UI/spot-on-rss.ui" line="772"/>
         <source>&amp;Publication Dates in Timeline</source>
         <translation type="unfinished">Veröffentlichungsdatum in der Timeline</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="786"/>
+        <location filename="../UI/spot-on-rss.ui" line="788"/>
         <source>Im&amp;port</source>
         <translation type="unfinished">Import</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="797"/>
+        <location filename="../UI/spot-on-rss.ui" line="799"/>
         <source>&amp;URL Links in Timeline</source>
         <translation type="unfinished">URL Links in der Timeline</translation>
     </message>
