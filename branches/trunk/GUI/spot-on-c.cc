@@ -1295,8 +1295,7 @@ void spoton::slotPopulateStars(void)
 	** First, received.
 	*/
 
-	list = m_ui.received->selectionModel()->selectedRows
-	  (4); // File
+	list = m_ui.received->selectionModel()->selectedRows(4); // File
 
 	if(!list.isEmpty())
 	  selectedFileName = list.at(0).data().toString();
