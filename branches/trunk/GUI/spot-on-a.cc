@@ -2662,11 +2662,14 @@ spoton::spoton(void):QMainWindow()
 #if QT_VERSION >= 0x050000
   m_optionsUi.play_sounds->setChecked
     (m_settings.value("gui/play_sounds", false).toBool());
+  m_optionsUi.play_sounds->setToolTip
+    (tr("Please place the Sounds directory in the directory which "
+	"houses the %1 executable.").arg(SPOTON_APPLICATION_NAME));
 #else
   m_optionsUi.play_sounds->setChecked(false);
   m_optionsUi.play_sounds->setEnabled(false);
-  m_optionsUi.play_sounds->setToolTip(tr("Qt 5.x is required for media "
-					 "sound."));
+  m_optionsUi.play_sounds->setToolTip
+    (tr("Qt 5.x, or newer, is required for media sound."));
 #endif
 
   /*
