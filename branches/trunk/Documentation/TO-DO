@@ -158,6 +158,7 @@ Completed Items
 112.   PostgreSQL query cancellation in the kernel.
        (SET SESSION statement_timeout TO milliseconds)
 113.   Active-kernel reminder warning persists.
+114.   Doxygen.
 
 Ignored Items
 
@@ -272,4 +273,3 @@ Remaining Items
 4.     Poptastic in the Wizard.
 5.     Chat institutions.
 6.     URLs statistics.
-7.     Doxygen.
