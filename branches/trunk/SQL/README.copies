@@ -4,7 +4,7 @@ The following instructions must be executed on the server that is
 hosting the database(s). You may be required to execute the commands
 as the postgres user.
 
-pg_dump -U postgres --clean --file=spot_on_user_db.sql xbook_db
+pg_dump -U postgres --clean --file=spot_on_user_db.sql spot_on_user_db
 pg_dumpall -U postgres --clean --globals-only --file=globals.sql
 
 Importing a database copy is simple.
