@@ -1,0 +1,3 @@
+Debian
+
+sudo aptitude install doxygen graphviz
