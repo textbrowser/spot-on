@@ -17,6 +17,16 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>You may disable or enable the activation of this window via the General section in Options.</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QTextBrowser" name="textBrowser">
       <property name="openLinks">
        <bool>false</bool>
@@ -31,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>550</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
