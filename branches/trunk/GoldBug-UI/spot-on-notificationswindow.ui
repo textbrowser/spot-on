@@ -17,12 +17,9 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="label">
+     <widget class="QCheckBox" name="activate">
       <property name="text">
-       <string>You may disable or enable the activation of this window via the General section in Options.</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
+       <string>&amp;Activate window on events.</string>
       </property>
      </widget>
     </item>
@@ -73,6 +70,10 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>activate</tabstop>
+  <tabstop>textBrowser</tabstop>
+ </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
  </resources>

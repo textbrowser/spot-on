@@ -980,6 +980,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotNotificationsEnabled(bool)));
+  connect(m_optionsUi.notifications,
+	  SIGNAL(toggled(bool)),
+	  m_notificationsUi.activate,
+	  SLOT(setChecked(bool)));
+  connect(m_notificationsUi.activate,
+	  SIGNAL(toggled(bool)),
+	  m_optionsUi.notifications,
+	  SLOT(setChecked(bool)));
   connect(m_optionsUi.play_sounds,
 	  SIGNAL(toggled(bool)),
 	  this,
