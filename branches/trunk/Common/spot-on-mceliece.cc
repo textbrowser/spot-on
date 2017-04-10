@@ -472,8 +472,8 @@ void spoton_mceliece_private_key::reset(const bool ok)
 void spoton_mceliece_private_key::swapSwappingColumns(const long int i,
 						      const long int j)
 {
-  if(i >= static_cast<long int> (m_swappingColumns.size()) ||
-     j >= static_cast<long int> (m_swappingColumns.size()))
+  if(i < 0 || i >= static_cast<long int> (m_swappingColumns.size()) ||
+     j < 0 || j >= static_cast<long int> (m_swappingColumns.size()))
     {
       m_ok = false;
       return;
