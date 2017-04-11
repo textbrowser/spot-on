@@ -4087,7 +4087,6 @@ void spoton::populateMail(void)
 		    item->setFlags
 		      (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		    m_ui.mail->setItem(row - 1, i, item);
-
 		  }
 
 		if(oids.contains(query.value(11).toString()))
