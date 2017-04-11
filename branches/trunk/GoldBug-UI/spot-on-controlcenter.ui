@@ -1733,9 +1733,6 @@ QPushButton:pressed {
                        <property name="alternatingRowColors">
                         <bool>true</bool>
                        </property>
-                       <property name="selectionMode">
-                        <enum>QAbstractItemView::MultiSelection</enum>
-                       </property>
                        <property name="selectionBehavior">
                         <enum>QAbstractItemView::SelectRows</enum>
                        </property>
@@ -2868,8 +2865,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>595</width>
-             <height>1804</height>
+             <width>466</width>
+             <height>1820</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
