@@ -3887,6 +3887,7 @@ void spoton::populateMail(void)
 
     if(db.open())
       {
+	QHash<QString, bool> cRow; // OID, bool.
 	QList<int> rows;
 	QModelIndexList list
 	  (m_ui.mail->selectionModel()->
@@ -3894,11 +3895,14 @@ void spoton::populateMail(void)
 	QSqlQuery query(db);
 	QString html(m_ui.mailMessage->toHtml());
 	QStringList oids;
-	int cRow = m_ui.mail->currentRow();
+	int vValue = m_ui.mail->verticalScrollBar()->value();
 	int totalRows = 0;
 
 	while(!list.isEmpty())
 	  {
+	    if(list.first().row() == m_ui.mail->currentRow())
+	      cRow[list.first().data().toString()] = false;
+
 	    QVariant data(list.takeFirst().data());
 
 	    if(!data.isNull() && data.isValid())
@@ -4089,17 +4093,19 @@ void spoton::populateMail(void)
 		    m_ui.mail->setItem(row - 1, i, item);
 		  }
 
+		if(cRow.contains(query.value(11).toString()))
+		  cRow[query.value(11).toString()] = true;
+
 		if(oids.contains(query.value(11).toString()))
 		  rows.append(row - 1);
 	      }
 	  }
 
 	m_ui.mail->setRowCount(totalRows);
-	m_ui.mail->setSortingEnabled(true);
 	m_ui.mail->setSelectionMode
 	  (QAbstractItemView::MultiSelection);
 
-	if(rows.contains(cRow))
+	if(cRow.values().value(0))
 	  m_ui.mailMessage->setHtml(html);
 
 	while(!rows.isEmpty())
@@ -4107,6 +4113,8 @@ void spoton::populateMail(void)
 
 	m_ui.mail->setSelectionMode
 	  (QAbstractItemView::ExtendedSelection);
+	m_ui.mail->setSortingEnabled(true);
+	m_ui.mail->verticalScrollBar()->setValue(vValue);
 	connect(m_ui.mail,
 		SIGNAL(itemSelectionChanged(void)),
 		this,
