@@ -52,7 +52,7 @@ Echo Call
 Echoed? Yes
 
 Groups: 4
-Two-Way
+Two-Way Call
 Public Key (Base-64)
 {
 0 - 0000(a | c)
@@ -104,7 +104,7 @@ EOL
 }
 
 Groups: 3
-Forward Secrecy
+Forward Secrecy Call
 Symmetric Key (Base-64)
 {
 0 - 0000d
@@ -257,6 +257,7 @@ EOL
 }
 
 Groups: 3
+Pure Forward Secrecy
 Symmetric Key (Base-64)
 {
 0 - 0001c
@@ -365,7 +366,7 @@ Groups: 3
 Gemini Encryption Key (Base-64)
 {
 0 - 0013
-1 - Message
+1 - Message (Groups: 4)
 }
 EOL
 {
