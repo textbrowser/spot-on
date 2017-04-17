@@ -337,7 +337,7 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      QList<QByteArray> list(message.split('_'));
 
-	      if(list.size() == 6)
+	      if(list.size() == 7)
 		emit buzzReceivedFromUI
 		  (QByteArray::fromBase64(list.value(0)),
 		   QByteArray::fromBase64(list.value(1)),
@@ -348,7 +348,7 @@ void spoton_gui_server::slotReadyRead(void)
 		   "0040a",
 		   QByteArray::fromBase64(list.value(4)),
 		   QByteArray::fromBase64(list.value(5)),
-		   QByteArray());
+		   QByteArray::fromBase64(list.value(6)));
 	      else if(list.size() == 9)
 		emit buzzReceivedFromUI
 		  (QByteArray::fromBase64(list.value(0)),

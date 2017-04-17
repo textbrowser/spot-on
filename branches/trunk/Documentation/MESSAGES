@@ -441,6 +441,7 @@ Symmetric Key (Base-64)
 0 - 0040a
 1 - Name
 2 - ID
+3 - UTC Date
 }
 EOL
 {
@@ -454,6 +455,7 @@ Symmetric Key (Base-64)
 1 - Name
 2 - ID
 3 - Message
+4 - UTC Date
 }
 EOL
 {

@@ -226,46 +226,55 @@ void spoton::slotReceivedKernelMessage(void)
 	      ** Find the channel(s)!
 	      */
 
-	      foreach(spoton_buzzpage *page, m_buzzPages.values())
+	      spoton_buzzpage *page = m_buzzPages.value(key, 0);
+
+	      if(!page)
+		continue;
+
+	      QByteArray bytes(list.value(0));
+	      QDataStream stream(&bytes, QIODevice::ReadOnly);
+	      int end = 5;
+
+	      list.clear();
+
+	      for(int i = 0; i < end; i++)
 		{
-		  if(!page)
-		    continue;
-		  else if(key != page->key())
-		    continue;
+		  QByteArray a;
 
-		  QByteArray bytes(list.value(0));
-		  QDataStream stream(&bytes, QIODevice::ReadOnly);
-		  QList<QByteArray> list;
-		  int end = 5;
+		  stream >> a;
 
-		  for(int i = 0; i < end; i++)
+		  if(stream.status() != QDataStream::Ok)
 		    {
-		      QByteArray a;
-
-		      stream >> a;
-
-		      if(stream.status() != QDataStream::Ok)
-			{
-			  list.clear();
-			  break;
-			}
-		      else
-			list << a;
-
-		      if(a == "0040a")
-			end = 3;
-		      else if(a == "004b")
-			end = 5;
+		      list.clear();
+		      break;
 		    }
+		  else
+		    list << a;
 
-		  if(!list.isEmpty())
-		    list.removeAt(0); // Message Type
-
-		  if(list.size() == 2)
-		    page->userStatus(list);
-		  else if(list.size() == 4)
-		    page->appendMessage(list);
+		  if(a == "0040a")
+		    end = 4;
+		  else if(a == "004b")
+		    end = 5;
 		}
+
+	      QDateTime dateTime
+		(QDateTime::fromString(list.value(list.size() - 1).
+				       constData(), "MMddyyyyhhmmss"));
+
+	      dateTime.setTimeSpec(Qt::UTC);
+
+	      if(!spoton_misc::
+		 acceptableTimeSeconds(dateTime,
+				       spoton_common::BUZZ_TIME_DELTA))
+		continue;
+
+	      if(!list.isEmpty())
+		list.removeAt(0); // Message Type
+
+	      if(list.size() == 3)
+		page->userStatus(list);
+	      else if(list.size() == 4)
+		page->appendMessage(list);
 	    }
 	  else if(data.startsWith("chat_status_"))
 	    {
@@ -5653,18 +5662,13 @@ void spoton::slotJoinBuzzChannel(void)
   if(!error.isEmpty())
     goto done_label;
 
-  foreach(spoton_buzzpage *p, m_buzzPages.values())
-    if(p && keys.first == p->key())
-      {
-	if(m_ui.buzzTab->indexOf(p) != -1)
-	  m_ui.buzzTab->setCurrentWidget(p);
+  if((page = m_buzzPages.value(keys.first, 0)))
+    {
+      if(m_ui.buzzTab->indexOf(page) != -1)
+	m_ui.buzzTab->setCurrentWidget(page);
 
-	page = p;
-	break;
-      }
-
-  if(page)
-    goto done_label;
+      goto done_label;
+    }
 
   if(m_buzzIds.contains(keys.first))
     id = m_buzzIds[keys.first];

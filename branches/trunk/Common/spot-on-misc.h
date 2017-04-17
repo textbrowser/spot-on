@@ -119,6 +119,7 @@ class spoton_misc
 				       spoton_crypt *crypt);
   static QString prettyFileSize(const qint64 size);
   static QString removeSpecialHtmlTags(const QString &text);
+  static bool acceptableTimeSeconds(const QDateTime &then, const int delta);
   static bool allParticipantsHaveGeminis(void);
   static bool authenticateAccount(QByteArray &name,
 				  QByteArray &password,

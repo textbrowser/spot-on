@@ -160,7 +160,8 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   QList<QByteArray> list;
 
   list << name
-       << m_id;
+       << m_id
+       << ""; // Artificial date.
   userStatus(list);
 }
 
@@ -402,6 +403,9 @@ void spoton_buzzpage::slotSendStatus(void)
   message.append(m_hashKey.toBase64());
   message.append("_");
   message.append(m_hashType.toBase64());
+  message.append("_");
+  message.append(QDateTime::currentDateTime().toUTC().
+		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
   message.append("\n");
 
   if(m_kernelSocket->write(message.constData(),
@@ -415,7 +419,7 @@ void spoton_buzzpage::slotSendStatus(void)
 
 void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 {
-  if(list.size() != 2)
+  if(list.size() != 3)
     return;
 
   QByteArray id
@@ -596,7 +600,8 @@ void spoton_buzzpage::slotBuzzNameChanged(const QByteArray &name)
   QList<QByteArray> list;
 
   list << name
-       << m_id;
+       << m_id
+       << ""; // Artificial date.
   userStatus(list);
 }
 

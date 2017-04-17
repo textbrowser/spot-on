@@ -31,7 +31,7 @@
 #include <QHash>
 #include <QStringList>
 
-#define SPOTON_VERSION_STR "2017.04.06"
+#define SPOTON_VERSION_STR "2017.04.30"
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
 typedef QList<QByteArray> QByteArrayList;
@@ -56,6 +56,7 @@ class spoton_common
 						 ** will be represented in
 						 ** base sixteen.
 						 */
+  static const int BUZZ_TIME_DELTA = 30; // Seconds.
   static const int CACHE_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM_STATIC = 30;

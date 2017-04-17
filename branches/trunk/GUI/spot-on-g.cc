@@ -342,15 +342,11 @@ void spoton::slotBuzzInvite(void)
   if(!error.isEmpty())
     return;
 
-  foreach(spoton_buzzpage *p, m_buzzPages.values())
-    if(p && keys.first == p->key())
-      {
-	if(m_ui.buzzTab->indexOf(p) != -1)
-	  m_ui.buzzTab->setCurrentWidget(p);
+  page = m_buzzPages.value(keys.first, 0);
 
-	page = p;
-	break;
-      }
+  if(page)
+    if(m_ui.buzzTab->indexOf(page) != -1)
+      m_ui.buzzTab->setCurrentWidget(page);
 
   if(!page)
     {
@@ -529,18 +525,15 @@ void spoton::joinBuzzChannel(const QUrl &url)
   if(!error.isEmpty())
     return;
 
-  foreach(spoton_buzzpage *p, m_buzzPages.values())
-    if(p && keys.first == p->key())
-      {
-	if(m_ui.buzzTab->indexOf(p) != -1)
-	  m_ui.buzzTab->setCurrentWidget(p);
-
-	page = p;
-	break;
-      }
+  page = m_buzzPages.value(keys.first, 0);
 
   if(page)
-    return;
+    {
+      if(m_ui.buzzTab->indexOf(page) != -1)
+	m_ui.buzzTab->setCurrentWidget(page);
+
+      return;
+    }
 
   if(m_buzzIds.contains(keys.first))
     id = m_buzzIds[keys.first];

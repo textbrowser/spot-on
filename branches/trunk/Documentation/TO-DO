@@ -159,6 +159,7 @@ Completed Items
        (SET SESSION statement_timeout TO milliseconds)
 113.   Active-kernel reminder warning persists.
 114.   Doxygen.
+115.   Include timestamps in Buzz.
 
 Ignored Items
 
@@ -277,4 +278,3 @@ Remaining Items
 8.     Include timestamps in StarBeam pulses.
 9.     Include timestamps in URL bundles.
 10.    Include timestamps in EPKS.
-11.    Include timestamps in Buzz.

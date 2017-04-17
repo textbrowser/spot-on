@@ -5813,3 +5813,14 @@ bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
      &ok);
   return ok;
 }
+
+bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
+{
+  if(!then.isValid())
+    return false;
+
+  QDateTime now(QDateTime::currentDateTimeUtc());
+
+  now.setTimeSpec(Qt::UTC);
+  return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
+}
