@@ -161,6 +161,7 @@ Completed Items
 114.   Doxygen.
 115.   Include timestamps in Buzz.
 116.   Include timestamps in StarBeam pulses.
+117.   Include timestamps in EPKS.
 
 Ignored Items
 
@@ -277,4 +278,3 @@ Remaining Items
 6.     URLs statistics.
 7.     Retrieve only the latest e-mails from IMAP/POP3.
 8.     Include timestamps in URL bundles.
-9.     Include timestamps in EPKS.

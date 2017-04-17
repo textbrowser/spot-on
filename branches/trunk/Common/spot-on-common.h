@@ -62,6 +62,7 @@ class spoton_common
   static const int CHAT_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int ELEGANT_STARBEAM_SIZE = 15000;
   static const int EMAIL_ATTACHMENT_MAXIMUM_SIZE = 10 * 1024 * 1024;
+  static const int EPKS_TIME_DELTA = 30;
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;

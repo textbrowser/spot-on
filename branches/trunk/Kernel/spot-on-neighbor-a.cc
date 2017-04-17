@@ -4883,7 +4883,7 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 
 	  list.clear();
 
-	  for(int i = 0; i < 7; i++)
+	  for(int i = 0; i < 8; i++)
 	    {
 	      QByteArray a;
 
@@ -4898,15 +4898,25 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
 		list << a;
 	    }
 
-	  if(list.size() != 7)
+	  if(list.size() != 8)
 	    {
 	      spoton_misc::logError
 		(QString("spoton_neighbor::process0090(): "
-			 "received irregular data. Expecting 7 "
+			 "received irregular data. Expecting 8 "
 			 "entries, "
 			 "received %1.").arg(list.size()));
 	      return;
 	    }
+
+	  QDateTime dateTime
+	    (QDateTime::fromString(list.value(list.size() - 1).
+				   constData(), "MMddyyyyhhmmss"));
+
+	  dateTime.setTimeSpec(Qt::UTC);
+
+	  if(!spoton_misc::
+	     acceptableTimeSeconds(dateTime, spoton_common::EPKS_TIME_DELTA))
+	    return;
 
 	  savePublicKey
 	    (list.value(1),                    // Key Type

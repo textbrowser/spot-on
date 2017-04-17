@@ -573,6 +573,7 @@ Symmetric Key (Base-64)
 4 - Dispatcher's Public Key Signature
 5 - Dispatcher's Signature Public Key
 6 - Dispatcher's Signature Public Key Signature
+7 - UTC Date
 }
 EOL
 {
