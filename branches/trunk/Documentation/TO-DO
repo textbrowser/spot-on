@@ -160,6 +160,7 @@ Completed Items
 113.   Active-kernel reminder warning persists.
 114.   Doxygen.
 115.   Include timestamps in Buzz.
+116.   Include timestamps in StarBeam pulses.
 
 Ignored Items
 
@@ -275,6 +276,5 @@ Remaining Items
 5.     Chat institutions.
 6.     URLs statistics.
 7.     Retrieve only the latest e-mails from IMAP/POP3.
-8.     Include timestamps in StarBeam pulses.
-9.     Include timestamps in URL bundles.
-10.    Include timestamps in EPKS.
+8.     Include timestamps in URL bundles.
+9.     Include timestamps in EPKS.

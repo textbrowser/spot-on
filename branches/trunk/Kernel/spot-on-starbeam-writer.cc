@@ -67,8 +67,7 @@ void spoton_starbeam_writer::run(void)
 }
 
 void spoton_starbeam_writer::processData
-(const QByteArray &dataIn,
- const QStringByteArrayHash &magnet)
+(const QByteArray &dataIn, const QStringByteArrayHash &magnet)
 {
   if(dataIn.isEmpty() || magnet.isEmpty())
     {
@@ -152,7 +151,7 @@ void spoton_starbeam_writer::processData
 
 	      QDataStream stream(&bytes, QIODevice::ReadOnly);
 
-	      for(int i = 0; i < 8; i++)
+	      for(int i = 0; i < 9; i++)
 		{
 		  QByteArray a;
 
@@ -178,7 +177,7 @@ void spoton_starbeam_writer::processData
 
       list.clear();
 
-      for(int i = 0; i < 8; i++)
+      for(int i = 0; i < 9; i++)
 	{
 	  QByteArray a;
 
@@ -195,6 +194,16 @@ void spoton_starbeam_writer::processData
     }
 
   if(list.value(0) != "0060")
+    return;
+
+  QDateTime dateTime
+    (QDateTime::fromString(list.value(list.size() - 1).
+			   constData(), "MMddyyyyhhmmss"));
+
+  dateTime.setTimeSpec(Qt::UTC);
+
+  if(!spoton_misc::
+     acceptableTimeSeconds(dateTime, spoton_common::STARBEAM_TIME_DELTA))
     return;
 
   QString connectionName("");

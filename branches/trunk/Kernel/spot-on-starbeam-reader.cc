@@ -455,7 +455,9 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 	 << fileSize.toLatin1()
 	 << data
 	 << pulseSize.toLatin1()
-	 << hash;
+	 << hash
+	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
+            toLatin1();
 
   if(stream.status() != QDataStream::Ok)
     ok = false;

@@ -56,7 +56,7 @@ class spoton_common
 						 ** will be represented in
 						 ** base sixteen.
 						 */
-  static const int BUZZ_TIME_DELTA = 30; // Seconds.
+  static const int BUZZ_TIME_DELTA = 30;
   static const int CACHE_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM_STATIC = 30;
@@ -101,6 +101,7 @@ class spoton_common
   static const int SEND_QUEUED_EMAIL_INTERVAL = 5;
   static const int SMP_TIME_DELTA_MAXIMUM = 90;
   static const int SPOTON_HOME_MAXIMUM_PATH_LENGTH = 256;
+  static const int STARBEAM_TIME_DELTA = 30;
   static const int STATUS_INTERVAL = 15;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
   static const int URL_CONTENT_SHARE_MAXIMUM_SIZE = 5 * 1024 * 1024;
