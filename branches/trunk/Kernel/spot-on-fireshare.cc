@@ -507,6 +507,7 @@ void spoton_fireshare::slotTimeout(void)
       QByteArray messageCode;
       QByteArray signature;
       QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+      QDateTime now(QDateTime::currentDateTime());
       bool ok = true;
 
       stream << QByteArray("0080")
@@ -524,7 +525,11 @@ void spoton_fireshare::slotTimeout(void)
 
       if(ok)
 	if(spoton_kernel::setting("gui/urlSignMessages", true).toBool())
-	  signature = s_crypt2->digitalSignature(keyInformation + data, &ok);
+	  signature = s_crypt2->digitalSignature
+	    (keyInformation +
+	     data +
+	     now.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
+	     &ok);
 
       if(ok)
 	{
@@ -540,6 +545,7 @@ void spoton_fireshare::slotTimeout(void)
 			     "");
 
 	  stream << data
+		 << now.toUTC().toString("MMddyyyyhhmmss").toLatin1()
 		 << signature;
 
 	  if(stream.status() != QDataStream::Ok)

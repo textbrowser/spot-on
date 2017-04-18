@@ -106,6 +106,7 @@ class spoton_common
   static const int STATUS_INTERVAL = 15;
   static const int STATUS_TEXT_MAXIMUM_LENGTH = 64;
   static const int URL_CONTENT_SHARE_MAXIMUM_SIZE = 5 * 1024 * 1024;
+  static const int URL_TIME_DELTA = 30;
   static const int WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM = 60000;
   static const int WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED = 5000; /*
 								  ** Please

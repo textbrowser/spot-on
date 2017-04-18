@@ -547,6 +547,12 @@ Encryption Key (Base-64)
 3 - Description
 4 - Content
 ...
+I - URL
+I + 1 - Title
+I + 2 - Description
+I + 3 - Content
+...
+N - 1 - UTC Date
 N - Signature (First Group Items and Previous N - 1 Items)
 }
 EOL

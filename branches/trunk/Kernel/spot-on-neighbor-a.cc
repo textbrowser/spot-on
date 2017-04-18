@@ -4764,9 +4764,20 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 		      }
 		  }
 
+		  QDateTime dateTime
+		    (QDateTime::fromString(list.value(1).constData(),
+					   "MMddyyyyhhmmss"));
+
+		  dateTime.setTimeSpec(Qt::UTC);
+
+		  if(!spoton_misc::
+		     acceptableTimeSeconds(dateTime,
+					   spoton_common::URL_TIME_DELTA))
+		    return;
+
 		  QByteArray dataForSignature
-		    (keyInformation + list.value(0));
-		  QByteArray signature(list.value(1));
+		    (keyInformation + list.value(0) + list.value(1));
+		  QByteArray signature(list.value(2));
 
 		  {
 		    QByteArray a;
@@ -4811,6 +4822,10 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 		      }
 
 		  if(!list.isEmpty())
+		    /*
+		    ** Remove the public-key digest.
+		    */
+
 		    list.removeAt(0);
 
 		  saveUrlsToShared(list);
