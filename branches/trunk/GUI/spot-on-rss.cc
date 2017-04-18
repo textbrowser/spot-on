@@ -1609,7 +1609,7 @@ void spoton_rss::slotActivateImport(bool state)
 
   if(state)
     {
-      if(!m_importTimer.isActive()) // Signals;
+      if(!m_importTimer.isActive()) // Signals.
 	m_importTimer.start();
     }
   else
