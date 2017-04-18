@@ -4197,7 +4197,8 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
     {
       if(messageType == "0040a")
 	stream << name
-	       << id;
+	       << id
+	       << dateTime;
       else
 	stream << name
 	       << id
