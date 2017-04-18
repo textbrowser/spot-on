@@ -476,7 +476,7 @@ EOL
 1 - Random Data (Base-64)
 
 Message Type ("0052") (Server Authentication Request)
-0 (Base-64)
+0 - 0 (Base-64)
 
 StarBeam
 Echoed? Yes
@@ -522,7 +522,7 @@ Message of the Day
 Echoed? No
 
 Message Type ("0070")
-MOTD (Base-64)
+0 - MOTD (Base-64)
 
 URL Distribution
 Echoed? Yes
