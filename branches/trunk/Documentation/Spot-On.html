@@ -6,7 +6,7 @@
 	<meta name="generator" content="LibreOffice 5.1.6.2 (Linux)"/>
 	<meta name="author" content="Monster "/>
 	<meta name="created" content="2014-10-24T18:38:51"/>
-	<meta name="changed" content="2017-04-16T18:25:51.564881678"/>
+	<meta name="changed" content="2017-04-18T10:06:53.804204552"/>
 	<style type="text/css">
 		@page { margin: 0.79in }
 		p { margin-bottom: 0.08in }
@@ -300,28 +300,33 @@ Communication Sessions</h3>
 <p align="left">This section describes some common methods which may
 be employed against Spot-On in an attempt to destabilize the
 communications of two parties.</p>
-<p align="left">Various attack methods include: re-ordering attack,
-reflection attack, and replay attack.</p>
+<p align="left">Various attack methods include: flood attack,
+re-ordering attack, reflection attack, and replay attack.</p>
+<p align="left">Public Spot-On devices are susceptible to flood
+attacks.</p>
 <p align="left">Save for <a class="western" href="#__RefHeading___Toc1332_384061765">Local
 Private Application Interfaces</a>, Spot-On does not guarantee
 orderly delivery of data and is therefore susceptible to <b>re-ordering</b><span style="font-weight: normal">.
 However, </span><span style="font-weight: normal">this attack method</span><span style="font-weight: normal">
-is not considered detrimental. </span><span style="font-weight: normal">Some
+is not considered detrimental </span><span style="font-weight: normal">as
+Spot-On is not orderly.</span><span style="font-weight: normal"> </span><span style="font-weight: normal">Some
 sub-systems such as Accounts and SMP </span><span style="font-weight: normal">should
 be resistant to this particular attack.</span></p>
 <p align="left" style="font-weight: normal">In a <b>reflection
 attack</b>, an adversary may capture a message sent from party A to
 party B and return the message to party A. For this attack to be
 successful in messages involving public keys, it must be possible for
-the originator of the message to be able to decipher the original
-message. Group communications are susceptible to reflection attacks.
-Some private-key communications contain timestamps and therefore
-should be resistant. Congestion control is also beneficial.</p>
+the originator of the message to be able to decipher its original
+message. Private-key communications are susceptible to reflection
+attacks, however, properly-defined congestion control and timestamps
+should aid against reflection attacks.</p>
 <p align="left" style="font-weight: normal">In a <b>replay attack,</b>
 an adversary may replay a valid message. Discounting congestion
-control, the message may appear as if it was sent recently. Again,
-some private-key portions of Spot-On are susceptible to replay
-attacks.</p>
+control, the message may appear as if it was sent recently. All
+private-key portions of Spot-On contain timestamps and in conjunction
+with congestion control should be resistant to replay attacks.</p>
+<p align="left" style="font-weight: normal">Computing and memory
+resources are required to prevent the aforementioned attacks.</p>
 <p align="left" style="font-weight: normal"><br/>
 <br/>
 
