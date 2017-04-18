@@ -2059,7 +2059,7 @@ void spoton_kernel::importUrls(void)
 
 void spoton_kernel::saveUrls(const QList<QByteArray> &urls)
 {
-  if(urls.isEmpty())
+  if(urls.isEmpty() || urls.size() % 4 != 0)
     return;
 
   QWriteLocker locker1(&m_urlListMutex);

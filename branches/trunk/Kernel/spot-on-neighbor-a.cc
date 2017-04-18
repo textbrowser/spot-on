@@ -4793,33 +4793,39 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 			if(stream.status() != QDataStream::Ok)
 			  break;
 			else
-			  list << a;
+			  {
+			    list << a;
+
+			    if(list.size() == 1)
+			      {
+				QByteArray publicKeyHash(list.value(0));
+
+				if(!spoton_misc::
+				   isAcceptedParticipant(publicKeyHash, "url",
+							 spoton_kernel::
+							 s_crypts.
+							 value("url", 0)))
+				  return;
+
+				if(spoton_kernel::
+				   setting("gui/urlAcceptSignedMessagesOnly",
+					   true).toBool())
+				  if(!spoton_misc::
+				     isValidSignature(dataForSignature,
+						      publicKeyHash,
+						      signature,
+						      spoton_kernel::s_crypts.
+						      value("url", 0)))
+				    {
+				      spoton_misc::logError
+					("spoton_neighbor::process0080(): "
+					 "invalid signature.");
+				      return;
+				    }
+			      }
+			  }
 		      }
 		  }
-
-		  QByteArray publicKeyHash(list.value(0));
-
-		  if(!spoton_misc::
-		     isAcceptedParticipant(publicKeyHash, "url",
-					   spoton_kernel::s_crypts.
-					   value("url", 0)))
-		    return;
-
-		  if(spoton_kernel::setting("gui/urlAcceptSignedMessagesOnly",
-					    true).toBool())
-		    if(!spoton_misc::
-		       isValidSignature(dataForSignature,
-					publicKeyHash,
-					signature,
-					spoton_kernel::s_crypts.
-					value("url", 0)))
-		      {
-			spoton_misc::logError
-			  ("spoton_neighbor::"
-			   "process0080(): invalid "
-			   "signature.");
-			return;
-		      }
 
 		  if(!list.isEmpty())
 		    /*
