@@ -90,7 +90,7 @@ static void bytesToWords(uint64_t *W,
 			 const char *bytes,
 			 const size_t bytes_size)
 {
-  if(!W || !bytes || bytes_size == 0)
+  if(Q_UNLIKELY(!W || !bytes || bytes_size == 0))
     return;
 
   for(size_t i = 0; i < bytes_size / 8; i++)
@@ -121,7 +121,7 @@ static void mix(const uint64_t x0,
 {
   Q_UNUSED(block_size);
 
-  if(!y0 || !y1)
+  if(Q_UNLIKELY(!y0 || !y1))
     return;
 
   /*
@@ -149,7 +149,7 @@ static void mix_inverse(const uint64_t y0,
 {
   Q_UNUSED(block_size);
 
-  if(!x0 || !x1)
+  if(Q_UNLIKELY(!x0 || !x1))
     return;
 
   /*
@@ -174,7 +174,7 @@ static void threefish_decrypt(char *D,
 			      const size_t block_size,
 			      bool *ok)
 {
-  if(!C || C_size == 0 || !D || !K || !T || block_size == 0)
+  if(Q_UNLIKELY(!C || C_size == 0 || !D || !K || !T || block_size == 0))
     {
       if(ok)
 	*ok = false;
@@ -196,7 +196,7 @@ static void threefish_decrypt_implementation(char *D,
 					     const size_t block_size,
 					     bool *ok)
 {
-  if(!C || C_size == 0 || !D || !K || !T || block_size == 0)
+  if(Q_UNLIKELY(!C || C_size == 0 || !D || !K || !T || block_size == 0))
     {
       if(ok)
 	*ok = false;
@@ -216,7 +216,7 @@ static void threefish_decrypt_implementation(char *D,
   uint64_t t[3];
   uint64_t *v = new (std::nothrow) uint64_t[Nw];
 
-  if(!k || !s || !v)
+  if(Q_UNLIKELY(!k || !s || !v))
     {
       if(ok)
 	*ok = false;
@@ -228,11 +228,11 @@ static void threefish_decrypt_implementation(char *D,
     {
       s[i] = new (std::nothrow) uint64_t[Nw];
 
-      if(!s[i])
-	error = true;
+      if(Q_UNLIKELY(!s[i]))
+	error = true; // Do not break.
     }
 
-  if(error)
+  if(Q_UNLIKELY(error))
     {
       if(ok)
 	*ok = false;
@@ -274,7 +274,7 @@ static void threefish_decrypt_implementation(char *D,
     {
       uint64_t *f = new (std::nothrow) uint64_t[Nw];
 
-      if(!f)
+      if(Q_UNLIKELY(!f))
 	{
 	  if(ok)
 	    *ok = false;
@@ -315,19 +315,19 @@ static void threefish_decrypt_implementation(char *D,
 
  done_label:
 
-  if(k)
+  if(Q_LIKELY(k))
     memset(k, 0, sizeof(*k) * static_cast<size_t> (Nw + 1));
 
   memset(t, 0, sizeof(t));
 
-  if(v)
+  if(Q_LIKELY(v))
     memset(v, 0, sizeof(*v) * static_cast<size_t> (Nw));
 
   delete []k;
 
   for(size_t i = 0; i < Nr / 4 + 1; i++)
     {
-      if(s[i])
+      if(Q_LIKELY(s[i]))
 	memset(s[i], 0, sizeof(*s[i]) * static_cast<size_t> (Nw));
 
       delete []s[i];
@@ -345,7 +345,7 @@ static void threefish_encrypt(char *E,
 			      const size_t block_size,
 			      bool *ok)
 {
-  if(!E || !K || !P || P_size == 0 || !T || block_size == 0)
+  if(Q_UNLIKELY(!E || !K || !P || P_size == 0 || !T || block_size == 0))
     {
       if(ok)
 	*ok = false;
@@ -367,7 +367,7 @@ static void threefish_encrypt_implementation(char *E,
 					     const size_t block_size,
 					     bool *ok)
 {
-  if(!E || !K || !T || !P || P_size == 0 || block_size == 0)
+  if(Q_UNLIKELY(!E || !K || !T || !P || P_size == 0 || block_size == 0))
     {
       if(ok)
 	*ok = false;
@@ -387,7 +387,7 @@ static void threefish_encrypt_implementation(char *E,
   uint64_t t[3];
   uint64_t *v = new (std::nothrow) uint64_t[Nw];
 
-  if(!k || !s || !v)
+  if(Q_UNLIKELY(!k || !s || !v))
     {
       if(ok)
 	*ok = false;
@@ -399,11 +399,11 @@ static void threefish_encrypt_implementation(char *E,
     {
       s[i] = new (std::nothrow) uint64_t[Nw];
 
-      if(!s[i])
-	error = true;
+      if(Q_UNLIKELY(!s[i]))
+	error = true; // Do not break.
     }
 
-  if(error)
+  if(Q_UNLIKELY(error))
     {
       if(ok)
 	*ok = false;
@@ -446,7 +446,7 @@ static void threefish_encrypt_implementation(char *E,
 
       uint64_t *f = new (std::nothrow) uint64_t[Nw];
 
-      if(!f)
+      if(Q_UNLIKELY(!f))
 	{
 	  if(ok)
 	    *ok = false;
@@ -483,19 +483,19 @@ static void threefish_encrypt_implementation(char *E,
 
  done_label:
 
-  if(k)
+  if(Q_LIKELY(k))
     memset(k, 0, sizeof(*k) * static_cast<size_t> (Nw + 1));
 
   memset(t, 0, sizeof(t));
 
-  if(v)
+  if(Q_LIKELY(v))
     memset(v, 0, sizeof(*v) * static_cast<size_t> (Nw));
 
   delete []k;
 
   for(size_t i = 0; i < Nr / 4 + 1; i++)
     {
-      if(s[i])
+      if(Q_LIKELY(s[i]))
 	memset(s[i], 0, sizeof(*s[i]) * static_cast<size_t> (Nw));
 
       delete []s[i];
@@ -509,7 +509,7 @@ static void wordsToBytes(char *B,
 			 const uint64_t *words,
 			 const size_t words_size)
 {
-  if(!B || !words || words_size == 0)
+  if(Q_UNLIKELY(!B || !words || words_size == 0))
     return;
 
   for(size_t i = 0; i < words_size; i++)
@@ -544,7 +544,7 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
 {
   QReadLocker locker(&m_locker);
 
-  if(!m_key || !m_tweak)
+  if(Q_UNLIKELY(!m_key || !m_tweak))
     {
       if(ok)
 	*ok = false;
@@ -554,7 +554,7 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
 
   QByteArray iv(bytes.mid(0, static_cast<int> (m_keyLength)));
 
-  if(iv.length() != static_cast<int> (m_keyLength))
+  if(Q_UNLIKELY(iv.length() != static_cast<int> (m_keyLength)))
     {
       if(ok)
 	*ok = false;
@@ -659,7 +659,7 @@ QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
 {
   QReadLocker locker(&m_locker);
 
-  if(!m_key || !m_tweak)
+  if(Q_UNLIKELY(!m_key || !m_tweak))
     {
       if(ok)
 	*ok = false;
@@ -673,7 +673,7 @@ QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
 
   setInitializationVector(iv, ok);
 
-  if(iv.isEmpty())
+  if(Q_UNLIKELY(iv.isEmpty()))
     {
       if(ok)
 	*ok = false;
@@ -771,12 +771,12 @@ void spoton_threefish::setInitializationVector
   if(ok)
     *ok = false;
 
-  if(ivLength == 0)
+  if(Q_UNLIKELY(ivLength == 0))
     return;
 
   char *iv = static_cast<char *> (gcry_calloc(ivLength, sizeof(char)));
 
-  if(iv)
+  if(Q_LIKELY(iv))
     {
       if(ok)
 	*ok = true;
@@ -821,7 +821,7 @@ void spoton_threefish::setKey
   gcry_free(m_key);
   m_key = static_cast<char *> (gcry_calloc_secure(keyLength, sizeof(char)));
 
-  if(!m_key)
+  if(Q_UNLIKELY(!m_key))
     {
       m_blockSize = 0;
       m_keyLength = 0;
