@@ -1049,7 +1049,7 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
     {
       char *iv = static_cast<char *> (gcry_calloc(ivLength, sizeof(char)));
 
-      if(iv)
+      if(Q_LIKELY(iv))
 	{
 	  if(bytes.isEmpty())
 	    {
