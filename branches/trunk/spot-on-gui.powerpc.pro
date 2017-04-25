@@ -28,9 +28,10 @@ QMAKE_CLEAN     += Spot-On \
 		   ../../libSpotOn/*.o ../../libSpotOn/*.so \
 		   ../../libSpotOn/test
 QMAKE_DISTCLEAN += -r temp
+QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -mabi=altivec -mpowerpc -mtune=powerpc \
-                          -pie \
+                          -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Werror -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \

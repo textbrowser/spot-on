@@ -31,8 +31,9 @@ QMAKE_CLEAN     += Spot-On \
 		   ../../libSpotOn/test
 QMAKE_CXX = clang++
 QMAKE_DISTCLEAN += -r temp .qmake.cache .qmake.stash
+QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-                          -mtune=native \
+                          -mtune=native -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \

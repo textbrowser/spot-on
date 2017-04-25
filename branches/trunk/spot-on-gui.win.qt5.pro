@@ -32,12 +32,13 @@ QMAKE_CLEAN     += Spot-On ..\\..\\libNTRU.dll ..\\..\\libNTRU\\src\\*.o \
 		   ..\\..\\libSpotOn\\*.o \
 		   ..\\..\\libSpotOn\\test.exe
                    .qmake.cache
-QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie \
+QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstrict-overflow=5
 QMAKE_DISTCLEAN += .qmake.cache .qmake.stash
+QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 INCLUDEPATH	+= . ..\\..\\. GUI \
 		   ..\\..\\PostgreSQL\\Include.win32 \
