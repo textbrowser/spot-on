@@ -211,7 +211,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 					   "failure.");
 				      }
 
-				    if(m_missingLinksIterator)
+				    if(Q_LIKELY(m_missingLinksIterator))
 				      m_missingLinksIterator->toFront();
 				    else
 				      spoton_misc::logError

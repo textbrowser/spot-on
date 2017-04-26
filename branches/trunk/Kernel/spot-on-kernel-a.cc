@@ -1173,7 +1173,7 @@ void spoton_kernel::prepareListeners(void)
 		      "FROM listeners"))
 	  while(query.next())
 	    {
-	      QPointer<spoton_listener> listener = 0;
+	      QPointer<spoton_listener> listener;
 	      QString status(query.value(4).toString().toLower());
 	      qint64 id = query.value(query.record().count() - 1).
 		toLongLong();
@@ -1340,7 +1340,7 @@ void spoton_kernel::prepareListeners(void)
 			    }
 			}
 
-		      if(listener)
+		      if(Q_LIKELY(listener))
 			{
 			  connect
 			    (listener,
@@ -1459,7 +1459,7 @@ void spoton_kernel::prepareNeighbors(void)
 		      "OID FROM neighbors"))
 	  while(query.next())
 	    {
-	      QPointer<spoton_neighbor> neighbor = 0;
+	      QPointer<spoton_neighbor> neighbor;
 	      qint64 id = query.value(query.record().count() - 1).
 		toLongLong();
 
@@ -1652,7 +1652,7 @@ void spoton_kernel::prepareNeighbors(void)
 			    }
 			}
 
-		      if(neighbor)
+		      if(Q_LIKELY(neighbor))
 			{
 			  connectSignalsToNeighbor(neighbor);
 			  m_neighbors.insert(id, neighbor);
@@ -1742,14 +1742,13 @@ void spoton_kernel::prepareStarbeamReaders(void)
 	  while(query.next())
 	    {
 	      QString status(query.value(1).toString().toLower());
-	      QPointer<spoton_starbeam_reader> starbeam = 0;
 	      double readInterval = query.value(0).toDouble();
 	      qint64 id = query.value(query.record().count() - 1).
 		toLongLong();
 
 	      if(status == "transmitting")
 		{
-		  QPointer<spoton_starbeam_reader> starbeam = 0;
+		  QPointer<spoton_starbeam_reader> starbeam;
 
 		  if(!m_starbeamReaders.contains(id))
 		    {
@@ -1772,7 +1771,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
 			     "critical failure.");
 			}
 
-		      if(starbeam)
+		      if(Q_LIKELY(starbeam))
 			m_starbeamReaders.insert(id, starbeam);
 		      else
 			{
@@ -1792,7 +1791,8 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		}
 	      else
 		{
-		  starbeam = m_starbeamReaders.value(id, 0);
+		  QPointer<spoton_starbeam_reader> starbeam
+		    (m_starbeamReaders.value(id, 0));
 
 		  if(starbeam)
 		    starbeam->deleteLater();
@@ -2138,7 +2138,7 @@ void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
 						const QByteArray &sSignature,
 						const QString &messageType)
 {
-  QPointer<spoton_neighbor> neighbor = 0;
+  QPointer<spoton_neighbor> neighbor;
 
   if(m_neighbors.contains(oid))
     neighbor = m_neighbors[oid];
@@ -4047,7 +4047,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 		      crypt = 0;
 		    }
 
-		  if(crypt)
+		  if(Q_LIKELY(crypt))
 		    s_crypts.insert(list.at(i), crypt);
 		}
 
@@ -4497,7 +4497,7 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 
 void spoton_kernel::slotDetachNeighbors(const qint64 listenerOid)
 {
-  QPointer<spoton_listener> listener = 0;
+  QPointer<spoton_listener> listener;
 
   if(m_listeners.contains(listenerOid))
     listener = m_listeners.value(listenerOid, 0);
@@ -4518,7 +4518,7 @@ void spoton_kernel::slotDetachNeighbors(const qint64 listenerOid)
 
 void spoton_kernel::slotDisconnectNeighbors(const qint64 listenerOid)
 {
-  QPointer<spoton_listener> listener = 0;
+  QPointer<spoton_listener> listener;
 
   if(m_listeners.contains(listenerOid))
     listener = m_listeners.value(listenerOid, 0);
@@ -4599,7 +4599,7 @@ void spoton_kernel::clearBuzzKeysContainer(void)
 
 int spoton_kernel::interfaces(void)
 {
-  if(instance())
+  if(Q_LIKELY(instance()))
     {
       if(!instance()->m_guiServer)
 	return 0;
@@ -5275,7 +5275,7 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 void spoton_kernel::slotBuzzMagnetReceivedFromUI(const qint64 oid,
 						 const QByteArray &magnet)
 {
-  QPointer<spoton_neighbor> neighbor = 0;
+  QPointer<spoton_neighbor> neighbor;
 
   if(m_neighbors.contains(oid))
     neighbor = m_neighbors[oid];

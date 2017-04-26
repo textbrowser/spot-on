@@ -380,7 +380,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 	  m_socketNotifier = 0;
         }
 
-      if(m_socketNotifier)
+      if(Q_LIKELY(m_socketNotifier))
 	m_socketNotifier->setEnabled(true);
       else
 	{

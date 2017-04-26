@@ -1315,7 +1315,7 @@ void spoton_neighbor::slotTimeout(void)
 		m_bluetoothSocket = new (std::nothrow) QBluetoothSocket
 		  (QBluetoothServiceInfo::RfcommProtocol, this);
 
-		if(m_bluetoothSocket)
+		if(Q_LIKELY(m_bluetoothSocket))
 		  {
 		    QByteArray bytes;
 		    QString serviceUuid;

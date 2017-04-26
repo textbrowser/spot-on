@@ -397,7 +397,7 @@ void spoton::slotReceivedKernelMessage(void)
 		    list.replace(i, QByteArray::fromBase64(list.at(i)));
 
 		  QList<QByteArray> values;
-		  QPointer<spoton_chatwindow> chat = 0;
+		  QPointer<spoton_chatwindow> chat;
 		  QString notsigned(" ");
 
 		  if(list.value(5).isEmpty())

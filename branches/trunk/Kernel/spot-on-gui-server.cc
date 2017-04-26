@@ -63,7 +63,7 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
     {
       QPointer<QSslSocket> socket = new (std::nothrow) QSslSocket(this);
 
-      if(socket)
+      if(Q_LIKELY(socket))
 	{
 	  try
 	    {
@@ -527,7 +527,7 @@ void spoton_gui_server::slotReadyRead(void)
 			  crypt = 0;
 			}
 
-		      if(crypt)
+		      if(Q_LIKELY(crypt))
 			{
 			  if(crypt->isAuthenticated() &&
 			     spoton_misc::isAuthenticatedHint(crypt))

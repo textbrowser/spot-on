@@ -784,7 +784,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
   ** Record the IP address of the client as soon as possible.
   */
 
-  QPointer<spoton_neighbor> neighbor = 0;
+  QPointer<spoton_neighbor> neighbor;
   QString error("");
 
   try
@@ -831,7 +831,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 			    "critical failure.");
     }
 
-  if(!error.isEmpty() || !neighbor)
+  if(Q_UNLIKELY(!error.isEmpty() || !neighbor))
     {
       if(m_transport == "sctp")
 	{
@@ -856,7 +856,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	}
     }
 
-  if(!neighbor)
+  if(Q_UNLIKELY(!neighbor))
     return;
 
   connect(neighbor,
@@ -1253,10 +1253,9 @@ void spoton_listener::prepareNetworkInterface(void)
 		m_networkInterface = new (std::nothrow)
 		  QNetworkInterface(list.at(i));
 
-		if(m_networkInterface)
+		if(Q_LIKELY(m_networkInterface))
 		  {
-		    if(!(m_networkInterface->flags() &
-			 QNetworkInterface::IsUp))
+		    if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		      {
 			delete m_networkInterface;
 			m_networkInterface = 0;
@@ -1277,10 +1276,9 @@ void spoton_listener::prepareNetworkInterface(void)
 		m_networkInterface = new (std::nothrow)
 		  QNetworkInterface(list.at(i));
 
-		if(m_networkInterface)
+		if(Q_LIKELY(m_networkInterface))
 		  {
-		    if(!(m_networkInterface->flags() &
-			 QNetworkInterface::IsUp))
+		    if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		      {
 			delete m_networkInterface;
 			m_networkInterface = 0;
@@ -1301,10 +1299,9 @@ void spoton_listener::prepareNetworkInterface(void)
 		m_networkInterface = new (std::nothrow)
 		  QNetworkInterface(list.at(i));
 
-		if(m_networkInterface)
+		if(Q_LIKELY(m_networkInterface))
 		  {
-		    if(!(m_networkInterface->flags() &
-			 QNetworkInterface::IsUp))
+		    if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		      {
 			delete m_networkInterface;
 			m_networkInterface = 0;
@@ -1484,7 +1481,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  m_bluetoothServer = new (std::nothrow) QBluetoothServer
 	    (QBluetoothServiceInfo::RfcommProtocol, this);
 
-	  if(m_bluetoothServer)
+	  if(Q_LIKELY(m_bluetoothServer))
 	    {
 	      connect(m_bluetoothServer,
 		      SIGNAL(newConnection(void)),
@@ -1697,7 +1694,7 @@ void spoton_listener::slotNewConnection(void)
   ** Record the IP address of the client as soon as possible.
   */
 
-  QPointer<spoton_neighbor> neighbor = 0;
+  QPointer<spoton_neighbor> neighbor;
   QString error("");
 
   try
@@ -1738,7 +1735,7 @@ void spoton_listener::slotNewConnection(void)
 			    "critical failure.");
     }
 
-  if(!neighbor)
+  if(Q_UNLIKELY(!neighbor))
     {
       socket->deleteLater();
       return;
