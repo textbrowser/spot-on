@@ -149,6 +149,7 @@ void spoton::slotPrepareUrlDatabases(void)
     }
 
 #ifndef Q_OS_MAC
+  repaint();
   QApplication::processEvents();
 #endif
 
@@ -177,6 +178,7 @@ void spoton::slotPrepareUrlDatabases(void)
     created = spoton_misc::prepareUrlKeysDatabase();
 
 #ifndef Q_OS_MAC
+  repaint();
   QApplication::processEvents();
 #endif
 
@@ -346,6 +348,7 @@ void spoton::slotPrepareUrlDatabases(void)
 
   progress.close();
 #ifndef Q_OS_MAC
+  repaint();
   QApplication::processEvents();
 #endif
 
@@ -448,6 +451,7 @@ void spoton::slotDropUrlTables(void)
     }
 
 #ifndef Q_OS_MAC
+  repaint();
   QApplication::processEvents();
 #endif
 
@@ -816,6 +820,7 @@ void spoton::slotImportUrls(void)
     readEncrypted = 0;
 
 #ifndef Q_OS_MAC
+  repaint();
   QApplication::processEvents();
 #endif
 
@@ -1020,6 +1025,7 @@ void spoton::slotImportUrls(void)
   QSqlDatabase::removeDatabase(connectionName);
   progress.close();
 #ifndef Q_OS_MAC
+  repaint();
   QApplication::processEvents();
 #endif
   displayUrlImportResults(now, imported, not_imported, declined);
@@ -1422,8 +1428,8 @@ void spoton::slotSaveCommonUrlCredentials(void)
     return;
   else
     {
-      repaint();
 #ifndef Q_OS_MAC
+      repaint();
       QApplication::processEvents();
 #endif
       m_rss->deactivate();
@@ -2246,6 +2252,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   */
 
 #ifndef Q_OS_MAC
+  repaint();
   QApplication::processEvents();
 #endif
 
@@ -2525,6 +2532,7 @@ void spoton::slotCorrectUrlDatabases(void)
 
   progress.close();
 #ifndef Q_OS_MAC
+  repaint();
   QApplication::processEvents();
 #endif
 
