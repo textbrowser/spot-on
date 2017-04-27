@@ -2404,6 +2404,7 @@ void spoton::slotCorrectUrlDatabases(void)
     }
 
 #ifndef Q_OS_MAC
+  repaint();
   QApplication::processEvents();
 #endif
 
