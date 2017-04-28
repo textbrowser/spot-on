@@ -266,15 +266,15 @@ Ignored Items
 64.    Key pools.
 65.    Personalized status messages.
 66.    Per-neighbor override of required signature proofs during key sharing.
+67.    Poptastic in the Wizard.
+68.    Chat institutions.
+69.    UDP multicast address sharing is flawed in Qt 4.x.
+       (https://bugreports.qt.io/browse/QTBUG-33419)
+70.    URLs statistics.
 
 Remaining Items
 
 1.     Automatic computations of rapid StarBeam digests may be incorrect.
        See spoton::slotPopulateStars().
-2.     UDP multicast address sharing is flawed in Qt 4.x.
-       (https://bugreports.qt.io/browse/QTBUG-33419)
-3.     Open Library.
-4.     Poptastic in the Wizard.
-5.     Chat institutions.
-6.     URLs statistics.
-7.     Retrieve only the latest e-mails from IMAP/POP3.
+2.     Open Library.
+3.     Retrieve only the latest e-mails from IMAP/POP3.
