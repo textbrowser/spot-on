@@ -676,33 +676,33 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <location filename="../GUI/spot-on-urls-search.cc" line="41"/>
         <location filename="../GUI/spot-on-urls-search.cc" line="50"/>
         <location filename="../GUI/spot-on-urls.cc" line="119"/>
-        <location filename="../GUI/spot-on-urls.cc" line="353"/>
-        <location filename="../GUI/spot-on-urls.cc" line="365"/>
-        <location filename="../GUI/spot-on-urls.cc" line="405"/>
-        <location filename="../GUI/spot-on-urls.cc" line="419"/>
-        <location filename="../GUI/spot-on-urls.cc" line="535"/>
-        <location filename="../GUI/spot-on-urls.cc" line="724"/>
-        <location filename="../GUI/spot-on-urls.cc" line="733"/>
-        <location filename="../GUI/spot-on-urls.cc" line="742"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1153"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1239"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1276"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1356"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1459"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1482"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1606"/>
+        <location filename="../GUI/spot-on-urls.cc" line="356"/>
+        <location filename="../GUI/spot-on-urls.cc" line="368"/>
+        <location filename="../GUI/spot-on-urls.cc" line="408"/>
+        <location filename="../GUI/spot-on-urls.cc" line="422"/>
+        <location filename="../GUI/spot-on-urls.cc" line="539"/>
+        <location filename="../GUI/spot-on-urls.cc" line="728"/>
+        <location filename="../GUI/spot-on-urls.cc" line="737"/>
+        <location filename="../GUI/spot-on-urls.cc" line="746"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1159"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1245"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1282"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1362"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1465"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1488"/>
         <location filename="../GUI/spot-on-urls.cc" line="1612"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1825"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1860"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1867"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2000"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2061"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2068"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2184"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2192"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2201"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2232"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2365"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1618"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1831"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1866"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1873"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2006"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2067"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2074"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2190"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2198"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2207"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2238"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2372"/>
         <source>%1: Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -799,14 +799,14 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <location filename="../GUI/spot-on-g.cc" line="1270"/>
         <location filename="../GUI/spot-on-g.cc" line="1876"/>
         <location filename="../GUI/spot-on-urls.cc" line="140"/>
-        <location filename="../GUI/spot-on-urls.cc" line="388"/>
-        <location filename="../GUI/spot-on-urls.cc" line="440"/>
-        <location filename="../GUI/spot-on-urls.cc" line="758"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1419"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1845"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2027"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2163"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2378"/>
+        <location filename="../GUI/spot-on-urls.cc" line="391"/>
+        <location filename="../GUI/spot-on-urls.cc" line="443"/>
+        <location filename="../GUI/spot-on-urls.cc" line="762"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1425"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1851"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2033"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2169"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2385"/>
         <source>%1: Confirmation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -853,10 +853,10 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <location filename="../GUI/spot-on-c.cc" line="3755"/>
         <location filename="../GUI/spot-on-f.cc" line="289"/>
         <location filename="../GUI/spot-on-f.cc" line="295"/>
-        <location filename="../GUI/spot-on-urls.cc" line="764"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1036"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1147"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2533"/>
+        <location filename="../GUI/spot-on-urls.cc" line="768"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1042"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1153"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2542"/>
         <source>%1: Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1309,7 +1309,7 @@ If not checked, the neighbor will be terminated after some internal timer expire
         <location filename="../GUI/spot-on-d.cc" line="1725"/>
         <location filename="../GUI/spot-on-e.cc" line="671"/>
         <location filename="../GUI/spot-on-e.cc" line="1436"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1067"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1073"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1598,12 +1598,12 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-f.cc" line="1696"/>
         <location filename="../GUI/spot-on-g.cc" line="1046"/>
         <location filename="../GUI/spot-on-g.cc" line="1956"/>
-        <location filename="../GUI/spot-on-urls.cc" line="725"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1168"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1277"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1403"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1483"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2186"/>
+        <location filename="../GUI/spot-on-urls.cc" line="729"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1174"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1283"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1409"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1489"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2192"/>
         <source>Invalid spoton_crypt object. This is a fatal flaw.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1771,7 +1771,7 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-e.cc" line="1404"/>
         <location filename="../GUI/spot-on-f.cc" line="244"/>
         <location filename="../GUI/spot-on-f.cc" line="567"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1993"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1999"/>
         <source>The interface is not connected to the kernel.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1781,7 +1781,7 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-e.cc" line="1410"/>
         <location filename="../GUI/spot-on-f.cc" line="249"/>
         <location filename="../GUI/spot-on-f.cc" line="572"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1995"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2001"/>
         <source>The connection to the kernel is not encrypted.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2282,7 +2282,7 @@ Socket Options: %30</source>
     <message>
         <location filename="../GUI/spot-on-c.cc" line="3615"/>
         <location filename="../GUI/spot-on-c.cc" line="3786"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1904"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1910"/>
         <source>Save</source>
         <translation type="unfinished">Guardar</translation>
     </message>
@@ -2500,7 +2500,7 @@ Socket Options: %30</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-d.cc" line="2549"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1259"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1265"/>
         <source>&amp;PostgreSQL Connect...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2539,14 +2539,14 @@ Socket Options: %30</source>
     <message>
         <location filename="../GUI/spot-on-urls-search.cc" line="51"/>
         <location filename="../GUI/spot-on-urls.cc" line="120"/>
-        <location filename="../GUI/spot-on-urls.cc" line="366"/>
-        <location filename="../GUI/spot-on-urls.cc" line="420"/>
-        <location filename="../GUI/spot-on-urls.cc" line="734"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1826"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1861"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2062"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2202"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2366"/>
+        <location filename="../GUI/spot-on-urls.cc" line="369"/>
+        <location filename="../GUI/spot-on-urls.cc" line="423"/>
+        <location filename="../GUI/spot-on-urls.cc" line="738"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1832"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1867"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2068"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2208"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2373"/>
         <source>Please connect to a URL database.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2586,127 +2586,127 @@ Socket Options: %30</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="167"/>
+        <location filename="../GUI/spot-on-urls.cc" line="168"/>
         <source>%1: Creating URL Databases</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="282"/>
+        <location filename="../GUI/spot-on-urls.cc" line="284"/>
         <source>Creating spot_on_urls_revisions_%1%2. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="355"/>
+        <location filename="../GUI/spot-on-urls.cc" line="358"/>
         <source>One or more errors occurred while attempting to create the URL databases.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="379"/>
+        <location filename="../GUI/spot-on-urls.cc" line="382"/>
         <source>Are you sure that you wish to delete most of the URL databases? Your credentials will also be removed. The shared.db database will not be removed. Please note that the deletion process may require a considerable amount of time to complete. The RSS mechanism and the kernel will be deactivated. Please also verify that you have proper administrator privileges.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="407"/>
+        <location filename="../GUI/spot-on-urls.cc" line="410"/>
         <source>One or more errors occurred while attempting to delete the URL data. Please verify that you have correct administrator privileges.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="537"/>
+        <location filename="../GUI/spot-on-urls.cc" line="541"/>
         <source>One or more errors occurred while attempting to destroy the URL tables.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="662"/>
+        <location filename="../GUI/spot-on-urls.cc" line="666"/>
         <source>%1: Gathering URL Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="743"/>
+        <location filename="../GUI/spot-on-urls.cc" line="747"/>
         <source>Did you prepare URL common credentials?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="756"/>
+        <location filename="../GUI/spot-on-urls.cc" line="760"/>
         <source>Did you prepare your URL databases and URL distillers?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1038"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1044"/>
         <source>URLs imported: %1. URLs not imported: %2. Some URLs (%3) may have been declined because of distiller rules. URLs that were not imported will remain in shared.db. The process completed in %4 second(s).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1364"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1370"/>
         <source>&amp;PostgreSQL Disconnect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1415"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1421"/>
         <source>In order to save new Common Credentials, the RSS mechanism and the kernel will be deactivated. Proceed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1614"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1620"/>
         <source>An error (%1) occurred while attempting to add the specified URL domain.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1906"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1912"/>
         <source>%1: Export Link As PDF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2422"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2430"/>
         <source>%1: Deleting Orphaned URL Keywords</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2469"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2477"/>
         <source>Reviewing spot_on_keywords_%1%2 for orphaned entries. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2535"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2544"/>
         <source>Approximate orphaned keyword entries deleted: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2417"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2425"/>
         <source>Deleting orphaned URL keywords. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="433"/>
+        <location filename="../GUI/spot-on-urls.cc" line="436"/>
         <source>Are you sure that you wish to drop most of the URL tables? Your credentials will not be removed. The shared.db database will not be removed. Please note that the process may require a considerable amount of time to complete. The RSS mechanism and the kernel will be deactivated.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="462"/>
+        <location filename="../GUI/spot-on-urls.cc" line="466"/>
         <source>Dropping URL tables. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="466"/>
+        <location filename="../GUI/spot-on-urls.cc" line="470"/>
         <source>%1: Dropping URL Tables</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="551"/>
+        <location filename="../GUI/spot-on-urls.cc" line="555"/>
         <source>Deleting URL data... Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="555"/>
+        <location filename="../GUI/spot-on-urls.cc" line="559"/>
         <source>%1: Deleting URL Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="766"/>
+        <location filename="../GUI/spot-on-urls.cc" line="770"/>
         <source>Please note that the URL-import process may require a considerable amount of time to complete.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="163"/>
+        <location filename="../GUI/spot-on-urls.cc" line="164"/>
         <source>Creating URL databases. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2716,143 +2716,143 @@ Socket Options: %30</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="215"/>
+        <location filename="../GUI/spot-on-urls.cc" line="217"/>
         <source>Creating spot_on_keywords_%1%2. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="245"/>
+        <location filename="../GUI/spot-on-urls.cc" line="247"/>
         <source>Creating spot_on_urls_%1%2. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="658"/>
+        <location filename="../GUI/spot-on-urls.cc" line="662"/>
         <source>Gathering URL statistics. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="830"/>
+        <location filename="../GUI/spot-on-urls.cc" line="835"/>
         <source>Importing URLs. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1149"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1155"/>
         <source>The provided credentials are correct. Please save the information!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1848"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1854"/>
         <source>Are you sure that you wish to remove the URL %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2031"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2037"/>
         <source>Are you sure that you wish to share the URL %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2384"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2391"/>
         <source>The database-correction process may require a considerable amount of time to complete. You may experience performance degradation upon completion. The RSS mechanism and the kernel will be deactivated. A brief report will be displayed after the process completes. Proceed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2392"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2399"/>
         <source>The database-correction process may require a considerable amount of time to complete. The RSS mechanism and the kernel will be deactivated. A brief report will be displayed after the process completes. Proceed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-f.cc" line="1744"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1217"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1223"/>
         <source>Database write error. Is urls_key_information.db properly defined?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1497"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1503"/>
         <source>Please specify at least one direction.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1503"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1509"/>
         <source>Invalid domain.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1513"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1519"/>
         <source>Only ftp, gopher, http, and https schemes are allowed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1608"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1614"/>
         <source>Unable to add the specified URL domain. Please enable logging via the Log Viewer and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2046"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2052"/>
         <source>URL %1 shared with your friendly participants.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1869"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2070"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2194"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1875"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2076"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2200"/>
         <source>Invalid m_urlCommonCrypt object. This is a fatal flaw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2234"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2240"/>
         <source>Invalid permissions.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2259"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2266"/>
         <source>Deleting URL keywords. Please be patient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="2263"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2270"/>
         <source>%1: Deleting URL Keywords</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="834"/>
+        <location filename="../GUI/spot-on-urls.cc" line="839"/>
         <source>%1: Importing URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1062"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1068"/>
         <source>%1: Select INI Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1155"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1161"/>
         <source>The provided credentials are incorrect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-f.cc" line="1748"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1221"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1227"/>
         <source>An error occurred with spoton_crypt::encryptedThenHashed().</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-f.cc" line="1752"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1225"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1231"/>
         <source>Unable to access urls_key_information.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1233"/>
-        <location filename="../GUI/spot-on-urls.cc" line="1450"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1239"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1456"/>
         <source>Key generation failure.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1292"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1298"/>
         <source>%1: PostgreSQL Connect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-urls.cc" line="1358"/>
+        <location filename="../GUI/spot-on-urls.cc" line="1364"/>
         <source>Could not open (%1) a database connection.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3061,7 +3061,7 @@ Error: %1.</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-f.cc" line="1856"/>
-        <location filename="../GUI/spot-on-urls.cc" line="2167"/>
+        <location filename="../GUI/spot-on-urls.cc" line="2173"/>
         <source>Are you sure that you wish to access the URL %1?</source>
         <translation type="unfinished"></translation>
     </message>
