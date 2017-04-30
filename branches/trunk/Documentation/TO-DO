@@ -278,3 +278,4 @@ Remaining Items
        See spoton::slotPopulateStars().
 2.     Open Library.
 3.     Retrieve only the latest e-mails from IMAP/POP3.
+4.     Temporary queue. Will avoid dropped packets.
