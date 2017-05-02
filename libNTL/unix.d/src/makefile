@@ -36,7 +36,7 @@ LDLIBS=-lm
 CPPFLAGS=
 # arguments for the C preprocessor
 
-LIBTOOL=libtool
+LIBTOOL=./libtool-build/libtool
 # libtool command -- this is now built locally
 
 LIBTOOL_LINK_FLAGS=
@@ -81,7 +81,7 @@ GMP_LIBDIR=$(GMP_PREFIX)/lib
 
 GMP_OPT_INCDIR=# -I$(GMP_INCDIR) # GMPI
 GMP_OPT_LIBDIR=# -L$(GMP_LIBDIR) # GMPL
-GMP_OPT_LIB=-lgmp # GMP
+GMP_OPT_LIB=# -lgmp # GMP
 # uncomment these if using GMP
 
 
@@ -117,7 +117,7 @@ GF2X_OPT_LIB=# -lgf2x # GF2X
 ###############################################################
 
 
-WIZARD=on
+WIZARD=off
 # Set to off if you want to bypass the wizard; otherwise, set to on.
 
 
@@ -339,12 +339,12 @@ setup4:
 
 
 ntl.a:	$(OBJ) 
-	$(AR) $(ARFLAGS) ntl.a $(OBJ) #LSTAT
-	- $(RANLIB) ntl.a #LSTAT
-# 	$(LIBTOOL) --tag=CXX --mode=link $(LINK) $(LIBTOOL_LINK_FLAGS) -o libntl.la $(OBJ:.o=.lo) $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB) $(LDLIBS) -rpath $(LIBDIR) -version-info `cat VERSION_INFO` #LSHAR
+# 	$(AR) $(ARFLAGS) ntl.a $(OBJ) #LSTAT
+# 	- $(RANLIB) ntl.a #LSTAT
+	$(LIBTOOL) --tag=CXX --mode=link $(LINK) $(LIBTOOL_LINK_FLAGS) -o libntl.la $(OBJ:.o=.lo) $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB) $(LDLIBS) -rpath $(LIBDIR) -version-info `cat VERSION_INFO` #LSHAR
 
-LCOMP= #LSTAT
-# LCOMP=$(LIBTOOL) --tag=CXX --mode=compile #LSHAR
+# LCOMP= #LSTAT
+LCOMP=$(LIBTOOL) --tag=CXX --mode=compile #LSHAR
 
 lip.o:	lip.cpp 
 	$(LCOMP) $(COMPILE) $(GMP_OPT_INCDIR) lip.cpp
@@ -370,8 +370,8 @@ CheckCompile: CheckCompile.cpp
 	$(LCOMP) $(COMPILE) $<
 
 .cpp: 
-	$(LINK) -o $@ $< ntl.a $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB) $(LDLIBS) #LSTAT
-# 	$(LIBTOOL) --tag=CXX --mode=link $(LINK) -o $@ $< libntl.la #LSHAR
+# 	$(LINK) -o $@ $< ntl.a $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB) $(LDLIBS) #LSTAT
+	$(LIBTOOL) --tag=CXX --mode=link $(LINK) -o $@ $< libntl.la #LSHAR
 
 #################################################################
 #
@@ -417,14 +417,14 @@ install:
 	cp -p ../doc/*.gif $(DESTDIR)$(DOCDIR)/NTL
 	- chmod -R a+r $(DESTDIR)$(DOCDIR)/NTL
 	mkdir -p -m 755 $(DESTDIR)$(LIBDIR)
-	cp -p ntl.a $(DESTDIR)$(LIBDIR)/libntl.a #LSTAT
-	- chmod a+r $(DESTDIR)$(LIBDIR)/libntl.a #LSTAT
-# 	$(LIBTOOL) --mode=install cp -p libntl.la $(DESTDIR)$(LIBDIR) #LSHAR
+# 	cp -p ntl.a $(DESTDIR)$(LIBDIR)/libntl.a #LSTAT
+# 	- chmod a+r $(DESTDIR)$(LIBDIR)/libntl.a #LSTAT
+	$(LIBTOOL) --mode=install cp -p libntl.la $(DESTDIR)$(LIBDIR) #LSHAR
 
 
 uninstall:
-	rm -f $(LIBDIR)/libntl.a #LSTAT
-# 	$(LIBTOOL) --mode=uninstall rm -f $(LIBDIR)/libntl.la #LSHAR
+# 	rm -f $(LIBDIR)/libntl.a #LSTAT
+	$(LIBTOOL) --mode=uninstall rm -f $(LIBDIR)/libntl.la #LSHAR
 	rm -rf $(INCLUDEDIR)/NTL
 	rm -rf $(DOCDIR)/NTL
 
@@ -454,7 +454,7 @@ clean:
 	sh RemoveProg $(PROGS) MakeDesc $(AUXPROGS) gen_gmp_aux
 	rm -f *.o 
 	rm -rf small
-# 	- $(LIBTOOL) --mode=clean rm -f libntl.la *.lo #LSHAR
+	- $(LIBTOOL) --mode=clean rm -f libntl.la *.lo #LSHAR
 
 #################################################################
 #
@@ -526,7 +526,7 @@ WOBJ=FFT.o GetTime.o GetPID.o ctools.o ZZ.o ZZVec.o ZZ_p.o ZZ_pX.o ZZ_pX1.o  \
 	thread.o BasicThreadPool.o fileio.o
 
 
-# wntl.a: LCOMP= #LSHAR
+wntl.a: LCOMP= #LSHAR
 wntl.a:	$(WOBJ) 
 	$(AR) $(ARFLAGS) wntl.a $(WOBJ)
 	- $(RANLIB) wntl.a

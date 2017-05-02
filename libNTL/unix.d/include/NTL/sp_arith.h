@@ -479,6 +479,7 @@ static inline wide_double PrepMulMod(long n)
 
 static inline wide_double PrepMulDivRem(long b, long n, wide_double ninv)
 {
+  (void) n;
    return wide_double(b)*ninv;
 }
 
@@ -499,7 +500,7 @@ long NormalizedMulMod(long a, long b, long n, wide_double ninv)
    return MulMod(a, b, n, ninv);
 }
 
-static inline bool NormalizedModulus(wide_double ninv) { return true; }
+static inline bool NormalizedModulus(wide_double ninv) { (void) ninv; return true; }
 
 
 

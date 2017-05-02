@@ -128,7 +128,7 @@ using the configure script.
 #endif
 
 
-#if 1
+#if 0
 #define NTL_GMP_LIP
 
 /* 
@@ -332,7 +332,7 @@ using the configure script.
 
 
 
-#if 0
+#if 1
 #define NTL_SPMM_ULL
 
 /*    This also causes an "all integer"
@@ -354,7 +354,7 @@ using the configure script.
  * FFT modulo single-precision primes is implemented.
  */
 
-#if 0
+#if 1
 #define NTL_FFT_BIGTAB
 
 /*
@@ -367,7 +367,7 @@ using the configure script.
 #endif
 
 
-#if 0
+#if 1
 #define  NTL_FFT_LAZYMUL
 
 /*
@@ -381,7 +381,7 @@ using the configure script.
 
 
 
-#if 0
+#if 1
 #define NTL_AVOID_BRANCHING
 
 /*
@@ -398,7 +398,7 @@ using the configure script.
 
 
 
-#if 0
+#if 1
 #define NTL_TBL_REM
 
 /*
@@ -412,7 +412,7 @@ using the configure script.
 
 
 
-#if 0
+#if 1
 #define NTL_CRT_ALTCODE
 
 /*
@@ -449,7 +449,7 @@ using the configure script.
  *
  */
 
-#elif 0
+#elif 1
 #define NTL_GF2X_ALTCODE1
 
 
