@@ -71,8 +71,6 @@
 'NTL_CLEAN_INT'           => 'off',
 'NTL_CLEAN_PTR'           => 'off',
 'NTL_RANGE_CHECK'         => 'off',
-
-
 'NTL_SPMM_ULL'            => 'off',
 'NTL_AVOID_BRANCHING'     => 'off',
 'NTL_FFT_BIGTAB'          => 'off',
