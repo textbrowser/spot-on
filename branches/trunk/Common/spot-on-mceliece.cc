@@ -905,7 +905,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	      p[static_cast<size_t> (i)] = static_cast<char> (b.to_ulong());
 	    }
 
-	  plaintext.write(p, plaintext_size);qDebug()<<m_conversion;
+	  plaintext.write(p, plaintext_size);
 	}
       else if(m_conversion == "foa")
 	{
