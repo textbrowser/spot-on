@@ -127,6 +127,11 @@ class spoton_mceliece_private_key
     return m_n;
   }
 
+  size_t preSynTabSize(void) const
+  {
+    return m_preSynTab.size();
+  }
+
   size_t t(void) const
   {
     return m_t;

@@ -754,8 +754,8 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
       if(ccar.length() != static_cast<long int> (m_n))
 	throw std::runtime_error("ccar.length() mismatch");
-      else if(m_n != m_privateKey->preSynTab().size())
-	throw std::runtime_error("preSynTab().size() mismatch");
+      else if(m_n != m_privateKey->preSynTabSize())
+	throw std::runtime_error("preSynTabSize() mismatch");
 
       /*
       ** Patterson.
