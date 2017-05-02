@@ -357,40 +357,106 @@ InnerProd_LL(const zz_p *ap, const zz_p *bp, long n, long d,
 
 long 
 InnerProd_L(const long *ap, const zz_p *bp, long n, long d, 
-          sp_reduce_struct dinv)
+          sp_reduce_struct dinv, long bound)
 {
    unsigned long sum = 0;
    long j = 0;
 
+   if (n <= bound) {
+      for (; j <= n-4; j += 4) {
+	 sum += (ap[j+0]) * rep(bp[j+0]);
+	 sum += (ap[j+1]) * rep(bp[j+1]);
+	 sum += (ap[j+2]) * rep(bp[j+2]);
+	 sum += (ap[j+3]) * rep(bp[j+3]);
+      }
+
+      for (; j < n; j++)
+	 sum += (ap[j]) * rep(bp[j]);
+
+      return rem(sum, d, dinv);
+   }
+
+   for (; j <= n-bound; j += bound) {
+
+      long i = 0;
+      for (; i <= bound-4; i += 4) {
+         sum += (ap[j+i+0]) * rep(bp[j+i+0]);
+         sum += (ap[j+i+1]) * rep(bp[j+i+1]);
+         sum += (ap[j+i+2]) * rep(bp[j+i+2]);
+         sum += (ap[j+i+3]) * rep(bp[j+i+3]);
+      }
+
+      for (; i < bound; i++) {
+         sum += (ap[j+i]) * rep(bp[j+i]);
+      }
+
+      sum = rem(sum, d, dinv);
+   }
+
+   if (j >= n) return sum;
+
    for (; j <= n-4; j += 4) {
-      sum += (ap[j+0]) * (rep(bp[j+0]));
-      sum += (ap[j+1]) * (rep(bp[j+1]));
-      sum += (ap[j+2]) * (rep(bp[j+2]));
-      sum += (ap[j+3]) * (rep(bp[j+3]));
+      sum += (ap[j+0]) * rep(bp[j+0]);
+      sum += (ap[j+1]) * rep(bp[j+1]);
+      sum += (ap[j+2]) * rep(bp[j+2]);
+      sum += (ap[j+3]) * rep(bp[j+3]);
    }
 
    for (; j < n; j++)
-      sum += (ap[j]) * (rep(bp[j]));
+      sum += (ap[j]) * rep(bp[j]);
 
    return rem(sum, d, dinv);
 }
 
 long 
 InnerProd_L(const zz_p *ap, const zz_p *bp, long n, long d, 
-          sp_reduce_struct dinv)
+          sp_reduce_struct dinv, long bound)
 {
    unsigned long sum = 0;
    long j = 0;
 
+   if (n <= bound) {
+      for (; j <= n-4; j += 4) {
+	 sum += rep(ap[j+0]) * rep(bp[j+0]);
+	 sum += rep(ap[j+1]) * rep(bp[j+1]);
+	 sum += rep(ap[j+2]) * rep(bp[j+2]);
+	 sum += rep(ap[j+3]) * rep(bp[j+3]);
+      }
+
+      for (; j < n; j++)
+	 sum += rep(ap[j]) * rep(bp[j]);
+
+      return rem(sum, d, dinv);
+   }
+
+   for (; j <= n-bound; j += bound) {
+
+      long i = 0;
+      for (; i <= bound-4; i += 4) {
+         sum += rep(ap[j+i+0]) * rep(bp[j+i+0]);
+         sum += rep(ap[j+i+1]) * rep(bp[j+i+1]);
+         sum += rep(ap[j+i+2]) * rep(bp[j+i+2]);
+         sum += rep(ap[j+i+3]) * rep(bp[j+i+3]);
+      }
+
+      for (; i < bound; i++) {
+         sum += rep(ap[j+i]) * rep(bp[j+i]);
+      }
+
+      sum = rem(sum, d, dinv);
+   }
+
+   if (j >= n) return sum;
+
    for (; j <= n-4; j += 4) {
-      sum += (rep(ap[j+0])) * (rep(bp[j+0]));
-      sum += (rep(ap[j+1])) * (rep(bp[j+1]));
-      sum += (rep(ap[j+2])) * (rep(bp[j+2]));
-      sum += (rep(ap[j+3])) * (rep(bp[j+3]));
+      sum += rep(ap[j+0]) * rep(bp[j+0]);
+      sum += rep(ap[j+1]) * rep(bp[j+1]);
+      sum += rep(ap[j+2]) * rep(bp[j+2]);
+      sum += rep(ap[j+3]) * rep(bp[j+3]);
    }
 
    for (; j < n; j++)
-      sum += (rep(ap[j])) * (rep(bp[j]));
+      sum += rep(ap[j]) * rep(bp[j]);
 
    return rem(sum, d, dinv);
 }

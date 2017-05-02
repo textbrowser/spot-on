@@ -77,6 +77,14 @@ public:
       _mat__rep.swap(other._mat__rep);
       _ntl_swap(_mat__numcols, other._mat__numcols);
    }
+
+   void move(Mat& other) 
+   { 
+      Mat tmp;
+      tmp.swap(other);
+      tmp.swap(*this);
+   }
+
 };  
  
 template<class T> 

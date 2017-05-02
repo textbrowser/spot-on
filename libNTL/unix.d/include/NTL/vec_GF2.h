@@ -76,6 +76,7 @@ public:
       { return get(i-1); }
 
    void swap(Vec<GF2>& y);
+   void move(Vec<GF2>& y);
    void append(GF2 a);
    void append(const Vec<GF2>& w);
 

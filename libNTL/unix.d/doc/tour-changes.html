@@ -19,6 +19,137 @@ A Tour of NTL: Summary of Changes
 
 <p><hr><p>
 <h3>
+2016.11.18: Changes between NTL 10.2.0 and 10.3.0
+</h3>
+
+<ul>
+<li>
+Implementation of a multi-modular strategy for
+matrix multiplication over <tt>ZZ_p</tt>.
+Here are some benchmarks that compare the new strategy 
+to the old (naive) one.
+Here, we consider <i>n</i>-by-<i>n</i> matrices
+modulo an <i>n</i>-bit prime.
+<ul>
+<li>
+<i>n</i>=128, speedup=6.8x
+<li>
+<i>n</i>=256, speedup=8.6x
+<li>
+<i>n</i>=512, speedup=9.3x
+<li>
+<i>n</i>=1024, speedup=18x
+<li>
+<i>n</i>=2048, speedup=37x
+</ul>
+
+<p>
+
+I also compared NTL's new <tt>mat_ZZ_p</tt> multiplication
+to FLINT's <tt>fmpz_mat</tt>
+multiplication. 
+The latter also uses a multi-modular strategy.
+For <i>n</i>=128,256,512,1024 as above, NTL's code is between
+2.7 and 3.1 times faster than FLINT's
+(and we did not count the time it would take to reduce
+the entries mod <i>p</i> for the FLINT code).
+
+<p>
+Part of this may be due to the AVX-enhanced small-prime matrix
+multiplication code used by NTL,
+and part may be due to better CRT code.
+
+<p>
+<li>
+I also instrumented both the plain and multi-modular 
+matrix multiplication for <tt>ZZ_p</tt> so that they are both "thread boosted"
+(i.e., will automatcally exploit multiple cores when possible).
+
+<p>
+<li>
+As an initial application of this faster matrix multiplication,
+I implemented a new version of Brent/Kung modular composition for <tt>ZZ_pX</tt>, 
+which is now between 2 and 5 times faster than the old one
+(depending on parameters).
+This is done with a new class called <tt>ZZ_pXNewArgument</tt>,
+which supersedes <tt>ZZ_pXArgument</tt> (retained for compatibility).
+This also makes the <tt>CanZass</tt> factoring algorithm
+for <tt>ZZ_pX</tt> faster (sometimes by a factor of almost 2, depending
+on parameters).
+It also makes <tt>CanZass</tt> more memory intensive
+(but while the overall memory usage increases,
+the memory access pattern is fairly cache friendly).
+
+<p>
+<li>
+I would like to see if this faster matrix multiplication
+can be used to get faster linear algebra (determinants, inverses,
+more general Gaussian elimination) via reduction to matrix multiplication.
+If anyone wants to volunteer to work on this, please let me know.
+Presumably, the FLINT <tt>nmod_mat</tt> code could be repurposed
+for this.
+I won't have time to work on this for a few months, but would be
+glad to discuss ideas with anyone who wanted to do the work.
+Note that the "plain" versions of these routines also need
+some work.
+
+<p>
+<li>
+I also added <tt>move</tt> methods to the <tt>Vec</tt> and <tt>Mat</tt>
+classes, and made a slight tweak to the <tt>Lazy</tt> class.
+
+
+</ul>
+
+<p><hr><p>
+<h3>
+2016.11.10: Changes between NTL 10.1.0 and 10.2.0
+</h3>
+
+<ul>
+<li>
+Added "thread boosting" to the <tt>ZZX</tt>
+multiplication routine.
+This can significantly increase performance on
+multicore machines (you must configure with <tt>NTL_THREAD_BOOST=on</tt>
+and call <tt>SetNumThreads</tt>).
+
+<li>
+Marginally improved performance and crossovers for 
+<tt>mat_zz_p</tt> multipliplication.
+
+<li>
+Marginally improved performance for
+<tt>mat_ZZ_p</tt> multipliplication (but much bigger 
+improvements hopefully coming soon).
+
+<li>
+Retired the <tt>zz_pXAltArgument</tt> class,
+which was used for modular composition in <tt>zz_pX</tt>.
+While this has been in  in the documented interface
+for a few months,
+it was flagged as being provisional and subject to 
+change.
+Well, it is being changed: it is being eliminated.
+
+<li>
+In place of <tt>zz_pXAltArgument</tt>, 
+I've added a class <tt>zz_pXNewArgument</tt>.
+For the time being, this will also be provisional and
+subject to change.
+With this class, all the code complexity for improved
+performance of modular composition is relegated to
+<tt>mat_zz_p</tt> multiplication.
+Also, all modular composition in <tt>zz_pX</tt> in NTL 
+goes through this new class.
+The old <tt>zz_pXArgument</tt> remains just for backward compatibility.
+
+
+</ul>
+
+
+<p><hr><p>
+<h3>
 2016.10.14: Changes between NTL 10.0.0 and 10.1.0
 </h3>
 
@@ -612,7 +743,6 @@ optimize certain code.
 A new modular composition implemention for <tt>zz_pX</tt>.
 This makes modular composition up to 3x faster, depending 
 on several factors.
-<a href="lzz_pX.cpp.html#compmod">See here</a> for details.
 
 <li>
 Improved performance for polynomial factoring over <tt>zz_pX</tt>

@@ -470,20 +470,13 @@ void mul(ZZ_pX& c, const ZZ_pX& a, const ZZ_pX& b)
       long mbits;
       mbits = NumBits(ZZ_p::modulus());
 
-      long nt = 1;
-      // FIXME: needs to be updated when I thread-enable the SS
-      // mul routine
+      long nt = AvailableThreads();
+      // right now, SSMul does not parallelize very well
       
-#ifdef NTL_THREAD_BOOST
-      BasicThreadPool *pool = GetThreadPool();
-      if (pool && !pool->active()) nt  = pool->NumThreads();
-#endif
-
       double rat = SSRatio(deg(a), mbits, deg(b), mbits);
 
       if ( nt == 1 && (
 
-         (k >= 53  && rat < 1.10) || 
          (k >= 106 && rat < 1.30) || 
          (k >= 212 && rat < 1.75) 
 

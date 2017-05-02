@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/jjj/ntl-10.1.0dev/doc/Lazy.cpp.html</title>
+<title>~/jjj/ntl-10.3.0dev/doc/Lazy.cpp.html</title>
 <meta name="Generator" content="Vim/7.4">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -69,7 +69,7 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 
 <span class="Comment">***************************************************************************</span><span class="Comment">*/</span>
 
-<span class="Type">template</span>&lt;<span class="Type">class</span> T&gt;
+<span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span> P=DefaultDeleterPolicy&gt;
 <span class="Type">class</span> Lazy {
 <span class="Statement">public</span>:
    Lazy();
@@ -98,7 +98,7 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 
       <span class="Type">bool</span> <span class="Statement">operator</span>()() <span class="Type">const</span>; <span class="Comment">// test if we are building</span>
 
-      <span class="Type">void</span> move(UniquePtr&lt;T&gt;&amp;);
+      <span class="Type">void</span> move(UniquePtr&lt;T,P&gt;&amp;);
       <span class="Comment">// EXCEPTIONS: may throw an exception if the move is not allowed</span>
       <span class="Comment">// (i.e., not building or already moved).</span>
       <span class="Comment">// Provides strong ES guarantee. </span>
@@ -116,6 +116,11 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Comment">// that may not satisfy the requirements of the Vec class</span>
 <span class="Comment">// (i.e., relocatability).  One can wrap it in a pointer </span>
 <span class="Comment">// class (e.g., CopiedPtr) to deal with this.</span>
+
+<span class="Comment">// NOTE: The optional parameter P is used as in the specification</span>
+<span class="Comment">// of the UniquePtr class.  The default should work fine in </span>
+<span class="Comment">// most cases.  It was introduced mainly to allow for the PIMPL</span>
+<span class="Comment">// paradigm.</span>
 
 
 </pre>

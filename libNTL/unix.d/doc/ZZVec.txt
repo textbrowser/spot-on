@@ -8,7 +8,7 @@ SUMMARY:
 The class ZZVec implements vectors of fixed-length ZZ's.  You can
 allocate a vector of ZZ's of a specified length, where the maximum
 size of each ZZ is also specified.  The size is measured in terms
-of the number of zzigits.
+of the number of limbs.
 
 These parameters can be specified either with a constructor 
 or with SetSize.  It is an error to try to re-size a vector of non-zero length,

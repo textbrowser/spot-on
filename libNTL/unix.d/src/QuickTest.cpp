@@ -330,7 +330,7 @@ cerr << "Performance Options:\n";
 
 
    for (i = 0; i < 15; i++) {
-      // cerr << n << "/" << k; 
+      //cerr << "(" << n << "," << k << ")"; 
       cerr << ".";
       RandomLen(p, k);
       ZZ_p::init(p);  

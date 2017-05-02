@@ -247,6 +247,7 @@ public:
    long position1(const T& a) const;  
 
    void swap(Vec<T>& y);
+   void move(Vec<T>& y);
    void append(const T& a);
    void append(const Vec<T>& w);
 
@@ -677,6 +678,20 @@ void swap(Vec<T>& x, Vec<T>& y)
    x.swap(y);
 }
  
+template<class T>
+void Vec<T>::move(Vec<T>& y)  
+{
+   // special logic to get exception handling right
+   if (&y == this) return;
+   if (fixed() || y.fixed()) LogicError("move: can't move these vectors");
+
+   Vec<T> tmp;
+   tmp.swap(y);
+   tmp.swap(*this);
+}
+
+
+
 // EXCEPTIONS: provides strong ES
 template<class T>
 void Vec<T>::append(const T& a)  

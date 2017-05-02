@@ -487,6 +487,9 @@ void UseFFTPrime(long index)
    if (index < 0) LogicError("invalud FFT prime index");
    if (index >= NTL_MAX_FFTPRIMES) ResourceError("FFT prime index too large");
 
+   if (index+1 >= NTL_NSP_BOUND) ResourceError("FFT prime index too large");
+   // largely acacedemic, but it is a convenient assumption
+
    do {  // NOTE: thread safe lazy init
       FFTTablesType::Builder bld(FFTTables, index+1);
       long amt = bld.amt();
@@ -611,10 +614,10 @@ void BitReverseCopy(unsigned long * NTL_RESTRICT A, const long * NTL_RESTRICT a,
 
 
 
-#define NTL_BRC_THRESH (12)
+#define NTL_BRC_THRESH (11)
 #define NTL_BRC_Q (5)
 
-// Must have NTL_BRC_THRESH > 2*NTL_BRC_Q
+// Must have NTL_BRC_THRESH >= 2*NTL_BRC_Q
 // Should also have (1L << (2*NTL_BRC_Q)) small enough
 // so that we can fit that many long's into the cache
 

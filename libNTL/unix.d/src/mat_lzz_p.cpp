@@ -16,7 +16,7 @@ NTL_START_IMPL
 
 
 #define PAR_THRESH_SQ (200)
-#define PAR_THRESH (40000)
+#define PAR_THRESH (40000.0)
 
 
 // *******************************************************
@@ -479,15 +479,15 @@ void mul_aux(vec_zz_p& x, const mat_zz_p& A, const vec_zz_p& b)
 
 #ifdef NTL_HAVE_LL_TYPE
 
-   if (cast_unsigned(l) <= (~(0UL))/cast_unsigned(p-1) &&
-       cast_unsigned(l)*cast_unsigned(p-1) <= (~(0UL))/cast_unsigned(p-1))  {
+   if (InnerProd_L_viable(l, p)) {
 
       sp_reduce_struct red_struct = zz_p::red_struct();
+      long bound = InnerProd_L_bound(p);
 
       NTL_GEXEC_RANGE(seq, n, first, last) {
 
          for (long i = first; i < last; i++) {
-            xp[i].LoopHole() = InnerProd_L(A[i].elts(), bp, l, p, red_struct);
+            xp[i].LoopHole() = InnerProd_L(A[i].elts(), bp, l, p, red_struct, bound);
          }
 
       } NTL_GEXEC_RANGE_END
@@ -646,7 +646,6 @@ void mul(mat_zz_p& X, const mat_zz_p& A, long b_in)
 #define MUL_ADD(a, b, c) a = _mm256_add_pd(a, _mm256_mul_pd(b, c))
 #endif
 
-#if 0
 static
 void muladd1_by_32(double *x, const double *a, const double *b, long n)
 {
@@ -688,96 +687,27 @@ void muladd1_by_32(double *x, const double *a, const double *b, long n)
    _mm256_store_pd(x + 7*4, acc7);
 }
 
-#else
-
 static
-void muladd1_by_32(double *x, const double *a, const double *b, long n)
+void muladd1_by_16(double *x, const double *a, const double *b, long n)
 {
+   __m256d avec, bvec;
+
+
    __m256d acc0=_mm256_load_pd(x + 0*4);
    __m256d acc1=_mm256_load_pd(x + 1*4);
    __m256d acc2=_mm256_load_pd(x + 2*4);
    __m256d acc3=_mm256_load_pd(x + 3*4);
-   __m256d acc4=_mm256_load_pd(x + 4*4);
-   __m256d acc5=_mm256_load_pd(x + 5*4);
-   __m256d acc6=_mm256_load_pd(x + 6*4);
-   __m256d acc7=_mm256_load_pd(x + 7*4);
 
-   long i = 0;
-   for (; i <= n-4; i +=4) {
 
-      // the following code sequences are a bit faster than
-      // just doing 4 _mm256_broadcast_sd's
-      // it requires a to point to aligned storage, however
+   for (long i = 0; i < n; i++) {
+      avec = _mm256_broadcast_sd(a); a++;
 
-#if 1
-     // this one seems slightly faster
-      __m256d a0101 = _mm256_broadcast_pd((const __m128d*)(a+0));
-      __m256d a2323 = _mm256_broadcast_pd((const __m128d*)(a+2));
-#else
-      __m256d avec = _mm256_load_pd(a);
-      __m256d a0101 = _mm256_permute2f128_pd(avec, avec, 0);
-      __m256d a2323 = _mm256_permute2f128_pd(avec, avec, 0x11);
-
-#endif
-
-      __m256d avec0 = _mm256_permute_pd(a0101, 0);
-      __m256d avec1 = _mm256_permute_pd(a0101, 0xf);
-      __m256d avec2 = _mm256_permute_pd(a2323, 0);
-      __m256d avec3 = _mm256_permute_pd(a2323, 0xf);
-
-      a += 4;
-
-      __m256d bvec;
-
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc0, avec0, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc1, avec0, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc2, avec0, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc3, avec0, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc4, avec0, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc5, avec0, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc6, avec0, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc7, avec0, bvec);
-
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc0, avec1, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc1, avec1, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc2, avec1, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc3, avec1, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc4, avec1, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc5, avec1, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc6, avec1, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc7, avec1, bvec);
-
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc0, avec2, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc1, avec2, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc2, avec2, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc3, avec2, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc4, avec2, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc5, avec2, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc6, avec2, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc7, avec2, bvec);
-
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc0, avec3, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc1, avec3, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc2, avec3, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc3, avec3, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc4, avec3, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc5, avec3, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc6, avec3, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc7, avec3, bvec);
-   }
-
-   for (; i < n; i++) {
-      __m256d avec = _mm256_broadcast_sd(a); a++;
-      __m256d bvec;
 
       bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc0, avec, bvec);
       bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc1, avec, bvec);
       bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc2, avec, bvec);
       bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc3, avec, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc4, avec, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc5, avec, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc6, avec, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc7, avec, bvec);
+      b += 16;
    }
 
 
@@ -785,16 +715,10 @@ void muladd1_by_32(double *x, const double *a, const double *b, long n)
    _mm256_store_pd(x + 1*4, acc1);
    _mm256_store_pd(x + 2*4, acc2);
    _mm256_store_pd(x + 3*4, acc3);
-   _mm256_store_pd(x + 4*4, acc4);
-   _mm256_store_pd(x + 5*4, acc5);
-   _mm256_store_pd(x + 6*4, acc6);
-   _mm256_store_pd(x + 7*4, acc7);
 }
 
-#endif
 
 // experiment: process two rows at a time
-#if 1
 static
 void muladd2_by_32(double *x, const double *a, const double *b, long n)
 {
@@ -870,91 +794,6 @@ void muladd2_by_32(double *x, const double *a, const double *b, long n)
    _mm256_store_pd(x + 7*4 + 1*MAT_BLK_SZ, acc13);
 
 }
-
-#else
-
-static
-void muladd2_by_32(double *x, const double *a, const double *b, long n)
-{
-   long i, j;
-   __m256d bvec;
-   __m256d acc00, acc01, acc02, acc03;
-   __m256d acc10, acc11, acc12, acc13;
-
-
-   for (j = 0; j < 2; j++) {
-
-      acc00=_mm256_load_pd(x + 0*4 + 0*MAT_BLK_SZ + j*(MAT_BLK_SZ/2));
-      acc01=_mm256_load_pd(x + 1*4 + 0*MAT_BLK_SZ + j*(MAT_BLK_SZ/2));
-      acc02=_mm256_load_pd(x + 2*4 + 0*MAT_BLK_SZ + j*(MAT_BLK_SZ/2));
-      acc03=_mm256_load_pd(x + 3*4 + 0*MAT_BLK_SZ + j*(MAT_BLK_SZ/2));
-
-      acc10=_mm256_load_pd(x + 0*4 + 1*MAT_BLK_SZ + j*(MAT_BLK_SZ/2));
-      acc11=_mm256_load_pd(x + 1*4 + 1*MAT_BLK_SZ + j*(MAT_BLK_SZ/2));
-      acc12=_mm256_load_pd(x + 2*4 + 1*MAT_BLK_SZ + j*(MAT_BLK_SZ/2));
-      acc13=_mm256_load_pd(x + 3*4 + 1*MAT_BLK_SZ + j*(MAT_BLK_SZ/2));
-
-      for (i = 0; i <= n-4; i+=4) {
-	 __m256d a0_0101 = _mm256_broadcast_pd((const __m128d*)(a+i+0));
-	 __m256d a0_2323 = _mm256_broadcast_pd((const __m128d*)(a+i+2));
-	 __m256d avec00 = _mm256_permute_pd(a0_0101, 0);
-	 __m256d avec01 = _mm256_permute_pd(a0_0101, 0xf);
-	 __m256d avec02 = _mm256_permute_pd(a0_2323, 0);
-	 __m256d avec03 = _mm256_permute_pd(a0_2323, 0xf);
-
-	 __m256d a1_0101 = _mm256_broadcast_pd((const __m128d*)(a+i+0+MAT_BLK_SZ));
-	 __m256d a1_2323 = _mm256_broadcast_pd((const __m128d*)(a+i+2+MAT_BLK_SZ));
-	 __m256d avec10 = _mm256_permute_pd(a1_0101, 0);
-	 __m256d avec11 = _mm256_permute_pd(a1_0101, 0xf);
-	 __m256d avec12 = _mm256_permute_pd(a1_2323, 0);
-	 __m256d avec13 = _mm256_permute_pd(a1_2323, 0xf);
-
-	 bvec = _mm256_load_pd(&b[(i+0)*MAT_BLK_SZ+0*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc00, avec00, bvec); MUL_ADD(acc10, avec10, bvec);
-	 bvec = _mm256_load_pd(&b[(i+0)*MAT_BLK_SZ+1*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc01, avec00, bvec); MUL_ADD(acc11, avec10, bvec);
-	 bvec = _mm256_load_pd(&b[(i+0)*MAT_BLK_SZ+2*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc02, avec00, bvec); MUL_ADD(acc12, avec10, bvec);
-	 bvec = _mm256_load_pd(&b[(i+0)*MAT_BLK_SZ+3*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc03, avec00, bvec); MUL_ADD(acc13, avec10, bvec);
-
-	 bvec = _mm256_load_pd(&b[(i+1)*MAT_BLK_SZ+0*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc00, avec01, bvec); MUL_ADD(acc10, avec11, bvec);
-	 bvec = _mm256_load_pd(&b[(i+1)*MAT_BLK_SZ+1*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc01, avec01, bvec); MUL_ADD(acc11, avec11, bvec);
-	 bvec = _mm256_load_pd(&b[(i+1)*MAT_BLK_SZ+2*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc02, avec01, bvec); MUL_ADD(acc12, avec11, bvec);
-	 bvec = _mm256_load_pd(&b[(i+1)*MAT_BLK_SZ+3*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc03, avec01, bvec); MUL_ADD(acc13, avec11, bvec);
-
-	 bvec = _mm256_load_pd(&b[(i+2)*MAT_BLK_SZ+0*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc00, avec02, bvec); MUL_ADD(acc10, avec12, bvec);
-	 bvec = _mm256_load_pd(&b[(i+2)*MAT_BLK_SZ+1*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc01, avec02, bvec); MUL_ADD(acc11, avec12, bvec);
-	 bvec = _mm256_load_pd(&b[(i+2)*MAT_BLK_SZ+2*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc02, avec02, bvec); MUL_ADD(acc12, avec12, bvec);
-	 bvec = _mm256_load_pd(&b[(i+2)*MAT_BLK_SZ+3*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc03, avec02, bvec); MUL_ADD(acc13, avec12, bvec);
-
-	 bvec = _mm256_load_pd(&b[(i+3)*MAT_BLK_SZ+0*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc00, avec03, bvec); MUL_ADD(acc10, avec13, bvec);
-	 bvec = _mm256_load_pd(&b[(i+3)*MAT_BLK_SZ+1*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc01, avec03, bvec); MUL_ADD(acc11, avec13, bvec);
-	 bvec = _mm256_load_pd(&b[(i+3)*MAT_BLK_SZ+2*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc02, avec03, bvec); MUL_ADD(acc12, avec13, bvec);
-	 bvec = _mm256_load_pd(&b[(i+3)*MAT_BLK_SZ+3*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc03, avec03, bvec); MUL_ADD(acc13, avec13, bvec);
-      }
-
-      for (; i < n; i++) {
-	 __m256d avec0 = _mm256_broadcast_sd(&a[i]); 
-	 __m256d avec1 = _mm256_broadcast_sd(&a[i+MAT_BLK_SZ]); 
-
-	 bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+0*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc00, avec0, bvec); MUL_ADD(acc10, avec1, bvec);
-	 bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+1*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc01, avec0, bvec); MUL_ADD(acc11, avec1, bvec);
-	 bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+2*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc02, avec0, bvec); MUL_ADD(acc12, avec1, bvec);
-	 bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+3*4+j*(MAT_BLK_SZ/2)]); MUL_ADD(acc03, avec0, bvec); MUL_ADD(acc13, avec1, bvec);
-      }
-
-
-      _mm256_store_pd(x + 0*4 + 0*MAT_BLK_SZ + j*(MAT_BLK_SZ/2), acc00);
-      _mm256_store_pd(x + 1*4 + 0*MAT_BLK_SZ + j*(MAT_BLK_SZ/2), acc01);
-      _mm256_store_pd(x + 2*4 + 0*MAT_BLK_SZ + j*(MAT_BLK_SZ/2), acc02);
-      _mm256_store_pd(x + 3*4 + 0*MAT_BLK_SZ + j*(MAT_BLK_SZ/2), acc03);
-
-      _mm256_store_pd(x + 0*4 + 1*MAT_BLK_SZ + j*(MAT_BLK_SZ/2), acc10);
-      _mm256_store_pd(x + 1*4 + 1*MAT_BLK_SZ + j*(MAT_BLK_SZ/2), acc11);
-      _mm256_store_pd(x + 2*4 + 1*MAT_BLK_SZ + j*(MAT_BLK_SZ/2), acc12);
-      _mm256_store_pd(x + 3*4 + 1*MAT_BLK_SZ + j*(MAT_BLK_SZ/2), acc13);
-
-   }
-}
-#endif
-
 
 
 // experiment: process three rows at a time
@@ -1060,6 +899,104 @@ void muladd3_by_32(double *x, const double *a, const double *b, long n)
 
 }
 
+static
+void muladd2_by_16(double *x, const double *a, const double *b, long n)
+{
+   __m256d avec0, avec1, bvec;
+   __m256d acc00, acc01, acc02, acc03;
+   __m256d acc10, acc11, acc12, acc13;
+ 
+
+   // round 0
+
+   acc00=_mm256_load_pd(x + 0*4 + 0*MAT_BLK_SZ);
+   acc01=_mm256_load_pd(x + 1*4 + 0*MAT_BLK_SZ);
+   acc02=_mm256_load_pd(x + 2*4 + 0*MAT_BLK_SZ);
+   acc03=_mm256_load_pd(x + 3*4 + 0*MAT_BLK_SZ);
+
+   acc10=_mm256_load_pd(x + 0*4 + 1*MAT_BLK_SZ);
+   acc11=_mm256_load_pd(x + 1*4 + 1*MAT_BLK_SZ);
+   acc12=_mm256_load_pd(x + 2*4 + 1*MAT_BLK_SZ);
+   acc13=_mm256_load_pd(x + 3*4 + 1*MAT_BLK_SZ);
+
+   for (long i = 0; i < n; i++) {
+      avec0 = _mm256_broadcast_sd(&a[i]); 
+      avec1 = _mm256_broadcast_sd(&a[i+MAT_BLK_SZ]); 
+
+      bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+0*4]); MUL_ADD(acc00, avec0, bvec); MUL_ADD(acc10, avec1, bvec);
+      bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+1*4]); MUL_ADD(acc01, avec0, bvec); MUL_ADD(acc11, avec1, bvec);
+      bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+2*4]); MUL_ADD(acc02, avec0, bvec); MUL_ADD(acc12, avec1, bvec);
+      bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+3*4]); MUL_ADD(acc03, avec0, bvec); MUL_ADD(acc13, avec1, bvec);
+   }
+
+
+   _mm256_store_pd(x + 0*4 + 0*MAT_BLK_SZ, acc00);
+   _mm256_store_pd(x + 1*4 + 0*MAT_BLK_SZ, acc01);
+   _mm256_store_pd(x + 2*4 + 0*MAT_BLK_SZ, acc02);
+   _mm256_store_pd(x + 3*4 + 0*MAT_BLK_SZ, acc03);
+
+   _mm256_store_pd(x + 0*4 + 1*MAT_BLK_SZ, acc10);
+   _mm256_store_pd(x + 1*4 + 1*MAT_BLK_SZ, acc11);
+   _mm256_store_pd(x + 2*4 + 1*MAT_BLK_SZ, acc12);
+   _mm256_store_pd(x + 3*4 + 1*MAT_BLK_SZ, acc13);
+
+}
+
+static
+void muladd3_by_16(double *x, const double *a, const double *b, long n)
+{
+   __m256d avec0, avec1, avec2, bvec;
+   __m256d acc00, acc01, acc02, acc03;
+   __m256d acc10, acc11, acc12, acc13;
+   __m256d acc20, acc21, acc22, acc23;
+ 
+
+   // round 0
+
+   acc00=_mm256_load_pd(x + 0*4 + 0*MAT_BLK_SZ);
+   acc01=_mm256_load_pd(x + 1*4 + 0*MAT_BLK_SZ);
+   acc02=_mm256_load_pd(x + 2*4 + 0*MAT_BLK_SZ);
+   acc03=_mm256_load_pd(x + 3*4 + 0*MAT_BLK_SZ);
+
+   acc10=_mm256_load_pd(x + 0*4 + 1*MAT_BLK_SZ);
+   acc11=_mm256_load_pd(x + 1*4 + 1*MAT_BLK_SZ);
+   acc12=_mm256_load_pd(x + 2*4 + 1*MAT_BLK_SZ);
+   acc13=_mm256_load_pd(x + 3*4 + 1*MAT_BLK_SZ);
+
+   acc20=_mm256_load_pd(x + 0*4 + 2*MAT_BLK_SZ);
+   acc21=_mm256_load_pd(x + 1*4 + 2*MAT_BLK_SZ);
+   acc22=_mm256_load_pd(x + 2*4 + 2*MAT_BLK_SZ);
+   acc23=_mm256_load_pd(x + 3*4 + 2*MAT_BLK_SZ);
+
+   for (long i = 0; i < n; i++) {
+      avec0 = _mm256_broadcast_sd(&a[i]); 
+      avec1 = _mm256_broadcast_sd(&a[i+MAT_BLK_SZ]); 
+      avec2 = _mm256_broadcast_sd(&a[i+2*MAT_BLK_SZ]); 
+
+      bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+0*4]); MUL_ADD(acc00, avec0, bvec); MUL_ADD(acc10, avec1, bvec); MUL_ADD(acc20, avec2, bvec);
+      bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+1*4]); MUL_ADD(acc01, avec0, bvec); MUL_ADD(acc11, avec1, bvec); MUL_ADD(acc21, avec2, bvec);
+      bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+2*4]); MUL_ADD(acc02, avec0, bvec); MUL_ADD(acc12, avec1, bvec); MUL_ADD(acc22, avec2, bvec);
+      bvec = _mm256_load_pd(&b[i*MAT_BLK_SZ+3*4]); MUL_ADD(acc03, avec0, bvec); MUL_ADD(acc13, avec1, bvec); MUL_ADD(acc23, avec2, bvec);
+   }
+
+
+   _mm256_store_pd(x + 0*4 + 0*MAT_BLK_SZ, acc00);
+   _mm256_store_pd(x + 1*4 + 0*MAT_BLK_SZ, acc01);
+   _mm256_store_pd(x + 2*4 + 0*MAT_BLK_SZ, acc02);
+   _mm256_store_pd(x + 3*4 + 0*MAT_BLK_SZ, acc03);
+
+   _mm256_store_pd(x + 0*4 + 1*MAT_BLK_SZ, acc10);
+   _mm256_store_pd(x + 1*4 + 1*MAT_BLK_SZ, acc11);
+   _mm256_store_pd(x + 2*4 + 1*MAT_BLK_SZ, acc12);
+   _mm256_store_pd(x + 3*4 + 1*MAT_BLK_SZ, acc13);
+
+   _mm256_store_pd(x + 0*4 + 2*MAT_BLK_SZ, acc20);
+   _mm256_store_pd(x + 1*4 + 2*MAT_BLK_SZ, acc21);
+   _mm256_store_pd(x + 2*4 + 2*MAT_BLK_SZ, acc22);
+   _mm256_store_pd(x + 3*4 + 2*MAT_BLK_SZ, acc23);
+
+}
+
 static inline
 void muladd_all_by_32(long first, long last, double *x, const double *a, const double *b, long n)
 {
@@ -1078,6 +1015,36 @@ void muladd_all_by_32(long first, long last, double *x, const double *a, const d
       muladd1_by_32(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
 #endif
 }
+
+
+static inline
+void muladd_all_by_16(long first, long last, double *x, const double *a, const double *b, long n)
+{
+   long i = first;
+#ifdef NTL_HAVE_FMA
+   // processing three rows at a time is faster
+   for (; i <= last-3; i+=3)
+      muladd3_by_16(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
+   for (; i < last; i++)
+      muladd1_by_16(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
+#else
+   // process only two rows at a time: not enough registers :-(
+   for (; i <= last-2; i+=2)
+      muladd2_by_16(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
+   for (; i < last; i++)
+      muladd1_by_16(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
+#endif
+}
+
+static inline
+void muladd_all_by_32_width(long first, long last, double *x, const double *a, const double *b, long n, long width)
+{
+   if (width > MAT_BLK_SZ/2) 
+      muladd_all_by_32(first, last, x, a, b, n);
+   else
+      muladd_all_by_16(first, last, x, a, b, n);
+}
+
 
 
 // this assumes n is a multiple of 16
@@ -1204,7 +1171,6 @@ void muladd_interval2(double * NTL_RESTRICT x, double * NTL_RESTRICT y, double c
 
 
 #define DO_MUL(a, b) ((unsigned long) (long(a)*long(b)))
-//#define DO_MUL(a, b) ((a)*(b))
 
 static
 inline void muladd_interval(unsigned long * NTL_RESTRICT x, unsigned long * NTL_RESTRICT y, 
@@ -1237,12 +1203,58 @@ void muladd1_by_32(unsigned long *x, const unsigned long *a, const unsigned long
    }
 }
 
+static
+void muladd1_by_32_width(unsigned long *x, const unsigned long *a, const unsigned long *b, 
+                   long n, long width)
+{
+   for (long j = 0; j < width; j++) {
+      unsigned long sum = x[j];
+      long i = 0;
+
+      for (; i <= n-4; i += 4) {
+         sum += DO_MUL(a[i+0], b[i+0]);
+         sum += DO_MUL(a[i+1], b[i+1]);
+         sum += DO_MUL(a[i+2], b[i+2]);
+         sum += DO_MUL(a[i+3], b[i+3]);
+      }
+
+      for (; i < n; i++)
+         sum += DO_MUL(a[i], b[i]);
+
+      x[j] = sum;
+      b += MAT_BLK_SZ;
+   }
+}
+
 // experiment with shorter int's
 static
 void muladd1_by_32(unsigned long *x, const unsigned int *a, const unsigned int *b, 
                    long n)
 {
    for (long j = 0; j < MAT_BLK_SZ; j++) {
+      unsigned long sum = x[j];
+      long i = 0;
+
+      for (; i <= n-4; i += 4) {
+         sum += DO_MUL(a[i+0], b[i+0]);
+         sum += DO_MUL(a[i+1], b[i+1]);
+         sum += DO_MUL(a[i+2], b[i+2]);
+         sum += DO_MUL(a[i+3], b[i+3]);
+      }
+
+      for (; i < n; i++)
+         sum += DO_MUL(a[i], b[i]);
+
+      x[j] = sum;
+      b += MAT_BLK_SZ;
+   }
+}
+
+static
+void muladd1_by_32_width(unsigned long *x, const unsigned int *a, const unsigned int *b, 
+                   long n, long width)
+{
+   for (long j = 0; j < width; j++) {
       unsigned long sum = x[j];
       long i = 0;
 
@@ -1373,6 +1385,104 @@ void muladd1_by_32_full(unsigned long *x, const unsigned long *a, const unsigned
    }
 }
 
+static
+void muladd1_by_32_full_width(unsigned long *x, const unsigned long *a, const unsigned long *b, long width)
+{
+   long j = 0;
+   for (; j <= width-4; j+=4) {
+
+      unsigned long sum = x[j];
+      unsigned long sum_1 = x[j+1];
+      unsigned long sum_2 = x[j+2];
+      unsigned long sum_3 = x[j+3];
+
+      const unsigned long *b_1 = b+MAT_BLK_SZ;
+      const unsigned long *b_2 = b+2*MAT_BLK_SZ;
+      const unsigned long *b_3 = b+3*MAT_BLK_SZ;
+
+      ONE_STEP_L(0);
+      ONE_STEP_L(1);
+      ONE_STEP_L(2);
+      ONE_STEP_L(3);
+      ONE_STEP_L(4);
+      ONE_STEP_L(5);
+      ONE_STEP_L(6);
+      ONE_STEP_L(7);
+      ONE_STEP_L(8);
+      ONE_STEP_L(9);
+      ONE_STEP_L(10);
+      ONE_STEP_L(11);
+      ONE_STEP_L(12);
+      ONE_STEP_L(13);
+      ONE_STEP_L(14);
+      ONE_STEP_L(15);
+      ONE_STEP_L(16);
+      ONE_STEP_L(17);
+      ONE_STEP_L(18);
+      ONE_STEP_L(19);
+      ONE_STEP_L(20);
+      ONE_STEP_L(21);
+      ONE_STEP_L(22);
+      ONE_STEP_L(23);
+      ONE_STEP_L(24);
+      ONE_STEP_L(25);
+      ONE_STEP_L(26);
+      ONE_STEP_L(27);
+      ONE_STEP_L(28);
+      ONE_STEP_L(29);
+      ONE_STEP_L(30);
+      ONE_STEP_L(31);
+
+      x[j]   = sum;
+      x[j+1] = sum_1;
+      x[j+2] = sum_2; 
+      x[j+3] = sum_3; 
+
+      b += 4*MAT_BLK_SZ;
+   }
+
+   for (; j < width; j++) {
+      unsigned long sum = x[j];
+      long i = 0;
+
+      sum += DO_MUL(a[i+0], b[i+0]);
+      sum += DO_MUL(a[i+1], b[i+1]);
+      sum += DO_MUL(a[i+2], b[i+2]);
+      sum += DO_MUL(a[i+3], b[i+3]);
+      sum += DO_MUL(a[i+4], b[i+4]);
+      sum += DO_MUL(a[i+5], b[i+5]);
+      sum += DO_MUL(a[i+6], b[i+6]);
+      sum += DO_MUL(a[i+7], b[i+7]);
+      sum += DO_MUL(a[i+8], b[i+8]);
+      sum += DO_MUL(a[i+9], b[i+9]);
+      sum += DO_MUL(a[i+10], b[i+10]);
+      sum += DO_MUL(a[i+11], b[i+11]);
+      sum += DO_MUL(a[i+12], b[i+12]);
+      sum += DO_MUL(a[i+13], b[i+13]);
+      sum += DO_MUL(a[i+14], b[i+14]);
+      sum += DO_MUL(a[i+15], b[i+15]);
+      sum += DO_MUL(a[i+16], b[i+16]);
+      sum += DO_MUL(a[i+17], b[i+17]);
+      sum += DO_MUL(a[i+18], b[i+18]);
+      sum += DO_MUL(a[i+19], b[i+19]);
+      sum += DO_MUL(a[i+20], b[i+20]);
+      sum += DO_MUL(a[i+21], b[i+21]);
+      sum += DO_MUL(a[i+22], b[i+22]);
+      sum += DO_MUL(a[i+23], b[i+23]);
+      sum += DO_MUL(a[i+24], b[i+24]);
+      sum += DO_MUL(a[i+25], b[i+25]);
+      sum += DO_MUL(a[i+26], b[i+26]);
+      sum += DO_MUL(a[i+27], b[i+27]);
+      sum += DO_MUL(a[i+28], b[i+28]);
+      sum += DO_MUL(a[i+29], b[i+29]);
+      sum += DO_MUL(a[i+30], b[i+30]);
+      sum += DO_MUL(a[i+31], b[i+31]);
+
+      x[j] = sum;
+      b += MAT_BLK_SZ;
+   }
+}
+
 // experiment with shorter int's
 static
 void muladd1_by_32_full(unsigned long *x, const unsigned int *a, const unsigned int *b)
@@ -1430,6 +1540,104 @@ void muladd1_by_32_full(unsigned long *x, const unsigned int *a, const unsigned 
    }
 }
 
+static
+void muladd1_by_32_full_width(unsigned long *x, const unsigned int *a, const unsigned int *b, long width)
+{
+   long j = 0;
+   for (; j <= width-4; j+=4) {
+
+      unsigned long sum = x[j];
+      unsigned long sum_1 = x[j+1];
+      unsigned long sum_2 = x[j+2];
+      unsigned long sum_3 = x[j+3];
+
+      const unsigned int *b_1 = b+MAT_BLK_SZ;
+      const unsigned int *b_2 = b+2*MAT_BLK_SZ;
+      const unsigned int *b_3 = b+3*MAT_BLK_SZ;
+
+      ONE_STEP_L(0);
+      ONE_STEP_L(1);
+      ONE_STEP_L(2);
+      ONE_STEP_L(3);
+      ONE_STEP_L(4);
+      ONE_STEP_L(5);
+      ONE_STEP_L(6);
+      ONE_STEP_L(7);
+      ONE_STEP_L(8);
+      ONE_STEP_L(9);
+      ONE_STEP_L(10);
+      ONE_STEP_L(11);
+      ONE_STEP_L(12);
+      ONE_STEP_L(13);
+      ONE_STEP_L(14);
+      ONE_STEP_L(15);
+      ONE_STEP_L(16);
+      ONE_STEP_L(17);
+      ONE_STEP_L(18);
+      ONE_STEP_L(19);
+      ONE_STEP_L(20);
+      ONE_STEP_L(21);
+      ONE_STEP_L(22);
+      ONE_STEP_L(23);
+      ONE_STEP_L(24);
+      ONE_STEP_L(25);
+      ONE_STEP_L(26);
+      ONE_STEP_L(27);
+      ONE_STEP_L(28);
+      ONE_STEP_L(29);
+      ONE_STEP_L(30);
+      ONE_STEP_L(31);
+
+      x[j]   = sum;
+      x[j+1] = sum_1;
+      x[j+2] = sum_2; 
+      x[j+3] = sum_3; 
+
+      b += 4*MAT_BLK_SZ;
+   }
+
+   for (; j < width; j++) {
+      unsigned long sum = x[j];
+      long i = 0;
+
+      sum += DO_MUL(a[i+0], b[i+0]);
+      sum += DO_MUL(a[i+1], b[i+1]);
+      sum += DO_MUL(a[i+2], b[i+2]);
+      sum += DO_MUL(a[i+3], b[i+3]);
+      sum += DO_MUL(a[i+4], b[i+4]);
+      sum += DO_MUL(a[i+5], b[i+5]);
+      sum += DO_MUL(a[i+6], b[i+6]);
+      sum += DO_MUL(a[i+7], b[i+7]);
+      sum += DO_MUL(a[i+8], b[i+8]);
+      sum += DO_MUL(a[i+9], b[i+9]);
+      sum += DO_MUL(a[i+10], b[i+10]);
+      sum += DO_MUL(a[i+11], b[i+11]);
+      sum += DO_MUL(a[i+12], b[i+12]);
+      sum += DO_MUL(a[i+13], b[i+13]);
+      sum += DO_MUL(a[i+14], b[i+14]);
+      sum += DO_MUL(a[i+15], b[i+15]);
+      sum += DO_MUL(a[i+16], b[i+16]);
+      sum += DO_MUL(a[i+17], b[i+17]);
+      sum += DO_MUL(a[i+18], b[i+18]);
+      sum += DO_MUL(a[i+19], b[i+19]);
+      sum += DO_MUL(a[i+20], b[i+20]);
+      sum += DO_MUL(a[i+21], b[i+21]);
+      sum += DO_MUL(a[i+22], b[i+22]);
+      sum += DO_MUL(a[i+23], b[i+23]);
+      sum += DO_MUL(a[i+24], b[i+24]);
+      sum += DO_MUL(a[i+25], b[i+25]);
+      sum += DO_MUL(a[i+26], b[i+26]);
+      sum += DO_MUL(a[i+27], b[i+27]);
+      sum += DO_MUL(a[i+28], b[i+28]);
+      sum += DO_MUL(a[i+29], b[i+29]);
+      sum += DO_MUL(a[i+30], b[i+30]);
+      sum += DO_MUL(a[i+31], b[i+31]);
+
+      x[j] = sum;
+      b += MAT_BLK_SZ;
+   }
+}
+
 #endif
 
 static inline
@@ -1446,6 +1654,31 @@ void muladd_all_by_32(long first, long last, unsigned long *x, const unsigned in
 }
 
 static inline
+void muladd_all_by_32_width(long first, long last, unsigned long *x, const unsigned long *a, const unsigned long *b, long n, long width)
+{
+   if (width == MAT_BLK_SZ) {
+      if (n == MAT_BLK_SZ) {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32_full(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b);
+      }
+      else {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
+      }
+   }
+   else {
+      if (n == MAT_BLK_SZ) {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32_full_width(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, width);
+      }
+      else {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32_width(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n, width);
+      }
+   }
+}
+
+static inline
 void muladd_all_by_32(long first, long last, unsigned long *x, const unsigned long *a, const unsigned long *b, long n)
 {
    if (n == MAT_BLK_SZ) {
@@ -1455,6 +1688,31 @@ void muladd_all_by_32(long first, long last, unsigned long *x, const unsigned lo
    else {
       for (long i = first; i < last; i++)
          muladd1_by_32(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
+   }
+}
+
+static inline
+void muladd_all_by_32_width(long first, long last, unsigned long *x, const unsigned int *a, const unsigned int *b, long n, long width)
+{
+   if (width == MAT_BLK_SZ) {
+      if (n == MAT_BLK_SZ) {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32_full(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b);
+      }
+      else {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
+      }
+   }
+   else {
+      if (n == MAT_BLK_SZ) {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32_full_width(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, width);
+      }
+      else {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32_width(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n, width);
+      }
    }
 }
 
@@ -1523,12 +1781,116 @@ void muladd1_by_32(long *x, const long *a, const long *b,
    }
 }
 
+static
+void muladd1_by_32_width(long *x, const long *a, const long *b, 
+                   long n, long p, sp_ll_reduce_struct ll_red_struct, long width)
+{
+   for (long j = 0; j < width; j++) {
+
+       ll_type sum;
+       ll_init(sum, x[j]);
+#if 0
+      for (long i = 0; i < n; i++)
+         ll_imul_add(sum, a[i], b[i]);
+#else
+      long i=0;
+      for(; i <= n-8; i+= 8) {
+         ll_imul_add(sum, a[i+0], b[i+0]);
+         ll_imul_add(sum, a[i+1], b[i+1]);
+         ll_imul_add(sum, a[i+2], b[i+2]);
+         ll_imul_add(sum, a[i+3], b[i+3]);
+
+         ll_imul_add(sum, a[i+4], b[i+4]);
+         ll_imul_add(sum, a[i+5], b[i+5]);
+         ll_imul_add(sum, a[i+6], b[i+6]);
+         ll_imul_add(sum, a[i+7], b[i+7]);
+      }
+
+      for (; i < n; i++)
+         ll_imul_add(sum, a[i], b[i]);
+      
+#endif
+
+      unsigned long sum0 = ll_get_lo(sum);
+      unsigned long sum1 = ll_get_hi(sum);
+
+      long res;
+      
+      if (ll_red_struct.nbits == NTL_SP_NBITS) 
+         res = sp_ll_red_31_normalized(0, sum1, sum0, p, ll_red_struct);
+      else
+         res =  sp_ll_red_31(0, sum1, sum0, p, ll_red_struct);
+
+
+      x[j] = res;
+      b += MAT_BLK_SZ;
+   }
+}
+
 #if 0
 static
 void muladd1_by_32_full(long *x, const long *a, const long *b, 
                         long p, sp_ll_reduce_struct ll_red_struct)
 {
    for (long j = 0; j < MAT_BLK_SZ; j++) {
+
+      ll_type sum;
+      ll_init(sum, x[j]);
+
+      ll_imul_add(sum, a[0], b[0]);
+      ll_imul_add(sum, a[1], b[1]);
+      ll_imul_add(sum, a[2], b[2]);
+      ll_imul_add(sum, a[3], b[3]);
+      ll_imul_add(sum, a[4], b[4]);
+      ll_imul_add(sum, a[5], b[5]);
+      ll_imul_add(sum, a[6], b[6]);
+      ll_imul_add(sum, a[7], b[7]);
+      ll_imul_add(sum, a[8], b[8]);
+      ll_imul_add(sum, a[9], b[9]);
+      ll_imul_add(sum, a[10], b[10]);
+      ll_imul_add(sum, a[11], b[11]);
+      ll_imul_add(sum, a[12], b[12]);
+      ll_imul_add(sum, a[13], b[13]);
+      ll_imul_add(sum, a[14], b[14]);
+      ll_imul_add(sum, a[15], b[15]);
+      ll_imul_add(sum, a[16], b[16]);
+      ll_imul_add(sum, a[17], b[17]);
+      ll_imul_add(sum, a[18], b[18]);
+      ll_imul_add(sum, a[19], b[19]);
+      ll_imul_add(sum, a[20], b[20]);
+      ll_imul_add(sum, a[21], b[21]);
+      ll_imul_add(sum, a[22], b[22]);
+      ll_imul_add(sum, a[23], b[23]);
+      ll_imul_add(sum, a[24], b[24]);
+      ll_imul_add(sum, a[25], b[25]);
+      ll_imul_add(sum, a[26], b[26]);
+      ll_imul_add(sum, a[27], b[27]);
+      ll_imul_add(sum, a[28], b[28]);
+      ll_imul_add(sum, a[29], b[29]);
+      ll_imul_add(sum, a[30], b[30]);
+      ll_imul_add(sum, a[31], b[31]);
+
+      unsigned long sum0 = ll_get_lo(sum);
+      unsigned long sum1 = ll_get_hi(sum);
+
+      long res;
+      
+      if (ll_red_struct.nbits == NTL_SP_NBITS) 
+         res = sp_ll_red_31_normalized(0, sum1, sum0, p, ll_red_struct);
+      else
+         res =  sp_ll_red_31(0, sum1, sum0, p, ll_red_struct);
+
+
+      x[j] = res;
+      b += MAT_BLK_SZ;
+   }
+}
+
+static
+void muladd1_by_32_full_width(long *x, const long *a, const long *b, 
+                        long p, sp_ll_reduce_struct ll_red_struct, long width)
+{
+   for (long j = 0; j < width; j++) {
 
       ll_type sum;
       ll_init(sum, x[j]);
@@ -1672,8 +2034,141 @@ void muladd1_by_32_full(long *x, const long *a, const long *b,
    }
 }
 
+void muladd1_by_32_full_width(long *x, const long *a, const long *b, 
+                        long p, sp_ll_reduce_struct ll_red_struct, long width)
+{
+   long j = 0;
+   for (; j <= width-4; j+=4) {
+
+      ll_type sum, sum_1, sum_2, sum_3;
+      ll_init(sum, x[j]);
+      ll_init(sum_1, x[j+1]);
+      ll_init(sum_2, x[j+2]);
+      ll_init(sum_3, x[j+3]);
+
+      const long *b_1 = b+MAT_BLK_SZ;
+      const long *b_2 = b+2*MAT_BLK_SZ;
+      const long *b_3 = b+3*MAT_BLK_SZ;
+
+      ONE_STEP(0);
+      ONE_STEP(1);
+      ONE_STEP(2);
+      ONE_STEP(3);
+      ONE_STEP(4);
+      ONE_STEP(5);
+      ONE_STEP(6);
+      ONE_STEP(7);
+      ONE_STEP(8);
+      ONE_STEP(9);
+      ONE_STEP(10);
+      ONE_STEP(11);
+      ONE_STEP(12);
+      ONE_STEP(13);
+      ONE_STEP(14);
+      ONE_STEP(15);
+      ONE_STEP(16);
+      ONE_STEP(17);
+      ONE_STEP(18);
+      ONE_STEP(19);
+      ONE_STEP(20);
+      ONE_STEP(21);
+      ONE_STEP(22);
+      ONE_STEP(23);
+      ONE_STEP(24);
+      ONE_STEP(25);
+      ONE_STEP(26);
+      ONE_STEP(27);
+      ONE_STEP(28);
+      ONE_STEP(29);
+      ONE_STEP(30);
+      ONE_STEP(31);
+
+      unsigned long sum0 = ll_get_lo(sum);
+      unsigned long sum1 = ll_get_hi(sum);
+
+      unsigned long sum0_1 = ll_get_lo(sum_1);
+      unsigned long sum1_1 = ll_get_hi(sum_1);
+
+      unsigned long sum0_2 = ll_get_lo(sum_2);
+      unsigned long sum1_2 = ll_get_hi(sum_2);
+
+      unsigned long sum0_3 = ll_get_lo(sum_3);
+      unsigned long sum1_3 = ll_get_hi(sum_3);
+      
+      if (ll_red_struct.nbits == NTL_SP_NBITS) {
+         x[j] = sp_ll_red_31_normalized(0, sum1, sum0, p, ll_red_struct);
+         x[j+1] = sp_ll_red_31_normalized(0, sum1_1, sum0_1, p, ll_red_struct);
+         x[j+2] = sp_ll_red_31_normalized(0, sum1_2, sum0_2, p, ll_red_struct);
+         x[j+3] = sp_ll_red_31_normalized(0, sum1_3, sum0_3, p, ll_red_struct);
+      }
+      else {
+         x[j] =  sp_ll_red_31(0, sum1, sum0, p, ll_red_struct);
+         x[j+1] =  sp_ll_red_31(0, sum1_1, sum0_1, p, ll_red_struct);
+         x[j+2] =  sp_ll_red_31(0, sum1_2, sum0_2, p, ll_red_struct);
+         x[j+3] =  sp_ll_red_31(0, sum1_3, sum0_3, p, ll_red_struct);
+      }
+
+
+      b += 4*MAT_BLK_SZ;
+   }
+
+   for (; j < width; j++) {
+
+      ll_type sum;
+      ll_init(sum, x[j]);
+
+      ll_imul_add(sum, a[0], b[0]);
+      ll_imul_add(sum, a[1], b[1]);
+      ll_imul_add(sum, a[2], b[2]);
+      ll_imul_add(sum, a[3], b[3]);
+      ll_imul_add(sum, a[4], b[4]);
+      ll_imul_add(sum, a[5], b[5]);
+      ll_imul_add(sum, a[6], b[6]);
+      ll_imul_add(sum, a[7], b[7]);
+      ll_imul_add(sum, a[8], b[8]);
+      ll_imul_add(sum, a[9], b[9]);
+      ll_imul_add(sum, a[10], b[10]);
+      ll_imul_add(sum, a[11], b[11]);
+      ll_imul_add(sum, a[12], b[12]);
+      ll_imul_add(sum, a[13], b[13]);
+      ll_imul_add(sum, a[14], b[14]);
+      ll_imul_add(sum, a[15], b[15]);
+      ll_imul_add(sum, a[16], b[16]);
+      ll_imul_add(sum, a[17], b[17]);
+      ll_imul_add(sum, a[18], b[18]);
+      ll_imul_add(sum, a[19], b[19]);
+      ll_imul_add(sum, a[20], b[20]);
+      ll_imul_add(sum, a[21], b[21]);
+      ll_imul_add(sum, a[22], b[22]);
+      ll_imul_add(sum, a[23], b[23]);
+      ll_imul_add(sum, a[24], b[24]);
+      ll_imul_add(sum, a[25], b[25]);
+      ll_imul_add(sum, a[26], b[26]);
+      ll_imul_add(sum, a[27], b[27]);
+      ll_imul_add(sum, a[28], b[28]);
+      ll_imul_add(sum, a[29], b[29]);
+      ll_imul_add(sum, a[30], b[30]);
+      ll_imul_add(sum, a[31], b[31]);
+
+      unsigned long sum0 = ll_get_lo(sum);
+      unsigned long sum1 = ll_get_hi(sum);
+
+      long res;
+      
+      if (ll_red_struct.nbits == NTL_SP_NBITS) 
+         res = sp_ll_red_31_normalized(0, sum1, sum0, p, ll_red_struct);
+      else
+         res =  sp_ll_red_31(0, sum1, sum0, p, ll_red_struct);
+
+
+      x[j] = res;
+      b += MAT_BLK_SZ;
+   }
+}
+
 
 #endif
+
 
 #else
 
@@ -1683,6 +2178,42 @@ void muladd1_by_32(long *x, const long *a, const long *b,
                    long n, long p, sp_ll_reduce_struct ll_red_struct)
 {
    for (long j = 0; j < MAT_BLK_SZ; j++) {
+
+      ll_type sum;
+      ll_init(sum, x[j]);
+
+      long i = 0;
+      for (; i < n-16; i++)
+         ll_imul_add(sum, a[i], b[i]);
+
+      ll_type acc21;
+      ll_init(acc21, ll_get_hi(sum));
+      unsigned long acc0 = ll_get_lo(sum);
+      ll_init(sum, acc0);
+
+      for (; i < n; i++)
+         ll_imul_add(sum, a[i], b[i]);
+
+      acc0 = ll_get_lo(sum);
+      ll_add(acc21, ll_get_hi(sum));
+
+      long res;
+      
+      if (ll_red_struct.nbits == NTL_SP_NBITS) 
+         res = sp_ll_red_31_normalized(ll_get_hi(acc21), ll_get_lo(acc21), acc0, p, ll_red_struct);
+      else
+         res = sp_ll_red_31(ll_get_hi(acc21), ll_get_lo(acc21), acc0, p, ll_red_struct);
+
+      x[j] = res;
+      b += MAT_BLK_SZ;
+   }
+}
+
+static
+void muladd1_by_32_width(long *x, const long *a, const long *b, 
+                   long n, long p, sp_ll_reduce_struct ll_red_struct, long width)
+{
+   for (long j = 0; j < width; j++) {
 
       ll_type sum;
       ll_init(sum, x[j]);
@@ -1777,6 +2308,68 @@ void muladd1_by_32_full(long *x, const long *a, const long *b,
    }
 }
 
+static
+void muladd1_by_32_full_width(long *x, const long *a, const long *b, 
+                        long p, sp_ll_reduce_struct ll_red_struct, long width)
+{
+   for (long j = 0; j < width; j++) {
+
+      ll_type sum;
+      ll_init(sum, x[j]);
+
+      ll_imul_add(sum, a[0], b[0]);
+      ll_imul_add(sum, a[1], b[1]);
+      ll_imul_add(sum, a[2], b[2]);
+      ll_imul_add(sum, a[3], b[3]);
+      ll_imul_add(sum, a[4], b[4]);
+      ll_imul_add(sum, a[5], b[5]);
+      ll_imul_add(sum, a[6], b[6]);
+      ll_imul_add(sum, a[7], b[7]);
+      ll_imul_add(sum, a[8], b[8]);
+      ll_imul_add(sum, a[9], b[9]);
+      ll_imul_add(sum, a[10], b[10]);
+      ll_imul_add(sum, a[11], b[11]);
+      ll_imul_add(sum, a[12], b[12]);
+      ll_imul_add(sum, a[13], b[13]);
+      ll_imul_add(sum, a[14], b[14]);
+      ll_imul_add(sum, a[15], b[15]);
+
+      ll_type acc21;
+      ll_init(acc21, ll_get_hi(sum));
+      unsigned long acc0 = ll_get_lo(sum);
+      ll_init(sum, acc0);
+
+      ll_imul_add(sum, a[16], b[16]);
+      ll_imul_add(sum, a[17], b[17]);
+      ll_imul_add(sum, a[18], b[18]);
+      ll_imul_add(sum, a[19], b[19]);
+      ll_imul_add(sum, a[20], b[20]);
+      ll_imul_add(sum, a[21], b[21]);
+      ll_imul_add(sum, a[22], b[22]);
+      ll_imul_add(sum, a[23], b[23]);
+      ll_imul_add(sum, a[24], b[24]);
+      ll_imul_add(sum, a[25], b[25]);
+      ll_imul_add(sum, a[26], b[26]);
+      ll_imul_add(sum, a[27], b[27]);
+      ll_imul_add(sum, a[28], b[28]);
+      ll_imul_add(sum, a[29], b[29]);
+      ll_imul_add(sum, a[30], b[30]);
+      ll_imul_add(sum, a[31], b[31]);
+
+      acc0 = ll_get_lo(sum);
+      ll_add(acc21, ll_get_hi(sum));
+
+      long res;
+      
+      if (ll_red_struct.nbits == NTL_SP_NBITS) 
+         res = sp_ll_red_31_normalized(ll_get_hi(acc21), ll_get_lo(acc21), acc0, p, ll_red_struct);
+      else
+         res = sp_ll_red_31(ll_get_hi(acc21), ll_get_lo(acc21), acc0, p, ll_red_struct);
+      
+      x[j] = res;
+      b += MAT_BLK_SZ;
+   }
+}
 
 
 #endif
@@ -1830,12 +2423,61 @@ void muladd1_by_32_half2(long *x, const long *a, const long *b,
    }
 }
 
+static
+void muladd1_by_32_half2_width(long *x, const long *a, const long *b, 
+                        long n, long p, sp_ll_reduce_struct ll_red_struct, long width)
+{
+   for (long j = 0; j < width; j++) {
+
+      unsigned long sum[2];
+      sum[0] = x[j];
+      sum[1] = 0;
+
+      long k=0;
+      long i=0;
+      for(; i <= n-16; i+= 16) {
+         unsigned long lsum = a[i+0]*b[i+0];
+         lsum += a[i+1]*b[i+1];
+         lsum += a[i+2]*b[i+2];
+         lsum += a[i+3]*b[i+3];
+         lsum += a[i+4]*b[i+4];
+         lsum += a[i+5]*b[i+5];
+         lsum += a[i+6]*b[i+6];
+         lsum += a[i+7]*b[i+7];
+         lsum += a[i+8]*b[i+8];
+         lsum += a[i+9]*b[i+9];
+         lsum += a[i+10]*b[i+10];
+         lsum += a[i+11]*b[i+11];
+         lsum += a[i+12]*b[i+12];
+         lsum += a[i+13]*b[i+13];
+         lsum += a[i+14]*b[i+14];
+         lsum += a[i+15]*b[i+15];
+         sum[k++] += lsum;
+      }
+
+      if (i < n) {
+         unsigned long lsum = a[i]*b[i];
+	 for (i++; i < n; i++)
+	    lsum += a[i]*b[i];
+         sum[k++] += lsum;
+      }
+
+      
+      long t0 = sp_ll_red_21(0, sum[0], p, ll_red_struct);
+      long t1 = sp_ll_red_21(0, sum[1], p, ll_red_struct);
+      x[j] = AddMod(t0, t1, p);
+
+      b += MAT_BLK_SZ;
+   }
+}
+
 
 
 // NOTE: oddly, this is slightly faster than the half2 routine, which
 // I would have thought would be faster
 // DIRT: this assumes MAT_BLK_SZ < (1L << NTL_BITS_PER_LONG/2),
 // which will hold unconditionally for MAT_BLK_SZ < 2^16.
+
 static
 void muladd1_by_32_half1(long *x, const long *a, const long *b, 
                         long n, long p, sp_ll_reduce_struct ll_red_struct)
@@ -1869,6 +2511,38 @@ void muladd1_by_32_half1(long *x, const long *a, const long *b,
    }
 }
 
+static
+void muladd1_by_32_half1_width(long *x, const long *a, const long *b, 
+                        long n, long p, sp_ll_reduce_struct ll_red_struct, long width)
+{
+   for (long j = 0; j < width; j++) {
+  
+      ll_type sum;
+      ll_init(sum, x[j]);
+
+      long i=0;
+      for(; i <= n-4; i+= 4) {
+         unsigned long lsum = a[i+0]*b[i+0];
+         lsum += a[i+1]*b[i+1];
+         lsum += a[i+2]*b[i+2];
+         lsum += a[i+3]*b[i+3];
+         ll_add(sum, lsum);
+      }
+
+      if (i < n) {
+         unsigned long lsum = a[i]*b[i];
+	 for (i++; i < n; i++)
+	    lsum += a[i]*b[i];
+         ll_add(sum, lsum);
+      }
+
+      unsigned long sum0 = ll_get_lo(sum);
+      unsigned long sum1 = ll_get_hi(sum);
+      x[j] = sp_ll_red_21(sum1, sum0, p, ll_red_struct);
+
+      b += MAT_BLK_SZ;
+   }
+}
 
 static inline
 void muladd_all_by_32(long first, long last, long *x, const long *a, const long *b, long n,
@@ -1890,6 +2564,43 @@ void muladd_all_by_32(long first, long last, long *x, const long *a, const long 
    }
 }
 
+static inline
+void muladd_all_by_32_width(long first, long last, long *x, const long *a, const long *b, long n,
+                      long p, sp_ll_reduce_struct ll_red_struct, long width)
+{
+   if (width == MAT_BLK_SZ) {
+      if ((p-1) >= (1L << ((NTL_BITS_PER_LONG/2)-1))) {
+	 if (n == MAT_BLK_SZ) {
+	    for (long i = first; i < last; i++)
+	       muladd1_by_32_full(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, p, ll_red_struct);
+	 }
+	 else {
+	    for (long i = first; i < last; i++)
+	       muladd1_by_32(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n, p, ll_red_struct);
+	 }
+      }
+      else {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32_half1(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n, p, ll_red_struct);
+      }
+   }
+   else {
+      if ((p-1) >= (1L << ((NTL_BITS_PER_LONG/2)-1))) {
+	 if (n == MAT_BLK_SZ) {
+	    for (long i = first; i < last; i++)
+	       muladd1_by_32_full_width(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, p, ll_red_struct, width);
+	 }
+	 else {
+	    for (long i = first; i < last; i++)
+	       muladd1_by_32_width(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n, p, ll_red_struct, width);
+	 }
+      }
+      else {
+	 for (long i = first; i < last; i++)
+	    muladd1_by_32_half1_width(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n, p, ll_red_struct, width);
+      }
+   }
+}
 
 
 #endif
@@ -1973,6 +2684,7 @@ void alt_mul_L(const mat_window_zz_p& X,
   
    long p = zz_p::modulus();
    sp_reduce_struct red_struct = zz_p::red_struct();
+   long bound = InnerProd_L_bound(p);
 
    const bool seq = double(n)*double(l)*double(m) < PAR_THRESH;
 
@@ -1989,7 +2701,7 @@ void alt_mul_L(const mat_window_zz_p& X,
    
          for (i = 0; i < n; i++) {
             const zz_p *ap = &A[i][0];
-            X[i][j].LoopHole() = InnerProd_L(bp, ap, l, p, red_struct);
+            X[i][j].LoopHole() = InnerProd_L(bp, ap, l, p, red_struct, bound);
          }
       }
 
@@ -2121,7 +2833,7 @@ void blk_mul_DD(const mat_window_zz_p& X,
 
          const double *abp = &A_buf[panel][0];
 
-         muladd_all_by_32(0, n, xbp, abp, brec, k_max-kk);
+         muladd_all_by_32_width(0, n, xbp, abp, brec, k_max-kk, j_max-jj);
       }
 
       
@@ -2219,7 +2931,8 @@ void blk_mul_LL(const mat_window_zz_p& X,
          }
 
          const long *abp = abufp[panel];
-         muladd_all_by_32(0, n, xbp, abp, brec, k_max-kk, p, ll_red_struct);
+
+         muladd_all_by_32_width(0, n, xbp, abp, brec, k_max-kk, p, ll_red_struct, j_max-jj);
       }
 
       
@@ -2331,7 +3044,7 @@ void blk_mul_L(const mat_window_zz_p& X,
 
          const uhlong *abp = abufp[panel];
 
-         muladd_all_by_32(0, n, xbp, abp, brec, k_max-kk);
+         muladd_all_by_32_width(0, n, xbp, abp, brec, k_max-kk, j_max-jj);
       }
 
       
@@ -2350,8 +3063,6 @@ void blk_mul_L(const mat_window_zz_p& X,
 #endif
 
 
-
-
 static
 void mul_base (const mat_window_zz_p& X, 
                const const_mat_window_zz_p& A, const const_mat_window_zz_p& B)  
@@ -2365,24 +3076,40 @@ void mul_base (const mat_window_zz_p& X,
       return;
    }
 
-
 #ifndef NTL_HAVE_LL_TYPE
 
    basic_mul(X, A, B);
 
 #else
 
-   if (l < 32) {
-      //cerr << "basic_mul\n";
-      basic_mul(X, A, B);
+   long p = zz_p::modulus();
+   long V = MAT_BLK_SZ*4;
+
+#ifdef NTL_HAVE_AVX
+
+   // experimentally, blk_mul_DD beats all the alternatives
+   // if each dimension is at least 16
+
+   if (n >= 16 && l >= 16 && m >= 16 &&
+       p-1 <= MAX_DBL_INT &&
+       V <= (MAX_DBL_INT-(p-1))/(p-1) &&
+       V*(p-1) <= (MAX_DBL_INT-(p-1))/(p-1)) 
+   {
+      if (NTL_OVERFLOW(n, MAT_BLK_SZ, 0)) ResourceError("number too big");
+      if (NTL_OVERFLOW(l, MAT_BLK_SZ, 0)) ResourceError("number too big");
+      if (NTL_OVERFLOW(m, MAT_BLK_SZ, 0)) ResourceError("number too big");
+
+      //cerr << "blk_mul_DD\n";
+      blk_mul_DD(X, A, B);
       return;
    }
+#endif
 
-   long p = zz_p::modulus();
-   
-   if (n/MAT_BLK_SZ < 4 || l/MAT_BLK_SZ < 4 || m/MAT_BLK_SZ < 4) {
-      if (cast_unsigned(l) <= (~(0UL))/cast_unsigned(p-1) &&
-          cast_unsigned(l)*cast_unsigned(p-1) <= (~(0UL))/cast_unsigned(p-1)) {
+
+   if (n < 32 || l < 32 || m < 32) {
+
+
+      if (InnerProd_L_viable(l, p)) {
          //cerr << "alt_mul_L\n";
          alt_mul_L(X, A, B);
       }
@@ -2391,44 +3118,36 @@ void mul_base (const mat_window_zz_p& X,
          alt_mul_LL(X, A, B);
       }
 
-      return;
    }
+   else {
 
-   {
+      // Experimentally, the block versions are better when all dimensions
+      // are at least 32
+
       if (NTL_OVERFLOW(n, MAT_BLK_SZ, 0)) ResourceError("number too big");
       if (NTL_OVERFLOW(l, MAT_BLK_SZ, 0)) ResourceError("number too big");
       if (NTL_OVERFLOW(m, MAT_BLK_SZ, 0)) ResourceError("number too big");
 
-      long V = MAT_BLK_SZ*4;
 
-#ifdef NTL_HAVE_AVX
-      if (p-1 <= MAX_DBL_INT &&
-          V <= (MAX_DBL_INT-(p-1))/(p-1) &&
-          V*(p-1) <= (MAX_DBL_INT-(p-1))/(p-1)) {
-
-         // cerr << "block_mul_DD\n";
-         blk_mul_DD(X, A, B);
-      }
-      else 
-#endif
-           if (cast_unsigned(V) <= (~(0UL)-cast_unsigned(p-1))/cast_unsigned(p-1) &&
-               cast_unsigned(V)*cast_unsigned(p-1) <= (~(0UL)-cast_unsigned(p-1))/cast_unsigned(p-1))  {
-
+      if (cast_unsigned(V) <= (~(0UL)-cast_unsigned(p-1))/cast_unsigned(p-1) &&
+          cast_unsigned(V)*cast_unsigned(p-1) <= (~(0UL)-cast_unsigned(p-1))/cast_unsigned(p-1))  {
          //cerr << "blk_mul_L\n";
          blk_mul_L(X, A, B);
 
       }
       else {
-  
          //cerr << "blk_mul_LL\n";
          blk_mul_LL(X, A, B);
       }
+
    }
 
 #endif
 
 
 }
+
+
 
 // The following implementation of Strassen is derived directly 
 // from the implementation in FLINT (see http://www.flintlib.org),
@@ -7170,6 +7889,42 @@ vec_zz_p operator*(const vec_zz_p& a, const mat_zz_p& b)
    mul(res, a, b);
    NTL_OPT_RETURN(vec_zz_p, res);
 }
+
+
+#if 0
+// for testing purposes
+
+void test_alt_mul_L(mat_zz_p& X, const mat_zz_p& A, const mat_zz_p& B)
+{
+   alt_mul_L(X, A, B);
+}
+
+void test_alt_mul_LL(mat_zz_p& X, const mat_zz_p& A, const mat_zz_p& B)
+{
+   alt_mul_LL(X, A, B);
+}
+
+void test_blk_mul_DD(mat_zz_p& X, const mat_zz_p& A, const mat_zz_p& B)
+{
+   blk_mul_DD(X, A, B);
+}
+
+void test_blk_mul_LL(mat_zz_p& X, const mat_zz_p& A, const mat_zz_p& B)
+{
+   blk_mul_LL(X, A, B);
+}
+
+void test_blk_mul_L(mat_zz_p& X, const mat_zz_p& A, const mat_zz_p& B)
+{
+   blk_mul_L(X, A, B);
+}
+
+void test_basic_mul(mat_zz_p& X, const mat_zz_p& A, const mat_zz_p& B)
+{
+   basic_mul(X, A, B);
+}
+
+#endif
 
 
 NTL_END_IMPL

@@ -1054,7 +1054,7 @@ void CompMod(ZZ_pX& x, const ZZ_pX& g, const ZZ_pX& h, const ZZ_pXModulus& F)
       return;
    }
 
-   ZZ_pXArgument A;
+   ZZ_pXNewArgument A;
 
    build(A, h, F, m);
 
@@ -1076,7 +1076,7 @@ void Comp2Mod(ZZ_pX& x1, ZZ_pX& x2, const ZZ_pX& g1, const ZZ_pX& g2,
       return;
    }
 
-   ZZ_pXArgument A;
+   ZZ_pXNewArgument A;
 
    build(A, h, F, m);
 
@@ -1103,7 +1103,7 @@ void Comp3Mod(ZZ_pX& x1, ZZ_pX& x2, ZZ_pX& x3,
       return;
    }
 
-   ZZ_pXArgument A;
+   ZZ_pXNewArgument A;
 
    build(A, h, F, m);
 
@@ -1304,11 +1304,163 @@ void ProjectPowers(vec_ZZ_p& x, const vec_ZZ_p& a, long k,
 
    long m = SqrRoot(k);
 
-   ZZ_pXArgument H;
+   ZZ_pXNewArgument H;
 
    build(H, h, F, m);
    ProjectPowers(x, a, k, H, F);
 }
+
+#ifdef  NTL_USE_ZZ_pXNewArgument
+
+// ZZ_pXNewArgument stuff
+
+
+void build(ZZ_pXNewArgument& H, const ZZ_pX& h, const ZZ_pXModulus& F, long m)
+{
+   long n = F.n;
+
+   if (m <= 0 || deg(h) >= n) LogicError("build: bad args");
+
+   if (NTL_OVERFLOW(m, 1, 0)) 
+      ResourceError("ZZ_pXNewArgument:build: m too big");
+
+   // NOTE: we don't take ZZ_pXArgBound into account, as the 
+   // new strategy anyway always uses space about (m + deg(g)/m)*n
+
+   long width; // usually n, but may be smaller if h has very low degree
+   // some messiness here to avoid overflow
+
+   long dh = deg(h);
+
+   if (dh < 0)
+      width = 1;
+   else if (dh == 0 || m-1 == 0)
+      width = 1;
+   else if (dh <= n/(m-1))
+      width = min(n, dh*(m-1) + 1);
+   else
+      width = n;
+
+
+   ZZ_pXMultiplier M;
+   build(M, h, F);
+
+   Mat<ZZ_p> mat;
+   mat.SetDims(m, width);
+ 
+   ZZ_pX poly;
+   poly = 1;
+
+   for (long i = 0; i < m; i++) {
+      VectorCopy(mat[i], poly, width);
+      MulMod(poly, poly, M, F);
+   }
+
+   
+   H.mat.move(mat);
+   H.poly.swap(poly);
+}
+
+void CompMod(ZZ_pX& x, const ZZ_pX& g, const ZZ_pXNewArgument& H, 
+             const ZZ_pXModulus& F)
+{
+   long d = deg(g)+1;
+
+   if (d <= 1) {
+      x = g;
+      return;
+   }
+
+   long m = H.mat.NumRows();
+
+   if (m == 0) LogicError("CompMod: uninitialized argument");
+
+   long l = (d+m-1)/m;
+
+   Mat<ZZ_p> gmat;
+   gmat.SetDims(l, m);
+
+   for (long i = 0; i < l; i++) 
+      for (long j = 0; j < m; j++)
+         gmat[i][j] = coeff(g, i*m+j);
+
+   Mat<ZZ_p> xmat;
+   mul(xmat, gmat, H.mat);
+
+
+   ZZ_pX t;
+   conv(t, xmat[l-1]);
+
+   if (l-2 >= 0) {
+      ZZ_pXMultiplier M;
+      build(M, H.poly, F);
+      ZZ_pX s;
+
+      for (long i = l-2; i >= 0; i--) {
+	 conv(s, xmat[i]);
+	 MulMod(t, t, M, F);
+	 add(t, t, s);
+      }
+   }
+
+   x = t;
+}
+
+
+
+void ProjectPowers(vec_ZZ_p& x, const vec_ZZ_p& a, long k,
+                   const ZZ_pXNewArgument& H, const ZZ_pXModulus& F)
+
+{
+   long n = F.n;
+
+   if (a.length() > n || k < 0)
+      LogicError("ProjectPowers: bad args");
+   if (NTL_OVERFLOW(k, 1, 0))
+      ResourceError("ProjectPowers: excessive args");
+
+   long m = H.mat.NumRows();
+
+   if (m == 0) LogicError("CompMod: uninitialized argument");
+
+   long width = H.mat.NumCols();
+   long l = (k+m-1)/m;
+
+   Mat<ZZ_p> amat, xmat;
+
+   amat.SetDims(l, width);
+
+   vec_ZZ_p s(INIT_SIZE, n);
+   s = a;
+   StripZeroes(s);
+
+   VectorCopy(amat[0], s, width);
+
+   if (l > 1) {
+      ZZ_pXMultiplier M;
+      build(M, H.poly, F);
+
+      for (long i = 1; i < l; i++) {
+	 UpdateMap(s, s, M, F);
+	 VectorCopy(amat[i], s, width);
+      }
+   }
+
+   mul_transpose(xmat, amat, H.mat);
+
+   x.SetLength(k);
+   for (long i = 0; i < l; i++) {
+      long j_max = min(m, k-i*m);
+      for (long j = 0; j < j_max; j++)
+         x[i*m+j] = xmat[i][j];
+   }
+
+}
+
+
+#endif
+
+
 
 
 void BerlekampMassey(ZZ_pX& h, const vec_ZZ_p& a, long m)

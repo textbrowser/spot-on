@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/jjj/ntl-10.1.0dev/doc/vector.cpp.html</title>
+<title>~/jjj/ntl-10.3.0dev/doc/vector.cpp.html</title>
 <meta name="Generator" content="Vim/7.4">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -236,6 +236,12 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
    <span class="Comment">// swap with y (fast: just swaps pointers)</span>
 
    <span class="Comment">// EXCEPTIONS: throws if vectors are fixed and lengths do not match, strong ES</span>
+
+   <span class="Type">void</span> move(Vec&lt;T&gt;&amp; y);
+   <span class="Comment">// move y into *this, killing y (fast: just moves pointers)</span>
+
+   <span class="Comment">// EXCEPTIONS: strong ES, raises an error if </span>
+   <span class="Comment">// &amp;y != this and either y or *this are fixed</span>
 
    <span class="Type">void</span> append(<span class="Type">const</span> T&amp; a);
    <span class="Comment">// append a to end of vector; uses the assignment operator of T</span>

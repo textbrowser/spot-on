@@ -7,6 +7,7 @@
 #include <NTL/vec_lzz_p.h>
 #include <NTL/Lazy.h>
 #include <NTL/SmartPtr.h>
+#include <NTL/mat_lzz_p.h>
 
 NTL_OPEN_NNS
 
@@ -1111,43 +1112,25 @@ CompMod(const zz_pX& g, const zz_pXArgument& H, const zz_pXModulus& F)
    { zz_pX x; CompMod(x, g, H, F); NTL_OPT_RETURN(zz_pX, x); }
 
 
+// New alternative CompMod strategy that just reduces to 
+// matrix multiplication ... 
 
-// experimental variant that yields a faster ModComp
-// Usage:
-//    zz_pXArgument H;
-//    build(H, h, F);
-//    zz_pXAltArgument H1;
-//    build(H1, H, F);  // this keeps a pointer to H, so H must remain alive
-//    CompMod(x, g, H1, F);  // x = g(h) mod f
 
-struct zz_pXAltArgument {
-
-   const zz_pXArgument *orig;
-   zz_pXAltArgument() : orig(0) {}
-
-#ifdef NTL_HAVE_LL_TYPE
-   long strategy;
-
-   long n, m;
-   Vec< Vec<long> > mem;
-   Vec<long*> row;
-
-   // NOTE: the following two members are used on if
-   // NTL_HAVE_AVX; however, we declare them unconditionally 
-   // to facilitate the possibility of dynamic linking based
-   // on architecture
-   Vec< AlignedArray<double> > dmem;
-   Vec<double*> drow;
-
-   sp_ll_reduce_struct pinv_LL;
-   sp_reduce_struct pinv_L;
-#endif
+struct zz_pXNewArgument {
+   Mat<zz_p> mat;
+   zz_pX     poly;
 };
 
-
-void build(zz_pXAltArgument& altH, const zz_pXArgument& H, const zz_pXModulus& F);
-void CompMod(zz_pX& x, const zz_pX& g, const zz_pXAltArgument& A, 
+void build(zz_pXNewArgument& H, const zz_pX& h, const zz_pXModulus& F, long m);
+void CompMod(zz_pX& x, const zz_pX& g, const zz_pXNewArgument& H,
              const zz_pXModulus& F);
+void reduce(zz_pXNewArgument& H, const zz_pXModulus& F);
+
+void ProjectPowers(vec_zz_p& x, const vec_zz_p& a, long k,
+                   const zz_pXNewArgument& H, const zz_pXModulus& F);
+
+
+
 
 
 

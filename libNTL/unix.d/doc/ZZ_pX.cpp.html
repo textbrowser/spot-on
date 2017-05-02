@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/jjj/ntl-10.1.0dev/doc/ZZ_pX.cpp.html</title>
+<title>~/jjj/ntl-10.3.0dev/doc/ZZ_pX.cpp.html</title>
 <meta name="Generator" content="Vim/7.4">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -799,6 +799,51 @@ vec_ZZ_p UpdateMap(<span class="Type">const</span> vec_ZZ_p&amp; a,
 <span class="Comment">// This is &quot;transposed&quot; MulMod by B.</span>
 <span class="Comment">// Input may have &quot;high order&quot; zeroes stripped.</span>
 <span class="Comment">// Output will always have high order zeroes stripped.</span>
+
+
+
+
+
+<span class="Comment">/*</span><span class="Comment">*************************************************************************\</span>
+
+<span class="Comment">        Faster Composition and Projection with Pre-Conditioning</span>
+
+<span class="Comment">A new, experimental version of composition with preconditioning.</span>
+<span class="Comment">This interface was introduced in NTL v10.3.0, and it should be </span>
+<span class="Comment">considered a preliminary interface and subject to change.</span>
+
+<span class="Comment">The class ZZ_pXNewArgument is similar to ZZ_pXArgument, but with</span>
+<span class="Comment">a different internal layout.  Copy constructor and assignment work.</span>
+
+<span class="Comment">Note that all NTL modular composition and power projection routines, </span>
+<span class="Comment">as well as other routines that use modular composition power projection </span>
+<span class="Comment">internally, now use this new class.</span>
+
+<span class="Comment">Note also that these routines do not pay any attention to the</span>
+<span class="Comment">ZZ_pXArgBound variable.</span>
+
+<span class="Comment">\*************************************************************************</span><span class="Comment">*/</span>
+
+<span class="Type">class</span> ZZ_pXNewArgument {
+ <span class="Comment">// ...</span>
+};
+
+<span class="Type">void</span> build(ZZ_pXNewArgument&amp; H, <span class="Type">const</span> ZZ_pX&amp; h, <span class="Type">const</span> ZZ_pXModulus&amp; F, <span class="Type">long</span> m);
+<span class="Comment">// same functionality as the corresponding ZZ_pXArgument-based routine</span>
+
+<span class="Type">void</span> CompMod(ZZ_pX&amp; x, <span class="Type">const</span> ZZ_pX&amp; g, <span class="Type">const</span> ZZ_pXNewArgument&amp; H,
+             <span class="Type">const</span> ZZ_pXModulus&amp; F);
+<span class="Comment">// same functionality as the corresponding ZZ_pXArgument-based routine</span>
+
+<span class="Type">void</span> ProjectPowers(vec_ZZ_p&amp; x, <span class="Type">const</span> vec_ZZ_p&amp; a, <span class="Type">long</span> k,
+                   <span class="Type">const</span> ZZ_pXNewArgument&amp; H, <span class="Type">const</span> ZZ_pXModulus&amp; F);
+<span class="Comment">// same functionality as the corresponding ZZ_pXArgument-based routine</span>
+
+
+
+
+
+
 
 
 <span class="Comment">/*</span><span class="Comment">*************************************************************************\</span>

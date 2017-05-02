@@ -212,8 +212,8 @@ and in any case, its use should be avoided when writing portable programs.
 Instead of the above macros, one should use the followng macros:
 
 <pre>
-   NTL_ZZ_NBITS -- number of bits in a zzigit;
-                   a ZZ is represented as a sequence of zzigits.
+   NTL_ZZ_NBITS -- number of bits in a limb;
+                   a ZZ is represented as a sequence of limbs.
 
    NTL_SP_NBITS -- max number of bits in a "single-precision" number
 
@@ -261,7 +261,7 @@ NTL_WSP_BOUND -- (1L &lt;&lt; NTL_WSP_NBITS)
 <p>
 
 Note that for a <tt>ZZ</tt> <tt>n</tt>,
-<tt>n.size()</tt> returns the number of "zzigits" of <tt>n</tt>.
+<tt>n.size()</tt> returns the number of "limbs" of <tt>n</tt>.
 This is supported with either traditional or GMP integer arithemtic.
 Note, however, that some old codes might write <tt>n.size() &lt;= 1</tt>
 as a way to test if <tt>NumBits(n) &lt;= NTL_NBITS</tt>.

@@ -84,16 +84,27 @@ void save();
 void restore() const;
 
 
-// some hooks that are useful in helib...
+// some hooks that are useful in helib and elsewhere
 // FIXME: generalize these to other context classes
 // and document
 
 bool null() const { return ptr == 0; } 
 bool equals(const zz_pContext& other) const { return ptr == other.ptr; } 
 long modulus() const { return ptr->p; }
+mulmod_t ModulusInverse() const { return ptr->pinv; }
+const sp_ZZ_reduce_struct& ZZ_red_struct() const { return ptr->ZZ_red_struct; } 
+sp_reduce_struct red_struct() const { return ptr->red_struct; } 
 
 
 };
+
+
+// should be in FFT.h, but because of some weirdess involving NTL_WIZARD_HACK,
+// it has to be here
+inline const sp_ZZ_reduce_struct& GetFFT_ZZ_red_struct(long i) 
+{
+   return FFTTables[i]->zz_p_context->ZZ_red_struct;
+}
 
 
 class zz_pBak {
@@ -494,17 +505,35 @@ InnerProd_LL(const long *ap, const zz_p *bp, long n, long d,
 long
 InnerProd_LL(const zz_p *ap, const zz_p *bp, long n, long d, 
           sp_ll_reduce_struct dinv);
-#endif
 
+inline bool
+InnerProd_L_viable(long n, long d)
+{
+   if (n < 2) n = 2;  
+   // this ensures cast_unsigned(-1)/d^2 is at least 2, which
+   // streamlines things
+   if (n > 128) n = 128;
+   return cast_unsigned(n) <= cast_unsigned(-1L)/cast_unsigned(d) && 
+          cast_unsigned(n)*cast_unsigned(d) <= cast_unsigned(-1L)/cast_unsigned(d);
+}
+
+inline long 
+InnerProd_L_bound(long d)
+{
+   return cast_unsigned(-1L)/(cast_unsigned(d)*cast_unsigned(d));
+   // This calculation ensures that the return value does not sign-overflow,
+   // and that InnerProd_L itself can accumulate an extra term.
+}
 
 long 
 InnerProd_L(const long *ap, const zz_p *bp, long n, long d, 
-          sp_reduce_struct dinv);
+          sp_reduce_struct dinv, long bound);
 
 long 
 InnerProd_L(const zz_p *ap, const zz_p *bp, long n, long d, 
-          sp_reduce_struct dinv);
+          sp_reduce_struct dinv, long bound);
 
+#endif
 
 NTL_CLOSE_NNS
 

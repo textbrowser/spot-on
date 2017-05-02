@@ -228,6 +228,18 @@ void vec_GF2::swap(vec_GF2& y)
 }
 
 
+void vec_GF2::move(vec_GF2& y)  
+{
+   // special logic to get exception handling right
+   if (&y == this) return;
+   if (fixed() || y.fixed()) LogicError("move: can't move these vectors");
+
+   vec_GF2 tmp;
+   tmp.swap(y);
+   tmp.swap(*this);
+}
+
+
 void vec_GF2::append(GF2 a)
 {
    long n = length();

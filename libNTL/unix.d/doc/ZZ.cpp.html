@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/jjj/ntl-10.1.0dev/doc/ZZ.cpp.html</title>
+<title>~/jjj/ntl-10.3.0dev/doc/ZZ.cpp.html</title>
 <meta name="Generator" content="Vim/7.4">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -77,8 +77,8 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 };
 
 
-<span class="Comment">// NOTE: A ZZ is represented as a sequence of &quot;zzigits&quot;,</span>
-<span class="Comment">// where each zzigit is between 0 and 2^{NTL_ZZ_NBITS-1}.</span>
+<span class="Comment">// NOTE: A ZZ is represented as a sequence of &quot;limbs&quot;,</span>
+<span class="Comment">// where each limb is between 0 and 2^{NTL_ZZ_NBITS-1}.</span>
 
 <span class="Comment">// NTL_ZZ_NBITS is  macros defined in &lt;NTL/ZZ.h&gt;.</span>
 
@@ -1000,8 +1000,8 @@ ostream&amp; <span class="Statement">operator</span>&lt;&lt;(ostream&amp; s, <sp
 
 <span class="Comment">// The following macros are defined:</span>
 
-<span class="PreProc">#define NTL_ZZ_NBITS (...)  </span><span class="Comment">// number of bits in a zzigit;</span>
-                            <span class="Comment">// a ZZ is represented as a sequence of zzigits.</span>
+<span class="PreProc">#define NTL_ZZ_NBITS (...)  </span><span class="Comment">// number of bits in a limb;</span>
+                            <span class="Comment">// a ZZ is represented as a sequence of limbs.</span>
 
 <span class="PreProc">#define NTL_SP_NBITS (...)  </span><span class="Comment">// max number of bits in a &quot;single-precision&quot; number</span>
 
@@ -1063,12 +1063,12 @@ ostream&amp; <span class="Statement">operator</span>&lt;&lt;(ostream&amp; s, <sp
 <span class="Comment">// returns least nonnegative k such that 2^k &gt;= m</span>
 
 <span class="Type">long</span> ZZ::size() <span class="Type">const</span>;
-<span class="Comment">// a.size() returns the number of zzigits of |a|; the</span>
+<span class="Comment">// a.size() returns the number of limbs of |a|; the</span>
 <span class="Comment">// size of 0 is 0.</span>
 
 <span class="Type">void</span> ZZ::SetSize(<span class="Type">long</span> k)
 <span class="Comment">// a.SetSize(k) does not change the value of a, but simply pre-allocates</span>
-<span class="Comment">// space for k zzigits.</span>
+<span class="Comment">// space for k limbs.</span>
 
 <span class="Type">long</span> ZZ::SinglePrecision() <span class="Type">const</span>;
 <span class="Comment">// a.SinglePrecision() is a predicate that tests if abs(a) &lt; NTL_SP_BOUND</span>
@@ -1077,11 +1077,12 @@ ostream&amp; <span class="Statement">operator</span>&lt;&lt;(ostream&amp; s, <sp
 <span class="Comment">// a.WideSinglePrecision() is a predicate that tests if abs(a) &lt; NTL_WSP_BOUND</span>
 
 <span class="Type">long</span> digit(<span class="Type">const</span> ZZ&amp; a, <span class="Type">long</span> k);
-<span class="Comment">// returns k-th zzigit of |a|, position 0 being the low-order</span>
-<span class="Comment">// zzigit.</span>
-<span class="Comment">// NOTE: this routine is only available when using NTL's traditional</span>
+<span class="Comment">// returns k-th limb of |a|, position 0 being the low-order</span>
+<span class="Comment">// limb.</span>
+<span class="Comment">// OBSOLETE: this routine is only available when using NTL's traditional</span>
 <span class="Comment">// long integer arithmetic, and should not be used in programs</span>
-<span class="Comment">// that are meant to be portable.</span>
+<span class="Comment">// that are meant to be portable. You should instead use the </span>
+<span class="Comment">// routine ZZ_limbs_get, defined in ZZ_limbs.h.</span>
 
 <span class="Type">void</span> ZZ::kill();
 <span class="Comment">// a.kill() sets a to zero and frees the space held by a.</span>

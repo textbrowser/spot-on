@@ -139,7 +139,7 @@ OBJ=FFT.o FacVec.o GF2.o GF2E.o GF2EX.o GF2EXFactoring.o GF2X.o GF2X1.o  \
 	mat_lzz_p.o mat_lzz_pE.o mat_poly_ZZ.o mat_poly_ZZ_p.o mat_poly_lzz_p.o  \
 	quad_float.o tools.o vec_GF2.o vec_GF2E.o vec_RR.o vec_ZZ.o vec_ZZ_p.o  \
 	vec_ZZ_pE.o vec_lzz_p.o vec_lzz_pE.o xdouble.o G_LLL_FP.o G_LLL_QP.o G_LLL_XD.o  \
-	G_LLL_RR.o thread.o BasicThreadPool.o  
+	G_LLL_RR.o thread.o BasicThreadPool.o MatPrime.o 
 
 # library source files
 SRC=FFT.cpp FacVec.cpp GF2.cpp GF2E.cpp GF2EX.cpp GF2EXFactoring.cpp GF2X.cpp  \
@@ -154,14 +154,14 @@ SRC=FFT.cpp FacVec.cpp GF2.cpp GF2E.cpp GF2EX.cpp GF2EXFactoring.cpp GF2X.cpp  \
 	quad_float.cpp tools.cpp vec_GF2.cpp vec_GF2E.cpp vec_RR.cpp vec_ZZ.cpp  \
 	vec_ZZ_p.cpp vec_ZZ_pE.cpp vec_lzz_p.cpp vec_lzz_pE.cpp xdouble.cpp  \
 	G_LLL_FP.cpp G_LLL_QP.cpp G_LLL_XD.cpp G_LLL_RR.cpp thread.cpp  \
-	BasicThreadPool.cpp
+	BasicThreadPool.cpp MatPrime.cpp
 
 
 
 # library header files
 INCL=FFT.h FacVec.h GF2.h GF2E.h GF2EX.h GF2EXFactoring.h GF2X.h  \
 	GF2XFactoring.h GF2XVec.h HNF.h ctools.h LLL.h RR.h WordVector.h  \
-	ZZ.h sp_arith.h ZZVec.h ZZX.h ZZXFactoring.h ZZ_p.h ZZ_pE.h ZZ_pEX.h  \
+	ZZ.h ZZ_limbs.h sp_arith.h ZZVec.h ZZX.h ZZXFactoring.h ZZ_p.h ZZ_pE.h ZZ_pEX.h  \
 	ZZ_pEXFactoring.h ZZ_pX.h ZZ_pXFactoring.h fileio.h lip.h lzz_p.h lzz_pE.h  \
 	lzz_pEX.h lzz_pEXFactoring.h lzz_pX.h lzz_pXFactoring.h mat_GF2.h mat_GF2E.h  \
 	mat_RR.h mat_ZZ.h mat_ZZ_p.h mat_ZZ_pE.h mat_lzz_p.h mat_lzz_pE.h mat_poly_ZZ.h  \
@@ -173,7 +173,7 @@ INCL=FFT.h FacVec.h GF2.h GF2E.h GF2EX.h GF2EXFactoring.h GF2X.h  \
 	vec_vec_GF2E.h vec_vec_RR.h vec_vec_ZZ.h vec_vec_ZZ_p.h vec_vec_ZZ_pE.h  \
 	vec_vec_long.h vec_vec_lzz_p.h vec_vec_lzz_pE.h vec_xdouble.h xdouble.h  \
 	config.h version.h def_config.h new.h vec_ulong.h vec_vec_ulong.h SmartPtr.h  \
-	Lazy.h LazyTable.h thread.h  BasicThreadPool.h
+	Lazy.h LazyTable.h thread.h  BasicThreadPool.h MatPrime.h
 
 
 
@@ -212,7 +212,7 @@ AUXPROGS = TestGetTime TestGetPID CheckFeature CheckCompile
 
 DFILES=copying.txt BasicThreadPool.txt GF2.txt GF2E.txt GF2EX.txt  \
 	GF2EXFactoring.txt GF2X.txt GF2XFactoring.txt GF2XVec.txt HNF.txt Lazy.txt  \
-	LazyTable.txt LLL.txt RR.txt SmartPtr.txt ZZ.txt ZZVec.txt ZZX.txt  \
+	LazyTable.txt LLL.txt RR.txt SmartPtr.txt ZZ.txt ZZ_limbs.txt ZZVec.txt ZZX.txt  \
 	ZZXFactoring.txt ZZ_p.txt ZZ_pE.txt ZZ_pEX.txt ZZ_pEXFactoring.txt ZZ_pX.txt  \
 	ZZ_pXFactoring.txt conversions.txt flags.txt lzz_p.txt lzz_pE.txt lzz_pEX.txt  \
 	lzz_pEXFactoring.txt lzz_pX.txt lzz_pXFactoring.txt mat_GF2.txt mat_GF2E.txt  \
@@ -231,7 +231,7 @@ DFILES=copying.txt BasicThreadPool.txt GF2.txt GF2E.txt GF2EX.txt  \
 
 TXFILES=GF2.txt GF2E.txt GF2EX.txt GF2EXFactoring.txt GF2X.txt  \
 	GF2XFactoring.txt GF2XVec.txt HNF.txt Lazy.txt LazyTable.txt LLL.txt RR.txt  \
-	SmartPtr.txt ZZ.txt ZZVec.txt ZZX.txt ZZXFactoring.txt ZZ_p.txt ZZ_pE.txt  \
+	SmartPtr.txt ZZ.txt ZZ_limbs.txt ZZVec.txt ZZX.txt ZZXFactoring.txt ZZ_p.txt ZZ_pE.txt  \
 	ZZ_pEX.txt ZZ_pEXFactoring.txt ZZ_pX.txt ZZ_pXFactoring.txt lzz_p.txt  \
 	lzz_pE.txt lzz_pEX.txt lzz_pEXFactoring.txt lzz_pX.txt lzz_pXFactoring.txt  \
 	mat_GF2.txt mat_GF2E.txt mat_RR.txt mat_ZZ.txt mat_ZZ_p.txt mat_ZZ_pE.txt  \
@@ -244,7 +244,7 @@ TXFILES=GF2.txt GF2E.txt GF2EX.txt GF2EXFactoring.txt GF2X.txt  \
 HTFILES=GF2.cpp.html GF2E.cpp.html GF2EX.cpp.html GF2EXFactoring.cpp.html  \
 	GF2X.cpp.html GF2XFactoring.cpp.html GF2XVec.cpp.html HNF.cpp.html  \
 	Lazy.cpp.html LazyTable.cpp.html LLL.cpp.html RR.cpp.html SmartPtr.cpp.html  \
-	ZZ.cpp.html ZZVec.cpp.html ZZX.cpp.html ZZXFactoring.cpp.html ZZ_p.cpp.html  \
+	ZZ.cpp.html ZZ_limbs.cpp.html ZZVec.cpp.html ZZX.cpp.html ZZXFactoring.cpp.html ZZ_p.cpp.html  \
 	ZZ_pE.cpp.html ZZ_pEX.cpp.html ZZ_pEXFactoring.cpp.html ZZ_pX.cpp.html  \
 	ZZ_pXFactoring.cpp.html lzz_p.cpp.html lzz_pE.cpp.html lzz_pEX.cpp.html  \
 	lzz_pEXFactoring.cpp.html lzz_pX.cpp.html lzz_pXFactoring.cpp.html  \
@@ -349,6 +349,9 @@ LCOMP= #LSTAT
 lip.o:	lip.cpp 
 	$(LCOMP) $(COMPILE) $(GMP_OPT_INCDIR) lip.cpp
 
+GF2X.o:	GF2X.cpp
+	$(LCOMP) $(COMPILE) $(GF2X_OPT_INCDIR) GF2X.cpp
+
 ctools.o:	ctools.cpp
 	$(LCOMP) $(COMPILE) ctools.cpp
 
@@ -364,7 +367,7 @@ CheckCompile: CheckCompile.cpp
 
 
 .cpp.o: 
-	$(LCOMP) $(COMPILE) $(GF2X_OPT_INCDIR) $<
+	$(LCOMP) $(COMPILE) $<
 
 .cpp: 
 	$(LINK) -o $@ $< ntl.a $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB) $(LDLIBS) #LSTAT

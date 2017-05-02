@@ -113,6 +113,9 @@ public:
    void swap(Vec<GF2>& y);
    // swap with y (fast: just swaps pointers)
 
+   void move(Vec<GF2>& y);
+   // move y to *this (fast: just moves pointers)
+
    void append(GF2 a);
    // append a to end of vector
 

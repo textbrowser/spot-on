@@ -41,6 +41,14 @@ public:
 };
 
 
+#ifndef NTL_WIZARD_HACK
+
+class MatPrime_crt_helper;
+void MatPrime_crt_helper_deleter(MatPrime_crt_helper*);
+
+#endif
+
+
 class ZZ_pInfoT {
 private:
    ZZ_pInfoT();                       // disabled
@@ -54,6 +62,18 @@ public:
    long ExtendedModulusSize;
 
    Lazy<ZZ_pFFTInfoT> FFTInfo;
+
+#ifndef NTL_WIZARD_HACK
+
+   struct MatPrime_crt_helper_deleter_policy {
+      static void deleter(MatPrime_crt_helper *p) { MatPrime_crt_helper_deleter(p); }
+   };
+
+
+   Lazy<MatPrime_crt_helper,MatPrime_crt_helper_deleter_policy> MatPrime_crt_helper_info;
+   // PIMPL 
+
+#endif
 
 };
 

@@ -516,13 +516,16 @@ public:
   template<class Fct>
   static void relaxed_exec_index(BasicThreadPool *pool, long cnt, const Fct& fct) 
   {
-    if (cnt <= 0) return;
-    if (!pool || pool->active()) {
-      if (cnt > 1) LogicError("relaxed_exec_index: not enough threads");
-      fct(0);
-    }
-    else {
-      pool->exec_index(cnt, fct);
+    if (cnt > 0) {
+      if (cnt == 1) {
+	fct(0);
+      }
+      else if (pool && !pool->active()) {
+	pool->exec_index(cnt, fct);
+      }
+      else {
+	LogicError("relaxed_exec_index: not enough threads");
+      }
     }
   }
 

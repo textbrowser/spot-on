@@ -74,7 +74,6 @@ static inline double PrepMulMod(long n)
 
 static inline double PrepMulDivRem(long b, long n, double ninv)
 {
-   (void) n;
    return double(b)*ninv;
 }
 
@@ -480,7 +479,6 @@ static inline wide_double PrepMulMod(long n)
 
 static inline wide_double PrepMulDivRem(long b, long n, wide_double ninv)
 {
-   (void) n;
    return wide_double(b)*ninv;
 }
 
@@ -501,7 +499,7 @@ long NormalizedMulMod(long a, long b, long n, wide_double ninv)
    return MulMod(a, b, n, ninv);
 }
 
-static inline bool NormalizedModulus(wide_double ninv) { (void) ninv; return true; }
+static inline bool NormalizedModulus(wide_double ninv) { return true; }
 
 
 
@@ -741,7 +739,6 @@ typedef unsigned long mulmod_precon_t;
 
 static inline unsigned long PrepMulModPrecon(long b, long n, wide_double ninv)
 {
-   (void) n;
    long q  = (long) ( (((wide_double) b) * wide_double(NTL_SP_BOUND)) * ninv ); 
    unsigned long rr = (cast_unsigned(b) << NTL_SP_NBITS) - cast_unsigned(q)*cast_unsigned(n);
 

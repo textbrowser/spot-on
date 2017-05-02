@@ -11,6 +11,11 @@
 #include <NTL/Lazy.h>
 #include <NTL/SmartPtr.h>
 
+#ifndef NTL_WIZARD_HACK
+#include <NTL/mat_ZZ_p.h>
+#endif
+
+
 NTL_OPEN_NNS
 
 
@@ -1121,6 +1126,40 @@ void CompMod(ZZ_pX& x, const ZZ_pX& g, const ZZ_pXArgument& H,
 inline ZZ_pX 
 CompMod(const ZZ_pX& g, const ZZ_pXArgument& H, const ZZ_pXModulus& F)
    { ZZ_pX x; CompMod(x, g, H, F); NTL_OPT_RETURN(ZZ_pX, x); }
+
+
+// New alternative CompMod strategy that just reduces to 
+// matrix multiplication ... 
+
+#if (!defined(NTL_WIZARD_HACK) && defined(NTL_HAVE_LL_TYPE))
+// NOTE: currently, we only ise the multi-modular matmul NTL_HAVE_LL_TYPE
+// if NTL_HAVE_LL_TYPE is defined.
+
+#define NTL_USE_ZZ_pXNewArgument
+
+#endif
+
+#ifdef NTL_USE_ZZ_pXNewArgument
+
+struct ZZ_pXNewArgument {
+   mat_ZZ_p_opaque mat;
+   ZZ_pX poly;
+};
+
+void build(ZZ_pXNewArgument& H, const ZZ_pX& h, const ZZ_pXModulus& F, long m);
+void CompMod(ZZ_pX& x, const ZZ_pX& g, const ZZ_pXNewArgument& H,
+             const ZZ_pXModulus& F);
+
+void ProjectPowers(vec_ZZ_p& x, const vec_ZZ_p& a, long k,
+                   const ZZ_pXNewArgument& H, const ZZ_pXModulus& F);
+
+#else
+
+typedef ZZ_pXArgument ZZ_pXNewArgument;
+
+#endif
+
+
 
 
 #ifndef NTL_TRANSITION

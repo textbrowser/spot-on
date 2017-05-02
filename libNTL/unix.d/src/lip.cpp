@@ -1096,7 +1096,7 @@ inline void GET_SIZE_NEG(long& sz, long& neg, _ntl_gbigint p)
 }
 
 static
-inline void STRIP(long& sz, _ntl_limb_t *p)
+inline void STRIP(long& sz, const _ntl_limb_t *p)
 {
    long n = sz;
    while (n > 0 && p[n-1] == 0) n--;
@@ -1497,6 +1497,26 @@ void _ntl_gcopy(_ntl_gbigint a, _ntl_gbigint *bb)
       }
    }
 }
+
+void _ntl_glimbs_set(const _ntl_limb_t *p, long n, _ntl_gbigint *x)
+{
+   if (n < 0) LogicError("_ntl_glimbs_set: negative size");
+   if (n > 0 && !p) LogicError("_ntl_glimbs_set: unexpected NULL pointer");
+
+   STRIP(n, p);
+   if (n == 0) {
+      _ntl_gzero(x);
+      return;
+   }
+
+   if (MustAlloc(*x, n)) _ntl_gsetlength(x, n);
+   _ntl_limb_t *xdata = DATA(*x);
+   for (long i = 0; i < n; i++) xdata[i] = p[i];
+   SIZE(*x) = n;
+
+}
+
+
 
 
 void _ntl_gzero(_ntl_gbigint *aa) 
@@ -4482,7 +4502,7 @@ void _ntl_gdoubtoz(double a, _ntl_gbigint *xx)
 
    a = floor(a);
 
-   if (!_ntl_IsFinite(&a))
+   if (!IsFinite(&a))
       ArithmeticError("_ntl_gdoubtoz: attempt to convert non-finite value");
 
    if (a < 0) {
@@ -5413,15 +5433,6 @@ void _ntl_gpowermod(_ntl_gbigint g, _ntl_gbigint e, _ntl_gbigint F,
    _ntl_gcopy(res, h);
 }
 
-long _ntl_gsize(_ntl_gbigint rep)
-{
-   if (!rep)
-      return 0;
-   else if (SIZE(rep) < 0)
-      return -SIZE(rep);
-   else
-      return SIZE(rep);
-}
 
 long _ntl_gisone(_ntl_gbigint rep)
 {
@@ -8357,5 +8368,52 @@ _ntl_general_rem_one_struct_delete(_ntl_general_rem_one_struct *pinfo)
 
 #endif
 
+
+void
+_ntl_quick_accum_begin(_ntl_gbigint *xp, long sz)
+{
+   long sbuf = sz+2;
+   _ntl_gbigint x = *xp;
+   if (MustAlloc(x, sbuf)) {
+      _ntl_gsetlength(&x, sbuf);
+      *xp = x;
+   }
+
+   _ntl_limb_t *xx = DATA(x);
+   for (long i = 0; i < sbuf; i++) xx[i] = 0;
+   SIZE(x) = sbuf;
+}
+
+void 
+_ntl_quick_accum_muladd(_ntl_gbigint x, _ntl_gbigint y, long b)
+{
+   if (!y) return;
+
+   _ntl_limb_t *yy = DATA(y);
+   long sy = SIZE(y);
+   if (!sy || !b) return;
+
+   _ntl_limb_t *xx = DATA(x);
+
+   _ntl_limb_t carry = NTL_MPN(addmul_1)(xx, yy, sy, b);
+   yy = xx + sy;
+   *yy = CLIP(*yy + carry);
+
+   if (*yy < carry) { /* unsigned comparison! */
+      do {
+	 yy++;
+	 *yy = CLIP(*yy + 1);
+      } while (*yy == 0);
+   }
+}
+
+void
+_ntl_quick_accum_end(_ntl_gbigint x)
+{
+   _ntl_limb_t *xx = DATA(x);
+   long sx = SIZE(x);
+   STRIP(sx, xx);
+   SIZE(x) = sx;
+}
 
 

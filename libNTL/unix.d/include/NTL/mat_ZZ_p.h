@@ -5,10 +5,74 @@
 #include <NTL/tools.h>
 #include <NTL/matrix.h>
 #include <NTL/vec_vec_ZZ_p.h>
+#include <NTL/SmartPtr.h>
 
 NTL_OPEN_NNS
 
 typedef Mat<ZZ_p> mat_ZZ_p;
+
+
+
+// ****************** opaque stuff **************
+
+struct mat_ZZ_p_opaque_body {
+   virtual ~mat_ZZ_p_opaque_body() { }
+   virtual mat_ZZ_p_opaque_body* clone() const = 0;
+   virtual long NumRows() const = 0; 
+   virtual long NumCols() const = 0; 
+   virtual void mul(mat_ZZ_p& X, const mat_ZZ_p& A) const = 0;
+   virtual void mul_transpose(mat_ZZ_p& X, const mat_ZZ_p& A) const = 0;
+};
+
+mat_ZZ_p_opaque_body *mat_ZZ_p_opaque_body_move(mat_ZZ_p& A);
+
+struct mat_ZZ_p_opaque {
+
+   CopiedPtr<mat_ZZ_p_opaque_body,CloningCopiedPtrPolicy> ptr;
+
+   void move(mat_ZZ_p& A)
+   {
+      this->ptr.reset(mat_ZZ_p_opaque_body_move(A));
+   }
+
+   long NumRows() const 
+   {
+      return ptr ? ptr->NumRows() : 0;
+   }
+
+   long NumCols() const 
+   {
+      return ptr ? ptr->NumCols() : 0;
+   }
+
+   bool initialized() const 
+   {
+      return ptr != 0;
+   }
+
+};
+
+inline
+void mul(mat_ZZ_p& X, const mat_ZZ_p& A, const mat_ZZ_p_opaque& B)
+{
+   if (!B.ptr) 
+      LogicError("mul: uninitialzed mat_ZZ_p_opaque");
+   else
+      B.ptr->mul(X, A);
+}
+
+inline
+void mul_transpose(mat_ZZ_p& X, const mat_ZZ_p& A, const mat_ZZ_p_opaque& B)
+{
+   if (!B.ptr) 
+      LogicError("mul: uninitialzed mat_ZZ_p_opaque");
+   else
+      B.ptr->mul_transpose(X, A);
+}
+
+
+
+
 
 void add(mat_ZZ_p& X, const mat_ZZ_p& A, const mat_ZZ_p& B); 
 void sub(mat_ZZ_p& X, const mat_ZZ_p& A, const mat_ZZ_p& B); 

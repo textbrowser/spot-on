@@ -1,19 +1,22 @@
 
 
 #include <NTL/ZZX.h>
+#include <NTL/BasicThreadPool.h>
 
 #include <NTL/new.h>
 
 NTL_START_IMPL
 
-/*****************************************************************/
-
-// Fast CRT routines
-//   - we could perhaps move these out of here to make them
-//   - more widely accessible
 
 
-struct FastCRTHelper {
+
+struct NewFastCRTHelperScratch {
+   Vec<ZZ> tmp_vec;        // length == nlevels+1
+   ZZ tmp1, tmp2, tmp3;
+};
+
+
+struct NewFastCRTHelper {
 
    ZZ prod;
    ZZ prod_half;
@@ -28,28 +31,41 @@ struct FastCRTHelper {
    Vec<long> nprimes_vec;  // length == veclen
    Vec<long> first_vec;    // length == nblocks
    Vec<ZZ> prod_vec;       // length == veclen
+
    Vec<long> coeff_vec;    // length == nprimes, coeff_vec[i] = (prod/p_i)^{-1} mod p_i
 
+   Vec<long> prime_vec;   // length == nprimes
+   Vec<const sp_ZZ_reduce_struct*> red_struct_vec; // length == nprimes
+   Vec<mulmod_precon_t> coeffpinv_vec; // length == nprimes
+   Vec<ZZVec> ppvec;       // length == nblocks
+   
+   long GetNumPrimes() const { return nprimes; }
 
-   Vec<ZZ> tmp_vec;        // length == nlevels
-
-
-   ZZ tmp1, tmp2, tmp3;
-
-   FastCRTHelper(long bound, long thresh); 
+   NewFastCRTHelper(long bound); 
 
    void fill_nprimes_vec(long index); 
    void fill_prod_vec(long index);
 
-   void reduce_aux(const ZZ& value, ZZ **remainders, long index, long level);
-   void reconstruct_aux(ZZ& value, ZZ **remainders, long index, long level);
+   void reduce_aux(const ZZ& value, long *remainders, NewFastCRTHelperScratch& scratch,
+                   long index, long level) const;
 
-   void reduce(const ZZ& value, ZZ **remainders);
-   void reconstruct(ZZ& value, ZZ **remainders);
+   void reconstruct_aux(ZZ& value, const long* remainders, NewFastCRTHelperScratch& scratch,
+                        long index, long level) const;
+
+
+   void reduce(const ZZ& value, long *remainders, NewFastCRTHelperScratch& scratch) const;
+   void reconstruct(ZZ& value, const long *remainders, NewFastCRTHelperScratch& scratch) const;
+
+   void init_scratch(NewFastCRTHelperScratch& scratch) const;
 
 };
 
-void FastCRTHelper::fill_nprimes_vec(long index) 
+void NewFastCRTHelper::init_scratch(NewFastCRTHelperScratch& scratch) const
+{
+   scratch.tmp_vec.SetLength(nlevels+1);
+}
+
+void NewFastCRTHelper::fill_nprimes_vec(long index) 
 {
    long left, right;
    left = 2*index + 1;
@@ -62,7 +78,7 @@ void FastCRTHelper::fill_nprimes_vec(long index)
    fill_nprimes_vec(right);
 }
 
-void FastCRTHelper::fill_prod_vec(long index)
+void NewFastCRTHelper::fill_prod_vec(long index)
 {
    long left, right;
    left = 2*index + 1;
@@ -74,8 +90,11 @@ void FastCRTHelper::fill_prod_vec(long index)
    mul(prod_vec[index], prod_vec[left], prod_vec[right]);
 }
 
-FastCRTHelper::FastCRTHelper(long bound, long thresh) 
+NewFastCRTHelper::NewFastCRTHelper(long bound) 
 {
+   long thresh = 96;
+   bound += 2; // extra 2 bits ensures correct results
+
    // assumes bound >= 1, thresh >= 1
 
    prod = 1;
@@ -102,19 +121,18 @@ FastCRTHelper::FastCRTHelper(long bound, long thresh)
 
    fill_nprimes_vec(0);
 
-   long k, i;
    first_vec.SetLength(nblocks+1);
 
    first_vec[0] = 0;
-   for (k = 1; k <= nblocks; k++)
+   for (long k = 1; k <= nblocks; k++)
       first_vec[k] = first_vec[k-1] + nprimes_vec[start_last_level + k-1];
 
    prod_vec.SetLength(veclen);
 
    // fill product leaves
-   for (k = 0; k < nblocks; k++) {
+   for (long k = 0; k < nblocks; k++) {
       prod_vec[start_last_level + k] = 1;
-      for (i = first_vec[k]; i < first_vec[k+1]; i++) {
+      for (long i = first_vec[k]; i < first_vec[k+1]; i++) {
          prod_vec[start_last_level + k] *= GetFFTPrime(i);
       }
    }
@@ -123,96 +141,417 @@ FastCRTHelper::FastCRTHelper(long bound, long thresh)
    fill_prod_vec(0);
 
    ZZ t1;
-   long tt;
 
-   // fill coeff_vec: simple, quadratic time for now
-   // not really essential to speed this up
    coeff_vec.SetLength(nprimes);
+   prime_vec.SetLength(nprimes);
+   red_struct_vec.SetLength(nprimes);
+   coeffpinv_vec.SetLength(nprimes);
+
    for (long i = 0; i < nprimes; i++) {
       long p = GetFFTPrime(i);
       div(t1, prod, p);
-      tt = rem(t1, p);
+      long tt = rem(t1, p);
       tt = InvMod(tt, p);
       coeff_vec[i] = tt;
+      prime_vec[i] = p;
+      red_struct_vec[i] = &GetFFT_ZZ_red_struct(i);
+      coeffpinv_vec[i] = PrepMulModPrecon(tt, p);
    }
 
-   tmp_vec.SetLength(nlevels);
+   ppvec.SetLength(nblocks);
+   for (long k = 0; k < nblocks; k++) {
+      const ZZ& block_prod = prod_vec[start_last_level + k];
+      ppvec[k].SetSize(first_vec[k+1]-first_vec[k], block_prod.size());
+      for (long i = first_vec[k]; i < first_vec[k+1]; i++) {
+         div(t1, block_prod, prime_vec[i]);
+         ppvec[k][i-first_vec[k]] = t1;
+      }
+   }
+
 }
 
-void FastCRTHelper::reduce_aux(const ZZ& value, ZZ **remainders, long index, long level)
+void NewFastCRTHelper::reduce_aux(const ZZ& value, long *remainders, 
+                                  NewFastCRTHelperScratch& scratch,
+                                  long index, long level) const
 {
    long left, right;
    left = 2*index + 1;
    right = 2*index + 2;
 
-   ZZ *result = 0;
-
-   if (left >= veclen) 
-      result = remainders[index - start_last_level];
-   else
-      result = &tmp_vec[level];
+   ZZ& result = scratch.tmp_vec[level];
 
    if (NumBits(value) <= NumBits(prod_vec[index]))
-      *result = value;
+      result = value;
    else {
-      rem(tmp1, value, prod_vec[index]);
-      sub(tmp2, tmp1, prod_vec[index]);
-      if (NumBits(tmp2) < NumBits(tmp1))
-         *result = tmp2;
+      rem(scratch.tmp1, value, prod_vec[index]);
+      sub(scratch.tmp2, scratch.tmp1, prod_vec[index]);
+      if (NumBits(scratch.tmp2) < NumBits(scratch.tmp1))
+         result = scratch.tmp2;
       else
-         *result = tmp1;
+         result = scratch.tmp1;
    }
 
    if (left < veclen) {
-      reduce_aux(*result, remainders, left, level+1);
-      reduce_aux(*result, remainders, right, level+1);
+      reduce_aux(result, remainders, scratch, left, level+1);
+      reduce_aux(result, remainders, scratch, right, level+1);
    }
+   else {
+      long k = index - start_last_level;
+      long i_begin = first_vec[k];
+      long i_end = first_vec[k+1];
 
+      for (long i = i_begin; i < i_end; i++) {
+         remainders[i] = red_struct_vec[i]->rem(result);
+      }
+   }
 }
 
-void FastCRTHelper::reduce(const ZZ& value, ZZ **remainders)
+void NewFastCRTHelper::reduce(const ZZ& value, long *remainders, 
+                              NewFastCRTHelperScratch& scratch) const
 {
-   reduce_aux(value, remainders, 0, 0);
+   reduce_aux(value, remainders, scratch, 0, 0);
 }
 
-void FastCRTHelper::reconstruct_aux(ZZ& value, ZZ **remainders, long index, long level)
+void NewFastCRTHelper::reconstruct_aux(ZZ& value, const long* remainders, 
+                                       NewFastCRTHelperScratch& scratch,
+                                       long index, long level) const
 {
    long left, right;
    left = 2*index + 1;
    right = 2*index + 2;
 
    if (left >= veclen) {
-      value = *remainders[index - start_last_level];
+      long k = index - start_last_level;
+      long i_begin = first_vec[k];
+      long i_end = first_vec[k+1];
+      const ZZ* ppv = ppvec[k].elts();
+      ZZ& acc = scratch.tmp1;
+
+      QuickAccumBegin(acc, prod_vec[index].size());
+      for (long i = i_begin; i < i_end; i++) {
+         long p = prime_vec[i];
+         long tt = coeff_vec[i];
+         mulmod_precon_t ttpinv = coeffpinv_vec[i];
+         long s = MulModPrecon(remainders[i], tt, p, ttpinv);
+         QuickAccumMulAdd(acc, ppv[i-i_begin], s);
+      }
+      QuickAccumEnd(acc);
+
+      value = acc;
       return;
    }
 
-   reconstruct_aux(tmp_vec[level], remainders, left, level+1);
-   reconstruct_aux(tmp1, remainders, right, level+1);
+   reconstruct_aux(scratch.tmp_vec[level], remainders, scratch, left, level+1);
+   reconstruct_aux(scratch.tmp1, remainders, scratch, right, level+1);
 
-   mul(tmp2, tmp_vec[level], prod_vec[right]);
-   mul(tmp3, tmp1, prod_vec[left]);
-   add(value, tmp2, tmp3);
+   mul(scratch.tmp2, scratch.tmp_vec[level], prod_vec[right]);
+   mul(scratch.tmp3, scratch.tmp1, prod_vec[left]);
+   add(value, scratch.tmp2, scratch.tmp3);
 }
 
-void FastCRTHelper::reconstruct(ZZ& value, ZZ **remainders)
+void NewFastCRTHelper::reconstruct(ZZ& value, const long *remainders, 
+                                   NewFastCRTHelperScratch& scratch) const
 {
-   reconstruct_aux(tmp1, remainders, 0, 0);
-   rem(tmp1, tmp1, prod);
-   if (tmp1 > prod_half)
-      sub(tmp1, tmp1, prod);
+   reconstruct_aux(scratch.tmp1, remainders, scratch, 0, 0);
+   rem(scratch.tmp2, scratch.tmp1, prod);
+   if (scratch.tmp2 > prod_half)
+      sub(scratch.tmp2, scratch.tmp2, prod);
 
-   value = tmp1;
+   value = scratch.tmp2;
 }
 
 
 
 
+#define CRT_BLK (8)
+
+void HomMul(ZZX& x, const ZZX& a, const ZZX& b)
+{
+   if (&a == &b) {
+      HomSqr(x, a);
+      return;
+   }
+
+   long da = deg(a);
+   long db = deg(b);
+
+   if (da < 0 || db < 0) {
+      clear(x);
+      return;
+   }
+
+   long dc = da + db;
+
+   zz_pBak bak;
+   bak.save();
+
+   long bound = NumBits(min(da, db)+1) + MaxBits(a) + MaxBits(b);
+
+   NewFastCRTHelper H(bound);
+
+   long nprimes = H.GetNumPrimes();
+
+   if (NTL_OVERFLOW(nprimes, CRT_BLK, 0))
+      ResourceError("overflow"); // this is pretty academic
+
+
+   Vec< zz_pX > A, B, C;
+
+   A.SetLength(nprimes);
+   for (long i = 0; i < nprimes; i++) A[i].SetLength(da+1);
+
+   NTL_EXEC_RANGE(da+1, first, last)
+   {
+      Vec<long> remainders_store;
+      remainders_store.SetLength(nprimes*CRT_BLK); 
+      long *remainders = remainders_store.elts();
+
+      NewFastCRTHelperScratch scratch;
+      H.init_scratch(scratch);
+
+      long jj = first;
+      for (; jj <= last-CRT_BLK; jj += CRT_BLK) {
+	 for (long j = 0; j < CRT_BLK; j++) 
+	    H.reduce(a[jj+j], remainders + j*nprimes, scratch);
+         for (long i = 0; i < nprimes; i++) {
+            zz_p *Ai = A[i].rep.elts();
+            for (long j = 0; j < CRT_BLK; j++)
+               Ai[jj+j].LoopHole() = remainders[j*nprimes+i];
+         }
+      }
+      if (jj < last) {
+	 for (long j = 0; j < last-jj; j++) 
+	    H.reduce(a[jj+j], remainders + j*nprimes, scratch);
+	 for (long i = 0; i < nprimes; i++) {
+            zz_p *Ai = A[i].rep.elts();
+	    for (long j = 0; j < last-jj; j++)
+	       Ai[jj+j].LoopHole() = remainders[j*nprimes+i];
+	 }
+      }
+   }
+   NTL_EXEC_RANGE_END
+
+   B.SetLength(nprimes);
+   for (long i = 0; i < nprimes; i++) B[i].SetLength(db+1);
+
+   NTL_EXEC_RANGE(db+1, first, last)
+   {
+      Vec<long> remainders_store;
+      remainders_store.SetLength(nprimes*CRT_BLK); 
+      long *remainders = remainders_store.elts();
+
+      NewFastCRTHelperScratch scratch;
+      H.init_scratch(scratch);
+
+      long jj = first;
+      for (; jj <= last-CRT_BLK; jj += CRT_BLK) {
+	 for (long j = 0; j < CRT_BLK; j++) 
+	    H.reduce(b[jj+j], remainders + j*nprimes, scratch);
+         for (long i = 0; i < nprimes; i++) {
+            zz_p *Bi = B[i].rep.elts();
+            for (long j = 0; j < CRT_BLK; j++)
+               Bi[jj+j].LoopHole() = remainders[j*nprimes+i];
+         }
+      }
+      if (jj < last) {
+	 for (long j = 0; j < last-jj; j++) 
+	    H.reduce(b[jj+j], remainders + j*nprimes, scratch);
+	 for (long i = 0; i < nprimes; i++) {
+            zz_p *Bi = B[i].rep.elts();
+	    for (long j = 0; j < last-jj; j++)
+	       Bi[jj+j].LoopHole() = remainders[j*nprimes+i];
+	 }
+      }
+   }
+   NTL_EXEC_RANGE_END
+         
+
+   C.SetLength(nprimes);
+   for (long i = 0; i < nprimes; i++) C[i].SetMaxLength(dc+1);
+
+   NTL_EXEC_RANGE(nprimes, first, last)
+   for (long i = first; i < last; i++) {
+      zz_p::FFTInit(i);
+      A[i].normalize();
+      B[i].normalize();
+      mul(C[i], A[i], B[i]);
+      long dci = deg(C[i]);
+      C[i].SetLength(dc+1);
+      if (dci < dc) {
+         zz_p *Ci = C[i].rep.elts();
+         for (long j = dci+1; j <= dc; j++) Ci[j] = 0;
+      }
+   }
+   NTL_EXEC_RANGE_END
+
+   ZZVec xx;
+   xx.SetSize(dc+1, (bound+NTL_ZZ_NBITS-1)/NTL_ZZ_NBITS);
+   // NOTE: we pre-allocate all the storage we
+   // need to collect the result.  Based on my experience,
+   // too many calls to malloc in a multi-threaded setting
+   // can lead to significant performance degredation
+
+   NTL_EXEC_RANGE(dc+1, first, last)
+   {
+      Vec<long> remainders_store;
+      remainders_store.SetLength(nprimes*CRT_BLK); 
+      long *remainders = remainders_store.elts();
+
+      NewFastCRTHelperScratch scratch;
+      H.init_scratch(scratch);
+
+      long jj = first;
+      for (; jj <= last-CRT_BLK; jj += CRT_BLK) {
+         for (long i = 0; i < nprimes; i++) {
+            zz_p *Ci = C[i].rep.elts();
+            for (long j = 0; j < CRT_BLK; j++)
+               remainders[j*nprimes+i] = rep(Ci[jj+j]);
+         }
+	 for (long j = 0; j < CRT_BLK; j++) 
+	    H.reconstruct(xx[jj+j], remainders + j*nprimes, scratch);
+      }
+      if (jj < last) {
+	 for (long i = 0; i < nprimes; i++) {
+            zz_p *Ci = C[i].rep.elts();
+	    for (long j = 0; j < last-jj; j++)
+               remainders[j*nprimes+i] = rep(Ci[jj+j]);
+	 }
+	 for (long j = 0; j < last-jj; j++) 
+	    H.reconstruct(xx[jj+j], remainders + j*nprimes, scratch);
+      }
+   }
+   NTL_EXEC_RANGE_END
+
+   x.SetLength(dc+1);
+   for (long j = 0; j <=dc; j++)
+      x[j] = xx[j];
+   x.normalize();
+}
+
+void HomSqr(ZZX& x, const ZZX& a)
+{
+   long da = deg(a);
+
+   if (da < 0) {
+      clear(x);
+      return;
+   }
+
+   long dc = da + da;
+
+   zz_pBak bak;
+   bak.save();
+
+   long bound = NumBits(da+1) + 2*MaxBits(a);
+
+   NewFastCRTHelper H(bound);
+
+   long nprimes = H.GetNumPrimes();
+
+   if (NTL_OVERFLOW(nprimes, CRT_BLK, 0))
+      ResourceError("overflow"); // this is pretty academic
+
+
+   Vec< zz_pX > A, C;
+
+   A.SetLength(nprimes);
+   for (long i = 0; i < nprimes; i++) A[i].SetLength(da+1);
+
+   NTL_EXEC_RANGE(da+1, first, last)
+   {
+      Vec<long> remainders_store;
+      remainders_store.SetLength(nprimes*CRT_BLK); 
+      long *remainders = remainders_store.elts();
+
+      NewFastCRTHelperScratch scratch;
+      H.init_scratch(scratch);
+
+      long jj = first;
+      for (; jj <= last-CRT_BLK; jj += CRT_BLK) {
+	 for (long j = 0; j < CRT_BLK; j++) 
+	    H.reduce(a[jj+j], remainders + j*nprimes, scratch);
+         for (long i = 0; i < nprimes; i++) {
+            zz_p *Ai = A[i].rep.elts();
+            for (long j = 0; j < CRT_BLK; j++)
+               Ai[jj+j].LoopHole() = remainders[j*nprimes+i];
+         }
+      }
+      if (jj < last) {
+	 for (long j = 0; j < last-jj; j++) 
+	    H.reduce(a[jj+j], remainders + j*nprimes, scratch);
+	 for (long i = 0; i < nprimes; i++) {
+            zz_p *Ai = A[i].rep.elts();
+	    for (long j = 0; j < last-jj; j++)
+	       Ai[jj+j].LoopHole() = remainders[j*nprimes+i];
+	 }
+      }
+   }
+   NTL_EXEC_RANGE_END
+
+
+   C.SetLength(nprimes);
+   for (long i = 0; i < nprimes; i++) C[i].SetMaxLength(dc+1);
+
+   NTL_EXEC_RANGE(nprimes, first, last)
+   for (long i = first; i < last; i++) {
+      zz_p::FFTInit(i);
+      A[i].normalize();
+      sqr(C[i], A[i]);
+      long dci = deg(C[i]);
+      C[i].SetLength(dc+1);
+      if (dci < dc) {
+         zz_p *Ci = C[i].rep.elts();
+         for (long j = dci+1; j <= dc; j++) Ci[j] = 0;
+      }
+   }
+   NTL_EXEC_RANGE_END
+
+   ZZVec xx;
+   xx.SetSize(dc+1, (bound+NTL_ZZ_NBITS-1)/NTL_ZZ_NBITS);
+   // NOTE: we pre-allocate all the storage we
+   // need to collect the result.  Based on my experience,
+   // too many calls to malloc in a multi-threaded setting
+   // can lead to significant performance degredation
+
+   NTL_EXEC_RANGE(dc+1, first, last)
+   {
+      Vec<long> remainders_store;
+      remainders_store.SetLength(nprimes*CRT_BLK); 
+      long *remainders = remainders_store.elts();
+
+      NewFastCRTHelperScratch scratch;
+      H.init_scratch(scratch);
+
+      long jj = first;
+      for (; jj <= last-CRT_BLK; jj += CRT_BLK) {
+         for (long i = 0; i < nprimes; i++) {
+            zz_p *Ci = C[i].rep.elts();
+            for (long j = 0; j < CRT_BLK; j++)
+               remainders[j*nprimes+i] = rep(Ci[jj+j]);
+         }
+	 for (long j = 0; j < CRT_BLK; j++) 
+	    H.reconstruct(xx[jj+j], remainders + j*nprimes, scratch);
+      }
+      if (jj < last) {
+	 for (long i = 0; i < nprimes; i++) {
+            zz_p *Ci = C[i].rep.elts();
+	    for (long j = 0; j < last-jj; j++)
+               remainders[j*nprimes+i] = rep(Ci[jj+j]);
+	 }
+	 for (long j = 0; j < last-jj; j++) 
+	    H.reconstruct(xx[jj+j], remainders + j*nprimes, scratch);
+      }
+   }
+   NTL_EXEC_RANGE_END
+
+   x.SetLength(dc+1);
+   for (long j = 0; j <=dc; j++)
+      x[j] = xx[j];
+   x.normalize();
+}
 
 
 
-
-
-/*****************************************************************/
 
 
 static
@@ -597,8 +936,7 @@ void SSMul(ZZX& c, const ZZX& a, const ZZX& b)
   aa.SetSize(m2, p.size());
   bb.SetSize(m2, p.size());
 
-  long i;
-  for (i = 0; i <= deg(a); i++) {
+  for (long i = 0; i <= deg(a); i++) {
     if (sign(a.rep[i]) >= 0) {
       aa[i] = a.rep[i];
     } else {
@@ -606,7 +944,7 @@ void SSMul(ZZX& c, const ZZX& a, const ZZX& b)
     }
   }
 
-  for (i = 0; i <= deg(b); i++) {
+  for (long i = 0; i <= deg(b); i++) {
     if (sign(b.rep[i]) >= 0) {
       bb[i] = b.rep[i];
     } else {
@@ -619,9 +957,14 @@ void SSMul(ZZX& c, const ZZX& a, const ZZX& b)
   fft(aa, r, l + 1, p, mr);
   fft(bb, r, l + 1, p, mr);
 
+
   /* Pointwise multiplication aa := aa * bb mod p */
+  // NOTE: we attempt to parallelize this
+  // Unfortunately, the bulk of the time is spent 
+  // in the FFT, so this is not very effective
+  NTL_EXEC_RANGE(m2, first, last)
   ZZ tmp, ai;
-  for (i = 0; i < m2; i++) {
+  for (long i = first; i < last; i++) {
     mul(ai, aa[i], bb[i]);
     if (NumBits(ai) > mr) {
       RightShift(tmp, ai, mr);
@@ -633,13 +976,14 @@ void SSMul(ZZX& c, const ZZX& a, const ZZX& b)
     }
     aa[i] = ai;
   }
-  
+  NTL_EXEC_RANGE_END
+
   ifft(aa, r, l + 1, p, mr);
-  ZZ scratch;
 
   /* Retrieve c, dividing by 2m, and subtracting p where necessary */
   c.rep.SetLength(n + 1);
-  for (i = 0; i <= n; i++) {
+  ZZ ai, tmp, scratch;
+  for (long i = 0; i <= n; i++) {
     ai = aa[i];
     ZZ& ci = c.rep[i];
     if (!IsZero(ai)) {
@@ -691,94 +1035,53 @@ void conv(vec_zz_p& x, const ZZVec& a)
 }
 
 
-void HomMul(ZZX& x, const ZZX& a, const ZZX& b)
+
+// Decide to use SSMul.  This is a real mess...tested on a Haswell machine
+static bool ChooseSS(long da, long maxbitsa, long db, long maxbitsb)
 {
-   if (&a == &b) {
-      HomSqr(x, a);
-      return;
+   long k = ((maxbitsa+maxbitsb+NTL_ZZ_NBITS-1)/NTL_ZZ_NBITS)/2;
+   double rat = SSRatio(da, maxbitsa, db, maxbitsb);
+   long nt = AvailableThreads();
+
+   if (nt == 1) {
+
+      return (k >= 26  && rat < 1.20) ||
+             (k >= 53  && rat < 1.60) ||
+             (k >= 106 && rat < 1.80) ||
+             (k >= 212 && rat < 2.00);
+
    }
+   else if (nt == 2) {
 
+      return (k >= 53  && rat < 1.10) ||
+             (k >= 106 && rat < 1.10) ||
+             (k >= 212 && rat < 1.40);
 
-   long da = deg(a);
-   long db = deg(b);
-
-   if (da < 0 || db < 0) {
-      clear(x);
-      return;
    }
+   else if (nt == 3) {
 
-   zz_pBak bak;
-   bak.save();
+      return (k >= 106 && rat < 1.05) ||
+             (k >= 212 && rat < 1.20);
 
-   long bound = 2 + NumBits(min(da, db)+1) + MaxBits(a) + MaxBits(b);
-
-   FastCRTHelper H(bound, 96);
-
-   long i, j, k;
-
-   Vec<ZZVec> c, aa, bb;
-
-   c.SetLength(H.nblocks);
-   aa.SetLength(H.nblocks);
-   bb.SetLength(H.nblocks);
-
-   long sz_a = max(1, MaxSize(a));
-   long sz_b = max(1, MaxSize(b));
-
-   for (k = 0; k < H.nblocks; k++) {
-      ZZ *prod_vec = &H.prod_vec[H.start_last_level];
-      c[k].SetSize(da+db+1, prod_vec[k].size()+1);
-      aa[k].SetSize(da+1, min(sz_a, prod_vec[k].size()));
-      bb[k].SetSize(db+1, min(sz_b, prod_vec[k].size()));
    }
+   else if (nt == 4) {
 
-   Vec<ZZ*> ptr_vec;
-   ptr_vec.SetLength(H.nblocks);
+      return (k >= 106 && rat < 1.04) ||
+             (k >= 212 && rat < 1.10);
 
-   for (j = 0; j <= da; j++) {
-      for (k = 0; k < H.nblocks; k++) ptr_vec[k] = &aa[k][j];
-      H.reduce(a.rep[j], ptr_vec.elts());
    }
+   else if (nt <= 8) {
 
-   for (j = 0; j <= db; j++) {
-      for (k = 0; k < H.nblocks; k++) ptr_vec[k] = &bb[k][j];
-      H.reduce(b.rep[j], ptr_vec.elts());
+      return (k >= 212 && rat < 1.01);
+
    }
+   else {
 
-   ZZ t1;
-     
-   for (k = 0; k < H.nblocks; k++) {
-      for (i = H.first_vec[k]; i < H.first_vec[k+1]; i++) {
-         zz_p::FFTInit(i);
+      return false;
 
-         zz_pX A, B, C;
-         conv(A.rep, aa[k]); A.normalize();
-         conv(B.rep, bb[k]); B.normalize();
-         mul(C, A, B);
-
-         long m = deg(C);
-         long p = zz_p::modulus();
-         long tt = H.coeff_vec[i];
-         mulmod_precon_t ttpinv = PrepMulModPrecon(tt, p);
-         div(t1, H.prod_vec[H.start_last_level+k], p);
-         for (j = 0; j <= m; j++) {
-            long tt1 = MulModPrecon(rep(C.rep[j]), tt, p, ttpinv);
-            MulAddTo(c[k][j], t1, tt1);
-         }
-      }
    }
-
-   x.rep.SetLength(da+db+1);
-   for (j = 0; j <= da+db; j++) {
-      for (k = 0; k < H.nblocks; k++) ptr_vec[k] = &c[k][j];
-      H.reconstruct(x.rep[j], ptr_vec.elts());
-   }
-
-   x.normalize();
-   bak.restore();
+ 
 }
-
-
 
 
 void mul(ZZX& c, const ZZX& a, const ZZX& b)
@@ -815,23 +1118,15 @@ void mul(ZZX& c, const ZZX& a, const ZZX& b)
    }
 
 
-   double rat = SSRatio(deg(a), MaxBits(a), deg(b), MaxBits(b));
-   long k1 = (maxa + maxb)/2;
 
-   if ( 
-
-      (k1 >= 26  && rat < 1.40) || 
-      (k1 >= 53  && rat < 1.60) || 
-      (k1 >= 106 && rat < 1.80) || 
-      (k1 >= 212 && rat < 2.00) 
-
-   ) {
+   if (ChooseSS(deg(a), MaxBits(a), deg(b), MaxBits(b))) {
       SSMul(c, a, b);
    }
    else {
       HomMul(c, a, b);
    }
 }
+
 
 
 void SSSqr(ZZX& c, const ZZX& a)
@@ -860,8 +1155,7 @@ void SSSqr(ZZX& c, const ZZX& a)
   ZZVec aa;
   aa.SetSize(m2, p.size());
 
-  long i;
-  for (i = 0; i <= deg(a); i++) {
+  for (long i = 0; i <= deg(a); i++) {
     if (sign(a.rep[i]) >= 0) {
       aa[i] = a.rep[i];
     } else {
@@ -874,8 +1168,12 @@ void SSSqr(ZZX& c, const ZZX& a)
   fft(aa, r, l + 1, p, mr);
 
   /* Pointwise multiplication aa := aa * aa mod p */
+  // NOTE: we attempt to parallelize this
+  // Unfortunately, the bulk of the time is spent 
+  // in the FFT, so this is not very effective
+  NTL_EXEC_RANGE(m2, first, last)
   ZZ tmp, ai;
-  for (i = 0; i < m2; i++) {
+  for (long i = first; i < last; i++) {
     sqr(ai, aa[i]);
     if (NumBits(ai) > mr) {
       RightShift(tmp, ai, mr);
@@ -887,17 +1185,15 @@ void SSSqr(ZZX& c, const ZZX& a)
     }
     aa[i] = ai;
   }
+  NTL_EXEC_RANGE_END
   
   ifft(aa, r, l + 1, p, mr);
 
-  ZZ ci;
 
   /* Retrieve c, dividing by 2m, and subtracting p where necessary */
   c.rep.SetLength(n + 1);
-
-  ZZ scratch;
-
-  for (i = 0; i <= n; i++) {
+  ZZ ai, tmp, scratch;
+  for (long i = 0; i <= n; i++) {
     ai = aa[i];
     ZZ& ci = c.rep[i];
     if (!IsZero(ai)) {
@@ -914,79 +1210,6 @@ void SSSqr(ZZX& c, const ZZX& a)
        clear(ci);
   }
 }
-
-void HomSqr(ZZX& x, const ZZX& a)
-{
-   long da = deg(a);
-
-   if (da < 0) {
-      clear(x);
-      return;
-   }
-
-   zz_pBak bak;
-   bak.save();
-
-   long bound = 2 + NumBits(da+1) + 2*MaxBits(a);
-
-   FastCRTHelper H(bound, 96);      
-
-   long i, j, k;
-
-   Vec<ZZVec> c, aa;
-
-   c.SetLength(H.nblocks);
-   aa.SetLength(H.nblocks);
-
-   long sz_a = max(1, MaxSize(a));
-
-   for (k = 0; k < H.nblocks; k++) {
-      ZZ *prod_vec = &H.prod_vec[H.start_last_level];
-      c[k].SetSize(da+da+1, prod_vec[k].size()+1);
-      aa[k].SetSize(da+1, min(sz_a, prod_vec[k].size()));
-   }
-
-   Vec<ZZ*> ptr_vec;
-   ptr_vec.SetLength(H.nblocks);
-
-   for (j = 0; j <= da; j++) {
-      for (k = 0; k < H.nblocks; k++) ptr_vec[k] = &aa[k][j];
-      H.reduce(a.rep[j], ptr_vec.elts());
-   }
-
-   ZZ t1;
-     
-   for (k = 0; k < H.nblocks; k++) {
-      for (i = H.first_vec[k]; i < H.first_vec[k+1]; i++) {
-         zz_p::FFTInit(i);
-
-         zz_pX A, C;
-         conv(A.rep, aa[k]); A.normalize();
-         sqr(C, A);
-
-         long m = deg(C);
-         long p = zz_p::modulus();
-         long tt = H.coeff_vec[i];
-         mulmod_precon_t ttpinv = PrepMulModPrecon(tt, p);
-         div(t1, H.prod_vec[H.start_last_level+k], p);
-         for (j = 0; j <= m; j++) {
-            long tt1 = MulModPrecon(rep(C.rep[j]), tt, p, ttpinv);
-            MulAddTo(c[k][j], t1, tt1);
-         }
-      }
-   }
-
-   x.rep.SetLength(da+da+1);
-   for (j = 0; j <= da+da; j++) {
-      for (k = 0; k < H.nblocks; k++) ptr_vec[k] = &c[k][j];
-      H.reconstruct(x.rep[j], ptr_vec.elts());
-   }
-
-   x.normalize();
-   bak.restore();
-}
-
-
 
 void sqr(ZZX& c, const ZZX& a)
 {
@@ -1012,18 +1235,7 @@ void sqr(ZZX& c, const ZZX& a)
       return;
    }
 
-   long mba = MaxBits(a);
-   double rat = SSRatio(deg(a), mba, deg(a), mba);
-   long k1 = maxa;
-
-   if ( 
-
-      (k1 >= 26  && rat < 1.40) || 
-      (k1 >= 53  && rat < 1.60) || 
-      (k1 >= 106 && rat < 1.80) || 
-      (k1 >= 212 && rat < 2.00) 
-
-   ) {
+   if (ChooseSS(deg(a), MaxBits(a), deg(a), MaxBits(a))) {
       SSSqr(c, a);
    }
    else {

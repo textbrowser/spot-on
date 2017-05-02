@@ -711,7 +711,7 @@ void DDF(vec_pair_ZZ_pX_long& factors, const ZZ_pX& ff, const ZZ_pX& hh,
    ZZ_pXModulus F;
    build(F, f);
 
-   ZZ_pXArgument H;
+   ZZ_pXNewArgument H;
 
    build(H, h, F, min(CompTableSize, deg(f)));
 
@@ -1274,7 +1274,7 @@ long IterIrredTest(const ZZ_pX& f)
 
    long CompTableSize = 2*SqrRoot(deg(f));
 
-   ZZ_pXArgument H;
+   ZZ_pXNewArgument H;
 
    build(H, h, F, CompTableSize);
 
@@ -1498,7 +1498,7 @@ void GenerateBabySteps(ZZ_pX& h1, const ZZ_pX& f, const ZZ_pX& h, long k,
    ZZ_pXModulus F;
    build(F, f);
 
-   ZZ_pXArgument H;
+   ZZ_pXNewArgument H;
    build(H, h, F, 2*SqrRoot(F.n));
 
 
@@ -1541,7 +1541,7 @@ void GenerateGiantSteps(const ZZ_pX& f, const ZZ_pX& h, long l,
    ZZ_pXModulus F;
    build(F, f);
 
-   ZZ_pXArgument H;
+   ZZ_pXNewArgument H;
    build(H, h, F, 2*SqrRoot(F.n));
 
    ZZ_pX h1;

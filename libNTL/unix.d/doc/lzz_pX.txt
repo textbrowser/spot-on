@@ -719,44 +719,6 @@ extern long zz_pXArgBound;
 // and indirectly affects many routines in zz_pXFactoring.
 
 
-// @anchor{compmod}
-
-/**************************************************************************\
-
-                     Faster Composition with Pre-Conditioning
-
-A new, experimental version of composition with preconditioning.
-This interface was introduced in NTL v9.6.3, and it should be 
-considered a preliminary interface and suvject to change (although
-it is likely to not change very much).
-
-Usage:
-    zz_pX x, g, h;
-    zz_pXModulus F;
-    zz_pXArgument H;
-    build(H, h, F);
-    zz_pXAltArgument H1;
-    build(H1, H, F);  // this keeps a pointer to H, so H must remain alive
-    CompMod(x, g, H1, F);  // x = g(h) mod f
-
-The idea is that H1 stores the data in H in an alternative format
-that allows for a more cache-friendly and more efficient execution
-of CompMod.  Depending on a variety of factors, this can be up to 
-about 3x faster than the redgular CompMod.
-
-
-\**************************************************************************/
-
-class  zz_pXAltArgument { 
- // ...
-};
-
-void build(zz_pXAltArgument& altH, const zz_pXArgument& H, const zz_pXModulus& F);
-void CompMod(zz_pX& x, const zz_pX& g, const zz_pXAltArgument& A, 
-             const zz_pXModulus& F);
-
-
-
 /**************************************************************************\
 
                      power projection routines
@@ -804,6 +766,43 @@ vec_zz_p UpdateMap(const vec_zz_p& a,
 // This is "transposed" MulMod by B.
 // Input vector may have "high order" zeroes striped.
 // The output will always have high order zeroes stripped.
+
+
+/**************************************************************************\
+
+        Faster Composition and Projection with Pre-Conditioning
+
+A new, experimental version of composition with preconditioning.
+This interface was introduced in NTL v10.2.0, and it should be 
+considered a preliminary interface and subject to change.
+
+The class zz_pXNewArgument is similar to zz_pXArgument, but with
+a different internal layout.  Copy constructor and assignment work.
+
+Note that all NTL modular composition and power projection routines, 
+as well as other routines that use modular composition power projection 
+internally, now use this new class.
+
+Note also that these routines do not pay any attention to the
+zz_pXArgBound variable.
+
+\**************************************************************************/
+
+class zz_pXNewArgument { 
+ // ...
+};
+
+void build(zz_pXNewArgument& H, const zz_pX& h, const zz_pXModulus& F, long m);
+// same functionality as the corresponding zz_pXArgument-based routine
+
+void CompMod(zz_pX& x, const zz_pX& g, const zz_pXNewArgument& H,
+             const zz_pXModulus& F);
+// same functionality as the corresponding zz_pXArgument-based routine
+
+void ProjectPowers(vec_zz_p& x, const vec_zz_p& a, long k,
+                   const zz_pXNewArgument& H, const zz_pXModulus& F);
+// same functionality as the corresponding zz_pXArgument-based routine
+
 
 
 /**************************************************************************\

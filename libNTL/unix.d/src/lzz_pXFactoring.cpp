@@ -670,7 +670,7 @@ void DDF(vec_pair_zz_pX_long& factors, const zz_pX& ff, const zz_pX& hh,
    zz_pXModulus F;
    build(F, f);
 
-   zz_pXArgument H;
+   zz_pXNewArgument H;
 
    build(H, h, F, min(CompTableSize, deg(f)));
 
@@ -1297,7 +1297,7 @@ long IterIrredTest(const zz_pX& f)
 
    long CompTableSize = 2*rootn;
 
-   zz_pXArgument H;
+   zz_pXNewArgument H;
 
    long UseModComp = 1;
 
@@ -1501,8 +1501,7 @@ void BuildRandomIrred(zz_pX& f, const zz_pX& g)
 NTL_CHEAP_THREAD_LOCAL long zz_pX_GCDTableSize = 4;
 static NTL_CHEAP_THREAD_LOCAL vec_zz_pX *BabyStepFile = 0;
 static NTL_CHEAP_THREAD_LOCAL vec_zz_pX *GiantStepFile = 0;
-static NTL_CHEAP_THREAD_LOCAL zz_pXArgument *HHH = 0;
-static NTL_CHEAP_THREAD_LOCAL zz_pXAltArgument *HHH1 = 0;
+static NTL_CHEAP_THREAD_LOCAL zz_pXNewArgument *HHH = 0;
 static NTL_CHEAP_THREAD_LOCAL long OldN = 0;
 
 
@@ -1535,17 +1534,13 @@ void GenerateBabySteps(zz_pX& h1, const zz_pX& f, const zz_pX& h, long k,
       }
    }
    else {
-      zz_pXArgument H;
+      zz_pXNewArgument H;
       build(H, h, F, 2*rootn);
 
-      zz_pXAltArgument H1;
-      build(H1, H, F);
-   
-   
       for (i = 1; i <= k-1; i++) {
          (*BabyStepFile)(i) = h1; 
    
-         CompMod(h1, h1, H1, F);
+         CompMod(h1, h1, H, F);
          if (verbose) cerr << ".";
       }
    }
@@ -1564,7 +1559,6 @@ void GenerateGiantSteps(const zz_pX& f, const zz_pX& h, long l, long verbose)
    build(F, f);
 
    build(*HHH, h, F, 2*SqrRoot(F.n));
-   build(*HHH1, *HHH, F);
 
    OldN = F.n;
 
@@ -1649,14 +1643,12 @@ void FetchGiantStep(zz_pX& g, long gs, const zz_pXModulus& F)
       last = (*GiantStepFile)(l);
       if (F.n < OldN) {
          rem(last, last, F);
-         for (long i = 0; i < (*HHH).H.length(); i++)
-            rem((*HHH).H[i], (*HHH).H[i], F);
-         build(*HHH1, *HHH, F);
+         reduce(*HHH, F);
          OldN = F.n;
       }
 
       (*GiantStepFile).SetLength(l+1);
-      CompMod((*GiantStepFile)(l+1), last, *HHH1, F);
+      CompMod((*GiantStepFile)(l+1), last, *HHH, F);
       g = (*GiantStepFile)(l+1);
    }
    else if (deg((*GiantStepFile)(gs)) >= F.n)
@@ -1905,13 +1897,11 @@ void NewDDF(vec_pair_zz_pX_long& factors,
 
    vec_zz_pX local_BabyStepFile;
    vec_zz_pX local_GiantStepFile;
-   zz_pXArgument local_HHH;
-   zz_pXAltArgument local_HHH1;
+   zz_pXNewArgument local_HHH;
 
    BabyStepFile = &local_BabyStepFile;
    GiantStepFile = &local_GiantStepFile;
    HHH = &local_HHH;
-   HHH1 = &local_HHH1;
    
    zz_pX h1;
    GenerateBabySteps(h1, f, h, k, verbose);

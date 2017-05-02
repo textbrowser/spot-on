@@ -134,6 +134,9 @@ class Mat {
    void swap(Mat<T>& other);
    // quick swap *this and other
 
+   void move(Mat<T>& other);
+   // quick move other to *this
+
 };
 
 template<class T>

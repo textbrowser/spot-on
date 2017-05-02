@@ -96,7 +96,7 @@ NTL_OPEN_NNS
 // (i.e., relocatability).  One can wrap it in a pointer 
 // class (e.g., OptionalVal) to deal with this.
 
-template<class T>
+template<class T, class P=DefaultDeleterPolicy>
 class Lazy {
 private:
    /* we make data members mutable so that Lazy members of
@@ -105,7 +105,7 @@ private:
    mutable AtomicBool initialized; 
    mutable MutexProxy mtx;
 
-   mutable UniquePtr<T> data;
+   mutable UniquePtr<T, P> data;
 
 
    class Dummy { };
@@ -119,7 +119,7 @@ public:
    // EXCEPTIONS: This always succeeds in killing the object
    void kill() 
    { 
-      UniquePtr<T> tmp;
+      UniquePtr<T, P> tmp;
       tmp.swap(data);
       initialized = false;  
    }
@@ -133,7 +133,7 @@ public:
       if (this == &other) return *this;
 
       if (other.initialized) {
-         UniquePtr<T> p;
+         UniquePtr<T, P> p;
          if (other.data) p.make(*other.data);
          p.swap(data);
          initialized = true;
@@ -187,7 +187,7 @@ public:
 
       ~Builder() { if (moved) ref.initialized = true; }
 
-      void move(UniquePtr<T>& p) 
+      void move(UniquePtr<T, P>& p) 
       {
          if (!building || moved) LogicError("Lazy::Builder illegal call to move");
          ref.data.move(p); 

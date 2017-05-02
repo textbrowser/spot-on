@@ -45,8 +45,8 @@ public:
 };
 
 
-// NOTE: A ZZ is represented as a sequence of "zzigits",
-// where each zzigit is between 0 and 2^{NTL_ZZ_NBITS-1}.
+// NOTE: A ZZ is represented as a sequence of "limbs",
+// where each limb is between 0 and 2^{NTL_ZZ_NBITS-1}.
 
 // NTL_ZZ_NBITS is  macros defined in <NTL/ZZ.h>.
 
@@ -968,8 +968,8 @@ ostream& operator<<(ostream& s, const ZZ& a);
 
 // The following macros are defined:
 
-#define NTL_ZZ_NBITS (...)  // number of bits in a zzigit;
-                            // a ZZ is represented as a sequence of zzigits.
+#define NTL_ZZ_NBITS (...)  // number of bits in a limb;
+                            // a ZZ is represented as a sequence of limbs.
 
 #define NTL_SP_NBITS (...)  // max number of bits in a "single-precision" number
 
@@ -1031,12 +1031,12 @@ long NextPowerOfTwo(long m);
 // returns least nonnegative k such that 2^k >= m
 
 long ZZ::size() const;
-// a.size() returns the number of zzigits of |a|; the
+// a.size() returns the number of limbs of |a|; the
 // size of 0 is 0.
 
 void ZZ::SetSize(long k)
 // a.SetSize(k) does not change the value of a, but simply pre-allocates
-// space for k zzigits.
+// space for k limbs.
 
 long ZZ::SinglePrecision() const;
 // a.SinglePrecision() is a predicate that tests if abs(a) < NTL_SP_BOUND
@@ -1045,11 +1045,12 @@ long ZZ::WideSinglePrecision() const;
 // a.WideSinglePrecision() is a predicate that tests if abs(a) < NTL_WSP_BOUND
 
 long digit(const ZZ& a, long k);
-// returns k-th zzigit of |a|, position 0 being the low-order
-// zzigit.
-// NOTE: this routine is only available when using NTL's traditional
+// returns k-th limb of |a|, position 0 being the low-order
+// limb.
+// OBSOLETE: this routine is only available when using NTL's traditional
 // long integer arithmetic, and should not be used in programs
-// that are meant to be portable.
+// that are meant to be portable. You should instead use the 
+// routine ZZ_limbs_get, defined in ZZ_limbs.h.
 
 void ZZ::kill();
 // a.kill() sets a to zero and frees the space held by a.

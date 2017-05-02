@@ -564,7 +564,17 @@ inline long _ntl_ZEROP(_ntl_gbigint p)
 
 ********************************************************************/
 
-long _ntl_gsize(_ntl_gbigint n);
+static inline
+long _ntl_gsize(_ntl_gbigint rep)
+{
+  if (!rep)
+      return 0;
+   else if (_ntl_SIZE(rep) < 0)
+      return -_ntl_SIZE(rep);
+   else
+      return _ntl_SIZE(rep);
+}
+
 long _ntl_gisone(_ntl_gbigint n);
 
 long _ntl_gsptest(_ntl_gbigint a);
@@ -641,5 +651,15 @@ _ntl_general_rem_one_struct_delete(_ntl_general_rem_one_struct *pinfo);
 
 long _ntl_gvalidate(_ntl_gbigint a);
 
+
+// special-purpose routines for accumulating CRT-like summations
+void
+_ntl_quick_accum_begin(_ntl_gbigint *xp, long sz);
+
+void
+_ntl_quick_accum_muladd(_ntl_gbigint x, _ntl_gbigint y, long b);
+
+void
+_ntl_quick_accum_end(_ntl_gbigint x);
 
 #endif

@@ -208,6 +208,12 @@ public:
 
    // EXCEPTIONS: throws if vectors are fixed and lengths do not match, strong ES
 
+   void move(Vec<T>& y);
+   // move y into *this, killing y (fast: just moves pointers)
+
+   // EXCEPTIONS: strong ES, raises an error if 
+   // &y != this and either y or *this are fixed
+
    void append(const T& a);
    // append a to end of vector; uses the assignment operator of T
    // for copying into locations that have already been initialized,

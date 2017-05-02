@@ -95,16 +95,11 @@ void ZZ_p::DoInstall()
 
       double fn = double(n);
 
-      // NOTE: these next two range checks are somewhat academic,
-      // but various bits of code in the ZZ_pX implementation
-      // implicitly rely on them
+      // NOTE: the following checks is somewhat academic,
+      // but the implementation relies on it
 
       if (8.0*fn*(fn+48) > NTL_FDOUBLE_PRECISION)
          ResourceError("modulus too big");
-
-      if (n >= NTL_NSP_BOUND)
-         ResourceError("modulus too big");
-
 
 
       FFTInfo->rem_struct.init(n, ZZ_pInfo->p, GetFFTPrime);
