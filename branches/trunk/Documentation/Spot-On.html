@@ -6,7 +6,7 @@
 	<meta name="generator" content="LibreOffice 5.1.6.2 (Linux)"/>
 	<meta name="author" content="Monster "/>
 	<meta name="created" content="2014-10-24T18:38:51"/>
-	<meta name="changed" content="2017-04-18T15:16:35.696815487"/>
+	<meta name="changed" content="2017-05-02T15:17:57.883900920"/>
 	<style type="text/css">
 		@page { margin: 0.79in }
 		p { margin-bottom: 0.08in }
@@ -853,14 +853,14 @@ cryptographic system is desired. A modified form of the library’s
 source is included in the source repository. The modifications
 include the removal of GMP support and the resolution of some
 compiler warnings. On OS X, Homebrew should be used to install the
-library and its dependencies. Generally, brew install ntl. On
-Unix-like and Windows systems, a shared form of the library is
-prepared during the compilation of Spot-On. The initial preparation
-process may require a significant time to complete. NTL source is
-available at <a class="western" href="http://www.shoup.net/ntl">http://www.shoup.net/ntl</a>.
-Please configure the NTL library with exceptions enabled (DoConfig).
-Please read the Documentation/MCELIECE document for additional
-information.</p>
+library and its dependencies. Generally, brew install ntl. If Spot-On
+is prepared via spot-on.qt5.pro, a shared form of the library will be
+prepared. The initial preparation process may require a significant
+time to complete. NTL source is available at
+<a class="western" href="http://www.shoup.net/ntl">http://www.shoup.net/ntl</a>.
+Newer compilers may support NTL’s exceptions implementation. Please
+see the DoConfig file. Please read the Documentation/MCELIECE
+document for additional information.</p>
 <p align="left"><br/>
 <br/>
 
