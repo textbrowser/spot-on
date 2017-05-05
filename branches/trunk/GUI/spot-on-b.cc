@@ -4363,7 +4363,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 				  tr("A severe memory issue occurred."));
 	    return;
 	  }
-	else
+	else if(item)
 	  row = item->row(); // Sorting.
       }
   }
