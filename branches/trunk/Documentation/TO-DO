@@ -280,3 +280,4 @@ Remaining Items
 3.     Retrieve only the latest e-mails from IMAP/POP3.
 4.     Temporary queues. Will avoid dropped packets.
 5.     Which key types to export and import? A new selection dialog.
+6.     Random sequences for random data (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
