@@ -612,7 +612,7 @@ spoton::spoton(void):QMainWindow()
 	     "<br><br>"
 	     "Compiled on %1, %2.<br>"
 	     "%3.<br>"
-	     "Qt %4, %5-bit.<br>"
+	     "Qt %4 (runtime %11), %5-bit.<br>"
 	     "%6.<br>"
 	     "libgcrypt %7.<br>"
 	     "libntl %8.<br>"
@@ -648,7 +648,8 @@ spoton::spoton(void):QMainWindow()
      arg("0.0").
 #endif
      arg(LIBSPOTON_VERSION_STR).
-     arg(spoton_misc::homePath()));
+     arg(spoton_misc::homePath()).
+     arg(qVersion() ? qVersion() : "unknown"));
   m_ui.emailSecrets->setVisible(false);
   m_ui.passphrase_strength_indicator->setVisible(false);
   m_ui.statisticsBox->setVisible(false);
