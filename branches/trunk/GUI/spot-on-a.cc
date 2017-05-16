@@ -2623,10 +2623,10 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.starbeamAutoVerify->setChecked
     (m_settings.value("gui/starbeamAutoVerify", false).toBool());
   m_optionsUi.superEcho->setCurrentIndex
-    (m_settings.value("gui/superEcho", 1).toInt());
+    (m_settings.value("gui/superEcho", 1).toInt()); // Disabled by default.
 
   if(m_optionsUi.superEcho->currentIndex() < 0)
-    m_optionsUi.superEcho->setCurrentIndex(1);
+    m_optionsUi.superEcho->setCurrentIndex(1); // Disabled.
 
   m_optionsUi.chatAcceptSigned->setChecked
     (m_settings.value("gui/chatAcceptSignedMessagesOnly", true).toBool());
