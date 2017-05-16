@@ -604,7 +604,17 @@ spoton::spoton(void):QMainWindow()
   m_ui.neighborOrientation->model()->setData
     (m_ui.neighborOrientation->model()->index(1, 0), 0, Qt::UserRole - 1);
 
+  QString qversion("");
   bool sslSupported = QSslSocket::supportsSsl();
+  const char *tmp = qVersion();
+
+  if(tmp)
+    qversion = tmp;
+
+  qversion = qversion.trimmed();
+
+  if(qversion.isEmpty())
+    qversion = "unknown";
 
   m_ui.buildInformation->setText
     (QString("<html>"
@@ -649,7 +659,7 @@ spoton::spoton(void):QMainWindow()
 #endif
      arg(LIBSPOTON_VERSION_STR).
      arg(spoton_misc::homePath()).
-     arg(qVersion() ? qVersion() : "unknown"));
+     arg(qversion));
   m_ui.emailSecrets->setVisible(false);
   m_ui.passphrase_strength_indicator->setVisible(false);
   m_ui.statisticsBox->setVisible(false);
