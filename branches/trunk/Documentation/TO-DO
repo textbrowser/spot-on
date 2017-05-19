@@ -163,6 +163,7 @@ Completed Items
 116.   Include timestamps in StarBeam pulses.
 117.   Include timestamps in EPKS.
 118.   Include timestamps in URL bundles.
+119.   Verify that the Super Echo precedes computations.
 
 Ignored Items
 
@@ -281,4 +282,3 @@ Remaining Items
 4.     Temporary queues. Will avoid dropped packets.
 5.     Which key types to export and import? A new selection dialog.
 6.     Random sequences for random data (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
-7.     Verify that the Super Echo precedes computations.
