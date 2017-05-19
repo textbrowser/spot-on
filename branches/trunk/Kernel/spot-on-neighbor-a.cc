@@ -2076,6 +2076,14 @@ void spoton_neighbor::processData(void)
 	      continue;
 	    }
 
+	  if(spoton_kernel::setting("gui/superEcho", 1).toInt() != 1)
+	    /*
+	    ** Super Echo!
+	    */
+
+	    emit receivedMessage
+	      (originalData, m_id, QPair<QByteArray, QByteArray> ());
+
 	  /*
 	  ** Please note that findMessageType() calls
 	  ** participantCount(). Therefore, the process() methods
@@ -2159,10 +2167,6 @@ void spoton_neighbor::processData(void)
 	      /*
 	      ** Super Echo!
 	      */
-
-	      if(messageType != "0060") // StarBeam
-		emit receivedMessage
-		  (originalData, m_id, QPair<QByteArray, QByteArray> ());
 	    }
 	  else if(echoMode == "full")
 	    {
