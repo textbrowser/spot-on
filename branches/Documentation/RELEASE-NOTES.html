@@ -4,6 +4,10 @@
 <ol>
   <li>Super Echo data should be distributed before being validated.</li>
 </ol>
+<b>Improvements</b>
+<ol>
+  <li>The sequence table in urls.db should contain at most one value. Existing instances may experience an initial performance degradation as the table must be vacuumed.</li>
+</ol>
 2017.05.10
 <br>
 <b>Corrections</b>

@@ -4439,16 +4439,18 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
       if(query.exec("INSERT INTO sequence VALUES (NULL)"))
 	{
-	  if(query.exec("SELECT MAX(value) FROM sequence"))
+	  QVariant variant(query.lastInsertId());
+
+	  if(variant.isValid())
 	    {
-	      if(query.next())
-		id = query.value(0).toLongLong();
+	      id = variant.toLongLong();
+	      query.exec
+		(QString("DELETE FROM sequence WHERE value < %1").arg(id));
 	    }
 	  else
 	    {
 	      ok = false;
-	      error = QString("spoton_misc::importUrl(): "
-			      "%1.").arg(query.lastError().text());
+	      error = "spoton_misc::importUrl(): invalid variant.";
 	      logError(error);
 	    }
 	}
