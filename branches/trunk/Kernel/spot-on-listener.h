@@ -173,7 +173,7 @@ class spoton_listener: public QObject
 		  const int maximumClients,
 		  const qint64 id,
 		  const QString &echoMode,
-		  const int keySize,
+		  const unsigned int keySize,
 		  const QByteArray &certificate,
 		  const QByteArray &privateKey,
 		  const QByteArray &publicKey,
@@ -225,7 +225,6 @@ class spoton_listener: public QObject
   QTimer m_timer;
   bool m_shareAddress;
   bool m_useAccounts;
-  int m_keySize;
   int m_laneWidth;
   int m_maximumClients;
   int m_passthrough;
@@ -239,6 +238,7 @@ class spoton_listener: public QObject
   spoton_listener_tcp_server *m_tcpServer;
   spoton_listener_udp_server *m_udpServer;
   spoton_sctp_server *m_sctpServer;
+  unsigned int m_keySize;
   QString errorString(void) const;
   int maxPendingConnections(void) const;
   qint64 id(void) const;

@@ -171,7 +171,7 @@ spoton_listener::spoton_listener
  const int maximumClients,
  const qint64 id,
  const QString &echoMode,
- const int keySize,
+ const unsigned int keySize,
  const QByteArray &certificate,
  const QByteArray &privateKey,
  const QByteArray &publicKey,
