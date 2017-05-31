@@ -1294,7 +1294,9 @@ void spoton_kernel::prepareListeners(void)
 				 maximumClients,
 				 id,
 				 list.value(3).constData(),
-				 query.value(6).toUInt(),
+				 static_cast<unsigned int> (qAbs(query.
+								 value(6).
+								 toInt())),
 				 certificate,
 				 privateKey,
 				 publicKey,
