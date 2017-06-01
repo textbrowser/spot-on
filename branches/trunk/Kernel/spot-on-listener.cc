@@ -216,7 +216,7 @@ spoton_listener::spoton_listener
   else
     m_externalAddress = 0;
 
-  m_keySize = qAbs(keySize);
+  m_keySize = keySize;
 
   if(transport == "bluetooth")
     {
