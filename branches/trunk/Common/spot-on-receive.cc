@@ -272,11 +272,17 @@ QList<QByteArray> spoton_receive::process0000
 			    {
 			      if(acceptSignedMessagesOnly)
 				{
-				  QByteArray recipientDigest
-				    (spoton_crypt::
-				     sha512Hash(s_crypt->publicKey(0), 0));
+				  QByteArray recipientDigest;
+				  bool ok = true;
 
-				  if(!spoton_misc::
+				  recipientDigest = s_crypt->publicKey(&ok);
+
+				  if(ok)
+				    recipientDigest = spoton_crypt::
+				      sha512Hash(recipientDigest, &ok);
+
+				  if(!ok ||
+				     !spoton_misc::
 				     isValidSignature("0000" +
 						      symmetricKey +
 						      hashKey +
@@ -1310,26 +1316,39 @@ QList<QByteArray> spoton_receive::process0013
 						   s_crypt))
 			    {
 			      if(acceptSignedMessagesOnly)
-				if(!spoton_misc::
-				   isValidSignature("0013" +
-						    symmetricKey +
-						    hashKey +
-						    symmetricKeyAlgorithm +
-						    hashKeyAlgorithm +
-						    list.value(0) +
-						    list.value(1) +
-						    list.value(2) +
-						    list.value(3),
-						    list.value(0),
-						    list.value(4),
-						    s_crypt))
-				  {
-				    spoton_misc::logError
-				      ("spoton_receive::"
-				       "process0013(): invalid "
-				       "signature.");
-				    return QList<QByteArray> ();
-				  }
+				{
+				  QByteArray recipientDigest;
+				  bool ok = true;
+
+				  recipientDigest = s_crypt->publicKey(&ok);
+
+				  if(ok)
+				    recipientDigest = spoton_crypt::
+				      sha512Hash(recipientDigest, &ok);
+
+				  if(!ok ||
+				     !spoton_misc::
+				     isValidSignature("0013" +
+						      symmetricKey +
+						      hashKey +
+						      symmetricKeyAlgorithm +
+						      hashKeyAlgorithm +
+						      list.value(0) +
+						      list.value(1) +
+						      list.value(2) +
+						      list.value(3) +
+						      recipientDigest,
+						      list.value(0),
+						      list.value(4),
+						      s_crypt))
+				    {
+				      spoton_misc::logError
+					("spoton_receive::"
+					 "process0013(): invalid "
+					 "signature.");
+				      return QList<QByteArray> ();
+				    }
+				}
 
 			      return list;
 			    }

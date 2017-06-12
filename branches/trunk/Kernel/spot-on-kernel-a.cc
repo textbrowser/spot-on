@@ -2032,10 +2032,8 @@ void spoton_kernel::slotMessageReceivedFromUI
 
 	if(setting("gui/chatSignMessages", true).toBool())
 	  {
-	    QByteArray recipientDigest;
-
-	    if(ok)
-	      recipientDigest = spoton_crypt::sha512Hash(publicKey, &ok);
+	    QByteArray recipientDigest
+	      (spoton_crypt::sha512Hash(publicKey, &ok));
 
 	    if(ok)
 	      signature = s_crypt2->digitalSignature
@@ -2855,17 +2853,25 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 				       "");
 
 		    if(setting("gui/chatSignMessages", true).toBool())
-		      signature = s_crypt2->digitalSignature
-			("0013" +
-			 symmetricKey +
-			 hashKey +
-			 cipherType +
-			 hashType +
-			 myPublicKeyHash +
-			 name +
-			 status +
-			 dateTime.toUTC().toString("MMddyyyyhhmmss").
-			 toLatin1(), &ok);
+		      {
+			QByteArray recipientDigest
+			  (spoton_crypt::sha512Hash(publicKey, &ok));
+
+			if(ok)
+			  signature = s_crypt2->digitalSignature
+			    ("0013" +
+			     symmetricKey +
+			     hashKey +
+			     cipherType +
+			     hashType +
+			     myPublicKeyHash +
+			     name +
+			     status +
+			     dateTime.toUTC().toString("MMddyyyyhhmmss").
+			     toLatin1() +
+			     recipientDigest,
+			     &ok);
+		      }
 
 		    if(ok)
 		      {
