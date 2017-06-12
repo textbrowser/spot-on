@@ -2031,17 +2031,26 @@ void spoton_kernel::slotMessageReceivedFromUI
 			   "");
 
 	if(setting("gui/chatSignMessages", true).toBool())
-	  signature = s_crypt2->digitalSignature
-	    ("0000" +
-	     symmetricKey +
-	     hashKey +
-	     cipherType +
-	     hashType +
-	     myPublicKeyHash +
-	     name +
-	     message +
-	     sequenceNumber +
-	     utcDate, &ok);
+	  {
+	    QByteArray recipientDigest;
+
+	    if(ok)
+	      recipientDigest = spoton_crypt::sha512Hash(publicKey, &ok);
+
+	    if(ok)
+	      signature = s_crypt2->digitalSignature
+		("0000" +
+		 symmetricKey +
+		 hashKey +
+		 cipherType +
+		 hashType +
+		 myPublicKeyHash +
+		 name +
+		 message +
+		 sequenceNumber +
+		 utcDate +
+		 recipientDigest, &ok);
+	  }
 
 	if(ok)
 	  {

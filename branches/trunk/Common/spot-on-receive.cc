@@ -271,27 +271,34 @@ QList<QByteArray> spoton_receive::process0000
 						   s_crypt))
 			    {
 			      if(acceptSignedMessagesOnly)
-				if(!spoton_misc::
-				   isValidSignature("0000" +
-						    symmetricKey +
-						    hashKey +
-						    symmetricKeyAlgorithm +
-						    hashKeyAlgorithm +
-						    list.value(0) +
-						    list.value(1) +
-						    list.value(2) +
-						    list.value(3) +
-						    list.value(4),
-						    list.value(0),
-						    list.value(5),
-						    s_crypt))
-				  {
-				    spoton_misc::logError
-				      ("spoton_receive::"
-				       "process0000(): invalid "
-				       "signature.");
-				    return QList<QByteArray> ();
-				  }
+				{
+				  QByteArray recipientDigest
+				    (spoton_crypt::
+				     sha512Hash(s_crypt->publicKey(0), 0));
+
+				  if(!spoton_misc::
+				     isValidSignature("0000" +
+						      symmetricKey +
+						      hashKey +
+						      symmetricKeyAlgorithm +
+						      hashKeyAlgorithm +
+						      list.value(0) +
+						      list.value(1) +
+						      list.value(2) +
+						      list.value(3) +
+						      list.value(4) +
+						      recipientDigest,
+						      list.value(0),
+						      list.value(5),
+						      s_crypt))
+				    {
+				      spoton_misc::logError
+					("spoton_receive::"
+					 "process0000(): invalid "
+					 "signature.");
+				      return QList<QByteArray> ();
+				    }
+				}
 
 			      if(!list.value(0).isEmpty() &&
 				 !list.value(1).isEmpty() &&
