@@ -3972,7 +3972,18 @@ void spoton::importNeighbors(const QString &filePath)
 		  {
 		    QByteArray token(list.takeFirst().trimmed());
 
-		    if(token.startsWith("echo_mode="))
+		    if(token.startsWith("connect="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("connect=")));
+			token = token.toLower().trimmed();
+
+			if(!(token == "false" || token == "true"))
+			  fine = false;
+			else
+			  hash["connect"] = token;
+		      }
+		    else if(token.startsWith("echo_mode="))
 		      {
 			token.remove
 			  (0, static_cast<int> (qstrlen("echo_mode=")));
@@ -4078,7 +4089,7 @@ void spoton::importNeighbors(const QString &filePath)
 		      break;
 		  }
 
-		if(hash.count() != 8)
+		if(hash.count() != 9)
 		  fine = false;
 
 		if(fine)
@@ -4156,7 +4167,10 @@ void spoton::importNeighbors(const QString &filePath)
 				   hash.value("transport"), &ok).
 			 toBase64());
 
-		    query.bindValue(8, "disconnected");
+		    if(hash.value("connect") == "true")
+		      query.bindValue(8, "connected");
+		    else
+		      query.bindValue(8, "disconnected");
 
 		    QString country
 		      (spoton_misc::
