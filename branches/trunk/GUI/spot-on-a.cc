@@ -2559,7 +2559,7 @@ spoton::spoton(void):QMainWindow()
      value("gui/acceptPublicizedListeners",
 	   "localConnected").toString().toLower());
 
-  if(statusControl == "localConnected")
+  if(statusControl == "localconnected")
     {
       m_optionsUi.acceptPublishedLocalConnected->setChecked(true);
       m_optionsUi.publishedKeySize->setEnabled(true);
