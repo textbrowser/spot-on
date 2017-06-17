@@ -4007,10 +4007,11 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 	{
 	  QString statusControl
 	    (spoton_kernel::setting("gui/acceptPublicizedListeners",
-				    "ignored").toString().
+				    "localConnected").toString().
 	     toLower());
 
-	  if(statusControl == "connected" || statusControl == "disconnected")
+	  if(statusControl == "connected" ||
+	     statusControl == "disconnected")
 	    {
 	      QHostAddress address;
 
@@ -4029,6 +4030,28 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 
 		  spoton_misc::savePublishedNeighbor
 		    (address, port, transport, statusControl, orientation,
+		     s_crypt);
+		}
+	    }
+	  else if(statusControl == "localconnected")
+	    {
+	      QHostAddress address;
+
+	      address.setAddress(list.value(0).constData());
+	      address.setScopeId(list.value(2).constData());
+
+	      if(spoton_misc::isPrivateNetwork(address))
+		{
+		  QString orientation(list.value(4).constData());
+		  QString transport(list.value(3).constData());
+		  quint16 port = list.value(1).toUShort(); /*
+							   ** toUShort()
+							   ** returns zero
+							   ** on failure.
+							   */
+
+		  spoton_misc::savePublishedNeighbor
+		    (address, port, transport, "connected", orientation,
 		     s_crypt);
 		}
 	    }

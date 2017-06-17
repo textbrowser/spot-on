@@ -193,6 +193,7 @@ class spoton_listener: public QObject
 		  QObject *parent);
   ~spoton_listener();
   QHostAddress externalAddress(void) const;
+  QHostAddress localAddress(void) const;
   QString orientation(void) const;
   QString serverAddress(void) const;
   QString transport(void) const;

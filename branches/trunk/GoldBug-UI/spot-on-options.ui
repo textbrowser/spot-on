@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-1854</y>
          <width>721</width>
          <height>3335</height>
         </rect>
@@ -1774,7 +1774,7 @@
                  </sizepolicy>
                 </property>
                 <property name="toolTip">
-                 <string>External IP information is required.</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;External IP information is required, save for local-area listeners.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
                  <string>Periodically p&amp;ublish plaintext connection information.</string>

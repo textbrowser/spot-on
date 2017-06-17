@@ -760,7 +760,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 				      5.00).toDouble()));
   m_poptasticPostTimer.start(2500);
   m_prepareTimer.start(5000);
-  m_publishAllListenersPlaintextTimer.setInterval(10 * 60 * 1000);
+  m_publishAllListenersPlaintextTimer.setInterval(30 * 1000);
   m_settingsTimer.setInterval(1500);
   m_scramblerTimer.setSingleShot(true);
   m_settingsTimer.setSingleShot(true);
@@ -984,6 +984,9 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_settingsWatcher.addPath(settings.fileName());
   m_fireShare->start();
   m_messagingCachePurgeTimer.start();
+
+  if(setting("gui/publishPeriodically", false).toBool())
+    m_publishAllListenersPlaintextTimer.start();
 
   if(setting("gui/etpReceivers", false).toBool())
     m_starbeamWriter->start();
@@ -4143,12 +4146,21 @@ void spoton_kernel::slotPublicizeAllListenersPlaintext(void)
       QPointer<spoton_listener> listener = it.value();
 
       if(listener)
-	if(!listener->externalAddress().isNull())
-	  if(listener->transport() != "bluetooth")
-	    emit publicizeListenerPlaintext(listener->externalAddress(),
-					    listener->externalPort(),
-					    listener->transport(),
-					    listener->orientation());
+	if(listener->transport() != "bluetooth")
+	  {
+	    if(spoton_misc::
+	       isPrivateNetwork(QHostAddress(listener->serverAddress())))
+	      emit publicizeListenerPlaintext
+		(QHostAddress(listener->serverAddress()),
+		 listener->serverPort(),
+		 listener->transport(),
+		 listener->orientation());
+	    else if(!listener->externalAddress().isNull())
+	      emit publicizeListenerPlaintext(listener->externalAddress(),
+					      listener->externalPort(),
+					      listener->transport(),
+					      listener->orientation());
+	  }
     }
 }
 
@@ -4157,12 +4169,21 @@ void spoton_kernel::slotPublicizeListenerPlaintext(const qint64 oid)
   QPointer<spoton_listener> listener = m_listeners.value(oid, 0);
 
   if(listener)
-    if(!listener->externalAddress().isNull())
-      if(listener->transport() != "bluetooth")
-	emit publicizeListenerPlaintext(listener->externalAddress(),
-					listener->externalPort(),
-					listener->transport(),
-					listener->orientation());
+    if(listener->transport() != "bluetooth")
+      {
+	if(spoton_misc::
+	   isPrivateNetwork(QHostAddress(listener->serverAddress())))
+	  emit publicizeListenerPlaintext
+	    (QHostAddress(listener->serverAddress()),
+	     listener->serverPort(),
+	     listener->transport(),
+	     listener->orientation());
+	else if(!listener->externalAddress().isNull())
+	  emit publicizeListenerPlaintext(listener->externalAddress(),
+					  listener->externalPort(),
+					  listener->transport(),
+					  listener->orientation());
+      }
 }
 
 void spoton_kernel::slotRequestScramble(void)

@@ -1774,7 +1774,7 @@
                  </sizepolicy>
                 </property>
                 <property name="toolTip">
-                 <string>External IP information is required.</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;External IP information is required, save for local-area listeners.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
                  <string>Periodically p&amp;ublish plaintext connection information.</string>
