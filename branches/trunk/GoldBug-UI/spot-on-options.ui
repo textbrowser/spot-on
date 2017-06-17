@@ -45,7 +45,7 @@
          <x>0</x>
          <y>0</y>
          <width>721</width>
-         <height>3307</height>
+         <height>3335</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1806,6 +1806,22 @@
                <number>5</number>
               </property>
               <item>
+               <widget class="QRadioButton" name="acceptPublishedLocalConnected">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&amp;Accept published local listeners (connected).</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QRadioButton" name="acceptPublishedConnected">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1851,9 +1867,6 @@
                 <property name="text">
                  <string>&amp;Ignore published listeners.</string>
                 </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
                </widget>
               </item>
               <item>
@@ -1873,9 +1886,6 @@
                 </item>
                 <item>
                  <widget class="QComboBox" name="publishedKeySize">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
                   <property name="sizeAdjustPolicy">
                    <enum>QComboBox::AdjustToContents</enum>
                   </property>
@@ -2649,6 +2659,7 @@
   <tabstop>emailSignMessages</tabstop>
   <tabstop>limitConnections</tabstop>
   <tabstop>publishPeriodically</tabstop>
+  <tabstop>acceptPublishedLocalConnected</tabstop>
   <tabstop>acceptPublishedConnected</tabstop>
   <tabstop>acceptPublishedDisconnected</tabstop>
   <tabstop>ignorePublished</tabstop>
