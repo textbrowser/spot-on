@@ -28,6 +28,9 @@
 #ifndef _spoton_misc_h_
 #define _spoton_misc_h_
 
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#include <QBluetoothAddress>
+#endif
 #include <QHostAddress>
 #include <QPair>
 #include <QReadWriteLock>
@@ -225,6 +228,13 @@ class spoton_misc
 				    const QByteArray &timestamp,
 				    const int seconds,
 				    spoton_crypt *crypt);
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+  static void savePublishedNeighbor(const QBluetoothAddress &address,
+				    const quint16 port,
+				    const QString &statusControl,
+				    const QString &orientation,
+				    spoton_crypt *crypt);
+#endif
   static void savePublishedNeighbor(const QHostAddress &address,
 				    const quint16 port,
 				    const QString &transport,

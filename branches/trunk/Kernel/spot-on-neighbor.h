@@ -481,6 +481,11 @@ class spoton_neighbor: public QThread
   void slotPeerVerifyError(const QSslError &error);
   void slotProxyAuthenticationRequired(const QNetworkProxy &proxy,
 				       QAuthenticator *authenticator);
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+  void slotPublicizeListenerPlaintext(const QBluetoothAddress &address,
+				      const quint16 port,
+				      const QString &orientation);
+#endif
   void slotPublicizeListenerPlaintext(const QByteArray &data,
 				      const qint64 id);
   void slotPublicizeListenerPlaintext(const QHostAddress &address,

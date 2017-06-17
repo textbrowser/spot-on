@@ -1697,6 +1697,215 @@ QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
   return publicKey;
 }
 
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
+					const quint16 port,
+					const QString &statusControl,
+					const QString &orientation,
+					spoton_crypt *crypt)
+{
+  if(address.isNull())
+    {
+      logError
+	("spoton_misc::savePublishedNeighbor(): address is empty.");
+      return;
+    }
+  else if(!crypt)
+    {
+      logError
+	("spoton_misc::savePublishedNeighbor(): crypt "
+	 "is zero.");
+      return;
+    }
+
+  QString connectionName("");
+  QString transport("bluetooth");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	QString country
+	  (countryNameFromIPAddress(address.toString()));
+	bool ok = true;
+
+	query.prepare
+	  ("INSERT INTO neighbors "
+	   "(local_ip_address, "
+	   "local_port, "
+	   "protocol, "
+	   "remote_ip_address, "
+	   "remote_port, "
+	   "scope_id, "
+	   "status_control, "
+	   "hash, "
+	   "sticky, "
+	   "country, "
+	   "remote_ip_address_hash, "
+	   "qt_country_hash, "
+	   "user_defined, "
+	   "proxy_hostname, "
+	   "proxy_password, "
+	   "proxy_port, "
+	   "proxy_type, "
+	   "proxy_username, "
+	   "uuid, "
+	   "echo_mode, "
+	   "ssl_key_size, "
+	   "certificate, "
+	   "account_name, "
+	   "account_password, "
+	   "transport, "
+	   "orientation, "
+	   "ssl_control_string) "
+	   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+	   "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	query.bindValue(0, QVariant(QVariant::String));
+	query.bindValue(1, QVariant(QVariant::String));
+	query.bindValue(2, crypt->encryptedThenHashed("", &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3,
+	     crypt->encryptedThenHashed(address.toString().toLatin1(),
+					&ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (4,
+	     crypt->
+	     encryptedThenHashed(QByteArray::number(port), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(5, crypt->encryptedThenHashed("", &ok).toBase64());
+
+	if(statusControl.toLower() == "connected" ||
+	   statusControl.toLower() == "disconnected")
+	  query.bindValue(6, statusControl.toLower());
+	else
+	  query.bindValue(6, "disconnected");
+
+	if(ok)
+	  /*
+	  ** We do not have proxy information.
+	  */
+
+	  query.bindValue
+	    (7,
+	     crypt->keyedHash((address.toString() +
+			       QString::number(port) +
+			       "" + // Scope ID
+			       transport).toLatin1(), &ok).
+	     toBase64());
+
+	query.bindValue(8, 1); // Sticky
+
+	if(ok)
+	  query.bindValue
+	    (9, crypt->encryptedThenHashed(country.toLatin1(),
+					   &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (10, crypt->keyedHash(address.toString().toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (11, crypt->keyedHash(country.remove(" ").toLatin1(), &ok).
+	     toBase64());
+
+	query.bindValue(12, 1);
+
+	QString proxyHostName("");
+	QString proxyPassword("");
+	QString proxyPort("1");
+	QString proxyType(QString::number(QNetworkProxy::NoProxy));
+	QString proxyUsername("");
+
+	if(ok)
+	  query.bindValue
+	    (13, crypt->encryptedThenHashed(proxyHostName.toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (14, crypt->encryptedThenHashed(proxyPassword.toUtf8(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (15, crypt->encryptedThenHashed(proxyPort.toLatin1(),
+					    &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (16, crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (17, crypt->encryptedThenHashed(proxyUsername.toUtf8(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (18, crypt->
+	     encryptedThenHashed("{00000000-0000-0000-0000-000000000000}",
+				 &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (19, crypt->encryptedThenHashed("full", &ok).toBase64());
+
+	query.bindValue(20, 0);
+
+	if(ok)
+	  query.bindValue
+	    (21, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (22, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (23, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (24, crypt->encryptedThenHashed(transport.toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  {
+	    if(orientation == "packet" || orientation == "stream")
+	      query.bindValue
+		(25, crypt->encryptedThenHashed(orientation.toLatin1(), &ok).
+		 toBase64());
+	    else
+	      query.bindValue
+		(25, crypt->encryptedThenHashed("packet", &ok).toBase64());
+	  }
+
+	query.bindValue(26, "N/A");
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+#endif
+
 void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 					const quint16 port,
 					const QString &p_transport,

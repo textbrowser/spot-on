@@ -34,6 +34,9 @@ extern "C"
 }
 
 #include <QAtomicInt>
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#include <QBluetoothAddress>
+#endif
 #include <QDateTime>
 #include <QFileSystemWatcher>
 #include <QFuture>
@@ -316,6 +319,11 @@ class spoton_kernel: public QObject
   void poppedMessage(const QByteArray &message);
   void publicizeListenerPlaintext(const QByteArray &data,
 				  const qint64 id);
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+  void publicizeListenerPlaintext(const QBluetoothAddress &address,
+				  const quint16 port,
+				  const QString &orientation);
+#endif
   void publicizeListenerPlaintext(const QHostAddress &address,
 				  const quint16 port,
 				  const QString &transport,

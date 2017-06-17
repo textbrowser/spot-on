@@ -513,6 +513,41 @@ QByteArray spoton_send::message0030(const QByteArray &message)
   return results;
 }
 
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+QByteArray spoton_send::message0030(const QBluetoothAddress &address,
+				    const quint16 port,
+				    const QString &orientation)
+{
+  QByteArray content;
+  QByteArray results;
+
+  results.append
+    ("POST HTTP/1.1\r\n"
+     "Content-Type: application/x-www-form-urlencoded\r\n"
+     "Content-Length: %1\r\n"
+     "\r\n"
+     "type=0030&content=%2\r\n"
+     "\r\n\r\n");
+  content.append(address.toString().toLatin1().toBase64());
+  content.append("\n");
+  content.append(QByteArray::number(port).toBase64());
+  content.append("\n");
+  content.append(QByteArray("").toBase64());
+  content.append("\n");
+  content.append(QByteArray("bluetooth").toBase64());
+  content.append("\n");
+  content.append(orientation.toLatin1().toBase64());
+  results.replace
+    ("%1",
+     QByteArray::number(content.length() +
+			QString("type=0030&content=\r\n\r\n\r\n").
+			length()));
+  results.replace
+    ("%2", content);
+  return results;
+}
+#endif
+
 QByteArray spoton_send::message0030(const QHostAddress &address,
 				    const quint16 port,
 				    const QString &transport,

@@ -2493,6 +2493,17 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SLOT(slotPublicizeListenerPlaintext(const QByteArray &,
 					      const qint64)),
 	  Qt::UniqueConnection);
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+  connect(this,
+	  SIGNAL(publicizeListenerPlaintext(const QBluetoothAddress &,
+					    const quint16,
+					    const QString &)),
+	  neighbor,
+	  SLOT(slotPublicizeListenerPlaintext(const QBluetoothAddress &,
+					      const quint16,
+					      const QString &)),
+	  Qt::UniqueConnection);
+#endif
   connect(this,
 	  SIGNAL(publicizeListenerPlaintext(const QHostAddress &,
 					    const quint16,
@@ -4145,22 +4156,31 @@ void spoton_kernel::slotPublicizeAllListenersPlaintext(void)
 
       QPointer<spoton_listener> listener = it.value();
 
-      if(listener)
-	if(listener->transport() != "bluetooth")
-	  {
-	    if(spoton_misc::
-	       isPrivateNetwork(QHostAddress(listener->serverAddress())))
-	      emit publicizeListenerPlaintext
-		(QHostAddress(listener->serverAddress()),
-		 listener->serverPort(),
-		 listener->transport(),
-		 listener->orientation());
-	    else if(!listener->externalAddress().isNull())
-	      emit publicizeListenerPlaintext(listener->externalAddress(),
-					      listener->externalPort(),
-					      listener->transport(),
-					      listener->orientation());
-	  }
+      if(!listener)
+	continue;
+
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+      if(listener->transport() == "bluetooth")
+	{
+	  emit publicizeListenerPlaintext
+	    (QBluetoothAddress(listener->serverAddress()),
+	     listener->serverPort(),
+	     listener->orientation());
+	  continue;
+	}
+#else
+      if(spoton_misc::isPrivateNetwork(QHostAddress(listener->serverAddress())))
+	emit publicizeListenerPlaintext
+	  (QHostAddress(listener->serverAddress()),
+	   listener->serverPort(),
+	   listener->transport(),
+	   listener->orientation());
+      else if(!listener->externalAddress().isNull())
+	emit publicizeListenerPlaintext(listener->externalAddress(),
+					listener->externalPort(),
+					listener->transport(),
+					listener->orientation());
+#endif
     }
 }
 
@@ -4168,22 +4188,31 @@ void spoton_kernel::slotPublicizeListenerPlaintext(const qint64 oid)
 {
   QPointer<spoton_listener> listener = m_listeners.value(oid, 0);
 
-  if(listener)
-    if(listener->transport() != "bluetooth")
-      {
-	if(spoton_misc::
-	   isPrivateNetwork(QHostAddress(listener->serverAddress())))
-	  emit publicizeListenerPlaintext
-	    (QHostAddress(listener->serverAddress()),
-	     listener->serverPort(),
-	     listener->transport(),
-	     listener->orientation());
-	else if(!listener->externalAddress().isNull())
-	  emit publicizeListenerPlaintext(listener->externalAddress(),
-					  listener->externalPort(),
-					  listener->transport(),
-					  listener->orientation());
-      }
+  if(!listener)
+    return;
+
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+  if(listener->transport() == "bluetooth")
+    {
+      emit publicizeListenerPlaintext
+	(QBluetoothAddress(listener->serverAddress()),
+	 listener->serverPort(),
+	 listener->orientation());
+      return;
+    }
+#else
+  if(spoton_misc::isPrivateNetwork(QHostAddress(listener->serverAddress())))
+    emit publicizeListenerPlaintext
+      (QHostAddress(listener->serverAddress()),
+       listener->serverPort(),
+       listener->transport(),
+       listener->orientation());
+  else if(!listener->externalAddress().isNull())
+    emit publicizeListenerPlaintext(listener->externalAddress(),
+				    listener->externalPort(),
+				    listener->transport(),
+				    listener->orientation());
+#endif
 }
 
 void spoton_kernel::slotRequestScramble(void)

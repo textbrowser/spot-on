@@ -4035,6 +4035,25 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 	    }
 	  else if(statusControl == "localconnected")
 	    {
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+	      if(!QBluetoothAddress(list.value(0).constData()).isNull())
+		{
+		  QString orientation(list.value(4).constData());
+		  quint16 port = list.value(1).toUShort(); /*
+							   ** toUShort()
+							   ** returns zero
+							   ** on failure.
+							   */
+
+		  spoton_misc::savePublishedNeighbor
+		    (QBluetoothAddress(list.value(0).constData()),
+		     port,
+		     "connected",
+		     orientation,
+		     s_crypt);
+		  goto done_label;
+		}
+#endif
 	      QHostAddress address;
 
 	      address.setAddress(list.value(0).constData());
@@ -4057,6 +4076,7 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 	    }
 	}
 
+    done_label:
       emit publicizeListenerPlaintext(originalData, m_id);
       emit resetKeepAlive();
       spoton_kernel::messagingCacheAdd(dataIn);
@@ -5894,6 +5914,35 @@ void spoton_neighbor::slotHostFound(const QHostInfo &hostInfo)
 	break;
       }
 }
+
+#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+void spoton_neighbor::slotPublicizeListenerPlaintext
+(const QBluetoothAddress &address,
+ const quint16 port,
+ const QString &orientation)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(!address.isNull())
+    if(readyToWrite())
+      {
+	QByteArray message
+	  (spoton_send::message0030(address, port, orientation));
+
+	if(write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotPublicizeListenerPlaintext(): "
+		     "write() "
+		     "error for %1:%2.").
+	     arg(m_address).
+	     arg(m_port));
+	else
+	  spoton_kernel::messagingCacheAdd(message);
+      }
+}
+#endif
 
 void spoton_neighbor::slotPublicizeListenerPlaintext
 (const QHostAddress &address, const quint16 port, const QString &transport,
