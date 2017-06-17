@@ -2561,7 +2561,7 @@ spoton::spoton(void):QMainWindow()
 
   if(statusControl == "localConnected")
     {
-      m_optionsUi.acceptPublishedConnected->setChecked(true);
+      m_optionsUi.acceptPublishedLocalConnected->setChecked(true);
       m_optionsUi.publishedKeySize->setEnabled(true);
     }
   else if(statusControl == "connected")
