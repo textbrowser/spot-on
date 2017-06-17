@@ -1335,6 +1335,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotCommonBuzzChannelsActivated(int)));
+  connect(m_optionsUi.acceptPublishedLocalConnected,
+	  SIGNAL(pressed(void)),
+	  this,
+	  SLOT(slotAcceptPublicizedListeners(void)));
   connect(m_optionsUi.acceptPublishedConnected,
 	  SIGNAL(pressed(void)),
 	  this,
@@ -2553,9 +2557,14 @@ spoton::spoton(void):QMainWindow()
   QString statusControl
     (m_settings.
      value("gui/acceptPublicizedListeners",
-	   "ignored").toString().toLower());
+	   "localConnected").toString().toLower());
 
-  if(statusControl == "connected")
+  if(statusControl == "localConnected")
+    {
+      m_optionsUi.acceptPublishedConnected->setChecked(true);
+      m_optionsUi.publishedKeySize->setEnabled(true);
+    }
+  else if(statusControl == "connected")
     {
       m_optionsUi.acceptPublishedConnected->setChecked(true);
       m_optionsUi.publishedKeySize->setEnabled(true);

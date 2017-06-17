@@ -1342,7 +1342,12 @@ void spoton::slotAcceptPublicizedListeners(void)
   if(!radioButton)
     return;
 
-  if(m_optionsUi.acceptPublishedConnected == radioButton)
+  if(m_optionsUi.acceptPublishedLocalConnected == radioButton)
+    {
+      m_settings["gui/acceptPublicizedListeners"] = "localConnected";
+      m_optionsUi.publishedKeySize->setEnabled(true);
+    }
+  else if(m_optionsUi.acceptPublishedConnected == radioButton)
     {
       m_settings["gui/acceptPublicizedListeners"] = "connected";
       m_optionsUi.publishedKeySize->setEnabled(true);
