@@ -4073,6 +4073,8 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 		    (address, port, transport, "connected", orientation,
 		     s_crypt);
 		}
+
+	      goto done_label;
 	    }
 	}
 
