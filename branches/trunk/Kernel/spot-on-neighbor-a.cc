@@ -2042,6 +2042,8 @@ void spoton_neighbor::processData(void)
 	process0065(length, data);
       else if(length > 0 && data.contains("type=0070&content="))
 	process0070(length, data);
+      else if(length > 0 && data.contains("type=0095b&content="))
+	process0095b(length, data);
       else if(length > 0 && data.contains("content="))
 	{
 	  /*
@@ -5045,6 +5047,43 @@ void spoton_neighbor::process0092(int length, const QByteArray &dataIn,
 
   if(!list.isEmpty())
     emit smpMessage(list);
+}
+
+void spoton_neighbor::process0095b(int length, const QByteArray &dataIn)
+{
+  if(m_id == -1)
+    return;
+
+  int indexOf = dataIn.lastIndexOf("\r\n");
+
+  if(indexOf < 0)
+    return;
+
+  length -= static_cast<int> (qstrlen("type=0095b&content="));
+
+  QByteArray data(dataIn.mid(0, indexOf + 2));
+
+  indexOf = data.indexOf("type=0095b&content=");
+
+  if(indexOf < 0)
+    return;
+
+  data.remove
+    (0, indexOf + static_cast<int> (qstrlen("type=0095b&content=")));
+
+  if(length == data.length())
+    {
+      emit receivedMessage(dataIn, m_id, QPair<QByteArray, QByteArray> ());
+      emit resetKeepAlive();
+    }
+  else
+    spoton_misc::logError
+      (QString("spoton_neighbor::process0095b(): 0095b "
+	       "Content-Length mismatch (advertised: %1, received: %2) "
+	       "for %3:%4.").
+       arg(length).arg(data.length()).
+       arg(m_address).
+       arg(m_port));
 }
 
 void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
