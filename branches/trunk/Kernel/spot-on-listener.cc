@@ -221,10 +221,10 @@ spoton_listener::spoton_listener
   if(transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
-      if(m_keySize > (QBluetooth::Authentication |
-		      QBluetooth::Authorization |
-		      QBluetooth::Encryption |
-		      QBluetooth::Secure))
+      if(m_keySize > static_cast<unsigned int > (QBluetooth::Authentication |
+						 QBluetooth::Authorization |
+						 QBluetooth::Encryption |
+						 QBluetooth::Secure))
 	m_keySize = QBluetooth::NoSecurity;
 #endif
     }
