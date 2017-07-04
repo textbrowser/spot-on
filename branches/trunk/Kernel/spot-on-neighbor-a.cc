@@ -2042,6 +2042,8 @@ void spoton_neighbor::processData(void)
 	process0065(length, data);
       else if(length > 0 && data.contains("type=0070&content="))
 	process0070(length, data);
+      else if(length > 0 && data.contains("type=0095a&content="))
+	process0095a(length, data);
       else if(length > 0 && data.contains("type=0095b&content="))
 	process0095b(length, data);
       else if(length > 0 && data.contains("content="))
@@ -2232,7 +2234,7 @@ void spoton_neighbor::slotConnected(void)
 
   /*
   ** The local address is the address of the proxy. Unfortunately,
-  ** we do not have network interfaces that have such an address.
+  ** we do not have a network interface that has such an address.
   ** Hence, m_networkInterface will always be zero. The object
   ** m_networkInterface was removed on 11/08/2013. The following
   ** logic remains.
@@ -5047,6 +5049,43 @@ void spoton_neighbor::process0092(int length, const QByteArray &dataIn,
 
   if(!list.isEmpty())
     emit smpMessage(list);
+}
+
+void spoton_neighbor::process0095a(int length, const QByteArray &dataIn)
+{
+  if(m_id == -1)
+    return;
+
+  int indexOf = dataIn.lastIndexOf("\r\n");
+
+  if(indexOf < 0)
+    return;
+
+  length -= static_cast<int> (qstrlen("type=0095a&content="));
+
+  QByteArray data(dataIn.mid(0, indexOf + 2));
+
+  indexOf = data.indexOf("type=0095a&content=");
+
+  if(indexOf < 0)
+    return;
+
+  data.remove
+    (0, indexOf + static_cast<int> (qstrlen("type=0095a&content=")));
+
+  if(length == data.length())
+    {
+      emit receivedMessage(dataIn, m_id, QPair<QByteArray, QByteArray> ());
+      emit resetKeepAlive();
+    }
+  else
+    spoton_misc::logError
+      (QString("spoton_neighbor::process0095a(): 0095a "
+	       "Content-Length mismatch (advertised: %1, received: %2) "
+	       "for %3:%4.").
+       arg(length).arg(data.length()).
+       arg(m_address).
+       arg(m_port));
 }
 
 void spoton_neighbor::process0095b(int length, const QByteArray &dataIn)

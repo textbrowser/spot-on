@@ -409,6 +409,7 @@ class spoton_neighbor: public QThread
 		    const QList<QByteArray> &symmetricKeys);
   void process0092(int length, const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
+  void process0095a(int length, const QByteArray &data);
   void process0095b(int length, const QByteArray &data);
   void recordCertificateOrAbort(void);
   void run(void);
