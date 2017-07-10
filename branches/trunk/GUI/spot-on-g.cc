@@ -30,6 +30,11 @@ extern "C"
 #include <libpq-fe.h>
 }
 
+#ifdef Q_OS_WIN32
+#include <Lmcons.h>
+#include <windows.h>
+#endif
+
 #include <QSqlDriver>
 
 #include "spot-on.h"
@@ -1380,6 +1385,13 @@ void spoton::slotWizardButtonClicked(void)
       }
     case 1:
       {
+#ifdef Q_OS_WIN32
+	DWORD username_length = UNLEN + 1;
+	char username[UNLEN + 1];
+
+	if(GetUserName(username, &username_length))
+	  m_ui.username->setText(username);
+#endif
 	m_ui.username->setFocus();
 	m_ui.username->selectAll();
 	m_wizardUi->next->setEnabled(true);
