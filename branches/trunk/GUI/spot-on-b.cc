@@ -1394,6 +1394,7 @@ void spoton::prepareListenerIPCombo(void)
 {
   m_ui.listenerIPCombo->clear();
 
+  QHash<QString, char> hash;
   QStringList list;
 
   if(m_ui.listenerTransport->currentIndex() == 0)
@@ -1404,13 +1405,20 @@ void spoton::prepareListenerIPCombo(void)
       while(!devices.isEmpty())
 	{
 	  QBluetoothHostInfo hostInfo = devices.takeFirst();
+	  QString string(hostInfo.address().toString());
 
-	  list.append(hostInfo.address().toString());
+	  if(hash.contains(string))
+	    continue;
+	  else
+	    hash[string] = 0;
+
+	  list.append(string);
 	}
 #endif
     }
   else
     {
+      QHash<QString, char> hash;
       QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
 
       while(!interfaces.isEmpty())
@@ -1434,13 +1442,29 @@ void spoton::prepareListenerIPCombo(void)
 	      if(m_ui.ipv4Listener->isChecked())
 		{
 		  if(address.protocol() == QAbstractSocket::IPv4Protocol)
-		    list.append(address.toString());
+		    {
+		      QString string(address.toString());
+
+		      if(!hash.contains(string))
+			{
+			  hash[string] = 0;
+			  list.append(address.toString());
+			}
+		    }
 		}
 	      else
 		{
 		  if(address.protocol() == QAbstractSocket::IPv6Protocol)
-		    list.append
-		      (QHostAddress(address.toIPv6Address()).toString());
+		    {
+		      QString string
+			(QHostAddress(address.toIPv6Address()).toString());
+
+		      if(!hash.contains(string))
+			{
+			  hash[string] = 0;
+			  list.append(string);
+			}
+		    }
 		}
 	    }
 	}
