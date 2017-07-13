@@ -43,11 +43,6 @@ extern "C"
 #include "ui_spot-on-stylesheet.h"
 #endif
 
-#ifdef Q_OS_WIN32
-#include <Lmcons.h>
-#include <windows.h>
-#endif
-
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
   if(m_locked)
@@ -1385,13 +1380,6 @@ void spoton::slotWizardButtonClicked(void)
       }
     case 1:
       {
-#ifdef Q_OS_WIN32
-	DWORD username_length = UNLEN + 1;
-	char username[UNLEN + 1];
-
-	if(GetUserName(username, &username_length))
-	  m_ui.username->setText(username);
-#endif
 	m_ui.username->setFocus();
 	m_ui.username->selectAll();
 	m_wizardUi->next->setEnabled(true);
