@@ -1386,13 +1386,11 @@ void spoton::slotWizardButtonClicked(void)
     case 1:
       {
 #ifdef Q_OS_WIN32
-	LPDWORD username_length = UNLEN + 1;
-	LPTSTR username[UNLEN + 1];
+	DWORD username_length = UNLEN + 1;
+	char username[UNLEN + 1];
 
 	if(GetUserName(username, &username_length))
-	  m_ui.username->setText
-	    (QString QString::
-	     fromUtf8(username, static_cast<int> (username_length)));
+	  m_ui.username->setText(username);
 #endif
 	m_ui.username->setFocus();
 	m_ui.username->selectAll();
