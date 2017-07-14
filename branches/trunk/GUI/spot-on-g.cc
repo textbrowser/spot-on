@@ -1379,7 +1379,8 @@ void spoton::slotWizardButtonClicked(void)
 #ifdef Q_OS_WIN32
 	QByteArray tmp(qgetenv("USERNAME").mid(0, 256).trimmed());
 
-	m_ui.username->setText(tmp);
+	if(!tmp.isEmpty())
+	  m_ui.username->setText(tmp);
 #endif
 	break;
       }
