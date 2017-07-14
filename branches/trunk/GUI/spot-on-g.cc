@@ -1376,6 +1376,11 @@ void spoton::slotWizardButtonClicked(void)
       {
 	m_wizardUi->next->setEnabled(true);
 	m_wizardUi->previous->setEnabled(false);
+#ifdef Q_OS_WIN32
+	QByteArray tmp(qgetenv("USERNAME").mid(0, 256).trimmed());
+
+	m_ui.username->setText(tmp);
+#endif
 	break;
       }
     case 1:
