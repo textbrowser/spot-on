@@ -202,6 +202,8 @@ static void signal_handler(int signal_number)
 class spoton_webengine_url_request_interceptor:
   public QWebEngineUrlRequestInterceptor
 {
+  Q_OBJECT
+
  public:
   spoton_webengine_url_request_interceptor(QObject *parent):
   QWebEngineUrlRequestInterceptor(parent)
