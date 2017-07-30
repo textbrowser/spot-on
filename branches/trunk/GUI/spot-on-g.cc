@@ -1266,6 +1266,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Would you like to launch the initialization wizard?"));
+  mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
@@ -1878,6 +1879,7 @@ void spoton::slotResetAllStyleSheets(void)
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to reset all custom widget "
 		"style sheets?"));
+  mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 

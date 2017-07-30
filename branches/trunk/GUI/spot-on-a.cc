@@ -6409,6 +6409,7 @@ void spoton::slotSetPassphrase(void)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
+      mb.setWindowIcon(windowIcon());
       mb.setWindowTitle(tr("%1: Confirmation").
 			arg(SPOTON_APPLICATION_NAME));
       mb.setWindowModality(Qt::WindowModal);
@@ -6566,6 +6567,7 @@ void spoton::slotSetPassphrase(void)
 #endif
 #endif
 	      mb.setIcon(QMessageBox::Question);
+	      mb.setWindowIcon(windowIcon());
 	      mb.setWindowTitle(tr("%1: Question").
 				arg(SPOTON_APPLICATION_NAME));
 	      mb.setWindowModality(Qt::WindowModal);
@@ -6590,6 +6592,7 @@ void spoton::slotSetPassphrase(void)
 #endif
 #endif
 		mb.setIcon(QMessageBox::Question);
+		mb.setWindowIcon(windowIcon());
 		mb.setWindowTitle(tr("%1: Confirmation").
 				  arg(SPOTON_APPLICATION_NAME));
 		mb.setWindowModality(Qt::WindowModal);
@@ -6835,6 +6838,7 @@ void spoton::slotSetPassphrase(void)
 		  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		  mb.setText(tr("Would you like to exercise your new "
 				"credentials as URL Common Credentials?"));
+		  mb.setWindowIcon(windowIcon());
 		  mb.setWindowTitle(tr("%1: Question").
 				    arg(SPOTON_APPLICATION_NAME));
 
@@ -7042,9 +7046,10 @@ void spoton::slotSetPassphrase(void)
 #endif
 #endif
 		mb.setIcon(QMessageBox::Question);
+		mb.setWindowIcon(windowIcon());
+		mb.setWindowModality(Qt::WindowModal);
 		mb.setWindowTitle(tr("%1: Question").
 				  arg(SPOTON_APPLICATION_NAME));
-		mb.setWindowModality(Qt::WindowModal);
 		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		mb.setText(tr("Would you like the kernel to be activated?"));
 
@@ -8071,9 +8076,10 @@ void spoton::sendKeysToKernel(void)
 #endif
 #endif
 	      mb.setIcon(QMessageBox::Question);
+	      mb.setWindowIcon(windowIcon());
+	      mb.setWindowModality(Qt::WindowModal);
 	      mb.setWindowTitle(tr("%1: Question").
 				arg(SPOTON_APPLICATION_NAME));
-	      mb.setWindowModality(Qt::WindowModal);
 	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	      mb.setText
 		 (tr("The kernel process %1 requires your private "
@@ -10340,6 +10346,7 @@ void spoton::slotAbout(void)
   mb.setStandardButtons(QMessageBox::Ok);
   mb.setText(str);
   mb.setTextFormat(Qt::RichText);
+  mb.setWindowIcon(windowIcon());
   mb.setWindowTitle(SPOTON_APPLICATION_NAME);
   mb.exec();
 }

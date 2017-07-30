@@ -571,9 +571,10 @@ void spoton_echo_key_share::deleteSelected(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").
 		    arg(SPOTON_APPLICATION_NAME));
-  mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"item(s)?"));

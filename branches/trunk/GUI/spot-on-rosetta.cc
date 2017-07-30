@@ -407,9 +407,10 @@ void spoton_rosetta::slotAddContact(void)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
       mb.setWindowTitle(tr("%1: Confirmation").
 			arg(SPOTON_APPLICATION_NAME));
-      mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Unable to retrieve your %1 "
 		    "public key for comparison. Continue?").
@@ -431,9 +432,10 @@ void spoton_rosetta::slotAddContact(void)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
       mb.setWindowTitle(tr("%1: Confirmation").
 			arg(SPOTON_APPLICATION_NAME));
-      mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Unable to retrieve your %1 signature "
 		    "public key for comparison. Continue?").
@@ -975,9 +977,10 @@ void spoton_rosetta::slotDelete(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").
 		    arg(SPOTON_APPLICATION_NAME));
-  mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"contact?"));

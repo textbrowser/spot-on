@@ -2717,9 +2717,10 @@ void spoton::slotRegenerateKey(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").
 		    arg(SPOTON_APPLICATION_NAME));
-  mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
   if(keyType == "chat")
@@ -2743,9 +2744,10 @@ void spoton::slotRegenerateKey(void)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
       mb.setWindowTitle(tr("%1: Confirmation").
 			arg(SPOTON_APPLICATION_NAME));
-      mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("McEliece keys require a significant amount of "
 		    "storage memory. As %1 prefers secure memory, "
@@ -3711,9 +3713,10 @@ void spoton::slotImportPublicKeys(void)
 #endif
 #endif
 	  mb.setIcon(QMessageBox::Question);
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
-	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
 	    (tr("The import file %1 contains a lot (%2) of data. Are you "
@@ -3904,9 +3907,10 @@ void spoton::slotImportNeighbors(void)
 #endif
 #endif
 	  mb.setIcon(QMessageBox::Question);
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
-	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
 	    (tr("The import file %1 contains a lot (%2) of data. Are you "
@@ -4495,9 +4499,10 @@ void spoton::slotRemoveUrlParticipants(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").
 		    arg(SPOTON_APPLICATION_NAME));
-  mb.setWindowModality(Qt::WindowModal);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"URLs participant(s)?"));
