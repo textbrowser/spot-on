@@ -4741,7 +4741,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
       int count = 0;
 
-      qSort(keywords.begin(), keywords.end(), lengthGreaterThan);
+      std::sort(keywords.begin(), keywords.end(), lengthGreaterThan);
 
       if(db.driverName() == "QSQLITE")
 	{

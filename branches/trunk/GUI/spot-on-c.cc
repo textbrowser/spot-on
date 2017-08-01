@@ -2035,7 +2035,7 @@ void spoton::populateNovas(void)
 		  novas.append(nova);
 	      }
 
-	    qSort(novas);
+	    std::sort(novas.begin(), novas.end());
 
 	    if(!novas.isEmpty())
 	      m_ui.novas->addItems(novas);
@@ -2187,7 +2187,7 @@ void spoton::slotTransmittedSelected(void)
 		  magnets.append(magnet);
 	      }
 
-	    qSort(magnets);
+	    std::sort(magnets.begin(), magnets.end());
 
 	    if(!magnets.isEmpty())
 	      m_ui.transmittedMagnets->addItems(magnets);
@@ -3540,7 +3540,7 @@ void spoton::updatePublicKeysLabel(void)
   QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 		   spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-  qSort(list);
+  std::sort(list.begin(), list.end());
   m_ui.personal_public_keys->setRowCount(list.size());
 
   for(int i = 0; i < list.size(); i++)

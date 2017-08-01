@@ -456,7 +456,7 @@ QStringList spoton_crypt::cipherTypes(void)
     }
 
   types << "threefish";
-  qSort(types.begin(), types.end());
+  std::sort(types.begin(), types.end());
   return types;
 }
 

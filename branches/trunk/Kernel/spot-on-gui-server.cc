@@ -99,8 +99,13 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
+#if QT_VERSION >= 0x050500
+	      spoton_crypt::setSslCiphers
+		(QSslConfiguration::supportedCiphers(), sslCS, configuration);
+#else
 	      spoton_crypt::setSslCiphers
 		(socket->supportedCiphers(), sslCS, configuration);
+#endif
 	      socket->setSslConfiguration(configuration);
 	      socket->startServerEncryption();
 	      m_queue.enqueue(socket);
@@ -476,7 +481,7 @@ void spoton_gui_server::slotReadyRead(void)
 		     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 		  int count = 0;
 
-		  qSort(names);
+		  std::sort(names.begin(), names.end());
 
 		  for(int i = 0; i < names.size(); i++)
 		    {

@@ -4580,7 +4580,7 @@ void spoton::slotPopulateListeners(void)
 			    << spoton_common::LANE_WIDTH_DEFAULT
 			    << spoton_common::LANE_WIDTH_MAXIMUM;
 			list = set.toList();
-			qSort(list);
+			std::sort(list.begin(), list.end());
 
 			while(!list.isEmpty())
 			  box->addItem(QString::number(list.takeFirst()));
@@ -5344,7 +5344,7 @@ void spoton::slotPopulateNeighbors(void)
 			    << spoton_common::LANE_WIDTH_DEFAULT
 			    << spoton_common::LANE_WIDTH_MAXIMUM;
 			list = set.toList();
-			qSort(list);
+			std::sort(list.begin(), list.end());
 
 			while(!list.isEmpty())
 			  box->addItem(QString::number(list.takeFirst()));
@@ -6526,7 +6526,7 @@ void spoton::slotSetPassphrase(void)
 	      QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 			       spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-	      qSort(list);
+	      std::sort(list.begin(), list.end());
 
 	      for(int i = 0; i < list.size(); i++)
 		{
@@ -6646,7 +6646,7 @@ void spoton::slotSetPassphrase(void)
 
 	      list << spoton_common::SPOTON_ENCRYPTION_KEY_NAMES
 		   << spoton_common::SPOTON_SIGNATURE_KEY_NAMES;
-	      qSort(list);
+	      std::sort(list.begin(), list.end());
 
 	      QProgressDialog progress(this);
 
@@ -6803,7 +6803,7 @@ void spoton::slotSetPassphrase(void)
 	  QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 			   spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-	  qSort(list);
+	  std::sort(list.begin(), list.end());
 
 	  for(int i = 0; i < list.size(); i++)
 	    m_crypts.insert
@@ -7140,7 +7140,7 @@ void spoton::slotValidatePassphrase(void)
 	    QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 			     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
-	    qSort(list);
+	    std::sort(list.begin(), list.end());
 
 	    for(int i = 0; i < list.size(); i++)
 	      m_crypts.insert

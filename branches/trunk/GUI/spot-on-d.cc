@@ -1545,7 +1545,7 @@ QString spoton::mapIconToEmoticon(const QString &content)
     "<img src=\":/emoticons/rose.png\"></img>";
 
   list = map.keys();
-  qSort(list.begin(), list.end(), lengthGreaterThan);
+  std::sort(list.begin(), list.end(), lengthGreaterThan);
 
   for(int i = 0; i < list.size(); i++)
     str.replace(list.at(i), map[list.at(i)], Qt::CaseInsensitive);
@@ -1672,7 +1672,7 @@ void spoton::slotAddAttachment(void)
 
       QStringList list(dialog.selectedFiles());
 
-      qSort(list);
+      std::sort(list.begin(), list.end());
 
       while(!list.isEmpty())
 	{

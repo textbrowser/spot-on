@@ -4035,7 +4035,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 			     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 	    bool altered = false;
 
-	    qSort(list);
+	    std::sort(list.begin(), list.end());
 
 	    for(int i = 0; i < list.size(); i++)
 	      if(!s_crypts.contains(list.at(i)))

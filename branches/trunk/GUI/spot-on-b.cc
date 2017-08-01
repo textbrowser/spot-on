@@ -1473,7 +1473,7 @@ void spoton::prepareListenerIPCombo(void)
 
   if(!list.isEmpty())
     {
-      qSort(list);
+      std::sort(list.begin(), list.end());
       m_ui.listenerIPCombo->addItem(tr("Custom"));
       m_ui.listenerIPCombo->insertSeparator(1);
       m_ui.listenerIPCombo->addItems(list);
@@ -3577,7 +3577,7 @@ void spoton::slotDeleteAllBlockedNeighbors(void)
 	  {
 	    QList<qint64> list(hash.values(hash.keys().at(i)));
 
-	    qSort(list);
+	    std::sort(list.begin(), list.end());
 
 	    for(int j = 1; j < list.size(); j++) // Delete all but one.
 	      {
@@ -3866,7 +3866,7 @@ void spoton::slotDeleteAllUuids(void)
 	  {
 	    QList<qint64> list(hash.values(hash.keys().at(i)));
 
-	    qSort(list);
+	    std::sort(list.begin(), list.end());
 
 	    for(int j = 1; j < list.size(); j++) // Delete all but one.
 	      {
@@ -6461,7 +6461,7 @@ void spoton::populateAccounts(const QString &listenerOid)
 		  names.append(name);
 	      }
 
-	    qSort(names);
+	    std::sort(names.begin(), names.end());
 
 	    if(!names.isEmpty())
 	      m_ui.accounts->addItems(names);
@@ -6531,7 +6531,7 @@ void spoton::populateListenerIps(const QString &listenerOid)
 		  ips.append(ip);
 	      }
 
-	    qSort(ips);
+	    std::sort(ips.begin(), ips.end());
 
 	    if(!ips.isEmpty())
 	      m_ui.acceptedIPList->addItems(ips);

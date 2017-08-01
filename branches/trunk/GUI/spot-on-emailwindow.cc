@@ -169,7 +169,7 @@ void spoton_emailwindow::slotAddAttachment(void)
 
       QStringList list(dialog.selectedFiles());
 
-      qSort(list);
+      std::sort(list.begin(), list.end());
 
       while(!list.isEmpty())
 	{
