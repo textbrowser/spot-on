@@ -40,13 +40,14 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 INCLUDEPATH	+= . ../../. GUI \
-                   /usr/local/include /usr/local/opt
+                   /usr/local/include /usr/local/opt \
+		   /usr/local/opt/openssl/include
 ICON		= Icons/Logo/spot-on-logo.icns
 LIBS		+= -L../../libNTRU -lntru \
                    -L../../libSpotOn -lspoton \
-                   -L/usr/local/lib -L/usr/local/opt/curl/lib \
+                   -L/usr/local/lib \
                    -L/usr/local/opt/openssl/lib -lGeoIP \
                    -lcrypto -lcurl -lgcrypt -lgmp \
 		   -lgpg-error -lntl -lpq -lssl \
