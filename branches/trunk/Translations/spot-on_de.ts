@@ -1141,7 +1141,7 @@
         <translation type="obsolete">Die Sticky-Funktion ermöglicht eine unbegrenztes Lebenszeit in der Verbindung mit einem Nachbarn. Wenn nicht aktiviert, wird die Verbindung zum Nachbar beendet, nachdem eine interne Uhr abgelaufen ist.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1442"/>
+        <location filename="../GUI/spot-on-g.cc" line="1440"/>
         <source>The passphrases must contain at least sixteen characters each.</source>
         <translation>Die Passphrase muss mindestens sechzehn einzelne Zeichen umfassen.</translation>
     </message>
@@ -1213,7 +1213,7 @@
         <translation type="obsolete">Teile öffentlichen Schlüssel für URLs</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1535"/>
+        <location filename="../GUI/spot-on-g.cc" line="1533"/>
         <source>Preparing databases. Please be patient.</source>
         <translation>Bereite die Datenbanken vor. Bitte um Geduld.</translation>
     </message>
@@ -1387,14 +1387,14 @@
         <location filename="../GUI/spot-on-g.cc" line="1139"/>
         <location filename="../GUI/spot-on-g.cc" line="1231"/>
         <location filename="../GUI/spot-on-g.cc" line="1238"/>
-        <location filename="../GUI/spot-on-g.cc" line="1440"/>
-        <location filename="../GUI/spot-on-g.cc" line="1445"/>
-        <location filename="../GUI/spot-on-g.cc" line="1466"/>
-        <location filename="../GUI/spot-on-g.cc" line="1476"/>
-        <location filename="../GUI/spot-on-g.cc" line="1963"/>
-        <location filename="../GUI/spot-on-g.cc" line="1991"/>
-        <location filename="../GUI/spot-on-g.cc" line="2055"/>
-        <location filename="../GUI/spot-on-g.cc" line="2061"/>
+        <location filename="../GUI/spot-on-g.cc" line="1438"/>
+        <location filename="../GUI/spot-on-g.cc" line="1443"/>
+        <location filename="../GUI/spot-on-g.cc" line="1464"/>
+        <location filename="../GUI/spot-on-g.cc" line="1474"/>
+        <location filename="../GUI/spot-on-g.cc" line="1961"/>
+        <location filename="../GUI/spot-on-g.cc" line="1989"/>
+        <location filename="../GUI/spot-on-g.cc" line="2053"/>
+        <location filename="../GUI/spot-on-g.cc" line="2059"/>
         <location filename="../GUI/spot-on-urls-search.cc" line="41"/>
         <location filename="../GUI/spot-on-urls-search.cc" line="50"/>
         <location filename="../GUI/spot-on-urls.cc" line="119"/>
@@ -1535,17 +1535,17 @@ Ausrichtung: %23
         <translation>Externe IP: %1.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1447"/>
+        <location filename="../GUI/spot-on-g.cc" line="1445"/>
         <source>The answer and question must contain at least sixteen characters each.</source>
         <translation>Die Antwort und Frage muss wenigstens sechzehn Zeichen umfassen.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1468"/>
+        <location filename="../GUI/spot-on-g.cc" line="1466"/>
         <source>The passphrases are not identical.</source>
         <translation>Die Passphrasen sind nicht identisch.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1478"/>
+        <location filename="../GUI/spot-on-g.cc" line="1476"/>
         <source>Please provide a name.</source>
         <translation>Bitte geben einen Namen ein.</translation>
     </message>
@@ -1571,7 +1571,7 @@ Ausrichtung: %23
         <location filename="../GUI/spot-on-f.cc" line="1334"/>
         <location filename="../GUI/spot-on-f.cc" line="1856"/>
         <location filename="../GUI/spot-on-g.cc" line="1271"/>
-        <location filename="../GUI/spot-on-g.cc" line="1884"/>
+        <location filename="../GUI/spot-on-g.cc" line="1882"/>
         <location filename="../GUI/spot-on-urls.cc" line="141"/>
         <location filename="../GUI/spot-on-urls.cc" line="393"/>
         <location filename="../GUI/spot-on-urls.cc" line="446"/>
@@ -1928,7 +1928,7 @@ Ausrichtung: %23
         <translation>Der Kernel-Prozess %1 erfordert Deine privaten Schlüssel zur Authentifizierung und Verschlüsselung. Möchtest Du diese Schlüssel mit dem Kernel teilen?</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1797"/>
+        <location filename="../GUI/spot-on-g.cc" line="1795"/>
         <source>&lt;b&gt;Cert. Effective Date:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Cert. Expiration Date:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;Cert. Issuer Organization:&lt;/b&gt; %3&lt;br&gt;&lt;b&gt;Cert. Issuer Common Name:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Cert. Issuer Locality Name:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Cert. Issuer Organizational Unit Name:&lt;/b&gt; %6&lt;br&gt;&lt;b&gt;Cert. Issuer Country Name:&lt;/b&gt; %7&lt;br&gt;&lt;b&gt;Cert. Issuer State or Province Name:&lt;/b&gt; %8&lt;br&gt;&lt;b&gt;Cert. Serial Number:&lt;/b&gt; %9&lt;br&gt;&lt;b&gt;Cert. Subject Organization:&lt;/b&gt; %10&lt;br&gt;&lt;b&gt;Cert. Subject Common Name:&lt;/b&gt; %11&lt;br&gt;&lt;b&gt;Cert. Subject Locality Name:&lt;/b&gt; %12&lt;br&gt;&lt;b&gt;Cert. Subject Organizational Unit Name:&lt;/b&gt; %13&lt;br&gt;&lt;b&gt;Cert. Subject Country Name:&lt;/b&gt; %14&lt;br&gt;&lt;b&gt;Cert. Subject State or Province Name:&lt;/b&gt; %15&lt;br&gt;&lt;b&gt;Cert. Version:&lt;/b&gt; %16&lt;br&gt;</source>
         <translation></translation>
     </message>
@@ -2011,7 +2011,7 @@ Ausrichtung: %23
         <location filename="../GUI/spot-on-f.cc" line="562"/>
         <location filename="../GUI/spot-on-f.cc" line="1698"/>
         <location filename="../GUI/spot-on-g.cc" line="1046"/>
-        <location filename="../GUI/spot-on-g.cc" line="1964"/>
+        <location filename="../GUI/spot-on-g.cc" line="1962"/>
         <location filename="../GUI/spot-on-urls.cc" line="732"/>
         <location filename="../GUI/spot-on-urls.cc" line="1178"/>
         <location filename="../GUI/spot-on-urls.cc" line="1287"/>
@@ -2500,7 +2500,7 @@ Socket Options: %30</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-a.cc" line="3362"/>
-        <location filename="../GUI/spot-on-g.cc" line="1975"/>
+        <location filename="../GUI/spot-on-g.cc" line="1973"/>
         <source>Generating %1-bit SSL/TLS data. Please be patient.</source>
         <translation>Erstelle %1-bit SSL/TLS Daten. Bitte habe etwas Geduld.</translation>
     </message>
@@ -4283,47 +4283,47 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1555"/>
+        <location filename="../GUI/spot-on-g.cc" line="1553"/>
         <source>&amp;Copy Style Sheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1559"/>
+        <location filename="../GUI/spot-on-g.cc" line="1557"/>
         <source>&amp;Reset Widget Style Sheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1563"/>
+        <location filename="../GUI/spot-on-g.cc" line="1561"/>
         <source>Set Widget &amp;Style Sheet...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1569"/>
+        <location filename="../GUI/spot-on-g.cc" line="1567"/>
         <source>Reset &amp;All Widget Style Sheets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1880"/>
+        <location filename="../GUI/spot-on-g.cc" line="1878"/>
         <source>Are you sure that you wish to reset all custom widget style sheets?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1993"/>
+        <location filename="../GUI/spot-on-g.cc" line="1991"/>
         <source>An error (%1) occurred while attempting to generate a new certificate.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="2057"/>
+        <location filename="../GUI/spot-on-g.cc" line="2055"/>
         <source>The generated data could not be recorded. Please enable logging via the Log Viewer and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="2063"/>
+        <location filename="../GUI/spot-on-g.cc" line="2061"/>
         <source>An error (%1) occurred while attempting to record the generated data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-g.cc" line="1600"/>
+        <location filename="../GUI/spot-on-g.cc" line="1598"/>
         <source>Spot-On: Widget Style Sheet (%1)</source>
         <translation type="unfinished"></translation>
     </message>
