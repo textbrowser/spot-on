@@ -40,7 +40,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
 INCLUDEPATH	+= . ../. ../../../. \
 		   ../../../libSCTP/Include.osx64 \
                    /usr/local/include /usr/local/opt \

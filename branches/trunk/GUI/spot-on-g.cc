@@ -1307,9 +1307,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	      this,
 	      SLOT(slotWizardButtonClicked(void)));
       dialog.show();
-#ifndef Q_OS_MAC
       dialog.resize(dialog.sizeHint());
-#endif
       spoton_utilities::centerWidget(&dialog, this);
 
       if(dialog.exec() == QDialog::Accepted)
