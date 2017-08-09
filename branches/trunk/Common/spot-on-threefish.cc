@@ -577,7 +577,7 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
 	(block.data(),
 	 m_key,
 	 m_tweak,
-	 ciphertext.mid(position,static_cast<int> (m_blockSize)).constData(),
+	 ciphertext.mid(position, static_cast<int> (m_blockSize)).constData(),
 	 m_blockSize,
 	 8 * m_blockSize,
 	 &ok);
