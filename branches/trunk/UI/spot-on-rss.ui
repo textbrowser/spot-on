@@ -750,17 +750,6 @@
     <string>Toggle Not &amp;Indexed</string>
    </property>
   </action>
-  <action name="action_Titles_Only">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Descriptions in Timeline</string>
-   </property>
-  </action>
   <action name="action_Publication_Dates_in_Timeline">
    <property name="checkable">
     <bool>true</bool>
@@ -781,11 +770,6 @@
    </property>
    <property name="text">
     <string>&amp;Descriptions in Timeline</string>
-   </property>
-  </action>
-  <action name="action_Import">
-   <property name="text">
-    <string>Im&amp;port</string>
    </property>
   </action>
   <action name="action_URL_Links_in_Timeline">
