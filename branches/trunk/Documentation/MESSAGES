@@ -416,7 +416,7 @@ Message Type ("0014") (Base-64)
 EOL
 1 - Lane Width
 EOL
-2 - Full/Half-Echo
+2 - Full / Half-Echo
 
 Echo Listener Publication
 Echoed? Yes
