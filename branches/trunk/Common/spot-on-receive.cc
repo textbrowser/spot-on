@@ -495,34 +495,47 @@ QList<QByteArray> spoton_receive::process0000a
 						   s_crypt))
 			    {
 			      if(acceptSignedMessagesOnly)
-				if(!spoton_misc::
-				   /*
-				   ** 0 - Sender's SHA-512 Hash
-				   ** 1 - Gemini Encryption Key
-				   ** 2 - Gemini Hash Key
-				   ** 3 - Timestamp
-				   ** 4 - Signature
-				   */
+				{
+				  QByteArray recipientDigest;
+				  bool ok = true;
 
-				   isValidSignature(messageType.toLatin1() +
-						    symmetricKey +
-						    hashKey +
-						    symmetricKeyAlgorithm +
-						    hashKeyAlgorithm +
-						    list.value(0) +
-						    list.value(1) +
-						    list.value(2) +
-						    list.value(3),
-						    list.value(0),
-						    list.value(4),
-						    s_crypt))
-				  {
-				    spoton_misc::logError
-				      ("spoton_receive::"
-				       "process0000a(): invalid "
-				       "signature.");
-				    return QList<QByteArray> ();
-				  }
+				  recipientDigest = s_crypt->publicKey(&ok);
+
+				  if(ok)
+				    recipientDigest = spoton_crypt::
+				      sha512Hash(recipientDigest, &ok);
+
+				  if(!ok ||
+				     !spoton_misc::
+				     /*
+				     ** 0 - Sender's SHA-512 Hash
+				     ** 1 - Gemini Encryption Key
+				     ** 2 - Gemini Hash Key
+				     ** 3 - Timestamp
+				     ** 4 - Signature
+				     */
+
+				     isValidSignature(messageType.toLatin1() +
+						      symmetricKey +
+						      hashKey +
+						      symmetricKeyAlgorithm +
+						      hashKeyAlgorithm +
+						      list.value(0) +
+						      list.value(1) +
+						      list.value(2) +
+						      list.value(3) +
+						      recipientDigest,
+						      list.value(0),
+						      list.value(4),
+						      s_crypt))
+				    {
+				      spoton_misc::logError
+					("spoton_receive::"
+					 "process0000a(): invalid "
+					 "signature.");
+				      return QList<QByteArray> ();
+				    }
+				}
 
 			      return list;
 			    }
@@ -642,31 +655,44 @@ QList<QByteArray> spoton_receive::process0000b
 						    s_crypt))
 		{
 		  if(acceptSignedMessagesOnly)
-		    if(!spoton_misc::
-		       /*
-		       ** 0 - 0000b
-		       ** 1 - Sender's SHA-512 Hash
-		       ** 2 - Gemini Encryption Key
-		       ** 3 - Gemini Hash Key
-		       ** 4 - Timestamp
-		       ** 5 - Signature
-		       */
+		    {
+		      QByteArray recipientDigest;
+		      bool ok = true;
 
-		       isValidSignature(list.value(0) +
-					list.value(1) +
-					list.value(2) +
-					list.value(3) +
-					list.value(4),
-					list.value(1),
-					list.value(5),
-					s_crypt))
-		      {
-			spoton_misc::logError
-			  ("spoton_receive::"
-			   "process0000b(): invalid "
-			   "signature.");
-			return QList<QByteArray> ();
-		      }
+		      recipientDigest = s_crypt->publicKey(&ok);
+
+		      if(ok)
+			recipientDigest = spoton_crypt::
+			  sha512Hash(recipientDigest, &ok);
+
+		      if(!ok ||
+			 !spoton_misc::
+			 /*
+			 ** 0 - 0000b
+			 ** 1 - Sender's SHA-512 Hash
+			 ** 2 - Gemini Encryption Key
+			 ** 3 - Gemini Hash Key
+			 ** 4 - Timestamp
+			 ** 5 - Signature
+			 */
+
+			 isValidSignature(list.value(0) +
+					  list.value(1) +
+					  list.value(2) +
+					  list.value(3) +
+					  list.value(4) +
+					  recipientDigest,
+					  list.value(1),
+					  list.value(5),
+					  s_crypt))
+			{
+			  spoton_misc::logError
+			    ("spoton_receive::"
+			     "process0000b(): invalid "
+			     "signature.");
+			  return QList<QByteArray> ();
+			}
+		    }
 
 		  return list;
 		}

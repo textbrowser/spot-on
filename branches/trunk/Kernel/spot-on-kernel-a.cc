@@ -4847,17 +4847,24 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 				       "");
 
 		    if(setting("gui/chatSignMessages", true).toBool())
-		      signature = s_crypt2->digitalSignature
-			("0000a" +
-			 symmetricKey +
-			 hashKey +
-			 symmetricKeyAlgorithm +
-			 hashType +
-			 myPublicKeyHash +
-			 gemini.first +
-			 gemini.second +
-			 dateTime.toUTC().toString("MMddyyyyhhmmss").
-			 toLatin1(), &ok);
+		      {
+			QByteArray recipientDigest
+			  (spoton_crypt::sha512Hash(publicKey, &ok));
+
+			if(ok)
+			  signature = s_crypt2->digitalSignature
+			    ("0000a" +
+			     symmetricKey +
+			     hashKey +
+			     symmetricKeyAlgorithm +
+			     hashType +
+			     myPublicKeyHash +
+			     gemini.first +
+			     gemini.second +
+			     dateTime.toUTC().toString("MMddyyyyhhmmss").
+			     toLatin1() +
+			     recipientDigest, &ok);
+		      }
 
 		    if(ok)
 		      {
@@ -5052,10 +5059,20 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 				       "");
 
 		    if(setting("gui/chatSignMessages", true).toBool())
-		      signature = s_crypt2->digitalSignature
-			("0000b" + myPublicKeyHash + symmetricKey + hashKey +
-			 dateTime.toUTC().toString("MMddyyyyhhmmss").
-			 toLatin1(), &ok);
+		      {
+			QByteArray recipientDigest
+			  (spoton_crypt::sha512Hash(publicKey, &ok));
+
+			if(ok)
+			  signature = s_crypt2->digitalSignature
+			    ("0000b" +
+			     myPublicKeyHash +
+			     symmetricKey +
+			     hashKey +
+			     dateTime.toUTC().toString("MMddyyyyhhmmss").
+			     toLatin1() +
+			     recipientDigest, &ok);
+		      }
 
 		    if(ok)
 		      {
@@ -6037,17 +6054,24 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 				       "");
 
 		    if(setting("gui/chatSignMessages", true).toBool())
-		      signature = s_crypt2->digitalSignature
-			("0000c" +
-			 symmetricKey +
-			 hashKey +
-			 symmetricKeyAlgorithm +
-			 hashType +
-			 myPublicKeyHash +
-			 geminis.first +
-			 geminis.second +
-			 dateTime.toUTC().toString("MMddyyyyhhmmss").
-			 toLatin1(), &ok);
+		      {
+			QByteArray recipientDigest
+			  (spoton_crypt::sha512Hash(publicKey, &ok));
+
+			if(ok)
+			  signature = s_crypt2->digitalSignature
+			    ("0000c" +
+			     symmetricKey +
+			     hashKey +
+			     symmetricKeyAlgorithm +
+			     hashType +
+			     myPublicKeyHash +
+			     geminis.first +
+			     geminis.second +
+			     dateTime.toUTC().toString("MMddyyyyhhmmss").
+			     toLatin1() +
+			     recipientDigest, &ok);
+		      }
 
 		    if(ok)
 		      {
