@@ -781,20 +781,9 @@ void spoton_threefish::setInitializationVector
       if(ok)
 	*ok = true;
 
-      if(bytes.isEmpty())
-	{
-	  gcry_fast_random_poll();
-	  gcry_create_nonce(iv, ivLength);
-	  bytes.append(iv, static_cast<int> (ivLength));
-	}
-      else
-	{
-	  memcpy
-	    (iv,
-	     bytes.constData(),
-	     qMin(ivLength, static_cast<size_t> (bytes.length())));
-	  bytes.remove(0, static_cast<int> (ivLength));
-	}
+      gcry_fast_random_poll();
+      gcry_create_nonce(iv, ivLength);
+      bytes = QByteArray(iv, static_cast<int> (ivLength));
     }
 
   gcry_free(iv);
