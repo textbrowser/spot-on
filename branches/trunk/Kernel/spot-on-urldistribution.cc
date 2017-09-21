@@ -540,11 +540,17 @@ void spoton_urldistribution::run(void)
 
       if(ok)
 	if(spoton_kernel::setting("gui/urlSignMessages", true).toBool())
-	  signature = s_crypt2->digitalSignature
-	    (keyInformation +
-	     data +
-	     now.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
-	     &ok);
+	  {
+	    QByteArray recipientDigest
+	      (spoton_crypt::sha512Hash(publicKeys.at(i), &ok));
+
+	    signature = s_crypt2->digitalSignature
+	      (keyInformation +
+	       data +
+	       now.toUTC().toString("MMddyyyyhhmmss").toLatin1() +
+	       recipientDigest,
+	       &ok);
+	  }
 
       if(ok)
 	{

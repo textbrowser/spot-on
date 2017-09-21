@@ -4863,18 +4863,35 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
 				if(spoton_kernel::
 				   setting("gui/urlAcceptSignedMessagesOnly",
 					   true).toBool())
-				  if(!spoton_misc::
-				     isValidSignature(dataForSignature,
-						      publicKeyHash,
-						      signature,
-						      spoton_kernel::s_crypts.
-						      value("url", 0)))
-				    {
-				      spoton_misc::logError
-					("spoton_neighbor::process0080(): "
-					 "invalid signature.");
-				      return;
-				    }
+				  {
+				    QByteArray recipientDigest;
+				    bool ok = true;
+				    spoton_crypt *s_crypt = spoton_kernel::
+				      s_crypts.value("url", 0);
+
+				    if(s_crypt)
+				      recipientDigest = s_crypt->publicKey(&ok);
+				    else
+				      ok = false;
+
+				    if(ok)
+				      recipientDigest = spoton_crypt::
+					sha512Hash(recipientDigest, &ok);
+
+				    if(!ok ||
+				       !spoton_misc::
+				       isValidSignature(dataForSignature +
+							recipientDigest,
+							publicKeyHash,
+							signature,
+							s_crypt))
+				      {
+					spoton_misc::logError
+					  ("spoton_neighbor::process0080(): "
+					   "invalid signature.");
+					return;
+				      }
+				  }
 			      }
 			  }
 		      }
