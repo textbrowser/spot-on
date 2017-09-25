@@ -35,7 +35,7 @@ Encryption Key (Base-64)
 2 - Message
 3 - Sequence Number
 4 - UTC Date
-5 - Signature (First Group Items and Previous Five Items)
+5 - Signature (First Group Items and Previous Five Items) (*)
 }
 EOL
 {
@@ -68,7 +68,7 @@ Encryption Key (Base-64)
 1 - Gemini Encryption Key
 2 - Gemini Digest Key
 3 - UTC Date
-4 - Signature (First Group Items and Previous Four Items)
+4 - Signature (First Group Items and Previous Four Items) (*)
 }
 EOL
 {
@@ -90,7 +90,7 @@ Gemini Encryption Key (Base-64)
 2 - Gemini Encryption Key
 3 - Gemini Digest Key
 4 - UTC Date
-5 - Signature (Previous Five Items)
+5 - Signature (Previous Five Items) (*)
 }
 EOL
 {
@@ -395,7 +395,7 @@ Encryption Key (Base-64)
 1 - Name
 2 - Status
 3 - UTC Date
-4 - Signature (First Group Items and Previous Four Items)
+4 - Signature (First Group Items and Previous Four Items) (*)
 }
 EOL
 {
@@ -553,7 +553,7 @@ I + 2 - Description
 I + 3 - Content
 ...
 N - 1 - UTC Date
-N - Signature (First Group Items and Previous N - 1 Items)
+N - Signature (First Group Items and Previous N - 1 Items) (*)
 }
 EOL
 {
@@ -687,3 +687,7 @@ EOL
     Preceding Data and Encrypted Timestamp,
     Encrypted Timestamp (Base-64)
 }
+
+(*) - Both recipient and sender identities are included in the
+digital signature. The recipient's identity is not explicitly included in the
+message bundle as the destination is implied through the encryption process via the destination's public key.
