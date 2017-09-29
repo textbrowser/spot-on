@@ -10408,32 +10408,30 @@ Error: %1.</source>
         <translation>Esc</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="498"/>
         <source>&amp;Empty Log</source>
-        <translation>Lösche Log</translation>
+        <translation type="vanished">Lösche Log</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="506"/>
         <source>E&amp;nable Log</source>
-        <translation>Aktiviere Log</translation>
+        <translation type="vanished">Aktiviere Log</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="511"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="498"/>
         <source>&amp;Copy</source>
         <translation>Kopiere</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="514"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="501"/>
         <source>Ctrl+C</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="519"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="506"/>
         <source>&amp;Paste</source>
         <translation>Einfügen</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="522"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="509"/>
         <source>Ctrl+V</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10975,7 +10973,7 @@ Error: %1.</source>
         <translation type="unfinished">Notizen</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="804"/>
+        <location filename="../UI/spot-on-rss.ui" line="788"/>
         <source>&amp;Remove Malformed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -11066,23 +11064,21 @@ Error: %1.</source>
         <translation type="unfinished">Toggle nicht indexierte</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="761"/>
-        <location filename="../UI/spot-on-rss.ui" line="783"/>
+        <location filename="../UI/spot-on-rss.ui" line="772"/>
         <source>&amp;Descriptions in Timeline</source>
         <translation type="unfinished">Beschreibungen in der Timeline</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="772"/>
+        <location filename="../UI/spot-on-rss.ui" line="761"/>
         <source>&amp;Publication Dates in Timeline</source>
         <translation type="unfinished">Veröffentlichungsdatum in der Timeline</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="788"/>
         <source>Im&amp;port</source>
-        <translation type="unfinished">Import</translation>
+        <translation type="obsolete">Import</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="799"/>
+        <location filename="../UI/spot-on-rss.ui" line="783"/>
         <source>&amp;URL Links in Timeline</source>
         <translation type="unfinished">URL Links in der Timeline</translation>
     </message>
