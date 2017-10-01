@@ -285,3 +285,4 @@ Remaining Items
 5.     Which key types to export and import? A new selection dialog.
 6.     Random sequences for random data (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
 7.     Bind the recipient's identity into all hybrid encryption schemes.
+8.     The Poptastic pixmap does not respect a scaled-contents request.

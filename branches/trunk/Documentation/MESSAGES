@@ -688,6 +688,6 @@ EOL
     Encrypted Timestamp (Base-64)
 }
 
-(*) - Both recipient and sender identities are included in the
+(*) - Recipient and sender identities are included in the
 digital signature. The recipient's identity is not explicitly included in the
 message bundle as the destination is implied through the encryption process via the destination's public key.
