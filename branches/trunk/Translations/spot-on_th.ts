@@ -9175,22 +9175,22 @@ Error: %1.</source>
         <translation type="unfinished">ยกเลิก</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="511"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="498"/>
         <source>&amp;Copy</source>
         <translation type="unfinished">คัดลอก</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="514"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="501"/>
         <source>Ctrl+C</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="519"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="506"/>
         <source>&amp;Paste</source>
         <translation type="unfinished">วาง</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="522"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="509"/>
         <source>Ctrl+V</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9220,14 +9220,12 @@ Error: %1.</source>
         <translation type="unfinished">ปิด</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="498"/>
         <source>&amp;Empty Log</source>
-        <translation type="unfinished">Logที่ว่างเปล่า</translation>
+        <translation type="obsolete">Logที่ว่างเปล่า</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="506"/>
         <source>E&amp;nable Log</source>
-        <translation type="unfinished">เปิดใช้งานการLog</translation>
+        <translation type="obsolete">เปิดใช้งานการLog</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="47"/>
@@ -9743,7 +9741,7 @@ Error: %1.</source>
         <translation type="unfinished">ประกาศเกี่ยวกับสวนสัตว์</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="804"/>
+        <location filename="../UI/spot-on-rss.ui" line="788"/>
         <source>&amp;Remove Malformed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9834,23 +9832,21 @@ Error: %1.</source>
         <translation type="unfinished">ท็อกเกิ้ลไม่ทำดัชนี</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="761"/>
-        <location filename="../UI/spot-on-rss.ui" line="783"/>
+        <location filename="../UI/spot-on-rss.ui" line="772"/>
         <source>&amp;Descriptions in Timeline</source>
         <translation type="unfinished">คำอธิบายในระยะเวลา</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="772"/>
+        <location filename="../UI/spot-on-rss.ui" line="761"/>
         <source>&amp;Publication Dates in Timeline</source>
         <translation type="unfinished">วันที่ตีพิมพ์ในระยะเวลา</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="788"/>
         <source>Im&amp;port</source>
-        <translation type="unfinished">นำเข้า</translation>
+        <translation type="obsolete">นำเข้า</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="799"/>
+        <location filename="../UI/spot-on-rss.ui" line="783"/>
         <source>&amp;URL Links in Timeline</source>
         <translation type="unfinished">ลิงค์ URL ในระยะเวลา</translation>
     </message>

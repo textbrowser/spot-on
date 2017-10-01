@@ -8290,22 +8290,22 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="511"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="498"/>
         <source>&amp;Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="514"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="501"/>
         <source>Ctrl+C</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="519"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="506"/>
         <source>&amp;Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="522"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="509"/>
         <source>Ctrl+V</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8327,16 +8327,6 @@ Error: %1.</source>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="490"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="498"/>
-        <source>&amp;Empty Log</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="506"/>
-        <source>E&amp;nable Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -8853,7 +8843,7 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="804"/>
+        <location filename="../UI/spot-on-rss.ui" line="788"/>
         <source>&amp;Remove Malformed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8944,23 +8934,17 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="761"/>
-        <location filename="../UI/spot-on-rss.ui" line="783"/>
+        <location filename="../UI/spot-on-rss.ui" line="772"/>
         <source>&amp;Descriptions in Timeline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="772"/>
+        <location filename="../UI/spot-on-rss.ui" line="761"/>
         <source>&amp;Publication Dates in Timeline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="788"/>
-        <source>Im&amp;port</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../UI/spot-on-rss.ui" line="799"/>
+        <location filename="../UI/spot-on-rss.ui" line="783"/>
         <source>&amp;URL Links in Timeline</source>
         <translation type="unfinished"></translation>
     </message>

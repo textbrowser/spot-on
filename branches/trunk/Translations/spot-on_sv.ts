@@ -8818,22 +8818,22 @@ Error: %1.</source>
         <translation>Esc</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="511"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="498"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopiera</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="514"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="501"/>
         <source>Ctrl+C</source>
         <translation>Ctrl+C</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="519"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="506"/>
         <source>&amp;Paste</source>
         <translation>&amp;Klistra in</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="522"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="509"/>
         <source>Ctrl+V</source>
         <translation>Ctrl+V</translation>
     </message>
@@ -8875,14 +8875,12 @@ Error: %1.</source>
         <translation>&amp;Stäng</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="498"/>
         <source>&amp;Empty Log</source>
-        <translation>&amp;Töm logg</translation>
+        <translation type="vanished">&amp;Töm logg</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="506"/>
         <source>E&amp;nable Log</source>
-        <translation>A&amp;ktivera logg</translation>
+        <translation type="vanished">A&amp;ktivera logg</translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="47"/>
@@ -9398,7 +9396,7 @@ Error: %1.</source>
         <translation type="unfinished">&amp;Zoo-notiser</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="804"/>
+        <location filename="../UI/spot-on-rss.ui" line="788"/>
         <source>&amp;Remove Malformed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9489,23 +9487,21 @@ Error: %1.</source>
         <translation type="unfinished">Växla ej &amp;indexerade</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="761"/>
-        <location filename="../UI/spot-on-rss.ui" line="783"/>
+        <location filename="../UI/spot-on-rss.ui" line="772"/>
         <source>&amp;Descriptions in Timeline</source>
         <translation type="unfinished">&amp;Beskrivningar i tidslinje</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="772"/>
+        <location filename="../UI/spot-on-rss.ui" line="761"/>
         <source>&amp;Publication Dates in Timeline</source>
         <translation type="unfinished">&amp;Publiceringsdatum i tidslinje</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="788"/>
         <source>Im&amp;port</source>
-        <translation type="unfinished">Im&amp;port</translation>
+        <translation type="obsolete">Im&amp;port</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rss.ui" line="799"/>
+        <location filename="../UI/spot-on-rss.ui" line="783"/>
         <source>&amp;URL Links in Timeline</source>
         <translation type="unfinished">&amp;URL-länkar i tidslinje</translation>
     </message>
