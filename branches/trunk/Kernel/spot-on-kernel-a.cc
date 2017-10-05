@@ -5395,7 +5395,7 @@ void spoton_kernel::writeMessage0060
   ** StarBeams.
   */
 
-  if(*ok)
+  if(ok)
     *ok = false;
 
   if(neighborIndex)

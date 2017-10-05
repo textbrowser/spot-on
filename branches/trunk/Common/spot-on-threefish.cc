@@ -801,7 +801,7 @@ void spoton_threefish::setKey
 
   if(keyLength != 32)
     {
-      if(*ok)
+      if(ok)
 	*ok = false;
 
       return;
@@ -821,7 +821,7 @@ void spoton_threefish::setKey
       return;
     }
 
-  if(*ok)
+  if(ok)
     *ok = true;
 
   m_blockSize = keyLength;
@@ -862,7 +862,7 @@ void spoton_threefish::setTweak(const QByteArray &tweak, bool *ok)
       goto done_label;
     }
 
-  if(*ok)
+  if(ok)
     *ok = true;
 
   memcpy(m_tweak, tweak.constData(), m_tweakLength);
