@@ -673,6 +673,7 @@ void spoton_smpwindow::slotExecute(void)
 
   QByteArray signature;
   QDateTime dateTime(QDateTime::currentDateTime());
+  QByteArray recipientDigest(spoton_crypt::sha512Hash(publicKey, &ok));
 
   signature = s_crypt2->digitalSignature
     ("0092" +
@@ -682,7 +683,8 @@ void spoton_smpwindow::slotExecute(void)
      m_ui.transfer_hash_type->currentText().toLatin1() +
      myPublicKeyHash +
      data +
-     dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
+     dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1() +
+     recipientDigest,
      &ok);
 
   if(!ok)
@@ -1204,6 +1206,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   QByteArray messageCode;
   QByteArray myPublicKey;
   QByteArray myPublicKeyHash;
+  QByteArray recipientDigest;
   QByteArray signature;
   QScopedPointer<spoton_crypt> crypt;
   QSslSocket *kernelSocket = spoton::instance() ?
@@ -1225,6 +1228,15 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   else if(!kernelSocket->isEncrypted())
     {
       error = tr("The connection to the kernel is not encrypted.");
+      goto done_label;
+    }
+
+  recipientDigest = spoton_crypt::sha512Hash(smp->m_publicKey, &ok);
+
+  if(!ok)
+    {
+      error = tr("A failure occurred while computing the SHA-512 "
+		 "digest of the recipient's public key.");
       goto done_label;
     }
 
@@ -1333,7 +1345,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
      m_ui.transfer_hash_type->currentText().toLatin1() +
      myPublicKeyHash +
      data +
-     dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
+     dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1() +
+     recipientDigest,
      &ok);
 
   if(!ok)

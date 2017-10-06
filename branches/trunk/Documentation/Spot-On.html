@@ -3,15 +3,14 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<title></title>
-	<meta name="generator" content="LibreOffice 4.3.7.2 (Linux)"/>
+	<meta name="generator" content="LibreOffice 5.1.6.2 (Linux)"/>
 	<meta name="author" content="Monster "/>
 	<meta name="created" content="2014-10-24T18:38:51"/>
-	<meta name="changedby" content="Alexis Megas"/>
-	<meta name="changed" content="2017-09-25T06:26:53.419572915"/>
+	<meta name="changed" content="2017-10-06T10:58:14.567592142"/>
 	<style type="text/css">
 		@page { margin: 0.79in }
 		p { margin-bottom: 0.08in }
-		h3 { margin-top: 0.17in; color: #000000 }
+		h3 { margin-top: 0.17in }
 		h3.western { font-family: "Liberation Sans", sans-serif }
 		h3.cjk { font-family: "Droid Sans" }
 		h3.ctl { font-family: "FreeSans" }
@@ -1091,13 +1090,16 @@ malicious entropy!</p>
 </p>
 <h3 class="western" align="center" style="page-break-before: always"><a name="__RefHeading___Toc2002_1921997545"></a>
 Surreptitious Forwarding</h3>
-<p align="left">Several methods of Spot-On are vulnerable to
-surreptitious forwarding. The errors will be addressed as resources
-permit.</p>
+<p align="left">The Spot-On e-mail methods of Spot-On are vulnerable
+to surreptitious forwarding. The errors will be addressed as
+resources permit. All other message types include both the
+recipient’s and the sender’s identities in the data that’s
+provided to digital-signature algorithms.</p>
 <p align="left">By including a recipient's identity alongside a
 sender's identity in a digital signature, surreptitious forwarding is
-discouraged. A digital signature is created from Symmetric Key Data
-|| Recipient || Sender || Other Data.</p>
+discouraged. A digital signature is created from concatenated data:
+message-specific data || symmetric-key data || the recipient’s
+identity || the sender’s identity.</p>
 <p align="left"><br/>
 <br/>
 

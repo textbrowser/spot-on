@@ -1580,16 +1580,30 @@ QList<QByteArray> spoton_receive::process0091
 
       if(signatureRequired)
 	{
+	  QByteArray recipientDigest;
+	  bool ok = true;
+
+	  if(spoton_kernel::s_crypts.value(keyType, 0))
+	    recipientDigest = spoton_kernel::s_crypts.value(keyType)->
+	      publicKey(&ok);
+	  else
+	    ok = false;
+
+	  if(ok)
+	    recipientDigest = spoton_crypt::sha512Hash(recipientDigest, &ok);
+
 	  if(messageType == "0091a")
 	    {
-	      if(!spoton_misc::isValidSignature("0091a" +
+	      if(!ok ||
+		 !spoton_misc::isValidSignature("0091a" +
 						symmetricKeys.value(0) +
 						symmetricKeys.value(2) +
 						symmetricKeys.value(1) +
 						symmetricKeys.value(3) +
 						list.value(0) +
 						list.value(1) +
-						list.value(2),
+						list.value(2) +
+						recipientDigest,
 						list.value(0),
 						list.value(3), // Signature
 						spoton_kernel::s_crypts.
@@ -1602,14 +1616,16 @@ QList<QByteArray> spoton_receive::process0091
 	    }
 	  else
 	    {
-	      if(!spoton_misc::isValidSignature("0091b" +
+	      if(!ok ||
+		 !spoton_misc::isValidSignature("0091b" +
 						symmetricKeys.value(0) +
 						symmetricKeys.value(2) +
 						symmetricKeys.value(1) +
 						symmetricKeys.value(3) +
 						list.value(0) +
 						list.value(1) +
-						list.value(2),
+						list.value(2) +
+						recipientDigest,
 						list.value(0),
 						list.value(3), // Signature
 						spoton_kernel::s_crypts.
@@ -1793,14 +1809,27 @@ QList<QByteArray> spoton_receive::process0092
       if(!spoton_misc::isAcceptedParticipant(list.value(0), keyType, s_crypt))
 	return QList<QByteArray> ();
 
-      if(!spoton_misc::isValidSignature("0092" +
+      QByteArray recipientDigest;
+
+      if(spoton_kernel::s_crypts.value(keyType, 0))
+	recipientDigest = spoton_kernel::s_crypts.value(keyType)->
+	  publicKey(&ok);
+      else
+	ok = false;
+
+      if(ok)
+	recipientDigest = spoton_crypt::sha512Hash(recipientDigest, &ok);
+
+      if(!ok ||
+	 !spoton_misc::isValidSignature("0092" +
 					symmetricKeys.value(0) +
 					symmetricKeys.value(2) +
 					symmetricKeys.value(1) +
 					symmetricKeys.value(3) +
 					list.value(0) +
 					list.value(1) +
-					list.value(2),
+					list.value(2) +
+					recipientDigest,
 					list.value(0),
 					list.value(3), // Signature
 					spoton_kernel::s_crypts.

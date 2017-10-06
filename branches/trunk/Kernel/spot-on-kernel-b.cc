@@ -2181,6 +2181,9 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   if(sign)
     {
+      QByteArray recipientDigest
+	(spoton_crypt::sha512Hash(publicKey, &ok));
+
       signature = s_crypt2->digitalSignature
 	("0091a" +
 	 symmetricKey +
@@ -2189,7 +2192,9 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 	 hashType +
 	 myPublicKeyHash +
 	 list.value(3) +
-	 utcDate, &ok);
+	 utcDate +
+	 recipientDigest,
+	 &ok);
 
       if(!ok)
 	return;
@@ -2385,6 +2390,9 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 
   if(sign)
     {
+      QByteArray recipientDigest
+	(spoton_crypt::sha512Hash(publicKey, &ok));
+
       signature = s_crypt2->digitalSignature
 	("0091b" +
 	 symmetricKey +
@@ -2393,7 +2401,8 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 	 hashType +
 	 myPublicKeyHash +
 	 bundle +
-	 utcDate,
+	 utcDate +
+	 recipientDigest,
 	 &ok);
 
       if(!ok)
