@@ -254,6 +254,9 @@ int main(int argc, char *argv[])
 
   QApplication qapplication(argc, argv);
 
+#if QT_VERSION >= 0x050700
+  qapplication.setAttribute(Qt::AA_DontUseNativeDialogs, true);
+#endif
   QDir().mkdir(spoton_misc::homePath());
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   QDir().mkdir(spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
