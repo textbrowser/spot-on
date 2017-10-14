@@ -499,7 +499,7 @@ void spoton_mailer::slotRetrieveMailTimeout(void)
 			pair.second = m_publicKeyHashesAdaptiveEchoPairs.
 			  first().value(2);
 			emit sendMailFromPostOffice(message, pair);
-			
+
 			QSqlQuery deleteQuery(db);
 
 			deleteQuery.exec("PRAGMA secure_delete = ON");
