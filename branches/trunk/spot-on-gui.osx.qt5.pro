@@ -81,7 +81,7 @@ lrelease.path           = .
 lupdate.extra           = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.osx.qt5.pro
 lupdate.path            = .
 macdeployqt.path        = ./Spot-On.app
-macdeployqt.extra       = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.app -verbose=0
+macdeployqt.extra       = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.app -executable=./Spot-On.app/Contents/MacOS/Spot-On -verbose=0
 preinstall.path         = /Applications/Spot-On_Qt5.d
 preinstall.extra        = rm -rf /Applications/Spot-On_Qt5.d/Spot-On.app/*
 postinstall.path	= /Applications/Spot-On_Qt5.d
