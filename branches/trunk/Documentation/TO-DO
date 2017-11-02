@@ -287,5 +287,5 @@ Remaining Items
 7.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
 8.     The Poptastic pixmap does not respect a scaled-contents request.
-9.     Smoke's Mumble requires standard CBC. CTS is not available. Modify
-       Buzz.
+9.     Smoke's Fire requires standard CBC. CTS is not available. Modify
+       Buzz. Perhaps (AES/CTS/PKCS7Padding).
