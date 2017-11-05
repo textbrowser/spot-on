@@ -168,10 +168,10 @@ void spoton_kernel::popPoptastic(void)
 	  address = hash.value("proxy_server_address").toString().trimmed();
 	  port = hash.value("proxy_server_port").toString().trimmed();
 
-	  if(hash.value("proxy_type") == "HTTP")
-	    scheme = "http";
-	  else
+	  if(hash.value("proxy_type") == "SOCKS5")
 	    scheme = "socks5";
+	  else
+	    scheme = "http";
 
 	  url = QString("%1://%2:%3").arg(scheme).arg(address).arg(port);
 	  curl_easy_setopt
@@ -499,10 +499,10 @@ void spoton_kernel::postPoptastic(void)
 		trimmed();
 	      port = hash.value("proxy_server_port").toString().trimmed();
 
-	      if(hash.value("proxy_type") == "HTTP")
-		scheme = "http";
-	      else
+	      if(hash.value("proxy_type") == "SOCKS5")
 		scheme = "socks5";
+	      else
+		scheme = "http";
 
 	      url = QString("%1://%2:%3").arg(scheme).arg(address).arg(port);
 	      curl_easy_setopt

@@ -2220,7 +2220,7 @@ QString spoton::savePoptasticAccount(void)
 					value()), &ok).toBase64());
 
 	query.addBindValue(m_poptasticRetroPhoneSettingsUi.proxy_type->
-			   currentText());
+			   currentText().toUpper());
 
 	if(ok)
 	  query.addBindValue
@@ -2330,11 +2330,9 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     (hash.value("proxy_server_address").toString());
   m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue
     (hash.value("proxy_server_port").toInt());
-  index = m_poptasticRetroPhoneSettingsUi.proxy_type->findText
-    (hash.value("proxy_type").toString());
 
-  if(index >= 0)
-    m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(index);
+  if(hash.value("proxy_type").toString().toUpper() == "SOCKS5")
+    m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(1);
   else
     m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
 
