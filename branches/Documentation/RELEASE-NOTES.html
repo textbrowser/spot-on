@@ -4,6 +4,7 @@
 <ol>
   <li>Non-zero pointer validation.</li>
   <li>Poptastic proxy type correction. The SQLite database poptastic.db includes a constraint set on the proxy type. The user interface must respect the text case (HTTP, SOCKS5).</li>
+  <li>Potential dereference of zero pointer (s variable) in threefish_decrypt_implementation().</li>
 </ol>
 <b>New</b>
 <ol>
