@@ -753,7 +753,7 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-e.cc" line="1301"/>
         <location filename="../GUI/spot-on-e.cc" line="1599"/>
         <location filename="../GUI/spot-on-e.cc" line="1950"/>
-        <location filename="../GUI/spot-on-e.cc" line="2389"/>
+        <location filename="../GUI/spot-on-e.cc" line="2387"/>
         <location filename="../GUI/spot-on-f.cc" line="453"/>
         <location filename="../GUI/spot-on-f.cc" line="760"/>
         <location filename="../GUI/spot-on-f.cc" line="1257"/>
@@ -939,7 +939,7 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-c.cc" line="3912"/>
         <location filename="../GUI/spot-on-c.cc" line="4504"/>
         <location filename="../GUI/spot-on-e.cc" line="585"/>
-        <location filename="../GUI/spot-on-e.cc" line="2376"/>
+        <location filename="../GUI/spot-on-e.cc" line="2374"/>
         <location filename="../GUI/spot-on-f.cc" line="1274"/>
         <location filename="../GUI/spot-on-f.cc" line="1334"/>
         <location filename="../GUI/spot-on-f.cc" line="1856"/>
@@ -1349,7 +1349,7 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-e.cc" line="66"/>
         <location filename="../GUI/spot-on-e.cc" line="1254"/>
         <location filename="../GUI/spot-on-e.cc" line="1394"/>
-        <location filename="../GUI/spot-on-e.cc" line="2391"/>
+        <location filename="../GUI/spot-on-e.cc" line="2389"/>
         <location filename="../GUI/spot-on-f.cc" line="562"/>
         <location filename="../GUI/spot-on-f.cc" line="1698"/>
         <location filename="../GUI/spot-on-g.cc" line="1046"/>
@@ -2903,7 +2903,7 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="2379"/>
+        <location filename="../GUI/spot-on-e.cc" line="2377"/>
         <source>Are you sure that you wish to delete the specified Poptastic account?</source>
         <translation type="unfinished"></translation>
     </message>
