@@ -115,6 +115,8 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 	    {
 	      m_queue.removeOne(socket);
 	      socket->deleteLater();
+	      spoton_misc::logError("spoton_gui_server_tcp_server::"
+				    "incomingConnection(): socket deleted.");
 	    }
 	}
       else
@@ -914,13 +916,8 @@ void spoton_gui_server::slotModeChanged(QSslSocket::SslMode mode)
 
   if(!socket)
     {
-      spoton_misc::logError
-	(QString("spoton_gui_server::slotModeChanged(): "
-		 "the connection mode has changed to %1 "
-		 "for %2:%3.").
-	 arg(mode).
-	 arg(serverAddress().toString()).
-	 arg(serverPort()));
+      spoton_misc::logError("spoton_gui_server::slotModeChanged(): "
+			    "empty socket object.");
       return;
     }
 
