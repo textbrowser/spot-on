@@ -5839,6 +5839,7 @@ void spoton::initializeKernelSocket(void)
 	(m_settings.value("gui/sslControlString",
 			  spoton_common::SSL_CONTROL_STRING).toString());
 
+      configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
       configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 #if QT_VERSION >= 0x040800
       configuration.setSslOption
@@ -5848,15 +5849,12 @@ void spoton::initializeKernelSocket(void)
       configuration.setSslOption
 	(QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050500
       spoton_crypt::setSslCiphers
-	(configuration.supportedCiphers(),
-	 sslCS,
-	 configuration);
+	(QSslConfiguration::supportedCiphers(), sslCS, configuration);
 #else
-      spoton_crypt::setSslCiphers(QSslSocket::supportedCiphers(),
-				  sslCS,
-				  configuration);
+      spoton_crypt::setSslCiphers
+	(socket->supportedCiphers(), sslCS, configuration);
 #endif
       m_kernelSocket.setSslConfiguration(configuration);
     }
