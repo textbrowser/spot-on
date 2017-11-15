@@ -5856,6 +5856,7 @@ void spoton::initializeKernelSocket(void)
       spoton_crypt::setSslCiphers
 	(socket->supportedCiphers(), sslCS, configuration);
 #endif
+      m_kernelSocket.ignoreSslErrors();
       m_kernelSocket.setSslConfiguration(configuration);
     }
   else
