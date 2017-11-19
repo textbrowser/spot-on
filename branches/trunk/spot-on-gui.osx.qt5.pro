@@ -40,7 +40,6 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 INCLUDEPATH	+= . ../../. GUI \
                    /usr/local/include /usr/local/opt \
 		   /usr/local/opt/openssl/include
