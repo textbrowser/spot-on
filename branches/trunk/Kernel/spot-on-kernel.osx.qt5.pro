@@ -13,9 +13,6 @@ LANGUAGE	= C++
 QT		+= bluetooth concurrent network sql
 CONFIG		+= qt release warn_on app_bundle
 
-# The function gcry_kdf_derive() is available in version
-# 1.5.0 of the gcrypt library.
-
 DEFINES += SPOTON_BLUETOOTH_ENABLED \
            SPOTON_LINKED_WITH_LIBGEOIP \
            SPOTON_LINKED_WITH_LIBNTRU \
@@ -42,12 +39,15 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 INCLUDEPATH	+= . ../. ../../../. \
                    /usr/local/include /usr/local/opt \
+                   /usr/local/opt/curl/include \
 		   /usr/local/opt/openssl/include
 ICON		=
 LIBS		+= -L../../../libNTRU -lntru \
                    -L../../../libSpotOn -lspoton \
                    -L/usr/local/lib \
-                   -L/usr/local/opt/openssl/lib -lGeoIP \
+                   -L/usr/local/opt/curl/lib \
+                   -L/usr/local/opt/openssl/lib \
+                   -lGeoIP \
                    -lcrypto -lcurl -lgcrypt -lgmp \
 		   -lgpg-error -lntl -lpq -lssl \
                    -framework Cocoa
