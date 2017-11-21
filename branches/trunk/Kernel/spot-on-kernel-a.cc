@@ -575,8 +575,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
   spoton_misc::correctSettingsContainer(s_settings);
   spoton_misc::setTimeVariables(s_settings);
-  spoton_misc::enableLog
-    (setting("gui/kernelLogEvents", false).toBool());
+  spoton_misc::enableLog(setting("gui/kernelLogEvents", false).toBool());
 
   QStringList arguments(QCoreApplication::arguments());
 
@@ -698,6 +697,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	break;
       }
 
+  spoton_misc::prepareDatabases();
   connect(this,
 	  SIGNAL(poppedMessage(const QByteArray &)),
 	  this,
@@ -1001,7 +1001,6 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
   s_congestion_control_secondary_storage = static_cast<int>
     (setting ("gui/secondary_storage_congestion_control", false).toBool());
-  spoton_misc::prepareDatabases();
 }
 
 spoton_kernel::~spoton_kernel()
