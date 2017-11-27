@@ -1262,12 +1262,15 @@ void spoton::slotSaveUrlCredentials(void)
 
 void spoton::slotPostgreSQLConnect(void)
 {
-  if(m_ui.postgresqlConnect->
-     property("user_text").toString() == "disconnect")
+  if(m_ui.postgresqlConnect->property("user_text").toString() == "disconnect")
     {
       m_ui.postgresqlConnect->setProperty("user_text", "connect");
       m_ui.postgresqlConnect->setText(tr("&PostgreSQL Connect..."));
+      m_ui.search->clear();
+      m_ui.searchfor->clear();
       m_ui.url_database_connection_information->clear();
+      m_ui.url_pages->setText("| 1 |");
+      m_ui.urls->clear();
       m_urlDatabase.close();
       m_urlDatabase = QSqlDatabase();
 
