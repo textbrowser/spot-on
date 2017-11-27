@@ -204,7 +204,11 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
   if(!ssl_library_initialized)
     {
       ssl_library_initialized = true;
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
       SSL_library_init(); // Always returns 1.
+#else
+      OPENSSL_init_ssl(0, NULL);
+#endif
     }
 }
 
@@ -3497,12 +3501,16 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	 spoton_common::SSL_CONTROL_STRING).toString().trimmed();
     }
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
   protocols << "TlsV1_2"
 	    << "TlsV1_1"
 	    << "TlsV1_0";
 
   if(!controlString.toLower().contains("!sslv3"))
     protocols << "SslV3";
+#else
+  protocols << "Tls";
+#endif
 
   while(!protocols.isEmpty())
     {
@@ -3511,15 +3519,18 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
       index = 0;
       next = 0;
 
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+      ctx = SSL_CTX_new(TLS_client_method());
+#else
       if(protocol == "TlsV1_2")
 	{
 #ifndef Q_OS_OS2
 #ifdef TLS1_2_VERSION
-	  if(!(ctx = SSL_CTX_new(TLSv1_2_method())))
+	  if(!(ctx = SSL_CTX_new(TLSv1_2_client_method())))
 	    {
 	      spoton_misc::logError
 		("spoton_crypt::defaultSslCiphers(): "
-		 "SSL_CTX_new(TLSv1_2_method()) failure.");
+		 "SSL_CTX_new(TLSv1_2_client_method()) failure.");
 	      goto done_label;
 	    }
 #endif
@@ -3561,9 +3572,14 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	    }
 #endif
 	}
+#endif
 
       if(!ctx)
-	continue;
+	{
+	  spoton_misc::logError("spoton_crypt::defaultSslCiphers(): "
+				"ctx is zero!");
+	  continue;
+	}
 
       if(SSL_CTX_set_cipher_list(ctx,
 				 controlString.toLatin1().constData()) == 0)
