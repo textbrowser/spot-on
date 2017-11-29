@@ -3335,9 +3335,18 @@ void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
       act.sa_handler = signal_handler;
       sigemptyset(&act.sa_mask);
       act.sa_flags = 0;
-      sigaction(list.takeFirst(), &act, 0);
+
+      if(sigaction(list.first(), &act, 0))
+	logError(QString("spoton_misc::prepareSignalHandler(): "
+			 "sigaction() failure for %1.").arg(list.first()));
+
+      list.removeFirst();
 #else
-      signal(list.takeFirst(), signal_handler);
+      if(signal(list.first(), signal_handler) == SIG_ERR)
+	logError(QString("spoton_misc::prepareSignalHandler(): "
+			 "signal() failure for %1.").arg(list.first()));
+
+      list.removeFirst();
 #endif
     }
 }

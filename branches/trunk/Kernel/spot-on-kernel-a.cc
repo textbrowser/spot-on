@@ -316,7 +316,9 @@ int main(int argc, char *argv[])
   act.sa_handler = SIG_IGN;
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
-  sigaction(SIGHUP, &act, 0);
+
+  if(sigaction(SIGHUP, &act, 0))
+    std::cerr << "sigaction() failure on SIGHUP. Continuing." << std::endl;
 
   /*
   ** Ignore SIGPIPE.
@@ -325,7 +327,10 @@ int main(int argc, char *argv[])
   act.sa_handler = SIG_IGN;
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
-  sigaction(SIGPIPE, &act, 0);
+
+  if(sigaction(SIGPIPE, &act, 0))
+    std::cerr << "sigaction() failure on SIGPIPE. Continuing." << std::endl;
+
 #if QT_VERSION >= 0x050000
   qInstallMessageHandler(qt_message_handler);
 #else
@@ -501,8 +506,7 @@ int main(int argc, char *argv[])
       catch(const std::bad_alloc &exception)
 	{
 	  s_kernel = 0;
-	  std::cerr << "Critical memory failure. Exiting kernel."
-		    << std::endl;
+	  std::cerr << "Critical memory failure. Exiting kernel." << std::endl;
 	  curl_global_cleanup();
 	  spoton_crypt::terminate();
 	  return EXIT_FAILURE;
@@ -510,8 +514,7 @@ int main(int argc, char *argv[])
       catch(...)
 	{
 	  s_kernel = 0;
-	  std::cerr << "Critical failure. Exiting kernel."
-		    << std::endl;
+	  std::cerr << "Critical failure. Exiting kernel." << std::endl;
 	  curl_global_cleanup();
 	  spoton_crypt::terminate();
 	  return EXIT_FAILURE;
