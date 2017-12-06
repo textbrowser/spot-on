@@ -111,6 +111,7 @@ class spoton_crypt
   static QString publicKeySize(const QByteArray &data);
   static QString publicKeySizeMcEliece(const QByteArray &data);
   static QString publicKeySizeNTRU(const QByteArray &data);
+  static QStringList buzzHashTypes(void);
   static QStringList cipherTypes(void);
   static QStringList congestionHashAlgorithms(void);
   static QStringList hashTypes(void);

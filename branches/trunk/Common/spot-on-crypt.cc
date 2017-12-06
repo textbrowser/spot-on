@@ -493,6 +493,27 @@ QStringList spoton_crypt::congestionHashAlgorithms(void)
   return types;
 }
 
+QStringList spoton_crypt::buzzHashTypes(void)
+{
+  QStringList types;
+
+  types << "sha1"
+        << "sha3-512"
+	<< "sha512"
+	<< "stribog512"
+	<< "whirlpool";
+
+  for(int i = types.size() - 1; i >= 0; i--)
+    {
+      int algorithm = gcry_md_map_name(types.at(i).toLatin1().constData());
+
+      if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
+	types.removeAt(i);
+    }
+
+  return types;
+}
+
 QStringList spoton_crypt::hashTypes(void)
 {
   QStringList types;
