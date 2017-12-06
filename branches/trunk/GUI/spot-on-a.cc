@@ -2540,7 +2540,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.ae_e_type->addItems(spoton_crypt::cipherTypes());
   m_ui.ae_h_type->addItems(spoton_crypt::hashTypes());
   m_ui.etpHashType->addItems(spoton_crypt::hashTypes());
-  m_ui.buzzHashType->addItems(spoton_crypt::hashTypes());
+  m_ui.buzzHashType->addItems(spoton_crypt::buzzHashTypes());
   m_ui.institutionNameType->addItems(spoton_crypt::cipherTypes());
   m_ui.institutionPostalAddressType->addItems(spoton_crypt::hashTypes());
   m_ui.kernelCipherType->blockSignals(true);
