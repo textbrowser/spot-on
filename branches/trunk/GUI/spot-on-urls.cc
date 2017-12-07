@@ -1186,7 +1186,8 @@ void spoton::slotSaveUrlCredentials(void)
      static_cast<unsigned long int> (m_ui.urlIteration->value()),
      m_ui.urlPassphrase->text(),
      salt,
-     64, // Dooble.
+     64, // Dooble 1.x.
+     false,
      error);
   QApplication::restoreOverrideCursor();
 
@@ -1450,6 +1451,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
      static_cast<unsigned long int> (m_ui.commonUrlIterationCount->value()),
      m_ui.commonUrlPassphrase->text(),
      m_ui.commonUrlPin->text().toUtf8(),
+     false,
      error);
   QApplication::restoreOverrideCursor();
 

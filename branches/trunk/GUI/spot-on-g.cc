@@ -336,6 +336,7 @@ void spoton::slotBuzzInvite(void)
 				   iterationCount,
 				   channel + channelType,
 				   channelSalt,
+				   true,
 				   error);
   QApplication::restoreOverrideCursor();
 
@@ -519,6 +520,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
 				   iterationCount,
 				   channel + channelType,
 				   channelSalt.toLatin1(),
+				   true,
 				   error);
   QApplication::restoreOverrideCursor();
 
@@ -1165,6 +1167,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 	     ui.hash_type->currentText().toLatin1().toHex() +
 	     ui.iteration_count->text().toLatin1().toHex(),
 	     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
+	     false,
 	     error);
 	  QApplication::restoreOverrideCursor();
 

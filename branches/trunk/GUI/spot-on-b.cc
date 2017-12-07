@@ -5693,6 +5693,7 @@ void spoton::slotJoinBuzzChannel(void)
 				   iterationCount,
 				   channel + channelType,
 				   channelSalt,
+				   true,
 				   error);
   QApplication::restoreOverrideCursor();
 

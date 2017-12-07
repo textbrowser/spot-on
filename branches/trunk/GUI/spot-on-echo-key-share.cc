@@ -239,6 +239,7 @@ void spoton_echo_key_share::slotMenuAction(void)
 	 ui.hash->currentText().toLatin1().toHex() +
 	 name.mid(16).toUtf8(),
 	 spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
+	 false,
 	 error);
       QApplication::restoreOverrideCursor();
 
@@ -1046,6 +1047,7 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
      QByteArray("aes256").toHex() + QByteArray("sha512").toHex() +
      name.mid(16).toUtf8(),
      spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
+     false,
      error);
 
   if(!error.isEmpty())

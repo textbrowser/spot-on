@@ -4027,6 +4027,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 							       10000).toInt()),
 		       passphrase,
 		       salt,
+		       false,
 		       error));
 
 	if(error.isEmpty())

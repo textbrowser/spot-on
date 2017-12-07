@@ -851,6 +851,7 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
      smp->guessWhirlpool().toHex(),
      smp->guessSha(),
      spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
+     false,
      error);
   QApplication::restoreOverrideCursor();
 
@@ -1740,6 +1741,7 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
      smp->guessWhirlpool().toHex(),
      smp->guessSha(),
      spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
+     false,
      error);
   QApplication::restoreOverrideCursor();
 

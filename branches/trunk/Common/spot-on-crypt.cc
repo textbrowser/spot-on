@@ -218,10 +218,18 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
  const unsigned long int iterationCount,
  const QString &passphrase,
  const QByteArray &salt,
+ const bool singleIteration,
  QString &error)
 {
   return derivedKeys
-    (cipherType, hashType, iterationCount, passphrase, salt, 256, error);
+    (cipherType,
+     hashType,
+     iterationCount,
+     passphrase,
+     salt,
+     256,
+     singleIteration,
+     error);
 }
 
 QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
@@ -231,6 +239,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
  const QString &passphrase,
  const QByteArray &salt,
  const int hashKeySize,
+ const bool singleIteration,
  QString &error)
 {
   QByteArray key;
@@ -316,21 +325,29 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 	   temporaryKey.data());
       else if(i == 2)
 	{
-	  err = gcry_kdf_derive
-	    (temporaryKey.constData(),
-	     static_cast<size_t> (temporaryKey.length()),
-	     GCRY_KDF_PBKDF2,
-	     hashAlgorithm,
-	     salt.constData(),
-	     static_cast<size_t> (salt.length()),
-	     iterationCount,
-	     static_cast<size_t> (key.length()),
-	     key.data());
-
-	  if(err == 0)
+	  if(singleIteration)
 	    {
-	      keys.first = key.mid(0, keys.first.length());
-	      keys.second = key.mid(keys.first.length());
+	      keys.first = temporaryKey.mid(0, keys.first.length());
+	      keys.second = temporaryKey.mid(keys.first.length());
+	    }
+	  else
+	    {
+	      err = gcry_kdf_derive
+		(temporaryKey.constData(),
+		 static_cast<size_t> (temporaryKey.length()),
+		 GCRY_KDF_PBKDF2,
+		 hashAlgorithm,
+		 salt.constData(),
+		 static_cast<size_t> (salt.length()),
+		 iterationCount,
+		 static_cast<size_t> (key.length()),
+		 key.data());
+
+	      if(err == 0)
+		{
+		  keys.first = key.mid(0, keys.first.length());
+		  keys.second = key.mid(keys.first.length());
+		}
 	    }
 
 	  temporaryKey.replace

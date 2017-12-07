@@ -191,6 +191,7 @@ void spoton_encryptfile_page::slotConvert(void)
      static_cast<unsigned long int> (ui.iteration_count->value()),
      password.toUtf8(),
      pin.toUtf8(),
+     false,
      error);
   ui.status_label->clear();
   QApplication::restoreOverrideCursor();
