@@ -52,7 +52,6 @@ OS X Qt 5.x
 
 qmake -spec macx-clang -o Makefile spot-on.osx.qt5.pro
 sudo make install
-sudo cp -r ./Spot-On.app ./Spot-On-Kernel.app /Applications/Spot-On_Qt5.d/.
 
 PowerPC
 
