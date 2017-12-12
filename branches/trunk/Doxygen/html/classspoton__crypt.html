@@ -168,12 +168,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>purgePrivatePublicKey
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a46400539c07e8f43b8ccdd929c1ca987"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a46400539c07e8f43b8ccdd929c1ca987"></a>
-static QPair&lt; QByteArray, QByteArray &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>derivedKeys</b> (const QString &amp;cipherType, const QString &amp;hashType, const unsigned long int iterationCount, const QString &amp;passphrase, const QByteArray &amp;salt, QString &amp;error)</td></tr>
-<tr class="separator:a46400539c07e8f43b8ccdd929c1ca987"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f8d0b525e6ffb72d52ffc073f6bbed3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f8d0b525e6ffb72d52ffc073f6bbed3"></a>
-static QPair&lt; QByteArray, QByteArray &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>derivedKeys</b> (const QString &amp;cipherType, const QString &amp;hashType, const unsigned long int iterationCount, const QString &amp;passphrase, const QByteArray &amp;salt, const int hashKeySize, QString &amp;error)</td></tr>
-<tr class="separator:a0f8d0b525e6ffb72d52ffc073f6bbed3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e5997dd31bd1a88b546dc961486d473"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5e5997dd31bd1a88b546dc961486d473"></a>
+static QPair&lt; QByteArray, QByteArray &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>derivedKeys</b> (const QString &amp;cipherType, const QString &amp;hashType, const unsigned long int iterationCount, const QString &amp;passphrase, const QByteArray &amp;salt, const bool singleIteration, QString &amp;error)</td></tr>
+<tr class="separator:a5e5997dd31bd1a88b546dc961486d473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea36c28c02d74cf67f3cef918003a664"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aea36c28c02d74cf67f3cef918003a664"></a>
+static QPair&lt; QByteArray, QByteArray &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>derivedKeys</b> (const QString &amp;cipherType, const QString &amp;hashType, const unsigned long int iterationCount, const QString &amp;passphrase, const QByteArray &amp;salt, const int hashKeySize, const bool singleIteration, QString &amp;error)</td></tr>
+<tr class="separator:aea36c28c02d74cf67f3cef918003a664"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7382dbdb47b772128ea0f12cb975d959"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7382dbdb47b772128ea0f12cb975d959"></a>
 static QByteArray&#160;</td><td class="memItemRight" valign="bottom"><b>keyedHash</b> (const QByteArray &amp;data, const QByteArray &amp;key, const QByteArray &amp;hashType, bool *ok)</td></tr>
 <tr class="separator:a7382dbdb47b772128ea0f12cb975d959"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -231,6 +231,9 @@ static QString&#160;</td><td class="memItemRight" valign="bottom"><b>publicKeySi
 <tr class="memitem:a445293be196600cbbad913d3c2d18077"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a445293be196600cbbad913d3c2d18077"></a>
 static QString&#160;</td><td class="memItemRight" valign="bottom"><b>publicKeySizeNTRU</b> (const QByteArray &amp;data)</td></tr>
 <tr class="separator:a445293be196600cbbad913d3c2d18077"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a693e1053577fed988f179031acdffdf1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a693e1053577fed988f179031acdffdf1"></a>
+static QStringList&#160;</td><td class="memItemRight" valign="bottom"><b>buzzHashTypes</b> (void)</td></tr>
+<tr class="separator:a693e1053577fed988f179031acdffdf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abeb921c084d1c7878dc1b43b04def0b8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abeb921c084d1c7878dc1b43b04def0b8"></a>
 static QStringList&#160;</td><td class="memItemRight" valign="bottom"><b>cipherTypes</b> (void)</td></tr>
 <tr class="separator:abeb921c084d1c7878dc1b43b04def0b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
