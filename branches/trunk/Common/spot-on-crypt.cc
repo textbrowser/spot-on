@@ -3379,7 +3379,7 @@ void spoton_crypt::generateCertificate(RSA *rsa,
 
   if(!commonName)
     {
-      error = QObject::tr("calloc() returned zero");
+      error = QObject::tr("calloc() returned zero or irregular address");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
 			    "calloc() failure or irregular address.");
       goto done_label;
