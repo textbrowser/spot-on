@@ -4246,7 +4246,6 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 {
   QByteArray data;
   QByteArray messageCode;
-  QDataStream stream(&data, QIODevice::WriteOnly);
   bool ok = true;
   spoton_crypt crypt(channelType,
 		     hashType,
@@ -4257,29 +4256,28 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 		     0,
 		     "");
 
-  stream << messageType.toLatin1();
+  data = messageType.toLatin1().toBase64() + "\n";
 
-  if(stream.status() != QDataStream::Ok)
-    ok = false;
-
-  if(ok)
+  if(messageType == "0040a")
     {
-      if(messageType == "0040a")
-	stream << name
-	       << id
-	       << dateTime;
-      else
-	stream << name
-	       << id
-	       << message
-	       << dateTime;
-
-      if(stream.status() != QDataStream::Ok)
-	ok = false;
+      data.append(name.toBase64());
+      data.append("\n");
+      data.append(id.toBase64());
+      data.append("\n");
+      data.append(dateTime.toBase64());
+    }
+  else
+    {
+      data.append(name.toBase64());
+      data.append("\n");
+      data.append(id.toBase64());
+      data.append("\n");
+      data.append(message.toBase64());
+      data.append("\n");
+      data.append(dateTime.toBase64());
     }
 
-  if(ok)
-    data = crypt.encrypted(data, &ok);
+  data = crypt.encrypted(data, &ok);
 
   if(ok)
     messageCode = crypt.keyedHash(data, &ok);

@@ -6413,15 +6413,7 @@ QString spoton_neighbor::findMessageType
 	  data = crypt.decrypted(list.value(0), &ok);
 
 	  if(ok)
-	    {
-	      QByteArray a;
-	      QDataStream stream(&data, QIODevice::ReadOnly);
-
-	      stream >> a;
-
-	      if(stream.status() == QDataStream::Ok)
-		type = a;
-	    }
+	    type = QByteArray::fromBase64(data.split('\n').value(0));
 
 	  if(type == "0040a" || type == "0040b")
 	    goto done_label;

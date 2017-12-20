@@ -438,10 +438,13 @@ Echoed? Yes
 Groups: 2
 Symmetric Key (Base-64)
 {
-0 - 0040a
-1 - Name
-2 - ID
-3 - UTC Date
+0 - 0040a (Base-64)
+EOL
+1 - Name (Base-64)
+EOL
+2 - ID (Base-64)
+EOL
+3 - UTC Date (Base-64)
 }
 EOL
 {
@@ -451,11 +454,15 @@ EOL
 Groups: 2
 Symmetric Key (Base-64)
 {
-0 - 0040b
-1 - Name
-2 - ID
-3 - Message
-4 - UTC Date
+0 - 0040b (Base-64)
+EOL
+1 - Name (Base-64)
+EOL
+2 - ID (Base-64)
+EOL
+3 - Message (Base-64)
+EOL
+4 - UTC Date (Base-64)
 }
 EOL
 {

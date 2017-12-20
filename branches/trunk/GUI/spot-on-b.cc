@@ -232,30 +232,11 @@ void spoton::slotReceivedKernelMessage(void)
 		continue;
 
 	      QByteArray bytes(list.value(0));
-	      QDataStream stream(&bytes, QIODevice::ReadOnly);
-	      int end = 5;
 
-	      list.clear();
+	      list = bytes.split('\n');
 
-	      for(int i = 0; i < end; i++)
-		{
-		  QByteArray a;
-
-		  stream >> a;
-
-		  if(stream.status() != QDataStream::Ok)
-		    {
-		      list.clear();
-		      break;
-		    }
-		  else
-		    list << a;
-
-		  if(a == "0040a")
-		    end = 4;
-		  else if(a == "004b")
-		    end = 5;
-		}
+	      for(int i = 0; i < list.size(); i++)
+		list.replace(i, QByteArray::fromBase64(list.at(i)));
 
 	      QDateTime dateTime
 		(QDateTime::fromString(list.value(list.size() - 1).
