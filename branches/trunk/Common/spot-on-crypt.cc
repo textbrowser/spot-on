@@ -3487,7 +3487,7 @@ void spoton_crypt::generateCertificate(RSA *rsa,
      !(buffer = static_cast<char *> (calloc(bptr->length + 1,
 					    sizeof(char)))))
     {
-      error = QObject::tr("calloc() failure bptr->length + 1 is "
+      error = QObject::tr("calloc() failure or bptr->length + 1 is "
 			  "irregular");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
 			    "calloc() failure or bptr->length + 1 is "
