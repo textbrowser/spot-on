@@ -332,9 +332,9 @@ void spoton::slotBuzzInvite(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   keys = spoton_crypt::derivedKeys(channelType,
-				   hashType,
+				   "sha1", // PBKDF2.
 				   iterationCount,
-				   channel + channelType,
+				   channel + channelType + hashType,
 				   channelSalt,
 				   true,
 				   error);
@@ -516,9 +516,9 @@ void spoton::joinBuzzChannel(const QUrl &url)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   keys = spoton_crypt::derivedKeys(channelType,
-				   hashType,
+				   "sha1", // PBKDF2.
 				   iterationCount,
-				   channel + channelType,
+				   channel + channelType + hashType,
 				   channelSalt.toLatin1(),
 				   true,
 				   error);
