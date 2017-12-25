@@ -1,0 +1,10 @@
+Architecture: amd64
+Installed-Size: 334880
+Maintainer: textbrowser@gmail.com
+Package: Spot-On
+Priority: optional
+Section: net
+Version: 2017.12.15
+Description: Spot-On
+ Welcome to Spot-On!
+ A spot-on.desktop file will also be installed in /usr/share/applications/.
