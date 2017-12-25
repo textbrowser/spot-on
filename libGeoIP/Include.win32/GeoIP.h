@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*- */
 /* GeoIP.h
  *
- * Copyright (C) 2006 MaxMind LLC
+ * Copyright (C) 2016 MaxMind, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -440,6 +440,14 @@ GEOIP_API char *GeoIP_name_by_ipnum_v6(GeoIP * gi, geoipv6_t ipnum);
 GEOIP_API char *GeoIP_name_by_addr_v6(GeoIP * gi, const char *addr);
 GEOIP_API char *GeoIP_name_by_name_v6(GeoIP * gi, const char *name);
 
+/* Free the memory allocated by GeoIP_database_info,
+   GeoIP_name_by_ipnum(_gl), GeoIP_name_by_addr(_gl),
+   GeoIP_name_by_name(_gl), GeoIP_org_by_ipnum(_gl)
+   GeoIP_org_by_addr(_gl), GeoIP_org_by_name(_gl),
+   GeoIP_name_by_ipnum_v6(_gl), GeoIP_name_by_addr_v6(_gl),
+   GeoIP_name_by_name_v6(_gl), GeoIP_org_by_ipnum_v6(_gl)
+   GeoIP_org_by_addr_v6(_gl), GeoIP_org_by_name_v6(_gl) */
+GEOIP_API void GeoIP_free(void *addr);
 
 /** GeoIP_last_netmask is deprecated - it is not thread safe */
 GEOIP_API int GeoIP_last_netmask(GeoIP * gi);
