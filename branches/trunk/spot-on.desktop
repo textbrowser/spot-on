@@ -1,7 +1,7 @@
 # https://specifications.freedesktop.org/desktop-entry-spec/latest/apa.html
 
 [Desktop Entry]
-Categories=Web
+Categories=Net
 Comment=Spot-On
 Exec=/usr/local/spot-on/spot-on.qt5.sh
 GenericName=Spot-On
