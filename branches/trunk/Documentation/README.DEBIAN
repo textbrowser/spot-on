@@ -1,4 +1,4 @@
-Preparing /usr/local/spot-on
+Preparing /usr/local/spot-on:
 
 sudo mkdir -p /usr/local/spot-on/Documentation
 sudo mkdir -p /usr/local/spot-on/Lib
