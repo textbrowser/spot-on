@@ -1,3 +1,0 @@
-Simple stress test.
-
-iperf -w 1024k -P 8 -i 2 -t 30 -c 127.0.0.1 -p 4710
