@@ -20,8 +20,7 @@ CONFIG		-= debug
 DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
 		   SPOTON_LINKED_WITH_LIBPTHREAD \
-		   SPOTON_MCELIECE_ENABLED \
-                   SPOTON_SCTP_ENABLED
+		   SPOTON_MCELIECE_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.

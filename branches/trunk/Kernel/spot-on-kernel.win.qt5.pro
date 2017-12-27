@@ -21,8 +21,7 @@ CONFIG		+= qt release warn_on
 DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
                    SPOTON_LINKED_WITH_LIBPTHREAD \
-                   SPOTON_MCELIECE_ENABLED \
-                   SPOTON_SCTP_ENABLED
+                   SPOTON_MCELIECE_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
@@ -47,7 +46,6 @@ INCLUDEPATH	+= . ..\\. ..\\..\\..\\. \
                    ..\\..\\..\\libGeoIP\\Include.win32 \
                    ..\\..\\..\\libOpenSSL\\Include.win32 \
                    ..\\..\\..\\libNTL\\windows.d\\include \
-                   ..\\..\\..\\libSCTP\\SctpDrv.win32\\inc \
                    ..\\..\\..\\libcURL\\Win32.d\include
 LIBS		+= -L..\\..\\..\\PostgreSQL\\Libraries.win32 \
                    -L..\\..\\..\\libNTL\\windows.d\\libraries.d \
@@ -56,11 +54,10 @@ LIBS		+= -L..\\..\\..\\PostgreSQL\\Libraries.win32 \
 		   -L..\\..\\..\\libSpotOn\\Libraries.win32 \
                    -L..\\..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\..\\libOpenSSL\\Libraries.win32 \
-                   -L..\\..\\..\\libSCTP\\SctpDrv.win32\\lib \
                    -L..\\..\\..\\libcURL\\Win32.d\bin \
                    -lGeoIP-1 -lcurl -leay32 -lgcrypt-20 \
                    -lgpg-error-0 -lntl \
-		   -lntru -lpq -lpthread -lsctpsp -lspoton -lssl32 -lws2_32
+		   -lntru -lpq -lpthread -lspoton -lssl32 -lws2_32
 PRE_TARGETDEPS = libntru.dll libspoton.dll
 
 TARGET		= ..\\..\\release\\Spot-On-Kernel
