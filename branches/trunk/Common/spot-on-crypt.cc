@@ -3547,7 +3547,9 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
   if(!controlString.toLower().contains("!sslv3"))
     protocols << "SslV3";
 #else
-  protocols << "Tls";
+  protocols << "TlsV1_2"
+	    << "TlsV1_1"
+	    << "TlsV1_0";
 #endif
 
   while(!protocols.isEmpty())
