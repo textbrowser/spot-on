@@ -140,10 +140,18 @@ void spoton_socket_options::setSocketOptions(QAbstractSocket *socket,
 
 void spoton_socket_options::setSocketOptions(const QString &options,
 					     const QString &transport,
+#ifdef Q_OS_WIN32
+					     const SOCKET socket,
+#else
 					     const qint64 socket,
+#endif
 					     bool *ok)
 {
+#ifdef Q_OS_WIN32
+  if(socket == INVALID_SOCKET)
+#else
   if(socket < 0)
+#endif
     {
       if(ok)
 	*ok = false;
@@ -192,7 +200,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
 #ifdef Q_OS_WIN32
 	    rc = setsockopt
-	      ((SOCKET) socket, level, option, (const char *) &v, (int) length);
+	      (socket, level, option, (const char *) &v, (int) length);
 #else
 	    rc = setsockopt((int) socket, level, option, &v, length);
 #endif
@@ -222,9 +230,11 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    socklen_t length = sizeof(v);
 
 #ifdef Q_OS_WIN32
-	    rc = setsockopt
-	      ((SOCKET) socket,
-	       SOL_SOCKET, SO_KEEPALIVE, (const char *) &v, (int) length);
+	    rc = setsockopt(socket,
+			    SOL_SOCKET,
+			    SO_KEEPALIVE,
+			    (const char *) &v,
+			    (int) length);
 #else
 	    rc = setsockopt((int) socket, SOL_SOCKET, SO_KEEPALIVE, &v, length);
 #endif
@@ -262,8 +272,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    l.l_linger = static_cast<u_short> (v);
 	    length = sizeof(l);
 	    rc = setsockopt
-	      ((SOCKET) socket,
-	       SOL_SOCKET, SO_LINGER, (const char *) &l, (int) length);
+	      (socket, SOL_SOCKET, SO_LINGER, (const char *) &l, (int) length);
 #else
 	    struct linger l;
 
@@ -305,8 +314,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
 #ifdef Q_OS_WIN32
 	    rc = setsockopt
-	      ((SOCKET) socket,
-	       SOL_SOCKET, option, (const char *) &v, (int) length);
+	      (socket, SOL_SOCKET, option, (const char *) &v, (int) length);
 #else
 	    rc = setsockopt((int) socket, SOL_SOCKET, option, &v, length);
 #endif

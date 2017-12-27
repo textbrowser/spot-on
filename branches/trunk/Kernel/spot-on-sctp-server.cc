@@ -85,7 +85,11 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
   m_id = id;
   m_isListening = false;
   m_serverPort = 0;
+#ifdef Q_OS_WIN32
+  m_socketDescriptor = INVALID_SOCKET;
+#else
   m_socketDescriptor = -1;
+#endif
 #ifdef SPOTON_SCTP_ENABLED
   m_backlog = 30;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
@@ -141,8 +145,13 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 #ifdef SPOTON_SCTP_ENABLED
   if(m_isListening)
     return true;
+#ifdef Q_OS_WIN32
+  else if(m_socketDescriptor != INVALID_SOCKET)
+    return m_isListening;
+#else
   else if(m_socketDescriptor > -1)
     return m_isListening;
+#endif
 
   QAbstractSocket::NetworkLayerProtocol protocol =
     QAbstractSocket::IPv4Protocol;
@@ -157,9 +166,16 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
     protocol = QAbstractSocket::IPv6Protocol;
 
   if(protocol == QAbstractSocket::IPv4Protocol)
-    m_socketDescriptor = rc = socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP);
+    m_socketDescriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP);
   else
-    m_socketDescriptor = rc = socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP);
+    m_socketDescriptor = socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP);
+
+#ifdef Q_OS_WIN32
+  if(m_socketDescriptor == INVALID_SOCKET)
+    rc = -1;
+#else
+  rc = m_socketDescriptor;
+#endif
 
   if(rc == -1)
     {
@@ -203,8 +219,13 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   ** Set the read and write buffer sizes.
   */
 
+#ifdef Q_OS_WIN32
+  spoton_socket_options::setSocketOptions
+    (socketOptions, "sctp", m_socketDescriptor, 0);
+#else
   spoton_socket_options::setSocketOptions
     (socketOptions, "sctp", static_cast<qint64> (m_socketDescriptor), 0);
+#endif
 
   /*
   ** Reuse the address.
@@ -427,7 +448,11 @@ int spoton_sctp_server::maxPendingConnections(void) const
 
 int spoton_sctp_server::socketDescriptor(void) const
 {
+#ifdef Q_OS_WIN32
+  return static_cast<int> (m_socketDescriptor);
+#else
   return m_socketDescriptor;
+#endif
 }
 
 quint16 spoton_sctp_server::serverPort(void) const
@@ -450,7 +475,11 @@ void spoton_sctp_server::close(void)
   m_isListening = false;
   m_serverAddress.clear();
   m_serverPort = 0;
+#ifdef Q_OS_WIN32
+  m_socketDescriptor = INVALID_SOCKET;
+#else
   m_socketDescriptor = -1;
+#endif
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
   if(m_socketNotifier)
     m_socketNotifier->deleteLater();
@@ -491,7 +520,11 @@ void spoton_sctp_server::slotTimeout(void)
   if(protocol == QAbstractSocket::IPv4Protocol)
     {
       QHostAddress address;
+#ifdef Q_OS_WIN32
+      SOCKET socketDescriptor = INVALID_SOCKET;
+#else
       int socketDescriptor = -1;
+#endif
       quint16 port = 0;
       socklen_t length = 0;
       struct sockaddr_in clientaddr;
@@ -502,7 +535,11 @@ void spoton_sctp_server::slotTimeout(void)
 	(m_socketDescriptor, (struct sockaddr *) &clientaddr,
 	 &length);
 
+#ifdef Q_OS_WIN32
+      if(socketDescriptor != INVALID_SOCKET)
+#else
       if(socketDescriptor > -1)
+#endif
 	{
 	  if(spoton_kernel::s_connectionCounts.count(m_id) >= m_backlog)
 	    {
@@ -580,7 +617,9 @@ void spoton_sctp_server::slotTimeout(void)
 	    }
 	  else
 #if QT_VERSION < 0x050000
-	    emit newConnection(socketDescriptor, address, port);
+	    emit newConnection(static_cast<int> (socketDescriptor),
+			       address,
+			       port);
 #else
 	    emit newConnection(static_cast<qintptr> (socketDescriptor),
 			       address, port);
@@ -608,7 +647,11 @@ void spoton_sctp_server::slotTimeout(void)
     {
 #ifndef Q_OS_OS2
       QHostAddress address;
+#ifdef Q_OS_WIN32
+      SOCKET socketDescriptor = INVALID_SOCKET;
+#else
       int socketDescriptor = -1;
+#endif
       quint16 port = 0;
       socklen_t length = 0;
       struct sockaddr_in6 clientaddr;
@@ -619,7 +662,11 @@ void spoton_sctp_server::slotTimeout(void)
 	(m_socketDescriptor, (struct sockaddr *) &clientaddr,
 	 &length);
 
+#ifdef Q_OS_WIN32
+      if(socketDescriptor != INVALID_SOCKET)
+#else
       if(socketDescriptor > -1)
+#endif
 	{
 	  if(spoton_kernel::s_connectionCounts.count(m_id) >= m_backlog)
 	    {
@@ -702,7 +749,9 @@ void spoton_sctp_server::slotTimeout(void)
 	    }
 	  else
 #if QT_VERSION < 0x050000
-	    emit newConnection(socketDescriptor, address, port);
+	    emit newConnection(static_cast<int> (socketDescriptor),
+			       address,
+			       port);
 #else
 	    emit newConnection(static_cast<qintptr> (socketDescriptor),
 			       address, port);

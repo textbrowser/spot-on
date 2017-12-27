@@ -64,7 +64,11 @@ class spoton_sctp_server: public QObject
 #endif
   bool m_isListening;
   int m_backlog;
+#ifdef Q_OS_WIN32
+  SOCKET m_socketDescriptor;
+#else
   int m_socketDescriptor;
+#endif
   qint64 m_id;
   quint16 m_serverPort;
 
