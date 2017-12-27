@@ -42,16 +42,14 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 INCLUDEPATH	+= . ../. ../../../. \
-		   ../../../libSCTP/Include.osx64 \
                    /usr/local/include /usr/local/opt
 ICON		=
 LIBS		+= -L../../../libNTRU -lntru \
-		   -L../../../libSCTP/Libraries.osx64 -lusrsctp \
                    -L../../../libSpotOn -lspoton \
                    -L/usr/local/lib -L/usr/local/opt/curl/lib \
                    -L/usr/local/opt/openssl/lib -lGeoIP \
                    -lcrypto -lcurl -lgcrypt -lgmp \
-		   -lgpg-error -lntl -lpq -lssl \
+		   -lgpg-error -lntl -lpq -lssl -lusrsctp \
                    -framework Cocoa
 PRE_TARGETDEPS = libntru.dylib libspoton.dylib
 OBJECTS_DIR = temp/obj
@@ -75,8 +73,6 @@ libgeoip_data_install.path = /Applications/GoldBug_Qt5.d/GeoIP
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
 libntru_install.path  = .
 libntru_install.extra = cp ../../../libNTRU/libntru.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libntru.dylib && install_name_tool -change ../../../libNTRU/libntru.dylib @executable_path/../Frameworks/libntru.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
-libsctp_install.path  = .
-libsctp_install.extra = cp ../../../libSCTP/Libraries.osx64/libusrsctp.0.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libusrsctp.0.dylib && install_name_tool -change ../../../libSCTP/Libraries.osx64/libusrsctp.0.dylib @executable_path/../Frameworks/libusrsctp.0.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 libspoton_install.path  = .
 libspoton_install.extra = cp ../../../libSpotOn/libspoton.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/opt/libgcrypt/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib ../Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change ../../../libSpotOn/libspoton.dylib @executable_path/../Frameworks/libspoton.dylib ../Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 macdeployqt.path        = ../Spot-On-Kernel.app
@@ -90,7 +86,6 @@ INSTALLS	= macdeployqt \
                   preinstall \
                   libgeoip_data_install \
                   libntru_install \
-		  libsctp_install \
                   libspoton_install \
                   spoton \
                   postinstall

@@ -6,32 +6,6 @@ OS X
 
 Please use Homebrew!
 
-Please note that the SCTP NKE bundle is only supported
-on OS X 10.6.8.
-
-Please download the SCTP extension from
-http://sctp.fh-muenster.de/sctp-nke.html and
-http://sctp.fh-muenster.de/sctp-user-land-stack.html.
-
-Please load the kernel extension via sudo kextload
-/System/Library/Extensions/SCTP.kext.
-
-Lion
-
-https://nplab.fh-muenster.de/wiki/projects/wiki/documents
-
-Mavericks
-
-https://nplab.fh-muenster.de/wiki/projects/wiki/documents
-
-Mountain Lion
-
-https://nplab.fh-muenster.de/wiki/projects/wiki/documents
-
-Yosemite
-
-https://nplab.fh-muenster.de/wiki/projects/wiki/documents
-
 Windows
 
 The SCTP driver for Windows was downloaded from
