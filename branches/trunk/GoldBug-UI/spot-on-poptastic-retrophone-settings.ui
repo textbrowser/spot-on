@@ -209,7 +209,7 @@
         <x>0</x>
         <y>0</y>
         <width>740</width>
-        <height>641</height>
+        <height>631</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -397,7 +397,7 @@
              <number>5</number>
             </property>
             <item>
-             <widget class="QLabel" name="label_6">
+             <widget class="QLabel" name="poptastic_label">
               <property name="maximumSize">
                <size>
                 <width>256</width>
