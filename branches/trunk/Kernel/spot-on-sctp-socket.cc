@@ -82,7 +82,11 @@ spoton_sctp_socket::spoton_sctp_socket(QObject *parent):QObject(parent)
 {
   m_connectToPeerPort = 0;
   m_hostLookupId = -1;
+#ifdef Q_OS_WIN32
+  m_socketDescriptor = INVALID_SOCKET;
+#else
   m_socketDescriptor = -1;
+#endif
   m_state = UnconnectedState;
 #ifdef SPOTON_SCTP_ENABLED
   m_readBufferSize = spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
@@ -129,8 +133,13 @@ QHostAddress spoton_sctp_socket::localAddressAndPort(quint16 *port) const
   if(port)
     *port = 0;
 
+#ifdef Q_OS_WIN32
+  if(m_socketDescriptor == INVALID_SOCKET)
+    return QHostAddress();
+#else
   if(m_socketDescriptor < 0)
     return QHostAddress();
+#endif
 
   QHostAddress address;
   socklen_t length = 0;
@@ -140,7 +149,7 @@ QHostAddress spoton_sctp_socket::localAddressAndPort(quint16 *port) const
 
   if(getsockname(
 #ifdef Q_OS_WIN32
-		 (SOCKET) m_socketDescriptor,
+		 m_socketDescriptor,
 #else
 		 m_socketDescriptor,
 #endif
@@ -207,8 +216,13 @@ QHostAddress spoton_sctp_socket::peerAddressAndPort(quint16 *port) const
   if(port)
     *port = 0;
 
+#ifdef Q_OS_WIN32
+  if(m_socketDescriptor == INVALID_SOCKET)
+    return QHostAddress();
+#else
   if(m_socketDescriptor < 0)
     return QHostAddress();
+#endif
 
   return spoton_misc::peerAddressAndPort(m_socketDescriptor, port);
 #else

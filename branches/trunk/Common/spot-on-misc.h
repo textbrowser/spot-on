@@ -93,7 +93,12 @@ class spoton_misc
   static QByteArray xor_arrays(const QByteArray &a, const QByteArray &b);
   static QHash<QString, QByteArray> retrieveEchoShareInformation
     (const QString &communityName, spoton_crypt *crypt);
-  static QHostAddress peerAddressAndPort(const int socketDescriptor,
+  static QHostAddress peerAddressAndPort(
+#ifdef Q_OS_WIN32
+					 const SOCKET socketDescriptor,
+#else
+					 const int socketDescriptor,
+#endif
 					 quint16 *port);
   static QList<QByteArray> findEchoKeys(const QByteArray &bytes1,
 					const QByteArray &bytes2,
@@ -170,7 +175,11 @@ class spoton_misc
   static bool isValidStarBeamMissingLinksMagnet(const QByteArray &magnet);
   static bool joinMulticastGroup(const QHostAddress &address,
 				 const QVariant &loop,
+#ifdef Q_OS_WIN32
+				 const SOCKET socketDescriptor,
+#else
 				 const int socketDescriptor,
+#endif
 				 const quint16 port);
   static bool prepareUrlDistillersDatabase(void);
   static bool prepareUrlKeysDatabase(void);

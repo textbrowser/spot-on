@@ -3666,7 +3666,12 @@ QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
     return QPair<QByteArray, QByteArray> ();
 }
 
-QHostAddress spoton_misc::peerAddressAndPort(const int socketDescriptor,
+QHostAddress spoton_misc::peerAddressAndPort(
+#ifdef Q_OS_WIN32
+					     const SOCKET socketDescriptor,
+#else
+					     const int socketDescriptor,
+#endif
 					     quint16 *port)
 {
   QHostAddress address;
@@ -5686,7 +5691,11 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
 
 bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 				     const QVariant &loop,
+#ifdef Q_OS_WIN32
+				     const SOCKET socketDescriptor,
+#else
 				     const int socketDescriptor,
+#endif
 				     const quint16 port)
 {
   bool ok = true;

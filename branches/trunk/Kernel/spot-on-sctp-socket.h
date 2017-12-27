@@ -102,7 +102,11 @@ class spoton_sctp_socket: public QObject
   QTimer m_timer;
   SocketState m_state;
   int m_hostLookupId;
+#ifdef Q_OS_WIN32
+  SOCKET m_socketDescriptor;
+#else
   int m_socketDescriptor;
+#endif
   qint64 m_readBufferSize;
   quint16 m_connectToPeerPort;
   QHostAddress localAddressAndPort(quint16 *port) const;
