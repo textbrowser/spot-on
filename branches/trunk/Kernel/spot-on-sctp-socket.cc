@@ -257,7 +257,11 @@ bool spoton_sctp_socket::setSocketDescriptor(const int socketDescriptor)
   if(socketDescriptor >= 0)
     {
       close();
+#ifdef Q_OS_WIN32
+      m_socketDescriptor = (SOCKET) socketDescriptor;
+#else
       m_socketDescriptor = socketDescriptor;
+#endif
       m_state = ConnectedState;
 
       /*
@@ -294,16 +298,18 @@ int spoton_sctp_socket::inspectConnectResult
       if(errorcode == WSAEWOULDBLOCK)
 	return 0;
 
-      QString errorstr(QString("inspectConnectResult::error=%1,socket=%2").
-		       arg(errorcode).arg(m_socketDescriptor));
+      QString errorstr
+	(QString("inspectConnectResult::error=%1,socket=%2").
+	 arg(errorcode).arg(static_cast<int> (m_socketDescriptor)));
 
       emit error(errorstr, UnknownSocketError);
 #else
       if(errorcode == EINPROGRESS)
 	return 0;
 
-      QString errorstr(QString("inspectConnectResult::errno=%1,socket=%2").
-		       arg(errorcode).arg(m_socketDescriptor));
+      QString errorstr
+	(QString("inspectConnectResult::errno=%1,socket=%2").
+	 arg(errorcode).arg(static_cast<int> (m_socketDescriptor)));
 
       if(errorcode == EACCES || errorcode == EPERM)
 	emit error(errorstr, SocketAccessError);
@@ -330,7 +336,11 @@ int spoton_sctp_socket::inspectConnectResult
 int spoton_sctp_socket::setSocketBlockingOrNon(void)
 {
 #ifdef SPOTON_SCTP_ENABLED
+#ifdef Q_OS_WIN32
+  if(m_socketDescriptor == INVALID_SOCKET)
+#else
   if(m_socketDescriptor < 0)
+#endif
     {
       spoton_misc::logError("spoton_sctp_socket::setSocketBlockingOrNon(): "
 			    "m_socketDescriptor is less than zero.");
@@ -342,7 +352,7 @@ int spoton_sctp_socket::setSocketBlockingOrNon(void)
 #ifdef Q_OS_WIN32
   unsigned long int enabled = 1;
 
-  rc = ioctlsocket((SOCKET) m_socketDescriptor, FIONBIO, &enabled);
+  rc = ioctlsocket(m_socketDescriptor, FIONBIO, &enabled);
 
   if(rc != 0)
     {
@@ -384,13 +394,19 @@ int spoton_sctp_socket::setSocketBlockingOrNon(void)
 
 int spoton_sctp_socket::socketDescriptor(void) const
 {
-  return m_socketDescriptor;
+  return static_cast<int> (m_socketDescriptor);
 }
 
 qint64 spoton_sctp_socket::read(char *data, const qint64 size)
 {
 #ifdef SPOTON_SCTP_ENABLED
-  if(m_socketDescriptor < 0 || m_state != ConnectedState)
+#ifdef Q_OS_WIN32
+  if(m_socketDescriptor == INVALID_SOCKET)
+#else
+  if(m_socketDescriptor < 0)
+#endif
+    return -1;
+  else if(m_state != ConnectedState)
     return -1;
   else if(!data || size < 0)
     return -1;
@@ -480,7 +496,13 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
 qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
 {
 #ifdef SPOTON_SCTP_ENABLED
-  if(m_socketDescriptor < 0 || m_state != ConnectedState)
+#ifdef Q_OS_WIN32
+  if(m_socketDescriptor == INVALID_SOCKET)
+#else
+  if(m_socketDescriptor < 0)
+#endif
+    return -1;
+  else if(m_state != ConnectedState)
     return -1;
   else if(!data || size < 0)
     return -1;
@@ -497,7 +519,7 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
 
 #ifdef Q_OS_WIN32
   sent = send
-    ((SOCKET) m_socketDescriptor, data,
+    (m_socketDescriptor, data,
      static_cast<size_t> (qMin(size, writeSize)), 0);
 #else
   sent = send
@@ -577,7 +599,7 @@ void spoton_sctp_socket::abort(void)
 {
 #ifdef SPOTON_SCTP_ENABLED
 #ifdef Q_OS_WIN32
-  shutdown((SOCKET) m_socketDescriptor, SD_BOTH);
+  shutdown(m_socketDescriptor, SD_BOTH);
 #else
   shutdown(m_socketDescriptor, SHUT_RDWR);
 #endif
@@ -592,8 +614,8 @@ void spoton_sctp_socket::close(void)
 
   QHostInfo::abortHostLookup(m_hostLookupId);
 #ifdef Q_OS_WIN32
-  shutdown((SOCKET) m_socketDescriptor, SD_BOTH);
-  closesocket((SOCKET) m_socketDescriptor);
+  shutdown(m_socketDescriptor, SD_BOTH);
+  closesocket(m_socketDescriptor);
 #else
   shutdown(m_socketDescriptor, SHUT_RDWR);
   ::close(m_socketDescriptor);
@@ -603,7 +625,11 @@ void spoton_sctp_socket::close(void)
   m_hostLookupId = -1;
   m_ipAddress.clear();
   m_readBuffer.clear();
+#ifdef Q_OS_WIN32
+  m_socketDescriptor = INVALID_SOCKET;
+#else
   m_socketDescriptor = -1;
+#endif
   m_state = UnconnectedState;
   m_timer.stop();
 
@@ -650,9 +676,16 @@ void spoton_sctp_socket::connectToHostImplementation(void)
     protocol = IPv6Protocol;
 
   if(protocol == IPv4Protocol)
-    m_socketDescriptor = rc = socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP);
+    m_socketDescriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP);
   else
-    m_socketDescriptor = rc = socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP);
+    m_socketDescriptor = socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP);
+
+#ifdef Q_OS_WIN32
+  if(m_socketDescriptor == INVALID_SOCKET)
+    rc = -1;
+#else
+  rc = m_socketDescriptor;
+#endif
 
   if(rc == -1)
     {
@@ -688,8 +721,13 @@ void spoton_sctp_socket::connectToHostImplementation(void)
   ** Set the read and write buffer sizes.
   */
 
+#ifdef Q_OS_WIN32
+  spoton_socket_options::setSocketOptions
+    (m_socketOptions, "sctp", m_socketDescriptor, 0);
+#else
   spoton_socket_options::setSocketOptions
     (m_socketOptions, "sctp", static_cast<qint64> (m_socketDescriptor), 0);
+#endif
 
   if(protocol == IPv4Protocol)
     {
@@ -866,7 +904,7 @@ void spoton_sctp_socket::setSocketOption(const SocketOption option,
 
 #ifdef Q_OS_WIN32
 	rc = setsockopt
-	  ((SOCKET) m_socketDescriptor, SOL_SOCKET,
+	  (m_socketDescriptor, SOL_SOCKET,
 	   SO_KEEPALIVE, (const char *) &optval, (int) optlen);
 #else
 	rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_KEEPALIVE,
@@ -888,7 +926,7 @@ void spoton_sctp_socket::setSocketOption(const SocketOption option,
 
 #ifdef Q_OS_WIN32
 	rc = setsockopt
-	  ((SOCKET) m_socketDescriptor, IPPROTO_SCTP,
+	  (m_socketDescriptor, IPPROTO_SCTP,
 	   SCTP_NODELAY, (const char *) &optval, (int) optlen);
 #else
 	rc = setsockopt(m_socketDescriptor, IPPROTO_SCTP, SCTP_NODELAY,
@@ -963,7 +1001,7 @@ void spoton_sctp_socket::slotTimeout(void)
 
 #ifdef Q_OS_WIN32
 	      rc = getsockopt
-		((SOCKET) m_socketDescriptor, SOL_SOCKET,
+		(m_socketDescriptor, SOL_SOCKET,
 		 SO_ERROR, (char *) &errorcode, &length);
 #else
 	      rc = getsockopt
@@ -986,7 +1024,13 @@ void spoton_sctp_socket::slotTimeout(void)
 	close();
     }
 
-  if(m_socketDescriptor < 0 || m_state != ConnectedState)
+#ifdef Q_OS_WIN32
+  if(m_socketDescriptor == INVALID_SOCKET)
+#else
+  if(m_socketDescriptor < 0)
+#endif
+    return;
+  else if(m_state != ConnectedState)
     return;
 
   QByteArray data(static_cast<int> (m_readBufferSize), 0);
