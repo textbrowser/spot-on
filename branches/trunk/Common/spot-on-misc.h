@@ -210,6 +210,11 @@ class spoton_misc
   static spoton_crypt *retrieveUrlCommonCredentials(spoton_crypt *crypt);
   static void alterDatabasesAfterAuthentication(spoton_crypt *crypt);
   static void cleanupDatabases(spoton_crypt *crypt);
+#ifdef Q_OS_WIN32
+  static void closeSocket(const Socket socket);
+#else
+  static void closeSocket(const int socket);
+#endif
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
   static void enableLog(const bool state);
   static void logError(const QString &error);

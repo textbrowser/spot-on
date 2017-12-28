@@ -25,6 +25,31 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifdef Q_OS_FREEBSD
+extern "C"
+{
+#include <sys/socket.h>
+#include <unistd.h>
+}
+#elif defined(Q_OS_LINUX)
+extern "C"
+{
+#include <sys/socket.h>
+#include <unistd.h>
+}
+#elif defined(Q_OS_MAC)
+extern "C"
+{
+#include <sys/socket.h>
+#include <unistd.h>
+}
+#elif defined(Q_OS_WIN32)
+extern "C"
+{
+#include <winsock2.h>
+}
+#endif
+
 #include <QDataStream>
 #include <QDateTime>
 #include <QDir>
@@ -6052,4 +6077,19 @@ bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
 
   now.setTimeSpec(Qt::UTC);
   return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
+}
+
+#ifdef Q_OS_WIN32
+void spoton_misc::closeSocket(const Socket socket)
+#else
+void spoton_misc::closeSocket(const int socket)
+#endif
+{
+#ifdef Q_OS_WIN32
+  shutdown(socket, SD_BOTH);
+  closesocket(socket);
+#else
+  shutdown(socket, SHUT_RDWR);
+  close(socket);
+#endif
 }
