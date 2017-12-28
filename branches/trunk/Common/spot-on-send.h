@@ -28,7 +28,7 @@
 #ifndef _spoton_send_h_
 #define _spoton_send_h_
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <QBluetoothAddress>
 #endif
 #include <QByteArray>
@@ -94,7 +94,7 @@ class spoton_send
      const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
   static QByteArray message0014(const QByteArray &message);
   static QByteArray message0030(const QByteArray &message);
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   static QByteArray message0030(const QBluetoothAddress &address,
 				const quint16 port,
 				const QString &orientation);

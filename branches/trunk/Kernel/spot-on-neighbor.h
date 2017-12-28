@@ -29,7 +29,7 @@
 #define _spoton_neighbor_h_
 
 #include <QAtomicInt>
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetoothsocket.h>
 #endif
 #include <QDateTime>
@@ -127,7 +127,7 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	spoton_socket_options::setSocketOptions
 	  (m_multicastSocket, socketOptions, 0);
 
-#if QT_VERSION >= 0x040800
+#if QT_VERSION >= 0x040807
 	if(!m_multicastSocket->joinMulticastGroup(address))
 	  {
 	    m_multicastSocket->deleteLater();
@@ -253,7 +253,7 @@ class spoton_neighbor: public QThread
 		  const int passthrough,
 		  const int sourceOfRandomness,
 		  const QByteArray &privateApplicationCredentials,
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 		  QBluetoothSocket *socket,
 #endif
 		  QObject *parent);
@@ -299,7 +299,7 @@ class spoton_neighbor: public QThread
   QMutex m_privateApplicationMutex;
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
   QPair<quint64, quint64> m_privateApplicationSequences;
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   QPointer<QBluetoothSocket> m_bluetoothSocket;
 #else
   QPointer<QObject> m_bluetoothSocket;
@@ -470,7 +470,7 @@ class spoton_neighbor: public QThread
   void slotEchoKeyShare(const QByteArrayList &list);
   void slotEncrypted(void);
   void slotError(QAbstractSocket::SocketError error);
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   void slotError(QBluetoothSocket::SocketError error);
 #endif
   void slotError(const QString &method,
@@ -483,7 +483,7 @@ class spoton_neighbor: public QThread
   void slotPeerVerifyError(const QSslError &error);
   void slotProxyAuthenticationRequired(const QNetworkProxy &proxy,
 				       QAuthenticator *authenticator);
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   void slotPublicizeListenerPlaintext(const QBluetoothAddress &address,
 				      const quint16 port,
 				      const QString &orientation);
@@ -536,7 +536,7 @@ class spoton_neighbor: public QThread
 			    const QByteArray &name,
 			    const QByteArray &password);
   void authenticationRequested(const QString &peerInformation);
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   void bluetooth(const QBluetoothServiceInfo &serviceInfo);
 #endif
   void callParticipant(const QByteArray &publicKeyHash,

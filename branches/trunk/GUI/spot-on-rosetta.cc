@@ -217,29 +217,6 @@ void spoton_rosetta::slotSetIcons(void)
   ui.save->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
 }
 
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-bool spoton_rosetta::event(QEvent *event)
-{
-  if(event)
-    if(event->type() == QEvent::WindowStateChange)
-      if(windowState() == Qt::WindowNoState)
-	{
-	  /*
-	  ** Minimizing the window on OS 10.6.8 and Qt 5.x will cause
-	  ** the window to become stale once it has resurfaced.
-	  */
-
-	  hide();
-	  show(0);
-	  update();
-	}
-
-  return QMainWindow::event(event);
-}
-#endif
-#endif
-
 void spoton_rosetta::slotClear(void)
 {
   if(sender() == ui.clearContact)

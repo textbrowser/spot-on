@@ -32,7 +32,7 @@ QAbstractSocket::SocketState spoton_neighbor::state(void) const
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       return QAbstractSocket::SocketState(m_bluetoothSocket->state());
 #endif
       return QAbstractSocket::UnconnectedState;
@@ -51,7 +51,7 @@ QString spoton_neighbor::localAddress(void) const
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       return m_bluetoothSocket->localAddress().toString();
 #else
       return "";
@@ -71,7 +71,7 @@ QString spoton_neighbor::peerAddress(void) const
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       return m_bluetoothSocket->peerAddress().toString();
 #else
       return "";
@@ -126,7 +126,7 @@ void spoton_neighbor::abort(void)
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_bluetoothSocket->abort();
 #endif
     }
@@ -142,7 +142,7 @@ void spoton_neighbor::close(void)
 {
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_bluetoothSocket->disconnectFromService();
 #endif
     }
@@ -299,7 +299,7 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
 
 void spoton_neighbor::deleteLater(void)
 {
-#if QT_VERSION >= 0x050200 && defined(Q_OS_MAC) && \
+#if QT_VERSION >= 0x050501 && defined(Q_OS_MAC) && \
   defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_transport == "bluetooth")
     {

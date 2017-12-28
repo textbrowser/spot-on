@@ -50,11 +50,6 @@ class spoton_echo_key_share: public QMainWindow
  private:
   QPointer<QSslSocket> m_kernelSocket;
   Ui_spoton_echokeyshare ui;
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-  bool event(QEvent *event);
-#endif
-#endif
   static bool save(const QPair<QByteArray, QByteArray> &keys,
 		   const QString &cipherType,
 		   const QString &hashType,

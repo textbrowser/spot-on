@@ -513,7 +513,7 @@ QByteArray spoton_send::message0030(const QByteArray &message)
   return results;
 }
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 QByteArray spoton_send::message0030(const QBluetoothAddress &address,
 				    const quint16 port,
 				    const QString &orientation)

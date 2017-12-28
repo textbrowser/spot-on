@@ -86,7 +86,7 @@ spoton_neighbor::spoton_neighbor
  const int passthrough,
  const int sourceOfRandomness,
  const QByteArray &privateApplicationCredentials,
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
  QBluetoothSocket *socket,
 #endif
  QObject *parent):QThread(parent)
@@ -115,7 +115,7 @@ spoton_neighbor::spoton_neighbor
 
   if(transport == "bluetooth")
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_bluetoothSocket = socket;
 
       if(m_bluetoothSocket)
@@ -195,7 +195,7 @@ spoton_neighbor::spoton_neighbor
 
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_address = m_bluetoothSocket->peerAddress().toString();
 #endif
     }
@@ -229,7 +229,7 @@ spoton_neighbor::spoton_neighbor
 
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       m_port = m_bluetoothSocket->peerPort();
 #endif
     }
@@ -284,7 +284,7 @@ spoton_neighbor::spoton_neighbor
 
 	      if(!configuration.privateKey().isNull())
 		{
-#if QT_VERSION >= 0x040800
+#if QT_VERSION >= 0x040807
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableCompression, true);
 		  configuration.setSslOption
@@ -293,7 +293,7 @@ spoton_neighbor::spoton_neighbor
 		    (QSsl::SslOptionDisableLegacyRenegotiation, true);
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableSessionTickets, true);
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050501
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableSessionPersistence, true);
 		  configuration.setSslOption
@@ -707,7 +707,7 @@ spoton_neighbor::spoton_neighbor
 
 	  if(!configuration.privateKey().isNull())
 	    {
-#if QT_VERSION >= 0x040800
+#if QT_VERSION >= 0x040807
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableCompression, true);
 	      configuration.setSslOption
@@ -716,7 +716,7 @@ spoton_neighbor::spoton_neighbor
 		(QSsl::SslOptionDisableLegacyRenegotiation, true);
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableSessionTickets, true);
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050501
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableSessionPersistence, true);
 	      configuration.setSslOption
@@ -1329,7 +1329,7 @@ void spoton_neighbor::slotTimeout(void)
 	  {
 	    if(!m_bluetoothSocket)
 	      {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 		m_bluetoothSocket = new (std::nothrow) QBluetoothSocket
 		  (QBluetoothServiceInfo::RfcommProtocol, this);
 
@@ -1643,7 +1643,7 @@ void spoton_neighbor::slotReadyRead(void)
 
   if(m_bluetoothSocket)
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       data = m_bluetoothSocket->readAll();
 #endif
     }
@@ -1981,7 +1981,7 @@ void spoton_neighbor::processData(void)
 	    {
 	      if(m_bluetoothSocket)
 		{
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 		  emit authenticationRequested
 		    (QString("%1:%2").
 		     arg(m_bluetoothSocket->peerAddress().toString()).
@@ -2336,7 +2336,7 @@ void spoton_neighbor::slotConnected(void)
 
 		if(m_bluetoothSocket)
 		  {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 		    query.bindValue
 		      (2, m_bluetoothSocket->localAddress().toString());
 		    query.bindValue
@@ -3876,7 +3876,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
       data = QByteArray::fromBase64(data);
 
       QList<QByteArray> list(data.split('\n'));
-#if QT_VERSION >= 0x040800
+#if QT_VERSION >= 0x040807
       QUuid uuid(list.value(0));
 #else
       QUuid uuid(list.value(0).constData());
@@ -4057,7 +4057,7 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 	    }
 	  else if(statusControl == "localconnected")
 	    {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 	      if(!QBluetoothAddress(list.value(0).constData()).isNull())
 		{
 		  QString orientation(list.value(4).constData());
@@ -5284,7 +5284,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
   deleteLater();
 }
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
 {
   if(m_bluetoothSocket)
@@ -6030,7 +6030,7 @@ void spoton_neighbor::slotHostFound(const QHostInfo &hostInfo)
       }
 }
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 void spoton_neighbor::slotPublicizeListenerPlaintext
 (const QBluetoothAddress &address,
  const quint16 port,
@@ -7213,7 +7213,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
     {
       if(m_bluetoothSocket)
 	{
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 	  sent = m_bluetoothSocket->write
 	    (data,
 	     qMin(spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE, remaining));

@@ -169,29 +169,6 @@ void spoton_starbeamanalyzer::slotSetIcons(void)
   ui.clear->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
 }
 
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-bool spoton_starbeamanalyzer::event(QEvent *event)
-{
-  if(event)
-    if(event->type() == QEvent::WindowStateChange)
-      if(windowState() == Qt::WindowNoState)
-	{
-	  /*
-	  ** Minimizing the window on OS 10.6.8 and Qt 5.x will cause
-	  ** the window to become stale once it has resurfaced.
-	  */
-
-	  hide();
-	  show(0);
-	  update();
-	}
-
-  return QMainWindow::event(event);
-}
-#endif
-#endif
-
 bool spoton_starbeamanalyzer::add(const QString &fileName,
 				  const QString &oid,
 				  const QString &pulseSize,

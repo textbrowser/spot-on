@@ -1903,7 +1903,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
       QString fileName("");
 
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050501
       fileName = url.fileName().trimmed();
 #else
       fileName = QFileInfo(url.path()).fileName().trimmed();

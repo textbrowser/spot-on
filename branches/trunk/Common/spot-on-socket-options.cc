@@ -121,7 +121,7 @@ void spoton_socket_options::setSocketOptions(QAbstractSocket *socket,
       }
     else if(string.startsWith("so_rcvbuf=") || string.startsWith("so_sndbuf="))
       {
-#if QT_VERSION >= 0x050300
+#if QT_VERSION >= 0x050501
 	QAbstractSocket::SocketOption option =
 	  QAbstractSocket::ReceiveBufferSizeSocketOption;
 

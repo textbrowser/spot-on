@@ -169,7 +169,7 @@ void spoton::slotSetSocketOptions(void)
     }
   else
     {
-#if QT_VERSION >= 0x050300
+#if QT_VERSION >= 0x050501
       if(transport == "BLUETOOTH")
 	{
 	  ui.so_rcvbuf->setEnabled(false);

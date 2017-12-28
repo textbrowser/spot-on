@@ -70,11 +70,6 @@ class spoton_smpwindow: public QMainWindow
  private:
   QHash<QByteArray, spoton_smpwindow_smp *> m_smps;
   Ui_spoton_smpwindow m_ui;
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-  bool event(QEvent *event);
-#endif
-#endif
   void generateSecretData(spoton_smpwindow_smp *smp);
   void keyPressEvent(QKeyEvent *event);
   void showError(const QString &error);

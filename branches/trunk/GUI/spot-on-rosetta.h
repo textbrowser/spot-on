@@ -47,11 +47,6 @@ class spoton_rosetta: public QMainWindow
  private:
   Ui_spoton_rosetta ui;
   QByteArray copyMyRosettaPublicKey(void) const;
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-  bool event(QEvent *event);
-#endif
-#endif
   void keyPressEvent(QKeyEvent *event);
   void populateContacts(void);
 

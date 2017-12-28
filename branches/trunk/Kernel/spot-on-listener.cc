@@ -202,7 +202,7 @@ spoton_listener::spoton_listener
  const QString &socketOptions,
  QObject *parent):QObject(parent)
 {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   m_bluetoothServer = 0;
 #endif
   m_sctpServer = 0;
@@ -232,7 +232,7 @@ spoton_listener::spoton_listener
 
   if(transport == "bluetooth")
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       if(m_keySize > static_cast<unsigned int > (QBluetooth::Authentication |
 						 QBluetooth::Authorization |
 						 QBluetooth::Encryption |
@@ -383,7 +383,7 @@ spoton_listener::~spoton_listener()
   m_externalAddressDiscovererTimer.stop();
   m_timer.stop();
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_bluetoothServiceInfo.isRegistered())
     m_bluetoothServiceInfo.unregisterService();
 #endif
@@ -631,7 +631,7 @@ void spoton_listener::slotTimeout(void)
 			    maximumPendingConnections =
 			      std::numeric_limits<int>::max();
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 			  if(m_bluetoothServer)
 			    m_bluetoothServer->setMaxPendingConnections
 			      (maximumPendingConnections);
@@ -730,7 +730,7 @@ void spoton_listener::slotTimeout(void)
   ** If the interface disappears, destroy the listener.
   */
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_transport == "bluetooth")
     return;
 #endif
@@ -821,7 +821,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	 m_passthrough,
 	 m_sourceOfRandomness,
 	 m_privateApplicationCredentials,
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 	 0,
 #endif
 	 this);
@@ -1447,7 +1447,7 @@ quint16 spoton_listener::serverPort(void) const
 
 void spoton_listener::close(void)
 {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_bluetoothServiceInfo.isRegistered())
     m_bluetoothServiceInfo.unregisterService();
 
@@ -1467,7 +1467,7 @@ void spoton_listener::close(void)
 
 bool spoton_listener::isListening(void) const
 {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_bluetoothServer)
     return m_bluetoothServer->isListening();
 #endif
@@ -1489,7 +1489,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
       m_port = port;
     }
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_transport == "bluetooth")
     {
       if(!m_bluetoothServer)
@@ -1612,7 +1612,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 
 QString spoton_listener::errorString(void) const
 {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_bluetoothServer)
     return QString("%1").arg(m_bluetoothServer->error());
 #endif
@@ -1628,7 +1628,7 @@ QString spoton_listener::errorString(void) const
 
 int spoton_listener::maxPendingConnections(void) const
 {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_bluetoothServer)
     return m_bluetoothServer->maxPendingConnections();
 #endif
@@ -1652,7 +1652,7 @@ QString spoton_listener::orientation(void) const
   return m_orientation;
 }
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 void spoton_listener::slotNewConnection(void)
 {
   if(!m_bluetoothServer)

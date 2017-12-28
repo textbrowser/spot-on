@@ -314,29 +314,6 @@ spoton_rss::~spoton_rss()
   m_parseXmlFuture.waitForFinished();
 }
 
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-bool spoton_rss::event(QEvent *event)
-{
-  if(event)
-    if(event->type() == QEvent::WindowStateChange)
-      if(windowState() == Qt::WindowNoState)
-	{
-	  /*
-	  ** Minimizing the window on OS 10.6.8 and Qt 5.x will cause
-	  ** the window to become stale once it has resurfaced.
-	  */
-
-	  hide();
-	  show();
-	  update();
-	}
-
-  return QMainWindow::event(event);
-}
-#endif
-#endif
-
 bool spoton_rss::importUrl(const QList<QVariant> &list,
 			   const int maximumKeywords)
 {

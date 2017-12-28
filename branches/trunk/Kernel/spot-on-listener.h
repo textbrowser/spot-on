@@ -33,7 +33,7 @@
 #include <QSqlDatabase>
 #include <QTcpServer>
 #include <QTimer>
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetoothserver.h>
 #include <qbluetoothserviceinfo.h>
 #include <qbluetoothsocket.h>
@@ -205,7 +205,7 @@ class spoton_listener: public QObject
   void updateConnectionCount(void);
 
  private:
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   QBluetoothServer *m_bluetoothServer;
   QBluetoothServiceInfo m_bluetoothServiceInfo;
 #endif
@@ -261,7 +261,7 @@ class spoton_listener: public QObject
 			 const QHostAddress &address,
 			 const quint16 port);
 #endif
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   void slotNewConnection(void);
 #endif
   void slotTimeout(void);

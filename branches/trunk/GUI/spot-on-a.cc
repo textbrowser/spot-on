@@ -54,7 +54,7 @@ extern "C"
 #elif defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebSettings>
 #endif
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetooth.h>
 #endif
 
@@ -692,7 +692,7 @@ spoton::spoton(void):QMainWindow()
   setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050501
   m_ui.message->setPlaceholderText(tr("Please type a message..."));
 #endif
   m_ui.search->setPlaceholderText(tr("Search"));
@@ -808,7 +808,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.signatureKeyType->model()->setData
     (m_ui.signatureKeyType->model()->index(2, 0), 0, Qt::UserRole - 1);
 #endif
-#if QT_VERSION < 0x050200 || !defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION < 0x050501 || !defined(SPOTON_BLUETOOTH_ENABLED)
   m_ui.listenerTransport->model()->setData
     (m_ui.listenerTransport->model()->index(0, 0), 0, Qt::UserRole - 1);
   m_ui.neighborTransport->model()->setData
@@ -4353,7 +4353,7 @@ void spoton::slotPopulateListeners(void)
 		      {
 			if(transport.toLower() == "bluetooth")
 			  {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 			    QComboBox *box = new QComboBox();
 			    QList<QBluetooth::Security> items;
 			    QMap<QBluetooth::Security, QString> map;

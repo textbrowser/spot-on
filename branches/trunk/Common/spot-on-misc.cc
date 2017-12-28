@@ -1724,7 +1724,7 @@ QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
   return publicKey;
 }
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
 					const quint16 port,
 					const QString &statusControl,

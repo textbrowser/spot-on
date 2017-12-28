@@ -62,11 +62,6 @@ class spoton_rss: public QMainWindow
   QTimer m_statisticsTimer;
   Ui_spoton_rss m_ui;
   int m_currentFeedRow;
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-  bool event(QEvent *event);
-#endif
-#endif
   bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
   spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);

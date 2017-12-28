@@ -29,7 +29,7 @@
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
 #include <QApplication>
 #else
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <QCoreApplication>
 #else
 #include <QCoreApplication>
@@ -340,7 +340,7 @@ int main(int argc, char *argv[])
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
   QApplication qapplication(argc, argv);
 #else
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   QCoreApplication qapplication(argc, argv);
 #else
   QCoreApplication qapplication(argc, argv);
@@ -2495,7 +2495,7 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SLOT(slotPublicizeListenerPlaintext(const QByteArray &,
 					      const qint64)),
 	  Qt::UniqueConnection);
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   connect(this,
 	  SIGNAL(publicizeListenerPlaintext(const QBluetoothAddress &,
 					    const quint16,
@@ -4162,7 +4162,7 @@ void spoton_kernel::slotPublicizeAllListenersPlaintext(void)
       if(!listener)
 	continue;
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       if(listener->transport() == "bluetooth")
 	{
 	  emit publicizeListenerPlaintext
@@ -4194,7 +4194,7 @@ void spoton_kernel::slotPublicizeListenerPlaintext(const qint64 oid)
   if(!listener)
     return;
 
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(listener->transport() == "bluetooth")
     {
       emit publicizeListenerPlaintext

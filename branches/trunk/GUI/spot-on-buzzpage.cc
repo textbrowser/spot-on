@@ -129,7 +129,7 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   ui.clients->setColumnHidden(1, true); // ID
   ui.clients->setColumnHidden(2, true); // Time
   ui.clients->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
-#if QT_VERSION >= 0x050200
+#if QT_VERSION >= 0x050501
   ui.message->setPlaceholderText(tr("Please type a message..."));
 #endif
   ui.splitter->setStretchFactor(0, 1);

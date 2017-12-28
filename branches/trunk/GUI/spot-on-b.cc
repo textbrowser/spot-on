@@ -26,7 +26,7 @@
 */
 
 #include <QSslKey>
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothlocaldevice.h>
 #endif
@@ -1381,7 +1381,7 @@ void spoton::prepareListenerIPCombo(void)
 
   if(m_ui.listenerTransport->currentIndex() == 0)
     {
-#if QT_VERSION >= 0x050200 && defined(SPOTON_BLUETOOTH_ENABLED)
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       QList<QBluetoothHostInfo> devices(QBluetoothLocalDevice::allDevices());
 
       while(!devices.isEmpty())
@@ -5582,29 +5582,6 @@ void spoton::slotPublicizeListenerPlaintext(void)
        arg(m_kernelSocket.peerPort()));
 }
 
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-bool spoton::event(QEvent *event)
-{
-  if(event)
-    if(event->type() == QEvent::WindowStateChange)
-      if(windowState() == Qt::WindowNoState)
-	{
-	  /*
-	  ** Minimizing the window on OS 10.6.8 and Qt 5.x will cause
-	  ** the window to become stale once it has resurfaced.
-	  */
-
-	  hide();
-	  show();
-	  update();
-	}
-
-  return QMainWindow::event(event);
-}
-#endif
-#endif
-
 void spoton::slotSuperEcho(int index)
 {
   m_settings["gui/superEcho"] = index;
@@ -5823,7 +5800,7 @@ void spoton::initializeKernelSocket(void)
 
       configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
       configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
-#if QT_VERSION >= 0x040800
+#if QT_VERSION >= 0x040807
       configuration.setSslOption
 	(QSsl::SslOptionDisableCompression, true);
       configuration.setSslOption
@@ -5831,7 +5808,7 @@ void spoton::initializeKernelSocket(void)
       configuration.setSslOption
 	(QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
-#if QT_VERSION >= 0x050500
+#if QT_VERSION >= 0x050501
       spoton_crypt::setSslCiphers
 	(QSslConfiguration::supportedCiphers(), sslCS, configuration);
 #else

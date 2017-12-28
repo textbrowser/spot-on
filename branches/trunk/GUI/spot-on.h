@@ -554,11 +554,6 @@ class spoton: public QMainWindow
   bool addFriendsKey(const QByteArray &key, const QString &type,
 		     QWidget *parent);
   bool deleteAllUrls(void);
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-  bool event(QEvent *event);
-#endif
-#endif
   bool isKernelActive(void) const;
   bool promptBeforeExit(void);
   bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,

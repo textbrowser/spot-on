@@ -55,11 +55,6 @@ class spoton_starbeamanalyzer: public QMainWindow
  private:
   QHash<QString, QPair<QAtomicInt *, QFuture<void> > > m_hash;
   Ui_spoton_starbeamanalyzer ui;
-#ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000 && QT_VERSION < 0x050300
-  bool event(QEvent *event);
-#endif
-#endif
   void analyze(const QString &fileName, const QString &pulseSize,
 	       const QString &totalSize, QAtomicInt *interrupt);
   void keyPressEvent(QKeyEvent *event);

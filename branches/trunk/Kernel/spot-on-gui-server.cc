@@ -94,7 +94,7 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 	      configuration.setLocalCertificate(QSslCertificate(certificate));
 	      configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 	      configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
-#if QT_VERSION >= 0x040800
+#if QT_VERSION >= 0x040807
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableCompression, true);
 	      configuration.setSslOption
@@ -102,7 +102,7 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
-#if QT_VERSION >= 0x050500
+#if QT_VERSION >= 0x050501
 	      spoton_crypt::setSslCiphers
 		(QSslConfiguration::supportedCiphers(), sslCS, configuration);
 #else
