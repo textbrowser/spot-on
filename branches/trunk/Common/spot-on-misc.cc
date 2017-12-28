@@ -43,7 +43,7 @@ extern "C"
 #include <sys/socket.h>
 #include <unistd.h>
 }
-#elif defined(Q_OS_WIN32)
+#elif defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 extern "C"
 {
 #include <winsock2.h>
@@ -102,7 +102,7 @@ QString spoton_misc::homePath(void)
   QByteArray homepath(qgetenv("SPOTON_HOME"));
 
   if(homepath.isEmpty())
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
     return QDir::currentPath() + QDir::separator() + ".spot-on";
 #else
     return QDir::homePath() + QDir::separator() + ".spot-on";
@@ -789,7 +789,7 @@ void spoton_misc::logErrorThread(const QString &error)
   if(file.open(QIODevice::Append | QIODevice::WriteOnly))
     {
       QDateTime now(QDateTime::currentDateTime());
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
       QString eol("\r\n");
 #else
       QString eol("\n");
@@ -3692,7 +3692,7 @@ QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
 }
 
 QHostAddress spoton_misc::peerAddressAndPort(
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 					     const SOCKET socketDescriptor,
 #else
 					     const int socketDescriptor,
@@ -5716,7 +5716,7 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
 
 bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 				     const QVariant &loop,
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 				     const SOCKET socketDescriptor,
 #else
 				     const int socketDescriptor,
@@ -5734,7 +5734,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
       mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
       mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
       if(setsockopt(socketDescriptor, IPPROTO_IP,
 		    IP_ADD_MEMBERSHIP, (const char *) &mreq4, (int) length)
 	 == -1)
@@ -5756,7 +5756,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 
 	  length = sizeof(option);
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IP,
 			IP_MULTICAST_LOOP, (const char *) &option, (int) length)
@@ -5786,7 +5786,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
       memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
       mreq6.ipv6mr_interface = 0;
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
       if(setsockopt(socketDescriptor, IPPROTO_IPV6,
 		    IPV6_JOIN_GROUP, (const char *) &mreq6,
 		    (int) length) == -1)
@@ -5808,7 +5808,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 
 	  length = sizeof(option);
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IPV6,
 			IPV6_MULTICAST_LOOP, (const char *) &option,
@@ -6079,13 +6079,13 @@ bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
   return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
 }
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 void spoton_misc::closeSocket(const Socket socket)
 #else
 void spoton_misc::closeSocket(const int socket)
 #endif
 {
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
   shutdown(socket, SD_BOTH);
   closesocket(socket);
 #else

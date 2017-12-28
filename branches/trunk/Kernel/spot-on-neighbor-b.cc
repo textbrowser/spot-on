@@ -155,8 +155,8 @@ void spoton_neighbor::close(void)
 	  int socketDescriptor = static_cast<int>
 	    (m_tcpSocket->socketDescriptor());
 
-#ifdef Q_OS_WIN32
-	  shutdown(socketDescriptor, SD_BOTH);
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+	  shutdown((SOCKET) socketDescriptor, SD_BOTH);
 #else
 	  shutdown(socketDescriptor, SHUT_RDWR);
 #endif

@@ -52,7 +52,7 @@ extern "C"
 
 extern "C"
 {
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 #include <io.h>
 #else
 #include <unistd.h>
@@ -162,7 +162,7 @@ spoton_neighbor::spoton_neighbor
     }
   else if(m_udpSocket)
     {
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
       m_udpSocket->setSocketDescriptor
 	(_dup(static_cast<int> (socketDescriptor)));
 #else
