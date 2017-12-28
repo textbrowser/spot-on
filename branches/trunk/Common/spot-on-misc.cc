@@ -25,6 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QtGlobal>
+
 #ifdef Q_OS_FREEBSD
 extern "C"
 {
