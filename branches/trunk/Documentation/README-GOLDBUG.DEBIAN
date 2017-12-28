@@ -32,7 +32,6 @@ sudo cp -p ./Data/spot-on-neighbors.txt /usr/local/goldbug/.
 sudo cp -p ./Icons/Logo/goldbug.png /usr/local/goldbug/.
 sudo cp -p ./Qt/qt.conf /usr/local/goldbug/.
 sudo cp -p ./SQL/* /usr/local/goldbug/SQL/.
-sudo cp -p ./Shell/spot-on-kernel.sh /usr/local/goldbug/.
 sudo cp -p ./Shell/goldbug.qt5.sh /usr/local/goldbug/.
 sudo cp -p ./Sounds/* /usr/local/goldbug/Sounds/.
 sudo cp -p ./GoldBug /usr/local/goldbug/.
