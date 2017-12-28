@@ -62,9 +62,7 @@ extern "C"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#ifdef SPOTON_SCTP_ENABLED
 #include <usrsctp.h>
-#endif
 }
 #elif defined(Q_OS_WIN32)
 extern "C"
