@@ -6079,17 +6079,18 @@ bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
   return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
 }
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
-void spoton_misc::closeSocket(const Socket socket)
+void spoton_misc::closeSocket
+#if QT_VERSION < 0x050000
+(const int socketDescriptor)
 #else
-void spoton_misc::closeSocket(const int socket)
+(const qintptr socketDescriptor)
 #endif
 {
 #if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
-  shutdown(socket, SD_BOTH);
-  closesocket(socket);
+  shutdown((SOCKET) socketDescriptor, SD_BOTH);
+  closesocket((SOCKET) socketDescriptor);
 #else
-  shutdown(socket, SHUT_RDWR);
-  close(socket);
+  shutdown(socketDescriptor, SHUT_RDWR);
+  close(socketDescriptor);
 #endif
 }

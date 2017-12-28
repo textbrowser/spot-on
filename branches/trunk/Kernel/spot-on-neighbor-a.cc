@@ -158,16 +158,34 @@ spoton_neighbor::spoton_neighbor
   else if(m_tcpSocket)
     {
       m_tcpSocket->setReadBufferSize(m_maximumBufferSize);
-      m_tcpSocket->setSocketDescriptor(socketDescriptor);
+
+      if(!m_tcpSocket->setSocketDescriptor(socketDescriptor))
+	spoton_misc::closeSocket(socketDescriptor);
     }
   else if(m_udpSocket)
     {
+      int s = 0;
+
 #if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
-      m_udpSocket->setSocketDescriptor
-	(_dup(static_cast<int> (socketDescriptor)));
+      s = _dup(static_cast<int> (socketDescriptor));
+
+      if(s != -1)
+	{
+	  if(!m_udpSocket->setSocketDescriptor(s))
+	    spoton_misc::closeSocket(s);
+	}
+      else
+	spoton_misc::closeSocket(socketDescriptor);
 #else
-      m_udpSocket->setSocketDescriptor
-	(dup(static_cast<int> (socketDescriptor)));
+      s = dup(static_cast<int> (socketDescriptor));
+
+      if(s != -1)
+	{
+	  if(!m_udpSocket->setSocketDescriptor(s))
+	    spoton_misc::closeSocket(s);
+	}
+      else
+	spoton_misc::closeSocket(socketDescriptor);
 #endif
       m_udpSocket->setLocalAddress(QHostAddress(localIpAddress));
       m_udpSocket->setLocalPort(localPort.toUShort());

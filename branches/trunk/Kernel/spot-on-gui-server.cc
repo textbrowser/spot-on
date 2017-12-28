@@ -65,9 +65,11 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 
       if(Q_LIKELY(socket))
 	{
+	  bool ok = true;
+
 	  try
 	    {
-	      socket->setSocketDescriptor(socketDescriptor);
+	      ok = socket->setSocketDescriptor(socketDescriptor);
 	      socket->setSocketOption
 		(QAbstractSocket::LowDelayOption,
 		 spoton_kernel::setting("kernel/tcp_nodelay", 1).
@@ -116,6 +118,10 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 	    {
 	      m_queue.removeOne(socket);
 	      socket->deleteLater();
+
+	      if(!ok)
+		spoton_misc::closeSocket(socketDescriptor);
+
 	      spoton_misc::logError("spoton_gui_server_tcp_server::"
 				    "incomingConnection(): socket deleted.");
 	    }
@@ -124,8 +130,11 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
-	  socket.setSocketDescriptor(socketDescriptor);
-	  socket.abort();
+	  if(socket.setSocketDescriptor(socketDescriptor))
+	    socket.abort();
+	  else
+	    spoton_misc::closeSocket(socketDescriptor);
+
 	  spoton_misc::logError("spoton_gui_server_tcp_server::"
 				"incomingConnection(): memory failure.");
 	}
@@ -134,8 +143,11 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
     {
       QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
-      socket.setSocketDescriptor(socketDescriptor);
-      socket.abort();
+      if(socket.setSocketDescriptor(socketDescriptor))
+	socket.abort();
+      else
+	spoton_misc::closeSocket(socketDescriptor);
+
       spoton_misc::logError
 	(QString("spoton_gui_server_tcp_server::"
 		 "incomingConnection(): "

@@ -50,8 +50,10 @@ void spoton_listener_tcp_server::incomingConnection(int socketDescriptor)
     {
       QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
-      socket.setSocketDescriptor(socketDescriptor);
-      socket.abort();
+      if(socket.setSocketDescriptor(socketDescriptor))
+	socket.abort();
+      else
+	spoton_misc::closeSocket(socketDescriptor);
     }
   else
     {
@@ -67,8 +69,10 @@ void spoton_listener_tcp_server::incomingConnection(int socketDescriptor)
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
-	  socket.setSocketDescriptor(socketDescriptor);
-	  socket.abort();
+	  if(socket.setSocketDescriptor(socketDescriptor))
+	    socket.abort();
+	  else
+	    spoton_misc::closeSocket(socketDescriptor);
 	}
       else if(!spoton_misc::
 	      isAcceptedIP(peerAddress, m_id,
@@ -76,8 +80,11 @@ void spoton_listener_tcp_server::incomingConnection(int socketDescriptor)
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
-	  socket.setSocketDescriptor(socketDescriptor);
-	  socket.abort();
+	  if(socket.setSocketDescriptor(socketDescriptor))
+	    socket.abort();
+	  else
+	    spoton_misc::closeSocket(socketDescriptor);
+
 	  spoton_misc::logError
 	    (QString("spoton_listener_tcp_server::incomingConnection(): "
 		     "connection from %1 denied for %2:%3.").
@@ -91,8 +98,11 @@ void spoton_listener_tcp_server::incomingConnection(int socketDescriptor)
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
-	  socket.setSocketDescriptor(socketDescriptor);
-	  socket.abort();
+	  if(socket.setSocketDescriptor(socketDescriptor))
+	    socket.abort();
+	  else
+	    spoton_misc::closeSocket(socketDescriptor);
+
 	  spoton_misc::logError
 	    (QString("spoton_listener_tcp_server::incomingConnection(): "
 		     "connection from %1 blocked for %2:%3.").
@@ -104,8 +114,10 @@ void spoton_listener_tcp_server::incomingConnection(int socketDescriptor)
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
-	  socket.setSocketDescriptor(socketDescriptor);
-	  socket.abort();
+	  if(socket.setSocketDescriptor(socketDescriptor))
+	    socket.abort();
+	  else
+	    spoton_misc::closeSocket(socketDescriptor);
 	}
       else
 	emit newConnection(socketDescriptor, peerAddress, peerPort);
@@ -837,22 +849,25 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	{
 	  spoton_sctp_socket socket(this);
 
-	  socket.setSocketDescriptor(static_cast<int> (socketDescriptor));
 	  socket.abort();
 	}
       else if(m_transport == "tcp")
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
-	  socket.setSocketDescriptor(socketDescriptor);
-	  socket.abort();
+	  if(socket.setSocketDescriptor(socketDescriptor))
+	    socket.abort();
+	  else
+	    spoton_misc::closeSocket(socketDescriptor);
 	}
       else if(m_transport == "udp")
 	{
 	  QAbstractSocket socket(QAbstractSocket::UdpSocket, this);
 
-	  socket.setSocketDescriptor(socketDescriptor);
-	  socket.abort();
+	  if(socket.setSocketDescriptor(socketDescriptor))
+	    socket.abort();
+	  else
+	    spoton_misc::closeSocket(socketDescriptor);
 	}
     }
 
