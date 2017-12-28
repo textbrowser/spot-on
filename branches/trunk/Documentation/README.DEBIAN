@@ -49,4 +49,4 @@ mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/DEBIAN spot-on-debian/.
 cp -r /usr/local/spot-on spot-on-debian/usr/local/.
-dpkg-deb --build spot-on-debian Spot-On-2017.12.27.deb
+dpkg-deb --build spot-on-debian Spot-On-2018.01.01.deb
