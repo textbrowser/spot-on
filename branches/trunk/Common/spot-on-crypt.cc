@@ -3652,14 +3652,14 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 #else
 	      QSslCipher cipher;
 
-	      if(protocol == "TlsV1_2")
-		cipher = QSslCipher(next, QSsl::TlsV1_2);
-	      else if(protocol == "TlsV1_1")
-		cipher = QSslCipher(next, QSsl::TlsV1_1);
+	      if(protocol == "SslV3")
+		cipher = QSslCipher(next, QSsl::SslV3);
 	      else if(protocol == "TlsV1_0")
 		cipher = QSslCipher(next, QSsl::TlsV1_0);
-	      else
-		cipher = QSslCipher(next, QSsl::SslV3);
+	      else if(protocol == "TlsV1_1")
+		cipher = QSslCipher(next, QSsl::TlsV1_1);
+	      else if(protocol == "TlsV1_2")
+		cipher = QSslCipher(next, QSsl::TlsV1_2);
 #endif
 
 	      if(cipher.isNull())

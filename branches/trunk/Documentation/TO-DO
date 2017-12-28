@@ -166,6 +166,7 @@ Completed Items
 119.   Verify that the Super Echo precedes computations.
 120.   spoton_misc::importUrl() and lastInsertId() over the sequence.
        Delete previous values on successful retrieval of sequence.
+121.   Smoke's Fire requires CTS. Modify Buzz.
 
 Ignored Items
 
@@ -287,5 +288,3 @@ Remaining Items
 7.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
 8.     The Poptastic pixmap does not respect a scaled-contents request.
-9.     Smoke's Fire requires standard CBC. CTS is not available. Modify
-       Buzz. Perhaps (AES/CTS/PKCS7Padding).
