@@ -38,7 +38,7 @@ class spoton_socket_options
 			       bool *ok);
   static void setSocketOptions(const QString &options,
 			       const QString &transport,
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 			       const SOCKET socket,
 #else
 			       const qint64 socket,

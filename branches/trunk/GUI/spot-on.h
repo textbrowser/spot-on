@@ -53,7 +53,7 @@
 #endif
 #include <QMessageBox>
 #include <QMouseEvent>
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 #include <qt_windows.h>
 #include <QtNetwork>
 #else

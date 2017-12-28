@@ -653,7 +653,7 @@ void spoton::slotTransportChanged(int index)
       m_ui.ipv4Listener->setEnabled(index != 0);
       m_ui.ipv6Listener->setEnabled(index != 0);
       m_ui.listenerKeySize->setEnabled(index == 2);
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
       m_ui.listenerShareAddress->setEnabled(false);
 #else
       m_ui.listenerShareAddress->setEnabled(index == 3);

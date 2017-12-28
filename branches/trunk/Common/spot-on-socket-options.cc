@@ -65,7 +65,7 @@ extern "C"
 #include <usrsctp.h>
 #endif
 }
-#elif defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#elif defined(Q_OS_WIN)
 extern "C"
 {
 #include <winsock2.h>
@@ -140,14 +140,14 @@ void spoton_socket_options::setSocketOptions(QAbstractSocket *socket,
 
 void spoton_socket_options::setSocketOptions(const QString &options,
 					     const QString &transport,
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 					     const SOCKET socket,
 #else
 					     const qint64 socket,
 #endif
 					     bool *ok)
 {
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
   if(socket == INVALID_SOCKET)
 #else
   if(socket < 0)
@@ -198,7 +198,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		option = TCP_NODELAY;
 	      }
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 	    rc = setsockopt
 	      (socket, level, option, (const char *) &v, (int) length);
 #else
@@ -229,7 +229,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    int rc = 0;
 	    socklen_t length = sizeof(v);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 	    rc = setsockopt(socket,
 			    SOL_SOCKET,
 			    SO_KEEPALIVE,
@@ -261,7 +261,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    int rc = 0;
 	    socklen_t length = 0;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 	    struct linger
 	    {
 	      u_short l_onoff;
@@ -312,7 +312,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    int rc = 0;
 	    socklen_t length = sizeof(v);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 	    rc = setsockopt
 	      (socket, SOL_SOCKET, option, (const char *) &v, (int) length);
 #else

@@ -298,7 +298,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(chat)
 			{
 			  chat->append(msg);
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 			  if(chat->isVisible())
 			    chat->activateWindow();
 #endif
@@ -421,7 +421,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(chat)
 			{
 			  chat->append(msg);
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 			  if(chat->isVisible())
 			    chat->activateWindow();
 #endif
@@ -496,7 +496,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(chat)
 			{
 			  chat->append(msg);
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 			  if(chat->isVisible())
 			    chat->activateWindow();
 #endif
@@ -543,7 +543,7 @@ void spoton::slotReceivedKernelMessage(void)
 			  if(chat)
 			    {
 			      chat->append(msg);
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 			      if(chat->isVisible())
 				chat->activateWindow();
 #endif
@@ -648,7 +648,7 @@ void spoton::slotReceivedKernelMessage(void)
 			    {
 			      chat->append(msg);
 			      chat->setSMPVerified(passed);
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 			      if(chat->isVisible())
 				chat->activateWindow();
 #endif
@@ -860,7 +860,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(chat)
 		    {
 		      chat->append(msg);
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 		      if(chat->isVisible())
 			chat->activateWindow();
 #endif
@@ -1295,7 +1295,7 @@ void spoton::highlightPaths(void)
 
 #if defined(Q_OS_MAC)
   if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
-#elif defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#elif defined(Q_OS_WIN)
   if(fileInfo.isReadable() && fileInfo.size() > 0)
 #else
   if(fileInfo.isExecutable() && fileInfo.size() > 0)
@@ -2801,7 +2801,7 @@ void spoton::slotResetAll(void)
 
   QApplication::instance()->exit(0);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
   QString program(QCoreApplication::applicationDirPath() +
 		  QDir::separator() +
 		  SPOTON_APPLICATION_NAME);

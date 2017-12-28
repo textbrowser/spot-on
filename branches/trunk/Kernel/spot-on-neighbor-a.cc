@@ -52,7 +52,7 @@ extern "C"
 
 extern "C"
 {
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 #include <io.h>
 #else
 #include <unistd.h>
@@ -166,7 +166,7 @@ spoton_neighbor::spoton_neighbor
     {
       int s = 0;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
       s = _dup(static_cast<int> (socketDescriptor));
 
       if(s != -1)

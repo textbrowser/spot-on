@@ -62,7 +62,7 @@ extern "C"
 extern "C"
 {
 #include <fcntl.h>
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 #include <process.h>
 #endif
 #include <signal.h>
@@ -255,7 +255,7 @@ static void signal_handler(int signal_number)
   ** Resume console input echo.
   */
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
   DWORD mode = 0;
   HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); // Safe?
 
@@ -594,7 +594,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
 	bool error = false;
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 	DWORD mode = 0;
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
 
@@ -654,7 +654,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      }
 	  }
 
-#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN)
 	SetConsoleMode(hStdin, mode);
 #else
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
