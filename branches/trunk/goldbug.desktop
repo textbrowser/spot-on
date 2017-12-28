@@ -1,0 +1,12 @@
+# https://specifications.freedesktop.org/desktop-entry-spec/latest/apa.html
+
+[Desktop Entry]
+Categories=Net
+Comment=GoldBug
+Exec=/usr/local/goldbug/goldbug.qt5.sh
+GenericName=GoldBug
+Icon=/usr/local/goldbug/goldbug.png
+Name=GoldBug
+StartupNotify=true
+Terminal=false
+Type=Application

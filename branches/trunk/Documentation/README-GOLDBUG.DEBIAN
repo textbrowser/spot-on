@@ -1,0 +1,52 @@
+Preparing /usr/local/goldbug:
+
+sudo mkdir -p /usr/local/goldbug/Documentation
+sudo mkdir -p /usr/local/goldbug/Lib
+sudo mkdir -p /usr/local/goldbug/SQL
+sudo mkdir -p /usr/local/goldbug/Sounds
+sudo mkdir -p /usr/local/goldbug/Translations
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Bluetooth.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Core.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5DBus.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Gui.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Multimedia.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Network.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Positioning.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5PrintSupport.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Sql.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Svg.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Widgets.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5XcbQpa.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libicudata.so.56 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libicui18n.so.56 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libicuuc.so.56 /usr/local/goldbug/Lib/.
+sudo cp -pr ~/Qt/5.9.3/gcc_64/plugins /usr/local/goldbug/.
+sudo cp -pr ~/Qt/5.9.3/gcc_64/translations /usr/local/goldbug/.
+sudo chmod -x,g+w /usr/local/goldbug/Lib/*
+cd ~/spot-on.d/branches/trunk
+qmake -o Makefile goldbug.qt5.pro && make -j 4
+sudo cp -p ../../libNTL/unix.d/src/.libs/libntl.so* /usr/local/goldbug/Lib/.
+sudo cp -p ../../libNTRU/libntru.so /usr/local/goldbug/Lib/.
+sudo cp -p ../../libSpotOn/libspoton.so /usr/local/goldbug/Lib/.
+sudo cp -p ./Data/spot-on-neighbors.txt /usr/local/goldbug/.
+sudo cp -p ./Icons/Logo/goldbug.png /usr/local/goldbug/.
+sudo cp -p ./Qt/qt.conf /usr/local/goldbug/.
+sudo cp -p ./SQL/* /usr/local/goldbug/SQL/.
+sudo cp -p ./Shell/spot-on-kernel.sh /usr/local/goldbug/.
+sudo cp -p ./Shell/goldbug.qt5.sh /usr/local/goldbug/.
+sudo cp -p ./Sounds/* /usr/local/goldbug/Sounds/.
+sudo cp -p ./GoldBug /usr/local/goldbug/.
+sudo cp -p ./Spot-On-Kernel /usr/local/goldbug/.
+sudo cp -p ./Translations/*.qm /usr/local/goldbug/Translations/.
+sudo cp -pr ./Documentation/* /usr/local/goldbug/Documentation/.
+sudo chown -Rh root:root /usr/local/goldbug
+
+Preparing GoldBug-x.deb:
+
+cd
+mkdir -p goldbug-debian/usr/local
+mkdir -p goldbug-debian/usr/share/applications
+cp -p ./spot-on.d/branches/trunk/goldbug.desktop goldbug-debian/usr/share/applications/.
+cp -pr ./spot-on.d/branches/trunk/DEBIAN goldbug-debian/.
+cp -r /usr/local/goldbug goldbug-debian/usr/local/.
+dpkg-deb --build goldbug-debian GoldBug-2018.01.01.deb
