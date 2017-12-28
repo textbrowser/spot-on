@@ -38,7 +38,7 @@
 #include <QString>
 #include <QVariant>
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 extern "C"
 {
 #include <winsock2.h>
@@ -94,7 +94,7 @@ class spoton_misc
   static QHash<QString, QByteArray> retrieveEchoShareInformation
     (const QString &communityName, spoton_crypt *crypt);
   static QHostAddress peerAddressAndPort(
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 					 const SOCKET socketDescriptor,
 #else
 					 const int socketDescriptor,
@@ -175,7 +175,7 @@ class spoton_misc
   static bool isValidStarBeamMissingLinksMagnet(const QByteArray &magnet);
   static bool joinMulticastGroup(const QHostAddress &address,
 				 const QVariant &loop,
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
 				 const SOCKET socketDescriptor,
 #else
 				 const int socketDescriptor,
@@ -210,7 +210,7 @@ class spoton_misc
   static spoton_crypt *retrieveUrlCommonCredentials(spoton_crypt *crypt);
   static void alterDatabasesAfterAuthentication(spoton_crypt *crypt);
   static void cleanupDatabases(spoton_crypt *crypt);
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN) || defined(Q_OS_WIN32)
   static void closeSocket(const Socket socket);
 #else
   static void closeSocket(const int socket);
