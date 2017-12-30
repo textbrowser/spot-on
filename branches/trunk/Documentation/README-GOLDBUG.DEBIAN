@@ -10,7 +10,9 @@ sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Core.so.5 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5DBus.so.5 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Gui.so.5 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Multimedia.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5MultimediaWidgets.so.5 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Network.so.5 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5OpenGL.so.5 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Positioning.so.5 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5PrintSupport.so.5 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Sql.so.5 /usr/local/goldbug/Lib/.
@@ -20,6 +22,7 @@ sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5XcbQpa.so.5 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libicudata.so.56 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libicui18n.so.56 /usr/local/goldbug/Lib/.
 sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libicuuc.so.56 /usr/local/goldbug/Lib/.
+sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libqgsttools_p.so* /usr/local/goldbug/Lib/.
 sudo cp -pr ~/Qt/5.9.3/gcc_64/plugins /usr/local/goldbug/.
 sudo cp -pr ~/Qt/5.9.3/gcc_64/translations /usr/local/goldbug/.
 sudo chmod -x,g+w /usr/local/goldbug/Lib/*
@@ -38,7 +41,7 @@ sudo cp -p ./GoldBug /usr/local/goldbug/.
 sudo cp -p ./Spot-On-Kernel /usr/local/goldbug/.
 sudo cp -p ./Translations/*.qm /usr/local/goldbug/Translations/.
 sudo cp -pr ./Documentation/* /usr/local/goldbug/Documentation/.
-sudo chown -Rh root:root /usr/local/goldbug
+sudo chown -Rh root:staff /usr/local/goldbug
 
 Preparing GoldBug-x.deb:
 
