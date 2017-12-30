@@ -2129,10 +2129,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(sslErrors(const QList<QSslError> &)),
 	  this,
 	  SLOT(slotKernelSocketSslErrors(const QList<QSslError> &)));
-#ifdef Q_OS_OS2
-  m_ui.ipv6Listener->setEnabled(false);
-  m_ui.ipv6Neighbor->setEnabled(false);
-#endif
   m_ui.passphrase_rb->setChecked(true);
   m_ui.passphrase_rb_authenticate->setChecked(true);
   m_ui.answer->setEnabled(false);

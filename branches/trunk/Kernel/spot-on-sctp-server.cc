@@ -309,7 +309,6 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
     }
   else
     {
-#ifndef Q_OS_OS2
       socklen_t length = 0;
       struct sockaddr_in6 serveraddr;
 
@@ -364,7 +363,6 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 #endif
 	  goto done_label;
 	}
-#endif
     }
 
   rc = ::listen(m_socketDescriptor, m_backlog);
@@ -645,7 +643,6 @@ void spoton_sctp_server::slotTimeout(void)
     }
   else
     {
-#ifndef Q_OS_OS2
       QHostAddress address;
 #if defined(Q_OS_WIN)
       SOCKET socketDescriptor = INVALID_SOCKET;
@@ -774,7 +771,6 @@ void spoton_sctp_server::slotTimeout(void)
 #endif
 	  close();
 	}
-#endif
     }
 #else
 #endif

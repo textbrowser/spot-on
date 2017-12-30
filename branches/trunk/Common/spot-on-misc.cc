@@ -3703,11 +3703,7 @@ QHostAddress spoton_misc::peerAddressAndPort(
 {
   QHostAddress address;
   socklen_t length = 0;
-#ifdef Q_OS_OS2
-  struct sockaddr peeraddr;
-#else
   struct sockaddr_storage peeraddr;
-#endif
 
   length = sizeof(peeraddr);
 
@@ -3717,9 +3713,7 @@ QHostAddress spoton_misc::peerAddressAndPort(
   if(getpeername(socketDescriptor, (struct sockaddr *) &peeraddr,
 		 &length) == 0)
     {
-#ifndef Q_OS_OS2
       if(peeraddr.ss_family == AF_INET)
-#endif
 	{
 	  spoton_type_punning_sockaddr_t *sockaddr =
 	    (spoton_type_punning_sockaddr_t *) &peeraddr;
@@ -3733,7 +3727,6 @@ QHostAddress spoton_misc::peerAddressAndPort(
 		*port = ntohs(sockaddr->sockaddr_in.sin_port);
 	    }
 	}
-#ifndef Q_OS_OS2
       else
 	{
 	  spoton_type_punning_sockaddr_t *sockaddr =
@@ -3754,7 +3747,6 @@ QHostAddress spoton_misc::peerAddressAndPort(
 		*port = ntohs(sockaddr->sockaddr_in6.sin6_port);
 	    }
 	}
-#endif
     }
 
   return address;
@@ -5777,7 +5769,6 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	    }
 	}
     }
-#ifndef Q_OS_OS2
   else if(address.protocol() == QAbstractSocket::IPv6Protocol)
     {
       Q_IPV6ADDR ip6 = address.toIPv6Address();
@@ -5829,7 +5820,6 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	    }
 	}
     }
-#endif
 
   return ok;
 }

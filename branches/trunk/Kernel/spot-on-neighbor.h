@@ -93,10 +93,6 @@ class spoton_neighbor_udp_socket: public QUdpSocket
       }
     else if(address.protocol() == QAbstractSocket::IPv6Protocol)
       {
-#ifdef Q_OS_OS2
-	return;
-#endif
-
 	Q_IPV6ADDR a6 = address.toIPv6Address();
 
 	if(a6.c[0] != 0xff)
