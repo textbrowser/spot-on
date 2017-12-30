@@ -197,11 +197,19 @@ public:
 
    SmartPtr(const SmartPtr& other);
    SmartPtr& operator=(const SmartPtr& other);
-   // copy and asignment
+   // copy and assignment
 
    template<class Y> SmartPtr(const SmartPtr<Y>& other);
    template<class Y> SmartPtr& operator=(const SmartPtr<Y>& other);
-   // copy and asignment
+   // copy and assignment
+
+   SmartPtr(SmartPtr&& other) noexcept;
+   SmartPtr& operator=(SmartPtr&& other) noexcept;
+   // move semantics (C++11 only)
+
+   template<class Y> SmartPtr(SmartPtr<Y>&& other) noexcept;
+   template<class Y> SmartPtr& operator=(SmartPtr<Y>&& other);
+   // move semantics (C++11 only)
 
    T& operator*()  const;
    T* operator->() const;
@@ -305,11 +313,19 @@ public:
 
    CloneablePtr(const CloneablePtr& other);
    CloneablePtr& operator=(const CloneablePtr& other);
-   // copy and asignment
+   // copy and assignment
 
    template<class Y> CloneablePtr(const CloneablePtr<Y>& other);
    template<class Y> CloneablePtr& operator=(const CloneablePtr<Y>& other);
-   // copy and asignment
+   // copy and assignment
+
+   CloneablePtr(CloneablePtr&& other) noexcept;
+   CloneablePtr& operator=(CloneablePtr&& other) noexcept;
+   // move semantics (C++11 only)
+
+   template<class Y> CloneablePtr(CloneablePtr<Y>&& other) noexcept;
+   template<class Y> CloneablePtr& operator=(CloneablePtr<Y>&& other);
+   // move semantics (C++11 only)
 
    T& operator*()  const;
    T* operator->() const;
@@ -443,6 +459,10 @@ public:
    UniquePtr();
    // initial value is null
 
+   UniquePtr(UniquePtr&& other) noexcept;
+   UniquePtr& operator=(UniquePtr&& other) noexcept;
+   // move semantics (C++11 only)
+
    UniquePtr& operator=(fake_null_type1);
    // allows assignment of 0; equivalent to calling reset()
 
@@ -557,16 +577,21 @@ public:
    // initial value is null
 
    CopiedPtr(const CopiedPtr& other); 
-   // creates a copy of other's referent by calling P::copier,
-   // and destroys original referent by calling P::deleter
+   // creates a copy of other's referent by calling P::copier
 
    void operator=(const CopiedPtr&); 
+   // creates a copy of other's referent by calling P::copier,
+   // and destroys original referent by calling P::deleter
 
    CopiedPtr& operator=(fake_null_type1);
    // allows assignment of 0; equivalent to calling reset()
 
    ~CopiedPtr();
    // destroys referent by calling P::deleter
+
+   CopiedPtr(CopiedPtr&& other) noexcept;
+   CopiedPtr& operator=(CopiedPtr&& other) noexcept;
+   // move semantics (C++11 only)
 
    void reset(T* p = 0);
    // reset underlying pointer to p, destroying original referent
@@ -676,6 +701,10 @@ public:
 
    ~UniqueArray();
 
+   UniqueArray(UniqueArray&& other) noexcept;
+   UniqueArray& operator=(UniqueArray&& other) noexcept;
+   // move semantics (C++11 only)
+
    void reset(T* p = 0);
    // reset with raw pointer, destroying referent
 
@@ -783,6 +812,10 @@ public:
 
    ~Unique2DArray();
    // destroys the entire array and each row in the array
+
+   Unique2DArray(Unique2DArray&& other) noexcept;
+   Unique2DArray& operator=(Unique2DArray&& other) noexcept;
+   // move semantics (C++11 only)
 
    void reset();
    // reset to null
@@ -903,6 +936,10 @@ public:
 
    ~OptionalVal();
    // destroys the referent
+
+   OptionalVal(OptionalVal&& other) noexcept;
+   OptionalVal& operator=(OptionalVal&& other) noexcept;
+   // move semantics (C++11 only)
 
    void reset(T* p = 0);
    // resets the referent

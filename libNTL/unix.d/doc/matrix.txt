@@ -63,6 +63,10 @@ class Mat {
    ~Mat();
    // destructor
 
+   Mat(Mat&& other) noexcept;
+   Mat& operator=(Mat&& other) noexcept;
+   // move semantics (C++11 only)
+
    Mat(INIT_SIZE_TYPE, long n, long m); 
    // Mat(INIT_SIZE, n, m) initializes an n x m matrix, invoking
    // the default constructor for T to initialize entries.

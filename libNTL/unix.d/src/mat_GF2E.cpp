@@ -805,4 +805,10 @@ void power(mat_GF2E& X, const mat_GF2E& A, const ZZ& e)
       X = T1;
 }
 
+void random(mat_GF2E& x, long n, long m)
+{
+   x.SetDims(n, m);
+   for (long i = 0; i < n; i++) random(x[i], m);
+}
+
 NTL_END_IMPL

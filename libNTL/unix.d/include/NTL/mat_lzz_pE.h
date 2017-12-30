@@ -34,6 +34,11 @@ void ident(mat_zz_pE& X, long n);
 inline mat_zz_pE ident_mat_zz_pE(long n)
    { mat_zz_pE X; ident(X, n); NTL_OPT_RETURN(mat_zz_pE, X); }
 
+void random(mat_zz_pE& x, long n, long m);
+inline mat_zz_pE random_mat_zz_pE(long n, long m)
+   { mat_zz_pE x; random(x, n, m); NTL_OPT_RETURN(mat_zz_pE, x); }
+
+
 
 void determinant(zz_pE& d, const mat_zz_pE& A);
 inline zz_pE determinant(const mat_zz_pE& A)

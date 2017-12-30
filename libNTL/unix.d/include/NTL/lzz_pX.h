@@ -87,8 +87,6 @@ explicit zz_pX(zz_p a) { *this = a; }
 
 zz_pX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
 
-zz_pX(const zz_pX& a) : rep(a.rep) { }
-// initial value is a
 
 inline zz_pX(long i, zz_p c);
 inline zz_pX(long i, long c);
@@ -97,13 +95,12 @@ inline zz_pX(INIT_MONO_TYPE, long i, zz_p c);
 inline zz_pX(INIT_MONO_TYPE, long i, long c);
 inline zz_pX(INIT_MONO_TYPE, long i);
 
-zz_pX& operator=(const zz_pX& a) 
-   { rep = a.rep; return *this; }
 
 inline zz_pX& operator=(long a);
 inline zz_pX& operator=(zz_p a);
 
-~zz_pX() { }
+// default copy constructor and assignment
+// default destructor
 
 void normalize();
 // strip leading zeros
@@ -138,6 +135,9 @@ static const zz_pX& zero();
 zz_pX(zz_pX& x, INIT_TRANS_TYPE) : rep(x.rep, INIT_TRANS) { }
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((zz_pX*))
 
 
 
@@ -865,6 +865,9 @@ public:
    const zz_pX& val() const { return f; }
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((zz_pXModulus*))
 
 
 inline long deg(const zz_pXModulus& F) { return F.n; }

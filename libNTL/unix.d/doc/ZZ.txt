@@ -35,6 +35,16 @@ public:
    ZZ& operator=(const ZZ& a);  // assignment operator
    ZZ& operator=(long a);  
 
+   ZZ(ZZ&& a); 
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   ZZ& operator=(ZZ&& a); 
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+
+
    // typedefs to aid in generic programming
    typedef ZZ_p residue_type;
    typedef ZZX poly_type;
@@ -737,16 +747,18 @@ public:
 
    explicit RandomStream(const unsigned char *key);
    // key should point to an array of NTL_PRG_KEYLEN bytes
-   // EXCEPTIONS: nothrow
+   // EXCEPTIONS: strong ES
 
    void get(unsigned char *res, long n); 
    // read the next n bytes from the stream and store to location pointed to by
    // res
    // EXCEPTIONS: throws a LogicError exception if n is negative
 
-   RandomStream(const RandomStream&); // default
-   RandomStream& operator=(const RandomStream&); // default
-   // EXCEPTIONS: nothrow
+   RandomStream(const RandomStream&); 
+   // EXCEPTIONS: strong ES
+
+   RandomStream& operator=(const RandomStream&); 
+   // EXCEPTIONS: strong ES
 };
 
 
@@ -767,9 +779,9 @@ class RandomStreamPush {
 // RAII for saving/restoring current PRG state
 public:
    RandomStreamPush();   // save a copy of the current PRG state
-                     // EXCEPTIONS: strong ES
+                         // EXCEPTIONS: strong ES
 
-   ~RandomStreamPush();  // restore the saveed copy of the PRG state
+   ~RandomStreamPush();  // restore the saved copy of the PRG state
 
 private: 
    RandomStreamPush(const RandomStreamPush&); // disable

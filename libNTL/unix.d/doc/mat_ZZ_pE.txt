@@ -96,6 +96,10 @@ long IsDiag(const mat_ZZ_pE& A, long n, const ZZ_pE& d);
 // test if X is an  n x n diagonal matrix with d on diagonal
 
 
+void random(mat_ZZ_pE& x, long n, long m);  // x = random n x m matrix
+mat_ZZ_pE random_mat_ZZ_pE(long n, long m);
+
+
 
 
 long gauss(mat_ZZ_pE& M);

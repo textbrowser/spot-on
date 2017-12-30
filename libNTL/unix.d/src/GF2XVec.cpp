@@ -83,12 +83,5 @@ GF2XVec::GF2XVec(const GF2XVec& a) : v(0), len(0), bsize(0)
 
 
 
-void GF2XVec::swap(GF2XVec& x)
-{
-   _ntl_swap(v, x.v);
-   _ntl_swap(len, x.len);
-   _ntl_swap(bsize, x.bsize);
-}
-
 
 NTL_END_IMPL

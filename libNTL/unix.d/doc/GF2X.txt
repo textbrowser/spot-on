@@ -30,6 +30,14 @@ public:
 
    ~GF2X(); // destructor
 
+   GF2X(GF2X&& a); 
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   GF2X& operator=(GF2X&& a); 
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
    GF2X(INIT_MONO_TYPE, long i, GF2 c); 
    GF2X(INIT_MONO_TYPE, long i, long c); 
    // initialize to c*X^i, invoke as GF2X(INIT_MONO, i, c)

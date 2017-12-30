@@ -35,7 +35,9 @@ explicit ZZ_pEX(const ZZ_pE& a) { *this = a; }
 
 ZZ_pEX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
 
-~ZZ_pEX() { }
+
+// default copy constructor and assignment
+// defaut destructor
 
 void normalize();
 // strip leading zeros
@@ -85,6 +87,10 @@ void swap(ZZ_pEX& x) { rep.swap(x.rep); }
 
 
 };
+
+
+
+NTL_DECLARE_RELOCATABLE((ZZ_pEX*))
 
 
 NTL_SNS istream& operator>>(NTL_SNS istream& s, ZZ_pEX& x);
@@ -679,6 +685,7 @@ public:
 }; 
 
 
+NTL_DECLARE_RELOCATABLE((ZZ_pEXModulus*))
 
 inline long deg(const ZZ_pEXModulus& F) { return F.n; }
 

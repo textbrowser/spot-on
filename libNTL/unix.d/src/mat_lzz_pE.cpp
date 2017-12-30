@@ -881,4 +881,10 @@ void power(mat_zz_pE& X, const mat_zz_pE& A, const ZZ& e)
       X = T1;
 }
 
+void random(mat_zz_pE& x, long n, long m)
+{
+   x.SetDims(n, m);
+   for (long i = 0; i < n; i++) random(x[i], m);
+}
+
 NTL_END_IMPL

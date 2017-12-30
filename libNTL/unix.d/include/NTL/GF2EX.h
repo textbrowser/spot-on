@@ -40,13 +40,8 @@ explicit GF2EX(const GF2& a) { *this = a; }
 
 GF2EX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
 
-GF2EX(const GF2EX& a) : rep(a.rep) { }
-
-
-GF2EX& operator=(const GF2EX& a) 
-   { rep = a.rep; return *this; }
-
-~GF2EX() { }
+// default copy constructor and assignment
+// default destructor
 
 void normalize();
 // strip leading zeros
@@ -97,6 +92,10 @@ void swap(GF2EX& x) { rep.swap(x.rep); }
 
 
 };
+
+
+
+NTL_DECLARE_RELOCATABLE((GF2EX*))
 
 
 
@@ -686,6 +685,7 @@ public:
 }; 
 
 
+NTL_DECLARE_RELOCATABLE((GF2EXModulus*))
 inline long deg(const GF2EXModulus& F) { return F.n; }
 
 void build(GF2EXModulus& F, const GF2EX& f);

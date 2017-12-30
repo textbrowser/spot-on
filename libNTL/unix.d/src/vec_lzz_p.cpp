@@ -313,4 +313,11 @@ void VectorCopy(vec_zz_p& x, const vec_zz_p& a, long n)
       clear(xp[i]);
 }
 
+
+void random(vec_zz_p& x, long n)
+{
+   x.SetLength(n);
+   VectorRandom(n, x.elts());
+}
+
 NTL_END_IMPL

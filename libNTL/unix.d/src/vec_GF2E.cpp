@@ -222,6 +222,11 @@ void VectorCopy(vec_GF2E& x, const vec_GF2E& a, long n)
       clear(x[i]);
 }
 
+void random(vec_GF2E& x, long n)
+{
+   x.SetLength(n);
+   for (long i = 0; i < n; i++) random(x[i]);
+}
 
 
 NTL_END_IMPL

@@ -53,6 +53,8 @@ vec_ZZ_p VectorCopy(const vec_ZZ_p& a, long n);
 // x = a copy of a of length exactly n.
 // The input is truncated or padded with zeroes, as necessary.
 
+void random(vec_ZZ_p& x, long n);  // x = random vector of length n
+vec_ZZ_p random_vec_ZZ_p(long n);
 
 
 

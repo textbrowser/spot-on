@@ -123,26 +123,6 @@ int main()
    cerr << "NTL_ZZ_NBITS = " << NTL_ZZ_NBITS << "\n";
    cerr << "NTL_SP_NBITS = " << NTL_SP_NBITS << "\n";
 
-#ifdef NTL_HAVE_LL_TYPE
-   cerr << "NTL_HAVE_LL_TYPE\n";
-#endif
-
-#ifdef NTL_HAVE_BUILTIN_CLZL
-   cerr << "NTL_HAVE_BUILTIN_CLZL\n";
-#endif
-
-#ifdef NTL_HAVE_AVX
-   cerr << "NTL_HAVE_AVX\n";
-#endif
-
-#ifdef NTL_HAVE_FMA
-   cerr << "NTL_HAVE_FMA\n";
-#endif
-
-#ifdef NTL_HAVE_PCLMUL
-   cerr << "NTL_HAVE_PCLMUL\n";
-#endif
-
 
 
 #ifdef NTL_LONGDOUBLE_SP_MULMOD
@@ -152,6 +132,8 @@ int main()
 #ifdef NTL_LONGLONG_SP_MULMOD
    cerr << "NTL_LONGLONG_SP_MULMOD\n";
 #endif
+
+#include <NTL/REPORT_ALL_FEATURES.h>
 
    cerr << "\n";
 
@@ -229,6 +211,14 @@ int main()
 #endif
 
 
+#ifdef NTL_STD_CXX11
+   cerr << "NTL_STD_CXX11\n";
+#endif
+
+#ifdef NTL_STD_CXX14
+   cerr << "NTL_STD_CXX14\n";
+#endif
+
 
 
 #ifdef NTL_UNSIGNED_LONG_LONG_TYPE
@@ -255,6 +245,10 @@ int main()
 
 #ifdef NTL_CLEAN_PTR
    cerr << "NTL_CLEAN_PTR\n";
+#endif
+
+#ifdef NTL_SAFE_VECTORS
+   cerr << "NTL_SAFE_VECTORS\n";
 #endif
 
 #ifdef NTL_RANGE_CHECK

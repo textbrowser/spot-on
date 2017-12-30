@@ -34,6 +34,10 @@ public:
 
    ~ZZVec();
 
+   ZZVec(ZZVec&& other) noexcept;
+   ZZVec& operator=(ZZVec&& other) noexcept;
+   // move semantics (C++11 only)
+
    ZZVec(long n, long d);
    // sets length to n and max size of each element to d
 
@@ -60,6 +64,9 @@ public:
 
    swap(ZZVec& x);
    // swap with x by swapping pointers
+
+   void move(ZZVec& other);
+   // quick move other to *this
 };
 
 

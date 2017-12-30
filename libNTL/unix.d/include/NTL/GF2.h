@@ -41,7 +41,7 @@ void operator=(const GF2Push&); // disabled
 
 public:
 GF2Push() { }
-explicit GF2Push(const GF2Context& context) { (void) context;}
+ explicit GF2Push(const GF2Context& context) { (void) context; }
 explicit GF2Push(long p) { if (p != 2) LogicError("GF2Push with p != 2"); }
 
 
@@ -49,6 +49,7 @@ explicit GF2Push(long p) { if (p != 2) LogicError("GF2Push with p != 2"); }
 
 class GF2X; // forward declaration
 
+class ref_GF2; // forward declaration
 
 class GF2 {
 public:
@@ -63,19 +64,15 @@ unsigned long _GF2__rep;
 
 
 GF2() : _GF2__rep(0) { }
-GF2(const GF2& a) : _GF2__rep(a._GF2__rep) { }
 
 explicit GF2(long a) : _GF2__rep(0) { *this = a; }
 
 GF2(INIT_VAL_TYPE, long a) : _GF2__rep(a & 1) { }
 GF2(INIT_LOOP_HOLE_TYPE, unsigned long a) : _GF2__rep(a) { }
 
+inline GF2(const ref_GF2&);
 
 
-
-~GF2() { }
-
-GF2& operator=(const GF2& a) { _GF2__rep = a._GF2__rep; return *this; }
 GF2& operator=(long a) { _GF2__rep = a & 1; return *this; }
 
 static long modulus() { return 2; }
@@ -92,6 +89,9 @@ void swap(GF2& x) { GF2 t; t = *this; *this = x; x = t; }
 };
 
 
+NTL_DECLARE_RELOCATABLE((GF2*))
+
+
 
 class ref_GF2 {
 public:
@@ -100,19 +100,13 @@ unsigned long *_ref_GF2__ptr;
 long _ref_GF2__pos;
 
 ref_GF2() : _ref_GF2__ptr(0), _ref_GF2__pos(0) { }
-ref_GF2(const ref_GF2& a) : 
-   _ref_GF2__ptr(a._ref_GF2__ptr), _ref_GF2__pos(a._ref_GF2__pos) { }
+
 ref_GF2(GF2& a) :
    _ref_GF2__ptr(&a._GF2__rep),  _ref_GF2__pos(0) { }
+
 ref_GF2(INIT_LOOP_HOLE_TYPE, unsigned long *ptr, long pos) :
    _ref_GF2__ptr(ptr), _ref_GF2__pos(pos) { }
 
-operator const GF2() const 
-{
-   return GF2(INIT_LOOP_HOLE, (*_ref_GF2__ptr >> _ref_GF2__pos) & 1);
-}
-
-~ref_GF2() { }
 
 ref_GF2 operator=(const ref_GF2& a)
 {
@@ -148,6 +142,15 @@ void swap(ref_GF2 x) { GF2 t; t = *this; *this = x; x = t; }
 };
 
 
+// I changed the conversion from a ref_GF2 operator
+// to a GF2 constructor, because clang was giving me errors
+// Note that gcc, icc, and MS compilers were all OK with
+// the old code
+
+inline
+GF2::GF2(const ref_GF2& other) :
+_GF2__rep((*other._ref_GF2__ptr >> other._ref_GF2__pos) & 1)
+{ }
 
 
 // functions

@@ -42,6 +42,30 @@ public:
 
    ~Vec() {}
 
+#if (NTL_CXX_STANDARD >= 2011)
+
+Vec(Vec&& a) NTL_FAKE_NOEXCEPT : Vec()
+{
+   *this = std::move(a);
+}
+
+Vec& operator=(Vec&& a) NTL_FAKE_NOEXCEPT
+{
+   if (fixed() || a.fixed()) {
+      *this = a;
+   }
+   else {
+      rep.unpinned_move(a.rep);
+      _len = _ntl_scalar_move(a._len);
+      _maxlen = _ntl_scalar_move(a._maxlen);
+   }
+
+   return *this;
+}
+
+
+#endif
+
    void kill();
 
    void SetLength(long n);
@@ -60,20 +84,55 @@ public:
    Vec(Vec<GF2>& x, INIT_TRANS_TYPE) : 
       rep(x.rep, INIT_TRANS), _len(x._len), _maxlen(x._maxlen) { }
 
-   const GF2 get(long i) const;
-   void put(long i, GF2 a);
+
+
+   ref_GF2 operator[](long i) 
+   {
+#ifdef NTL_RANGE_CHECK
+      if (i < 0 || i >= _len) LogicError("index out of range in Vec");
+#endif
+
+      iterator t(INIT_LOOP_HOLE, rep.elts(), i);
+      return *t;
+   }
+
+   const GF2 operator[](long i) const
+   {
+#ifdef NTL_RANGE_CHECK
+      if (i < 0 || i >= _len) LogicError("index out of range in Vec");
+#endif
+
+      const_iterator t(INIT_LOOP_HOLE, rep.elts(), i);
+      return *t;
+   }
+
+   ref_GF2 at(long i) 
+   {
+      if (i < 0 || i >= _len) LogicError("index out of range in Vec");
+      iterator t(INIT_LOOP_HOLE, rep.elts(), i);
+      return *t;
+   }
+
+   const GF2 at(long i) const
+   {
+      if (i < 0 || i >= _len) LogicError("index out of range in Vec");
+      const_iterator t(INIT_LOOP_HOLE, rep.elts(), i);
+      return *t;
+   }
+
+   void put(long i, GF2 a) { (*this)[i] = a; }
    void put(long i, long a) { put(i, to_GF2(a)); }
 
-   ref_GF2 operator[](long i); 
+   const GF2 get(long i) const
+   {
+      return (*this)[i];
+   }
 
    ref_GF2 operator()(long i) 
       { return (*this)[i-1]; }
 
-   const GF2 operator[](long i) const 
-      { return get(i); }
-
    const GF2 operator()(long i) const 
-      { return get(i-1); }
+      { return (*this)[i-1]; }
 
    void swap(Vec<GF2>& y);
    void move(Vec<GF2>& y);
@@ -90,9 +149,197 @@ public:
    typedef ref_GF2 reference;
    typedef const GF2 const_reference;
 
-};
+// The following makes it possible to use range-based for-loops
+// However, the only safe ways to use it are
+//    for (auto x: vec)
+//    for (auto&& x : vec)
+// The following:  
+//    for (const auto& x : vec)
+// will unfortunately allow elements of vec to be modified 
+
+   template<class T> // T is either unsigned long or const unsigned long
+   struct proxy_iterator_impl {
+
+      T *ptr;
+      long idx;
+
+      proxy_iterator_impl() : ptr(0), idx(0) { }
+      proxy_iterator_impl(T *_ptr, long _idx) : ptr(_ptr), idx(_idx) { }
+
+      template <class X>
+      proxy_iterator_impl(const proxy_iterator_impl<X>& other)
+      { ptr = other.ptr; idx = other.idx; }
+
+      void add(long x)
+      {
+         idx += x;
+      }
+
+      void inc() { idx++; }
+
+      void dec() { idx--; }
+
+      ref_GF2 make_ref_GF2() const
+      {
+         long q, r;
+         _ntl_bpl_divrem(cast_unsigned(idx), q, r);
+         return ref_GF2(INIT_LOOP_HOLE, ptr+q, r);
+      }
+
+      const GF2  make_GF2() const
+      {
+         long q, r;
+         _ntl_bpl_divrem(cast_unsigned(idx), q, r);
+	 return GF2(INIT_LOOP_HOLE, (ptr[q] >> r) & 1);
+      }
+
+      long diff(const proxy_iterator_impl& other) const
+      {
+         return (this->idx - other.idx);
+      }
+
+      bool eq(const proxy_iterator_impl& other) const
+      { return ptr == other.ptr && idx == other.idx; }
+
+   };
+
+
+   struct const_proxy_iterator {
+
+      proxy_iterator_impl<const unsigned long> rep;
+
+      const_proxy_iterator() { }
+      const_proxy_iterator(INIT_LOOP_HOLE_TYPE, const unsigned long *ptr, long idx)
+         : rep(ptr, idx) { }
+
+      const_proxy_iterator& operator++() { rep.inc(); return *this; }
+      const_proxy_iterator  operator++(int) { const_proxy_iterator t = *this; rep.inc(); return t; }
+
+      const_proxy_iterator& operator--() { rep.dec(); return *this; }
+      const_proxy_iterator  operator--(int) { const_proxy_iterator t = *this; rep.dec(); return t; }
+
+      const_proxy_iterator& operator+=(long x) { rep.add(x); return *this; }
+      const_proxy_iterator& operator-=(long x) { rep.add(-x); return *this; }
+
+      const GF2 operator*() const { return rep.make_GF2(); }
+
+      const GF2 operator[](long x) const 
+      { const_proxy_iterator t = *this; t.rep.add(x); return *t; }
+
+   };
+
+   typedef const_proxy_iterator const_iterator;
+
+
+   const_iterator begin() const { return const_iterator(INIT_LOOP_HOLE, rep.elts(), 0); }
+   const_iterator end() const { 
+      return const_iterator(INIT_LOOP_HOLE, rep.elts(), _len);
+   }
+
+
+   struct proxy_iterator {
+
+      proxy_iterator_impl<unsigned long> rep;
+
+      proxy_iterator() { }
+      proxy_iterator(INIT_LOOP_HOLE_TYPE, unsigned long *ptr, long idx)
+         : rep(ptr, idx) { }
+
+      proxy_iterator& operator++() { rep.inc(); return *this; }
+      proxy_iterator  operator++(int) { proxy_iterator t = *this; rep.inc(); return t; }
+
+      proxy_iterator& operator--() { rep.dec(); return *this; }
+      proxy_iterator  operator--(int) { proxy_iterator t = *this; rep.dec(); return t; }
+
+      proxy_iterator& operator+=(long x) { rep.add(x); return *this; }
+      proxy_iterator& operator-=(long x) { rep.add(-x); return *this; }
+
+      ref_GF2 operator*() const { return rep.make_ref_GF2(); }
+
+      ref_GF2 operator[](long x) const 
+      { proxy_iterator t = *this; t.rep.add(x); return *t; }
+
+      operator const_proxy_iterator() const 
+      { const_proxy_iterator t; t.rep = rep; return t; }
+
+   };
+
+   typedef proxy_iterator iterator;
+
+   iterator begin() { return iterator(INIT_LOOP_HOLE, rep.elts(), 0); }
+   iterator end() { 
+      return iterator(INIT_LOOP_HOLE, rep.elts(), _len);
+   }
+
+ };
 
 typedef Vec<GF2> vec_GF2;
+
+
+
+inline
+bool operator==(const vec_GF2::const_proxy_iterator& a, const vec_GF2::const_proxy_iterator& b) 
+{ return a.rep.eq(b.rep); }
+
+inline
+bool operator!=(const vec_GF2::const_proxy_iterator& a, const vec_GF2::const_proxy_iterator& b) 
+{ return !(a == b); }
+
+inline
+vec_GF2::const_proxy_iterator operator+(const vec_GF2::const_proxy_iterator& a, long x)
+{ vec_GF2::const_proxy_iterator t = a; t.rep.add(x); return t; }
+
+inline
+vec_GF2::const_proxy_iterator operator+(long x, const vec_GF2::const_proxy_iterator& a)
+{ return a + x; }
+
+inline
+vec_GF2::const_proxy_iterator operator-(const vec_GF2::const_proxy_iterator& a, long x)
+{ vec_GF2::const_proxy_iterator t = a; t.rep.add(-x); return t; }
+
+inline
+vec_GF2::const_proxy_iterator operator-(long x, const vec_GF2::const_proxy_iterator& a)
+{ return a - x; }
+
+inline
+long operator-(const vec_GF2::const_proxy_iterator& a, const vec_GF2::const_proxy_iterator& b)
+{ return a.rep.diff(b.rep); }
+
+
+
+
+
+
+
+
+
+inline
+bool operator==(const vec_GF2::proxy_iterator& a, const vec_GF2::proxy_iterator& b) 
+{ return a.rep.eq(b.rep); }
+
+inline
+bool operator!=(const vec_GF2::proxy_iterator& a, const vec_GF2::proxy_iterator& b) 
+{ return !(a == b); }
+
+inline
+vec_GF2::proxy_iterator operator+(const vec_GF2::proxy_iterator& a, long x)
+{ vec_GF2::proxy_iterator t = a; t.rep.add(x); return t; }
+
+inline
+vec_GF2::proxy_iterator operator+(long x, const vec_GF2::proxy_iterator& a)
+{ return a + x; }
+
+inline
+vec_GF2::proxy_iterator operator-(const vec_GF2::proxy_iterator& a, long x)
+{ vec_GF2::proxy_iterator t = a; t.rep.add(-x); return t; }
+
+inline
+vec_GF2::proxy_iterator operator-(long x, const vec_GF2::proxy_iterator& a)
+{ return a - x; }
+
+inline
+long operator-(const vec_GF2::proxy_iterator& a, const vec_GF2::proxy_iterator& b)
+{ return a.rep.diff(b.rep); }
 
 
 // sepcialized conversion

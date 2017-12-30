@@ -83,6 +83,10 @@ int main()
    cout << "NTL_CLEAN_PTR\n";
 #endif
 
+#ifdef NTL_SAFE_VECTORS
+   cout << "NTL_SAFE_VECTORS\n";
+#endif
+
 #ifdef NTL_RANGE_CHECK
    cout << "NTL_RANGE_CHECK\n";
 #endif

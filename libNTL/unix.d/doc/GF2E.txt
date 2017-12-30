@@ -46,7 +46,15 @@ public:
    
    ~GF2E(); // destructor
 
-   void init(const GF2X& P);
+   GF2E(GF2E&& a); 
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   GF2E& operator=(GF2E&& a); 
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   static void init(const GF2X& P);
    // GF2E::init(P) initializes the current modulus to P;
    // required: deg(P) >= 1.
    

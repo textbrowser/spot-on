@@ -34,15 +34,12 @@
 #include <NTL/sp_arith.h>
 
 
-//#include <cstdlib>
-//#include <cstdio>
-#include <cmath>
-
 #ifdef NTL_GMP_LIP
 #include <gmp.h>
 #endif
 
-NTL_CLIENT
+NTL_IMPORT_FROM_STD
+NTL_USE_NNS
 
 
 
@@ -128,6 +125,27 @@ inline _ntl_limb_t XCLIP(_ntl_limb_t a)
 }
 
 
+#if (NTL_BITS_PER_LIMB_T == NTL_BITS_PER_LONG)
+static
+inline long COUNT_BITS(_ntl_limb_t x)
+{
+   return _ntl_count_bits(x);
+}
+#else
+static
+inline long COUNT_BITS(_ntl_limb_t x)
+{
+   if (!x) { return 0; } 
+
+   long res = NTL_BITS_PER_LIMB_T;
+   while (x < (_ntl_limb_t(1) << (NTL_BITS_PER_LIMB_T-1))) {
+      x <<= 1;
+      res--;
+   }
+
+   return res;
+}
+#endif
 
 
 
@@ -930,7 +948,7 @@ _ntl_mpn_tdiv_qr (_ntl_limb_t *q, _ntl_limb_t *r,long  /* qxn */,
    // compute dhi = high order NTL_ZZ_NBITS of (d[sd-1], ..., d[0])
    _ntl_limb_t d1 = d[sd-1];
    _ntl_limb_t d0 = d[sd-2];
-   long dbits = _ntl_count_bits(d1); // DIRT: assumes _ntl_limb_t == unsigned long
+   long dbits = COUNT_BITS(d1); 
    _ntl_limb_t dhi = (d1 << (NTL_ZZ_NBITS-dbits)) | (d0 >> dbits);
 
 
@@ -1142,27 +1160,6 @@ inline void SWAP_LIMB_PTR(_ntl_limb_t_ptr& a, _ntl_limb_t_ptr& b)
    b = t;
 }
 
-#if (NTL_BITS_PER_LIMB_T == NTL_BITS_PER_LONG)
-static
-inline void COUNT_BITS(long& cnt, _ntl_limb_t x)
-{
-   cnt = _ntl_count_bits(x);
-}
-#else
-static
-inline void COUNT_BITS(long& cnt, _ntl_limb_t x)
-{
-   if (!x) { cnt = 0; return; } 
-
-   long res = NTL_BITS_PER_LIMB_T;
-   while (x < (_ntl_limb_t(1) << (NTL_BITS_PER_LIMB_T-1))) {
-      x <<= 1;
-      res--;
-   }
-
-   cnt = res;
-}
-#endif
 
 static void DUMP(_ntl_gbigint a)
 {
@@ -1380,7 +1377,7 @@ void _ntl_gsetlength(_ntl_gbigint *v, long len)
 
       len++;  /* always allocate at least one more than requested */
 
-      oldlen = (long) (oldlen * 1.2); /* always increase by at least 20% */
+      oldlen = (long) (oldlen * 1.4); /* always increase by at least 40% */
       if (len < oldlen)
          len = oldlen;
 
@@ -1775,31 +1772,6 @@ _ntl_gweight(
 	return (res);
 }
 
-long 
-_ntl_g2logs(
-	long aa
-	)
-{
-	long i = 0;
-	unsigned long a;
-
-	if (aa < 0)
-		a = - ((unsigned long) aa);
-	else
-		a = aa;
-
-	while (a>=256)
-		i += 8, a >>= 8;
-	if (a >=16)
-		i += 4, a >>= 4;
-	if (a >= 4)
-		i += 2, a >>= 2;
-	if (a >= 2)
-		i += 2;
-	else if (a >= 1)
-		i++;
-	return (i);
-}
 
 long _ntl_g2log(_ntl_gbigint a)
 {
@@ -1810,7 +1782,7 @@ long _ntl_g2log(_ntl_gbigint a)
    la = SIZE(a);
    if (la == 0) return 0;
    if (la < 0) la = -la;
-   COUNT_BITS(t, DATA(a)[la-1]);
+   t = COUNT_BITS(DATA(a)[la-1]);
    return NTL_ZZ_NBITS*(la - 1) + t;
 }
 
@@ -5290,7 +5262,7 @@ void _ntl_gpowermod(_ntl_gbigint g, _ntl_gbigint e, _ntl_gbigint F,
       if (use_redc) {
          long shamt;
 
-         COUNT_BITS(shamt, DATA(F)[sF-1]);
+         shamt = COUNT_BITS(DATA(F)[sF-1]);
          shamt = NTL_ZZ_NBITS - shamt;
          _ntl_glshift(F, shamt, &F1);
       }

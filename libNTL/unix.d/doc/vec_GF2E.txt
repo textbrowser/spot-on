@@ -54,6 +54,8 @@ vec_GF2E VectorCopy(const vec_GF2E& a, long n);
 // x = a copy of a of length exactly n.
 // The input is truncated or padded with zeroes, as necessary.
 
+void random(vec_GF2E& x, long n);  // x = random vector of length n
+vec_GF2E random_vec_GF2E(long n);
 
 
 // operator notation:

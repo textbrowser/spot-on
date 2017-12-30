@@ -10,23 +10,29 @@ cp ../README unix/README
 
 for i in $1
 do
-   cp $i unix/src/$i
+   cp $i unix/src/
 done
 
 for i in $2
 do
-   cp ../include/NTL/$i unix/include/NTL/$i
+   cp ../include/NTL/$i unix/include/NTL/
 done
 
 
 
 for i in $3
 do
-   cp ../doc/$i unix/doc/$i
+   cp ../doc/$i unix/doc/
 done
 
 cp ../include/NTL/def_config.h unix/include/NTL/config.h
 cp def_makefile unix/src/makefile
-sh ResetFeatures unix
+sh ResetFeatures unix "$4"
+
+for f in $4
+do
+   cp Check$f.cpp unix/src/
+done
+
 cp -R libtool-seed unix/src
 cp -R libtool-origin unix/src

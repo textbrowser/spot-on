@@ -15,11 +15,16 @@ public:
    T b;  
   
    Pair() { }  
-   Pair(const Pair<S,T>& x) : a(x.a), b(x.b) { } 
    Pair(const S& x, const T& y) : a(x), b(y) { }  
-   Pair<S,T>& operator=(const Pair<S,T>& x) { a = x.a; b = x.b; return *this; } 
+
    ~Pair() { }  
 };  
+
+template<class S, class T> NTL_DECLARE_RELOCATABLE_WHEN((Pair<S,T>*))
+   { return DeclareRelocatableType((S*)0) &&
+            DeclareRelocatableType((T*)0); }
+// FIXME: remove CV-qualifiers and S and T? 
+
   
 template<class S, class T>
 inline Pair<S,T> cons(const S& x, const T& y) { return Pair<S,T>(x, y); } 

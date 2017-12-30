@@ -49,6 +49,12 @@ void ident(mat_GF2& X, long n);
 inline mat_GF2 ident_mat_GF2(long n)
    { mat_GF2 X; ident(X, n); NTL_OPT_RETURN(mat_GF2, X); }
 
+
+void random(mat_GF2& x, long n, long m);
+inline mat_GF2 random_mat_GF2(long n, long m)
+   { mat_GF2 x; random(x, n, m); NTL_OPT_RETURN(mat_GF2, x); }
+
+
 long IsIdent(const mat_GF2& A, long n);
 void transpose(mat_GF2& X, const mat_GF2& A);
 void solve(ref_GF2 d, vec_GF2& X, const mat_GF2& A, const vec_GF2& b);

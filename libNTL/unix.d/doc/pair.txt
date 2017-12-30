@@ -30,14 +30,12 @@ public:
    Pair(); 
    // default constructor...invokes default constructors for S and T
 
-   Pair(const Pair<S,T>& x); // copy
-
-   Pair& operator=(const Pair<S,T>& x); // assignment
-
    Pair(const S& x, const T& y);  // initialize with (x, y)
 
    ~Pair(); 
    // destructor...invokes destructors for S and T
+
+   // defaut copy and move constructors and assignment 
 };  
   
 template<class S, class T>

@@ -103,6 +103,9 @@ long IsDiag(const mat_GF2& A, long n, long d);
 // test if X is an n x n diagonal matrix with diagonal element (d mod 2)
 
 
+void random(mat_GF2& x, long n, long m);  // x = random n x m matrix
+mat_GF2 random_mat_GF2(long n, long m);
+
 long gauss(mat_GF2& M);
 long gauss(mat_GF2& M, long w);
 // Performs unitary row operations so as to bring M into row echelon

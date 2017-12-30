@@ -35,6 +35,11 @@ void ident(mat_GF2E& X, long n);
 inline mat_GF2E ident_mat_GF2E(long n)
    { mat_GF2E X; ident(X, n); NTL_OPT_RETURN(mat_GF2E, X); }
 
+void random(mat_GF2E& x, long n, long m);
+inline mat_GF2E random_mat_GF2E(long n, long m)
+   { mat_GF2E x; random(x, n, m); NTL_OPT_RETURN(mat_GF2E, x); }
+
+
 void determinant(GF2E& d, const mat_GF2E& A);
 long IsIdent(const mat_GF2E& A, long n);
 void transpose(mat_GF2E& X, const mat_GF2E& A);

@@ -192,7 +192,7 @@ TS=QuickTest.cpp ZZTest.cpp BerlekampTest.cpp CanZassTest.cpp ZZXFacTest.cpp  \
 	ExceptionTest.cpp
 
 # scripts
-SCRIPTS=MakeGetTime MakeGetPID MakeCheckFeature ResetFeatures CopyFeatures  \
+SCRIPTS=MakeGetTime MakeGetPID MakeCheckFeatures ResetFeatures CopyFeatures  \
 	TestScript dosify unixify RemoveProg configure DoConfig mfile cfile ppscript
 
 
@@ -200,11 +200,12 @@ SCRIPTS=MakeGetTime MakeGetPID MakeCheckFeature ResetFeatures CopyFeatures  \
 MD=MakeDesc.cpp MakeDescAux.cpp newnames.cpp gen_gmp_aux.cpp 
 GT=GetTime0.cpp GetTime1.cpp GetTime2.cpp GetTime3.cpp GetTime4.cpp GetTime5.cpp TestGetTime.cpp
 GP=GetPID1.cpp GetPID2.cpp TestGetPID.cpp
-CH=CheckCLZL.cpp CheckCLZLAux.cpp CheckLL.cpp CheckLLAux.cpp CheckAVX.cpp CheckFMA.cpp  \
-	CheckPCLMUL.cpp CheckCompile.cpp
+CH=CheckCompile.cpp
 
-AUXPROGS = TestGetTime TestGetPID CheckFeature CheckCompile
+AUXPROGS = TestGetTime TestGetPID CheckFeatures CheckCompile
 
+FEATURES=ALIGNED_ARRAY BUILTIN_CLZL LL_TYPE SSSE3 AVX PCLMUL AVX2 FMA \
+	COPY_TRAITS1 COPY_TRAITS2
 
 
 # documentation
@@ -311,17 +312,17 @@ setup1:
 	mv mach_desc.h ../include/NTL/mach_desc.h
 
 
-# setup2 does some dynamic checks for GetTime, GetPID, __builtin_clzl, and LL types 
+# setup2 does some dynamic checks for GetTime, GetPID, and other features
 
 setup2:
-	echo "*** CheckFeature log ***" > CheckFeature.log
+	echo "*** CheckFeatures log ***" > CheckFeatures.log
 	sh MakeGetTime "$(LINK)" "$(LDLIBS)"
 	sh MakeGetPID  "$(LINK)" "$(LDLIBS)"
-	sh MakeCheckFeature BUILTIN_CLZL "CheckCLZL.cpp CheckCLZLAux.cpp" "$(LINK)" "$(LDLIBS)"
-	sh MakeCheckFeature LL_TYPE "CheckLL.cpp CheckLLAux.cpp" "$(LINK)" "$(LDLIBS)"
-	sh MakeCheckFeature AVX "CheckAVX.cpp" "$(LINK)" "$(LDLIBS)"
-	sh MakeCheckFeature FMA "CheckFMA.cpp" "$(LINK)" "$(LDLIBS)"
-	sh MakeCheckFeature PCLMUL "CheckPCLMUL.cpp" "$(LINK)" "$(LDLIBS)"
+	sh MakeCheckFeatures "$(FEATURES)" "$(LINK)" "$(LDLIBS)"
+
+# NOTE: to add a feature XXX:
+#   * add a program CheckXXX.cpp which returns 0 if XXX works, -1 otherwise
+#   * add XXX to the FEATURES variable
 
 # setup3 generates the file ../include/NTL/gmp_aux.h
 # The file ../include/NTL/gmp_aux.h is included in ../include/NTL/lip.h
@@ -335,7 +336,7 @@ setup3:
 # setup4 runs the wizard
 
 setup4:
-	sh Wizard $(WIZARD) "$(MAKE)"
+	sh Wizard $(WIZARD) "$(MAKE)" "$(FEATURES)"
 
 
 ntl.a:	$(OBJ) 
@@ -441,7 +442,7 @@ uninstall:
 
 clobber:	
 	rm -f ntl.a mach_desc.h ../include/NTL/mach_desc.h  GetTime.cpp GetPID.cpp
-	sh ResetFeatures '..'
+	sh ResetFeatures '..' "$(FEATURES)" 
 	rm -f ../include/NTL/gmp_aux.h
 	sh RemoveProg $(PROGS) MakeDesc $(AUXPROGS) gen_gmp_aux
 	rm -f *.o
@@ -455,6 +456,9 @@ clean:
 	rm -f *.o 
 	rm -rf small
 # 	- $(LIBTOOL) --mode=clean rm -f libntl.la *.lo #LSHAR
+
+wclean:
+	rm -f *.o 
 
 #################################################################
 #
@@ -491,7 +495,7 @@ package:
 	./configure --nowrite
 	cp mfileout def_makefile
 	cp cfileout ../include/NTL/def_config.h
-	sh unixify "$(SFILES) DIRNAME WINDIR VERSION_INFO NOTES" "$(INCL)" "$(DOC)" 
+	sh unixify "$(SFILES) DIRNAME WINDIR VERSION_INFO NOTES" "$(INCL)" "$(DOC)" "$(FEATURES)"
 	rm -rf `cat DIRNAME`
 	rm -f `cat DIRNAME`.tar
 	rm -f `cat DIRNAME`.tar.gz
@@ -505,7 +509,7 @@ winpack:
 	./configure --nowrite NTL_GMP_LIP=off TUNE=generic
 	cp mfileout def_makefile
 	cp cfileout ../include/NTL/def_config.h
-	sh dosify "$(SRC)" "$(INCL)" "$(DOC)" "$(TS)" "$(TD)" 
+	sh dosify "$(SRC)" "$(INCL)" "$(DOC)" "$(TS)" "$(TD)" "$(FEATURES)"
 	rm -rf `cat WINDIR`
 	rm -f `cat WINDIR`.zip 
 	mv dos `cat WINDIR`

@@ -30,6 +30,16 @@ public:
 
    ~zz_pX(); // destructor
 
+
+   zz_pX(zz_pX&& a); 
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   zz_pX& operator=(zz_pX&& a); 
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+
    zz_pX(INIT_MONO_TYPE, long i, zz_p c); 
    zz_pX(INIT_MONO_TYPE, long i, long c); 
    // initialize to c*X^i, invoke as zz_pX(INIT_MONO, i, c)

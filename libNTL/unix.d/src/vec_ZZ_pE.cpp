@@ -174,6 +174,11 @@ void VectorCopy(vec_ZZ_pE& x, const vec_ZZ_pE& a, long n)
       clear(x[i]);
 }
 
+void random(vec_ZZ_pE& x, long n)
+{
+   x.SetLength(n);
+   for (long i = 0; i < n; i++) random(x[i]);
+}
 
 
 NTL_END_IMPL

@@ -17,10 +17,6 @@ If n is the modulus, all inputs should be in the range 0..n-1.
 The number n itself should be in the range 1..2^{NTL_SP_NBITS}-1.
 */
 
-// I've declared these "static" so that the installation wizard
-// has more flexibility, without worrying about the (rather esoteric)
-// possibility of the linker complaining when the definitions
-// are inconsistent across several files.
 
 // DIRT: undocumented feature: in all of these MulMod routines,
 // the first argument, a, need only be in the range
@@ -67,23 +63,23 @@ typedef double mulmod_t;
 typedef double muldivrem_t;
 
 
-static inline double PrepMulMod(long n)
+inline double PrepMulMod(long n)
 {
    return double(1L)/double(n);
 }
 
-static inline double PrepMulDivRem(long b, long n, double ninv)
+inline double PrepMulDivRem(long b, long n, double ninv)
 {
    return double(b)*ninv;
 }
 
-static inline double PrepMulDivRem(long b, long n)
+inline double PrepMulDivRem(long b, long n)
 {
    return double(b)/double(n);
 }
 
 
-static inline double PrepMulModPrecon(long b, long n)
+inline double PrepMulModPrecon(long b, long n)
 {
    return PrepMulModPrecon(b, n, PrepMulMod(n));
 }
@@ -142,32 +138,32 @@ NTL_ARITH_RIGHT_SHIFT, and NTL_AVOID_BRANCHING.
 #if (NTL_ARITH_RIGHT_SHIFT && !defined(NTL_CLEAN_INT))
 // DIRT: IMPL-DEF: arithmetic right shift and cast unsigned to signed
 
-static inline 
+inline 
 long sp_SignMask(long a)
 {
    return a >> (NTL_BITS_PER_LONG-1);
 }
 
-static inline 
+inline 
 long sp_SignMask(unsigned long a)
 {
    return cast_signed(a) >> (NTL_BITS_PER_LONG-1);
 }
 #else
-static inline 
+inline 
 long sp_SignMask(long a)
 {
    return -long(cast_unsigned(a) >> (NTL_BITS_PER_LONG-1));
 }
 
-static inline 
+inline 
 long sp_SignMask(unsigned long a)
 {
    return -long(a >> (NTL_BITS_PER_LONG-1));
 }
 #endif
 
-static inline
+inline
 bool sp_Negative(unsigned long a)
 {
    return clean_cast_signed(a) < 0;
@@ -184,13 +180,13 @@ bool sp_Negative(unsigned long a)
 // in written in a particular way to get optimal machine code:
 // subtract, cmove (tested on clang, gcc, icc).
 
-static inline 
+inline 
 long sp_CorrectDeficit(long a, long n)
 {
    return a >= 0 ? a : a+n;
 }
 
-template<class T> static inline 
+template<class T> 
 long sp_CorrectDeficitQuo(T& q, long a, long n, long amt=1)
 {
    return a >= 0 ? a : (q -= amt, a+n);
@@ -198,13 +194,13 @@ long sp_CorrectDeficitQuo(T& q, long a, long n, long amt=1)
 
 
 
-static inline 
+inline 
 long sp_CorrectDeficit(unsigned long a, long n)
 {
    return !sp_Negative(a) ? a : a+n;
 }
 
-template<class T> static inline 
+template<class T> 
 long sp_CorrectDeficitQuo(T& q, unsigned long a, long n, long amt=1)
 {
    return !sp_Negative(a) ? a : (q -= amt, a+n);
@@ -212,13 +208,13 @@ long sp_CorrectDeficitQuo(T& q, unsigned long a, long n, long amt=1)
 
 
 
-static inline 
+inline 
 long sp_CorrectExcess(long a, long n)
 {
    return a-n >= 0 ? a-n : a;
 }
 
-template<class T> static inline 
+template<class T> 
 long sp_CorrectExcessQuo(T& q, long a, long n, long amt=1)
 {
    return a-n >= 0 ? (q += amt, a-n) : a;
@@ -226,13 +222,13 @@ long sp_CorrectExcessQuo(T& q, long a, long n, long amt=1)
 
 
 
-static inline 
+inline 
 long sp_CorrectExcess(unsigned long a, long n)
 {
    return !sp_Negative(a-n) ? a-n : a;
 }
 
-template<class T> static inline 
+template<class T> 
 long sp_CorrectExcessQuo(T& q, unsigned long a, long n, long amt=1)
 {
    return !sp_Negative(a-n) ? (q += amt, a-n) : a;
@@ -244,13 +240,13 @@ long sp_CorrectExcessQuo(T& q, unsigned long a, long n, long amt=1)
 // This C++ code uses traditional masking and adding
 // to avoid branching. 
 
-static inline 
+inline 
 long sp_CorrectDeficit(long a, long n)
 {
    return a + (sp_SignMask(a) & n);
 }
 
-template<class T> static inline 
+template<class T> 
 long sp_CorrectDeficitQuo(T& q, long a, long n, long amt=1)
 {
    q += sp_SignMask(a)*amt;
@@ -261,13 +257,13 @@ long sp_CorrectDeficitQuo(T& q, long a, long n, long amt=1)
 
 
 
-static inline 
+inline 
 long sp_CorrectDeficit(unsigned long a, long n)
 {
    return a + (sp_SignMask(a) & n);
 }
 
-template<class T> static inline 
+template<class T> 
 long sp_CorrectDeficitQuo(T& q, unsigned long a, long n, long amt=1)
 {
    q += sp_SignMask(a)*amt;
@@ -277,13 +273,13 @@ long sp_CorrectDeficitQuo(T& q, unsigned long a, long n, long amt=1)
 
 
 
-static inline 
+inline 
 long sp_CorrectExcess(long a, long n)
 {
    return (a-n) + (sp_SignMask(a-n) & n);
 }
 
-template<class T> static inline 
+template<class T> 
 long sp_CorrectExcessQuo(T& q, long a, long n, long amt=1)
 {
    q += (1L + sp_SignMask(a-n))*amt;
@@ -293,13 +289,13 @@ long sp_CorrectExcessQuo(T& q, long a, long n, long amt=1)
 
 
 
-static inline 
+inline 
 long sp_CorrectExcess(unsigned long a, long n)
 {
    return (a-n) + (sp_SignMask(a-n) & n);
 }
 
-template<class T> static inline 
+template<class T> 
 long sp_CorrectExcessQuo(T& q, unsigned long a, long n, long amt=1)
 {
    q += (1L + sp_SignMask(a-n))*amt;
@@ -317,7 +313,7 @@ long sp_CorrectExcessQuo(T& q, unsigned long a, long n, long amt=1)
 
 #ifdef NTL_HAVE_BUILTIN_CLZL
 
-static inline long 
+inline long 
 sp_CountLeadingZeros(unsigned long x)
 {
    return __builtin_clzl(x);
@@ -325,11 +321,11 @@ sp_CountLeadingZeros(unsigned long x)
 
 #else
 
-static inline long 
+inline long 
 sp_CountLeadingZeros(unsigned long x)
 {
    long res = NTL_BITS_PER_LONG-NTL_SP_NBITS;
-   x = x << NTL_BITS_PER_LONG-NTL_SP_NBITS;
+   x = x << (NTL_BITS_PER_LONG-NTL_SP_NBITS);
    while (x < (1UL << (NTL_BITS_PER_LONG-1))) {
       x <<= 1;
       res++;
@@ -344,21 +340,21 @@ sp_CountLeadingZeros(unsigned long x)
 
 
 
-static inline 
+inline 
 long AddMod(long a, long b, long n)
 {
    long r = a+b;
    return sp_CorrectExcess(r, n);
 }
 
-static inline 
+inline 
 long SubMod(long a, long b, long n)
 {
    long r = a-b;
    return sp_CorrectDeficit(r, n);
 }
 
-static inline 
+inline 
 long NegateMod(long a, long n)
 {
    return SubMod(0, a, n);
@@ -472,19 +468,19 @@ inline wide_double& operator/=(wide_double& x, wide_double y)
 typedef wide_double mulmod_t;
 typedef wide_double muldivrem_t;
 
-static inline wide_double PrepMulMod(long n)
+inline wide_double PrepMulMod(long n)
 {
    return wide_double(1L)/wide_double(n);
 }
 
-static inline wide_double PrepMulDivRem(long b, long n, wide_double ninv)
+inline wide_double PrepMulDivRem(long b, long n, wide_double ninv)
 {
   (void) n;
    return wide_double(b)*ninv;
 }
 
 
-static inline 
+inline 
 long MulMod(long a, long b, long n, wide_double ninv)
 {
    long q  = (long) ((((wide_double) a) * ((wide_double) b)) * ninv); 
@@ -494,17 +490,17 @@ long MulMod(long a, long b, long n, wide_double ninv)
    return sp_CorrectExcess(r, n);
 }
 
-static inline 
+inline 
 long NormalizedMulMod(long a, long b, long n, wide_double ninv)
 {
    return MulMod(a, b, n, ninv);
 }
 
-static inline bool NormalizedModulus(wide_double ninv) { (void) ninv; return true; }
+inline bool NormalizedModulus(wide_double ninv) { (void) ninv; return true; }
 
 
 
-static inline 
+inline 
 long MulModWithQuo(long& qres, long a, long b, long n, wide_double ninv)
 {
    long q  = (long) ((((wide_double) a) * ((wide_double) b)) * ninv); 
@@ -518,7 +514,7 @@ long MulModWithQuo(long& qres, long a, long b, long n, wide_double ninv)
 }
 
 
-static inline 
+inline 
 long MulMod2_legacy(long a, long b, long n, wide_double bninv)
 {
    long q  = (long) (((wide_double) a) * bninv);
@@ -529,7 +525,7 @@ long MulMod2_legacy(long a, long b, long n, wide_double bninv)
    return r;
 }
 
-static inline 
+inline 
 long MulDivRem(long& qres, long a, long b, long n, wide_double bninv)
 {
    long q  = (long) (((wide_double) a) * bninv);
@@ -552,7 +548,7 @@ struct sp_inverse {
    unsigned long inv;
    long shamt;
 
-   sp_inverse() { }
+   sp_inverse() NTL_DEFAULT
    sp_inverse(unsigned long _inv, long _shamt) : inv(_inv), shamt(_shamt) { }
 };
 
@@ -582,7 +578,7 @@ typedef sp_inverse mulmod_t;
 #if (NTL_SP_NBITS <= 2*NTL_DOUBLE_PRECISION-10)
 
 
-static inline unsigned long
+inline unsigned long
 sp_NormalizedPrepMulMod(long n)
 {
    double ninv = 1/double(n); 
@@ -639,7 +635,7 @@ sp_NormalizedPrepMulMod(long n)
 
 #else
 
-static inline unsigned long 
+inline unsigned long 
 sp_NormalizedPrepMulMod(long n)
 {
    return 
@@ -649,7 +645,7 @@ sp_NormalizedPrepMulMod(long n)
 #endif
 
 
-static inline sp_inverse
+inline sp_inverse
 PrepMulMod(long n)
 {
    long shamt = sp_CountLeadingZeros(n) - (NTL_BITS_PER_LONG-NTL_SP_NBITS);
@@ -663,7 +659,7 @@ PrepMulMod(long n)
 
 
 
-static inline long 
+inline long 
 sp_NormalizedMulMod(long a, long b, long n, unsigned long ninv) 
 {
    ll_type U;
@@ -680,7 +676,7 @@ sp_NormalizedMulMod(long a, long b, long n, unsigned long ninv)
 
 
 
-static inline long 
+inline long 
 MulMod(long a, long b, long n, sp_inverse ninv)
 {
    return sp_NormalizedMulMod(a, b << ninv.shamt, n << ninv.shamt, ninv.inv) >> ninv.shamt;
@@ -689,19 +685,19 @@ MulMod(long a, long b, long n, sp_inverse ninv)
 // if you know what you're doing....
 // FIXME: eventually, put this is the documented interface...
 // but for now, it's "experimental"
-static inline long 
+inline long 
 NormalizedMulMod(long a, long b, long n, sp_inverse ninv)
 {
    return sp_NormalizedMulMod(a, b, n, ninv.inv);
 }
 
-static inline bool
+inline bool
 NormalizedModulus(sp_inverse ninv) { return ninv.shamt == 0; }
 
 
 
 
-static inline long 
+inline long 
 sp_NormalizedMulModWithQuo(long& qres, long a, long b, long n, unsigned long ninv)
 {
    ll_type U;
@@ -717,7 +713,7 @@ sp_NormalizedMulModWithQuo(long& qres, long a, long b, long n, unsigned long nin
    return r;
 }
 
-static inline long 
+inline long 
 MulModWithQuo(long& qres, long a, long b, long n, sp_inverse ninv)
 {
    return sp_NormalizedMulModWithQuo(qres, a, b << ninv.shamt, n << ninv.shamt, ninv.inv) >> ninv.shamt;
@@ -738,7 +734,7 @@ typedef unsigned long mulmod_precon_t;
 
 #if (!defined(NTL_LONGLONG_SP_MULMOD))
 
-static inline unsigned long PrepMulModPrecon(long b, long n, wide_double ninv)
+inline unsigned long PrepMulModPrecon(long b, long n, wide_double ninv)
 {
    long q  = (long) ( (((wide_double) b) * wide_double(NTL_SP_BOUND)) * ninv ); 
    unsigned long rr = (cast_unsigned(b) << NTL_SP_NBITS) - cast_unsigned(q)*cast_unsigned(n);
@@ -751,7 +747,7 @@ static inline unsigned long PrepMulModPrecon(long b, long n, wide_double ninv)
 #else
 
 
-static inline unsigned long 
+inline unsigned long 
 sp_NormalizedPrepMulModPrecon(long b, long n, unsigned long ninv)
 {
    unsigned long H = cast_unsigned(b) << 2;
@@ -766,7 +762,7 @@ sp_NormalizedPrepMulModPrecon(long b, long n, unsigned long ninv)
 }
 
 
-static inline unsigned long 
+inline unsigned long 
 PrepMulModPrecon(long b, long n, sp_inverse ninv)
 {
    return sp_NormalizedPrepMulModPrecon(b << ninv.shamt, n << ninv.shamt, ninv.inv) << (NTL_BITS_PER_LONG-NTL_SP_NBITS);
@@ -782,7 +778,7 @@ PrepMulModPrecon(long b, long n, sp_inverse ninv)
    
 
 
-static inline long MulModPrecon(long a, long b, long n, unsigned long bninv)
+inline long MulModPrecon(long a, long b, long n, unsigned long bninv)
 {
    unsigned long qq = ll_mul_hi(a, bninv);
    unsigned long rr = cast_unsigned(a)*cast_unsigned(b) - qq*cast_unsigned(n);
@@ -791,7 +787,7 @@ static inline long MulModPrecon(long a, long b, long n, unsigned long bninv)
 
 
 
-static inline long MulModPreconWithQuo(long& qres, long a, long b, long n, unsigned long bninv)
+inline long MulModPreconWithQuo(long& qres, long a, long b, long n, unsigned long bninv)
 {
    unsigned long qq = ll_mul_hi(a, bninv);
    unsigned long rr = cast_unsigned(a)*cast_unsigned(b) - qq*cast_unsigned(n);
@@ -809,17 +805,18 @@ static inline long MulModPreconWithQuo(long& qres, long a, long b, long n, unsig
 typedef wide_double mulmod_precon_t;
 
 
-static inline wide_double PrepMulModPrecon(long b, long n, wide_double ninv)
+inline wide_double PrepMulModPrecon(long b, long n, wide_double ninv)
 {
+  (void) n;
    return ((wide_double) b) * ninv;
 }
 
-static inline long MulModPrecon(long a, long b, long n, wide_double bninv)
+inline long MulModPrecon(long a, long b, long n, wide_double bninv)
 {
    return MulMod2_legacy(a, b, n, bninv);
 }
 
-static inline long MulModPreconWithQuo(long& qq, long a, long b, long n, wide_double bninv)
+inline long MulModPreconWithQuo(long& qq, long a, long b, long n, wide_double bninv)
 {
    return MulDivRem(qq, a, b, n, bninv);
 }
@@ -843,18 +840,18 @@ struct sp_muldivrem_struct {
    unsigned long bninv;
 
    explicit sp_muldivrem_struct(unsigned long _bninv) : bninv(_bninv) { }
-   sp_muldivrem_struct() { }
+   sp_muldivrem_struct() NTL_DEFAULT
 };
 
 typedef sp_muldivrem_struct muldivrem_t;
 
-static inline sp_muldivrem_struct PrepMulDivRem(long b, long n, sp_inverse ninv)
+inline sp_muldivrem_struct PrepMulDivRem(long b, long n, sp_inverse ninv)
 {
    return sp_muldivrem_struct(PrepMulModPrecon(b, n, ninv));
 }
 
 
-static inline
+inline
 long MulDivRem(long& qres, long a, long b, long n,  sp_muldivrem_struct bninv)
 {
    return MulModPreconWithQuo(qres, a, b, n, bninv.bninv);
@@ -867,19 +864,19 @@ long MulDivRem(long& qres, long a, long b, long n,  sp_muldivrem_struct bninv)
 
 
 
-static inline mulmod_precon_t PrepMulModPrecon(long b, long n)
+inline mulmod_precon_t PrepMulModPrecon(long b, long n)
 {
    return PrepMulModPrecon(b, n, PrepMulMod(n));
 }
 
 
-static inline 
+inline 
 long MulMod(long a, long b, long n)
 {
    return MulMod(a, b, n, PrepMulMod(n));
 }
 
-static inline muldivrem_t PrepMulDivRem(long b, long n)
+inline muldivrem_t PrepMulDivRem(long b, long n)
 {
    return PrepMulDivRem(b, n, PrepMulMod(n));
 }
@@ -891,7 +888,7 @@ static inline muldivrem_t PrepMulDivRem(long b, long n)
 
 #ifdef NTL_LEGACY_SP_MULMOD
 
-static inline long MulMod2(long a, long b, long n, wide_double bninv)
+inline long MulMod2(long a, long b, long n, wide_double bninv)
 {
    return MulMod2_legacy(a, b, n, bninv);
 }
@@ -902,7 +899,7 @@ static inline long MulMod2(long a, long b, long n, wide_double bninv)
 
 
 
-static inline
+inline
 void VectorMulModPrecon(long k, long *x, const long *a, long b, long n, 
                         mulmod_precon_t bninv)
 {
@@ -910,7 +907,7 @@ void VectorMulModPrecon(long k, long *x, const long *a, long b, long n,
       x[i] = MulModPrecon(a[i], b, n, bninv);
 }
 
-static inline
+inline
 void VectorMulMod(long k, long *x, const long *a, long b, long n, 
                   mulmod_t ninv)
 {
@@ -920,7 +917,7 @@ void VectorMulMod(long k, long *x, const long *a, long b, long n,
 }
 
 
-static inline 
+inline 
 void VectorMulMod(long k, long *x, const long *a, long b, long n)
 {
    mulmod_t ninv = PrepMulMod(n);
@@ -937,10 +934,10 @@ struct sp_reduce_struct {
    sp_reduce_struct(unsigned long _ninv, long _sgn) : 
       ninv(_ninv), sgn(_sgn)  { }
 
-   sp_reduce_struct() { }
+   sp_reduce_struct() NTL_DEFAULT
 };
 
-static inline
+inline
 sp_reduce_struct sp_PrepRem(long n)
 {
    unsigned long q = (1UL << (NTL_BITS_PER_LONG-1))/cast_unsigned(n);
@@ -955,7 +952,7 @@ sp_reduce_struct sp_PrepRem(long n)
 
 
 
-static inline
+inline
 long rem(unsigned long a, long n, sp_reduce_struct red) 
 {
    unsigned long Q = ll_mul_hi(a, red.ninv);
@@ -965,7 +962,7 @@ long rem(unsigned long a, long n, sp_reduce_struct red)
 }
 
 
-static inline
+inline
 long rem(long a, long n, sp_reduce_struct red) 
 {
    unsigned long a0 = cast_unsigned(a) & ((1UL << (NTL_BITS_PER_LONG-1))-1);
@@ -978,22 +975,25 @@ long rem(long a, long n, sp_reduce_struct red)
 struct sp_reduce_struct { };
 
 
-static inline
+inline
 sp_reduce_struct sp_PrepRem(long n) 
 {
+  (void) n;
    return sp_reduce_struct();
 }
 
 
-static inline
+inline
 long rem(unsigned long a, long n, sp_reduce_struct red) 
 {
+  (void) red;
    return a % cast_unsigned(n);
 }
 
-static inline
+inline
 long rem(long a, long n, sp_reduce_struct red)
 {
+  (void) red;
    long r = a % n;
    return sp_CorrectDeficit(r, n);
 }
@@ -1016,14 +1016,14 @@ struct sp_ll_reduce_struct {
    unsigned long inv;
    long nbits;
 
-   sp_ll_reduce_struct() { }
+   sp_ll_reduce_struct() NTL_DEFAULT
 
    sp_ll_reduce_struct(unsigned long _inv, long _nbits) : inv(_inv), nbits(_nbits) { }
 
 };
 
 
-static inline sp_ll_reduce_struct
+inline sp_ll_reduce_struct
 make_sp_ll_reduce_struct(long n)
 {
    long nbits = NTL_BITS_PER_LONG - sp_CountLeadingZeros(n);
@@ -1035,7 +1035,7 @@ make_sp_ll_reduce_struct(long n)
 
 
 // computes remainder (hi, lo) mod d, assumes hi < d
-static inline long  
+inline long  
 sp_ll_red_21(unsigned long hi, unsigned long lo, long d, 
             sp_ll_reduce_struct dinv)
 {
@@ -1049,7 +1049,7 @@ sp_ll_red_21(unsigned long hi, unsigned long lo, long d,
 }
 
 // computes remainder (x[n-1], ..., x[0]) mod d
-static inline long 
+inline long 
 sp_ll_red_n1(const unsigned long *x, long n, long d, sp_ll_reduce_struct dinv)
 {
    long carry = 0;
@@ -1060,7 +1060,7 @@ sp_ll_red_n1(const unsigned long *x, long n, long d, sp_ll_reduce_struct dinv)
 } 
 
 // computes remainder (x2, x1, x0) mod d, assumes x2 < d
-static inline long 
+inline long 
 sp_ll_red_31(unsigned long x2, unsigned long x1, unsigned long x0,
            long d, sp_ll_reduce_struct dinv)
 {
@@ -1072,7 +1072,7 @@ sp_ll_red_31(unsigned long x2, unsigned long x1, unsigned long x0,
 // normalized versions of the above: assume NumBits(d) == NTL_SP_NBITS
 
 // computes remainder (hi, lo) mod d, assumes hi < d
-static inline long  
+inline long  
 sp_ll_red_21_normalized(unsigned long hi, unsigned long lo, long d, 
             sp_ll_reduce_struct dinv)
 {
@@ -1086,7 +1086,7 @@ sp_ll_red_21_normalized(unsigned long hi, unsigned long lo, long d,
 }
 
 // computes remainder (x[n-1], ..., x[0]) mod d
-static inline long 
+inline long 
 sp_ll_red_n1_normalized(const unsigned long *x, long n, long d, sp_ll_reduce_struct dinv)
 {
    long carry = 0;
@@ -1097,7 +1097,7 @@ sp_ll_red_n1_normalized(const unsigned long *x, long n, long d, sp_ll_reduce_str
 } 
 
 // computes remainder (x2, x1, x0) mod d, assumes x2 < d
-static inline long 
+inline long 
 sp_ll_red_31_normalized(unsigned long x2, unsigned long x1, unsigned long x0,
            long d, sp_ll_reduce_struct dinv)
 {
@@ -1114,9 +1114,10 @@ sp_ll_red_31_normalized(unsigned long x2, unsigned long x1, unsigned long x0,
 struct sp_ll_reduce_struct { };
 
 
-static inline sp_ll_reduce_struct
+inline sp_ll_reduce_struct
 make_sp_ll_reduce_struct(long n)
 {
+  (void) n;
    return sp_ll_reduce_struct();
 }
 

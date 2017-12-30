@@ -828,20 +828,6 @@ long compare(const quad_float& x, const quad_float& y)
 quad_float fabs(const quad_float& x) 
 { if (x.hi>=0.0) return x; else return -x; }
 
-quad_float to_quad_float(const char *s)
-{
-   quad_float x;
-
-   RRPush push;
-   RR::SetPrecision(4*NTL_DOUBLE_PRECISION);
-
-   NTL_TLS_LOCAL(RR, t);
-   conv(t, s);
-   conv(x, t);
-
-   return x;
-}
-
 
 quad_float ldexp(const quad_float& x, long exp) { // x*2^exp
    double xhi, xlo;

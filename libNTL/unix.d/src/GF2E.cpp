@@ -174,4 +174,5 @@ void inv(GF2E& x, const GF2E& a)
    InvMod(x._GF2E__rep, a._GF2E__rep, GF2E::modulus());
 }
 
+
 NTL_END_IMPL

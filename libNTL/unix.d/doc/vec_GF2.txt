@@ -6,39 +6,58 @@ MODULE: vec_GF2
 SUMMARY:
 
 
-The class Vec<GF2> is explicitly specialized.
-It behaves much like a generic Vec<T> (see vector.txt), 
-but there are some differences.
+The class Vec<GF2> is explicitly specialized.  It behaves much like a generic
+Vec<T> (see vector.txt), but there are some differences.
 
-For efficiency, elements of a Vec<GF2> are "packed" into a word.
-You can still use subscript notation v[i] or v(i).
-For const vectors, these evaluate to values of type const GF2.
-For non-const vectors, these evaluate to values of the
-special type ref_GF2, which is defined in the GF2 header file.
+For efficiency, elements of a Vec<GF2> are "packed" into a word.  You can still
+use subscript notation v[i] or v(i).  For const vectors, these evaluate to
+values of type const GF2.  For non-const vectors, these evaluate to values of
+the special type ref_GF2, which is defined in the GF2 header file.
 
-There are implicit conversions from ref_GF2 to const GF2
-and from GF2& to ref_GF2.  Therefore, if you want to declare
-a function that takes a non-const reference to a GF2, you
-should declare the parameter of type ref_GF2: this will
-allow you to pass variables of type GF2 as well as 
-elements of vec_GF2's obtained through indexing.
+There are implicit conversions from ref_GF2 to const GF2 and from GF2& to
+ref_GF2.  Therefore, if you want to declare a function that takes a non-const
+reference to a GF2, you should declare the parameter of type ref_GF2: this will
+allow you to pass variables of type GF2 as well as elements of vec_GF2's
+obtained through indexing.
 
 As an alternative, one can use the get and put methods below to access
 vector elements.
 
-There is one subtle but important difference in the semantics
-of Vec<GF2> and that of generic NTL vectors.  With a Vec<GF2>, whenever its
-length is increased (via SetLength), the "new" bits are always 0.
-For example, if v.length() == 20, then 
+There is a subtle but important difference in the semantics of Vec<GF2> and
+that of generic NTL vectors.  With a Vec<GF2>, whenever its length is increased
+(via SetLength), the "new" bits are always 0.  For example, if 
+v.length() == 20, then 
 
    v.SetLength(10); v.setLength(20);
 
-will effectively clear bits 10..19 of v.
-This is quite different from the semantics of generic NTL vectors, where
-the above sequence would not change the value of v at all.
-One has to be aware of this difference, but it will not matter
-in most ordinary circumstances.
+will effectively clear bits 10..19 of v.  This is quite different from the
+semantics of generic NTL vectors, where the above sequence would not change the
+value of v at all.  One has to be aware of this difference, but it will not
+matter in most ordinary circumstances.
 
+
+Another thing to be aware of is the use of Vec<GF2> in range-based
+for loops.  The safest ways to do this are as follows:
+
+   for (auto&& item : vec) { ... } // for read-only or read/write access
+
+or
+
+   for (GF2 item : vec) { ... } // for access via a copy
+
+Note that:
+   * declaring item as "auto&" or "GF2&" will yield a syntax error
+   * declaring item as "auto" or "const auto&" will potentially
+     allow code to modify vec via item, without a warning or error,
+     contrary to expectations (although this cannot happen if vec
+     itself is const)
+
+However, declaring item as "auto&&" will work as expected, and the compiler
+will raise an error if you try to modify a const Vec<GF2>.  
+
+All of these issues arise because ref_GF2 is not a true reference, and the
+semantics of "auto" and "auto&" interact badly.  Similar issues arise with
+vector<bool> in the STL.
 
 \**************************************************************************/
 
@@ -55,7 +74,20 @@ public:
 
    Vec(const Vec<GF2>& a); // copy constructor
    Vec& operator=(const Vec<GF2>& a); // assignment
+
+   Vec(Vec&& a);
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+   // will revert to copy constructor if a is fixed
+
+   Vec& operator=(Vec&& a);
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+   // will revert to copy assignment if *this or a is fixed
+
    ~Vec(); // destructor
+
+
 
    void SetLength(long n); // set length to n bits
    void SetLength(long n, GF2 a); 
@@ -129,7 +161,26 @@ public:
    typedef GF2 value_type;
    typedef ref_GF2 reference;
    typedef const GF2 const_reference;
+   typedef /* implementation defined type */ iterator;
+   typedef /* implementation defined type */ const_iterator;
 
+   ref_GF2 at(long i);
+   const GF2 at(long i) const;
+   // indexing with range checking
+
+
+   iterator begin();
+   const_iterator begin() const;
+   // pointer to beginning of vector
+
+   iterator end();
+   const_iterator end() const;
+   // pointer to (one past) end of vector
+
+   // NOTES: The iterator types act like pointers.  You can perform all the
+   // usual arithmetic on them, as well as dereferencing and subscripting.
+   // Dereferencing an iterator yields a ref_GF2.  Dereferencing a
+   // const_iterator yields a const GF2.
 
 
 };
@@ -180,9 +231,6 @@ vec_GF2 reverse(const vec_GF2& a);
 
 long weight(const vec_GF2& a); // return number of 1 bits in a
 
-void random(vec_GF2& x, long n);  // x = random vector of length n
-vec_GF2 random_vec_GF2(long n);
-
 
 // arithmetic operations over GF(2):
 
@@ -204,6 +252,9 @@ void VectorCopy(vec_GF2& x, const vec_GF2& a, long n);
 vec_GF2 VectorCopy(const vec_GF2& a, long n);
 // x = a copy of a of length exactly n.
 // The input is truncated or padded with zeroes, as necessary.
+
+void random(vec_GF2& x, long n);  // x = random vector of length n
+vec_GF2 random_vec_GF2(long n);
 
 
 

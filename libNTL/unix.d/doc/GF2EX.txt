@@ -32,10 +32,20 @@ public:
 
    ~GF2EX(); // destructor
 
+
+   GF2EX(GF2EX&& a); 
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   GF2EX& operator=(GF2EX&& a); 
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+
    GF2EX(INIT_MONO_TYPE, long i, const GF2E& c); 
    GF2EX(INIT_MONO_TYPE, long i, GF2 c); 
    GF2EX(INIT_MONO_TYPE, long i, long c); 
-   // initialize to c*X^i, invoke as GF2EX(INIT_MONO, i)
+   // initialize to c*X^i, invoke as GF2EX(INIT_MONO, i, c)
 
    GF2EX(INIT_MONO_TYPE, long i); 
    // initialize to X^i, invoke as GF2EX(INIT_MONO, i)

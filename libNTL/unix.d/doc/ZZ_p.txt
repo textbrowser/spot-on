@@ -36,6 +36,14 @@ public:
    ZZ_p& operator=(const ZZ_p& a); // assignment
    ZZ_p& operator=(long a); // assignment
 
+   ZZ_p(ZZ_p&& a); 
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   ZZ_p& operator=(ZZ_p&& a); 
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
    static void init(const ZZ& p);
    // ZZ_p::init(p) sets the modulus to p (p > 1)
    

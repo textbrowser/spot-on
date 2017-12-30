@@ -42,6 +42,8 @@ vec_zz_p VectorCopy(const vec_zz_p& a, long n);
 // x = a copy of a of length exactly n.
 // The input is truncated or padded with zeroes, as necessary.
 
+void random(vec_zz_p& x, long n);  // x = random vector of length n
+vec_zz_p random_vec_zz_p(long n);
 
 
 void InnerProduct(zz_p& x, const vec_zz_p& a, const vec_zz_p& b);

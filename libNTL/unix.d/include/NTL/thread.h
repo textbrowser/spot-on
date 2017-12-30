@@ -86,6 +86,9 @@ public:
       else
          return false;
    }
+
+   long get_count() const { return cnt; }
+   // mainly for debugging
 };
 
 class MutexProxy { 
@@ -173,6 +176,8 @@ public:
    AtomicRefCount() : cnt(0) { }
    void inc() { cnt++; }
    bool dec() { cnt--; return cnt == 0; }
+   long get_count() const { return cnt; }
+   // mainly for debugging
 };
 
 class MutexProxy { 

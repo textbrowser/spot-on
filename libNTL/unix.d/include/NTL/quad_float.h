@@ -58,9 +58,11 @@ public:
   quad_float(double x, double y) : hi(x), lo(y) { } // internal use only
   // FIXME: add a special argument to this to make it more "internal"
 
-  ~quad_float() {}
 
 };  // end class quad_float
+
+
+NTL_DECLARE_RELOCATABLE((quad_float*))
 
 
 
@@ -272,9 +274,8 @@ inline void conv(quad_float& x, const quad_float& a)
 inline quad_float to_quad_float(const quad_float& a)
    { return a; }
 
-quad_float to_quad_float(const char *s);
-inline void conv(quad_float& x, const char *s)
-   { x = to_quad_float(s); }
+inline quad_float to_quad_float(const char *s)
+{ quad_float res; conv(res, s); return res; }
 
 
 

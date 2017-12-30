@@ -195,14 +195,11 @@ DivHandlerPtr DivHandler;
 ZZ_p() { } // NO_ALLOC
 explicit ZZ_p(long a) { *this = a; }
 
-ZZ_p(const ZZ_p& a) { _ZZ_p__rep = a._ZZ_p__rep; } // NO_ALLOC
-
 ZZ_p(INIT_NO_ALLOC_TYPE) { }  // allocates no space
 ZZ_p(INIT_ALLOC_TYPE) { _ZZ_p__rep.SetSize(ZZ_pInfo->size); }  // allocates space
 
 ~ZZ_p() { } 
 
-ZZ_p& operator=(const ZZ_p& a) { _ZZ_p__rep = a._ZZ_p__rep; return *this; }
 
 inline ZZ_p& operator=(long a);
 
@@ -266,6 +263,10 @@ void KillBig() { _ZZ_p__rep.KillBig(); }
 
 
 };
+
+
+
+NTL_DECLARE_RELOCATABLE((ZZ_p*))
 
 
 

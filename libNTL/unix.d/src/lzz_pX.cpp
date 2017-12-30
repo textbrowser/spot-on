@@ -1339,8 +1339,6 @@ void MulByXMod(zz_pX& h, const zz_pX& a, const zz_pX& f)
 
 void random(zz_pX& x, long n)
 {
-   long i;
-
    x.rep.SetLength(n);
    VectorRandom(n, x.rep.elts());
    x.normalize();

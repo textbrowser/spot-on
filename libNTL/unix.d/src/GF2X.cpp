@@ -113,24 +113,6 @@ void GF2X::SetLength(long n)
 }
 
 
-ref_GF2 GF2X::operator[](long i)
-{
-   if (i < 0) LogicError("GF2X: subscript out of range");
-   long wi = i/NTL_BITS_PER_LONG;
-   if (wi >= xrep.length())  LogicError("GF2X: subscript out of range");
-   long bi = i - wi*NTL_BITS_PER_LONG;
-   return ref_GF2(INIT_LOOP_HOLE, &xrep[wi], bi);
-}
-
-
-const GF2 GF2X::operator[](long i) const
-{
-   if (i < 0) LogicError("GF2X: subscript out of range");
-   long wi = i/NTL_BITS_PER_LONG;
-   if (wi >= xrep.length())  LogicError("GF2X: subscript out of range");
-   long bi = i - wi*NTL_BITS_PER_LONG;
-   return to_GF2((xrep[wi] & (1UL << bi)) != 0);
-}
 
 
 
@@ -257,15 +239,13 @@ void SetCoeff(GF2X& x, long i, GF2 a)
 long deg(const GF2X& aa)
 {
    long n = aa.xrep.length();
-
-   if (n == 0)
-      return -1;
-
+   if (n == 0) return -1;
    _ntl_ulong a = aa.xrep[n-1];
-   long i = 0;
-
    if (a == 0) LogicError("GF2X: unnormalized polynomial detected in deg");
+   return NTL_BITS_PER_LONG*(n-1) + _ntl_count_bits(a) - 1;
 
+#if 0
+   long i = 0;
    while (a>=256)
       i += 8, a >>= 8;
    if (a >=16)
@@ -276,8 +256,8 @@ long deg(const GF2X& aa)
       i += 2;
    else if (a >= 1)
       i++;
+#endif
 
-   return NTL_BITS_PER_LONG*(n-1) + i - 1;
 }
    
 

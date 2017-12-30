@@ -100,7 +100,7 @@ mat_zz_p power(const mat_zz_p& A, long e);
 // powers, if the optional parameter relax is true (which is the default).
 // However, note that in these relaxed routines, if a computed determinant
 // value is zero, this may not be the true determinant: all that you can assume
-// is that the true determinant is is not invertible mod p. If the parameter
+// is that the true determinant is not invertible mod p. If the parameter
 // relax==false, then these routines behave identically to their "unrelaxed"
 // counterparts.
 
@@ -134,6 +134,10 @@ mat_zz_p diag(long n, zz_p d);
 
 long IsDiag(const mat_zz_p& A, long n, zz_p d);
 // test if X is an  n x n diagonal matrix with d on diagonal
+
+
+void random(mat_zz_p& x, long n, long m);  // x = random n x m matrix
+mat_zz_p random_mat_zz_p(long n, long m);
 
 
 

@@ -8,12 +8,12 @@ echo "does anybody really know what time it is?"
 
 
 sh RemoveProg TestGetTime
-echo $1 -o TestGetTime TestGetTime.cpp GetTime1.cpp $2  >> "CheckFeature.log" 2>&1
-$1 -o TestGetTime TestGetTime.cpp GetTime1.cpp $2 >> "CheckFeature.log" 2>&1
+echo $1 -o TestGetTime TestGetTime.cpp GetTime1.cpp $2  >> "CheckFeatures.log" 2>&1
+$1 -o TestGetTime TestGetTime.cpp GetTime1.cpp $2 >> "CheckFeatures.log" 2>&1
 
 if test -f TestGetTime
 then
-if ./TestGetTime 1 1048576 1048575 >> "CheckFeature.log" 2>&1
+if ./TestGetTime 1 1048576 1048575 >> "CheckFeatures.log" 2>&1
 then
 cp GetTime1.cpp GetTime.cpp
 echo "using GetTime1.cpp"
@@ -23,12 +23,12 @@ fi
 
 
 sh RemoveProg TestGetTime
-echo $1 -o TestGetTime TestGetTime.cpp GetTime2.cpp $2  >> "CheckFeature.log" 2>&1
-$1 -o TestGetTime TestGetTime.cpp GetTime2.cpp $2  >> "CheckFeature.log" 2>&1
+echo $1 -o TestGetTime TestGetTime.cpp GetTime2.cpp $2  >> "CheckFeatures.log" 2>&1
+$1 -o TestGetTime TestGetTime.cpp GetTime2.cpp $2  >> "CheckFeatures.log" 2>&1
 
 if test -f TestGetTime
 then
-if ./TestGetTime 1 1048576 1048575 >> "CheckFeature.log" 2>&1
+if ./TestGetTime 1 1048576 1048575 >> "CheckFeatures.log" 2>&1
 then
 cp GetTime2.cpp GetTime.cpp
 echo "using GetTime2.cpp"
@@ -37,12 +37,12 @@ fi
 fi
 
 sh RemoveProg TestGetTime
-echo $1 -o TestGetTime TestGetTime.cpp GetTime3.cpp $2  >> "CheckFeature.log" 2>&1
-$1 -o TestGetTime TestGetTime.cpp GetTime3.cpp $2  >> "CheckFeature.log" 2>&1
+echo $1 -o TestGetTime TestGetTime.cpp GetTime3.cpp $2  >> "CheckFeatures.log" 2>&1
+$1 -o TestGetTime TestGetTime.cpp GetTime3.cpp $2  >> "CheckFeatures.log" 2>&1
 
 if test -f TestGetTime
 then
-if ./TestGetTime 1 1048576 1048575 >> "CheckFeature.log" 2>&1
+if ./TestGetTime 1 1048576 1048575 >> "CheckFeatures.log" 2>&1
 then
 cp GetTime3.cpp GetTime.cpp
 echo "using GetTime3.cpp"
@@ -51,13 +51,13 @@ fi
 fi
 
 sh RemoveProg TestGetTime
-echo $1 -o TestGetTime TestGetTime.cpp GetTime4.cpp $2  >> "CheckFeature.log" 2>&1
-$1 -o TestGetTime TestGetTime.cpp GetTime4.cpp $2  >> "CheckFeature.log" 2>&1
+echo $1 -o TestGetTime TestGetTime.cpp GetTime4.cpp $2  >> "CheckFeatures.log" 2>&1
+$1 -o TestGetTime TestGetTime.cpp GetTime4.cpp $2  >> "CheckFeatures.log" 2>&1
 
 
 if test -f TestGetTime
 then
-if ./TestGetTime 1 1048576 1048575 >> "CheckFeature.log" 2>&1
+if ./TestGetTime 1 1048576 1048575 >> "CheckFeatures.log" 2>&1
 then
 cp GetTime4.cpp GetTime.cpp
 echo "using GetTime4.cpp"
@@ -66,8 +66,8 @@ fi
 fi
 
 sh RemoveProg TestGetTime
-echo $1 -o TestGetTime TestGetTime.cpp GetTime5.cpp $2  >> "CheckFeature.log" 2>&1
-$1 -o TestGetTime TestGetTime.cpp GetTime5.cpp $2  >> "CheckFeature.log" 2>&1
+echo $1 -o TestGetTime TestGetTime.cpp GetTime5.cpp $2  >> "CheckFeatures.log" 2>&1
+$1 -o TestGetTime TestGetTime.cpp GetTime5.cpp $2  >> "CheckFeatures.log" 2>&1
 
 
 if test -f TestGetTime

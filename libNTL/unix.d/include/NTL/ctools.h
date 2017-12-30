@@ -4,11 +4,38 @@
 
 #include <NTL/config.h>
 #include <NTL/mach_desc.h>
-#include <NTL/HAVE_LL_TYPE.h>
-#include <NTL/HAVE_BUILTIN_CLZL.h>
-#include <NTL/HAVE_AVX.h>
-#include <NTL/HAVE_FMA.h>
-#include <NTL/HAVE_PCLMUL.h>
+
+#include <NTL/ALL_FEATURES.h>
+
+
+// defines the working C++ standard
+
+#if defined(NTL_STD_CXX11)
+#define NTL_CXX_STANDARD (2011)
+#elif defined(NTL_STD_CXX14)
+#define NTL_CXX_STANDARD (2014)
+#else
+#define NTL_CXX_STANDARD (1998)
+#endif
+
+// define some macros regarding noexcept declarations
+
+#if (NTL_CXX_STANDARD >= 2011)
+
+#define NTL_NOEXCEPT noexcept
+
+#ifdef NTL_EXCEPTIONS
+#define NTL_FAKE_NOEXCEPT
+#else
+#define NTL_FAKE_NOEXCEPT noexcept
+#endif
+
+#else
+
+#define NTL_NOEXCEPT 
+#define NTL_FAKE_NOEXCEPT
+
+#endif
 
 
 /*
@@ -34,7 +61,7 @@
 
 #elif (NTL_BITS_PER_LONG == 64 && defined(__GNUC__))
 
-#define NTL_ULL_TYPE __uint128_t
+#define NTL_ULL_TYPE __uint128_t 
 
 #elif (NTL_BITS_PER_LONG == 32 && (defined(_MSC_VER) || defined(__BORLANDC__)))
 
@@ -367,6 +394,38 @@ void _ntl_swap(T*& a, T*& b)
  */
 
 
+// The following do for "move" what the above does for swap
+
+#define NTL_DEFINE_SCALAR_MOVE(T)\
+inline T _ntl_scalar_move(T& a)\
+{\
+   T t = a; a = 0; return t;\
+}
+
+NTL_DEFINE_SCALAR_MOVE(long)
+NTL_DEFINE_SCALAR_MOVE(int)
+NTL_DEFINE_SCALAR_MOVE(short)
+NTL_DEFINE_SCALAR_MOVE(char)
+
+NTL_DEFINE_SCALAR_MOVE(unsigned long)
+NTL_DEFINE_SCALAR_MOVE(unsigned int)
+NTL_DEFINE_SCALAR_MOVE(unsigned short)
+NTL_DEFINE_SCALAR_MOVE(unsigned char)
+
+NTL_DEFINE_SCALAR_MOVE(double)
+NTL_DEFINE_SCALAR_MOVE(float)
+
+   
+template<class T>
+T* _ntl_scalar_move(T*& a)
+{
+   T *t = a; a = 0; return t;
+}
+
+
+
+
+
 // The following routine increments a pointer so that
 // it is properly aligned.  
 // It is assumed that align > 0.
@@ -378,7 +437,7 @@ void _ntl_swap(T*& a, T*& b)
 #define NTL_UPTRINT_T unsigned long long
 // DIRT: this should really be std::uintptr_t, defined
 // in <cstdint>; however, that header is not widely available,
-// and even if it were, std::uintpre_t is not guaranteed
+// and even if it were, std::uintptr_t is not guaranteed
 // to be defined.  Of course, unsigned long long may not
 // be defined in pre-C++11.  
 
@@ -389,32 +448,25 @@ void _ntl_swap(T*& a, T*& b)
 #endif
 
 
-#if (!defined(__GNUC__) || !defined(__x86_64__) || NTL_BITS_PER_LONG != 64)
+#ifdef NTL_HAVE_ALIGNED_ARRAY
 
-// DIRT: for now, we only attempt to implement this function properly when
-// we really need it, which is for AVX support.
-// The source file CheckAVX.c checks for these same conditions.
-// We still define it, to simplify the overall code structure.
-
-static inline
-char *_ntl_make_aligned(char *p, long align)
-{
-   return p;
-}
-
-#else
-
-// DIRT: in the limited range of platforms for which we attempt to
-// implement it, this should work fine.
-
-static inline
+inline
 char *_ntl_make_aligned(char *p, long align)
 {
    unsigned long r =  (unsigned long) (((NTL_UPTRINT_T) (p)) % ((NTL_UPTRINT_T) (align)));
    return p + ((((unsigned long) (align)) - r) % ((unsigned long) (align)));
 }
 
-#define NTL_HAVE_ALIGNED_ARRAY
+#else
+
+
+inline
+char *_ntl_make_aligned(char *p, long align)
+{
+  (void) align;
+   return p;
+}
+
 
 #endif
 
@@ -450,7 +502,7 @@ char *_ntl_make_aligned(char *p, long align)
 
 #ifdef NTL_HAVE_BUILTIN_CLZL
 
-static inline long 
+inline long 
 _ntl_count_bits(unsigned long x)
 {
    return x ? (NTL_BITS_PER_LONG - __builtin_clzl(x)) : 0;
@@ -458,7 +510,7 @@ _ntl_count_bits(unsigned long x)
 
 #else
 
-static inline long 
+inline long 
 _ntl_count_bits(unsigned long x)
 {
    if (!x) return 0;
@@ -474,5 +526,74 @@ _ntl_count_bits(unsigned long x)
 
 #endif
 
+
+
+
+#if (!defined(NTL_CLEAN_INT) && NTL_ARITH_RIGHT_SHIFT && (NTL_BITS_PER_LONG == (1 << (NTL_NUMBITS_BPL-1))))
+
+
+
+inline void
+_ntl_bpl_divrem(long a, long& q, long& r)
+{
+   q = a >> (NTL_NUMBITS_BPL-1);
+   r = a & (NTL_BITS_PER_LONG-1);
+}
+
+#else
+
+inline void
+_ntl_bpl_divrem(long a, long& q, long& r)
+{
+   q = a / NTL_BITS_PER_LONG;
+   r = a % NTL_BITS_PER_LONG;
+   if (r < 0) {
+      q--;
+      r += NTL_BITS_PER_LONG;
+   }
+}
+
 #endif
 
+inline void
+_ntl_bpl_divrem(unsigned long a, long& q, long& r)
+{
+   q = a / NTL_BITS_PER_LONG;
+   r = a % NTL_BITS_PER_LONG;
+}
+
+
+
+template <class T>
+struct _ntl_is_char_pointer
+{
+ enum {value = false};
+};
+
+template <>
+struct _ntl_is_char_pointer<char*>
+{
+ enum {value = true};
+};
+
+template <>
+struct _ntl_is_char_pointer<const char*>
+{
+ enum {value = true};
+};
+
+template <bool, typename T = void>
+struct _ntl_enable_if
+{};
+
+template <typename T>
+struct _ntl_enable_if<true, T> {
+  typedef T type;
+};
+
+
+
+
+
+
+#endif

@@ -3,6 +3,7 @@
 
 
 #define NTL_BITS_PER_LONG (32)
+#define NTL_NUMBITS_BPL (6)
 #define NTL_MAX_LONG (2147483647L)
 #define NTL_MAX_INT (2147483647)
 #define NTL_BITS_PER_INT (32)

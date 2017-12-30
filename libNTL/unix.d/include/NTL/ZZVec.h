@@ -50,9 +50,43 @@ public:
    ZZ& operator[](long i) { return v[i]; }
    const ZZ& operator[](long i) const { return v[i]; }
 
-   void swap(ZZVec& x);
+
+   void swap(ZZVec& x)
+   {
+      _ntl_swap(v, x.v);
+      _ntl_swap(len, x.len);
+      _ntl_swap(bsize, x.bsize);
+   }
+
+   void move(ZZVec& other) 
+   { 
+      ZZVec tmp;
+      tmp.swap(other);
+      tmp.swap(*this);
+   }
+
+
+#if (NTL_CXX_STANDARD >= 2011)
+
+   ZZVec(ZZVec&& other) noexcept : ZZVec() 
+   {
+      this->move(other);
+   }
+
+   ZZVec& operator=(ZZVec&& other) noexcept
+   {
+      this->move(other);
+      return *this;
+   }
+
+#endif
+
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((ZZVec*))
+
 
 inline void swap(ZZVec& x, ZZVec& y) { x.swap(y); }
 

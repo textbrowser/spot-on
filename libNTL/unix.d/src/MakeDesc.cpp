@@ -754,6 +754,7 @@ const char *yn_vec[2] = { "no", "yes" };
 int main()
 {
    long bpl, bpi, bpt, rs_arith, nbits, wnbits;
+   long nb_bpl;
    long dp, dr;
    long fma_detected;
    long big_pointers;
@@ -784,6 +785,17 @@ int main()
       bpl++;
    }
 
+
+   /*
+    * compute nb_bpl = NumBits(bpl) 
+    */
+
+   ulval = bpl;
+   nb_bpl = 0;
+   while (ulval) {
+      ulval = ulval >> 1;
+      nb_bpl++;
+   }
 
 
 
@@ -1148,6 +1160,7 @@ int main()
    fprintf(f, "#ifndef NTL_mach_desc__H\n");
    fprintf(f, "#define NTL_mach_desc__H\n\n\n");
    fprintf(f, "#define NTL_BITS_PER_LONG (%ld)\n", bpl);
+   fprintf(f, "#define NTL_NUMBITS_BPL (%ld)\n", nb_bpl);
    fprintf(f, "#define NTL_MAX_LONG (%ldL)\n", ((long) ((1UL<<(bpl-1))-1UL)));
    fprintf(f, "#define NTL_MAX_INT (%ld)\n", ((long) ((1UL<<(bpi-1))-1UL)));
    fprintf(f, "#define NTL_BITS_PER_INT (%ld)\n", bpi);

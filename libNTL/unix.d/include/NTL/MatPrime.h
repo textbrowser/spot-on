@@ -59,13 +59,13 @@ extern MatPrimeTablesType MatPrimeTables;
 // a truly GLOBAL variable, shared among all threads
 
 
-static inline 
+inline 
 long GetMatPrime(long i)
 {
    return MatPrimeTables[i]->q;
 }
 
-static inline
+inline
 void RestoreMatPrime(long i)
 {
    MatPrimeTables[i]->context.restore();

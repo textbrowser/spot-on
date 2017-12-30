@@ -169,6 +169,23 @@ using the configure script.
 
 
 #if 0
+#define NTL_STD_CXX11
+
+/*
+ * Set this flag if you want to enable C++11 features within NTL.
+ */
+
+#elif 0
+#define NTL_STD_CXX14
+
+/*
+ * Set this flag if you want to enable C++14 features within NTL.
+ */
+
+#endif
+
+
+#if 0
 #define NTL_UNSIGNED_LONG_LONG_TYPE unsigned long long
 
 /*
@@ -202,6 +219,17 @@ using the configure script.
  *   This will disallow the use of some non-standard pointer arithmetic
  *   that may improve performance somewhat.
  *
+ */
+
+#endif
+
+#if 0
+#define NTL_SAFE_VECTORS
+
+/*
+ * This will compile NTL in "safe vector" mode, only assuming
+ * the relocatability property for trivial types and types
+ * explicitly declared relocatable.  See vector.txt for more details.
  */
 
 #endif
@@ -474,6 +502,27 @@ using the configure script.
 
 #endif
 
+
+
+/* sanity checks */
+
+#if (defined(NTL_THREAD_BOOST) && !defined(NTL_THREADS))
+#error "NTL_THREAD_BOOST defined but not NTL_THREADS"
+#endif
+
+#if (defined(NTL_THREADS) && !(defined(NTL_STD_CXX11) || defined(NTL_STD_CXX14)))
+#error "NTL_THREADS defined but not NTL_STD_CXX11 or NTL_STD_CXX14"
+#endif
+
+
+#if (defined(NTL_EXCEPTIONS) && !(defined(NTL_STD_CXX11) || defined(NTL_STD_CXX14)))
+#error "NTL_EXCEPTIONS defined but not NTL_STD_CXX11 or NTL_STD_CXX14"
+#endif
+
+
+#if (defined(NTL_SAFE_VECTORS) && !(defined(NTL_STD_CXX11) || defined(NTL_STD_CXX14)))
+#error "NTL_SAFE_VECTORS defined but not NTL_STD_CXX11 or NTL_STD_CXX14"
+#endif
 
 
 

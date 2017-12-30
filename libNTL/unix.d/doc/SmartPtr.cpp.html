@@ -2,8 +2,8 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/jjj/ntl-10.3.0dev/doc/SmartPtr.cpp.html</title>
-<meta name="Generator" content="Vim/7.4">
+<title>~/junk6/ntl-10.4.0/doc/SmartPtr.cpp.html</title>
+<meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
 <meta name="settings" content="use_css,pre_wrap,no_foldcolumn,expand_tabs,prevent_copy=">
@@ -227,11 +227,19 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 
    SmartPtr(<span class="Type">const</span> SmartPtr&amp; other);
    SmartPtr&amp; <span class="Statement">operator</span>=(<span class="Type">const</span> SmartPtr&amp; other);
-   <span class="Comment">// copy and asignment</span>
+   <span class="Comment">// copy and assignment</span>
 
    <span class="Type">template</span>&lt;<span class="Type">class</span> Y&gt; SmartPtr(<span class="Type">const</span> SmartPtr&lt;Y&gt;&amp; other);
    <span class="Type">template</span>&lt;<span class="Type">class</span> Y&gt; SmartPtr&amp; <span class="Statement">operator</span>=(<span class="Type">const</span> SmartPtr&lt;Y&gt;&amp; other);
-   <span class="Comment">// copy and asignment</span>
+   <span class="Comment">// copy and assignment</span>
+
+   SmartPtr(SmartPtr&amp;&amp; other) <span class="Statement">noexcept</span>;
+   SmartPtr&amp; <span class="Statement">operator</span>=(SmartPtr&amp;&amp; other) <span class="Statement">noexcept</span>;
+   <span class="Comment">// move semantics (C++11 only)</span>
+
+   <span class="Type">template</span>&lt;<span class="Type">class</span> Y&gt; SmartPtr(SmartPtr&lt;Y&gt;&amp;&amp; other) <span class="Statement">noexcept</span>;
+   <span class="Type">template</span>&lt;<span class="Type">class</span> Y&gt; SmartPtr&amp; <span class="Statement">operator</span>=(SmartPtr&lt;Y&gt;&amp;&amp; other);
+   <span class="Comment">// move semantics (C++11 only)</span>
 
    T&amp; <span class="Statement">operator</span>*()  <span class="Type">const</span>;
    T* <span class="Statement">operator</span>-&gt;() <span class="Type">const</span>;
@@ -335,11 +343,19 @@ SmartPtr&lt;T&gt; MakeSmart(<span class="Type">const</span> X1&amp; x1, ..., <sp
 
    CloneablePtr(<span class="Type">const</span> CloneablePtr&amp; other);
    CloneablePtr&amp; <span class="Statement">operator</span>=(<span class="Type">const</span> CloneablePtr&amp; other);
-   <span class="Comment">// copy and asignment</span>
+   <span class="Comment">// copy and assignment</span>
 
    <span class="Type">template</span>&lt;<span class="Type">class</span> Y&gt; CloneablePtr(<span class="Type">const</span> CloneablePtr&lt;Y&gt;&amp; other);
    <span class="Type">template</span>&lt;<span class="Type">class</span> Y&gt; CloneablePtr&amp; <span class="Statement">operator</span>=(<span class="Type">const</span> CloneablePtr&lt;Y&gt;&amp; other);
-   <span class="Comment">// copy and asignment</span>
+   <span class="Comment">// copy and assignment</span>
+
+   CloneablePtr(CloneablePtr&amp;&amp; other) <span class="Statement">noexcept</span>;
+   CloneablePtr&amp; <span class="Statement">operator</span>=(CloneablePtr&amp;&amp; other) <span class="Statement">noexcept</span>;
+   <span class="Comment">// move semantics (C++11 only)</span>
+
+   <span class="Type">template</span>&lt;<span class="Type">class</span> Y&gt; CloneablePtr(CloneablePtr&lt;Y&gt;&amp;&amp; other) <span class="Statement">noexcept</span>;
+   <span class="Type">template</span>&lt;<span class="Type">class</span> Y&gt; CloneablePtr&amp; <span class="Statement">operator</span>=(CloneablePtr&lt;Y&gt;&amp;&amp; other);
+   <span class="Comment">// move semantics (C++11 only)</span>
 
    T&amp; <span class="Statement">operator</span>*()  <span class="Type">const</span>;
    T* <span class="Statement">operator</span>-&gt;() <span class="Type">const</span>;
@@ -473,6 +489,10 @@ CloneablePtr&lt;T&gt; MakeCloneable(<span class="Type">const</span> X1&amp; x1, 
    UniquePtr();
    <span class="Comment">// initial value is null</span>
 
+   UniquePtr(UniquePtr&amp;&amp; other) <span class="Statement">noexcept</span>;
+   UniquePtr&amp; <span class="Statement">operator</span>=(UniquePtr&amp;&amp; other) <span class="Statement">noexcept</span>;
+   <span class="Comment">// move semantics (C++11 only)</span>
+
    UniquePtr&amp; <span class="Statement">operator</span>=(fake_null_type1);
    <span class="Comment">// allows assignment of 0; equivalent to calling reset()</span>
 
@@ -587,16 +607,21 @@ CloneablePtr&lt;T&gt; MakeCloneable(<span class="Type">const</span> X1&amp; x1, 
    <span class="Comment">// initial value is null</span>
 
    CopiedPtr(<span class="Type">const</span> CopiedPtr&amp; other);
-   <span class="Comment">// creates a copy of other's referent by calling P::copier,</span>
-   <span class="Comment">// and destroys original referent by calling P::deleter</span>
+   <span class="Comment">// creates a copy of other's referent by calling P::copier</span>
 
    <span class="Type">void</span> <span class="Statement">operator</span>=(<span class="Type">const</span> CopiedPtr&amp;);
+   <span class="Comment">// creates a copy of other's referent by calling P::copier,</span>
+   <span class="Comment">// and destroys original referent by calling P::deleter</span>
 
    CopiedPtr&amp; <span class="Statement">operator</span>=(fake_null_type1);
    <span class="Comment">// allows assignment of 0; equivalent to calling reset()</span>
 
    ~CopiedPtr();
    <span class="Comment">// destroys referent by calling P::deleter</span>
+
+   CopiedPtr(CopiedPtr&amp;&amp; other) <span class="Statement">noexcept</span>;
+   CopiedPtr&amp; <span class="Statement">operator</span>=(CopiedPtr&amp;&amp; other) <span class="Statement">noexcept</span>;
+   <span class="Comment">// move semantics (C++11 only)</span>
 
    <span class="Type">void</span> reset(T* p = <span class="Constant">0</span>);
    <span class="Comment">// reset underlying pointer to p, destroying original referent</span>
@@ -706,6 +731,10 @@ CloneablePtr&lt;T&gt; MakeCloneable(<span class="Type">const</span> X1&amp; x1, 
 
    ~UniqueArray();
 
+   UniqueArray(UniqueArray&amp;&amp; other) <span class="Statement">noexcept</span>;
+   UniqueArray&amp; <span class="Statement">operator</span>=(UniqueArray&amp;&amp; other) <span class="Statement">noexcept</span>;
+   <span class="Comment">// move semantics (C++11 only)</span>
+
    <span class="Type">void</span> reset(T* p = <span class="Constant">0</span>);
    <span class="Comment">// reset with raw pointer, destroying referent</span>
 
@@ -813,6 +842,10 @@ CloneablePtr&lt;T&gt; MakeCloneable(<span class="Type">const</span> X1&amp; x1, 
 
    ~Unique2DArray();
    <span class="Comment">// destroys the entire array and each row in the array</span>
+
+   Unique2DArray(Unique2DArray&amp;&amp; other) <span class="Statement">noexcept</span>;
+   Unique2DArray&amp; <span class="Statement">operator</span>=(Unique2DArray&amp;&amp; other) <span class="Statement">noexcept</span>;
+   <span class="Comment">// move semantics (C++11 only)</span>
 
    <span class="Type">void</span> reset();
    <span class="Comment">// reset to null</span>
@@ -933,6 +966,10 @@ CloneablePtr&lt;T&gt; MakeCloneable(<span class="Type">const</span> X1&amp; x1, 
 
    ~OptionalVal();
    <span class="Comment">// destroys the referent</span>
+
+   OptionalVal(OptionalVal&amp;&amp; other) <span class="Statement">noexcept</span>;
+   OptionalVal&amp; <span class="Statement">operator</span>=(OptionalVal&amp;&amp; other) <span class="Statement">noexcept</span>;
+   <span class="Comment">// move semantics (C++11 only)</span>
 
    <span class="Type">void</span> reset(T* p = <span class="Constant">0</span>);
    <span class="Comment">// resets the referent</span>

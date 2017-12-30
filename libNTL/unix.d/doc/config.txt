@@ -45,6 +45,11 @@ NTL_GF2X_LIB=off     # Switch to enable the use of the gf2x package
 
 GF2X_PREFIX=$(DEF_PREFIX) # Directory in which gf2x components are installed
 
+NTL_STD_CXX11=off    # Build assuming C++11 features
+NTL_STD_CXX14=off    # Build assuming C++14 features
+
+NTL_SAFE_VECTORS=off # build in "safe vector" mode 
+
 
 ########## Here are more detailed description of these variables.
 
@@ -66,11 +71,10 @@ CXXFLAGS=-g -O2
 
 NATIVE=on
 
-# Flag to target code to current hardware.
-# This will pass -march=native through to the compiler 
-# (if possible).  This is the easiest way to exploit the
-# hardware capabilities of your machine to their fullest 
-# potential.  
+# Flag to target code to current hardware.  Setting this flag  will pass
+# -march=native through to the compiler via CXXAUTOFLAGS (if possible).  This
+# is the easiest way to exploit the hardware capabilities of your machine to
+# their fullest potential.  
 
 TUNE=auto
 
@@ -120,32 +124,43 @@ SHARED=off
 
 NTL_THREADS=off
 
-# Set to 'on' if you want to compile NTL in thread-safe mode.
-# This requires several C++11 features, including atomic types,
-# mutexes, and thread_local storage.  Your compiler may not
-# yet support these features.
-
-# Note that this option is currently only supported with
-# NTL_GMP_LIP=on.
+# Set to 'on' if you want to compile NTL in thread-safe mode.  This requires
+# several C++11 features, including atomic types, mutexes, and thread_local
+# storage.  Your compiler may not yet support these features.  Setting this
+# flag will automatically set the NTL_STD_CXX11 flag (if neither NTL_STD_CXX11
+# or NTL_STD_CXX14 is already set). It will also pass -pthread throught to the
+# compiler via CXXAUTOFLAGS (if possible).
 
 ########## thread boosting
 
 NTL_THREAD_BOOST=off
 
-# Set to 'on' if you want to compile NTL so that is does
-# certain internal computations using multiple threads.
-# Setting this flag automatically sets the NTL_THREADS flag.
-# This feature is a work in progress.  See documentation in
-# BasicThreadPool.txt for more details.
+# Set to 'on' if you want to compile NTL so that is does certain internal
+# computations using multiple threads.  Setting this flag automatically sets
+# the NTL_THREADS flag.  This feature is a work in progress.  
+# See BasicThreadPool documentation file for more details.
 
 ########## exceptions
 
 NTL_EXCEPTIONS=off
 
-# Set to 'on' if you want to compile NTL with exceptions enabled.
-# This requires several C++11 features, including lambdas
-# and the new rules for exception specifications.
-# Your compiler may not yet support these feautures.
+# Set to 'on' if you want to compile NTL with exceptions enabled.  This
+# requires several C++11 features, including lambdas and the new rules for
+# exception specifications.  Your compiler may not yet support these feautures.
+# Setting this flag will automatically set the NTL_STD_CXX11 flag (if neither
+# NTL_STD_CXX11 or NTL_STD_CXX14 is already set).
+
+# With exceptions disabled, any error conditions detected by NTL (including
+# memory allocation errors) will result in an error message and a call to
+# abort.  Also, if compiling in C++11 mode (or later, see NTL_STD_CXX11), with
+# exceptions disabled, certain move constructors and move assignment operators
+# will be declared "noexcept".  This can lead to greater efficiency (for
+# example, std::vector's take advantage of this).
+
+# With exceptions enabled, most error conditions detected by NTL will result in
+# an exception being thrown.  NTL will also be compiled in a "thread safe" mode
+# that prevents memory leaks (and other problems).  In addition, some move
+# constructors and move assignment operators may not be declared "noexcept".
 
 ########## GMP variables:
 
@@ -192,6 +207,28 @@ GF2X_PREFIX=$(DEF_PREFIX)
 # and <gf2x_prefix>/lib contains libgf2x.a.  
 # For finer-grained control, set the variables GF2X_INCDIR and GF2X_LIBDIR 
 # instead (see below).
+
+########### Language stadards
+
+NTL_STD_CXX11=off    # Build assuming C++11 features
+NTL_STD_CXX14=off    # Build assuming C++14 features
+
+# Setting one of these will also make pass either -std=c++11 or -std=c++14
+# through to the compiler via CXXAUTOFLAGS (if possible)
+
+
+############ Safe vector mode
+
+NTL_SAFE_VECTORS=off # Build in "safe vector mode"
+
+# Build NTL in "safe vector mode", which relaxes the "relocatability"
+# requirement for NTL vector types. I expect that at some point in the next
+# couple of years, this will be "on" by default.  Setting this flag will
+# automatically set the NTL_STD_CXX11 flag (if neither NTL_STD_CXX11 or
+# NTL_STD_CXX14 is already set).  See vector documentation file for more
+# details.
+
+
 
 
 

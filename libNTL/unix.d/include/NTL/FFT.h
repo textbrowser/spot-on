@@ -107,19 +107,19 @@ extern FFTTablesType FFTTables;
 // a truly GLOBAL variable, shared among all threads
 
 
-static inline 
+inline 
 long GetFFTPrime(long i)
 {
    return FFTTables[i]->q;
 }
 
-static inline 
+inline 
 mulmod_t GetFFTPrimeInv(long i)
 {
    return FFTTables[i]->qinv;
 }
 
-static inline 
+inline 
 double GetFFTPrimeRecip(long i)
 {
    return FFTTables[i]->qrecip;
@@ -144,7 +144,7 @@ void FFT(long* A, const long* a, long k, const FFTPrimeInfo& info, long dir);
 
 
 
-static inline
+inline
 void FFTFwd(long* A, const long *a, long k, const FFTPrimeInfo& info)
 // Slightly higher level interface...using the ith FFT prime
 {
@@ -152,39 +152,39 @@ void FFTFwd(long* A, const long *a, long k, const FFTPrimeInfo& info)
 }
 
 
-static inline
+inline
 void FFTFwd(long* A, const long *a, long k, long i)
 {
    FFTFwd(A, a, k, *FFTTables[i]);
 }
 
-static inline
+inline
 void FFTRev(long* A, const long *a, long k, const FFTPrimeInfo& info)
 // Slightly higher level interface...using the ith FFT prime
 {
    FFT(A, a, k, info, 1);
 }
 
-static inline
+inline
 void FFTRev(long* A, const long *a, long k, long i)
 {
    FFTRev(A, a, k, *FFTTables[i]);
 }
 
-static inline
+inline
 void FFTMulTwoInv(long* A, const long *a, long k, const FFTPrimeInfo& info)
 {
    VectorMulModPrecon(1L << k, A, a, info.TwoInvTable[k], info.q, 
                       info.TwoInvPreconTable[k]);
 }
 
-static inline
+inline
 void FFTMulTwoInv(long* A, const long *a, long k, long i)
 {
    FFTMulTwoInv(A, a, k, *FFTTables[i]);
 }
 
-static inline 
+inline 
 void FFTRev1(long* A, const long *a, long k, const FFTPrimeInfo& info)
 // FFTRev + FFTMulTwoInv
 {
@@ -192,7 +192,7 @@ void FFTRev1(long* A, const long *a, long k, const FFTPrimeInfo& info)
    FFTMulTwoInv(A, A, k, info);
 }
 
-static inline 
+inline 
 void FFTRev1(long* A, const long *a, long k, long i)
 {
    FFTRev1(A, a, k, *FFTTables[i]);

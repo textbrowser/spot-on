@@ -101,6 +101,18 @@ int main()
    cout << "NTL_GF2X_LIB=0\n";
 #endif
 
+#ifdef NTL_STD_CXX11
+   cout << "NTL_STD_CXX11=1\n";
+#else
+   cout << "NTL_STD_CXX11=0\n";
+#endif
+
+#ifdef NTL_STD_CXX14
+   cout << "NTL_STD_CXX14=1\n";
+#else
+   cout << "NTL_STD_CXX14=0\n";
+#endif
+
 
 #ifdef NTL_UNSIGNED_LONG_LONG_TYPE
    cout << "FLAG_UNSIGNED_LONG_LONG_TYPE=1\n";
@@ -140,6 +152,12 @@ int main()
    cout << "NTL_CLEAN_PTR=1\n";
 #else
    cout << "NTL_CLEAN_PTR=0\n";
+#endif
+
+#ifdef NTL_SAFE_VECTORS
+   cout << "NTL_SAFE_VECTORS=1\n";
+#else
+   cout << "NTL_SAFE_VECTORS=0\n";
 #endif
 
 #ifdef NTL_RANGE_CHECK

@@ -152,67 +152,8 @@ void vec_GF2::FixAtCurrentLength()
 }
 
 
-const GF2 vec_GF2::get(long i) const
-{
-   const vec_GF2& v = *this;
-
-   if (i < 0 || i >= v.length()) 
-      LogicError("vec_GF2: subscript out of range");
-
-   long q = i/NTL_BITS_PER_LONG;
-   long p = i - q*NTL_BITS_PER_LONG;
-
-   if (v.rep[q] & (1UL << p))
-      return to_GF2(1);
-   else
-      return to_GF2(0);
-}
-
-ref_GF2 vec_GF2::operator[](long i)
-{
-   vec_GF2& v = *this;
-
-   if (i < 0 || i >= v.length()) 
-      LogicError("vec_GF2: subscript out of range");
-
-   long q = i/NTL_BITS_PER_LONG;
-   long p =  i - q*NTL_BITS_PER_LONG;
-   return ref_GF2(INIT_LOOP_HOLE, &v.rep[q], p);
-}
 
 
-
-static
-void SetBit(vec_GF2& v, long i)
-{
-   if (i < 0 || i >= v.length())
-      LogicError("vec_GF2: subscript out of range");
-
-   long q = i/NTL_BITS_PER_LONG;
-   long p = i - q*NTL_BITS_PER_LONG;
-
-   v.rep[q] |= (1UL << p);
-}
-
-static
-void ClearBit(vec_GF2& v, long i)
-{
-   if (i < 0 || i >= v.length())
-      LogicError("vec_GF2: subscript out of range");
-
-   long q = i/NTL_BITS_PER_LONG;
-   long p = i - q*NTL_BITS_PER_LONG;
-
-   v.rep[q] &= ~(1UL << p);
-}
-
-void vec_GF2::put(long i, GF2 a)
-{
-   if (a == 1)
-      SetBit(*this, i);
-   else
-      ClearBit(*this, i);
-}
 
 void vec_GF2::swap(vec_GF2& y)
 {

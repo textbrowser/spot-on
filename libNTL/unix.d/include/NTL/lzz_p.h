@@ -214,6 +214,10 @@ void allocate() { }
 
 };
 
+
+
+NTL_DECLARE_RELOCATABLE((zz_p*))
+
 inline
 zz_p to_zz_p(long a) 
 {

@@ -5,24 +5,6 @@
 NTL_CLIENT
 
 
-void random(mat_zz_p& X, long n, long m)
-{
-   X.SetDims(n, m);
-   long i, j;
-
-   for (i = 0; i < n; i++)
-      for (j = 0; j < m; j++)
-         random(X[i][j]);
-}
-
-void random(vec_zz_p& X, long n)
-{
-   X.SetLength(n);
-   long i;
-
-   for (i = 0; i < n; i++)
-      random(X[i]);
-}
 
 void cvt(mat_GF2& x, const mat_zz_p& a)
 {

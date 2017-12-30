@@ -9,9 +9,13 @@
 #error "AVX not supported"
 #endif
 
-#if (NTL_BITS_PER_LONG != 64 || NTL_DOUBLE_PRECISION != 53)
+#if (NTL_BITS_PER_LONG != 64 || NTL_BITS_PER_INT != 32 || NTL_DOUBLE_PRECISION != 53)
 #error "AVX not supported"
 // sanity check -- code that uses this feature also relies on this
+#endif
+
+#ifndef NTL_HAVE_ALIGNED_ARRAY
+#error "AVX not supported"
 #endif
 
 using namespace std;

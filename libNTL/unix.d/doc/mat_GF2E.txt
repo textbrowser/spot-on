@@ -100,6 +100,10 @@ long IsDiag(const mat_GF2E& A, long n, const GF2E& d);
 
 
 
+void random(mat_GF2E& x, long n, long m);  // x = random n x m matrix
+mat_GF2E random_mat_GF2E(long n, long m);
+
+
 
 long gauss(mat_GF2E& M);
 long gauss(mat_GF2E& M, long w);

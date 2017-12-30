@@ -13,15 +13,15 @@
 NTL_START_IMPL
 
 
-const string& CurrentThreadID()
+const std::string& CurrentThreadID()
 {
-   NTL_TLS_LOCAL(string, ID);
+   NTL_TLS_LOCAL(std::string, ID);
    static NTL_CHEAP_THREAD_LOCAL bool initialized = false;
 
    if (!initialized) {
 #ifdef NTL_THREADS
-      stringstream ss;
-      ss << this_thread::get_id();
+      std::stringstream ss;
+      ss << std::this_thread::get_id();
       ID = ss.str();
 #else
       ID = "0";

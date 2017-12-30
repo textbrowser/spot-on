@@ -31,6 +31,11 @@ void ident(mat_zz_p& X, long n);
 inline mat_zz_p ident_mat_zz_p(long n)
    { mat_zz_p X; ident(X, n); NTL_OPT_RETURN(mat_zz_p, X); }
 
+void random(mat_zz_p& x, long n, long m);
+inline mat_zz_p random_mat_zz_p(long n, long m)
+   { mat_zz_p x; random(x, n, m); NTL_OPT_RETURN(mat_zz_p, x); }
+
+
 long IsIdent(const mat_zz_p& A, long n);
 void transpose(mat_zz_p& X, const mat_zz_p& A);
 

@@ -75,11 +75,5 @@ ZZVec::ZZVec(const ZZVec& a) : v(0), len(0), bsize(0)
       v[i] = (a.v)[i];
 }
 
-void ZZVec::swap(ZZVec& x)
-{
-   _ntl_swap(v, x.v);
-   _ntl_swap(len, x.len);
-   _ntl_swap(bsize, x.bsize);
-}
 
 NTL_END_IMPL

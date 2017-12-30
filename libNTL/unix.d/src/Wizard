@@ -58,7 +58,7 @@ cp fileio.cpp small/src
 
 
 
-sh CopyFeatures '..' small
+sh CopyFeatures '..' small "$3"
 cp ../include/NTL/FFT.h small/include/NTL
 cp ../include/NTL/ctools.h small/include/NTL
 cp ../include/NTL/ZZ.h small/include/NTL

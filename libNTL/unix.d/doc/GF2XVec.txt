@@ -28,7 +28,12 @@ public:
    // identical)
 
    GF2XVec(const GF2XVec&); 
+
    ~GF2XVec();
+
+   GF2XVec(GF2XVec&& other) noexcept;
+   GF2XVec& operator=(GF2XVec&& other) noexcept;
+   
 
    GF2XVec(long n, long d);
    // sets length to n and max size of each element to d,
@@ -55,6 +60,12 @@ public:
    GF2X& operator[](long i);
    const GF2X& operator[](long i) const;
    // indexing operator; starts at 0; no range checking
+
+   swap(GF2XVec& x);
+   // swap with x by swapping pointers
+
+   void move(GF2XVec& other);
+   // quick move other to *this
 };
 
 

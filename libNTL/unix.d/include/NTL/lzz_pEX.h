@@ -28,6 +28,8 @@ vec_zz_pE rep;
 zz_pEX() { }
 //  initial value 0
 
+// default copy constructor and assignment
+// default destructor
 
 explicit zz_pEX(long a) { *this = a; }
 explicit zz_pEX(const zz_p& a) { *this = a; }
@@ -35,7 +37,6 @@ explicit zz_pEX(const zz_pE& a) { *this = a; }
 
 zz_pEX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
 
-~zz_pEX() { }
 
 void normalize();
 // strip leading zeros
@@ -83,6 +84,9 @@ zz_pEX(zz_pEX& x, INIT_TRANS_TYPE) : rep(x.rep, INIT_TRANS) { }
 
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((zz_pEX*))
 
 
 NTL_SNS istream& operator>>(NTL_SNS istream& s, zz_pEX& x);
@@ -674,6 +678,9 @@ public:
    // extra level of indirection to ensure relocatability
 
 }; 
+
+
+NTL_DECLARE_RELOCATABLE((zz_pEXModulus*))
 
 
 

@@ -7926,5 +7926,10 @@ void test_basic_mul(mat_zz_p& X, const mat_zz_p& A, const mat_zz_p& B)
 
 #endif
 
+void random(mat_zz_p& x, long n, long m)
+{
+   x.SetDims(n, m);
+   for (long i = 0; i < n; i++) random(x[i], m);
+}
 
 NTL_END_IMPL

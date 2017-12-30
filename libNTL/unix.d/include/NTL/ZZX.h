@@ -34,14 +34,8 @@ ZZX(INIT_SIZE_TYPE, long n)
 
    { rep.SetMaxLength(n); }
 
-ZZX(const ZZX& a) : rep(a.rep) { }
-// initial value is a
-
-
-ZZX& operator=(const ZZX& a) 
-   { rep = a.rep; return *this; }
-
-~ZZX() { }
+// default copy constructor and assignment
+// default destructor
 
 void normalize();
 // strip leading zeros
@@ -88,6 +82,9 @@ void swap(ZZX& x) { rep.swap(x.rep); }
 // swap with x (only pointers are swapped)
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((ZZX*))
 
 
 

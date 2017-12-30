@@ -11,6 +11,7 @@ mkdir dos/GetPID
 mkdir dos/MakeDesc
 mkdir dos/misc
 mkdir dos/tests
+mkdir dos/CheckFeatures
 
 cp ../README dos/README.txt
 
@@ -60,6 +61,5 @@ done
 cp $5 dos/tests
 
 cp ../include/NTL/def_config.h dos/include/NTL/config.h
-sh ResetFeatures dos
-
+sh ResetFeatures dos "$6"
 

@@ -3,8 +3,18 @@
 #include <NTL/vec_ZZ.h>
 #include <NTL/Lazy.h>
 #include <NTL/fileio.h>
+#include <NTL/SmartPtr.h>
 
-#include <cstring>
+
+
+#if defined(NTL_HAVE_AVX2)
+#include <immintrin.h>
+#elif defined(NTL_HAVE_SSSE3)
+#include <emmintrin.h>
+#include <tmmintrin.h>
+#endif
+
+
 
 
 
@@ -626,23 +636,6 @@ long NextPowerOfTwo(long m)
 }
 
 
-
-long NumBits(long a)
-{
-   unsigned long aa;
-   if (a < 0) 
-      aa = - ((unsigned long) a);
-   else
-      aa = a;
-
-   long k = 0;
-   while (aa) {
-      k++;
-      aa = aa >> 1;
-   }
-
-   return k;
-}
 
 
 long bit(long a, long k)
@@ -1270,76 +1263,6 @@ void power2(ZZ& x, long e)
 }
 
    
-void conv(ZZ& x, const char *s)
-{
-   long c;
-   long cval;
-   long sign;
-   long ndigits;
-   long acc;
-   long i = 0;
-
-   NTL_ZZRegister(a);
-
-   if (!s) InputError("bad ZZ input");
-
-   if (!iodigits) InitZZIO();
-
-   a = 0;
-
-   c = s[i];
-   while (IsWhiteSpace(c)) {
-      i++;
-      c = s[i];
-   }
-
-   if (c == '-') {
-      sign = -1;
-      i++;
-      c = s[i];
-   }
-   else
-      sign = 1;
-
-   cval = CharToIntVal(c);
-   if (cval < 0 || cval > 9) InputError("bad ZZ input");
-
-   ndigits = 0;
-   acc = 0;
-   while (cval >= 0 && cval <= 9) {
-      acc = acc*10 + cval;
-      ndigits++;
-
-      if (ndigits == iodigits) {
-         mul(a, a, ioradix);
-         add(a, a, acc);
-         ndigits = 0;
-         acc = 0;
-      }
-
-      i++;
-      c = s[i];
-      cval = CharToIntVal(c);
-   }
-
-   if (ndigits != 0) {
-      long mpy = 1;
-      while (ndigits > 0) {
-         mpy = mpy * 10;
-         ndigits--;
-      }
-
-      mul(a, a, mpy);
-      add(a, a, acc);
-   }
-
-   if (sign == -1)
-      negate(a, a);
-
-   x = a;
-}
-
-
 
 void bit_and(ZZ& x, const ZZ& a, long b)
 {
@@ -1725,9 +1648,7 @@ void DeriveKey(unsigned char *key, long klen,
 
 // ******************** ChaCha20 stuff ***********************
 
-static const _ntl_uint32 chacha_const[4] = 
-   { 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 };
-
+// ============= old stuff
 
 #define LE(p) (((_ntl_uint32)((p)[0])) + ((_ntl_uint32)((p)[1]) << 8) + \
     ((_ntl_uint32)((p)[2]) << 16) + ((_ntl_uint32)((p)[3]) << 24))
@@ -1765,6 +1686,9 @@ void salsa20_core(_ntl_uint32* data)
 static
 void salsa20_init(_ntl_uint32 *state, const unsigned char *K)  
 {
+   static const _ntl_uint32 chacha_const[4] = 
+      { 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574 };
+
    long i;
 
    for (i = 0; i < 4; i++)
@@ -1791,7 +1715,7 @@ void salsa20_apply(_ntl_uint32 *state, _ntl_uint32 *data)
 
    for (i = 0; i < 16; i++) data[i] += state[i];
 
-   for (i = 12; i < 16; i++) {
+   for (i = 12; i < 14; i++) {
       state[i]++;
       state[i] = INT32MASK(state[i]);
       if (state[i] != 0) break;
@@ -1799,33 +1723,15 @@ void salsa20_apply(_ntl_uint32 *state, _ntl_uint32 *data)
 }
 
 
-#if 0
-// state is 16 words, data is 64 bytes
-static
-void salsa20_apply(_ntl_uint32 *state, unsigned char *data)
-{
-   _ntl_uint32 wdata[16];
-   salsa20_apply(state, wdata);
 
-   long i;
-   for (i = 0; i < 16; i++)
-      FROMLE(data + 4*i, wdata[i]);
-
-   // FIXME: could use memcpy for above if everything 
-   // is right
-}
-#endif
-
-
-
-RandomStream::RandomStream(const unsigned char *key)
+old_RandomStream::old_RandomStream(const unsigned char *key)
 {
    salsa20_init(state, key);
    pos = 64;
 }
 
 
-void RandomStream::do_get(unsigned char *NTL_RESTRICT res, long n)
+void old_RandomStream::do_get(unsigned char *NTL_RESTRICT res, long n)
 {
    if (n < 0) LogicError("RandomStream::get: bad args");
 
@@ -1863,6 +1769,467 @@ void RandomStream::do_get(unsigned char *NTL_RESTRICT res, long n)
          res[i+j] = buf[j];
    }
 }
+
+#if (defined(NTL_HAVE_AVX2) || defined(NTL_HAVE_SSSE3))
+
+
+/*****************************************************************
+
+This AVX2 implementation is derived from public domain code 
+originally developed by Martin Goll Shay Gueron, and obtained from 
+here:
+
+https://github.com/floodyberry/supercop/tree/master/crypto_stream/chacha20/goll_gueron
+
+On a Haswell machine, ths code is about 4.x faster than the vanilla 
+C code.
+
+The following is the README from that page
+
+==================================================================
+
+This code implements Daniel J. Bernstein's ChaCha stream cipher in C,
+targeting architectures with AVX2 and future AVX512 vector extensions.
+
+The implementation improves the slightly modified implementations of Ted Krovetz in the Chromium Project
+(http://src.chromium.org/viewvc/chrome/trunk/deps/third_party/nss/nss/lib/freebl/chacha20/chacha20_vec.c and
+http://src.chromium.org/viewvc/chrome/trunk/deps/third_party/openssl/openssl/crypto/chacha/chacha_vec.c)
+by using the Advanced Vector Extensions AVX2 and, if available in future, AVX512 to widen the vectorization
+to 256-bit, respectively 512-bit.
+
+On Intel's Haswell architecture this implementation (using AVX2) is almost ~2x faster than the fastest 
+implementation here, when encrypting (decrypting) 2 blocks and more. Also, this implementation is expected 
+to double the speed again, when encrypting (decrypting) 4 blocks and more, running on a future architecture
+with support for AVX512.
+
+Further details and our measurement results are provided in:
+Goll, M., and Gueron,S.: Vectorization of ChaCha Stream Cipher. Cryptology ePrint Archive, 
+Report 2013/759, November, 2013, http://eprint.iacr.org/2013/759.pdf
+
+Developers and authors:
+*********************************************************
+Martin Goll (1) and Shay Gueron (2, 3), 
+(1) Ruhr-University Bochum, Germany
+(2) University of Haifa, Israel
+(3) Intel Corporation, Israel Development Center, Haifa, Israel
+*********************************************************
+
+Intellectual Property Notices
+-----------------------------
+
+There are no known present or future claims by a copyright holder that the
+distribution of this software infringes the copyright. In particular, the author
+of the software is not making such claims and does not intend to make such
+claims.
+
+There are no known present or future claims by a patent holder that the use of
+this software infringes the patent. In particular, the author of the software is
+not making such claims and does not intend to make such claims.
+
+Our implementation is in public domain.
+
+*****************************************************************/
+
+
+// round selector, specified values:
+//  8:  low security - high speed
+// 12:  mid security -  mid speed
+// 20: high security -  low speed
+#ifndef CHACHA_RNDS
+#define CHACHA_RNDS 20
+#endif
+
+
+#if (defined(NTL_HAVE_AVX2))
+
+typedef __m256i ivec_t;
+
+#define DELTA	_mm256_set_epi64x(0,2,0,2)
+#define START   _mm256_set_epi64x(0,1,0,0)
+
+#define STOREU_VEC(m,r)	_mm256_storeu_si256((__m256i*)(m), r)
+#define STORE_VEC(m,r)	_mm256_store_si256((__m256i*)(m), r)
+
+#define LOAD_VEC(r,m) r = _mm256_load_si256((const __m256i *)(m))
+#define LOADU_VEC(r,m) r = _mm256_loadu_si256((const __m256i *)(m))
+
+#define LOADU_VEC_128(r, m) r = _mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i*)(m)))
+
+
+
+#define ADD_VEC_32(a,b)	_mm256_add_epi32(a, b)
+#define ADD_VEC_64(a,b)	_mm256_add_epi64(a, b)
+#define XOR_VEC(a,b)	_mm256_xor_si256(a, b)
+
+
+#define ROR_VEC_V1(x)	_mm256_shuffle_epi32(x,_MM_SHUFFLE(0,3,2,1))
+#define ROR_VEC_V2(x)	_mm256_shuffle_epi32(x,_MM_SHUFFLE(1,0,3,2))
+#define ROR_VEC_V3(x)	_mm256_shuffle_epi32(x,_MM_SHUFFLE(2,1,0,3))
+#define ROL_VEC_7(x)	XOR_VEC(_mm256_slli_epi32(x, 7), _mm256_srli_epi32(x,25))
+#define ROL_VEC_12(x)	XOR_VEC(_mm256_slli_epi32(x,12), _mm256_srli_epi32(x,20))
+
+#define ROL_VEC_8(x)	_mm256_shuffle_epi8(x,_mm256_set_epi8(14,13,12,15,10,9,8,11,6,5,4,7,2,1,0,3,14,13,12,15,10,9,8,11,6,5,4,7,2,1,0,3))
+
+
+#define ROL_VEC_16(x)	_mm256_shuffle_epi8(x,_mm256_set_epi8(13,12,15,14,9,8,11,10,5,4,7,6,1,0,3,2,13,12,15,14,9,8,11,10,5,4,7,6,1,0,3,2))
+
+
+
+#define WRITEU_VEC(op, d, v0, v1, v2, v3)						\
+    STOREU_VEC(op + (d + 0*4), _mm256_permute2x128_si256(v0, v1, 0x20));	\
+    STOREU_VEC(op + (d + 8*4), _mm256_permute2x128_si256(v2, v3, 0x20));	\
+    STOREU_VEC(op + (d +16*4), _mm256_permute2x128_si256(v0, v1, 0x31));	\
+    STOREU_VEC(op + (d +24*4), _mm256_permute2x128_si256(v2, v3, 0x31));
+
+#define WRITE_VEC(op, d, v0, v1, v2, v3)						\
+    STORE_VEC(op + (d + 0*4), _mm256_permute2x128_si256(v0, v1, 0x20));	\
+    STORE_VEC(op + (d + 8*4), _mm256_permute2x128_si256(v2, v3, 0x20));	\
+    STORE_VEC(op + (d +16*4), _mm256_permute2x128_si256(v0, v1, 0x31));	\
+    STORE_VEC(op + (d +24*4), _mm256_permute2x128_si256(v2, v3, 0x31));
+
+#define SZ_VEC (32)
+
+#define RANSTREAM_BUFSZ (1024)
+// must be a multiple of 8*SZ_VEC
+
+#elif defined(NTL_HAVE_SSSE3)
+
+typedef __m128i ivec_t;
+
+#define DELTA	_mm_set_epi32(0,0,0,1)
+#define START   _mm_setzero_si128()
+
+#define STOREU_VEC(m,r)	_mm_storeu_si128((__m128i*)(m), r)
+#define STORE_VEC(m,r)	_mm_store_si128((__m128i*)(m), r)
+
+#define LOAD_VEC(r,m) r = _mm_load_si128((const __m128i *)(m))
+#define LOADU_VEC(r,m) r = _mm_loadu_si128((const __m128i *)(m))
+
+#define LOADU_VEC_128(r, m) r = _mm_loadu_si128((const __m128i*)(m))
+
+#define ADD_VEC_32(a,b)	_mm_add_epi32(a, b)
+#define ADD_VEC_64(a,b)	_mm_add_epi64(a, b)
+#define XOR_VEC(a,b)	_mm_xor_si128(a, b)
+
+
+#define ROR_VEC_V1(x)	_mm_shuffle_epi32(x,_MM_SHUFFLE(0,3,2,1))
+#define ROR_VEC_V2(x)	_mm_shuffle_epi32(x,_MM_SHUFFLE(1,0,3,2))
+#define ROR_VEC_V3(x)	_mm_shuffle_epi32(x,_MM_SHUFFLE(2,1,0,3))
+#define ROL_VEC_7(x)	XOR_VEC(_mm_slli_epi32(x, 7), _mm_srli_epi32(x,25))
+#define ROL_VEC_12(x)	XOR_VEC(_mm_slli_epi32(x,12), _mm_srli_epi32(x,20))
+
+#define ROL_VEC_8(x)	_mm_shuffle_epi8(x,_mm_set_epi8(14,13,12,15,10,9,8,11,6,5,4,7,2,1,0,3))
+
+
+#define ROL_VEC_16(x)	_mm_shuffle_epi8(x,_mm_set_epi8(13,12,15,14,9,8,11,10,5,4,7,6,1,0,3,2))
+
+
+#define WRITEU_VEC(op, d, v0, v1, v2, v3)	\
+    STOREU_VEC(op + (d + 0*4), v0);	\
+    STOREU_VEC(op + (d + 4*4), v1);	\
+    STOREU_VEC(op + (d + 8*4), v2);	\
+    STOREU_VEC(op + (d +12*4), v3);
+
+#define WRITE_VEC(op, d, v0, v1, v2, v3)	\
+    STORE_VEC(op + (d + 0*4), v0);	\
+    STORE_VEC(op + (d + 4*4), v1);	\
+    STORE_VEC(op + (d + 8*4), v2);	\
+    STORE_VEC(op + (d +12*4), v3);
+
+#define SZ_VEC (16)
+
+#define RANSTREAM_BUFSZ (1024)
+// must be a multiple of 8*SZ_VEC
+
+#else
+
+#error "unsupported architecture"
+
+#endif
+
+
+#define DQROUND_VECTORS_VEC(a,b,c,d)				\
+    a = ADD_VEC_32(a,b); d = XOR_VEC(d,a); d = ROL_VEC_16(d);	\
+    c = ADD_VEC_32(c,d); b = XOR_VEC(b,c); b = ROL_VEC_12(b);	\
+    a = ADD_VEC_32(a,b); d = XOR_VEC(d,a); d = ROL_VEC_8(d);	\
+    c = ADD_VEC_32(c,d); b = XOR_VEC(b,c); b = ROL_VEC_7(b);	\
+    b = ROR_VEC_V1(b); c = ROR_VEC_V2(c); d = ROR_VEC_V3(d);	\
+    a = ADD_VEC_32(a,b); d = XOR_VEC(d,a); d = ROL_VEC_16(d);	\
+    c = ADD_VEC_32(c,d); b = XOR_VEC(b,c); b = ROL_VEC_12(b);	\
+    a = ADD_VEC_32(a,b); d = XOR_VEC(d,a); d = ROL_VEC_8(d);	\
+    c = ADD_VEC_32(c,d); b = XOR_VEC(b,c); b = ROL_VEC_7(b);	\
+    b = ROR_VEC_V3(b); c = ROR_VEC_V2(c); d = ROR_VEC_V1(d);
+
+
+
+#define RANSTREAM_STATESZ (4*SZ_VEC)
+
+
+struct RandomStream_impl {
+
+   AlignedArray<unsigned char> state_store;
+   AlignedArray<unsigned char> buf_store;
+
+   void allocate_space() 
+   {
+      state_store.SetLength(RANSTREAM_STATESZ);
+      buf_store.SetLength(RANSTREAM_BUFSZ);
+   }
+
+   explicit
+   RandomStream_impl(const unsigned char *key) 
+   {
+      allocate_space();
+
+      unsigned char *state = state_store.elts();
+
+      unsigned int chacha_const[] = {
+	      0x61707865,0x3320646E,0x79622D32,0x6B206574
+      };
+
+
+      ivec_t d0, d1, d2, d3;
+      LOADU_VEC_128(d0, chacha_const);
+      LOADU_VEC_128(d1, key);
+      LOADU_VEC_128(d2, key+16);
+
+      d3 = START;
+
+
+      STORE_VEC(state + 0*SZ_VEC, d0); 
+      STORE_VEC(state + 1*SZ_VEC, d1); 
+      STORE_VEC(state + 2*SZ_VEC, d2); 
+      STORE_VEC(state + 3*SZ_VEC, d3); 
+   }
+
+   RandomStream_impl(const RandomStream_impl& other) 
+   {
+      allocate_space();
+      *this = other;
+   }
+
+   RandomStream_impl& operator=(const RandomStream_impl& other) 
+   {
+      std::memcpy(state_store.elts(), other.state_store.elts(), RANSTREAM_STATESZ);
+      std::memcpy(buf_store.elts(), other.buf_store.elts(), RANSTREAM_BUFSZ);
+      return *this;
+   }
+
+   const unsigned char *
+   get_buf() const
+   {
+      return buf_store.elts(); 
+   }
+
+   long
+   get_buf_len() const
+   {
+      return RANSTREAM_BUFSZ;
+   }
+
+   long
+   get_bytes(unsigned char *NTL_RESTRICT res, 
+             long n, long pos)
+   {
+      if (n < 0) LogicError("RandomStream::get: bad args");
+      if (n == 0) return pos;
+
+      unsigned char *NTL_RESTRICT buf = buf_store.elts();
+
+      if (n <= RANSTREAM_BUFSZ-pos) {
+	 std::memcpy(&res[0], &buf[pos], n);
+	 pos += n;
+	 return pos;
+      }
+
+      unsigned char *NTL_RESTRICT state = state_store.elts();
+
+      ivec_t d0, d1, d2, d3;
+      LOAD_VEC(d0, state + 0*SZ_VEC);
+      LOAD_VEC(d1, state + 1*SZ_VEC);
+      LOAD_VEC(d2, state + 2*SZ_VEC);
+      LOAD_VEC(d3, state + 3*SZ_VEC);
+
+
+      // read remainder of buffer
+      std::memcpy(&res[0], &buf[pos], RANSTREAM_BUFSZ-pos);
+      n -= RANSTREAM_BUFSZ-pos;
+      res += RANSTREAM_BUFSZ-pos;
+      pos = RANSTREAM_BUFSZ;
+
+      long i = 0;
+      for (;  i <= n-RANSTREAM_BUFSZ; i += RANSTREAM_BUFSZ) {
+
+	 for (long j = 0; j < RANSTREAM_BUFSZ/(8*SZ_VEC); j++) {
+	    ivec_t v0=d0, v1=d1, v2=d2, v3=d3;
+	    ivec_t v4=d0, v5=d1, v6=d2, v7=ADD_VEC_64(d3, DELTA);
+
+	    for (long k = 0; k < CHACHA_RNDS/2; k++) {
+		    DQROUND_VECTORS_VEC(v0,v1,v2,v3)
+		    DQROUND_VECTORS_VEC(v4,v5,v6,v7)
+	    }
+
+	    WRITEU_VEC(res+i+j*(8*SZ_VEC), 0, ADD_VEC_32(v0,d0), ADD_VEC_32(v1,d1), ADD_VEC_32(v2,d2), ADD_VEC_32(v3,d3))
+	    d3 = ADD_VEC_64(d3, DELTA);
+	    WRITEU_VEC(res+i+j*(8*SZ_VEC), 4*SZ_VEC, ADD_VEC_32(v4,d0), ADD_VEC_32(v5,d1), ADD_VEC_32(v6,d2), ADD_VEC_32(v7,d3))
+	    d3 = ADD_VEC_64(d3, DELTA);
+
+	 }
+
+      }
+
+      if (i < n) {
+	 for (long j = 0; j < RANSTREAM_BUFSZ/(8*SZ_VEC); j++) {
+	    ivec_t v0=d0, v1=d1, v2=d2, v3=d3;
+	    ivec_t v4=d0, v5=d1, v6=d2, v7=ADD_VEC_64(d3, DELTA);
+
+	    for (long k = 0; k < CHACHA_RNDS/2; k++) {
+		    DQROUND_VECTORS_VEC(v0,v1,v2,v3)
+		    DQROUND_VECTORS_VEC(v4,v5,v6,v7)
+	    }
+
+	    WRITE_VEC(buf+j*(8*SZ_VEC), 0, ADD_VEC_32(v0,d0), ADD_VEC_32(v1,d1), ADD_VEC_32(v2,d2), ADD_VEC_32(v3,d3))
+	    d3 = ADD_VEC_64(d3, DELTA);
+	    WRITE_VEC(buf+j*(8*SZ_VEC), 4*SZ_VEC, ADD_VEC_32(v4,d0), ADD_VEC_32(v5,d1), ADD_VEC_32(v6,d2), ADD_VEC_32(v7,d3))
+	    d3 = ADD_VEC_64(d3, DELTA);
+	 }
+
+	 pos = n-i;
+	 std::memcpy(&res[i], &buf[0], pos);
+      }
+
+      STORE_VEC(state + 3*SZ_VEC, d3); 
+
+      return pos;
+   }
+
+};
+
+
+#else
+
+struct RandomStream_impl {
+   _ntl_uint32 state[16];
+   unsigned char buf[64];
+
+   explicit
+   RandomStream_impl(const unsigned char *key)
+   {
+      salsa20_init(state, key);
+   }
+
+   const unsigned char *
+   get_buf() const
+   {
+      return &buf[0];
+   }
+
+   long
+   get_buf_len() const
+   {
+      return 64;
+   }
+
+   long get_bytes(unsigned char *res, long n, long pos) 
+   {
+      if (n < 0) LogicError("RandomStream::get: bad args");
+
+      long i, j;
+
+      if (n <= 64-pos) {
+	 for (i = 0; i < n; i++) res[i] = buf[pos+i];
+	 pos += n;
+	 return pos;
+      }
+
+      // read remainder of buffer
+      for (i = 0; i < 64-pos; i++) res[i] = buf[pos+i];
+      n -= 64-pos;
+      res += 64-pos;
+      pos = 64;
+
+      _ntl_uint32 wdata[16];
+
+      // read 64-byte chunks
+      for (i = 0; i <= n-64; i += 64) {
+	 salsa20_apply(state, wdata);
+	 for (j = 0; j < 16; j++)
+	    FROMLE(res + i + 4*j, wdata[j]);
+      }
+
+      if (i < n) { 
+	 salsa20_apply(state, wdata);
+
+	 for (j = 0; j < 16; j++)
+	    FROMLE(buf + 4*j, wdata[j]);
+
+	 pos = n-i;
+	 for (j = 0; j < pos; j++)
+	    res[i+j] = buf[j];
+      }
+
+      return pos;
+   }
+
+};
+
+
+#endif
+
+
+
+// Boilerplate PIMPL code
+
+RandomStream_impl *
+RandomStream_impl_build(const unsigned char *key)
+{
+   UniquePtr<RandomStream_impl> p;
+   p.make(key);
+   return p.release();
+}
+
+RandomStream_impl *
+RandomStream_impl_build(const RandomStream_impl& other)
+{
+   UniquePtr<RandomStream_impl> p;
+   p.make(other);
+   return p.release();
+}
+
+void
+RandomStream_impl_copy(RandomStream_impl& x, const RandomStream_impl& y)
+{
+   x = y;
+}
+
+void
+RandomStream_impl_delete(RandomStream_impl* p)
+{
+   delete p;
+}
+
+const unsigned char *
+RandomStream_impl_get_buf(const RandomStream_impl& x)
+{
+   return x.get_buf();
+}
+
+long
+RandomStream_impl_get_buf_len(const RandomStream_impl& x)
+{
+   return x.get_buf_len();
+}
+
+long
+RandomStream_impl_get_bytes(RandomStream_impl& impl, 
+   unsigned char *res, long n, long pos)
+{
+   return impl.get_bytes(res, n, pos);
+}
+
+
+
+
 
 
 NTL_TLS_GLOBAL_DECL(UniquePtr<RandomStream>,  CurrentRandomStream);
@@ -1906,7 +2273,7 @@ void SetSeed(const ZZ& seed)
 static
 void InitRandomStream()
 {
-   const string& id = UniqueID();
+   const std::string& id = UniqueID();
    SetSeed((const unsigned char *) id.c_str(), id.length());
 }
 

@@ -1193,6 +1193,32 @@ behave like normal vectors, via a class the mimics ordinary references
 to <tt>GF2</tt>'s.  
 </ul>
 
+<p>
+<p>
+<h2>
+C+11 Support
+</h2>
+<p>
+
+As of version 10.4, NTL supports a number of C++11 specific features.
+To enable this support, you must build NTL with <tt>NTL_STD_CXX11=on</tt>.
+This build flag is  automatically turned on by a number of other
+NTL features that require NTL support.
+
+<p>
+The most important of these is "move semantics".
+Most of the important classes are now equipped with
+"move" constructors and "move" assignment operators.
+Where possible, these are declared <tt>noexcept</tt>.
+NTL's <tt>Vec</tt> class and STL's <tt>vector</tt> class
+can take advantage of noexcept move constructors in certain
+situations.
+<a href="#efficiency">See below</a> 
+for more details regarding exceptions and move semantics.
+
+
+
+
 
 <p>
 <p>
@@ -1256,9 +1282,26 @@ New functions
 are used to throw exceptions derived from <tt>ErrorObject</tt>.
 
 <p>
+<a name="efficiency">
+<b>Efficiency considerations:</b>
+</a>
+Because of a bunch of design decsions that were made long before
+<tt>C++11</tt> came along, most of the important NTL classes
+<i>do not</i> have <tt>noexcept</tt> move constructors <i>if</i> you enable
+exceptions in NTL, which can reduce performance somewhat.
+Therefore, if you do not really need to have NTL handle errors
+by throwing exceptions,  
+and you do want to maximize performance,
+you should <i>not</i> enable exceptions
+in NTL.
+But even with exceptions enabled, the performance penalty
+should not be terrible.
+
+
+<p>
 <b>Issues with GMP:</b>
-As of this writing (December 2014),
-GMP itself provides only the very crude print-message-then-abort
+GMP itself (at least as of version 6.1.2) 
+provides only the very crude print-message-then-abort
 error handling.
 Note that NTL only uses low-level GMP routines (the <tt>mpn</tt>-level
 routines),
@@ -1334,7 +1377,6 @@ legacy, and to its special memory management of
 and
 <tt>Vec&lt;GF2E&gt;</tt>
 types.
-
 
 
 

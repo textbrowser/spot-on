@@ -52,8 +52,40 @@ public:
    GF2X& operator[](long i) { return v[i]; }
    const GF2X& operator[](long i) const { return v[i]; }
 
-   void swap(GF2XVec& x);
+   void swap(GF2XVec& x)
+   {
+      _ntl_swap(v, x.v);
+      _ntl_swap(len, x.len);
+      _ntl_swap(bsize, x.bsize);
+   }
+
+   void move(GF2XVec& other) 
+   { 
+      GF2XVec tmp;
+      tmp.swap(other);
+      tmp.swap(*this);
+   }
+
+
+#if (NTL_CXX_STANDARD >= 2011)
+
+   GF2XVec(GF2XVec&& other) noexcept : GF2XVec() 
+   {
+      this->move(other);
+   }
+
+   GF2XVec& operator=(GF2XVec&& other) noexcept
+   {
+      this->move(other);
+      return *this;
+   }
+
+#endif
+
 };
+
+
+NTL_DECLARE_RELOCATABLE((GF2XVec*))
 
 inline void swap(GF2XVec& x, GF2XVec& y) { x.swap(y); }
 

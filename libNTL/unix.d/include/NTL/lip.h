@@ -142,20 +142,19 @@ long _ntl_gdigit(_ntl_gbigint a, long i);
 
 // DIRT: These are copied from lip.cpp file
 
-static
 inline long& _ntl_ALLOC(_ntl_gbigint p)
    { return (((long *) p)[0]); }
 
-static
 inline long& _ntl_SIZE(_ntl_gbigint p)
    { return (((long *) p)[1]); }
 
-static
 inline long _ntl_ZEROP(_ntl_gbigint p)
 {
    return !p || !_ntl_SIZE(p);
 }
 
+inline long _ntl_PINNED(_ntl_gbigint p)
+  { return p && (_ntl_ALLOC(p) & 1); }
 
 
 /***********************************************************************
@@ -314,7 +313,7 @@ inline long _ntl_ZEROP(_ntl_gbigint p)
     long _ntl_gscompare(_ntl_gbigint a, long b);
        /* single-precision version of the above */
 
-    static inline
+    inline
     long _ntl_giszero (_ntl_gbigint a)
     {
       return _ntl_ZEROP(a);
@@ -322,7 +321,7 @@ inline long _ntl_ZEROP(_ntl_gbigint p)
        /* test for 0 */
 
 
-    static inline
+    inline
     long _ntl_gsign(_ntl_gbigint a)
     {
        long sa;
@@ -358,8 +357,13 @@ inline long _ntl_ZEROP(_ntl_gbigint p)
     long _ntl_g2log(_ntl_gbigint a);
        /* number of bits in |a|; returns 0 if a = 0 */
 
-    long _ntl_g2logs(long a);
+    inline
+    long _ntl_g2logs(long a)
         /* single-precision version of the above */
+    {
+       unsigned long aa = a >= 0 ? a : - ((unsigned long) a);
+       return _ntl_count_bits(aa);
+    }
 
 
 /********************************************************************
@@ -536,7 +540,7 @@ inline long _ntl_ZEROP(_ntl_gbigint p)
 
 ***********************************************************************/
 
-    static inline
+    inline
     long _ntl_gmaxalloc(_ntl_gbigint x)
     {
       if (!x)
@@ -564,7 +568,7 @@ inline long _ntl_ZEROP(_ntl_gbigint p)
 
 ********************************************************************/
 
-static inline
+inline
 long _ntl_gsize(_ntl_gbigint rep)
 {
   if (!rep)

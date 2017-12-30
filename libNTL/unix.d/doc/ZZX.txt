@@ -54,6 +54,16 @@ public:
 
    ~ZZX();
 
+
+   ZZX(ZZX&& a); 
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   ZZX& operator=(ZZX&& a); 
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+
    ZZX(INIT_MONO_TYPE, long i, const ZZ& c); 
    ZZX(INIT_MONO_TYPE, long i, long c); 
    // initial value c*X^i, invoke as ZZX(INIT_MONO, i, c)

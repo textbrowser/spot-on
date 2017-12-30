@@ -95,6 +95,11 @@ inline mat_ZZ_p ident_mat_ZZ_p(long n)
    { mat_ZZ_p X; ident(X, n); NTL_OPT_RETURN(mat_ZZ_p, X); }
 
 
+void random(mat_ZZ_p& x, long n, long m);
+inline mat_ZZ_p random_mat_ZZ_p(long n, long m)
+   { mat_ZZ_p x; random(x, n, m); NTL_OPT_RETURN(mat_ZZ_p, x); }
+
+
 
 void determinant(ZZ_p& d, const mat_ZZ_p& A);
 long IsIdent(const mat_ZZ_p& A, long n);

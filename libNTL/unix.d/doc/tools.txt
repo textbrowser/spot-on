@@ -11,7 +11,12 @@ Some useful tools that are used throughout NTL.
 
 #include <cstdlib>
 #include <cmath>
+#include <cstring>
+
+#include <utility>
 #include <iostream>
+#include <new>
+#include <stdexcept>
 
 #include <NTL/config.h>
 #include <NTL/mach_desc.h>

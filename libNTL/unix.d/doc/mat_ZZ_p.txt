@@ -14,7 +14,7 @@ Defines the class mat_ZZ_p.
 #include <NTL/vec_vec_ZZ_p.h>
 
 
-typedef mat_ZZ_p mat_ZZ_p; // backward compatibility
+typedef Mat<ZZ_p> mat_ZZ_p; // backward compatibility
 
 void add(mat_ZZ_p& X, const mat_ZZ_p& A, const mat_ZZ_p& B); 
 // X = A + B
@@ -93,6 +93,10 @@ mat_ZZ_p diag(long n, const ZZ_p& d);
 long IsDiag(const mat_ZZ_p& A, long n, const ZZ_p& d);
 // test if X is an  n x n diagonal matrix with d on diagonal
 
+
+
+void random(mat_ZZ_p& x, long n, long m);  // x = random n x m matrix
+mat_ZZ_p random_mat_ZZ_p(long n, long m);
 
 
 

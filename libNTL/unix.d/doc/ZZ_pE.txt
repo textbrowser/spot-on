@@ -40,7 +40,15 @@ public:
    
    ~ZZ_pE(); // destructor
 
-   void init(const ZZ_pX& P);
+   ZZ_pE(ZZ_pE&& a); 
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   ZZ_pE& operator=(ZZ_pE&& a); 
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   static void init(const ZZ_pX& P);
    // ZZ_pE::init(P) initializes the current modulus to P;
    // required: deg(P) >= 1.
    

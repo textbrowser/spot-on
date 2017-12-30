@@ -12,6 +12,8 @@
 #error "PCLMUL not supported"
 #endif
 
+// NOTE: gcc and clang define __PCLMUL__, but icc does not
+
 using namespace std;
 
 

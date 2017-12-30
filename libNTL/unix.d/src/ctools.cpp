@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <cmath>
 
-using namespace std;
 
 
 /*
@@ -74,8 +73,9 @@ double _ntl_ldexp(double x, long e)
    else if (e < NTL_MIN_INT)
       return x*_ntl_ldexp_zero;
    else
-      return ldexp(x, ((int) e));
+      return std::ldexp(x, ((int) e));
 }
+
 
 
 

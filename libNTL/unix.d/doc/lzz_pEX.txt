@@ -32,6 +32,16 @@ public:
 
    ~zz_pEX(); // destructor
 
+
+   zz_pEX(zz_pEX&& a); 
+   // move constructor (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+   zz_pEX& operator=(zz_pEX&& a); 
+   // move assignment (C++11 only)
+   // declared noexcept unless NTL_EXCEPTIONS flag is set
+
+
    zz_pEX(INIT_MONO_TYPE, long i, const zz_pE& c); 
    zz_pEX(INIT_MONO_TYPE, long i, const zz_p& c); 
    zz_pEX(INIT_MONO_TYPE, long i, long c); 

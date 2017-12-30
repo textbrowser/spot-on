@@ -2,8 +2,8 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/jjj/ntl-10.3.0dev/doc/vec_GF2.cpp.html</title>
-<meta name="Generator" content="Vim/7.4">
+<title>~/junk6/ntl-10.4.0/doc/vec_GF2.cpp.html</title>
+<meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
 <meta name="settings" content="use_css,pre_wrap,no_foldcolumn,expand_tabs,prevent_copy=">
@@ -35,39 +35,58 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Comment">SUMMARY:</span>
 
 
-<span class="Comment">The class Vec&lt;GF2&gt; is explicitly specialized.</span>
-<span class="Comment">It behaves much like a generic Vec&lt;T&gt; (see vector.txt), </span>
-<span class="Comment">but there are some differences.</span>
+<span class="Comment">The class Vec&lt;GF2&gt; is explicitly specialized.  It behaves much like a generic</span>
+<span class="Comment">Vec&lt;T&gt; (see vector.txt), but there are some differences.</span>
 
-<span class="Comment">For efficiency, elements of a Vec&lt;GF2&gt; are &quot;packed&quot; into a word.</span>
-<span class="Comment">You can still use subscript notation v[i] or v(i).</span>
-<span class="Comment">For const vectors, these evaluate to values of type const GF2.</span>
-<span class="Comment">For non-const vectors, these evaluate to values of the</span>
-<span class="Comment">special type ref_GF2, which is defined in the GF2 header file.</span>
+<span class="Comment">For efficiency, elements of a Vec&lt;GF2&gt; are &quot;packed&quot; into a word.  You can still</span>
+<span class="Comment">use subscript notation v[i] or v(i).  For const vectors, these evaluate to</span>
+<span class="Comment">values of type const GF2.  For non-const vectors, these evaluate to values of</span>
+<span class="Comment">the special type ref_GF2, which is defined in the GF2 header file.</span>
 
-<span class="Comment">There are implicit conversions from ref_GF2 to const GF2</span>
-<span class="Comment">and from GF2&amp; to ref_GF2.  Therefore, if you want to declare</span>
-<span class="Comment">a function that takes a non-const reference to a GF2, you</span>
-<span class="Comment">should declare the parameter of type ref_GF2: this will</span>
-<span class="Comment">allow you to pass variables of type GF2 as well as </span>
-<span class="Comment">elements of vec_GF2's obtained through indexing.</span>
+<span class="Comment">There are implicit conversions from ref_GF2 to const GF2 and from GF2&amp; to</span>
+<span class="Comment">ref_GF2.  Therefore, if you want to declare a function that takes a non-const</span>
+<span class="Comment">reference to a GF2, you should declare the parameter of type ref_GF2: this will</span>
+<span class="Comment">allow you to pass variables of type GF2 as well as elements of vec_GF2's</span>
+<span class="Comment">obtained through indexing.</span>
 
 <span class="Comment">As an alternative, one can use the get and put methods below to access</span>
 <span class="Comment">vector elements.</span>
 
-<span class="Comment">There is one subtle but important difference in the semantics</span>
-<span class="Comment">of Vec&lt;GF2&gt; and that of generic NTL vectors.  With a Vec&lt;GF2&gt;, whenever its</span>
-<span class="Comment">length is increased (via SetLength), the &quot;new&quot; bits are always 0.</span>
-<span class="Comment">For example, if v.length() == 20, then </span>
+<span class="Comment">There is a subtle but important difference in the semantics of Vec&lt;GF2&gt; and</span>
+<span class="Comment">that of generic NTL vectors.  With a Vec&lt;GF2&gt;, whenever its length is increased</span>
+<span class="Comment">(via SetLength), the &quot;new&quot; bits are always 0.  For example, if </span>
+<span class="Comment">v.length() == 20, then </span>
 
 <span class="Comment">   v.SetLength(10); v.setLength(20);</span>
 
-<span class="Comment">will effectively clear bits 10..19 of v.</span>
-<span class="Comment">This is quite different from the semantics of generic NTL vectors, where</span>
-<span class="Comment">the above sequence would not change the value of v at all.</span>
-<span class="Comment">One has to be aware of this difference, but it will not matter</span>
-<span class="Comment">in most ordinary circumstances.</span>
+<span class="Comment">will effectively clear bits 10..19 of v.  This is quite different from the</span>
+<span class="Comment">semantics of generic NTL vectors, where the above sequence would not change the</span>
+<span class="Comment">value of v at all.  One has to be aware of this difference, but it will not</span>
+<span class="Comment">matter in most ordinary circumstances.</span>
 
+
+<span class="Comment">Another thing to be aware of is the use of Vec&lt;GF2&gt; in range-based</span>
+<span class="Comment">for loops.  The safest ways to do this are as follows:</span>
+
+<span class="Comment">   for (auto&amp;&amp; item : vec) { ... } // for read-only or read/write access</span>
+
+<span class="Comment">or</span>
+
+<span class="Comment">   for (GF2 item : vec) { ... } // for access via a copy</span>
+
+<span class="Comment">Note that:</span>
+<span class="Comment">   * declaring item as &quot;auto&amp;&quot; or &quot;GF2&amp;&quot; will yield a syntax error</span>
+<span class="Comment">   * declaring item as &quot;auto&quot; or &quot;const auto&amp;&quot; will potentially</span>
+<span class="Comment">     allow code to modify vec via item, without a warning or error,</span>
+<span class="Comment">     contrary to expectations (although this cannot happen if vec</span>
+<span class="Comment">     itself is const)</span>
+
+<span class="Comment">However, declaring item as &quot;auto&amp;&amp;&quot; will work as expected, and the compiler</span>
+<span class="Comment">will raise an error if you try to modify a const Vec&lt;GF2&gt;.  </span>
+
+<span class="Comment">All of these issues arise because ref_GF2 is not a true reference, and the</span>
+<span class="Comment">semantics of &quot;auto&quot; and &quot;auto&amp;&quot; interact badly.  Similar issues arise with</span>
+<span class="Comment">vector&lt;bool&gt; in the STL.</span>
 
 <span class="Comment">\*************************************************************************</span><span class="Comment">*/</span>
 
@@ -84,7 +103,20 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 
    Vec(<span class="Type">const</span> Vec&lt;GF2&gt;&amp; a); <span class="Comment">// copy constructor</span>
    Vec&amp; <span class="Statement">operator</span>=(<span class="Type">const</span> Vec&lt;GF2&gt;&amp; a); <span class="Comment">// assignment</span>
+
+   Vec(Vec&amp;&amp; a);
+   <span class="Comment">// move constructor (C++11 only)</span>
+   <span class="Comment">// declared noexcept unless NTL_EXCEPTIONS flag is set</span>
+   <span class="Comment">// will revert to copy constructor if a is fixed</span>
+
+   Vec&amp; <span class="Statement">operator</span>=(Vec&amp;&amp; a);
+   <span class="Comment">// move assignment (C++11 only)</span>
+   <span class="Comment">// declared noexcept unless NTL_EXCEPTIONS flag is set</span>
+   <span class="Comment">// will revert to copy assignment if *this or a is fixed</span>
+
    ~Vec(); <span class="Comment">// destructor</span>
+
+
 
    <span class="Type">void</span> SetLength(<span class="Type">long</span> n); <span class="Comment">// set length to n bits</span>
    <span class="Type">void</span> SetLength(<span class="Type">long</span> n, GF2 a);
@@ -158,7 +190,26 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
    <span class="Type">typedef</span> GF2 value_type;
    <span class="Type">typedef</span> ref_GF2 reference;
    <span class="Type">typedef</span> <span class="Type">const</span> GF2 const_reference;
+   <span class="Type">typedef</span> <span class="Comment">/*</span><span class="Comment"> implementation defined type </span><span class="Comment">*/</span> iterator;
+   <span class="Type">typedef</span> <span class="Comment">/*</span><span class="Comment"> implementation defined type </span><span class="Comment">*/</span> const_iterator;
 
+   ref_GF2 at(<span class="Type">long</span> i);
+   <span class="Type">const</span> GF2 at(<span class="Type">long</span> i) <span class="Type">const</span>;
+   <span class="Comment">// indexing with range checking</span>
+
+
+   iterator begin();
+   const_iterator begin() <span class="Type">const</span>;
+   <span class="Comment">// pointer to beginning of vector</span>
+
+   iterator end();
+   const_iterator end() <span class="Type">const</span>;
+   <span class="Comment">// pointer to (one past) end of vector</span>
+
+   <span class="Comment">// NOTES: The iterator types act like pointers.  You can perform all the</span>
+   <span class="Comment">// usual arithmetic on them, as well as dereferencing and subscripting.</span>
+   <span class="Comment">// Dereferencing an iterator yields a ref_GF2.  Dereferencing a</span>
+   <span class="Comment">// const_iterator yields a const GF2.</span>
 
 
 };
@@ -209,9 +260,6 @@ vec_GF2 reverse(<span class="Type">const</span> vec_GF2&amp; a);
 
 <span class="Type">long</span> weight(<span class="Type">const</span> vec_GF2&amp; a); <span class="Comment">// return number of 1 bits in a</span>
 
-<span class="Type">void</span> random(vec_GF2&amp; x, <span class="Type">long</span> n);  <span class="Comment">// x = random vector of length n</span>
-vec_GF2 random_vec_GF2(<span class="Type">long</span> n);
-
 
 <span class="Comment">// arithmetic operations over GF(2):</span>
 
@@ -233,6 +281,9 @@ vec_GF2 random_vec_GF2(<span class="Type">long</span> n);
 vec_GF2 VectorCopy(<span class="Type">const</span> vec_GF2&amp; a, <span class="Type">long</span> n);
 <span class="Comment">// x = a copy of a of length exactly n.</span>
 <span class="Comment">// The input is truncated or padded with zeroes, as necessary.</span>
+
+<span class="Type">void</span> random(vec_GF2&amp; x, <span class="Type">long</span> n);  <span class="Comment">// x = random vector of length n</span>
+vec_GF2 random_vec_GF2(<span class="Type">long</span> n);
 
 
 

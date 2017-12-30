@@ -136,6 +136,14 @@ RR& operator=(double a); // convert and assign
 
 ~RR(); // destructor
 
+RR(RR&& a); 
+// move constructor (C++11 only)
+// declared noexcept unless NTL_EXCEPTIONS flag is set
+
+RR& operator=(RR&& a); 
+// move assignment (C++11 only)
+// declared noexcept unless NTL_EXCEPTIONS flag is set
+
 const ZZ& mantissa() const;  // read the mantissa
 long exponent() const;  // read the exponent
 

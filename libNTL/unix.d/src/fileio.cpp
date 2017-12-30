@@ -6,7 +6,6 @@
 #include <sstream>
 #include <iomanip>
 #include <ctime>
-#include <cstring>
 
 
 
@@ -15,7 +14,7 @@ NTL_START_IMPL
 
 void OpenWrite(ofstream& s, const char *name)
 {
-   s.open(name, ios::out);
+   s.open(name, std::ios::out);
 
    if (!s) {
       FileError("write open failed");
@@ -29,7 +28,7 @@ void OpenWrite(ofstream& s, const char *name, FileList& flist)
    //   We do the AddFile first, since that can conceivably fail.
 
    flist.AddFile(name);
-   s.open(name, ios::out);
+   s.open(name, std::ios::out);
 
    if (!s) {
       flist.RemoveLast();
@@ -40,7 +39,7 @@ void OpenWrite(ofstream& s, const char *name, FileList& flist)
 
 void OpenRead(ifstream& s, const char *name)
 {
-   s.open(name, ios::in);
+   s.open(name, std::ios::in);
    if (!s) {
       FileError("read open failed");
    }
@@ -82,11 +81,11 @@ FileList::~FileList()
 
 const char *FileName(const char* stem, long d)
 {
-   NTL_TLS_LOCAL(string, sbuf);
+   NTL_TLS_LOCAL(std::string, sbuf);
 
-   stringstream ss;
+   std::stringstream ss;
    ss << "tmp-ntl-" << stem;
-   ss << "-" << setfill('0') << setw(5) << d << "-";
+   ss << "-" << std::setfill('0') << std::setw(5) << d << "-";
    sbuf = ss.str() + UniqueID();
    return sbuf.c_str();
 }
@@ -107,12 +106,12 @@ const char *FileName(const char* stem, long d)
 //    harder to guarantee)
 
 
-const string& UniqueID()
+const std::string& UniqueID()
 {
    static AtomicCounter cnt; // a GLOBAL counter
    
 
-   NTL_TLS_LOCAL(string, ID);
+   NTL_TLS_LOCAL(std::string, ID);
 
    NTL_TLS_LOCAL_INIT(bool, initialized, (false));
    NTL_TLS_LOCAL_INIT(unsigned long, local_cnt, (cnt.inc()));
@@ -120,7 +119,7 @@ const string& UniqueID()
    NTL_TLS_LOCAL_INIT(unsigned long, local_clock, (clock()));
 
    if (!initialized) {
-      stringstream ss;
+      std::stringstream ss;
       ss << local_cnt << "-" << local_time << "-" 
          << local_clock << "-" << GetPID()  << "-" << CurrentThreadID();  
       ID = ss.str();

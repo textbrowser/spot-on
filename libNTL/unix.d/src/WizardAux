@@ -47,6 +47,7 @@ sub RunProg {
    my $val;
    my $res;
 
+   system("$ARGV[0] wclean") and return "999999999999999";
    system("$ARGV[0] wntl.a") and return "999999999999999";
    RemoveProg($name);
    system("$ARGV[0] $name") and return "999999999999999";
@@ -163,11 +164,6 @@ foreach $aflag1 ("default", "NTL_FFT_LAZYMUL") {
          $Config{$bflag1} = 0;
          $Config{$cflag1} = 0;
 
-         # these are the files that include class definitions
-         # from FFT.h and ZZ_p.h, which have members defined
-         # in terms of mulmod_precon_t
-         unlink("FFT.o"); unlink("ZZ_p.o"); unlink("vec_ZZ_p.o");
-         unlink("ZZ_pX.o"); unlink("ZZ_pX1.o"); 
       }
    }
 }
@@ -188,14 +184,6 @@ if ($time1*1.0 > $time*1.04) {
    # stick with BIGTABs
    $Config{"NTL_FFT_BIGTAB"} = 1;
 }
-
-
-unlink("FFT.o"); unlink("ZZ_p.o"); unlink("vec_ZZ_p.o");
-unlink("ZZ_pX.o"); unlink("ZZ_pX1.o"); 
-
-# also unlink lip.o, since that may depend on the MulMod impl
-unlink("lip.o");   
-
 
 
 
@@ -224,7 +212,6 @@ if ($Config{'NTL_HAVE_PCLMUL'} == 0) {
 
 	 $Config{$aflag1} = 0;
 	 $Config{$bflag1} = 0;
-	 unlink("GF2X.o");
       }
    }
 
@@ -252,7 +239,6 @@ if ($Config{"NTL_HAVE_LL_TYPE"} == 1) {
       }
 
       $Config{$flag1} = 0;
-      unlink("lip.o");
    }
 
    $Config{$flag} = 1;
@@ -277,7 +263,6 @@ if ($Config{"NTL_HAVE_LL_TYPE"} == 1 && $Config{"NTL_GMP_LIP"} == 1) {
       }
 
       $Config{$flag1} = 0;
-      unlink("lip.o");
    }
 
    $Config{$flag} = 1;

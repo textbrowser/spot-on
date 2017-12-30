@@ -19,6 +19,164 @@ A Tour of NTL: Summary of Changes
 
 <p><hr><p>
 <h3>
+2017.07.07: Changes between NTL 10.4.0 and 10.5.0
+</h3>
+
+<ul>
+<li>
+Added uniform conversions from <tt>char*</tt> and <tt>const char*</tt>,
+which use whatever stream input operator <tt>&gt;&gt;</tt> applies.
+<ul>
+<li>
+For example, you can write <tt>conv(x, "...")</tt>
+or <tt>x = conv&lt;T&gt;("...")</tt>
+for <tt>x</tt> of any type <tt>T</tt>.
+<li>
+The code is written using templates in such a way
+that a second argument of <tt>0</tt> or <tt>nullptr</tt>
+will not match. 
+
+<li>
+See <a href="conversions.txt">conversions.txt</a> for details.
+</ul>
+
+<li>
+Changed behavior of matrix input: non rectctanglar matrices
+set the fail bit on the stream, rather than raising an error
+
+<li>
+Fixed a benign error on make check.
+
+</ul>
+
+<p><hr><p>
+<h3>
+2017.06.19: Changes between NTL 10.3.0 and 10.4.0
+</h3>
+
+<ul>
+<li>
+<b>Faster linear algebra over <tt>ZZ_p</tt>.</b>
+Rewrote <tt>mat_ZZ_p</tt> routines 
+<tt>inv</tt>, <tt>solve</tt>, <tt>determinant</tt>, 
+<tt>gauss</tt>, and <tt>kernel</tt>
+to be thread boosted (and <tt>inv</tt> was more extensvely rewritten,
+so it's a bit faster even without multi-threading.
+<ul>
+<li> 
+I would still like to write reductions to matrix multiplication
+for many of these routines.
+</ul>
+
+<p>
+<li>
+<b>Faster pseudo-random number generation.</b>
+Made the pseudo-random number generator (based on "Salsa20")
+faster on machines that support SSE3, and even faster
+on machines that support AVX2 (speedup with AVX2 is about 4.6x).
+<ul>
+<li>
+Hardware support is automatically detected at build time.
+<li>
+I had to downgrade the exception guarantees 
+for <tt>RandomStream</tt> methods 
+from "nothrow" to "strong ES".
+</ul>
+
+<p>
+<li>
+<b>C++11 support / "move" semantics.</b>
+Added configuration flags <tt>NTL_STD_CXX11</tt> and 
+<tt>NTL_STD_CXX14</tt>.
+<ul>
+<li>
+Setting these flags will allow NTL to exploit certain language
+features guaranteed by the standard.
+<li>
+The <tt>NTL_STD_CXX11</tt> will automatically be set
+by setting other configuration flags that require <tt>C++11</tt>
+support.
+<li>
+If the <tt>NTL_STD_CXX11</tt> flag is set, then NTL will declare
+"move" constructors and assigment operators for most of the
+major NTL classes.
+to the extent possible, these are declared "noexcept".
+<ul>
+<small>
+<li>
+NOTE: by <i>not</i> enabling exceptions with <tt>NTL_EXCEPTIONS=on</tt>,
+you get more "noexcept" move constructors, which can yield
+better performance.
+</small>
+</ul>
+</ul>
+
+<p>
+<li>
+<b>Safe vector mode.</b>
+Added a new "safe vector" mode, which is enabled with
+<tt>NTL_SAFE_VECTORS=on</tt>.
+In this mode,
+NTL relaxes the "relocatability"
+requirement for NTL vector types. 
+While this flag is currently "off" by default,
+I expect that at some point in the next
+couple of years, it will be "on" by default.  
+<ul>
+<li>
+More details available <a href="vector.cpp.html">here</a>.
+<li>
+This feature requires <tt>C++11</tt>.
+</ul>
+
+<p>
+<li>
+<b>Iterators and support for "range based for loops".</b>
+Added a "proxy iterator" to the <tt>Vec&lt;GF2&gt;</tt> class.
+With this, now all the  <tt>Vec&lt;T&gt;</tt> classes
+have iterators, which means that you can use the <tt>C++11</tt>
+syntax for "range based for loops".
+The safest way to write these for loops in general is as:
+<pre>
+  for (auto&amp;&amp; item : vec) { ... }
+</pre>
+
+<p>
+<li>
+<b>Convenience routines for random vectors and matrices.</b>
+<ul>
+<li>
+Added convenience routines <tt>random(vec, n)</tt> to build
+a random vector <tt>vec</tt> of length <tt>n</tt>.
+Available for vectors over 
+<tt>GF2</tt>,
+<tt>GF2E</tt>,
+<tt>zz_p</tt>,
+<tt>zz_pE</tt>,
+<tt>ZZ_p</tt>,
+and
+<tt>ZZ_pE</tt>.
+
+<li>
+Added convenience routines <tt>random(mat, n, m)</tt> to build
+a random <tt>n</tt>-by-</tt>m</tt> matrix <tt>mat</tt>.
+Available for matrices over 
+<tt>GF2</tt>,
+<tt>GF2E</tt>,
+<tt>zz_p</tt>,
+<tt>zz_pE</tt>,
+<tt>ZZ_p</tt>,
+and
+<tt>ZZ_pE</tt>.
+</ul>
+
+
+
+
+</ul>
+
+<p><hr><p>
+<h3>
 2016.11.18: Changes between NTL 10.2.0 and 10.3.0
 </h3>
 

@@ -94,6 +94,35 @@ void kill()
 void swap(ZZ& x)
 { _ntl_gswap(&rep, &x.rep); }
 
+bool pinned() const
+{
+   return _ntl_PINNED(rep);
+}
+
+
+#if (NTL_CXX_STANDARD >= 2011)
+
+ZZ(ZZ&& a) NTL_FAKE_NOEXCEPT
+{
+   *this = std::move(a);
+}
+
+ZZ& operator=(ZZ&& a) NTL_FAKE_NOEXCEPT
+{
+   if (pinned() || a.pinned()) {
+      _ntl_gcopy(a.rep, &rep);
+   }
+   else {
+      rep.move(a.rep);
+   }
+
+   return *this;
+}
+
+
+#endif
+
+
 void SetSize(long k)
 // pre-allocates space for k-digit numbers (base 2^NTL_ZZ_NBITS);  
 // does not change the value.
@@ -144,6 +173,9 @@ void KillBig() { if (MaxAlloc() > NTL_RELEASE_THRESH) kill(); }
 long validate() { return _ntl_gvalidate(rep); }
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((ZZ*))
 
 
 class ZZWatcher {
@@ -210,7 +242,6 @@ inline ZZ to_ZZ(unsigned long a) { return ZZ(INIT_VAL, a); }
 inline void conv(ZZ& x, unsigned int a) { _ntl_guintoz((unsigned long)(a), &x.rep); }
 inline ZZ to_ZZ(unsigned int a) { return ZZ(INIT_VAL, a); }
 
-void conv(ZZ& x, const char *s);
 inline ZZ::ZZ(INIT_VAL_TYPE, const char *s)  { conv(*this, s); }
 inline ZZ to_ZZ(const char *s) { return ZZ(INIT_VAL, s); }
 
@@ -977,7 +1008,9 @@ inline ZZ& operator^=(ZZ& x, long b)
 
 
 
-long NumBits(long a);
+inline
+long NumBits(long a)
+   { return _ntl_g2logs(a); }
 
 long bit(long a, long k);
 
@@ -1039,7 +1072,98 @@ void DeriveKey(unsigned char *key, long klen,
 
 #define NTL_PRG_KEYLEN (32)
 
+
+class RandomStream_impl;
+
+RandomStream_impl *
+RandomStream_impl_build(const unsigned char *key);
+
+RandomStream_impl *
+RandomStream_impl_build(const RandomStream_impl&);
+
+void
+RandomStream_impl_copy(RandomStream_impl&, const RandomStream_impl&);
+
+const unsigned char *
+RandomStream_impl_get_buf(const RandomStream_impl&);
+
+long
+RandomStream_impl_get_buf_len(const RandomStream_impl&);
+
+long
+RandomStream_impl_get_bytes(RandomStream_impl& impl, unsigned char *res, 
+   long n, long pos);
+
+void
+RandomStream_impl_delete(RandomStream_impl*);
+
+struct 
+RandomStream_impl_deleter {
+   static void deleter(RandomStream_impl* p) { RandomStream_impl_delete(p); }
+};
+
+
 class RandomStream {
+private:
+
+   long pos;
+   const unsigned char *buf;
+   long buf_len;
+
+   UniquePtr<RandomStream_impl,RandomStream_impl_deleter> impl;
+
+public:
+
+   explicit
+   RandomStream(const unsigned char *key) {
+      impl.reset(RandomStream_impl_build(key));
+      pos = buf_len = RandomStream_impl_get_buf_len(*impl);
+      buf = RandomStream_impl_get_buf(*impl);
+   }
+
+   RandomStream(const RandomStream& other) {
+      impl.reset(RandomStream_impl_build(*other.impl));
+      pos = other.pos;
+      buf_len = other.buf_len;
+      buf = RandomStream_impl_get_buf(*impl);
+   }
+
+   RandomStream& operator=(const RandomStream& other) {
+      RandomStream_impl_copy(*impl, *other.impl);
+      pos = other.pos;
+      buf_len = other.buf_len;
+      buf = RandomStream_impl_get_buf(*impl);
+      return *this;
+   }
+
+   void get(unsigned char *res, long n) 
+   {
+      // optimize short reads
+      if (n > 0 && n <= buf_len-pos) {
+#if 1
+         std::memcpy(&res[0], &buf[pos], n);
+         // NOTE: mempy undefined if res == null
+         // That's a reason we don't do this for n==0, which
+         // is anyway an unlikely case
+#else
+         for (long i = 0; i < n; i++) {
+            res[i] = buf[pos+i];
+         }
+#endif
+         pos += n;
+      }
+      else {
+         pos = RandomStream_impl_get_bytes(*impl, res, n, pos);
+      }
+   }
+
+};
+
+
+
+// ============ old stuff: for testing  ============
+
+class old_RandomStream {
 private:
    _ntl_uint32 state[16];
    unsigned char buf[64];
@@ -1049,7 +1173,7 @@ private:
 
 public:
    explicit
-   RandomStream(const unsigned char *key);
+   old_RandomStream(const unsigned char *key);
 
    // No default constructor 
    // default copy and assignment
@@ -1604,7 +1728,7 @@ public:
 class InvModErrorObject : public ArithmeticErrorObject {
 public:
    InvModErrorObject(const char *s, const ZZ& a, const ZZ& n)
-     : ArithmeticErrorObject(s) { (void) a; (void) n;}
+      : ArithmeticErrorObject(s) { }
 
    const ZZ& get_a() const { return ZZ::zero(); }
    const ZZ& get_n() const { return ZZ::zero(); }
