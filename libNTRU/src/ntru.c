@@ -7,11 +7,52 @@
 #include "idxgen.h"
 #include "mgf.h"
 
-/** Whether to ensure g is invertible when generating a key */
+/***************************************
+ *          NTRU Prime                 *
+ ***************************************/
+
+uint8_t ntruprime_gen_key_pair(const NtruPrimeParams *params, NtruPrimeKeyPair *kp, NtruRandContext *rand_ctx) {
+    NtruIntPoly g;
+    NtruIntPoly *g_inv = &kp->priv.g_inv;
+    uint8_t invertible;
+    do {
+        if (!ntruprime_rand_tern(params->p, &g, rand_ctx))
+            return NTRU_ERR_PRNG;
+        invertible = ntruprime_inv_poly(&g, g_inv, params->q);
+    } while (!invertible);
+
+    NtruIntPoly *f = &kp->priv.f;
+    if (!ntruprime_rand_tern_t(params->p, params->t, f, rand_ctx))
+        return NTRU_ERR_PRNG;
+    NtruIntPoly f_inv;
+    if (!ntruprime_inv_poly(f, &f_inv, params->q))
+        return NTRU_ERR_INVALID_PARAM;
+
+    NtruIntPoly *h = &kp->pub.h;
+    if (!ntruprime_mult_poly(&g, &f_inv, h, params->q))
+        return NTRU_ERR_INVALID_PARAM;
+    ntruprime_mult_mod(h, params->inv_3, params->q);
+
+    return NTRU_SUCCESS;
+}
+
+/***************************************
+ *          NTRUEncrypt                *
+ ***************************************/
+
+/** whether to ensure g is invertible when generating a key */
 #define NTRU_CHECK_INVERTIBILITY_G 0
 
 const int8_t NTRU_COEFF1_TABLE[] = {0, 0, 0, 1, 1, 1, -1, -1};
 const int8_t NTRU_COEFF2_TABLE[] = {0, 1, -1, 0, 1, -1, 0, 1};
+
+void ntru_set_optimized_impl() {
+#ifdef NTRU_DETECT_SIMD
+    __builtin_cpu_init();
+#endif
+    ntru_set_optimized_impl_poly();
+    ntru_set_optimized_impl_hash();
+}
 
 /* Generates a random g. If NTRU_CHECK_INVERTIBILITY_G, g will be invertible mod q */
 uint8_t ntru_gen_g(const NtruEncParams *params, NtruPrivPoly *g, NtruRandContext *rand_ctx) {
@@ -93,6 +134,8 @@ uint8_t ntru_gen_key_pair_single(const NtruEncParams *params, NtruEncPrivKey *pr
 }
 
 uint8_t ntru_gen_key_pair(const NtruEncParams *params, NtruEncKeyPair *kp, NtruRandContext *rand_ctx) {
+    ntru_set_optimized_impl();
+
     NtruIntPoly fq;
     uint8_t result = ntru_gen_key_pair_single(params, &kp->priv, &kp->pub, &fq, rand_ctx);
     ntru_clear_int(&fq);
@@ -100,6 +143,8 @@ uint8_t ntru_gen_key_pair(const NtruEncParams *params, NtruEncKeyPair *kp, NtruR
 }
 
 uint8_t ntru_gen_key_pair_multi(const NtruEncParams *params, NtruEncPrivKey *priv, NtruEncPubKey *pub, NtruRandContext *rand_ctx, uint32_t num_pub) {
+    ntru_set_optimized_impl();
+
     uint16_t q = params->q;
     NtruIntPoly fq;
     uint8_t result = ntru_gen_key_pair_single(params, priv, pub, &fq, rand_ctx);
@@ -123,6 +168,8 @@ uint8_t ntru_gen_key_pair_multi(const NtruEncParams *params, NtruEncPrivKey *pri
 }
 
 uint8_t ntru_gen_pub(const NtruEncParams *params, NtruEncPrivKey *priv, NtruEncPubKey *pub, NtruRandContext *rand_ctx) {
+    ntru_set_optimized_impl();
+
     uint16_t q = params->q;
     NtruIntPoly fq;
     if (!ntru_invert(&priv->t, q-1, &fq))
@@ -368,6 +415,8 @@ uint8_t ntru_check_rep_weight(NtruIntPoly *p, uint16_t dm0) {
 }
 
 uint8_t ntru_encrypt(uint8_t *msg, uint16_t msg_len, NtruEncPubKey *pub, const NtruEncParams *params, NtruRandContext *rand_ctx, uint8_t *enc) {
+    ntru_set_optimized_impl();
+
     uint16_t N = params->N;
     uint16_t q = params->q;
     uint16_t db = params->db;
@@ -437,6 +486,8 @@ void ntru_decrypt_poly(NtruIntPoly *e, NtruEncPrivKey *priv, uint16_t q, NtruInt
 }
 
 uint8_t ntru_decrypt(uint8_t *enc, NtruEncKeyPair *kp, const NtruEncParams *params, uint8_t *dec, uint16_t *dec_len) {
+    ntru_set_optimized_impl();
+
     uint16_t N = params->N;
     uint16_t q = params->q;
     uint16_t db = params->db;

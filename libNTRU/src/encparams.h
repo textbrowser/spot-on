@@ -4,6 +4,34 @@
 #include <stdint.h>
 #include "hash.h"
 
+/***************************************
+ *           NTRU Prime                *
+ ***************************************/
+
+/* A set of parameters for NTRU Prime */
+typedef struct NtruPrimeParams {
+    /* name of the parameter set */
+    char name[11];
+
+    /* number of polynomial coefficients */
+    uint16_t p;
+
+    /* modulus */
+    uint16_t q;
+
+    /* number of ones + number of negative ones in f */
+    uint16_t t;
+
+    /* 3^(-1) mod q */
+    uint16_t inv_3;
+} NtruPrimeParams;
+
+extern const NtruPrimeParams NTRUPRIME_739;
+
+/***************************************
+ *           NTRUEncrypt               *
+ ***************************************/
+
 /* max hash output length in bytes */
 #define NTRU_MAX_HASH_LEN 64
 

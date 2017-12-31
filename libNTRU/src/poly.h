@@ -6,9 +6,73 @@
 #include "types.h"
 
 /**
+ * @brief NTRU Prime multiplication
+ *
+ * Multiplies two NtruIntPolys modulo q. Both are assumed to be reduced mod q.
+ *
+ * @param a a polynomial
+ * @param b a polynomial
+ * @param c output parameter; a pointer to store the new polynomial
+ * @param modulus
+ */
+uint8_t ntruprime_mult_poly(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t modulus);
+
+/**
+ * @brief Random small polynomial
+ *
+ * Generates a random ternary polynomial for NTRU Prime.
+ *
+ * @param N the number of coefficients; must be NTRU_MAX_DEGREE or less
+ * @param poly output parameter; a pointer to store the new polynomial
+ * @param rand_ctx a random number generator
+ * @return 1 for success, 0 for failure
+ */
+uint8_t ntruprime_rand_tern(uint16_t N, NtruIntPoly *poly, NtruRandContext *rand_ctx);
+
+/**
+ * @brief Random t-small polynomial
+ *
+ * Generates a random ternary polynomial for NTRU Prime with t nonzero coefficients.
+ *
+ * @param N the number of coefficients; must be NTRU_MAX_DEGREE or less
+ * @param t number of ones + number of negative ones
+ * @param poly output parameter; a pointer to store the new polynomial
+ * @param rand_ctx a random number generator
+ * @return 1 for success, 0 for failure
+ */
+uint8_t ntruprime_rand_tern_t(uint16_t N, uint16_t t, NtruIntPoly *poly, NtruRandContext *rand_ctx);
+
+/* Multiplies a polynomial by an integer, modulo another integer */
+void ntruprime_mult_mod(NtruIntPoly *a, uint16_t factor, uint16_t modulus);
+
+/**
+ * @brief Modular inverse
+ *
+ * Computes the multiplicative inverse of a number using the extended Euclidean algorithm.
+ *
+ * @param a the input value
+ * @param modulus
+ * @return the inverse of a
+ */
+uint16_t ntruprime_inv_int(uint16_t a, uint16_t modulus);
+
+/**
+ * @brief Polynomial inverse
+ *
+ * Computes the multiplicative inverse of a polynomial in (Z/q)[x]/[x^p-x-1],
+ * where p is given by a->N and q is given by modulus.
+ *
+ * @param a the input value
+ * @param b output parameter; a pointer to store the inverse polynomial
+ * @param modulus
+ * @return 1 if a is invertible, 0 otherwise
+ */
+uint8_t ntruprime_inv_poly(NtruIntPoly *a, NtruIntPoly *b, uint16_t modulus);
+
+/**
  * @brief Random ternary polynomial
  *
- * Generates a random ternary polynomial.
+ * Generates a random ternary polynomial for NTRUEncrypt.
  *
  * @param N the number of coefficients; must be NTRU_MAX_DEGREE or less
  * @param num_ones number of ones
@@ -71,7 +135,7 @@ void ntru_sub(NtruIntPoly *a, NtruIntPoly *b);
  * @param mod_mask an AND mask to apply; must be a power of two minus one
  * @return 0 if the number of coefficients differ, 1 otherwise
  */
-uint8_t ntru_mult_tern(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t mod_mask);
+uint8_t (*ntru_mult_tern)(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t mod_mask);
 
 /**
  * @brief General polynomial by ternary polynomial multiplication, 32 bit version
@@ -102,36 +166,6 @@ uint8_t ntru_mult_tern_32(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint1
  * @return 0 if the number of coefficients differ, 1 otherwise
  */
 uint8_t ntru_mult_tern_64(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t mod_mask);
-
-/**
- * @brief General polynomial by ternary polynomial multiplication, SSSE3 version
- *
- * Multiplies a NtruIntPoly by a NtruTernPoly. The number of coefficients
- * must be the same for both polynomials.
- * This variant requires SSSE3 support.
- *
- * @param a a general polynomial
- * @param b a ternary polynomial
- * @param c output parameter; a pointer to store the new polynomial
- * @param mod_mask an AND mask to apply; must be a power of two minus one
- * @return 0 if the number of coefficients differ, 1 otherwise
- */
-uint8_t ntru_mult_tern_sse(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t mod_mask);
-
-/**
- * @brief General polynomial by ternary polynomial multiplication, AVX2 version
- *
- * Multiplies a NtruIntPoly by a NtruTernPoly. The number of coefficients
- * must be the same for both polynomials.
- * This variant requires AVX2 support.
- *
- * @param a a general polynomial
- * @param b a ternary polynomial
- * @param c output parameter; a pointer to store the new polynomial
- * @param mod_mask an AND mask to apply; must be a power of two minus one
- * @return 0 if the number of coefficients differ, 1 otherwise
- */
-uint8_t ntru_mult_tern_avx2(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t mod_mask);
 
 #ifndef NTRU_AVOID_HAMMING_WT_PATENT
 /**
@@ -195,19 +229,6 @@ void ntru_to_arr_64(NtruIntPoly *p, uint16_t q, uint8_t *a);
 /**
  * @brief Polynomial to binary
  *
- * Converts a NtruIntPoly to a uint8_t array. q is assumed to be 2048, so
- * each coefficient is encoded in 11 bits.
- * Requires SSSE3 support.
- *
- * @param p a polynomial
- * @param a output parameter; a pointer to store the encoded polynomial.
- *          Must accommodate at least 7 more bytes than the result takes up.
- */
-void ntru_to_arr_sse_2048(NtruIntPoly *p, uint8_t *a);
-
-/**
- * @brief Polynomial to binary
- *
  * Converts a NtruIntPoly to a uint8_t array. Each coefficient is encoded
  * in (log q) bits.
  *
@@ -215,7 +236,7 @@ void ntru_to_arr_sse_2048(NtruIntPoly *p, uint8_t *a);
  * @param q the modulus; must be a power of two
  * @param a output parameter; a pointer to store the encoded polynomial
  */
-void ntru_to_arr(NtruIntPoly *p, uint16_t q, uint8_t *a);
+void (*ntru_to_arr)(NtruIntPoly *p, uint16_t q, uint8_t *a);
 
 /**
  * @brief Polynomial to binary modulo 4
@@ -252,7 +273,7 @@ void ntru_mult_fac(NtruIntPoly *a, int16_t factor);
  * @param mod_mask an AND mask to apply to the coefficients of c
  * @return 0 if the number of coefficients differ, 1 otherwise
  */
-uint8_t ntru_mult_int(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t mod_mask);
+uint8_t (*ntru_mult_int)(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t mod_mask);
 
 /**
  * @brief Multiplication of two general polynomials with a modulus
@@ -285,36 +306,6 @@ uint8_t ntru_mult_int_16(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_
 uint8_t ntru_mult_int_64(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t mod_mask);
 
 /**
- * @brief Multiplication of two general polynomials with a modulus, SSSE3 version
- *
- * Multiplies a NtruIntPoly by another, taking the coefficient values modulo an integer.
- * The number of coefficients must be the same for both polynomials.
- * Requires SSSE3 support.
- *
- * @param a input and output parameter; coefficients are overwritten
- * @param b a polynomial to multiply by
- * @param c output parameter; a pointer to store the new polynomial
- * @param mod_mask an AND mask to apply to the coefficients of c
- * @return 0 if the number of coefficients differ, 1 otherwise
- */
-uint8_t ntru_mult_int_sse(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t mod_mask);
-
-/**
- * @brief Multiplication of two general polynomials with a modulus, AVX2 version
- *
- * Multiplies a NtruIntPoly by another, taking the coefficient values modulo an integer.
- * The number of coefficients must be the same for both polynomials.
- * Requires AVX2 support.
- *
- * @param a input and output parameter; coefficients are overwritten
- * @param b a polynomial to multiply by
- * @param c output parameter; a pointer to store the new polynomial
- * @param mod_mask an AND mask to apply to the coefficients of c
- * @return 0 if the number of coefficients differ, 1 otherwise
- */
-uint8_t ntru_mult_int_avx2(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t mod_mask);
-
-/**
  * @brief Reduction modulo a power of two
  *
  * Reduces the coefficients of an NtruIntPoly modulo a power of two.
@@ -322,7 +313,7 @@ uint8_t ntru_mult_int_avx2(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint1
  * @param p input and output parameter; coefficients are overwritten
  * @param mod_mask an AND mask to apply to the coefficients of c
  */
-void ntru_mod_mask(NtruIntPoly *p, uint16_t mod_mask);
+void (*ntru_mod_mask)(NtruIntPoly *p, uint16_t mod_mask);
 
 /**
  * @brief Reduction modulo 3
@@ -344,16 +335,6 @@ void ntru_mod3(NtruIntPoly *p);
  * @param modulus the modulus to apply to the coefficients of p
  */
 void ntru_mod_center(NtruIntPoly *p, uint16_t modulus);
-
-/**
- * @brief Equality with one
- *
- * Tests if p(x) = 1
- *
- * @param p a polynomial
- * @return 1 iff all coefficients are equal to zero, except for the lowest coefficient which must equal 1
- */
-uint8_t ntru_equals1(NtruIntPoly *p);
 
 /**
  * @brief Equality of two polynomials
@@ -398,7 +379,7 @@ void ntru_clear_int(NtruIntPoly *p);
  * @param Fq output parameter; a pointer to store the new polynomial
  * @return 1 if a is invertible, 0 otherwise
  */
-uint8_t ntru_invert(NtruPrivPoly *a, uint16_t mod_mask, NtruIntPoly *Fq);
+uint8_t (*ntru_invert)(NtruPrivPoly *a, uint16_t mod_mask, NtruIntPoly *Fq);
 
 /**
  * @brief Inverse modulo q
@@ -431,5 +412,13 @@ uint8_t ntru_invert_32(NtruPrivPoly *a, uint16_t mod_mask, NtruIntPoly *Fq);
  * @return 1 if a is invertible, 0 otherwise
  */
 uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t mod_mask, NtruIntPoly *Fq);
+
+/**
+ * @brief Choose fastest implementation
+ *
+ * Sets function pointers for polynomial math, etc. so the most efficient
+ * variant is used.
+ */
+void ntru_set_optimized_impl_poly();
 
 #endif   /* NTRU_POLY_H */
