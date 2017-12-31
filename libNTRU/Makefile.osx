@@ -4,6 +4,7 @@ AS=$(CC) -c
 # set CFLAGS depending on SIMD
 CFLAGS?=-g
 CFLAGS+=-Wall -Wextra -Wno-unused-parameter
+SIMD=none
 ifeq ($(SIMD), ssse3)
     CFLAGS+=-mssse3 -mno-avx2
 else ifeq ($(SIMD), avx2)
