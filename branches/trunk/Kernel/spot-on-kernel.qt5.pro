@@ -45,9 +45,9 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Werror -Wextra -Wl,-z,relro \
 			  -Woverloaded-virtual -Wpointer-arith \
                           -Wstack-protector -Wstrict-overflow=5
+QMAKE_EXTRA_TARGETS = libntl libntru libspoton purge
 QMAKE_LFLAGS_RELEASE = -Wl,-rpath,/usr/local/spot-on/Lib
 QMAKE_LFLAGS_RPATH =
-QMAKE_EXTRA_TARGETS = libntl libntru libspoton purge
 INCLUDEPATH	+= . ../. ../../../. ../../../libNTL/unix.d/include \
 		   /usr/include/postgresql
 LIBS		+= -L../../../libNTL/unix.d/src/.libs \
