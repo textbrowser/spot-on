@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1854</y>
+         <y>-803</y>
          <width>721</width>
-         <height>3335</height>
+         <height>3363</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1117,6 +1117,13 @@
                  </widget>
                 </item>
                </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="terminate_kernel_on_ui_exit">
+                <property name="text">
+                 <string>&amp;Terminate kernel process on UI exit.</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -2633,6 +2640,7 @@
   <tabstop>sslControlString</tabstop>
   <tabstop>saveSslControlString</tabstop>
   <tabstop>testSslControlString</tabstop>
+  <tabstop>terminate_kernel_on_ui_exit</tabstop>
   <tabstop>starbeamAutoVerify</tabstop>
   <tabstop>starbeamUpdateInterval</tabstop>
   <tabstop>remove_otm</tabstop>

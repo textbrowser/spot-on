@@ -1587,29 +1587,30 @@ bool spoton::promptBeforeExit(void)
 	return true;
     }
 
-  if(m_ui.pid->text().toLongLong() > 0)
-    {
-      QMessageBox mb(this);
+  if(!m_optionsUi.terminate_kernel_on_ui_exit->isChecked())
+    if(m_ui.pid->text().toLongLong() > 0)
+      {
+	QMessageBox mb(this);
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+	mb.setAttribute(Qt::WA_MacMetalStyle, true);
 #endif
 #endif
-      mb.setIcon(QMessageBox::Question);
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Question").
-			arg(SPOTON_APPLICATION_NAME));
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("The kernel appears to be active. Closing %1 "
-		    "will not deactivate the kernel. Are you "
-		    "sure that you wish to exit %1?").
-		 arg(SPOTON_APPLICATION_NAME));
+	mb.setIcon(QMessageBox::Question);
+	mb.setWindowIcon(windowIcon());
+	mb.setWindowModality(Qt::WindowModal);
+	mb.setWindowTitle(tr("%1: Question").
+			  arg(SPOTON_APPLICATION_NAME));
+	mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	mb.setText(tr("The kernel appears to be active. Closing %1 "
+		      "will not deactivate the kernel. Are you "
+		      "sure that you wish to exit %1?").
+		   arg(SPOTON_APPLICATION_NAME));
 
-      if(mb.exec() != QMessageBox::Yes)
-	return true;
-    }
+	if(mb.exec() != QMessageBox::Yes)
+	  return true;
+      }
 
   m_quit = true;
   return false;

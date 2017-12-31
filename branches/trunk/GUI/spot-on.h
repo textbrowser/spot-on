@@ -1003,6 +1003,7 @@ class spoton: public QMainWindow
   void slotStatusChanged(int index);
   void slotSuperEcho(int index);
   void slotTabChanged(int index);
+  void slotTerminateKernelOnUIExit(bool state);
   void slotTestPoptasticPop3Settings(void);
   void slotTestPoptasticSmtpSettings(void);
   void slotTestSslControlString(void);

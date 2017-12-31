@@ -2061,6 +2061,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotPostgreSQLKernelUrlDistributionTimeout(int)));
+  connect(m_optionsUi.terminate_kernel_on_ui_exit,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotTerminateKernelOnUIExit(bool)));
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -2291,6 +2295,8 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.postgresql_kernel_url_distribution_timeout->setValue
     (m_settings.value("gui/postgresql_kernel_url_distribution_timeout", 45000).
      toInt());
+  m_optionsUi.terminate_kernel_on_ui_exit->setChecked
+    (m_settings.value("gui/terminate_kernel_on_ui_exit", false).toBool());
   m_kernelUpdateTimer.start
     (static_cast<int> (1000 * m_optionsUi.kernelUpdateInterval->value()));
   m_listenersUpdateTimer.start
@@ -3262,6 +3268,9 @@ void spoton::slotQuit(void)
   if(!m_quit && sender())
     if(promptBeforeExit())
       return;
+
+  if(m_optionsUi.terminate_kernel_on_ui_exit->isChecked())
+    slotDeactivateKernel();
 
   m_quit = true;
   cleanup();

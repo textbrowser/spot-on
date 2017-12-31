@@ -379,3 +379,12 @@ void spoton::slotMailContextMenu(const QPoint &point)
   Q_UNUSED(point);
 #endif
 }
+
+void spoton::slotTerminateKernelOnUIExit(bool state)
+{
+  m_settings["gui/terminate_kernel_on_ui_exit"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/terminate_kernel_on_ui_exit", state);
+}
