@@ -37,6 +37,21 @@
 	<img src="images/spot-on.png">
         <hr>
         <section id="main_content">
+	  <h4>Spot-On 2018.01.01</h4>
+	  <p>
+	    Welcome to the 2018.01.01 release of Spot-On. Corrections and new features are detailed below.<br>
+	    <ul>
+	      <li>Debian package lacked multimedia support.</li>
+	      <li>QAbstractSocket::setSocketDescriptor() may fail. Provided descriptor must be closed.</li>
+	      <li>Removed OS/2 support.</li>
+	      <li>Removed Qt 4.x OS X project files.</li>
+	      <li>Replaced Q_OS_WIN32 with Q_OS_WIN.</li>
+	      <li>Spot-On now supports Qt 4.8.7 and Qt 5.5.1 and newer.</li>
+	      <li>Terminate the kernel on exit, if enabled. Please see Options::Settings.</li>
+              <li>Upgraded NTRU products.</li>
+              <li>Upgraded libNTL Unix source to version 10.5.0. Please remove the existing libNTL directory before building Spot-On. C++ exceptions have been enabled. Please review NTL's DoConfig file.</li>
+	    </ul>
+	  </p>
 	  <h4>Spot-On 2017.12.27</h4>
 	  <p>
 	    Welcome to the 2017.12.27 release of Spot-On. Corrections and new features are detailed below.<br>
