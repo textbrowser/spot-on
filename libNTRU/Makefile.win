@@ -1,4 +1,4 @@
-CC?=gcc
+CC=gcc
 AS=$(CC) -c
 
 ifeq ($(SIMD), sse)

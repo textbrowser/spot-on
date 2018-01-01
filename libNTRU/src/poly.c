@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
+#ifdef WIN32
+#include <malloc.h>
+#else
 #include <alloca.h>
+#endif
 #include "poly.h"
 #include "poly_ssse3.h"
 #include "poly_avx2.h"
