@@ -51,4 +51,4 @@ mkdir -p goldbug-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/goldbug.desktop goldbug-debian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/DEBIAN-GoldBug goldbug-debian/DEBIAN
 cp -r /usr/local/goldbug goldbug-debian/usr/local/.
-dpkg-deb --build goldbug-debian GoldBug-2018.01.01.deb
+dpkg-deb --build goldbug-debian GoldBug-2018.01.05.deb
