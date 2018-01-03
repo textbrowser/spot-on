@@ -2963,7 +2963,7 @@ bool spoton_misc::isValidBuzzMagnetData(const QByteArray &data)
 	}
       else if(i == 5) // Hash Type
 	{
-	  if(!spoton_crypt::hashTypes().contains(str))
+	  if(!spoton_crypt::buzzHashTypes().contains(str))
 	    {
 	      valid = false;
 	      goto done_label;
@@ -3047,7 +3047,7 @@ bool spoton_misc::isValidBuzzMagnet(const QByteArray &magnet)
 	{
 	  str.remove(0, 3);
 
-	  if(!spoton_crypt::hashTypes().contains(str))
+	  if(!spoton_crypt::buzzHashTypes().contains(str))
 	    {
 	      valid = false;
 	      goto done_label;
