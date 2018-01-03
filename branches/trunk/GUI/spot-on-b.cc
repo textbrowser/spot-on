@@ -350,7 +350,7 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  notify(QDateTime::currentDateTime().toString());
 		  notify
-		    (tr("Participant <i>%1</i> (%2) "
+		    (tr("Participant <b>%1</b> (%2) "
 			"has completed a "
 			"forward secrecy exchange.<br>").
 		     arg(name).
@@ -407,11 +407,10 @@ void spoton::slotReceivedKernelMessage(void)
 			 arg(now.toString("mm")).
 			 arg(now.toString("ss")));
 		      msg.append
-			(tr("<i><a href='%1'>"
-			    "%2...%3 cordially invites you to "
-			    "join a Buzz channel. Please click this "
-			    "link to accept the invitation in a new "
-			    "window.</a></i>").
+			(tr("<i>%2...%3 cordially invites you to "
+			    "join a Buzz channel. Please <a href='%1'>"
+			    "accept</a> the invitation. If accepted, a new "
+			    "window will be displayed.</i>").
 			 arg(list.value(2).constData()).
 			 arg(hash.toBase64().mid(0, 16).
 			     constData()).
@@ -630,9 +629,9 @@ void spoton::slotReceivedKernelMessage(void)
 			    msg.append
 			      (tr("<font color=red>"
 				  "<i>SMP verification with "
-				  "%1 (%2...%3) "
+				  "%1 (%2...%3) has "
 				  "experienced a protocol failure. "
-				  "The specific state machine has been reset."
+				  "The respective state machine has been reset."
 				  "</i></font>").
 			       arg(smpName).
 			       arg(hash.toBase64().mid(0, 16).
