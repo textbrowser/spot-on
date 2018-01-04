@@ -231,16 +231,18 @@ void spoton::slotReceivedKernelMessage(void)
 	      if(!page)
 		continue;
 
-	      QByteArray bytes(list.value(0));
+	      list = list.value(0).split('\n');
 
-	      list = bytes.split('\n');
-
-	      for(int i = 0; i < list.size(); i++)
-		list.replace(i, QByteArray::fromBase64(list.at(i)));
+	      if(!list.isEmpty())
+		list.replace
+		  (list.size() - 1,
+		   QByteArray::fromBase64(list.at(list.size() - 1)));
+	      else
+		continue;
 
 	      QDateTime dateTime
-		(QDateTime::fromString(list.value(list.size() - 1).
-				       constData(), "MMddyyyyhhmmss"));
+		(QDateTime::fromString(list.at(list.size() - 1).constData(),
+				       "MMddyyyyhhmmss"));
 
 	      dateTime.setTimeSpec(Qt::UTC);
 
@@ -249,8 +251,10 @@ void spoton::slotReceivedKernelMessage(void)
 				       spoton_common::BUZZ_TIME_DELTA))
 		continue;
 
-	      if(!list.isEmpty())
-		list.removeAt(0); // Message Type
+	      for(int i = 0; i < list.size() - 1; i++)
+		list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+	      list.removeAt(0); // Message Type
 
 	      if(list.size() == 3)
 		page->userStatus(list);
