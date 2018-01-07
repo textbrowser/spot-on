@@ -435,7 +435,7 @@ EOL
 Echo Buzz
 Echoed? Yes
 
-Groups: 2
+Groups: 3
 Symmetric Key (Base-64)
 {
 0 - 0040a (Base-64)
@@ -450,8 +450,12 @@ EOL
 {
 0 - Keyed Message Code (Base-64)
 }
+EOL
+{
+0 - Destination Code (Base-64)
+}
 
-Groups: 2
+Groups: 3
 Symmetric Key (Base-64)
 {
 0 - 0040b (Base-64)
@@ -467,6 +471,10 @@ EOL
 EOL
 {
 0 - Keyed Message Code (Base-64)
+}
+EOL
+{
+0 - Destination Code (Base-64)
 }
 
 Account Authentication
