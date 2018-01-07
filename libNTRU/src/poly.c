@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
-#ifdef WIN32
+#ifdef __FreeBSD__
+#elif defined(WIN32)
 #include <malloc.h>
 #else
 #include <alloca.h>
