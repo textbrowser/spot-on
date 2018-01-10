@@ -51,7 +51,7 @@ LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
 		   -L..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\libOpenSSL\\Libraries.win32 \
 		   -L..\\..\\libcURL\\Win32.d\bin \
-		   -lGeoIP-1 -lcrypto-1_1 -lcurl -leay32 -lgcrypt-20 \
+		   -lGeoIP-1 -lcrypto-1_1 -lcurl -lgcrypt-20 \
 		   -lgpg-error-0 -lntl \
 		   -lntru -lpq -lpthread -lspoton -lssl-1_1 -lws2_32
 PRE_TARGETDEPS = libntru.dll libspoton.dll
