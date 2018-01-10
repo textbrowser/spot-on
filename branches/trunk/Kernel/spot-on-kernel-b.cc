@@ -137,14 +137,8 @@ void spoton_kernel::popPoptastic(void)
     }
 
   CURL *curl = 0;
-  QHash<QByteArray, char> cache;
-  QList<int> list;
-  bool popRound = true;
 
- begin_label:
-  curl = curl_easy_init();
-
-  if(curl)
+  if((curl = curl_easy_init()))
     {
       curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
       curl_easy_setopt
@@ -185,6 +179,7 @@ void spoton_kernel::popPoptastic(void)
 	}
 
       QString method(hash.value("in_method").toString().toUpper().trimmed());
+      QString removeUrl("");
       QString ssltls(hash.value("in_ssltls").toString().toUpper().trimmed());
       QString url("");
 
@@ -192,14 +187,12 @@ void spoton_kernel::popPoptastic(void)
 	{
 	  if(method == "IMAP")
 	    {
-	      if(popRound)
-		url = QString("imaps://%1:%2/INBOX/;UID=1").
-		  arg(hash.value("in_server_address").toString().trimmed()).
-		  arg(hash.value("in_server_port").toString().trimmed());
-	      else
-		url = QString("imaps://%1:%2/INBOX").
-		  arg(hash.value("in_server_address").toString().trimmed()).
-		  arg(hash.value("in_server_port").toString().trimmed());
+	      removeUrl = QString("imaps://%1:%2/INBOX").
+		arg(hash.value("in_server_address").toString().trimmed()).
+		arg(hash.value("in_server_port").toString().trimmed());
+	      url = QString("imaps://%1:%2/INBOX/;UID=1").
+		arg(hash.value("in_server_address").toString().trimmed()).
+		arg(hash.value("in_server_port").toString().trimmed());
 	    }
 	  else
 	    url = QString("pop3s://%1:%2/1").
@@ -235,14 +228,12 @@ void spoton_kernel::popPoptastic(void)
 	{
 	  if(method == "IMAP")
 	    {
-	      if(popRound)
-		url = QString("imap://%1:%2/INBOX/;UID=1").
-		  arg(hash.value("in_server_address").toString().trimmed()).
-		  arg(hash.value("in_server_port").toString().trimmed());
-	      else
-		url = QString("imap://%1:%2/INBOX").
-		  arg(hash.value("in_server_address").toString().trimmed()).
-		  arg(hash.value("in_server_port").toString().trimmed());
+	      removeUrl = QString("imap://%1:%2/INBOX").
+		arg(hash.value("in_server_address").toString().trimmed()).
+		arg(hash.value("in_server_port").toString().trimmed());
+	      url = QString("imap://%1:%2/INBOX/;UID=1").
+		arg(hash.value("in_server_address").toString().trimmed()).
+		arg(hash.value("in_server_port").toString().trimmed());
 	    }
 	  else
 	    url = QString("pop3://%1:%2/1").
@@ -250,130 +241,98 @@ void spoton_kernel::popPoptastic(void)
 	      arg(hash.value("in_server_port").toString().trimmed());
 	}
 
-      curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
+      QHash<QByteArray, char> cache;
+      int limit = setting("gui/poptasticNumberOfMessages", 15).toInt();
 
-      if(popRound)
+      for(int i = 1; i <= limit; i++)
 	{
-	  popRound = false;
+	  curl_receive_data.clear();
+	  curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+	  curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
+	  curl_easy_setopt
+	    (curl, CURLOPT_WRITEFUNCTION, curl_write_memory_callback);
 
-	  for(int i = 1; i <= 15; i++)
+	  CURLcode rc = CURLE_OK;
+
+	  if((rc = curl_easy_perform(curl)) == CURLE_OK)
 	    {
-	      curl_receive_data.clear();
-	      curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 128L);
-	      curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
-	      curl_easy_setopt
-		(curl, CURLOPT_WRITEFUNCTION, curl_write_memory_callback);
-
-	      CURLcode rc = CURLE_OK;
-
-	      if((rc = curl_easy_perform(curl)) == CURLE_OK)
-		{
-		  if(method == "IMAP")
-		    {
-		      list.append(i);
-		      url.replace
-			(QString("UID=%1").arg(i),
-			 QString("UID=%1").arg(i + 1));
-		      curl_easy_setopt
-			(curl, CURLOPT_URL, url.toLatin1().constData());
-		    }
-		  else
-		    {
-		      url = url.mid(0, url.lastIndexOf('/'));
-		      url.append("/");
-		      url.append(QByteArray::number(i));
-		      curl_easy_setopt
-			(curl, CURLOPT_URL, url.toLatin1().constData());
-		    }
-
-		  if(!curl_receive_data.isEmpty())
-		    {
-		      QByteArray hash;
-		      bool ok = true;
-
-		      hash = s_crypt->keyedHash(curl_receive_data, &ok);
-
-		      if(!cache.contains(hash))
-			{
-			  emit poppedMessage(curl_receive_data);
-			  cache[hash] = 0;
-			}
-		    }
-		}
-	      else if(rc == CURLE_OPERATION_TIMEDOUT)
-		{
-                  if(method == "IMAP")
-		    list.append(i); // Remove this item from the Inbox.
-
-		  break;
-                }
+	      if(method == "IMAP")
+		url.replace
+		  (QString("UID=%1").arg(i),
+		   QString("UID=%1").arg(i + 1));
 	      else
 		{
-		  spoton_misc::logError
-		    (QString("spoton_kernel::popPoptastic(): "
-			     "curl_easy_perform() failure (%1).").arg(rc));
-		  break;
+		  url = url.mid(0, url.lastIndexOf('/'));
+		  url.append("/");
+		  url.append(QByteArray::number(i));
 		}
 
-	      if(m_poptasticPopFuture.isCanceled())
-		break;
+	      if(!curl_receive_data.isEmpty())
+		{
+		  QByteArray hash;
+		  bool ok = true;
+
+		  hash = s_crypt->keyedHash(curl_receive_data, &ok);
+
+		  if(!cache.contains(hash))
+		    {
+		      emit poppedMessage(curl_receive_data);
+		      cache[hash] = 0;
+		    }
+		}
 	    }
-	}
-      else
-	{
-	  if(!hash.value("in_remove_remote", true).toBool())
-	    list.clear();
+	  else if(rc == CURLE_OPERATION_TIMEDOUT)
+	    {
+	    }
+	  else
+	    {
+	      spoton_misc::logError
+		(QString("spoton_kernel::popPoptastic(): "
+			 "curl_easy_perform() failure (%1).").arg(rc));
+	      break;
+	    }
 
-	  /*
-	  ** Remove items from the remote server.
-	  */
+	  if(m_poptasticPopFuture.isCanceled())
+	    break;
 
-	  while(!list.isEmpty())
+	  if(hash.value("in_remove_remote", true).toBool())
+	    if(method == "IMAP")
 	      {
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
-	      curl_easy_setopt
-		(curl, CURLOPT_URL, url.toLatin1().constData());
-	      curl_easy_setopt
-		(curl, CURLOPT_CUSTOMREQUEST,
-		 QString("STORE %1 +Flags \\Deleted").
-		 arg(list.takeFirst()).toLatin1().constData());
+		curl_easy_setopt
+		  (curl, CURLOPT_URL, removeUrl.toLatin1().constData());
+		curl_easy_setopt
+		  (curl, CURLOPT_CUSTOMREQUEST,
+		   QString("STORE %1 +Flags \\Deleted").
+		   arg(i).toLatin1().constData());
 
-	      CURLcode rc = CURLE_OK;
+		CURLcode rc = CURLE_OK;
 
-	      if((rc = curl_easy_perform(curl)) != CURLE_OK)
-		{
-		  spoton_misc::logError
-		    (QString("spoton_kernel::popPoptastic(): "
-			     "curl_easy_perform(STORE) failure (%1).").
-		     arg(rc));
-		  curl_easy_setopt
-		    (curl, CURLOPT_CUSTOMREQUEST, "EXPUNGE");
-		  rc = curl_easy_perform(curl);
-
-		  if(rc != CURLE_OK)
+		if((rc = curl_easy_perform(curl)) != CURLE_OK)
+		  {
 		    spoton_misc::logError
 		      (QString("spoton_kernel::popPoptastic(): "
-			       "curl_easy_perform(EXPUNGE) failure (%1).").
+			       "curl_easy_perform(STORE) failure (%1).").
 		       arg(rc));
-		}
+		    curl_easy_setopt
+		      (curl, CURLOPT_CUSTOMREQUEST, "EXPUNGE");
+		    rc = curl_easy_perform(curl);
 
-	      if(m_poptasticPopFuture.isCanceled())
-		break;
-	    }
+		    if(rc != CURLE_OK)
+		      spoton_misc::logError
+			(QString("spoton_kernel::popPoptastic(): "
+				 "curl_easy_perform(EXPUNGE) failure (%1).").
+			 arg(rc));
+		  }
+	      }
 	}
 
       curl_easy_cleanup(curl);
       curl_receive_data.clear();
-
-      if(m_poptasticPopFuture.isCanceled())
-	return;
     }
   else
     spoton_misc::logError("spoton_kernel::popPoptastic(): "
 			  "curl_easy_init() failure.");
-
-  if(!list.isEmpty())
-    goto begin_label;
 }
 
 void spoton_kernel::postPoptastic(void)

@@ -2521,6 +2521,14 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 5;
 
   settings.insert("gui/emailRetrievalInterval", integer);
+  integer = settings.value("gui/poptasticNumberOfMessages", 15).toInt(&ok);
+
+  if(!ok)
+    integer = 15;
+  else if(integer < 15 || integer > 999999999)
+    integer = 15;
+
+  settings.insert("gui/poptasticNumberOfMessages", integer);
   rational = settings.value("gui/poptasticRefreshInterval", 5.00).
     toDouble(&ok);
 

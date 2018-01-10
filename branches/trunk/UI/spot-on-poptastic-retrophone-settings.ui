@@ -62,6 +62,29 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>&amp;Retrieve</string>
+       </property>
+       <property name="buddy">
+        <cstring>number_of_messages</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="number_of_messages">
+       <property name="suffix">
+        <string> messages per query.</string>
+       </property>
+       <property name="minimum">
+        <number>15</number>
+       </property>
+       <property name="maximum">
+        <number>999999999</number>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_5">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -938,6 +961,7 @@
  </widget>
  <tabstops>
   <tabstop>poptasticRefresh</tabstop>
+  <tabstop>number_of_messages</tabstop>
   <tabstop>capath</tabstop>
   <tabstop>selectcapath</tabstop>
   <tabstop>account</tabstop>

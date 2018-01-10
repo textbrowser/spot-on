@@ -178,6 +178,8 @@ void spoton::slotConfigurePoptastic(void)
 #endif
   m_poptasticRetroPhoneSettingsUi.capath->setText
     (m_settings.value("gui/poptasticCAPath", "").toString());
+  m_poptasticRetroPhoneSettingsUi.number_of_messages->setValue
+    (m_settings.value("gui/poptasticNumberOfMessages", 15).toInt());
   m_poptasticRetroPhoneSettingsUi.poptasticRefresh->setValue
     (m_settings.value("gui/poptasticRefreshInterval", 5.00).toDouble());
   m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
@@ -244,11 +246,16 @@ void spoton::slotConfigurePoptastic(void)
 
       m_settings["gui/poptasticCAPath"] =
 	m_poptasticRetroPhoneSettingsUi.capath->text();
+      m_settings["gui/poptasticNumberOfMessages"] =
+	m_poptasticRetroPhoneSettingsUi.number_of_messages->value();
       m_settings["gui/poptasticRefreshInterval"] =
 	m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value();
       settings.setValue
 	("gui/poptasticCAPath",
 	 m_poptasticRetroPhoneSettingsUi.capath->text());
+      settings.setValue
+	("gui/poptasticNumberOfMessages",
+	 m_poptasticRetroPhoneSettingsUi.number_of_messages->value());
       settings.setValue
 	("gui/poptasticRefreshInterval",
 	 m_poptasticRetroPhoneSettingsUi.poptasticRefresh->value());
@@ -605,6 +612,8 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.in_username->clear();
   m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked(false);
   m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.number_of_messages->setValue
+    (m_poptasticRetroPhoneSettingsUi.number_of_messages->minimum());
   m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.out_password->clear();
   m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
@@ -622,14 +631,19 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText("localhost");
+  m_settings["gui/poptasticCAPath"] = "";
   m_settings["gui/poptasticName"] = "";
   m_settings["gui/poptasticNameEmail"] = "";
+  m_settings["gui/poptasticNumberOfMessages"] =
+    m_poptasticRetroPhoneSettingsUi.number_of_messages->value();
+  m_settings["gui/poptasticRefreshInterval"] = 5.00;
 
   QSettings settings;
 
   settings.remove("gui/poptasticCAPath");
   settings.remove("gui/poptasticName");
   settings.remove("gui/poptasticNameEmail");
+  settings.remove("gui/poptasticNumberOfMessages");
   settings.remove("gui/poptasticRefreshInterval");
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
