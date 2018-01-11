@@ -288,3 +288,4 @@ Remaining Items
 7.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
 8.     The Poptastic pixmap does not respect a scaled-contents request.
+9.     Own NTRU implementation.
