@@ -413,7 +413,7 @@ class spoton_forward_secrecy
 class spoton_integer_table_widget_item: public QTableWidgetItem
 {
  public:
-  spoton_integer_table_item(const QString &text):QTableWidgetItem(text)
+  spoton_integer_table_widget_item(const QString &text):QTableWidgetItem(text)
   {
   }
 
