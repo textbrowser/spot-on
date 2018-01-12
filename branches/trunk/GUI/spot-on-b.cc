@@ -4095,8 +4095,9 @@ void spoton::populateMail(void)
 			  {
 			    if(query.value(i).toLongLong() > 0)
 			      {
-				item = new QTableWidgetItem
-				  (query.value(i).toString());
+				item = new spoton_integer_table_widget_item
+				  (QString::
+				   number(query.value(i).toLongLong()));
 				item->setData(Qt::UserRole, 1);
 				item->setIcon(QIcon(":/generic/attach.png"));
 			      }

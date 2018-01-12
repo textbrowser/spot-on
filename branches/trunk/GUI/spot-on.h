@@ -410,6 +410,19 @@ class spoton_forward_secrecy
   QString key_type;
 };
 
+class spoton_integer_table_widget_item: public QTableWidgetItem
+{
+ public:
+  spoton_integer_table_item(const QString &text):QTableWidgetItem(text)
+  {
+  }
+
+  bool operator<(const QTableWidgetItem &other) const
+  {
+    return other.text().toLongLong() > text().toLongLong();
+  }
+};
+
 class spoton: public QMainWindow
 {
   Q_OBJECT
