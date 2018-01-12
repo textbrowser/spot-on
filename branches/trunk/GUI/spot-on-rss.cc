@@ -2871,7 +2871,7 @@ void spoton_rss::slotStatisticsTimeout(void)
 
     if(db.open())
       {
-	QList<int> counts;
+	QList<qint64> counts;
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
@@ -2901,7 +2901,7 @@ void spoton_rss::slotStatisticsTimeout(void)
 
 	if(query.exec())
 	  while(query.next())
-	    counts << query.value(0).toInt();
+	    counts << query.value(0).toLongLong();
 
 	QLocale locale;
 

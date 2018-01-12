@@ -655,7 +655,7 @@ void spoton::slotGatherUrlStatistics(void)
   QProgressDialog progress(this);
   int processed = 0;
   qint64 count = 0;
-  quint64 size = 0;
+  qint64 size = 0;
 
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
@@ -713,7 +713,7 @@ void spoton::slotGatherUrlStatistics(void)
 				  "('\"spot_on_urls_%1%2\"')").
 			  arg(c1).arg(c2)))
 	      if(query.next())
-		size += static_cast<quint64> (query.value(0).toLongLong());
+		size += query.value(0).toLongLong();
 	  }
 
 	processed += 1;
