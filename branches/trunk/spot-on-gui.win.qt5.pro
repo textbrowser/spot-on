@@ -7,12 +7,11 @@ libspoton.target = libspoton.dll
 libspoton.commands = $(MAKE) -C ..\\..\\libSpotOn library
 libspoton.depends =
 
-TEMPLATE	= app
+CONFIG		+= qt release warn_on
+CONFIG		-= debug
 LANGUAGE	= C++
 QT		+= concurrent gui multimedia network printsupport sql \
 		   widgets
-CONFIG		+= qt release warn_on
-CONFIG		-= debug
 
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.
@@ -25,20 +24,22 @@ DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN     += Spot-On ..\\..\\libNTRU.dll ..\\..\\libNTRU\\src\\*.o \
-                   ..\\..\\libNTRU\\src\\*.s \
-                   ..\\..\\libSpotOn\\libspoton.dll \
-		   ..\\..\\libSpotOn\\*.o \
-		   ..\\..\\libSpotOn\\test.exe
-                   .qmake.cache
+QMAKE_CLEAN            += Spot-On ..\\..\\libNTRU.dll \
+                          ..\\..\\libNTRU\\src\\*.o \
+                          ..\\..\\libNTRU\\src\\*.s \
+                          ..\\..\\libSpotOn\\libspoton.dll \
+                          ..\\..\\libSpotOn\\*.o \
+                          ..\\..\\libSpotOn\\test.exe \
+                          .qmake.cache
 QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstrict-overflow=5
-QMAKE_DISTCLEAN += .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_EXTRA_TARGETS = libntru libspoton purge
+QMAKE_DISTCLEAN        += .qmake.cache .qmake.stash
+QMAKE_EXTRA_TARGETS    = libntru libspoton purge
+
 INCLUDEPATH	+= . ..\\..\\. GUI \
 		   ..\\..\\PostgreSQL\\Include.win32 \
 		   ..\\..\\libSpotOn\\Include.win32 \
@@ -56,9 +57,8 @@ LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
 		   -lGeoIP-1 -lcrypto-1_1 -lcurl -lgcrypt-20 \
 		   -lgpg-error-0 -lntl \
 		   -lntru -lpq -lpthread -lspoton -lssl-1_1 -lws2_32
-PRE_TARGETDEPS = libntru.dll libspoton.dll
-
-RC_FILE		= Icons\\Resources\\spot-on.rc
-
-TARGET		= Spot-On
+PRE_TARGETDEPS  = libntru.dll libspoton.dll
 PROJECTNAME	= Spot-On
+RC_FILE		= Icons\\Resources\\spot-on.rc
+TARGET		= Spot-On
+TEMPLATE        = app

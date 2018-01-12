@@ -7,11 +7,10 @@ libspoton.target = libspoton.dylib
 libspoton.commands = $(MAKE) -C ../../libSpotOn library
 libspoton.depends =
 
-TEMPLATE	= app
+CONFIG		+= app_bundle qt release warn_on
 LANGUAGE	= C++
 QT		+= bluetooth concurrent multimedia network printsupport \
 		   sql widgets
-CONFIG		+= app_bundle qt release warn_on
 
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.
@@ -26,44 +25,44 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN     += Spot-On ../../libNTRU/*.dylib ../../libNTRU/src/*.o \
-                   ../../libNTRU/src/*.s \
-                   ../../libSpotOn/*.dylib ../../libSpotOn/*.o \
-		   ../../libSpotOn/test
-QMAKE_CXX = clang++
+QMAKE_CLEAN            += Spot-On ../../libNTRU/*.dylib ../../libNTRU/src/*.o \
+                          ../../libNTRU/src/*.s \
+                          ../../libSpotOn/*.dylib ../../libSpotOn/*.o \
+                          ../../libSpotOn/test
+QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_DISTCLEAN += -r temp .qmake.cache .qmake.stash
+QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -mtune=generic -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
                           -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstack-protector -Wstrict-overflow=5
-QMAKE_EXTRA_TARGETS = libntru libspoton purge
-INCLUDEPATH	+= . ../../. GUI \
-                   /usr/local/include /usr/local/opt \
-                   /usr/local/opt/curl/include \
-		   /usr/local/opt/openssl/include
-ICON		= Icons/Logo/spot-on-logo.icns
-LIBS		+= -L../../libNTRU -lntru \
-                   -L../../libSpotOn -lspoton \
-                   -L/usr/local/lib \
-                   -L/usr/local/opt/curl/lib \
-                   -L/usr/local/opt/openssl/lib -lGeoIP \
-                   -lcrypto -lcurl -lgcrypt -lgmp \
-		   -lgpg-error -lntl -lpq -lssl \
-                   -framework AppKit -framework Cocoa
-PRE_TARGETDEPS = libntru.dylib libspoton.dylib
-OBJECTS_DIR = temp/obj
-UI_DIR = temp/ui
-MOC_DIR = temp/moc
-RCC_DIR = temp/rcc
+QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 
+INCLUDEPATH	  += . ../../. GUI \
+                     /usr/local/include /usr/local/opt \
+                     /usr/local/opt/curl/include \
+                     /usr/local/opt/openssl/include
+ICON		  = Icons/Logo/spot-on-logo.icns
+LIBS		  += -L../../libNTRU -lntru \
+                     -L../../libSpotOn -lspoton \
+                     -L/usr/local/lib \
+                     -L/usr/local/opt/curl/lib \
+                     -L/usr/local/opt/openssl/lib -lGeoIP \
+                     -lcrypto -lcurl -lgcrypt -lgmp \
+                     -lgpg-error -lntl -lpq -lssl \
+                     -framework AppKit -framework Cocoa
+MOC_DIR           = temp/moc
 OBJECTIVE_HEADERS += Common/CocoaInitializer.h
 OBJECTIVE_SOURCES += Common/CocoaInitializer.mm
-
-TARGET		= Spot-On
-PROJECTNAME	= Spot-On
+OBJECTS_DIR       = temp/obj
+PRE_TARGETDEPS    = libntru.dylib libspoton.dylib
+PROJECTNAME	  = Spot-On
+RCC_DIR           = temp/rcc
+TARGET		  = Spot-On
+TEMPLATE          = app
+UI_DIR            = temp/ui
 
 # Prevent qmake from stripping everything.
 
