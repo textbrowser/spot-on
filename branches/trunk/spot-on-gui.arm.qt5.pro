@@ -29,7 +29,6 @@ QMAKE_CLEAN            += Spot-On \
                           ../../libNTRU/src/*.s \
                           ../../libSpotOn/*.o ../../libSpotOn/*.so \
                           ../../libSpotOn/test
-QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
                           -mtune=native -pie -O3 \
@@ -37,6 +36,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
                           -Wstack-protector -Wstrict-overflow=5
+QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 QMAKE_LFLAGS_RELEASE   += -Wl,-rpath,/usr/local/spot-on/Lib
 
