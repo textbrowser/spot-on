@@ -41,8 +41,7 @@ QMAKE_LFLAGS_RELEASE   += -Wl,-rpath,/usr/local/spot-on/Lib
 
 INCLUDEPATH	+= . ../. ../../../. /usr/include/postgresql
 LIBS		+= -L../../../libNTRU -L../../../libSpotOn \
-		   -lGeoIP \
-		   -lcrypto -lcurl -lgcrypt -lgpg-error -lntru \
+		   -lGeoIP -lcrypto -lcurl -lgcrypt -lgpg-error -lntru \
 		   -lpq -lspoton -lssl
 MOC_DIR         = temp/moc
 OBJECTS_DIR     = temp/obj
