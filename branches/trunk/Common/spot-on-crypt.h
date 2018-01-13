@@ -64,6 +64,11 @@ class spoton_threefish;
 class spoton_crypt
 {
  public:
+  static QByteArray derivedSha1Key
+    (const QByteArray &salt,
+     const QString &passphrase,
+     const int hashKeySize,
+     const unsigned long int iterationCount);
   static QPair<QByteArray, QByteArray> derivedKeys
     (const QString &cipherType,
      const QString &hashType,

@@ -242,6 +242,13 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
  const bool singleIteration,
  QString &error)
 {
+  if(salt.isEmpty())
+    {
+      error = QObject::tr("empty salt");
+      spoton_misc::logError("spoton_crypt::derivedKeys(): empty salt.");
+      return QPair<QByteArray, QByteArray> ();
+    }
+
   QByteArray key;
   QByteArray temporaryKey;
   QPair<QByteArray, QByteArray> keys;
@@ -4482,4 +4489,32 @@ void spoton_crypt::removeFlawedEntries(spoton_crypt *crypt)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+QByteArray spoton_crypt::derivedSha1Key
+(const QByteArray &salt,
+ const QString &passphrase,
+ const int hashKeySize,
+ const unsigned long int iterationCount)
+{
+  if(gcry_md_test_algo(gcry_md_map_name("sha1")) != 0 || salt.isEmpty())
+    return QByteArray();
+  else
+    gcry_fast_random_poll();
+
+  QByteArray key(qAbs(hashKeySize), 0);
+  int hashAlgorithm = gcry_md_map_name("sha1");
+
+  if(gcry_kdf_derive(passphrase.toUtf8().constData(),
+		     static_cast<size_t> (passphrase.toUtf8().length()),
+		     GCRY_KDF_PBKDF2,
+		     hashAlgorithm,
+		     salt.constData(),
+		     static_cast<size_t> (salt.length()),
+		     iterationCount,
+		     static_cast<size_t> (key.length()),
+		     key.data()) != 0)
+    return QByteArray();
+
+  return key;
 }

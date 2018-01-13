@@ -93,6 +93,13 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   if(m_key.isEmpty())
     m_key = "unknown";
 
+  QString error("");
+
+  m_hashKeyGenerated = spoton_crypt::derivedSha1Key
+    (spoton_crypt::sha512Hash(m_hashKey + m_hashType, 0),
+     m_hashKey,
+     48,
+     m_iterationCount);
   m_statusTimer.start(30000);
   connect(&m_statusTimer,
 	  SIGNAL(timeout(void)),
@@ -278,7 +285,7 @@ void spoton_buzzpage::slotSendMessage(void)
     message.append("_");
     message.append(sendMethod.toBase64());
     message.append("_");
-    message.append(m_hashKey.toBase64());
+    message.append(m_hashKeyGenerated.toBase64());
     message.append("_");
     message.append(m_hashType.toBase64());
     message.append("_");
@@ -400,7 +407,7 @@ void spoton_buzzpage::slotSendStatus(void)
   message.append("_");
   message.append(m_id.toBase64());
   message.append("_");
-  message.append(m_hashKey.toBase64());
+  message.append(m_hashKeyGenerated.toBase64());
   message.append("_");
   message.append(m_hashType.toBase64());
   message.append("_");
@@ -646,7 +653,7 @@ void spoton_buzzpage::slotSave(void)
 	data.append("\n");
 	data.append(m_channelType.toBase64());
 	data.append("\n");
-	data.append(m_hashKey.toBase64());
+	data.append(m_hashKeyGenerated.toBase64());
 	data.append("\n");
 	data.append(m_hashType.toBase64());
 	data.append("\n");
@@ -736,7 +743,7 @@ void spoton_buzzpage::slotRemove(void)
 	data.append("\n");
 	data.append(m_channelType.toBase64());
 	data.append("\n");
-	data.append(m_hashKey.toBase64());
+	data.append(m_hashKeyGenerated.toBase64());
 	data.append("\n");
 	data.append(m_hashType.toBase64());
 	data.append("\n");
@@ -795,7 +802,7 @@ QByteArray spoton_buzzpage::channelType(void) const
 
 QByteArray spoton_buzzpage::hashKey(void) const
 {
-  return m_hashKey;
+  return m_hashKeyGenerated;
 }
 
 QByteArray spoton_buzzpage::hashType(void) const

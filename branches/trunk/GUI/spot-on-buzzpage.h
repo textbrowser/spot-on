@@ -69,6 +69,7 @@ class spoton_buzzpage: public QWidget
   QByteArray m_channelSalt;
   QByteArray m_channelType;
   QByteArray m_hashKey;
+  QByteArray m_hashKeyGenerated;
   QByteArray m_hashType;
   QByteArray m_id;
   QByteArray m_key; // Not stored in secure memory.
