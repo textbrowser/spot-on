@@ -30,7 +30,7 @@ QMAKE_CLEAN            += Spot-On ..\\..\\libNTRU.dll \
                           ..\\..\\libSpotOn\\libspoton.dll \
                           ..\\..\\libSpotOn\\*.o \
                           ..\\..\\libSpotOn\\test.exe \
-                          .qmake.cache
+                          .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Wextra \
