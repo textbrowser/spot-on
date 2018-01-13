@@ -542,6 +542,7 @@ class spoton_neighbor: public QThread
   void forwardSecrecyRequest(const QByteArrayList &list);
   void newData(void);
   void newEMailArrived(void);
+  void notification(const QString &text);
   void publicizeListenerPlaintext(const QByteArray &data, const qint64 id);
   void receivedBuzzMessage(const QByteArrayList &list,
 			   const QByteArrayList &symmetricKeys);

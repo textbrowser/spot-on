@@ -889,6 +889,16 @@ void spoton::slotReceivedKernelMessage(void)
 	      notify(tr("You have new e-mail!<br>"));
 	      playSound("echo.wav");
 	    }
+	  else if(data.startsWith("notification_"))
+	    {
+	      data.remove(0, static_cast<int> (qstrlen("notification_")));
+
+	      if(!data.isEmpty())
+		{
+		  notify(QDateTime::currentDateTime().toString());
+		  notify(data + "<br>");
+		}
+	    }
 	  else if(data.startsWith("smp_"))
 	    {
 	      data.remove(0, static_cast<int> (qstrlen("smp_")));

@@ -97,6 +97,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   QHash<int, bool> m_guiIsAuthenticated;
 #endif
   QTimer m_generalTimer;
+  void sendMessageToUIs(const QByteArray &message);
 
  private slots:
   void slotAuthenticationRequested(const QString &peerInformation);
@@ -108,6 +109,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   void slotForwardSecrecyResponse(const QByteArrayList &list);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotNewEMailArrived(void);
+  void slotNotification(const QString &text);
   void slotReadyRead(void);
   void slotReceivedBuzzMessage(const QByteArrayList &list,
 			       const QByteArrayList &keys);

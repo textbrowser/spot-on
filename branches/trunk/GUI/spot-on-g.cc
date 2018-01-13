@@ -135,10 +135,14 @@ QByteArray spoton::poptasticNameEmail(void) const
 
 void spoton::slotShowNotificationsWindow(void)
 {
+  bool wasVisible = m_notificationsWindow->isVisible();
+
   m_notificationsWindow->showNormal();
   m_notificationsWindow->activateWindow();
   m_notificationsWindow->raise();
-  spoton_utilities::centerWidget(m_notificationsWindow, this);
+
+  if(!wasVisible)
+    spoton_utilities::centerWidget(m_notificationsWindow, this);
 }
 
 QByteArray spoton::copyMyOpenLibraryPublicKey(void) const

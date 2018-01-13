@@ -2404,6 +2404,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	      m_guiServer,
 	      SLOT(slotNewEMailArrived(void)),
 	      Qt::UniqueConnection);
+      connect(neighbor,
+	      SIGNAL(notification(const QString &)),
+	      m_guiServer,
+	      SLOT(slotNotification(const QString &)),
+	      Qt::UniqueConnection);
       connect
 	(neighbor,
 	 SIGNAL(receivedBuzzMessage(const QByteArrayList &,

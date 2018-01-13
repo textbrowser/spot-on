@@ -5267,19 +5267,33 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
     }
 
   if(m_tcpSocket)
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotError(): "
-	       "socket error (%1) for %2:%3. "
-	       "Aborting socket.").arg(m_tcpSocket->errorString()).
-       arg(m_address).
-       arg(m_port));
+    {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).arg(m_tcpSocket->errorString()));
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotError(): "
+		 "socket error (%1) for %2:%3. "
+		 "Aborting socket.").arg(m_tcpSocket->errorString()).
+	 arg(m_address).
+	 arg(m_port));
+    }
   else if(m_udpSocket)
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotError(): "
-	       "socket error (%1) for %2:%3. "
-	       "Aborting socket.").arg(m_udpSocket->errorString()).
-       arg(m_address).
-       arg(m_port));
+    {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).arg(m_udpSocket->errorString()));
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotError(): "
+		 "socket error (%1) for %2:%3. "
+		 "Aborting socket.").arg(m_udpSocket->errorString()).
+	 arg(m_address).
+	 arg(m_port));
+    }
+  else
+    emit notification
+      (QString("The neighbor %1:%2 generated a fatal error (%3).").
+       arg(m_address).arg(m_port).arg(error));
 
   deleteLater();
 }
@@ -5304,6 +5318,15 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
 
   if(error != QBluetoothSocket::UnknownSocketError)
     {
+      if(m_bluetoothSocket)
+	emit notification
+	  (QString("The neighbor %1:%2 generated a fatal error (%3).").
+	   arg(m_address).arg(m_port).arg(m_bluetoothSocket->errorString()));
+      else
+	emit notification
+	  (QString("The neighbor %1:%2 generated a fatal error (%3).").
+	   arg(m_address).arg(m_port).arg(error));
+
       spoton_misc::logError
 	(QString("spoton_neighbor::slotError(): "
 		 "socket error (%1) for %2:%3. Aborting.").
@@ -5318,6 +5341,9 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
 void spoton_neighbor::slotError(const QString &method,
 				const spoton_sctp_socket::SocketError error)
 {
+  emit notification
+    (QString("The neighbor %1:%2 generated a fatal error (%3).").
+     arg(m_address).arg(m_port).arg(error));
   spoton_misc::logError
     (QString("spoton_neighbor::slotError(): "
 	     "socket error (%1:%2) for %3:%4. "
