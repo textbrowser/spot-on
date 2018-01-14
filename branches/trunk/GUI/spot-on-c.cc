@@ -3153,11 +3153,13 @@ void spoton::prepareContextMenuMirrors(void)
 				toString().toLower())),
 		      tr("Share &E-Mail Public Key Pair"),
 		      this, SLOT(slotShareEmailPublicKey(void)));
+#ifdef SPOTON_OPEN_LIBRARY_SUPPORTED
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("Share &Open Library Public Key Pair"),
 		      this, SLOT(slotShareOpenLibraryPublicKey(void)));
+#endif
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),

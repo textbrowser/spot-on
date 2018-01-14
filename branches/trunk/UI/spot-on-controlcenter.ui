@@ -3457,8 +3457,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>768</width>
+             <height>198</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3882,7 +3882,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>792</width>
+                  <width>679</width>
                   <height>452</height>
                  </rect>
                 </property>
@@ -5706,8 +5706,8 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>790</width>
+             <y>-555</y>
+             <width>812</width>
              <height>1149</height>
             </rect>
            </property>
@@ -6512,11 +6512,6 @@
                      </item>
                      <item>
                       <property name="text">
-                       <string notr="true">Open Library</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
                        <string notr="true">Poptastic</string>
                       </property>
                      </item>
@@ -6855,8 +6850,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>551</width>
-             <height>498</height>
+             <width>826</width>
+             <height>555</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">

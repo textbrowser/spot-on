@@ -89,9 +89,11 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
   menu->addAction(tr("Share &E-Mail Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
+#ifdef SPOTON_OPEN_LIBRARY_SUPPORTED
   menu->addAction(tr("Share &Open Library Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
+#endif
   menu->addAction(tr("Share &Poptastic Public Key Pair"),
 		  this,
 		  SLOT(slotMenuAction(void)));
@@ -248,6 +250,7 @@ void spoton_echo_key_share::slotMenuAction(void)
     shareSelected("chat");
   else if(index == 7)
     shareSelected("email");
+#ifdef SPOTON_OPEN_LIBRARY_SUPPORTED
   else if(index == 8)
     shareSelected("open-library");
   else if(index == 9)
@@ -260,6 +263,18 @@ void spoton_echo_key_share::slotMenuAction(void)
     deleteSelected();
   else if(index == 15) // Reset Widgets
     resetWidgets();
+#else
+  else if(index == 8)
+    shareSelected("poptastic");
+  else if(index == 9)
+    shareSelected("rosetta");
+  else if(index == 10)
+    shareSelected("url");
+  else if(index == 12) // Remove Selected
+    deleteSelected();
+  else if(index == 14) // Reset Widgets
+    resetWidgets();
+#endif
 }
 
 void spoton_echo_key_share::showError(const QString &error)

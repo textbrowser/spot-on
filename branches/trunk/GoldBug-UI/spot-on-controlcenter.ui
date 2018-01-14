@@ -6569,8 +6569,8 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>799</width>
+             <y>-541</y>
+             <width>764</width>
              <height>1206</height>
             </rect>
            </property>
@@ -7820,11 +7820,6 @@ QPushButton:pressed {
                      </item>
                      <item>
                       <property name="text">
-                       <string notr="true">Open Library</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
                        <string notr="true">Poptastic</string>
                       </property>
                      </item>
@@ -8101,7 +8096,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>425</width>
+             <width>609</width>
              <height>679</height>
             </rect>
            </property>
