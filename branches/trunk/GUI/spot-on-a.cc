@@ -754,6 +754,7 @@ spoton::spoton(void):QMainWindow()
   m_sb.email->setVisible(false);
   m_sb.forward_secrecy_request->setVisible(false);
   m_sb.status->setTextFormat(Qt::RichText);
+  m_sb.warning->setVisible(false);
   m_notificationsWindow->setWindowTitle
     (tr("%1: Notifications").arg(SPOTON_APPLICATION_NAME));
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
@@ -890,6 +891,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(linkActivated(const QString &)),
 	  this,
 	  SLOT(slotShareKeysWithKernel(const QString &)));
+  connect(m_sb.warning,
+	  SIGNAL(clicked(void)),
+	  m_sb.warning,
+	  SLOT(hide(void)));
+  connect(m_sb.warning,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotShowNotificationsWindow(void)));
   m_optionsUi.guiSecureMemoryPool->setProperty
     ("original_stylesheet", m_optionsUi.guiSecureMemoryPool->styleSheet());
   m_ui.kernelSecureMemoryPool->setProperty

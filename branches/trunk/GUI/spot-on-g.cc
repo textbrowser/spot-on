@@ -628,6 +628,7 @@ void spoton::notify(const QString &text)
     return;
 
   m_notificationsUi.textBrowser->append(text.trimmed());
+  m_sb.warning->setVisible(true);
 
   if(m_optionsUi.notifications->isChecked())
     slotShowNotificationsWindow();
