@@ -2181,7 +2181,7 @@ spoton::spoton(void):QMainWindow()
     (0,
      "magnet:?rn=Spot-On_Developer_Channel_Key&xf=10000&"
      "xs=Spot-On_Developer_Channel_Salt&ct=aes256&"
-     "hk=Spot-On_Developer_Channel_Hash_Key&ht=sha512&xt=urn:buzz");
+     "hk=Spot-On_Developer_Channel_Hash_Key&ht=sha384&xt=urn:buzz");
   m_ui.toolButtonCopyToClipboard->setMenu(menu);
   menu = new QMenu(this);
   m_ui.shareBuzzMagnet->setMenu(menu);
