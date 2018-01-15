@@ -391,8 +391,12 @@ void spoton::slotTerminateKernelOnUIExit(bool state)
 
 void spoton::slotKeysIndexChanged(const QString &text)
 {
+#ifndef SPOTON_OPEN_LIBRARY_SUPPORTED
   if(text == "Open Library")
     m_ui.regenerate->setEnabled(false);
   else
     m_ui.regenerate->setEnabled(true);
+#else
+  Q_UNUSED(text);
+#endif
 }
