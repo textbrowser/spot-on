@@ -388,3 +388,11 @@ void spoton::slotTerminateKernelOnUIExit(bool state)
 
   settings.setValue("gui/terminate_kernel_on_ui_exit", state);
 }
+
+void spoton::slotKeysIndexChanged(const QString &text)
+{
+  if(text == "Open Library")
+    m_ui.regenerate->setEnabled(false);
+  else
+    m_ui.regenerate->setEnabled(true);
+}

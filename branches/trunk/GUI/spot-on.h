@@ -824,6 +824,7 @@ class spoton: public QMainWindow
   void slotKernelSocketState(void);
   void slotKernelStatus(void);
   void slotKernelUrlBatchSizeChanged(int value);
+  void slotKeysIndexChanged(const QString &text);
   void slotLaneWidthChanged(int index);
   void slotLaunchKernelAfterAuthentication(bool state);
   void slotLimitConnections(int value);

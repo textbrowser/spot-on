@@ -1250,6 +1250,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveEmailName(void)));
+  connect(m_ui.keys,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotKeysIndexChanged(const QString &)));
   connect(m_ui.urlName,
 	  SIGNAL(returnPressed(void)),
 	  this,

@@ -6512,6 +6512,11 @@
                      </item>
                      <item>
                       <property name="text">
+                       <string notr="true">Open Library</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
                        <string notr="true">Poptastic</string>
                       </property>
                      </item>
@@ -6850,8 +6855,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>551</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
