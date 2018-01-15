@@ -1,11 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classspoton__kernel.html" title="spoton_kernel" alt="" coords="155,5,258,32"/>
-<area shape="rect" id="node3" href="$classspoton__listener.html" title="spoton_listener" alt="" coords="151,56,262,83"/>
-<area shape="rect" id="node4" href="$classspoton__mailer.html" title="spoton_mailer" alt="" coords="155,107,258,133"/>
-<area shape="rect" id="node5" href="$classspoton__neighbor__worker.html" title="spoton_neighbor_worker" alt="" coords="125,157,288,184"/>
-<area shape="rect" id="node6" href="$classspoton__sctp__server.html" title="spoton_sctp_server" alt="" coords="139,208,275,235"/>
-<area shape="rect" id="node7" href="$classspoton__sctp__socket.html" title="spoton_sctp_socket" alt="" coords="137,259,276,285"/>
-<area shape="rect" id="node8" href="$classspoton__starbeam__reader.html" title="spoton_starbeam_reader" alt="" coords="124,309,289,336"/>
-<area shape="rect" id="node9" href="$classspoton__starbeam__writer__worker.html" title="spoton_starbeam_writer\l_worker" alt="" coords="126,361,287,402"/>
-<area shape="rect" id="node10" href="$classspoton__urldistribution.html" title="spoton_urldistribution" alt="" coords="134,427,279,453"/>
+<area shape="rect" id="node2" href="$classspoton__integer__table__widget__item.html" title="spoton_integer_table\l_widget_item" alt="" coords="184,5,327,47"/>
 </map>

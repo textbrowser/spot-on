@@ -15,6 +15,7 @@ var searchData=
   ['spoton_5fforward_5fsecrecy',['spoton_forward_secrecy',['../classspoton__forward__secrecy.html',1,'']]],
   ['spoton_5fgui_5fserver',['spoton_gui_server',['../classspoton__gui__server.html',1,'']]],
   ['spoton_5fgui_5fserver_5ftcp_5fserver',['spoton_gui_server_tcp_server',['../classspoton__gui__server__tcp__server.html',1,'']]],
+  ['spoton_5finteger_5ftable_5fwidget_5fitem',['spoton_integer_table_widget_item',['../classspoton__integer__table__widget__item.html',1,'']]],
   ['spoton_5fkernel',['spoton_kernel',['../classspoton__kernel.html',1,'']]],
   ['spoton_5flineedit',['spoton_lineedit',['../classspoton__lineedit.html',1,'']]],
   ['spoton_5flistener',['spoton_listener',['../classspoton__listener.html',1,'']]],
