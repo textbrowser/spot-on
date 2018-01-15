@@ -885,8 +885,6 @@ void spoton::slotReceivedKernelMessage(void)
 #if SPOTON_GOLDBUG == 1
 	      populateMail();
 #endif
-	      notify(QDateTime::currentDateTime().toString());
-	      notify(tr("You have new e-mail!<br>"));
 	      playSound("echo.wav");
 	    }
 	  else if(data.startsWith("notification_"))
