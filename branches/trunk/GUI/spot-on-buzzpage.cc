@@ -653,7 +653,7 @@ void spoton_buzzpage::slotSave(void)
 	data.append("\n");
 	data.append(m_channelType.toBase64());
 	data.append("\n");
-	data.append(m_hashKeyGenerated.toBase64());
+	data.append(m_hashKey.toBase64());
 	data.append("\n");
 	data.append(m_hashType.toBase64());
 	data.append("\n");
@@ -743,7 +743,7 @@ void spoton_buzzpage::slotRemove(void)
 	data.append("\n");
 	data.append(m_channelType.toBase64());
 	data.append("\n");
-	data.append(m_hashKeyGenerated.toBase64());
+	data.append(m_hashKey.toBase64());
 	data.append("\n");
 	data.append(m_hashType.toBase64());
 	data.append("\n");
