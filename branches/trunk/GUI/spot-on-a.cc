@@ -54,6 +54,10 @@ extern "C"
 #elif defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebSettings>
 #endif
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent>
+#endif
+#include <QtCore>
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetooth.h>
 #endif
