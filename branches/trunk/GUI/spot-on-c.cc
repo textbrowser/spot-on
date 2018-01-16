@@ -735,8 +735,7 @@ void spoton::slotGatherStatistics(void)
   if(!m_statisticsFuture.isFinished())
     return;
 
-  m_statisticsFuture = QtConcurrent::run
-    (this, &spoton::gatherStatistics);
+  m_statisticsFuture = QtConcurrent::run(this, &spoton::gatherStatistics);
   m_statisticsFutureWatcher.setFuture(m_statisticsFuture);
 }
 
@@ -2772,6 +2771,7 @@ void spoton::slotRegenerateKey(void)
   if(keyType == "chat")
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_generalFuture.waitForFinished();
       m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
 
       while(!m_starbeamDigestFutures.isEmpty())

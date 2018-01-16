@@ -474,6 +474,7 @@ class spoton: public QMainWindow
   QDialog *m_poptasticRetroPhoneDialog;
   QElapsedTimer m_urlQueryElapsedTimer;
   QFuture<QList<QPair<QString, QVariant> > > m_statisticsFuture;
+  QFuture<void> m_generalFuture;
   QFutureWatcher<QList<QPair<QString, QVariant> > > m_statisticsFutureWatcher;
   QHash<QByteArray, QPointer<spoton_buzzpage> > m_buzzPages;
   QHash<QByteArray, QString> m_neighborToOidMap;
@@ -601,6 +602,7 @@ class spoton: public QMainWindow
 			       const quint64 not_imported,
 			       const quint64 declined);
   void forwardSecrecyRequested(const QList<QByteArray> &list);
+  void generalConcurrentMethod(const QHash<QString, QVariant> &settings);
   void generateHalfGeminis(void);
   void highlightPaths(void);
   void importNeighbors(const QString &filePath);
@@ -649,9 +651,6 @@ class spoton: public QMainWindow
   void sharePublicKeyWithParticipant(const QString &keyType);
   void showError(const QString &error);
   void showUrls(const QString &link, const QString &querystr);
-  void updateListenersTable(const QSqlDatabase &db);
-  void updateNeighborsTable(const QSqlDatabase &db);
-  void updateParticipantsTable(const QSqlDatabase &db);
   void updatePoptasticNameSettingsFromWidgets(spoton_crypt *crypt);
   void updatePublicKeysLabel(void);
   void verifySMPSecret(const QString &hash, const QString &keyType,

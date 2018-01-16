@@ -3307,6 +3307,11 @@ void spoton::cleanup(void)
     }
 
   m_statisticsFuture.waitForFinished();
+
+  /*
+  ** Abort timers.
+  */
+
   m_buzzStatusTimer.stop();
   m_chatInactivityTimer.stop();
   m_emailRetrievalTimer.stop();
@@ -3319,6 +3324,17 @@ void spoton::cleanup(void)
   m_starbeamUpdateTimer.stop();
   m_tableTimer.stop();
   m_updateChatWindowsTimer.stop();
+
+  /*
+  ** Terminate dependent futures.
+  */
+
+  m_generalFuture.waitForFinished();
+
+  /*
+  ** Close databases.
+  */
+
   m_urlDatabase.close();
   m_urlDatabase = QSqlDatabase();
 
@@ -3332,15 +3348,15 @@ void spoton::cleanup(void)
   m_urlCommonCrypt = 0;
   m_wizardUi = 0;
 
-  QHashIterator<QString, spoton_crypt *> it(m_crypts);
+  QMutableHashIterator<QString, spoton_crypt *> it(m_crypts);
 
   while(it.hasNext())
     {
       it.next();
       delete it.value();
+      it.remove();
     }
 
-  m_crypts.clear();
 #if SPOTON_GOLDBUG == 0
   m_addParticipantWindow->deleteLater();
 #endif
@@ -4144,7 +4160,6 @@ void spoton::slotPopulateListeners(void)
 		   SIGNAL(itemChanged(QTableWidgetItem *)),
 		   this,
 		   SLOT(slotListenerChanged(QTableWidgetItem *)));
-	updateListenersTable(db);
 
 	QModelIndexList list;
 	QString ip("");
@@ -4820,7 +4835,6 @@ void spoton::slotPopulateNeighbors(void)
 		   SIGNAL(itemChanged(QTableWidgetItem *)),
 		   this,
 		   SLOT(slotNeighborChanged(QTableWidgetItem *)));
-	updateNeighborsTable(db);
 
 	QModelIndexList list;
 	QString proxyIp("");
@@ -5982,6 +5996,17 @@ void spoton::slotGeneralTimerTimeout(void)
 	  ** We'll need something here.
 	  */
 	}
+
+  if(m_generalFuture.isFinished())
+    {
+      QHash<QString, QVariant> settings;
+
+      settings["is_kernel_active"] = isKernelActive();
+      settings["keep_only_user_defined_neighbors"] = m_optionsUi.
+	keepOnlyUserDefinedNeighbors->isChecked();
+      m_generalFuture = QtConcurrent::run
+	(this, &spoton::generalConcurrentMethod, settings);
+    }
 }
 
 void spoton::slotSelectGeoIPPath(void)
@@ -6311,103 +6336,6 @@ void spoton::slotListenerChanged(QTableWidgetItem *item)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::updateListenersTable(const QSqlDatabase &db)
-{
-  if(!isKernelActive())
-    if(db.isOpen())
-      {
-	QSqlQuery query(db);
-
-	/*
-	** OK, so the kernel is inactive. Discover the
-	** listeners that have not been deleted and update some of their
-	** information.
-	*/
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM listeners WHERE "
-		   "status_control = 'deleted'");
-	query.exec("DELETE FROM listeners_accounts WHERE "
-		   "listener_oid NOT IN "
-		   "(SELECT OID FROM listeners)");
-	query.exec("DELETE FROM listeners_accounts_consumed_authentications "
-		   "WHERE listener_oid >= 0");
-	query.exec("DELETE FROM listeners_allowed_ips WHERE "
-		   "listener_oid NOT IN "
-		   "(SELECT OID FROM listeners)");
-	query.exec("UPDATE listeners SET connections = 0, "
-		   "external_ip_address = NULL, "
-		   "status = 'offline' WHERE "
-		   "status = 'online' OR connections > 0");
-      }
-}
-
-void spoton::updateNeighborsTable(const QSqlDatabase &db)
-{
-  if(m_optionsUi.keepOnlyUserDefinedNeighbors->isChecked())
-    if(db.isOpen())
-      {
-	/*
-	** Delete random, disconnected peers.
-	*/
-
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM neighbors WHERE "
-		   "status <> 'connected' AND "
-		   "status_control <> 'blocked' AND "
-		   "user_defined = 0");
-      }
-
-  if(!isKernelActive())
-    if(db.isOpen())
-      {
-	QSqlQuery query(db);
-
-	/*
-	** OK, so the kernel is inactive. Discover the
-	** neighbors that have not been deleted and not disconnected
-	** and update some of their information.
-	*/
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM neighbors WHERE "
-		   "status_control = 'deleted'");
-	query.exec("UPDATE neighbors SET "
-		   "account_authenticated = NULL, "
-		   "bytes_read = 0, "
-		   "bytes_written = 0, "
-		   "external_ip_address = NULL, "
-		   "is_encrypted = 0, "
-		   "local_ip_address = NULL, "
-		   "local_port = NULL, "
-		   "ssl_session_cipher = NULL, "
-		   "status = 'disconnected', "
-		   "uptime = 0 WHERE "
-		   "local_ip_address IS NOT NULL OR local_port IS NOT NULL "
-		   "OR status <> 'disconnected'");
-      }
-}
-
-void spoton::updateParticipantsTable(const QSqlDatabase &db)
-{
-  if(!isKernelActive())
-    if(db.isOpen())
-      {
-	QSqlQuery query(db);
-
-	/*
-	** OK, so the kernel is inactive. All participants are offline.
-	*/
-
-	query.exec("UPDATE friends_public_keys SET status = 'offline' WHERE "
-		   "status <> 'offline'");
-	spoton_misc::purgeSignatureRelationships
-	  (db, m_crypts.value("chat", 0));
-      }
 }
 
 void spoton::slotSetPassphrase(void)
@@ -8501,8 +8429,6 @@ void spoton::slotPopulateParticipants(void)
 
     if(db.open())
       {
-	updateParticipantsTable(db);
-
 	QList<int> rows;  // Chat
 	QList<int> rowsE; // E-Mail
 	QList<int> rowsU; // URLs

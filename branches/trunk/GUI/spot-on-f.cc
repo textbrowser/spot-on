@@ -1294,6 +1294,7 @@ void spoton::slotDeleteKey(void)
   if(keyType == "chat")
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_generalFuture.waitForFinished();
       m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
 
       while(!m_starbeamDigestFutures.isEmpty())
