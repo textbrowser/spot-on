@@ -1301,7 +1301,10 @@ void spoton_neighbor::slotTimeout(void)
 	      shouldDelete = true;
 	  }
 	else if(m_id != -1)
-	  shouldDelete = true;
+	  {
+	    if(!db.lastError().text().toLower().contains("locked"))
+	      shouldDelete = true;
+	  }
       }
 
     db.close();
@@ -6360,6 +6363,8 @@ void spoton_neighbor::slotProxyAuthenticationRequired
 	  authenticator->setPassword(m_udpSocket->proxy().password());
 	  authenticator->setUser(m_udpSocket->proxy().user());
 	}
+      else
+	*authenticator = QAuthenticator();
     }
 }
 
