@@ -10,7 +10,6 @@ sudo cp -p ../../libNTRU/libntru.so /usr/local/spot-on/Lib/.
 sudo cp -p ../../libSpotOn/libspoton.so /usr/local/spot-on/Lib/.
 sudo cp -p ./Data/spot-on-neighbors.txt /usr/local/spot-on/.
 sudo cp -p ./Icons/Logo/spot-on-logo.png /usr/local/spot-on/.
-sudo cp -p ./Qt/qt.conf /usr/local/spot-on/.
 sudo cp -p ./SQL/* /usr/local/spot-on/SQL/.
 sudo cp -p ./Shell/spot-on-kernel.sh /usr/local/spot-on/.
 sudo cp -p ./Shell/spot-on.sh /usr/local/spot-on/.
