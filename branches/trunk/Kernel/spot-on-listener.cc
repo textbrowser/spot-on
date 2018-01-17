@@ -28,7 +28,6 @@
 #include <QDir>
 #include <QNetworkInterface>
 #include <QSqlDatabase>
-#include <QSqlError>
 #include <QSqlQuery>
 
 #include <limits>
@@ -700,13 +699,15 @@ void spoton_listener::slotTimeout(void)
 		shouldDelete = true;
 	      }
 	  }
-	else if(!db.lastError().text().toLower().contains("locked"))
+	else
 	  {
+#ifndef Q_PROCESSOR_ARM
 	    foreach(spoton_neighbor *socket,
 		    findChildren<spoton_neighbor *> ())
 	      socket->deleteLater();
 
 	    shouldDelete = true;
+#endif
 	  }
       }
 

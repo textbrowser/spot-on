@@ -28,7 +28,6 @@
 #include <QAuthenticator>
 #include <QDateTime>
 #include <QDir>
-#include <QSqlError>
 #include <QSqlQuery>
 #include <QSslCipher>
 #include <QSslConfiguration>
@@ -1302,8 +1301,9 @@ void spoton_neighbor::slotTimeout(void)
 	  }
 	else if(m_id != -1)
 	  {
-	    if(!db.lastError().text().toLower().contains("locked"))
-	      shouldDelete = true;
+#ifndef Q_PROCESSOR_ARM
+	    shouldDelete = true;
+#endif
 	  }
       }
 
