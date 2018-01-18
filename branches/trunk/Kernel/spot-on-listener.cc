@@ -813,9 +813,16 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	 static_cast<qint64> (socketDescriptor),
 	 0);
       neighbor = new spoton_neighbor
-	(socketDescriptor, m_certificate, m_privateKey,
-	 m_echoMode, m_useAccounts, m_id, m_maximumBufferSize,
-	 m_maximumContentLength, m_transport, address.toString(),
+	(socketDescriptor,
+	 m_certificate,
+	 m_privateKey,
+	 m_echoMode,
+	 m_useAccounts,
+	 m_id,
+	 m_maximumBufferSize,
+	 m_maximumContentLength,
+	 m_transport,
+	 address.toString(),
 	 QString::number(port),
 	 m_address,
 	 QString::number(m_port),
@@ -836,22 +843,21 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
     {
       error = "memory allocation failure";
       neighbor = 0;
-      spoton_misc::logError("spoton_listener::slotNewConnection(): "
-			    "memory failure.");
+      spoton_misc::logError
+	("spoton_listener::slotNewConnection(): memory failure.");
     }
   catch(...)
     {
-      if(neighbor)
-	neighbor->deleteLater();
-
       error = "irregular exception";
-      spoton_misc::logError("spoton_listener::slotNewConnection(): "
-			    "critical failure.");
+      spoton_misc::logError
+	("spoton_listener::slotNewConnection(): critical failure.");
     }
 
   if(Q_UNLIKELY(!error.isEmpty() || !neighbor))
     {
-      if(m_transport == "sctp")
+      if(neighbor)
+	neighbor->deleteLater();
+      else if(m_transport == "sctp")
 	{
 	  spoton_sctp_socket socket(this);
 
@@ -876,10 +882,11 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	  else
 	    spoton_misc::closeSocket(socketDescriptor);
 	}
-    }
+      else
+	spoton_misc::closeSocket(socketDescriptor);
 
-  if(Q_UNLIKELY(!neighbor))
-    return;
+      return;
+    }
 
   connect(neighbor,
 	  SIGNAL(disconnected(void)),
@@ -1722,9 +1729,15 @@ void spoton_listener::slotNewConnection(void)
   try
     {
       neighbor = new spoton_neighbor
-	(-1, m_certificate, m_privateKey,
-	 m_echoMode, m_useAccounts, m_id, m_maximumBufferSize,
-	 m_maximumContentLength, m_transport,
+	(-1,
+	 m_certificate,
+	 m_privateKey,
+	 m_echoMode,
+	 m_useAccounts,
+	 m_id,
+	 m_maximumBufferSize,
+	 m_maximumContentLength,
+	 m_transport,
 	 socket->peerAddress().toString(),
 	 QString::number(socket->peerPort()),
 	 m_address,
@@ -1744,22 +1757,23 @@ void spoton_listener::slotNewConnection(void)
     {
       error = "memory allocation failure";
       neighbor = 0;
-      spoton_misc::logError("spoton_listener::slotNewConnection(): "
-			    "memory failure.");
+      spoton_misc::logError
+	("spoton_listener::slotNewConnection(): memory failure.");
     }
   catch(...)
     {
-      if(neighbor)
-	neighbor->deleteLater();
-
       error = "irregular exception";
-      spoton_misc::logError("spoton_listener::slotNewConnection(): "
-			    "critical failure.");
+      spoton_misc::logError
+	("spoton_listener::slotNewConnection(): critical failure.");
     }
 
-  if(Q_UNLIKELY(!neighbor))
+  if(Q_UNLIKELY(!error.isEmpty()))
     {
-      socket->deleteLater();
+      if(neighbor)
+	neighbor->deleteLater();
+      else
+	socket->deleteLater();
+
       return;
     }
 

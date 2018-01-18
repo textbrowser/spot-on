@@ -95,7 +95,14 @@ spoton_neighbor::spoton_neighbor
   m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
 		       spoton_common::LANE_WIDTH_MAXIMUM);
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+  m_bluetoothSocket = socket;
+
+  if(m_bluetoothSocket)
+    m_bluetoothSocket->setParent(this);
+#else
   m_bluetoothSocket = 0;
+#endif
   m_passthrough = passthrough;
   m_privateApplicationCredentials = privateApplicationCredentials;
   m_privateApplicationSequences.first = m_privateApplicationSequences.second =
@@ -115,7 +122,6 @@ spoton_neighbor::spoton_neighbor
   if(transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-      m_bluetoothSocket = socket;
 
       if(m_bluetoothSocket)
 	{
@@ -191,6 +197,8 @@ spoton_neighbor::spoton_neighbor
       m_udpSocket->setPeerAddress(QHostAddress(ipAddress));
       m_udpSocket->setPeerPort(port.toUShort());
     }
+  else if(socketDescriptor != -1)
+    spoton_misc::closeSocket(socketDescriptor);
 
   if(m_bluetoothSocket)
     {
