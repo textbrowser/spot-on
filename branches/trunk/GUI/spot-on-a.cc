@@ -376,8 +376,10 @@ int main(int argc, char *argv[])
 #endif
 
   if(!settings.contains("gui/gcryctl_init_secmem"))
-    settings.setValue("gui/gcryctl_init_secmem",
-		      spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
+    settings.setValue("gui/gcryctl_init_secmem", 0);
+
+  if(!settings.contains("kernel/gcryctl_init_secmem"))
+    settings.setValue("kernel/gcryctl_init_secmem", 0);
 
   if(!settings.contains("gui/tcp_nodelay"))
     settings.setValue("gui/tcp_nodelay", 1);

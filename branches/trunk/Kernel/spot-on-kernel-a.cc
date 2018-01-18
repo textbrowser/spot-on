@@ -395,8 +395,7 @@ int main(int argc, char *argv[])
   QSettings settings;
 
   if(!settings.contains("kernel/gcryctl_init_secmem"))
-    settings.setValue("kernel/gcryctl_init_secmem",
-		      spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
+    settings.setValue("kernel/gcryctl_init_secmem", 0);
 
   if(!settings.contains("kernel/sctp_nodelay"))
     settings.setValue("kernel/sctp_nodelay", 1);
