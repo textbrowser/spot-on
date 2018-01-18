@@ -6569,7 +6569,7 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-541</y>
+             <y>0</y>
              <width>764</width>
              <height>1206</height>
             </rect>
@@ -7351,7 +7351,7 @@ top: 5px;
                    <item row="3" column="4">
                     <widget class="QLabel" name="label_58">
                      <property name="text">
-                      <string>Minimum of 16 characters.</string>
+                      <string>Minimum of 8 characters.</string>
                      </property>
                     </widget>
                    </item>
@@ -9448,8 +9448,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>426</width>
-             <height>444</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
