@@ -701,13 +701,17 @@ void spoton_listener::slotTimeout(void)
 	  }
 	else
 	  {
-#ifndef Q_PROCESSOR_ARM
-	    foreach(spoton_neighbor *socket,
-		    findChildren<spoton_neighbor *> ())
-	      socket->deleteLater();
+	    QFileInfo fileInfo
+	      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
-	    shouldDelete = true;
-#endif
+	    if(!fileInfo.exists())
+	      {
+		foreach(spoton_neighbor *socket,
+			findChildren<spoton_neighbor *> ())
+		  socket->deleteLater();
+
+		shouldDelete = true;
+	      }
 	  }
       }
 

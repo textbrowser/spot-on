@@ -1301,9 +1301,11 @@ void spoton_neighbor::slotTimeout(void)
 	  }
 	else if(m_id != -1)
 	  {
-#ifndef Q_PROCESSOR_ARM
-	    shouldDelete = true;
-#endif
+	    QFileInfo fileInfo
+	      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
+
+	    if(!fileInfo.exists())
+	      shouldDelete = true;
 	  }
       }
 
