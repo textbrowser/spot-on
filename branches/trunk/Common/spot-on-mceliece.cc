@@ -363,7 +363,7 @@ bool spoton_mceliece_private_key::preparePreSynTab(void)
 	  NTL::GF2EX gf2ex = m_X - m_L[i];
 
 	  if(!NTL::IsZero(gf2ex)) // Should always be true.
-	    m_preSynTab.push_back(NTL::InvMod(m_X - m_L[i], m_gZ));
+	    m_preSynTab.push_back(NTL::InvMod(gf2ex, m_gZ));
 	  else
 	    m_preSynTab.push_back(m_X);
 	}
