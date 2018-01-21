@@ -127,7 +127,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec("CREATE TABLE IF NOT EXISTS buzz_channels ("
 		   "data BLOB NOT NULL, "
 		   "data_hash TEXT PRIMARY KEY NOT NULL)"); // Keyed hash.
@@ -168,7 +172,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec("CREATE TABLE IF NOT EXISTS categories ("
 		   "category TEXT NOT NULL, "
 		   "category_hash TEXT PRIMARY KEY NOT NULL)"); /*
@@ -211,7 +219,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec("CREATE TABLE IF NOT EXISTS folders ("
 		   "date TEXT NOT NULL, "
 		   "folder_index INTEGER NOT NULL "
@@ -291,7 +303,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec
 	  ("CREATE TABLE IF NOT EXISTS friends_public_keys ("
 	   "gemini TEXT DEFAULT NULL, "
@@ -350,7 +366,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec("CREATE TABLE IF NOT EXISTS idiotes ("
 		   "id TEXT NOT NULL, "
 		   "id_hash TEXT PRIMARY KEY NOT NULL, " // Keyed hash.
@@ -372,7 +392,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec("CREATE TABLE IF NOT EXISTS kernel_gui_server ("
 		   "port INTEGER PRIMARY KEY NOT NULL "
 		   "CHECK (port >= 0 AND port <= 65535))");
@@ -400,7 +424,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec
 	  (QString("CREATE TABLE IF NOT EXISTS listeners ("
 		   "ip_address TEXT NOT NULL, "
@@ -511,7 +539,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec
 	  (QString("CREATE TABLE IF NOT EXISTS neighbors ("
 		   "local_ip_address TEXT , "
@@ -623,7 +655,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec("CREATE TABLE IF NOT EXISTS poptastic ("
 		   "in_authentication TEXT NOT NULL, "
 		   "in_method TEXT NOT NULL, "
@@ -674,7 +710,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec("CREATE TABLE IF NOT EXISTS secrets ("
 		   "generated_data TEXT NOT NULL, "
 		   "generated_data_hash TEXT NULL PRIMARY KEY, " // Keyed hash.
@@ -697,7 +737,11 @@ void spoton_misc::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
 	query.exec("PRAGMA journal_mode = WAL");
+#endif
 	query.exec("CREATE TABLE IF NOT EXISTS magnets ("
 		   "magnet BLOB NOT NULL, "
 		   "magnet_hash TEXT PRIMARY KEY NOT NULL, " // Keyed hash.
