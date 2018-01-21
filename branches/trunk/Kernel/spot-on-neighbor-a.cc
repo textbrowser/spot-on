@@ -1059,7 +1059,8 @@ void spoton_neighbor::slotTimeout(void)
     {
       spoton_misc::logError
 	(QString("spoton_neighbor::slotTimeout(): "
-		 "aborting because of silent connection for %1:%2.").
+		 "aborting because of silent (%1) connection for %2:%3.").
+	 arg(m_silenceTime).
 	 arg(m_address).
 	 arg(m_port));
       deleteLater();
