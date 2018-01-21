@@ -1333,6 +1333,7 @@ void spoton_rss::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
+	query.exec("PRAGMA journal_mode = WAL");
 	query.exec("CREATE TABLE IF NOT EXISTS rss_feeds ("
 		   "feed TEXT NOT NULL, "
 		   "feed_description TEXT NOT NULL, "
