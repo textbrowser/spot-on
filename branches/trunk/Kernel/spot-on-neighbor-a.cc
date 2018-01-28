@@ -4143,11 +4143,11 @@ void spoton_neighbor::process0040a(int length, const QByteArray &dataIn,
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
 
-      if(list.size() != 2)
+      if(!(list.size() == 2 || list.size() == 3))
 	{
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::process0040a(): "
-		     "received irregular data. Expecting 2 "
+		     "received irregular data. Expecting 2 or 3 "
 		     "entries, "
 		     "received %1.").arg(list.size()));
 	  return;
@@ -4227,11 +4227,11 @@ void spoton_neighbor::process0040b(int length, const QByteArray &dataIn,
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
 
-      if(list.size() != 2)
+      if(!(list.size() == 2 || list.size() == 3))
 	{
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::process0040b(): "
-		     "received irregular data. Expecting 2 "
+		     "received irregular data. Expecting 2 or 3 "
 		     "entries, "
 		     "received %1.").arg(list.size()));
 	  return;
@@ -6454,7 +6454,7 @@ QString spoton_neighbor::findMessageType
   ** attached to the kernel.
   */
 
-  if(interfaces > 0 && list.size() == 2)
+  if(interfaces > 0 && (list.size() == 2 || list.size() == 3))
     {
       symmetricKeys = spoton_kernel::findBuzzKey(list.value(0), list.value(1));
 

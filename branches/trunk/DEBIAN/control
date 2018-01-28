@@ -1,6 +1,6 @@
 Architecture: amd64
 Depends: libcurl3-gnutls (>= 4.4.0), libgcrypt20 (>= 1.6.5), libgpg-error0 (>= 0.17.0), libgeoip1 (>= 1.6.9), libpq5 (>= 5.8), libssl1.0.0 (>= 1.0.2)
-Installed-Size: 186008
+Installed-Size: 186012
 Maintainer: textbrowser@gmail.com
 Package: Spot-On
 Priority: optional
