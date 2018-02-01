@@ -419,7 +419,7 @@ inline void ForceToMem(double *p) { _ntl_ForceToMem(p); }
 
 #else
 
-inline void ForceToMem(double *p) { (void) p; }
+inline void ForceToMem(double *p) { (void) p;}
 
 #endif
 

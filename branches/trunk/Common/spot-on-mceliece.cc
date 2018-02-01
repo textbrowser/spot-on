@@ -392,7 +392,7 @@ bool spoton_mceliece_private_key::prepareS(void)
 {
   try
     {
-      int long k = static_cast<long int> (m_k);
+      int long k = static_cast<long int> (m_k);qDebug()<<m_k<<k;
 
       m_S.SetDims(k, k);
 
@@ -733,13 +733,13 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	  s >> string;
 	  salt1 = QByteArray::fromBase64(string.c_str());
 
-	  if(salt1.length() != 64)
+	  if(salt1.length() != 32)
 	    throw std::runtime_error("salt1.length() mismatch");
 
 	  s >> string;
 	  salt2 = QByteArray::fromBase64(string.c_str());
 
-	  if(salt2.length() != 64)
+	  if(salt2.length() != 32)
 	    throw std::runtime_error("salt2.length() mismatch");
 	}
       else if(m_conversion == "fob")
@@ -919,13 +919,13 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	    (stream1.str().c_str(), static_cast<int> (stream1.str().size()));
 	  bool ok = true;
 
-	  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+	  bytes = spoton_crypt::sha256Hash(bytes, &ok);
 
 	  if(!ok)
-	    throw std::runtime_error("spoton_crypt::sha512Hash() failure");
+	    throw std::runtime_error("spoton_crypt::sha256Hash() failure");
 
 	  /*
-	  ** Generate a key stream via PBKDF2 from SHA-512(m).
+	  ** Generate a key stream via PBKDF2 from SHA-256(m).
 	  */
 
 	  QByteArray keyStream2
@@ -935,7 +935,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	  if(gcry_kdf_derive(bytes.constData(),
 			     static_cast<size_t> (bytes.length()),
 			     GCRY_KDF_PBKDF2,
-			     gcry_md_map_name("sha512"),
+			     gcry_md_map_name("sha256"),
 			     salt2.constData(),
 			     static_cast<size_t> (salt2.length()),
 			     1,
@@ -965,13 +965,13 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	  stream2 << ecar << mcar;
 	  bytes = QByteArray
 	    (stream2.str().c_str(), static_cast<int> (stream2.str().size()));
-	  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+	  bytes = spoton_crypt::sha256Hash(bytes, &ok);
 
 	  if(!ok)
-	    throw std::runtime_error("spoton_crypt::sha512Hash() failure");
+	    throw std::runtime_error("spoton_crypt::sha256Hash() failure");
 
 	  /*
-	  ** Generate a key stream via PBKDF2 from SHA-512(e || mcar).
+	  ** Generate a key stream via PBKDF2 from SHA-256(e || mcar).
 	  */
 
 	  QByteArray keyStream1
@@ -981,7 +981,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	  if(gcry_kdf_derive(bytes.constData(),
 			     static_cast<size_t> (bytes.length()),
 			     GCRY_KDF_PBKDF2,
-			     gcry_md_map_name("sha512"),
+			     gcry_md_map_name("sha256"),
 			     salt1.constData(),
 			     static_cast<size_t> (salt1.length()),
 			     1,
@@ -1190,24 +1190,24 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    (stream1.str().c_str(), static_cast<int> (stream1.str().size()));
 	  bool ok = true;
 
-	  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+	  bytes = spoton_crypt::sha256Hash(bytes, &ok);
 
 	  if(!ok)
-	    throw std::runtime_error("spoton_crypt::sha512Hash() failure");
+	    throw std::runtime_error("spoton_crypt::sha256Hash() failure");
 
 	  /*
-	  ** Generate a key stream via PBKDF2 from SHA-512(e || m).
+	  ** Generate a key stream via PBKDF2 from SHA-256(e || m).
 	  */
 
 	  QByteArray keyStream1
 	    (static_cast<int> (qCeil(static_cast<double> (m.length()) /
 				     CHAR_BIT)), 0);
-	  QByteArray salt1(spoton_crypt::weakRandomBytes(64));
+	  QByteArray salt1(spoton_crypt::weakRandomBytes(32));
 
 	  if(gcry_kdf_derive(bytes.constData(),
 			     static_cast<size_t> (bytes.length()),
 			     GCRY_KDF_PBKDF2,
-			     gcry_md_map_name("sha512"),
+			     gcry_md_map_name("sha256"),
 			     salt1.constData(),
 			     static_cast<size_t> (salt1.length()),
 			     1,
@@ -1236,24 +1236,24 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	  stream2 << e;
 	  bytes = QByteArray
 	    (stream2.str().c_str(), static_cast<int> (stream2.str().size()));
-	  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+	  bytes = spoton_crypt::sha256Hash(bytes, &ok);
 
 	  if(!ok)
-	    throw std::runtime_error("spoton_crypt::sha512Hash() failure");
+	    throw std::runtime_error("spoton_crypt::sha256Hash() failure");
 
 	  /*
-	  ** Generate a key stream via PBKDF2 from SHA-512(e).
+	  ** Generate a key stream via PBKDF2 from SHA-256(e).
 	  */
 
 	  QByteArray keyStream2
 	    (static_cast<int> (qCeil(static_cast<double> (m.length()) /
 				     CHAR_BIT)), 0);
-	  QByteArray salt2(spoton_crypt::weakRandomBytes(64));
+	  QByteArray salt2(spoton_crypt::weakRandomBytes(32));
 
 	  if(gcry_kdf_derive(bytes.constData(),
 			     static_cast<size_t> (bytes.length()),
 			     GCRY_KDF_PBKDF2,
-			     gcry_md_map_name("sha512"),
+			     gcry_md_map_name("sha256"),
 			     salt2.constData(),
 			     static_cast<size_t> (salt2.length()),
 			     1,

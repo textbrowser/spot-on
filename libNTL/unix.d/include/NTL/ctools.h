@@ -463,7 +463,6 @@ char *_ntl_make_aligned(char *p, long align)
 inline
 char *_ntl_make_aligned(char *p, long align)
 {
-  (void) align;
    return p;
 }
 

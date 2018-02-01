@@ -325,7 +325,7 @@ inline long
 sp_CountLeadingZeros(unsigned long x)
 {
    long res = NTL_BITS_PER_LONG-NTL_SP_NBITS;
-   x = x << (NTL_BITS_PER_LONG-NTL_SP_NBITS);
+   x = x << NTL_BITS_PER_LONG-NTL_SP_NBITS;
    while (x < (1UL << (NTL_BITS_PER_LONG-1))) {
       x <<= 1;
       res++;
@@ -807,7 +807,6 @@ typedef wide_double mulmod_precon_t;
 
 inline wide_double PrepMulModPrecon(long b, long n, wide_double ninv)
 {
-  (void) n;
    return ((wide_double) b) * ninv;
 }
 
@@ -978,7 +977,6 @@ struct sp_reduce_struct { };
 inline
 sp_reduce_struct sp_PrepRem(long n) 
 {
-  (void) n;
    return sp_reduce_struct();
 }
 
@@ -986,14 +984,12 @@ sp_reduce_struct sp_PrepRem(long n)
 inline
 long rem(unsigned long a, long n, sp_reduce_struct red) 
 {
-  (void) red;
    return a % cast_unsigned(n);
 }
 
 inline
 long rem(long a, long n, sp_reduce_struct red)
 {
-  (void) red;
    long r = a % n;
    return sp_CorrectDeficit(r, n);
 }
@@ -1117,7 +1113,6 @@ struct sp_ll_reduce_struct { };
 inline sp_ll_reduce_struct
 make_sp_ll_reduce_struct(long n)
 {
-  (void) n;
    return sp_ll_reduce_struct();
 }
 
