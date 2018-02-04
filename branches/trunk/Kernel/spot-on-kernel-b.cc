@@ -122,12 +122,16 @@ void spoton_kernel::popPoptastic(void)
 	  break;
 	}
       else
-	hash.clear();
+	{
+	  m_poptasticImapUIDs.remove(hash["in_username"].toString());
+	  hash.clear();
+	}
     }
 
   if(hash.isEmpty() || !ok)
     {
       m_poptasticAccounts.clear();
+      m_poptasticImapUIDs.clear();
 
       if(!ok)
 	spoton_misc::logError("spoton_kernel::popPoptastic(): "
@@ -148,11 +152,11 @@ void spoton_kernel::popPoptastic(void)
 	(curl, CURLOPT_USERNAME,
 	 hash.value("in_username").toByteArray().trimmed().constData());
 
-      long int timeout = 10L;
+      long int timeout = 5L;
 
       if(hash.value("proxy_enabled").toBool())
 	{
-	  timeout += 15L;
+	  timeout += 5L;
 
 	  QString address("");
 	  QString port("");
@@ -187,12 +191,16 @@ void spoton_kernel::popPoptastic(void)
 	{
 	  if(method == "IMAP")
 	    {
+	      qint64 uid = m_poptasticImapUIDs.value
+		(hash.value("in_username").toString(), 1);
+
 	      removeUrl = QString("imaps://%1:%2/INBOX").
 		arg(hash.value("in_server_address").toString().trimmed()).
 		arg(hash.value("in_server_port").toString().trimmed());
-	      url = QString("imaps://%1:%2/INBOX/;UID=1").
+	      url = QString("imaps://%1:%2/INBOX/;UID=%3").
 		arg(hash.value("in_server_address").toString().trimmed()).
-		arg(hash.value("in_server_port").toString().trimmed());
+		arg(hash.value("in_server_port").toString().trimmed()).
+		arg(uid);
 	    }
 	  else
 	    url = QString("pop3s://%1:%2/1").
@@ -228,12 +236,16 @@ void spoton_kernel::popPoptastic(void)
 	{
 	  if(method == "IMAP")
 	    {
+	      qint64 uid = m_poptasticImapUIDs.value
+		(hash.value("in_username").toString(), 1);
+
 	      removeUrl = QString("imap://%1:%2/INBOX").
 		arg(hash.value("in_server_address").toString().trimmed()).
 		arg(hash.value("in_server_port").toString().trimmed());
-	      url = QString("imap://%1:%2/INBOX/;UID=1").
+	      url = QString("imap://%1:%2/INBOX/;UID=%3").
 		arg(hash.value("in_server_address").toString().trimmed()).
-		arg(hash.value("in_server_port").toString().trimmed());
+		arg(hash.value("in_server_port").toString().trimmed()).
+		arg(uid);
 	    }
 	  else
 	    url = QString("pop3://%1:%2/1").
@@ -243,8 +255,10 @@ void spoton_kernel::popPoptastic(void)
 
       QHash<QByteArray, char> cache;
       int limit = setting("gui/poptasticNumberOfMessages", 15).toInt();
+      qint64 uid = m_poptasticImapUIDs.value
+	(hash.value("in_username").toString(), 1);
 
-      for(int i = 1; i <= limit; i++)
+      for(int i = uid; i < limit + uid; i++)
 	{
 	  curl_receive_data.clear();
 	  curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
@@ -257,9 +271,14 @@ void spoton_kernel::popPoptastic(void)
 	  if((rc = curl_easy_perform(curl)) == CURLE_OK)
 	    {
 	      if(method == "IMAP")
-		url.replace
-		  (QString("UID=%1").arg(i),
-		   QString("UID=%1").arg(i + 1));
+		{
+		  m_poptasticImapUIDs
+		    [hash.value("in_username").toString()] += 1;
+		  url = QString("imaps://%1:%2/INBOX/;UID=%3").
+		    arg(hash.value("in_server_address").toString().trimmed()).
+		    arg(hash.value("in_server_port").toString().trimmed()).
+		    arg(i);
+		}
 	      else
 		{
 		  url = url.mid(0, url.lastIndexOf('/'));
@@ -283,9 +302,15 @@ void spoton_kernel::popPoptastic(void)
 	    }
 	  else if(rc == CURLE_OPERATION_TIMEDOUT)
 	    {
+	      if(method == "IMAP")
+		url = QString("imaps://%1:%2/INBOX/;UID=%3").
+		  arg(hash.value("in_server_address").toString().trimmed()).
+		  arg(hash.value("in_server_port").toString().trimmed()).
+		  arg(i);
 	    }
 	  else
 	    {
+	      m_poptasticImapUIDs.remove(hash.value("in_username").toString());
 	      spoton_misc::logError
 		(QString("spoton_kernel::popPoptastic(): "
 			 "curl_easy_perform() failure (%1).").arg(rc));
