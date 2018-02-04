@@ -1979,6 +1979,8 @@ void spoton::slotSavePoptasticAccount(void)
 
       if(ok)
 	{
+	  QString account
+	    (m_poptasticRetroPhoneSettingsUi.account->currentText());
 	  bool initial = m_poptasticRetroPhoneSettingsUi.account->count() == 0;
 
 	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
@@ -1998,7 +2000,15 @@ void spoton::slotSavePoptasticAccount(void)
 
 	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
 
-	  int index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	  int index = -1;
+
+	  if((index = m_poptasticRetroPhoneSettingsUi.account->
+	      findText(account)) >= 0)
+	    m_poptasticRetroPhoneSettingsUi.account->setCurrentIndex(index);
+	  else
+	    m_poptasticRetroPhoneSettingsUi.account->setCurrentIndex(0);
+
+	  index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
 	    findText(m_settings["gui/poptasticName"].toByteArray());
 
 	  if(index >= 0)
@@ -2373,8 +2383,7 @@ void spoton::slotPoptasticAccountChanged(const QString &text)
 
 void spoton::slotDeletePoptasticAccount(void)
 {
-  if(m_poptasticRetroPhoneSettingsUi.account->currentText().trimmed().
-     isEmpty())
+  if(m_poptasticRetroPhoneSettingsUi.account->currentText().trimmed().isEmpty())
     return;
 
   QMessageBox mb(m_poptasticRetroPhoneDialog);
