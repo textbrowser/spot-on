@@ -12,11 +12,14 @@
   <li>Enable WAL journal mode on non-ARM for SQLite databases save for congestion_control.db and urls.db.</li>
   <li>Fire compatibility with SmokeStack.</li>
   <li>Increased spoton_common::NEIGHBOR_SILENCE_TIME to 180 seconds.</li>
+  <li>Maintain UID circular sequencers for IMAP. Session-only.</li>
   <li>Minimum password length set to 8.</li>
   <li>Moved some database activity off of the main UI thread.</li>
   <li>New Buzz HMAC key generation.</li>
+  <li>Non-postoffice e-mail dates are now in RFC 2822 format.</li>
   <li>Notify the user of important events via the status bar.</li>
   <li>Numeric sorting of e-mail attachment column.</li>
+  <li>Parse date from traditional e-mail per RFC 2822 format.</li>
   <li>Per Mr. Schmidt, notify the operator of fatal neighbor errors.</li>
   <li>Removed Open Library key-generation logic.</li>
   <li>Replaced SHA-512 with SHA-256 in McEliece.</li>

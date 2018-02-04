@@ -3346,7 +3346,7 @@ void spoton::slotSendMail(void)
 			  "?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, crypt->
-	       encryptedThenHashed(now.toString(Qt::ISODate).
+	       encryptedThenHashed(now.toString(Qt::RFC2822Date).
 				   toLatin1(), &ok).toBase64());
 	    query.bindValue(1, 1); // Sent Folder
 
@@ -3394,7 +3394,7 @@ void spoton::slotSendMail(void)
 	    if(ok)
 	      query.bindValue
 		(4, crypt->
-		 keyedHash(now.toString(Qt::ISODate).toLatin1() +
+		 keyedHash(now.toString(Qt::RFC2822Date).toLatin1() +
 			   message + subject, &ok).toBase64());
 
 	    if(ok)
@@ -4086,9 +4086,10 @@ void spoton::populateMail(void)
 				  item->setText(tr("error"));
 				else if(i == 0) // date
 				  {
-				    if(QDateTime::currentDateTime().
-				       toString(Qt::ISODate).mid(0, 10) ==
-				       item->text().mid(0, 10))
+				    if(QDateTime::currentDateTime().date() ==
+				       QDateTime::fromString(item->text(),
+							     Qt::RFC2822Date).
+				       date())
 				      item->setBackground
 					(QBrush(QColor("lightgreen")));
 				  }

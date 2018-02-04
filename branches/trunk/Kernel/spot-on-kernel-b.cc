@@ -1368,6 +1368,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	(spoton_crypt::sha512Hash(message.mid(message.indexOf("content=")).
 				  simplified(), 0).toHex());
       QByteArray subject;
+      QDateTime date(QDateTime::currentDateTime());
       QList<QByteArray> list(message.trimmed().split('\n'));
       QList<QByteArray> mList;
 
@@ -1376,6 +1377,16 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  {
 	    if(!from.isEmpty())
 	      boundary = list.value(i).toLower();
+	  }
+	else if(list.value(i).toLower().startsWith("date:"))
+	  {
+	    QString string(list.value(i));
+
+	    string.remove(0, static_cast<int> (qstrlen("date:")));
+	    string = string.trimmed();
+
+	    if(!string.isEmpty())
+	      date = QDateTime::fromString(string, Qt::RFC2822Date);
 	  }
 	else if(list.value(i).toLower().startsWith("from:"))
 	  {
@@ -1505,7 +1516,6 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 	if(db.open())
 	  {
-	    QDateTime now(QDateTime::currentDateTime());
 	    QSqlQuery query(db);
 	    bool ok = true;
 
@@ -1518,7 +1528,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue
 	      (0, s_crypt->
-	       encryptedThenHashed(now.toString(Qt::ISODate).
+	       encryptedThenHashed(date.toString(Qt::RFC2822Date).
 				   toLatin1(), &ok).toBase64());
 	    query.bindValue(1, 0); // Inbox Folder
 
@@ -1535,8 +1545,8 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 	    if(ok)
 	      query.bindValue
-		(4, s_crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
-				       m + subject,
+		(4, s_crypt->keyedHash(date.toString(Qt::RFC2822Date).
+				       toLatin1() + m + subject,
 				       &ok).toBase64());
 
 	    if(ok)
