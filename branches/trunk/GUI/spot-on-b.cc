@@ -4103,11 +4103,21 @@ void spoton::populateMail(void)
 #if QT_VERSION >= 0x050000
 				    if(QDateTime::currentDateTime().date() ==
 				       QDateTime::fromString(item->text(),
+							     Qt::ISODate).
+				       date() ||
+				       QDateTime::currentDateTime().date() ==
+				       QDateTime::fromString(item->text(),
 							     Qt::RFC2822Date).
 				       date())
 				      item->setBackground
 					(QBrush(QColor("lightgreen")));
 #else
+				    if(QDateTime::currentDateTime().date() ==
+				       QDateTime::fromString(item->text(),
+							     Qt::ISODate).
+				       date())
+				      item->setBackground
+					(QBrush(QColor("lightgreen")));
 #endif
 				  }
 			      }
