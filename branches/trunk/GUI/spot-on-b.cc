@@ -3344,10 +3344,17 @@ void spoton::slotSendMail(void)
 			  "status, subject, participant_oid) "
 			  "VALUES (?, ?, ?, ?, ?, ?, ?, "
 			  "?, ?, ?, ?, ?, ?, ?, ?)");
+#if QT_VERSION >= 0x050000
 	    query.bindValue
 	      (0, crypt->
 	       encryptedThenHashed(now.toString(Qt::RFC2822Date).
 				   toLatin1(), &ok).toBase64());
+#else
+	    query.bindValue
+	      (0, crypt->
+	       encryptedThenHashed(now.toString(Qt::ISODate).
+				   toLatin1(), &ok).toBase64());
+#endif
 	    query.bindValue(1, 1); // Sent Folder
 
 	    /*
@@ -3392,10 +3399,17 @@ void spoton::slotSendMail(void)
 	      message = m_ui.outgoingMessage->toPlainText().toUtf8();
 
 	    if(ok)
+#if QT_VERSION >= 0x050000
 	      query.bindValue
 		(4, crypt->
 		 keyedHash(now.toString(Qt::RFC2822Date).toLatin1() +
 			   message + subject, &ok).toBase64());
+#else
+	      query.bindValue
+		(4, crypt->
+		 keyedHash(now.toString(Qt::ISODate).toLatin1() +
+			   message + subject, &ok).toBase64());
+#endif
 
 	    if(ok)
 	      query.bindValue(5, crypt->
@@ -4086,12 +4100,15 @@ void spoton::populateMail(void)
 				  item->setText(tr("error"));
 				else if(i == 0) // date
 				  {
+#if QT_VERSION >= 0x050000
 				    if(QDateTime::currentDateTime().date() ==
 				       QDateTime::fromString(item->text(),
 							     Qt::RFC2822Date).
 				       date())
 				      item->setBackground
 					(QBrush(QColor("lightgreen")));
+#else
+#endif
 				  }
 			      }
 			    else
