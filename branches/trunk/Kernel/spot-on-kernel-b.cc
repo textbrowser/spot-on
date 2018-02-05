@@ -1368,9 +1368,14 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	(spoton_crypt::sha512Hash(message.mid(message.indexOf("content=")).
 				  simplified(), 0).toHex());
       QByteArray subject;
+#if QT_VERSION >= 0x050000
       QDateTime date(QDateTime::currentDateTime());
+#endif
       QList<QByteArray> list(message.trimmed().split('\n'));
       QList<QByteArray> mList;
+#if QT_VERSION < 0x050000
+      QString date("");
+#endif
 
       for(int i = 0; i < list.size(); i++)
 	if(list.value(i).toLower().contains("content-type: text/"))
@@ -1386,7 +1391,11 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    string = string.trimmed();
 
 	    if(!string.isEmpty())
+#if QT_VERSION >= 0x050000
 	      date = QDateTime::fromString(string, Qt::RFC2822Date);
+#else
+	      date = string;
+#endif
 	  }
 	else if(list.value(i).toLower().startsWith("from:"))
 	  {
@@ -1519,6 +1528,11 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    QSqlQuery query(db);
 	    bool ok = true;
 
+#if QT_VERSION < 0x050000
+	    if(date.isEmpty())
+	      date = QDateTime::currentDateTime().toString(Qt::ISODate);
+#endif
+
 	    query.prepare("INSERT INTO folders "
 			  "(date, folder_index, from_account, goldbug, hash, "
 			  "message, message_code, "
@@ -1526,10 +1540,16 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 			  "sign, signature, "
 			  "status, subject, participant_oid) "
 			  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+#if QT_VERSION >= 0x050000
 	    query.bindValue
 	      (0, s_crypt->
 	       encryptedThenHashed(date.toString(Qt::RFC2822Date).
 				   toLatin1(), &ok).toBase64());
+#else
+	    query.bindValue
+	      (0, s_crypt->
+	       encryptedThenHashed(date.toLatin1(), &ok).toBase64());
+#endif
 	    query.bindValue(1, 0); // Inbox Folder
 
 	    if(ok)
@@ -1544,10 +1564,16 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		 toBase64());
 
 	    if(ok)
+#if QT_VERSION >= 0x050000
 	      query.bindValue
 		(4, s_crypt->keyedHash(date.toString(Qt::RFC2822Date).
 				       toLatin1() + m + subject,
 				       &ok).toBase64());
+#else
+	      query.bindValue
+		(4, s_crypt->keyedHash(date.toLatin1() + m + subject,
+				       &ok).toBase64());
+#endif
 
 	    if(ok)
 	      if(!m.isEmpty())
