@@ -1735,7 +1735,7 @@ void spoton::slotShowNeighborStatistics(void)
 
   if(!s)
     {
-      s = new spoton_neighborstatistics(0);
+      s = new spoton_neighborstatistics(this);
       s->setObjectName(QString::number(oid));
       connect(QCoreApplication::instance(),
 	      SIGNAL(aboutToQuit(void)),
