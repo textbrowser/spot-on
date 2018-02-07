@@ -1470,11 +1470,11 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-e.cc" line="64"/>
         <location filename="../GUI/spot-on-e.cc" line="88"/>
         <location filename="../GUI/spot-on-e.cc" line="237"/>
-        <location filename="../GUI/spot-on-e.cc" line="1267"/>
-        <location filename="../GUI/spot-on-e.cc" line="1316"/>
-        <location filename="../GUI/spot-on-e.cc" line="1614"/>
-        <location filename="../GUI/spot-on-e.cc" line="1966"/>
-        <location filename="../GUI/spot-on-e.cc" line="2412"/>
+        <location filename="../GUI/spot-on-e.cc" line="1271"/>
+        <location filename="../GUI/spot-on-e.cc" line="1320"/>
+        <location filename="../GUI/spot-on-e.cc" line="1618"/>
+        <location filename="../GUI/spot-on-e.cc" line="1970"/>
+        <location filename="../GUI/spot-on-e.cc" line="2420"/>
         <location filename="../GUI/spot-on-f.cc" line="453"/>
         <location filename="../GUI/spot-on-f.cc" line="775"/>
         <location filename="../GUI/spot-on-f.cc" line="1272"/>
@@ -1617,8 +1617,8 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-c.cc" line="3887"/>
         <location filename="../GUI/spot-on-d.cc" line="1662"/>
         <location filename="../GUI/spot-on-d.cc" line="1728"/>
-        <location filename="../GUI/spot-on-e.cc" line="686"/>
-        <location filename="../GUI/spot-on-e.cc" line="1452"/>
+        <location filename="../GUI/spot-on-e.cc" line="690"/>
+        <location filename="../GUI/spot-on-e.cc" line="1456"/>
         <location filename="../GUI/spot-on-urls.cc" line="1077"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
@@ -1649,8 +1649,8 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-c.cc" line="3720"/>
         <location filename="../GUI/spot-on-c.cc" line="3914"/>
         <location filename="../GUI/spot-on-c.cc" line="4506"/>
-        <location filename="../GUI/spot-on-e.cc" line="592"/>
-        <location filename="../GUI/spot-on-e.cc" line="2399"/>
+        <location filename="../GUI/spot-on-e.cc" line="594"/>
+        <location filename="../GUI/spot-on-e.cc" line="2407"/>
         <location filename="../GUI/spot-on-f.cc" line="1289"/>
         <location filename="../GUI/spot-on-f.cc" line="1351"/>
         <location filename="../GUI/spot-on-f.cc" line="1873"/>
@@ -2058,9 +2058,9 @@ Socket Options: %30</source>
         <location filename="../GUI/spot-on-d.cc" line="1330"/>
         <location filename="../GUI/spot-on-d.cc" line="1700"/>
         <location filename="../GUI/spot-on-e.cc" line="66"/>
-        <location filename="../GUI/spot-on-e.cc" line="1269"/>
-        <location filename="../GUI/spot-on-e.cc" line="1409"/>
-        <location filename="../GUI/spot-on-e.cc" line="2414"/>
+        <location filename="../GUI/spot-on-e.cc" line="1273"/>
+        <location filename="../GUI/spot-on-e.cc" line="1413"/>
+        <location filename="../GUI/spot-on-e.cc" line="2422"/>
         <location filename="../GUI/spot-on-f.cc" line="577"/>
         <location filename="../GUI/spot-on-f.cc" line="1715"/>
         <location filename="../GUI/spot-on-g.cc" line="1053"/>
@@ -2324,7 +2324,7 @@ Socket Options: %30</source>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="56"/>
         <location filename="../GUI/spot-on-b.cc" line="4832"/>
-        <location filename="../GUI/spot-on-e.cc" line="1420"/>
+        <location filename="../GUI/spot-on-e.cc" line="1424"/>
         <location filename="../GUI/spot-on-f.cc" line="244"/>
         <location filename="../GUI/spot-on-f.cc" line="582"/>
         <location filename="../GUI/spot-on-urls.cc" line="2009"/>
@@ -2334,7 +2334,7 @@ Socket Options: %30</source>
     <message>
         <location filename="../GUI/spot-on-b.cc" line="61"/>
         <location filename="../GUI/spot-on-b.cc" line="4829"/>
-        <location filename="../GUI/spot-on-e.cc" line="1426"/>
+        <location filename="../GUI/spot-on-e.cc" line="1430"/>
         <location filename="../GUI/spot-on-f.cc" line="249"/>
         <location filename="../GUI/spot-on-f.cc" line="587"/>
         <location filename="../GUI/spot-on-urls.cc" line="2011"/>
@@ -2759,7 +2759,7 @@ Socket Options: %30</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-c.cc" line="933"/>
-        <location filename="../GUI/spot-on-e.cc" line="1448"/>
+        <location filename="../GUI/spot-on-e.cc" line="1452"/>
         <source>%1: Select StarBeam Transmit File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3424,82 +3424,82 @@ Socket Options: %30</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-e.cc" line="239"/>
-        <location filename="../GUI/spot-on-e.cc" line="1968"/>
+        <location filename="../GUI/spot-on-e.cc" line="1972"/>
         <source>An error (%1) occurred while attempting to save the Poptastic information.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="412"/>
-        <location filename="../GUI/spot-on-e.cc" line="418"/>
+        <location filename="../GUI/spot-on-e.cc" line="414"/>
+        <location filename="../GUI/spot-on-e.cc" line="420"/>
         <source>%1: Poptastic Incoming Connection Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="420"/>
-        <location filename="../GUI/spot-on-e.cc" line="567"/>
+        <location filename="../GUI/spot-on-e.cc" line="422"/>
+        <location filename="../GUI/spot-on-e.cc" line="569"/>
         <source>Failure!
 Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="559"/>
-        <location filename="../GUI/spot-on-e.cc" line="565"/>
+        <location filename="../GUI/spot-on-e.cc" line="561"/>
+        <location filename="../GUI/spot-on-e.cc" line="567"/>
         <source>%1: Poptastic Outgoing Connection Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="595"/>
+        <location filename="../GUI/spot-on-e.cc" line="597"/>
         <source>Are you sure that you wish to reset your Poptastic settings?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="682"/>
+        <location filename="../GUI/spot-on-e.cc" line="686"/>
         <source>%1: Select CA File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1299"/>
+        <location filename="../GUI/spot-on-e.cc" line="1303"/>
         <source>%1: StarBeam Pulse Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1300"/>
+        <location filename="../GUI/spot-on-e.cc" line="1304"/>
         <source>&amp;Pulse Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1318"/>
+        <location filename="../GUI/spot-on-e.cc" line="1322"/>
         <source>An error occurred while attempting to secure the pulse size.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1348"/>
+        <location filename="../GUI/spot-on-e.cc" line="1352"/>
         <source>%1: StarBeam Read Interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1349"/>
+        <location filename="../GUI/spot-on-e.cc" line="1353"/>
         <source>&amp;Read Interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1437"/>
+        <location filename="../GUI/spot-on-e.cc" line="1441"/>
         <source>Please select at least one participant for StarBeam sharing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="1467"/>
+        <location filename="../GUI/spot-on-e.cc" line="1471"/>
         <source>The selected file is not readable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="2402"/>
+        <location filename="../GUI/spot-on-e.cc" line="2410"/>
         <source>Are you sure that you wish to delete the specified Poptastic account?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-e.cc" line="414"/>
-        <location filename="../GUI/spot-on-e.cc" line="561"/>
+        <location filename="../GUI/spot-on-e.cc" line="416"/>
+        <location filename="../GUI/spot-on-e.cc" line="563"/>
         <source>Test successful!</source>
         <translation type="unfinished"></translation>
     </message>

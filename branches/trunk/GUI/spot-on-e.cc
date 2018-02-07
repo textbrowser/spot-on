@@ -264,10 +264,12 @@ void spoton::slotConfigurePoptastic(void)
     }
 
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
+  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip("");
   m_poptasticRetroPhoneSettingsUi.in_remove_remote->setChecked(true);
   m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
   m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
   m_poptasticRetroPhoneSettingsUi.out_password->clear();
+  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip("");
   m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
   m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
   m_poptasticRetroPhoneSettingsUi.out_username->clear();
@@ -606,6 +608,7 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
   m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
+  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip("");
   m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
   m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
   m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
@@ -616,6 +619,7 @@ void spoton::slotPoptasticSettingsReset(void)
     (m_poptasticRetroPhoneSettingsUi.number_of_messages->minimum());
   m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.out_password->clear();
+  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip("");
   m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
   m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
   m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
@@ -2298,6 +2302,8 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 
   m_poptasticRetroPhoneSettingsUi.in_password->setText
     (hash.value("in_password").toString());
+  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip
+    (m_poptasticRetroPhoneSettingsUi.in_password->text());
   m_poptasticRetroPhoneSettingsUi.in_remove_remote->setChecked
     (hash.value("in_remove_remote").toBool());
   m_poptasticRetroPhoneSettingsUi.in_server_address->setText
@@ -2328,6 +2334,8 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 
   m_poptasticRetroPhoneSettingsUi.out_password->setText
     (hash.value("out_password").toString());
+  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip
+    (m_poptasticRetroPhoneSettingsUi.out_password->text());
   m_poptasticRetroPhoneSettingsUi.out_server_address->setText
     (hash.value("out_server_address").toString());
   m_poptasticRetroPhoneSettingsUi.out_server_port->setValue
@@ -2529,6 +2537,7 @@ void spoton::slotDeletePoptasticAccount(void)
 	{
 	  m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
 	  m_poptasticRetroPhoneSettingsUi.in_password->clear();
+	  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip("");
 	  m_poptasticRetroPhoneSettingsUi.in_remove_remote->setChecked(true);
 	  m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
 	  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
@@ -2538,6 +2547,7 @@ void spoton::slotDeletePoptasticAccount(void)
 	  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked(false);
 	  m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
 	  m_poptasticRetroPhoneSettingsUi.out_password->clear();
+	  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip("");
 	  m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
 	  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
 	  m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
