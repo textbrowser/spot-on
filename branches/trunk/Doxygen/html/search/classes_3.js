@@ -43,6 +43,7 @@ var searchData=
   ['spoton_5fsmpwindow',['spoton_smpwindow',['../classspoton__smpwindow.html',1,'']]],
   ['spoton_5fsmpwindow_5fsmp',['spoton_smpwindow_smp',['../classspoton__smpwindow__smp.html',1,'']]],
   ['spoton_5fsocket_5foptions',['spoton_socket_options',['../classspoton__socket__options.html',1,'']]],
+  ['spoton_5fsqlquery',['spoton_sqlquery',['../classspoton__sqlquery.html',1,'']]],
   ['spoton_5fstarbeam_5freader',['spoton_starbeam_reader',['../classspoton__starbeam__reader.html',1,'']]],
   ['spoton_5fstarbeam_5fwriter',['spoton_starbeam_writer',['../classspoton__starbeam__writer.html',1,'']]],
   ['spoton_5fstarbeam_5fwriter_5fworker',['spoton_starbeam_writer_worker',['../classspoton__starbeam__writer__worker.html',1,'']]],
