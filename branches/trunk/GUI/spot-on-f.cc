@@ -454,85 +454,100 @@ void spoton::slotEstablishForwardSecrecy(void)
 }
 
 QList<QByteArray> spoton::retrieveForwardSecrecyInformation
-(const QSqlDatabase &db, const QString &oid, bool *ok1) const
+(const QString &oid, bool *ok1) const
 {
   if(ok1)
     *ok1 = false;
 
   QList<QByteArray> list;
-
-  if(!db.isOpen())
-    return list;
-
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return list;
 
-  QSqlQuery query(db);
+  QString connectionName("");
 
-  query.setForwardOnly(true);
-  query.prepare("SELECT forward_secrecy_authentication_algorithm, "
-		"forward_secrecy_authentication_key, "
-		"forward_secrecy_encryption_algorithm, "
-		"forward_secrecy_encryption_key FROM "
-		"friends_public_keys WHERE OID = ?");
-  query.bindValue(0, oid);
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
 
-  if(query.exec())
-    {
-      if(query.next())
-	{
-	  QByteArray bytes;
-	  bool ok2 = true;
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
-	  if(!query.isNull(0))
-	    {
-	      bytes = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok2);
+    if(db.open())
+      {
+	QSqlQuery query(db);
 
-	      if(ok2)
-		list << bytes;
-	    }
+	query.setForwardOnly(true);
+	query.prepare("SELECT forward_secrecy_authentication_algorithm, "
+		      "forward_secrecy_authentication_key, "
+		      "forward_secrecy_encryption_algorithm, "
+		      "forward_secrecy_encryption_key FROM "
+		      "friends_public_keys WHERE OID = ?");
+	query.bindValue(0, oid);
 
-	  if(ok2)
-	    if(!query.isNull(1))
+	if(query.exec())
+	  {
+	    if(query.next())
 	      {
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok2);
+		QByteArray bytes;
+		bool ok2 = true;
+
+		if(!query.isNull(0))
+		  {
+		    bytes = crypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(0).toByteArray()),
+		       &ok2);
+
+		    if(ok2)
+		      list << bytes;
+		  }
 
 		if(ok2)
-		  list << bytes;
-	      }
+		  if(!query.isNull(1))
+		    {
+		      bytes = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(1).toByteArray()),
+			 &ok2);
 
-	  if(ok2)
-	    if(!query.isNull(2))
-	      {
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(2).toByteArray()), &ok2);
-
-		if(ok2)
-		  list << bytes;
-	      }
-
-	  if(ok2)
-	    if(!query.isNull(3))
-	      {
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(3).toByteArray()), &ok2);
+		      if(ok2)
+			list << bytes;
+		    }
 
 		if(ok2)
-		  list << bytes;
-	      }
+		  if(!query.isNull(2))
+		    {
+		      bytes = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(2).toByteArray()),
+			 &ok2);
 
-	  if(ok2)
-	    if(ok1)
+		      if(ok2)
+			list << bytes;
+		    }
+
+		if(ok2)
+		  if(!query.isNull(3))
+		    {
+		      bytes = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(3).toByteArray()),
+			 &ok2);
+
+		      if(ok2)
+			list << bytes;
+		    }
+
+		if(ok2)
+		  if(ok1)
+		    *ok1 = true;
+	      }
+	    else if(ok1)
 	      *ok1 = true;
-	}
-      else if(ok1)
-	*ok1 = true;
-    }
+	  }
+      }
 
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   return list;
 }
 
@@ -1301,6 +1316,7 @@ void spoton::slotDeleteKey(void)
 	{
 	  QFuture<void> future(m_starbeamDigestFutures.takeFirst());
 
+	  future.cancel();
 	  future.waitForFinished();
 	}
 

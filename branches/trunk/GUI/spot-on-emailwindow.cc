@@ -382,7 +382,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 			  bool ok = true;
 
 			  list = spoton::instance()->
-			    retrieveForwardSecrecyInformation(db, oid, &ok);
+			    retrieveForwardSecrecyInformation(oid, &ok);
 
 			  if(ok)
 			    item = new QTableWidgetItem

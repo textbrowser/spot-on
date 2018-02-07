@@ -1370,7 +1370,7 @@ void spoton::slotKeepOnlyUserDefinedNeighbors(bool state)
 
   settings.setValue("gui/keepOnlyUserDefinedNeighbors", state);
 
-  if(state)
+  if(m_neighborsFuture.isFinished() && state)
     m_neighborsLastModificationTime = QDateTime();
 }
 
@@ -5050,8 +5050,12 @@ void spoton::slotSetIcons(int index)
 
   m_ui.passphraseButton->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   m_listenersLastModificationTime = QDateTime();
-  m_neighborsLastModificationTime = QDateTime();
-  m_participantsLastModificationTime = QDateTime();
+
+  if(m_neighborsFuture.isFinished())
+    m_neighborsLastModificationTime = QDateTime();
+
+  if(m_participantsFuture.isFinished())
+    m_participantsLastModificationTime = QDateTime();
 
   // Neighbors
 

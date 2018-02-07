@@ -436,7 +436,7 @@ class spoton: public QMainWindow
   QHash<QString, spoton_crypt *> crypts(void) const;
   QMap<QString, QByteArray> SMPWindowStreams(const QStringList &keyTypes) const;
   QList<QByteArray> retrieveForwardSecrecyInformation
-    (const QSqlDatabase &db, const QString &oid, bool *ok) const;
+    (const QString &oid, bool *ok) const;
   QSqlDatabase urlDatabase(void) const;
 
   QSslSocket *kernelSocket(void)
@@ -475,6 +475,8 @@ class spoton: public QMainWindow
   QElapsedTimer m_urlQueryElapsedTimer;
   QFuture<QList<QPair<QString, QVariant> > > m_statisticsFuture;
   QFuture<void> m_generalFuture;
+  QFuture<void> m_neighborsFuture;
+  QFuture<void> m_participantsFuture;
   QFutureWatcher<QList<QPair<QString, QVariant> > > m_statisticsFutureWatcher;
   QHash<QByteArray, QPointer<spoton_buzzpage> > m_buzzPages;
   QHash<QByteArray, QString> m_neighborToOidMap;
@@ -635,6 +637,8 @@ class spoton: public QMainWindow
   void prepareVisiblePages(void);
   void refreshInstitutions(void);
   void removeFavorite(const bool removeAll);
+  void retrieveNeighbors(void);
+  void retrieveParticipants(spoton_crypt *crypt);
   void saveDestination(const QString &path);
   void saveGeoIPPath(const int version, const QString &path);
   void saveKernelPath(const QString &path);
@@ -877,7 +881,12 @@ class spoton: public QMainWindow
   void slotPopulateBuzzFavorites(void);
   void slotPopulateEtpMagnets(void);
   void slotPopulateListeners(void);
+  void slotPopulateNeighbors(QSqlQuery *query,
+			     const QString &connectionName,
+			     const int &size);
   void slotPopulateNeighbors(void);
+  void slotPopulateParticipants(QSqlQuery *query,
+				const QString &connectionName);
   void slotPopulateParticipants(void);
   void slotPopulateStars(void);
   void slotPostgreSQLConnect(void);
@@ -1047,6 +1056,11 @@ class spoton: public QMainWindow
  signals:
   void buzzNameChanged(const QByteArray &name);
   void iconsChanged(void);
+  void neighborsQueryReady(QSqlQuery *query,
+			   const QString &connectionName,
+			   const int &size);
+  void participantsQueryReady(QSqlQuery *query,
+			      const QString &connectionName);
   void smpMessageReceivedFromKernel(const QByteArrayList &list);
   void statusChanged(const QIcon &icon,
 		     const QString &name,

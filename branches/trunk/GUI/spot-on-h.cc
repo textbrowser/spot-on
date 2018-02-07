@@ -25,8 +25,15 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QApplication>
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent>
+#endif
+#include <QtCore>
+
 #include <limits>
 
+#include "Common/spot-on-crypt.h"
 #include "spot-on.h"
 #include "spot-on-documentation.h"
 #if SPOTON_GOLDBUG == 0
@@ -535,4 +542,196 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 
       QSqlDatabase::removeDatabase(connectionName);
     }
+}
+
+void spoton::retrieveNeighbors(void)
+{
+  QFileInfo fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
+
+  if(fileInfo.exists())
+    {
+      if(fileInfo.lastModified() >= m_neighborsLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_neighborsLastModificationTime)
+	    m_neighborsLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_neighborsLastModificationTime = fileInfo.lastModified();
+	}
+      else
+	return;
+    }
+  else
+    m_neighborsLastModificationTime = QDateTime();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(fileInfo.absoluteFilePath());
+
+    if(db.open())
+      {
+	QSqlQuery *query = new QSqlQuery(db);
+	int size = 0;
+
+	query->setForwardOnly(true);
+
+	if(query->exec("SELECT COUNT(*) FROM neighbors "
+		       "WHERE status_control <> 'deleted'"))
+	  if(query->next())
+	    size = query->value(0).toInt();
+
+	if(query->exec("SELECT sticky, "
+		       "uuid, "
+		       "status, "
+		       "ssl_key_size, "
+		       "status_control, "
+		       "local_ip_address, "
+		       "local_port, "
+		       "external_ip_address, "
+		       "external_port, "
+		       "country, "
+		       "remote_ip_address, "
+		       "remote_port, "
+		       "scope_id, "
+		       "protocol, "
+		       "proxy_hostname, "
+		       "proxy_port, "
+		       "maximum_buffer_size, "
+		       "maximum_content_length, "
+		       "echo_mode, "
+		       "uptime, "
+		       "allow_exceptions, "
+		       "certificate, "
+		       "bytes_read, "
+		       "bytes_written, "
+		       "ssl_session_cipher, "
+		       "account_name, "
+		       "account_authenticated, "
+		       "transport, "
+		       "orientation, "
+		       "motd, "
+		       "is_encrypted, "
+		       "0, " // Certificate
+		       "ae_token, "
+		       "ae_token_type, "
+		       "ssl_control_string, "
+		       "priority, "
+		       "lane_width, "
+		       "passthrough, "
+		       "waitforbyteswritten_msecs, "
+		       "private_application_credentials, "
+		       "silence_time, "
+		       "socket_options, "
+		       "OID "
+		       "FROM neighbors WHERE status_control <> 'deleted'"))
+	  {
+	    emit neighborsQueryReady(query, connectionName, size);
+	    return;
+	  }
+	else
+	  delete query;
+      }
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::retrieveParticipants(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+
+  QFileInfo fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+  if(fileInfo.exists())
+    {
+      if(fileInfo.lastModified() >= m_participantsLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_participantsLastModificationTime)
+	    m_participantsLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_participantsLastModificationTime = fileInfo.lastModified();
+	}
+      else
+	return;
+    }
+  else
+    m_participantsLastModificationTime = QDateTime();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(fileInfo.absoluteFilePath());
+
+    if(db.open())
+      {
+	QSqlQuery *query = new QSqlQuery(db);
+	bool ok = true;
+
+	query->setForwardOnly(true);
+	query->prepare("SELECT "
+		       "name, "               // 0
+		       "OID, "                // 1
+		       "neighbor_oid, "       // 2
+		       "public_key_hash, "    // 3
+		       "status, "             // 4
+		       "last_status_update, " // 5
+		       "gemini, "             // 6
+		       "gemini_hash_key, "    // 7
+		       "key_type, "           // 8
+		       "public_key "          // 9
+		       "FROM friends_public_keys "
+		       "WHERE key_type_hash IN (?, ?, ?, ?)");
+	query->bindValue
+	  (0, crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
+
+	if(ok)
+	  query->bindValue
+	    (1, crypt->keyedHash(QByteArray("email"), &ok).toBase64());
+
+	if(ok)
+	  query->bindValue
+	    (2, crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
+
+	if(ok)
+	  query->bindValue
+	    (3, crypt->keyedHash(QByteArray("url"), &ok).toBase64());
+
+	if(ok && query->exec())
+	  {
+	    emit participantsQueryReady(query, connectionName);
+	    return;
+	  }
+	else
+	  delete query;
+      }
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotPopulateNeighbors(void)
+{
+  if(currentTabName() != "neighbors")
+    return;
+  else if(m_ui.neighborsTemporarilyPause->isChecked())
+    return;
+
+  if(m_neighborsFuture.isFinished())
+    m_neighborsFuture = QtConcurrent::run(this, &spoton::retrieveNeighbors);
+}
+
+void spoton::slotPopulateParticipants(void)
+{
+  if(m_participantsFuture.isFinished())
+    m_participantsFuture = QtConcurrent::run
+      (this, &spoton::retrieveParticipants, m_crypts.value("chat", 0));
 }
