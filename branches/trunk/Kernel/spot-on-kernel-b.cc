@@ -274,10 +274,17 @@ void spoton_kernel::popPoptastic(void)
 		{
 		  m_poptasticImapUIDs
 		    [hash.value("in_username").toString()] += 1;
-		  url = QString("imaps://%1:%2/INBOX/;UID=%3").
-		    arg(hash.value("in_server_address").toString().trimmed()).
-		    arg(hash.value("in_server_port").toString().trimmed()).
-		    arg(i);
+
+		  if(ssltls == "SSL" || ssltls == "TLS")
+		    url = QString("imaps://%1:%2/INBOX/;UID=%3").
+		      arg(hash.value("in_server_address").toString().trimmed()).
+		      arg(hash.value("in_server_port").toString().trimmed()).
+		      arg(i);
+		  else
+		    url = QString("imap://%1:%2/INBOX/;UID=%3").
+		      arg(hash.value("in_server_address").toString().trimmed()).
+		      arg(hash.value("in_server_port").toString().trimmed()).
+		      arg(uid);
 		}
 	      else
 		{

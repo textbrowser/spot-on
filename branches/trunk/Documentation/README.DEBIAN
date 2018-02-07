@@ -5,26 +5,26 @@ sudo mkdir -p /usr/local/spot-on/Lib
 sudo mkdir -p /usr/local/spot-on/SQL
 sudo mkdir -p /usr/local/spot-on/Sounds
 sudo mkdir -p /usr/local/spot-on/Translations
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Bluetooth.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Core.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5DBus.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Gui.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Multimedia.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5MultimediaWidgets.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Network.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5OpenGL.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Positioning.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5PrintSupport.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Sql.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Svg.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5Widgets.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libQt5XcbQpa.so.5 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libicudata.so.56 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libicui18n.so.56 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libicuuc.so.56 /usr/local/spot-on/Lib/.
-sudo cp -p ~/Qt/5.9.3/gcc_64/lib/libqgsttools_p.so* /usr/local/spot-on/Lib/.
-sudo cp -pr ~/Qt/5.9.3/gcc_64/plugins /usr/local/spot-on/.
-sudo cp -pr ~/Qt/5.9.3/gcc_64/translations /usr/local/spot-on/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5Bluetooth.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5Core.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5DBus.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5Gui.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5Multimedia.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5MultimediaWidgets.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5Network.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5OpenGL.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5Positioning.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5PrintSupport.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5Sql.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5Svg.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5Widgets.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libQt5XcbQpa.so.5 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libicudata.so.56 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libicui18n.so.56 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libicuuc.so.56 /usr/local/spot-on/Lib/.
+sudo cp -p ~/Qt/5.9.4/gcc_64/lib/libqgsttools_p.so* /usr/local/spot-on/Lib/.
+sudo cp -pr ~/Qt/5.9.4/gcc_64/plugins /usr/local/spot-on/.
+sudo cp -pr ~/Qt/5.9.4/gcc_64/translations /usr/local/spot-on/.
 sudo chmod -x,g+w /usr/local/spot-on/Lib/*
 cd ~/spot-on.d/branches/trunk
 qmake -o Makefile spot-on.qt5.pro && make -j 4
