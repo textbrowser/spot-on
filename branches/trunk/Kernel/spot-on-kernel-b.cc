@@ -136,6 +136,7 @@ void spoton_kernel::popPoptastic(void)
       return;
     }
 
+  QHash<QByteArray, char> cache;
   int limit = setting("gui/poptasticNumberOfMessages", 15).toInt();
 
   for(int i = 1; i <= limit; i++)
@@ -247,8 +248,6 @@ void spoton_kernel::popPoptastic(void)
 	      arg(hash.value("in_server_address").toString().trimmed()).
 	      arg(hash.value("in_server_port").toString().trimmed());
 	}
-
-      QHash<QByteArray, char> cache;
 
       curl_receive_data.clear();
       curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 128L);
