@@ -1,5 +1,5 @@
 Requirements: Qt 5.x, libGeoIP, libcURL, libcrypto, libeay, libgcrypt,
-libgpg-error, libssl, libusrsctp. Qt Qt 4.8.7 is also supported.
+libgpg-error, libssl, libusrsctp. Qt 4.8.6 and Qt 4.8.7 are also supported.
 
 If header (h) or interface (ui) files have changed, please perform
 a distclean before building Spot-On.
