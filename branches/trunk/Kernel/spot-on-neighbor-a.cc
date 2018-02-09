@@ -291,7 +291,7 @@ spoton_neighbor::spoton_neighbor
 
 	      if(!configuration.privateKey().isNull())
 		{
-#if QT_VERSION >= 0x040807
+#if QT_VERSION >= 0x040806
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableCompression, true);
 		  configuration.setSslOption
@@ -714,7 +714,7 @@ spoton_neighbor::spoton_neighbor
 
 	  if(!configuration.privateKey().isNull())
 	    {
-#if QT_VERSION >= 0x040807
+#if QT_VERSION >= 0x040806
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableCompression, true);
 	      configuration.setSslOption
@@ -3890,7 +3890,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
       data = QByteArray::fromBase64(data);
 
       QList<QByteArray> list(data.split('\n'));
-#if QT_VERSION >= 0x040807
+#if QT_VERSION >= 0x040806
       QUuid uuid(list.value(0));
 #else
       QUuid uuid(list.value(0).constData());
