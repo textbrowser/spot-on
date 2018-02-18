@@ -133,9 +133,9 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SIGNAL(unify(void)));
+  ui.clients->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
   ui.clients->setColumnHidden(1, true); // ID
   ui.clients->setColumnHidden(2, true); // Time
-  ui.clients->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
 #if QT_VERSION >= 0x050501
   ui.message->setPlaceholderText(tr("Please type a message..."));
 #endif
