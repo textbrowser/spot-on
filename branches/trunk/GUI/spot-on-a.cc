@@ -3066,6 +3066,27 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRegenerateKey(void)));
+  m_ui.ae_tokens->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
+  m_ui.emailParticipants->horizontalHeader()->setSortIndicator
+    (0, Qt::AscendingOrder);
+  m_ui.etpMagnets->horizontalHeader()->setSortIndicator(1, Qt::AscendingOrder);
+  m_ui.addTransmittedMagnets->horizontalHeader()->setSortIndicator
+    (0, Qt::AscendingOrder);
+  m_ui.institutions->horizontalHeader()->setSortIndicator
+    (0, Qt::AscendingOrder);
+  m_statisticsUi.view->horizontalHeader()->setSortIndicator
+    (0, Qt::AscendingOrder);
+  m_ui.statistics->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
+  m_ui.mail->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
+  m_ui.listeners->horizontalHeader()->setSortIndicator(3, Qt::AscendingOrder);
+  m_ui.neighbors->horizontalHeader()->setSortIndicator(1, Qt::AscendingOrder);
+  m_ui.participants->horizontalHeader()->setSortIndicator
+    (0, Qt::AscendingOrder);
+  m_ui.postoffice->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
+  m_ui.received->horizontalHeader()->setSortIndicator(4, Qt::AscendingOrder);
+  m_ui.transmitted->horizontalHeader()->setSortIndicator(5, Qt::AscendingOrder);
+  m_ui.urlParticipants->horizontalHeader()->setSortIndicator
+    (0, Qt::AscendingOrder);
   m_ui.emailParticipants->setColumnHidden(1, true); // OID
   m_ui.emailParticipants->setColumnHidden(2, true); // neighbor_oid
   m_ui.emailParticipants->setColumnHidden(3, true); // public_key_hash
@@ -3100,36 +3121,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.urlParticipants->setColumnHidden(1, true); // OID
   m_ui.urlParticipants->setColumnHidden(2, true); // neighbor_oid
   m_ui.urlParticipants->setColumnHidden(3, true); // public_key_hash
-  m_ui.ae_tokens->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
-  m_ui.emailParticipants->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
-  m_ui.etpMagnets->horizontalHeader()->setSortIndicator
-    (1, Qt::AscendingOrder);
-  m_ui.addTransmittedMagnets->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
-  m_ui.institutions->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
-  m_statisticsUi.view->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
-  m_ui.statistics->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
-  m_ui.mail->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
-  m_ui.listeners->horizontalHeader()->setSortIndicator
-    (3, Qt::AscendingOrder);
-  m_ui.neighbors->horizontalHeader()->setSortIndicator
-    (1, Qt::AscendingOrder);
-  m_ui.participants->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
-  m_ui.postoffice->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
-  m_ui.received->horizontalHeader()->setSortIndicator
-    (4, Qt::AscendingOrder);
-  m_ui.transmitted->horizontalHeader()->setSortIndicator
-    (5, Qt::AscendingOrder);
-  m_ui.urlParticipants->horizontalHeader()->setSortIndicator
-    (0, Qt::AscendingOrder);
   m_ui.emailSplitter->setStretchFactor(0, 1);
   m_ui.emailSplitter->setStretchFactor(1, 0);
   m_ui.listenersHorizontalSplitter->setStretchFactor(0, 1);
