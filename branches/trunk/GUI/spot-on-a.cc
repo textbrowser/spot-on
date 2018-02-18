@@ -5401,7 +5401,8 @@ void spoton::slotPopulateNeighbors(QSqlQuery *query,
 	      box->setMinimum(0);
 	      box->setProperty
 		("oid", query->value(query->record().count() - 1));
-	      box->setToolTip(tooltip);
+	      box->setToolTip
+		(tr("A positive value may pause the kernel."));
 	      box->setValue
 		(static_cast<int> (query->value(i).toInt()));
 	      box->setWrapping(true);

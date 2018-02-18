@@ -52,11 +52,11 @@ spoton_starbeamanalyzer::spoton_starbeamanalyzer(QWidget *parent):
 #endif
   statusBar()->setSizeGripEnabled(false);
 #endif
+  ui.tableWidget->horizontalHeader()->setSortIndicator(4, Qt::AscendingOrder);
   ui.tableWidget->setColumnHidden
     (ui.tableWidget->columnCount() - 1, true); // OID
   ui.tableWidget->setColumnHidden
     (ui.tableWidget->columnCount() - 2, true); // Results
-  ui.tableWidget->horizontalHeader()->setSortIndicator(4, Qt::AscendingOrder);
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,
