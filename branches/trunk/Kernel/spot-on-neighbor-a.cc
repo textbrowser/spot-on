@@ -215,6 +215,7 @@ spoton_neighbor::spoton_neighbor
 
   m_accountAuthenticated = 0;
   m_allowExceptions = false;
+  m_bytesDiscardedOnWrite = 0;
   m_bytesRead = 0;
   m_bytesWritten = 0;
   m_echoMode = echoMode;
@@ -568,6 +569,7 @@ spoton_neighbor::spoton_neighbor
   m_address = ipAddress.trimmed();
   m_allowExceptions = allowExceptions;
   m_bluetoothSocket = 0;
+  m_bytesDiscardedOnWrite = 0;
   m_bytesRead = 0;
   m_bytesWritten = 0;
   m_echoMode = echoMode;
@@ -1025,6 +1027,7 @@ spoton_neighbor::~spoton_neighbor()
 
 	    query.prepare("UPDATE neighbors SET "
 			  "account_authenticated = NULL, "
+			  "bytes_discarded_on_write = 0, "
 			  "bytes_read = 0, "
 			  "bytes_written = 0, "
 			  "external_ip_address = NULL, "
@@ -1518,6 +1521,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 
   query.exec("PRAGMA synchronous = OFF");
   query.prepare("UPDATE neighbors SET "
+		"bytes_discarded_on_write = ?, "
 		"bytes_read = ?, "
 		"bytes_written = ?, "
 		"is_encrypted = ?, "
@@ -1526,20 +1530,29 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 		"WHERE OID = ? AND "
 		"status = 'connected' "
 		"AND ABS(? - uptime) >= 10");
-  query.bindValue(0, m_bytesRead);
 
-  QReadLocker locker(&m_bytesWrittenMutex);
+  {
+    QReadLocker locker(&m_bytesDiscardedOnWriteMutex);
 
-  query.bindValue(1, m_bytesWritten);
-  locker.unlock();
-  query.bindValue(2, isEncrypted() ? 1 : 0);
+    query.addBindValue(m_bytesDiscardedOnWrite);
+  }
+
+  query.addBindValue(m_bytesRead);
+
+  {
+    QReadLocker locker(&m_bytesWrittenMutex);
+
+    query.addBindValue(m_bytesWritten);
+  }
+
+  query.addBindValue(isEncrypted() ? 1 : 0);
 
   if(cipher.isNull() || !spoton_kernel::s_crypts.value("chat", 0))
-    query.bindValue(3, QVariant::String);
+    query.addBindValue(QVariant::String);
   else
     {
-      query.bindValue
-	(3, spoton_kernel::s_crypts.value("chat")->
+      query.addBindValue
+	(spoton_kernel::s_crypts.value("chat")->
 	 encryptedThenHashed(QString("%1-%2-%3-%4-%5-%6-%7").
 			     arg(cipher.name()).
 			     arg(cipher.authenticationMethod()).
@@ -1551,12 +1564,12 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 	 toBase64());
 
       if(!ok)
-	query.bindValue(3, QVariant::String);
+	query.addBindValue(QVariant::String);
     }
 
-  query.bindValue(4, seconds);
-  query.bindValue(5, m_id);
-  query.bindValue(6, seconds);
+  query.addBindValue(seconds);
+  query.addBindValue(m_id);
+  query.addBindValue(seconds);
 
   if(ok)
     query.exec();
@@ -7246,10 +7259,10 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
   else if(size == 0)
     return 0;
 
-  qint64 udpMinimum = qMin
-    (static_cast<qint64> (spoton_common::MAXIMUM_UDP_DATAGRAM_SIZE), size);
   qint64 remaining = size;
   qint64 sent = 0;
+  qint64 udpMinimum = qMin
+    (static_cast<qint64> (spoton_common::MAXIMUM_UDP_DATAGRAM_SIZE), size);
 
   while(remaining > 0)
     {
@@ -7344,6 +7357,13 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 
       data += sent;
       remaining -= sent;
+    }
+
+  if(remaining > 0)
+    {
+      QWriteLocker locker(&m_bytesDiscardedOnWriteMutex);
+
+      m_bytesDiscardedOnWrite += remaining;
     }
 
   return size - remaining;

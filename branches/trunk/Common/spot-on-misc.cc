@@ -522,7 +522,6 @@ void spoton_misc::prepareDatabases(void)
 		   "ip_address_hash TEXT NOT NULL, " // Keyed hash.
 		   "listener_oid INTEGER NOT NULL, "
 		   "PRIMARY KEY (ip_address_hash, listener_oid))");
-	query.exec("ALTER TABLE listeners ADD socket_options TEXT");
       }
 
     db.close();
@@ -592,6 +591,8 @@ void spoton_misc::prepareDatabases(void)
 		   "uptime INTEGER NOT NULL DEFAULT 0, "
 		   "certificate BLOB NOT NULL, "
 		   "allow_exceptions INTEGER NOT NULL DEFAULT 0, "
+		   "bytes_discarded_on_write INTEGER NOT NULL DEFAULT 0 "
+		   "CHECK (bytes_discarded_on_write >= 0), "
 		   "bytes_read INTEGER NOT NULL DEFAULT 0 "
 		   "CHECK (bytes_read >= 0), "
 		   "bytes_written INTEGER NOT NULL DEFAULT 0 "
@@ -638,7 +639,9 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING).
 	   arg(std::numeric_limits<int>::max()));
-	query.exec("ALTER TABLE neighbors ADD socket_options TEXT");
+	query.exec("ALTER TABLE neighbors ADD "
+		   "bytes_discarded_on_write INTEGER NOT NULL DEFAULT 0 "
+		   "CHECK (bytes_discarded_on_write >= 0)");
       }
 
     db.close();
@@ -692,8 +695,6 @@ void spoton_misc::prepareDatabases(void)
 		   "(proxy_type IN ('HTTP', 'SOCKS5')), "
 		   "proxy_username TEXT NOT NULL, "
 		   "smtp_localname TEXT NOT NULL)");
-	query.exec("ALTER TABLE poptastic "
-		   "ADD in_remove_remote INTEGER TEXT NOT NULL DEFAULT 1");
       }
 
     db.close();
@@ -1585,6 +1586,7 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
 
 	query.exec("UPDATE neighbors SET "
 		   "account_authenticated = NULL, "
+		   "bytes_discarded_on_write = 0, "
 		   "bytes_read = 0, "
 		   "bytes_written = 0, "
 		   "external_ip_address = NULL, "

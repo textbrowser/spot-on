@@ -2209,7 +2209,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.toolButtonCopyToClipboard->setMenu(menu);
   menu = new QMenu(this);
   m_ui.shareBuzzMagnet->setMenu(menu);
-  m_generalTimer.start(3500);
+  m_generalTimer.start(1500);
   m_chatInactivityTimer.start(120000);
   m_updateChatWindowsTimer.start(3500);
   m_ui.ipv4Listener->setChecked(true);

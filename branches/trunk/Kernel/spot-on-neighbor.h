@@ -303,6 +303,7 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_accountClientSentSaltMutex;
   QReadWriteLock m_accountNameMutex;
   QReadWriteLock m_accountPasswordMutex;
+  QReadWriteLock m_bytesDiscardedOnWriteMutex;
   QReadWriteLock m_bytesWrittenMutex;
   QReadWriteLock m_dataMutex;
   QReadWriteLock m_echoModeMutex;
@@ -342,6 +343,7 @@ class spoton_neighbor: public QThread
   qint64 m_maximumBufferSize;
   qint64 m_maximumContentLength;
   quint16 m_port;
+  quint64 m_bytesDiscardedOnWrite;
   quint64 m_bytesRead;
   quint64 m_bytesWritten;
   spoton_external_address *m_externalAddress;
