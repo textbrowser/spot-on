@@ -341,9 +341,9 @@ class spoton_neighbor: public QThread
   qint64 m_listenerOid;
   qint64 m_maximumBufferSize;
   qint64 m_maximumContentLength;
+  quint16 m_port;
   quint64 m_bytesRead;
   quint64 m_bytesWritten;
-  quint16 m_port;
   spoton_external_address *m_externalAddress;
   spoton_neighbor_tcp_socket *m_tcpSocket;
   spoton_neighbor_udp_socket *m_udpSocket;
