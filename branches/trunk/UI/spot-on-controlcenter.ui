@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>366</width>
-                <height>464</height>
+                <width>816</width>
+                <height>545</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -790,12 +790,12 @@
                        </column>
                        <column>
                         <property name="text">
-                         <string>neighbor_oid</string>
+                         <string>Neighbor OID</string>
                         </property>
                        </column>
                        <column>
                         <property name="text">
-                         <string>public_key_hash</string>
+                         <string>Public Key Hash</string>
                         </property>
                        </column>
                        <column>
@@ -949,7 +949,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>770</width>
+             <width>812</width>
              <height>602</height>
             </rect>
            </property>
@@ -1205,32 +1205,32 @@
                        </column>
                        <column>
                         <property name="text">
-                         <string>goldbug</string>
+                         <string>GoldBug</string>
                         </property>
                        </column>
                        <column>
                         <property name="text">
-                         <string>message</string>
+                         <string>Message</string>
                         </property>
                        </column>
                        <column>
                         <property name="text">
-                         <string>message_digest</string>
+                         <string>Message Digest</string>
                         </property>
                        </column>
                        <column>
                         <property name="text">
-                         <string>receiver_sender_hash</string>
+                         <string>Receiver / Sender Hash</string>
                         </property>
                        </column>
                        <column>
                         <property name="text">
-                         <string>hash</string>
+                         <string>Hash</string>
                         </property>
                        </column>
                        <column>
                         <property name="text">
-                         <string>signature</string>
+                         <string>Signature</string>
                         </property>
                        </column>
                        <column>
@@ -1503,12 +1503,12 @@
                           </column>
                           <column>
                            <property name="text">
-                            <string>neighbor_oid</string>
+                            <string>Neighbor OID</string>
                            </property>
                           </column>
                           <column>
                            <property name="text">
-                            <string>public_key_hash</string>
+                            <string>Public Key Hash</string>
                            </property>
                           </column>
                           <column>
@@ -2199,8 +2199,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>602</width>
-             <height>360</height>
+             <width>826</width>
+             <height>555</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2921,7 +2921,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>242</width>
+                     <width>267</width>
                      <height>1435</height>
                     </rect>
                    </property>
@@ -3457,8 +3457,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>768</width>
-             <height>198</height>
+             <width>826</width>
+             <height>555</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3788,7 +3788,7 @@
                     </column>
                     <column>
                      <property name="text">
-                      <string>certificate</string>
+                      <string>Certificate</string>
                      </property>
                     </column>
                     <column>
@@ -3882,7 +3882,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>679</width>
+                  <width>792</width>
                   <height>452</height>
                  </rect>
                 </property>
@@ -4671,8 +4671,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>623</width>
-             <height>335</height>
+             <width>826</width>
+             <height>555</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4756,9 +4756,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>620</width>
-                 <height>616</height>
+                 <y>-287</y>
+                 <width>802</width>
+                 <height>599</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -7978,8 +7978,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>613</width>
-             <height>427</height>
+             <width>826</width>
+             <height>555</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8200,12 +8200,12 @@
                   </column>
                   <column>
                    <property name="text">
-                    <string>neighbor_oid</string>
+                    <string>Neighbor OID</string>
                    </property>
                   </column>
                   <column>
                    <property name="text">
-                    <string>public_key_hash</string>
+                    <string>Public Key Hash</string>
                    </property>
                   </column>
                  </widget>
@@ -8590,8 +8590,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>222</width>
-             <height>146</height>
+             <width>826</width>
+             <height>555</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">

@@ -213,12 +213,12 @@
           </column>
           <column>
            <property name="text">
-            <string>neighbor_oid</string>
+            <string>Neighbor OID</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>public_key_hash</string>
+            <string>Public Key Hash</string>
            </property>
           </column>
           <column>
