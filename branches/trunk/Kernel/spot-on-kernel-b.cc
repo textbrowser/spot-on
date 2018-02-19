@@ -255,6 +255,7 @@ void spoton_kernel::popPoptastic(void)
 	      arg(i);
 	}
 
+      curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 128L); // cURL sometimes dies.
       curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
       curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
       curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_memory_callback);
