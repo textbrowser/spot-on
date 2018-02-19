@@ -148,7 +148,7 @@ void spoton_kernel::popPoptastic(void)
 
       if(!curl)
 	continue;
-      else if(method == "IMAP")
+      else
 	curl_easy_reset(curl);
 
       curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
@@ -314,12 +314,6 @@ void spoton_kernel::popPoptastic(void)
 
       if(m_poptasticPopFuture.isCanceled())
 	break;
-
-      if(method != "IMAP")
-	{
-	  curl_easy_cleanup(curl);
-	  curl = 0;
-	}
 
       curl_receive_data.clear();
     }
