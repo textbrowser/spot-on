@@ -272,7 +272,7 @@ libspoton_error_t libspoton_deregister_kernel
       goto error_label;
     }
 
-  if(sqlite3_bind_int64(stmt, 1, pid) != SQLITE_OK)
+  if(sqlite3_bind_int64(stmt, 1, (sqlite3_int64) pid) != SQLITE_OK)
     {
       rerr = LIBSPOTON_ERROR_SQLITE_BIND_INT64;
       goto error_label;
@@ -558,7 +558,7 @@ libspoton_error_t libspoton_register_kernel
       goto error_label;
     }
 
-  if(sqlite3_bind_int64(stmt, 1, pid) != SQLITE_OK)
+  if(sqlite3_bind_int64(stmt, 1, (sqlite3_int64) pid) != SQLITE_OK)
     {
       rerr = LIBSPOTON_ERROR_SQLITE_BIND_INT64;
       goto error_label;
@@ -681,7 +681,11 @@ libspoton_error_t libspoton_save_url(const char *url,
 
 	  if(iv)
 	    {
+#ifdef LIBSPOTON_OS_OPENBSD
+	      gcry_cipher_ctl(cipherCtx, GCRYCTL_RESET, NULL, (size_t) 0);
+#else
 	      gcry_cipher_reset(cipherCtx);
+#endif
 	      gcry_fast_random_poll();
 	      gcry_create_nonce(iv, blockLength);
 
@@ -766,14 +770,15 @@ libspoton_error_t libspoton_save_url(const char *url,
 	  encodedBuffer[encodedBufferLength - 1] = lengthArray[3];
 #else
 	  length = (size_t) htonl((uint32_t) length);
-	  memcpy(lengthArray, &length, 4);
-	  memcpy(&encodedBuffer[encodedBufferLength - 4], lengthArray, 4);
+	  memcpy(lengthArray, &length, (size_t) 4);
+	  memcpy
+	    (&encodedBuffer[encodedBufferLength - 4], lengthArray, (size_t) 4);
 #endif
 	  gcry_fast_random_poll();
 
 	  if(gcry_cipher_encrypt(cipherCtx,
 				 encodedBuffer, encodedBufferLength,
-				 0, 0) == 0)
+				 0, (size_t) 0) == 0)
 	    {
 	      if(SIZE_MAX - blockLength >= encodedBufferLength)
 		encodedBufferAndIVLength = blockLength + encodedBufferLength;
