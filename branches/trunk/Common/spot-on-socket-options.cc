@@ -65,6 +65,12 @@ extern "C"
 #include <usrsctp.h>
 #endif
 }
+#elif defined(Q_OS_OPENBSD)
+extern "C"
+{
+#include <netinet/in.h>
+#include <sys/socket.h> 
+}
 #elif defined(Q_OS_WIN)
 extern "C"
 {
