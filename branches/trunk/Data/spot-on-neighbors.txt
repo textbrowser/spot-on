@@ -15,8 +15,8 @@ connect=false&echo_mode=full&ip_address=127.0.0.1&orientation=packet&port=4710&p
 
 # A remote IPv4 TCP neighbor.
 
-connect=false&echo_mode=full&ip_address=rosemary-ipv4.tilaa.cloud&orientation=packet&port=4710&protocol=IPv4&scope_id=&ssl_key_size=3072&transport=tcp
+connect=false&echo_mode=full&ip_address=rosemary-ipv4.tilaa.cloud&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
 
 # A remote IPv6 TCP neighbor.
 
-connect=false&echo_mode=full&ip_address=rosemary-ipv6.tilaa.cloud&orientation=packet&port=4710&protocol=IPv6&scope_id=&ssl_key_size=3072&transport=tcp
+connect=false&echo_mode=full&ip_address=rosemary-ipv6.tilaa.cloud&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
