@@ -5,7 +5,7 @@ Maintainer: textbrowser@gmail.com
 Package: Spot-On
 Priority: optional
 Section: Internet
-Version: 2018.02.20
+Version: 2018.03.03
 Description: Spot-On
  Welcome to Spot-On!
  A spot-on.qt5.desktop file will also be installed in /usr/share/applications/.
