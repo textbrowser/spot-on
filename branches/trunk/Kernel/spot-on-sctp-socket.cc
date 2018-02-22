@@ -145,7 +145,7 @@ QHostAddress spoton_sctp_socket::localAddressAndPort(quint16 *port) const
   socklen_t length = 0;
   struct sockaddr_storage peeraddr;
 
-  length = sizeof(peeraddr);
+  length = (socklen_t) sizeof(peeraddr);
 
   if(getsockname(
 #if defined(Q_OS_WIN)
@@ -734,7 +734,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
       socklen_t length = 0;
       struct sockaddr_in serveraddr;
 
-      length = sizeof(serveraddr);
+      length = (socklen_t) sizeof(serveraddr);
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
       serveraddr.sin_family = AF_INET;
@@ -803,7 +803,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
       socklen_t length = 0;
       struct sockaddr_in6 serveraddr;
 
-      length = sizeof(serveraddr);
+      length = (socklen_t) sizeof(serveraddr);
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin6_addr = in6addr_any;
       serveraddr.sin6_family = AF_INET6;
@@ -997,7 +997,7 @@ void spoton_sctp_socket::slotTimeout(void)
 	    {
 	      int errorcode = 0;
 	      int rc = 0;
-	      socklen_t length = sizeof(errorcode);
+	      socklen_t length = (socklen_t) sizeof(errorcode);
 
 #if defined(Q_OS_WIN)
 	      rc = getsockopt

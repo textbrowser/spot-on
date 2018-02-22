@@ -254,7 +254,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       socklen_t length = 0;
       struct sockaddr_in serveraddr;
 
-      length = sizeof(serveraddr);
+      length = (socklen_t) sizeof(serveraddr);
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin_family = AF_INET;
       serveraddr.sin_port = htons(port);
@@ -312,7 +312,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       socklen_t length = 0;
       struct sockaddr_in6 serveraddr;
 
-      length = sizeof(serveraddr);
+      length = (socklen_t) sizeof(serveraddr);
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin6_family = AF_INET6;
       serveraddr.sin6_port = htons(port);
@@ -527,7 +527,7 @@ void spoton_sctp_server::slotTimeout(void)
       socklen_t length = 0;
       struct sockaddr_in clientaddr;
 
-      length = sizeof(clientaddr);
+      length = (socklen_t) sizeof(clientaddr);
       memset(&clientaddr, 0, sizeof(clientaddr));
       socketDescriptor = accept
 	(m_socketDescriptor, (struct sockaddr *) &clientaddr,
@@ -653,7 +653,7 @@ void spoton_sctp_server::slotTimeout(void)
       socklen_t length = 0;
       struct sockaddr_in6 clientaddr;
 
-      length = sizeof(clientaddr);
+      length = (socklen_t) sizeof(clientaddr);
       memset(&clientaddr, 0, sizeof(clientaddr));
       socketDescriptor = accept
 	(m_socketDescriptor, (struct sockaddr *) &clientaddr,

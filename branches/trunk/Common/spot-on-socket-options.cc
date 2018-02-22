@@ -197,7 +197,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    int option = TCP_NODELAY;
 #endif
 	    int rc = 0;
-	    socklen_t length = sizeof(v);
+	    socklen_t length = (socklen_t) sizeof(v);
 
 	    if(transport.toLower() == "tcp")
 	      {
@@ -234,7 +234,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	if(!string.isEmpty())
 	  {
 	    int rc = 0;
-	    socklen_t length = sizeof(v);
+	    socklen_t length = (socklen_t) sizeof(v);
 
 #if defined(Q_OS_WIN)
 	    rc = setsockopt(socket,
@@ -277,7 +277,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
 	    l.l_onoff = 1;
 	    l.l_linger = static_cast<u_short> (v);
-	    length = sizeof(l);
+	    length = (socklen_t) sizeof(l);
 	    rc = setsockopt
 	      (socket, SOL_SOCKET, SO_LINGER, (const char *) &l, (int) length);
 #else
@@ -285,7 +285,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
 	    l.l_onoff = 1;
 	    l.l_linger = v;
-	    length = sizeof(l);
+	    length = (socklen_t) sizeof(l);
 	    rc = setsockopt((int) socket, SOL_SOCKET, SO_LINGER, &l, length);
 #endif
 
@@ -317,7 +317,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	if(!string.isEmpty() && v > 0)
 	  {
 	    int rc = 0;
-	    socklen_t length = sizeof(v);
+	    socklen_t length = (socklen_t) sizeof(v);
 
 #if defined(Q_OS_WIN)
 	    rc = setsockopt
