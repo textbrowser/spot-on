@@ -25,7 +25,6 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QtCore>
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
 #include <QApplication>
 #else
