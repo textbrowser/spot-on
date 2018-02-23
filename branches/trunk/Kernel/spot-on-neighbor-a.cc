@@ -1512,7 +1512,6 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 
   QSqlQuery query(db);
   QSslCipher cipher;
-  bool ok = true;
 
   if(m_tcpSocket)
     cipher = m_tcpSocket->sessionCipher();
@@ -1526,10 +1525,9 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 		"bytes_written = ?, "
 		"is_encrypted = ?, "
 		"ssl_session_cipher = ?, "
+		"status = ?, "
 		"uptime = ? "
-		"WHERE OID = ? AND "
-		"status = 'connected' "
-		"AND ABS(? - uptime) >= 10");
+		"WHERE OID = ?");
 
   {
     QReadLocker locker(&m_bytesDiscardedOnWriteMutex);
@@ -1550,29 +1548,51 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
   if(cipher.isNull() || !spoton_kernel::s_crypts.value("chat", 0))
     query.addBindValue(QVariant::String);
   else
-    {
-      query.addBindValue
-	(spoton_kernel::s_crypts.value("chat")->
-	 encryptedThenHashed(QString("%1-%2-%3-%4-%5-%6-%7").
-			     arg(cipher.name()).
-			     arg(cipher.authenticationMethod()).
-			     arg(cipher.encryptionMethod()).
-			     arg(cipher.keyExchangeMethod()).
-			     arg(cipher.protocolString()).
-			     arg(cipher.supportedBits()).
-			     arg(cipher.usedBits()).toUtf8(), &ok).
-	 toBase64());
+    query.addBindValue
+      (spoton_kernel::s_crypts.value("chat")->
+       encryptedThenHashed(QString("%1-%2-%3-%4-%5-%6-%7").
+			   arg(cipher.name()).
+			   arg(cipher.authenticationMethod()).
+			   arg(cipher.encryptionMethod()).
+			   arg(cipher.keyExchangeMethod()).
+			   arg(cipher.protocolString()).
+			   arg(cipher.supportedBits()).
+			   arg(cipher.usedBits()).toUtf8(), 0).toBase64());
 
-      if(!ok)
-	query.addBindValue(QVariant::String);
+  switch(state())
+    {
+    case QAbstractSocket::BoundState:
+      {
+	query.addBindValue("bound");
+	break;
+      }
+    case QAbstractSocket::ClosingState:
+      {
+	query.addBindValue("closing");
+	break;
+      }
+    case QAbstractSocket::ConnectedState:
+      {
+	query.addBindValue("connected");
+	break;
+      }
+    case QAbstractSocket::ConnectingState:
+      {
+	query.addBindValue("connecting");
+	break;
+      }
+    case QAbstractSocket::HostLookupState:
+      {
+	query.addBindValue("host-lookup");
+	break;
+      }
+    default:
+      query.addBindValue("disconnected");
     }
 
   query.addBindValue(seconds);
   query.addBindValue(m_id);
-  query.addBindValue(seconds);
-
-  if(ok)
-    query.exec();
+  query.exec();
 }
 
 void spoton_neighbor::saveStatus(const QString &status)

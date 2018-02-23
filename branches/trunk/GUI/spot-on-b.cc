@@ -1586,7 +1586,33 @@ void spoton::slotKernelHashTypeChanged(int index)
 
 bool spoton::isKernelActive(void) const
 {
-  return m_ui.pid->text().toLongLong() > 0;
+  QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
+  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
+  libspoton_handle_t libspotonHandle;
+  pid_t pid = 0;
+
+  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     &libspotonHandle,
+			     0)) == LIBSPOTON_ERROR_NONE)
+    pid = libspoton_registered_kernel_pid(&libspotonHandle, &err);
+
+  libspoton_close(&libspotonHandle);
+
+  if(err == LIBSPOTON_ERROR_SQLITE_DATABASE_LOCKED)
+    /*
+    ** Let's try next time.
+    */
+
+    return true;
+  else
+    return pid > 0;
 }
 
 void spoton::slotCopyMyChatPublicKey(void)

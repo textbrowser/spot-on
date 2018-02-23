@@ -1579,8 +1579,7 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
 	query.exec("DELETE FROM neighbors WHERE "
 		   "status_control = 'deleted'");
 
-	if(settings.
-	   value("gui/keepOnlyUserDefinedNeighbors", true).toBool())
+	if(settings.value("gui/keepOnlyUserDefinedNeighbors", true).toBool())
 	  query.exec("DELETE FROM neighbors WHERE "
 		     "status_control <> 'blocked' AND user_defined = 0");
 
