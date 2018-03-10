@@ -550,6 +550,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_guiServer = 0;
   m_mailer = 0;
   m_starbeamWriter = 0;
+  m_urlImportFutureInterrupt = 0;
   m_urlsProcessed = 0;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_uptime = QDateTime::currentDateTime();

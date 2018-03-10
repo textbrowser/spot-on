@@ -504,6 +504,7 @@ spoton::spoton(void):QMainWindow()
     (tr("%1: Release Notes").arg(SPOTON_APPLICATION_NAME));
   m_rss = new spoton_rss(0);
   m_starbeamAnalyzer = new spoton_starbeamanalyzer(0);
+  m_starbeamDigestInterrupt = 0;
   m_starbeamReceivedModel = new QStandardItemModel(this);
   m_statisticsModel = new QStandardItemModel(this);
 
