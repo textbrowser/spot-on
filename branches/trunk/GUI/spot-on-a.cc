@@ -62,6 +62,7 @@ extern "C"
 #include <qbluetooth.h>
 #endif
 
+#include "Common/spot-on-architecture.h"
 #include "Common/spot-on-threefish.h"
 #include "spot-on.h"
 #include "spot-on-defines.h"
@@ -632,12 +633,13 @@ spoton::spoton(void):QMainWindow()
 	     "<br><br>"
 	     "Compiled on %1, %2.<br>"
 	     "%3.<br>"
-	     "Qt %4 (runtime %11), %5-bit.<br>"
-	     "%6.<br>"
-	     "libgcrypt %7.<br>"
-	     "libntl %8.<br>"
-	     "libspoton %9.<br>"
-	     "Location of .spot-on: %10.<br><br>"
+	     "Architecture %4.<br>"
+	     "Qt %5 (runtime %12), %6-bit.<br>"
+	     "%7.<br>"
+	     "libgcrypt %8.<br>"
+	     "libntl %9.<br>"
+	     "libspoton %10.<br>"
+	     "Location of .spot-on: %11.<br><br>"
 	     "Translators<br>"
 	     "Chinese - Zhao Wang<br>"
 	     "German - Ulrike M&#246;ller<br>"
@@ -659,6 +661,7 @@ spoton::spoton(void):QMainWindow()
 	 SSLeay_version(SSLEAY_VERSION) :
 #endif
 	 "OpenSSL is not supported, according to Qt").
+     arg(SPOTON_ARCHITECTURE_STR).
      arg(QT_VERSION_STR).arg(CHAR_BIT * sizeof(void *)).
      arg(curl_version()).
      arg(GCRYPT_VERSION).
