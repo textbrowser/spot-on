@@ -302,7 +302,7 @@ void spoton_starbeamanalyzer::analyze(const QString &fileName,
 	  if(percent > 0 && percent % 5 == 0)
 	    emit updatePercent(fileName, percent);
 
-	  if(interrupt && interrupt->fetchAndAddRelaxed(0))
+	  if(interrupt && interrupt->fetchAndAddOrdered(0))
 	    {
 	      interrupted = true;
 	      break;
@@ -348,7 +348,7 @@ void spoton_starbeamanalyzer::analyze(const QString &fileName,
 	    if(percent > 0 && percent % 5 == 0)
 	      emit updatePercent(fileName, percent);
 
-	    if(interrupt && interrupt->fetchAndAddRelaxed(0))
+	    if(interrupt && interrupt->fetchAndAddOrdered(0))
 	      {
 		interrupted = true;
 		break;

@@ -821,7 +821,7 @@ void spoton_misc::logError(const QString &error)
 {
   if(error.trimmed().isEmpty())
     return;
-  else if(!s_enableLog.fetchAndAddRelaxed(0))
+  else if(!s_enableLog.fetchAndAddOrdered(0))
     return;
 
   QtConcurrent::run(&spoton_misc::logErrorThread, error);
@@ -831,7 +831,7 @@ void spoton_misc::logErrorThread(const QString &error)
 {
   if(error.trimmed().isEmpty())
     return;
-  else if(!s_enableLog.fetchAndAddRelaxed(0))
+  else if(!s_enableLog.fetchAndAddOrdered(0))
     return;
 
   QWriteLocker locker(&s_logMutex);

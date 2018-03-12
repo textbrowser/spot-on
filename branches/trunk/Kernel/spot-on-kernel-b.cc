@@ -1885,7 +1885,7 @@ void spoton_kernel::importUrls(void)
 		      }
 		}
 
-	      if(m_urlImportFutureInterrupt.fetchAndAddRelaxed(0))
+	      if(m_urlImportFutureInterrupt.fetchAndAddOrdered(0))
 		break;
 	    }
       }
@@ -1895,7 +1895,7 @@ void spoton_kernel::importUrls(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(m_urlImportFutureInterrupt.fetchAndAddRelaxed(0))
+  if(m_urlImportFutureInterrupt.fetchAndAddOrdered(0))
     {
       delete crypt;
 
@@ -1954,7 +1954,7 @@ void spoton_kernel::importUrls(void)
       {
 	do
 	  {
-	    if(m_urlImportFutureInterrupt.fetchAndAddRelaxed(0))
+	    if(m_urlImportFutureInterrupt.fetchAndAddOrdered(0))
 	      break;
 
 	    QWriteLocker locker(&m_urlListMutex);

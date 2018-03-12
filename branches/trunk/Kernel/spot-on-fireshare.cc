@@ -156,7 +156,7 @@ void spoton_fireshare::slotTimeout(void)
 		      }
 		}
 
-	      if(m_quit.fetchAndAddRelaxed(0))
+	      if(m_quit.fetchAndAddOrdered(0))
 		break;
 	    }
       }
@@ -166,7 +166,7 @@ void spoton_fireshare::slotTimeout(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(m_quit.fetchAndAddRelaxed(0))
+  if(m_quit.fetchAndAddOrdered(0))
     return;
 
   /*
@@ -206,7 +206,7 @@ void spoton_fireshare::slotTimeout(void)
 	      if(ok)
 		publicKeys.append(publicKey);
 
-	      if(m_quit.fetchAndAddRelaxed(0))
+	      if(m_quit.fetchAndAddOrdered(0))
 		break;
 	    }
       }
@@ -216,7 +216,7 @@ void spoton_fireshare::slotTimeout(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(m_quit.fetchAndAddRelaxed(0))
+  if(m_quit.fetchAndAddOrdered(0))
     return;
 
   if(publicKeys.isEmpty())
@@ -450,7 +450,7 @@ void spoton_fireshare::slotTimeout(void)
 
 	    count += 1;
 
-	    if(m_quit.fetchAndAddRelaxed(0))
+	    if(m_quit.fetchAndAddOrdered(0))
 	      break;
 	  }
       }
@@ -468,7 +468,7 @@ void spoton_fireshare::slotTimeout(void)
       return;
     }
 
-  if(m_quit.fetchAndAddRelaxed(0))
+  if(m_quit.fetchAndAddOrdered(0))
     return;
 
   QByteArray cipherType
@@ -572,7 +572,7 @@ void spoton_fireshare::slotTimeout(void)
       if(ok)
 	emit sendURLs(message);
 
-      if(m_quit.fetchAndAddRelaxed(0))
+      if(m_quit.fetchAndAddOrdered(0))
 	return;
     }
 }

@@ -1709,7 +1709,7 @@ void spoton::computeFileDigest(const QByteArray &expectedFileHash,
 	      (spoton_crypt::sha1FileHash(fileName,
 					  m_starbeamDigestInterrupt));
 
-	    if(!m_starbeamDigestInterrupt.fetchAndAddRelaxed(0))
+	    if(!m_starbeamDigestInterrupt.fetchAndAddOrdered(0))
 	      spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt);
 	  }
 

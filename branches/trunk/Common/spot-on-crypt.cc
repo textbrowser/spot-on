@@ -3741,7 +3741,7 @@ QByteArray spoton_crypt::sha1FileHash(const QString &fileName,
 
       while((rc = file.read(buffer.data(), buffer.length())) > 0)
 	{
-	  if(atomic.fetchAndAddRelaxed(0))
+	  if(atomic.fetchAndAddOrdered(0))
 	    break;
 
 	  hash.addData(buffer, static_cast<int> (rc));
