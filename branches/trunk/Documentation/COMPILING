@@ -44,6 +44,11 @@ brew install postgresql
 qmake -spec macx-clang -o Makefile spot-on.osx.qt5.pro
 sudo make install
 
+OpenBSD
+
+qmake -o Makefile spot-on.openbsd.pro
+gmake
+
 PowerPC
 
 qmake or qmake-qt4 -o Makefile spot-on.powerpc.pro
