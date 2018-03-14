@@ -7,5 +7,5 @@ Priority: optional
 Section: Internet
 Version: 2018.03.15
 Description: Spot-On
- Welcome to Spot-On on PowerPC!
+ Welcome to Spot-On on the PowerPC!
  A spot-on.desktop file will also be installed in /usr/share/applications/.
