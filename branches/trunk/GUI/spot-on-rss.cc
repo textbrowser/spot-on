@@ -2944,6 +2944,8 @@ void spoton_rss::slotStatisticsTimeout(void)
 
     QFontMetrics fm(statusBar()->fontMetrics());
 
+    statusBar()->setToolTip
+      ("<html>" + QString(str).replace(" | ", "<br>") + "</html>");
     statusBar()->showMessage
       (fm.elidedText(str.trimmed(), Qt::ElideRight, statusBar()->width() - 25));
   }
