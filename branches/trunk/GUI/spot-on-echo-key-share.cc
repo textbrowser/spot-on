@@ -727,7 +727,8 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
       showError(tr("The interface is not connected to the kernel."));
       return;
     }
-  else if(!m_kernelSocket->isEncrypted())
+  else if(!m_kernelSocket->isEncrypted() &&
+	  m_kernelSocket->property("key_size").toInt() > 0)
     {
       showError(tr("The connection to the kernel is not encrypted."));
       return;

@@ -1191,7 +1191,8 @@ void spoton::slotShareBuzzMagnet(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QAction *action = qobject_cast<QAction *> (sender());
@@ -2284,7 +2285,8 @@ void spoton::askKernelToReadStarBeamKeys(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QByteArray message;
@@ -2530,7 +2532,8 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QString oid("");

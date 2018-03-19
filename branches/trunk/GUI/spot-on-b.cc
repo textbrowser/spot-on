@@ -56,7 +56,8 @@ void spoton::sendMessage(bool *ok)
       error = tr("The interface is not connected to the kernel.");
       goto done_label;
     }
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
       goto done_label;
@@ -931,7 +932,8 @@ void spoton::slotShareChatPublicKey(void)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QString oid("");
@@ -1014,7 +1016,8 @@ void spoton::slotShareEmailPublicKey(void)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QString oid("");
@@ -3770,7 +3773,8 @@ void spoton::slotShareURLPublicKey(void)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QString oid("");
@@ -4833,7 +4837,8 @@ void spoton::slotRetrieveMail(void)
 
   if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
     {
-      if(m_kernelSocket.isEncrypted())
+      if(m_kernelSocket.isEncrypted() ||
+	 m_ui.kernelKeySize->currentText().toInt() == 0)
 	{
 	  QByteArray message("retrievemail\n");
 
@@ -4851,7 +4856,7 @@ void spoton::slotRetrieveMail(void)
 		(5000, this, SLOT(slotEnableRetrieveMail(void)));
 	    }
 	}
-      else
+      else if(m_ui.kernelKeySize->currentText().toInt() > 0)
 	error = tr("The connection to the kernel is not encrypted.");
     }
   else
@@ -5599,7 +5604,8 @@ void spoton::slotPublicizeAllListenersPlaintext(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QByteArray message;
@@ -5619,7 +5625,8 @@ void spoton::slotPublicizeListenerPlaintext(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QString oid("");
@@ -5663,6 +5670,7 @@ void spoton::slotSuperEcho(int index)
 
 void spoton::slotKernelKeySizeChanged(const QString &text)
 {
+  m_kernelSocket.setProperty("key_size", text.toInt());
   m_settings["gui/kernelKeySize"] = text.toInt();
 
   QSettings settings;
@@ -5788,7 +5796,8 @@ void spoton::slotJoinBuzzChannel(void)
   m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
 
   if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-    if(m_kernelSocket.isEncrypted())
+    if(m_kernelSocket.isEncrypted() ||
+       m_ui.kernelKeySize->currentText().toInt() == 0)
       {
 	QByteArray message("addbuzz_");
 
@@ -5839,60 +5848,65 @@ void spoton::initializeKernelSocket(void)
   if(m_kernelSocket.state() != QAbstractSocket::UnconnectedState)
     return;
 
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_sb.status->setText
-    (tr("Generating SSL/TLS %1-bit data for the kernel socket. "
-	"Please be patient.").arg(m_ui.kernelKeySize->currentText()));
-  m_sb.status->repaint();
-
-  QByteArray certificate;
-  QByteArray privateKey;
-  QByteArray publicKey;
-  QString error("");
-
-  spoton_crypt::generateSslKeys
-    (m_ui.kernelKeySize->currentText().toInt(),
-     certificate,
-     privateKey,
-     publicKey,
-     m_kernelSocket.peerAddress(),
-     0,
-     error);
-  m_sb.status->clear();
-  QApplication::restoreOverrideCursor();
-
-  if(error.isEmpty())
+  if(m_ui.kernelKeySize->currentText().toInt() > 0)
     {
-      QSslConfiguration configuration;
-      QString sslCS
-	(m_settings.value("gui/sslControlString",
-			  spoton_common::SSL_CONTROL_STRING).toString());
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_sb.status->setText
+	(tr("Generating SSL/TLS %1-bit data for the kernel socket. "
+	    "Please be patient.").arg(m_ui.kernelKeySize->currentText()));
+      m_sb.status->repaint();
 
-      configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-      configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+      QByteArray certificate;
+      QByteArray privateKey;
+      QByteArray publicKey;
+      QString error("");
+
+      spoton_crypt::generateSslKeys
+	(m_ui.kernelKeySize->currentText().toInt(),
+	 certificate,
+	 privateKey,
+	 publicKey,
+	 m_kernelSocket.peerAddress(),
+	 0,
+	 error);
+      m_sb.status->clear();
+      QApplication::restoreOverrideCursor();
+
+      if(error.isEmpty())
+	{
+	  QSslConfiguration configuration;
+	  QString sslCS
+	    (m_settings.value("gui/sslControlString",
+			      spoton_common::SSL_CONTROL_STRING).toString());
+
+	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
+	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 #if QT_VERSION >= 0x040806
-      configuration.setSslOption
-	(QSsl::SslOptionDisableCompression, true);
-      configuration.setSslOption
-	(QSsl::SslOptionDisableEmptyFragments, true);
-      configuration.setSslOption
-	(QSsl::SslOptionDisableLegacyRenegotiation, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableCompression, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableEmptyFragments, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
 #if QT_VERSION >= 0x050501
-      spoton_crypt::setSslCiphers
-	(QSslConfiguration::supportedCiphers(), sslCS, configuration);
+	  spoton_crypt::setSslCiphers
+	    (QSslConfiguration::supportedCiphers(), sslCS, configuration);
 #else
-      spoton_crypt::setSslCiphers
-	(m_kernelSocket.supportedCiphers(), sslCS, configuration);
+	  spoton_crypt::setSslCiphers
+	    (m_kernelSocket.supportedCiphers(), sslCS, configuration);
 #endif
-      m_kernelSocket.ignoreSslErrors();
-      m_kernelSocket.setSslConfiguration(configuration);
+	  m_kernelSocket.ignoreSslErrors();
+	  m_kernelSocket.setSslConfiguration(configuration);
+	}
+      else
+	spoton_misc::logError
+	  (QString("spoton::"
+		   "initializeKernelSocket(): "
+		   "generateSslKeys() failure (%1).").arg(error));
     }
   else
-    spoton_misc::logError
-      (QString("spoton::"
-	       "initializeKernelSocket(): "
-	       "generateSslKeys() failure (%1).").arg(error));
+    m_kernelSocket.ignoreSslErrors();
 }
 
 void spoton::slotBuzzChanged(void)

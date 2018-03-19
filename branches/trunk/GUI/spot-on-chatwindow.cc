@@ -221,7 +221,8 @@ void spoton_chatwindow::sendMessage(bool *ok)
       error = tr("The interface is not connected to the kernel.");
       goto done_label;
     }
-  else if(!m_kernelSocket->isEncrypted())
+  else if(!m_kernelSocket->isEncrypted() &&
+	  m_kernelSocket->property("key_size").toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
       goto done_label;
@@ -514,7 +515,8 @@ void spoton_chatwindow::slotShareStarBeam(void)
       showError(error);
       return;
     }
-  else if(!m_kernelSocket->isEncrypted())
+  else if(!m_kernelSocket->isEncrypted() &&
+	  m_kernelSocket->property("key_size").toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
       showError(error);

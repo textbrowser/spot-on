@@ -629,7 +629,7 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.buildInformation->setText
     (QString("<html>"
-	     "<font color=\"#004d40\">Rose Red</font>"
+	     "<font color=\"#004d40\">Solar Spark</font>"
 	     "<br><br>"
 	     "Compiled on %1, %2.<br>"
 	     "%3.<br>"
@@ -2478,8 +2478,10 @@ spoton::spoton(void):QMainWindow()
     m_ui.kernelKeySize->setCurrentIndex
       (m_ui.kernelKeySize->findText(keySize));
   else
-    m_ui.kernelKeySize->setCurrentIndex(0);
+    m_ui.kernelKeySize->setCurrentIndex(1); // 2048
 
+  m_kernelSocket.setProperty
+    ("key_size", m_ui.kernelKeySize->currentText().toInt());
   keySize = m_settings.value("gui/publishedKeySize", "2048").toString();
 
   if(m_optionsUi.publishedKeySize->findText(keySize) > -1)
@@ -5841,8 +5843,11 @@ void spoton::slotGeneralTimerTimeout(void)
 	if(port > 0)
 	  {
 	    initializeKernelSocket();
-	    m_kernelSocket.connectToHostEncrypted
-	      ("127.0.0.1", port);
+
+	    if(m_ui.kernelKeySize->currentText().toInt() == 0)
+	      m_kernelSocket.connectToHost("127.0.0.1", port);
+	    else
+	      m_kernelSocket.connectToHostEncrypted("127.0.0.1", port);
 	  }
       }
 
@@ -7865,28 +7870,38 @@ void spoton::slotKernelSocketState(void)
 	 m_settings.value("gui/tcp_nodelay", 1).toInt()); /*
 							  ** Disable Nagle?
 							  */
-      if(m_kernelSocket.isEncrypted())
+      if(m_kernelSocket.isEncrypted() ||
+	 m_ui.kernelKeySize->currentText().toInt() == 0)
 	{
 	  sendKeysToKernel();
 	  askKernelToReadStarBeamKeys();
 	  sendBuzzKeysToKernel();
 
-	  QSslCipher cipher(m_kernelSocket.sessionCipher());
-	  QString str(QString("%1-%2-%3-%4-%5-%6-%7").
-		      arg(cipher.name()).
-		      arg(cipher.authenticationMethod()).
-		      arg(cipher.encryptionMethod()).
-		      arg(cipher.keyExchangeMethod()).
-		      arg(cipher.protocolString()).
-		      arg(cipher.supportedBits()).
-		      arg(cipher.usedBits()));
+	  if(m_kernelSocket.isEncrypted())
+	    {
+	      QSslCipher cipher(m_kernelSocket.sessionCipher());
+	      QString str(QString("%1-%2-%3-%4-%5-%6-%7").
+			  arg(cipher.name()).
+			  arg(cipher.authenticationMethod()).
+			  arg(cipher.encryptionMethod()).
+			  arg(cipher.keyExchangeMethod()).
+			  arg(cipher.protocolString()).
+			  arg(cipher.supportedBits()).
+			  arg(cipher.usedBits()));
 
-	  m_sb.kernelstatus->setToolTip
-	    (tr("Connected to the kernel on port %1 "
-		"from local port %2 via cipher %3.").
-	     arg(m_kernelSocket.peerPort()).
-	     arg(m_kernelSocket.localPort()).
-	     arg(str));
+	      m_sb.kernelstatus->setToolTip
+		(tr("Connected to the kernel on port %1 "
+		    "from local port %2 via cipher %3.").
+		 arg(m_kernelSocket.peerPort()).
+		 arg(m_kernelSocket.localPort()).
+		 arg(str));
+	    }
+	  else
+	    m_sb.kernelstatus->setToolTip
+	      (tr("Connected to the kernel on port %1 "
+		  "from local port %2.").
+	       arg(m_kernelSocket.peerPort()).
+	       arg(m_kernelSocket.localPort()));
 	}
       else
 	m_sb.kernelstatus->setToolTip
@@ -7922,10 +7937,12 @@ void spoton::sendBuzzKeysToKernel(void)
 
   bool sent = true;
 
-  if((sent = (m_kernelSocket.isEncrypted() &&
+  if((sent = ((m_kernelSocket.isEncrypted() ||
+	       m_ui.kernelKeySize->currentText().toInt() == 0) &&
 	      m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
     foreach(spoton_buzzpage *page, m_buzzPages.values())
-      if(page && (sent &= m_kernelSocket.isEncrypted()))
+      if(page && (sent &= (m_kernelSocket.isEncrypted() ||
+			   m_ui.kernelKeySize->currentText().toInt() == 0)))
 	{
 	  QByteArray message;
 
@@ -7972,7 +7989,8 @@ void spoton::sendKeysToKernel(void)
 
   if(m_crypts.value("chat", 0))
     if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-      if(m_kernelSocket.isEncrypted())
+      if(m_kernelSocket.isEncrypted() ||
+	 m_ui.kernelKeySize->currentText().toInt() == 0)
 	{
 	  if(!m_optionsUi.sharePrivateKeys->isChecked())
 	    {
@@ -9184,7 +9202,8 @@ void spoton::slotDetachListenerNeighbors(void)
     return;
 
   if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-    if(m_kernelSocket.isEncrypted())
+    if(m_kernelSocket.isEncrypted() ||
+       m_ui.kernelKeySize->currentText().toInt() == 0)
       {
 	QByteArray message;
 
@@ -9220,7 +9239,8 @@ void spoton::slotDisconnectListenerNeighbors(void)
     return;
 
   if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-    if(m_kernelSocket.isEncrypted())
+    if(m_kernelSocket.isEncrypted() ||
+       m_ui.kernelKeySize->currentText().toInt() == 0)
       {
 	QByteArray message;
 
@@ -9242,7 +9262,8 @@ void spoton::slotCallParticipant(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QAction *action = qobject_cast<QAction *> (sender());

@@ -178,7 +178,8 @@ spoton_buzzpage::~spoton_buzzpage()
 
   if(m_kernelSocket &&
      m_kernelSocket->state() == QAbstractSocket::ConnectedState)
-    if(m_kernelSocket->isEncrypted())
+    if(m_kernelSocket->isEncrypted() ||
+       m_kernelSocket->property("key_size").toInt() == 0)
       {
 	QByteArray message("removebuzz_");
 
@@ -230,7 +231,8 @@ void spoton_buzzpage::slotSendMessage(void)
       error = tr("The interface is not connected to the kernel.");
       goto done_label;
     }
-  else if(!m_kernelSocket->isEncrypted())
+  else if(!m_kernelSocket->isEncrypted() &&
+	  m_kernelSocket->property("key_size").toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
       goto done_label;
@@ -385,7 +387,8 @@ void spoton_buzzpage::slotSendStatus(void)
     return;
   else if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket->isEncrypted())
+  else if(!m_kernelSocket->isEncrypted() &&
+	  m_kernelSocket->property("key_size").toInt() > 0)
     return;
 
   QByteArray name;

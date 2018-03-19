@@ -1307,8 +1307,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>565</width>
-             <height>558</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2865,8 +2865,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>466</width>
-             <height>1820</height>
+             <width>595</width>
+             <height>1804</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4129,8 +4129,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>519</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5255,8 +5255,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>603</width>
-             <height>335</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6568,7 +6568,7 @@ color: rgb(255, 255, 255);</string>
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-169</x>
              <y>0</y>
              <width>764</width>
              <height>1206</height>
@@ -7251,12 +7251,20 @@ QPushButton:pressed {
                    </item>
                    <item>
                     <widget class="QComboBox" name="kernelKeySize">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A value of zero disables SSL/TLS between the UI and the kernel. Please restart the kernel if this option is changed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="currentIndex">
-                      <number>0</number>
+                      <number>1</number>
                      </property>
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
                      </property>
+                     <item>
+                      <property name="text">
+                       <string>0</string>
+                      </property>
+                     </item>
                      <item>
                       <property name="text">
                        <string>2048</string>

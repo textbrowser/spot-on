@@ -2007,7 +2007,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
       if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
 	error = tr("The interface is not connected to the kernel.");
-      else if(!m_kernelSocket.isEncrypted())
+      else if(!m_kernelSocket.isEncrypted() &&
+	      m_ui.kernelKeySize->currentText().toInt() > 0)
 	error = tr("The connection to the kernel is not encrypted.");
 
       if(!error.isEmpty())

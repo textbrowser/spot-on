@@ -2426,7 +2426,9 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     integer = 2048;
-  else if(!(integer == 2048 || integer == 3072 ||
+  else if(!(integer == 0 ||
+	    integer == 2048 ||
+	    integer == 3072 ||
 	    integer == 4096))
     integer = 2048;
 

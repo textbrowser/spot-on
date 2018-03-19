@@ -196,7 +196,8 @@ void spoton::slotShareOpenLibraryPublicKey(void)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QString oid("");
@@ -277,7 +278,8 @@ void spoton::slotBuzzInvite(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted())
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
   QModelIndexList list
@@ -599,7 +601,8 @@ void spoton::joinBuzzChannel(const QUrl &url)
   page->showUnify(true);
 
   if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-    if(m_kernelSocket.isEncrypted())
+    if(m_kernelSocket.isEncrypted() ||
+       m_ui.kernelKeySize->currentText().toInt() == 0)
       {
 	QByteArray message("addbuzz_");
 

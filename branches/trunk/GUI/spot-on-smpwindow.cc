@@ -471,7 +471,8 @@ void spoton_smpwindow::slotExecute(void)
       showError(error);
       return;
     }
-  else if(!kernelSocket->isEncrypted())
+  else if(!kernelSocket->isEncrypted() &&
+	  kernelSocket->property("key_size").toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
       showError(error);
@@ -1202,7 +1203,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       error = tr("The interface is not connected to the kernel.");
       goto done_label;
     }
-  else if(!kernelSocket->isEncrypted())
+  else if(!kernelSocket->isEncrypted() &&
+	  kernelSocket->property("key_size").toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
       goto done_label;

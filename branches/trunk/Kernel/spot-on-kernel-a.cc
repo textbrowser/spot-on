@@ -4675,10 +4675,11 @@ int spoton_kernel::interfaces(void)
 	return 0;
 
       int count = 0;
+      int kernelKeySize = setting("gui/kernelKeySize", 2048).toInt();
 
       foreach(QSslSocket *socket, instance()->m_guiServer->
 	      findChildren<QSslSocket *> ())
-	count += socket->isEncrypted();
+	count += (kernelKeySize == 0) || socket->isEncrypted();
 
       return count;
     }

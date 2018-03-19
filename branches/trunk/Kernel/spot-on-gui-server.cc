@@ -47,17 +47,19 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
   QByteArray privateKey;
   QByteArray publicKey;
   QString error("");
+  int kernelKeySize = spoton_kernel::setting("gui/kernelKeySize", 2048).toInt();
 
-  spoton_crypt::generateSslKeys
-    (spoton_kernel::setting("gui/kernelKeySize", 2048).toInt(),
-     certificate,
-     privateKey,
-     publicKey,
-     serverAddress(),
-     60L * 60L * 24L *
-     static_cast<long int> (spoton_common::
-			    KERNEL_CERTIFICATE_DAYS_VALID),
-     error);
+  if(kernelKeySize > 0)
+    spoton_crypt::generateSslKeys
+      (kernelKeySize,
+       certificate,
+       privateKey,
+       publicKey,
+       serverAddress(),
+       60L * 60L * 24L *
+       static_cast<long int> (spoton_common::
+			      KERNEL_CERTIFICATE_DAYS_VALID),
+       error);
 
   if(error.isEmpty())
     {
@@ -76,41 +78,49 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 		 toInt()); /*
 			   ** Disable Nagle?
 			   */
-	      connect(socket,
-		      SIGNAL(encrypted(void)),
-		      this,
-		      SLOT(slotEncrypted(void)));
-	      connect(socket,
-		      SIGNAL(modeChanged(QSslSocket::SslMode)),
-		      this,
-		      SIGNAL(modeChanged(QSslSocket::SslMode)));
 
-	      QSslConfiguration configuration;
-	      QString sslCS
-		(spoton_kernel::
-		 setting("gui/sslControlString",
-			 spoton_common::SSL_CONTROL_STRING).toString());
+	      if(kernelKeySize > 0)
+		{
+		  connect(socket,
+			  SIGNAL(encrypted(void)),
+			  this,
+			  SLOT(slotEncrypted(void)));
+		  connect(socket,
+			  SIGNAL(modeChanged(QSslSocket::SslMode)),
+			  this,
+			  SIGNAL(modeChanged(QSslSocket::SslMode)));
 
-	      configuration.setLocalCertificate(QSslCertificate(certificate));
-	      configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-	      configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+		  QSslConfiguration configuration;
+		  QString sslCS
+		    (spoton_kernel::
+		     setting("gui/sslControlString",
+			     spoton_common::SSL_CONTROL_STRING).toString());
+
+		  configuration.setLocalCertificate
+		    (QSslCertificate(certificate));
+		  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
+		  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 #if QT_VERSION >= 0x040806
-	      configuration.setSslOption
-		(QSsl::SslOptionDisableCompression, true);
-	      configuration.setSslOption
-		(QSsl::SslOptionDisableEmptyFragments, true);
-	      configuration.setSslOption
-		(QSsl::SslOptionDisableLegacyRenegotiation, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableCompression, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableEmptyFragments, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
 #if QT_VERSION >= 0x050501
-	      spoton_crypt::setSslCiphers
-		(QSslConfiguration::supportedCiphers(), sslCS, configuration);
+		  spoton_crypt::setSslCiphers
+		    (QSslConfiguration::supportedCiphers(),
+		     sslCS,
+		     configuration);
 #else
-	      spoton_crypt::setSslCiphers
-		(socket->supportedCiphers(), sslCS, configuration);
+		  spoton_crypt::setSslCiphers
+		    (socket->supportedCiphers(), sslCS, configuration);
 #endif
-	      socket->setSslConfiguration(configuration);
-	      socket->startServerEncryption();
+		  socket->setSslConfiguration(configuration);
+		  socket->startServerEncryption();
+		}
+
 	      m_queue.enqueue(socket);
 	      emit newConnection();
 	    }
@@ -271,7 +281,8 @@ void spoton_gui_server::slotReadyRead(void)
       return;
     }
 
-  if(!socket->isEncrypted())
+  if(!socket->isEncrypted() &&
+     spoton_kernel::setting("gui/kernelKeySize", 2048).toInt() > 0)
     {
       socket->readAll();
       spoton_misc::logError
@@ -990,9 +1001,12 @@ void spoton_gui_server::slotNotification(const QString &text)
 
 void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
 {
+  int keySize = spoton_kernel::setting("gui/kernelKeySize", 2048).toInt();
+
   foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-    if(m_guiIsAuthenticated.value(socket->socketDescriptor(), false) &&
-       socket->isEncrypted())
+    if(m_guiIsAuthenticated.
+       value(socket->socketDescriptor(), false) && (keySize == 0 ||
+						    socket->isEncrypted()))
       {
 	qint64 w = 0;
 
@@ -1016,7 +1030,8 @@ void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
     else
       spoton_misc::logError
 	(QString("spoton_gui_server::sendMessageToUIs(): "
-		 "socket %1:%2 is not encrypted or the user interface "
+		 "socket %1:%2 is not encrypted, if required, "
+		 "or the user interface "
 		 "has not been authenticated. Ignoring write() request.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));

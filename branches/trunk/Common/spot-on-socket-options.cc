@@ -70,7 +70,7 @@ extern "C"
 {
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <sys/socket.h> 
+#include <sys/socket.h>
 }
 #elif defined(Q_OS_WIN)
 extern "C"
