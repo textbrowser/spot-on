@@ -4254,7 +4254,7 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 		     hashType,
 		     QByteArray(),
 		     key,
-		     hashKey,
+		     hashKey.mid(0, 48),
 		     0,
 		     0,
 		     "");
@@ -4285,8 +4285,36 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
   if(ok)
     messageCode = crypt.keyedHash(data, &ok);
 
+  QByteArray a1(data);
+  QByteArray a2(messageCode);
+  QByteArray destination;
+
   if(ok)
-    data = data.toBase64() + "\n" + messageCode.toBase64();
+    {
+      /*
+      ** Now, the destination tag.
+      */
+
+      spoton_crypt crypt("aes256",
+			 "sha512",
+			 QByteArray(),
+			 QByteArray(),
+			 spoton_crypt::sha512Hash(hashKey.mid(48), 0),
+			 0,
+			 0,
+			 "");
+
+      destination = crypt.keyedHash(a1 + a2, &ok);
+
+      if(!ok)
+	{
+	  destination = spoton_crypt::weakRandomBytes(64);
+	  ok = true;
+	}
+    }
+
+  if(ok)
+    data = a1.toBase64() + "\n" + a2.toBase64() + "\n" + destination.toBase64();
 
   if(ok)
     {

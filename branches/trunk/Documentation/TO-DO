@@ -167,6 +167,7 @@ Completed Items
 120.   spoton_misc::importUrl() and lastInsertId() over the sequence.
        Delete previous values on successful retrieval of sequence.
 121.   Smoke's Fire requires CTS. Modify Buzz.
+122.   Buzz Cryptographic Discovery.
 
 Ignored Items
 
@@ -289,4 +290,3 @@ Remaining Items
        E-mail remains.
 8.     The Poptastic pixmap does not respect a scaled-contents request.
 9.     Own NTRU implementation.
-10.    Buzz Cryptographic Discovery.

@@ -98,7 +98,7 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   m_hashKeyGenerated = spoton_crypt::derivedSha1Key
     (spoton_crypt::sha512Hash(m_hashKey + m_hashType, 0),
      m_hashKey,
-     48,
+     112,
      m_iterationCount);
   m_statusTimer.start(30000);
   connect(&m_statusTimer,
@@ -805,7 +805,7 @@ QByteArray spoton_buzzpage::channelType(void) const
 
 QByteArray spoton_buzzpage::hashKey(void) const
 {
-  return m_hashKeyGenerated;
+  return m_hashKeyGenerated.mid(0, 48);
 }
 
 QByteArray spoton_buzzpage::hashType(void) const
