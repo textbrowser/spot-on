@@ -5,7 +5,7 @@ Maintainer: None
 Package: GoldBug
 Priority: optional
 Section: Internet
-Version: 2018.03.15
+Version: 2018.03.30
 Description: GoldBug
  Welcome to GoldBug!
  A goldbug.desktop file will also be installed in /usr/share/applications/.
