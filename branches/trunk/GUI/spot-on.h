@@ -561,6 +561,7 @@ class spoton: public QMainWindow
   QPixmap pixmapForCountry(const QString &country) const;
   QString currentTabName(void) const;
   QString neighborSummary(QTableWidgetItem *item, int &h, int &v) const;
+  QString participantKeyType(QTableWidget *item) const;
   QString saveCommonUrlCredentials
     (const QPair<QByteArray, QByteArray> &keys,
      const QString &cipherType, const QString &hashType,

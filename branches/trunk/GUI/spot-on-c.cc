@@ -2888,6 +2888,8 @@ void spoton::prepareContextMenuMirrors(void)
 			       tr("MELODICA Two-Way: &Call friend with new "
 				  "Gemini pair."),
 			       this, SLOT(slotCallParticipant(void)));
+      action->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #else
       action = menu->addAction(tr("&Call participant."),
@@ -2899,6 +2901,8 @@ void spoton::prepareContextMenuMirrors(void)
       action->setProperty("type", "calling_using_gemini");
       action = menu->addAction(tr("&Two-way calling."),
 			       this, SLOT(slotCallParticipant(void)));
+      action->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #endif
       action = menu->addAction(tr("&Terminate call."),
@@ -2951,7 +2955,8 @@ void spoton::prepareContextMenuMirrors(void)
 		      tr("Share a &StarBeam with the "
 			 "selected participant(s)..."),
 		      this,
-		      SLOT(slotShareStarBeam(void)));
+		      SLOT(slotShareStarBeam(void)))->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       menu->addSeparator();
       menu->addAction
 	(tr("Call via Forward &Secrecy credentials."),
@@ -2974,7 +2979,8 @@ void spoton::prepareContextMenuMirrors(void)
 		      tr("Invite selected participant(s) "
 			 "to an anonymous Buzz channel..."),
 		      this,
-		      SLOT(slotBuzzInvite(void)));
+		      SLOT(slotBuzzInvite(void)))->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       m_ui.chatActionMenu->setMenu(menu);
       connect(m_ui.chatActionMenu,
 	      SIGNAL(clicked(void)),
@@ -3248,9 +3254,6 @@ void spoton::prepareContextMenuMirrors(void)
       list << pair;
       pair.first = tr("Idle Priority");
       pair.second = QThread::IdlePriority;
-      list << pair;
-      pair.first = tr("Inherit Priority");
-      pair.second = QThread::InheritPriority;
       list << pair;
       pair.first = tr("Low Priority");
       pair.second = QThread::LowPriority;

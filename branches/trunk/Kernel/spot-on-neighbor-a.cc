@@ -1272,7 +1272,7 @@ void spoton_neighbor::slotTimeout(void)
 
 			q = Priority(query.value(10).toInt());
 
-			if(q < 0 || q > 7)
+			if(q < 0 || q > 6)
 			  q = HighPriority;
 
 			if(isRunning() && p != q)

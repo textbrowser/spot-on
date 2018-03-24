@@ -4986,8 +4986,6 @@ void spoton::slotPopulateNeighbors(QSqlQuery *query,
 	priority = "Highest Priority";
       else if(priority.toInt() == 6)
 	priority = "Time-Critical Priority";
-      else if(priority.toInt() == 7)
-	priority = "Inherit Priority";
       else
 	priority = "High Priority";
 
@@ -7595,9 +7593,6 @@ void spoton::slotShowContextMenu(const QPoint &point)
       pair.first = tr("Idle Priority");
       pair.second = QThread::IdlePriority;
       list << pair;
-      pair.first = tr("Inherit Priority");
-      pair.second = QThread::InheritPriority;
-      list << pair;
       pair.first = tr("Low Priority");
       pair.second = QThread::LowPriority;
       list << pair;
@@ -7672,6 +7667,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      tr("MELODICA Two-Way: &Call friend with new "
 				 "Gemini pair."),
 			      this, SLOT(slotCallParticipant(void)));
+      action->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #else
       action = menu.addAction(tr("&Call participant."),
@@ -7683,6 +7680,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action->setProperty("type", "calling_using_gemini");
       action = menu.addAction(tr("&Two-way calling."),
 			      this, SLOT(slotCallParticipant(void)));
+      action->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #endif
       action = menu.addAction(tr("&Terminate call."),
@@ -7735,7 +7734,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     tr("Share a &StarBeam with the "
 			"selected participant(s)..."),
 		     this,
-		     SLOT(slotShareStarBeam(void)));
+		     SLOT(slotShareStarBeam(void)))->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       menu.addSeparator();
       menu.addAction
 	(tr("Call via Forward &Secrecy credentials."),
@@ -7760,7 +7760,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     tr("Invite selected participant(s) "
 			"to an anonymous Buzz channel..."),
 		     this,
-		     SLOT(slotBuzzInvite(void)));
+		     SLOT(slotBuzzInvite(void)))->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       menu.exec(m_ui.participants->mapToGlobal(point));
     }
   else if(m_ui.received == sender())

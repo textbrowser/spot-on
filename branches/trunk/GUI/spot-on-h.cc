@@ -736,3 +736,22 @@ void spoton::slotPopulateParticipants(void)
     m_participantsFuture = QtConcurrent::run
       (this, &spoton::retrieveParticipants, m_crypts.value("chat", 0));
 }
+
+QString spoton::participantKeyType(QTableWidget *table) const
+{
+  if(!table)
+    return QString("");
+
+  int row = -1;
+
+  if((row = table->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = table->item(row, 1); // OID
+
+      if(item)
+	return item->data
+	  (Qt::ItemDataRole(Qt::UserRole + 1)).toString().toLower();
+    }
+
+  return QString("");
+}

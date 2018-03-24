@@ -295,8 +295,7 @@ void spoton::slotBuzzInvite(void)
 
 	continue;
 
-      else if(list.value(i).
-	      data(Qt::ItemDataRole(Qt::UserRole + 1)) != "chat")
+      else if(list.value(i).data(Qt::ItemDataRole(Qt::UserRole + 1)) != "chat")
 	/*
 	** Ignore non-chat participants.
 	*/
