@@ -562,6 +562,7 @@ class spoton: public QMainWindow
   QString currentTabName(void) const;
   QString listenerTransport(void) const;
   QString neighborSummary(QTableWidgetItem *item, int &h, int &v) const;
+  QString neighborTransport(void) const;
   QString participantKeyType(QTableWidget *table) const;
   QString saveCommonUrlCredentials
     (const QPair<QByteArray, QByteArray> &keys,
@@ -574,6 +575,7 @@ class spoton: public QMainWindow
   bool deleteAllUrls(void);
   bool isKernelActive(void) const;
   bool listenerSupportsSslTls(void) const;
+  bool neighborSupportsSslTls(void) const;
   bool promptBeforeExit(void);
   bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 		  const QString &oid);

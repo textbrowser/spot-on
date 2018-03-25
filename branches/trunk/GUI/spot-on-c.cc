@@ -3176,10 +3176,18 @@ void spoton::prepareContextMenuMirrors(void)
 	      Qt::UniqueConnection);
     }
 
-  if(!m_ui.neighborsActionMenu->menu())
+  if(true)
     {
+      if(m_ui.neighborsActionMenu->menu())
+	m_ui.neighborsActionMenu->menu()->clear();
+
       QAction *action = 0;
-      QMenu *menu = new QMenu(this);
+      QMenu *menu = 0;
+
+      if(m_ui.neighborsActionMenu->menu())
+	menu = m_ui.neighborsActionMenu->menu();
+      else
+	menu = new QMenu(this);
 
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
@@ -3231,7 +3239,8 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       menu->addAction(tr("&Reset Certificate"),
 		      this,
-		      SLOT(slotResetCertificate(void)));
+		      SLOT(slotResetCertificate(void)))->setEnabled
+	(neighborSupportsSslTls());
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
@@ -3264,10 +3273,13 @@ void spoton::prepareContextMenuMirrors(void)
 		      this, SLOT(slotResetAETokenInformation(void)));
       menu->addSeparator();
       menu->addAction(tr("Set &SSL Control String..."),
-		      this, SLOT(slotSetNeighborSSLControlString(void)));
+		      this, SLOT(slotSetNeighborSSLControlString(void)))->
+	setEnabled(neighborSupportsSslTls());
       menu->addSeparator();
       action = menu->addAction(tr("Set Socket &Options..."),
 			       this, SLOT(slotSetSocketOptions(void)));
+      action->setEnabled
+	("bluetooth" != neighborTransport());
       action->setProperty("type", "neighbors");
       menu->addSeparator();
 
@@ -3317,6 +3329,11 @@ void spoton::prepareContextMenuMirrors(void)
 	      SIGNAL(clicked(void)),
 	      m_ui.neighborsActionMenu,
 	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
+      connect(menu,
+	      SIGNAL(aboutToShow(void)),
+	      this,
+	      SLOT(slotPrepareContextMenuMirrors(void)),
 	      Qt::UniqueConnection);
     }
 

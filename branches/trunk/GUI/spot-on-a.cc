@@ -7531,7 +7531,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       menu.addAction(tr("&Reset Certificate"),
 		     this,
-		     SLOT(slotResetCertificate(void)));
+		     SLOT(slotResetCertificate(void)))->
+	setEnabled(neighborSupportsSslTls());
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
@@ -7577,10 +7578,13 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this, SLOT(slotResetAETokenInformation(void)));
       menu.addSeparator();
       menu.addAction(tr("Set &SSL Control String..."),
-		     this, SLOT(slotSetNeighborSSLControlString(void)));
+		     this, SLOT(slotSetNeighborSSLControlString(void)))->
+	setEnabled(neighborSupportsSslTls());
       menu.addSeparator();
       action = menu.addAction(tr("Set Socket &Options..."),
 			      this, SLOT(slotSetSocketOptions(void)));
+      action->setEnabled
+	("bluetooth" != neighborTransport());
       action->setProperty("type", "neighbors");
       menu.addSeparator();
 

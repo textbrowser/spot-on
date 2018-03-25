@@ -788,6 +788,38 @@ QString spoton::listenerTransport(void) const
   return QString("");
 }
 
+bool spoton::neighborSupportsSslTls(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item1 = m_ui.neighbors->item(row, 3);
+      QTableWidgetItem *item2 = m_ui.neighbors->item(row, 27);
+
+      if(item1 && item2)
+	return item1->text().toInt() > 0 &&
+	  item2->text().toLower().trimmed() == "tcp";
+    }
+
+  return false;
+}
+
+QString spoton::neighborTransport(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item(row, 27);
+
+      if(item)
+	return item->text();
+    }
+
+  return QString("");
+}
+
 void spoton::slotPrepareContextMenuMirrors(void)
 {
   prepareContextMenuMirrors();
