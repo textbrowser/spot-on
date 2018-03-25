@@ -2844,10 +2844,18 @@ void spoton::slotRegenerateKey(void)
 
 void spoton::prepareContextMenuMirrors(void)
 {
-  if(!m_ui.chatActionMenu->menu())
+  if(true)
     {
+      if(m_ui.chatActionMenu->menu())
+	m_ui.chatActionMenu->menu()->clear();
+
       QAction *action = 0;
-      QMenu *menu = new QMenu(this);
+      QMenu *menu = 0;
+
+      if(m_ui.chatActionMenu->menu())
+	menu = m_ui.chatActionMenu->menu();
+      else
+	menu = new QMenu(this);
 
       menu->addAction
 	(QIcon(QString(":/%1/add.png").
@@ -2888,6 +2896,8 @@ void spoton::prepareContextMenuMirrors(void)
 			       tr("MELODICA Two-Way: &Call friend with new "
 				  "Gemini pair."),
 			       this, SLOT(slotCallParticipant(void)));
+      action->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #else
       action = menu->addAction(tr("&Call participant."),
@@ -2899,6 +2909,8 @@ void spoton::prepareContextMenuMirrors(void)
       action->setProperty("type", "calling_using_gemini");
       action = menu->addAction(tr("&Two-way calling."),
 			       this, SLOT(slotCallParticipant(void)));
+      action->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #endif
       action = menu->addAction(tr("&Terminate call."),
@@ -2951,7 +2963,8 @@ void spoton::prepareContextMenuMirrors(void)
 		      tr("Share a &StarBeam with the "
 			 "selected participant(s)..."),
 		      this,
-		      SLOT(slotShareStarBeam(void)));
+		      SLOT(slotShareStarBeam(void)))->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       menu->addSeparator();
       menu->addAction
 	(tr("Call via Forward &Secrecy credentials."),
@@ -2974,12 +2987,18 @@ void spoton::prepareContextMenuMirrors(void)
 		      tr("Invite selected participant(s) "
 			 "to an anonymous Buzz channel..."),
 		      this,
-		      SLOT(slotBuzzInvite(void)));
+		      SLOT(slotBuzzInvite(void)))->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
       m_ui.chatActionMenu->setMenu(menu);
       connect(m_ui.chatActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.chatActionMenu,
 	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
+      connect(menu,
+	      SIGNAL(aboutToShow(void)),
+	      this,
+	      SLOT(slotPrepareContextMenuMirrors(void)),
 	      Qt::UniqueConnection);
     }
 
@@ -3062,10 +3081,18 @@ void spoton::prepareContextMenuMirrors(void)
 	      Qt::UniqueConnection);
     }
 
-  if(!m_ui.listenersActionMenu->menu())
+  if(true)
     {
+      if(m_ui.listenersActionMenu->menu())
+	m_ui.listenersActionMenu->menu()->clear();
+
       QAction *action = 0;
-      QMenu *menu = new QMenu(this);
+      QMenu *menu = 0;
+
+      if(m_ui.listenersActionMenu->menu())
+	menu = m_ui.listenersActionMenu->menu();
+      else
+	menu = new QMenu(this);
 
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
@@ -3104,18 +3131,26 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       menu->addAction
 	(tr("&Prepare new one-year certificate."),
-	 this, SLOT(slotGenerateOneYearListenerCertificate(void)));
+	 this, SLOT(slotGenerateOneYearListenerCertificate(void)))->setEnabled
+	(listenerSupportsSslTls());
       menu->addAction(tr("Set &SSL Control String..."),
-		      this, SLOT(slotSetListenerSSLControlString(void)));
+		      this, SLOT(slotSetListenerSSLControlString(void)))->
+	setEnabled(listenerSupportsSslTls());
       menu->addSeparator();
       action = menu->addAction(tr("Set Socket &Options..."),
 			       this, SLOT(slotSetSocketOptions(void)));
+      action->setEnabled("bluetooth" != listenerTransport());
       action->setProperty("type", "listeners");
       m_ui.listenersActionMenu->setMenu(menu);
       connect(m_ui.listenersActionMenu,
 	      SIGNAL(clicked(void)),
 	      m_ui.listenersActionMenu,
 	      SLOT(showMenu(void)),
+	      Qt::UniqueConnection);
+      connect(menu,
+	      SIGNAL(aboutToShow(void)),
+	      this,
+	      SLOT(slotPrepareContextMenuMirrors(void)),
 	      Qt::UniqueConnection);
     }
 

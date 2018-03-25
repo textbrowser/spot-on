@@ -560,7 +560,9 @@ class spoton: public QMainWindow
   QList<QPair<QString, QVariant> > gatherStatistics(void) const;
   QPixmap pixmapForCountry(const QString &country) const;
   QString currentTabName(void) const;
+  QString listenerTransport(void) const;
   QString neighborSummary(QTableWidgetItem *item, int &h, int &v) const;
+  QString participantKeyType(QTableWidget *table) const;
   QString saveCommonUrlCredentials
     (const QPair<QByteArray, QByteArray> &keys,
      const QString &cipherType, const QString &hashType,
@@ -571,6 +573,7 @@ class spoton: public QMainWindow
 		     QWidget *parent);
   bool deleteAllUrls(void);
   bool isKernelActive(void) const;
+  bool listenerSupportsSslTls(void) const;
   bool promptBeforeExit(void);
   bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 		  const QString &oid);
@@ -893,6 +896,7 @@ class spoton: public QMainWindow
   void slotPostgreSQLDisconnect(int index);
   void slotPostgreSQLKernelUrlDistributionTimeout(int value);
   void slotPrepareAndShowInstallationWizard(void);
+  void slotPrepareContextMenuMirrors(void);
   void slotPrepareSMP(const QString &hash);
   void slotPrepareSMP(void);
   void slotPrepareUrlDatabases(void);
