@@ -755,3 +755,35 @@ QString spoton::participantKeyType(QTableWidget *table) const
 
   return QString("");
 }
+
+bool spoton::listenerSupportsSslTls(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item1 = m_ui.listeners->item(row, 2);
+      QTableWidgetItem *item2 = m_ui.listeners->item(row, 15);
+
+      if(item1 && item2)
+	return item1->text().toInt() > 0 &&
+	  item2->text().toLower().trimmed() == "tcp";
+    }
+
+  return false;
+}
+
+QString spoton::listenerTransport(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item(row, 15);
+
+      if(item)
+	return item->text();
+    }
+
+  return QString("");
+}

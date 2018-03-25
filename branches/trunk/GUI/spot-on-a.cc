@@ -7667,8 +7667,6 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      tr("MELODICA Two-Way: &Call friend with new "
 				 "Gemini pair."),
 			      this, SLOT(slotCallParticipant(void)));
-      action->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #else
       action = menu.addAction(tr("&Call participant."),
@@ -7680,8 +7678,6 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action->setProperty("type", "calling_using_gemini");
       action = menu.addAction(tr("&Two-way calling."),
 			      this, SLOT(slotCallParticipant(void)));
-      action->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #endif
       action = menu.addAction(tr("&Terminate call."),
@@ -7734,8 +7730,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     tr("Share a &StarBeam with the "
 			"selected participant(s)..."),
 		     this,
-		     SLOT(slotShareStarBeam(void)))->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
+		     SLOT(slotShareStarBeam(void)));
       menu.addSeparator();
       menu.addAction
 	(tr("Call via Forward &Secrecy credentials."),
@@ -7760,8 +7755,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     tr("Invite selected participant(s) "
 			"to an anonymous Buzz channel..."),
 		     this,
-		     SLOT(slotBuzzInvite(void)))->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
+		     SLOT(slotBuzzInvite(void)));
       menu.exec(m_ui.participants->mapToGlobal(point));
     }
   else if(m_ui.received == sender())
