@@ -1396,6 +1396,8 @@ void spoton::prepareListenerIPCombo(void)
   if(m_ui.listenerTransport->currentIndex() == 0)
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
       QList<QBluetoothHostInfo> devices(QBluetoothLocalDevice::allDevices());
 
       while(!devices.isEmpty())
@@ -1410,6 +1412,8 @@ void spoton::prepareListenerIPCombo(void)
 
 	  list.append(string);
 	}
+
+      QApplication::restoreOverrideCursor();
 #endif
     }
   else
