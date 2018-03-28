@@ -629,8 +629,14 @@ void spoton::notify(const QString &text)
   if(text.trimmed().isEmpty())
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  if(m_notificationsUi.textBrowser->toPlainText().length() > 256 * 1024)
+    m_notificationsUi.textBrowser->clear();
+
   m_notificationsUi.textBrowser->append(text.trimmed());
   m_sb.warning->setVisible(true);
+  QApplication::restoreOverrideCursor();
 
   if(m_optionsUi.notifications->isChecked())
     slotShowNotificationsWindow();
@@ -736,7 +742,7 @@ void spoton::slotNewGlobalName(void)
   bool ok = true;
 
   text = QInputDialog::getText
-    (this, tr("%1: Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
+    (this, tr("%1: Global Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
      QLineEdit::Normal, "", &ok).trimmed();
 
   if(!ok)

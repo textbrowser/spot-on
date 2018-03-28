@@ -3805,12 +3805,12 @@ void spoton::slotImportPublicKeys(void)
 	  else
 	    notimported += 1;
 	}
-    }
 
-  QMessageBox::information
-    (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
-     tr("A total of %1 key pair(s) were imported and %2 key pair(s) "
-	"were not imported.").arg(imported).arg(notimported));
+      QMessageBox::information
+	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	 tr("A total of %1 key pair(s) were imported and %2 key pair(s) "
+	    "were not imported.").arg(imported).arg(notimported));
+    }
 }
 
 void spoton::slotExportListeners(void)

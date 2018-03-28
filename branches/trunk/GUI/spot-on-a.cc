@@ -9745,7 +9745,7 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
 
   ui.setupUi(&dialog);
   dialog.setWindowTitle
-    (tr("%1: Please Authenticate Account").
+    (tr("%1: Authenticate Neighbor Account").
      arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
   dialog.setAttribute(Qt::WA_MacMetalStyle, false);

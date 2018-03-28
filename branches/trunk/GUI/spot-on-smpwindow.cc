@@ -42,7 +42,7 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
     (m_ui.participants->columnCount() - 1, true); // OID
   m_ui.secrets->setColumnHidden(0, true); // Stream
   m_ui.secrets->setColumnHidden(m_ui.secrets->columnCount() - 1, true); // OID
-  setWindowTitle(tr("%1: SMP Window").arg(SPOTON_APPLICATION_NAME));
+  setWindowTitle(tr("%1: SMP").arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
 #if QT_VERSION < 0x050000
   setAttribute(Qt::WA_MacMetalStyle, true);
