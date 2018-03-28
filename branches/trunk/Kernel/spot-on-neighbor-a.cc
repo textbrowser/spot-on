@@ -6237,6 +6237,9 @@ void spoton_neighbor::slotPeerVerifyError(const QSslError &error)
 
   if(shouldDelete)
     {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).arg(error.errorString()));
       spoton_misc::logError
 	(QString("spoton_neighbor::slotPeerVerifyError(): instructed "
 		 "to delete neighbor for %1:%2.").
