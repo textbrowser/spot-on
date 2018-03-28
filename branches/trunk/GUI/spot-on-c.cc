@@ -3139,7 +3139,7 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       action = menu->addAction(tr("Set Socket &Options..."),
 			       this, SLOT(slotSetSocketOptions(void)));
-      action->setEnabled("bluetooth" != listenerTransport());
+      action->setEnabled(listenerTransport() > "bluetooth");
       action->setProperty("type", "listeners");
       m_ui.listenersActionMenu->setMenu(menu);
       connect(m_ui.listenersActionMenu,
@@ -3278,8 +3278,7 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       action = menu->addAction(tr("Set Socket &Options..."),
 			       this, SLOT(slotSetSocketOptions(void)));
-      action->setEnabled
-	("bluetooth" != neighborTransport());
+      action->setEnabled(neighborTransport() > "bluetooth");
       action->setProperty("type", "neighbors");
       menu->addSeparator();
 

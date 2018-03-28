@@ -7471,8 +7471,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       action = menu.addAction(tr("Set Socket &Options..."),
 			      this, SLOT(slotSetSocketOptions(void)));
-      action->setEnabled
-	("bluetooth" != listenerTransport());
+      action->setEnabled(listenerTransport() > "bluetooth");
       action->setProperty("type", "listeners");
       menu.exec(m_ui.listeners->mapToGlobal(point));
     }
@@ -7583,8 +7582,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       action = menu.addAction(tr("Set Socket &Options..."),
 			      this, SLOT(slotSetSocketOptions(void)));
-      action->setEnabled
-	("bluetooth" != neighborTransport());
+      action->setEnabled(neighborTransport() > "bluetooth");
       action->setProperty("type", "neighbors");
       menu.addSeparator();
 
