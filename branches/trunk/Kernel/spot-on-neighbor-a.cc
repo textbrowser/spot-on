@@ -1060,6 +1060,10 @@ void spoton_neighbor::slotTimeout(void)
 {
   if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= m_silenceTime)
     {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).
+	 arg("aborting because of silent connection"));
       spoton_misc::logError
 	(QString("spoton_neighbor::slotTimeout(): "
 		 "aborting because of silent (%1) connection for %2:%3.").
@@ -1425,6 +1429,11 @@ void spoton_neighbor::slotTimeout(void)
 
 		if(!m_udpSocket->waitForConnected(timeout))
 		  {
+		    emit notification
+		      (QString("The neighbor %1:%2 generated a fatal "
+			       "error (%3).").
+		       arg(m_address).arg(m_port).
+		       arg("waitForConnected() failure"));
 		    spoton_misc::logError
 		      (QString("spoton_neighbor::slotTimeout(): "
 			       "waitForConnected() failure for "
@@ -1827,6 +1836,10 @@ void spoton_neighbor::slotReadyRead(void)
     }
   else
     {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).
+	 arg("zero data received on ready-read signal"));
       spoton_misc::logError
 	(QString("spoton_neighbor::slotReadyRead(): "
 		 "Did not receive data. Closing connection for "
@@ -2733,6 +2746,9 @@ void spoton_neighbor::slotWrite
 
 void spoton_neighbor::slotLifetimeExpired(void)
 {
+  emit notification
+    (QString("The neighbor %1:%2 generated a fatal error (%3).").
+     arg(m_address).arg(m_port).arg("lifetime expired"));
   spoton_misc::logError
     (QString("spoton_neighbor::slotLifetimeExpired(): "
 	     "expiration time reached for %1:%2. Aborting socket.").
@@ -6240,6 +6256,9 @@ void spoton_neighbor::slotPeerVerifyError(const QSslError &error)
 	    if(!spoton_crypt::memcmp(m_peerCertificate.toPem(),
 				     m_tcpSocket->peerCertificate().toPem()))
 	      {
+		emit notification
+		  (QString("The neighbor %1:%2 generated a fatal error (%3).").
+		   arg(m_address).arg(m_port).arg("certificate mismatch"));
 		spoton_misc::logError
 		  (QString("spoton_neighbor::slotPeerVerifyError(): "
 			   "the stored certificate does not match "
@@ -6264,6 +6283,9 @@ void spoton_neighbor::slotModeChanged(QSslSocket::SslMode mode)
     {
       if(mode == QSslSocket::UnencryptedMode)
 	{
+	  emit notification
+	    (QString("The neighbor %1:%2 generated a fatal error (%3).").
+	     arg(m_address).arg(m_port).arg("unencrypted connection"));
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::slotModeChanged(): "
 		     "unencrypted connection mode for %1:%2. Aborting.").
@@ -6318,6 +6340,10 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 	    {
 	      if(m_tcpSocket->peerCertificate().isNull())
 		{
+		  emit notification
+		    (QString("The neighbor %1:%2 generated a fatal "
+			     "error (%3).").
+		     arg(m_address).arg(m_port).arg("empty peer certificate"));
 		  spoton_misc::logError
 		    (QString("spoton_neighbor::recordCertificateOrAbort(): "
 			     "null peer certificate for %1:%2. Aborting.").
@@ -6330,6 +6356,10 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 		      memcmp(m_peerCertificate.toPem(),
 			     m_tcpSocket->peerCertificate().toPem()))
 		{
+		  emit notification
+		    (QString("The neighbor %1:%2 generated a fatal "
+			     "error (%3).").
+		     arg(m_address).arg(m_port).arg("certificate mismatch"));
 		  spoton_misc::logError
 		    (QString("spoton_neighbor::recordCertificateOrAbort(): "
 			     "the stored certificate does not match "
@@ -7370,6 +7400,10 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 		  ** return -1.
 		  */
 
+		  emit notification
+		    (QString("The neighbor %1:%2 generated "
+			     "a fatal error (unknown socket error).").
+		     arg(m_address).arg(m_port));
 		  deleteLater();
 		  break;
 		}
