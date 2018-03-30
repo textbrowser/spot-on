@@ -782,6 +782,8 @@ void spoton_smpwindow::slotGenerateData(void)
     db.close();
   }
 
+  QSqlDatabase::removeDatabase(connectionName);
+
   QString keyType
     (m_ui.participants->selectionModel()->selectedRows(1).value(0).data().
      toString());
