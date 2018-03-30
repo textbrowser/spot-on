@@ -3949,8 +3949,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>582</width>
-             <height>553</height>
+             <width>607</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -4064,284 +4064,256 @@ color: rgb(255, 255, 255);</string>
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_48">
-                  <property name="spacing">
-                   <number>5</number>
+                 <widget class="QTableWidget" name="neighbors">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16777215</height>
+                   </size>
                   </property>
-                  <item>
-                   <widget class="QTableWidget" name="neighbors">
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="verticalScrollBarPolicy">
-                     <enum>Qt::ScrollBarAlwaysOn</enum>
-                    </property>
-                    <property name="alternatingRowColors">
-                     <bool>true</bool>
-                    </property>
-                    <property name="selectionMode">
-                     <enum>QAbstractItemView::SingleSelection</enum>
-                    </property>
-                    <property name="selectionBehavior">
-                     <enum>QAbstractItemView::SelectRows</enum>
-                    </property>
-                    <property name="horizontalScrollMode">
-                     <enum>QAbstractItemView::ScrollPerPixel</enum>
-                    </property>
-                    <property name="sortingEnabled">
-                     <bool>true</bool>
-                    </property>
-                    <attribute name="horizontalHeaderDefaultSectionSize">
-                     <number>280</number>
-                    </attribute>
-                    <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-                     <bool>true</bool>
-                    </attribute>
-                    <attribute name="horizontalHeaderStretchLastSection">
-                     <bool>true</bool>
-                    </attribute>
-                    <column>
-                     <property name="text">
-                      <string>Sticky</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>UUID</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Status</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>SSL Key Size</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Status Control</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Local IP</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Local Port</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>External IP</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>External Port</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Country</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Remote IP</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Remote Port</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Scope ID</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Protocol</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Proxy Hostname</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Proxy Port</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Max. Buffer Size (Bytes)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Max. Content Length (Bytes)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Echo Mode</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Uptime (Seconds)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Allow Certificate Exceptions</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Certificate SHA-512 Hash</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Bytes Read</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Bytes Written</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>SSL Session Cipher</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Account Name</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Account Authenticated</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Transport</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Orientation</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Message of the Day</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Encrypted</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>certificate</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Adaptive Echo Token</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Adaptive Echo Token Type</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>SSL Control String</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Priority</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Lane Width (Bytes)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Passthrough</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Wait-For-Bytes-Written (Milliseconds)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Private Application Credentials</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Silence Time (Seconds)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Socket Options</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>OID</string>
-                     </property>
-                    </column>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QTextBrowser" name="neighborSummary">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Monospace</family>
-                     </font>
-                    </property>
-                    <property name="tabChangesFocus">
-                     <bool>true</bool>
-                    </property>
-                    <property name="openLinks">
-                     <bool>false</bool>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+                  <property name="verticalScrollBarPolicy">
+                   <enum>Qt::ScrollBarAlwaysOn</enum>
+                  </property>
+                  <property name="alternatingRowColors">
+                   <bool>true</bool>
+                  </property>
+                  <property name="selectionMode">
+                   <enum>QAbstractItemView::SingleSelection</enum>
+                  </property>
+                  <property name="selectionBehavior">
+                   <enum>QAbstractItemView::SelectRows</enum>
+                  </property>
+                  <property name="horizontalScrollMode">
+                   <enum>QAbstractItemView::ScrollPerPixel</enum>
+                  </property>
+                  <property name="sortingEnabled">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="horizontalHeaderDefaultSectionSize">
+                   <number>280</number>
+                  </attribute>
+                  <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+                   <bool>true</bool>
+                  </attribute>
+                  <attribute name="horizontalHeaderStretchLastSection">
+                   <bool>true</bool>
+                  </attribute>
+                  <column>
+                   <property name="text">
+                    <string>Sticky</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>UUID</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Status</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>SSL Key Size</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Status Control</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Local IP</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Local Port</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>External IP</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>External Port</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Country</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Remote IP</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Remote Port</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Scope ID</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Protocol</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Proxy Hostname</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Proxy Port</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Max. Buffer Size (Bytes)</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Max. Content Length (Bytes)</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Echo Mode</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Uptime (Seconds)</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Allow Certificate Exceptions</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Certificate SHA-512 Hash</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Bytes Read</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Bytes Written</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>SSL Session Cipher</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Account Name</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Account Authenticated</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Transport</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Orientation</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Message of the Day</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Encrypted</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>certificate</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Adaptive Echo Token</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Adaptive Echo Token Type</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>SSL Control String</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Priority</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Lane Width (Bytes)</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Passthrough</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Wait-For-Bytes-Written (Milliseconds)</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Private Application Credentials</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Silence Time (Seconds)</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Socket Options</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>OID</string>
+                   </property>
+                  </column>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -5039,8 +5011,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>606</width>
-             <height>347</height>
+             <width>607</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -10575,8 +10547,6 @@ border-style: inset;
     <addaction name="action_Documentation"/>
     <addaction name="action_Release_Notes"/>
     <addaction name="separator"/>
-    <addaction name="action_Neighbor_Summary_Panel"/>
-    <addaction name="separator"/>
     <addaction name="action_Log_Viewer"/>
     <addaction name="action_Minimal_Display"/>
     <addaction name="action_Notifications_Window"/>
@@ -11030,8 +11000,6 @@ border-style: inset;
   <tabstop>neighborsActionMenu</tabstop>
   <tabstop>shareBuzzMagnet</tabstop>
   <tabstop>neighbors_maximum_items_displayed</tabstop>
-  <tabstop>neighbors</tabstop>
-  <tabstop>neighborSummary</tabstop>
   <tabstop>neighborIP</tabstop>
   <tabstop>neighborPort</tabstop>
   <tabstop>ipv4Neighbor</tabstop>

@@ -569,13 +569,13 @@ void spoton::retrieveNeighbors(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    QSqlDatabase *db = new QSqlDatabase(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(fileInfo.absoluteFilePath());
+    db->setDatabaseName(fileInfo.absoluteFilePath());
 
-    if(db.open())
+    if(db->open())
       {
-	QSqlQuery *query = new QSqlQuery(db);
+	QSqlQuery *query = new QSqlQuery(*db);
 	int size = 0;
 
 	query->setForwardOnly(true);
@@ -630,12 +630,16 @@ void spoton::retrieveNeighbors(void)
 		       "OID "
 		       "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
-	    emit neighborsQueryReady(query, connectionName, size);
+	    emit neighborsQueryReady(db, query, connectionName, size);
 	    return;
 	  }
-	else
-	  delete query;
+
+	db->close();
+	delete db;
+	delete query;
       }
+    else
+      delete db;
   }
 
   QSqlDatabase::removeDatabase(connectionName);
@@ -668,13 +672,13 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    QSqlDatabase *db = new QSqlDatabase(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(fileInfo.absoluteFilePath());
+    db->setDatabaseName(fileInfo.absoluteFilePath());
 
-    if(db.open())
+    if(db->open())
       {
-	QSqlQuery *query = new QSqlQuery(db);
+	QSqlQuery *query = new QSqlQuery(*db);
 	bool ok = true;
 
 	query->setForwardOnly(true);
@@ -708,12 +712,16 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
 
 	if(ok && query->exec())
 	  {
-	    emit participantsQueryReady(query, connectionName);
+	    emit participantsQueryReady(db, query, connectionName);
 	    return;
 	  }
-	else
-	  delete query;
+
+	db->close();
+	delete db;
+	delete query;
       }
+    else
+      delete db;
   }
 
   QSqlDatabase::removeDatabase(connectionName);

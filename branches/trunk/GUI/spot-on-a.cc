@@ -852,18 +852,22 @@ spoton::spoton(void):QMainWindow()
 	  m_starbeamAnalyzer,
 	  SLOT(slotSetIcons(void)));
   connect(this,
-	  SIGNAL(neighborsQueryReady(QSqlQuery *,
+	  SIGNAL(neighborsQueryReady(QSqlDatabase *,
+				     QSqlQuery *,
 				     const QString &,
 				     const int &)),
 	  this,
-	  SLOT(slotPopulateNeighbors(QSqlQuery *,
+	  SLOT(slotPopulateNeighbors(QSqlDatabase *,
+				     QSqlQuery *,
 				     const QString &,
 				     const int &)));
   connect(this,
-	  SIGNAL(participantsQueryReady(QSqlQuery *,
+	  SIGNAL(participantsQueryReady(QSqlDatabase *,
+					QSqlQuery *,
 					const QString &)),
 	  this,
-	  SLOT(slotPopulateParticipants(QSqlQuery *,
+	  SLOT(slotPopulateParticipants(QSqlDatabase *,
+					QSqlQuery *,
 					const QString &)));
   connect(this,
 	  SIGNAL(smpMessageReceivedFromKernel(const QByteArrayList &)),
@@ -988,10 +992,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowEncryptFile(void)));
-  connect(m_ui.action_Neighbor_Summary_Panel,
-	  SIGNAL(triggered(bool)),
-	  this,
-	  SLOT(slotShowNeighborSummaryPanel(bool)));
   connect(m_ui.action_New_Global_Name,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1424,10 +1424,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(itemSelectionChanged(void)),
 	  this,
 	  SLOT(slotMailSelected(void)));
-  connect(m_ui.neighbors,
-	  SIGNAL(itemSelectionChanged(void)),
-	  this,
-	  SLOT(slotNeighborSelected(void)));
   connect(m_ui.listeners,
 	  SIGNAL(itemSelectionChanged(void)),
 	  this,
@@ -2254,6 +2250,7 @@ spoton::spoton(void):QMainWindow()
   settings.remove("gui/poptasticVerifySmtpPeer");
   settings.remove("gui/rsaKeySize");
   settings.remove("gui/rss_scroll_automatically");
+  settings.remove("gui/show_neighbor_summary_panel");
   settings.remove("gui/signatureKey");
 
   if(!settings.contains("gui/saveCopy"))
@@ -2272,10 +2269,6 @@ spoton::spoton(void):QMainWindow()
 
   spoton_misc::correctSettingsContainer(m_settings);
   spoton_misc::setTimeVariables(m_settings);
-  m_ui.action_Neighbor_Summary_Panel->setChecked
-    (m_settings.value("gui/show_neighbor_summary_panel", true).toBool());
-  m_ui.neighborSummary->setVisible
-    (m_ui.action_Neighbor_Summary_Panel->isChecked());
   m_ui.activeUrlDistribution->setChecked
     (m_settings.value("gui/activeUrlDistribution", false).toBool());
   m_ui.action_Buzz->setChecked
@@ -3236,7 +3229,6 @@ spoton::spoton(void):QMainWindow()
   widgets << m_ui.etpMagnet
 	  << m_ui.friendInformation
 	  << m_ui.motd
-	  << m_ui.neighborSummary
 	  << m_ui.searchfor
 	  << m_ui.urls;
 
@@ -4805,7 +4797,8 @@ void spoton::slotPopulateListeners(void)
   populateAETokens();
 }
 
-void spoton::slotPopulateNeighbors(QSqlQuery *query,
+void spoton::slotPopulateNeighbors(QSqlDatabase *db,
+				   QSqlQuery *query,
 				   const QString &connectionName,
 				   const int &size)
 {
@@ -4813,7 +4806,7 @@ void spoton::slotPopulateNeighbors(QSqlQuery *query,
   if(m_ui.neighborsTemporarilyPause->isChecked())
     {
       delete query;
-      QSqlDatabase::database(connectionName, false).close();
+      delete db;
       QSqlDatabase::removeDatabase(connectionName);
       return;
     }
@@ -4822,7 +4815,7 @@ void spoton::slotPopulateNeighbors(QSqlQuery *query,
   if(currentTabName() != "neighbors")
     {
       delete query;
-      QSqlDatabase::database(connectionName, false).close();
+      delete db;
       QSqlDatabase::removeDatabase(connectionName);
       return;
     }
@@ -4832,7 +4825,7 @@ void spoton::slotPopulateNeighbors(QSqlQuery *query,
   if(!crypt)
     {
       delete query;
-      QSqlDatabase::database(connectionName, false).close();
+      delete db;
       QSqlDatabase::removeDatabase(connectionName);
       return;
     }
@@ -5557,9 +5550,6 @@ void spoton::slotPopulateNeighbors(QSqlQuery *query,
       row += 1;
     }
 
-  if(m_ui.neighbors->currentRow() == -1 || row == 0)
-    m_ui.neighborSummary->clear();
-
   m_ui.neighbors->setRowCount(totalRows);
   m_ui.neighbors->setSortingEnabled(true);
 
@@ -5583,7 +5573,7 @@ void spoton::slotPopulateNeighbors(QSqlQuery *query,
     focusWidget->setFocus();
 
   delete query;
-  QSqlDatabase::database(connectionName, false).close();
+  delete db;
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
 }
@@ -6213,7 +6203,6 @@ void spoton::slotDeleteNeighbor(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  m_ui.neighborSummary->clear();
 }
 
 void spoton::slotListenerChanged(QTableWidgetItem *item)
@@ -8366,10 +8355,10 @@ void spoton::slotDeleteAllNeighbors(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  m_ui.neighborSummary->clear();
 }
 
-void spoton::slotPopulateParticipants(QSqlQuery *query,
+void spoton::slotPopulateParticipants(QSqlDatabase *db,
+				      QSqlQuery *query,
 				      const QString &connectionName)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -8377,7 +8366,7 @@ void spoton::slotPopulateParticipants(QSqlQuery *query,
   if(!crypt)
     {
       delete query;
-      QSqlDatabase::database(connectionName, false).close();
+      delete db;
       QSqlDatabase::removeDatabase(connectionName);
       return;
     }
@@ -8926,7 +8915,7 @@ void spoton::slotPopulateParticipants(QSqlQuery *query,
     focusWidget->setFocus();
 
   delete query;
-  QSqlDatabase::database(connectionName, false).close();
+  delete db;
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
 }
@@ -9582,32 +9571,6 @@ void spoton::slotSaveSslControlString(void)
 void spoton::slotDiscoverExternalAddress(void)
 {
   m_externalAddress.discover();
-}
-
-void spoton::slotNeighborSelected(void)
-{
-  if(!m_ui.action_Neighbor_Summary_Panel->isChecked())
-    return;
-
-  QTableWidgetItem *item = m_ui.neighbors->selectedItems().value(0);
-
-  if(item)
-    {
-      QPair<int, int> s(m_ui.neighborSummary->textCursor().selectionStart(),
-			m_ui.neighborSummary->textCursor().selectionEnd());
-      int h = 0;
-      int v = 0;
-
-      m_ui.neighborSummary->setText(neighborSummary(item, h, v));
-
-      QTextCursor cursor(m_ui.neighborSummary->textCursor());
-
-      cursor.setPosition(s.first);
-      cursor.setPosition(s.second, QTextCursor::KeepAnchor);
-      m_ui.neighborSummary->setTextCursor(cursor);
-      m_ui.neighborSummary->horizontalScrollBar()->setValue(h);
-      m_ui.neighborSummary->verticalScrollBar()->setValue(v);
-    }
 }
 
 void spoton::slotChangeTabPosition(int index)

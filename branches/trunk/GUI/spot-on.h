@@ -561,7 +561,6 @@ class spoton: public QMainWindow
   QPixmap pixmapForCountry(const QString &country) const;
   QString currentTabName(void) const;
   QString listenerTransport(void) const;
-  QString neighborSummary(QTableWidgetItem *item, int &h, int &v) const;
   QString neighborTransport(void) const;
   QString participantKeyType(QTableWidget *table) const;
   QString saveCommonUrlCredentials
@@ -865,7 +864,6 @@ class spoton: public QMainWindow
   void slotNeighborFullEcho(void);
   void slotNeighborHalfEcho(void);
   void slotNeighborMaximumChanged(int value);
-  void slotNeighborSelected(void);
   void slotNeighborSilenceTimeChanged(int value);
   void slotNeighborWaitForBytesWrittenChanged(int value);
   void slotNewEmailWindow(void);
@@ -886,11 +884,13 @@ class spoton: public QMainWindow
   void slotPopulateBuzzFavorites(void);
   void slotPopulateEtpMagnets(void);
   void slotPopulateListeners(void);
-  void slotPopulateNeighbors(QSqlQuery *query,
+  void slotPopulateNeighbors(QSqlDatabase *db,
+			     QSqlQuery *query,
 			     const QString &connectionName,
 			     const int &size);
   void slotPopulateNeighbors(void);
-  void slotPopulateParticipants(QSqlQuery *query,
+  void slotPopulateParticipants(QSqlDatabase *db,
+				QSqlQuery *query,
 				const QString &connectionName);
   void slotPopulateParticipants(void);
   void slotPopulateStars(void);
@@ -1011,7 +1011,6 @@ class spoton: public QMainWindow
   void slotShowMainTabContextMenu(const QPoint &point);
   void slotShowMinimalDisplay(bool state);
   void slotShowNeighborStatistics(void);
-  void slotShowNeighborSummaryPanel(bool state);
   void slotShowNotificationsWindow(void);
   void slotShowOptions(void);
   void slotShowPage(bool state);
@@ -1062,10 +1061,12 @@ class spoton: public QMainWindow
  signals:
   void buzzNameChanged(const QByteArray &name);
   void iconsChanged(void);
-  void neighborsQueryReady(QSqlQuery *query,
+  void neighborsQueryReady(QSqlDatabase *db,
+			   QSqlQuery *query,
 			   const QString &connectionName,
 			   const int &size);
-  void participantsQueryReady(QSqlQuery *query,
+  void participantsQueryReady(QSqlDatabase *db,
+			      QSqlQuery *query,
 			      const QString &connectionName);
   void smpMessageReceivedFromKernel(const QByteArrayList &list);
   void statusChanged(const QIcon &icon,

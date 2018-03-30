@@ -600,7 +600,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.neighborOrientation->setVisible(!state);
   m_ui.neighborScopeId->setVisible(!state);
   m_ui.neighborScopeIdLabel->setVisible(!state);
-  m_ui.neighborSummary->setVisible(!state);
   m_ui.neighborTransport->setVisible(!state);
   m_ui.neighborsEchoMode->setVisible(!state);
   m_ui.neighborsSslControlString->setVisible(!state);

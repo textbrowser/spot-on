@@ -1972,17 +1972,6 @@ void spoton::slotShowStatisticsWindow(void)
   spoton_utilities::centerWidget(m_statisticsWindow, this);
 }
 
-void spoton::slotShowNeighborSummaryPanel(bool state)
-{
-  slotNeighborSelected();
-  m_settings["gui/show_neighbor_summary_panel"] = state;
-  m_ui.neighborSummary->setVisible(state);
-
-  QSettings settings;
-
-  settings.setValue("gui/show_neighbor_summary_panel", state);
-}
-
 void spoton::slotShowRss(void)
 {
   m_rss->showNormal();
