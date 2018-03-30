@@ -9,10 +9,6 @@
 
 connect=true&echo_mode=full&ip_address=239.255.43.21&orientation=packet&port=4710&protocol=IPv4&scope_id=&ssl_key_size=0&transport=udp
 
-# A remote SCTP neighbor.
-
-connect=false&echo_mode=full&ip_address=127.0.0.1&orientation=packet&port=4710&protocol=IPv4&scope_id=&ssl_key_size=0&transport=sctp
-
 # A remote IPv4 TCP neighbor.
 
 connect=false&echo_mode=full&ip_address=rosemary-ipv4.tilaa.cloud&orientation=packet&port=4710&protocol=Dynamic DNS&scope_id=&ssl_key_size=3072&transport=tcp
