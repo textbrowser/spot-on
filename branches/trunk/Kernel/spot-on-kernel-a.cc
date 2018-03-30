@@ -222,7 +222,7 @@ static void qt_message_handler(QtMsgType type,
 {
   Q_UNUSED(type);
   Q_UNUSED(context);
-  spoton_misc::logError(QString("An error (%1) occurred.").arg(msg));
+  spoton_misc::logError(QString("A kernel error (%1) occurred.").arg(msg));
 }
 #else
 static void qt_message_handler(QtMsgType type, const char *msg)
@@ -230,9 +230,9 @@ static void qt_message_handler(QtMsgType type, const char *msg)
   Q_UNUSED(type);
 
   if(msg && qstrnlen(msg, std::numeric_limits<uint>::max()) > 0)
-    spoton_misc::logError(QString("An error (%1) occurred.").arg(msg));
+    spoton_misc::logError(QString("A kernel error (%1) occurred.").arg(msg));
   else
-    spoton_misc::logError("Unknown error.");
+    spoton_misc::logError("Unknown kernel error.");
 }
 #endif
 
