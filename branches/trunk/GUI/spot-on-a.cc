@@ -1024,6 +1024,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  m_notificationsUi.textBrowser,
 	  SLOT(clear(void)));
+  connect(m_notificationsUi.action_Clear,
+	  SIGNAL(triggered(void)),
+	  m_sb.warning,
+	  SLOT(hide(void)));
   connect(m_optionsUi.notifications,
 	  SIGNAL(toggled(bool)),
 	  this,
