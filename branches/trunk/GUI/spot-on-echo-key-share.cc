@@ -515,17 +515,17 @@ void spoton_echo_key_share::populate(void)
 		      (2, checked.value(1) ? Qt::Checked : Qt::Unchecked);
 		    item->setCheckState
 		      (7, checked.value(2) ? Qt::Checked : Qt::Unchecked);
-		    item->setToolTip(1, tr("If checked, public key pairs "
+		    item->setToolTip(1, tr("<html>If checked, public key pairs "
 					   "originating from the specified "
 					   "community will be saved in "
-					   "friends_public_keys.db."));
-		    item->setToolTip(7, tr("If checked, public key pairs "
+					   "friends_public_keys.db.</html>"));
+		    item->setToolTip(7, tr("<html>If checked, public key pairs "
 					   "originating from the specified "
 					   "community must contain valid "
 					   "signatures in order to be saved "
 					   "in friends_public_keys.db. Keys "
 					   "that are not signed will be "
-					   "temporarily accepted."));
+					   "temporarily accepted.</html>"));
 		  }
 	    }
       }

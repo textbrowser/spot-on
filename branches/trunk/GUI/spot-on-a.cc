@@ -5139,12 +5139,11 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	item->setFlags(Qt::ItemIsEnabled |
 		       Qt::ItemIsSelectable |
 		       Qt::ItemIsUserCheckable);
-	item->setToolTip(tr("The sticky feature enables an "
-			    "indefinite lifetime for a neighbor.\n"
-			    "If "
+	item->setToolTip(tr("<html>The sticky feature enables an "
+			    "indefinite lifetime for a neighbor. If "
 			    "not checked, the neighbor will be "
 			    "terminated after some internal "
-			    "timer expires."));
+			    "timer expires.</html>"));
 	m_ui.neighbors->setItem(row, 0, item);
       }
 
@@ -5468,7 +5467,9 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 				 toLower())));
 		}
 
-	      item->setToolTip(tooltip);
+	      if(item->toolTip().isEmpty())
+		item->setToolTip(tooltip);
+
 	      m_ui.neighbors->setItem(row, i, item);
 	    }
 	}
@@ -7901,9 +7902,9 @@ void spoton::slotKernelSocketState(void)
 	}
       else
 	m_sb.kernelstatus->setToolTip
-	  (tr("Connected to the kernel on port %1 "
+	  (tr("<html>Connected to the kernel on port %1 "
 	      "from local port %2. Communications between the interface and "
-	      "the kernel have been disabled.").
+	      "the kernel have been disabled.</html>").
 	   arg(m_kernelSocket.peerPort()).
 	   arg(m_kernelSocket.localPort()));
     }
@@ -7914,9 +7915,9 @@ void spoton::slotKernelSocketState(void)
 
       if(isKernelActive())
 	m_sb.kernelstatus->setToolTip
-	  (tr("The interface is not connected to the kernel. However, "
+	  (tr("<html>The interface is not connected to the kernel. However, "
 	      "the kernel appears to be active. Perhaps the kernel's "
-	      "UI server has been disabled."));
+	      "UI server has been disabled.</html>"));
       else
 	m_sb.kernelstatus->setToolTip
 	  (tr("The interface is not connected to the kernel. Is the kernel "

@@ -186,9 +186,9 @@ void spoton::slotSetSocketOptions(void)
 	}
 #else
       ui.so_rcvbuf->setEnabled(false);
-      ui.so_rcvbuf->setToolTip(tr("Qt version 5.3 or newer is required."));
+      ui.so_rcvbuf->setToolTip(tr("Qt version 5.5.1 or newer is required."));
       ui.so_sndbuf->setEnabled(false);
-      ui.so_sndbuf->setToolTip(tr("Qt version 5.3 or newer is required."));
+      ui.so_sndbuf->setToolTip(tr("Qt version 5.5.1 or newer is required."));
 #endif
     }
 
