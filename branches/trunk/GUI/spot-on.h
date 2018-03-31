@@ -74,6 +74,9 @@
 #include <QTimer>
 #include <QTranslator>
 #include <QUuid>
+#if QT_VERSION >= 0x050600 && defined(SPOTON_WEBENGINE_ENABLED)
+#include <QWebEngineUrlRequestInterceptor>
+#endif
 #include <QtDebug>
 
 #include <limits>
@@ -338,6 +341,29 @@ class spoton_virtual_keyboard: public QDialog
 	}
   }
 };
+
+#if QT_VERSION >= 0x050600 && defined(SPOTON_WEBENGINE_ENABLED)
+class spoton_webengine_url_request_interceptor:
+  public QWebEngineUrlRequestInterceptor
+{
+  Q_OBJECT
+
+ public:
+  spoton_webengine_url_request_interceptor(QObject *parent):
+  QWebEngineUrlRequestInterceptor(parent)
+  {
+  }
+
+  ~spoton_webengine_url_request_interceptor()
+  {
+  }
+
+  void interceptRequest(QWebEngineUrlRequestInfo &info)
+  {
+    info.block(true);
+  }
+};
+#endif
 
 class spoton_lineedit: public QLineEdit
 {

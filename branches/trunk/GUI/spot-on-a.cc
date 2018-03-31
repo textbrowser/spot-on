@@ -203,29 +203,6 @@ static void signal_handler(int signal_number)
   _Exit(signal_number);
 }
 
-#if QT_VERSION >= 0x050600 && defined(SPOTON_WEBENGINE_ENABLED)
-class spoton_webengine_url_request_interceptor:
-  public QWebEngineUrlRequestInterceptor
-{
-  Q_OBJECT
-
- public:
-  spoton_webengine_url_request_interceptor(QObject *parent):
-  QWebEngineUrlRequestInterceptor(parent)
-  {
-  }
-
-  ~spoton_webengine_url_request_interceptor()
-  {
-  }
-
-  void interceptRequest(QWebEngineUrlRequestInfo &info)
-  {
-    info.block(true);
-  }
-};
-#endif
-
 int main(int argc, char *argv[])
 {
   /*
