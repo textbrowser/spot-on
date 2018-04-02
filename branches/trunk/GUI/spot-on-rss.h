@@ -82,9 +82,9 @@ class spoton_rss: public QMainWindow
 		    const QUrl &url);
 
  private slots:
-  void slotAddFeed(void);
   void slotActivate(bool state);
   void slotActivateImport(bool state);
+  void slotAddFeed(void);
   void slotContentReplyFinished(void);
   void slotCopyFeedLink(void);
   void slotDeleteAllFeeds(void);
