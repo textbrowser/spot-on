@@ -1307,8 +1307,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>565</width>
-             <height>558</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2865,8 +2865,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>466</width>
-             <height>1820</height>
+             <width>595</width>
+             <height>1804</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4129,8 +4129,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>556</width>
-             <height>517</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5227,8 +5227,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>603</width>
-             <height>335</height>
+             <width>609</width>
+             <height>679</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6542,7 +6542,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>799</width>
+             <width>764</width>
              <height>1206</height>
             </rect>
            </property>
@@ -8081,7 +8081,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>425</width>
+             <width>609</width>
              <height>679</height>
             </rect>
            </property>
@@ -9706,7 +9706,7 @@ QPushButton:pressed {
                 <item>
                  <widget class="QLabel" name="label_9">
                   <property name="text">
-                   <string>Acceptable examples: ftp:, gopher:, http:, https:, https://www.nasa.gov, etc. RSS and Search interpret the settings defined in this page.</string>
+                   <string>Acceptable examples: ftp:, gopher:, http:, https:, https://www.nasa.gov, etc.</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -9738,6 +9738,16 @@ QPushButton:pressed {
                     <property name="bottomMargin">
                      <number>5</number>
                     </property>
+                    <item>
+                     <widget class="QLabel" name="label_123">
+                      <property name="text">
+                       <string>The kernel interprets the Download settings.</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
                     <item>
                      <widget class="QTableWidget" name="downDistillers">
                       <property name="tabKeyNavigation">
@@ -9793,6 +9803,16 @@ QPushButton:pressed {
                      <number>5</number>
                     </property>
                     <item>
+                     <widget class="QLabel" name="label_127">
+                      <property name="text">
+                       <string>RSS and Search interpret the Import settings.</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
                      <widget class="QTableWidget" name="sharedDistillers">
                       <property name="tabKeyNavigation">
                        <bool>true</bool>
@@ -9846,6 +9866,16 @@ QPushButton:pressed {
                     <property name="bottomMargin">
                      <number>5</number>
                     </property>
+                    <item>
+                     <widget class="QLabel" name="label_128">
+                      <property name="text">
+                       <string>The kernel interprets the Upload settings.</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
                     <item>
                      <widget class="QTableWidget" name="upDistillers">
                       <property name="tabKeyNavigation">

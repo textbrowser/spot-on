@@ -4728,7 +4728,7 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-287</y>
+                 <y>0</y>
                  <width>802</width>
                  <height>599</height>
                 </rect>
@@ -8215,7 +8215,7 @@
                 <item>
                  <widget class="QLabel" name="label_9">
                   <property name="text">
-                   <string>Acceptable examples: ftp:, gopher:, http:, https:, https://www.nasa.gov, etc. RSS and Search interpret the settings defined in this page.</string>
+                   <string>Acceptable examples: ftp:, gopher:, http:, https:, https://www.nasa.gov, etc.</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -8247,6 +8247,16 @@
                     <property name="bottomMargin">
                      <number>5</number>
                     </property>
+                    <item>
+                     <widget class="QLabel" name="label_40">
+                      <property name="text">
+                       <string>The kernel interprets the Download settings.</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
                     <item>
                      <widget class="QTableWidget" name="downDistillers">
                       <property name="tabKeyNavigation">
@@ -8302,6 +8312,16 @@
                      <number>5</number>
                     </property>
                     <item>
+                     <widget class="QLabel" name="label_43">
+                      <property name="text">
+                       <string>RSS and Search interpret the Import settings.</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
                      <widget class="QTableWidget" name="sharedDistillers">
                       <property name="tabKeyNavigation">
                        <bool>true</bool>
@@ -8355,6 +8375,16 @@
                     <property name="bottomMargin">
                      <number>5</number>
                     </property>
+                    <item>
+                     <widget class="QLabel" name="label_60">
+                      <property name="text">
+                       <string>The kernel interprets the Upload settings.</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
                     <item>
                      <widget class="QTableWidget" name="upDistillers">
                       <property name="tabKeyNavigation">
