@@ -7,7 +7,7 @@
 
 # A local multicast UDP neighbor.
 
-connect=true&echo_mode=full&ip_address=239.255.43.21&orientation=packet&port=4710&protocol=IPv4&scope_id=&ssl_key_size=0&transport=udp
+connect=false&echo_mode=full&ip_address=239.255.43.21&orientation=packet&port=4710&protocol=IPv4&scope_id=&ssl_key_size=0&transport=udp
 
 # A remote IPv4 TCP neighbor.
 
