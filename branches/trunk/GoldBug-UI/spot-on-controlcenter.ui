@@ -2866,7 +2866,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>595</width>
-             <height>1804</height>
+             <height>1832</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -2875,6 +2875,22 @@ color: rgb(255, 255, 255);</string>
               <property name="spacing">
                <number>5</number>
               </property>
+              <item>
+               <widget class="QCheckBox" name="listenersTemporarilyPause">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Setting will not be retained.</string>
+                </property>
+                <property name="text">
+                 <string>Temporarily Pause Updates</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QTableWidget" name="listeners">
                 <property name="maximumSize">
@@ -4235,6 +4251,22 @@ color: rgb(255, 255, 255);</string>
                       <string>All</string>
                      </property>
                     </item>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="neighborsTemporarilyPause">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="toolTip">
+                     <string>Setting will not be retained.</string>
+                    </property>
+                    <property name="text">
+                     <string>Temporarily Pause Updates</string>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -11510,6 +11542,7 @@ border-style: inset;
   <tabstop>sign_this_email</tabstop>
   <tabstop>sendMail</tabstop>
   <tabstop>scrollArea_7</tabstop>
+  <tabstop>listenersTemporarilyPause</tabstop>
   <tabstop>listeners</tabstop>
   <tabstop>listenersEchoMode</tabstop>
   <tabstop>listenerShareAddress</tabstop>
@@ -11552,6 +11585,8 @@ border-style: inset;
   <tabstop>neighborsActionMenu</tabstop>
   <tabstop>shareBuzzMagnet</tabstop>
   <tabstop>neighbors_maximum_items_displayed</tabstop>
+  <tabstop>neighborsTemporarilyPause</tabstop>
+  <tabstop>neighbors</tabstop>
   <tabstop>neighborIP</tabstop>
   <tabstop>neighborPort</tabstop>
   <tabstop>ipv4Neighbor</tabstop>
