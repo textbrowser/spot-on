@@ -741,34 +741,39 @@ void spoton::slotGatherStatistics(void)
 
 QList<QPair<QString, QVariant> > spoton::gatherStatistics(void) const
 {
-  QFileInfo fileInfo
-    (spoton_misc::homePath() + QDir::separator() + "kernel.db");
   QList<QPair<QString, QVariant> > list;
-  QString connectionName("");
 
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+  if(isKernelActive())
+    {
+      QFileInfo fileInfo
+	(spoton_misc::homePath() + QDir::separator() + "kernel.db");
+      QString connectionName("");
 
-    db.setDatabaseName(fileInfo.absoluteFilePath());
-
-    if(db.open())
       {
-	QSqlQuery query(db);
+	QSqlDatabase db = spoton_misc::database(connectionName);
 
-	query.setForwardOnly(true);
-	query.exec("PRAGMA read_uncommitted = True");
+	db.setDatabaseName(fileInfo.absoluteFilePath());
 
-	if(query.exec("SELECT statistic, value FROM kernel_statistics "
-		      "ORDER BY statistic"))
-	  while(query.next())
-	    list << QPair<QString, QVariant> (query.value(0).toString(),
-					      query.value(1));
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+	    query.exec("PRAGMA read_uncommitted = True");
+
+	    if(query.exec("SELECT statistic, value FROM kernel_statistics "
+			  "ORDER BY statistic"))
+	      while(query.next())
+		list << QPair<QString, QVariant> (query.value(0).toString(),
+						  query.value(1));
+	  }
+
+	db.close();
       }
 
-    db.close();
-  }
+      QSqlDatabase::removeDatabase(connectionName);
+    }
 
-  QSqlDatabase::removeDatabase(connectionName);
   return list;
 }
 
@@ -845,7 +850,7 @@ void spoton::populateStatistics
   if(focusWidget)
     focusWidget->setFocus();
 
-  if(activeListeners > 0)
+  if(activeListeners > 0 && isKernelActive())
     {
       m_sb.listeners->setIcon
 	(QIcon(QString(":/%1/status-online.png").
@@ -863,7 +868,7 @@ void spoton::populateStatistics
       m_sb.listeners->setToolTip(tr("Listeners are offline."));
     }
 
-  if(activeNeighbors > 0)
+  if(activeNeighbors > 0 && isKernelActive())
     {
       m_sb.neighbors->setIcon
 	(QIcon(QString(":/%1/status-online.png").

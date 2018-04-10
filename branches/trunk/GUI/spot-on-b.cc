@@ -31,6 +31,13 @@
 #include <qbluetoothlocaldevice.h>
 #endif
 
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+extern "C"
+{
+#include <signal.h>
+}
+#endif
+
 #include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-smp.h"
@@ -1618,8 +1625,16 @@ bool spoton::isKernelActive(void) const
     */
 
     return true;
+  else if(pid > 0)
+    {
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+      return kill(pid, 0) == 0;
+#else
+      return true;
+#endif
+    }
   else
-    return pid > 0;
+    return false;
 }
 
 void spoton::slotCopyMyChatPublicKey(void)
