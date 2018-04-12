@@ -41,18 +41,19 @@ brew install ntl
 brew install openssl
 brew install postgresql
 
-qmake -spec macx-clang -o Makefile spot-on.osx.qt5.pro
+qmake QMAKE_CXX=/usr/local/opt/llvm/bin/clang++ -o Makefile spot-on.osx.qt5.pro
 sudo make install
 
 OpenBSD
 
-qmake -o Makefile spot-on.openbsd.pro
+qmake4 -o Makefile spot-on.openbsd.pro
 gmake
 
 PowerPC
 
 qmake or qmake-qt4 -o Makefile spot-on.powerpc.pro
 qmake or qmake-qt5 -o Makefile spot-on.powerpc.qt5.pro
+make
 
 Windows
 
