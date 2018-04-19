@@ -368,8 +368,8 @@ void spoton::slotEstablishForwardSecrecy(void)
   progress.setWindowTitle(tr("%1: Generating Key Pairs").
 			  arg(SPOTON_APPLICATION_NAME));
   progress.show();
-#ifndef Q_OS_MAC
   progress.repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -379,10 +379,7 @@ void spoton::slotEstablishForwardSecrecy(void)
       if(i + 1 <= progress.maximum())
 	progress.setValue(i + 1);
 
-#ifndef Q_OS_MAC
       progress.repaint();
-      QApplication::processEvents();
-#endif
 
       bool temporary = publicKeyHashes.at(i).data(Qt::UserRole).toBool();
 

@@ -6538,8 +6538,8 @@ void spoton::slotSetPassphrase(void)
 	      progress.setWindowTitle(tr("%1: Generating Key Pairs").
 				      arg(SPOTON_APPLICATION_NAME));
 	      progress.show();
-#ifndef Q_OS_MAC
 	      progress.repaint();
+#ifndef Q_OS_MAC
 	      QApplication::processEvents();
 #endif
 
@@ -6548,10 +6548,7 @@ void spoton::slotSetPassphrase(void)
 		  if(i + 1 <= progress.maximum())
 		    progress.setValue(i + 1);
 
-#ifndef Q_OS_MAC
 		  progress.repaint();
-		  QApplication::processEvents();
-#endif
 
 		  spoton_crypt crypt
 		    (m_ui.cipherType->currentText(),
@@ -6805,7 +6802,9 @@ void spoton::slotSetPassphrase(void)
       m_ui.signatureKeyType->setEnabled(false);
       m_ui.signatureKeyType->setEnabled(false);
       repaint();
+#ifndef Q_OS_MAC
       QApplication::processEvents();
+#endif
 
       for(int i = 0; i < m_ui.tab->count(); i++)
 	{

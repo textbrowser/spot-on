@@ -149,8 +149,8 @@ void spoton::slotPrepareUrlDatabases(void)
 	}
     }
 
-#ifndef Q_OS_MAC
   repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -169,8 +169,8 @@ void spoton::slotPrepareUrlDatabases(void)
   progress.setWindowTitle(tr("%1: Creating URL Databases").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-#ifndef Q_OS_MAC
   progress.repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
   created = spoton_misc::prepareUrlDistillersDatabase();
@@ -178,8 +178,8 @@ void spoton::slotPrepareUrlDatabases(void)
   if(created)
     created = spoton_misc::prepareUrlKeysDatabase();
 
-#ifndef Q_OS_MAC
   repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -194,10 +194,7 @@ void spoton::slotPrepareUrlDatabases(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-#ifndef Q_OS_MAC
 	progress.repaint();
-	QApplication::processEvents();
-#endif
 
 	if(m_urlDatabase.isOpen())
 	  {
@@ -348,8 +345,8 @@ void spoton::slotPrepareUrlDatabases(void)
     query.exec("PRAGMA journal_mode = DELETE");
 
   progress.close();
-#ifndef Q_OS_MAC
   repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -453,8 +450,8 @@ void spoton::slotDropUrlTables(void)
       slotDeactivateKernel();
     }
 
-#ifndef Q_OS_MAC
   repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -473,8 +470,8 @@ void spoton::slotDropUrlTables(void)
   progress.setWindowTitle(tr("%1: Dropping URL Tables").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-#ifndef Q_OS_MAC
   progress.repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -497,10 +494,7 @@ void spoton::slotDropUrlTables(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-#ifndef Q_OS_MAC
 	progress.repaint();
-	QApplication::processEvents();
-#endif
 
 	if(m_urlDatabase.isOpen())
 	  {
@@ -562,8 +556,8 @@ bool spoton::deleteAllUrls(void)
   progress.setWindowTitle(tr("%1: Deleting URL Data").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-#ifndef Q_OS_MAC
   progress.repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -578,10 +572,7 @@ bool spoton::deleteAllUrls(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-#ifndef Q_OS_MAC
 	progress.repaint();
-	QApplication::processEvents();
-#endif
 
 	if(m_urlDatabase.isOpen())
 	  {
@@ -669,8 +660,8 @@ void spoton::slotGatherUrlStatistics(void)
   progress.setWindowTitle(tr("%1: Gathering URL Statistics").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-#ifndef Q_OS_MAC
   progress.repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -682,10 +673,7 @@ void spoton::slotGatherUrlStatistics(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-#ifndef Q_OS_MAC
 	progress.repaint();
-	QApplication::processEvents();
-#endif
 
 	if(m_urlDatabase.isOpen())
 	  {
@@ -823,8 +811,8 @@ void spoton::slotImportUrls(void)
   if(cipherType.isEmpty() || symmetricKey.isEmpty())
     readEncrypted = 0;
 
-#ifndef Q_OS_MAC
   repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -845,8 +833,8 @@ void spoton::slotImportUrls(void)
   progress.show();
   progress.raise();
   progress.activateWindow();
-#ifndef Q_OS_MAC
   progress.repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
   populateUrlDistillers();
@@ -886,10 +874,7 @@ void spoton::slotImportUrls(void)
 		if(processed <= progress.maximum())
 		  progress.setValue(processed);
 
-#ifndef Q_OS_MAC
 		progress.repaint();
-		QApplication::processEvents();
-#endif
 
 		QByteArray content;
 		QByteArray description;
@@ -1028,8 +1013,8 @@ void spoton::slotImportUrls(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   progress.close();
-#ifndef Q_OS_MAC
   repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
   displayUrlImportResults(now, imported, not_imported, declined);
@@ -1436,8 +1421,8 @@ void spoton::slotSaveCommonUrlCredentials(void)
     return;
   else
     {
-#ifndef Q_OS_MAC
       repaint();
+#ifndef Q_OS_MAC
       QApplication::processEvents();
 #endif
       m_rss->deactivate();
@@ -2264,8 +2249,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   ** Now, we must remove the URL from all of the keywords tables.
   */
 
-#ifndef Q_OS_MAC
   repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -2283,8 +2268,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   progress.setWindowTitle(tr("%1: Deleting URL Keywords").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-#ifndef Q_OS_MAC
   progress.repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -2294,10 +2279,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-#ifndef Q_OS_MAC
 	progress.repaint();
-	QApplication::processEvents();
-#endif
 
 	QChar c1;
 	QChar c2;
@@ -2424,8 +2406,8 @@ void spoton::slotCorrectUrlDatabases(void)
       slotDeactivateKernel();
     }
 
-#ifndef Q_OS_MAC
   repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -2444,8 +2426,8 @@ void spoton::slotCorrectUrlDatabases(void)
   progress.setWindowTitle(tr("%1: Deleting Orphaned URL Keywords").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
-#ifndef Q_OS_MAC
   progress.repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 
@@ -2469,10 +2451,7 @@ void spoton::slotCorrectUrlDatabases(void)
 	if(processed <= progress.maximum())
 	  progress.setValue(processed);
 
-#ifndef Q_OS_MAC
 	progress.repaint();
-	QApplication::processEvents();
-#endif
 
 	QChar c1;
 	QChar c2;
@@ -2545,8 +2524,8 @@ void spoton::slotCorrectUrlDatabases(void)
       }
 
   progress.close();
-#ifndef Q_OS_MAC
   repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
 

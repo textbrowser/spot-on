@@ -2375,8 +2375,8 @@ void spoton_rss::slotRefreshTimeline(void)
   progress.show();
   progress.raise();
   progress.activateWindow();
-#ifndef Q_OS_MAC
   progress.repaint();
+#ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
   m_ui.timeline->clear();
@@ -2445,10 +2445,7 @@ void spoton_rss::slotRefreshTimeline(void)
 	      if(i <= progress.maximum())
 		progress.setValue(i);
 
-#ifndef Q_OS_MAC
 	      progress.repaint();
-	      QApplication::processEvents();
-#endif
 
 	      QByteArray bytes;
 	      QList<QVariant> list;
