@@ -195,6 +195,9 @@ void spoton::slotPrepareUrlDatabases(void)
 	  progress.setValue(processed);
 
 	progress.repaint();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
 
 	if(m_urlDatabase.isOpen())
 	  {
@@ -495,6 +498,9 @@ void spoton::slotDropUrlTables(void)
 	  progress.setValue(processed);
 
 	progress.repaint();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
 
 	if(m_urlDatabase.isOpen())
 	  {
@@ -573,6 +579,9 @@ bool spoton::deleteAllUrls(void)
 	  progress.setValue(processed);
 
 	progress.repaint();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
 
 	if(m_urlDatabase.isOpen())
 	  {
@@ -674,6 +683,9 @@ void spoton::slotGatherUrlStatistics(void)
 	  progress.setValue(processed);
 
 	progress.repaint();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
 
 	if(m_urlDatabase.isOpen())
 	  {
@@ -875,6 +887,9 @@ void spoton::slotImportUrls(void)
 		  progress.setValue(processed);
 
 		progress.repaint();
+#ifndef Q_OS_MAC
+		QApplication::processEvents();
+#endif
 
 		QByteArray content;
 		QByteArray description;
@@ -2280,6 +2295,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  progress.setValue(processed);
 
 	progress.repaint();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
 
 	QChar c1;
 	QChar c2;
@@ -2452,6 +2470,9 @@ void spoton::slotCorrectUrlDatabases(void)
 	  progress.setValue(processed);
 
 	progress.repaint();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
 
 	QChar c1;
 	QChar c2;

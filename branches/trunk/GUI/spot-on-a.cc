@@ -6549,6 +6549,9 @@ void spoton::slotSetPassphrase(void)
 		    progress.setValue(i + 1);
 
 		  progress.repaint();
+#ifndef Q_OS_MAC
+		  QApplication::processEvents();
+#endif
 
 		  spoton_crypt crypt
 		    (m_ui.cipherType->currentText(),
