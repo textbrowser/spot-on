@@ -90,8 +90,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>824</width>
+             <height>557</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>545</height>
+                <width>814</width>
+                <height>547</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -773,7 +773,7 @@
                         <bool>true</bool>
                        </property>
                        <attribute name="horizontalHeaderDefaultSectionSize">
-                        <number>200</number>
+                        <number>225</number>
                        </attribute>
                        <attribute name="horizontalHeaderStretchLastSection">
                         <bool>true</bool>
@@ -949,8 +949,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>812</width>
-             <height>602</height>
+             <width>919</width>
+             <height>645</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1173,7 +1173,7 @@
                         <bool>true</bool>
                        </property>
                        <attribute name="horizontalHeaderDefaultSectionSize">
-                        <number>150</number>
+                        <number>200</number>
                        </attribute>
                        <attribute name="horizontalHeaderStretchLastSection">
                         <bool>true</bool>
@@ -1809,7 +1809,7 @@
                    <bool>true</bool>
                   </property>
                   <attribute name="horizontalHeaderDefaultSectionSize">
-                   <number>150</number>
+                   <number>200</number>
                   </attribute>
                   <attribute name="horizontalHeaderStretchLastSection">
                    <bool>true</bool>
@@ -1922,7 +1922,7 @@
                         <bool>true</bool>
                        </property>
                        <attribute name="horizontalHeaderDefaultSectionSize">
-                        <number>150</number>
+                        <number>200</number>
                        </attribute>
                        <attribute name="horizontalHeaderStretchLastSection">
                         <bool>true</bool>
@@ -2199,8 +2199,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>824</width>
+             <height>557</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2920,9 +2920,9 @@
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>0</y>
-                     <width>267</width>
-                     <height>1435</height>
+                     <y>-764</y>
+                     <width>279</width>
+                     <height>1384</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3457,8 +3457,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>824</width>
+             <height>557</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3618,7 +3618,7 @@
                    <bool>true</bool>
                   </property>
                   <attribute name="horizontalHeaderDefaultSectionSize">
-                   <number>280</number>
+                   <number>300</number>
                   </attribute>
                   <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                    <bool>true</bool>
@@ -3854,8 +3854,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>792</width>
-                  <height>452</height>
+                  <width>783</width>
+                  <height>444</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4643,8 +4643,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>824</width>
+             <height>557</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4728,9 +4728,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>802</width>
-                 <height>599</height>
+                 <y>-280</y>
+                 <width>799</width>
+                 <height>588</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5678,9 +5678,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>812</width>
-             <height>1149</height>
+             <y>-542</y>
+             <width>843</width>
+             <height>1116</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6403,7 +6403,7 @@
                     <enum>QAbstractItemView::ScrollPerPixel</enum>
                    </property>
                    <attribute name="horizontalHeaderDefaultSectionSize">
-                    <number>150</number>
+                    <number>200</number>
                    </attribute>
                    <attribute name="horizontalHeaderStretchLastSection">
                     <bool>true</bool>
@@ -6767,6 +6767,9 @@
                    <property name="sortingEnabled">
                     <bool>true</bool>
                    </property>
+                   <attribute name="horizontalHeaderDefaultSectionSize">
+                    <number>200</number>
+                   </attribute>
                    <attribute name="horizontalHeaderMinimumSectionSize">
                     <number>150</number>
                    </attribute>
@@ -6835,8 +6838,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>824</width>
+             <height>557</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7958,8 +7961,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>824</width>
+             <height>557</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8163,7 +8166,7 @@
                    <bool>true</bool>
                   </property>
                   <attribute name="horizontalHeaderDefaultSectionSize">
-                   <number>150</number>
+                   <number>200</number>
                   </attribute>
                   <attribute name="horizontalHeaderStretchLastSection">
                    <bool>true</bool>
@@ -8274,6 +8277,9 @@
                       <property name="horizontalScrollMode">
                        <enum>QAbstractItemView::ScrollPerPixel</enum>
                       </property>
+                      <attribute name="horizontalHeaderDefaultSectionSize">
+                       <number>200</number>
+                      </attribute>
                       <attribute name="horizontalHeaderStretchLastSection">
                        <bool>true</bool>
                       </attribute>
@@ -8338,6 +8344,9 @@
                       <property name="horizontalScrollMode">
                        <enum>QAbstractItemView::ScrollPerPixel</enum>
                       </property>
+                      <attribute name="horizontalHeaderDefaultSectionSize">
+                       <number>200</number>
+                      </attribute>
                       <attribute name="horizontalHeaderStretchLastSection">
                        <bool>true</bool>
                       </attribute>
@@ -8402,6 +8411,9 @@
                       <property name="horizontalScrollMode">
                        <enum>QAbstractItemView::ScrollPerPixel</enum>
                       </property>
+                      <attribute name="horizontalHeaderDefaultSectionSize">
+                       <number>200</number>
+                      </attribute>
                       <attribute name="horizontalHeaderStretchLastSection">
                        <bool>true</bool>
                       </attribute>
@@ -8600,8 +8612,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>555</height>
+             <width>824</width>
+             <height>557</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
