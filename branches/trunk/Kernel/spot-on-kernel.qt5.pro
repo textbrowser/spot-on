@@ -38,7 +38,7 @@ QMAKE_CLEAN            += ../Spot-On-Kernel \
                           ../../../libSpotOn/*.so ../../../libSpotOn/test
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-			  -mtune=native -pie -O3 \
+			  -mtune=native -pie -std=c++11 -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Werror -Wextra -Wl,-z,relro \
 			  -Woverloaded-virtual -Wpointer-arith \
