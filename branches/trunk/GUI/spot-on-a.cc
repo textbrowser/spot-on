@@ -239,6 +239,11 @@ int main(int argc, char *argv[])
 #if QT_VERSION >= 0x050700
   qapplication.setAttribute(Qt::AA_DontUseNativeDialogs, true);
 #endif
+#if SPOTON_GOLDBUG == 0
+  qapplication.setWindowIcon(QIcon(":/Logo/spot-on-logo.png"));
+#else
+  qapplication.setWindowIcon(QIcon(":/Logo/goldbug.png"));
+#endif
   QDir().mkdir(spoton_misc::homePath());
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
   QDir().mkdir(spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
