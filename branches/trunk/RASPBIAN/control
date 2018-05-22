@@ -5,7 +5,7 @@ Maintainer: textbrowser@gmail.com
 Package: Spot-On
 Priority: optional
 Section: Internet
-Version: 2018.04.30
+Version: 2018.06.06
 Description: Spot-On
  Welcome to Spot-On on Pi!
  A spot-on.desktop file will also be installed in /usr/share/applications/.
