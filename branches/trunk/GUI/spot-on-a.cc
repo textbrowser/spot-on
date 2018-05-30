@@ -3279,15 +3279,33 @@ void spoton::slotQuit(void)
 
   if(m_optionsUi.terminate_kernel_on_ui_exit->isChecked())
     {
-      QStandardItem *item = m_statisticsModel->findItems
-	("Attached User Interfaces").value(0);
+      QString connectionName("");
+      int count = 0; // Terminate the kernel on database errors.
 
-      if(item && (item = m_statisticsModel->item(item->row(), 1)))
-	{
-	  if(item->text().toInt() <= 1)
-	    slotDeactivateKernel();
-	}
-      else
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+
+	    if(query.exec("SELECT value FROM kernel_statistics "
+			  "WHERE statistic = 'Attached User Interfaces'") &&
+	       query.next())
+	      count = query.value(0).toInt();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+
+      if(count <= 1)
 	slotDeactivateKernel();
     }
 
