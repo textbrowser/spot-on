@@ -131,8 +131,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>679</height>
+             <width>607</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -1307,8 +1307,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>679</height>
+             <width>607</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2410,7 +2410,7 @@ QPushButton:pressed {
                     <item>
                      <widget class="QCheckBox" name="richtext">
                       <property name="toolTip">
-                       <string>The Rich Text option will be ignored on traditional e-mail accounts.</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The Rich Text option will be ignored on traditional e-mail accounts. If enabled, an HTML representation of the Message text will be included in the e-mail bundle.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="text">
                        <string>&amp;Rich Text</string>
@@ -2865,8 +2865,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>595</width>
-             <height>1832</height>
+             <width>593</width>
+             <height>1855</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4145,8 +4145,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>679</height>
+             <width>607</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5259,8 +5259,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>679</height>
+             <width>607</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5345,8 +5345,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>597</width>
-                 <height>571</height>
+                 <width>624</width>
+                 <height>575</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6574,8 +6574,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>764</width>
-             <height>1206</height>
+             <width>782</width>
+             <height>1251</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -8113,8 +8113,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>679</height>
+             <width>593</width>
+             <height>725</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9460,8 +9460,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>679</height>
+             <width>607</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -11098,7 +11098,7 @@ border-style: inset;
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>22</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
