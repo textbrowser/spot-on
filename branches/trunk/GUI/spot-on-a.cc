@@ -3278,7 +3278,18 @@ void spoton::slotQuit(void)
       return;
 
   if(m_optionsUi.terminate_kernel_on_ui_exit->isChecked())
-    slotDeactivateKernel();
+    {
+      QStandardItem *item = m_statisticsModel->findItems
+	("Attached User Interfaces").value(0);
+
+      if(item && (item = m_statisticsModel->item(item->row(), 1)))
+	{
+	  if(item->text().toInt() <= 1)
+	    slotDeactivateKernel();
+	}
+      else
+	slotDeactivateKernel();
+    }
 
   m_quit = true;
   cleanup();
