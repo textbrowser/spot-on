@@ -7101,51 +7101,66 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 		 geminis.second.isEmpty())
 		emit statusMessageReceived
 		  (publicKeyHash,
-		   tr("The participant %1...%2 terminated%3 the call.").
+		   tr("The participant %1...%2 terminated%3 the call "
+		      "via %4:%5.").
 		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
 		   arg(publicKeyHash.toBase64().right(16).constData()).
-		   arg(notsigned));
+		   arg(notsigned).
+		   arg(m_address).
+		   arg(m_port));
 	      else if(messageType == "0000a")
 		{
 		  if(respond)
 		    emit statusMessageReceived
 		      (publicKeyHash,
 		       tr("The participant %1...%2 may have "
-			  "initiated a two-way call%3. Response dispatched.").
+			  "initiated a two-way call%3 via %4:%5. "
+			  "Response dispatched.").
 		       arg(publicKeyHash.toBase64().mid(0, 16).constData()).
 		       arg(publicKeyHash.toBase64().right(16).constData()).
-		       arg(notsigned));
+		       arg(notsigned).
+		       arg(m_address).
+		       arg(m_port));
 		  else
 		    emit statusMessageReceived
 		      (publicKeyHash,
-		       tr("The participant %1...%2 initiated a call%3.").
+		       tr("The participant %1...%2 initiated a call%3 "
+			  "via %4:%5.").
 		       arg(publicKeyHash.toBase64().mid(0, 16).constData()).
 		       arg(publicKeyHash.toBase64().right(16).constData()).
-		       arg(notsigned));
+		       arg(notsigned).
+		       arg(m_address).
+		       arg(m_port));
 		}
 	      else if(messageType == "0000b")
 		emit statusMessageReceived
 		  (publicKeyHash,
 		   tr("The participant %1...%2 initiated a call%3 "
-		      "within a call.").
+		      "within a call via %4:%5.").
 		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
 		   arg(publicKeyHash.toBase64().right(16).constData()).
-		   arg(notsigned));
+		   arg(notsigned).
+		   arg(m_address).
+		   arg(m_port));
 	      else if(messageType == "0000c")
 		emit statusMessageReceived
 		  (publicKeyHash,
 		   tr("Received a two-way call response%1 from "
-		      "participant %2...%3.").
+		      "participant %2...%3 via %4:%5.").
 		   arg(notsigned).
 		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()));
+		   arg(publicKeyHash.toBase64().right(16).constData()).
+		   arg(m_address).
+		   arg(m_port));
 	      else if(messageType == "0000d")
 		emit statusMessageReceived
 		  (publicKeyHash,
 		   tr("The participant %1...%2 initiated a call via "
-		      "Forward Secrecy.").
+		      "Forward Secrecy via %3:%4.").
 		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()));
+		   arg(publicKeyHash.toBase64().right(16).constData()).
+		   arg(m_address).
+		   arg(m_port));
 
 	      /*
 	      ** Respond to this call with a new pair of half keys.
