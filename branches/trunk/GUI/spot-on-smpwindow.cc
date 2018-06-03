@@ -732,7 +732,7 @@ void spoton_smpwindow::slotExecute(void)
 
   QString message("");
 
-  message = tr("%1: Contacted participant %2... Please wait for a response.").
+  message = tr("%1: Contacting participant %2... Please wait for a response.").
     arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).arg(name);
   m_ui.output->append(message);
   QApplication::restoreOverrideCursor();
