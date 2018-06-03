@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>360</width>
-    <height>500</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -38,8 +38,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>328</width>
-        <height>591</height>
+        <width>342</width>
+        <height>527</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -58,7 +58,7 @@
             <string>&amp;NODELAY</string>
            </property>
            <property name="buddy">
-            <cstring>so_linger</cstring>
+            <cstring>nodelay</cstring>
            </property>
           </widget>
          </item>
@@ -102,7 +102,7 @@
             <string>SO_&amp;KEEPALIVE</string>
            </property>
            <property name="buddy">
-            <cstring>so_linger</cstring>
+            <cstring>so_keepalive</cstring>
            </property>
           </widget>
          </item>
@@ -189,7 +189,7 @@
             <string>SO_&amp;RCVBUF</string>
            </property>
            <property name="buddy">
-            <cstring>so_linger</cstring>
+            <cstring>so_rcvbuf</cstring>
            </property>
           </widget>
          </item>
@@ -232,7 +232,7 @@
             <string>SO_&amp;SNDBUF</string>
            </property>
            <property name="buddy">
-            <cstring>so_linger</cstring>
+            <cstring>so_sndbuf</cstring>
            </property>
           </widget>
          </item>
