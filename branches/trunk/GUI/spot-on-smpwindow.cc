@@ -1244,10 +1244,11 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 	}
       else
 	message = tr("%1: SMP verification with %2 experienced a protocol "
-		     "failure. The specific state machine has been "
-		     "reset.").
+		     "failure. Current step is %3. "
+		     "The specific state machine has been reset.").
 	  arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
-	  arg(name);
+	  arg(name).
+	  arg(smp->m_smp->step());
 
       if(!ok)
 	smp->m_smp->initialize();
