@@ -521,7 +521,7 @@ int main(int argc, char *argv[])
     {
       std::cerr << "Critical kernel error ("
 		<< libspoton_strerror(err)
-		<< ") with libspoton_init_b()."
+		<< ") with libspoton_init_b(). Exiting kernel."
 		<< std::endl;
       curl_global_cleanup();
       spoton_crypt::terminate();

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>710</width>
-    <height>595</height>
+    <height>637</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -16,43 +16,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QLabel" name="label_10">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>40</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));
-
-color: rgb(255, 255, 255);
-
-
-</string>
-      </property>
-      <property name="text">
-       <string>Socialist Millionaires Protocol (SMP)</string>
-      </property>
-      <property name="margin">
-       <number>0</number>
-      </property>
-      <property name="indent">
-       <number>5</number>
-      </property>
-     </widget>
-    </item>
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -121,6 +84,30 @@ color: rgb(255, 255, 255);
             </widget>
            </item>
            <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="clear">
+               <property name="text">
+                <string>&amp;Clear Messages</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>Data exchanged via Poptastic public keys shall be transferred over the Echo and the Poptastic mediums.</string>
@@ -150,6 +137,65 @@ color: rgb(255, 255, 255);
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
+              <widget class="QLabel" name="label_105">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QLabel {
+ border: 1px solid gray;
+ background-color: lightgreen;
+ margin: 2px;
+ padding: 2px;
+ }</string>
+               </property>
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="prepare_smp_object">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Prepare an SMP object via the secret and the selected participant. The SMP object will be initialized to the zeroth state.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>&amp;Create SMP Object</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_120">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QLabel {
+ border: 1px solid gray;
+ background-color: lightgreen;
+ margin: 2px;
+ padding: 2px;
+ }</string>
+               </property>
+               <property name="text">
+                <string>2</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="execute">
+               <property name="text">
+                <string>&amp;Execute SMP</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="horizontalSpacer">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -163,36 +209,12 @@ color: rgb(255, 255, 255);
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="clear">
-               <property name="text">
-                <string>&amp;Clear Messages</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="execute">
-               <property name="text">
-                <string>&amp;Execute SMP</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QPushButton" name="generate">
                <property name="toolTip">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate a stream of bytes via the secret and the selected participant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>&amp;Generate Secret Stream</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="prepare_smp_object">
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Prepare an SMP object via the secret and the selected participant. The SMP object will be initialized to the zeroth state.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="text">
-                <string>&amp;Prepare SMP Object</string>
                </property>
               </widget>
              </item>
@@ -320,6 +342,16 @@ color: rgb(255, 255, 255);
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Please do not modify the Generator Hash Type, Generator Stream Size, and Iteration Count unless you have notified other participants.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_99">
           <property name="spacing">
            <number>5</number>
@@ -336,9 +368,6 @@ color: rgb(255, 255, 255);
           </item>
           <item>
            <widget class="QComboBox" name="generator_hash_type">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please do not modify the Generator Hash Type unless you have notified other participants.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToContents</enum>
             </property>
@@ -350,7 +379,7 @@ color: rgb(255, 255, 255);
              <string>Generator &amp;Stream Size</string>
             </property>
             <property name="buddy">
-             <cstring>iteration_count</cstring>
+             <cstring>generator_stream_size</cstring>
             </property>
            </widget>
           </item>
@@ -487,7 +516,7 @@ color: rgb(255, 255, 255);
      <x>0</x>
      <y>0</y>
      <width>710</width>
-     <height>19</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -524,11 +553,11 @@ color: rgb(255, 255, 255);
   <tabstop>tabWidget</tabstop>
   <tabstop>participants</tabstop>
   <tabstop>output</tabstop>
-  <tabstop>secret</tabstop>
   <tabstop>clear</tabstop>
+  <tabstop>secret</tabstop>
+  <tabstop>prepare_smp_object</tabstop>
   <tabstop>execute</tabstop>
   <tabstop>generate</tabstop>
-  <tabstop>prepare_smp_object</tabstop>
   <tabstop>secrets</tabstop>
   <tabstop>remove</tabstop>
   <tabstop>refresh</tabstop>
