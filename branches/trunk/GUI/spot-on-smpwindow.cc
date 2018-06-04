@@ -1145,6 +1145,9 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       m_ui.output->append(message);
       return;
     }
+  else if(smp->m_smp->step() == 4 ||
+	  smp->m_smp->step() == 5)
+    return;
 
   spoton_crypt *s_crypt1 = spoton::instance() ? spoton::instance()->
     crypts().value(smp->m_keyType, 0) : 0;
