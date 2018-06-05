@@ -51,6 +51,7 @@ class spoton_smpwindow_smp
   }
 
   QByteArray m_publicKey;
+  QHash<QByteArray, char> m_cache;
   QString m_keyType;
   QString m_name;
   spoton_smp *m_smp;

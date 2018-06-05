@@ -563,6 +563,7 @@ void spoton_smpwindow::slotExecute(void)
 				  "registered.").arg(m_smps.size()));
     }
 
+  smp->m_cache.clear();
   smp->m_smp->initialize();
 
   QList<QByteArray> values(smp->m_smp->step1(&ok));
@@ -810,8 +811,8 @@ void spoton_smpwindow::slotGenerateData(void)
   QScopedPointer<spoton_smpwindow_smp> smp;
 
   smp.reset(new spoton_smpwindow_smp(secret));
-  smp->m_name = name;
   smp->m_keyType = keyType;
+  smp->m_name = name;
   smp->m_publicKey = publicKey;
   generateSecretData(smp.data());
   populateSecrets();
@@ -919,6 +920,7 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
   else
     smp->m_smp->setGuess(secret);
 
+  smp->m_cache.clear();
   smp->m_smp->setStep0();
   QApplication::restoreOverrideCursor();
 }
@@ -1165,6 +1167,15 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 
   {
     QByteArray bytes(list.value(1));
+
+    if(smp->m_cache.contains(s_crypt1->keyedHash(bytes, 0)))
+      {
+	QApplication::restoreOverrideCursor();
+	return;
+      }
+    else
+      smp->m_cache[s_crypt1->keyedHash(bytes, 0)] = 0;
+
     QDataStream stream(&bytes, QIODevice::ReadOnly);
 
     stream >> values;
@@ -1212,15 +1223,6 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       goto done_label;
     }
 
-  recipientDigest = spoton_crypt::sha512Hash(smp->m_publicKey, &ok);
-
-  if(!ok)
-    {
-      error = tr("A failure occurred while computing the SHA-512 "
-		 "digest of the recipient's public key.");
-      goto done_label;
-    }
-
   values = smp->m_smp->nextStep(values, &ok, &passed);
 
   if(!ok || smp->m_smp->step() == 4 || smp->m_smp->step() == 5)
@@ -1232,6 +1234,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 	      message = tr("%1: Verified secrets with %2.").
 		arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
 		arg(name);
+	      smp->m_cache.clear();
 	      smp->m_smp->setStep0();
 	      generateSecretData(smp);
 	      populateSecrets();
@@ -1251,7 +1254,10 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 	  arg(smp->m_smp->step());
 
       if(!ok)
-	smp->m_smp->initialize();
+	{
+	  smp->m_cache.clear();
+	  smp->m_smp->initialize();
+	}
 
       m_ui.output->append(message);
     }
@@ -1284,6 +1290,15 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   if(!ok)
     {
       error = tr("An error occurred with spoton_crypt::sha512Hash().");
+      goto done_label;
+    }
+
+  recipientDigest = spoton_crypt::sha512Hash(smp->m_publicKey, &ok);
+
+  if(!ok)
+    {
+      error = tr("A failure occurred while computing the SHA-512 "
+		 "digest of the recipient's public key.");
       goto done_label;
     }
 
