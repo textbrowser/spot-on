@@ -160,7 +160,7 @@
              <item>
               <widget class="QPushButton" name="prepare_smp_object">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Prepare an SMP object via the secret and the selected participant. The SMP object will be initialized to the zeroth state.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Prepare an SMP object via the secret and the selected participant. The SMP object will be initialized to the zeroth state. If an SMP object exists for the selected participant, the object's secret will be updated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>&amp;Create SMP Object</string>
@@ -190,6 +190,9 @@
              </item>
              <item>
               <widget class="QPushButton" name="execute">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Prepare an SMP object via the secret and the selected participant. The SMP object will be initialized to the zeroth state. If an SMP object exists for the selected participant, the object's secret will be updated. If successful, launch SMP!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="text">
                 <string>&amp;Execute SMP</string>
                </property>
