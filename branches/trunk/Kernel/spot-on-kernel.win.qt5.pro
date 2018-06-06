@@ -41,10 +41,10 @@ QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie -O3 \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstrict-overflow=5
-QMAKE_DISTCLEAN        += .qmake.cache .qmake.stash debug \
+QMAKE_DISTCLEAN        += .qmake.cache .qmake.stash -f debug \
                           object_script.Spot-On-Kernel.Debug \
                           object_script.Spot-On-Kernel.Release \
-                          release
+                          -f release
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 
 INCLUDEPATH	+= . ..\\. ..\\..\\..\\. \
