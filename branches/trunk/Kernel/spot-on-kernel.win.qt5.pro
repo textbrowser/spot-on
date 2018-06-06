@@ -32,14 +32,19 @@ QMAKE_CLEAN            += ..\\..\\release\\Spot-On-Kernel \
                           ..\\..\\..\\libSpotOn\\libspoton.dll \
                           ..\\..\\..\\libSpotOn\\*.o \
                           ..\\..\\..\\libSpotOn\\test.exe \
-                          .qmake.cache .qmake.stash
+                          .qmake.cache .qmake.stash \
+                          object_script.Spot-On-Kernel.Debug \
+                          object_script.Spot-On-Kernel.Release
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstrict-overflow=5
-QMAKE_DISTCLEAN        += .qmake.cache .qmake.stash
+QMAKE_DISTCLEAN        += .qmake.cache .qmake.stash debug \
+                          object_script.Spot-On-Kernel.Debug \
+                          object_script.Spot-On-Kernel.Release \
+                          release
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 
 INCLUDEPATH	+= . ..\\. ..\\..\\..\\. \
