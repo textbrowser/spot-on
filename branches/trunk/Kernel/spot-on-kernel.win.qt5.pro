@@ -31,10 +31,7 @@ QMAKE_CLEAN            += ..\\..\\release\\Spot-On-Kernel \
                           ..\\..\\..\\libNTRU\\src\\*.s \
                           ..\\..\\..\\libSpotOn\\libspoton.dll \
                           ..\\..\\..\\libSpotOn\\*.o \
-                          ..\\..\\..\\libSpotOn\\test.exe \
-                          .qmake.cache .qmake.stash \
-                          object_script.Spot-On-Kernel.Debug \
-                          object_script.Spot-On-Kernel.Release
+                          ..\\..\\..\\libSpotOn\\test.exe
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
