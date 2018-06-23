@@ -29,6 +29,7 @@
 #define _spoton_utilities_h_
 
 #include <QDesktopWidget>
+#include <QScreen>
 #include <QWidget>
 
 class spoton_utilities
@@ -66,12 +67,19 @@ class spoton_utilities
 
     if(parent)
       scrn = QApplication::desktop()->screenNumber(parent);
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
     else if(QApplication::desktop()->isVirtualDesktop())
       scrn = QApplication::desktop()->screenNumber(QCursor::pos());
+#endif
     else
       scrn = QApplication::desktop()->screenNumber(child);
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
     desk = QApplication::desktop()->availableGeometry(scrn);
+#else
+    desk = QGuiApplication::screens().value(scrn) ?
+      QGuiApplication::screens().value(scrn)->geometry() : QRect();
+#endif
 
     QWidgetList list = QApplication::topLevelWidgets();
 
