@@ -1335,7 +1335,6 @@ void spoton_rss::prepareDatabases(void)
       {
 	QSqlQuery query(db);
 
-
 #ifdef Q_PROCESSOR_ARM
 	query.exec("PRAGMA journal_mode = DELETE");
 #else
