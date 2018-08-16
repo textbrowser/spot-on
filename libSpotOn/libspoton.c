@@ -332,8 +332,7 @@ libspoton_error_t libspoton_init_a(const char *databasePath,
       libspotonHandle->m_keyLength = keyLength;
 
       if(!(libspotonHandle->m_key =
-	   gcry_calloc_secure(libspotonHandle->m_keyLength,
-			      sizeof(char))))
+	   gcry_calloc_secure(libspotonHandle->m_keyLength, sizeof(char))))
 	{
 	  rerr = LIBSPOTON_ERROR_GCRY_CALLOC_SECURE;
 	  goto error_label;
@@ -426,8 +425,7 @@ libspoton_error_t libspoton_init_b(const char *databasePath,
 	}
 
       if(!(libspotonHandle->m_key =
-	   gcry_calloc_secure(libspotonHandle->m_keyLength,
-			      sizeof(char))))
+	   gcry_calloc_secure(libspotonHandle->m_keyLength, sizeof(char))))
 	{
 	  rerr = LIBSPOTON_ERROR_GCRY_CALLOC_SECURE;
 	  goto error_label;
@@ -790,8 +788,8 @@ libspoton_error_t libspoton_save_url(const char *url,
 
 	      if(sizeofchar > 0 &&
 		 encodedBufferAndIVLength <= SIZE_MAX / sizeofchar)
-		encodedBufferAndIV = calloc(encodedBufferAndIVLength,
-					    sizeof(char));
+		encodedBufferAndIV = calloc
+		  (encodedBufferAndIVLength, sizeofchar);
 	      else
 		encodedBufferAndIV = 0;
 
