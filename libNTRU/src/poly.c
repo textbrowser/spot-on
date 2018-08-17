@@ -63,8 +63,8 @@ uint8_t ntruprime_rand_tern(uint16_t N, NtruIntPoly *poly, NtruRandContext *rand
 }
 
 uint8_t ntruprime_rand_tern_t(uint16_t N, uint16_t t, NtruIntPoly *poly, NtruRandContext *rand_ctx) {
-  if(N == 0)
-    return 0;
+    if (N == 0)
+        return 0;
 
     poly->N = N;
 
