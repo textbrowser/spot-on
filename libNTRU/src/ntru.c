@@ -418,6 +418,10 @@ uint8_t ntru_encrypt(uint8_t *msg, uint16_t msg_len, NtruEncPubKey *pub, const N
     ntru_set_optimized_impl();
 
     uint16_t N = params->N;
+
+    if(N == 0)
+      return NTRU_ERR_INVALID_PARAM;
+
     uint16_t q = params->q;
     uint16_t db = params->db;
     uint16_t max_len_bytes = ntru_max_msg_len(params);

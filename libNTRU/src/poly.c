@@ -63,6 +63,9 @@ uint8_t ntruprime_rand_tern(uint16_t N, NtruIntPoly *poly, NtruRandContext *rand
 }
 
 uint8_t ntruprime_rand_tern_t(uint16_t N, uint16_t t, NtruIntPoly *poly, NtruRandContext *rand_ctx) {
+  if(N == 0)
+    return 0;
+
     poly->N = N;
 
     uint8_t rand_bits[(2*t+7)/8];
@@ -464,6 +467,8 @@ void ntru_mult_int_64_base(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uin
     /* make 64-bit versions of a and b */
     uint64_t a64[N2];
     uint64_t b64[N2];
+    memset(a64, 0, sizeof(a64));
+    memset(b64, 0, sizeof(b64));
     uint16_t i;
     for (i=0; i<len/2; i++) {
         a64[i] = (a[2*i]&mod_mask) + (((uint64_t)(a[2*i+1]&mod_mask))<<25);
