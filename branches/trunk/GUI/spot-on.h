@@ -441,24 +441,16 @@ class spoton_integer_table_widget_item: public QTableWidgetItem
  public:
   spoton_integer_table_widget_item(const QString &text):QTableWidgetItem(text)
   {
-    // Ignore toLongLong() errors.
-
-    m_longlong = text.trimmed().toLongLong();
   }
 
   bool operator<(const QTableWidgetItem &other) const
   {
-    const spoton_integer_table_widget_item *item =
-      dynamic_cast<const spoton_integer_table_widget_item *> (&other);
+    /*
+    ** Ignore toLongLong() errors.
+    */
 
-    if(item)
-      return m_longlong < item->m_longlong;
-    else
-      return QTableWidgetItem::operator<(other);
+    return text().toLongLong() < other.text().toLongLong();
   }
-
- private:
-  qint64 m_longlong;
 };
 
 class spoton: public QMainWindow
