@@ -611,7 +611,7 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.buildInformation->setText
     (QString("<html>"
-	     "<font color=\"#6a5acd\">Blue Spark</font>"
+	     "<font color=\"#6a5acd\">Demure Dolphins</font>"
 	     "<br><br>"
 	     "Compiled on %1, %2.<br>"
 	     "%3.<br>"
