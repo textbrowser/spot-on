@@ -153,6 +153,21 @@
                <string>4096</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>7680</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>8192</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>15360</string>
+              </property>
+             </item>
             </widget>
            </item>
            <item>
