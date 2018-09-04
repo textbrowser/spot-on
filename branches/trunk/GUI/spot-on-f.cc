@@ -311,19 +311,6 @@ void spoton::slotEstablishForwardSecrecy(void)
   ui.encryptionKeyType->model()->setData
     (ui.encryptionKeyType->model()->index(1, 0), 0, Qt::UserRole - 1);
 #endif
-
-  if(!spoton_crypt::hasShake() && ui.encryptionKeyType->currentIndex() == 1)
-    {
-      int index = s_publicKeySizes.value("mceliece").indexOf
-	("m11t51-fujisaki-okamoto-b");
-
-      if(index >= 0)
-	ui.encryptionKeySize->model()->setData
-	  (ui.encryptionKeySize->model()->index(index, 0),
-	   0,
-	   Qt::UserRole - 1);
-    }
-
 #ifndef SPOTON_LINKED_WITH_LIBNTRU
   ui.encryptionKeyType->model()->setData
     (ui.encryptionKeyType->model()->index(2, 0), 0, Qt::UserRole - 1);
@@ -1042,6 +1029,20 @@ void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
   comboBox->clear();
   comboBox->addItems(list);
   comboBox->setCurrentIndex(0);
+
+  for(int i = 0; i < comboBox->count(); i++)
+    comboBox->model()->setData
+      (comboBox->model()->index(i, 0), 1 | 32, Qt::UserRole - 1);
+
+  if(index == 1 && !spoton_crypt::hasShake())
+    {
+      int index = s_publicKeySizes.value("mceliece").indexOf
+	("m11t51-fujisaki-okamoto-b");
+
+      if(index >= 0)
+	comboBox->model()->setData
+	  (comboBox->model()->index(index, 0), 0, Qt::UserRole - 1);
+    }
 }
 
 void spoton::slotAllowFSRequest(bool state)
