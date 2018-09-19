@@ -60,18 +60,73 @@ int main()
       CHECK(q1.validate() && r1.validate() && q == q1 && r == r1);
    }
 
-   cerr << "\nvalidating squaring...";
-   for (long i = 0; i < 200000; i++) {
-      long a_len = RandomBnd(8000)+5;
+   cerr << "\nvalidating mul...";
+   for (long i = 0; i < 1000000; i++) {
+      long a_len = RandomBnd(1000)+1;
+      long b_len = RandomBnd(1000)+1;
 
-      ZZ a, b, a1, c;
+      ZZ a, b, c;
+
+      RandomLen(a, a_len);
+      RandomLen(b, b_len);
+
+      if (RandomBnd(2)) a = -a;
+      if (RandomBnd(2)) b = -b;
+
+      long p = 7919;
+      long r = MulMod(rem(a, p), rem(b, p), p);
+      long s = MulMod(rem(a, p), rem(a, p), p);
+
+      switch (RandomBnd(5)) {
+      case 0:
+         mul(c, a, b);
+         CHECK(c.validate() && rem(c, p) == r);
+         break;
+
+      case 1:
+         mul(a, a, b);
+         CHECK(a.validate() && rem(a, p) == r);
+         break;
+
+      case 2:
+         mul(b, a, b);
+         CHECK(b.validate() && rem(b, p) == r);
+         break;
+
+      case 3:
+         mul(c, a, a);
+         CHECK(c.validate() && rem(c, p) == s);
+         break;
+
+      case 4:
+         mul(a, a, a);
+         CHECK(a.validate() && rem(a, p) == s);
+         break;
+      }
+   }
+
+   cerr << "\nvalidating squaring...";
+   for (long i = 0; i < 1000000; i++) {
+      long a_len = RandomBnd(1000)+1;
+
+      ZZ a, b, a1, a2, c;
       RandomLen(a, a_len);
 
-      sqr(b, a);
-      a1 = a;
-      mul(c, a, a1);
+      if (RandomBnd(2)) a = -a;
 
-      CHECK(b.validate() && c.validate() && b == c);
+      a1 = a;
+      a2 = a;
+
+      if (RandomBnd(2)) {
+         sqr(b, a);
+         mul(c, a1, a2);
+         CHECK(b.validate() && c.validate() && b == c);
+      }
+      else {
+         sqr(a, a);
+         mul(c, a1, a2);
+         CHECK(a.validate() && c.validate() && a == c);
+      }
    }
 
    cerr << "\nvalidating SqrRoot...";
@@ -156,10 +211,10 @@ int main()
    }
 
    cerr << "\nvalidating GCD...";
-   for (long i = 0; i < 100000; i++) {
-      long a_len = RandomBnd(4000)+5;
-      long b_len = RandomBnd(4000)+5;
-      long c_len = RandomBnd(500)+1;
+   for (long i = 0; i < 1000000; i++) {
+      long a_len = RandomBnd(1000)+1;
+      long b_len = RandomBnd(1000)+1;
+      long c_len = RandomBnd(200)+1;
 
       ZZ a, b, c;
       RandomLen(a, a_len);
@@ -169,6 +224,9 @@ int main()
       a *= c;
       b *= c;
 
+      if (RandomBnd(2)) a = -a;
+      if (RandomBnd(2)) b = -b;
+
       ZZ d, s, t, d1;
 
       XGCD(d, s, t, a, b);
@@ -177,18 +235,30 @@ int main()
       CHECK(d.validate() && s.validate() && t.validate() && d1.validate());
       CHECK(d == d1 && d == a*s + b*t);
       CHECK(divide(a, d) && divide(b, d)); 
+
+      CHECK(abs(s) <= 1 || 2*d*abs(s) < abs(b));
+      CHECK(abs(t) <= 1 || 2*d*abs(t) < abs(a));
+
+      if (a < 0) { a = -a; s = -s; }
+      if (b < 0) { b = -b; t = -t; }
+      if (a < b) { swap(a, b); swap(s, t); }
+      
+      // so now we have a >= b >= 0
+      // check that s in (-b/2*d, b/2*d]
+      CHECK(2*d*s > -b && 2*d*s <= b);
    }
 
    cerr << "\nvalidating InvMod...";
    for (long i = 0; i < 100000; i++) {
-      long n_len = RandomBnd(4000)+5;
+      long n_len = RandomBnd(4000)+4;
       
       ZZ a, n, x;
       RandomLen(n, n_len);
       RandomBnd(a, n);
 
       long r = InvModStatus(x, a, n);
-      CHECK((r == 0 && (x * a) % n == 1) || (r == 1 && x != 1 && x == GCD(a, n)) );
+      CHECK((r == 0 && (x * a) % n == 1 && 0 <= x && x < n) || 
+            (r == 1 && x != 1 && x == GCD(a, n)) );
    }
 
    cerr << "\nvalidating RatRecon...";

@@ -9,7 +9,6 @@
 
 #endif
 
-#include <NTL/new.h>
 
 #if (defined(NTL_WIZARD_HACK) && defined(NTL_GF2X_LIB))
 #undef NTL_GF2X_LIB

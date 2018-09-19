@@ -3,7 +3,6 @@
 #include <NTL/vec_quad_float.h>
 #include <NTL/fileio.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 

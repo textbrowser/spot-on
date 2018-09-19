@@ -79,7 +79,7 @@ the factorization task.
 You can turn this "power hack" on/off by setting the following variable
 to 1/0:
 
-   extern long ZZXFac_PowerHack;  // initial value = 1
+   extern thread_local long ZZXFac_PowerHack;  // initial value = 1
 
 
 Third, the polynomial is factored modulo several
@@ -87,7 +87,7 @@ small primes, and one small prime p is selected as the "best".
 You can choose the number of small primes that you want to use
 by setting the following variable:
 
-   extern long ZZXFac_InitNumPrimes;  // initial value = 7
+   extern thread_local long ZZXFac_InitNumPrimes;  // initial value = 7
 
 Fourth, The factorization mod p is "lifted" to a factorization mod p^k
 for a sufficiently large k.  This is done via quadratic Hensel
@@ -120,7 +120,7 @@ fairly well on all input polynomials.
 Set the following variable to 1 to enable the van Hoeij method,
 and to 0 to revert to the Zassenhaus method:
 
-   extern long ZZXFac_van_Hoeij; // initial value = 1
+   extern thread_local long ZZXFac_van_Hoeij; // initial value = 1
 
 Note that the "power hack" is still on by default when using van Hoeij's
 method, but we have arranged things so that the "power hack" strategy 
@@ -145,7 +145,7 @@ the exponential behavior of the algorithm really starts to dominate.
 The behaviour of these heuristics can be fine tuned by
 setting the following global variables:
 
-   extern long ZZXFac_MaxNumPrimes;  // initial value = 50
+   extern thread_local long ZZXFac_MaxNumPrimes;  // initial value = 50
    // During the factor recombination phase, if not much progress
    // is being made, occasionally more "local" information is 
    // collected by factoring f modulo another prime.
@@ -154,7 +154,7 @@ setting the following global variables:
    // This value bounds the total number of primes modulo which f 
    // is factored.
 
-   extern long ZZXFac_MaxPrune;  // initial value = 10
+   extern thread_local long ZZXFac_MaxPrune;  // initial value = 10
    // A kind of "meet in the middle" strategy is used
    // to prune the search space during recombination.
    // For many (but not all) polynomials, this can greatly

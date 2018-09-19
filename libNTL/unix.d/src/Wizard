@@ -60,6 +60,7 @@ cp fileio.cpp small/src
 
 sh CopyFeatures '..' small "$3"
 cp ../include/NTL/FFT.h small/include/NTL
+cp ../include/NTL/FFT_impl.h small/include/NTL
 cp ../include/NTL/ctools.h small/include/NTL
 cp ../include/NTL/ZZ.h small/include/NTL
 cp ../include/NTL/sp_arith.h small/include/NTL
@@ -86,6 +87,7 @@ cp ../include/NTL/GF2.h small/include/NTL
 cp ../include/NTL/WordVector.h small/include/NTL
 cp ../include/NTL/vec_GF2.h small/include/NTL
 cp ../include/NTL/GF2X.h small/include/NTL
+cp ../include/NTL/PackageInfo.h small/include/NTL
 
 cp cfile small/src
 cp WizardAux small/src

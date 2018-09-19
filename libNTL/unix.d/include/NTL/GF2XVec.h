@@ -67,7 +67,7 @@ public:
    }
 
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    GF2XVec(GF2XVec&& other) noexcept : GF2XVec() 
    {

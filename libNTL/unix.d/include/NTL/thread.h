@@ -35,6 +35,36 @@ public:
    operator long() const { return data.load( NTL_SNS memory_order_acquire); }
 };
 
+class AtomicLowWaterMark {
+private:
+   NTL_SNS atomic_ulong data;
+
+   AtomicLowWaterMark(const AtomicLowWaterMark& other); // disabled
+   AtomicLowWaterMark& operator=(const AtomicLowWaterMark& other); // disabled
+
+public:
+   
+   explicit AtomicLowWaterMark(const unsigned long& _data) : data(_data) { }
+   operator unsigned long() const { return data.load( NTL_SNS memory_order_relaxed); }
+
+   void UpdateMin(unsigned long val) 
+   {
+      unsigned long old_data = *this;
+      while(old_data > val &&
+            !data.compare_exchange_weak(old_data, val, NTL_SNS memory_order_relaxed));
+
+      // NOTE: there have been some bug reports for GCC, CLANG, and MSVC
+      // on the implementation of compare_exchange_weak.  
+      // For a great introduction to compare_exchange_weak, see
+      //   http://preshing.com/20150402/you-can-do-any-kind-of-atomic-read-modify-write-operation/ 
+      // In fact, almost everything I known about C++11 atomics I learned
+      // from Preshing's blog.  For more on the compiler bug, see
+      //    https://stackoverflow.com/questions/21879331/is-stdatomic-compare-exchange-weak-thread-unsafe-by-design/21946549#21946549
+
+   }
+
+};
+
 
 class AtomicBool {
 private:
@@ -61,6 +91,7 @@ private:
 
 public:
    AtomicCounter() : cnt(0) { }
+   explicit AtomicCounter(unsigned long _cnt) : cnt(_cnt) { }
    unsigned long inc() 
    { 
       return cnt.fetch_add(1UL, NTL_SNS memory_order_relaxed); 
@@ -134,6 +165,23 @@ public:
    operator long() const { return data; }
 };
 
+class AtomicLowWaterMark {
+private:
+   unsigned long data;
+
+   AtomicLowWaterMark(const AtomicLowWaterMark& other); // disabled
+   AtomicLowWaterMark& operator=(const AtomicLowWaterMark& other); // disabled
+
+public:
+   
+   explicit AtomicLowWaterMark(const unsigned long& _data) : data(_data) { }
+   operator unsigned long() const { return data; }
+
+   void UpdateMin(unsigned long val) 
+   {
+      if (val < data) data = val;
+   }
+};
 
 class AtomicBool {
 private:
@@ -160,6 +208,7 @@ private:
 
 public:
    AtomicCounter() : cnt(0) { }
+   explicit AtomicCounter(unsigned long _cnt) : cnt(_cnt) { }
    unsigned long inc() { return cnt++; }
 };
 

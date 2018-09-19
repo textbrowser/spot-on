@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/junk6/ntl-10.4.0/doc/GF2EXFactoring.cpp.html</title>
+<title>~/ntl-staging/ntl-11.0.0updated/doc/GF2EXFactoring.cpp.html</title>
 <meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -112,7 +112,7 @@ vec_pair_GF2EX_long NewDDF(<span class="Type">const</span> GF2EX&amp; f, <span c
 <span class="Comment">// form tmp-*.</span>
 <span class="Comment">// The definition of &quot;large&quot; is controlled by the variable</span>
 
-      <span class="Type">extern</span> <span class="Type">double</span> GF2EXFileThresh
+      <span class="Type">extern</span> <span class="Type">thread_local</span> <span class="Type">double</span> GF2EXFileThresh
 
 <span class="Comment">// which can be set by the user.  If the sizes of the tables</span>
 <span class="Comment">// exceeds GF2EXFileThresh KB, external files are used.</span>
@@ -161,6 +161,9 @@ vec_pair_GF2EX_long CanZass(<span class="Type">const</span> GF2EX&amp; f, <span 
 <span class="Comment">// NOTE: these routines use modular composition.  The space</span>
 <span class="Comment">// used for the required tables can be controlled by the variable</span>
 <span class="Comment">// GF2EXArgBound (see GF2EX.txt).</span>
+
+<span class="Comment">// NOTE: In most situations, you should use the CanZass factoring</span>
+<span class="Comment">// routine, rather than Berlekamp: it is faster and uses less space.</span>
 
 
 

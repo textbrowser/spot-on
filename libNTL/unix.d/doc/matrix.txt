@@ -64,7 +64,9 @@ class Mat {
    // destructor
 
    Mat(Mat&& other) noexcept;
+#ifndef NTL_DISABLE_MOVE_ASSIGN
    Mat& operator=(Mat&& other) noexcept;
+#endif
    // move semantics (C++11 only)
 
    Mat(INIT_SIZE_TYPE, long n, long m); 
@@ -134,6 +136,9 @@ class Mat {
    long position1(const Vec<T>& a) const;
    // returns index of a in matrix, or -1 if not present;
    // equivalent to rep(*this).position1(a).
+
+   long alias(const Vec<T>& a) const;
+   // returns 1 if a aliases a row of the matrix, and 0 otherwise.
 
    void swap(Mat<T>& other);
    // quick swap *this and other

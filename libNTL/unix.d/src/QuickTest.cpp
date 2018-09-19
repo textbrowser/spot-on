@@ -58,7 +58,6 @@ int GF2X_test()
 
 void GF2X_time()
 {
-   long n = 1000000L;
    long iter;
 
    GF2X a, b, c;
@@ -66,37 +65,41 @@ void GF2X_time()
    double t;
    long i;
 
-   random(a, n);
-   random(b, n);
+   for (long n = 1000; n <= 1000000L; n *= 1000) {
 
-   mul(c, a, b);
+      random(a, n);
+      random(b, n);
 
-   iter = 0;
-   do {
-      iter = iter ? (2*iter) : 1;
-      t = GetTime();
-      for (i = 0; i < iter; i++)
-         mul(c, a, b);
-      t = GetTime() - t;
-   } while (t < 0.5);
+      mul(c, a, b);
 
-   cerr << "time to multiply polynomials over GF(2) \n   of degree < 1000000: "
-        << (t/iter) << "s\n";
+      iter = 0;
+      do {
+	 iter = iter ? (2*iter) : 1;
+	 t = GetTime();
+	 for (i = 0; i < iter; i++)
+	    mul(c, a, b);
+	 t = GetTime() - t;
+      } while (t < 0.5);
+
+      cerr << "time to multiply polynomials over GF(2) \n   of degree < " << n << " : "
+	   << (t/iter) << "s";
 
 #ifdef NTL_GF2X_LIB
-   OldMul(c, a, b);
+      OldMul(c, a, b);
 
-   iter = 0;
-   do {
-      iter = iter ? (2*iter) : 1;
-      t = GetTime();
-      for (i = 0; i < iter; i++)
-         OldMul(c, a, b);
-      t = GetTime() - t;
-   } while (t < 0.5);
+      iter = 0;
+      do {
+	 iter = iter ? (2*iter) : 1;
+	 t = GetTime();
+	 for (i = 0; i < iter; i++)
+	    OldMul(c, a, b);
+	 t = GetTime() - t;
+      } while (t < 0.5);
 
-   cerr << "   **** using old code: "  << (t/iter) << "s\n";
+      cerr << " [old code: "  << (t/iter) << "s]";
 #endif
+      cerr << "\n";
+   }
 
 }
 
@@ -158,14 +161,9 @@ int main()
    cerr << "NTL_THREADS\n";
 #endif
 
-#ifdef NTL_DISABLE_TLS_HACK
-   cerr << "NTL_DISABLE_TLS_HACK\n";
+#ifdef NTL_TLS_HACK
+   cerr << "NTL_TLS_HACK\n";
 #endif
-
-#ifdef NTL_ENABLE_TLS_HACK
-   cerr << "NTL_ENABLE_TLS_HACK\n";
-#endif
-
 
 #ifdef NTL_EXCEPTIONS
    cerr << "NTL_EXCEPTIONS\n";
@@ -219,6 +217,14 @@ int main()
    cerr << "NTL_STD_CXX14\n";
 #endif
 
+#ifdef NTL_DISABLE_MOVE_ASSIGN
+   cout << "NTL_DISABLE_MOVE_ASSIGN\n";
+#endif
+
+#ifdef NTL_DISABLE_MOVE
+   cout << "NTL_DISABLE_MOVE\n";
+#endif
+
 
 
 #ifdef NTL_UNSIGNED_LONG_LONG_TYPE
@@ -249,6 +255,14 @@ int main()
 
 #ifdef NTL_SAFE_VECTORS
    cerr << "NTL_SAFE_VECTORS\n";
+#endif
+
+#ifdef NTL_ENABLE_AVX_FFT
+   cerr << "NTL_ENABLE_AVX_FFT\n";
+#endif
+
+#ifdef NTL_AVOID_AVX512
+   cerr << "NTL_AVOID_AVX512\n";
 #endif
 
 #ifdef NTL_RANGE_CHECK

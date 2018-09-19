@@ -2,7 +2,6 @@
 
 #include <NTL/ZZ_pE.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 

@@ -1,7 +1,3 @@
-
-
-#include <NTL/config.h>
-
 #include <cstdlib>
 #include <cstdio>
 

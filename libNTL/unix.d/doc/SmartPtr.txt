@@ -66,13 +66,16 @@ smart pointer to an object constructed as T(x1, ..., xn).  Besides notational
 convenience, it also reduces the number of memory allocations from 2 to 1, as
 the data and control block can be allocated in one chunck of memory.
 
-This is implemented without reliance on C++11 features, which means that there
-are limitations.  First, the number n of arguments is limited to 9.  And
-second, all arguments are pass by const reference. However, you can work around
-this by using the helper function Fwd.  For example, if T has a 2-argument
-constructor where the second must be a non-const reference of some type, and x2
-is a variable of that type, you can write MakeSmart<T>(x1, Fwd(x2)), to forward
-that reference through all the template nonsense in a typesafe manner.
+In C++11 mode, this is implemented using variadic templates and "perfect
+forwarding".  Otherwise, this is implemented using macros, and there are some
+limitations: first, the number n of arguments is limited to 9; second, all
+arguments are pass by const reference, but you can work around this by using
+the helper function Fwd.  For example, if T has a 2-argument constructor where
+the second must be a non-const reference of some type, and x2 is a variable of
+that type, you can write MakeSmart<T>(x1, Fwd(x2)), to forward that reference
+through in a typesafe manner.  Note that for compatibility, the Fwd function is
+also available in C++11 mode, so you can write code that will work in either
+mode.
 
 MakeRaw:
 
@@ -244,10 +247,11 @@ bool operator==(const SmartPtr<X>& a, const SmartPtr<Y>& b);
 template<class X, class Y>
 bool operator!=(const SmartPtr<X>& a, const SmartPtr<Y>& b);
 
-// MakeSmart psuedo-variadic template
-template<class T, class X1, ..., class Xn> 
-SmartPtr<T> MakeSmart(const X1& x1, ..., const Xn& xn);
-// EXCEPTIONS: may throw if dynamic constrction of T(x1, ..., xn) fails
+// MakeSmart variadic template
+template<class T, class... Args> 
+SmartPtr<T> MakeSmart(Args&&... args);
+// EXCEPTIONS: may throw an exception if constructor for T throws
+// or memory allocation fails
 
 
 // EXCEPTIONS: unless otherwise specified, the methods above
@@ -370,9 +374,10 @@ template<class X, class Y>
 bool operator!=(const CloneablePtr<X>& a, const CloneablePtr<Y>& b);
 
 // MakeCloneable psuedo-variadic template
-template<class T, class X1, ..., class Xn> 
-CloneablePtr<T> MakeCloneable(const X1& x1, ..., const Xn& xn);
-// EXCEPTIONS: may throw if dynamic constrction of T(x1, ..., xn) fails
+template<class T, class... Args> 
+CloneablePtr<T> MakeCloneable(Args&&... args);
+// EXCEPTIONS: may throw an exception if constructor for T throws
+// or memory allocation fails
 
 
 // EXCEPTIONS: unless otherwise specified, the methods above
@@ -473,10 +478,10 @@ public:
    // reset underlying pointer to p, destroying original referent
    // by calling P::deleter
 
-   template<class T, class X1, ..., class Xn> 
-   void make(const X1& x1, ..., const Xn& xn);
+   template<class T, class... Args>
+   void make(Args&&... args);
    // pseudo-variadic template, roughly equivalent to
-   // reset(new T(x1, ..., xn))
+   // reset(new T(std::forward<args> args...))
    // EXCEPTIONS: this may throw (but provides strong ES guarantee)
 
    T& operator*()  const;
@@ -597,10 +602,10 @@ public:
    // reset underlying pointer to p, destroying original referent
    // by calling P::deleter
 
-   template<class T, class X1, ..., class Xn> 
-   void make(const X1& x1, ..., const Xn& xn);
+   template<class T, class... Args> 
+   void make(Args&&... args);
    // pseudo-variadic template, roughly equivalent to
-   // reset(new T(x1, ..., xn))
+   // reset(new T(std::forward<args> args...))
    // EXCEPTIONS: this may throw (but provides strong ES guarantee)
 
    T& operator*()  const;
@@ -944,10 +949,10 @@ public:
    void reset(T* p = 0);
    // resets the referent
 
-   template<class T, class X1, ..., class Xn> 
-   void make(const X1& x1, ..., const Xn& xn);
+   template<class T, class... Args>
+   void make(Args&&... args);
    // pseudo-variadic template.
-   // resets the referent to a new object T(x1, ..., xn)
+   // resets the referent to a new object T(std::forward<Args> args...)
    // EXCEPTIONS: may throw an exception (but provides strong ES guarantee)
 
    T& val() const;

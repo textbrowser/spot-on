@@ -31,8 +31,8 @@ public:
 
    ~GF2XVec();
 
-   GF2XVec(GF2XVec&& other) noexcept;
-   GF2XVec& operator=(GF2XVec&& other) noexcept;
+   GF2XVec(GF2XVec&& other) noexcept; 
+   GF2XVec& operator=(GF2XVec&& other) noexcept; 
    
 
    GF2XVec(long n, long d);

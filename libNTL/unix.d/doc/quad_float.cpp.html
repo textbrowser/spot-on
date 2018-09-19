@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/junk6/ntl-10.4.0/doc/quad_float.cpp.html</title>
+<title>~/ntl-staging/ntl-11.0.0updated/doc/quad_float.cpp.html</title>
 <meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -222,14 +222,7 @@ quad_float random_quad_float();
 <span class="Comment">and ulp(y) means &quot;unit in the last place of y&quot;.  </span>
 
 <span class="Comment">For the software to work correctly, IEEE Standard Arithmetic is sufficient.  </span>
-<span class="Comment">That includes just about every modern computer; the only exception I'm</span>
-<span class="Comment">aware of is Intel x86 platforms running Linux (but you can still</span>
-<span class="Comment">use this platform--see below).</span>
-
-<span class="Comment">Also sufficient is any platform that implements arithmetic with correct </span>
-<span class="Comment">rounding, i.e., given double floating point numbers a and b, a op b </span>
-<span class="Comment">is computed exactly and then rounded to the nearest double.  </span>
-<span class="Comment">The tie-breaking rule is not important.</span>
+<span class="Comment">However, there are a couple subtle points (see below).</span>
 
 <span class="Comment">This is a rather weird representation;  although it gives one</span>
 <span class="Comment">essentially twice the precision of an ordinary double, it is</span>
@@ -245,67 +238,46 @@ quad_float random_quad_float();
 <span class="Comment">some care is taken to ensure that the ZZ to quad_float conversion routine</span>
 <span class="Comment">produces a non-finite value upon overflow.</span>
 
-<span class="Comment">THE INTEL x86/x87 PROBLEM</span>
 
-<span class="Comment">[The following discussion was written before the advent of SSE2 instructions,</span>
-<span class="Comment">back when all floating point on x86 was done using the x87 FPU instruction set</span>
-<span class="Comment">and registers.  By now, it is mostly of historical interest, as modern x86 CPUs</span>
-<span class="Comment">(since SSE2) use a new set of instructions and registers that avoid all of</span>
-<span class="Comment">these problems, and by default, it seems that all modern C++ compilers (by</span>
-<span class="Comment">default) avoid the x87 altogether.  However, there are new problems (see THE</span>
-<span class="Comment">FMA PROBLEM, below).]</span>
 
-<span class="Comment">Although just about every modern processor implements the IEEE floating point</span>
-<span class="Comment">standard, there still can be problems on processors that support IEEE extended</span>
-<span class="Comment">double precision.  The only processor I know of that supports this is the x86.</span>
+<span class="Comment">THE EXTENDED PRECISION PROBLEM</span>
 
-<span class="Comment">While extended double precision may sound like a nice thing, it is not.  Normal</span>
-<span class="Comment">double precision has 53 bits of precision.  Extended has 64.  On x86s, the FP</span>
-<span class="Comment">registers have 53 or 64 bits of precision---this can be set at run-time by</span>
-<span class="Comment">modifying the cpu &quot;control word&quot; (something that can be done only in assembly</span>
-<span class="Comment">code).  However, doubles stored in memory always have only 53 bits.  Compilers</span>
-<span class="Comment">may move values between memory and registers whenever they want, which can</span>
-<span class="Comment">effectively change the value of a floating point number even though at the</span>
-<span class="Comment">C/C++ level, nothing has happened that should have changed the value.  Is that</span>
-<span class="Comment">sick, or what?  Actually, the new C99 standard seems to outlaw such</span>
-<span class="Comment">&quot;spontaneous&quot; value changes; however, this behavior is not necessarily</span>
-<span class="Comment">universally implemented.</span>
+<span class="Comment">Some machines may compute intermediate floating point results in an extended</span>
+<span class="Comment">double precision format.  The only machines I know that do this are old</span>
+<span class="Comment">(pre-SSE) x86 machines that rely on the x87 coprocessor instruction set, so</span>
+<span class="Comment">this is mainly of historical interest these days.  On these old machines,</span>
+<span class="Comment">intermediate results are stored in the 80-bit x87 floating point registers.</span>
+<span class="Comment">These registers have 53 or 64 bits of precision---this can be set at run-time</span>
+<span class="Comment">by modifying the cpu &quot;control word&quot; (either in assembly or through special</span>
+<span class="Comment">compiler intrinsics).  If the preicsion is set to 64 bits, the quad_float</span>
+<span class="Comment">routines will produce incorrect results.</span>
 
-<span class="Comment">This is a real headache, and if one is not just a bit careful, the quad_float</span>
-<span class="Comment">code will break.  This breaking is not at all subtle, and the program QuadTest</span>
-<span class="Comment">will catch the problem if it exists.</span>
 
-<span class="Comment">You should not need to worry about any of this, because NTL automatically</span>
-<span class="Comment">detects and works around these problems as best it can, as described below.  It</span>
-<span class="Comment">shouldn't make a mistake, but if it does, you will catch it in the QuadTest</span>
-<span class="Comment">program.  If things don't work quite right, you might try setting NTL_FIX_X86</span>
-<span class="Comment">or NTL_NO_FIX_X86 flags in ntl_config.h, but this should not be necessary.</span>
+<span class="Comment">The best way to fix this problem is to set the precsion of the x87 registers to</span>
+<span class="Comment">53 at the beginning of program execution and to leave it.  This is what Windows</span>
+<span class="Comment">with MSVC++ does.  On Linux with gcc (and other compilers), however, this is</span>
+<span class="Comment">not the case: the precision of the registers is set to 64 bits.</span>
 
-<span class="Comment">Here are the details about how NTL fixes the problem.</span>
+<span class="Comment">To fix this problem, the build process for NTL automatically checks for</span>
+<span class="Comment">extended double preceision, and if detected, arranges for the quad_float</span>
+<span class="Comment">routines to locally set the precision to 53 bits on entry and back to 64 bits</span>
+<span class="Comment">on exit.  This only works with GCC and GCC-compatible compilers (including</span>
+<span class="Comment">CLANG and ICC) that support GCC's inline assembly syntax.  The configuration</span>
+<span class="Comment">flags  NTL_FIX_X86 or NTL_NO_FIX_X86 can be set to override NTL's default</span>
+<span class="Comment">behavior (but I've never really seen a need to use them).</span>
 
-<span class="Comment">The first and best way is to have the default setting of the control word be 53</span>
-<span class="Comment">bits.  However, you are at the mercy of your platform (compiler, OS, run-time</span>
-<span class="Comment">libraries).  Windows does this, and so the problem simply does not arise here,</span>
-<span class="Comment">and NTL neither detects nor fixes the problem.  Linux, however, does not do</span>
-<span class="Comment">this, which really sucks.  Can we talk these Linux people into changing this?</span>
-
-<span class="Comment">The second way to fix the problem is by having NTL fiddle with control word</span>
-<span class="Comment">itself.  If you compile NTL using a GNU compiler on an x86, this should happen</span>
-<span class="Comment">automatically.  On the one hand, this is not a general, portable solution,</span>
-<span class="Comment">since it will only work if you use a GNU compiler, or at least one that</span>
-<span class="Comment">supports GNU 'asm' syntax.  On the other hand, almost everybody who compiles</span>
-<span class="Comment">C++ on x86/Linux platforms uses GNU compilers (although there are some</span>
-<span class="Comment">commercial compilers out there that I don't know too much about).</span>
-
-<span class="Comment">The third way to fix the problem is to 'force' all intermediate floating point</span>
-<span class="Comment">results into memory.  This is not an 'ideal' fix, since it is not fully</span>
-<span class="Comment">equivalent to 53-bit precision (because of double rounding), but it works</span>
+<span class="Comment">If all else fails, NTL will revert to a strategy of  forcing all intermediate</span>
+<span class="Comment">floating point results into memory.  This is not an ideal fix, since it is not</span>
+<span class="Comment">fully equivalent to 53-bit precision (because of double rounding), but it works</span>
 <span class="Comment">(although to be honest, I've never seen a full proof of correctness in this</span>
 <span class="Comment">case).  NTL's quad_float code does this by storing intermediate results in</span>
 <span class="Comment">local variables declared to be 'volatile'.  This is the solution to the problem</span>
-<span class="Comment">that NTL uses if it detects the problem and can't fix it using the GNU 'asm'</span>
-<span class="Comment">hack mentioned above.  This solution should work on any platform that</span>
-<span class="Comment">faithfully implements 'volatile' according to the ANSI C standard.</span>
+<span class="Comment">that NTL uses if it detects the problem and can't fix it using the control word</span>
+<span class="Comment">hack mentioned above.  In fact, I've never seen a platform where this strategy</span>
+<span class="Comment">is required.</span>
+
+<span class="Comment">To reiterate: this is all mainly of historical interest, as the x87 coprocessor</span>
+<span class="Comment">is pretty much not used any more.</span>
 
 
 <span class="Comment">THE FMA PROBLEM</span>
@@ -315,34 +287,32 @@ quad_float random_quad_float();
 <span class="Comment">and more precise than performing this using two instructions and two roundings,</span>
 <span class="Comment">FMA instructions can break the logic of quad_float.  </span>
 
-<span class="Comment">To mitigate this problem, NTL tries to detect whether the compiler emits FMA</span>
-<span class="Comment">instructions when it builds the make_desc.h file. The macro NTL_FMA_DETECTED</span>
-<span class="Comment">gets set to 1 if it detects this to be the case. Based on the setting of this</span>
-<span class="Comment">macro, code in quad_float.cpp will strategically replace certain</span>
-<span class="Comment">multiplications a*b with a*b + z, where z is an external variable that will</span>
-<span class="Comment">always be zero (but hopefully the compiler will not figure this out).  It is a</span>
-<span class="Comment">bit of a hack, but it generally works.</span>
+<span class="Comment">To mitigate this problem, NTL's configuration script will attempt to detect the</span>
+<span class="Comment">existence of FMA's, and if detected, to supress them using a compiler flag.</span>
+<span class="Comment">Right now, NTL's configuration script only attempts to fix this problem for the</span>
+<span class="Comment">GCC, CLANG, and ICC compilers.  GCC,  this is done with the flag</span>
+<span class="Comment">-ffp-contract=off (or the flag -mno-fused-madd, which is obsolete in new</span>
+<span class="Comment">versions of GCC).  On CLANG, this is also done with the flag -ffp-contract=off,</span>
+<span class="Comment">although by default, CLANG will not emit FMA's, so this should not be</span>
+<span class="Comment">necessary.  On ICC, this is done by the fp_contract(off) pragma.  This is</span>
+<span class="Comment">accomplished by passing information through the make variable NOCONTRACT, which</span>
+<span class="Comment">is only used in the compilation of quad_float.cpp.</span>
+
 
 
 <span class="Comment">THE FLOATING POINT REASSOCIATION PROBLEM</span>
 
-<span class="Comment">The C++ standard says that compilers must issue instructions</span>
-<span class="Comment">that respect the grouping of floating point operations.</span>
-<span class="Comment">So the compiler is not allowed to compile (a+b)+c as a+(b+c).</span>
-<span class="Comment">Most compilers (at least by default) repect this rule.</span>
+<span class="Comment">The C++ standard says that compilers must issue instructions that respect the</span>
+<span class="Comment">grouping of floating point operations.  So the compiler is not allowed to</span>
+<span class="Comment">compile (a+b)+c as a+(b+c).  Most compilers repect this rule by default, but</span>
+<span class="Comment">some do not (such as Intel's ICC compiler).  The logic of quad_float relies</span>
+<span class="Comment">crucially on this rule.</span>
 
-<span class="Comment">One exception is the Intel icc compiler.  Because of this, the quad_float.cpp</span>
-<span class="Comment">file includes a pragma that will force the Intel compiler to respect the</span>
-<span class="Comment">standard.</span>
-
-<span class="Comment">Note that gcc respects this rule by default, unless you pass -ffast-math as a</span>
-<span class="Comment">compilation flag.  As long as quad_float.cpp is not compiled with this flag,</span>
-<span class="Comment">you should be OK.  The quad_float.cpp file contains a preprocessor check to</span>
-<span class="Comment">detect if it is compiled under gcc with -ffast-math, and if so, reports an</span>
-<span class="Comment">error.</span>
-
-<span class="Comment">This is the only file in NTL which requires this rule.  Also, it should be OK</span>
-<span class="Comment">to compile client code with -ffast-math, if that is desired.</span>
+<span class="Comment">In fact, NTL attempts to ensure that all of its source files get compiled with</span>
+<span class="Comment">this rule in force.  To this end, if the configuration script detects an ICC</span>
+<span class="Comment">compiler, it will pass the &quot;-fp-model precise&quot; flag through to the compiler</span>
+<span class="Comment">(via the CXXAUTOFLAGS make variable) when compiling *all* source files (not</span>
+<span class="Comment">just quad_float.cpp).</span>
 
 
 <span class="Comment">BACKGROUND INFO</span>

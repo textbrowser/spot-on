@@ -50,6 +50,7 @@ void touch_ldouble(long double* x);
 double sum_double(double *x, long n);
 
 double fma_test(double a, double b, double c);
+double reassoc_test(double a, double b, double c, double d);
 
 
 double power2(long k);
@@ -70,6 +71,27 @@ long FMADetected(long dp)
 
    double lo = fma_test(x, y, z);
    return lo != 0;
+}
+
+long ReassocDetected(long dp)
+{
+   double a =  power2(0) + power2(dp-1);
+   double b =  power2(0) - power2(dp-1);
+   double c =  power2(0) + power2(dp-1);
+   double d =  power2(0) + power2(dp-1);
+
+   touch_double(&a);
+   touch_double(&b);
+   touch_double(&c);
+   touch_double(&d);
+
+   double e = reassoc_test(a, b, c, d);
+   touch_double(&e);
+
+   double f = power2(dp+1);
+   touch_double(&f);
+
+   return e != f;
 }
 
 long DoubleRounding(long dp)
@@ -757,6 +779,7 @@ int main()
    long nb_bpl;
    long dp, dr;
    long fma_detected;
+   long reassoc_detected;
    long big_pointers;
    long ldp;
    FILE *f;
@@ -767,7 +790,7 @@ int main()
    size_t tval;
    long slval;
 
-   fprintf(stderr, "This is NTL version %s\n\n", NTL_VERSION);
+   fprintf(stderr, "This is NTL version %s\n", NTL_VERSION);
 
 
 
@@ -1020,6 +1043,12 @@ int main()
 
    fma_detected = FMADetected(dp);
 
+   /* 
+    * Next, we check if the platform may reassociate FP operations.
+    */ 
+
+   reassoc_detected = ReassocDetected(dp);
+
 
 
    /* 
@@ -1036,6 +1065,12 @@ int main()
    if (((long) val_ldouble(1.75)) != 1L) ldp = 0;
    if (((long) val_ldouble(-1.75)) != -1L) ldp = 0;
 
+
+   if (reassoc_detected) {
+      fprintf(stderr, "BAD NEWS: Floating point reassociation detected.\n");
+      fprintf(stderr, "Do not use -Ofast, -ffast-math.\n");
+      return 1;
+   }
 
    /*
     * Set nbits = min(bpl-2, dp-3) [and even]
@@ -1081,7 +1116,7 @@ int main()
     * That's it!  All tests have passed.
     */
 
-   fprintf(stderr, "GOOD NEWS: compatible machine.\n");
+   fprintf(stderr, "\n*** GOOD NEWS: compatible machine.\n");
    fprintf(stderr, "summary of machine characteristics:\n");
    fprintf(stderr, "bits per long = %ld\n", bpl);
    fprintf(stderr, "bits per int = %ld\n", bpi);
@@ -1101,7 +1136,7 @@ int main()
    if (dp != 53) {
       warnings = 1;
 
-      fprintf(stderr, "\n\nWARNING:\n\n"); 
+      fprintf(stderr, "\n*** WARNING :\n"); 
       fprintf(stderr, "Nonstandard floating point precision.\n");
       fprintf(stderr, "IEEE standard is 53 bits.\n"); 
    }
@@ -1111,7 +1146,7 @@ int main()
 
    warnings = 1;
 
-   fprintf(stderr, "\n\nWARNING:\n\n");
+   fprintf(stderr, "\n*** WARNING :\n");
    fprintf(stderr, "If this Sparc is a Sparc-10 or later (so it has\n");
    fprintf(stderr, "a hardware integer multiply instruction) you\n");
    fprintf(stderr, "should specify the -mv8 option in the makefile\n"); 
@@ -1121,7 +1156,7 @@ int main()
 
    if (dr && !GNUC_INTEL) {
       warnings = 1;
-      fprintf(stderr, "\n\nWARNING:\n\n");
+      fprintf(stderr, "\n*** WARNING :\n");
       fprintf(stderr, "This platform has extended double precision registers.\n");
       fprintf(stderr, "While that may sound like a good thing, it actually is not.\n");
       fprintf(stderr, "If this is a Pentium or other x86 and your compiler\n");
@@ -1147,6 +1182,18 @@ int main()
          fprintf(stderr, "then type 'make clobber' and then 'make'.\n\n\n");
          return 1;
       }
+   }
+
+#else
+
+   if (warnings) {
+      fprintf(stderr, "\n\n");
+      fprintf(stderr, "********************************************************\n");
+      fprintf(stderr, "********************************************************\n");
+      fprintf(stderr, "****         !!! SEE WARNINGS ABOVE !!!             ****\n");
+      fprintf(stderr, "********************************************************\n");
+      fprintf(stderr, "********************************************************\n");
+      fprintf(stderr, "\n\n");
    }
 
 #endif

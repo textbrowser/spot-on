@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/junk6/ntl-10.4.0/doc/LLL.cpp.html</title>
+<title>~/ntl-staging/ntl-11.0.0updated/doc/LLL.cpp.html</title>
 <meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -317,13 +317,13 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Comment">  dumped to a file.  The behavior can be controlled with these global</span>
 <span class="Comment">  variables:</span>
 
-<span class="Comment">     extern char *LLLDumpFile;  // file to dump basis, 0 =&gt; no dump; </span>
-<span class="Comment">                                // initially 0</span>
+<span class="Comment">     extern thread_local char *LLLDumpFile;  </span>
+<span class="Comment">     // file to dump basis, 0 =&gt; no dump; </span>
+<span class="Comment">     // initially 0</span>
 
-<span class="Comment">     extern double LLLStatusInterval; // seconds between status reports </span>
-<span class="Comment">                                      // initially 900s = 15min</span>
-
-
+<span class="Comment">     extern thread_local double LLLStatusInterval; </span>
+<span class="Comment">     // seconds between status reports </span>
+<span class="Comment">     // initially 900s = 15min</span>
 
 <span class="Comment"> </span>
 <span class="Comment">************* Calling Syntax for BKZ routines ***************</span>

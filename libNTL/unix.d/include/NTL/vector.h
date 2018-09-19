@@ -40,12 +40,6 @@ union _ntl_AlignedVectorHeader {
 #define NTL_VectorMinAlloc (4)
 #endif
 
-// vectors are always expanded by at least this ratio
-
-#ifndef NTL_VectorExpansionRatio
-#define NTL_VectorExpansionRatio (1.4)
-#endif
-
 // controls initialization during input
 
 #ifndef NTL_VectorInputBlock
@@ -113,23 +107,9 @@ void default_BlockConstructFromVec(T* p, long n, const T* q)
    guard.relax();
 }  
 
-template<class T>
-void BlockMoveConstructFromVec(T* p, long n, const T* q)  
-{  
-   long i;
-
-   NTL_SCOPE(guard) { default_BlockDestroy(p, i); };
-
-   for (i = 0; i < n; i++)  
-      (void) new(&p[i]) T(q[i]);  
-
-   guard.relax();
-}  
-
 
 template<class T>
 void BlockConstructFromVec(T* p, long n, const T* q) { default_BlockConstructFromVec(p, n, q); }
-
 
 
 
@@ -229,6 +209,7 @@ public:
 #ifdef NTL_SAFE_VECTORS
 
    static constexpr bool relocatable = DeclareRelocatableType((T*)0);
+   static constexpr bool copyable = Relocate_aux_has_any_copy((T*)0);
 
 #endif
 
@@ -262,7 +243,7 @@ public:
 
    Vec& operator=(const Vec& a);  
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    Vec(Vec&& a)  NTL_FAKE_NOEXCEPT
    {  
@@ -278,6 +259,7 @@ public:
       }
    }     
 
+#ifndef NTL_DISABLE_MOVE_ASSIGN
    Vec& operator=(Vec&& a)  NTL_FAKE_NOEXCEPT
    {
       if(fixed() || a.fixed()) {
@@ -291,7 +273,7 @@ public:
 
       return *this;
    }
-
+#endif
 
 #endif
 
@@ -471,6 +453,8 @@ private:
    void ReAllocate(long n, VecStrategy<false>);
    void InitMove(long n, T* src, std::true_type); 
    void InitMove(long n, T* src, std::false_type); 
+   void InitCopyMove(long n, T* src, std::true_type); 
+   void InitCopyMove(long n, T* src, std::false_type); 
 #endif
 
    template<class F>
@@ -580,11 +564,37 @@ void Vec<T>::InitMove(long n, T *src, std::true_type)
    AdjustMaxLength(n);
 }
 
+#if 0
 template<class T>
 void Vec<T>::InitMove(long n, T *src, std::false_type)
 {
    Init(n, src);
 }
+#else
+// This version throws a runtime error, rather than a compile-time
+// error, if no copy contructor is available.
+// This increases backward compatibility.
+
+template<class T>
+void Vec<T>::InitCopyMove(long n, T *src, std::true_type)
+{
+   Init(n, src);
+}
+
+template<class T>
+void Vec<T>::InitCopyMove(long n, T *src, std::false_type)
+{
+   LogicError("cannot re-allocate vector: no copy constructor for type");
+}
+
+template<class T>
+void Vec<T>::InitMove(long n, T *src, std::false_type)
+{
+   typedef std::integral_constant<bool, copyable> copy_it;
+   InitCopyMove(n, src, copy_it());
+}
+
+#endif
 
 
 template<class T>
@@ -652,7 +662,7 @@ void Vec<T>::AllocateTo(long n)
       NTL_VEC_HEAD(_vec__rep)->fixed = 0;  
    }  
    else if (n > NTL_VEC_HEAD(_vec__rep)->alloc) {  
-      m = max(n, long(NTL_VectorExpansionRatio*NTL_VEC_HEAD(_vec__rep)->alloc));  
+      m = max(n, _ntl_vec_grow(NTL_VEC_HEAD(_vec__rep)->alloc));  
       m = ((m+NTL_VectorMinAlloc-1)/NTL_VectorMinAlloc) * NTL_VectorMinAlloc; 
 
       ReAllocate(m, VecStrategy<NTL_RELOC_TAG>());

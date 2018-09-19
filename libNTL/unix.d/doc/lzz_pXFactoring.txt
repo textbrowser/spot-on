@@ -101,6 +101,9 @@ vec_pair_zz_pX_long CanZass(const zz_pX& f, long verbose=0);
 // returns a list of factors, with multiplicities.  f must be monic.
 // Calls SquareFreeDecomp and SFCanZass.
 
+// NOTE: In most situations, you should use the CanZass factoring
+// routine, rather than Berlekamp: it is faster and uses less space.
+
 
 void mul(zz_pX& f, const vec_pair_zz_pX_long& v);
 zz_pX mul(const vec_pair_zz_pX_long& v);

@@ -1,6 +1,5 @@
 #include <NTL/mat_poly_ZZ_p.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 

@@ -27,13 +27,7 @@
 #endif
 
 
-#if (defined(NTL_THREADS) && defined(__GNUC__) && !defined(NTL_DISABLE_TLS_HACK))
-#define NTL_TLS_HACK
-#endif
-
-
-
-#ifdef NTL_TLS_HACK
+#if (defined(NTL_THREADS) && defined(NTL_TLS_HACK)) 
 #include <pthread.h>
 #endif
 
@@ -254,30 +248,58 @@ inline void swap(long& a, long& b)  {  long t;  t = a; a = b; b = t; }
 inline void swap(int& a, int& b)  {  int t;  t = a; a = b; b = t; }
 
 
+// some convenience casting routines:
+
+inline unsigned long cast_unsigned(long a) { return (unsigned long) a; }
+inline unsigned int cast_unsigned(int a) { return (unsigned int) a; }
+
+
+// these routines respect the NTL_CLEAN_INT flag: if set,
+// they use code that is guaranteed to work, under the
+// assumption that signed integers are two's complement.
+// A good compiler should optimize it all away and generate
+// the same code in either case (tested on gcc, clang, icc, msvc++).
+// This is really an academic exercise...
+
+#ifdef NTL_CLEAN_INT
+
+inline long cast_signed(unsigned long a) 
+{ return NTL_ULONG_TO_LONG(a); }
+
+inline int cast_signed(unsigned int a) 
+{ return NTL_UINT_TO_INT(a); }
+
+#else
+
+inline long cast_signed(unsigned long a) { return long(a); }
+inline int cast_signed(unsigned int a) { return int(a); }
+
+#endif
+
 
 inline void conv(int& x, int a) { x = a; }
 inline void conv(int& x, long a) 
-   { unsigned y = (unsigned) a;  x = NTL_UINT_TO_INT(y); }
+   { unsigned y = (unsigned) a;  x = cast_signed(y); }
 inline void conv(int& x, float a) { x = int(NTL_SNS floor(double(a))); }
 inline void conv(int& x, double a) { x = int(NTL_SNS floor(a)); }
 
 inline void conv(int& x, unsigned a) 
-   { x = NTL_UINT_TO_INT(a); }
+   { x = cast_signed(a); }
 
 inline void conv(int& x, unsigned long a)
-   { unsigned y = (unsigned) a;  x = NTL_UINT_TO_INT(y); }
+   { unsigned y = (unsigned) a;  x = cast_signed(y); }
 
 inline int to_int(int a) { return a; }
 inline int to_int(long a) 
-   { unsigned y = (unsigned) a;  return NTL_UINT_TO_INT(y); }
+   { unsigned y = (unsigned) a;  return cast_signed(y); }
 inline int to_int(float a) { return int(NTL_SNS floor(double(a))); }
 inline int to_int(double a) { return int(NTL_SNS floor(a)); }
 
 inline int to_int(unsigned a) 
-   { return NTL_UINT_TO_INT(a); }
+   { return cast_signed(a); }
 
 inline int to_int(unsigned long a) 
-   { unsigned y = (unsigned) a;  return NTL_UINT_TO_INT(y); }
+   { unsigned y = (unsigned) a;  return cast_signed(y); }
 
 
 inline void conv(long& x, int a) { x = a; }
@@ -286,10 +308,10 @@ inline void conv(long& x, float a) { x = long(NTL_SNS floor(double(a))); }
 inline void conv(long& x, double a) { x = long(NTL_SNS floor(a)); }
 
 inline void conv(long& x, unsigned a)
-   { unsigned long y = a;  x = NTL_ULONG_TO_LONG(y); }
+   { unsigned long y = a;  x = cast_signed(y); }
 
 inline void conv(long& x, unsigned long a)
-   { x = NTL_ULONG_TO_LONG(a); }
+   { x = cast_signed(a); }
 
 inline long to_long(int a) { return a; }
 inline long to_long(long a) { return a; }
@@ -297,10 +319,10 @@ inline long to_long(float a) { return long(NTL_SNS floor(double(a))); }
 inline long to_long(double a) { return long(NTL_SNS floor(a)); }
 
 inline long to_long(unsigned a)
-   { unsigned long y = a;  return NTL_ULONG_TO_LONG(y); }
+   { unsigned long y = a;  return cast_signed(y); }
 
 inline long to_long(unsigned long a)
-   { return NTL_ULONG_TO_LONG(a); }
+   { return cast_signed(a); }
 
 inline void conv(float& x, int a) { x = float(a); }
 inline void conv(float& x, long a) { x = float(a); }
@@ -350,39 +372,6 @@ inline void conv(unsigned long& x, float a) { x = ((unsigned int) to_long(a)); }
 inline void conv(unsigned long& x, double a) { x = ((unsigned int) to_long(a)); }
 
 
-// some convenience casting routines:
-
-inline long cast_signed(unsigned long a) { return long(a); }
-inline int cast_signed(unsigned int a) { return int(a); }
-// DIRT: IMPL-DEF: the behavior here is implementation defined,
-// but on a 2s compliment machine, it should always work
-
-inline unsigned long cast_unsigned(long a) { return (unsigned long) a; }
-inline unsigned int cast_unsigned(int a) { return (unsigned int) a; }
-
-
-// these versions respect the NTL_CLEAN_INT flag: if set,
-// they use code that is guaranteed to work, under the
-// assumption that signed intgers are two's complement.
-// A good compiler should optimize it all away and generate
-// the same code in either case (tested on gcc, clang, icc).
-// This is really an academic exercise...
-
-#ifdef NTL_CLEAN_INT
-
-inline long clean_cast_signed(unsigned long a) 
-{ return NTL_ULONG_TO_LONG(a); }
-
-inline int clean_cast_signed(unsigned int a) 
-{ return NTL_UINT_TO_INT(a); }
-
-#else
-
-inline long clean_cast_signed(unsigned long a) { return long(a); }
-inline int clean_cast_signed(unsigned int a) { return int(a); }
-
-#endif
-
 
 
 
@@ -409,6 +398,8 @@ char IntValToChar(long a);
 
 inline double GetTime() { return _ntl_GetTime(); }
 inline unsigned long GetPID() { return _ntl_GetPID(); }
+
+inline double GetWallTime() { return _ntl_GetWallTime(); }
 
 inline long IsFinite(double *p) { return _ntl_IsFinite(p); }
 
@@ -442,13 +433,22 @@ void PrintTime(NTL_SNS ostream& s, double t);
 // on relative modern versions of gcc, we can 
 // decalare "restricted" pointers in C++
 
+// we also can use __attribute__((always_inline))
+
+
 #define NTL_RESTRICT __restrict
+#define NTL_ALWAYS_INLINE __attribute__((always_inline))
 
 #else
 
 #define NTL_RESTRICT
+#define NTL_ALWAYS_INLINE 
 
 #endif
+
+
+
+
 
 // A very lightly wrapped pointer than does nothing more than provide
 // auto cleanup in a destructor.  Use the UniquePtr class (in SmartPtr.h) 
@@ -640,7 +640,9 @@ public:
 
 
 
-#ifdef NTL_TLS_HACK
+#if (defined(NTL_THREADS) && defined(NTL_TLS_HACK)) 
+
+// NOTE: All of this TLS code is replicated in CheckThreads.cpp.
 
 
 namespace details_pthread {
@@ -816,6 +818,19 @@ ll_add(ll_type& x, unsigned long a)
    );
 }
 
+inline void
+ll_add(ll_type& x, const ll_type& a)
+{
+   __asm__ (
+   "addq %[alo],%[xlo] \n\t"
+   "adcq %[ahi],%[xhi]" :
+   [xhi] "+r" (x.hi), [xlo] "+r" (x.lo) :
+   [ahi] "rm" (a.hi), [alo] "rm" (a.lo) :
+   "cc"
+   );
+}
+
+
 
 
 // NOTE: an optimizing compiler will remove the conditional.
@@ -931,6 +946,13 @@ ll_add(ll_type& x, unsigned long a)
    x += a;
 }
 
+inline void
+ll_add(ll_type& x, const ll_type& a)
+{
+   x += a;
+}
+
+
 // NOTE: shamt must be in the range 0..NTL_BITS_PER_LONG-1
 template<long shamt>
 unsigned long
@@ -985,7 +1007,7 @@ ll_mul_hi(unsigned long a, unsigned long b)
 #define NTL_DECLARE_RELOCATABLE_WHEN(x) \
 constexpr bool DeclareRelocatableType x
 
-#if (defined(NTL_HAVE_COPY_TRAITS1))
+#if (defined(NTL_HAVE_COPY_TRAITS1) || defined(NTL_WINPACK))
 
 
 // This strategy is used on compilers that fully support C++11 type traits.
@@ -996,6 +1018,9 @@ constexpr bool DeclareRelocatableType x
 
 // This strategy is checked in the CheckCOPY_TRAITS1.cpp program.
 
+// We also use this strategy for the WINPACK distribution. 
+// It should work on Windows with any compiler that properly supports C++11
+
 
 template<class T>
 constexpr bool Relocate_aux_has_trivial_copy(T*)
@@ -1003,6 +1028,12 @@ constexpr bool Relocate_aux_has_trivial_copy(T*)
    return  std::is_trivially_copyable<T>::value &&
            std::is_trivially_destructible<T>::value &&
            std::is_copy_constructible<T>::value;
+}
+
+template<class T>
+constexpr bool Relocate_aux_has_any_copy(T*)
+{
+   return std::is_copy_constructible<T>::value;
 }
 
 #elif (defined(NTL_HAVE_COPY_TRAITS2))
@@ -1046,6 +1077,12 @@ constexpr bool Relocate_aux_has_trivial_copy(T*)
    return  __has_trivial_copy(T) &&
            __has_trivial_destructor(T) &&
            Relocate_aux_has_copy<T>::value;
+}
+
+template<class T>
+constexpr bool Relocate_aux_has_any_copy(T*)
+{
+   return Relocate_aux_has_copy<T>::value;
 }
 
 

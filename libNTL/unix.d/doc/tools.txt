@@ -25,7 +25,13 @@ Some useful tools that are used throughout NTL.
 
 
 double GetTime();
-// returns number of seconds of CPU time used by this process;
+// returns number of seconds of CPU time used by this process.
+
+double GetWallTime();
+// returns the "wall clock" time, measured since the beginning
+// of some unspecified epoch.  This is useful for measuring the
+// performance of multi-threaded code, since in this case,
+// GetTime does not return very useful information in that case.
 
 void PrintTime(ostream& s, double t);
 // prints the time t (in seconds) to s in the format
@@ -122,8 +128,8 @@ void swap(int& a, int& b);
 void TerminalError(const char *s);
 // print an error message and call abort
 
-extern void (*ErrorMsgCallback)(const char *);
-extern void (*ErrorCallback)();
+extern thread_local void (*ErrorMsgCallback)(const char *);
+extern thread_local void (*ErrorCallback)();
 // Pointers (initially NULL) to callback functions.
 // Upon encountering an unrecoverable error with an error
 // message s, the following happens:

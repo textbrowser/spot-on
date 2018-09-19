@@ -662,7 +662,6 @@ long InvModStatus(GF2EX& x, const GF2EX& a, const GF2EX& f);
 class GF2EXModulus {
 public:
    GF2EXModulus();
-   ~GF2EXModulus() { }
 
    GF2EXModulus(const GF2EX& ff);
 

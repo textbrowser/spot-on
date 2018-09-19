@@ -10,6 +10,31 @@ sh RemoveProg ZZTest
 
 echo
 echo "---------------------------------"
+echo "making SSMulTest"
+$MAKE_PROG SSMulTest
+echo "running SSMulTest"
+./SSMulTest
+sh RemoveProg SSMulTest
+
+
+echo
+echo "---------------------------------"
+echo "making ZZ_pXTest"
+$MAKE_PROG ZZ_pXTest
+echo "running ZZ_pXTest"
+./ZZ_pXTest
+sh RemoveProg ZZ_pXTest
+
+echo
+echo "---------------------------------"
+echo "making lzz_pXTest"
+$MAKE_PROG lzz_pXTest
+echo "running lzz_pXTest"
+./lzz_pXTest
+sh RemoveProg lzz_pXTest
+
+echo
+echo "---------------------------------"
 echo "making CanZassTest"
 $MAKE_PROG CanZassTest
 echo "running CanZassTest"
@@ -75,6 +100,14 @@ echo "running GF2EXTest"
 ./GF2EXTest
 sh RemoveProg GF2EXTest
 
+
+echo
+echo "---------------------------------"
+echo "making GF2EXGCDTest"
+$MAKE_PROG GF2EXGCDTest
+echo "running GF2EXGCDTest"
+./GF2EXGCDTest
+sh RemoveProg GF2EXGCDTest
 
 echo
 echo "---------------------------------"
@@ -189,6 +222,15 @@ echo "running ZZ_pEXTest"
 ./ZZ_pEXTest 
 sh RemoveProg ZZ_pEXTest
 
+echo
+echo "---------------------------------"
+echo "making ZZ_pEXGCDTest"
+$MAKE_PROG ZZ_pEXGCDTest
+echo "running ZZ_pEXGCDTest"
+./ZZ_pEXGCDTest 
+sh RemoveProg ZZ_pEXGCDTest
+
+
 
 echo
 echo "---------------------------------"
@@ -197,6 +239,15 @@ $MAKE_PROG lzz_pEXTest
 echo "running lzz_pEXTest"
 ./lzz_pEXTest 
 sh RemoveProg lzz_pEXTest
+
+
+echo
+echo "---------------------------------"
+echo "making lzz_pEXGCDTest"
+$MAKE_PROG lzz_pEXGCDTest
+echo "running lzz_pEXGCDTest"
+./lzz_pEXGCDTest 
+sh RemoveProg lzz_pEXGCDTest
 
 
 echo

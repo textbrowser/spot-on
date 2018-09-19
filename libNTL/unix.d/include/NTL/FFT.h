@@ -10,6 +10,8 @@
 
 NTL_OPEN_NNS
 
+#define NTL_PROVIDES_TRUNC_FFT
+
 #define NTL_FFTFudge (4)
 // This constant is used in selecting the correct
 // number of FFT primes for polynomial multiplication
@@ -36,21 +38,12 @@ NTL_OPEN_NNS
 
 
 
-class FFTVectorPair {
-public:
-   Vec<long> wtab_precomp;
-   Vec<mulmod_precon_t> wqinvtab_precomp;
+// PIPL pattern: FFTMulTabs defined in FFT.cpp
+class FFTMulTabs; 
+struct FFTMulTabsDeleterPolicy {
+   static void deleter(FFTMulTabs *p);
 };
 
-typedef LazyTable<FFTVectorPair, NTL_FFTMaxRoot+1> FFTMultipliers;
-
-
-class FFTMulTabs {
-public:
-
-   FFTMultipliers MulTab[2];
-
-};
 
 class zz_pInfoT; // forward reference, defined in lzz_p.h
 
@@ -77,11 +70,11 @@ struct FFTPrimeInfo {
    Vec<mulmod_precon_t> TwoInvPreconTable;
    // mulmod preconditioning data
 
-   UniquePtr< FFTMulTabs > bigtab;
+   UniquePtr< FFTMulTabs, FFTMulTabsDeleterPolicy > bigtab;
 
 };
 
-void InitFFTPrimeInfo(FFTPrimeInfo& info, long q, long w, bool bigtab);
+void InitFFTPrimeInfo(FFTPrimeInfo& info, long q, long w, long bigtab_index);
 
 
 #define NTL_MAX_FFTPRIMES (20000)
@@ -134,69 +127,114 @@ void UseFFTPrime(long index);
 // allocates and initializes information for FFT prime
 
 
-void FFT(long* A, const long* a, long k, const FFTPrimeInfo& info, long dir);
-// the low-level FFT routine.
-// computes a 2^k point FFT modulo q = info.q
-// dir == 0 => forward direction (using roots)
-// dir == 1 => backwards direction (using inverse roots)
+void new_fft(long* A, const long* a, long k, 
+             const FFTPrimeInfo& info, long yn, long xn);
+
+inline
+void new_fft(long* A, const long* a, long k, 
+             const FFTPrimeInfo& info)
+{ new_fft(A, a, k, info, 1L << k, 1L << k); }
 
 
+void new_ifft(long* A, const long* a, long k, 
+              const FFTPrimeInfo& info, long yn);
 
+inline
+void new_ifft(long* A, const long* a, long k, 
+              const FFTPrimeInfo& info)
+{ new_ifft(A, a, k, info, 1L << k); }
+
+
+void new_fft_flipped(long* A, const long* a, long k, 
+      const FFTPrimeInfo& info);
+
+void new_ifft_flipped(long* A, const long* a, long k, 
+      const FFTPrimeInfo& info);
 
 
 inline
 void FFTFwd(long* A, const long *a, long k, const FFTPrimeInfo& info)
-// Slightly higher level interface...using the ith FFT prime
 {
-   FFT(A, a, k, info, 0);
+   new_fft(A, a, k, info);
 }
 
+inline
+void FFTFwd_trunc(long* A, const long *a, long k, const FFTPrimeInfo& info,
+                  long yn, long xn)
+{
+   new_fft(A, a, k, info, yn, xn);
+}
+
+inline
+void FFTFwd_trans(long* A, const long *a, long k, const FFTPrimeInfo& info)
+{
+   new_ifft_flipped(A, a, k, info);
+}
 
 inline
 void FFTFwd(long* A, const long *a, long k, long i)
+// Slightly higher level interface...using the ith FFT prime
 {
    FFTFwd(A, a, k, *FFTTables[i]);
 }
 
 inline
-void FFTRev(long* A, const long *a, long k, const FFTPrimeInfo& info)
+void FFTFwd_trunc(long* A, const long *a, long k, long i, long yn, long xn)
 // Slightly higher level interface...using the ith FFT prime
 {
-   FFT(A, a, k, info, 1);
+   FFTFwd_trunc(A, a, k, *FFTTables[i], yn, xn);
 }
 
 inline
-void FFTRev(long* A, const long *a, long k, long i)
+void FFTFwd_trans(long* A, const long *a, long k, long i)
+// Slightly higher level interface...using the ith FFT prime
 {
-   FFTRev(A, a, k, *FFTTables[i]);
+   FFTFwd_trans(A, a, k, *FFTTables[i]);
 }
+
+
+
 
 inline
-void FFTMulTwoInv(long* A, const long *a, long k, const FFTPrimeInfo& info)
-{
-   VectorMulModPrecon(1L << k, A, a, info.TwoInvTable[k], info.q, 
-                      info.TwoInvPreconTable[k]);
-}
-
-inline
-void FFTMulTwoInv(long* A, const long *a, long k, long i)
-{
-   FFTMulTwoInv(A, a, k, *FFTTables[i]);
-}
-
-inline 
 void FFTRev1(long* A, const long *a, long k, const FFTPrimeInfo& info)
-// FFTRev + FFTMulTwoInv
 {
-   FFTRev(A, a, k, info);
-   FFTMulTwoInv(A, A, k, info);
+   new_ifft(A, a, k, info);
 }
 
-inline 
+inline
+void FFTRev1_trunc(long* A, const long *a, long k, const FFTPrimeInfo& info,
+                  long yn)
+{
+   new_ifft(A, a, k, info, yn);
+}
+
+inline
+void FFTRev1_trans(long* A, const long *a, long k, const FFTPrimeInfo& info)
+{
+   new_fft_flipped(A, a, k, info);
+}
+
+inline
 void FFTRev1(long* A, const long *a, long k, long i)
+// Slightly higher level interface...using the ith FFT prime
 {
    FFTRev1(A, a, k, *FFTTables[i]);
 }
+
+inline
+void FFTRev1_trunc(long* A, const long *a, long k, long i, long yn)
+// Slightly higher level interface...using the ith FFT prime
+{
+   FFTRev1_trunc(A, a, k, *FFTTables[i], yn);
+}
+
+inline
+void FFTRev1_trans(long* A, const long *a, long k, long i)
+// Slightly higher level interface...using the ith FFT prime
+{
+   FFTRev1_trans(A, a, k, *FFTTables[i]);
+}
+
 
 
 long IsFFTPrime(long n, long& w);

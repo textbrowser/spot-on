@@ -1,7 +1,6 @@
 
 #include <NTL/mat_RR.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 
@@ -104,7 +103,7 @@ void mul_aux(vec_RR& x, const mat_RR& A, const vec_RR& b)
   
 void mul(vec_RR& x, const mat_RR& A, const vec_RR& b)  
 {  
-   if (&b == &x || A.position1(x) != -1) {
+   if (&b == &x || A.alias(x)) {
       vec_RR tmp;
       mul_aux(tmp, A, b);
       x = tmp;

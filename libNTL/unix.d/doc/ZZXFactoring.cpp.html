@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/junk6/ntl-10.4.0/doc/ZZXFactoring.cpp.html</title>
+<title>~/ntl-staging/ntl-11.0.0updated/doc/ZZXFactoring.cpp.html</title>
 <meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -110,7 +110,7 @@ ZZX mul(<span class="Type">const</span> vec_pair_ZZX_long&amp; a);
 <span class="Comment">You can turn this &quot;power hack&quot; on/off by setting the following variable</span>
 <span class="Comment">to 1/0:</span>
 
-<span class="Comment">   extern long ZZXFac_PowerHack;  // initial value = 1</span>
+<span class="Comment">   extern thread_local long ZZXFac_PowerHack;  // initial value = 1</span>
 
 
 <span class="Comment">Third, the polynomial is factored modulo several</span>
@@ -118,7 +118,7 @@ ZZX mul(<span class="Type">const</span> vec_pair_ZZX_long&amp; a);
 <span class="Comment">You can choose the number of small primes that you want to use</span>
 <span class="Comment">by setting the following variable:</span>
 
-<span class="Comment">   extern long ZZXFac_InitNumPrimes;  // initial value = 7</span>
+<span class="Comment">   extern thread_local long ZZXFac_InitNumPrimes;  // initial value = 7</span>
 
 <span class="Comment">Fourth, The factorization mod p is &quot;lifted&quot; to a factorization mod p^k</span>
 <span class="Comment">for a sufficiently large k.  This is done via quadratic Hensel</span>
@@ -151,7 +151,7 @@ ZZX mul(<span class="Type">const</span> vec_pair_ZZX_long&amp; a);
 <span class="Comment">Set the following variable to 1 to enable the van Hoeij method,</span>
 <span class="Comment">and to 0 to revert to the Zassenhaus method:</span>
 
-<span class="Comment">   extern long ZZXFac_van_Hoeij; // initial value = 1</span>
+<span class="Comment">   extern thread_local long ZZXFac_van_Hoeij; // initial value = 1</span>
 
 <span class="Comment">Note that the &quot;power hack&quot; is still on by default when using van Hoeij's</span>
 <span class="Comment">method, but we have arranged things so that the &quot;power hack&quot; strategy </span>
@@ -176,7 +176,7 @@ ZZX mul(<span class="Type">const</span> vec_pair_ZZX_long&amp; a);
 <span class="Comment">The behaviour of these heuristics can be fine tuned by</span>
 <span class="Comment">setting the following global variables:</span>
 
-<span class="Comment">   extern long ZZXFac_MaxNumPrimes;  // initial value = 50</span>
+<span class="Comment">   extern thread_local long ZZXFac_MaxNumPrimes;  // initial value = 50</span>
 <span class="Comment">   // During the factor recombination phase, if not much progress</span>
 <span class="Comment">   // is being made, occasionally more &quot;local&quot; information is </span>
 <span class="Comment">   // collected by factoring f modulo another prime.</span>
@@ -185,7 +185,7 @@ ZZX mul(<span class="Type">const</span> vec_pair_ZZX_long&amp; a);
 <span class="Comment">   // This value bounds the total number of primes modulo which f </span>
 <span class="Comment">   // is factored.</span>
 
-<span class="Comment">   extern long ZZXFac_MaxPrune;  // initial value = 10</span>
+<span class="Comment">   extern thread_local long ZZXFac_MaxPrune;  // initial value = 10</span>
 <span class="Comment">   // A kind of &quot;meet in the middle&quot; strategy is used</span>
 <span class="Comment">   // to prune the search space during recombination.</span>
 <span class="Comment">   // For many (but not all) polynomials, this can greatly</span>

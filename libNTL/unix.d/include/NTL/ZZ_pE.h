@@ -19,7 +19,6 @@ private:
 public:
 
    ZZ_pEInfoT(const ZZ_pX&);
-   ~ZZ_pEInfoT() { }
 
    ZZ_pXModulus p;
 

@@ -1,7 +1,6 @@
 
 #include <NTL/lzz_p.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 
@@ -120,11 +119,11 @@ zz_pInfoT::zz_pInfoT(INIT_USER_FFT_TYPE, long q)
    p_info_owner.make();
    p_info = p_info_owner.get();
 
-   bool bigtab = false;
+   long bigtab_index = -1;
 #ifdef NTL_FFT_BIGTAB
-   bigtab = true;
+   bigtab_index = 0;
 #endif
-   InitFFTPrimeInfo(*p_info, q, w, bigtab); 
+   InitFFTPrimeInfo(*p_info, q, w, bigtab_index); 
 
    NumPrimes = 1;
    PrimeCnt = 0;

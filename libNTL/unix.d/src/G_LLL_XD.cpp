@@ -4,7 +4,6 @@
 #include <NTL/vec_xdouble.h>
 #include <NTL/vec_double.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 

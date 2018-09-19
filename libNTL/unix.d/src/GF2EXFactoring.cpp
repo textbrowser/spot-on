@@ -4,7 +4,6 @@
 #include <NTL/vec_GF2XVec.h>
 #include <NTL/fileio.h>
 #include <NTL/FacVec.h>
-#include <NTL/new.h>
 
 
 NTL_START_IMPL

@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/junk6/ntl-10.4.0/doc/SmartPtr.cpp.html</title>
+<title>~/ntl-staging/ntl-11.0.0updated/doc/SmartPtr.cpp.html</title>
 <meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -96,13 +96,16 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Comment">convenience, it also reduces the number of memory allocations from 2 to 1, as</span>
 <span class="Comment">the data and control block can be allocated in one chunck of memory.</span>
 
-<span class="Comment">This is implemented without reliance on C++11 features, which means that there</span>
-<span class="Comment">are limitations.  First, the number n of arguments is limited to 9.  And</span>
-<span class="Comment">second, all arguments are pass by const reference. However, you can work around</span>
-<span class="Comment">this by using the helper function Fwd.  For example, if T has a 2-argument</span>
-<span class="Comment">constructor where the second must be a non-const reference of some type, and x2</span>
-<span class="Comment">is a variable of that type, you can write MakeSmart&lt;T&gt;(x1, Fwd(x2)), to forward</span>
-<span class="Comment">that reference through all the template nonsense in a typesafe manner.</span>
+<span class="Comment">In C++11 mode, this is implemented using variadic templates and &quot;perfect</span>
+<span class="Comment">forwarding&quot;.  Otherwise, this is implemented using macros, and there are some</span>
+<span class="Comment">limitations: first, the number n of arguments is limited to 9; second, all</span>
+<span class="Comment">arguments are pass by const reference, but you can work around this by using</span>
+<span class="Comment">the helper function Fwd.  For example, if T has a 2-argument constructor where</span>
+<span class="Comment">the second must be a non-const reference of some type, and x2 is a variable of</span>
+<span class="Comment">that type, you can write MakeSmart&lt;T&gt;(x1, Fwd(x2)), to forward that reference</span>
+<span class="Comment">through in a typesafe manner.  Note that for compatibility, the Fwd function is</span>
+<span class="Comment">also available in C++11 mode, so you can write code that will work in either</span>
+<span class="Comment">mode.</span>
 
 <span class="Comment">MakeRaw:</span>
 
@@ -274,10 +277,11 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Type">template</span>&lt;<span class="Type">class</span> X, <span class="Type">class</span> Y&gt;
 <span class="Type">bool</span> <span class="Statement">operator</span>!=(<span class="Type">const</span> SmartPtr&lt;X&gt;&amp; a, <span class="Type">const</span> SmartPtr&lt;Y&gt;&amp; b);
 
-<span class="Comment">// MakeSmart psuedo-variadic template</span>
-<span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span> X1, ..., <span class="Type">class</span> Xn&gt;
-SmartPtr&lt;T&gt; MakeSmart(<span class="Type">const</span> X1&amp; x1, ..., <span class="Type">const</span> Xn&amp; xn);
-<span class="Comment">// EXCEPTIONS: may throw if dynamic constrction of T(x1, ..., xn) fails</span>
+<span class="Comment">// MakeSmart variadic template</span>
+<span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span>... Args&gt;
+SmartPtr&lt;T&gt; MakeSmart(Args&amp;&amp;... args);
+<span class="Comment">// EXCEPTIONS: may throw an exception if constructor for T throws</span>
+<span class="Comment">// or memory allocation fails</span>
 
 
 <span class="Comment">// EXCEPTIONS: unless otherwise specified, the methods above</span>
@@ -400,9 +404,10 @@ SmartPtr&lt;T&gt; MakeSmart(<span class="Type">const</span> X1&amp; x1, ..., <sp
 <span class="Type">bool</span> <span class="Statement">operator</span>!=(<span class="Type">const</span> CloneablePtr&lt;X&gt;&amp; a, <span class="Type">const</span> CloneablePtr&lt;Y&gt;&amp; b);
 
 <span class="Comment">// MakeCloneable psuedo-variadic template</span>
-<span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span> X1, ..., <span class="Type">class</span> Xn&gt;
-CloneablePtr&lt;T&gt; MakeCloneable(<span class="Type">const</span> X1&amp; x1, ..., <span class="Type">const</span> Xn&amp; xn);
-<span class="Comment">// EXCEPTIONS: may throw if dynamic constrction of T(x1, ..., xn) fails</span>
+<span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span>... Args&gt;
+CloneablePtr&lt;T&gt; MakeCloneable(Args&amp;&amp;... args);
+<span class="Comment">// EXCEPTIONS: may throw an exception if constructor for T throws</span>
+<span class="Comment">// or memory allocation fails</span>
 
 
 <span class="Comment">// EXCEPTIONS: unless otherwise specified, the methods above</span>
@@ -503,10 +508,10 @@ CloneablePtr&lt;T&gt; MakeCloneable(<span class="Type">const</span> X1&amp; x1, 
    <span class="Comment">// reset underlying pointer to p, destroying original referent</span>
    <span class="Comment">// by calling P::deleter</span>
 
-   <span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span> X1, ..., <span class="Type">class</span> Xn&gt;
-   <span class="Type">void</span> make(<span class="Type">const</span> X1&amp; x1, ..., <span class="Type">const</span> Xn&amp; xn);
+   <span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span>... Args&gt;
+   <span class="Type">void</span> make(Args&amp;&amp;... args);
    <span class="Comment">// pseudo-variadic template, roughly equivalent to</span>
-   <span class="Comment">// reset(new T(x1, ..., xn))</span>
+   <span class="Comment">// reset(new T(std::forward&lt;args&gt; args...))</span>
    <span class="Comment">// EXCEPTIONS: this may throw (but provides strong ES guarantee)</span>
 
    T&amp; <span class="Statement">operator</span>*()  <span class="Type">const</span>;
@@ -627,10 +632,10 @@ CloneablePtr&lt;T&gt; MakeCloneable(<span class="Type">const</span> X1&amp; x1, 
    <span class="Comment">// reset underlying pointer to p, destroying original referent</span>
    <span class="Comment">// by calling P::deleter</span>
 
-   <span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span> X1, ..., <span class="Type">class</span> Xn&gt;
-   <span class="Type">void</span> make(<span class="Type">const</span> X1&amp; x1, ..., <span class="Type">const</span> Xn&amp; xn);
+   <span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span>... Args&gt;
+   <span class="Type">void</span> make(Args&amp;&amp;... args);
    <span class="Comment">// pseudo-variadic template, roughly equivalent to</span>
-   <span class="Comment">// reset(new T(x1, ..., xn))</span>
+   <span class="Comment">// reset(new T(std::forward&lt;args&gt; args...))</span>
    <span class="Comment">// EXCEPTIONS: this may throw (but provides strong ES guarantee)</span>
 
    T&amp; <span class="Statement">operator</span>*()  <span class="Type">const</span>;
@@ -974,10 +979,10 @@ CloneablePtr&lt;T&gt; MakeCloneable(<span class="Type">const</span> X1&amp; x1, 
    <span class="Type">void</span> reset(T* p = <span class="Constant">0</span>);
    <span class="Comment">// resets the referent</span>
 
-   <span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span> X1, ..., <span class="Type">class</span> Xn&gt;
-   <span class="Type">void</span> make(<span class="Type">const</span> X1&amp; x1, ..., <span class="Type">const</span> Xn&amp; xn);
+   <span class="Type">template</span>&lt;<span class="Type">class</span> T, <span class="Type">class</span>... Args&gt;
+   <span class="Type">void</span> make(Args&amp;&amp;... args);
    <span class="Comment">// pseudo-variadic template.</span>
-   <span class="Comment">// resets the referent to a new object T(x1, ..., xn)</span>
+   <span class="Comment">// resets the referent to a new object T(std::forward&lt;Args&gt; args...)</span>
    <span class="Comment">// EXCEPTIONS: may throw an exception (but provides strong ES guarantee)</span>
 
    T&amp; val() <span class="Type">const</span>;

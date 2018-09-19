@@ -1,9 +1,678 @@
 
 #include <NTL/mat_lzz_pE.h>
-
-#include <NTL/new.h>
+#include <NTL/BasicThreadPool.h>
 
 NTL_START_IMPL
+
+
+
+
+// ==========================================
+
+
+
+
+#define PAR_THRESH (40000.0)
+
+static double
+zz_pE_SizeInWords()
+{
+   return deg(zz_pE::modulus());
+}
+
+
+static
+void mul_aux(Mat<zz_pE>& X, const Mat<zz_pE>& A, const Mat<zz_pE>& B)  
+{  
+   long n = A.NumRows();  
+   long l = A.NumCols();  
+   long m = B.NumCols();  
+  
+   if (l != B.NumRows())  
+      LogicError("matrix mul: dimension mismatch");  
+  
+   X.SetDims(n, m);  
+
+
+   zz_pContext zz_p_context;
+   zz_p_context.save();
+   zz_pEContext zz_pE_context;
+   zz_pE_context.save();
+   double sz = zz_pE_SizeInWords();
+
+   bool seq = (double(n)*double(l)*double(m)*sz*sz < PAR_THRESH);
+
+   NTL_GEXEC_RANGE(seq, m, first, last)
+   NTL_IMPORT(n)
+   NTL_IMPORT(l)
+   NTL_IMPORT(m)
+
+   zz_p_context.restore();
+   zz_pE_context.restore();
+
+   long i, j, k;  
+   zz_pX acc, tmp;  
+
+   Vec<zz_pE> B_col;
+   B_col.SetLength(l);
+
+   for (j = first; j < last; j++) {
+      for (k = 0; k < l; k++) B_col[k] = B[k][j];
+
+      for (i = 0; i < n; i++) {
+         clear(acc);
+         for (k = 0; k < l; k++) {
+            mul(tmp, rep(A[i][k]), rep(B_col[k]));
+            add(acc, acc, tmp);
+         }
+         conv(X[i][j], acc);
+      }
+   }
+
+   NTL_GEXEC_RANGE_END
+}  
+
+
+void mul(mat_zz_pE& X, const mat_zz_pE& A, const mat_zz_pE& B)  
+{  
+   if (&X == &A || &X == &B) {  
+      mat_zz_pE tmp;  
+      mul_aux(tmp, A, B);  
+      X = tmp;  
+   }  
+   else  
+      mul_aux(X, A, B);  
+}  
+  
+
+void inv(zz_pE& d, Mat<zz_pE>& X, const Mat<zz_pE>& A)
+{
+   long n = A.NumRows();
+
+   if (A.NumCols() != n)
+      LogicError("inv: nonsquare matrix");
+
+   if (n == 0) {
+      set(d);
+      X.SetDims(0, 0);
+      return;
+   }
+
+   const zz_pXModulus& G = zz_pE::modulus();
+
+   zz_pX t1, t2;
+   zz_pX pivot;
+   zz_pX pivot_inv;
+
+   Vec< Vec<zz_pX> > M;
+   // scratch space
+
+   M.SetLength(n);
+   for (long i = 0; i < n; i++) {
+      M[i].SetLength(n);
+      for (long j = 0; j < n; j++) {
+         M[i][j].SetMaxLength(2*deg(G)-1);
+         M[i][j] = rep(A[i][j]);
+      }
+   }
+
+   zz_pX det;
+   det = 1;
+
+
+   Vec<long> P;
+   P.SetLength(n);
+   for (long k = 0; k < n; k++) P[k] = k;
+   // records swap operations
+   
+
+   zz_pContext zz_p_context;
+   zz_p_context.save();
+   double sz = zz_pE_SizeInWords();
+
+   bool seq = double(n)*double(n)*sz*sz < PAR_THRESH;
+
+   bool pivoting = false;
+
+   for (long k = 0; k < n; k++) {
+
+      long pos = -1;
+
+      for (long i = k; i < n; i++) {
+         rem(pivot, M[i][k], G);
+         if (pivot != 0) {
+            InvMod(pivot_inv, pivot, G);
+            pos = i;
+            break;
+         }
+      }
+
+      if (pos != -1) {
+         if (k != pos) {
+            swap(M[pos], M[k]);
+            negate(det, det); 
+            P[k] = pos;
+            pivoting = true;
+         }
+
+         MulMod(det, det, pivot, G);
+
+         {
+            // multiply row k by pivot_inv
+            zz_pX *y = &M[k][0];
+            for (long j = 0; j < n; j++) {
+               rem(t2, y[j], G);
+               MulMod(y[j], t2, pivot_inv, G);
+            }
+            y[k] = pivot_inv;
+         }
+
+
+         NTL_GEXEC_RANGE(seq, n, first, last)  
+         NTL_IMPORT(n)
+         NTL_IMPORT(k)
+
+         zz_p_context.restore();
+
+         zz_pX *y = &M[k][0]; 
+         zz_pX t1, t2;
+
+         for (long i = first; i < last; i++) {
+            if (i == k) continue; // skip row k
+
+            zz_pX *x = &M[i][0]; 
+            rem(t1, x[k], G);
+            negate(t1, t1); 
+            x[k] = 0;
+            if (t1 == 0) continue;
+
+            // add t1 * row k to row i
+            for (long j = 0; j < n; j++) {
+               mul(t2, y[j], t1);
+               add(x[j], x[j], t2);
+            }
+         }
+         NTL_GEXEC_RANGE_END
+      }
+      else {
+         clear(d);
+         return;
+      }
+   }
+
+   if (pivoting) {
+      // pivot colums, using reverse swap sequence
+
+      for (long i = 0; i < n; i++) {
+         zz_pX *x = &M[i][0]; 
+
+         for (long k = n-1; k >= 0; k--) {
+            long pos = P[k];
+            if (pos != k) swap(x[pos], x[k]);
+         }
+      }
+   }
+
+   X.SetDims(n, n);
+   for (long i = 0; i < n; i++)
+      for (long j = 0; j < n; j++)
+         conv(X[i][j], M[i][j]);
+
+   conv(d, det);
+}
+
+static
+void solve_impl(zz_pE& d, Vec<zz_pE>& X, 
+                const Mat<zz_pE>& A, const Vec<zz_pE>& b, bool trans)
+
+{
+   long n = A.NumRows();
+   if (A.NumCols() != n)
+      LogicError("solve: nonsquare matrix");
+
+   if (b.length() != n)
+      LogicError("solve: dimension mismatch");
+
+   if (n == 0) {
+      set(d);
+      X.SetLength(0);
+      return;
+   }
+
+   zz_pX t1, t2;
+
+   const zz_pXModulus& G = zz_pE::modulus();
+
+   Vec< Vec<zz_pX> > M;
+
+   M.SetLength(n);
+
+   for (long i = 0; i < n; i++) {
+      M[i].SetLength(n+1);
+      for (long j = 0; j < n; j++) M[i][j].SetMaxLength(2*deg(G)-1);
+
+      if (trans) 
+         for (long j = 0; j < n; j++) M[i][j] = rep(A[j][i]);
+      else
+         for (long j = 0; j < n; j++) M[i][j] = rep(A[i][j]);
+
+      M[i][n] = rep(b[i]);
+   }
+
+   zz_pX det;
+   set(det);
+
+   zz_pContext zz_p_context;
+   zz_p_context.save();
+   double sz = zz_pE_SizeInWords();
+
+   for (long k = 0; k < n; k++) {
+      long pos = -1;
+      for (long i = k; i < n; i++) {
+         rem(t1, M[i][k], G);
+         M[i][k] = t1;
+         if (pos == -1 && !IsZero(t1)) {
+            pos = i;
+         }
+      }
+
+      if (pos != -1) {
+         if (k != pos) {
+            swap(M[pos], M[k]);
+            negate(det, det); 
+         }
+
+         MulMod(det, det, M[k][k], G);
+
+         // make M[k, k] == -1 mod G, and make row k reduced
+
+         InvMod(t1, M[k][k], G);
+         negate(t1, t1); 
+         for (long j = k+1; j <= n; j++) {
+            rem(t2, M[k][j], G);
+            MulMod(M[k][j], t2, t1, G);
+         }
+
+         bool seq =
+            double(n-(k+1))*(n-(k+1))*sz*sz < PAR_THRESH;
+
+         NTL_GEXEC_RANGE(seq, n-(k+1), first, last)
+         NTL_IMPORT(n)
+         NTL_IMPORT(k)
+
+         zz_p_context.restore();
+
+         zz_pX t1, t2;
+
+         for (long ii = first; ii < last; ii++) {
+            long i = ii + k+1;
+
+            // M[i] = M[i] + M[k]*M[i,k]
+
+            t1 = M[i][k];   // this is already reduced
+
+            zz_pX *x = M[i].elts() + (k+1);
+            zz_pX *y = M[k].elts() + (k+1);
+
+            for (long j = k+1; j <= n; j++, x++, y++) {
+               // *x = *x + (*y)*t1
+
+               mul(t2, *y, t1);
+               add(*x, *x, t2);
+            }
+         }
+
+         NTL_GEXEC_RANGE_END
+
+      }
+      else {
+         clear(d);
+         return;
+      }
+   }
+
+   X.SetLength(n);
+   for (long i = n-1; i >= 0; i--) {
+      clear(t1);
+      for (long j = i+1; j < n; j++) {
+         mul(t2, rep(X[j]), M[i][j]);
+         add(t1, t1, t2);
+      }
+      sub(t1, t1, M[i][n]);
+      conv(X[i], t1);
+   }
+
+   conv(d, det);
+}
+
+
+void solve(zz_pE& d, Vec<zz_pE>& x, 
+               const Mat<zz_pE>& A, const Vec<zz_pE>& b)
+{
+   solve_impl(d, x, A, b, true);
+}
+
+void solve(zz_pE& d, const Mat<zz_pE>& A, 
+               Vec<zz_pE>& x, const Vec<zz_pE>& b)
+{
+   solve_impl(d, x, A, b, false);
+}
+
+
+
+long gauss(Mat<zz_pE>& M_in, long w)
+{
+   zz_pX t1, t2;
+   zz_pX piv;
+
+   long n = M_in.NumRows();
+   long m = M_in.NumCols();
+
+   if (w < 0 || w > m)
+      LogicError("gauss: bad args");
+
+   const zz_pXModulus& G = zz_pE::modulus();
+
+   Vec< Vec<zz_pX> > M;
+
+   M.SetLength(n);
+   for (long i = 0; i < n; i++) {
+      M[i].SetLength(m);
+      for (long j = 0; j < m; j++) {
+         M[i][j].SetLength(2*deg(G)-1);
+         M[i][j] = rep(M_in[i][j]);
+      }
+   }
+
+   zz_pContext zz_p_context;
+   zz_p_context.save();
+   double sz = zz_pE_SizeInWords();
+
+   long l = 0;
+   for (long k = 0; k < w && l < n; k++) {
+
+      long pos = -1;
+      for (long i = l; i < n; i++) {
+         rem(t1, M[i][k], G);
+         M[i][k] = t1;
+         if (pos == -1 && !IsZero(t1)) {
+            pos = i;
+         }
+      }
+
+      if (pos != -1) {
+         swap(M[pos], M[l]);
+
+         InvMod(piv, M[l][k], G);
+         negate(piv, piv);
+
+         for (long j = k+1; j < m; j++) {
+            rem(M[l][j], M[l][j], G);
+         }
+
+         bool seq =
+            double(n-(l+1))*double(m-(k+1))*sz*sz < PAR_THRESH;
+
+         NTL_GEXEC_RANGE(seq, n-(l+1), first, last)
+         NTL_IMPORT(m)
+         NTL_IMPORT(k)
+         NTL_IMPORT(l)
+
+         zz_p_context.restore();
+
+         zz_pX t1, t2;
+
+
+         for (long ii = first; ii < last; ii++) {
+            long i = ii + l+1;
+
+            // M[i] = M[i] + M[l]*M[i,k]*piv
+
+            MulMod(t1, M[i][k], piv, G);
+
+            clear(M[i][k]);
+
+            zz_pX *x = M[i].elts() + (k+1);
+            zz_pX *y = M[l].elts() + (k+1);
+
+            for (long j = k+1; j < m; j++, x++, y++) {
+               // *x = *x + (*y)*t1
+
+               mul(t2, *y, t1);
+               add(t2, t2, *x);
+               *x = t2;
+            }
+         }
+
+         NTL_GEXEC_RANGE_END
+
+         l++;
+      }
+   }
+   
+   for (long i = 0; i < n; i++)
+      for (long j = 0; j < m; j++)
+         conv(M_in[i][j], M[i][j]);
+
+   return l;
+}
+
+
+long gauss(Mat<zz_pE>& M)
+{
+   return gauss(M, M.NumCols());
+}
+
+void image(Mat<zz_pE>& X, const Mat<zz_pE>& A)
+{
+   Mat<zz_pE> M;
+   M = A;
+   long r = gauss(M);
+   M.SetDims(r, M.NumCols());
+   X = M;
+}
+
+
+
+void kernel(Mat<zz_pE>& X, const Mat<zz_pE>& A)
+{
+   long m = A.NumRows();
+   long n = A.NumCols();
+
+   const zz_pXModulus& G = zz_pE::modulus();
+
+   Mat<zz_pE> M;
+
+   transpose(M, A);
+   long r = gauss(M);
+
+   if (r == 0) {
+      ident(X, m);
+      return;
+   }
+
+   X.SetDims(m-r, m);
+
+   if (m-r == 0 || m == 0) return;
+
+
+   Vec<long> D;
+   D.SetLength(m);
+   for (long j = 0; j < m; j++) D[j] = -1;
+
+   Vec<zz_pE> inverses;
+   inverses.SetLength(m);
+
+   for (long i = 0, j = -1; i < r; i++) {
+      do {
+         j++;
+      } while (IsZero(M[i][j]));
+
+      D[j] = i;
+      inv(inverses[j], M[i][j]); 
+   }
+
+   zz_pEContext zz_pE_context;
+   zz_pE_context.save();
+   zz_pContext zz_p_context;
+   zz_p_context.save();
+   double sz = zz_pE_SizeInWords();
+
+   bool seq = 
+      double(m-r)*double(r)*double(r)*sz*sz < PAR_THRESH;
+
+   NTL_GEXEC_RANGE(seq, m-r, first, last)
+   NTL_IMPORT(m)
+   NTL_IMPORT(r)
+
+   zz_p_context.restore();
+   zz_pE_context.restore();
+
+   zz_pX t1, t2;
+   zz_pE T3;
+
+   for (long k = first; k < last; k++) {
+      Vec<zz_pE>& v = X[k];
+      long pos = 0;
+      for (long j = m-1; j >= 0; j--) {
+         if (D[j] == -1) {
+            if (pos == k)
+               set(v[j]);
+            else
+               clear(v[j]);
+            pos++;
+         }
+         else {
+            long i = D[j];
+
+            clear(t1);
+
+            for (long s = j+1; s < m; s++) {
+               mul(t2, rep(v[s]), rep(M[i][s]));
+               add(t1, t1, t2);
+            }
+
+            conv(T3, t1);
+            mul(T3, T3, inverses[j]);
+            negate(v[j], T3); 
+         }
+      }
+   }
+
+   NTL_GEXEC_RANGE_END
+}
+
+
+
+
+
+void determinant(zz_pE& d, const Mat<zz_pE>& M_in)
+{
+   zz_pX t1, t2;
+
+   const zz_pXModulus& G = zz_pE::modulus();
+
+   long n = M_in.NumRows();
+
+   if (M_in.NumCols() != n)
+      LogicError("determinant: nonsquare matrix");
+
+   if (n == 0) {
+      set(d);
+      return;
+   }
+
+   Vec< Vec<zz_pX> > M;
+
+   M.SetLength(n);
+   for (long i = 0; i < n; i++) {
+      M[i].SetLength(n);
+      for (long j = 0; j < n; j++) { 
+         M[i][j].SetMaxLength(2*deg(G)-1);
+         M[i][j] = rep(M_in[i][j]);
+      }
+   }
+
+   zz_pX det;
+   set(det);
+
+   zz_pContext zz_p_context;
+   zz_p_context.save();
+   double sz = zz_pE_SizeInWords();
+
+   for (long k = 0; k < n; k++) {
+      long pos = -1;
+      for (long i = k; i < n; i++) {
+         rem(t1, M[i][k], G);
+         M[i][k] = t1;
+         if (pos == -1 && !IsZero(t1))
+            pos = i;
+      }
+
+      if (pos != -1) {
+         if (k != pos) {
+            swap(M[pos], M[k]);
+            negate(det, det);
+         }
+
+         MulMod(det, det, M[k][k], G);
+
+         // make M[k, k] == -1 mod G, and make row k reduced
+
+         InvMod(t1, M[k][k], G);
+         negate(t1, t1);
+         for (long j = k+1; j < n; j++) {
+            rem(t2, M[k][j], G);
+            MulMod(M[k][j], t2, t1, G);
+         }
+
+
+         bool seq =
+            double(n-(k+1))*(n-(k+1))*sz*sz < PAR_THRESH;
+
+         NTL_GEXEC_RANGE(seq, n-(k+1), first, last)
+         NTL_IMPORT(n)
+         NTL_IMPORT(k)
+
+         zz_p_context.restore();
+
+         zz_pX t1, t2;
+
+         for (long ii = first; ii < last; ii++) {
+            long i = ii + k+1;
+
+            // M[i] = M[i] + M[k]*M[i,k]
+
+            t1 = M[i][k];   // this is already reduced
+
+            zz_pX *x = M[i].elts() + (k+1);
+            zz_pX *y = M[k].elts() + (k+1);
+
+            for (long j = k+1; j < n; j++, x++, y++) {
+               // *x = *x + (*y)*t1
+
+               mul(t2, *y, t1);
+               add(*x, *x, t2);
+            }
+         }
+
+         NTL_GEXEC_RANGE_END
+
+      }
+      else {
+         clear(d);
+         return;
+      }
+   }
+
+   conv(d, det);
+}
+
+
+// ==========================================
+
+
+
 
   
 void add(mat_zz_pE& X, const mat_zz_pE& A, const mat_zz_pE& B)  
@@ -51,45 +720,8 @@ void negate(mat_zz_pE& X, const mat_zz_pE& A)
       for (j = 1; j <= m; j++)  
          negate(X(i,j), A(i,j));  
 }  
-  
-void mul_aux(mat_zz_pE& X, const mat_zz_pE& A, const mat_zz_pE& B)  
-{  
-   long n = A.NumRows();  
-   long l = A.NumCols();  
-   long m = B.NumCols();  
-  
-   if (l != B.NumRows())  
-      LogicError("matrix mul: dimension mismatch");  
-  
-   X.SetDims(n, m);  
-  
-   long i, j, k;  
-   zz_pX acc, tmp;  
-  
-   for (i = 1; i <= n; i++) {  
-      for (j = 1; j <= m; j++) {  
-         clear(acc);  
-         for(k = 1; k <= l; k++) {  
-            mul(tmp, rep(A(i,k)), rep(B(k,j)));  
-            add(acc, acc, tmp);  
-         }  
-         conv(X(i,j), acc);  
-      }  
-   }  
-}  
-  
-  
-void mul(mat_zz_pE& X, const mat_zz_pE& A, const mat_zz_pE& B)  
-{  
-   if (&X == &A || &X == &B) {  
-      mat_zz_pE tmp;  
-      mul_aux(tmp, A, B);  
-      X = tmp;  
-   }  
-   else  
-      mul_aux(X, A, B);  
-}  
-  
+
+
   
 static
 void mul_aux(vec_zz_pE& x, const mat_zz_pE& A, const vec_zz_pE& b)  
@@ -118,7 +750,7 @@ void mul_aux(vec_zz_pE& x, const mat_zz_pE& A, const vec_zz_pE& b)
   
 void mul(vec_zz_pE& x, const mat_zz_pE& A, const vec_zz_pE& b)  
 {  
-   if (&b == &x || A.position1(x) != -1) {
+   if (&b == &x || A.alias(x)) {
       vec_zz_pE tmp;
       mul_aux(tmp, A, b);
       x = tmp;
@@ -179,92 +811,6 @@ void ident(mat_zz_pE& X, long n)
 } 
 
 
-void determinant(zz_pE& d, const mat_zz_pE& M_in)
-{
-   long k, n;
-   long i, j;
-   long pos;
-   zz_pX t1, t2;
-   zz_pX *x, *y;
-
-   const zz_pXModulus& p = zz_pE::modulus();
-
-   n = M_in.NumRows();
-
-   if (M_in.NumCols() != n)
-      LogicError("determinant: nonsquare matrix");
-
-   if (n == 0) {
-      set(d);
-      return;
-   }
-
-
-   UniqueArray<vec_zz_pX> M_store;
-   M_store.SetLength(n);
-   vec_zz_pX *M = M_store.get();
-
-   for (i = 0; i < n; i++) {
-      M[i].SetLength(n);
-      for (j = 0; j < n; j++) {
-         M[i][j].rep.SetMaxLength(2*deg(p)-1);
-         M[i][j] = rep(M_in[i][j]);
-      }
-   }
-
-   zz_pX det;
-   set(det);
-
-   for (k = 0; k < n; k++) {
-      pos = -1;
-      for (i = k; i < n; i++) {
-         rem(t1, M[i][k], p);
-         M[i][k] = t1;
-         if (pos == -1 && !IsZero(t1))
-            pos = i;
-      }
-
-      if (pos != -1) {
-         if (k != pos) {
-            swap(M[pos], M[k]);
-            negate(det, det);
-         }
-
-         MulMod(det, det, M[k][k], p);
-
-         // make M[k, k] == -1 mod p, and make row k reduced
-
-         InvMod(t1, M[k][k], p);
-         negate(t1, t1);
-         for (j = k+1; j < n; j++) {
-            rem(t2, M[k][j], p);
-            MulMod(M[k][j], t2, t1, p);
-         }
-
-         for (i = k+1; i < n; i++) {
-            // M[i] = M[i] + M[k]*M[i,k]
-
-            t1 = M[i][k];   // this is already reduced
-
-            x = M[i].elts() + (k+1);
-            y = M[k].elts() + (k+1);
-
-            for (j = k+1; j < n; j++, x++, y++) {
-               // *x = *x + (*y)*t1
-
-               mul(t2, *y, t1);
-               add(*x, *x, t2);
-            }
-         }
-      }
-      else {
-         clear(d);
-         return;
-      }
-   }
-
-   conv(d, det);
-}
 
 long IsIdent(const mat_zz_pE& A, long n)
 {
@@ -317,390 +863,6 @@ void transpose(mat_zz_pE& X, const mat_zz_pE& A)
 }
    
 
-static
-void solve_impl(zz_pE& d, vec_zz_pE& X, const mat_zz_pE& A, const vec_zz_pE& b, bool trans)
-
-{
-   long n = A.NumRows();
-   if (A.NumCols() != n)
-      LogicError("solve: nonsquare matrix");
-
-   if (b.length() != n)
-      LogicError("solve: dimension mismatch");
-
-   if (n == 0) {
-      set(d);
-      X.SetLength(0);
-      return;
-   }
-
-   long i, j, k, pos;
-   zz_pX t1, t2;
-   zz_pX *x, *y;
-
-   const zz_pXModulus& p = zz_pE::modulus();
-
-
-   UniqueArray<vec_zz_pX> M_store;
-   M_store.SetLength(n);
-   vec_zz_pX *M = M_store.get();
-
-   for (i = 0; i < n; i++) {
-      M[i].SetLength(n+1);
-      if (trans) {
-	 for (j = 0; j < n; j++) {
-	    M[i][j].rep.SetMaxLength(2*deg(p)-1);
-	    M[i][j] = rep(A[j][i]);
-	 }
-      }
-      else {
-	 for (j = 0; j < n; j++) {
-	    M[i][j].rep.SetMaxLength(2*deg(p)-1);
-	    M[i][j] = rep(A[i][j]);
-	 }
-      }
-      M[i][n].rep.SetMaxLength(2*deg(p)-1);
-      M[i][n] = rep(b[i]);
-   }
-
-   zz_pX det;
-   set(det);
-
-   for (k = 0; k < n; k++) {
-      pos = -1;
-      for (i = k; i < n; i++) {
-         rem(t1, M[i][k], p);
-         M[i][k] = t1;
-         if (pos == -1 && !IsZero(t1)) {
-            pos = i;
-         }
-      }
-
-      if (pos != -1) {
-         if (k != pos) {
-            swap(M[pos], M[k]);
-            negate(det, det);
-         }
-
-         MulMod(det, det, M[k][k], p);
-
-         // make M[k, k] == -1 mod p, and make row k reduced
-
-         InvMod(t1, M[k][k], p);
-         negate(t1, t1);
-         for (j = k+1; j <= n; j++) {
-            rem(t2, M[k][j], p);
-            MulMod(M[k][j], t2, t1, p);
-         }
-
-         for (i = k+1; i < n; i++) {
-            // M[i] = M[i] + M[k]*M[i,k]
-
-            t1 = M[i][k];   // this is already reduced
-
-            x = M[i].elts() + (k+1);
-            y = M[k].elts() + (k+1);
-
-            for (j = k+1; j <= n; j++, x++, y++) {
-               // *x = *x + (*y)*t1
-
-               mul(t2, *y, t1);
-               add(*x, *x, t2);
-            }
-         }
-      }
-      else {
-         clear(d);
-         return;
-      }
-   }
-
-   X.SetLength(n);
-   for (i = n-1; i >= 0; i--) {
-      clear(t1);
-      for (j = i+1; j < n; j++) {
-         mul(t2, rep(X[j]), M[i][j]);
-         add(t1, t1, t2);
-      }
-      sub(t1, t1, M[i][n]);
-      conv(X[i], t1);
-   }
-
-   conv(d, det);
-}
-
-void solve(zz_pE& d, vec_zz_pE& x, const mat_zz_pE& A, const vec_zz_pE& b)
-{
-   solve_impl(d, x, A, b, true);
-}
-
-void solve(zz_pE& d, const mat_zz_pE& A, vec_zz_pE& x,  const vec_zz_pE& b)
-{
-   solve_impl(d, x, A, b, false);
-}
-
-void inv(zz_pE& d, mat_zz_pE& X, const mat_zz_pE& A)
-{
-   long n = A.NumRows();
-   if (A.NumCols() != n)
-      LogicError("inv: nonsquare matrix");
-
-   if (n == 0) {
-      set(d);
-      X.SetDims(0, 0);
-      return;
-   }
-
-   long i, j, k, pos;
-   zz_pX t1, t2;
-   zz_pX *x, *y;
-
-   const zz_pXModulus& p = zz_pE::modulus();
-
-
-   UniqueArray<vec_zz_pX> M_store;
-   M_store.SetLength(n);
-   vec_zz_pX *M = M_store.get();
-
-   for (i = 0; i < n; i++) {
-      M[i].SetLength(2*n);
-      for (j = 0; j < n; j++) {
-         M[i][j].rep.SetMaxLength(2*deg(p)-1);
-         M[i][j] = rep(A[i][j]);
-         M[i][n+j].rep.SetMaxLength(2*deg(p)-1);
-         clear(M[i][n+j]);
-      }
-      set(M[i][n+i]);
-   }
-
-   zz_pX det;
-   set(det);
-
-   for (k = 0; k < n; k++) {
-      pos = -1;
-      for (i = k; i < n; i++) {
-         rem(t1, M[i][k], p);
-         M[i][k] = t1;
-         if (pos == -1 && !IsZero(t1)) {
-            pos = i;
-         }
-      }
-
-      if (pos != -1) {
-         if (k != pos) {
-            swap(M[pos], M[k]);
-            negate(det, det);
-         }
-
-         MulMod(det, det, M[k][k], p);
-
-         // make M[k, k] == -1 mod p, and make row k reduced
-
-         InvMod(t1, M[k][k], p);
-         negate(t1, t1);
-         for (j = k+1; j < 2*n; j++) {
-            rem(t2, M[k][j], p);
-            MulMod(M[k][j], t2, t1, p);
-         }
-
-         for (i = k+1; i < n; i++) {
-            // M[i] = M[i] + M[k]*M[i,k]
-
-            t1 = M[i][k];   // this is already reduced
-
-            x = M[i].elts() + (k+1);
-            y = M[k].elts() + (k+1);
-
-            for (j = k+1; j < 2*n; j++, x++, y++) {
-               // *x = *x + (*y)*t1
-
-               mul(t2, *y, t1);
-               add(*x, *x, t2);
-            }
-         }
-      }
-      else {
-         clear(d);
-         return;
-      }
-   }
-
-   X.SetDims(n, n);
-   for (k = 0; k < n; k++) {
-      for (i = n-1; i >= 0; i--) {
-         clear(t1);
-         for (j = i+1; j < n; j++) {
-            mul(t2, rep(X[j][k]), M[i][j]);
-            add(t1, t1, t2);
-         }
-         sub(t1, t1, M[i][n+k]);
-         conv(X[i][k], t1);
-      }
-   }
-
-   conv(d, det);
-}
-
-
-
-long gauss(mat_zz_pE& M_in, long w)
-{
-   long k, l;
-   long i, j;
-   long pos;
-   zz_pX t1, t2, t3;
-   zz_pX *x, *y;
-
-   long n = M_in.NumRows();
-   long m = M_in.NumCols();
-
-   if (w < 0 || w > m)
-      LogicError("gauss: bad args");
-
-   const zz_pXModulus& p = zz_pE::modulus();
-
-
-   UniqueArray<vec_zz_pX> M_store;
-   M_store.SetLength(n);
-   vec_zz_pX *M = M_store.get();
-
-   for (i = 0; i < n; i++) {
-      M[i].SetLength(m);
-      for (j = 0; j < m; j++) {
-         M[i][j].rep.SetMaxLength(2*deg(p)-1);
-         M[i][j] = rep(M_in[i][j]);
-      }
-   }
-
-   l = 0;
-   for (k = 0; k < w && l < n; k++) {
-
-      pos = -1;
-      for (i = l; i < n; i++) {
-         rem(t1, M[i][k], p);
-         M[i][k] = t1;
-         if (pos == -1 && !IsZero(t1)) {
-            pos = i;
-         }
-      }
-
-      if (pos != -1) {
-         swap(M[pos], M[l]);
-
-         InvMod(t3, M[l][k], p);
-         negate(t3, t3);
-
-         for (j = k+1; j < m; j++) {
-            rem(M[l][j], M[l][j], p);
-         }
-
-         for (i = l+1; i < n; i++) {
-            // M[i] = M[i] + M[l]*M[i,k]*t3
-
-            MulMod(t1, M[i][k], t3, p);
-
-            clear(M[i][k]);
-
-            x = M[i].elts() + (k+1);
-            y = M[l].elts() + (k+1);
-
-            for (j = k+1; j < m; j++, x++, y++) {
-               // *x = *x + (*y)*t1
-
-               mul(t2, *y, t1);
-               add(t2, t2, *x);
-               *x = t2;
-            }
-         }
-
-         l++;
-      }
-   }
-   
-   for (i = 0; i < n; i++)
-      for (j = 0; j < m; j++)
-         conv(M_in[i][j], M[i][j]);
-
-   return l;
-}
-
-long gauss(mat_zz_pE& M)
-{
-   return gauss(M, M.NumCols());
-}
-
-void image(mat_zz_pE& X, const mat_zz_pE& A)
-{
-   mat_zz_pE M;
-   M = A;
-   long r = gauss(M);
-   M.SetDims(r, M.NumCols());
-   X = M;
-}
-
-void kernel(mat_zz_pE& X, const mat_zz_pE& A)
-{
-   long m = A.NumRows();
-   long n = A.NumCols();
-
-   mat_zz_pE M;
-   long r;
-
-   transpose(M, A);
-   r = gauss(M);
-
-   X.SetDims(m-r, m);
-
-   long i, j, k, s;
-   zz_pX t1, t2;
-
-   zz_pE T3;
-
-   vec_long D;
-   D.SetLength(m);
-   for (j = 0; j < m; j++) D[j] = -1;
-
-   vec_zz_pE inverses;
-   inverses.SetLength(m);
-
-   j = -1;
-   for (i = 0; i < r; i++) {
-      do {
-         j++;
-      } while (IsZero(M[i][j]));
-
-      D[j] = i;
-      inv(inverses[j], M[i][j]); 
-   }
-
-   for (k = 0; k < m-r; k++) {
-      vec_zz_pE& v = X[k];
-      long pos = 0;
-      for (j = m-1; j >= 0; j--) {
-         if (D[j] == -1) {
-            if (pos == k)
-               set(v[j]);
-            else
-               clear(v[j]);
-            pos++;
-         }
-         else {
-            i = D[j];
-
-            clear(t1);
-
-            for (s = j+1; s < m; s++) {
-               mul(t2, rep(v[s]), rep(M[i][s]));
-               add(t1, t1, t2);
-            }
-
-            conv(T3, t1);
-            mul(T3, T3, inverses[j]);
-            negate(v[j], T3);
-         }
-      }
-   }
-}
    
 void mul(mat_zz_pE& X, const mat_zz_pE& A, const zz_pE& b_in)
 {

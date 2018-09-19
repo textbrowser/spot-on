@@ -1,7 +1,7 @@
 
 #include <NTL/lzz_pX.h>
+#include <NTL/FFT_impl.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 
@@ -1399,16 +1399,17 @@ fftRep& fftRep::operator=(const fftRep& R)
 
    if (R.k < 0) {
       k = -1;
+      len = 0;
       return *this;
    }
 
    DoSetSize(R.k, R.NumPrimes);
-   long i, j, n;
+   len = R.len;
 
-   n = 1L << k;
+   long i, j;
 
    for (i = 0; i < NumPrimes; i++)
-      for (j = 0; j < n; j++)
+      for (j = 0; j < len; j++)
          tbl[i][j] = R.tbl[i][j];
 
    return *this;
@@ -1617,7 +1618,8 @@ void FromModularRep(zz_p* res, const fftRep& R, long lo, long cnt,
 
 
 
-void TofftRep(fftRep& y, const zz_pX& x, long k, long lo, long hi)
+void TofftRep_trunc(fftRep& y, const zz_pX& x, long k, 
+                    long len, long lo, long hi)
 // computes an n = 2^k point convolution.
 // if deg(x) >= 2^k, then x is first reduced modulo X^n-1.
 {
@@ -1638,10 +1640,12 @@ void TofftRep(fftRep& y, const zz_pX& x, long k, long lo, long hi)
    hi = min(hi, deg(x));
 
    y.SetSize(k);
-
    n = 1L << k;
 
+   y.len = len = FFTRoundUp(len, k);
+
    m = max(hi-lo + 1, 0);
+   long ilen = FFTRoundUp(m, k);
 
    const zz_p *xx = x.rep.elts();
 
@@ -1653,7 +1657,7 @@ void TofftRep(fftRep& y, const zz_pX& x, long k, long lo, long hi)
          for (j = 0; j < m; j++) {
             yp[j] = rep(xx[j+lo]);
          }
-         for (j = m; j < n; j++) {
+         for (j = m; j < ilen; j++) {
             yp[j] = 0;
          }
       }
@@ -1676,7 +1680,7 @@ void TofftRep(fftRep& y, const zz_pX& x, long k, long lo, long hi)
                t = sp_CorrectExcess(t, q);
                yp[j] = t;
             }
-            for (j = m; j < n; j++) {
+            for (j = m; j < ilen; j++) {
                yp[j] = 0;
             }
          }
@@ -1699,12 +1703,12 @@ void TofftRep(fftRep& y, const zz_pX& x, long k, long lo, long hi)
 
    if (p_info) {
       long *yp = &y.tbl[0][0];
-      FFTFwd(yp, yp, k, *p_info);
+      FFTFwd_trunc(yp, yp, k, *p_info, len, ilen);
    } 
    else {
       for (i = 0; i < nprimes; i++) {
          long *yp = &y.tbl[i][0];
-         FFTFwd(yp, yp, k, i);
+         FFTFwd_trunc(yp, yp, k, i, len, ilen);
       }
    }
 }
@@ -1735,6 +1739,7 @@ void RevTofftRep(fftRep& y, const vec_zz_p& x,
    y.SetSize(k);
 
    n = 1L << k;
+   y.len = n;
 
    m = max(hi-lo + 1, 0);
 
@@ -1782,12 +1787,12 @@ void RevTofftRep(fftRep& y, const vec_zz_p& x,
 
    if (p_info) {
       long *yp = &y.tbl[0][0];
-      FFTRev1(yp, yp, k, *p_info);
+      FFTRev1_trans(yp, yp, k, *p_info);
    }
    else {
       for (i = 0; i < info->NumPrimes; i++) {
          long *yp = &y.tbl[i][0];
-         FFTRev1(yp, yp, k, i);
+         FFTRev1_trans(yp, yp, k, i);
       }
    }
 }
@@ -1808,22 +1813,26 @@ void FromfftRep(zz_pX& x, fftRep& y, long lo, long hi)
    k = y.k;
    n = (1L << k);
 
+   hi = min(hi, n-1);
+   l = hi-lo+1;
+   l = max(l, 0);
+
+   long len = y.len;
+   if (len <= hi) LogicError("FromfftRep: bad len"); 
+
    FFTPrimeInfo *p_info = info->p_info;
 
    if (p_info) {
       long *yp = &y.tbl[0][0];
-      FFTRev1(yp, yp, k, *p_info);
+      FFTRev1_trunc(yp, yp, k, *p_info, len);
    }
    else {
       for (i = 0; i < NumPrimes; i++) {
          long *yp = &y.tbl[i][0];
-         FFTRev1(yp, yp, k, i);
+         FFTRev1_trunc(yp, yp, k, i, len);
       }
    }
 
-   hi = min(hi, n-1);
-   l = hi-lo+1;
-   l = max(l, 0);
    x.rep.SetLength(l);
 
    if (p_info) {
@@ -1856,16 +1865,18 @@ void RevFromfftRep(vec_zz_p& x, fftRep& y, long lo, long hi)
    k = y.k;
    n = (1L << k);
 
+   if (y.len != n) LogicError("RevFromfftRep: bad len");
+
    FFTPrimeInfo *p_info = info->p_info;
 
    if (p_info) {
       long *yp = &y.tbl[0][0];
-      FFTFwd(yp, yp, k, *p_info);
+      FFTFwd_trans(yp, yp, k, *p_info);
    }
    else {
       for (i = 0; i < NumPrimes; i++) {
          long *yp = &y.tbl[i][0];
-         FFTFwd(yp, yp, k, i);
+         FFTFwd_trans(yp, yp, k, i);
       }
    }
 
@@ -1896,6 +1907,13 @@ void NDFromfftRep(zz_pX& x, const fftRep& y, long lo, long hi, fftRep& z)
    k = y.k;
    n = (1L << k);
 
+   hi = min(hi, n-1);
+   l = hi-lo+1;
+   l = max(l, 0);
+
+   long len = y.len;
+   if (len <= hi) LogicError("FromfftRep: bad len");
+
    z.SetSize(k);
 
    FFTPrimeInfo *p_info = info->p_info;
@@ -1903,19 +1921,16 @@ void NDFromfftRep(zz_pX& x, const fftRep& y, long lo, long hi, fftRep& z)
    if (p_info) {
       long *zp = &z.tbl[0][0];
       const long *yp = &y.tbl[0][0];
-      FFTRev1(zp, yp, k, *p_info);
+      FFTRev1_trunc(zp, yp, k, *p_info, len);
    }
    else {
       for (i = 0; i < NumPrimes; i++) {
          long *zp = &z.tbl[i][0];
          const long *yp = &y.tbl[i][0];
-         FFTRev1(zp, yp, k, i);
+         FFTRev1_trunc(zp, yp, k, i, len);
       }
    }
 
-   hi = min(hi, n-1);
-   l = hi-lo+1;
-   l = max(l, 0);
    x.rep.SetLength(l);
 
    if (p_info) {
@@ -1952,6 +1967,10 @@ void FromfftRep(zz_p* x, fftRep& y, long lo, long hi)
 
    k = y.k;
    n = (1L << k);
+
+
+   //if (y.len <= min(hi, n-1)) LogicError("FromfftRep: bad len");
+   if (y.len != n) LogicError("FromfftRep: bad len");
 
    FFTPrimeInfo *p_info = info->p_info;
 
@@ -1997,6 +2016,8 @@ void mul(fftRep& z, const fftRep& x, const fftRep& y)
 
    z.SetSize(k);
 
+   long len = z.len = min(x.len, y.len);
+
    FFTPrimeInfo *p_info = info->p_info;
 
    if (p_info) {
@@ -2007,11 +2028,11 @@ void mul(fftRep& z, const fftRep& x, const fftRep& y)
       mulmod_t qinv = p_info->qinv;
 
       if (NormalizedModulus(qinv)) {
-         for (j = 0; j < n; j++)
+         for (j = 0; j < len; j++)
             zp[j] = NormalizedMulMod(xp[j], yp[j], q, qinv);
       }
       else {
-         for (j = 0; j < n; j++)
+         for (j = 0; j < len; j++)
             zp[j] = MulMod(xp[j], yp[j], q, qinv);
       }
    }
@@ -2023,7 +2044,7 @@ void mul(fftRep& z, const fftRep& x, const fftRep& y)
          long q = GetFFTPrime(i);
          mulmod_t qinv = GetFFTPrimeInv(i);
    
-         for (j = 0; j < n; j++)
+         for (j = 0; j < len; j++)
             zp[j] = NormalizedMulMod(xp[j], yp[j], q, qinv);
       }
    }
@@ -2042,6 +2063,8 @@ void sub(fftRep& z, const fftRep& x, const fftRep& y)
 
    z.SetSize(k);
 
+   long len = z.len = min(x.len, y.len);
+
    FFTPrimeInfo *p_info = info->p_info;
 
    if (p_info) {
@@ -2050,7 +2073,7 @@ void sub(fftRep& z, const fftRep& x, const fftRep& y)
       const long *yp = &y.tbl[0][0];
       long q = p_info->q;
 
-      for (j = 0; j < n; j++)
+      for (j = 0; j < len; j++)
          zp[j] = SubMod(xp[j], yp[j], q);
    }
    else {
@@ -2060,7 +2083,7 @@ void sub(fftRep& z, const fftRep& x, const fftRep& y)
          const long *yp = &y.tbl[i][0];
          long q = GetFFTPrime(i);
    
-         for (j = 0; j < n; j++)
+         for (j = 0; j < len; j++)
             zp[j] = SubMod(xp[j], yp[j], q);
       }
    }
@@ -2079,6 +2102,8 @@ void add(fftRep& z, const fftRep& x, const fftRep& y)
 
    z.SetSize(k);
 
+   long len = z.len = min(x.len, y.len);
+
    FFTPrimeInfo *p_info = info->p_info;
 
    if (p_info) {
@@ -2087,7 +2112,7 @@ void add(fftRep& z, const fftRep& x, const fftRep& y)
       const long *yp = &y.tbl[0][0];
       long q = p_info->q;
 
-      for (j = 0; j < n; j++)
+      for (j = 0; j < len; j++)
          zp[j] = AddMod(xp[j], yp[j], q);
    }
    else {
@@ -2097,7 +2122,7 @@ void add(fftRep& z, const fftRep& x, const fftRep& y)
          const long *yp = &y.tbl[i][0];
          long q = GetFFTPrime(i);
    
-         for (j = 0; j < n; j++)
+         for (j = 0; j < len; j++)
             zp[j] = AddMod(xp[j], yp[j], q);
       }
    }
@@ -2118,16 +2143,21 @@ void reduce(fftRep& x, const fftRep& a, long k)
    n = 1L << k;
 
    if (l < k) LogicError("reduce: bad operands");
+   if (a.len < n) LogicError("reduce: bad len");
 
    x.SetSize(k);
+   x.len = n;
+
+   if (&x == &a) return;
 
    for (i = 0; i < info->NumPrimes; i++) {
       ap = &a.tbl[i][0];   
       xp = &x.tbl[i][0];
       for (j = 0; j < n; j++) 
-         xp[j] = ap[j << (l-k)];
+         xp[j] = ap[j];
    }
 }
+
 
 void AddExpand(fftRep& x, const fftRep& a)
 //  x = x + (an "expanded" version of a)
@@ -2141,6 +2171,7 @@ void AddExpand(fftRep& x, const fftRep& a)
    n = 1L << k;
 
    if (l < k) LogicError("AddExpand: bad args");
+   if (x.len < n) LogicError("AddExpand: bad len");
 
    FFTPrimeInfo *p_info = info->p_info;
    
@@ -2149,8 +2180,7 @@ void AddExpand(fftRep& x, const fftRep& a)
       const long *ap = &a.tbl[0][0];
       long *xp = &x.tbl[0][0];
       for (j = 0; j < n; j++) {
-         long j1 = j << (l-k);
-         xp[j1] = AddMod(xp[j1], ap[j], q);
+         xp[j] = AddMod(xp[j], ap[j], q);
       }
    }
    else {
@@ -2159,50 +2189,47 @@ void AddExpand(fftRep& x, const fftRep& a)
          const long *ap = &a.tbl[i][0];
          long *xp = &x.tbl[i][0];
          for (j = 0; j < n; j++) {
-            long j1 = j << (l-k);
-            xp[j1] = AddMod(xp[j1], ap[j], q);
+            xp[j] = AddMod(xp[j], ap[j], q);
          }
       }
    }
 }
 
 
-
 void FFTMul(zz_pX& x, const zz_pX& a, const zz_pX& b)
 {
-   long k, d;
-
    if (IsZero(a) || IsZero(b)) {
       clear(x);
       return;
    }
 
-   d = deg(a) + deg(b);
-   k = NextPowerOfTwo(d+1);
+   long da = deg(a);
+   long db = deg(b);
+   long d = da+db;
+   long k = NextPowerOfTwo(d+1);
 
    fftRep R1(INIT_SIZE, k), R2(INIT_SIZE, k);
 
-   TofftRep(R1, a, k);
-   TofftRep(R2, b, k);
+   TofftRep_trunc(R1, a, k, d+1);
+   TofftRep_trunc(R2, b, k, d+1);
    mul(R1, R1, R2);
    FromfftRep(x, R1, 0, d);
 }
 
 void FFTSqr(zz_pX& x, const zz_pX& a)
 {
-   long k, d;
-
    if (IsZero(a)) {
       clear(x);
       return;
    }
 
-   d = 2*deg(a);
-   k = NextPowerOfTwo(d+1);
+   long da = deg(a);
+   long d = 2*da;
+   long k = NextPowerOfTwo(d+1);
 
    fftRep R1(INIT_SIZE, k);
 
-   TofftRep(R1, a, k);
+   TofftRep_trunc(R1, a, k, d+1);
    mul(R1, R1, R1);
    FromfftRep(x, R1, 0, d);
 }
@@ -2287,7 +2314,7 @@ void rem21(zz_pX& x, const zz_pX& a, const zz_pXModulus& F)
    fftRep R1(INIT_SIZE, F.l);
    zz_pX P1(INIT_SIZE, n);
 
-   TofftRep(R1, a, F.l, n, 2*(n-1));
+   TofftRep_trunc(R1, a, F.l, 2*n-3, n, 2*(n-1));
    mul(R1, R1, F.HRep);
    FromfftRep(P1, R1, n-2, 2*n-4);
 
@@ -2343,7 +2370,7 @@ void DivRem21(zz_pX& q, zz_pX& x, const zz_pX& a, const zz_pXModulus& F)
    fftRep R1(INIT_SIZE, F.l);
    zz_pX P1(INIT_SIZE, n), qq;
 
-   TofftRep(R1, a, F.l, n, 2*(n-1));
+   TofftRep_trunc(R1, a, F.l, 2*n-3, n, 2*(n-1));
    mul(R1, R1, F.HRep);
    FromfftRep(P1, R1, n-2, 2*n-4);
    qq = P1;
@@ -2399,7 +2426,7 @@ void div21(zz_pX& x, const zz_pX& a, const zz_pXModulus& F)
    fftRep R1(INIT_SIZE, F.l);
    zz_pX P1(INIT_SIZE, n);
 
-   TofftRep(R1, a, F.l, n, 2*(n-1));
+   TofftRep_trunc(R1, a, F.l, 2*n-3, n, 2*(n-1));
    mul(R1, R1, F.HRep);
    FromfftRep(x, R1, n-2, 2*n-4);
 }
@@ -2599,18 +2626,22 @@ void MulMod(zz_pX& x, const zz_pX& a, const zz_pX& b, const zz_pXModulus& F)
    fftRep R1(INIT_SIZE, k), R2(INIT_SIZE, F.l);
    zz_pX P1(INIT_SIZE, n);
 
-   TofftRep(R1, a, k);
-   TofftRep(R2, b, k);
+   long len;
+   if (zz_p::IsFFTPrime()) 
+      len = n;
+   else
+      len = 1L << F.k;
 
+   TofftRep_trunc(R1, a, k, max(1L << F.k, d));
+   TofftRep_trunc(R2, b, k, max(1L << F.k, d));
    mul(R1, R1, R2);
-
    NDFromfftRep(P1, R1, n, d-1, R2); // save R1 for future use
-   
-   TofftRep(R2, P1, F.l);
+
+   TofftRep_trunc(R2, P1, F.l, 2*n-3);
    mul(R2, R2, F.HRep);
    FromfftRep(P1, R2, n-2, 2*n-4);
 
-   TofftRep(R2, P1, F.k);
+   TofftRep_trunc(R2, P1, F.k, len);
    mul(R2, R2, F.FRep);
    reduce(R1, R1, F.k);
    sub(R1, R1, R2);
@@ -2645,15 +2676,21 @@ void SqrMod(zz_pX& x, const zz_pX& a, const zz_pXModulus& F)
    fftRep R1(INIT_SIZE, k), R2(INIT_SIZE, F.l);
    zz_pX P1(INIT_SIZE, n);
 
-   TofftRep(R1, a, k);
+   long len;
+   if (zz_p::IsFFTPrime()) 
+      len = n;
+   else
+      len = 1L << F.k;
+
+   TofftRep_trunc(R1, a, k, max(1L << F.k, d));
    mul(R1, R1, R1);
-   NDFromfftRep(P1, R1, n, d-1, R2);  // save R1 for future use
-   
-   TofftRep(R2, P1, F.l);
+   NDFromfftRep(P1, R1, n, d-1, R2); // save R1 for future use
+
+   TofftRep_trunc(R2, P1, F.l, 2*n-3);
    mul(R2, R2, F.HRep);
    FromfftRep(P1, R2, n-2, 2*n-4);
 
-   TofftRep(R2, P1, F.k);
+   TofftRep_trunc(R2, P1, F.k, len);
    mul(R2, R2, F.FRep);
    reduce(R1, R1, F.k);
    sub(R1, R1, R2);
@@ -2866,11 +2903,16 @@ void build(zz_pXMultiplier& x, const zz_pX& b,
    zz_pX P1(INIT_SIZE, n);
    
 
-   TofftRep(R1, b, F.l);
+   TofftRep_trunc(R1, b, F.l, 2*n-2);
    reduce(x.B2, R1, F.k);
    mul(R1, R1, F.HRep);
    FromfftRep(P1, R1, n-1, 2*n-3); 
+
    TofftRep(x.B1, P1, F.l);
+   // could be truncated to length max(1L << F.k, 2*n-2), except
+   // for the usage in UpdateMap, where we would have to investigate
+   // further
+
 }
 
 
@@ -2901,13 +2943,19 @@ void MulMod(zz_pX& x, const zz_pX& a, const zz_pXMultiplier& B,
    zz_pX P1(INIT_SIZE, n), P2(INIT_SIZE, n);
    fftRep R1(INIT_SIZE, F.l), R2(INIT_SIZE, F.l);
 
-   TofftRep(R1, a, F.l);
+   long len;
+   if (zz_p::IsFFTPrime()) 
+      len = n;
+   else
+      len = 1L << F.k;
+
+   TofftRep_trunc(R1, a, F.l, max(1L << F.k, 2*n-2));
    mul(R2, R1, B.B1);
    FromfftRep(P1, R2, n-1, 2*n-3);
 
    reduce(R1, R1, F.k);
    mul(R1, R1, B.B2);
-   TofftRep(R2, P1, F.k);
+   TofftRep_trunc(R2, P1, F.k, len);
    mul(R2, R2, F.FRep);
    sub(R1, R1, R2);
 

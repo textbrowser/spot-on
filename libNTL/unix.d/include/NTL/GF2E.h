@@ -20,13 +20,13 @@ private:
 public:
 
    GF2EInfoT(const GF2X& NewP);
-   ~GF2EInfoT() { }
 
    GF2XModulus p;
 
    long KarCross;
    long ModCross;
    long DivCross;
+   long GCDCross;
 
    long _card_exp;
    Lazy<ZZ> _card;
@@ -142,6 +142,7 @@ static const GF2XModulus& modulus() { return GF2EInfo->p; }
 static long KarCross() { return GF2EInfo->KarCross; }
 static long ModCross() { return GF2EInfo->ModCross; }
 static long DivCross() { return GF2EInfo->DivCross; }
+static long GCDCross() { return GF2EInfo->GCDCross; }
 
 static long degree() { return GF2EInfo->p.n; }
 

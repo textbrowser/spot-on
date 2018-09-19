@@ -100,7 +100,7 @@ bool pinned() const
 }
 
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
 ZZ(ZZ&& a) NTL_FAKE_NOEXCEPT
 {
@@ -392,8 +392,11 @@ inline void add(ZZ& x, const ZZ& a, long b)
 inline void add(ZZ& x, long a, const ZZ& b) { add(x, b, a); }
 
 
-void sub(ZZ& x, const ZZ& a, long b);
+inline void sub(ZZ& x, const ZZ& a, long b)
+   { _ntl_gssub(a.rep, b, &x.rep); }
+
 void sub(ZZ& x, long a, const ZZ& b);
+// defined in ZZ.cpp
 
 /* operator/function notation */
 
@@ -1073,7 +1076,7 @@ void DeriveKey(unsigned char *key, long klen,
 #define NTL_PRG_KEYLEN (32)
 
 
-class RandomStream_impl;
+struct RandomStream_impl;
 
 RandomStream_impl *
 RandomStream_impl_build(const unsigned char *key);
@@ -1093,6 +1096,8 @@ RandomStream_impl_get_buf_len(const RandomStream_impl&);
 long
 RandomStream_impl_get_bytes(RandomStream_impl& impl, unsigned char *res, 
    long n, long pos);
+
+void RandomStream_impl_set_nonce(RandomStream_impl& impl, unsigned long nonce);
 
 void
 RandomStream_impl_delete(RandomStream_impl*);
@@ -1157,7 +1162,23 @@ public:
       }
    }
 
+   // FIXME: document this? Not sure if I want to 
+   // commit to this interface, as it is somewhat ChaCha-specific
+   void set_nonce(unsigned long nonce) 
+   {
+      RandomStream_impl_set_nonce(*impl, nonce);
+      pos = buf_len;
+   }
+
 };
+
+// this is the number of bits we can pass through the set_nonce
+// interface
+#if (NTL_BITS_PER_LONG > 64)
+#define NTL_BITS_PER_NONCE (64)
+#else
+#define NTL_BITS_PER_NONCE NTL_BITS_PER_LONG
+#endif
 
 
 
@@ -1230,7 +1251,6 @@ public:
 
 
 
-
 void RandomBnd(ZZ& x, const ZZ& n);
 // x = "random number" in the range 0..n-1, or 0  if n <= 0
 
@@ -1272,7 +1292,6 @@ unsigned long RandomBits_ulong(long l);
 
 // helper class to make generating small random numbers faster
 // FIXME: add documentation?
-
 struct RandomBndGenerator {
 
    long p;
@@ -1331,6 +1350,8 @@ inline void VectorRandomBnd(long k, long* x, long n)
    }
 }
 
+
+void VectorRandomWord(long k, unsigned long* x);
 
 
 /**********************************************************
@@ -1738,6 +1759,39 @@ public:
 
 
 void InvModError(const char *s, const ZZ& a, const ZZ& n); 
+
+#ifdef NTL_PROVIDES_SS_LIP_IMPL
+
+inline void 
+LeftRotate_lip_impl(ZZ& a, const ZZ& b, long e, const ZZ& p, long n, ZZ& scratch)
+// Compute a = b * 2^e mod p, where p = 2^n+1. 0<=e<n and 0<b<p 
+// a may not alias p
+// scratch may not alias a, b, or p
+{
+   _ntl_leftrotate(&a.rep, &b.rep, e, p.rep, n, &scratch.rep);
+}
+
+inline void
+SS_AddMod_lip_impl(ZZ& x, const ZZ& a, const ZZ& b, const ZZ& p, long n)
+// x = a + b mod p, where p = 2^n+1,  a, b in [0, p).
+// x may not alias p.
+{
+   _ntl_ss_addmod(&x.rep, &a.rep, &b.rep, p.rep, n);
+}
+
+inline void
+SS_SubMod_lip_impl(ZZ& x, const ZZ& a, const ZZ& b, const ZZ& p, long n)
+// x = a + b mod p, where p = 2^n+1,  a, b in [0, p).
+// x may not alias b or p.
+{
+   _ntl_ss_submod(&x.rep, &a.rep, &b.rep, p.rep, n);
+}
+
+#endif
+
+
+
+
 
 NTL_CLOSE_NNS
 

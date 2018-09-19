@@ -43,9 +43,11 @@ public:
    // move constructor (C++11 only)
    // declared noexcept unless NTL_EXCEPTIONS flag is set
 
+#ifndef NTL_DISABLE_MOVE_ASSIGN
    zz_pE& operator=(zz_pE&& a); 
    // move assignment (C++11 only)
    // declared noexcept unless NTL_EXCEPTIONS flag is set
+#endif
 
    static void init(const zz_pX& P);
    // zz_pE::init(P) initializes the current modulus to P;

@@ -1,7 +1,6 @@
 
 #include <NTL/vec_GF2.h>
 
-#include <NTL/new.h>
 #include <cstdio>
 
 NTL_START_IMPL
@@ -555,11 +554,8 @@ void random(vec_GF2& x, long n)
    x.SetLength(n);
 
    long wl = x.rep.length();
-   long i;
 
-   for (i = 0; i < wl-1; i++) {
-      x.rep[i] = RandomWord();
-   }
+   VectorRandomWord(wl-1, x.rep.elts());
 
    if (n > 0) {
       long pos = n % NTL_BITS_PER_LONG;

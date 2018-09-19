@@ -2,7 +2,6 @@
 
 #include <NTL/GF2E.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 
@@ -15,54 +14,212 @@ GF2EInfoT *GF2EInfo = 0;
 GF2EInfoT::GF2EInfoT(const GF2X& NewP)
 {
    build(p, NewP);
+   _card_exp = p.n;
 
-   if (p.size == 1) {
+   long sz = p.size;
+
+// The following crossovers were set using the programs
+// GF2EXKarCross.cpp, GF2EXModCross.cpp, GF2EXModCross.cpp,
+// and GF2EXGCDCross.cpp.
+// To use these programs, one has to remove the #if 0 guards
+// in GF2EX.cpp on mul_disable_plain, BuildPlain, and DivRemPlain.
+
+// There are three different configurations that are treated separately:
+//   * with gf2x lib and with pclmul instruction available
+//   * without gf2x lib but with pclmul
+//   * without gf2X lib and without pclmul
+// It is possible that one could be using gf2x lib on a platform without
+// pclmul, in which case the crossovers used here are not optimal.  It is also
+// possible that one could be using gf2x lib with pclmul, but compile NTL with
+// NATIVE=off, so that NTL assumes there is no pclmul.  Again, this will lead
+// to crossovers that are not optimal.
+
+// The crossovers were calculated based on a Skylake Xeon processor:
+// Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz.
+
+
+#if (defined(NTL_GF2X_LIB) && defined(NTL_HAVE_PCLMUL))
+
+   //========== KarCross ==========
+
+   if (sz <= 1) {
       if (deg(p) <= NTL_BITS_PER_LONG/2)
+         KarCross = 3;
+      else
          KarCross = 4;
+   }
+   else if (sz <= 6) KarCross = 8;
+   else if (sz <= 9) KarCross = 4;
+   else              KarCross = 2;
+
+
+
+   //========== ModCross ==========
+
+
+   if (sz <= 1) {
+      if (deg(p) <= NTL_BITS_PER_LONG/2)
+         ModCross = 15;
+      else
+         ModCross = 20;
+   }
+   else if (sz <=  9) ModCross =  60;
+   else if (sz <= 18) ModCross =  25;
+   else               ModCross =  15;
+
+
+   //========== DivCross ==========
+
+   if (sz <= 1) {
+      if (deg(p) <= NTL_BITS_PER_LONG/2)
+         DivCross =  50;
+      else
+         DivCross =  75;
+   }
+   else if (sz <=  2) DivCross = 100;
+   else if (sz <=  3) DivCross = 150;
+   else if (sz <=  4) DivCross = 200;
+   else if (sz <=  6) DivCross = 250;
+   else if (sz <=  9) DivCross = 225;
+   else if (sz <= 15) DivCross = 125;
+   else if (sz < 125) DivCross = 100;
+   else               DivCross =  75;
+
+   //========== GCDCross ==========
+
+   if (sz <= 1) {
+      if (deg(p) <= NTL_BITS_PER_LONG/2)
+         GCDCross = 225;
+      else
+         GCDCross = 225;
+   }
+   else if (sz <=  2) GCDCross =  450;
+   else if (sz <=  4) GCDCross =  600;
+   else if (sz <  12) GCDCross = 1150;
+   else               GCDCross =  600;
+
+
+#elif (defined(NTL_HAVE_PCLMUL))
+
+   //========== KarCross ==========
+
+   if (sz <= 1) {
+      if (deg(p) <= NTL_BITS_PER_LONG/2)
+         KarCross = 5;
       else
          KarCross = 8;
    }
-   else if (p.size == 2)
-      KarCross = 8;
-   else if (p.size <= 5)
-      KarCross = 4;
-   else if (p.size == 6)
-      KarCross = 3;
-   else 
-      KarCross = 2;
+   else if (sz <= 5) KarCross = 8;
+   else if (sz <= 9) KarCross = 4;
+   else              KarCross = 2;
 
 
-   if (p.size <= 1) {
+
+   //========== ModCross ==========
+
+
+   if (sz <= 1) {
       if (deg(p) <= NTL_BITS_PER_LONG/2)
-         ModCross = 20;
+         ModCross = 30;
       else
-         ModCross = 40;
+         ModCross = 45;
    }
-   else if (p.size <= 2)
-      ModCross = 75;
-   else if (p.size <= 4)
-      ModCross = 50;
-   else
-      ModCross = 25;
+   else if (sz <=  2) ModCross = 110;
+   else if (sz <=  3) ModCross = 105;
+   else if (sz <=  4) ModCross =  65;
+   else if (sz <=  5) ModCross =  60;
+   else if (sz <=  6) ModCross =  55;
+   else if (sz <=  8) ModCross =  50;
+   else if (sz <= 12) ModCross =  30;
+   else if (sz <= 18) ModCross =  25;
+   else               ModCross =  15;
 
-   if (p.size == 1) {
+
+
+   //========== DivCross ==========
+
+
+   if (sz <= 1) {
       if (deg(p) <= NTL_BITS_PER_LONG/2)
-         DivCross = 100;
+         DivCross =  75;
       else
-         DivCross = 200;
+         DivCross = 125;
    }
-   else if (p.size == 2)
-      DivCross = 400;
-   else if (p.size <= 4)
-      DivCross = 200;
-   else if (p.size == 5)
-      DivCross = 150;
-   else if (p.size <= 13)
-      DivCross = 100;
-   else 
-      DivCross = 75;
+   else if (sz <=  2) DivCross = 450;
+   else if (sz <=  3) DivCross = 425;
+   else if (sz <=  4) DivCross = 375;
+   else if (sz <=  6) DivCross = 250;
+   else if (sz <=  8) DivCross = 225;
+   else if (sz <= 16) DivCross = 125;
+   else if (sz <= 45) DivCross = 100;
+   else               DivCross =  75;
 
-   _card_exp = p.n;
+
+   //========== GCDCross ==========
+
+   if (sz <= 1) {
+      if (deg(p) <= NTL_BITS_PER_LONG/2)
+         GCDCross = 225;
+      else
+         GCDCross = 225;
+   }
+   else if (sz < 12) GCDCross = 1150;
+   else              GCDCross =  850;
+
+#else
+
+   //========== KarCross ==========
+
+   if (sz <= 1) {
+      if (deg(p) <= NTL_BITS_PER_LONG/2)
+         KarCross = 4;
+      else
+         KarCross = 12;
+   }
+   else if (sz <= 3) KarCross = 4;
+   else              KarCross = 2;
+
+
+
+   //========== ModCross ==========
+
+
+   if (sz <= 1) {
+      if (deg(p) <= NTL_BITS_PER_LONG/2)
+         ModCross = 45;
+      else
+         ModCross = 65;
+   }
+   else if (sz <=  2) ModCross =  25;
+   else               ModCross =  15;
+
+
+   //========== DivCross ==========
+
+   if (sz <= 1) {
+      if (deg(p) <= NTL_BITS_PER_LONG/2)
+         DivCross = 175;
+      else
+         DivCross = 250;
+   }
+   else if (sz <=  4) DivCross = 100;
+   else               DivCross =  75;
+
+   //========== GCDCross ==========
+
+   if (sz <= 1) {
+      if (deg(p) <= NTL_BITS_PER_LONG/2)
+         GCDCross = 225;
+      else
+         GCDCross = 850;
+   }
+   else if (sz <  8) GCDCross =  850;
+   else if (sz < 12) GCDCross =  600;
+   else              GCDCross =  450;
+
+
+#endif
+
 }
 
 

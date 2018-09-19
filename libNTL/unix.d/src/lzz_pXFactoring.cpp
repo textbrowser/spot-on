@@ -3,7 +3,6 @@
 #include <NTL/mat_lzz_p.h>
 #include <NTL/FacVec.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 

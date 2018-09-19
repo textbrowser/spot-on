@@ -1,6 +1,5 @@
 
 #include <NTL/lzz_pX.h>
-#include <NTL/new.h>
 
 
 

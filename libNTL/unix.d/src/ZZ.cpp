@@ -5,6 +5,8 @@
 #include <NTL/fileio.h>
 #include <NTL/SmartPtr.h>
 
+#include <NTL/BasicThreadPool.h>
+
 
 
 #if defined(NTL_HAVE_AVX2)
@@ -393,8 +395,40 @@ long PowerMod(long a, long ee, long n)
    return x;
 }
 
-long ProbPrime(long n, long NumTests)
+static
+long MillerWitness_sp(long n, long x)
 {
+   long m, y, z;
+   long j, k;
+
+   if (x == 0) return 0;
+
+   m = n - 1;
+   k = 0;
+   while((m & 1) == 0) {
+      m = m >> 1;
+      k++;
+   }
+   // n - 1 == 2^k * m, m odd
+
+   z = PowerMod(x, m, n);
+   if (z == 1) return 0;
+
+   j = 0;
+   do {
+      y = z;
+      z = MulMod(y, y, n);
+      j++;
+   } while (j != k && z != 1);
+
+   if (z != 1 || y != n-1) return 1;
+   return 0;
+}
+
+long ProbPrime(long n, long NumTrials)
+{
+   if (NumTrials < 0) NumTrials = 0;
+
    long m, x, y, z;
    long i, j, k;
 
@@ -413,8 +447,14 @@ long ProbPrime(long n, long NumTests)
    if (n == 7) return 1;
    if (n % 7 == 0) return 0;
 
+   if (n == 11) return 1;
+   if (n % 11 == 0) return 0;
+
+   if (n == 13) return 1;
+   if (n % 13 == 0) return 0;
+
    if (n >= NTL_SP_BOUND) {
-      return ProbPrime(to_ZZ(n), NumTests);
+      return ProbPrime(to_ZZ(n), NumTrials);
    }
 
    m = n - 1;
@@ -426,14 +466,20 @@ long ProbPrime(long n, long NumTests)
 
    // n - 1 == 2^k * m, m odd
 
-   for (i = 0; i < NumTests; i++) {
-      do {
-         x = RandomBnd(n);
-      } while (x == 0);
-      // x == 0 is not a useful candidtae for a witness!
+   for (i = 0; i < NumTrials+1; i++) {
+      // for consistency with the multi-precision version,
+      // we first see if 2 is a witness, so we really do 
+      // NumTrials+1 tests
 
+      if (i == 0) 
+         x = 2;
+      else {
+	 do {
+	    x = RandomBnd(n);
+	 } while (x == 0);
+         // x == 0 is not a useful candidate for a witness!
+      }
 
-      if (x == 0) continue;
       z = PowerMod(x, m, n);
       if (z == 1) continue;
    
@@ -453,7 +499,12 @@ long ProbPrime(long n, long NumTests)
 
 long MillerWitness(const ZZ& n, const ZZ& x)
 {
+   if (n.SinglePrecision()) {
+      return MillerWitness_sp(to_long(n), to_long(x));
+   }
+
    ZZ m, y, z;
+
    long j, k;
 
    if (x == 0) return 0;
@@ -484,6 +535,16 @@ long MillerWitness(const ZZ& n, const ZZ& x)
 // It is computed a bit on the "low" side, since being a bit
 // low doesn't hurt much, but being too high can hurt a lot.
 
+// See the paper "Fast generation of prime numbers and secure
+// public-key cryptographic parameters" by Ueli Maurer.
+// In that paper, it is calculated that the optimal bound in
+// roughly T_exp/T_div, where T_exp is the time for an exponentiation
+// and T_div is is the time for a single precision division.
+// Of course, estimating these times is a bit tricky, and
+// the values we use are based on experimentation, assuming
+// GMP is being used.  I've tested this on various bit lengths
+// up to 16,000, and they seem to be pretty close to optimal. 
+
 static
 long ComputePrimeBound(long bn)
 {
@@ -504,11 +565,15 @@ long ComputePrimeBound(long bn)
       prime_bnd = bn*fn;
 
    return prime_bnd;
+
+
 }
 
 
 long ProbPrime(const ZZ& n, long NumTrials)
 {
+   if (NumTrials < 0) NumTrials = 0;
+
    if (n <= 1) return 0;
 
    if (n.SinglePrecision()) {
@@ -556,7 +621,146 @@ long ProbPrime(const ZZ& n, long NumTrials)
 }
 
 
+static
+void MultiThreadedRandomPrime(ZZ& n, long l, long NumTrials)
+{
+
+   long nt = AvailableThreads();
+
+
+
+   const long LOCAL_ITER_BOUND = 8; 
+   // since resetting the PRG comes at a certain cost,
+   // we perform a few iterations with each reset to
+   // amortize the reset cost. 
+
+   unsigned long initial_counter = 0;
+   ZZ seed;
+   RandomBits(seed, 256);
+
+   for (;;) {
+
+      AtomicLowWaterMark low_water_mark(-1UL);
+      AtomicCounter counter(initial_counter);
+
+      Vec< UniquePtr<ZZ> > result(INIT_SIZE, nt);
+      Vec<long> result_ctr(INIT_SIZE, nt, -1UL);
+
+      NTL_EXEC_INDEX(nt, index)
+
+         RandomStreamPush push;
+
+	 SetSeed(seed);
+	 RandomStream& stream = GetCurrentRandomStream();
+
+	 ZZ cand;
+
+	 while (low_water_mark == -1UL) {
+
+	    unsigned long local_ctr = counter.inc();
+            if (local_ctr >> (NTL_BITS_PER_NONCE-1)) {
+               // counter overflow...rather academic
+               break;
+            }
+
+	    stream.set_nonce(local_ctr);
+	    
+	    for (long iter = 0; iter < LOCAL_ITER_BOUND && 
+				local_ctr <= low_water_mark; iter++) {
+
+	       RandomLen(cand, l);
+	       if (!IsOdd(cand)) add(cand, cand, 1);
+
+	       if (ProbPrime(cand, 0)) { 
+		  result[index].make(cand);
+		  result_ctr[index] = local_ctr;
+		  low_water_mark.UpdateMin(local_ctr);
+		  break;
+	       }
+	    }
+	 }
+
+      NTL_EXEC_INDEX_END
+
+      // find index of low_water_mark
+
+      unsigned long low_water_mark1 = low_water_mark;
+      unsigned long low_water_index = -1;
+
+      for (long index = 0; index < nt; index++) {
+	 if (result_ctr[index] == low_water_mark1) {
+	    low_water_index = index;
+	    break;
+	 }
+      }
+
+      if (low_water_index == -1) {
+         // counter overflow...rather academic
+         initial_counter = 0;
+         RandomBits(seed, 256);
+         continue;
+      }
+
+      ZZ N;
+      N = *result[low_water_index];
+
+      Vec<ZZ> W(INIT_SIZE, NumTrials);
+
+      for (long i = 0; i < NumTrials; i++) {
+         do { 
+            RandomBnd(W[i], N);
+         } while (W[i] == 0);
+      }
+
+      AtomicBool tests_pass(true);
+
+      NTL_EXEC_RANGE(NumTrials, first, last)
+
+         for (long i = first; i < last && tests_pass; i++) {
+            if (MillerWitness(N, W[i])) tests_pass = false;
+         }
+
+      NTL_EXEC_RANGE_END
+
+      if (tests_pass) {
+         n = N;
+         return;
+      }
+
+      // very unlikey to get here
+      initial_counter = low_water_mark1 + 1;
+   }
+}
+
+
 void RandomPrime(ZZ& n, long l, long NumTrials)
+{
+   if (NumTrials < 0) NumTrials = 0;
+
+   if (l >= 256) { 
+      MultiThreadedRandomPrime(n, l, NumTrials); 
+      return;
+   }
+
+   if (l <= 1)
+      LogicError("RandomPrime: l out of range");
+
+   if (l == 2) {
+      if (RandomBnd(2))
+         n = 3;
+      else
+         n = 2;
+
+      return;
+   }
+
+   do {
+      RandomLen(n, l);
+      if (!IsOdd(n)) add(n, n, 1);
+   } while (!ProbPrime(n, NumTrials));
+}
+
+void OldRandomPrime(ZZ& n, long l, long NumTrials)
 {
    if (l <= 1)
       LogicError("RandomPrime: l out of range");
@@ -774,6 +978,8 @@ void InvModError(const char *s, const ZZ& a, const ZZ& n)
 
 long RandomPrime_long(long l, long NumTrials)
 {
+   if (NumTrials < 0) NumTrials = 0;
+
    if (l <= 1 || l >= NTL_BITS_PER_LONG)
       ResourceError("RandomPrime: length out of range");
 
@@ -1239,13 +1445,6 @@ long CRT(ZZ& gg, ZZ& a, const ZZ& G, const ZZ& p)
 }
 
 
-
-void sub(ZZ& x, const ZZ& a, long b)
-{
-   NTL_ZZRegister(B);
-   conv(B, b);
-   sub(x, a, B);
-}
 
 void sub(ZZ& x, long a, const ZZ& b)
 {
@@ -1731,7 +1930,7 @@ old_RandomStream::old_RandomStream(const unsigned char *key)
 }
 
 
-void old_RandomStream::do_get(unsigned char *NTL_RESTRICT res, long n)
+void old_RandomStream::do_get(unsigned char *res, long n)
 {
    if (n < 0) LogicError("RandomStream::get: bad args");
 
@@ -1846,6 +2045,7 @@ typedef __m256i ivec_t;
 
 #define DELTA	_mm256_set_epi64x(0,2,0,2)
 #define START   _mm256_set_epi64x(0,1,0,0)
+#define NONCE(nonce) _mm256_set_epi64x(nonce, 1, nonce, 0)   
 
 #define STOREU_VEC(m,r)	_mm256_storeu_si256((__m256i*)(m), r)
 #define STORE_VEC(m,r)	_mm256_store_si256((__m256i*)(m), r)
@@ -1889,8 +2089,9 @@ typedef __m256i ivec_t;
 
 #define SZ_VEC (32)
 
-#define RANSTREAM_BUFSZ (1024)
-// must be a multiple of 8*SZ_VEC
+#define RANSTREAM_NCHUNKS (2)
+// leads to a BUFSZ of 512
+
 
 #elif defined(NTL_HAVE_SSSE3)
 
@@ -1898,6 +2099,7 @@ typedef __m128i ivec_t;
 
 #define DELTA	_mm_set_epi32(0,0,0,1)
 #define START   _mm_setzero_si128()
+#define NONCE(nonce) _mm_set_epi64x(nonce,0)
 
 #define STOREU_VEC(m,r)	_mm_storeu_si128((__m128i*)(m), r)
 #define STORE_VEC(m,r)	_mm_store_si128((__m128i*)(m), r)
@@ -1938,8 +2140,8 @@ typedef __m128i ivec_t;
 
 #define SZ_VEC (16)
 
-#define RANSTREAM_BUFSZ (1024)
-// must be a multiple of 8*SZ_VEC
+#define RANSTREAM_NCHUNKS (4)
+// leads to a BUFSZ of 512
 
 #else
 
@@ -1964,17 +2166,22 @@ typedef __m128i ivec_t;
 
 #define RANSTREAM_STATESZ (4*SZ_VEC)
 
+#define RANSTREAM_CHUNKSZ (2*RANSTREAM_STATESZ)
+#define RANSTREAM_BUFSZ   (RANSTREAM_NCHUNKS*RANSTREAM_CHUNKSZ)
+
 
 struct RandomStream_impl {
 
    AlignedArray<unsigned char> state_store;
    AlignedArray<unsigned char> buf_store;
+   long chunk_count;
 
    void allocate_space() 
    {
       state_store.SetLength(RANSTREAM_STATESZ);
       buf_store.SetLength(RANSTREAM_BUFSZ);
    }
+
 
    explicit
    RandomStream_impl(const unsigned char *key) 
@@ -2000,6 +2207,8 @@ struct RandomStream_impl {
       STORE_VEC(state + 1*SZ_VEC, d1); 
       STORE_VEC(state + 2*SZ_VEC, d2); 
       STORE_VEC(state + 3*SZ_VEC, d3); 
+
+      chunk_count = 0;
    }
 
    RandomStream_impl(const RandomStream_impl& other) 
@@ -2012,6 +2221,7 @@ struct RandomStream_impl {
    {
       std::memcpy(state_store.elts(), other.state_store.elts(), RANSTREAM_STATESZ);
       std::memcpy(buf_store.elts(), other.buf_store.elts(), RANSTREAM_BUFSZ);
+      chunk_count = other.chunk_count;
       return *this;
    }
 
@@ -2026,6 +2236,10 @@ struct RandomStream_impl {
    {
       return RANSTREAM_BUFSZ;
    }
+
+   // bytes are generated in chunks of RANSTREAM_BUFSZ bytes, except that
+   // initially, we may generate a few chunks of RANSTREAM_CHUNKSZ
+   // bytes.  This optimizes a bit for short bursts following a reset.
 
    long
    get_bytes(unsigned char *NTL_RESTRICT res, 
@@ -2060,7 +2274,9 @@ struct RandomStream_impl {
       long i = 0;
       for (;  i <= n-RANSTREAM_BUFSZ; i += RANSTREAM_BUFSZ) {
 
-	 for (long j = 0; j < RANSTREAM_BUFSZ/(8*SZ_VEC); j++) {
+         chunk_count |= RANSTREAM_NCHUNKS;  // disable small buffer strategy
+
+	 for (long j = 0; j < RANSTREAM_NCHUNKS; j++) {
 	    ivec_t v0=d0, v1=d1, v2=d2, v3=d3;
 	    ivec_t v4=d0, v5=d1, v6=d2, v7=ADD_VEC_64(d3, DELTA);
 
@@ -2079,13 +2295,26 @@ struct RandomStream_impl {
       }
 
       if (i < n) {
-	 for (long j = 0; j < RANSTREAM_BUFSZ/(8*SZ_VEC); j++) {
+
+         long nchunks;
+
+         if (chunk_count < RANSTREAM_NCHUNKS) {
+            nchunks = long(cast_unsigned((n-i)+RANSTREAM_CHUNKSZ-1)/RANSTREAM_CHUNKSZ);
+            chunk_count += nchunks;
+         }
+         else
+            nchunks = RANSTREAM_NCHUNKS;
+
+         long pos_offset = RANSTREAM_BUFSZ - nchunks*RANSTREAM_CHUNKSZ;
+         buf += pos_offset;
+
+	 for (long j = 0; j < nchunks; j++) {
 	    ivec_t v0=d0, v1=d1, v2=d2, v3=d3;
 	    ivec_t v4=d0, v5=d1, v6=d2, v7=ADD_VEC_64(d3, DELTA);
 
 	    for (long k = 0; k < CHACHA_RNDS/2; k++) {
-		    DQROUND_VECTORS_VEC(v0,v1,v2,v3)
-		    DQROUND_VECTORS_VEC(v4,v5,v6,v7)
+               DQROUND_VECTORS_VEC(v0,v1,v2,v3)
+               DQROUND_VECTORS_VEC(v4,v5,v6,v7)
 	    }
 
 	    WRITE_VEC(buf+j*(8*SZ_VEC), 0, ADD_VEC_32(v0,d0), ADD_VEC_32(v1,d1), ADD_VEC_32(v2,d2), ADD_VEC_32(v3,d3))
@@ -2094,13 +2323,22 @@ struct RandomStream_impl {
 	    d3 = ADD_VEC_64(d3, DELTA);
 	 }
 
-	 pos = n-i;
-	 std::memcpy(&res[i], &buf[0], pos);
+	 pos = n-i+pos_offset;
+	 std::memcpy(&res[i], &buf[0], n-i);
       }
 
       STORE_VEC(state + 3*SZ_VEC, d3); 
 
       return pos;
+   }
+
+   void set_nonce(unsigned long nonce)
+   {
+      unsigned char *state = state_store.elts();
+      ivec_t d3;
+      d3 = NONCE(nonce);
+      STORE_VEC(state + 3*SZ_VEC, d3);
+      chunk_count = 0;
    }
 
 };
@@ -2171,6 +2409,25 @@ struct RandomStream_impl {
       return pos;
    }
 
+   void set_nonce(unsigned long nonce)
+   {
+      _ntl_uint32 nonce0, nonce1;
+
+      nonce0 = nonce;
+      nonce0 = INT32MASK(nonce0);
+
+      nonce1 = 0;
+
+#if (NTL_BITS_PER_LONG > 32)
+      nonce1 = nonce >> 32;
+      nonce1 = INT32MASK(nonce1);
+#endif
+
+      state[12] = 0;
+      state[13] = 0;
+      state[14] = nonce0;
+      state[15] = nonce1;
+   }
 };
 
 
@@ -2227,6 +2484,12 @@ RandomStream_impl_get_bytes(RandomStream_impl& impl,
    return impl.get_bytes(res, n, pos);
 }
 
+
+void 
+RandomStream_impl_set_nonce(RandomStream_impl& impl, unsigned long nonce)
+{
+   impl.set_nonce(nonce);
+}
 
 
 
@@ -2317,6 +2580,18 @@ unsigned long RandomWord()
 
    stream.get(buf, NTL_BITS_PER_LONG/8);
    return WordFromBytes(buf, NTL_BITS_PER_LONG/8);
+}
+
+
+void VectorRandomWord(long k, unsigned long* x)
+{
+   RandomStream& stream = LocalGetCurrentRandomStream();
+   unsigned char buf[NTL_BITS_PER_LONG/8];
+
+   for (long i = 0; i < k; i++) {
+      stream.get(buf, NTL_BITS_PER_LONG/8);
+      x[i] = WordFromBytes(buf, NTL_BITS_PER_LONG/8);
+   }
 }
 
 long RandomBits_long(long l)
@@ -2551,8 +2826,8 @@ double Log2(double x)
 // Define p(k,t) to be the conditional probability that a random, odd, k-bit 
 // number is composite, given that it passes t iterations of the 
 // Miller-Rabin test.
-// This routine returns 0 or 1, and if it returns 1 then
-// p(k,t) <= 2^{-n}.
+// If this routine returns a non-zero value, then
+//    p(k,t) <= 2^{-n}.
 // This basically encodes the estimates of Damgard, Landrock, and Pomerance;
 // it uses floating point arithmetic, but is coded in such a way
 // that its results should be correct, assuming that the log function
@@ -2663,8 +2938,298 @@ long GenPrime_long(long k, long err)
    return RandomPrime_long(k, t);
 }
 
+void MultiThreadedGenGermainPrime(ZZ& n, long k, long err)
+{
+   long nt = AvailableThreads();
+
+
+   long prime_bnd = ComputePrimeBound(k);
+
+   if (NumBits(prime_bnd) >= k/2)
+      prime_bnd = (1L << (k/2-1));
+
+   ZZ two;
+   two = 2;
+
+   const long LOCAL_ITER_BOUND = 8;
+   // since resetting the PRG comes at a certain cost,
+   // we perform a few iterations with each reset to
+   // amortize the reset cost. 
+
+   unsigned long initial_counter = 0;
+   ZZ seed;
+   RandomBits(seed, 256);
+
+
+   ZZ overflow_counter;
+
+   for (;;) {
+
+      AtomicLowWaterMark low_water_mark(-1UL);
+      AtomicCounter counter(initial_counter);
+
+      Vec< UniquePtr<ZZ> > result(INIT_SIZE, nt);
+      Vec<long> result_ctr(INIT_SIZE, nt, -1UL);
+
+      NTL_EXEC_INDEX(nt, index)
+
+         RandomStreamPush push;
+
+	 SetSeed(seed);
+	 RandomStream& stream = GetCurrentRandomStream();
+
+	 ZZ cand, n1;
+         PrimeSeq s;
+
+	 while (low_water_mark == -1UL) {
+
+	    unsigned long local_ctr = counter.inc();
+            if (local_ctr >> (NTL_BITS_PER_NONCE-1)) {
+               // counter overflow...rather academic
+               break;
+            }
+
+	    stream.set_nonce(local_ctr);
+	    
+	    for (long iter = 0; iter < LOCAL_ITER_BOUND && 
+				local_ctr <= low_water_mark; iter++) {
+
+
+	       RandomLen(cand, k);
+	       if (!IsOdd(cand)) add(cand, cand, 1);
+
+	       s.reset(3);
+	       long p;
+
+	       long sieve_passed = 1;
+
+	       p = s.next();
+	       while (p && p < prime_bnd) {
+		  long r = rem(cand, p);
+
+		  if (r == 0) {
+		     sieve_passed = 0;
+		     break;
+		  }
+
+		  // test if 2*r + 1 = 0 (mod p)
+		  if (r == p-r-1) {
+		     sieve_passed = 0;
+		     break;
+		  }
+
+		  p = s.next();
+	       }
+
+               if (!sieve_passed) continue;
+
+
+               if (MillerWitness(cand, two)) continue;
+
+	       // n1 = 2*cand+1
+	       mul(n1, cand, 2);
+	       add(n1, n1, 1);
+
+
+               if (MillerWitness(n1, two)) continue;
+
+	       result[index].make(cand);
+	       result_ctr[index] = local_ctr;
+	       low_water_mark.UpdateMin(local_ctr);
+	       break;
+            }
+         }
+
+      NTL_EXEC_INDEX_END
+
+      // find index of low_water_mark
+
+      unsigned long low_water_mark1 = low_water_mark;
+      unsigned long low_water_index = -1;
+
+      for (long index = 0; index < nt; index++) {
+	 if (result_ctr[index] == low_water_mark1) {
+	    low_water_index = index;
+	    break;
+	 }
+      }
+
+      if (low_water_index == -1) {
+         // counter overflow...rather academic
+         overflow_counter++;
+         initial_counter = 0;
+         RandomBits(seed, 256);
+         continue;
+      }
+
+      ZZ N;
+      N = *result[low_water_index];
+
+      ZZ iter = ((overflow_counter << (NTL_BITS_PER_NONCE-1)) +
+                 conv<ZZ>(low_water_mark1) + 1)*LOCAL_ITER_BOUND;
+
+      // now do t M-R iterations...just to make sure
+ 
+      // First compute the appropriate number of M-R iterations, t
+      // The following computes t such that 
+      //       p(k,t)*8/k <= 2^{-err}/(5*iter^{1.25})
+      // which suffices to get an overall error probability of 2^{-err}.
+      // Note that this method has the advantage of not requiring 
+      // any assumptions on the density of Germain primes.
+
+      long err1 = max(1, err + 7 + (5*NumBits(iter) + 3)/4 - NumBits(k));
+      long t;
+      t = 1;
+      while (!ErrBoundTest(k, t, err1))
+         t++;
+
+      Vec<ZZ> W(INIT_SIZE, t);
+
+      for (long i = 0; i < t; i++) {
+         do { 
+            RandomBnd(W[i], N);
+         } while (W[i] == 0);
+      }
+
+      AtomicBool tests_pass(true);
+
+      NTL_EXEC_RANGE(t, first, last)
+
+         for (long i = first; i < last && tests_pass; i++) {
+            if (MillerWitness(N, W[i])) tests_pass = false;
+         }
+
+      NTL_EXEC_RANGE_END
+
+      if (tests_pass) {
+         n = N;
+         return;
+      }
+
+      // very unlikey to get here
+      initial_counter = low_water_mark1 + 1;
+   }
+}
 
 void GenGermainPrime(ZZ& n, long k, long err)
+{
+   if (k <= 1) LogicError("GenGermainPrime: bad length");
+
+   if (k > (1L << 20)) ResourceError("GenGermainPrime: length too large");
+
+   if (err < 1) err = 1;
+   if (err > 512) err = 512;
+
+   if (k == 2) {
+      if (RandomBnd(2))
+         n = 3;
+      else
+         n = 2;
+
+      return;
+   }
+
+   if (k >= 192) {
+      MultiThreadedGenGermainPrime(n, k, err);
+      return;
+   }
+
+
+   long prime_bnd = ComputePrimeBound(k);
+
+   if (NumBits(prime_bnd) >= k/2)
+      prime_bnd = (1L << (k/2-1));
+
+
+   ZZ two;
+   two = 2;
+
+   ZZ n1;
+
+   
+   PrimeSeq s;
+
+   ZZ iter;
+   iter = 0;
+
+
+   for (;;) {
+      iter++;
+
+      RandomLen(n, k);
+      if (!IsOdd(n)) add(n, n, 1);
+
+      s.reset(3);
+      long p;
+
+      long sieve_passed = 1;
+
+      p = s.next();
+      while (p && p < prime_bnd) {
+         long r = rem(n, p);
+
+         if (r == 0) {
+            sieve_passed = 0;
+            break;
+         }
+
+         // test if 2*r + 1 = 0 (mod p)
+         if (r == p-r-1) {
+            sieve_passed = 0;
+            break;
+         }
+
+         p = s.next();
+      }
+
+      if (!sieve_passed) continue;
+
+
+      if (MillerWitness(n, two)) continue;
+
+      // n1 = 2*n+1
+      mul(n1, n, 2);
+      add(n1, n1, 1);
+
+
+      if (MillerWitness(n1, two)) continue;
+
+      // now do t M-R iterations...just to make sure
+ 
+      // First compute the appropriate number of M-R iterations, t
+      // The following computes t such that 
+      //       p(k,t)*8/k <= 2^{-err}/(5*iter^{1.25})
+      // which suffices to get an overall error probability of 2^{-err}.
+      // Note that this method has the advantage of not requiring 
+      // any assumptions on the density of Germain primes.
+
+      long err1 = max(1, err + 7 + (5*NumBits(iter) + 3)/4 - NumBits(k));
+      long t;
+      t = 1;
+      while (!ErrBoundTest(k, t, err1))
+         t++;
+
+      ZZ W;
+      long MR_passed = 1;
+
+      long i;
+      for (i = 1; i <= t; i++) {
+         do {
+            RandomBnd(W, n);
+         } while (W == 0);
+         // W == 0 is not a useful candidate witness!
+
+         if (MillerWitness(n, W)) {
+            MR_passed = 0;
+            break;
+         }
+      }
+
+      if (MR_passed) break;
+   }
+}
+
+void OldGenGermainPrime(ZZ& n, long k, long err)
 {
    if (k <= 1) LogicError("GenGermainPrime: bad length");
 

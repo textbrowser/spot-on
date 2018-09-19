@@ -1,6 +1,3 @@
-#include <NTL/config.h>
-
-
 #include <sys/time.h>
 #include <sys/resource.h>
 

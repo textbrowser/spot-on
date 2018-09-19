@@ -60,7 +60,7 @@ vec_pair_zz_pEX_long NewDDF(const zz_pEX& f, const zz_pEX& h,
 // form tmp-*.
 // The definition of "large" is controlled by the variable
 
-      extern double zz_pEXFileThresh
+      extern thread_local double zz_pEXFileThresh
 
 // which can be set by the user.  If the sizes of the tables
 // exceeds zz_pEXFileThresh KB, external files are used.

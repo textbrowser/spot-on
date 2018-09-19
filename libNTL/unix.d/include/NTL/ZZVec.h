@@ -66,7 +66,7 @@ public:
    }
 
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    ZZVec(ZZVec&& other) noexcept : ZZVec() 
    {

@@ -5,15 +5,6 @@ This configure script generates the file 'makefile' and the file
 '../include/NTL/config.h', based upon the values assigned to the
 variables on the command line.
 
-Note that all of these configuration options can also be set 
-by editing these two (well documented) files by hand.
-
-This command is intended only to provide a slightly more convenient
-and (perhaps more importantly) non-interactive way to do this.
-This script does not perform any 'magic', like finding out what
-the local C compiler is called, etc.  If the defaults are not
-correct for your platform, you have to set an appropriate variable.
-
 
 ########### Here are the most important variables, and their default values.
 
@@ -23,15 +14,15 @@ CXXFLAGS=-g -O2      # C++ complilation flags
 
 NATIVE=on            # compiles code targeted to current hardware
 
-TUNE=auto            # performance-tuning switch
+TUNE=generic (or x86)# performance-tuning switch
 
 DEF_PREFIX=/usr/local# Default software directory
 
 PREFIX=$(DEF_PREFIX) # Directory in which to install NTL library components
 SHARED=off           # Generate a shared library (as well as static)
 
-NTL_THREADS=off      # compile in thread-safe mode
-NTL_THREAD_BOOST=off # compile with thread boosting enabled
+NTL_THREADS=on       # compile in thread-safe mode
+NTL_THREAD_BOOST=on  # compile with thread boosting enabled
 NTL_EXCEPTIONS=off   # compile in exception-safe mode
 
 NTL_GMP_LIP=on       # Switch to enable the use of GMP as primary 
@@ -45,10 +36,15 @@ NTL_GF2X_LIB=off     # Switch to enable the use of the gf2x package
 
 GF2X_PREFIX=$(DEF_PREFIX) # Directory in which gf2x components are installed
 
-NTL_STD_CXX11=off    # Build assuming C++11 features
-NTL_STD_CXX14=off    # Build assuming C++14 features
+NTL_STD_CXX11=on     # Build assuming C++11 features
 
-NTL_SAFE_VECTORS=off # build in "safe vector" mode 
+NTL_SAFE_VECTORS=on  # build in "safe vector" mode 
+
+NTL_ENABLE_AVX_FFT=off # implement the small-prime FFT using AVX
+                       # instructions...this is experimental at 
+                       # moment, and may lead to worse performance
+
+NTL_AVOID_AVX512=off # avoid using 512-bit AVX registers
 
 
 ########## Here are more detailed description of these variables.
@@ -58,15 +54,14 @@ NTL_SAFE_VECTORS=off # build in "safe vector" mode
 CXX=g++
 
 # A C++ compiler, e.g., g++, CC, xlC
-# Note that NTL appends a ".c" siffix to both C and C++ files,
-# so you must, for example, use g++ (rather than gcc) as your C++ 
-# compiler.
 
 
 
 CXXFLAGS=-g -O2
 
 # Flags for the C++ compiler. 
+# It is highly recommend to avoid things like -O3 and -Ofast.
+# These may yield incorrect code.
 
 
 NATIVE=on
@@ -74,15 +69,18 @@ NATIVE=on
 # Flag to target code to current hardware.  Setting this flag  will pass
 # -march=native through to the compiler via CXXAUTOFLAGS (if possible).  This
 # is the easiest way to exploit the hardware capabilities of your machine to
-# their fullest potential.  
+# their fullest potential.  Note that if CXXFLAGS contains an '-march=XXX'
+# option, then NATIVE will be turned off.
 
-TUNE=auto
+TUNE=generic (or x86)
 
 # Switch to determine how various performance options get set
-#   auto        make runs a performance-tuning wizard (recommended)
+#   auto        make runs a performance-tuning wizard 
 #   generic     should be OK for most platforms
 #   x86         should be well suited for most x86 platforms
-# More choices may be added in the future
+# More choices may be added in the future.
+# The default is 'x86' if the configuration script detects that it 
+# is running on an x86 machine; otherwise the default is 'generic'.
 
 
 ########## Installation path:
@@ -122,7 +120,7 @@ SHARED=off
 
 ########## thread safety
 
-NTL_THREADS=off
+NTL_THREADS=on
 
 # Set to 'on' if you want to compile NTL in thread-safe mode.  This requires
 # several C++11 features, including atomic types, mutexes, and thread_local
@@ -130,14 +128,16 @@ NTL_THREADS=off
 # flag will automatically set the NTL_STD_CXX11 flag (if neither NTL_STD_CXX11
 # or NTL_STD_CXX14 is already set). It will also pass -pthread throught to the
 # compiler via CXXAUTOFLAGS (if possible).
+# Turning this flag off will also turn off the NTL_THREAD_BOOST flag.
 
 ########## thread boosting
 
-NTL_THREAD_BOOST=off
+NTL_THREAD_BOOST=on
 
 # Set to 'on' if you want to compile NTL so that is does certain internal
-# computations using multiple threads.  Setting this flag automatically sets
-# the NTL_THREADS flag.  This feature is a work in progress.  
+# computations using multiple threads.  
+# This feature is a work in progress.  
+# As time goes on, more NTL algorithms are thread boosted.
 # See BasicThreadPool documentation file for more details.
 
 ########## exceptions
@@ -155,7 +155,8 @@ NTL_EXCEPTIONS=off
 # abort.  Also, if compiling in C++11 mode (or later, see NTL_STD_CXX11), with
 # exceptions disabled, certain move constructors and move assignment operators
 # will be declared "noexcept".  This can lead to greater efficiency (for
-# example, std::vector's take advantage of this).
+# example, std::vector's take advantage of this to avoid call to copy 
+# contructors).
 
 # With exceptions enabled, most error conditions detected by NTL will result in
 # an exception being thrown.  NTL will also be compiled in a "thread safe" mode
@@ -210,16 +211,17 @@ GF2X_PREFIX=$(DEF_PREFIX)
 
 ########### Language stadards
 
-NTL_STD_CXX11=off    # Build assuming C++11 features
+NTL_STD_CXX11=on     # Build assuming C++11 features
 NTL_STD_CXX14=off    # Build assuming C++14 features
 
-# Setting one of these will also make pass either -std=c++11 or -std=c++14
-# through to the compiler via CXXAUTOFLAGS (if possible)
+# Setting one of these may also result in passing pass either -std=c++11 or
+# -std=c++14 through to the compiler via CXXAUTOFLAGS (if it is necessary and
+# possible).
 
 
 ############ Safe vector mode
 
-NTL_SAFE_VECTORS=off # Build in "safe vector mode"
+NTL_SAFE_VECTORS=on  # Build in "safe vector mode"
 
 # Build NTL in "safe vector mode", which relaxes the "relocatability"
 # requirement for NTL vector types. I expect that at some point in the next
@@ -228,6 +230,30 @@ NTL_SAFE_VECTORS=off # Build in "safe vector mode"
 # NTL_STD_CXX14 is already set).  See vector documentation file for more
 # details.
 
+
+############ AVX FFT
+
+NTL_ENABLE_AVX_FFT=off # implement the small-prime FFT using AVX
+                       # instructions...this is experimental at 
+                       # moment, and may lead to worse performance
+
+On machines with AVX2/FMA or AVX512, this will implement the small-prime FFT
+using AVX code.  This is still quite experimental, and may lead to worse
+performance.  While the FFT itself can run 2-3 times faster, this comes at the
+cost of (1) restriction to 50-bit primes (so NTL_SP_NBITS will be set to 50
+instead of 60), and (2) the CPU speed may be throttled, slowing down other
+operations.  So far, it seems that the only operations that are faster are
+arithmetic operations in zz_pX, and only for certain choices of modulus.
+Arithmetic operations in ZZ_pX, with large modulus, can run slower with AVX
+than without.
+
+
+########### Avoid 512-bit AVX registers
+
+NTL_AVOID_AVX512=off # avoid using 512-bit AVX registers
+
+Even if available, this will avoid the use of 512-bit AVX registers.  This
+affects both Mat<zz_p> operations, as well as the AVX-based FFT (see above).
 
 
 
@@ -238,17 +264,9 @@ NTL_SAFE_VECTORS=off # Build in "safe vector mode"
 
    ./configure
 
-# Actually, the initially installed makefile and config.h files
-# already reflect the default values. 
+# If your C++ compiler is called icpc:
 
-
-
-
-# If your C++ compiler is called CC:
-
-   ./configure CXX=CC
-
-
+   ./configure CXX=icpc
 
 
 # If GMP was installed in a non-standard directory, say,  $HOME/sw:
@@ -277,16 +295,56 @@ NTL_SAFE_VECTORS=off # Build in "safe vector mode"
 CXXAUTOFLAGS=
 
 # This is a variable that is automagically set by the configuration script.
-# These are C++ compiler flags that are selected depending on
-# the choice of other configuration options, and is geared towards gcc.
-# The configuration script always prints out the value it chooses.
-# If you explicitly set a value when invoking the configuration script,
-# then it will not change that value.
+# These are C++ compiler flags that are selected depending on the choice of
+# other configuration options, as well as information gleaned by the
+# configuration script about the compiler.  To do this, the configuration
+# script attempts to figure out the type of compiler and the default language
+# standard supported.  The types of compiler currently recognized are gcc,
+# clang, and icc.  For these compilers, the automagic should definitely work.
+# For others, your mileage may vary.  The configuration script always prints
+# out the value it chooses.  Currently, the following flags may get passed
+# through CXXAUTOFLAGS:
+#
+#   -std=c++11 
+#   -std=c++14         if requested explicitly via NTL_STD_CXX11=on or 
+#                      NTL_STD_CXX14=on, or implicitly via a request
+#                      for a feature that requires C++11
+#
+#   -pthread           if thread-safety is requested via NTL_THREADS=on 
+#                      or NTL_THREAD_BOOST=on
+#
+#   -fp-model precise  only for the Intel icc compiler (to prevent
+#                      non-value-preserving floating point optimizations)
+#
+# If you explicitly set the value of CXXAUTOFLAGS when invoking the
+# configuration script, then it will not change that value.
+
+NOCONTRACT=
+
+# Like the CXXAUTOFLAGS variable, this is set automagically by the 
+# configuration script, unless you explicitly provide a value.
+# It is only used in compiling the source file that implements
+# the quad_float class.  For that file only, NTL requires not only
+# that the compiler does not perform any non-value-preserving 
+# floating point optimizations, but that is also does not perform
+# any "contractions" (i.e., emit FMA (fused multiply add) instructions. 
+# Currently, it may be set as follows:
+# 
+#   -ffp-contract=off   for gcc (and possibly clang) compilers 
+#
+#   -mno-fused-madd     for old gcc compilers that don't support 
+#                       -ffp-contract=off
+#   -DFP_CONTRACT_OFF   for the Intel icc compiler
+#
+# The configuation script will make every attempt to ensure that this really
+# does disable contractions.  If it doesn't work, a fallback strategy is used
+# that should still work (but with a performance penalty).
+
 
 MAKE_PROG=make
 
-# To set CXXAUTOFLAGS, the configure script actually needs to run make.
-# If you wish to use a non-standard make program for this purpose,
+# To set CXXAUTOFLAGS and NOCONTRACT, the configure script actually needs to
+# run make.  If you wish to use a non-standard make program for this purpose,
 # set this variable to point to that program.
 
 
@@ -309,8 +367,10 @@ LIBDIR=$(PREFIX)/lib
 INCLUDEDIR=$(PREFIX)/include
 DOCDIR=$(PREFIX)/share/doc
 
-NTL_DISABLE_TLS_HACK=off
-NTL_ENABLE_TLS_HACK=off
+NTL_TLS_HACK=on
+
+NTL_DISABLE_MOVE_ASSIGN=on
+NTL_DISABLE_MOVE=off
 
 NTL_LEGACY_NO_NAMESPACE=off
 NTL_LEGACY_INPUT_ERROR=off
@@ -319,11 +379,11 @@ NTL_LEGACY_SP_MULMOD=off
 
 NTL_UNSIGNED_LONG_LONG_TYPE=undefined
 NTL_CLEAN_INT=off
-NTL_CLEAN_PTR=off
+NTL_CLEAN_PTR=on
 NTL_RANGE_CHECK=off
 NTL_X86_FIX=off
 NTL_NO_X86_FIX=off
-NTL_NO_INIT_TRANS=off
+NTL_NO_INIT_TRANS=on
 NTL_DISABLE_LONGDOUBLE=off
 NTL_DISABLE_LONGLONG=off
 NTL_DISABLE_LL_ASM=off
@@ -425,10 +485,9 @@ DOCDIR=$(PREFIX)/share/doc
 # copies the library itself to $(LIBDIR)/libntl.a, and copies the
 # documentation files into $(DOCDIR)/NTL.
 
-########## Disable/enable TLS hack
+########## TLS hack
 
-NTL_DISABLE_TLS_HACK=off
-NTL_ENABLE_TLS_HACK=off
+NTL_TLS_HACK=on
 
 # when building NTL with NTL_THREADS=on, if the compiler is gcc-compatible, a
 # "TLS hack" may be used to workaround the fact that many compilers do not
@@ -436,15 +495,30 @@ NTL_ENABLE_TLS_HACK=off
 # gcc's more limited __thread feature, and to emulate thread_local semantics
 # using pthread routines.
 # 
-# "gcc-compatible" means that the "__GNUC__" macro is defined, which means the
-# TLS hack may be used for gcc, clang, and icc compilers.  The current version
-# of NTL will enable this hack by default, but you can disable it by specifying
-# NTL_DISABLE_TLS_HACK=on.  At some point in the future, this default behavior
-# may change, in which case you will still be able to force the TLS hack by
-# specifying NTL_ENABLE_TLS_HACK=on.
+# The configuration script will first check if threads and TLS work with the
+# hack, and if not, will try setting NTL_TLS_HACK=off.  You can also turn off
+# the hack by setting NTL_TLS_HACK=off.
 
 
+########## Disabling move semantics
 
+NTL_DISABLE_MOVE_ASSIGN=on
+NTL_DISABLE_MOVE=off
+
+# The first flag will disable the generation of move assignment operators for
+# Vec<T>, Mat<T>, vec_GF2, and GF2X.  By implication, move assignment operators
+# will be disabled as well for many other types (like polynomials).  The second
+# flag will disable move constuctors and move assignment operators for all NTL
+# types.
+
+# These flags are only relevant in C++11 mode.  They are meant to deal with
+# backward compatibility issues for legacy NTL clients that may not deal well
+# with automatically generated move operations.  It turns out that move
+# semantics can quietly break programs.  See
+# http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/n3153.htm 
+# However, the default now is just to disable move assignment operators for
+# those classes where it seems likeliest to cause a problem.  This default will
+# likely be changed in the future, so that no move operations are disabled.
 
 
 
@@ -498,10 +572,12 @@ NTL_CLEAN_INT=off
 # integer arithmetic which would yield slightly better performance.
 
 
-NTL_CLEAN_PTR=off
+NTL_CLEAN_PTR=on
 
 # Setting this to 'on' disables the use of some non-standard
 # pointer arithmetic which would yield slightly better performance.
+# The 'off' setting really just invites undefined behavior without 
+# any measurable performance benefit. 
 
 
 NTL_RANGE_CHECK=off
@@ -532,7 +608,7 @@ NTL_NO_X86_FIX=off
 
 
 
-NTL_NO_INIT_TRANS=off
+NTL_NO_INIT_TRANS=on
 
 # When 'off', NTL uses a special code sequence to avoid
 # copying large objects in return statements.  However, if your
@@ -583,7 +659,7 @@ NTL_SPMM_ULL=off
 NTL_FFT_BIGTAB=off
 
 # Precomputed tables are used to store all the roots of unity
-# used in FFT computations.
+# used in FFT computations. 
 
 
 NTL_FFT_LAZYMUL=off

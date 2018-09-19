@@ -286,13 +286,13 @@ long
   dumped to a file.  The behavior can be controlled with these global
   variables:
 
-     extern char *LLLDumpFile;  // file to dump basis, 0 => no dump; 
-                                // initially 0
+     extern thread_local char *LLLDumpFile;  
+     // file to dump basis, 0 => no dump; 
+     // initially 0
 
-     extern double LLLStatusInterval; // seconds between status reports 
-                                      // initially 900s = 15min
-
-
+     extern thread_local double LLLStatusInterval; 
+     // seconds between status reports 
+     // initially 900s = 15min
 
  
 ************* Calling Syntax for BKZ routines ***************

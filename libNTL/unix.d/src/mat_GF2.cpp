@@ -3,7 +3,6 @@
 #include <NTL/mat_GF2.h>
 #include <NTL/vec_long.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 
@@ -52,7 +51,7 @@ void mul_aux(vec_GF2& x, const mat_GF2& A, const vec_GF2& b)
   
 void mul(vec_GF2& x, const mat_GF2& A, const vec_GF2& b)  
 {  
-   if (&b == &x || A.position1(x) != -1) {
+   if (&b == &x || A.alias(x)) {
       vec_GF2 tmp;
       mul_aux(tmp, A, b);
       x = tmp;
@@ -99,7 +98,7 @@ void mul_aux(vec_GF2& x, const vec_GF2& a, const mat_GF2& B)
 
 void mul(vec_GF2& x, const vec_GF2& a, const mat_GF2& B)
 {
-   if (&a == &x || B.position1(x) != -1) {
+   if (&a == &x || B.alias(x)) {
       vec_GF2 tmp;
       mul_aux(tmp, a, B);
       x = tmp;

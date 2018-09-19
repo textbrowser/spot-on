@@ -42,6 +42,15 @@ double fma_test(double a, double b, double c)
    return t2;
 }
 
+double reassoc_test(double a, double b, double c, double d)
+{
+   double t1 = a*c + a*d;
+   double t2 = b*c + b*d;
+   return t1 + t2;
+   // an optimizing compiler that reassociates will almost
+   // surely compute this as (a+b)*(c+d).
+}
+
 double power2(long k)
 {
    long i;

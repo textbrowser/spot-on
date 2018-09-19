@@ -1,7 +1,6 @@
 
 #include <NTL/ZZVec.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 
@@ -22,7 +21,7 @@ void ZZVec::SetSize(long n, long d)
    tmp.len = 0;
    tmp.bsize = d;
 
-   tmp.v = (ZZ*) NTL_MALLOC(n, sizeof(ZZ), 0);
+   tmp.v = (ZZ*) NTL_SNS_MALLOC(n, sizeof(ZZ), 0);
    if (!tmp.v) MemoryError();
 
    long i = 0;

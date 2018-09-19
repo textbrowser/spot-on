@@ -600,7 +600,8 @@ BasicThreadPool *ReleaseThreadPool();
 
 inline void SetNumThreads(long n) 
 { 
-   ResetThreadPool(MakeRaw<BasicThreadPool>(n));
+   BasicThreadPool *p = (n == 1 ? 0 : MakeRaw<BasicThreadPool>(n));
+   ResetThreadPool(p);
 }
 
 inline long AvailableThreads()

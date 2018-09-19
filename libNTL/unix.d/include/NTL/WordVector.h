@@ -38,12 +38,6 @@ NTL_OPEN_NNS
 #define NTL_WordVectorMinAlloc (4)
 #endif
 
-// vectors are always expanded by at least this ratio
-
-#ifndef NTL_WordVectorExpansionRatio
-#define NTL_WordVectorExpansionRatio (1.4)
-#endif
-
 // controls initialization during input
 
 #ifndef NTL_WordVectorInputBlock

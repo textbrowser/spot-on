@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/junk6/ntl-10.4.0/doc/vector.cpp.html</title>
+<title>~/ntl-staging/ntl-11.0.0updated/doc/vector.cpp.html</title>
 <meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -70,25 +70,15 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Comment">v.allocated() is the number of elements which have been allocated,</span>
 <span class="Comment">which may be more than the number elements initialized.</span>
 <span class="Comment">Note that if n &lt;= v.allocated(), then v.SetLength(n) is guaranteed</span>
-<span class="Comment">not to cause any memory allocation, or movement of objects.</span>
+<span class="Comment">not to cause any memory allocation or movement of objects.</span>
 
 <span class="Comment">Space is managed using malloc, realloc, and free.  When a vector is grown, a</span>
 <span class="Comment">bit more space may be allocated than was requested for efficiency reasons.</span>
 
-<span class="Comment">Note that when a vector is grown, the space is reallocated using realloc, and</span>
-<span class="Comment">thus the addresses of vector elements may change, possibly creating dangling</span>
-<span class="Comment">references to vector elements.  One has to be especially careful of this when</span>
-<span class="Comment">using vectors passed as reference parameters that may alias one another.</span>
-
-<span class="Comment">Because realloc is used to grow a vector, the objects stored in a vector should</span>
-<span class="Comment">be &quot;relocatable&quot;---that is, they shouldn't care what their actual address is,</span>
-<span class="Comment">which may change over time.  Most reasonable objects satisfy this constraint.</span>
-
-<span class="Comment">NOTE: as of NTL 10.4, you may compile NTL in &quot;safe vector&quot; mode by setting the</span>
-<span class="Comment">configuration flag NTL_SAFE_VECTORS=on.  In this mode, a safer approach for</span>
-<span class="Comment">resizing vectors is used, which uses copy/move constructors instead of realloc,</span>
-<span class="Comment">unless the type T is explicitly declared as &quot;relocatable&quot;.  See below for more</span>
-<span class="Comment">details.</span>
+<span class="Comment">Note that when a vector is grown, the objects in the vector may have moved,</span>
+<span class="Comment">possibly creating dangling references to vector elements.  One has to be</span>
+<span class="Comment">especially careful of this when using vectors passed as reference parameters</span>
+<span class="Comment">that may alias one another.</span>
 
 
 <span class="Comment">----------------------</span>
@@ -146,53 +136,58 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Comment">For old-time FORTRAN programmers, the i-th vector element (counting from 1) is</span>
 <span class="Comment">accessed as v(i).</span>
 
-<span class="Comment">-------------------------</span>
-<span class="Comment">COMPARISON TO STL VECTORS </span>
-<span class="Comment">-------------------------</span>
+<span class="Comment">--------------------</span>
+<span class="Comment">REALLOCATION DETAILS</span>
+<span class="Comment">--------------------</span>
 
-<span class="Comment">When the length of an NTL vector is reduced, no objects are destroyed.</span>
-<span class="Comment">In contrast, when the length of an STL vector is reduced, objects are</span>
-<span class="Comment">destroyed (effectively, maintaining the invariant len == init).</span>
+<span class="Comment">When a vector is resized and not enough space has been allocated, then a</span>
+<span class="Comment">reallocation process takes place.  There are several strategies which can be</span>
+<span class="Comment">used, which we list here from least to most efficient.</span>
 
-<span class="Comment">If not using NTL's safe vector mode (see below), when the length of an NTL</span>
-<span class="Comment">vector is increased, and the new value of len exceeds the current value of</span>
-<span class="Comment">alloc, the underying array of objects is resized using realloc.  This implies</span>
-<span class="Comment">that existing objects are moved using a bit-wise copy.  As mentioned above,</span>
-<span class="Comment">this means that objects should be &quot;relocatable&quot;, in the sense that they do not</span>
-<span class="Comment">care what their actual address is.  Most reasonable objects satisfy this</span>
-<span class="Comment">constraint.  An example of an object that does not is one that stores in one</span>
-<span class="Comment">data member a pointer to another data member within the same object.</span>
 
-<span class="Comment">In contrast, when the length of an STL vector is increased, a new array is</span>
-<span class="Comment">allocated, and objects from the old array are copied to the new array, and then</span>
-<span class="Comment">destroyed in the old array.  This obviously is much more expensive that NTL's</span>
-<span class="Comment">strategy.  However, the new &quot;move semantics&quot;, introduced in C++11, mitigate</span>
-<span class="Comment">this issue somewhat.</span>
+<span class="Comment">COPY AND DESTROY STRATEGY:</span>
+<span class="Comment">This is the same strategy used by the STL prior to C++11.  New memory is</span>
+<span class="Comment">allocated, and each element of the vector is copied (using a copy constructor)</span>
+<span class="Comment">to the new memory, and then all the elements in the old memory is destroyed</span>
+<span class="Comment">(using a destructor).  While much safer than the Realloc Strategy, it can be a</span>
+<span class="Comment">bit slower.</span>
 
-<span class="Comment">Because of NTL's relocatability requirement, it is not recommended to use NTL</span>
-<span class="Comment">vectors over classes coming from the standard library, which may not satisfy</span>
-<span class="Comment">the requirement.  In those cases, you could either use an STL vector, or use an</span>
-<span class="Comment">NTL vector and wrap the suspect classes in an NTL smart pointer of some kind</span>
-<span class="Comment">(e.g., SmartPtr or CopiedPtr).</span>
+<span class="Comment">MOVE STRATEGY:</span>
+<span class="Comment">This is a strategy that is also used by the STL, assuming C++11.  New memory is</span>
+<span class="Comment">allocated, and each element of the vector is moved (using a move constructor)</span>
+<span class="Comment">to the new memory, and then all the elements in the old memory is destroyed</span>
+<span class="Comment">(using a destructor).  This strategy is only viable if the underlying type has</span>
+<span class="Comment">a &quot;nothrow&quot; move constructor.  Typically, it will be significantly faster than</span>
+<span class="Comment">the Copy and Destroy Strategy.</span>
 
-<span class="Comment">Note also that Facebook's open source &quot;folly&quot; library also provides a vector</span>
-<span class="Comment">class that uses realloc in a manner very similar to NTL's vector class.  See</span>
-<span class="Comment"><a href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md</a></span>
+<span class="Comment">REALLOC STRATEGY:</span>
+<span class="Comment">This strategy simply calls the realloc function, which may result in objects</span>
+<span class="Comment">being copied bit-wise from one location in memory to another.  For most types</span>
+<span class="Comment">of objects, even those with non-trivial constructors and destructors, this is</span>
+<span class="Comment">perfectly safe, as most objects really don't care what address they are stored</span>
+<span class="Comment">at.  As an example of where this doesn't work, STL string implementations using</span>
+<span class="Comment">a &quot;short string&quot; optimization may consist of an object containing a pointer to</span>
+<span class="Comment">a sub-object, which would be invalidated if the object were bit-wise moved from</span>
+<span class="Comment">one location to another.  This strategy is the fastest of them all.</span>
 
-<span class="Comment">See also <a href="http://open-std.org/JTC1/SC22/WG21/docs/papers/2016/p0023r0.pdf">http://open-std.org/JTC1/SC22/WG21/docs/papers/2016/p0023r0.pdf</a></span>
-<span class="Comment">for more on this issue.</span>
+<span class="Comment">CHOOSING A STRATEGY:</span>
+<span class="Comment">In the implementation of Vec&lt;T&gt;, NTL will opt for the Realloc Strategy</span>
+<span class="Comment">if one of the two conditions hold:</span>
+<span class="Comment">   (i) T has a trivial copy constructor and a trivial destructor, or</span>
+<span class="Comment">   (iii) T is a class that has been explicit declared &quot;relocatable&quot;.</span>
+<span class="Comment">(See below for details on how to declare that a class is relocatable.)</span>
+<span class="Comment">Otherwise, NTL will use the Move Strategy if T has a nothrow move costructor.</span>
+<span class="Comment">Otherwise, NTL will use the Copy Strategy if T has a copy constructor that is</span>
+<span class="Comment">accessible (i.e., not private and not deleted).  Otherwise, no reallocation</span>
+<span class="Comment">implementation is provided, and a runtime error will be raised if a</span>
+<span class="Comment">reallocation is required (this provides maximum flexiblilty and also maximum</span>
+<span class="Comment">backward compatibility with previous versions of NTL, even though sometimes a</span>
+<span class="Comment">compile-time diagnostic would be preferable).</span>
 
-<span class="Comment">----------------</span>
-<span class="Comment">SAFE VECTOR MODE</span>
-<span class="Comment">----------------</span>
 
-<span class="Comment">As of NTL 10.4, you can configure NTL in &quot;safe vector mode&quot; by configuring NTL</span>
-<span class="Comment">with NTL_SAFE_VECTORS=on.  If you do this, then by default, NTL will *not* use</span>
-<span class="Comment">the above realloc strategy for resizing a vector.  Rather, it will use the same</span>
-<span class="Comment">strategy used by STL vectors: using a nothrow move constructor if available,</span>
-<span class="Comment">and a copy constructor otherwise.  However, one can also explicitly declare</span>
-<span class="Comment">that a class T is relocatable.  The easiest way to do this is to put the</span>
-<span class="Comment">following line of code immediately after the definition of class T:</span>
+<span class="Comment">DECLARING A CLASS RELOCATABLE:</span>
+<span class="Comment">One can declare T to be relocatable by adding the following line of code</span>
+<span class="Comment">immediately after the definition of class T:</span>
 
 <span class="Comment">   NTL_DECLARE_RELOCATABLE((T*))</span>
 
@@ -226,20 +221,25 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Comment">include scalar types and simple classes with trivial copy constructor and</span>
 <span class="Comment">destructor.</span>
 
-<span class="Comment">Thus, even in &quot;safe vector mode&quot;, NTL will continue to use the realloc strategy</span>
-<span class="Comment">on such simple types.  NTL also declares most of the important classes in the</span>
-<span class="Comment">library to be relocatable.  Some of these classes do not (in general) have</span>
-<span class="Comment">nothrow move constructors, yet it is still safe to relocate via realloc in the</span>
-<span class="Comment">context of NTL Vec's.  </span>
+<span class="Comment">NTL already declares as relocatable most if the fundamental types fot which it</span>
+<span class="Comment">makes sense to do so.</span>
 
-<span class="Comment">Note that safe vector mode requires C++11 features.  When not in safe vector</span>
-<span class="Comment">mode, you can still leave in the above declarations and things will be fine,</span>
-<span class="Comment">even without C++11 (the constexpr will become an inline, to keep the compiler</span>
-<span class="Comment">happy).</span>
+<span class="Comment">UNSAFE VECTOR MODE:</span>
+<span class="Comment">The above describes the default behavior of NTL as of version 11.0.  Prior to</span>
+<span class="Comment">version 11.0, the default behavior was to only use the Realloc Strategy, which</span>
+<span class="Comment">is potentially unsafe.  You can revert to this old behavior by configuring</span>
+<span class="Comment">NTL_SAFE_VECTORS=off.</span>
 
-<span class="Comment">The nice thing about safe vector mode is that you can freely use any type T to</span>
-<span class="Comment">form a Vec&lt;T&gt;, without worrying about relocatability.  If there is a</span>
-<span class="Comment">performance issue, you can consider declaring T to be relocatable.</span>
+
+<span class="Comment">-------------------------</span>
+<span class="Comment">COMPARISON TO STL VECTORS </span>
+<span class="Comment">-------------------------</span>
+
+<span class="Comment">When the length of an NTL vector is reduced, no objects are destroyed.</span>
+<span class="Comment">In contrast, when the length of an STL vector is reduced, objects are</span>
+<span class="Comment">destroyed (effectively, maintaining the invariant len == init).</span>
+
+<span class="Comment">Also, STL vectors never use anything like the Realloc Strategy.</span>
 
 
 <span class="Comment">----------------------</span>
@@ -268,8 +268,8 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 
 <span class="Comment">With all of these design decisions baked into NTL's Vec class, transitioning to</span>
 <span class="Comment">STL vectors would be problematic, and is unlikely to ever happen.  But as</span>
-<span class="Comment">things evolve, NTL Vec's are starting to offer many of the same convenience and</span>
-<span class="Comment">safety features as STL vector's.</span>
+<span class="Comment">things have evolved, NTL Vec's offers many of the same convenience and safety</span>
+<span class="Comment">features as STL vector's.</span>
 
 
 <span class="Comment">\*************************************************************************</span><span class="Comment">*/</span>
@@ -311,11 +311,27 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
    <span class="Comment">// declared noexcept unless NTL_EXCEPTIONS flag is set</span>
    <span class="Comment">// will revert to copy assignment if *this or a is fixed</span>
 
-   <span class="Comment">// NOTES: If neither source nor destination are fixed, these operations will</span>
+   <span class="Comment">// NOTE: If neither source nor destination are fixed, these operations will</span>
    <span class="Comment">// be fast pointer moves and no exceptions will be thrown.  If either are</span>
    <span class="Comment">// fixed (say, the row in a Mat&lt;T&gt;), these operations revert to copy</span>
    <span class="Comment">// operations, which may either throw an exception (if NTL_EXCEPTIONS is on)</span>
    <span class="Comment">// or abort the program (if NTL_EXCEPTIONS is off).</span>
+
+   <span class="Comment">// NOTE: In a vector copy assignment x=a, all iterators, references,</span>
+   <span class="Comment">// and pointers related to x may be invalidated by the assignment.</span>
+   <span class="Comment">// In a vector move assignment, the same applies to a as well.</span>
+
+   <span class="Comment">// BACKWARD COMPATIBILITY: after introducing of &quot;move constructors&quot; in NTL</span>
+   <span class="Comment">// 10.4, there have been some reports of incompatibilties.  Some legacy NTL</span>
+   <span class="Comment">// clients have been known to assume that x=a does not invalidate pointers</span>
+   <span class="Comment">// into x, provided x.length() &gt;= a.length() before the assignment.  This</span>
+   <span class="Comment">// assumption is not valid, however, for a move assignment.  Because of this</span>
+   <span class="Comment">// problem, as of NTL 11.0, move assignments have been disabled by default</span>
+   <span class="Comment">// (this is controlled by the configuration flag NTL_DISABLE_MOVE_ASSIGN).</span>
+   <span class="Comment">// This affects vectors and matrices,  as well as many other types (such as</span>
+   <span class="Comment">// polynomials) that are implemented in terms of vectors.  Move assignment</span>
+   <span class="Comment">// is not disabled.</span>
+
 
    ~Vec();
    <span class="Comment">// destructor: calls T's destructor for all initialized</span>

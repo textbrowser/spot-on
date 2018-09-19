@@ -77,7 +77,7 @@ vec_pair_ZZ_pX_long NewDDF(const ZZ_pX& f, const ZZ_pX& h,
 // form tmp-*.
 // The definition of "large" is controlled by the variable
 
-      extern double ZZ_pXFileThresh
+      extern thread_local double ZZ_pXFileThresh
 
 // which can be set by the user.  If the sizes of the tables
 // exceeds ZZ_pXFileThresh KB, external files are used.
@@ -119,10 +119,8 @@ vec_pair_ZZ_pX_long CanZass(const ZZ_pX& f, long verbose=0);
 // returns a list of factors, with multiplicities.  f must be monic.
 // Calls SquareFreeDecomp and SFCanZass.
 
-// NOTE: these routines use modular composition.  The space
-// used for the required tables can be controlled by the variable
-// ZZ_pXArgBound (see ZZ_pX.txt).
-
+// NOTE: In most situations, you should use the CanZass factoring
+// routine, rather than Berlekamp: it is faster and uses less space.
 
 void mul(ZZ_pX& f, const vec_pair_ZZ_pX_long& v);
 ZZ_pX mul(const vec_pair_ZZ_pX_long& v);

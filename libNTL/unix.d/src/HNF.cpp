@@ -1,7 +1,6 @@
 
 #include <NTL/HNF.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 

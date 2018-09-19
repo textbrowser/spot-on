@@ -80,10 +80,12 @@ public:
    // declared noexcept unless NTL_EXCEPTIONS flag is set
    // will revert to copy constructor if a is fixed
 
+#ifndef NTL_DISABLE_MOVE_ASSIGN
    Vec& operator=(Vec&& a);
    // move assignment (C++11 only)
    // declared noexcept unless NTL_EXCEPTIONS flag is set
    // will revert to copy assignment if *this or a is fixed
+#endif
 
    ~Vec(); // destructor
 

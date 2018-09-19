@@ -1,4 +1,5 @@
 
+
 -----------------------------
 These are basically notes to myself on preparing a new
 distribution of NTL.
@@ -27,6 +28,8 @@ make winpack
 
 
 =====================================
+
+TODO: add a runtime flag that makes GetTime call GetWallTime
 
 FIXME: maybe it would make more sense to take the +1/-1 logic
 out of [cg]_lip_impl block_construct routines and just put it in

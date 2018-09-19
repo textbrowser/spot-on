@@ -1,7 +1,6 @@
 
 #include <NTL/GF2XVec.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 
@@ -26,7 +25,7 @@ void GF2XVec::SetSize(long n, long d)
    tmp.bsize = d;
 
 
-   tmp.v = (GF2X*) NTL_MALLOC(n, sizeof(GF2X), 0);
+   tmp.v = (GF2X*) NTL_SNS_MALLOC(n, sizeof(GF2X), 0);
    if (!tmp.v) MemoryError();
 
    long i = 0;

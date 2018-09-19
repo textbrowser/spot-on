@@ -17,7 +17,6 @@ public:
    Pair() { }  
    Pair(const S& x, const T& y) : a(x), b(y) { }  
 
-   ~Pair() { }  
 };  
 
 template<class S, class T> NTL_DECLARE_RELOCATABLE_WHEN((Pair<S,T>*))

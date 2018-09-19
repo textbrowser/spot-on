@@ -37,10 +37,9 @@ calculations for the <a href="GF2X.cpp.html">GF2X</a> class will
 be faster for large degree polymials.
 
 <p>
-<b>Warning:</b>
-<i>the current version of <tt>gf2x</tt> (v1.1) is neither thread safe
-or exception safe;
-do not use it if you need these features in NTL.</i>
+Note: you will need version 1.2 or later of <tt>gf2x</tt>
+for a thread-safe build of NTL.
+
 
 
 
@@ -74,7 +73,7 @@ You can also supply the option
 <tt>--disable-shared</tt> to the <tt>configure</tt> script,
 if you only want static libraries.
 However, if you ultimately want to build NTL as a shared
-library, then you must also buld <tt>gf2x</tt> as a shared library.
+library, then you must also build <tt>gf2x</tt> as a shared library.
 
 <p>
 <p>
@@ -132,11 +131,6 @@ then
    % ./configure NTL_GF2X_LIB=on
 </pre>
 does the job.
-
-<p>
-Instead of passing arguments to the configure script,
-you can also just edit the <tt>config.h</tt> and <tt>makefile</tt> by hand.
-The documentation in these files should be self-explanatory.
 
 
 <p>

@@ -37,9 +37,11 @@ public:
    // move constructor (C++11 only)
    // declared noexcept unless NTL_EXCEPTIONS flag is set
 
+#ifndef NTL_DISABLE_MOVE_ASSIGN
    GF2EX& operator=(GF2EX&& a); 
    // move assignment (C++11 only)
    // declared noexcept unless NTL_EXCEPTIONS flag is set
+#endif
 
 
    GF2EX(INIT_MONO_TYPE, long i, const GF2E& c); 
@@ -647,7 +649,7 @@ void CompMod(GF2EX& x, const GF2EX& g, const GF2EXArgument& H,
 GF2EX CompMod(const GF2EX& g, const GF2EXArgument& H, 
                     const GF2EXModulus& F);
 
-extern long GF2EXArgBound;
+extern thread_local long GF2EXArgBound;
 
 // Initially 0.  If this is set to a value greater than zero, then
 // composition routines will allocate a table of no than about

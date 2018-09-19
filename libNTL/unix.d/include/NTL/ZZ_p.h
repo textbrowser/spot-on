@@ -43,7 +43,7 @@ public:
 
 #ifndef NTL_WIZARD_HACK
 
-class MatPrime_crt_helper;
+struct MatPrime_crt_helper;
 void MatPrime_crt_helper_deleter(MatPrime_crt_helper*);
 
 #endif
@@ -198,7 +198,6 @@ explicit ZZ_p(long a) { *this = a; }
 ZZ_p(INIT_NO_ALLOC_TYPE) { }  // allocates no space
 ZZ_p(INIT_ALLOC_TYPE) { _ZZ_p__rep.SetSize(ZZ_pInfo->size); }  // allocates space
 
-~ZZ_p() { } 
 
 
 inline ZZ_p& operator=(long a);

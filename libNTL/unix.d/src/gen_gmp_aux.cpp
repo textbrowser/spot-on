@@ -2,6 +2,9 @@
 #include <cstdlib>
 #include <cmath>
 #include <cstdio>
+#include <cstring>
+
+
 
 #include <NTL/config.h>
 
@@ -65,9 +68,12 @@ void print2k(FILE *f, long k, long bpl)
 
 void Error(const char *s)
 {
-   fprintf(stderr, "%s\n", s);
+   fprintf(stderr, "*** %s\n", s);
    abort();
 }
+
+
+char buffer[1024];
 
 
 int main()
@@ -97,8 +103,30 @@ int main()
    if (nail_bits > 0)
       fprintf(stderr, "WARNING: GMP_NAIL_BITS > 0: this has not been well tested\n");
 
-   // NOTE: newer versions of GMP define mp_bits_per_limb as
-   // GMP_LIMB_BITS
+   if (__GNU_MP_VERSION < 5) 
+      Error("GMP version 5.0.0 or later required");
+
+   // check that GMP_LIMB_BITS == mp_bits_per_limb as a consistency check
+   if (GMP_LIMB_BITS != mp_bits_per_limb) 
+      Error("GMP_LIMB_BITS != mp_bits_per_limb: inconsistency between gmp.h and libgmp");
+
+   // check that vesrion numbers match as a consistency check
+   // This is adapted from MPFR's configure script
+   bool bad_version = false;
+   sprintf(buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
+           __GNU_MP_VERSION_PATCHLEVEL);
+   fprintf(stderr, "GMP version check (%s/%s)\n", buffer, gmp_version);
+   if (strcmp(buffer, gmp_version)) {
+      if (__GNU_MP_VERSION_PATCHLEVEL != 0)
+         bad_version = true;
+      else {
+         sprintf(buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
+         if (strcmp(buffer, gmp_version)) bad_version = true;
+      }
+   }
+
+   if (bad_version)
+      Error("version number mismatch: inconsistency between gmp.h and libgmp");
 
    if (sizeof(mp_limb_t) == sizeof(long) && mp_bits_per_limb == bpl)
       ntl_zz_nbits = bpl-nail_bits;
@@ -118,6 +146,7 @@ int main()
       printf("#define NTL_SMALL_MP_SIZE_T\n");
       fprintf(stderr, "setting NTL_SMALL_MP_SIZE_T\n");
    }
+
 
    fprintf(stderr, "NTL_ZZ_NBITS = %ld\n", ntl_zz_nbits);
    printf("#define NTL_ZZ_NBITS (%ld)\n",  ntl_zz_nbits);

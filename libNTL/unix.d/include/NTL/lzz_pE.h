@@ -19,7 +19,6 @@ private:
 
 public:
    zz_pEInfoT(const zz_pX&);
-   ~zz_pEInfoT() { }
 
    zz_pXModulus p;
 
@@ -127,7 +126,6 @@ zz_pE(INIT_NO_ALLOC_TYPE) { }  // allocates no space
 zz_pE(INIT_ALLOC_TYPE) {  _zz_pE__rep.rep.SetMaxLength(zz_pE::degree()); }  // allocates space
 void allocate() {  _zz_pE__rep.rep.SetMaxLength(zz_pE::degree()); }
 
-~zz_pE() { } 
 
 
 zz_pE(zz_pE& x, INIT_TRANS_TYPE) : _zz_pE__rep(x._zz_pE__rep, INIT_TRANS) { }

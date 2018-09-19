@@ -35,9 +35,11 @@ public:
    // move constructor (C++11 only)
    // declared noexcept unless NTL_EXCEPTIONS flag is set
 
+#ifndef NTL_DISABLE_MOVE_ASSIGN
    zz_pX& operator=(zz_pX&& a); 
    // move assignment (C++11 only)
    // declared noexcept unless NTL_EXCEPTIONS flag is set
+#endif
 
 
    zz_pX(INIT_MONO_TYPE, long i, zz_p c); 
@@ -720,7 +722,7 @@ zz_pX CompMod(const zz_pX& g, const zz_pXArgument& H,
              const zz_pXModulus& F);
 
 
-extern long zz_pXArgBound;
+extern thread_local long zz_pXArgBound;
 
 // Initially 0.  If this is set to a value greater than zero, then
 // composition routines will allocate a table of no than about

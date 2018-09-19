@@ -1,5 +1,5 @@
 
-rm -r dos
+rm -rf dos
 
 mkdir dos
 mkdir dos/src
@@ -48,6 +48,8 @@ do
    cp ../include/NTL/$i dos/include/NTL/$i
 done
 
+echo "#define NTL_WINPACK (1)" >> dos/include/NTL/PackageInfo.h
+
 for i in $3
 do
    cp ../doc/$i dos/doc/$i
@@ -60,6 +62,6 @@ done
 
 cp $5 dos/tests
 
-cp ../include/NTL/def_config.h dos/include/NTL/config.h
+cp cfileout dos/include/NTL/config.h
 sh ResetFeatures dos "$6"
 

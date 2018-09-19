@@ -562,15 +562,16 @@ class FFTRep {
 public:
    long k;                // a 2^k point representation
    long MaxK;             // maximum space allocated
+   long len;              // length of truncated FFT
    long NumPrimes; 
    Unique2DArray<long> tbl;
 
-   FFTRep() : k(-1), MaxK(-1), NumPrimes(0) { }
+   FFTRep() : k(-1), MaxK(-1), len(0), NumPrimes(0) { }
 
-   FFTRep(const FFTRep& R) : k(-1), MaxK(-1), NumPrimes(0)
+   FFTRep(const FFTRep& R) : k(-1), MaxK(-1), len(0), NumPrimes(0)
    { *this = R; }
 
-   FFTRep(INIT_SIZE_TYPE, long InitK) : k(-1), MaxK(-1), NumPrimes(0)
+   FFTRep(INIT_SIZE_TYPE, long InitK) : k(-1), MaxK(-1), len(0), NumPrimes(0)
    {  SetSize(InitK); }
 
    FFTRep& operator=(const FFTRep& R);
@@ -579,8 +580,16 @@ public:
 };
 
 
-void ToFFTRep(FFTRep& y, const ZZ_pX& x, long k, long lo, long hi);
+void ToFFTRep_trunc(FFTRep& y, const ZZ_pX& x, long k, long len, 
+                    long lo, long hi);
+
+inline void ToFFTRep_trunc(FFTRep& y, const ZZ_pX& x, long k, long len)
+{ ToFFTRep_trunc(y, x, k, len, 0, deg(x)); }
+
+inline
+void ToFFTRep(FFTRep& y, const ZZ_pX& x, long k, long lo, long hi)
 // computes an n = 2^k point convolution of x[lo..hi].
+{ ToFFTRep_trunc(y, x, k, 0, lo, hi); }
 
 inline void ToFFTRep(FFTRep& y, const ZZ_pX& x, long k)
 
@@ -787,7 +796,6 @@ private:
 public:
 
    ZZ_pXMatrix() { }
-   ~ZZ_pXMatrix() { }
 
    void operator=(const ZZ_pXMatrix&);
    ZZ_pX& operator() (long i, long j) { return elts[i][j]; }
@@ -871,7 +879,6 @@ long InvModStatus(ZZ_pX& x, const ZZ_pX& a, const ZZ_pX& f);
 class ZZ_pXModulus {
 public:
    ZZ_pXModulus() : UseFFT(0), n(-1)  { }
-   ~ZZ_pXModulus() { }
    
 
    // the following members may become private in future
@@ -991,7 +998,6 @@ public:
    ZZ_pXMultiplier() : UseFFT(0)  { }
    ZZ_pXMultiplier(const ZZ_pX& b, const ZZ_pXModulus& F);
 
-   ~ZZ_pXMultiplier() { }
 
 
    // the following members may become private in the future

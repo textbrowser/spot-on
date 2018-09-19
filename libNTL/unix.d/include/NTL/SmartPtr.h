@@ -6,6 +6,10 @@
 #include <NTL/tools.h>
 #include <NTL/thread.h>
 
+#if (NTL_CXX_STANDARD >= 2011)
+// ensure we get std::forward
+#include <utility>
+#endif
 
 
 NTL_OPEN_NNS
@@ -289,7 +293,7 @@ public:
       return *this;
    }
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    SmartPtr(SmartPtr&& other) noexcept : dp(other.dp), cp(other.cp) 
    {
@@ -532,7 +536,7 @@ public:
       return *this;
    }
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    CloneablePtr(CloneablePtr&& other) noexcept : dp(other.dp), cp(other.cp) 
    {
@@ -645,6 +649,84 @@ bool operator!=(const CloneablePtr<X>& a, const CloneablePtr<Y>& b)
 // ******************************************************
 
 // Implementation of MakeSmart and friends
+
+
+#if (NTL_CXX_STANDARD >= 2011)
+
+// Declared for backward compatibility with pre-C++11 NTL clients
+template<class T> 
+T& Fwd(T& x) { return x; }
+
+template<class T> 
+const T& Fwd(const T& x) { return x; }
+
+template<class T>
+class MakeSmartAux : public SmartPtrControl {
+public: 
+   T d;
+
+   template<class... Args>
+   MakeSmartAux(Args&&... args) : d(std::forward<Args>(args)...) { }
+};
+
+template<class T, class... Args>
+SmartPtr<T> MakeSmart(Args&&... args)
+{
+   MakeSmartAux<T> *cp = 
+      NTL_NEW_OP MakeSmartAux<T>( std::forward<Args>(args)...  ); 
+   if (!cp) MemoryError();
+   return SmartPtr<T>(SmartPtrLoopHole(), &cp->d, cp);
+}
+
+template<class T>
+class MakeCloneableAux : public CloneablePtrControl {
+public: 
+   T d;
+
+   template<class... Args>
+   MakeCloneableAux(Args&&... args) : d(std::forward<Args>(args)...) { }
+   CloneablePtrControl *clone() const \
+   {
+      CloneablePtrControl *q = NTL_NEW_OP CloneablePtrControlDerived<T>(d);
+      if (!q) MemoryError();
+      return q;
+   }
+   void *get() { return &d; }
+};
+
+#ifdef NTL_TEST_EXCEPTIONS
+
+template<class T, class... Args>
+T* MakeRaw(Args&&... args) { 
+   T *p = 0;
+   if (--exception_counter != 0) p = NTL_NEW_OP T(std::forward<Args>(args)...); 
+   if (!p) MemoryError();
+   return p;
+};
+
+
+#else
+
+template<class T, class... Args>
+T* MakeRaw(Args&&... args) { 
+   T *p = NTL_NEW_OP T(std::forward<Args>(args)...); 
+   if (!p) MemoryError();
+   return p;
+};
+
+#endif
+
+
+template<class T, class... Args>
+CloneablePtr<T> MakeCloneable(Args&&... args)
+{
+   MakeCloneableAux<T> *cp = 
+      NTL_NEW_OP MakeCloneableAux<T>( std::forward<Args>(args)...  ); 
+   if (!cp) MemoryError();
+   return CloneablePtr<T>(CloneablePtrLoopHole(), &cp->d, cp);
+}
+
+#else
 
 
 // Reference forwarding
@@ -890,6 +972,7 @@ T* MakeRaw(NTL_VARARGS(n)) { \
 
 NTL_FOREACH_ARG(NTL_DEFINE_MAKERAW)
 
+#endif
 
 // ********************************
 
@@ -996,7 +1079,7 @@ public:
    UniquePtr() : dp(0) { }
    ~UniquePtr() { P::deleter(dp); }
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    UniquePtr(UniquePtr&& other) noexcept : UniquePtr() 
    {
@@ -1019,6 +1102,17 @@ public:
 
    UniquePtr& operator=(fake_null_type1) { reset(); return *this; }
 
+
+#if (NTL_CXX_STANDARD >= 2011)
+
+   template<class... Args>
+   void make(Args&&... args) 
+   {
+      reset(MakeRaw<T>(std::forward<Args>(args)...));
+   }
+
+#else
+
    void make()
    {
       reset(MakeRaw<T>());
@@ -1032,6 +1126,8 @@ public:
    }\
 
    NTL_FOREACH_ARG1(NTL_DEFINE_UNIQUE_MAKE)
+
+#endif
 
    T& operator*()  const { return *dp; }
    T* operator->() const { return dp; }
@@ -1166,7 +1262,7 @@ public:
    }
 
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    CopiedPtr(CopiedPtr&& other) noexcept : CopiedPtr() 
    {
@@ -1191,6 +1287,17 @@ public:
 
    CopiedPtr& operator=(fake_null_type1) { reset(); return *this; }
 
+
+#if (NTL_CXX_STANDARD >= 2011)
+
+   template<class... Args>
+   void make(Args&&... args) 
+   {
+      reset(MakeRaw<T>(std::forward<Args>(args)...));
+   }
+
+#else
+
    void make()
    {
       reset(MakeRaw<T>());
@@ -1204,6 +1311,8 @@ public:
    }\
 
    NTL_FOREACH_ARG1(NTL_DEFINE_COPIED_MAKE)
+
+#endif
 
    T& operator*()  const { return *dp; }
    T* operator->() const { return dp; }
@@ -1345,9 +1454,8 @@ public:
       return *this;
    }
 
-   ~OptionalVal() {  }
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    OptionalVal(OptionalVal&& other) noexcept : OptionalVal() 
    {
@@ -1365,9 +1473,20 @@ public:
 
    void reset(T* p = 0) { dp.reset(p); }
 
+#if (NTL_CXX_STANDARD >= 2011)
+
+   template<class... Args>
+   void make(Args&&... args) 
+   {
+      dp.make(std::forward<Args>(args)...);
+   }
+
+#else
+
    void make() { dp.make(); }
 
 #define NTL_DEFINE_OPTIONAL_VAL_MAKE(n) \
+\
    template< NTL_ARGTYPES(n) >\
    void make( NTL_VARARGS(n) )\
    {\
@@ -1375,6 +1494,8 @@ public:
    }\
 
    NTL_FOREACH_ARG1(NTL_DEFINE_OPTIONAL_VAL_MAKE)
+
+#endif
 
    T& val() const { return *dp; }
 
@@ -1473,7 +1594,7 @@ public:
 
    ~UniqueArray() { delete[] dp; }
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    UniqueArray(UniqueArray&& other) noexcept : UniqueArray() 
    {
@@ -1650,7 +1771,7 @@ public:
    }
 
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    Unique2DArray(Unique2DArray&& other) noexcept : Unique2DArray() 
    {
@@ -1851,7 +1972,7 @@ public:
    ~AlignedArray() { NTL_SNS free(sp); }
 
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    AlignedArray(AlignedArray&& other) noexcept : AlignedArray() 
    {

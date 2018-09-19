@@ -1,7 +1,6 @@
 
 #include <NTL/WordVector.h>
 
-#include <NTL/new.h>
 #include <cstdio>
 
 NTL_START_IMPL
@@ -31,7 +30,7 @@ void WordVector::DoSetLength(long n)
          ResourceError("length too big in vector::SetLength");
 
       _ntl_ulong *p = (_ntl_ulong *) 
-                      NTL_MALLOC(m, sizeof(_ntl_ulong), 2*sizeof(_ntl_ulong));
+                      NTL_SNS_MALLOC(m, sizeof(_ntl_ulong), 2*sizeof(_ntl_ulong));
 
       if (!p) {  
 	 MemoryError();  
@@ -56,7 +55,7 @@ void WordVector::DoSetLength(long n)
 
    if (frozen) LogicError("Cannot grow this WordVector");
       
-   m = max(n, long(NTL_WordVectorExpansionRatio*max_length));
+   m = max(n, _ntl_vec_grow(max_length));
 
    m = ((m+NTL_WordVectorMinAlloc-1)/NTL_WordVectorMinAlloc)*NTL_WordVectorMinAlloc; 
    _ntl_ulong *p = rep - 2;
@@ -65,7 +64,7 @@ void WordVector::DoSetLength(long n)
       ResourceError("length too big in vector::SetLength");
 
    p = (_ntl_ulong *) 
-       NTL_REALLOC(p, m, sizeof(_ntl_ulong), 2*sizeof(_ntl_ulong)); 
+       NTL_SNS_REALLOC(p, m, sizeof(_ntl_ulong), 2*sizeof(_ntl_ulong)); 
 
    if (!p) {  
       MemoryError();  
@@ -349,7 +348,7 @@ long WV_BlockConstructAlloc(WordVector& x, long d, long n)
    else
       m = n;
 
-   p = (_ntl_ulong *) NTL_MALLOC(m, nbytes, sizeof(_ntl_ulong));
+   p = (_ntl_ulong *) NTL_SNS_MALLOC(m, nbytes, sizeof(_ntl_ulong));
    if (!p) MemoryError();
 
    *p = m;

@@ -2,7 +2,6 @@
 #include <NTL/lzz_pEXFactoring.h>
 #include <NTL/FacVec.h>
 #include <NTL/fileio.h>
-#include <NTL/new.h>
 
 NTL_START_IMPL
 

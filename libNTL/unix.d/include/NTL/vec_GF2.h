@@ -42,13 +42,21 @@ public:
 
    ~Vec() {}
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
 Vec(Vec&& a) NTL_FAKE_NOEXCEPT : Vec()
 {
-   *this = std::move(a);
+   if (a.fixed()) {
+      *this = a;
+   }
+   else {
+      rep.unpinned_move(a.rep);
+      _len = _ntl_scalar_move(a._len);
+      _maxlen = _ntl_scalar_move(a._maxlen);
+   }
 }
 
+#ifndef NTL_DISABLE_MOVE_ASSIGN
 Vec& operator=(Vec&& a) NTL_FAKE_NOEXCEPT
 {
    if (fixed() || a.fixed()) {
@@ -62,6 +70,7 @@ Vec& operator=(Vec&& a) NTL_FAKE_NOEXCEPT
 
    return *this;
 }
+#endif
 
 
 #endif

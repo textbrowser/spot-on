@@ -1,6 +1,5 @@
 
 #include <NTL/mat_lzz_p.h>
-#include <NTL/new.h>
 #include <NTL/vec_long.h>
 
 
@@ -556,7 +555,7 @@ void mul_aux(vec_zz_p& x, const mat_zz_p& A, const vec_zz_p& b)
   
 void mul(vec_zz_p& x, const mat_zz_p& A, const vec_zz_p& b)  
 {  
-   if (&b == &x || A.position1(x) != -1) {
+   if (&b == &x || A.alias(x)) {
       vec_zz_p tmp;
       mul_aux(tmp, A, b);
       x = tmp;
@@ -621,6 +620,15 @@ void mul(mat_zz_p& X, const mat_zz_p& A, long b_in)
 //
 // ******************************************************************
 
+//#undef NTL_HAVE_AVX
+//#undef NTL_HAVE_FMA
+//#undef NTL_HAVE_AVX512F
+// for testing purposes
+
+#if (defined(NTL_HAVE_AVX512F) && defined(NTL_AVOID_AVX512))
+#undef NTL_HAVE_AVX512F
+#endif
+
 #define MAT_BLK_SZ (32)
 
 
@@ -645,6 +653,284 @@ void mul(mat_zz_p& X, const mat_zz_p& A, long b_in)
 #else
 #define MUL_ADD(a, b, c) a = _mm256_add_pd(a, _mm256_mul_pd(b, c))
 #endif
+
+
+#ifdef NTL_HAVE_AVX512F
+#define MUL_ADD512(a, b, c) a = _mm512_fmadd_pd(b, c, a) 
+#endif
+
+
+
+#ifdef NTL_HAVE_AVX512F
+
+static
+void muladd1_by_32(double *x, const double *a, const double *b, long n)
+{
+   __m512d avec0, bvec;
+
+   __m512d acc00, acc01, acc02, acc03;
+ 
+   acc00=_mm512_load_pd(x + 0*8 + 0*MAT_BLK_SZ);
+   acc01=_mm512_load_pd(x + 1*8 + 0*MAT_BLK_SZ);
+   acc02=_mm512_load_pd(x + 2*8 + 0*MAT_BLK_SZ);
+   acc03=_mm512_load_pd(x + 3*8 + 0*MAT_BLK_SZ);
+
+   for (long i = 0; i < n; i++) {
+      avec0 = _mm512_set1_pd(a[i+0*MAT_BLK_SZ]); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+0*8]); 
+      MUL_ADD512(acc00, avec0, bvec); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+1*8]); 
+      MUL_ADD512(acc01, avec0, bvec); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+2*8]); 
+      MUL_ADD512(acc02, avec0, bvec); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+3*8]); 
+      MUL_ADD512(acc03, avec0, bvec); 
+   }
+
+
+   _mm512_store_pd(x + 0*8 + 0*MAT_BLK_SZ, acc00);
+   _mm512_store_pd(x + 1*8 + 0*MAT_BLK_SZ, acc01);
+   _mm512_store_pd(x + 2*8 + 0*MAT_BLK_SZ, acc02);
+   _mm512_store_pd(x + 3*8 + 0*MAT_BLK_SZ, acc03);
+
+}
+
+static
+void muladd2_by_32(double *x, const double *a, const double *b, long n)
+{
+   __m512d avec0, avec1, bvec;
+
+   __m512d acc00, acc01, acc02, acc03;
+   __m512d acc10, acc11, acc12, acc13;
+ 
+
+
+   acc00=_mm512_load_pd(x + 0*8 + 0*MAT_BLK_SZ);
+   acc01=_mm512_load_pd(x + 1*8 + 0*MAT_BLK_SZ);
+   acc02=_mm512_load_pd(x + 2*8 + 0*MAT_BLK_SZ);
+   acc03=_mm512_load_pd(x + 3*8 + 0*MAT_BLK_SZ);
+
+   acc10=_mm512_load_pd(x + 0*8 + 1*MAT_BLK_SZ);
+   acc11=_mm512_load_pd(x + 1*8 + 1*MAT_BLK_SZ);
+   acc12=_mm512_load_pd(x + 2*8 + 1*MAT_BLK_SZ);
+   acc13=_mm512_load_pd(x + 3*8 + 1*MAT_BLK_SZ);
+
+   for (long i = 0; i < n; i++) {
+      avec0 = _mm512_set1_pd(a[i+0*MAT_BLK_SZ]); 
+      avec1 = _mm512_set1_pd(a[i+1*MAT_BLK_SZ]); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+0*8]); 
+      MUL_ADD512(acc00, avec0, bvec); MUL_ADD512(acc10, avec1, bvec);
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+1*8]); 
+      MUL_ADD512(acc01, avec0, bvec); MUL_ADD512(acc11, avec1, bvec);
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+2*8]); 
+      MUL_ADD512(acc02, avec0, bvec); MUL_ADD512(acc12, avec1, bvec);
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+3*8]); 
+      MUL_ADD512(acc03, avec0, bvec); MUL_ADD512(acc13, avec1, bvec);
+   }
+
+
+   _mm512_store_pd(x + 0*8 + 0*MAT_BLK_SZ, acc00);
+   _mm512_store_pd(x + 1*8 + 0*MAT_BLK_SZ, acc01);
+   _mm512_store_pd(x + 2*8 + 0*MAT_BLK_SZ, acc02);
+   _mm512_store_pd(x + 3*8 + 0*MAT_BLK_SZ, acc03);
+
+   _mm512_store_pd(x + 0*8 + 1*MAT_BLK_SZ, acc10);
+   _mm512_store_pd(x + 1*8 + 1*MAT_BLK_SZ, acc11);
+   _mm512_store_pd(x + 2*8 + 1*MAT_BLK_SZ, acc12);
+   _mm512_store_pd(x + 3*8 + 1*MAT_BLK_SZ, acc13);
+
+}
+
+
+static
+void muladd3_by_32(double *x, const double *a, const double *b, long n)
+{
+   __m512d avec0, avec1, avec2, bvec;
+
+   __m512d acc00, acc01, acc02, acc03;
+   __m512d acc10, acc11, acc12, acc13;
+   __m512d acc20, acc21, acc22, acc23;
+ 
+
+
+   acc00=_mm512_load_pd(x + 0*8 + 0*MAT_BLK_SZ);
+   acc01=_mm512_load_pd(x + 1*8 + 0*MAT_BLK_SZ);
+   acc02=_mm512_load_pd(x + 2*8 + 0*MAT_BLK_SZ);
+   acc03=_mm512_load_pd(x + 3*8 + 0*MAT_BLK_SZ);
+
+   acc10=_mm512_load_pd(x + 0*8 + 1*MAT_BLK_SZ);
+   acc11=_mm512_load_pd(x + 1*8 + 1*MAT_BLK_SZ);
+   acc12=_mm512_load_pd(x + 2*8 + 1*MAT_BLK_SZ);
+   acc13=_mm512_load_pd(x + 3*8 + 1*MAT_BLK_SZ);
+
+   acc20=_mm512_load_pd(x + 0*8 + 2*MAT_BLK_SZ);
+   acc21=_mm512_load_pd(x + 1*8 + 2*MAT_BLK_SZ);
+   acc22=_mm512_load_pd(x + 2*8 + 2*MAT_BLK_SZ);
+   acc23=_mm512_load_pd(x + 3*8 + 2*MAT_BLK_SZ);
+
+   for (long i = 0; i < n; i++) {
+      avec0 = _mm512_set1_pd(a[i+0*MAT_BLK_SZ]); 
+      avec1 = _mm512_set1_pd(a[i+1*MAT_BLK_SZ]); 
+      avec2 = _mm512_set1_pd(a[i+2*MAT_BLK_SZ]); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+0*8]); 
+      MUL_ADD512(acc00, avec0, bvec); MUL_ADD512(acc10, avec1, bvec);
+      MUL_ADD512(acc20, avec2, bvec); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+1*8]); 
+      MUL_ADD512(acc01, avec0, bvec); MUL_ADD512(acc11, avec1, bvec);
+      MUL_ADD512(acc21, avec2, bvec); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+2*8]); 
+      MUL_ADD512(acc02, avec0, bvec); MUL_ADD512(acc12, avec1, bvec);
+      MUL_ADD512(acc22, avec2, bvec); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+3*8]); 
+      MUL_ADD512(acc03, avec0, bvec); MUL_ADD512(acc13, avec1, bvec);
+      MUL_ADD512(acc23, avec2, bvec); 
+   }
+
+   _mm512_store_pd(x + 0*8 + 0*MAT_BLK_SZ, acc00);
+   _mm512_store_pd(x + 1*8 + 0*MAT_BLK_SZ, acc01);
+   _mm512_store_pd(x + 2*8 + 0*MAT_BLK_SZ, acc02);
+   _mm512_store_pd(x + 3*8 + 0*MAT_BLK_SZ, acc03);
+
+   _mm512_store_pd(x + 0*8 + 1*MAT_BLK_SZ, acc10);
+   _mm512_store_pd(x + 1*8 + 1*MAT_BLK_SZ, acc11);
+   _mm512_store_pd(x + 2*8 + 1*MAT_BLK_SZ, acc12);
+   _mm512_store_pd(x + 3*8 + 1*MAT_BLK_SZ, acc13);
+
+   _mm512_store_pd(x + 0*8 + 2*MAT_BLK_SZ, acc20);
+   _mm512_store_pd(x + 1*8 + 2*MAT_BLK_SZ, acc21);
+   _mm512_store_pd(x + 2*8 + 2*MAT_BLK_SZ, acc22);
+   _mm512_store_pd(x + 3*8 + 2*MAT_BLK_SZ, acc23);
+
+
+}
+
+
+static
+void muladd1_by_16(double *x, const double *a, const double *b, long n)
+{
+   __m512d avec0, bvec;
+
+   __m512d acc00, acc01;
+ 
+
+
+   acc00=_mm512_load_pd(x + 0*8 + 0*MAT_BLK_SZ);
+   acc01=_mm512_load_pd(x + 1*8 + 0*MAT_BLK_SZ);
+
+   for (long i = 0; i < n; i++) {
+      avec0 = _mm512_set1_pd(a[i+0*MAT_BLK_SZ]); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+0*8]); 
+      MUL_ADD512(acc00, avec0, bvec); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+1*8]); 
+      MUL_ADD512(acc01, avec0, bvec); 
+   }
+
+
+   _mm512_store_pd(x + 0*8 + 0*MAT_BLK_SZ, acc00);
+   _mm512_store_pd(x + 1*8 + 0*MAT_BLK_SZ, acc01);
+
+}
+
+static
+void muladd2_by_16(double *x, const double *a, const double *b, long n)
+{
+   __m512d avec0, avec1, bvec;
+
+   __m512d acc00, acc01;
+   __m512d acc10, acc11;
+ 
+
+
+   acc00=_mm512_load_pd(x + 0*8 + 0*MAT_BLK_SZ);
+   acc01=_mm512_load_pd(x + 1*8 + 0*MAT_BLK_SZ);
+
+   acc10=_mm512_load_pd(x + 0*8 + 1*MAT_BLK_SZ);
+   acc11=_mm512_load_pd(x + 1*8 + 1*MAT_BLK_SZ);
+
+   for (long i = 0; i < n; i++) {
+      avec0 = _mm512_set1_pd(a[i+0*MAT_BLK_SZ]); 
+      avec1 = _mm512_set1_pd(a[i+1*MAT_BLK_SZ]); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+0*8]); 
+      MUL_ADD512(acc00, avec0, bvec); MUL_ADD512(acc10, avec1, bvec);
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+1*8]); 
+      MUL_ADD512(acc01, avec0, bvec); MUL_ADD512(acc11, avec1, bvec);
+   }
+
+
+   _mm512_store_pd(x + 0*8 + 0*MAT_BLK_SZ, acc00);
+   _mm512_store_pd(x + 1*8 + 0*MAT_BLK_SZ, acc01);
+
+   _mm512_store_pd(x + 0*8 + 1*MAT_BLK_SZ, acc10);
+   _mm512_store_pd(x + 1*8 + 1*MAT_BLK_SZ, acc11);
+}
+
+
+static
+void muladd3_by_16(double *x, const double *a, const double *b, long n)
+{
+   __m512d avec0, avec1, avec2, bvec;
+
+   __m512d acc00, acc01;
+   __m512d acc10, acc11;
+   __m512d acc20, acc21;
+ 
+
+
+   acc00=_mm512_load_pd(x + 0*8 + 0*MAT_BLK_SZ);
+   acc01=_mm512_load_pd(x + 1*8 + 0*MAT_BLK_SZ);
+
+   acc10=_mm512_load_pd(x + 0*8 + 1*MAT_BLK_SZ);
+   acc11=_mm512_load_pd(x + 1*8 + 1*MAT_BLK_SZ);
+
+   acc20=_mm512_load_pd(x + 0*8 + 2*MAT_BLK_SZ);
+   acc21=_mm512_load_pd(x + 1*8 + 2*MAT_BLK_SZ);
+
+
+   for (long i = 0; i < n; i++) {
+      avec0 = _mm512_set1_pd(a[i+0*MAT_BLK_SZ]); 
+      avec1 = _mm512_set1_pd(a[i+1*MAT_BLK_SZ]); 
+      avec2 = _mm512_set1_pd(a[i+2*MAT_BLK_SZ]); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+0*8]); 
+      MUL_ADD512(acc00, avec0, bvec); MUL_ADD512(acc10, avec1, bvec);
+      MUL_ADD512(acc20, avec2, bvec); 
+
+      bvec = _mm512_load_pd(&b[i*MAT_BLK_SZ+1*8]); 
+      MUL_ADD512(acc01, avec0, bvec); MUL_ADD512(acc11, avec1, bvec);
+      MUL_ADD512(acc21, avec2, bvec); 
+   }
+
+
+   _mm512_store_pd(x + 0*8 + 0*MAT_BLK_SZ, acc00);
+   _mm512_store_pd(x + 1*8 + 0*MAT_BLK_SZ, acc01);
+
+   _mm512_store_pd(x + 0*8 + 1*MAT_BLK_SZ, acc10);
+   _mm512_store_pd(x + 1*8 + 1*MAT_BLK_SZ, acc11);
+
+   _mm512_store_pd(x + 0*8 + 2*MAT_BLK_SZ, acc20);
+   _mm512_store_pd(x + 1*8 + 2*MAT_BLK_SZ, acc21);
+
+}
+
+
+
+#else
 
 static
 void muladd1_by_32(double *x, const double *a, const double *b, long n)
@@ -687,38 +973,6 @@ void muladd1_by_32(double *x, const double *a, const double *b, long n)
    _mm256_store_pd(x + 7*4, acc7);
 }
 
-static
-void muladd1_by_16(double *x, const double *a, const double *b, long n)
-{
-   __m256d avec, bvec;
-
-
-   __m256d acc0=_mm256_load_pd(x + 0*4);
-   __m256d acc1=_mm256_load_pd(x + 1*4);
-   __m256d acc2=_mm256_load_pd(x + 2*4);
-   __m256d acc3=_mm256_load_pd(x + 3*4);
-
-
-   for (long i = 0; i < n; i++) {
-      avec = _mm256_broadcast_sd(a); a++;
-
-
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc0, avec, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc1, avec, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc2, avec, bvec);
-      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc3, avec, bvec);
-      b += 16;
-   }
-
-
-   _mm256_store_pd(x + 0*4, acc0);
-   _mm256_store_pd(x + 1*4, acc1);
-   _mm256_store_pd(x + 2*4, acc2);
-   _mm256_store_pd(x + 3*4, acc3);
-}
-
-
-// experiment: process two rows at a time
 static
 void muladd2_by_32(double *x, const double *a, const double *b, long n)
 {
@@ -795,11 +1049,8 @@ void muladd2_by_32(double *x, const double *a, const double *b, long n)
 
 }
 
-
-// experiment: process three rows at a time
 // NOTE: this makes things slower on an AVX1 platform --- not enough registers
 // it could be faster on AVX2/FMA, where there should be enough registers
-
 static
 void muladd3_by_32(double *x, const double *a, const double *b, long n)
 {
@@ -900,6 +1151,38 @@ void muladd3_by_32(double *x, const double *a, const double *b, long n)
 }
 
 static
+void muladd1_by_16(double *x, const double *a, const double *b, long n)
+{
+   __m256d avec, bvec;
+
+
+   __m256d acc0=_mm256_load_pd(x + 0*4);
+   __m256d acc1=_mm256_load_pd(x + 1*4);
+   __m256d acc2=_mm256_load_pd(x + 2*4);
+   __m256d acc3=_mm256_load_pd(x + 3*4);
+
+
+   for (long i = 0; i < n; i++) {
+      avec = _mm256_broadcast_sd(a); a++;
+
+
+      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc0, avec, bvec);
+      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc1, avec, bvec);
+      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc2, avec, bvec);
+      bvec = _mm256_load_pd(b); b += 4; MUL_ADD(acc3, avec, bvec);
+      b += 16;
+   }
+
+
+   _mm256_store_pd(x + 0*4, acc0);
+   _mm256_store_pd(x + 1*4, acc1);
+   _mm256_store_pd(x + 2*4, acc2);
+   _mm256_store_pd(x + 3*4, acc3);
+}
+
+
+
+static
 void muladd2_by_16(double *x, const double *a, const double *b, long n)
 {
    __m256d avec0, avec1, bvec;
@@ -941,6 +1224,7 @@ void muladd2_by_16(double *x, const double *a, const double *b, long n)
    _mm256_store_pd(x + 3*4 + 1*MAT_BLK_SZ, acc13);
 
 }
+
 
 static
 void muladd3_by_16(double *x, const double *a, const double *b, long n)
@@ -997,12 +1281,20 @@ void muladd3_by_16(double *x, const double *a, const double *b, long n)
 
 }
 
+
+
+
+#endif
+
+
+
+
 static inline
 void muladd_all_by_32(long first, long last, double *x, const double *a, const double *b, long n)
 {
    long i = first;
-#ifdef NTL_HAVE_FMA
-   // processing three rows at a time is faster
+#if (defined(NTL_HAVE_FMA) || defined(NTL_HAVE_AVX512F))
+   // process three rows at a time
    for (; i <= last-3; i+=3)
       muladd3_by_32(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
    for (; i < last; i++)
@@ -1021,7 +1313,7 @@ static inline
 void muladd_all_by_16(long first, long last, double *x, const double *a, const double *b, long n)
 {
    long i = first;
-#ifdef NTL_HAVE_FMA
+#if (defined(NTL_HAVE_FMA) || defined(NTL_HAVE_AVX512F))
    // processing three rows at a time is faster
    for (; i <= last-3; i+=3)
       muladd3_by_16(x + i*MAT_BLK_SZ, a + i*MAT_BLK_SZ, b, n);
@@ -1045,6 +1337,9 @@ void muladd_all_by_32_width(long first, long last, double *x, const double *a, c
       muladd_all_by_16(first, last, x, a, b, n);
 }
 
+// muladd_interval1 used in alt_inv_DD and alt_tri_DD
+// muladd_interval used in blk_inv_DD and blk_tri_DD, with an
+//   argument of MAT_BLK_SZ
 
 
 // this assumes n is a multiple of 16
@@ -1127,50 +1422,17 @@ void muladd_interval1(double * NTL_RESTRICT x, double * NTL_RESTRICT y, double c
    }
 }
 
-#define AVX_PD_SZ (4)
-
-// experimental: assumes n is a multiple of 4 in the range [0..32]
-#if 1
-static inline
-void muladd_interval2(double * NTL_RESTRICT x, double * NTL_RESTRICT y, double c, long n)
-{
-   n /= 4;
-   if (n <= 0 || n > 8) return;
-
-   x += n*4;
-   y += n*4;
-
-   // n in [1..8]
-
-   __m256d xvec, yvec, cvec;
-
-   cvec = _mm256_broadcast_sd(&c);
-
-   switch (n) {
-   case 8: xvec = _mm256_load_pd(x-8*4); yvec = _mm256_load_pd(y-8*4); MUL_ADD(xvec, yvec, cvec); _mm256_store_pd(x-8*4, xvec);
-   case 7: xvec = _mm256_load_pd(x-7*4); yvec = _mm256_load_pd(y-7*4); MUL_ADD(xvec, yvec, cvec); _mm256_store_pd(x-7*4, xvec);
-   case 6: xvec = _mm256_load_pd(x-6*4); yvec = _mm256_load_pd(y-6*4); MUL_ADD(xvec, yvec, cvec); _mm256_store_pd(x-6*4, xvec);
-   case 5: xvec = _mm256_load_pd(x-5*4); yvec = _mm256_load_pd(y-5*4); MUL_ADD(xvec, yvec, cvec); _mm256_store_pd(x-5*4, xvec);
-   case 4: xvec = _mm256_load_pd(x-4*4); yvec = _mm256_load_pd(y-4*4); MUL_ADD(xvec, yvec, cvec); _mm256_store_pd(x-4*4, xvec);
-   case 3: xvec = _mm256_load_pd(x-3*4); yvec = _mm256_load_pd(y-3*4); MUL_ADD(xvec, yvec, cvec); _mm256_store_pd(x-3*4, xvec);
-   case 2: xvec = _mm256_load_pd(x-2*4); yvec = _mm256_load_pd(y-2*4); MUL_ADD(xvec, yvec, cvec); _mm256_store_pd(x-2*4, xvec);
-   case 1: xvec = _mm256_load_pd(x-1*4); yvec = _mm256_load_pd(y-1*4); MUL_ADD(xvec, yvec, cvec); _mm256_store_pd(x-1*4, xvec);
-   }
-   
-}
-#else
-static inline
-void muladd_interval2(double * NTL_RESTRICT x, double * NTL_RESTRICT y, double c, long n)
-{
-   for (long i = 0; i < n; i++)
-      x[i] += y[i]*c;
-}
-#endif
 
 #endif
 
 
-#define DO_MUL(a, b) ((unsigned long) (long(a)*long(b)))
+//#define DO_MUL(a, b) ((unsigned long) (long(a)*long(b)))
+
+static inline 
+unsigned long 
+DO_MUL(unsigned long a, unsigned long b)
+{ return a*b; }
+
 
 static
 inline void muladd_interval(unsigned long * NTL_RESTRICT x, unsigned long * NTL_RESTRICT y, 
@@ -1483,6 +1745,7 @@ void muladd1_by_32_full_width(unsigned long *x, const unsigned long *a, const un
    }
 }
 
+
 // experiment with shorter int's
 static
 void muladd1_by_32_full(unsigned long *x, const unsigned int *a, const unsigned int *b)
@@ -1716,7 +1979,10 @@ void muladd_all_by_32_width(long first, long last, unsigned long *x, const unsig
    }
 }
 
-#if (NTL_BITS_PER_INT >= NTL_BITS_PER_LONG/2)
+#if (!defined(__INTEL_COMPILER) && (NTL_BITS_PER_INT >= NTL_BITS_PER_LONG/2))
+// Something goes wrong with the Intel ICC (version 16.0.3) compiler 
+// in this case.
+// It goes away with -O1, so I suspect it is a compiler bug.
 
 typedef unsigned int uhlong;
 
@@ -3444,7 +3710,7 @@ void basic_inv(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
             // multiply row k by pivot_inv
             long t1 = pivot_inv;
             mulmod_precon_t t1pinv = PrepMulModPrecon(t1, p, pinv); 
-            long * NTL_RESTRICT y = &M[k][0];
+            long *y = &M[k][0];
             for (long j = 0; j < n; j++) 
                y[j] = MulModPrecon(y[j], t1, p, t1pinv);
 
@@ -3457,11 +3723,11 @@ void basic_inv(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          NTL_IMPORT(p)
          NTL_IMPORT(n)
          NTL_IMPORT(k)
-         long * NTL_RESTRICT y = &M[k][0]; 
+         long *y = &M[k][0]; 
          for (long i = first; i < last; i++) {
             if (i == k) continue; // skip row k
 
-            long * NTL_RESTRICT x = &M[i][0]; 
+            long *x = &M[i][0]; 
             long t1 = x[k];
             t1 = NegateMod(t1, p);
             x[k] = 0;
@@ -3487,7 +3753,7 @@ void basic_inv(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
       // pivot colums, using reverse swap sequence
 
       for (long i = 0; i < n; i++) {
-         long * NTL_RESTRICT x = &M[i][0]; 
+         long *x = &M[i][0]; 
 
          for (long k = n-1; k >= 0; k--) {
             long pos = P[k];
@@ -3594,7 +3860,7 @@ void alt_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
             // multiply row k by pivot_inv
             long t1 = pivot_inv;
             mulmod_precon_t t1pinv = PrepMulModPrecon(t1, p, pinv); // t1*pinv;
-            unsigned long * NTL_RESTRICT y = &M[k][0];
+            unsigned long *y = &M[k][0];
             for (long j = 0; j < n; j++) {
                long t2 = rem(y[j], p, red_struct);
                y[j] = MulModPrecon(t2, t1, p, t1pinv);
@@ -3609,16 +3875,15 @@ void alt_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          NTL_IMPORT(n)
          NTL_IMPORT(k)
          NTL_IMPORT(red_struct)
-         unsigned long * NTL_RESTRICT y = &M[k][0]; 
+         unsigned long *y = &M[k][0]; 
          if (cleanup) {
             for (long i = first; i < last; i++) {
                if (i == k) continue;
                // skip row k: the data won't change, but it
                // technically is a race condition in a multi-theaded
-               // execution, and it would violate the "restrict"
-               // contract
+               // execution
 
-               unsigned long * NTL_RESTRICT x = &M[i][0]; 
+               unsigned long *x = &M[i][0]; 
                for (long j = 0; j < n; j++) {
                   x[j] = rem(x[j], p, red_struct);
                }
@@ -3629,7 +3894,7 @@ void alt_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          for (long i = first; i < last; i++) {
             if (i == k) continue; // skip row k
 
-            unsigned long * NTL_RESTRICT x = &M[i][0]; 
+            unsigned long *x = &M[i][0]; 
             long t1 = rem(x[k], p, red_struct);
             t1 = NegateMod(t1, p);
             x[k] = 0;
@@ -3664,7 +3929,7 @@ void alt_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
       // pivot colums, using reverse swap sequence
 
       for (long i = 0; i < n; i++) {
-         unsigned long * NTL_RESTRICT x = &M[i][0]; 
+         unsigned long *x = &M[i][0]; 
 
          for (long k = n-1; k >= 0; k--) {
             long pos = P[k];
@@ -3772,7 +4037,7 @@ void alt_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
             // multiply row k by pivot_inv
             long t1 = pivot_inv;
             mulmod_precon_t t1pinv = PrepMulModPrecon(t1, p, pinv); // t1*pinv;
-            double * NTL_RESTRICT y = &M[k][0];
+            double *y = &M[k][0];
             for (long j = 0; j < n; j++) {
                long t2 = rem((unsigned long)(long)y[j], p, red_struct);
                y[j] = MulModPrecon(t2, t1, p, t1pinv);
@@ -3787,16 +4052,15 @@ void alt_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          NTL_IMPORT(n)
          NTL_IMPORT(k)
          NTL_IMPORT(red_struct)
-         double * NTL_RESTRICT y = &M[k][0]; 
+         double *y = &M[k][0]; 
          if (cleanup) {
             for (long i = first; i < last; i++) {
                if (i == k) continue;
                // skip row k: the data won't change, but it
                // technically is a race condition in a multi-theaded
-               // execution, and it would violate the "restrict"
-               // contract
+               // execution
 
-               double * NTL_RESTRICT x = &M[i][0]; 
+               double *x = &M[i][0]; 
                for (long j = 0; j < n; j++) {
                   x[j] = rem((unsigned long)(long)x[j], p, red_struct);
                }
@@ -3807,7 +4071,7 @@ void alt_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          for (long i = first; i < last; i++) {
             if (i == k) continue; // skip row k
 
-            double * NTL_RESTRICT x = &M[i][0]; 
+            double *x = &M[i][0]; 
             long t1 = rem((unsigned long)(long)x[k], p, red_struct);
             t1 = NegateMod(t1, p);
             x[k] = 0;
@@ -3830,7 +4094,7 @@ void alt_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
       // pivot colums, using reverse swap sequence
 
       for (long i = 0; i < n; i++) {
-         double * NTL_RESTRICT x = &M[i][0]; 
+         double *x = &M[i][0]; 
 
          for (long k = n-1; k >= 0; k--) {
             long pos = P[k];
@@ -3929,7 +4193,7 @@ void blk_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
       }
 
       red_count = red_count-MAT_BLK_SZ;
-      double * NTL_RESTRICT kpanelp = &M[kpanel][0];
+      double *kpanelp = &M[kpanel][0];
 
       if (cleanup) {
          for (long r = 0; r < n*MAT_BLK_SZ; r++) 
@@ -3957,10 +4221,10 @@ void blk_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
             return;
          }
 
-         double * NTL_RESTRICT y = &kpanelp[k*MAT_BLK_SZ];
+         double *y = &kpanelp[k*MAT_BLK_SZ];
          if (k != pos) {
             // swap rows pos and k
-            double * NTL_RESTRICT x = &kpanelp[pos*MAT_BLK_SZ];
+            double *x = &kpanelp[pos*MAT_BLK_SZ];
             for (long j = 0; j < MAT_BLK_SZ; j++) _ntl_swap(x[j], y[j]);
             
             det = NegateMod(det, p);
@@ -3985,7 +4249,7 @@ void blk_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          for (long i = 0; i < n; i++) {
             if (i == k) continue; // skip row k
 
-            double * NTL_RESTRICT x = &kpanelp[i*MAT_BLK_SZ];
+            double *x = &kpanelp[i*MAT_BLK_SZ];
             long t1 = rem((unsigned long)(long)x[k-kk], p, red_struct);
             t1 = NegateMod(t1, p);
             x[k-kk] = 0;
@@ -4027,7 +4291,7 @@ void blk_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
       for (long jpanel = first; jpanel < last; jpanel++) {
          if (jpanel == kpanel) continue;
 
-         double * NTL_RESTRICT jpanelp = &M[jpanel][0];
+         double *jpanelp = &M[jpanel][0];
 
          if (cleanup) {
             for (long r = 0; r < n*MAT_BLK_SZ; r++) 
@@ -4039,8 +4303,8 @@ void blk_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
             long pos = P[k];
             if (pos != k) {
                // swap rows pos and k
-               double * NTL_RESTRICT pos_p = &jpanelp[pos*MAT_BLK_SZ];
-               double * NTL_RESTRICT k_p = &jpanelp[k*MAT_BLK_SZ];
+               double *pos_p = &jpanelp[pos*MAT_BLK_SZ];
+               double *k_p = &jpanelp[k*MAT_BLK_SZ];
                for (long j = 0; j < MAT_BLK_SZ; j++)
                   _ntl_swap(pos_p[j], k_p[j]);
             }
@@ -4073,8 +4337,8 @@ void blk_inv_DD(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          if (pos != k) { 
             // swap columns pos and k
 
-            double * NTL_RESTRICT x = &M[pos / MAT_BLK_SZ][pos % MAT_BLK_SZ];
-            double * NTL_RESTRICT y = &M[k / MAT_BLK_SZ][k % MAT_BLK_SZ];
+            double *x = &M[pos / MAT_BLK_SZ][pos % MAT_BLK_SZ];
+            double *y = &M[k / MAT_BLK_SZ][k % MAT_BLK_SZ];
             for (long i = 0; i < n; i++) {
                _ntl_swap(x[i*MAT_BLK_SZ], y[i*MAT_BLK_SZ]);
             }
@@ -4182,7 +4446,7 @@ void blk_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
       }
 
       red_count = red_count-MAT_BLK_SZ;
-      unsigned long * NTL_RESTRICT kpanelp = &M[kpanel][0];
+      unsigned long *kpanelp = &M[kpanel][0];
 
       if (cleanup) {
          for (long r = 0; r < n*MAT_BLK_SZ; r++) 
@@ -4210,10 +4474,10 @@ void blk_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
             return;
          }
 
-         unsigned long * NTL_RESTRICT y = &kpanelp[k*MAT_BLK_SZ];
+         unsigned long *y = &kpanelp[k*MAT_BLK_SZ];
          if (k != pos) {
             // swap rows pos and k
-            unsigned long * NTL_RESTRICT x = &kpanelp[pos*MAT_BLK_SZ];
+            unsigned long *x = &kpanelp[pos*MAT_BLK_SZ];
             for (long j = 0; j < MAT_BLK_SZ; j++) _ntl_swap(x[j], y[j]);
             
             det = NegateMod(det, p);
@@ -4238,7 +4502,7 @@ void blk_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          for (long i = 0; i < n; i++) {
             if (i == k) continue; // skip row k
 
-            unsigned long * NTL_RESTRICT x = &kpanelp[i*MAT_BLK_SZ];
+            unsigned long *x = &kpanelp[i*MAT_BLK_SZ];
             long t1 = rem(x[k-kk], p, red_struct);
             t1 = NegateMod(t1, p);
             x[k-kk] = 0;
@@ -4280,7 +4544,7 @@ void blk_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
       for (long jpanel = first; jpanel < last; jpanel++) {
          if (jpanel == kpanel) continue;
 
-         unsigned long * NTL_RESTRICT jpanelp = &M[jpanel][0];
+         unsigned long *jpanelp = &M[jpanel][0];
 
          if (cleanup) {
             for (long r = 0; r < n*MAT_BLK_SZ; r++) 
@@ -4292,8 +4556,8 @@ void blk_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
             long pos = P[k];
             if (pos != k) {
                // swap rows pos and k
-               unsigned long * NTL_RESTRICT pos_p = &jpanelp[pos*MAT_BLK_SZ];
-               unsigned long * NTL_RESTRICT k_p = &jpanelp[k*MAT_BLK_SZ];
+               unsigned long *pos_p = &jpanelp[pos*MAT_BLK_SZ];
+               unsigned long *k_p = &jpanelp[k*MAT_BLK_SZ];
                for (long j = 0; j < MAT_BLK_SZ; j++)
                   _ntl_swap(pos_p[j], k_p[j]);
             }
@@ -4329,8 +4593,8 @@ void blk_inv_L(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          if (pos != k) { 
             // swap columns pos and k
 
-            unsigned long * NTL_RESTRICT x = &M[pos / MAT_BLK_SZ][pos % MAT_BLK_SZ];
-            unsigned long * NTL_RESTRICT y = &M[k / MAT_BLK_SZ][k % MAT_BLK_SZ];
+            unsigned long *x = &M[pos / MAT_BLK_SZ][pos % MAT_BLK_SZ];
+            unsigned long *y = &M[k / MAT_BLK_SZ][k % MAT_BLK_SZ];
             for (long i = 0; i < n; i++) {
                _ntl_swap(x[i*MAT_BLK_SZ], y[i*MAT_BLK_SZ]);
             }
@@ -4425,7 +4689,7 @@ void blk_inv_LL(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
    for (long kk = 0, kpanel = 0; kk < n; kk += MAT_BLK_SZ, kpanel++) {
       long k_max = min(kk+MAT_BLK_SZ, n);
 
-      long * NTL_RESTRICT kpanelp = &M[kpanel][0];
+      long *kpanelp = &M[kpanel][0];
 
 
       for (long k = kk; k < k_max; k++) {
@@ -4449,10 +4713,10 @@ void blk_inv_LL(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
             return;
          }
 
-         long * NTL_RESTRICT y = &kpanelp[k*MAT_BLK_SZ];
+         long *y = &kpanelp[k*MAT_BLK_SZ];
          if (k != pos) {
             // swap rows pos and k
-            long * NTL_RESTRICT x = &kpanelp[pos*MAT_BLK_SZ];
+            long *x = &kpanelp[pos*MAT_BLK_SZ];
             for (long j = 0; j < MAT_BLK_SZ; j++) _ntl_swap(x[j], y[j]);
             
             det = NegateMod(det, p);
@@ -4476,7 +4740,7 @@ void blk_inv_LL(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          for (long i = 0; i < n; i++) {
             if (i == k) continue; // skip row k
 
-            long * NTL_RESTRICT x = &kpanelp[i*MAT_BLK_SZ];
+            long *x = &kpanelp[i*MAT_BLK_SZ];
             long t1 = x[k-kk];
             t1 = NegateMod(t1, p);
             x[k-kk] = 0;
@@ -4515,15 +4779,15 @@ void blk_inv_LL(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
       for (long jpanel = first; jpanel < last; jpanel++) {
          if (jpanel == kpanel) continue;
 
-         long * NTL_RESTRICT jpanelp = &M[jpanel][0];
+         long *jpanelp = &M[jpanel][0];
 
          // perform swaps
          for (long k = kk; k < k_max; k++) {
             long pos = P[k];
             if (pos != k) {
                // swap rows pos and k
-               long * NTL_RESTRICT pos_p = &jpanelp[pos*MAT_BLK_SZ];
-               long * NTL_RESTRICT k_p = &jpanelp[k*MAT_BLK_SZ];
+               long *pos_p = &jpanelp[pos*MAT_BLK_SZ];
+               long *k_p = &jpanelp[k*MAT_BLK_SZ];
                for (long j = 0; j < MAT_BLK_SZ; j++)
                   _ntl_swap(pos_p[j], k_p[j]);
             }
@@ -4560,8 +4824,8 @@ void blk_inv_LL(zz_p& d, mat_zz_p& X, const mat_zz_p& A, bool relax)
          if (pos != k) { 
             // swap columns pos and k
 
-            long * NTL_RESTRICT x = &M[pos / MAT_BLK_SZ][pos % MAT_BLK_SZ];
-            long * NTL_RESTRICT y = &M[k / MAT_BLK_SZ][k % MAT_BLK_SZ];
+            long *x = &M[pos / MAT_BLK_SZ][pos % MAT_BLK_SZ];
+            long *y = &M[k / MAT_BLK_SZ][k % MAT_BLK_SZ];
             for (long i = 0; i < n; i++) {
                _ntl_swap(x[i*MAT_BLK_SZ], y[i*MAT_BLK_SZ]);
             }
@@ -4771,7 +5035,7 @@ void basic_tri(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
             // multiply row k by pivot_inv
             long t1 = pivot_inv;
             mulmod_precon_t t1pinv = PrepMulModPrecon(t1, p, pinv); 
-            long * NTL_RESTRICT y = &M[k][0];
+            long *y = &M[k][0];
             // adjust
             for (long j = k+1; j < n; j++) 
                y[j] = MulModPrecon(y[j], t1, p, t1pinv);
@@ -4790,13 +5054,13 @@ void basic_tri(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
          NTL_IMPORT(p)
          NTL_IMPORT(n)
          NTL_IMPORT(k)
-         long * NTL_RESTRICT y = &M[k][0]; 
+         long *y = &M[k][0]; 
 
          // adjust
          for (long ii = first; ii < last; ii++) {
             long i = ii + k+1;
 
-            long * NTL_RESTRICT x = &M[i][0]; 
+            long *x = &M[i][0]; 
             long t1 = x[k];
             t1 = NegateMod(t1, p);
             // adjust // x[k] = 0;
@@ -4956,7 +5220,7 @@ void alt_tri_L(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
             // multiply row k by pivot_inv
             long t1 = pivot_inv;
             mulmod_precon_t t1pinv = PrepMulModPrecon(t1, p, pinv); // t1*pinv;
-            unsigned long * NTL_RESTRICT y = &M[k][0];
+            unsigned long *y = &M[k][0];
             for (long j = k+1; j < n; j++) {
                long t2 = rem(y[j], p, red_struct);
                y[j] = MulModPrecon(t2, t1, p, t1pinv);
@@ -4973,12 +5237,12 @@ void alt_tri_L(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
          NTL_IMPORT(n)
          NTL_IMPORT(k)
          NTL_IMPORT(red_struct)
-         unsigned long * NTL_RESTRICT y = &M[k][0]; 
+         unsigned long *y = &M[k][0]; 
          if (cleanup) {
             for (long ii = first; ii < last; ii++) {
                long i = ii + k+1;
 
-               unsigned long * NTL_RESTRICT x = &M[i][0]; 
+               unsigned long *x = &M[i][0]; 
                for (long j = k+1; j < n; j++) {
                   x[j] = rem(x[j], p, red_struct);
                }
@@ -4989,7 +5253,7 @@ void alt_tri_L(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
          for (long ii = first; ii < last; ii++) {
             long i = ii + k+1;
 
-            unsigned long * NTL_RESTRICT x = &M[i][0]; 
+            unsigned long *x = &M[i][0]; 
             long t1 = rem(x[k], p, red_struct);
             t1 = NegateMod(t1, p);
             if (t1 == 0) continue;
@@ -5152,7 +5416,7 @@ void alt_tri_DD(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
             // multiply row k by pivot_inv
             long t1 = pivot_inv;
             mulmod_precon_t t1pinv = PrepMulModPrecon(t1, p, pinv); // t1*pinv;
-            double * NTL_RESTRICT y = &M[k][0];
+            double *y = &M[k][0];
             for (long j = k+1; j < n; j++) {
                long t2 = rem((unsigned long)(long)y[j], p, red_struct);
                y[j] = MulModPrecon(t2, t1, p, t1pinv);
@@ -5169,12 +5433,12 @@ void alt_tri_DD(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
          NTL_IMPORT(n)
          NTL_IMPORT(k)
          NTL_IMPORT(red_struct)
-         double * NTL_RESTRICT y = &M[k][0]; 
+         double *y = &M[k][0]; 
          if (cleanup) {
             for (long ii = first; ii < last; ii++) {
                long i = ii + k+1;
 
-               double * NTL_RESTRICT x = &M[i][0]; 
+               double *x = &M[i][0]; 
                for (long j = k+1; j < n; j++) {
                   x[j] = rem((unsigned long)(long)x[j], p, red_struct);
                }
@@ -5188,7 +5452,7 @@ void alt_tri_DD(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
          for (long ii = first; ii < last; ii++) {
             long i = ii + k+1;
 
-            double * NTL_RESTRICT x = &M[i][0]; 
+            double *x = &M[i][0]; 
             long t1 = rem((unsigned long)(long)x[k], p, red_struct);
             t1 = NegateMod(t1, p);
             if (t1 == 0) continue;
@@ -5331,7 +5595,7 @@ void blk_tri_DD(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
       }
 
       red_count = red_count-MAT_BLK_SZ;
-      double * NTL_RESTRICT kpanelp = &M[kpanel][0];
+      double *kpanelp = &M[kpanel][0];
 
       if (cleanup) {
          for (long r = kk*MAT_BLK_SZ; r < n*MAT_BLK_SZ; r++) 
@@ -5359,10 +5623,10 @@ void blk_tri_DD(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
             return;
          }
 
-         double * NTL_RESTRICT y = &kpanelp[k*MAT_BLK_SZ];
+         double *y = &kpanelp[k*MAT_BLK_SZ];
          if (k != pos) {
             // swap rows pos and k
-            double * NTL_RESTRICT x = &kpanelp[pos*MAT_BLK_SZ];
+            double *x = &kpanelp[pos*MAT_BLK_SZ];
             for (long j = 0; j < MAT_BLK_SZ; j++) _ntl_swap(x[j], y[j]);
             
             det = NegateMod(det, p);
@@ -5391,7 +5655,7 @@ void blk_tri_DD(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
          for (long i = kk; i < n; i++) {
             if (i == k) continue; // skip row k
 
-            double * NTL_RESTRICT x = &kpanelp[i*MAT_BLK_SZ];
+            double *x = &kpanelp[i*MAT_BLK_SZ];
             long t1 = rem((unsigned long)(long)x[k-kk], p, red_struct);
             t1 = NegateMod(t1, p);
             x[k-kk] = 0;
@@ -5440,7 +5704,7 @@ void blk_tri_DD(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
       for (long index = first; index < last; index++) {
          long jpanel = index + kpanel+1;
 
-         double * NTL_RESTRICT jpanelp = &M[jpanel][0];
+         double *jpanelp = &M[jpanel][0];
 
          if (cleanup) {
             for (long r = kk*MAT_BLK_SZ; r < n*MAT_BLK_SZ; r++) 
@@ -5452,8 +5716,8 @@ void blk_tri_DD(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
             long pos = P[k];
             if (pos != k) {
                // swap rows pos and k
-               double * NTL_RESTRICT pos_p = &jpanelp[pos*MAT_BLK_SZ];
-               double * NTL_RESTRICT k_p = &jpanelp[k*MAT_BLK_SZ];
+               double *pos_p = &jpanelp[pos*MAT_BLK_SZ];
+               double *k_p = &jpanelp[k*MAT_BLK_SZ];
                for (long j = 0; j < MAT_BLK_SZ; j++)
                   _ntl_swap(pos_p[j], k_p[j]);
             }
@@ -5602,7 +5866,7 @@ void blk_tri_L(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
       }
 
       red_count = red_count-MAT_BLK_SZ;
-      unsigned long * NTL_RESTRICT kpanelp = &M[kpanel][0];
+      unsigned long *kpanelp = &M[kpanel][0];
 
       if (cleanup) {
          for (long r = kk*MAT_BLK_SZ; r < n*MAT_BLK_SZ; r++) 
@@ -5630,10 +5894,10 @@ void blk_tri_L(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
             return;
          }
 
-         unsigned long * NTL_RESTRICT y = &kpanelp[k*MAT_BLK_SZ];
+         unsigned long *y = &kpanelp[k*MAT_BLK_SZ];
          if (k != pos) {
             // swap rows pos and k
-            unsigned long * NTL_RESTRICT x = &kpanelp[pos*MAT_BLK_SZ];
+            unsigned long *x = &kpanelp[pos*MAT_BLK_SZ];
             for (long j = 0; j < MAT_BLK_SZ; j++) _ntl_swap(x[j], y[j]);
             
             det = NegateMod(det, p);
@@ -5662,7 +5926,7 @@ void blk_tri_L(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
          for (long i = kk; i < n; i++) {
             if (i == k) continue; // skip row k
 
-            unsigned long * NTL_RESTRICT x = &kpanelp[i*MAT_BLK_SZ];
+            unsigned long *x = &kpanelp[i*MAT_BLK_SZ];
             long t1 = rem(x[k-kk], p, red_struct);
             t1 = NegateMod(t1, p);
             x[k-kk] = 0;
@@ -5710,7 +5974,7 @@ void blk_tri_L(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
       for (long index = first; index < last; index++) {
          long jpanel = index + kpanel+1;
 
-         unsigned long * NTL_RESTRICT jpanelp = &M[jpanel][0];
+         unsigned long *jpanelp = &M[jpanel][0];
 
          if (cleanup) {
             for (long r = kk*MAT_BLK_SZ; r < n*MAT_BLK_SZ; r++) 
@@ -5722,8 +5986,8 @@ void blk_tri_L(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
             long pos = P[k];
             if (pos != k) {
                // swap rows pos and k
-               unsigned long * NTL_RESTRICT pos_p = &jpanelp[pos*MAT_BLK_SZ];
-               unsigned long * NTL_RESTRICT k_p = &jpanelp[k*MAT_BLK_SZ];
+               unsigned long *pos_p = &jpanelp[pos*MAT_BLK_SZ];
+               unsigned long *k_p = &jpanelp[k*MAT_BLK_SZ];
                for (long j = 0; j < MAT_BLK_SZ; j++)
                   _ntl_swap(pos_p[j], k_p[j]);
             }
@@ -5857,7 +6121,7 @@ void blk_tri_LL(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
    for (long kk = 0, kpanel = 0; kk < n; kk += MAT_BLK_SZ, kpanel++) {
       long k_max = min(kk+MAT_BLK_SZ, n);
 
-      long * NTL_RESTRICT kpanelp = &M[kpanel][0];
+      long *kpanelp = &M[kpanel][0];
 
       for (long k = kk; k < k_max; k++) {
 
@@ -5880,10 +6144,10 @@ void blk_tri_LL(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
             return;
          }
 
-         long * NTL_RESTRICT y = &kpanelp[k*MAT_BLK_SZ];
+         long *y = &kpanelp[k*MAT_BLK_SZ];
          if (k != pos) {
             // swap rows pos and k
-            long * NTL_RESTRICT x = &kpanelp[pos*MAT_BLK_SZ];
+            long *x = &kpanelp[pos*MAT_BLK_SZ];
             for (long j = 0; j < MAT_BLK_SZ; j++) _ntl_swap(x[j], y[j]);
             
             det = NegateMod(det, p);
@@ -5911,7 +6175,7 @@ void blk_tri_LL(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
          for (long i = kk; i < n; i++) {
             if (i == k) continue; // skip row k
 
-            long * NTL_RESTRICT x = &kpanelp[i*MAT_BLK_SZ];
+            long *x = &kpanelp[i*MAT_BLK_SZ];
             long t1 = x[k-kk];
             t1 = NegateMod(t1, p);
             x[k-kk] = 0;
@@ -5956,15 +6220,15 @@ void blk_tri_LL(zz_p& d, const mat_zz_p& A, const vec_zz_p *bp,
       for (long index = first; index < last; index++) {
          long jpanel = index + kpanel+1;
 
-         long * NTL_RESTRICT jpanelp = &M[jpanel][0];
+         long *jpanelp = &M[jpanel][0];
 
          // perform swaps
          for (long k = kk; k < k_max; k++) {
             long pos = P[k];
             if (pos != k) {
                // swap rows pos and k
-               long * NTL_RESTRICT pos_p = &jpanelp[pos*MAT_BLK_SZ];
-               long * NTL_RESTRICT k_p = &jpanelp[k*MAT_BLK_SZ];
+               long *pos_p = &jpanelp[pos*MAT_BLK_SZ];
+               long *k_p = &jpanelp[k*MAT_BLK_SZ];
                for (long j = 0; j < MAT_BLK_SZ; j++)
                   _ntl_swap(pos_p[j], k_p[j]);
             }
@@ -6209,12 +6473,12 @@ long elim_basic(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
       NTL_IMPORT(n)
       NTL_IMPORT(k)
       NTL_IMPORT(r)
-      long * NTL_RESTRICT y = &M[r][0]; 
+      long *y = &M[r][0]; 
 
       for (long ii = first; ii < last; ii++) {
          long i = ii + r+1;
 
-         long * NTL_RESTRICT x = &M[i][0]; 
+         long *x = &M[i][0]; 
          long t1 = x[k];
          t1 = MulMod(t1, pivot_inv, p);
          t1 = NegateMod(t1, p);
@@ -6362,8 +6626,8 @@ void CopyBlock(double *dst_ptr, long dst_blk, const double *src_ptr, long src_bl
 static inline
 void SwapOneRow(double *panelp, long i, long pos)
 {
-   double * NTL_RESTRICT pos_p = &panelp[pos*MAT_BLK_SZ];
-   double * NTL_RESTRICT i_p = &panelp[i*MAT_BLK_SZ];
+   double *pos_p = &panelp[pos*MAT_BLK_SZ];
+   double *i_p = &panelp[i*MAT_BLK_SZ];
    for (long j = 0; j < MAT_BLK_SZ; j++)
       _ntl_swap(pos_p[j], i_p[j]);
 }
@@ -6444,7 +6708,7 @@ long elim_blk_DD(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
 
    AlignedArray<double> aux_panel_store;
    aux_panel_store.SetLength(n*MAT_BLK_SZ);
-   double * NTL_RESTRICT aux_panel = &aux_panel_store[0];
+   double *aux_panel = &aux_panel_store[0];
 
 
    AlignedArray<double> buf_store1;
@@ -6510,7 +6774,7 @@ long elim_blk_DD(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
             kpanel++;
          }
 
-         double * NTL_RESTRICT kpanelp = &M[kpanel][0];
+         double *kpanelp = &M[kpanel][0];
 
          if (k == kk) { // a fresh kpanel -- special processing
 
@@ -6558,12 +6822,12 @@ long elim_blk_DD(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
             continue;
          }
 
-         double * NTL_RESTRICT y = &kpanelp[r*MAT_BLK_SZ];
-         double * NTL_RESTRICT y1 = &aux_panel[r*MAT_BLK_SZ];
+         double *y = &kpanelp[r*MAT_BLK_SZ];
+         double *y1 = &aux_panel[r*MAT_BLK_SZ];
          if (r != pos) {
             // swap rows pos and r
-            double * NTL_RESTRICT x = &kpanelp[pos*MAT_BLK_SZ];
-            double * NTL_RESTRICT x1 = &aux_panel[pos*MAT_BLK_SZ];
+            double *x = &kpanelp[pos*MAT_BLK_SZ];
+            double *x1 = &aux_panel[pos*MAT_BLK_SZ];
 
             for (long j = k-kk; j < MAT_BLK_SZ; j++) _ntl_swap(x[j], y[j]);
             for (long j = 0; j < r-rr; j++) _ntl_swap(x1[j], y1[j]);
@@ -6580,8 +6844,8 @@ long elim_blk_DD(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
 
          // clear column
          for (long i = r+1; i < n; i++) {
-            double * NTL_RESTRICT x = &kpanelp[i*MAT_BLK_SZ];
-            double * NTL_RESTRICT x1 = &aux_panel[i*MAT_BLK_SZ];
+            double *x = &kpanelp[i*MAT_BLK_SZ];
+            double *x1 = &aux_panel[i*MAT_BLK_SZ];
             long t1 = rem((unsigned long)(long)x[k-kk], p, red_struct);
             t1 = MulMod(t1, pivot_inv, p);
             t1 = NegateMod(t1, p);
@@ -6631,7 +6895,7 @@ long elim_blk_DD(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
          for (long index = first; index < last; index++) {
             long jpanel = index + kpanel+1;
 
-            double * NTL_RESTRICT jpanelp = &M[jpanel][0];
+            double *jpanelp = &M[jpanel][0];
 
             if (cleanup) {
                for (long h = 0; h < n*MAT_BLK_SZ; h++) 
@@ -6849,8 +7113,8 @@ void TransposeBlock(unsigned long *dst_ptr, long dst_blk)
 static inline
 void SwapOneRow(unsigned long *panelp, long i, long pos)
 {
-   unsigned long * NTL_RESTRICT pos_p = &panelp[pos*MAT_BLK_SZ];
-   unsigned long * NTL_RESTRICT i_p = &panelp[i*MAT_BLK_SZ];
+   unsigned long *pos_p = &panelp[pos*MAT_BLK_SZ];
+   unsigned long *i_p = &panelp[i*MAT_BLK_SZ];
    for (long j = 0; j < MAT_BLK_SZ; j++)
       _ntl_swap(pos_p[j], i_p[j]);
 }
@@ -6932,7 +7196,7 @@ long elim_blk_L(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
 
    UniqueArray<unsigned long> aux_panel_store;
    aux_panel_store.SetLength(n*MAT_BLK_SZ);
-   unsigned long * NTL_RESTRICT aux_panel = &aux_panel_store[0];
+   unsigned long *aux_panel = &aux_panel_store[0];
 
 
    UniqueArray<unsigned long> buf_store1;
@@ -7003,7 +7267,7 @@ long elim_blk_L(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
             kpanel++;
          }
 
-         unsigned long * NTL_RESTRICT kpanelp = &M[kpanel][0];
+         unsigned long *kpanelp = &M[kpanel][0];
 
          if (k == kk) { // a fresh kpanel -- special processing
 
@@ -7053,12 +7317,12 @@ long elim_blk_L(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
             continue;
          }
 
-         unsigned long * NTL_RESTRICT y = &kpanelp[r*MAT_BLK_SZ];
-         unsigned long * NTL_RESTRICT y1 = &aux_panel[r*MAT_BLK_SZ];
+         unsigned long *y = &kpanelp[r*MAT_BLK_SZ];
+         unsigned long *y1 = &aux_panel[r*MAT_BLK_SZ];
          if (r != pos) {
             // swap rows pos and r
-            unsigned long * NTL_RESTRICT x = &kpanelp[pos*MAT_BLK_SZ];
-            unsigned long * NTL_RESTRICT x1 = &aux_panel[pos*MAT_BLK_SZ];
+            unsigned long *x = &kpanelp[pos*MAT_BLK_SZ];
+            unsigned long *x1 = &aux_panel[pos*MAT_BLK_SZ];
 
             for (long j = k-kk; j < MAT_BLK_SZ; j++) _ntl_swap(x[j], y[j]);
             for (long j = 0; j < r-rr; j++) _ntl_swap(x1[j], y1[j]);
@@ -7075,8 +7339,8 @@ long elim_blk_L(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
 
          // clear column
          for (long i = r+1; i < n; i++) {
-            unsigned long * NTL_RESTRICT x = &kpanelp[i*MAT_BLK_SZ];
-            unsigned long * NTL_RESTRICT x1 = &aux_panel[i*MAT_BLK_SZ];
+            unsigned long *x = &kpanelp[i*MAT_BLK_SZ];
+            unsigned long *x1 = &aux_panel[i*MAT_BLK_SZ];
             long t1 = rem(x[k-kk], p, red_struct);
             t1 = MulMod(t1, pivot_inv, p);
             t1 = NegateMod(t1, p);
@@ -7126,7 +7390,7 @@ long elim_blk_L(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
          for (long index = first; index < last; index++) {
             long jpanel = index + kpanel+1;
 
-            unsigned long * NTL_RESTRICT jpanelp = &M[jpanel][0];
+            unsigned long *jpanelp = &M[jpanel][0];
 
             if (cleanup) {
                for (long h = 0; h < n*MAT_BLK_SZ; h++) 
@@ -7351,8 +7615,8 @@ void TransposeBlock(long *dst_ptr, long dst_blk)
 static inline
 void SwapOneRow(long *panelp, long i, long pos)
 {
-   long * NTL_RESTRICT pos_p = &panelp[pos*MAT_BLK_SZ];
-   long * NTL_RESTRICT i_p = &panelp[i*MAT_BLK_SZ];
+   long *pos_p = &panelp[pos*MAT_BLK_SZ];
+   long *i_p = &panelp[i*MAT_BLK_SZ];
    for (long j = 0; j < MAT_BLK_SZ; j++)
       _ntl_swap(pos_p[j], i_p[j]);
 }
@@ -7436,7 +7700,7 @@ long elim_blk_LL(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
 
    UniqueArray<long> aux_panel_store;
    aux_panel_store.SetLength(n*MAT_BLK_SZ);
-   long * NTL_RESTRICT aux_panel = &aux_panel_store[0];
+   long *aux_panel = &aux_panel_store[0];
 
 
    UniqueArray<long> buf_store1;
@@ -7490,7 +7754,7 @@ long elim_blk_LL(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
             kpanel++;
          }
 
-         long * NTL_RESTRICT kpanelp = &M[kpanel][0];
+         long *kpanelp = &M[kpanel][0];
 
          if (k == kk) { // a fresh kpanel -- special processing
 
@@ -7532,12 +7796,12 @@ long elim_blk_LL(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
             continue;
          }
 
-         long * NTL_RESTRICT y = &kpanelp[r*MAT_BLK_SZ];
-         long * NTL_RESTRICT y1 = &aux_panel[r*MAT_BLK_SZ];
+         long *y = &kpanelp[r*MAT_BLK_SZ];
+         long *y1 = &aux_panel[r*MAT_BLK_SZ];
          if (r != pos) {
             // swap rows pos and r
-            long * NTL_RESTRICT x = &kpanelp[pos*MAT_BLK_SZ];
-            long * NTL_RESTRICT x1 = &aux_panel[pos*MAT_BLK_SZ];
+            long *x = &kpanelp[pos*MAT_BLK_SZ];
+            long *x1 = &aux_panel[pos*MAT_BLK_SZ];
 
             for (long j = k-kk; j < MAT_BLK_SZ; j++) _ntl_swap(x[j], y[j]);
             for (long j = 0; j < r-rr; j++) _ntl_swap(x1[j], y1[j]);
@@ -7548,8 +7812,8 @@ long elim_blk_LL(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
 
          // clear column
          for (long i = r+1; i < n; i++) {
-            long * NTL_RESTRICT x = &kpanelp[i*MAT_BLK_SZ];
-            long * NTL_RESTRICT x1 = &aux_panel[i*MAT_BLK_SZ];
+            long *x = &kpanelp[i*MAT_BLK_SZ];
+            long *x1 = &aux_panel[i*MAT_BLK_SZ];
             long t1 = x[k-kk];
             t1 = MulMod(t1, pivot_inv, p);
             t1 = NegateMod(t1, p);
@@ -7596,7 +7860,7 @@ long elim_blk_LL(const mat_zz_p& A, mat_zz_p *im, mat_zz_p *ker,
          for (long index = first; index < last; index++) {
             long jpanel = index + kpanel+1;
 
-            long * NTL_RESTRICT jpanelp = &M[jpanel][0];
+            long *jpanelp = &M[jpanel][0];
 
             // perform swaps
             ApplySwaps(jpanelp, rr, r, P);

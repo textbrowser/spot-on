@@ -30,7 +30,6 @@ GF2X() { }
 explicit GF2X(long a) { *this = a; }
 explicit GF2X(GF2 a) { *this = a; }
 
-~GF2X() { }
 
 // we have to explicitly declare copy constructor and assignment
 // in case we also declare the corresponding move operations
@@ -38,13 +37,19 @@ explicit GF2X(GF2 a) { *this = a; }
 GF2X(const GF2X& a) : xrep(a.xrep) { }
 GF2X& operator=(const GF2X& a) { xrep = a.xrep; return *this; }
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
 GF2X(GF2X&& a) NTL_FAKE_NOEXCEPT
 {
-   *this = std::move(a);
+   if (a.xrep.pinned()) {
+      *this = a;
+   }
+   else {
+      xrep.unpinned_move(a.xrep);
+   }
 }
 
+#ifndef NTL_DISABLE_MOVE_ASSIGN
 GF2X& operator=(GF2X&& a) NTL_FAKE_NOEXCEPT
 {
    if (xrep.pinned() || a.xrep.pinned()) {
@@ -56,6 +61,7 @@ GF2X& operator=(GF2X&& a) NTL_FAKE_NOEXCEPT
 
    return *this;
 }
+#endif
 
 
 #endif

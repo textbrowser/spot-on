@@ -2,7 +2,6 @@
 #include <NTL/GF2X.h>
 #include <NTL/vec_long.h>
 
-#include <NTL/new.h>
 #include <cstdio>
 
 #if (defined(NTL_WIZARD_HACK) && defined(NTL_GF2X_LIB))
@@ -85,6 +84,10 @@ void GF2X::SetLength(long n)
       LogicError("SetLength: negative index");
       return; // NOTE: this helps the compiler optimize
    }
+
+
+   if (NTL_OVERFLOW(n, 1, 0))
+      ResourceError("GF2X::SetLength: excessive length");
 
    long w = (n + NTL_BITS_PER_LONG - 1)/NTL_BITS_PER_LONG;
    long old_w = xrep.length();
@@ -452,10 +455,7 @@ void random(GF2X& x, long n)
 
    x.xrep.SetLength(wl);
 
-   long i;
-   for (i = 0; i < wl-1; i++) {
-      x.xrep[i] = RandomWord();
-   }
+   VectorRandomWord(wl-1, x.xrep.elts());
 
    if (n > 0) {
       long pos = n % NTL_BITS_PER_LONG;
@@ -617,6 +617,7 @@ NTL_EFF_BB_MUL_CODE1
 #endif
 
 
+// warning #13200: No EMMS instruction before return
 }
 
 static 
@@ -673,6 +674,7 @@ NTL_EFF_SHORT_BB_MUL_CODE1
 #endif
 
 
+// warning #13200: No EMMS instruction before return
 }
 
 
@@ -807,6 +809,7 @@ void mul5 (_ntl_ulong *c, const _ntl_ulong *a, const _ntl_ulong *b)
    c[6] ^= hl2[3];
    c[7] ^= hl2[4];
    c[8] ^= hl2[5];
+// warning #13200: No EMMS instruction before return
 }
 
 static
@@ -877,6 +880,7 @@ void mul7(_ntl_ulong *c, const _ntl_ulong *a, const _ntl_ulong *b)
    c[9]  ^= hl2[5];
    c[10] ^= hl2[6];
    c[11] ^= hl2[7];
+// warning #13200: No EMMS instruction before return
 }
 
 static
@@ -915,6 +919,7 @@ void mul8(_ntl_ulong *c, const _ntl_ulong *a, const _ntl_ulong *b)
    c[9]  ^= hl2[5];
    c[10] ^= hl2[6];
    c[11] ^= hl2[7];
+// warning #13200: No EMMS instruction before return
 }
 
 static
@@ -933,7 +938,7 @@ void KarMul(_ntl_ulong *c, const _ntl_ulong *a, const _ntl_ulong *b,
          case 8: mul8(c, a, b); break;
       }
 
-      return;
+      return; // warning #13200: No EMMS instruction before return
    }
 
    long ll, lh, i, ll2, lh2;
@@ -1037,7 +1042,9 @@ void mul(GF2X& c, const GF2X& a, const GF2X& b)
       cp = c.xrep.elts();
    }
 
+   // This is thread safe in v1.2 of gf2x
    gf2x_mul(cp, ap, sa, bp, sb);
+
 
    if (in_mem) {
       c.xrep = mem;
@@ -1256,6 +1263,7 @@ void mul(GF2X& c, const GF2X& a, const GF2X& b)
                cp[10] = v[10];
             }
          }
+         // warning #13200: No EMMS instruction before return
          return; 
 
          case 7: {
@@ -1394,7 +1402,6 @@ void mul(GF2X& c, const GF2X& a, const GF2X& b)
    const _ntl_ulong *ap, *bp;
    _ntl_ulong *cp;
 
-
    long sc = sa + sb;
    long in_mem = 0;
 
@@ -1434,8 +1441,9 @@ void mul(GF2X& c, const GF2X& a, const GF2X& b)
 
 
    vec.SetLength(2*sa);
-
    _ntl_ulong *v = vec.elts();
+
+
 
    long i, j;
 

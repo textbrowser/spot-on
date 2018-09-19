@@ -19,6 +19,452 @@ A Tour of NTL: Summary of Changes
 
 <p><hr><p>
 <h3>
+2018.08.17: Changes between NTL 11.2.1 and 11.3.0
+</h3>
+
+<ul>
+<li>
+<b>Implemented an AVX-based small-prime FFT</b> (which works with
+both AVX2 and AVX512)
+<ul>
+<li>
+This can give a 2-3x speedup for the FFT.
+<li>
+However, it is not enabled by default, because it reduces
+that small-prime size bound from 60 bits to 50 bits,
+and may slow down certain computations.
+<li>
+The reasons for this unfortunate slowdown are that some CRT-based computations
+may slow down because of the smaller prime size, and because
+Intel CPUs may slow themselves down when executing AVX 
+instructions.
+<li>
+To enable this feature, configure with <tt>NTL_ENABLE_AVX_FFT=on</tt>.
+<li>
+Here are some running times on a Skylake Xeon machine
+(<tt>Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz</tt>).
+For various values of <i>n</i>,
+we measure the time to compute <i>a<sup>e</sup>&nbsp;</i>mod<i>&nbsp;f</i>,
+where <i>f</i> is a random monic polynomial of degree <i>n</i>
+over <i>Z<sub>17</sub></i>,
+<i>a</i> is a random polynomial of degree less than <i>n</i>,
+and <i>e=2<sup>n</sup>-1</i>.
+<pre>
+   n           1024    2048    4096    8192   16384
+   non-AVX    0.171   0.741   3.192  14.348  60.812
+   AVX512     0.089   0.372   1.648   7.740  35.588
+</pre>
+</ul>
+
+<p>
+<li>
+<b>Implemented AVX512 instruction sequences</b>
+<ul>
+<li>
+This affects <tt>Mat&lt;zz_p&gt;</tt> arithmetic and the small-prime FFT.
+<li>
+Becuause AVX512 instructions can in certain situations
+lead to slower computations (because of CPU "throttling"),
+this feature can be disabled by configuring with
+<tt>NTL_AVOID_AVX512=on</tt>.
+</ul>
+
+<p>
+<li>
+<b>Performance tuned <tt>GF2EX</tt> arithmetic</b>
+<ul>
+<li>
+Tuned crossovers for various algorithms.
+</ul>
+
+<p>
+<li>
+<b>Implemented asymptotocially fast GCD and XGCD for 
+<tt>GF2EX</tt>, <tt>zz_pEX</tt>, and <tt>ZZ_pEX</tt></b>
+<ul>
+<li>
+Some work may still need to be done to fine tune
+the crossovers, but they should be pretty good as is.
+<li>
+Many thanks to 
+<a href="http://personales.unican.es/taberalf/">Luis Felipe Tabera Alonso</a> for porting the code,
+as well as testing and tuning it.
+</ul>
+
+<p>
+<li>
+<b>Other small changes</b>
+<ul>
+<li>
+Restructured <tt>quad_float</tt> implemenation to isolate better
+the parts that are dependent on correct FP rounding.
+<li>
+Standardized vector growth rate to 1.5 via the function <tt>_ntl_vec_grow</tt>.
+<li>
+Got rid of most uses of <tt>__restrict</tt> in <tt>mat_lzz_p.cpp</tt>,
+some of which were technically UB.
+<li>
+Got rid of some uses of <tt>#warning</tt>, which are not portable.
+</ul>
+
+</ul>
+
+<p><hr><p>
+<h3>
+2018.07.15: Changes between NTL 11.2.0 and 11.2.1
+</h3>
+
+<ul>
+<li>
+Fixed an embarrassing bug, introduced in NTL 11.2.0, 
+in which <tt>add(ZZ,ZZ,long)</tt>
+and <tt>sub(ZZ,ZZ,long)</tt> would give incorrect result
+if third argument was zero.
+<li>
+Fixed incorrect libtool version number in NTL 11.2.0.
+</ul>
+
+<p><hr><p>
+<h3>
+2018.07.07: Changes between NTL 11.1.0 and 11.2.0
+</h3>
+
+<ul>
+<li>
+<b>Complete re-write of the
+Schoenhage-Strassen FFT for <tt>ZZX</tt> arithmetic.</b>
+
+<ul>
+<li>
+Implementation of "truncated" FFT 
+<li>
+Implementaion of "sqrt 2" trick
+<li>
+More efficient implementation of low-level butterfly operations
+<li>
+Here is some timing data comparing <tt>ZZX</tt> multiplication times
+of NTL 11.0 and 11.2.
+The entries are the ratio of the  11.0-time over the 11.2-time (so
+the bigger the number, the bigger the improvement).
+The rows are labeled by the bit-length <i>k</i> of the coefficient,
+the column by the degree bound <i>n</i>.
+Unlabeled columns represent degree bounds half-way between the labeled
+ones.
+
+
+<p>
+
+<img src="zmulrat.jpg" border="0" style="display: block; width: 60%; height: auto;">
+
+<p>
+<li>
+For multiplication in <tt>ZZX</tt>, NTL and 
+<a href="http://www.flintlib.org">FLINT</a>
+now have comparable performance across a wide range
+of parameter sizes, with NTL being 2x faster for some parameters,
+and FLITNt being 1.5x faster in others.
+Here is a chart showing the ratio of FLINT time
+over NTL time (so the bigger the number, the faster NTL is relative to FLINT)
+<p>
+
+<img src="flintrat.jpg" border="0" style="display: block; width: 60%; height: auto;">
+
+<p>
+<li>
+See also this report on 
+<a href="http://www.shoup.net/ntl/benchmarks.pdf">NTL vs FLINT</a>
+for detailed benchmarks that compare the performance NTL and FLINT
+on a number of operations and parameter settings.
+
+<li>
+Future plans for NTL's Schoenhage-Strassen code:
+<ul>
+<li>
+Implement something like Bailey's 4-step variant
+(which should yield better cache behavior)
+<li>
+Thread boosting (built on top of the 4-step variant)
+</ul>
+</ul>
+
+<li>
+Some fine tuning of the new small-prime 
+truncated-FFT implementation introduced in version 11.0.
+<li>
+Fixed obscure bug in new small-prime FFT code: this only affects
+users who call low-level, undocumented FFT routines 
+on transforms of size 2, so it is unlikely to have affected
+any real code.
+
+<li>
+Performance improvements to <tt>ZZ+long</tt> and <tt>ZZ-long</tt>
+routines (and by extension <tt>ZZ+=long</tt>, <tt>ZZ-=long</tt>, 
+<tt>ZZ++</tt>, and <tt>ZZ--</tt>)
+
+
+
+</ul>
+
+<p><hr><p>
+<h3>
+2018.06.07: Changes between NTL 11.0.0 and 11.1.0
+</h3>
+
+<ul>
+<li>
+<b>Complete re-write of the low-level "small-prime" FFT (a.k.a., NTT).</b>
+
+<ul>
+<li> This implements a "truncated" FFT, which can speed up
+polynomial multiplication by a factor of two, and which 
+mainly eliminates "jumps" in the running time at powers of two.
+The new FFT routines are in fact a bit faster even at powers of two.
+
+<li> Some low-level interfaces have changed, but these are 
+all <i>undocumented</i>, so should not cause
+any problems for clients that don't inappropriately 
+use such interfaces.
+
+
+<li>
+Here is some timing data comparing the new (truncated) FFT to 
+the old (plain) FFT. <i>x</i>-axis is degree bound, 
+<i>y</i>-axis is time (in seconds), shown on a log/log scale.
+This is the time to multiply two polynomials modulo
+a single-precision "FFT" prime (60 bits).
+
+<p>
+
+<img src="TFT-time.jpg"  border="0" style="display: block; width: 40%; height: auto;">
+
+</ul>
+
+<p>
+<li>
+<b>Improved performance of ZZ mul and sqr on small inputs</b>
+<ul>
+<li>mul speedup: 1 limb: 2.5x; 2 limbs: 1.4x; 3 limbs: 1.3x.
+<li>NTL now makes explicit calls to <tt>mpn_sqr</tt> and 
+requires GMP version 5.0 or later.
+</ul>
+
+<p>
+<li>
+<b>Other changes:</b>
+<ul>
+<li>
+Changed header files to make Windows installation more reliable,
+especially for IDE's like Code Blocks
+
+<li>
+Added documentation for the <tt>GCD</tt> routine in the <tt>ZZ</tt> module
+
+<li>
+Fixed a bit of UB in the <tt>lip.h</tt> interface  (<tt>_ntl_gbigint_body</tt>)
+</ul>
+
+</ul>
+
+
+<p><hr><p>
+<h3>
+2018.04.07: Changes between NTL 10.5.0 and 11.0.0
+</h3>
+
+<ul>
+<li>
+<b>Updated the configuration script:</b>
+<ul>
+<li>
+It does some basic auto-detection of the compiler, default language
+standard, and hardware platform.
+<li>
+Using compiler information, it sets compiler flags
+affecting floating point more intelligently.
+Note also that the configuration and build scripts ensure
+that floating point closely adheres to the IEEE standard,
+and that the compiler does not perform any re-association.
+<li>
+Using the default language standard information, it sets 
+the flags affecting language standards  more intelligently.
+<li>
+Using the hardware platform information, 
+it sets the TUNE flag more intelligently
+(in particular, on x86 platforms, the defaults should work just fine).
+<li>
+One now has to run <tt>./configure</tt> to generate 
+a make file,
+as the distribution no longer includes a default make file.
+<li>
+Running <tt>make clobber</tt> is no longer of much use,
+as the make file will call it automatically if you re-configure.
+<li>
+There is now a flag <tt>NTL_TLS_HACK</tt> that is automatically set
+by the configuration script.
+This flag controls how TLS (thread local storage) is implemented:
+either using pthread routines with <tt>__thread</tt> 
+or using only <tt>thread_local</tt>.
+This flag replaces the <tt>NTL_DISABLE_TLS_HACK</tt>
+and <tt>NTL_ENABLE_TLS_HACK</tt> flags, which had to be set manually.
+<li>
+Added a flag <tt>NTL_DISABLE_MOVE_ASSIGN</tt>, 
+which is on by default,
+and which prevents move assignment operators for
+<tt>Vec&lt;T&gt;</tt> and
+<tt>Mat&lt;T&gt;</tt>. 
+This disables move assignment
+for many other classes, including all of the polynomial classes.
+Move assignment can break backward compatibility, as it may
+invalidate pointers into the destination vector.
+Move constructors are not affected.
+
+<li>
+Added a flag <tt>NTL_DISABLE_MOVE</tt>, which is off by default.
+This disables <i>all</i> move constructors and assignment operators.
+It is doubtful that this will ever be needed, 
+except for really weird client code.
+
+<li>
+Added a check in the the build script to ensure that a thread-safe version of
+the <tt>gf2x</tt> library is used (if necessary).
+
+</ul>
+
+<p>
+<li>
+<b>Updated some default configuration values:</b>
+<ul>
+<li>
+Made <tt>NTL_STD_CXX11=on</tt> the default.
+<li>
+Made <tt>NTL_THREADS=on</tt> and <tt>NTL_THREAD_BOOST=on</tt>
+the default.
+So now, by default, NTL is thread safe and exploits
+multiple cores to speed up many operations,
+when possible.
+To get these speedups, you just have to call <tt>SetNumThreads</tt>.
+See <a href="BasicThreadPool.cpp.html">BasicThreadPool.txt</a>
+for more details on thread boosting.
+<li>
+Made <tt>NTL_SAFE_VECTORS=on</tt> the default.
+This makes the use of NTL's vectors much safer,
+since they do not (by default) rely on 
+the "relocatability" of the component type.
+This mode of operation has also been modified from
+previous versions so that it is more backward
+compatible (in particular, if the component 
+type does not have a usable copy or move constructor,
+it can still work without compile-time errors).
+See <a href="vector.cpp.html">vector.txt</a>
+for more details.
+
+<ul>
+<li>
+All of the above new default settings require <tt>C++11</tt> features.
+The configuration script will include additional compiler flags,
+such as <tt>-std=c++11</tt>,
+to ensure that these features are available.
+In addition, the <tt>NTL_THREADS=on</tt> and <tt>NTL_THREAD_BOOST=on</tt>
+settings generally require that the <tt>-pthread</tt>
+flag be passed to the compiler (at least on for GCC and GCC-like 
+compilers).
+This means that to compile programs using NTL,
+you may have to pass the flags  <tt>-std=c++11</tt>
+and  <tt>-pthread</tt> to your compiler (although,
+GCC version 6 and later do not require the  <tt>-std=c++11</tt>,
+since the default is <tt>C++14</tt> for these compilers).
+
+<li>
+If you really want to revert to the old default settings,
+run <tt>./configure</tt> with
+<pre>
+   NTL_STD_CXX11=off NTL_THREADS=off NTL_SAFE_VECTORS=off
+</pre>
+</ul>
+
+<li>
+Made <tt>NTL_CLEAN_PTR=on</tt> the default.
+This has no significant impact on performance,
+and avoids undefined behavior.
+
+<li>
+Made <tt>NTL_NO_INIT_TRANS=on</tt> the default. 
+This means that functions returning class objects
+now rely exclusively on the "named return value optimization".
+Many years ago, one could not rely on this optimization,
+but nowadays, this optimization is essentially universal.
+
+</ul>
+
+<p>
+<li>
+<b>Performance improvements:</b>
+<ul>
+<li>
+Thread boosted all cubic-time operations in 
+<tt>mat_ZZ_pE</tt>,
+<tt>mat_lzz_pE</tt>, 
+and
+<tt>mat_GF2E</tt>. 
+This includes:
+matrix multiplication, inversion, determinant,
+kernel, image, and solving linear systems.
+
+<li>
+Thread boosted <tt>RandomPrime</tt>, <tt>GenPrime</tt>,
+and <tt>GenGermainPrime</tt>.
+Care has been taken so that
+on a given platform,
+you will always get the same prime if you run the algorithm
+with the same <tt>RandomStream</tt>. In particular, even though
+these routines are thread boosted, their behavior is independent
+of the number of available threads and any indeterminacy
+arising from concurrent computation.
+Also, care has been taken to ensure that the new algorithms
+are no slower than the old ones in a single-threaded environment.
+
+</ul>
+
+<p>
+<li>
+<b>New functionality:</b>
+<ul>
+<li>
+Added a new function <tt>GetWallTime</tt>.
+See <a href="tools.cpp.html">tools.txt</a> for details.
+<li>
+Added a new function <tt>VectorRandomWord</tt>.
+See <a href="ZZ.cpp.html">ZZ.txt</a> for details.
+<li>
+Added support for true variadic templates in various smart pointer
+routines.
+See <a href="SmartPtr.cpp.html">SmartPtr.txt</a> for details.
+</ul>
+
+<p>
+<li>
+<b>Fixes and improvements to the Windows distribution:</b>
+<ul>
+<li>
+The Windows distribution has the new default settings as described above.
+In particular, the new distribution is thread safe
+and thread boosted by default.
+<li>
+The distribution has been fixed so that certain linker errors
+no longer arise.
+<li>
+If the compiler is <tt>MSVC++</tt>, use of a <tt>long long</tt> type is
+enabled in certain settings for better performance.
+<li>
+Some basic testing was done using <tt>MSVC++</tt> 2017 to ensure
+that the library works with the new default settings.
+</ul>
+
+</ul>
+
+
+<p><hr><p>
+<h3>
 2017.07.07: Changes between NTL 10.4.0 and 10.5.0
 </h3>
 
@@ -473,7 +919,7 @@ compilers and other software development tools.
 
 
 </ul>
-
+</ul>
 
 
 <p><hr><p>

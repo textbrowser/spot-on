@@ -4,7 +4,6 @@
 #include <NTL/fileio.h>
 
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 

@@ -184,7 +184,6 @@ explicit zz_p(long a) : _zz_p__rep(0) { *this = a;  }
 
 zz_p(const zz_p& a) : _zz_p__rep(a._zz_p__rep) { }  
 
-~zz_p() { } 
 
 zz_p& operator=(const zz_p& a) { _zz_p__rep = a._zz_p__rep; return *this; }
 
@@ -203,6 +202,8 @@ static long PrimeCnt() { return zz_pInfo->PrimeCnt; }
 
 
 static long storage() { return sizeof(long); }
+
+static bool IsFFTPrime() { return zz_pInfo->p_info != 0; }
 
 zz_p(long a, INIT_LOOP_HOLE_TYPE) { _zz_p__rep = a; }
 

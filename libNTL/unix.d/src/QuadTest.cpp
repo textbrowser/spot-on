@@ -9,7 +9,10 @@ int main()
 
    quad_float::SetOutputPrecision(25);
 
-   if (PrecisionOK())
+   long pok;
+   double one = 1.0;
+   quad_float_PrecisionOK(pok, one);
+   if (pok)
       cout << "Precision OK\n";
    else
       cout << "Precision not OK\n";

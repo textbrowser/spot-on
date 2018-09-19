@@ -166,7 +166,7 @@ long sp_SignMask(unsigned long a)
 inline
 bool sp_Negative(unsigned long a)
 {
-   return clean_cast_signed(a) < 0;
+   return cast_signed(a) < 0;
 }
 
 
@@ -325,7 +325,7 @@ inline long
 sp_CountLeadingZeros(unsigned long x)
 {
    long res = NTL_BITS_PER_LONG-NTL_SP_NBITS;
-   x = x << NTL_BITS_PER_LONG-NTL_SP_NBITS;
+   x = x << (NTL_BITS_PER_LONG-NTL_SP_NBITS);
    while (x < (1UL << (NTL_BITS_PER_LONG-1))) {
       x <<= 1;
       res++;
@@ -493,6 +493,7 @@ long MulMod(long a, long b, long n, wide_double ninv)
 inline 
 long NormalizedMulMod(long a, long b, long n, wide_double ninv)
 {
+  (void) ninv;
    return MulMod(a, b, n, ninv);
 }
 
@@ -605,8 +606,8 @@ sp_NormalizedPrepMulMod(long n)
    unsigned long rrhi = ((unsigned long) (rr >> NTL_BITS_PER_LONG)) 
                         + (rrlo >> (NTL_BITS_PER_LONG-1));
 
-   long rlo = clean_cast_signed(rrlo);  // these should be No-Ops
-   long rhi = clean_cast_signed(rrhi);
+   long rlo = cast_signed(rrlo);  // these should be No-Ops
+   long rhi = cast_signed(rrhi);
 
    const double bpl_as_double (double(1L << NTL_SP_NBITS) * double(1L << (NTL_BITS_PER_LONG-NTL_SP_NBITS)));
    double fr = double(rlo) + double(rhi)*bpl_as_double;

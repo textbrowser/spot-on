@@ -39,7 +39,6 @@ public:
    Mat() : _mat__numcols(0) { }  
    Mat(const Mat& a);  
    Mat& operator=(const Mat& a);  
-   ~Mat() { }  
   
    Mat(INIT_SIZE_TYPE, long n, long m);  
   
@@ -69,6 +68,11 @@ public:
   
    long position(const Vec<T>& a) const { return _mat__rep.position(a); } 
    long position1(const Vec<T>& a) const { return _mat__rep.position1(a); } 
+   long alias(const Vec<T>& a) const 
+   {
+      return a.fixed() && a.length() == NumCols() && position1(a) != -1; 
+   }
+
    Mat(Mat& x, INIT_TRANS_TYPE) :  
     _mat__rep(x._mat__rep, INIT_TRANS), _mat__numcols(x._mat__numcols) { }  
 
@@ -86,18 +90,20 @@ public:
    }
 
 
-#if (NTL_CXX_STANDARD >= 2011)
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
 
    Mat(Mat&& other) noexcept : Mat() 
    {
       this->move(other);
    }
 
+#ifndef NTL_DISABLE_MOVE_ASSIGN
    Mat& operator=(Mat&& other) noexcept
    {
       this->move(other);
       return *this;
    }
+#endif
 
 #endif
 

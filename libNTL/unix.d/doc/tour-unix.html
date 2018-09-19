@@ -53,7 +53,9 @@ details).
 If you really do not want to use GMP,
 you can pass the option
 <tt>NTL_GMP_LIP=off</tt> 
-to <tt>configure</tt>.
+to <tt>configure</tt>;
+however, NTL will run significantly faster with GMP,
+so this is strongly discouraged.
 
 <p>
 After installation,
@@ -107,16 +109,47 @@ is your program.
 Assume that you have installed NTL in <tt>/usr/local</tt> as above.
 The following should work:
 <pre>
-   % g++ -g -O2 foo.cpp -o foo -lntl -lgmp -lm
+   % g++ -g -O2 -std=c++11 -pthread -march=native foo.cpp -o foo -lntl -lgmp -lm
 </pre>
-If you have installed NTL and/or GMP is a non-standard location,
-say <tt>/path/to/sw</tt>,
-then:
+<p>
+NOTES:
+<ol>
+<li>
+By default, NTL is built in <tt>C++11</tt> mode, and 
+you will need to ensure that your compiler configured to
+accept <tt>C++11</tt>.
+This can usually be acomplished by passing <tt>-std=c++11</tt>
+to the compiler.
+Newer versions (6.1 or later) of GCC compile in <tt>C++14</tt>
+mode by default, so this may not be not necessary.
+This same option can be passed to other GCC-like compilers, such as CLANG 
+and Intel's ICC compiler.
+<li>
+By default, NTL is built with multithreading enabled,
+and for this reason, you need to pass the <tt>-pthread</tt>
+option to GCC.
+This same option can be passed to other GCC-like compilers, such as CLANG 
+and Intel's ICC compiler.
+<li>
+The <tt>-march=native</tt> option is usually a good idea
+to get best performance for code targeted to a specific x86
+architecture.
+This same option can be passed to other compilers, like CLANG 
+and Intel's ICC compiler.
+<li>
+You can look in the file <tt>/usr/local/include/NTL/ConfigLog.h</tt>
+to see what options (in addition to <tt>-g -O2</tt>) were chosen
+by NTL's configuration script. Look a line that looks like this:
+of 
 <pre>
-   % g++ -g -O2 -I/path/to/sw/include foo.cpp -o foo  -L/path/to/sw/lib -lntl -lgmp -lm
+   CXXAUTOFLAGS=" -std=c++11 -pthread -march=native"
 </pre>
+
+<li>
 If you build NTL with <tt>gf2x</tt>, just add the option
 <tt>-lgf2x</tt> to the above, right after <tt>-lgmp</tt>.
+</ol>
+
 
 <p>
 If you are working in the NTL <tt>src</tt> directory itself,
@@ -197,15 +230,15 @@ CXX=g++              # The C++ compiler
 CXXFLAGS=-g -O2      # C++ complilation flags
 
 NATIVE=on            # Compiles code targeted to the current hardware (see below)
-TUNE=auto            # Performance-tuning switch (see below)
+TUNE=generic (or x86)# Performance-tuning switch (see below)
 
 DEF_PREFIX=/usr/local# Default software directory
 
 PREFIX=$(DEF_PREFIX) # Directory in which to install NTL library components
 SHARED=off           # Generate a shared library (as well as static -- see below)
 
-NTL_THREADS=off      # compile in thread-safe mode (see below)
-NTL_THREAD_BOOST=off # compile with thread boosting enabled (see below)
+NTL_THREADS=on       # compile in thread-safe mode (see below)
+NTL_THREAD_BOOST=on  # compile with thread boosting enabled (see below)
 NTL_EXCEPTIONS=off   # compile with exceptions enabled (see below)
 
 NTL_GMP_LIP=on       # Switch to enable the use of GMP as primary 
@@ -218,10 +251,9 @@ NTL_GF2X_LIB=off     # Switch to enable the use of the gf2x package
 
 GF2X_PREFIX=$(DEF_PREFIX) # Directory in which gf2x components are installed
 
-NTL_STD_CXX11=off    # Build assuming C++11 features
-NTL_STD_CXX14=off    # Build assuming C++14 features
+NTL_STD_CXX11=on     # Build assuming C++11 features
 
-NTL_SAFE_VECTORS=off # build in "safe vector" mode 
+NTL_SAFE_VECTORS=on  # build in "safe vector" mode 
 
 
 </pre>
@@ -235,9 +267,6 @@ If you are happy with all the default values, run:
 <pre>
    % ./configure
 </pre>
-Actually, the initially installed <tt>makefile</tt> and <tt>config.h</tt> files
-already reflect the default values, and you do not have to even run
-the configure script.
 
 <p>
 <li>
@@ -253,11 +282,25 @@ If you want to use, say, the options <tt>-g</tt>,
 <tt>-O2</tt>, and <tt>-march=core-avx2</tt>,
 compiling <tt>C++</tt>, run:
 <pre>
-   % ./configure "CXXFLAGS=-g -O2 -march=core-avx2"
+   % ./configure "CXXFLAGS=-g -O2 -march=core-avx2" 
 </pre>
+Note that the conguration script will detect that you are
+passing an <tt>-march=XXX</tt> option through <tt>CXXFLAGS</tt>,
+and will therefore surpress the <tt>-march=native</tt> option.
+
+<p>
+<li>
+If you don't want thread safety, run:
+<pre>
+   % ./configure NTL_THREADS=off
+</pre>
+This will also turn off thread boosting (see below),
+and you won't have to pass the option <tt>-pthread</tt>
+through to compile your programs.
 
 
 <p>
+<li>
 If GMP was installed in 
  <tt>$HOME/sw</tt>,
 run:
@@ -299,14 +342,18 @@ run:
 The special makefile variable <tt>CXXAUTOFLAGS</tt>
 is automagically set by the configuration script.
 These are <tt>C++</tt> compiler flags that are selected depending on
-the choice of other configuration options, and is geared towards <tt>gcc</tt>.
+the choice of other configuration options. 
+This is geared towards GCC,
+but should work pretty well for other compilers,
+such as CLANG and ICC.
 The configuration script always tests that these flags actually work,
 and prints out the flags that it chooses.
 If you explicitly set <tt>CXXAUTOFLAGS</tt> when invoking the configuration script,
 then it will not change that value.
 
 <p>
-To set <tt>CXXAUTOFLAGS</tt>, the configure script actually needs to run make.
+To set <tt>CXXAUTOFLAGS</tt> and for other checks, 
+the configure script actually needs to run make.
 If you wish to use a non-standard make program for this purpose,
 say <tt>gmake</tt>,
 set <tt>MAKE_PROG=gmake</tt>.
@@ -338,6 +385,7 @@ you could add
 <tt>-march=XXX</tt> to <tt>CXXFLAGS</tt> 
 to enable instructions for a specific 
 CPU type (e.g., <tt>XXX=core-avx2</tt> works for Haswell CPUs).
+Doing so will automatically set <tt>NATIVE=off</tt>.
 
 <p>
 The question of "fat builds" for NTL has occasionally come up.
@@ -352,17 +400,20 @@ the approprate version of the library.
 
 <p>
 <i>Tuning options.</i>
-If <tt>TUNING=auto</tt> (the default), then <tt>make</tt> will run a performance-tuning "wizard"
+If <tt>TUNE=auto</tt>, then <tt>make</tt> will run a performance-tuning "wizard"
 to set a number of fine-grained performance options.
 This is highly recommended, as it will choose options that are 
 best suited to your particular hardware and compiler;
 however, it can be a bit time consuming.
-Alternatively, you can set <tt>TUNING</tt> to one of the following values.
+Alternatively, you can set <tt>TUNE</tt> to one of the following values.
 <ul>
 <li> <tt>generic</tt>: chooses options that should be OK for most platforms
 <li> <tt>x86</tt>: chooses options that should be well suited for most x86 platforms
 </ul>
 More choices may be added in the future.
+Right now, the default is <tt>x86</tt> if the <tt>configure</tt>
+detects that is is running on an x86 platform,
+and <tt>generic</tt> otherwise.
 
 
 
@@ -371,13 +422,6 @@ More choices may be added in the future.
 There are a number of more esoteric configuration variables that can be set.
 See <a href="config.txt"><tt>config.txt</tt></a> for a complete
 description.
-
-<p>
-<i>Skipping this step.</i>
-Note that the distribution comes with pre-installed <tt>makefile</tt>
-and <tt>config.h</tt> files,
-so it is possible to skip the configure step entirely.
-However, this is usually a bad idea.
 
 
 <p>
@@ -397,6 +441,11 @@ But here is a description of what happens.
 <p>
 
 <ol>
+<li>
+The makefile invokes <tt>make clobber</tt>,
+which gets rid of just about anything that was created
+by a previous run of make.
+
 <li>
 The makefile 
 builds the file "<tt>../include/NTL/mach_desc.h</tt>", 
@@ -421,10 +470,14 @@ The file  "<tt>../include/NTL/gmp_aux.h</tt>"
 is generated for use with GMP.
 If not using GMP, this file is still created, but it is empty.
 
+<p>
+<li>
+If necessary, the compatbility of the <tt>gf2x</tt> library is verified.
+
 
 <p>
 <li>
-If <tt>TUNE=auto</tt> (the default),
+If <tt>TUNE=auto</tt>,
 the configuration wizard script is run.
 This script works in a sub-directory, 
 compiling several programs,
@@ -448,20 +501,8 @@ which are set by the wizard.
 <p>
 <li>
 The makefile will compile all the source files,
-and then creates the library "<tt>ntl.a</tt>" in the current directory.
+and then create the library "<tt>ntl.a</tt>" in the current directory.
 </ol>
-
-<p>
-Note that for finer control  you can optionally  break up this process 
-into the five
-component steps:
-<pre>
-   % make setup1
-   % make setup2
-   % make setup3
-   % make setup4
-   % make ntl.a
-</pre>
 
 
 <p>
@@ -514,13 +555,11 @@ Executing <tt>make uninstall</tt> undoes <tt>make install</tt>.
 
 <p>
 Executing <tt>make clobber</tt> essentially
-undoes <tt>make</tt>.
-<i>Make sure you do this if you re-build NTL for a different architecture!</i>
+removes everything created by <tt>make</tt>.
 
 <p>
 Executing <tt>make clean</tt> will remove object files, but not 
 <tt>ntl.a</tt>.
-To rebuild after executing <tt>make clean</tt>, execute <tt>make ntl.a</tt>.
 
 
 <p>
@@ -571,6 +610,9 @@ you may have to do something special, like set a special
 shell variable:  the output generated by the <tt>libtool</tt>
 program during <tt>make install</tt> should give specific
 instructions.
+On many systems, you need to set the shell variable 
+<tt>LD_LIBRARY_PATH</tt> to a path that contains the directory where
+the shared library is installed.
 In addition, if NTL is built as a shared library, then
 you typically do not have to include <tt>-lgmp</tt> (if using GMP),
 or <tt>-lgf2x</tt> (if using <tt>gf2x</tt>), or corresponding
@@ -585,26 +627,35 @@ Thread safety, thread boosting, and exception safety
 </h2>
 <p>
 
-By default, NTL is currently not thread safe.
-To make it so, you must configure with
-<tt>NTL_THREADS=on</tt>.
-However, this requires a <tt>C++11</tt> compiler.
-Currently, the configure script will try to add
-<tt>-std=c++11</tt> and <tt>-pthread</tt> to <tt>CXXAUTOFLAGS</tt>,
-as this is what <tt>gcc</tt> requires.
-
-<p>
-You might also consider configuring with 
-<tt>NTL_THREAD_BOOST=on</tt> to make NTL internally use
-a thread pool to boost performance.
+By default, NTL currently compiles with multithreading
+enabled.
+In particular, the configuration variables
+<tt>NTL_THREADS</tt> and <tt>NTL_THREAD_BOOST</tt>
+are both "on" by default.
+With <tt>NTL_THREADS=on</tt>, NTL is compiled in a thread safe manner.
+With <tt>NTL_THREAD_BOOST=on</tt>, 
+NTL will make use of a thread pool to boost performance.
 This also makes the same thread-boosting facility available
 to NTL client code. 
-Note that <tt>NTL_THREAD_BOOST=on</tt> implies
-<tt>NTL_THREADS=on</tt>.
+Turning off <tt>NTL_THREADS</tt> will also turn off 
+<tt>NTL_THREAD_BOOST</tt>.
+
 
 <p>
-Note that GMP is thread safe, but (currently) <tt>gf2x</tt> is not.
-So you cannot use <tt>gf2x</tt> in a thread-safe build of NTL.
+To provide multithreading safety and capabilities,
+NTL requires a  <tt>C++11</tt> compiler.
+Currently, the configure script will try to add
+<tt>-std=c++11</tt> (if necessary) 
+and <tt>-pthread</tt> to <tt>CXXAUTOFLAGS</tt>,
+as this is what GCC requires.
+
+<p>
+Note that GMP is thread safe.
+<p>
+Note that <tt>gf2x</tt> is thread safe starting from v1.2 of 
+<tt>gf2x</tt>.
+The NTL build process will check that you have the right version
+of <tt>gf2x</tt>.
 
 <p>
 By default, NTL treats errors in a very old-fashioned way:
@@ -614,6 +665,14 @@ by configuring with <tt>NTL_EXCEPTIONS=on</tt>.
 This will make NTL throw an exception instead of aborting.
 This feature also requires a <tt>C++11</tt> compiler
 (and <tt>CXXAUTOFLAGS</tt> is adjusted appropriately).
+It is not enabled by default because (a) most NTL clients probably
+don't need fancy exception handling, and (b) there is a 
+small performance penalty for enabling exceptions
+(mostly related to esoteric issues surrounding 
+"<tt>nothrow</tt> move constructors" and vector reallocation,
+not to anything <i>directly</i> related to exceptions).
+
+
 
 <p>
 <a href="tour-impl.html#threadimpl">[See here]</a>  
@@ -642,7 +701,7 @@ typically in such settings, the 64-bit ABI will yield much better
 performance, while the 32-bit ABI is available for backward compatibility.
 On modern 64-bit platforms, the 64-bit ABI is typically the default;
 otherwise, you may have to explicitly request it
-(e.g., with <tt>gcc</tt>, pass the <tt>-m64</tt>
+(e.g., with GCC, pass the <tt>-m64</tt>
 flag to the compiler).
 
 <p>

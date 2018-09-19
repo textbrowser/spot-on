@@ -5,7 +5,6 @@
 #include <NTL/vec_vec_ZZ_p.h>
 #include <NTL/ZZX.h>
 
-#include <NTL/new.h>
 
 NTL_START_IMPL
 
@@ -1889,7 +1888,7 @@ void rem(ZZ_pEX& r, const ZZ_pEX& a, const ZZ_pEX& b)
    }
 }
 
-void GCD(ZZ_pEX& x, const ZZ_pEX& a, const ZZ_pEX& b)
+void PlainGCD(ZZ_pEX& x, const ZZ_pEX& a, const ZZ_pEX& b)
 {
    ZZ_pE t;
 
@@ -1924,66 +1923,387 @@ void GCD(ZZ_pEX& x, const ZZ_pEX& a, const ZZ_pEX& b)
    mul(x, x, t); 
 }
 
+class _NTL_ZZ_pEXMatrix {
+private:
+
+   _NTL_ZZ_pEXMatrix(const _NTL_ZZ_pEXMatrix&);  // disable
+   ZZ_pEX elts[2][2];
+
+public:
+
+   _NTL_ZZ_pEXMatrix() { }
+   ~_NTL_ZZ_pEXMatrix() { }
+
+   void operator=(const _NTL_ZZ_pEXMatrix&);
+   ZZ_pEX& operator() (long i, long j) { return elts[i][j]; }
+   const ZZ_pEX& operator() (long i, long j) const { return elts[i][j]; }
+};
 
 
-         
+void _NTL_ZZ_pEXMatrix::operator=(const _NTL_ZZ_pEXMatrix& M)
+{
+   elts[0][0] = M.elts[0][0];
+   elts[0][1] = M.elts[0][1];
+   elts[1][0] = M.elts[1][0];
+   elts[1][1] = M.elts[1][1];
+}
+
+
+static
+void mul(ZZ_pEX& U, ZZ_pEX& V, const _NTL_ZZ_pEXMatrix& M)
+// (U, V)^T = M*(U, V)^T
+{
+   ZZ_pEX t1, t2, t3;
+
+   mul(t1, M(0,0), U);
+   mul(t2, M(0,1), V);
+   add(t3, t1, t2);
+   mul(t1, M(1,0), U);
+   mul(t2, M(1,1), V);
+   add(V, t1, t2);
+   U = t3;
+}
+
+
+static
+void mul(_NTL_ZZ_pEXMatrix& A, _NTL_ZZ_pEXMatrix& B, _NTL_ZZ_pEXMatrix& C)
+// A = B*C, B and C are destroyed
+{
+   ZZ_pEX t1, t2;
+
+   mul(t1, B(0,0), C(0,0));
+   mul(t2, B(0,1), C(1,0));
+   add(A(0,0), t1, t2);
+
+   mul(t1, B(1,0), C(0,0));
+   mul(t2, B(1,1), C(1,0));
+   add(A(1,0), t1, t2);
+
+   mul(t1, B(0,0), C(0,1));
+   mul(t2, B(0,1), C(1,1));
+   add(A(0,1), t1, t2);
+
+   mul(t1, B(1,0), C(0,1));
+   mul(t2, B(1,1), C(1,1));
+   add(A(1,1), t1, t2);
+
+   long i, j;
+   for (i = 0; i < 2; i++) {
+      for (j = 0; j < 2; j++) {
+          B(i,j).kill();
+          C(i,j).kill();
+      }
+   }
+}
+
+
+void IterHalfGCD(_NTL_ZZ_pEXMatrix& M_out, ZZ_pEX& U, ZZ_pEX& V, long d_red)
+{
+   M_out(0,0).SetMaxLength(d_red);
+   M_out(0,1).SetMaxLength(d_red);
+   M_out(1,0).SetMaxLength(d_red);
+   M_out(1,1).SetMaxLength(d_red);
+
+   set(M_out(0,0));   clear(M_out(0,1));
+   clear(M_out(1,0)); set(M_out(1,1));
+
+   long goal = deg(U) - d_red;
+
+   if (deg(V) <= goal)
+      return;
+
+   ZZ_pEX Q, t(INIT_SIZE, d_red);
+
+   while (deg(V) > goal) {
+      PlainDivRem(Q, U, U, V);
+      swap(U, V);
+
+      mul(t, Q, M_out(1,0));
+      sub(t, M_out(0,0), t);
+      M_out(0,0) = M_out(1,0);
+      M_out(1,0) = t;
+
+      mul(t, Q, M_out(1,1));
+      sub(t, M_out(0,1), t);
+      M_out(0,1) = M_out(1,1);
+      M_out(1,1) = t;
+   }
+}
+
+
+
+#define NTL_ZZ_pEX_HalfGCD_CROSSOVER (25)
+#define NTL_ZZ_pEX_GCD_CROSSOVER (275)
+
+
+void HalfGCD(_NTL_ZZ_pEXMatrix& M_out, const ZZ_pEX& U, const ZZ_pEX& V, long d_red)
+{
+   if (IsZero(V) || deg(V) <= deg(U) - d_red) {
+      set(M_out(0,0));   clear(M_out(0,1));
+      clear(M_out(1,0)); set(M_out(1,1));
+
+      return;
+   }
+
+
+   long n = deg(U) - 2*d_red + 2;
+   if (n < 0) n = 0;
+
+   ZZ_pEX U1, V1;
+
+   RightShift(U1, U, n);
+   RightShift(V1, V, n);
+
+   if (d_red <= NTL_ZZ_pEX_HalfGCD_CROSSOVER) {
+      IterHalfGCD(M_out, U1, V1, d_red);
+      return;
+   }
+
+   long d1 = (d_red + 1)/2;
+   if (d1 < 1) d1 = 1;
+   if (d1 >= d_red) d1 = d_red - 1;
+
+   _NTL_ZZ_pEXMatrix M1;
+
+   HalfGCD(M1, U1, V1, d1);
+   mul(U1, V1, M1);
+
+   long d2 = deg(V1) - deg(U) + n + d_red;
+
+   if (IsZero(V1) || d2 <= 0) {
+      M_out = M1;
+      return;
+   }
+
+
+   ZZ_pEX Q;
+   _NTL_ZZ_pEXMatrix M2;
+
+   DivRem(Q, U1, U1, V1);
+   swap(U1, V1);
+
+   HalfGCD(M2, U1, V1, d2);
+
+   ZZ_pEX t(INIT_SIZE, deg(M1(1,1))+deg(Q)+1);
+
+   mul(t, Q, M1(1,0));
+   sub(t, M1(0,0), t);
+   swap(M1(0,0), M1(1,0));
+   swap(M1(1,0), t);
+
+   t.kill();
+
+   t.SetMaxLength(deg(M1(1,1))+deg(Q)+1);
+
+   mul(t, Q, M1(1,1));
+   sub(t, M1(0,1), t);
+   swap(M1(0,1), M1(1,1));
+   swap(M1(1,1), t);
+
+   t.kill();
+
+   mul(M_out, M2, M1);
+}
+
+
+
+
+void XHalfGCD(_NTL_ZZ_pEXMatrix& M_out, ZZ_pEX& U, ZZ_pEX& V, long d_red)
+{
+   if (IsZero(V) || deg(V) <= deg(U) - d_red) {
+      set(M_out(0,0));   clear(M_out(0,1));
+      clear(M_out(1,0)); set(M_out(1,1));
+
+      return;
+   }
+
+   long du = deg(U);
+
+   if (d_red <= NTL_ZZ_pEX_HalfGCD_CROSSOVER) {
+      IterHalfGCD(M_out, U, V, d_red);
+      return;
+   }
+
+   long d1 = (d_red + 1)/2;
+   if (d1 < 1) d1 = 1;
+   if (d1 >= d_red) d1 = d_red - 1;
+
+   //ZZ_pXMatrix M1;
+   _NTL_ZZ_pEXMatrix M1;
+
+   HalfGCD(M1, U, V, d1);
+   mul(U, V, M1);
+
+   long d2 = deg(V) - du + d_red;
+
+   if (IsZero(V) || d2 <= 0) {
+      M_out = M1;
+      return;
+   }
+
+
+   ZZ_pEX Q;
+   _NTL_ZZ_pEXMatrix M2;
+
+   DivRem(Q, U, U, V);
+   swap(U, V);
+
+   XHalfGCD(M2, U, V, d2);
+
+   ZZ_pEX t(INIT_SIZE, deg(M1(1,1))+deg(Q)+1);
+
+   mul(t, Q, M1(1,0));
+   sub(t, M1(0,0), t);
+   swap(M1(0,0), M1(1,0));
+   swap(M1(1,0), t);
+
+   t.kill();
+
+   t.SetMaxLength(deg(M1(1,1))+deg(Q)+1);
+
+   mul(t, Q, M1(1,1));
+   sub(t, M1(0,1), t);
+   swap(M1(0,1), M1(1,1));
+   swap(M1(1,1), t);
+
+   t.kill();
+
+   mul(M_out, M2, M1);
+}
+
+void HalfGCD(ZZ_pEX& U, ZZ_pEX& V)
+{
+   long d_red = (deg(U)+1)/2;
+
+   if (IsZero(V) || deg(V) <= deg(U) - d_red) {
+      return;
+   }
+
+   long du = deg(U);
+
+
+   long d1 = (d_red + 1)/2;
+   if (d1 < 1) d1 = 1;
+   if (d1 >= d_red) d1 = d_red - 1;
+
+   _NTL_ZZ_pEXMatrix M1;
+
+   HalfGCD(M1, U, V, d1);
+   mul(U, V, M1);
+
+   long d2 = deg(V) - du + d_red;
+
+   if (IsZero(V) || d2 <= 0) {
+      return;
+   }
+
+   M1(0,0).kill();
+   M1(0,1).kill();
+   M1(1,0).kill();
+   M1(1,1).kill();
+
+
+   ZZ_pEX Q;
+
+   DivRem(Q, U, U, V);
+   swap(U, V);
+
+   HalfGCD(M1, U, V, d2);
+
+   mul(U, V, M1);
+}
+
+
+void GCD(ZZ_pEX& d, const ZZ_pEX& u, const ZZ_pEX& v)
+{
+   ZZ_pEX u1, v1;
+
+   u1 = u;
+   v1 = v;
+
+   if (deg(u1) == deg(v1)) {
+      if (IsZero(u1)) {
+         clear(d);
+         return;
+      }
+
+      rem(v1, v1, u1);
+   }
+   else if (deg(u1) < deg(v1)) {
+      swap(u1, v1);
+   }
+
+   // deg(u1) > deg(v1)
+
+   while (deg(u1) > NTL_ZZ_pEX_GCD_CROSSOVER && !IsZero(v1)) {
+      HalfGCD(u1, v1);
+
+      if (!IsZero(v1)) {
+         rem(u1, u1, v1);
+         swap(u1, v1);
+      }
+   }
+
+   PlainGCD(d, u1, v1);
+}
+
 
 void XGCD(ZZ_pEX& d, ZZ_pEX& s, ZZ_pEX& t, const ZZ_pEX& a, const ZZ_pEX& b)
 {
-   ZZ_pE z;
+    ZZ_pE w;
 
-
-   if (IsZero(b)) {
+   if (IsZero(a) && IsZero(b)) {
+      clear(d);
       set(s);
       clear(t);
-      d = a;
-   }
-   else if (IsZero(a)) {
-      clear(s);
-      set(t);
-      d = b;
-   }
-   else {
-      long e = max(deg(a), deg(b)) + 1;
-
-      ZZ_pEX temp(INIT_SIZE, e), u(INIT_SIZE, e), v(INIT_SIZE, e), 
-            u0(INIT_SIZE, e), v0(INIT_SIZE, e), 
-            u1(INIT_SIZE, e), v1(INIT_SIZE, e), 
-            u2(INIT_SIZE, e), v2(INIT_SIZE, e), q(INIT_SIZE, e);
-
-
-      set(u1); clear(v1);
-      clear(u2); set(v2);
-      u = a; v = b;
-
-      do {
-         DivRem(q, u, u, v);
-         swap(u, v);
-         u0 = u2;
-         v0 = v2;
-         mul(temp, q, u2);
-         sub(u2, u1, temp);
-         mul(temp, q, v2);
-         sub(v2, v1, temp);
-         u1 = u0;
-         v1 = v0;
-      } while (!IsZero(v));
-
-      d = u;
-      s = u1;
-      t = v1;
+      return;
    }
 
-   if (IsZero(d)) return;
-   if (IsOne(LeadCoeff(d))) return;
+   ZZ_pEX U, V, Q;
 
-   /* make gcd monic */
+   U = a;
+   V = b;
 
-   inv(z, LeadCoeff(d));
-   mul(d, d, z);
-   mul(s, s, z);
-   mul(t, t, z);
+   long flag = 0;
+
+   if (deg(U) == deg(V)) {
+      DivRem(Q, U, U, V);
+      swap(U, V);
+      flag = 1;
+   }
+   else if (deg(U) < deg(V)) {
+      swap(U, V);
+      flag = 2;
+   }
+
+   _NTL_ZZ_pEXMatrix M;
+
+   XHalfGCD(M, U, V, deg(U)+1);
+
+   d = U;
+
+   if (flag == 0) {
+      s = M(0,0);
+      t = M(0,1);
+   }
+   else if (flag == 1) {
+      s = M(0,1);
+      mul(t, Q, M(0,1));
+      sub(t, M(0,0), t);
+   }
+   else {  /* flag == 2 */
+      s = M(0,1);
+      t = M(0,0);
+   }
+
+   // normalize
+
+   inv(w, LeadCoeff(d));
+   mul(d, d, w);
+   mul(s, s, w);
+   mul(t, t, w);
 }
+
 
 void IterBuild(ZZ_pE* a, long n)
 {

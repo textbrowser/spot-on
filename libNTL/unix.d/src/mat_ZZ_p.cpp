@@ -352,6 +352,7 @@ void mul(mat_ZZ_p_crt_rep& X, const mat_ZZ_p_crt_rep& A, const mat_ZZ_p_crt_rep&
 
    bool seq = (double(n)*double(l)*double(m)*double(nprimes) < PAR_THRESH);
 
+
    NTL_GEXEC_RANGE(seq, nprimes, first, last)
    NTL_IMPORT(n)
    NTL_IMPORT(l)
@@ -657,7 +658,7 @@ void mul_aux(vec_ZZ_p& x, const mat_ZZ_p& A, const vec_ZZ_p& b)
   
 void mul(vec_ZZ_p& x, const mat_ZZ_p& A, const vec_ZZ_p& b)  
 {  
-   if (&b == &x || A.position1(x) != -1) {
+   if (&b == &x || A.alias(x)) {
       vec_ZZ_p tmp;
       mul_aux(tmp, A, b);
       x = tmp;

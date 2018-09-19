@@ -4,11 +4,10 @@
 #include <cctype>
 #include <cstdio>
 
-#include <NTL/new.h>
-
 
 
 NTL_START_IMPL
+
 
 NTL_CHEAP_THREAD_LOCAL void (*ErrorCallback)() = 0;
 NTL_CHEAP_THREAD_LOCAL void (*ErrorMsgCallback)(const char *) = 0;

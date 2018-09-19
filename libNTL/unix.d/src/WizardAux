@@ -149,7 +149,7 @@ foreach $aflag1 ("default", "NTL_FFT_LAZYMUL") {
                next;
          }
 
-         print "run: $aflag1 $bflag1 $cflag1 NTL_FFT_BIGTAB\n";
+         print "run: $aflag1 $bflag1 $cflag1\n";
          GenConfigHeader();
          $time1 = RunProg("Poly1TimeTest");
 
@@ -173,7 +173,6 @@ $Config{$bflag} = 1;
 $Config{$cflag} = 1;
 
 # now see if BIGTAB really helps
-
 
 $Config{"NTL_FFT_BIGTAB"} = 0;
 print "run: $aflag $bflag $cflag default\n";

@@ -50,9 +50,11 @@ public:
    // move constructor (C++11 only)
    // declared noexcept unless NTL_EXCEPTIONS flag is set
 
+#ifndef NTL_DISABLE_MOVE_ASSIGN
    GF2E& operator=(GF2E&& a); 
    // move assignment (C++11 only)
    // declared noexcept unless NTL_EXCEPTIONS flag is set
+#endif
 
    static void init(const GF2X& P);
    // GF2E::init(P) initializes the current modulus to P;
@@ -390,7 +392,7 @@ static const GF2E& GF2E::zero();
 // GF2E::zero() yields a read-only reference to zero
 
 static long GF2X::WordLength();
-// GF2E::size() returns # of words needed to store a polynomial of
+// GF2E::WordLength() returns # of words needed to store a polynomial of
 // degree < GF2E::degree()
 
 void GF2E::swap(GF2E& x);
