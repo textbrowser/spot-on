@@ -392,7 +392,7 @@ bool spoton_mceliece_private_key::prepareS(void)
 {
   try
     {
-      int long k = static_cast<long int> (m_k);qDebug()<<m_k<<k;
+      int long k = static_cast<long int> (m_k);
 
       m_S.SetDims(k, k);
 
