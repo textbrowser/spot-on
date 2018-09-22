@@ -1,7 +1,7 @@
-/* gpg-error.h or gpgrt.h - Public interface to libgpg-error.   -*- c -*-
- * Copyright (C) 2003-2004, 2010, 2013-2017 g10 Code GmbH
+/* gpg-error.h or gpgrt.h - Common code for GnuPG and others.    -*- c -*-
+ * Copyright (C) 2001-2018 g10 Code GmbH
  *
- * This file is part of libgpg-error.
+ * This file is part of libgpg-error (aka libgpgrt).
  *
  * libgpg-error is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -15,9 +15,45 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <https://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: LGPL-2.1+
  *
  * Do not edit.  Generated from gpg-error.h.in for:
                  i686-w64-mingw32
+ */
+
+/* The GnuPG project consists of many components.  Error codes are
+ * exchanged between all components.  The common error codes and their
+ * user-presentable descriptions are kept into a shared library to
+ * allow adding new error codes and components without recompiling any
+ * of the other components.  In addition to error codes this library
+ * also features several other groups of functions which are common to
+ * all GnuPG components.  They may be used by independet project as
+ * well.  The interfaces will not change in a backward incompatible way.
+ *
+ * An error code together with an error source build up an error
+ * value.  As the error value is been passed from one component to
+ * another, it preserves the information about the source and nature
+ * of the error.
+ *
+ * A component of the GnuPG project can define the following macros to
+ * tune the behaviour of the library:
+ *
+ * GPG_ERR_SOURCE_DEFAULT: Define to an error source of type
+ * gpg_err_source_t to make that source the default for gpg_error().
+ * Otherwise GPG_ERR_SOURCE_UNKNOWN is used as default.
+ *
+ * GPG_ERR_ENABLE_GETTEXT_MACROS: Define to provide macros to map the
+ * internal gettext API to standard names.  This has only an effect on
+ * Windows platforms.
+ *
+ * GPGRT_ENABLE_ES_MACROS: Define to provide "es_" macros for the
+ * estream functions.
+ *
+ * GPGRT_ENABLE_LOG_MACROS: Define to provide short versions of the
+ * log functions.
+ *
+ * GPGRT_ENABLE_ARGPARSE_MACROS: Needs to be defined to provide the
+ * mandatory macros of the argparse interface.
  */
 
 #ifndef GPG_ERROR_H
@@ -30,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.27"
-#define GPGRT_VERSION     "1.27"
+#define GPG_ERROR_VERSION "1.32"
+#define GPGRT_VERSION     "1.32"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x011b00
-#define GPGRT_VERSION_NUMBER     0x011b00
+#define GPG_ERROR_VERSION_NUMBER 0x012000
+#define GPGRT_VERSION_NUMBER     0x012000
 
 
 #ifdef __GNUC__
@@ -57,44 +93,17 @@ extern "C" {
 #endif
 #endif /* __cplusplus */
 
-/* The GnuPG project consists of many components.  Error codes are
-   exchanged between all components.  The common error codes and their
-   user-presentable descriptions are kept into a shared library to
-   allow adding new error codes and components without recompiling any
-   of the other components.  The interface will not change in a
-   backward incompatible way.
-
-   An error code together with an error source build up an error
-   value.  As the error value is been passed from one component to
-   another, it preserver the information about the source and nature
-   of the error.
-
-   A component of the GnuPG project can define the following macros to
-   tune the behaviour of the library:
-
-   GPG_ERR_SOURCE_DEFAULT: Define to an error source of type
-   gpg_err_source_t to make that source the default for gpg_error().
-   Otherwise GPG_ERR_SOURCE_UNKNOWN is used as default.
-
-   GPG_ERR_ENABLE_GETTEXT_MACROS: Define to provide macros to map the
-   internal gettext API to standard names.  This has only an effect on
-   Windows platforms.
-
-   GPGRT_ENABLE_ES_MACROS: Define to provide "es_" macros for the
-   estream functions.
-
-   In addition to the error codes, Libgpg-error also provides a set of
-   functions used by most GnuPG components.  */
 
 
 /* The error source type gpg_err_source_t.
-
-   Where as the Poo out of a welle small
-   Taketh his firste springing and his sours.
-					--Chaucer.  */
+ *
+ * Where as the Poo out of a welle small
+ * Taketh his firste springing and his sours.
+ *					--Chaucer.
+ */
 
 /* Only use free slots, never change or reorder the existing
-   entries.  */
+ * entries.  */
 typedef enum
   {
     GPG_ERR_SOURCE_UNKNOWN = 0,
@@ -128,7 +137,7 @@ typedef enum
 /* The error code type gpg_err_code_t.  */
 
 /* Only use free slots, never change or reorder the existing
-   entries.  */
+ * entries.  */
 typedef enum
   {
     GPG_ERR_NO_ERROR = 0,
@@ -685,13 +694,13 @@ typedef enum
 /* The error value type gpg_error_t.  */
 
 /* We would really like to use bit-fields in a struct, but using
-   structs as return values can cause binary compatibility issues, in
-   particular if you want to do it efficiently (also see
-   -freg-struct-return option to GCC).  */
+ * structs as return values can cause binary compatibility issues, in
+ * particular if you want to do it efficiently (also see
+ * -freg-struct-return option to GCC).  */
 typedef unsigned int gpg_error_t;
 
 /* We use the lowest 16 bits of gpg_error_t for error codes.  The 16th
-   bit indicates system errors.  */
+ * bit indicates system errors.  */
 #define GPG_ERR_CODE_MASK	(GPG_ERR_CODE_DIM - 1)
 
 /* Bits 17 to 24 are reserved.  */
@@ -701,11 +710,13 @@ typedef unsigned int gpg_error_t;
 #define GPG_ERR_SOURCE_SHIFT	24
 
 /* The highest bit is reserved.  It shouldn't be used to prevent
-   potential negative numbers when transmitting error values as
-   text.  */
+ * potential negative numbers when transmitting error values as
+ * text.  */
 
 
-/* GCC feature test.  */
+/*
+ * GCC feature test.
+ */
 #if __GNUC__
 # define _GPG_ERR_GCC_VERSION (__GNUC__ * 10000 \
                                + __GNUC_MINOR__ * 100 \
@@ -732,7 +743,7 @@ typedef unsigned int gpg_error_t;
 
 /* The noreturn attribute.  */
 #if _GPG_ERR_GCC_VERSION >= 20500
-# define GPGRT_ATTR_NORETURN   __attribute__ ((noreturn))
+# define GPGRT_ATTR_NORETURN   __attribute__ ((__noreturn__))
 #else
 # define GPGRT_ATTR_NORETURN
 #endif
@@ -742,12 +753,12 @@ typedef unsigned int gpg_error_t;
 # define GPGRT_ATTR_PRINTF(f, a) \
                     __attribute__ ((format(__gnu_printf__,f,a)))
 # define GPGRT_ATTR_NR_PRINTF(f, a) \
-                    __attribute__ ((noreturn, format(__gnu_printf__,f,a)))
+                    __attribute__ ((__noreturn__, format(__gnu_printf__,f,a)))
 #elif _GPG_ERR_GCC_VERSION >= 20500
 # define GPGRT_ATTR_PRINTF(f, a) \
                     __attribute__ ((format(printf,f,a)))
 # define GPGRT_ATTR_NR_PRINTF(f, a) \
-                    __attribute__ ((noreturn, format(printf,f,a)))
+                    __attribute__ ((__noreturn__, format(printf,f,a)))
 #else
 # define GPGRT_ATTR_PRINTF(f, a)
 # define GPGRT_ATTR_NR_PRINTF(f, a)
@@ -766,9 +777,9 @@ typedef unsigned int gpg_error_t;
 #endif
 
 /* The used and unused attributes.
-   I am not sure since when the unused attribute is really supported.
-   In any case it it only needed for gcc versions which print a
-   warning.  Thus let us require gcc >= 3.5.  */
+ * I am not sure since when the unused attribute is really supported.
+ * In any case it it only needed for gcc versions which print a
+ * warning.  Thus let us require gcc >= 3.5.  */
 #if _GPG_ERR_GCC_VERSION >= 40000
 # define GPGRT_ATTR_USED  __attribute__ ((used))
 #else
@@ -848,7 +859,9 @@ gpgrt_annotate_leaked_object (const void *p)
 }
 
 
-/* Initialization function.  */
+/*
+ * Initialization function.
+ */
 
 /* Initialize the library.  This function should be run early.  */
 gpg_error_t gpg_err_init (void) _GPG_ERR_CONSTRUCTOR;
@@ -878,10 +891,12 @@ void gpgrt_set_alloc_func  (void *(*f)(void *a, size_t n));
 
 
 
-/* Constructor and accessor functions.  */
+/*
+ * Constructor and accessor functions.
+ */
 
 /* Construct an error value from an error code and source.  Within a
-   subsystem, use gpg_error.  */
+ * subsystem, use gpg_error.  */
 static GPG_ERR_INLINE gpg_error_t
 gpg_err_make (gpg_err_source_t source, gpg_err_code_t code)
 {
@@ -892,7 +907,7 @@ gpg_err_make (gpg_err_source_t source, gpg_err_code_t code)
 
 
 /* The user should define GPG_ERR_SOURCE_DEFAULT before including this
-   file to specify a default source for gpg_error.  */
+ * file to specify a default source for gpg_error.  */
 #ifndef GPG_ERR_SOURCE_DEFAULT
 #define GPG_ERR_SOURCE_DEFAULT	GPG_ERR_SOURCE_UNKNOWN
 #endif
@@ -924,44 +939,44 @@ gpg_err_source (gpg_error_t err)
 /* String functions.  */
 
 /* Return a pointer to a string containing a description of the error
-   code in the error value ERR.  This function is not thread-safe.  */
+ * code in the error value ERR.  This function is not thread-safe.  */
 const char *gpg_strerror (gpg_error_t err);
 
 /* Return the error string for ERR in the user-supplied buffer BUF of
-   size BUFLEN.  This function is, in contrast to gpg_strerror,
-   thread-safe if a thread-safe strerror_r() function is provided by
-   the system.  If the function succeeds, 0 is returned and BUF
-   contains the string describing the error.  If the buffer was not
-   large enough, ERANGE is returned and BUF contains as much of the
-   beginning of the error string as fits into the buffer.  */
+ * size BUFLEN.  This function is, in contrast to gpg_strerror,
+ * thread-safe if a thread-safe strerror_r() function is provided by
+ * the system.  If the function succeeds, 0 is returned and BUF
+ * contains the string describing the error.  If the buffer was not
+ * large enough, ERANGE is returned and BUF contains as much of the
+ * beginning of the error string as fits into the buffer.  */
 int gpg_strerror_r (gpg_error_t err, char *buf, size_t buflen);
 
 /* Return a pointer to a string containing a description of the error
-   source in the error value ERR.  */
+ * source in the error value ERR.  */
 const char *gpg_strsource (gpg_error_t err);
 
 
-/* Mapping of system errors (errno).  */
+/*
+ * Mapping of system errors (errno).
+ */
 
 /* Retrieve the error code for the system error ERR.  This returns
-   GPG_ERR_UNKNOWN_ERRNO if the system error is not mapped (report
-   this). */
+ * GPG_ERR_UNKNOWN_ERRNO if the system error is not mapped (report
+ * this). */
 gpg_err_code_t gpg_err_code_from_errno (int err);
 
-
 /* Retrieve the system error for the error code CODE.  This returns 0
-   if CODE is not a system error code.  */
+ * if CODE is not a system error code.  */
 int gpg_err_code_to_errno (gpg_err_code_t code);
 
-
 /* Retrieve the error code directly from the ERRNO variable.  This
-   returns GPG_ERR_UNKNOWN_ERRNO if the system error is not mapped
-   (report this) and GPG_ERR_MISSING_ERRNO if ERRNO has the value 0. */
+ * returns GPG_ERR_UNKNOWN_ERRNO if the system error is not mapped
+ * (report this) and GPG_ERR_MISSING_ERRNO if ERRNO has the value 0. */
 gpg_err_code_t gpg_err_code_from_syserror (void);
 
 
 /* Set the ERRNO variable.  This function is the preferred way to set
-   ERRNO due to peculiarities on WindowsCE.  */
+ * ERRNO due to peculiarities on WindowsCE.  */
 void gpg_err_set_errno (int err);
 
 /* Return or check the version.  Both functions are identical.  */
@@ -969,6 +984,8 @@ const char *gpgrt_check_version (const char *req_version);
 const char *gpg_error_check_version (const char *req_version);
 
 /* System specific type definitions.  */
+#include <sys/types.h>
+
 typedef long    gpgrt_ssize_t;
 
 #include <stdint.h>
@@ -1031,6 +1048,11 @@ size_t  gpgrt_w32_iconv (gpgrt_w32_iconv_t cd,
 # define iconv(a,b,c,d,e) gpgrt_w32_iconv ((a),(b),(c),(d),(e))
 #endif /*GPGRT_ENABLE_W32_ICONV_MACROS*/
 
+/* Query a string in the registry.  */
+char *gpgrt_w32_reg_query_string (const char *root,
+                                  const char *dir,
+                                  const char *name);
+
 
 /* Self-documenting convenience functions.  */
 
@@ -1055,7 +1077,45 @@ gpg_error_from_syserror (void)
 
 
 
-/* Lock functions.  */
+/*
+ * Malloc and friends
+ */
+
+void *gpgrt_realloc (void *a, size_t n);
+void *gpgrt_malloc (size_t n);
+void *gpgrt_calloc (size_t n, size_t m);
+char *gpgrt_strdup (const char *string);
+char *gpgrt_strconcat (const char *s1, ...) GPGRT_ATTR_SENTINEL(0);
+void gpgrt_free (void *a);
+
+
+/*
+ * System specific function wrappers.
+ */
+
+/* A getenv replacement which mallocs the returned string.  */
+char *gpgrt_getenv (const char *name);
+
+/* A setenv and a unsetenv replacement.*/
+gpg_err_code_t gpgrt_setenv (const char *name,
+                             const char *value, int overwrite);
+#define gpgrt_unsetenv(n) gpgrt_setenv ((n), NULL, 1)
+
+/* A wrapper around mkdir using a string for the mode.  */
+gpg_err_code_t gpgrt_mkdir (const char *name, const char *modestr);
+
+/* A simple wrapper around chdir.  */
+gpg_err_code_t gpgrt_chdir (const char *name);
+
+/* Return the current WD as a malloced string.  */
+char *gpgrt_getcwd (void);
+
+
+
+
+/*
+ * Lock functions.
+ */
 
 
 #ifdef _WIN64
@@ -1100,14 +1160,18 @@ gpg_err_code_t gpgrt_lock_destroy (gpgrt_lock_t *lockhd);
 
 
 
-/* Thread functions.  */
+/*
+ * Thread functions.
+ */
 
 gpg_err_code_t gpgrt_yield (void);
 
 
 
 
-/* Estream */
+/*
+ * Estream
+ */
 
 /* The definition of this struct is entirely private.  You must not
    use it for anything.  It is only here so some functions can be
@@ -1351,8 +1415,8 @@ int gpgrt_write_hexstring (gpgrt_stream_t _GPGRT__RESTRICT stream,
 
 size_t gpgrt_fread (void *_GPGRT__RESTRICT ptr, size_t size, size_t nitems,
                     gpgrt_stream_t _GPGRT__RESTRICT stream);
-size_t gpgrt_fwrite (const void *_GPGRT__RESTRICT ptr, size_t size, size_t memb,
-                     gpgrt_stream_t _GPGRT__RESTRICT stream);
+size_t gpgrt_fwrite (const void *_GPGRT__RESTRICT ptr, size_t size,
+                     size_t nitems, gpgrt_stream_t _GPGRT__RESTRICT stream);
 
 char *gpgrt_fgets (char *_GPGRT__RESTRICT s, int n,
                    gpgrt_stream_t _GPGRT__RESTRICT stream);
@@ -1367,7 +1431,6 @@ gpgrt_ssize_t gpgrt_getline (char *_GPGRT__RESTRICT *_GPGRT__RESTRICT lineptr,
 gpgrt_ssize_t gpgrt_read_line (gpgrt_stream_t stream,
                          char **addr_of_buffer, size_t *length_of_buffer,
                          size_t *max_length);
-void gpgrt_free (void *a);
 
 int gpgrt_fprintf (gpgrt_stream_t _GPGRT__RESTRICT stream,
                    const char *_GPGRT__RESTRICT format, ...)
@@ -1506,16 +1569,366 @@ int gpgrt_vsnprintf (char *buf,size_t bufsize,
 # define es_bsprintf          gpgrt_bsprintf
 # define es_vbsprintf         gpgrt_vbsprintf
 #endif /*GPGRT_ENABLE_ES_MACROS*/
+
+
 
-/* Base64 decode functions.  */
+/*
+ * Base64 encode and decode functions.
+ */
 
 struct _gpgrt_b64state;
 typedef struct _gpgrt_b64state *gpgrt_b64state_t;
 
+gpgrt_b64state_t gpgrt_b64enc_start (gpgrt_stream_t stream, const char *title);
+gpg_err_code_t   gpgrt_b64enc_write (gpgrt_b64state_t state,
+                                     const void *buffer, size_t nbytes);
+gpg_err_code_t   gpgrt_b64enc_finish (gpgrt_b64state_t state);
+
 gpgrt_b64state_t gpgrt_b64dec_start (const char *title);
-gpg_error_t gpgrt_b64dec_proc (gpgrt_b64state_t state,
-                               void *buffer, size_t length, size_t *r_nbytes);
-gpg_error_t gpgrt_b64dec_finish (gpgrt_b64state_t state);
+gpg_error_t      gpgrt_b64dec_proc (gpgrt_b64state_t state,
+                                    void *buffer, size_t length,
+                                    size_t *r_nbytes);
+gpg_error_t      gpgrt_b64dec_finish (gpgrt_b64state_t state);
+
+
+
+/*
+ * Logging functions
+ */
+
+/* Flag values for gpgrt_log_set_prefix. */
+#define GPGRT_LOG_WITH_PREFIX  1
+#define GPGRT_LOG_WITH_TIME    2
+#define GPGRT_LOG_WITH_PID     4
+#define GPGRT_LOG_RUN_DETACHED 256
+#define GPGRT_LOG_NO_REGISTRY  512
+
+/* Log levels as used by gpgrt_log.  */
+enum gpgrt_log_levels
+  {
+    GPGRT_LOGLVL_BEGIN,
+    GPGRT_LOGLVL_CONT,
+    GPGRT_LOGLVL_INFO,
+    GPGRT_LOGLVL_WARN,
+    GPGRT_LOGLVL_ERROR,
+    GPGRT_LOGLVL_FATAL,
+    GPGRT_LOGLVL_BUG,
+    GPGRT_LOGLVL_DEBUG
+  };
+
+
+/* The next 4 functions are not thread-safe - call them early.  */
+void gpgrt_log_set_sink (const char *name, gpgrt_stream_t stream, int fd);
+void gpgrt_log_set_socket_dir_cb (const char *(*fnc)(void));
+void gpgrt_log_set_pid_suffix_cb (int (*cb)(unsigned long *r_value));
+void gpgrt_log_set_prefix (const char *text, unsigned int flags);
+
+int  gpgrt_get_errorcount (int clear);
+void gpgrt_inc_errorcount (void);
+const char *gpgrt_log_get_prefix (unsigned int *flags);
+int  gpgrt_log_test_fd (int fd);
+int  gpgrt_log_get_fd (void);
+gpgrt_stream_t gpgrt_log_get_stream (void);
+
+void gpgrt_log (int level, const char *fmt, ...) GPGRT_ATTR_PRINTF(2,3);
+void gpgrt_logv (int level, const char *fmt, va_list arg_ptr);
+void gpgrt_logv_prefix (int level, const char *prefix,
+                              const char *fmt, va_list arg_ptr);
+void gpgrt_log_string (int level, const char *string);
+void gpgrt_log_bug (const char *fmt, ...)    GPGRT_ATTR_NR_PRINTF(1,2);
+void gpgrt_log_fatal (const char *fmt, ...)  GPGRT_ATTR_NR_PRINTF(1,2);
+void gpgrt_log_error (const char *fmt, ...)  GPGRT_ATTR_PRINTF(1,2);
+void gpgrt_log_info (const char *fmt, ...)   GPGRT_ATTR_PRINTF(1,2);
+void gpgrt_log_debug (const char *fmt, ...)  GPGRT_ATTR_PRINTF(1,2);
+void gpgrt_log_debug_string (const char *string,
+                             const char *fmt, ...) GPGRT_ATTR_PRINTF(2,3);
+void gpgrt_log_printf (const char *fmt, ...) GPGRT_ATTR_PRINTF(1,2);
+void gpgrt_log_printhex (const void *buffer, size_t length,
+                         const char *fmt, ...) GPGRT_ATTR_PRINTF(3,4);
+void gpgrt_log_clock (const char *fmt, ...) GPGRT_ATTR_PRINTF(1,2);
+void gpgrt_log_flush (void);
+void _gpgrt_log_assert (const char *expr, const char *file, int line,
+                        const char *func) GPGRT_ATTR_NORETURN;
+
+#ifdef GPGRT_HAVE_MACRO_FUNCTION
+# define gpgrt_assert(expr)                                     \
+  ((expr)                                                       \
+   ? (void) 0                                                   \
+   : _gpgrt_log_assert (#expr, __FILE__, __LINE__, __FUNCTION__))
+#else /*!GPGRT_HAVE_MACRO_FUNCTION*/
+# define gpgrt_assert(expr)                                     \
+  ((expr)                                                       \
+   ? (void) 0                                                   \
+   : _gpgrt_log_assert (#expr, __FILE__, __LINE__, NULL))
+#endif /*!GPGRT_HAVE_MACRO_FUNCTION*/
+
+#ifdef GPGRT_ENABLE_LOG_MACROS
+# define log_get_errorcount      gpgrt_get_errorcount
+# define log_inc_errorcount      gpgrt_inc_errorcount
+# define log_set_file(a)         gpgrt_log_set_sink ((a), NULL, -1)
+# define log_set_fd(a)           gpgrt_log_set_sink (NULL, NULL, (a))
+# define log_set_stream(a)       gpgrt_log_set_sink (NULL, (a), -1)
+# define log_set_socket_dir_cb   gpgrt_log_set_socket_dir_cb
+# define log_set_pid_suffix_cb   gpgrt_log_set_pid_suffix_cb
+# define log_set_prefix          gpgrt_log_set_prefix
+# define log_get_prefix          gpgrt_log_get_prefix
+# define log_test_fd             gpgrt_log_test_fd
+# define log_get_fd              gpgrt_log_get_fd
+# define log_get_stream          gpgrt_log_get_stream
+# define log_log                 gpgrt_log
+# define log_logv                gpgrt_logv
+# define log_logv_prefix         gpgrt_logv_prefix
+# define log_string              gpgrt_log_string
+# define log_bug                 gpgrt_log_bug
+# define log_fatal               gpgrt_log_fatal
+# define log_error               gpgrt_log_error
+# define log_info                gpgrt_log_info
+# define log_debug               gpgrt_log_debug
+# define log_debug_string        gpgrt_log_debug_string
+# define log_printf              gpgrt_log_printf
+# define log_printhex            gpgrt_log_printhex
+# define log_clock               gpgrt_log_clock
+# define log_flush               gpgrt_log_flush
+# ifdef GPGRT_HAVE_MACRO_FUNCTION
+#  define log_assert(expr)                                      \
+  ((expr)                                                       \
+   ? (void) 0                                                   \
+   : _gpgrt_log_assert (#expr, __FILE__, __LINE__, __FUNCTION__))
+# else /*!GPGRT_HAVE_MACRO_FUNCTION*/
+#  define log_assert(expr)                                      \
+  ((expr)                                                       \
+   ? (void) 0                                                   \
+   : _gpgrt_log_assert (#expr, __FILE__, __LINE__, NULL))
+# endif /*!GPGRT_HAVE_MACRO_FUNCTION*/
+
+#endif /*GPGRT_ENABLE_LOG_MACROS*/
+
+
+/*
+ * Spawn functions  (Not yet available)
+ */
+#define GPGRT_SPAWN_NONBLOCK   16 /* Set the streams to non-blocking.      */
+#define GPGRT_SPAWN_RUN_ASFW   64 /* Use AllowSetForegroundWindow on W32.  */
+#define GPGRT_SPAWN_DETACHED  128 /* Start the process in the background.  */
+
+#if 0
+
+/* Function and convenience macros to create pipes.  */
+gpg_err_code_t gpgrt_make_pipe (int filedes[2], gpgrt_stream_t *r_fp,
+                                int direction, int nonblock);
+#define gpgrt_create_pipe(a)              gpgrt_make_pipe ((a),NULL,  0,  0);
+#define gpgrt_create_inbound_pipe(a,b,c)  gpgrt_make_pipe ((a), (b), -1,(c));
+#define gpgrt_create_outbound_pipe(a,b,c) gpgrt_make_pipe ((a), (b),  1,(c));
+
+
+/* Fork and exec PGMNAME.  */
+gpg_err_code_t gpgrt_spawn_process (const char *pgmname, const char *argv[],
+                                    int *execpt, void (*preexec)(void),
+                                    unsigned int flags,
+                                    gpgrt_stream_t *r_infp,
+                                    gpgrt_stream_t *r_outfp,
+                                    gpgrt_stream_t *r_errfp,
+                                    pid_t *pid);
+
+/* Fork and exec PGNNAME and connect the process to the given FDs.  */
+gpg_err_code_t gpgrt_spawn_process_fd (const char *pgmname, const char *argv[],
+                                       int infd, int outfd, int errfd,
+                                       pid_t *pid);
+
+/* Fork and exec PGMNAME as a detached process.  */
+gpg_err_code_t gpgrt_spawn_process_detached (const char *pgmname,
+                                             const char *argv[],
+                                             const char *envp[] );
+
+/* Wait for a single process.  */
+gpg_err_code_t gpgrt_wait_process (const char *pgmname, pid_t pid, int hang,
+                                int *r_exitcode);
+
+/* Wait for a multiple processes.  */
+gpg_err_code_t gpgrt_wait_processes (const char **pgmnames, pid_t *pids,
+                                     size_t count, int hang, int *r_exitcodes);
+
+/* Kill the process identified by PID.  */
+void gpgrt_kill_process (pid_t pid);
+
+/* Release process resources identified by PID.  */
+void gpgrt_release_process (pid_t pid);
+
+#endif /*0*/
+
+
+
+/*
+ * Option parsing.
+ */
+
+struct _gpgrt_argparse_internal_s;
+typedef struct
+{
+  int  *argc;	      /* Pointer to ARGC (value subject to change). */
+  char ***argv;	      /* Pointer to ARGV (value subject to change). */
+  unsigned int flags; /* Global flags.  May be set prior to calling the
+                         parser.  The parser may change the value.  */
+  int err;            /* Print error description for last option.
+                         Either 0,  ARGPARSE_PRINT_WARNING or
+                         ARGPARSE_PRINT_ERROR.  */
+  unsigned int lineno;/* The current line number.  */
+  int r_opt; 	      /* Returns option code. */
+  int r_type;	      /* Returns type of option value.  */
+  union {
+    int   ret_int;
+    long  ret_long;
+    unsigned long ret_ulong;
+    char *ret_str;
+  } r;		      /* Return values */
+
+  struct _gpgrt_argparse_internal_s *internal;
+} gpgrt_argparse_t;
+
+
+typedef struct
+{
+  int          short_opt;
+  const char  *long_opt;
+  unsigned int flags;
+  const char  *description; /* Optional description. */
+} gpgrt_opt_t;
+
+
+#ifdef GPGRT_ENABLE_ARGPARSE_MACROS
+
+/* Global flags for (gpgrt_argparse_t).flags.  */
+#define ARGPARSE_FLAG_KEEP        1  /* Do not remove options form argv.     */
+#define ARGPARSE_FLAG_ALL         2  /* Do not stop at last option but return
+                                        remaining args with R_OPT set to -1. */
+#define ARGPARSE_FLAG_MIXED       4  /* Assume options and args are mixed.   */
+#define ARGPARSE_FLAG_NOSTOP      8  /* Do not stop processing at "--".      */
+#define ARGPARSE_FLAG_ARG0       16  /* Do not skip the first arg.           */
+#define ARGPARSE_FLAG_ONEDASH    32  /* Allow long options with one dash.    */
+#define ARGPARSE_FLAG_NOVERSION  64  /* No output for "--version".           */
+#define ARGPARSE_FLAG_RESET     128  /* Request to reset the internal state. */
+#define ARGPARSE_FLAG_STOP_SEEN 256  /* Set to true if a "--" has been seen. */
+#define ARGPARSE_FLAG_NOLINENO  512  /* Do not zero the lineno field.         */
+
+/* Constants for (gpgrt_argparse_t).err.  */
+#define ARGPARSE_PRINT_WARNING  1    /* Print a diagnostic.                  */
+#define ARGPARSE_PRINT_ERROR    2    /* Print a diagnostic and call exit.    */
+
+/* Special return values of gpgrt_argparse.  */
+#define ARGPARSE_IS_ARG            (-1)
+#define ARGPARSE_INVALID_OPTION    (-2)
+#define ARGPARSE_MISSING_ARG       (-3)
+#define ARGPARSE_KEYWORD_TOO_LONG  (-4)
+#define ARGPARSE_READ_ERROR        (-5)
+#define ARGPARSE_UNEXPECTED_ARG    (-6)
+#define ARGPARSE_INVALID_COMMAND   (-7)
+#define ARGPARSE_AMBIGUOUS_OPTION  (-8)
+#define ARGPARSE_AMBIGUOUS_COMMAND (-9)
+#define ARGPARSE_INVALID_ALIAS     (-10)
+#define ARGPARSE_OUT_OF_CORE       (-11)
+#define ARGPARSE_INVALID_ARG       (-12)
+
+/* Flags for the option descriptor (gpgrt_opt_t)->flags.  Note that
+ * a TYPE constant may be or-ed with the OPT constants.  */
+#define ARGPARSE_TYPE_NONE        0  /* Does not take an argument.        */
+#define ARGPARSE_TYPE_INT         1  /* Takes an int argument.            */
+#define ARGPARSE_TYPE_STRING      2  /* Takes a string argument.          */
+#define ARGPARSE_TYPE_LONG        3  /* Takes a long argument.            */
+#define ARGPARSE_TYPE_ULONG       4  /* Takes an unsigned long argument.  */
+#define ARGPARSE_OPT_OPTIONAL (1<<3) /* Argument is optional.             */
+#define ARGPARSE_OPT_PREFIX   (1<<4) /* Allow 0x etc. prefixed values.    */
+#define ARGPARSE_OPT_IGNORE   (1<<6) /* Ignore command or option.         */
+#define ARGPARSE_OPT_COMMAND  (1<<7) /* The argument is a command.        */
+
+/* A set of macros to make option definitions easier to read.  */
+#define ARGPARSE_x(s,l,t,f,d) \
+     { (s), (l), ARGPARSE_TYPE_ ## t | (f), (d) }
+
+#define ARGPARSE_s(s,l,t,d) \
+     { (s), (l), ARGPARSE_TYPE_ ## t, (d) }
+#define ARGPARSE_s_n(s,l,d) \
+     { (s), (l), ARGPARSE_TYPE_NONE, (d) }
+#define ARGPARSE_s_i(s,l,d) \
+     { (s), (l), ARGPARSE_TYPE_INT, (d) }
+#define ARGPARSE_s_s(s,l,d) \
+     { (s), (l), ARGPARSE_TYPE_STRING, (d) }
+#define ARGPARSE_s_l(s,l,d) \
+     { (s), (l), ARGPARSE_TYPE_LONG, (d) }
+#define ARGPARSE_s_u(s,l,d) \
+     { (s), (l), ARGPARSE_TYPE_ULONG, (d) }
+
+#define ARGPARSE_o(s,l,t,d) \
+     { (s), (l), (ARGPARSE_TYPE_ ## t  | ARGPARSE_OPT_OPTIONAL), (d) }
+#define ARGPARSE_o_n(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_NONE   | ARGPARSE_OPT_OPTIONAL), (d) }
+#define ARGPARSE_o_i(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_INT    | ARGPARSE_OPT_OPTIONAL), (d) }
+#define ARGPARSE_o_s(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_STRING | ARGPARSE_OPT_OPTIONAL), (d) }
+#define ARGPARSE_o_l(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_LONG   | ARGPARSE_OPT_OPTIONAL), (d) }
+#define ARGPARSE_o_u(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_ULONG  | ARGPARSE_OPT_OPTIONAL), (d) }
+
+#define ARGPARSE_p(s,l,t,d) \
+     { (s), (l), (ARGPARSE_TYPE_ ## t  | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_p_n(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_NONE   | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_p_i(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_INT    | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_p_s(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_STRING | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_p_l(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_LONG   | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_p_u(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_ULONG  | ARGPARSE_OPT_PREFIX), (d) }
+
+#define ARGPARSE_op(s,l,t,d) \
+     { (s), (l), (ARGPARSE_TYPE_ ## t \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_op_n(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_NONE \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_op_i(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_INT \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_op_s(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_STRING \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_op_l(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_LONG \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), (d) }
+#define ARGPARSE_op_u(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_ULONG \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), (d) }
+
+#define ARGPARSE_c(s,l,d) \
+     { (s), (l), (ARGPARSE_TYPE_NONE | ARGPARSE_OPT_COMMAND), (d) }
+
+#define ARGPARSE_ignore(s,l) \
+     { (s), (l), (ARGPARSE_OPT_IGNORE), "@" }
+
+#define ARGPARSE_group(s,d) \
+     { (s), NULL, 0, (d) }
+
+/* Mark the end of the list (mandatory).  */
+#define ARGPARSE_end() \
+     { 0, NULL, 0, NULL }
+
+#endif /* GPGRT_ENABLE_ARGPARSE_MACROS */
+
+/* Take care: gpgrt_argparse keeps state in ARG and requires that
+ * either ARGPARSE_FLAG_RESET is used after OPTS has been changed or
+ * gpgrt_argparse (NULL, ARG, NULL) is called first.  */
+int gpgrt_argparse (gpgrt_stream_t fp,
+                    gpgrt_argparse_t *arg, gpgrt_opt_t *opts);
+void gpgrt_usage (int level);
+const char *gpgrt_strusage (int level);
+void gpgrt_set_strusage (const char *(*f)(int));
+void gpgrt_set_usage_outfnc (int (*f)(int, const char *));
+void gpgrt_set_fixed_string_mapper (const char *(*f)(const char*));
+
+
 
 #ifdef __cplusplus
 }
