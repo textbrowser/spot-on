@@ -1,6 +1,6 @@
 Please keep the files within this directory as current as possible.
 
-The gcrypt files should be downloaded from https://gpg4win.org.
+The gcrypt files should be downloaded from https://files.gpg4win.org.
 
 The pthread files should be downloaded from ftp://sourceware.org/pub/pthreads-win32/dll-latest.
 
