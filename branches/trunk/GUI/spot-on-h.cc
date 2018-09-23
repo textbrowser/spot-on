@@ -832,3 +832,17 @@ void spoton::slotPrepareContextMenuMirrors(void)
 {
   prepareContextMenuMirrors();
 }
+
+void spoton::slotShowErrorMessage(void)
+{
+  QTimer *timer = qobject_cast<QTimer *> (sender());
+
+  if(!timer)
+    return;
+
+  QString str(timer->property("text").toString().trimmed());
+
+  timer->deleteLater();
+  QMessageBox::critical
+    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), str);
+}

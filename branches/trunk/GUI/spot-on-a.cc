@@ -3250,16 +3250,39 @@ spoton::spoton(void):QMainWindow()
 	str = tr("The SQLite database driver is not available. "
 		 "Please resolve!");
 
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), str);
+      QTimer *timer = new QTimer(this);
+
+      connect(timer,
+	      SIGNAL(timeout(void)),
+	      this,
+	      SLOT(slotShowErrorMessage(void)));
+      timer->setProperty("text", str);
+      timer->setSingleShot(true);
+      timer->start(1500);
     }
   else
     {
-      QTimer::singleShot(1500, this, SLOT(slotAfterFirstShow(void)));
+      QFileInfo fileInfo(spoton_misc::homePath());
 
-      if(!spoton_crypt::passphraseSet())
+      if(!fileInfo.isReadable() || !fileInfo.isWritable())
+	{
+	  QString str(tr("The directory %1 must be readable and writable.").
+		      arg(fileInfo.absolutePath()));
+	  QTimer *timer = new QTimer(this);
+
+	  connect(timer,
+		  SIGNAL(timeout(void)),
+		  this,
+		  SLOT(slotShowErrorMessage(void)));
+	  timer->setProperty("text", str);
+	  timer->setSingleShot(true);
+	  timer->start(1500);
+	}
+      else if(!spoton_crypt::passphraseSet())
 	QTimer::singleShot
 	  (750, this, SLOT(slotPrepareAndShowInstallationWizard(void)));
+
+      QTimer::singleShot(1500, this, SLOT(slotAfterFirstShow(void)));
     }
 }
 
