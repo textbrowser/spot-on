@@ -602,6 +602,14 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
       delete m_publicKey;
       m_publicKey = 0;
     }
+
+  if(!m_privateKey)
+    spoton_misc::logError("spoton_mceliece::spoton_mceliece(): "
+			  "m_privateKey is zero!");
+
+  if(!m_publicKey)
+    spoton_misc::logError("spoton_mceliece::spoton_mceliece(): "
+			  "m_publicKey is zero!");
 }
 
 spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
@@ -661,6 +669,10 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
       delete m_publicKey;
       m_publicKey = 0;
     }
+
+  if(!m_publicKey)
+    spoton_misc::logError("spoton_mceliece::spoton_mceliece(): "
+			  "m_publicKey is zero!");
 }
 
 spoton_mceliece::spoton_mceliece(const QByteArray &conversion,
@@ -705,7 +717,10 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
   char *p = new (std::nothrow) char[plaintext_size];
 
   if(!p)
-    return false;
+    {
+      spoton_misc::logError("spoton_mceliece::decrypt(): p is zero!");
+      return false;
+    }
 
   try
     {
