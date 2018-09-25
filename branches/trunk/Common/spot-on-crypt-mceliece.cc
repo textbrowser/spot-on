@@ -117,6 +117,11 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
 
   if(!m_mceliece)
     return QByteArray();
+  else if(m_privateKey)
+    {
+      gcry_free(m_privateKey);
+      m_privateKey = 0;
+    }
 
   QByteArray bytes;
   std::stringstream ciphertext;

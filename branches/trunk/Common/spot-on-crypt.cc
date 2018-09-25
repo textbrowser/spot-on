@@ -655,6 +655,7 @@ void spoton_crypt::init(const QString &cipherType,
   m_hashKeyLength = 0;
   m_hashType = hashType;
   m_id = id;
+  m_isMcEliece.store(0);
   m_iterationCount = iterationCount;
 #ifdef SPOTON_MCELIECE_ENABLED
   m_mceliece = 0;
@@ -1686,9 +1687,16 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
       return;
     }
   else
-    memcpy(m_privateKey,
-	   keyData.constData(),
-	   m_privateKeyLength);
+    {
+      memcpy(m_privateKey,
+	     keyData.constData(),
+	     m_privateKeyLength);
+
+      if(::memcmp(m_privateKey,
+		  "mceliece-",
+		  qMin(m_privateKeyLength, strlen("mceliece-"))) == 0)
+	m_isMcEliece.store(1);
+    }
 
   locker2.unlock();
   keyData.replace
@@ -1710,6 +1718,9 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       return QByteArray();
   }
 
+  if(m_isMcEliece.load())
+    return publicKeyDecryptMcEliece(data, ok);
+
   QReadLocker locker1(&m_privateKeyMutex);
 
   if(!m_privateKey || m_privateKeyLength <= 0)
@@ -1723,15 +1734,9 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       return QByteArray();
     }
 
-  if(::memcmp(m_privateKey, "mceliece-", qMin(m_privateKeyLength,
-					      strlen("mceliece-"))) == 0)
-    {
-      locker1.unlock();
-      return publicKeyDecryptMcEliece(data, ok);
-    }
-  else if(::memcmp(m_privateKey,
-		   "ntru-private-key-",
-		   qMin(m_privateKeyLength, strlen("ntru-private-key-"))) == 0)
+  if(::memcmp(m_privateKey,
+	      "ntru-private-key-",
+	      qMin(m_privateKeyLength, strlen("ntru-private-key-"))) == 0)
     {
       locker1.unlock();
 
@@ -2084,6 +2089,8 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
   gcry_sexp_t parameters_t = 0;
   int ks = keySize.toInt();
   size_t length = 0;
+
+  m_isMcEliece.store(0);
 
   /*
   ** Use lock guards.
@@ -4194,6 +4201,8 @@ QString spoton_crypt::publicKeySize(void)
 
 void spoton_crypt::purgePrivatePublicKeys(void)
 {
+  m_isMcEliece.store(0);
+
   QWriteLocker locker1(&m_privateKeyMutex);
 
   gcry_free(m_privateKey);

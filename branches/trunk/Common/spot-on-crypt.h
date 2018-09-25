@@ -48,6 +48,7 @@ extern "C"
 #endif
 }
 
+#include <QAtomicInt>
 #include <QByteArray>
 #include <QHostAddress>
 #include <QMutex>
@@ -217,6 +218,7 @@ class spoton_crypt
   void purgePrivatePublicKeys(void);
 
  private:
+  QAtomicInt m_isMcEliece;
   QByteArray m_publicKey;
   QMutex m_cipherMutex;
   QReadWriteLock m_hashKeyMutex;
