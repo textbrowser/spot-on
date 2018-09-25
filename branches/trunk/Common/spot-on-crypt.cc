@@ -655,7 +655,7 @@ void spoton_crypt::init(const QString &cipherType,
   m_hashKeyLength = 0;
   m_hashType = hashType;
   m_id = id;
-  m_isMcEliece.store(0);
+  m_isMcEliece.fetchAndStoreOrdered(0);
   m_iterationCount = iterationCount;
 #ifdef SPOTON_MCELIECE_ENABLED
   m_mceliece = 0;
@@ -1695,7 +1695,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
       if(::memcmp(m_privateKey,
 		  "mceliece-",
 		  qMin(m_privateKeyLength, strlen("mceliece-"))) == 0)
-	m_isMcEliece.store(1);
+	m_isMcEliece.fetchAndStoreOrdered(1);
     }
 
   locker2.unlock();
@@ -1718,7 +1718,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       return QByteArray();
   }
 
-  if(m_isMcEliece.load())
+  if(m_isMcEliece.fetchAndAddOrdered(0))
     return publicKeyDecryptMcEliece(data, ok);
 
   QReadLocker locker1(&m_privateKeyMutex);
@@ -2090,7 +2090,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
   int ks = keySize.toInt();
   size_t length = 0;
 
-  m_isMcEliece.store(0);
+  m_isMcEliece.fetchAndStoreOrdered(0);
 
   /*
   ** Use lock guards.
@@ -4201,7 +4201,7 @@ QString spoton_crypt::publicKeySize(void)
 
 void spoton_crypt::purgePrivatePublicKeys(void)
 {
-  m_isMcEliece.store(0);
+  m_isMcEliece.fetchAndStoreOrdered(0);
 
   QWriteLocker locker1(&m_privateKeyMutex);
 
