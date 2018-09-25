@@ -106,6 +106,7 @@ spoton_starbeamanalyzer::~spoton_starbeamanalyzer()
       if(pair.first)
 	pair.first->fetchAndStoreOrdered(1);
 
+      pair.second.cancel();
       pair.second.waitForFinished();
       delete pair.first;
       it.remove();
@@ -412,6 +413,7 @@ void spoton_starbeamanalyzer::slotDelete(void)
   if(pair.first)
     pair.first->fetchAndStoreOrdered(1);
 
+  pair.second.cancel();
   pair.second.waitForFinished();
   delete pair.first;
   m_hash.remove(item->text());

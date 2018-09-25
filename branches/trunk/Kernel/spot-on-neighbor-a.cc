@@ -1049,7 +1049,10 @@ spoton_neighbor::~spoton_neighbor()
     }
 
   while(!m_privateApplicationFutures.isEmpty())
-    m_privateApplicationFutures.takeFirst().waitForFinished();
+    {
+      m_privateApplicationFutures.first().cancel();
+      m_privateApplicationFutures.takeFirst().waitForFinished();
+    }
 
   close();
   quit();

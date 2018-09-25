@@ -2779,6 +2779,7 @@ void spoton::slotRegenerateKey(void)
   if(keyType == "chat")
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_generalFuture.cancel();
       m_generalFuture.waitForFinished();
       m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
 
@@ -2786,6 +2787,7 @@ void spoton::slotRegenerateKey(void)
 	{
 	  QFuture<void> future(m_starbeamDigestFutures.takeFirst());
 
+	  future.cancel();
 	  future.waitForFinished();
 	}
 

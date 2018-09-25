@@ -310,6 +310,7 @@ spoton_rss::~spoton_rss()
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
+  m_importFuture.cancel();
   m_importFuture.waitForFinished();
   m_statisticsTimer.stop();
   m_parseXmlFuture.cancel();

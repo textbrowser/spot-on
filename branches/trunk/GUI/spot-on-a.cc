@@ -3342,7 +3342,9 @@ void spoton::cleanup(void)
     spoton_misc::removeOneTimeStarBeamMagnets();
 
   m_encryptFile.abort();
+  m_neighborsFuture.cancel();
   m_neighborsFuture.waitForFinished();
+  m_participantsFuture.cancel();
   m_participantsFuture.waitForFinished();
   m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
 
@@ -3354,6 +3356,7 @@ void spoton::cleanup(void)
       future.waitForFinished();
     }
 
+  m_statisticsFuture.cancel();
   m_statisticsFuture.waitForFinished();
 
   /*
@@ -3377,6 +3380,7 @@ void spoton::cleanup(void)
   ** Terminate dependent futures.
   */
 
+  m_generalFuture.cancel();
   m_generalFuture.waitForFinished();
 
   /*
