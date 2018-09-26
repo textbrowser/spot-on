@@ -4094,11 +4094,13 @@ void spoton::slotAddNeighbor(void)
 
 void spoton::slotHideOfflineParticipants(bool state)
 {
+  m_participantsLastModificationTime = QDateTime();
   m_settings["gui/hideOfflineParticipants"] = state;
 
   QSettings settings;
 
   settings.setValue("gui/hideOfflineParticipants", state);
+  slotPopulateParticipants();
 }
 
 void spoton::slotProtocolRadioToggled(bool state)
