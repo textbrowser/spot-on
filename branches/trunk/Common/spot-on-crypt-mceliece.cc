@@ -31,74 +31,6 @@
 #endif
 #include "spot-on-misc.h"
 
-void spoton_crypt::generateMcElieceKeys(const QString &keySize,
-					QByteArray &privateKey,
-					QByteArray &publicKey,
-					bool *ok)
-{
-  if(ok)
-    *ok = false;
-
-#ifdef SPOTON_MCELIECE_ENABLED
-  QByteArray conversion("000");
-  size_t m = 0;
-  size_t t = 0;
-
-  if(keySize == "m11t51")
-    {
-      m = 11;
-      t = 51;
-    }
-  else if(keySize == "m11t51-fujisaki-okamoto-a")
-    {
-      conversion = "foa";
-      m = 11;
-      t = 51;
-    }
-  else if(keySize == "m11t51-fujisaki-okamoto-b")
-    {
-      conversion = "fob";
-      m = 11;
-      t = 51;
-    }
-  else
-    return;
-
-  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece
-    (conversion, m, t);
-
-  if(mceliece)
-    if(mceliece->generatePrivatePublicKeys())
-      {
-	mceliece->privateKeyParameters(privateKey);
-
-	if(!privateKey.isEmpty())
-	  {
-	    privateKey.prepend(conversion);
-	    privateKey.prepend("mceliece-private-key-");
-	  }
-
-	mceliece->publicKeyParameters(publicKey);
-
-	if(!publicKey.isEmpty())
-	  {
-	    publicKey.prepend(conversion);
-	    publicKey.prepend("mceliece-public-key-");
-	  }
-
-	if(!publicKey.isEmpty() && !privateKey.isEmpty())
-	  if(ok)
-	    *ok = true;
-      }
-
-  delete mceliece;
-#else
-  Q_UNUSED(keySize);
-  Q_UNUSED(privateKey);
-  Q_UNUSED(publicKey);
-#endif
-}
-
 QByteArray spoton_crypt::publicKeyDecryptMcEliece
 (const QByteArray &data, bool *ok)
 {
@@ -243,5 +175,73 @@ QString spoton_crypt::publicKeySizeMcEliece(void)
   return publicKeySizeMcEliece(m_publicKey);
 #else
   return publicKeySizeMcEliece(QByteArray());
+#endif
+}
+
+void spoton_crypt::generateMcElieceKeys(const QString &keySize,
+					QByteArray &privateKey,
+					QByteArray &publicKey,
+					bool *ok)
+{
+  if(ok)
+    *ok = false;
+
+#ifdef SPOTON_MCELIECE_ENABLED
+  QByteArray conversion("000");
+  size_t m = 0;
+  size_t t = 0;
+
+  if(keySize == "m11t51")
+    {
+      m = 11;
+      t = 51;
+    }
+  else if(keySize == "m11t51-fujisaki-okamoto-a")
+    {
+      conversion = "foa";
+      m = 11;
+      t = 51;
+    }
+  else if(keySize == "m11t51-fujisaki-okamoto-b")
+    {
+      conversion = "fob";
+      m = 11;
+      t = 51;
+    }
+  else
+    return;
+
+  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece
+    (conversion, m, t);
+
+  if(mceliece)
+    if(mceliece->generatePrivatePublicKeys())
+      {
+	mceliece->privateKeyParameters(privateKey);
+
+	if(!privateKey.isEmpty())
+	  {
+	    privateKey.prepend(conversion);
+	    privateKey.prepend("mceliece-private-key-");
+	  }
+
+	mceliece->publicKeyParameters(publicKey);
+
+	if(!publicKey.isEmpty())
+	  {
+	    publicKey.prepend(conversion);
+	    publicKey.prepend("mceliece-public-key-");
+	  }
+
+	if(!publicKey.isEmpty() && !privateKey.isEmpty())
+	  if(ok)
+	    *ok = true;
+      }
+
+  delete mceliece;
+#else
+  Q_UNUSED(keySize);
+  Q_UNUSED(privateKey);
+  Q_UNUSED(publicKey);
 #endif
 }
