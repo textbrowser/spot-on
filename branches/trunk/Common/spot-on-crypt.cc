@@ -117,6 +117,7 @@ struct gcry_thread_cbs gcry_threads_qt =
   };
 #endif
 
+QAtomicInt spoton_crypt::s_hasSecureMemory = 0;
 bool spoton_crypt::s_cbc_cts_enabled = true;
 static bool gcryctl_set_thread_cbs_set = false;
 static bool ssl_library_initialized = false;
@@ -149,6 +150,7 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
   if(!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
     {
       s_cbc_cts_enabled = cbc_cts_enabled;
+      s_hasSecureMemory.fetchAndStoreOrdered(0);
       gcry_control(GCRYCTL_ENABLE_M_GUARD);
 
       if(!gcry_check_version(GCRYPT_VERSION))
@@ -176,6 +178,7 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 	  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
 #ifdef Q_OS_FREEBSD
 	  gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize), 0);
+	  s_hasSecureMemory.fetchAndStoreOrdered(1);
 #else
 	  gcry_error_t err = 0;
 
@@ -191,6 +194,8 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 			 "secure memory failure (%1).").
 		 arg(buffer.constData()));
 	    }
+	  else
+	    s_hasSecureMemory.fetchAndStoreOrdered(1);
 #endif
 
 	  gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
@@ -577,18 +582,37 @@ spoton_crypt::spoton_crypt(const QByteArray &privateKey,
   init("", "", QByteArray(), QByteArray(), QByteArray(), 0, 0, "", "cbc");
   m_privateKeyLength = static_cast<size_t> (privateKey.length());
 
-  if(m_privateKeyLength == 0 ||
-     (m_privateKey =
-      static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
-					      sizeof(char)))) == 0)
+  if(privateKey.startsWith("mceliece-") || publicKey.startsWith("mceliece-"))
+    m_isMcEliece.fetchAndStoreOrdered(1);
+
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
     {
-      m_privateKeyLength = 0;
-      spoton_misc::logError
-	("spoton_crypt::spoton_crypt(): "
-	 "gcry_calloc_secure() "
-	 "failure or m_privateKeyLength is peculiar (%1).");
+      if(m_privateKeyLength == 0 ||
+	 (m_privateKey =
+	  static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
+						  sizeof(char)))) == 0)
+	{
+	  m_privateKeyLength = 0;
+	  spoton_misc::logError
+	    ("spoton_crypt::spoton_crypt(): "
+	     "gcry_calloc_secure() "
+	     "failure or m_privateKeyLength is peculiar (%1).");
+	}
     }
   else
+    {
+      if(m_privateKeyLength == 0 ||
+	 (m_privateKey = static_cast<char *> (calloc(m_privateKeyLength,
+						     sizeof(char)))) == 0)
+	{
+	  m_privateKeyLength = 0;
+	  spoton_misc::logError
+	    ("spoton_crypt::spoton_crypt(): calloc() "
+	     "failure or m_privateKeyLength is peculiar (%1).");
+	}
+    }
+
+  if(m_privateKey && m_privateKeyLength > 0)
     memcpy(m_privateKey,
 	   privateKey.constData(),
 	   m_privateKeyLength);
@@ -806,7 +830,12 @@ spoton_crypt::~spoton_crypt()
   m_publicKey.clear();
   gcry_cipher_close(m_cipherHandle);
   gcry_free(m_hashKey);
-  gcry_free(m_privateKey);
+
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
+    gcry_free(m_privateKey);
+  else
+    free(m_privateKey);
+
   gcry_free(m_symmetricKey);
 }
 
@@ -1654,6 +1683,8 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
      keyData.startsWith("mceliece-") ||
      keyData.startsWith("ntru-private-key-"))
     {
+      if(keyData.startsWith("mceliece-"))
+	m_isMcEliece.fetchAndStoreOrdered(1);
     }
   else
     {
@@ -1670,37 +1701,48 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
 
   m_privateKeyLength = static_cast<size_t> (keyData.length());
 
-  if(m_privateKeyLength == 0 ||
-     (m_privateKey =
-      static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
-					      sizeof(char)))) == 0)
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
     {
-      if(ok)
-	*ok = false;
+      if(m_privateKeyLength == 0 ||
+	 (m_privateKey =
+	  static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
+						  sizeof(char)))) == 0)
+	{
+	  if(ok)
+	    *ok = false;
 
-      m_privateKeyLength = 0;
-      spoton_misc::logError
-	(QString("spoton_crypt::initializePrivateKeyContainer(): "
-	         "gcry_calloc_secure() "
-	         "failure or m_privateKeyLength is peculiar (%1).").
-	 arg(m_id));
-      return;
+	  m_isMcEliece.fetchAndAddOrdered(0);
+	  m_privateKeyLength = 0;
+	  spoton_misc::logError
+	    (QString("spoton_crypt::initializePrivateKeyContainer(): "
+		     "gcry_calloc_secure() "
+		     "failure or m_privateKeyLength is peculiar (%1).").
+	     arg(m_id));
+	  return;
+	}
     }
   else
     {
-      memcpy(m_privateKey,
-	     keyData.constData(),
-	     m_privateKeyLength);
+      if(m_privateKeyLength == 0 ||
+	 (m_privateKey = static_cast<char *> (calloc(m_privateKeyLength,
+						     sizeof(char)))) == 0)
+	{
+	  if(ok)
+	    *ok = false;
 
-      if(::memcmp(m_privateKey,
-		  "mceliece-",
-		  qMin(m_privateKeyLength, strlen("mceliece-"))) == 0)
-	m_isMcEliece.fetchAndStoreOrdered(1);
+	  m_isMcEliece.fetchAndStoreOrdered(0);
+	  m_privateKeyLength = 0;
+	  spoton_misc::logError
+	    (QString("spoton_crypt::initializePrivateKeyContainer(): calloc() "
+		     "failure or m_privateKeyLength is peculiar (%1).").
+	     arg(m_id));
+	  return;
+	}
     }
 
+  memcpy(m_privateKey, keyData.constData(), m_privateKeyLength);
   locker2.unlock();
-  keyData.replace
-    (0, keyData.length(), QByteArray(keyData.length(), 0));
+  keyData.replace(0, keyData.length(), QByteArray(keyData.length(), 0));
   keyData.clear();
 
   if(ok)
@@ -1775,7 +1817,11 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
       QWriteLocker locker2(&m_privateKeyMutex);
 
-      gcry_free(m_privateKey);
+      if(s_hasSecureMemory.fetchAndAddOrdered(0))
+	gcry_free(m_privateKey);
+      else
+	free(m_privateKey);
+
       m_privateKey = 0;
       m_privateKeyLength = 0;
       locker2.unlock();
@@ -1819,7 +1865,11 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
       QWriteLocker locker1(&m_privateKeyMutex);
 
-      gcry_free(m_privateKey);
+      if(s_hasSecureMemory.fetchAndAddOrdered(0))
+	gcry_free(m_privateKey);
+      else
+	free(m_privateKey);
+
       m_privateKey = 0;
       m_privateKeyLength = 0;
       locker1.unlock();
@@ -2098,7 +2148,11 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 
   QWriteLocker locker1(&m_privateKeyMutex);
 
-  gcry_free(m_privateKey);
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
+    gcry_free(m_privateKey);
+  else
+    free(m_privateKey);
+
   m_privateKey = 0;
   m_privateKeyLength = 0;
   locker1.unlock();
@@ -2553,7 +2607,11 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
       QWriteLocker locker2(&m_privateKeyMutex);
 
-      gcry_free(m_privateKey);
+      if(s_hasSecureMemory.fetchAndAddOrdered(0))
+	gcry_free(m_privateKey);
+      else
+	free(m_privateKey);
+
       m_privateKey = 0;
       m_privateKeyLength = 0;
       locker2.unlock();
@@ -2597,7 +2655,11 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
       QWriteLocker locker2(&m_privateKeyMutex);
 
-      gcry_free(m_privateKey);
+      if(s_hasSecureMemory.fetchAndAddOrdered(0))
+	gcry_free(m_privateKey);
+      else
+	free(m_privateKey);
+
       m_privateKey = 0;
       m_privateKeyLength = 0;
       locker2.unlock();
@@ -4205,7 +4267,11 @@ void spoton_crypt::purgePrivatePublicKeys(void)
 
   QWriteLocker locker1(&m_privateKeyMutex);
 
-  gcry_free(m_privateKey);
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
+    gcry_free(m_privateKey);
+  else
+    free(m_privateKey);
+
   m_privateKey = 0;
   m_privateKeyLength = 0;
   locker1.unlock();

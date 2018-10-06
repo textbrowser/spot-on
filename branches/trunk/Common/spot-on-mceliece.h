@@ -235,6 +235,14 @@ class spoton_mceliece
 	       std::stringstream &ciphertext) const;
   bool generatePrivatePublicKeys(void);
 
+  bool ok(void) const
+  {
+    if(m_privateKey && m_publicKey)
+      return m_privateKey->ok() && m_publicKey->ok();
+    else
+      return false;
+  }
+
   size_t m(void) const
   {
     return m_m;
@@ -245,14 +253,13 @@ class spoton_mceliece
     return m_t;
   }
 
-  static double expansion_m11t51(void)
+  static double expansion(const size_t m, const size_t t)
   {
     size_t k = 0;
-    size_t m = 11;
     size_t n = 1 << m; // 2^m
-    size_t t = 51;
 
-    k = n - m * t;
+    if(m * t < n)
+      k = n - m * t;
 
     if(k > 0)
       return static_cast<double> (n) / static_cast<double> (k);
@@ -270,7 +277,10 @@ class spoton_mceliece
     ** Some calculations.
     */
 
-    m_k = m_n - m_m * m_t;
+    if(m_m * m_t < m_n)
+      m_k = m_n - m_m * m_t;
+    else
+      m_k = 0;
   }
 
   void privateKeyParameters(QByteArray &privateKey) const;

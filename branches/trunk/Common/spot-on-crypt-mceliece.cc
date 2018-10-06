@@ -44,16 +44,28 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
 					   */
 
   if(!m_mceliece)
-    m_mceliece = new (std::nothrow) spoton_mceliece
-      (m_privateKey, m_privateKeyLength, m_publicKey);
+    {
+      m_mceliece = new (std::nothrow) spoton_mceliece
+	(m_privateKey, m_privateKeyLength, m_publicKey);
+
+      if(!m_mceliece->ok())
+	{
+	  delete m_mceliece;
+	  m_mceliece = 0;
+	}
+      else
+	{
+	  if(s_hasSecureMemory.fetchAndAddOrdered(0))
+	    gcry_free(m_privateKey);
+	  else
+	    free(m_privateKey);
+
+	  m_privateKey = 0;
+	}
+    }
 
   if(!m_mceliece)
     return QByteArray();
-  else if(m_privateKey)
-    {
-      gcry_free(m_privateKey);
-      m_privateKey = 0;
-    }
 
   QByteArray bytes;
   std::stringstream ciphertext;
@@ -187,26 +199,52 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
     *ok = false;
 
 #ifdef SPOTON_MCELIECE_ENABLED
-  QByteArray conversion("000");
+  QByteArray conversion("");
+  QByteArray prefix("");
   size_t m = 0;
   size_t t = 0;
 
   if(keySize == "m11t51")
     {
+      conversion = "000";
       m = 11;
+      prefix = "000-m11t51";
       t = 51;
     }
   else if(keySize == "m11t51-fujisaki-okamoto-a")
     {
       conversion = "foa";
       m = 11;
+      prefix = "foa-m11t51";
       t = 51;
     }
   else if(keySize == "m11t51-fujisaki-okamoto-b")
     {
       conversion = "fob";
       m = 11;
+      prefix = "fob-m11t51";
       t = 51;
+    }
+  else if(keySize == "m12t68")
+    {
+      conversion = "000";
+      m = 12;
+      prefix = "000-m12t68";
+      t = 68;
+    }
+  else if(keySize == "m12t68-fujisaki-okamoto-a")
+    {
+      conversion = "foa";
+      m = 12;
+      prefix = "foa-m12t68";
+      t = 68;
+    }
+  else if(keySize == "m12t68-fujisaki-okamoto-b")
+    {
+      conversion = "fob";
+      m = 12;
+      prefix = "fob-m12t68";
+      t = 68;
     }
   else
     return;
@@ -221,7 +259,7 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
 
 	if(!privateKey.isEmpty())
 	  {
-	    privateKey.prepend(conversion);
+	    privateKey.prepend(prefix);
 	    privateKey.prepend("mceliece-private-key-");
 	  }
 
@@ -229,7 +267,7 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
 
 	if(!publicKey.isEmpty())
 	  {
-	    publicKey.prepend(conversion);
+	    publicKey.prepend(prefix);
 	    publicKey.prepend("mceliece-public-key-");
 	  }
 

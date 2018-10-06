@@ -242,6 +242,7 @@ class spoton_crypt
   spoton_mceliece *m_mceliece;
 #endif
   spoton_threefish *m_threefish;
+  static QAtomicInt s_hasSecureMemory;
   static bool s_cbc_cts_enabled;
   unsigned long int m_iterationCount;
   QByteArray publicKeyDecryptMcEliece(const QByteArray &data, bool *ok);

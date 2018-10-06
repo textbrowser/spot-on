@@ -1960,14 +1960,20 @@ void spoton::slotEncryptionKeyTypeChanged(int index)
 
   if(index == 1 && !spoton_crypt::hasShake())
     {
-      int index = s_publicKeySizes.value("mceliece").indexOf
-	("m11t51-fujisaki-okamoto-b");
+      QStringList list;
 
-      if(index >= 0)
-	m_ui.encryptionKeySize->model()->setData
-	  (m_ui.encryptionKeySize->model()->index(index, 0),
-	   0,
-	   Qt::UserRole - 1);
+      list << "m11t51-fujisaki-okamoto-b" << "m12t68-fujisaki-okamoto-b";
+
+      for(int i = 0; i < list.size(); i++)
+	{
+	  int index = s_publicKeySizes.value("mceliece").indexOf(list.at(i));
+
+	  if(index >= 0)
+	    m_ui.encryptionKeySize->model()->setData
+	      (m_ui.encryptionKeySize->model()->index(index, 0),
+	       0,
+	       Qt::UserRole - 1);
+	}
     }
 }
 

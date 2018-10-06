@@ -56,34 +56,47 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
   m_ok = true;
   m_t = 0;
 
+  if(!privateKey || privateKeyLength == 0)
+    {
+      reset(false);
+      return;
+    }
+
   char *c = 0;
 
   try
     {
+      int m = 11;
+      size_t offset = static_cast<size_t>
+	(qstrlen("mceliece-private-key-000-m00t00"));
+
+      if(memcmp(privateKey, "mceliece-private-key-foa-m12t68", offset) == 0 ||
+	 memcmp(privateKey, "mceliece-private-key-fob-m12t68", offset) == 0)
+	m = 12;
+
       NTL::GF2E::init
 	(NTL::
 	 /*
 	 ** What should the value be? The maximum m that's supported?
 	 */
-	 BuildIrred_GF2X(static_cast<long int> (11))); /*
-						       ** Initialize
-						       ** some NTL
-						       ** internal
-						       ** object(s).
-						       */
-
-      size_t offset = static_cast<size_t>
-	(qstrlen("mceliece-private-key-000"));
+	 BuildIrred_GF2X(static_cast<long int> (m))); /*
+						      ** Initialize
+						      ** some NTL
+						      ** internal
+						      ** object(s).
+						      */
 
       if(privateKey && privateKeyLength > offset)
 	{
 	  if((c = new (std::nothrow) char[privateKeyLength - offset + 1]))
 	    {
-	      if(memcmp(privateKey, "mceliece-private-key-foa", offset) == 0)
+	      if(memcmp(privateKey,
+			"mceliece-private-key-foa",
+			offset - 7) == 0)
 		m_conversion = "foa";
 	      else if(memcmp(privateKey,
 			     "mceliece-private-key-fob",
-			     offset) == 0)
+			     offset - 7) == 0)
 		m_conversion = "fob";
 
 	      memset(c, 0, privateKeyLength - offset + 1);
@@ -147,7 +160,8 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
   ** Some calculations.
   */
 
-  m_k = m_n - m_m * m_t;
+  if(m_m * m_t < m_n)
+    m_k = m_n - m_m * m_t;
 
   /*
   ** Prepare important containers.
@@ -570,7 +584,8 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
       m_privateKey = 0;
     }
 
-  size_t offset = static_cast<size_t> (qstrlen("mceliece-public-key-000"));
+  size_t offset = static_cast<size_t>
+    (qstrlen("mceliece-public-key-000-m00t00"));
 
   if(publicKey.length() > static_cast<int> (offset))
     {
@@ -622,7 +637,8 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
   m_publicKey = 0;
   m_t = 0;
 
-  size_t offset = static_cast<size_t> (qstrlen("mceliece-public-key-000"));
+  size_t offset = static_cast<size_t>
+    (qstrlen("mceliece-public-key-000-m00t00"));
 
   if(publicKey.length() > static_cast<int> (offset))
     {
@@ -679,7 +695,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &conversion,
 				 const size_t m,
 				 const size_t t)
 {
-  m_conversion = conversion;
+  m_conversion = conversion.mid(0, 3);
   m_privateKey = 0;
   m_publicKey = 0;
 
