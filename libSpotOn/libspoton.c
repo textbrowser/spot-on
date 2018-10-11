@@ -649,9 +649,7 @@ libspoton_error_t libspoton_save_url(const char *url,
 	goto error_label;
       }
 
-  rv = libspoton_create_urls_table(libspotonHandle);
-
-  if(rv != SQLITE_OK)
+  if(libspoton_create_urls_table(libspotonHandle) != SQLITE_OK)
     {
       rerr = LIBSPOTON_ERROR_SQLITE_CREATE_URLS_TABLE;
       goto error_label;
