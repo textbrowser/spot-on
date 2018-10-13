@@ -45,7 +45,7 @@ INCLUDEPATH	+= . ../. ../../../. /usr/local/include/postgresql
 LIBS		+= -L../../../libNTRU -L../../../libSpotOn \
 		   -L/usr/local/lib -lGeoIP \
                    -lcrypto -lcurl -lgcrypt -lgpg-error \
-                   -lgmp4 -lntl -lntru -lpq \
+                   -lgmp -lntl -lntru -lpq \
 		   -lspoton -lssl
 MOC_DIR         = temp/moc
 OBJECTS_DIR     = temp/obj
