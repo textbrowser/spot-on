@@ -17,7 +17,8 @@ QT		+= concurrent gui multimedia network printsupport sql \
 
 DEFINES	+= SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
-	   SPOTON_LINKED_WITH_LIBPTHREAD \
+           SPOTON_LINKED_WITH_LIBPTHREAD \
+           SPOTON_MCELIECE_ENABLED \
 	   SPOTON_SCTP_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -42,7 +43,7 @@ QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 INCLUDEPATH	+= . ../../. GUI /usr/local/include/postgresql
 LIBS		+= -L../../libNTRU -L../../libSpotOn \
 		   -lGeoIP -lcrypto -lcurl -lgcrypt \
-		   -lgpg-error -lntru -lpq -lspoton -lssl
+		   -lgpg-error -lgmp4 -lntl -lntru -lpq -lspoton -lssl
 MOC_DIR         = temp/moc
 OBJECTS_DIR     = temp/obj
 PRE_TARGETDEPS  = libntru.so libspoton.so
