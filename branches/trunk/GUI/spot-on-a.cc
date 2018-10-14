@@ -3285,7 +3285,7 @@ spoton::spoton(void):QMainWindow()
 	QTimer::singleShot
 	  (1500, this, SLOT(slotPrepareAndShowInstallationWizard(void)));
 
-      QTimer::singleShot(1500, this, SLOT(slotAfterFirstShow(void)));
+      QTimer::singleShot(2500, this, SLOT(slotAfterFirstShow(void)));
     }
 }
 

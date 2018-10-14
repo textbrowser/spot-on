@@ -149,7 +149,8 @@ QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
   if(!data.startsWith("mceliece-public-key-"))
     return keySize;
 
-  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece(data);
+  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece
+    (qCompress(data)); // A compressed key is expected.
 
   if(mceliece)
     {
