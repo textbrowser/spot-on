@@ -1,6 +1,6 @@
 Architecture: amd64
 Depends: libcurl3-gnutls (>= 4.4.0), libgcrypt20 (>= 1.6.5), libgpg-error0 (>= 0.17.0), libgeoip1 (>= 1.6.9), libpq5 (>= 5.8), libqt5bluetooth5 (>= 5.5.1), libqt5concurrent5 (>= 5.5.1), libqt5core5a (>= 5.5.1), libqt5dbus5 (>= 5.5.1), libqt5gui5 (>= 5.5.1), libqt5multimedia5 (>= 5.5.1), libqt5multimedia5-plugins (>= 5.5.1), libqt5multimediawidgets5 (>= 5.5.1), libqt5network5 (>= 5.5.1), libqt5opengl5 (>= 5.5.1), libqt5printsupport5 (>= 5.5.1), libqt5sql5 (>= 5.5.1), libqt5sql5-psql (>= 5.5.1), libqt5sql5-sqlite (>= 5.5.1), libqt5svg5 (>= 5.5.1), libqt5widgets5 (>= 5.5.1), libssl1.0.0 (>= 1.0.2)
-Installed-Size: 121688
+Installed-Size: 121696
 Maintainer: textbrowser@gmail.com
 Package: Spot-On
 Priority: optional
