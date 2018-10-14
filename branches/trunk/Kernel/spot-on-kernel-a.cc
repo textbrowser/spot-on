@@ -2018,7 +2018,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 
   if(ok)
     keyInformation = spoton_crypt::publicKeyEncrypt
-      (keyInformation, publicKey, &ok);
+      (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
 
   if(ok)
     {
@@ -2851,7 +2851,10 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 		  if(ok)
 		    keyInformation = spoton_crypt::publicKeyEncrypt
-		      (keyInformation, publicKey, &ok);
+		      (keyInformation,
+		       qCompress(publicKey),
+		       publicKey.mid(0, 25),
+		       &ok);
 		}
 
 	      if(ok)
@@ -3253,13 +3256,17 @@ void spoton_kernel::slotRetrieveMail(void)
 		   hashKey.toBase64() + "\n" +
 		   cipherType.toBase64() + "\n" +
 		   hashType.toBase64(),
-		   publicKey, &ok);
+		   qCompress(publicKey),
+		   publicKey.mid(0, 25),
+		   &ok);
 
 	      if(ok)
 		{
 		  data.append
 		    (spoton_crypt::publicKeyEncrypt(myPublicKeyHash,
-						    publicKey, &ok).
+						    qCompress(publicKey),
+						    publicKey.mid(0, 25),
+						    &ok).
 		     toBase64());
 		  data.append("\n");
 		}
@@ -3530,7 +3537,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		 hashKey.toBase64() + "\n" +
 		 symmetricKeyAlgorithm.toBase64() + "\n" +
 		 hashType.toBase64(),
-		 publicKey, &ok);
+		 qCompress(publicKey),
+		 publicKey.mid(0, 25),
+		 &ok);
 
 	      QList<QByteArray> items;
 
@@ -3780,7 +3789,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		   hashKey1.toBase64() + "\n" +
 		   cipherType.toBase64() + "\n" +
 		   hashType.toBase64(),
-		   participantPublicKey, &ok);
+		   qCompress(participantPublicKey),
+		   participantPublicKey.mid(0, 25),
+		   &ok);
 
 	      if(ok)
 		{
@@ -3844,7 +3855,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		 hashKey2.toBase64() + "\n" +
 		 cipherType.toBase64() + "\n" +
 		 hashType.toBase64(),
-		 publicKey, &ok);
+		 qCompress(publicKey),
+		 publicKey.mid(0, 25),
+		 &ok);
 
 	      QList<QByteArray> items;
 
@@ -4859,7 +4872,10 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 
 		  if(ok)
 		    keyInformation = spoton_crypt::publicKeyEncrypt
-		      (keyInformation, publicKey, &ok);
+		      (keyInformation,
+		       qCompress(publicKey),
+		       publicKey.mid(0, 25),
+		       &ok);
 		}
 
 	      if(ok)
@@ -6065,7 +6081,10 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 
 		  if(ok)
 		    keyInformation = spoton_crypt::publicKeyEncrypt
-		      (keyInformation, publicKey, &ok);
+		      (keyInformation,
+		       qCompress(publicKey),
+		       publicKey.mid(0, 25),
+		       &ok);
 		}
 
 	      if(ok)

@@ -106,7 +106,7 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
     *ok = false;
 
 #ifdef SPOTON_MCELIECE_ENABLED
-  if(data.isEmpty() || !publicKey.startsWith("mceliece-public-key-"))
+  if(data.isEmpty())
     return QByteArray();
 
   QByteArray bytes;

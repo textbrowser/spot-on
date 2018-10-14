@@ -678,7 +678,7 @@ void spoton_rosetta::slotConvert(void)
 
       if(ok)
 	keyInformation = spoton_crypt::publicKeyEncrypt
-	  (keyInformation, publicKey, &ok);
+	  (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
 
       if(!ok)
 	{

@@ -521,7 +521,10 @@ void spoton_fireshare::slotTimeout(void)
 
       if(ok)
 	keyInformation = spoton_crypt::publicKeyEncrypt
-	  (keyInformation, publicKeys.at(i), &ok);
+	  (keyInformation,
+	   qCompress(publicKeys.at(i)),
+	   publicKeys.at(i).mid(0, 25),
+	   &ok);
 
       if(ok)
 	if(spoton_kernel::setting("gui/urlSignMessages", true).toBool())

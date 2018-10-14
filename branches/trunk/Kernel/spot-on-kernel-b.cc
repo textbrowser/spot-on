@@ -2134,7 +2134,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   }
 
   keyInformation = spoton_crypt::publicKeyEncrypt
-    (keyInformation, publicKey, &ok);
+    (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
 
   if(!ok)
     return;
@@ -2330,7 +2330,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   }
 
   keyInformation = spoton_crypt::publicKeyEncrypt
-    (keyInformation, publicKey, &ok);
+    (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
 
   if(!ok)
     return;
@@ -2351,8 +2351,10 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
     bundle = qCompress(bundle, 9);
   }
 
+  QByteArray pk(qUncompress(list.value(1)));
+
   bundle = spoton_crypt::publicKeyEncrypt
-    (bundle, qUncompress(list.value(1)), &ok);
+    (bundle, list.value(1), pk.mid(0, 25), &ok);
 
   if(!ok)
     return;

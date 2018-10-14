@@ -2986,7 +2986,9 @@ void spoton::slotCopyFriendshipBundle(void)
     (symmetricKey.toBase64() + "@" +
      cipherType.toBase64() + "@" +
      hashKey.toBase64(),
-     publicKey, &ok);
+     qCompress(publicKey),
+     publicKey.mid(0, 25),
+     &ok);
 
   if(!ok)
     {

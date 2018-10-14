@@ -1388,14 +1388,15 @@ QByteArray spoton_crypt::whirlpoolHash(const QByteArray &data, bool *ok)
 }
 
 QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
-					  const QByteArray &publicKey,
+					  const QByteArray &pk,
+					  const QByteArray &startsWith,
 					  bool *ok)
 {
-  if(publicKey.startsWith("mceliece-"))
-    return publicKeyEncryptMcEliece(data, publicKey, ok);
-  else if(publicKey.startsWith("ntru-public-key-"))
-    return publicKeyEncryptNTRU(data, publicKey, ok);
-  else if(!publicKey.startsWith("(public-key"))
+  if(startsWith.startsWith("mceliece-"))
+    return publicKeyEncryptMcEliece(data, pk, ok);
+  else if(startsWith.startsWith("ntru-public-key-"))
+    return publicKeyEncryptNTRU(data, qUncompress(pk), ok);
+  else if(!startsWith.startsWith("(public-key"))
     {
       if(ok)
 	*ok = false;
@@ -1404,6 +1405,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
     }
 
   QByteArray encrypted;
+  QByteArray publicKey(qUncompress(pk));
   gcry_error_t err = 0;
   gcry_sexp_t key_t = 0;
 

@@ -643,7 +643,7 @@ void spoton_smpwindow::slotExecute(void)
   }
 
   keyInformation = spoton_crypt::publicKeyEncrypt
-    (keyInformation, publicKey, &ok);
+    (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
 
   if(!ok)
     {
@@ -1328,7 +1328,10 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   }
 
   keyInformation = spoton_crypt::publicKeyEncrypt
-    (keyInformation, smp->m_publicKey, &ok);
+    (keyInformation,
+     qCompress(smp->m_publicKey),
+     smp->m_publicKey.mid(0, 25),
+     &ok);
 
   if(!ok)
     {

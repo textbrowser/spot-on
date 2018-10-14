@@ -627,7 +627,7 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
 			  "m_publicKey is zero!");
 }
 
-spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
+spoton_mceliece::spoton_mceliece(const QByteArray &pk)
 {
   m_conversion = "000";
   m_k = 0;
@@ -637,6 +637,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &publicKey)
   m_publicKey = 0;
   m_t = 0;
 
+  QByteArray publicKey(qUncompress(pk));
   size_t offset = static_cast<size_t>
     (qstrlen("mceliece-public-key-000-m00t00"));
 
