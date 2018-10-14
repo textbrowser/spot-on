@@ -7,7 +7,7 @@
 
 
 
-CXX=g++
+CXX=c++
 # A C++ compiler, e.g., g++, CC, xlC
 
 

@@ -13,7 +13,7 @@ system("echo '*** CompilerOutput.log ***' > CompilerOutput.log");
 
 %MakeVal = (
 
-'CXX'	      => 'g++',
+'CXX'	      => 'c++',
 'CXXFLAGS'    => '-g -O2',
 'CXXAUTOFLAGS'=> '',
 'NOCONTRACT'  => '',
