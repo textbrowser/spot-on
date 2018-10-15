@@ -637,7 +637,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
   m_publicKey = 0;
   m_t = 0;
 
-  QByteArray publicKey(qUncompress(pk));
+  QByteArray publicKey(qUncompress(pk)); // Key is compressed.
   size_t offset = static_cast<size_t>
     (qstrlen("mceliece-public-key-000-m00t00"));
 
