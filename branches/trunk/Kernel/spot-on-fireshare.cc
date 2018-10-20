@@ -384,6 +384,9 @@ void spoton_fireshare::slotTimeout(void)
 
 		      for(int i = 0; i < polarizers.size(); i++)
 			{
+			  if(m_quit.fetchAndAddOrdered(0))
+			    break;
+
 			  QString type(polarizers.at(i).second);
 			  QUrl u1(polarizers.at(i).first);
 			  QUrl u2(QUrl::fromUserInput(bytes.value(0)));

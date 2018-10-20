@@ -1028,26 +1028,22 @@ spoton_kernel::~spoton_kernel()
 
   m_poptasticCache.clear();
   locker2.unlock();
+  m_checkForTerminationFuture.cancel();
+  m_fireShare->quit();
   m_future.cancel();
   m_poptasticPopFuture.cancel();
   m_poptasticPostFuture.cancel();
+  m_urlDistribution->quit();
   m_urlImportFutureInterrupt.fetchAndStoreOrdered(1);
 
   for(int i = 0; i < m_urlImportFutures.size(); i++)
     m_urlImportFutures[i].cancel();
 
-  m_checkForTerminationFuture.cancel();
   m_checkForTerminationFuture.waitForFinished();
-  m_future.cancel();
   m_future.waitForFinished();
-  m_poptasticPopFuture.cancel();
   m_poptasticPopFuture.waitForFinished();
-  m_poptasticPostFuture.cancel();
   m_poptasticPostFuture.waitForFinished();
   m_statisticsFuture.waitForFinished();
-  m_fireShare->quit();
-  m_fireShare->wait();
-  m_urlDistribution->quit();
 
   for(int i = 0; i < m_urlImportFutures.size(); i++)
     m_urlImportFutures[i].waitForFinished();
