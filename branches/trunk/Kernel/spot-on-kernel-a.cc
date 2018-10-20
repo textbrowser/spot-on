@@ -1033,6 +1033,7 @@ spoton_kernel::~spoton_kernel()
   m_future.cancel();
   m_poptasticPopFuture.cancel();
   m_poptasticPostFuture.cancel();
+  m_statisticsFuture.cancel();
   m_urlDistribution->quit();
   m_urlImportFutureInterrupt.fetchAndStoreOrdered(1);
 
