@@ -7,7 +7,7 @@ system("echo '*** CompilerOutput.log ***' > CompilerOutput.log");
 
 
 %MakeFlag = (
-'SHARED'  => 'off',
+'SHARED'  => 'on',
 'NATIVE'  => 'on',
 );
 
@@ -62,7 +62,7 @@ system("echo '*** CompilerOutput.log ***' > CompilerOutput.log");
 'NTL_LEGACY_SP_MULMOD'    => 'off',
 'NTL_THREADS'             => 'on',
 'NTL_TLS_HACK'            => 'on',
-'NTL_EXCEPTIONS'          => 'off',
+'NTL_EXCEPTIONS'          => 'on',
 'NTL_STD_CXX11'           => 'on',
 'NTL_STD_CXX14'           => 'off',
 'NTL_DISABLE_MOVE_ASSIGN' => 'on',
