@@ -8,7 +8,7 @@ system("echo '*** CompilerOutput.log ***' > CompilerOutput.log");
 
 %MakeFlag = (
 'SHARED'  => 'on',
-'NATIVE'  => 'on',
+'NATIVE'  => 'off',
 );
 
 %MakeVal = (
