@@ -67,7 +67,6 @@ system("echo '*** CompilerOutput.log ***' > CompilerOutput.log");
 'NTL_STD_CXX14'           => 'off',
 'NTL_DISABLE_MOVE_ASSIGN' => 'on',
 'NTL_DISABLE_MOVE'        => 'off',
-'NTL_EXCEPTIONS'          => 'off',
 'NTL_THREAD_BOOST'        => 'on',
 'NTL_GMP_LIP'             => 'on',
 'NTL_GF2X_LIB'            => 'off',
