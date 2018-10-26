@@ -110,7 +110,23 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
     return QByteArray();
 
   QByteArray bytes;
-  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece(publicKey);
+  QByteArray hash(sha512Hash(publicKey, 0));
+  spoton_mceliece *mceliece = 0;
+
+  {
+    QWriteLocker locker(&s_mceliecePeersMutex);
+
+    if(s_mceliecePeers.contains(hash))
+      mceliece = s_mceliecePeers.value(hash);
+    else
+      {
+	mceliece = new (std::nothrow) spoton_mceliece(publicKey);
+
+	if(mceliece)
+	  s_mceliecePeers[hash] = mceliece;
+      }
+  }
+
   std::stringstream ciphertext;
 
   if(mceliece)
@@ -126,8 +142,6 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
 	  if(ok)
 	    *ok = true;
       }
-
-  delete mceliece;
 
   if(bytes.isEmpty())
     spoton_misc::logError("spoton_crypt::publicKeyEncryptMcEliece(): "

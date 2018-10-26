@@ -1190,6 +1190,7 @@ void spoton_misc::retrieveSymmetricData
  QByteArray &publicKey,
  QByteArray &symmetricKey,
  QByteArray &hashKey,
+ QByteArray &startsWith,
  QString &neighborOid,
  QString &receiverName,
  const QByteArray &cipherType,
@@ -1271,6 +1272,12 @@ void spoton_misc::retrieveSymmetricData
 			(QByteArray::fromBase64(query.value(2).
 						toByteArray()),
 			 ok);
+
+		    if((ok && *ok) || !ok)
+		      {
+			startsWith = publicKey.mid(0, 25);
+			publicKey = qCompress(publicKey);
+		      }
 
 		    if(ok && *ok)
 		      receiverName = crypt->decryptedAfterAuthenticated

@@ -9455,6 +9455,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   QByteArray hashKey;
   QByteArray keyInformation;
   QByteArray publicKey;
+  QByteArray startsWith;
   QByteArray symmetricKey;
   QPair<QByteArray, QByteArray> gemini;
   QString receiverName("");
@@ -9470,6 +9471,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 				     publicKey,
 				     symmetricKey,
 				     hashKey,
+				     startsWith,
 				     neighborOid,
 				     receiverName,
 				     cipherType,
@@ -9487,8 +9489,8 @@ void spoton::slotCopyEmailFriendshipBundle(void)
     (symmetricKey.toBase64() + "@" +
      cipherType.toBase64() + "@" +
      hashKey.toBase64(),
-     qCompress(publicKey),
-     publicKey.mid(0, 25),
+     publicKey,
+     startsWith,
      &ok);
 
   if(!ok)

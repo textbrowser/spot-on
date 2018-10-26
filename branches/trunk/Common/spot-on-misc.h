@@ -225,6 +225,7 @@ class spoton_misc
 				    QByteArray &publicKey,
 				    QByteArray &symmetricKey,
 				    QByteArray &hashKey,
+				    QByteArray &startsWith,
 				    QString &neighborOid,
 				    QString &receiverName,
 				    const QByteArray &cipherType,

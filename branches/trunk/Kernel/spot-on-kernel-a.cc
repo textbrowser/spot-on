@@ -1983,6 +1983,7 @@ void spoton_kernel::slotMessageReceivedFromUI
   QByteArray hashType(setting("gui/kernelHashType",
 			      "sha512").toString().toLatin1());
   QByteArray keyInformation;
+  QByteArray startsWith;
   QByteArray symmetricKey;
   QDataStream stream(&keyInformation, QIODevice::WriteOnly);
   QPair<QByteArray, QByteArray> gemini;
@@ -1993,6 +1994,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 				     publicKey,
 				     symmetricKey,
 				     hashKey,
+				     startsWith,
 				     neighborOid,
 				     receiverName,
 				     cipherType,
@@ -2015,7 +2017,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 
   if(ok)
     keyInformation = spoton_crypt::publicKeyEncrypt
-      (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
+      (keyInformation, publicKey, startsWith, &ok);
 
   if(ok)
     {
@@ -2037,7 +2039,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 	if(setting("gui/chatSignMessages", true).toBool())
 	  {
 	    QByteArray recipientDigest
-	      (spoton_crypt::sha512Hash(publicKey, &ok));
+	      (spoton_crypt::sha512Hash(qUncompress(publicKey), &ok));
 
 	    if(ok)
 	      signature = s_crypt2->digitalSignature
