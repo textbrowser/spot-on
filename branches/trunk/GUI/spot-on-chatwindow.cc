@@ -309,8 +309,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
   if(m_kernelSocket->write(message.constData(), message.length()) !=
      message.length())
     {
-      error = tr("An error occurred while writing to the "
-		 "kernel socket.");
+      error = tr("An error occurred while writing to the kernel socket.");
       spoton_misc::logError
 	(QString("spoton_chatwindow::slotSendMessage(): write() failure for "
 		 "%1:%2.").

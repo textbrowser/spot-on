@@ -790,8 +790,7 @@ void spoton_rosetta::slotConvert(void)
 
       if(!ok)
 	{
-	  error = tr("The method spoton_crypt::publicKeyDecrypt() "
-		     "failed.");
+	  error = tr("The method spoton_crypt::publicKeyDecrypt() failed.");
 	  goto done_label2;
 	}
 
@@ -848,8 +847,7 @@ void spoton_rosetta::slotConvert(void)
 	  if(computedHash.isEmpty() || messageCode.isEmpty() ||
 	     !spoton_crypt::memcmp(computedHash, messageCode))
 	    {
-	      error = tr("The computed hash does not match the provided "
-			 "hash.");
+	      error = tr("The computed hash does not match the provided hash.");
 	      goto done_label2;
 	    }
 	}
