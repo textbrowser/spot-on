@@ -583,8 +583,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(aTypes.isEmpty())
     {
       error = tr("The method spoton_crypt::cipherTypes() has "
-		 "failed. "
-		 "This is a fatal flaw.");
+		 "failed. This is a fatal flaw.");
       goto done_label;
     }
 
@@ -593,8 +592,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(eTypes.isEmpty())
     {
       error = tr("The method spoton_crypt::hashTypes() has "
-		 "failed. "
-		 "This is a fatal flaw.");
+		 "failed. This is a fatal flaw.");
       goto done_label;
     }
 
@@ -714,7 +712,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 	  error = tr("Error recording credentials.");
       }
     else
-      error = tr("Unable to open a connection to friends_public_keys.db");
+      error = tr("Unable to open a connection to friends_public_keys.db.");
 
     db.close();
   }
