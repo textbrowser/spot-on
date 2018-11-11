@@ -21,9 +21,15 @@
 #if __GLIBC__ <= 2 || ( __GLIBC__ == 2 && __GLIBC_MINOR__ < 9 )
 #ifndef __powerpc__
 /* assume little endian */
+#ifndef htole64
 #define htole64(x) (x)
+#endif
+#ifndef htole32
 #define htole32(x) (x)
+#endif
+#ifndef htole16
 #define htole16(x) (x)
+#endif
 #endif
 #endif
 #endif
