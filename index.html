@@ -39,6 +39,26 @@
 	<img src="images/echo.png">
         <hr>
         <section id="main_content">
+	  <h4>2018.11.11</h4>
+	  <p>
+	    Welcome to the 2018.11.11 release of Spot-On. Corrections and new features are detailed below.<br>
+	    <ul>
+	      <li>Cancel futures.</li>
+	      <li>Compress internal public-key data in support of larger McEliece keys.</li>
+	      <li>Corrected state of Forward Secrecy Algorithms Selection's Encryption Key Size regarding McEliece. SHAKE is required for McEliece-Fujisake-Okamoto-B. Libgcrypt introduced SHAKE in 1.7.0.</li>
+	      <li>Destroy the McEliece secret key once the McEliece object has been created.</li>
+	      <li>Force processing of participants table on changes to "Hide offline participants.".</li>
+	      <li>Initialize RSA key sizes in Forward Secrecy Algorithms Selection.</li>
+	      <li>McEliece m = 12, t = 68. Keys must be re-created.</li>
+	      <li>NTL 11.3.1 on Linux. The configure script must be executed manually.</li>
+	      <li>OpenSSL 1.1.0i on Windows.</li>
+	      <li>PostgreSQL 9.6.10 on Windows.</li>
+	      <li>Prefer normal SQLite database synchronization where possible.</li>
+	      <li>SQLite 3.25.3 on Windows.</li>
+	      <li>Store McEliece public key objects in temporary container for rapid discovery. Container will be purged upon application termination.</li>
+	      <li>Upgraded gcrypt to version 1.8.3 on Windows.</li>
+	    </ul>
+	  </p>
 	  <h4>2018.06.06</h4>
 	  <p>
 	    Welcome to the 2018.06.06 release of Spot-On. Corrections and new features are detailed below.<br>
