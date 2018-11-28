@@ -760,7 +760,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
 				      5.00).toDouble()));
   m_poptasticPostTimer.start(2500);
-  m_prepareTimer.start(5000);
+  m_prepareTimer.start(10000);
   m_publishAllListenersPlaintextTimer.setInterval(30 * 1000);
   m_settingsTimer.setInterval(1500);
   m_scramblerTimer.setSingleShot(true);
