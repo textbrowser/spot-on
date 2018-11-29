@@ -482,7 +482,7 @@ int main(int argc, char *argv[])
     {
       try
 	{
-	  new spoton_kernel();
+	  s_kernel = new spoton_kernel();
 
 #ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
 	  QMainWindow window;
@@ -531,7 +531,6 @@ int main(int argc, char *argv[])
 
 spoton_kernel::spoton_kernel(void):QObject(0)
 {
-  s_kernel = this;
   qRegisterMetaType<QAbstractSocket::SocketError>
     ("QAbstractSocket::SocketError");
   qRegisterMetaType<QByteArrayList> ("QByteArrayList");
