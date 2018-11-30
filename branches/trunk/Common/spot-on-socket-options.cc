@@ -46,6 +46,7 @@ extern "C"
 #elif defined(Q_OS_LINUX)
 extern "C"
 {
+#include <linux/net_tstamp.h>
 #include <netinet/in.h>
 #ifdef SPOTON_SCTP_ENABLED
 #include <netinet/sctp.h>
@@ -283,22 +284,32 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	if(!string.isEmpty())
 	  {
 	    int rc = 0;
-	    int v = qBound(0, string.toInt(), 1);
-	    socklen_t length = (socklen_t) sizeof(v);
+	    int so_timestamping_flags = 0;
+
+	    if(qBound(0, string.toInt(), 1))
+	      {
+		so_timestamping_flags |= SOF_TIMESTAMPING_RAW_HARDWARE;
+		so_timestamping_flags |= SOF_TIMESTAMPING_RX_HARDWARE;
+		so_timestamping_flags |= SOF_TIMESTAMPING_RX_SOFTWARE;
+		so_timestamping_flags |= SOF_TIMESTAMPING_SOFTWARE;
+		so_timestamping_flags |= SOF_TIMESTAMPING_SYS_HARDWARE;
+		so_timestamping_flags |= SOF_TIMESTAMPING_TX_HARDWARE;
+		so_timestamping_flags |= SOF_TIMESTAMPING_TX_SOFTWARE;
+	      }
 
 #if defined(Q_OS_WIN)
 	    rc = setsockopt
 	      (socket,
 	       SOL_SOCKET,
 	       SO_TIMESTAMPING,
-	       (const char *) &v,
-	       (int) length);
+	       (const char *) &so_timestamping_flags,
+	       (int) sizeof(so_timestamping_flags));
 #else
 	    rc = setsockopt((int) socket,
 			    SOL_SOCKET,
 			    SO_TIMESTAMPING,
-			    &v,
-			    length);
+			    &so_timestamping_flags,
+			    (socklen_t) sizeof(so_timestamping_flags));
 #endif
 
 	    if(rc != 0)
