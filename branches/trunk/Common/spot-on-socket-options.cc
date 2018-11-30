@@ -139,7 +139,7 @@ void spoton_socket_options::setSocketOptions(QAbstractSocket *socket,
 
 	int v = qBound(4096, string.toInt(), std::numeric_limits<int>::max());
 
-	if(!string.isEmpty() && v > 0)
+	if(!string.isEmpty())
 	  socket->setSocketOption(option, v);
 #endif
       }
@@ -185,8 +185,6 @@ void spoton_socket_options::setSocketOptions(const QString &options,
       {
 	string = string.mid(static_cast<int> (qstrlen("nodelay=")));
 
-	int v = qBound(0, string.toInt(), 1);
-
 	if(!string.isEmpty())
 	  {
 #if SPOTON_SCTP_ENABLED
@@ -197,6 +195,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    int option = TCP_NODELAY;
 #endif
 	    int rc = 0;
+	    int v = qBound(0, string.toInt(), 1);
 	    socklen_t length = (socklen_t) sizeof(v);
 
 	    if(transport.toLower() == "tcp")
@@ -229,11 +228,10 @@ void spoton_socket_options::setSocketOptions(const QString &options,
       {
 	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
 
-	int v = qBound(0, string.toInt(), 1);
-
 	if(!string.isEmpty())
 	  {
 	    int rc = 0;
+	    int v = qBound(0, string.toInt(), 1);
 	    socklen_t length = (socklen_t) sizeof(v);
 
 #if defined(Q_OS_WIN)
@@ -303,20 +301,20 @@ void spoton_socket_options::setSocketOptions(const QString &options,
     else if((string.startsWith("so_rcvbuf=") ||
 	     string.startsWith("so_sndbuf=")) && transport.toLower() == "sctp")
       {
-	int option = 0;
-
-	if(string.startsWith("so_rcvbuf="))
-	  option = SO_RCVBUF;
-	else
-	  option = SO_SNDBUF;
-
 	string = string.mid(static_cast<int> (qstrlen("so_rcvbuf=")));
 
-	int v = qBound(4096, string.toInt(), std::numeric_limits<int>::max());
-
-	if(!string.isEmpty() && v > 0)
+	if(!string.isEmpty())
 	  {
+	    int option = 0;
+
+	    if(string.startsWith("so_rcvbuf="))
+	      option = SO_RCVBUF;
+	    else
+	      option = SO_SNDBUF;
+
 	    int rc = 0;
+	    int v = qBound
+	      (4096, string.toInt(), std::numeric_limits<int>::max());
 	    socklen_t length = (socklen_t) sizeof(v);
 
 #if defined(Q_OS_WIN)
@@ -336,5 +334,43 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		   "setsockopt() failure on SO_RCVBUF / SO_SNDBUF.");
 	      }
 	  }
+      }
+    else if(string.startsWith("so_timestamping="))
+      {
+#if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
+	string = string.mid(static_cast<int> (qstrlen("so_timestamping=")));
+
+	if(!string.isEmpty())
+	  {
+	    int rc = 0;
+	    int v = qBound(0, string.toInt(), 1);
+	    socklen_t length = (socklen_t) sizeof(v);
+
+#if defined(Q_OS_WIN)
+	    rc = setsockopt
+	      (socket,
+	       SOL_SOCKET,
+	       SO_TIMESTAMPING,
+	       (const char *) &v,
+	       (int) length);
+#else
+	    rc = setsockopt((int) socket,
+			    SOL_SOCKET,
+			    SO_TIMESTAMPING,
+			    &v,
+			    length);
+#endif
+
+	    if(rc != 0)
+	      {
+		if(ok)
+		  *ok = false;
+
+		spoton_misc::logError
+		  ("spoton_socket_options::setSocketOptions(): "
+		   "setsockopt() failure on SO_TIMESTAMPING.");
+	      }
+	  }
+#endif
       }
 }
