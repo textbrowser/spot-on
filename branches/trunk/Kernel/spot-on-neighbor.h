@@ -121,8 +121,10 @@ class spoton_neighbor_udp_socket: public QUdpSocket
 	  }
 
 	spoton_socket_options::setSocketOptions
-	  (m_multicastSocket, socketOptions, 0);
-
+	  (socketOptions,
+	   "udp",
+	   static_cast<qint64> (m_multicastSocket->socketDescriptor()),
+	   0);
 #if QT_VERSION >= 0x040806
 	if(!m_multicastSocket->joinMulticastGroup(address))
 	  {

@@ -2281,21 +2281,25 @@ void spoton_neighbor::processData(void)
 void spoton_neighbor::slotConnected(void)
 {
   if(m_sctpSocket)
-    {
-      m_sctpSocket->setSocketOption
-	(spoton_sctp_socket::KeepAliveOption,
-	 QVariant(m_socketOptions.contains("so_keepalive=1")));
-      m_sctpSocket->setSocketOption
- 	(spoton_sctp_socket::LowDelayOption,
-	 QVariant(m_socketOptions.contains("nodelay=1")));
-    }
+    spoton_socket_options::setSocketOptions
+      (m_socketOptions,
+       m_transport,
+       static_cast<qint64> (m_sctpSocket->socketDescriptor()),
+       0);
   else if(m_tcpSocket)
-    spoton_socket_options::setSocketOptions(m_tcpSocket, m_socketOptions, 0);
+    spoton_socket_options::setSocketOptions
+      (m_socketOptions,
+       m_transport,
+       static_cast<qint64> (m_tcpSocket->socketDescriptor()),
+       0);
   else if(m_udpSocket)
     if(m_isUserDefined)
       {
 	spoton_socket_options::setSocketOptions
-	  (m_udpSocket, m_socketOptions, 0);
+	  (m_socketOptions,
+	   m_transport,
+	   static_cast<qint64> (m_udpSocket->socketDescriptor()),
+	   0);
 
 	QHostAddress address(m_address);
 

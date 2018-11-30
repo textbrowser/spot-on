@@ -82,71 +82,8 @@ extern "C"
 }
 #endif
 
-void spoton_socket_options::setSocketOptions(QAbstractSocket *socket,
-					     const QString &options,
-					     bool *ok)
-{
-  if(!socket)
-    {
-      if(ok)
-	*ok = false;
-
-      return;
-    }
-
-  QStringList list(options.split(";", QString::SkipEmptyParts));
-
-  if(list.isEmpty())
-    {
-      if(ok)
-	*ok = true;
-
-      return;
-    }
-
-  if(ok)
-    *ok = true;
-
-  foreach(QString string, list)
-    if(socket->socketType() == QAbstractSocket::TcpSocket &&
-       string.startsWith("nodelay="))
-      {
-	string = string.mid(static_cast<int> (qstrlen("nodelay=")));
-
-	int v = qBound(0, string.toInt(), 1);
-
-	socket->setSocketOption(QAbstractSocket::LowDelayOption, v);
-      }
-    else if(socket->socketType() == QAbstractSocket::TcpSocket &&
-	    string.startsWith("so_keepalive="))
-      {
-	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
-
-	int v = qBound(0, string.toInt(), 1);
-
-	socket->setSocketOption(QAbstractSocket::KeepAliveOption, v);
-      }
-    else if(string.startsWith("so_rcvbuf=") || string.startsWith("so_sndbuf="))
-      {
-#if QT_VERSION >= 0x050501
-	QAbstractSocket::SocketOption option =
-	  QAbstractSocket::ReceiveBufferSizeSocketOption;
-
-	if(string.startsWith("so_sndbuf="))
-	  option = QAbstractSocket::SendBufferSizeSocketOption;
-
-	string = string.mid(static_cast<int> (qstrlen("so_rcvbuf=")));
-
-	int v = qBound(4096, string.toInt(), std::numeric_limits<int>::max());
-
-	if(!string.isEmpty())
-	  socket->setSocketOption(option, v);
-#endif
-      }
-}
-
 void spoton_socket_options::setSocketOptions(const QString &options,
-					     const QString &transport,
+					     const QString &t,
 #if defined(Q_OS_WIN)
 					     const SOCKET socket,
 #else
@@ -166,7 +103,8 @@ void spoton_socket_options::setSocketOptions(const QString &options,
       return;
     }
 
-  QStringList list(options.split(";", QString::SkipEmptyParts));
+  QString transport(t.toLower().trimmed());
+  QStringList list(options.toLower().split(";", QString::SkipEmptyParts));
 
   if(list.isEmpty())
     {
@@ -180,8 +118,8 @@ void spoton_socket_options::setSocketOptions(const QString &options,
     *ok = true;
 
   foreach(QString string, list)
-    if(string.startsWith("nodelay=") && (transport.toLower() == "sctp" ||
-					 transport.toLower() == "tcp"))
+    if(string.startsWith("nodelay=") && (transport == "sctp" ||
+					 transport == "tcp"))
       {
 	string = string.mid(static_cast<int> (qstrlen("nodelay=")));
 
@@ -198,7 +136,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    int v = qBound(0, string.toInt(), 1);
 	    socklen_t length = (socklen_t) sizeof(v);
 
-	    if(transport.toLower() == "tcp")
+	    if(transport == "tcp")
 	      {
 		level = IPPROTO_TCP;
 		option = TCP_NODELAY;
@@ -223,8 +161,8 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	  }
       }
     else if(string.
-	    startsWith("so_keepalive=") && (transport.toLower() == "sctp" ||
-					    transport.toLower() == "tcp"))
+	    startsWith("so_keepalive=") && (transport == "sctp" ||
+					    transport == "tcp"))
       {
 	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
 
@@ -299,7 +237,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	  }
       }
     else if((string.startsWith("so_rcvbuf=") ||
-	     string.startsWith("so_sndbuf=")) && transport.toLower() == "sctp")
+	     string.startsWith("so_sndbuf=")) && transport == "sctp")
       {
 	string = string.mid(static_cast<int> (qstrlen("so_rcvbuf=")));
 
@@ -335,9 +273,11 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	      }
 	  }
       }
-    else if(string.startsWith("so_timestamping="))
+    else if(string.startsWith("so_timestamping=") && (transport == "sctp" ||
+						      transport == "tcp" ||
+						      transport == "udp"))
       {
-#if defined(Q_OS_LINUX) || defined(Q_OS_WIN)
+#if defined(SO_TIMESTAMPING)
 	string = string.mid(static_cast<int> (qstrlen("so_timestamping=")));
 
 	if(!string.isEmpty())

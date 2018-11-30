@@ -33,11 +33,8 @@
 class spoton_socket_options
 {
  public:
-  static void setSocketOptions(QAbstractSocket *socket,
-			       const QString &options,
-			       bool *ok);
   static void setSocketOptions(const QString &options,
-			       const QString &transport,
+			       const QString &t, // Transport
 #ifdef Q_OS_WIN
 			       const SOCKET socket,
 #else

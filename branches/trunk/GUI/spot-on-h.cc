@@ -137,6 +137,17 @@ void spoton::slotSetSocketOptions(void)
   ui.so_rcvbuf->setMaximum(std::numeric_limits<int>::max());
   ui.so_sndbuf->setMaximum(std::numeric_limits<int>::max());
 
+#if defined(SO_TIMESTAMPING)
+  ui.so_timestamping->setEnabled(transport != "BLUETOOTH");
+
+  if(!ui.so_timestamping->isEnabled())
+    ui.so_timestamping->setToolTip
+      (tr("TCP, SCTP, if available, and UDP only."));
+#else
+  ui.so_timestamping->setEnabled(false);
+  ui.so_timestamping->setToolTip(tr("SO_TIMESTAMPING is not defined."));
+#endif
+
   if(type == "listeners")
     {
       dialog.setWindowTitle
@@ -230,6 +241,13 @@ void spoton::slotSetSocketOptions(void)
 	  ui.so_sndbuf->setValue
 	    (string.mid(static_cast<int> (qstrlen("so_sndbuf="))).toInt());
       }
+    else if(string.startsWith("so_timestamping="))
+      {
+	if(ui.so_timestamping->isEnabled())
+	  ui.so_timestamping->setChecked
+	    (string.
+	     mid(static_cast<int> (qstrlen("so_timestamping="))).toInt());
+      }
 
   if(dialog.exec() != QDialog::Accepted)
     return;
@@ -264,6 +282,13 @@ void spoton::slotSetSocketOptions(void)
   if(ui.so_sndbuf->isEnabled())
     {
       socketOptions.append(QString("so_sndbuf=%1").arg(ui.so_sndbuf->value()));
+      socketOptions.append(";");
+    }
+
+  if(ui.so_timestamping->isEnabled())
+    {
+      socketOptions.append
+	(QString("so_timestamping=%1").arg(ui.so_timestamping->isChecked()));
       socketOptions.append(";");
     }
 
