@@ -1047,7 +1047,7 @@ void spoton::displayUrlImportResults(const QDateTime &then,
      arg(SPOTON_APPLICATION_NAME),
      tr("URLs imported: %1. URLs not imported: %2. "
 	"Some URLs (%3) may have been declined because of distiller rules. "
-	"URLs that were not imported will remain in shared.db. "
+	"URLs which were not imported will remain in shared.db. "
 	"The process completed in %4 second(s).").
      arg(imported).arg(not_imported).arg(declined).
      arg(locale.toString(qAbs(QDateTime::currentDateTime().secsTo(then)))));
@@ -1857,12 +1857,12 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to remove the URL %1?").
 		 arg(str));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
 	return;
@@ -2041,13 +2041,13 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to share the URL %1?").
+		 arg(spoton_misc::urlToEncoded(original).constData()));
       mb.setWindowIcon(windowIcon());
       mb.setWindowModality(Qt::WindowModal);
       mb.setWindowTitle(tr("%1: Confirmation").
 			arg(SPOTON_APPLICATION_NAME));
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Are you sure that you wish to share the URL %1?").
-		 arg(spoton_misc::urlToEncoded(original).constData()));
 
       if(mb.exec() != QMessageBox::Yes)
 	return;
@@ -2178,13 +2178,13 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 #endif
 #endif
 	  mb.setIcon(QMessageBox::Question);
+	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	  mb.setText(tr("Are you sure that you wish to access the URL %1?").
+		     arg(str));
 	  mb.setWindowIcon(windowIcon());
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
-	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText(tr("Are you sure that you wish to access the URL %1?").
-		     arg(str));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return;
@@ -2395,9 +2395,6 @@ void spoton::slotCorrectUrlDatabases(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
   if(m_urlDatabase.driverName() == "QPSQL")
@@ -2415,6 +2412,10 @@ void spoton::slotCorrectUrlDatabases(void)
 	  "The RSS mechanism and the kernel will be deactivated. "
 	  "A brief report will be displayed after the process completes. "
 	  "Proceed?"));
+
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;

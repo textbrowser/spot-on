@@ -384,14 +384,14 @@ void spoton_rosetta::slotAddContact(void)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").
-			arg(SPOTON_APPLICATION_NAME));
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Unable to retrieve your %1 "
 		    "public key for comparison. Continue?").
 		 arg(keyType.constData()));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").
+			arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
 	return;
@@ -409,14 +409,14 @@ void spoton_rosetta::slotAddContact(void)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").
-			arg(SPOTON_APPLICATION_NAME));
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Unable to retrieve your %1 signature "
 		    "public key for comparison. Continue?").
 		 arg(keyType.constData()));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").
+			arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
 	return;
@@ -952,13 +952,12 @@ void spoton_rosetta::slotDelete(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"contact?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
