@@ -2724,10 +2724,6 @@ void spoton::slotRegenerateKey(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
   if(keyType == "chat")
@@ -2737,6 +2733,10 @@ void spoton::slotRegenerateKey(void)
   else
     mb.setText(tr("Are you sure that you wish to generate the selected "
 		  "key pair? The kernel will be deactivated."));
+
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -2751,12 +2751,8 @@ void spoton::slotRegenerateKey(void)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").
-			arg(SPOTON_APPLICATION_NAME));
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("McEliece keys require a significant amount of "
+      mb.setText(tr("McEliece key pairs require a significant amount of "
 		    "storage memory. As %1 prefers secure memory, "
 		    "the gcrypt library may fail if it's unable to "
 		    "reserve the required amount of memory. Some "
@@ -2766,6 +2762,9 @@ void spoton::slotRegenerateKey(void)
 		    "secure memory pools of the interface and the kernel "
 		    "to zero. Continue with the key-generation process?").
 		 arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
 	return;
@@ -3773,16 +3772,16 @@ void spoton::slotImportPublicKeys(void)
 #endif
 #endif
 	  mb.setIcon(QMessageBox::Question);
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
 	    (tr("The import file %1 contains a lot (%2) of data. Are you "
 		"sure that you wish to process it?").
 	     arg(fileInfo.absoluteFilePath()).
 	     arg(fileInfo.size()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return;
@@ -3967,16 +3966,16 @@ void spoton::slotImportNeighbors(void)
 #endif
 #endif
 	  mb.setIcon(QMessageBox::Question);
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
 	    (tr("The import file %1 contains a lot (%2) of data. Are you "
 		"sure that you wish to process it?").
 	     arg(fileInfo.absoluteFilePath()).
 	     arg(fileInfo.size()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return;
@@ -4564,13 +4563,12 @@ void spoton::slotRemoveUrlParticipants(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"URLs participant(s)?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;

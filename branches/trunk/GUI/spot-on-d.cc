@@ -1573,14 +1573,14 @@ bool spoton::promptBeforeExit(void)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Question").
-			arg(SPOTON_APPLICATION_NAME));
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("The File Encryption application is occupied. "
 		    "Are you sure that you wish to exit %1?").
 		 arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Question").
+			arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
 	return true;
@@ -1597,15 +1597,15 @@ bool spoton::promptBeforeExit(void)
 #endif
 #endif
 	mb.setIcon(QMessageBox::Question);
-	mb.setWindowIcon(windowIcon());
-	mb.setWindowModality(Qt::WindowModal);
-	mb.setWindowTitle(tr("%1: Question").
-			  arg(SPOTON_APPLICATION_NAME));
 	mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	mb.setText(tr("The kernel appears to be active. Closing %1 "
 		      "will not deactivate the kernel. Are you "
 		      "sure that you wish to exit %1?").
 		   arg(SPOTON_APPLICATION_NAME));
+	mb.setWindowIcon(windowIcon());
+	mb.setWindowModality(Qt::WindowModal);
+	mb.setWindowTitle(tr("%1: Question").
+			  arg(SPOTON_APPLICATION_NAME));
 
 	if(mb.exec() != QMessageBox::Yes)
 	  return true;
