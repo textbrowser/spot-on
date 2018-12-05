@@ -4911,8 +4911,27 @@ void spoton::slotRetrieveMail(void)
 
 void spoton::slotKernelStatus(void)
 {
-  if(isKernelActive())
-    slotDeactivateKernel();
+  if(isKernelActive() && m_sb.kernelstatus == sender())
+    {
+      QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+
+      slotDeactivateKernel();
+    }
   else
     {
       slotDeactivateKernel();

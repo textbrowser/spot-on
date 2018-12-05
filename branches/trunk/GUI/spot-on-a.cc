@@ -5724,7 +5724,7 @@ void spoton::slotActivateKernel(void)
       if(m_settings.value("gui/buzzAutoJoin", true).toBool())
 	joinDefaultBuzzChannel();
     }
-  else if(sender())
+  else if(m_ui.activateKernel == sender())
     QMessageBox::critical
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
        tr("The kernel process could not be started. Good luck."));
@@ -5732,7 +5732,7 @@ void spoton::slotActivateKernel(void)
 
 void spoton::slotDeactivateKernel(void)
 {
-  if(isKernelActive() && sender())
+  if(isKernelActive() && m_ui.deactivateKernel == sender())
     {
       QMessageBox mb(this);
 
