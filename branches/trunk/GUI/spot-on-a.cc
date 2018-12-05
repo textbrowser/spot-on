@@ -5732,6 +5732,26 @@ void spoton::slotActivateKernel(void)
 
 void spoton::slotDeactivateKernel(void)
 {
+  if(isKernelActive() && sender())
+    {
+      QMessageBox mb(this);
+
+#ifdef Q_OS_MAC
+#if QT_VERSION < 0x050000
+      mb.setAttribute(Qt::WA_MacMetalStyle, true);
+#endif
+#endif
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+    }
+
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
@@ -6348,10 +6368,6 @@ void spoton::slotSetPassphrase(void)
 #endif
 #endif
       mb.setIcon(QMessageBox::Question);
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowTitle(tr("%1: Confirmation").
-			arg(SPOTON_APPLICATION_NAME));
-      mb.setWindowModality(Qt::WindowModal);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
       if(m_ui.passphrase_rb->isChecked())
@@ -6367,6 +6383,10 @@ void spoton::slotSetPassphrase(void)
 		      "be re-encoded via a separate tool. Please see "
 		      "the future Re-Encode URLs option. The RSS mechanism "
 		      "and the kernel will be deactivated."));
+
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
 	{
@@ -6508,13 +6528,12 @@ void spoton::slotSetPassphrase(void)
 #endif
 #endif
 	      mb.setIcon(QMessageBox::Question);
-	      mb.setWindowIcon(windowIcon());
-	      mb.setWindowTitle(tr("%1: Question").
-				arg(SPOTON_APPLICATION_NAME));
-	      mb.setWindowModality(Qt::WindowModal);
 	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	      mb.setText
-		(tr("Would you like to generate public key pairs?"));
+	      mb.setText(tr("Would you like to generate public key pairs?"));
+	      mb.setWindowIcon(windowIcon());
+	      mb.setWindowModality(Qt::WindowModal);
+	      mb.setWindowTitle
+		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
 	      if(mb.exec() == QMessageBox::Yes)
 		proceed = true;
@@ -6533,13 +6552,9 @@ void spoton::slotSetPassphrase(void)
 #endif
 #endif
 		mb.setIcon(QMessageBox::Question);
-		mb.setWindowIcon(windowIcon());
-		mb.setWindowTitle(tr("%1: Confirmation").
-				  arg(SPOTON_APPLICATION_NAME));
-		mb.setWindowModality(Qt::WindowModal);
 		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		mb.setText
-		 (tr("McEliece keys require a significant amount of "
+		 (tr("McEliece key pairs require a significant amount of "
 		     "storage memory. As %1 prefers secure memory, "
 		     "the gcrypt library may fail if it's unable to "
 		     "reserve the required amount of memory. Some "
@@ -6549,6 +6564,10 @@ void spoton::slotSetPassphrase(void)
 		     "secure memory pools of the interface and the kernel "
 		     "to zero. Continue with the key-generation process?").
 		  arg(SPOTON_APPLICATION_NAME));
+		mb.setWindowIcon(windowIcon());
+		mb.setWindowModality(Qt::WindowModal);
+		mb.setWindowTitle
+		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
 		if(mb.exec() != QMessageBox::Yes)
 		  proceed = false;
@@ -6989,12 +7008,12 @@ void spoton::slotSetPassphrase(void)
 #endif
 #endif
 		mb.setIcon(QMessageBox::Question);
-		mb.setWindowIcon(windowIcon());
-		mb.setWindowModality(Qt::WindowModal);
-		mb.setWindowTitle(tr("%1: Question").
-				  arg(SPOTON_APPLICATION_NAME));
 		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		mb.setText(tr("Would you like the kernel to be activated?"));
+		mb.setWindowIcon(windowIcon());
+		mb.setWindowModality(Qt::WindowModal);
+		mb.setWindowTitle
+		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
 		if(mb.exec() == QMessageBox::Yes)
 		  proceed = true;
@@ -8048,16 +8067,17 @@ void spoton::sendKeysToKernel(void)
 #endif
 #endif
 	      mb.setIcon(QMessageBox::Question);
-	      mb.setWindowIcon(windowIcon());
-	      mb.setWindowModality(Qt::WindowModal);
-	      mb.setWindowTitle(tr("%1: Question").
-				arg(SPOTON_APPLICATION_NAME));
 	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	      mb.setText
 		 (tr("The kernel process %1 requires your private "
-		     "authentication "
-		     "and encryption keys. Would you like to share the keys?").
+		     "authentication and encryption keys. "
+		     "Would you like to share "
+		     "the keys with the kernel process?").
 		  arg(m_ui.pid->text()));
+	      mb.setWindowIcon(windowIcon());
+	      mb.setWindowModality(Qt::WindowModal);
+	      mb.setWindowTitle
+		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
 	      if(mb.exec() != QMessageBox::Yes)
 		{

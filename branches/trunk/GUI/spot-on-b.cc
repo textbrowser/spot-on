@@ -1113,13 +1113,12 @@ void spoton::slotRemoveParticipants(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"Chat participant(s)?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -2309,15 +2308,15 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 #endif
 #endif
 	  mb.setIcon(QMessageBox::Question);
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Unable to retrieve your %1 "
 			"public key for comparison. Are you sure "
 			"that you wish to accept the foreign key pair?").
 		     arg(keyType.constData()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle
+		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return false;
@@ -2336,15 +2335,15 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 #endif
 #endif
 	  mb.setIcon(QMessageBox::Question);
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Unable to retrieve your %1 signature "
 			"public key for comparison. Are you sure "
 			"that you wish to accept the foreign key pair?").
 		     arg(keyType.constData()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return false;
@@ -2374,14 +2373,14 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 #endif
 #endif
 	  mb.setIcon(QMessageBox::Question);
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Invalid %1 "
 			"public key signature. Accept?").
 		     arg(keyType.constData()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return false;
@@ -2404,14 +2403,15 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 #endif
 #endif
 	  mb.setIcon(QMessageBox::Question);
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Invalid %1 "
 			"signature public key signature. Accept?").
 		     arg(keyType.constData()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
+
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    return false;
@@ -2830,15 +2830,14 @@ void spoton::slotResetAll(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to reset %1? All "
 		"data will be lost. PostgreSQL databases must be "
 		"removed separately.").
 	     arg(SPOTON_APPLICATION_NAME));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -3103,7 +3102,7 @@ void spoton::slotSendMail(void)
       QMessageBox::critical
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
-	 tr("The file email.db has exceeded the specified limit. Please "
+	 tr("The file email.db has exceeded the defined limit. Please "
 	    "remove some entries and/or increase the limit "
 	    "via the Permissions section in Options."));
       return;
@@ -4824,12 +4823,12 @@ void spoton::slotEmptyTrash(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to empty the Trash folder?"));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").
 		    arg(SPOTON_APPLICATION_NAME));
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to empty the Trash folder?"));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
@@ -5972,13 +5971,12 @@ void spoton::slotRemoveEmailParticipants(void)
 #endif
 #endif
   mb.setIcon(QMessageBox::Question);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"E-Mail participant(s)?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
     return;
