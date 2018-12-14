@@ -7,10 +7,6 @@ a distclean before building Spot-On.
 To verify the version of Qt, issue qmake --version. Qt 5.x project files
 include qt5 in their names. qmake may be an alias for qmake-qt4 or qmake-qt5.
 
-Absolute Cleaning
-
-make distclean or mingw32-make distclean
-
 ARM
 
 qmake or qmake-qt4 -o Makefile spot-on.arm.pro
