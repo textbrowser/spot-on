@@ -176,7 +176,7 @@ spoton_neighbor::spoton_neighbor
 
       if(s != -1)
 	{
-	  if(!m_udpSocket->setSocketDescriptor(s))
+	  if(!m_udpSocket->setSocketDescriptor(s, QAbstractSocket::BoundState))
 	    spoton_misc::closeSocket(s);
 	}
       else
@@ -186,7 +186,7 @@ spoton_neighbor::spoton_neighbor
 
       if(s != -1)
 	{
-	  if(!m_udpSocket->setSocketDescriptor(s))
+	  if(!m_udpSocket->setSocketDescriptor(s, QAbstractSocket::BoundState))
 	    spoton_misc::closeSocket(s);
 	}
       else

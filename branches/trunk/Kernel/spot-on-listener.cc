@@ -877,7 +877,8 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	{
 	  QAbstractSocket socket(QAbstractSocket::UdpSocket, this);
 
-	  if(socket.setSocketDescriptor(socketDescriptor))
+	  if(socket.setSocketDescriptor(socketDescriptor,
+					QAbstractSocket::BoundState))
 	    socket.abort();
 	  else
 	    spoton_misc::closeSocket(socketDescriptor);
