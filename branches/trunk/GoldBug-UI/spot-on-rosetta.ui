@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
+    <width>600</width>
     <height>815</height>
    </rect>
   </property>
@@ -22,16 +22,7 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="leftMargin">
-     <number>5</number>
-    </property>
-    <property name="topMargin">
-     <number>5</number>
-    </property>
-    <property name="rightMargin">
-     <number>5</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>5</number>
     </property>
     <item>
@@ -176,16 +167,7 @@ QPushButton:pressed {
        <property name="spacing">
         <number>5</number>
        </property>
-       <property name="leftMargin">
-        <number>5</number>
-       </property>
-       <property name="topMargin">
-        <number>5</number>
-       </property>
-       <property name="rightMargin">
-        <number>5</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>5</number>
        </property>
        <item>
@@ -550,16 +532,7 @@ QPushButton:pressed {
           <property name="spacing">
            <number>5</number>
           </property>
-          <property name="leftMargin">
-           <number>5</number>
-          </property>
-          <property name="topMargin">
-           <number>5</number>
-          </property>
-          <property name="rightMargin">
-           <number>5</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>5</number>
           </property>
           <item>
@@ -685,16 +658,7 @@ color: rgb(255, 255, 255);</string>
           <property name="spacing">
            <number>5</number>
           </property>
-          <property name="leftMargin">
-           <number>5</number>
-          </property>
-          <property name="topMargin">
-           <number>5</number>
-          </property>
-          <property name="rightMargin">
-           <number>5</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>5</number>
           </property>
           <item>
@@ -843,8 +807,8 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>594</width>
-     <height>19</height>
+     <width>600</width>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

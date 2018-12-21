@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>710</width>
-    <height>637</height>
+    <width>745</width>
+    <height>645</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -518,8 +518,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>710</width>
-     <height>27</height>
+     <width>745</width>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
