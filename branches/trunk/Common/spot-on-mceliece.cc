@@ -76,9 +76,6 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 
       NTL::GF2E::init
 	(NTL::
-	 /*
-	 ** What should the value be? The maximum m that's supported?
-	 */
 	 BuildIrred_GF2X(static_cast<long int> (m))); /*
 						      ** Initialize
 						      ** some NTL
@@ -742,6 +739,14 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
   try
     {
+      NTL::GF2E::init
+	(NTL::BuildIrred_GF2X(static_cast<long int> (m_m))); /*
+							     ** Initialize
+							     ** some NTL
+							     ** internal
+							     ** object(s).
+							     */
+
       NTL::vec_GF2 c1;
       NTL::vec_GF2 c2;
       QByteArray salt1;
