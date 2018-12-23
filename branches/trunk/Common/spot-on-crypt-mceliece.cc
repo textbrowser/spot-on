@@ -60,7 +60,7 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
 	  else
 	    free(m_privateKey);
 
-	  m_privateKey = 0;
+	  m_privateKey = 0; // Do not reset m_privateKeyLength.
 	}
     }
 
