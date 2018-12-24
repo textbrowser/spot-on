@@ -111,6 +111,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
   menu->addAction(tr("&Reset Input Widgets"),
 		  this,
 		  SLOT(slotMenuAction(void)));
+  menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
   ui.menu->setMenu(menu);
   connect(ui.menu,
 	  SIGNAL(clicked(void)),

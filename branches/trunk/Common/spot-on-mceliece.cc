@@ -251,7 +251,7 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
 {
   try
     {
-      if(m_swappingColumns.size() != m_n)
+      if(m_n != m_swappingColumns.size())
 	throw std::runtime_error("m_swappingColumns().size() mismatch");
 
       long int k = static_cast<long int> (m_k);
@@ -597,8 +597,7 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
 	  s << publicKey.mid(static_cast<int> (offset)).constData();
 	  s >> Gcar; // ~500 ms.
 	  s >> t;
-	  m_publicKey = new (std::nothrow)
-	    spoton_mceliece_public_key(t, Gcar);
+	  m_publicKey = new (std::nothrow) spoton_mceliece_public_key(t, Gcar);
 	}
       catch(...)
 	{

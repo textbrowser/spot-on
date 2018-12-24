@@ -930,7 +930,9 @@ spoton::spoton(void):QMainWindow()
      "}"
      );
   m_ui.chatSecrets->setMenu(new QMenu(this));
+  m_ui.chatSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.emailSecrets->setMenu(new QMenu(this));
+  m_ui.emailSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
   connect(m_ui.chatSecrets,
 	  SIGNAL(clicked(void)),
 	  m_ui.chatSecrets,
@@ -2196,7 +2198,9 @@ spoton::spoton(void):QMainWindow()
      "xs=Spot-On_Developer_Channel_Salt&ct=aes256&"
      "hk=Spot-On_Developer_Channel_Hash_Key&ht=sha384&xt=urn:buzz");
   m_ui.toolButtonCopyToClipboard->setMenu(menu);
+  menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
   menu = new QMenu(this);
+  menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.shareBuzzMagnet->setMenu(menu);
   m_generalTimer.start(1500);
   m_chatInactivityTimer.start(120000);
@@ -7477,6 +7481,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	(tr("Reset Forward &Secrecy information of selected participant(s)."),
 	 this, SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "email");
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.emailParticipants->mapToGlobal(point));
     }
   else if(m_ui.listeners == sender())
@@ -7531,6 +7536,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      this, SLOT(slotSetSocketOptions(void)));
       action->setEnabled(listenerTransport() > "bluetooth");
       action->setProperty("type", "listeners");
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.listeners->mapToGlobal(point));
     }
   else if(m_ui.neighbors == sender())
@@ -7685,6 +7691,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this,
 		     SLOT(slotShowNeighborStatistics(void)));
 #endif
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.neighbors->mapToGlobal(point));
     }
   else if(m_ui.participants == sender())
@@ -7826,6 +7833,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this,
 		     SLOT(slotBuzzInvite(void)))->setEnabled
 	("chat" == participantKeyType(m_ui.participants));
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.participants->mapToGlobal(point));
     }
   else if(m_ui.received == sender())
@@ -7851,6 +7859,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       menu.addAction(tr("Discover &Missing Links..."), this,
 		     SLOT(slotDiscoverMissingLinks(void)));
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.received->mapToGlobal(point));
     }
   else if(m_ui.transmitted == sender())
@@ -7878,6 +7887,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     SLOT(slotSetSBPulseSize(void)));
       menu.addAction(tr("Set &Read Interval..."), this,
 		     SLOT(slotSetSBReadInterval(void)));
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.transmitted->mapToGlobal(point));
     }
   else if(m_ui.transmittedMagnets == sender())
@@ -7920,6 +7930,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action = menu.addAction(tr("&Rename Participant..."),
 			      this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "url");
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.urlParticipants->mapToGlobal(point));
     }
 }
@@ -9337,6 +9348,13 @@ void spoton::slotCallParticipant(void)
   if(!action)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   QString keyType("");
   QString oid("");
   QString type(action->property("type").toString().toLower());
@@ -9357,11 +9375,20 @@ void spoton::slotCallParticipant(void)
     }
 
   if(oid.isEmpty())
-    return;
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
   else if(keyType == "poptastic" && type == "calling_two_way")
-    return; // Not allowed!
+    {
+      QApplication::restoreOverrideCursor();
+      return; // Not allowed!
+    }
   else if(temporary) // Temporary friend?
-    return; // Not allowed!
+    {
+      QApplication::restoreOverrideCursor();
+      return; // Not allowed!
+    }
 
   if(type == "calling")
     slotGenerateGeminiInChat();
@@ -9391,6 +9418,8 @@ void spoton::slotCallParticipant(void)
       (QString("spoton::slotCallParticipant(): write() failure for %1:%2.").
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotSignatureCheckBoxToggled(bool state)
@@ -9430,6 +9459,13 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!clipboard)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   QString keyType("");
   QString oid("");
   int row = -1;
@@ -9450,6 +9486,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(oid.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9457,6 +9494,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
      !m_crypts.value(QString("%1-signature").arg(keyType), 0))
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9484,6 +9522,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(cipherType.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9502,6 +9541,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!ok || publicKey.isEmpty() || symmetricKey.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9516,6 +9556,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9525,6 +9566,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9535,6 +9577,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9543,6 +9586,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9552,6 +9596,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9590,6 +9635,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9598,6 +9644,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -9605,6 +9652,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 		     keyInformation.toBase64() + "@" +
 		     data.toBase64() + "@" +
 		     hash.toBase64());
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotCopyAllMyPublicKeys(void)
@@ -9613,6 +9661,11 @@ void spoton::slotCopyAllMyPublicKeys(void)
 
   if(clipboard)
     {
+      menuBar()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(copyMyChatPublicKey() + "\n" +
 			 copyMyEmailPublicKey() + "\n" +

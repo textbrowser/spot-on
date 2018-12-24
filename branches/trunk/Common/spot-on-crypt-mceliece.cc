@@ -88,8 +88,8 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
     locker.unlock();
 
   if(bytes.isEmpty())
-    spoton_misc::logError("spoton_crypt::publicKeyDecryptMcEliece(): "
-			  "failure.");
+    spoton_misc::logError
+      ("spoton_crypt::publicKeyDecryptMcEliece(): failure.");
 
   return bytes;
 #else

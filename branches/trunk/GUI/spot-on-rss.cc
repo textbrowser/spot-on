@@ -235,6 +235,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
   menu->addSeparator();
   menu->addAction(tr("&Schedule selected RSS feed for update."),
 		  this, SLOT(slotScheduleFeedUpdate(void)));
+  menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.action_menu->setMenu(menu);
   connect(m_ui.action_menu,
 	  SIGNAL(clicked(void)),

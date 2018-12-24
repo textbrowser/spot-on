@@ -52,6 +52,7 @@ spoton_emailwindow::spoton_emailwindow
 #endif
   m_ui.emailSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->setVisible(false);
+  m_ui.emailSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.goldbug->setEnabled(false);
   m_ui.outgoingMessage->append(message);
   m_ui.outgoingSubject->setText(subject);

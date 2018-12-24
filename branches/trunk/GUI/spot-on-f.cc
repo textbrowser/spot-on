@@ -1533,6 +1533,13 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   QString forwardSecrecyInformation("");
   QString keyType("");
   QString oid("");
@@ -1560,11 +1567,20 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
 
   if(!spoton_misc::isValidForwardSecrecyMagnet(forwardSecrecyInformation.
 					       toLatin1(), values))
-    return;
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
   else if(oid.isEmpty())
-    return;
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
   else if(temporary) // Temporary friend?
-    return; // Not allowed!
+    {
+      QApplication::restoreOverrideCursor();
+      return; // Not allowed!
+    }
 
   /*
   ** Do we have forward secrecy keys?
@@ -1587,6 +1603,8 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
 	       "write() failure for %1:%2.").
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotPurgeEphemeralKeys(void)

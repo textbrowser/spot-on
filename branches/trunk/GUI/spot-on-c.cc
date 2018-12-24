@@ -2541,6 +2541,13 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   QString oid("");
   QString publicKeyHash("");
   QTableWidget *table = 0;
@@ -2558,7 +2565,10 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
     table = m_ui.urlParticipants;
 
   if(!table)
-    return;
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
 
   if((row = table->currentRow()) >= 0)
     {
@@ -2572,7 +2582,10 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
     }
 
   if(oid.isEmpty())
-    return;
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
   else if(oid == "0")
     {
       QString connectionName("");
@@ -2633,8 +2646,6 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 
   if(ok)
     {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
       QByteArray message;
       QByteArray name;
 
@@ -2681,9 +2692,9 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 		   "write() failure for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
-
-      QApplication::restoreOverrideCursor();
     }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotRegenerateKey(void)
@@ -2863,6 +2874,7 @@ void spoton::prepareContextMenuMirrors(void)
       else
 	menu = new QMenu(this);
 
+      menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu->addAction
 	(QIcon(QString(":/%1/add.png").
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
@@ -3043,6 +3055,7 @@ void spoton::prepareContextMenuMirrors(void)
       QAction *action = 0;
       QMenu *menu = new QMenu(this);
 
+      menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu->addAction
 	(QIcon(QString(":/%1/add.png").
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
@@ -3100,6 +3113,7 @@ void spoton::prepareContextMenuMirrors(void)
       else
 	menu = new QMenu(this);
 
+      menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
@@ -3195,6 +3209,7 @@ void spoton::prepareContextMenuMirrors(void)
       else
 	menu = new QMenu(this);
 
+      menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
@@ -3347,6 +3362,7 @@ void spoton::prepareContextMenuMirrors(void)
       QAction *action = 0;
       QMenu *menu = new QMenu(this);
 
+      menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
@@ -3378,6 +3394,7 @@ void spoton::prepareContextMenuMirrors(void)
       QAction *action = 0;
       QMenu *menu = new QMenu(this);
 
+      menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
@@ -3416,6 +3433,7 @@ void spoton::prepareContextMenuMirrors(void)
       QAction *action = 0;
       QMenu *menu = new QMenu(this);
 
+      menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu->addAction
 	(QIcon(QString(":/%1/add.png").
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
@@ -4396,6 +4414,13 @@ void spoton::slotCopyUrlFriendshipBundle(void)
       return;
     }
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   QString oid("");
   int row = -1;
 
@@ -4411,6 +4436,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(oid.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4438,6 +4464,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(cipherType.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4456,6 +4483,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(!ok || publicKey.isEmpty() || symmetricKey.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4470,6 +4498,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4478,6 +4507,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4487,6 +4517,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4495,6 +4526,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4504,6 +4536,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4533,6 +4566,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4541,6 +4575,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -4548,6 +4583,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
 		     keyInformation.toBase64() + "@" +
 		     data.toBase64() + "@" +
 		     hash.toBase64());
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotRemoveUrlParticipants(void)

@@ -2908,6 +2908,13 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!clipboard)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   QString keyType("");
   QString oid("");
   int row = -1;
@@ -2928,6 +2935,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(oid.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -2935,6 +2943,7 @@ void spoton::slotCopyFriendshipBundle(void)
      !m_crypts.value(QString("%1-signature").arg(keyType), 0))
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -2962,6 +2971,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(cipherType.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -2980,6 +2990,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!ok || publicKey.isEmpty() || symmetricKey.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -2994,6 +3005,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -3003,6 +3015,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -3013,6 +3026,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -3021,6 +3035,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -3030,6 +3045,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -3068,6 +3084,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -3076,6 +3093,7 @@ void spoton::slotCopyFriendshipBundle(void)
   if(!ok)
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -3083,6 +3101,7 @@ void spoton::slotCopyFriendshipBundle(void)
 		     keyInformation.toBase64() + "@" +
 		     data.toBase64() + "@" +
 		     hash.toBase64());
+  QApplication::restoreOverrideCursor();
 }
 
 Ui_spoton_mainwindow spoton::ui(void) const
@@ -4400,6 +4419,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
 	ui.setupUi(&dialog);
 	ui.secrets->setMenu(new QMenu(this));
+	ui.secrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
 	connect(ui.secrets,
 		SIGNAL(clicked(void)),
 		ui.secrets,

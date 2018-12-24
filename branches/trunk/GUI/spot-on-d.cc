@@ -2216,7 +2216,16 @@ void spoton::slotClearClipboardBuffer(void)
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
-    clipboard->clear();
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      menuBar()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 void spoton::slotAssignNewIPToNeighbor(void)
