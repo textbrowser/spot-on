@@ -1660,7 +1660,16 @@ void spoton::slotCopyMyChatPublicKey(void)
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
-    clipboard->setText(copyMyChatPublicKey());
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(copyMyChatPublicKey());
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 QByteArray spoton::copyMyChatPublicKey(void) const
@@ -3694,7 +3703,16 @@ void spoton::slotCopyMyEmailPublicKey(void)
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
-    clipboard->setText(copyMyEmailPublicKey());
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(copyMyEmailPublicKey());
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 void spoton::slotCopyMyPoptasticPublicKey(void)
@@ -3702,7 +3720,16 @@ void spoton::slotCopyMyPoptasticPublicKey(void)
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
-    clipboard->setText(copyMyPoptasticPublicKey());
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(copyMyPoptasticPublicKey());
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 void spoton::slotCopyMyRosettaPublicKey(void)
@@ -3710,7 +3737,16 @@ void spoton::slotCopyMyRosettaPublicKey(void)
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
-    clipboard->setText(copyMyRosettaPublicKey());
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(copyMyRosettaPublicKey());
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 QByteArray spoton::copyMyEmailPublicKey(void) const
@@ -3823,7 +3859,16 @@ void spoton::slotCopyMyURLPublicKey(void)
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
-    clipboard->setText(copyMyUrlPublicKey());
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(copyMyUrlPublicKey());
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 void spoton::slotShareURLPublicKey(void)

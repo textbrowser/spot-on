@@ -9661,7 +9661,7 @@ void spoton::slotCopyAllMyPublicKeys(void)
 
   if(clipboard)
     {
-      menuBar()->repaint();
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
       repaint();
 #ifndef Q_OS_MAC
       QApplication::processEvents();

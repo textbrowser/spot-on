@@ -186,7 +186,16 @@ void spoton::slotCopyMyOpenLibraryPublicKey(void)
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
-    clipboard->setText(copyMyOpenLibraryPublicKey());
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(copyMyOpenLibraryPublicKey());
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 void spoton::slotShareOpenLibraryPublicKey(void)

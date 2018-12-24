@@ -260,6 +260,8 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
   if(!eCrypt || !sCrypt)
     return QByteArray();
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QByteArray name;
   QByteArray mPublicKey;
   QByteArray mSignature;
@@ -281,12 +283,28 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
     sSignature = sCrypt->digitalSignature(sPublicKey, &ok);
 
   if(ok)
-    return "K" + QByteArray("rosetta").toBase64() + "@" +
-      name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
-      sPublicKey.toBase64() + "@" + sSignature.toBase64();
+    {
+      QByteArray data("K" +
+		      QByteArray("rosetta").toBase64() +
+		      "@" +
+		      name.toBase64() +
+		      "@" +
+		      mPublicKey.toBase64() +
+		      "@" +
+		      mSignature.toBase64() +
+		      "@" +
+		      sPublicKey.toBase64() +
+		      "@" +
+		      sSignature.toBase64());
+
+      QApplication::restoreOverrideCursor();
+      return data;
+    }
   else
-    return QByteArray();
+    {
+      QApplication::restoreOverrideCursor();
+      return QByteArray();
+    }
 }
 
 void spoton_rosetta::setName(const QString &text)
