@@ -209,6 +209,15 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString oid("");
   int row = -1;
 
@@ -222,7 +231,10 @@ void spoton::slotShareOpenLibraryPublicKey(void)
     }
 
   if(oid.isEmpty())
-    return;
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
 
   QByteArray publicKey;
   QByteArray signature;
@@ -246,8 +258,6 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 
   if(ok)
     {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
       QByteArray message;
       QByteArray name(m_settings.value("gui/openLibraryName", "unknown").
 		      toByteArray());
@@ -278,9 +288,9 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 		   "for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
-
-      QApplication::restoreOverrideCursor();
     }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotBuzzInvite(void)

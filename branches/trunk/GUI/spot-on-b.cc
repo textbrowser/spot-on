@@ -943,6 +943,15 @@ void spoton::slotShareChatPublicKey(void)
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString oid("");
   int row = -1;
 
@@ -956,7 +965,10 @@ void spoton::slotShareChatPublicKey(void)
     }
 
   if(oid.isEmpty())
-    return;
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
 
   QByteArray publicKey;
   QByteArray signature;
@@ -979,8 +991,6 @@ void spoton::slotShareChatPublicKey(void)
 
   if(ok)
     {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
       QByteArray message;
       QByteArray name(m_settings.value("gui/nodeName", "unknown").
 		      toByteArray());
@@ -1011,9 +1021,9 @@ void spoton::slotShareChatPublicKey(void)
 		   "for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
-
-      QApplication::restoreOverrideCursor();
     }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotShareEmailPublicKey(void)
@@ -1027,6 +1037,13 @@ void spoton::slotShareEmailPublicKey(void)
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString oid("");
@@ -3898,6 +3915,15 @@ void spoton::slotShareURLPublicKey(void)
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString oid("");
   int row = -1;
 
@@ -3911,7 +3937,10 @@ void spoton::slotShareURLPublicKey(void)
     }
 
   if(oid.isEmpty())
-    return;
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
 
   QByteArray publicKey;
   QByteArray signature;
@@ -3934,8 +3963,6 @@ void spoton::slotShareURLPublicKey(void)
 
   if(ok)
     {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
       QByteArray message;
       QByteArray name(m_settings.value("gui/urlName", "unknown").
 		      toByteArray());
@@ -3966,9 +3993,9 @@ void spoton::slotShareURLPublicKey(void)
 		   "for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
-
-      QApplication::restoreOverrideCursor();
     }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotDeleteAllUuids(void)
