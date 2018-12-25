@@ -700,7 +700,6 @@ void spoton_rosetta::slotConvert(void)
 
       if(!ok)
 	{
-	  QApplication::restoreOverrideCursor();
 	  error = tr("The method spoton_crypt::publicKeyEncrypt() failed or "
 		     "an error occurred with the QDataStream object.");
 	  goto done_label1;
@@ -752,7 +751,6 @@ void spoton_rosetta::slotConvert(void)
 	  data.toBase64() + "@" +
 	  messageCode.toBase64();
 
-      QApplication::restoreOverrideCursor();
       crypt.reset();
 
       if(!ok)
@@ -768,6 +766,8 @@ void spoton_rosetta::slotConvert(void)
 	ui.output->clear();
 
     done_label1:
+
+      QApplication::restoreOverrideCursor();
 
       if(!error.isEmpty())
 	QMessageBox::critical(this, tr("%1: Error").

@@ -3615,6 +3615,8 @@ void spoton::slotSendMail(void)
 	  (m_optionsUi.emailSignMessages->isChecked());
 
 #if SPOTON_GOLDBUG == 1
+	QApplication::restoreOverrideCursor();
+
 	QMessageBox mb(this);
 
 #ifdef Q_OS_MAC
@@ -3635,7 +3637,10 @@ void spoton::slotSendMail(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
+
+  if(QApplication::overrideCursor()->shape() != Qt::ArrowCursor)
+    QApplication::restoreOverrideCursor();
+
   m_ui.outgoingSubject->setFocus();
 }
 
