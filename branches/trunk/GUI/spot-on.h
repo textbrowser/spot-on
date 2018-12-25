@@ -890,6 +890,7 @@ class spoton: public QMainWindow
 #endif
   void slotMessagesAnchorClicked(const QUrl &url);
   void slotModeChanged(QSslSocket::SslMode mode);
+  void slotMonitorEvents(bool state);
   void slotNeighborChanged(QTableWidgetItem *item);
   void slotNeighborFullEcho(void);
   void slotNeighborHalfEcho(void);

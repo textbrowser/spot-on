@@ -871,3 +871,12 @@ void spoton::slotShowErrorMessage(void)
   QMessageBox::critical
     (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), str);
 }
+
+void spoton::slotMonitorEvents(bool state)
+{
+  m_settings["gui/monitorEvents"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/monitorEvents", state);
+}

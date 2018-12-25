@@ -1015,6 +1015,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  m_sb.warning,
 	  SLOT(hide(void)));
+  connect(m_optionsUi.monitor,
+	  SIGNAL(toggled(bool)),
+	  m_notificationsUi.monitor,
+	  SLOT(setChecked(bool)));
   connect(m_optionsUi.notifications,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1023,10 +1027,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  m_notificationsUi.activate,
 	  SLOT(setChecked(bool)));
+  connect(m_notificationsUi.monitor,
+	  SIGNAL(toggled(bool)),
+	  m_optionsUi.monitor,
+	  SLOT(setChecked(bool)));
   connect(m_notificationsUi.activate,
 	  SIGNAL(toggled(bool)),
 	  m_optionsUi.notifications,
 	  SLOT(setChecked(bool)));
+  connect(m_notificationsUi.monitor,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotMonitorEvents(bool)));
   connect(m_optionsUi.play_sounds,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2639,6 +2651,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/kernelLogEvents", false).toBool());
   m_optionsUi.limitConnections->setValue
     (m_settings.value("gui/limitConnections", 10).toInt());
+  m_optionsUi.monitor->setChecked
+    (m_settings.value("gui/monitorEvents", true).toBool());
   m_optionsUi.notifications->setChecked
     (m_settings.value("gui/automaticNotifications", false).toBool());
   m_optionsUi.openlinks->setChecked

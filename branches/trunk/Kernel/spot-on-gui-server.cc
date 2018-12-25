@@ -986,7 +986,8 @@ void spoton_gui_server::slotSMPMessage(const QByteArrayList &list)
 
 void spoton_gui_server::slotNotification(const QString &text)
 {
-  if(spoton_kernel::interfaces() == 0)
+  if(spoton_kernel::interfaces() == 0 ||
+     !spoton_kernel::setting("gui/monitorEvents", true).toBool())
     return;
 
   if(text.trimmed().isEmpty())

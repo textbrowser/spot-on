@@ -88,16 +88,7 @@
        <item>
         <widget class="QFrame" name="passphrase_frame">
          <layout class="QVBoxLayout" name="verticalLayout_7">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>0</number>
           </property>
           <item>
@@ -180,7 +171,7 @@
           <item>
            <widget class="QCheckBox" name="url_credentials">
             <property name="text">
-             <string>&amp;Apply the derived credentials to URL containers.</string>
+             <string>Apply the derived credentials to URL containers.</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -221,16 +212,7 @@
             <property name="spacing">
              <number>0</number>
             </property>
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
+            <property name="margin">
              <number>0</number>
             </property>
             <item>
@@ -346,16 +328,7 @@
             <property name="spacing">
              <number>0</number>
             </property>
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
+            <property name="margin">
              <number>0</number>
             </property>
             <item>
@@ -418,7 +391,7 @@
        <item>
         <widget class="QCheckBox" name="launch_kernel">
          <property name="text">
-          <string>&amp;Launch the GoldBug kernel upon completion.</string>
+          <string>Launch the GoldBug kernel upon completion.</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -451,16 +424,7 @@
           <property name="spacing">
            <number>0</number>
           </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>0</number>
           </property>
           <item>

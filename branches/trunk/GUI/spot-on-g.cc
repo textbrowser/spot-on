@@ -635,7 +635,8 @@ void spoton::joinBuzzChannel(const QUrl &url)
 
 void spoton::notify(const QString &text)
 {
-  if(text.trimmed().isEmpty())
+  if(!m_settings.value("gui/monitorEvents", true).toBool() ||
+     text.trimmed().isEmpty())
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
