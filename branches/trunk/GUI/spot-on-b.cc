@@ -1027,6 +1027,8 @@ void spoton::slotShareEmailPublicKey(void)
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString oid("");
   int row = -1;
 
@@ -1040,7 +1042,10 @@ void spoton::slotShareEmailPublicKey(void)
     }
 
   if(oid.isEmpty())
-    return;
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
 
   QByteArray publicKey;
   QByteArray signature;
@@ -1063,8 +1068,6 @@ void spoton::slotShareEmailPublicKey(void)
 
   if(ok)
     {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
       QByteArray message;
       QByteArray name(m_settings.value("gui/emailName", "unknown").
 		      toByteArray());
@@ -1095,9 +1098,9 @@ void spoton::slotShareEmailPublicKey(void)
 		   "for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
-
-      QApplication::restoreOverrideCursor();
     }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotRemoveParticipants(void)
@@ -1122,6 +1125,13 @@ void spoton::slotRemoveParticipants(void)
 
   if(mb.exec() != QMessageBox::Yes)
     return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
 
   QString connectionName("");
 
@@ -1194,6 +1204,7 @@ void spoton::slotRemoveParticipants(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotSaveBuzzName(void)
@@ -6065,6 +6076,13 @@ void spoton::slotRemoveEmailParticipants(void)
   if(mb.exec() != QMessageBox::Yes)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   QString connectionName("");
 
   {
@@ -6102,6 +6120,7 @@ void spoton::slotRemoveEmailParticipants(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotAddAcceptedIP(void)

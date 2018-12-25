@@ -4609,6 +4609,13 @@ void spoton::slotRemoveUrlParticipants(void)
   if(mb.exec() != QMessageBox::Yes)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
   QString connectionName("");
 
   {
@@ -4646,6 +4653,7 @@ void spoton::slotRemoveUrlParticipants(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotShowStatistics(void)
