@@ -1980,6 +1980,11 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
 
 void spoton::slotShowSMPWindow(void)
 {
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
   m_smpWindow.show(this);
   spoton_utilities::centerWidget(&m_smpWindow, this);
 }
