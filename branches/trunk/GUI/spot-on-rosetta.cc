@@ -543,6 +543,8 @@ void spoton_rosetta::slotEncryptToggled(bool state)
 
 void spoton_rosetta::populateContacts(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
 
   {
@@ -620,6 +622,8 @@ void spoton_rosetta::populateContacts(void)
 
   if(ui.contacts->count() == 0)
     ui.contacts->addItem("Empty"); // Please do not translate Empty.
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rosetta::slotConvert(void)

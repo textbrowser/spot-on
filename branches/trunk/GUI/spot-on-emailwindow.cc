@@ -281,11 +281,11 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 	if(ok && query.exec())
 	  while(query.next())
 	    {
-	      QByteArray publicKey;
 	      QString keyType("");
 	      QString name("");
 	      QString oid(query.value(1).toString());
 	      bool ok = true;
+	      bool publicKeyContainsPoptastic = false;
 	      bool temporary = query.value(2).toLongLong() == -1 ? false : true;
 
 	      keyType = crypt->decryptedAfterAuthenticated
@@ -310,8 +310,14 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 	      if(!ok)
 		name = "";
 
-	      publicKey = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(5).toByteArray()), &ok);
+	      if(query.value(5).toByteArray().length() < 1024 * 1024)
+		/*
+		** Avoid McEliece keys!
+		*/
+
+		publicKeyContainsPoptastic = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(5).toByteArray()), &ok).
+		  contains("-poptastic");
 
 	      for(int i = 0; i < query.record().count(); i++)
 		{
@@ -350,7 +356,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 					   "nouve").toString())));
 		      else if(keyType == "poptastic")
 			{
-			  if(publicKey.contains("-poptastic"))
+			  if(publicKeyContainsPoptastic)
 			    {
 			      item->setBackground
 				(QBrush(QColor(255, 255, 224)));
@@ -374,8 +380,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 		    item = new QTableWidgetItem(query.value(i).toString());
 		  else if(i == 4)
 		    {
-		      if(keyType == "poptastic" &&
-			 publicKey.contains("-poptastic"))
+		      if(keyType == "poptastic" && publicKeyContainsPoptastic)
 			item = new QTableWidgetItem("");
 		      else
 			{
