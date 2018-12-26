@@ -8458,7 +8458,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
-  if(!crypt)
+  if(!crypt || !db || !query)
     {
       delete query;
       delete db;
@@ -8532,7 +8532,6 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 
   while(query->next())
     {
-      QByteArray publicKey;
       QIcon icon;
       QString keyType("");
       QString name("");
@@ -8540,6 +8539,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
       QString status(query->value(4).toString().toLower());
       QString statusText("");
       bool ok = true;
+      bool publicKeyContainsPoptastic = false;
       bool temporary =
 	query->value(2).toLongLong() == -1 ? false : true;
 
@@ -8565,8 +8565,14 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
       if(!ok)
 	name = "";
 
-      publicKey = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(9).toByteArray()), &ok);
+      if(query->value(9).toByteArray().length() < 1024 * 1024)
+	/*
+	** Avoid McEliece keys!
+	*/
+
+	publicKeyContainsPoptastic = crypt->decryptedAfterAuthenticated
+	  (QByteArray::fromBase64(query->value(9).toByteArray()), &ok).
+	  contains("-poptastic");
 
       if(!isKernelActive())
 	status = "offline";
@@ -8594,8 +8600,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		  */
 
 		  if(!((m_ui.hideOfflineParticipants->isChecked() &&
-			status == "offline") ||
-		       publicKey.contains("-poptastic")))
+			status == "offline") || publicKeyContainsPoptastic))
 		    {
 		      row += 1;
 		      m_ui.participants->setRowCount(row);
@@ -8765,8 +8770,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 	      */
 
 	      if((m_ui.hideOfflineParticipants->isChecked() &&
-		  status == "offline") ||
-		 publicKey.contains("-poptastic"))
+		  status == "offline") || publicKeyContainsPoptastic)
 		{
 		  /*
 		  ** This may be a plain Poptastic participant.
@@ -8808,7 +8812,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 				       "nouve").toString())));
 		  else if(keyType == "poptastic")
 		    {
-		      if(publicKey.contains("-poptastic"))
+		      if(publicKeyContainsPoptastic)
 			{
 			  item->setBackground
 			    (QBrush(QColor(255, 255, 224)));
@@ -8833,8 +8837,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		  (query->value(i).toString());
 	      else if(i == 4)
 		{
-		  if(keyType == "poptastic" &&
-		     publicKey.contains("-poptastic"))
+		  if(keyType == "poptastic" && publicKeyContainsPoptastic)
 		    item = new QTableWidgetItem("");
 		  else
 		    {
