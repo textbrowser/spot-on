@@ -81,8 +81,7 @@ static libspoton_error_t initialize_libgcrypt
 (const int secure_memory_pool_size)
 {
   /*
-  ** Initialize the gcrypt library if it has not yet been
-  ** initialized.
+  ** Initialize the gcrypt library if it has not yet been initialized.
   */
 
   libspoton_error_t rerr = LIBSPOTON_ERROR_NONE;
@@ -97,7 +96,7 @@ static libspoton_error_t initialize_libgcrypt
 
       if(err == 0)
 	gcryctl_set_thread_cbs_set = true;
-      else
+      else if(stderr)
 	fprintf(stderr, "libspoton::initialize_libgcrypt(): "
 		"error initializing threads. Proceeding.\n");
     }
@@ -110,8 +109,10 @@ static libspoton_error_t initialize_libgcrypt
 	rerr = LIBSPOTON_ERROR_GCRY_CHECK_VERSION;
       else if(secure_memory_pool_size == 0)
 	{
-	  fprintf(stderr, "libspoton::initialize_libgcrypt(): "
-		  "disabling secure memory.\n");
+	  if(stderr)
+	    fprintf(stderr, "libspoton::initialize_libgcrypt(): "
+		    "disabling secure memory.\n");
+
 	  gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
 	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 	}
