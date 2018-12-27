@@ -1169,10 +1169,8 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 	query.prepare("INSERT OR REPLACE INTO relationships_with_signatures "
 		      "(public_key_hash, signature_public_key_hash) "
 		      "VALUES (?, ?)");
-
-	if(ok)
-	  query.bindValue
-	    (0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+	query.bindValue
+	  (0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue

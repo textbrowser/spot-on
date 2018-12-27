@@ -103,6 +103,9 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
 #endif
 #else
   m_backlog = 0;
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+  m_socketNotifier = 0;
+#endif
 #endif
 }
 

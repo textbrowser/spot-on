@@ -3639,17 +3639,16 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     0,
 				     "");
 
-		  if(ok)
-		    data = crypt.encrypted
-		      (myPublicKeyHash.toBase64() + "\n" +
-		       items.value(0).toBase64() + "\n" + // Name
-		       items.value(1).toBase64() + "\n" + // Subject
-		       items.value(2).toBase64() + "\n" + // Message
-		       items.value(3).toBase64() + "\n" + // Date
-		       items.value(4).toBase64() + "\n" + // Attachment Data
-		       items.value(5).toBase64() + "\n" + // Signature
-		       QVariant(goldbugUsed).toByteArray().toBase64(),
-		       &ok);
+		  data = crypt.encrypted
+		    (myPublicKeyHash.toBase64() + "\n" +
+		     items.value(0).toBase64() + "\n" + // Name
+		     items.value(1).toBase64() + "\n" + // Subject
+		     items.value(2).toBase64() + "\n" + // Message
+		     items.value(3).toBase64() + "\n" + // Date
+		     items.value(4).toBase64() + "\n" + // Attachment Data
+		     items.value(5).toBase64() + "\n" + // Signature
+		     QVariant(goldbugUsed).toByteArray().toBase64(),
+		     &ok);
 
 		  if(ok)
 		    messageCode1 = crypt.keyedHash
@@ -3956,17 +3955,16 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				     0,
 				     "");
 
-		  if(ok)
-		    data2 = crypt.encrypted
-		      (myPublicKeyHash.toBase64() + "\n" +
-		       items.value(0).toBase64() + "\n" + // Name
-		       items.value(1).toBase64() + "\n" + // Subject
-		       items.value(2).toBase64() + "\n" + // Message
-		       items.value(3).toBase64() + "\n" + // Date
-		       items.value(4).toBase64() + "\n" + // Attachment Data
-		       items.value(5).toBase64() + "\n" + // Signature
-		       QVariant(goldbugUsed).toByteArray().toBase64(),
-		       &ok);
+		  data2 = crypt.encrypted
+		    (myPublicKeyHash.toBase64() + "\n" +
+		     items.value(0).toBase64() + "\n" + // Name
+		     items.value(1).toBase64() + "\n" + // Subject
+		     items.value(2).toBase64() + "\n" + // Message
+		     items.value(3).toBase64() + "\n" + // Date
+		     items.value(4).toBase64() + "\n" + // Attachment Data
+		     items.value(5).toBase64() + "\n" + // Signature
+		     QVariant(goldbugUsed).toByteArray().toBase64(),
+		     &ok);
 
 		  if(ok)
 		    messageCode1 = spoton_crypt::keyedHash

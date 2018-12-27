@@ -66,27 +66,32 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 
   try
     {
-      int m = 11;
       size_t offset = static_cast<size_t>
 	(qstrlen("mceliece-private-key-000-m00t00"));
 
-      if(memcmp(privateKey, "mceliece-private-key-foa-m12t68", offset) == 0 ||
-	 memcmp(privateKey, "mceliece-private-key-fob-m12t68", offset) == 0)
-	m = 12;
-
-      NTL::GF2E::init
-	(NTL::
-	 BuildIrred_GF2X(static_cast<long int> (m))); /*
-						      ** Initialize
-						      ** some NTL
-						      ** internal
-						      ** object(s).
-						      */
-
-      if(privateKey && privateKeyLength > offset)
+      if(privateKeyLength > offset)
 	{
 	  if((c = new (std::nothrow) char[privateKeyLength - offset + 1]))
 	    {
+	      int m = 11;
+
+	      if(memcmp(privateKey,
+			"mceliece-private-key-foa-m12t68",
+			offset) == 0 ||
+		 memcmp(privateKey,
+			"mceliece-private-key-fob-m12t68",
+			offset) == 0)
+		m = 12;
+
+	      NTL::GF2E::init
+		(NTL::
+		 BuildIrred_GF2X(static_cast<long int> (m))); /*
+							      ** Initialize
+							      ** some NTL
+							      ** internal
+							      ** object(s).
+							      */
+
 	      if(memcmp(privateKey,
 			"mceliece-private-key-foa",
 			offset - 7) == 0)
