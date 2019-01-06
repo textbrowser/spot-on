@@ -1,6 +1,5 @@
 The McEliece cryptographic system is only enabled for the FreeBSD, Linux,
-OS X, and Windows Qt 5.x project files. On Linux, please execute
-./configure within libNTL/unix.d/src before compiling Spot-On.
+OS X, and Windows Qt 5.x project files.
 Version 9.10.0 of NTL, or newer, is suitable. C++ exceptions must
 be enabled (NTL_EXCEPTIONS)!
 

@@ -1,7 +1,7 @@
 cache()
 include(spot-on-gui-source.pro)
 libntl.target = libntl.so
-libntl.commands = cd ../../libNTL/unix.d/src && $(MAKE)
+libntl.commands = cd ../../libNTL/unix.d/src && ./configure && $(MAKE)
 libntl.depends =
 libntru.target = libntru.so
 libntru.commands = $(MAKE) -C ../../libNTRU

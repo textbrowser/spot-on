@@ -880,3 +880,43 @@ void spoton::slotMonitorEvents(bool state)
 
   settings.setValue("gui/monitorEvents", state);
 }
+
+void spoton::slotPQUrlDatabaseFaulty(void)
+{
+  slotPostgreSQLDisconnect(0);
+}
+
+void spoton::inspectPQUrlDatabase(const QByteArray &password)
+{
+  QSettings settings;
+  QSqlDatabase db = QSqlDatabase::addDatabase
+    ("QPSQL", "inspect_pq_url_database");
+  QString options
+    (settings.value("gui/postgresql_connection_options", "").
+     toString().trimmed());
+  QString str("connect_timeout=5");
+
+  if(!options.isEmpty())
+    {
+      str.append(";");
+      str.append(options);
+    }
+
+  if(settings.value("gui/postgresql_ssltls", false).toBool())
+    str.append(";requiressl=1");
+
+  db.setConnectOptions(str);
+  db.setDatabaseName
+    (settings.value("gui/postgresql_database", "").toString().trimmed());
+  db.setHostName
+    (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
+  db.setPort(settings.value("gui/postgresql_port", 5432).toInt());
+
+  if(!db.open(settings.value("gui/postgresql_name", "").toString().trimmed(),
+	      password))
+    emit pqUrlDatabaseFaulty();
+
+  db.close();
+  db = QSqlDatabase();
+  QSqlDatabase::removeDatabase("inspect_pq_url_database");
+}

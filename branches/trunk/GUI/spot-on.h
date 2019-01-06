@@ -507,6 +507,7 @@ class spoton: public QMainWindow
   QFuture<void> m_generalFuture;
   QFuture<void> m_neighborsFuture;
   QFuture<void> m_participantsFuture;
+  QFuture<void> m_pqUrlDatabaseFuture;
   QFutureWatcher<QList<QPair<QString, QVariant> > > m_statisticsFutureWatcher;
   QHash<QByteArray, QPointer<spoton_buzzpage> > m_buzzPages;
   QHash<QByteArray, QString> m_neighborToOidMap;
@@ -645,6 +646,7 @@ class spoton: public QMainWindow
   void initializeKernelSocket(void);
   void initializeSMP(const QString &hash);
   void initializeUrlDistillers(void);
+  void inspectPQUrlDatabase(const QByteArray &password);
   void joinBuzzChannel(const QUrl &url);
   void joinDefaultBuzzChannel(void);
   void magnetize(void);
@@ -903,6 +905,7 @@ class spoton: public QMainWindow
   void slotNotificationsEnabled(bool state);
   void slotOntopChatDialogs(bool state);
   void slotOpenChatUrlChecked(bool state);
+  void slotPQUrlDatabaseFaulty(void);
   void slotPageClicked(const QString &link);
   void slotParticipantDoubleClicked(QTableWidgetItem *item);
   void slotPassphraseAuthenticateRadioToggled(bool state);
@@ -1100,6 +1103,7 @@ class spoton: public QMainWindow
   void participantsQueryReady(QSqlDatabase *db,
 			      QSqlQuery *query,
 			      const QString &connectionName);
+  void pqUrlDatabaseFaulty(void);
   void smpMessageReceivedFromKernel(const QByteArrayList &list);
   void statusChanged(const QIcon &icon,
 		     const QString &name,

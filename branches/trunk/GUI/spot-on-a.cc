@@ -855,6 +855,10 @@ spoton::spoton(void):QMainWindow()
 					QSqlQuery *,
 					const QString &)));
   connect(this,
+	  SIGNAL(pqUrlDatabaseFaulty(void)),
+	  this,
+	  SLOT(slotPQUrlDatabaseFaulty(void)));
+  connect(this,
 	  SIGNAL(smpMessageReceivedFromKernel(const QByteArrayList &)),
 	  &m_smpWindow,
 	  SLOT(slotSMPMessageReceivedFromKernel(const QByteArrayList &)));
@@ -3367,6 +3371,8 @@ void spoton::cleanup(void)
   m_neighborsFuture.waitForFinished();
   m_participantsFuture.cancel();
   m_participantsFuture.waitForFinished();
+  m_pqUrlDatabaseFuture.cancel();
+  m_pqUrlDatabaseFuture.waitForFinished();
   m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
 
   while(!m_starbeamDigestFutures.isEmpty())
@@ -4887,7 +4893,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
-  if(!crypt)
+  if(!crypt || !db || !query)
     {
       delete query;
       delete db;
@@ -6033,6 +6039,33 @@ void spoton::slotGeneralTimerTimeout(void)
       m_generalFuture = QtConcurrent::run
 	(this, &spoton::generalConcurrentMethod, settings);
     }
+
+  /*
+  ** Is the PostgreSQL URLs database healthy?
+  */
+
+  if(!m_ui.url_database_connection_information->text().isEmpty())
+    if(m_urlDatabase.driverName() == "QPSQL")
+      if(m_pqUrlDatabaseFuture.isFinished())
+	{
+	  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+	  if(crypt)
+	    {
+	      QByteArray password;
+	      bool ok = true;
+
+	      password = crypt->decryptedAfterAuthenticated
+		(QByteArray::
+		 fromBase64(m_settings.
+			    value("gui/postgresql_password", "").
+			    toByteArray()), &ok);
+
+	      if(ok)
+		m_pqUrlDatabaseFuture = QtConcurrent::run
+		  (this, &spoton::inspectPQUrlDatabase, password);
+	    }
+	}
 }
 
 void spoton::slotSelectGeoIPPath(void)
