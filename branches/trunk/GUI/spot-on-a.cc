@@ -484,6 +484,7 @@ spoton::spoton(void):QMainWindow()
   m_documentation->setWindowTitle
     (tr("%1: Documentation").arg(SPOTON_APPLICATION_NAME));
   m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, 0);
+  m_pqUrlFaultyCounter = 0;
   m_releaseNotes = new spoton_documentation
     (QUrl("qrc:/Documentation/RELEASE-NOTES.html"), 0);
   m_releaseNotes->setWindowTitle

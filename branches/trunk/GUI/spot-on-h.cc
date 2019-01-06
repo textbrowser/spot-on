@@ -883,14 +883,15 @@ void spoton::slotMonitorEvents(bool state)
 
 void spoton::slotPQUrlDatabaseFaulty(void)
 {
+  m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
   slotPostgreSQLDisconnect(0);
 }
 
 void spoton::inspectPQUrlDatabase(const QByteArray &password)
 {
   QSettings settings;
-  QSqlDatabase db = QSqlDatabase::addDatabase
-    ("QPSQL", "inspect_pq_url_database");
+  QSqlDatabase db;
+  QString connectionName(spoton_misc::databaseName());
   QString options
     (settings.value("gui/postgresql_connection_options", "").
      toString().trimmed());
@@ -905,6 +906,7 @@ void spoton::inspectPQUrlDatabase(const QByteArray &password)
   if(settings.value("gui/postgresql_ssltls", false).toBool())
     str.append(";requiressl=1");
 
+  db = QSqlDatabase::addDatabase("QPSQL", connectionName);
   db.setConnectOptions(str);
   db.setDatabaseName
     (settings.value("gui/postgresql_database", "").toString().trimmed());
@@ -914,9 +916,10 @@ void spoton::inspectPQUrlDatabase(const QByteArray &password)
 
   if(!db.open(settings.value("gui/postgresql_name", "").toString().trimmed(),
 	      password))
-    emit pqUrlDatabaseFaulty();
+    if(m_pqUrlFaultyCounter.fetchAndAddOrdered(1) > 5)
+      emit pqUrlDatabaseFaulty();
 
   db.close();
   db = QSqlDatabase();
-  QSqlDatabase::removeDatabase("inspect_pq_url_database");
+  QSqlDatabase::removeDatabase(connectionName);
 }

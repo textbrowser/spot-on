@@ -493,6 +493,7 @@ class spoton: public QMainWindow
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE = 2;
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL = 3;
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY = 4;
+  QAtomicInt m_pqUrlFaultyCounter;
   QAtomicInt m_starbeamDigestInterrupt;
   QByteArray m_kernelSocketData;
   QDateTime m_buzzFavoritesLastModificationTime;
