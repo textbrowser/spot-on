@@ -111,24 +111,30 @@ void spoton::slotSetSocketOptions(void)
 
   ui.setupUi(&dialog);
   ui.nodelay->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
+
 #ifndef SPOTON_SCTP_ENABLED
-  ui.nodelay->setEnabled(!(transport == "SCTP"));
+  if(transport == "SCTP")
+    ui.nodelay->setEnabled(false);
 #endif
 
   if(!ui.nodelay->isEnabled())
     ui.nodelay->setToolTip(tr("SCTP, if available, and TCP only."));
 
   ui.so_keepalive->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
+
 #ifndef SPOTON_SCTP_ENABLED
-  ui.so_keepalive->setEnabled(!(transport == "SCTP"));
+  if(transport == "SCTP")
+    ui.so_keepalive->setEnabled(false);
 #endif
 
   if(!ui.so_keepalive->isEnabled())
     ui.so_keepalive->setToolTip(tr("SCTP, if available, and TCP only."));
 
   ui.so_linger->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
+
 #ifndef SPOTON_SCTP_ENABLED
-  ui.so_linger->setEnabled(!(transport == "SCTP"));
+  if(transport == "SCTP")
+    ui.so_linger->setEnabled(false);
 #endif
 
   if(!ui.so_linger->isEnabled())
