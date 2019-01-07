@@ -1137,9 +1137,6 @@ void spoton::slotSetPrivateApplicationInformation(void)
   dialog.setWindowTitle
     (tr("%1: Private Application Credentials").
      arg(SPOTON_APPLICATION_NAME));
-#ifdef Q_OS_MAC
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
   ui.cipher_type->addItems(ctypes);
   ui.hash_type->addItems(htypes);
 
@@ -1294,11 +1291,6 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
   m_wizardHash["url_create_sqlite_db"] = false;
   m_wizardHash["url_credentials"] = true;
   m_wizardHash["url_distribution"] = false;
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Would you like to launch the initialization wizard?"));
@@ -1784,11 +1776,6 @@ void spoton::slotResetAllStyleSheets(void)
 #if SPOTON_GOLDBUG == 0
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to reset all custom widget "

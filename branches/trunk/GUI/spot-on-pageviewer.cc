@@ -301,9 +301,6 @@ void spoton_pageviewer::slotPagePrintPreview(void)
   QPrinter printer(QPrinter::HighResolution);
   QPrintPreviewDialog printDialog(&printer, this);
 
-#ifdef Q_OS_MAC
-  printDialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
   printDialog.setWindowModality(Qt::WindowModal);
   connect(&printDialog,
 	  SIGNAL(paintRequested(QPrinter *)),

@@ -51,12 +51,6 @@ spoton_neighborstatistics::spoton_neighborstatistics(QWidget *parent):
   m_timer.setInterval(2500);
   m_timer.start();
 #ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#if QT_VERSION >= 0x050000
-  setWindowFlags(windowFlags() & ~Qt::WindowFullscreenButtonHint);
-#endif
   statusBar()->setSizeGripEnabled(false);
 #endif
 }

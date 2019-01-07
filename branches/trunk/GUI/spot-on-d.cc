@@ -1379,9 +1379,6 @@ void spoton::slotSetAETokenInformation(void)
   dialog.setWindowTitle
     (tr("%1: Adaptive Echo Information").
      arg(SPOTON_APPLICATION_NAME));
-#ifdef Q_OS_MAC
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
   ui.token_e_type->addItems(etypes);
   ui.token_h_type->addItems(htypes);
 
@@ -1567,11 +1564,6 @@ bool spoton::promptBeforeExit(void)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("The File Encryption application is occupied. "
@@ -1591,11 +1583,6 @@ bool spoton::promptBeforeExit(void)
       {
 	QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	mb.setIcon(QMessageBox::Question);
 	mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	mb.setText(tr("The kernel appears to be active. Closing %1 "
@@ -1660,11 +1647,6 @@ void spoton::slotAddAttachment(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -1717,11 +1699,6 @@ void spoton::slotSaveAttachment(void)
   QFileDialog dialog(this);
 
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
   dialog.setDirectory(QDir::homePath());
   dialog.setFileMode(QFileDialog::Directory);
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));

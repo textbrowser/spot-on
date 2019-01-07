@@ -44,12 +44,6 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
   m_ui.secrets->setColumnHidden(m_ui.secrets->columnCount() - 1, true); // OID
   setWindowTitle(tr("%1: SMP").arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#if QT_VERSION >= 0x050000
-  setWindowFlags(windowFlags() & ~Qt::WindowFullscreenButtonHint);
-#endif
   statusBar()->setSizeGripEnabled(false);
 #endif
   connect(m_ui.action_Close,
@@ -1093,11 +1087,6 @@ void spoton_smpwindow::slotRemove(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected secret?"));

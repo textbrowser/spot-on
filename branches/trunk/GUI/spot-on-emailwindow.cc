@@ -153,11 +153,6 @@ void spoton_emailwindow::slotAddAttachment(void)
   QFileDialog dialog(this);
 
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-  #ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
   dialog.setDirectory(QDir::homePath());
   dialog.setFileMode(QFileDialog::ExistingFiles);
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));

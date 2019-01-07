@@ -1847,11 +1847,6 @@ void spoton_rss::slotDeleteAllFeeds(void)
 {
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to delete all of the RSS "
@@ -1892,11 +1887,6 @@ void spoton_rss::slotDeleteFeed(void)
 {
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to delete the selected RSS "
@@ -2298,11 +2288,6 @@ void spoton_rss::slotPurge(void)
 {
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to purge obsolete links?"));
@@ -2362,11 +2347,6 @@ void spoton_rss::slotRefreshTimeline(void)
 
   QProgressDialog progress(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   progress.setLabelText(tr("Populating..."));
   progress.setMaximum(0);
   progress.setMinimum(0);
@@ -2622,11 +2602,6 @@ void spoton_rss::slotRemoveMalformed(void)
 {
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove all malformed links?"));
@@ -3092,11 +3067,6 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
       QUrl u(url);
 
       u.setScheme(u.scheme().remove(0, 7));
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to remove %1?").

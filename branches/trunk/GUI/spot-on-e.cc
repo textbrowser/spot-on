@@ -173,9 +173,6 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneDialog->setWindowTitle
     (tr("%1: Poptastic & RetroPhone Settings").
      arg(SPOTON_APPLICATION_NAME));
-#ifdef Q_OS_MAC
-  m_poptasticRetroPhoneDialog->setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
   m_poptasticRetroPhoneSettingsUi.capath->setText
     (m_settings.value("gui/poptasticCAPath", "").toString());
   m_poptasticRetroPhoneSettingsUi.number_of_messages->setValue
@@ -583,11 +580,6 @@ void spoton::slotPoptasticSettingsReset(void)
 {
   QMessageBox mb(m_poptasticRetroPhoneDialog);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to reset your Poptastic "
@@ -688,11 +680,6 @@ void spoton::slotSelectCAPath(void)
       dialog.setDirectory(QDir::homePath());
       dialog.setLabelText(QFileDialog::Accept, tr("Select"));
       dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
       if(dialog.exec() == QDialog::Accepted)
 	{
@@ -1458,11 +1445,6 @@ void spoton::slotShareStarBeam(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   if(dialog.exec() != QDialog::Accepted)
     return;
@@ -2399,11 +2381,6 @@ void spoton::slotDeletePoptasticAccount(void)
 
   QMessageBox mb(m_poptasticRetroPhoneDialog);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to delete the specified "

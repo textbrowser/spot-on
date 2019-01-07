@@ -303,9 +303,6 @@ void spoton::slotEstablishForwardSecrecy(void)
     (tr("%1: Forward Secrecy Algorithms Selection").
      arg(SPOTON_APPLICATION_NAME));
   ui.setupUi(dialog.data());
-#ifdef Q_OS_MAC
-  dialog->setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
   ui.encryptionKeySize->setObjectName("encryption_key_size");
 #ifndef SPOTON_MCELIECE_ENABLED
   ui.encryptionKeyType->model()->setData
@@ -342,12 +339,6 @@ void spoton::slotEstablishForwardSecrecy(void)
     algorithm = "rsa";
 
   keySize = ui.encryptionKeySize->currentText();
-
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   progress.setLabelText(tr("Generating key pairs. Please be patient."));
   progress.setMaximum(publicKeyHashes.size());
   progress.setMinimum(0);
@@ -601,9 +592,6 @@ void spoton::slotRespondToForwardSecrecy(void)
     (tr("%1: Forward Secrecy Algorithms Selection").
      arg(SPOTON_APPLICATION_NAME));
   ui.setupUi(dialog);
-#ifdef Q_OS_MAC
-  dialog->setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
   ui.authentication_algorithm->addItems(aTypes);
   ui.encryption_algorithm->addItems(eTypes);
   ui.tab->setCurrentIndex(1);
@@ -1286,11 +1274,6 @@ void spoton::slotDeleteKey(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
@@ -1349,11 +1332,6 @@ void spoton::slotLock(void)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to lock the application? "
@@ -1892,11 +1870,6 @@ void spoton::slotLinkClicked(const QUrl &url)
   if(str.length() > 64)
     str = str.mid(0, 24) + "..." + str.right(24);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to access the URL %1?").arg(str));

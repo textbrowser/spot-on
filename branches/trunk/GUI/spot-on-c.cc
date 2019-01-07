@@ -470,11 +470,6 @@ void spoton::slotSelectDestination(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   if(dialog.exec() == QDialog::Accepted)
     saveDestination(dialog.selectedFiles().value(0));
@@ -941,11 +936,6 @@ void spoton::slotSelectTransmitFile(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   if(dialog.exec() == QDialog::Accepted)
     m_ui.transmittedFile->setText
@@ -2729,11 +2719,6 @@ void spoton::slotRegenerateKey(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
@@ -2756,11 +2741,6 @@ void spoton::slotRegenerateKey(void)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("McEliece key pairs require a significant amount of "
@@ -3693,11 +3673,6 @@ void spoton::slotExportPublicKeys(void)
 #endif
   dialog.setLabelText(QFileDialog::Accept, tr("Save"));
   dialog.setAcceptMode(QFileDialog::AcceptSave);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
   dialog.selectFile(QString("spot-on-public-keys-export-%1.txt").
 		    arg(QDateTime::currentDateTime().
 			toString("MM-dd-yyyy-hh-mm-ss")));
@@ -3764,11 +3739,6 @@ void spoton::slotImportPublicKeys(void)
 #endif
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   int imported = 0;
   int notimported = 0;
@@ -3784,11 +3754,6 @@ void spoton::slotImportPublicKeys(void)
 	{
 	  QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
@@ -3865,11 +3830,6 @@ void spoton::slotExportListeners(void)
 #endif
   dialog.setLabelText(QFileDialog::Accept, tr("Save"));
   dialog.setAcceptMode(QFileDialog::AcceptSave);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
   dialog.selectFile(QString("spot-on-listeners-export-%1.txt").
 		    arg(QDateTime::currentDateTime().
 			toString("MM-dd-yyyy-hh-mm-ss")));
@@ -3961,11 +3921,6 @@ void spoton::slotImportNeighbors(void)
 #endif
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -3978,11 +3933,6 @@ void spoton::slotImportNeighbors(void)
 	{
 	  QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
@@ -4593,11 +4543,6 @@ void spoton::slotRemoveUrlParticipants(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "

@@ -48,12 +48,6 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
      arg(SPOTON_APPLICATION_NAME));
   ui.name->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
 #ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#if QT_VERSION >= 0x050000
-  setWindowFlags(windowFlags() & ~Qt::WindowFullscreenButtonHint);
-#endif
   statusBar()->setSizeGripEnabled(false);
 #endif
   connect(ui.action_Close,
@@ -396,11 +390,6 @@ void spoton_rosetta::slotAddContact(void)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Unable to retrieve your %1 "
@@ -421,11 +410,6 @@ void spoton_rosetta::slotAddContact(void)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Unable to retrieve your %1 signature "
@@ -968,11 +952,6 @@ void spoton_rosetta::slotDelete(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "

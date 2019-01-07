@@ -66,12 +66,6 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
 #ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#if QT_VERSION >= 0x050000
-  setWindowFlags(windowFlags() & ~Qt::WindowFullscreenButtonHint);
-#endif
   statusBar()->setSizeGripEnabled(false);
 #endif
   connect(ui.action_Close,
@@ -534,11 +528,6 @@ void spoton_chatwindow::slotShareStarBeam(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   if(dialog.exec() != QDialog::Accepted)
     return;
@@ -751,11 +740,6 @@ void spoton_chatwindow::slotLinkClicked(const QUrl &url)
   if(str.length() > 64)
     str = str.mid(0, 24) + "..." + str.right(24);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to access %1?").arg(str));

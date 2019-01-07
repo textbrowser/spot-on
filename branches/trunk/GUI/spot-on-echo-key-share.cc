@@ -46,12 +46,6 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
   setWindowTitle
     (tr("%1: Echo Public Key Share").arg(SPOTON_APPLICATION_NAME));
 #ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#if QT_VERSION >= 0x050000
-  setWindowFlags(windowFlags() & ~Qt::WindowFullscreenButtonHint);
-#endif
   statusBar()->setSizeGripEnabled(false);
 #endif
   connect(ui.action_Close,
@@ -559,11 +553,6 @@ void spoton_echo_key_share::deleteSelected(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "

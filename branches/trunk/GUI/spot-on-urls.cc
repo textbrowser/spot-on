@@ -125,11 +125,6 @@ void spoton::slotPrepareUrlDatabases(void)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Please note that the database-preparation process may "
@@ -156,12 +151,7 @@ void spoton::slotPrepareUrlDatabases(void)
 
   QProgressDialog progress(this);
   bool created = true;
-
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
+  
   progress.setLabelText(tr("Creating URL databases. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
@@ -373,11 +363,6 @@ void spoton::slotDeleteAllUrls(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to delete most of the "
@@ -428,11 +413,6 @@ void spoton::slotDropUrlTables(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to drop most of the "
@@ -461,11 +441,6 @@ void spoton::slotDropUrlTables(void)
   QProgressDialog progress(this);
   bool dropped = true;
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   progress.setLabelText(tr("Dropping URL tables. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
@@ -550,11 +525,6 @@ bool spoton::deleteAllUrls(void)
   QProgressDialog progress(this);
   bool deleted = true;
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   progress.setLabelText(tr("Deleting URL data... Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
@@ -657,11 +627,6 @@ void spoton::slotGatherUrlStatistics(void)
   qint64 count = 0;
   qint64 size = 0;
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   progress.setLabelText(tr("Gathering URL statistics. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
@@ -753,11 +718,6 @@ void spoton::slotImportUrls(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Did you prepare your URL databases and URL distillers?"));
@@ -831,11 +791,6 @@ void spoton::slotImportUrls(void)
   QDateTime now(QDateTime::currentDateTime());
   QProgressDialog progress(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   progress.setLabelText(tr("Importing URLs. Please be patient."));
   progress.setMaximum(0);
   progress.setMinimum(0);
@@ -1076,11 +1031,6 @@ void spoton::slotSelectUrlIniPath(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   if(dialog.exec() == QDialog::Accepted)
     saveUrlIniPath(dialog.selectedFiles().value(0));
@@ -1305,9 +1255,6 @@ void spoton::slotPostgreSQLConnect(void)
   dialog.setWindowTitle
     (tr("%1: PostgreSQL Connect").
      arg(SPOTON_APPLICATION_NAME));
-#ifdef Q_OS_MAC
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
   ui.connection_options->setText
     (settings.value("gui/postgresql_connection_options", "").
      toString().trimmed());
@@ -1419,11 +1366,6 @@ void spoton::slotSaveCommonUrlCredentials(void)
     }
 
   mb.reset(new QMessageBox(this));
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb->setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb->setIcon(QMessageBox::Question);
   mb->setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb->setText(tr("In order to save new Common Credentials, "
@@ -1851,11 +1793,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       if(str.length() > 64)
 	str = str.mid(0, 24) + "..." + str.right(24);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to remove the URL %1?").
@@ -1888,9 +1825,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
       QFileDialog dialog(this);
 
-#ifdef Q_OS_MAC
-      dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
       dialog.setAcceptMode(QFileDialog::AcceptSave);
 #if QT_VERSION < 0x050000
       dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
@@ -2035,11 +1969,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to share the URL %1?").
@@ -2172,11 +2101,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  if(str.length() > 64)
 	    str = str.mid(0, 24) + "..." + str.right(24);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Are you sure that you wish to access the URL %1?").
@@ -2271,11 +2195,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
   QProgressDialog progress(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   progress.setLabelText(tr("Deleting URL keywords. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
@@ -2389,11 +2308,6 @@ void spoton::slotCorrectUrlDatabases(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
@@ -2432,11 +2346,6 @@ void spoton::slotCorrectUrlDatabases(void)
 
   QProgressDialog progress(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   progress.setLabelText(tr("Deleting orphaned URL keywords. "
 			   "Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);

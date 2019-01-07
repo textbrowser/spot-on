@@ -1127,11 +1127,6 @@ void spoton::slotRemoveParticipants(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "
@@ -2339,11 +2334,6 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 	{
 	  QMessageBox mb(parent);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Unable to retrieve your %1 "
@@ -2366,11 +2356,6 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 	{
 	  QMessageBox mb(parent);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Unable to retrieve your %1 signature "
@@ -2404,11 +2389,6 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 	{
 	  QMessageBox mb(parent);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Invalid %1 "
@@ -2434,11 +2414,6 @@ bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
 	{
 	  QMessageBox mb(parent);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText(tr("Invalid %1 "
@@ -2861,11 +2836,6 @@ void spoton::slotResetAll(void)
 {
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to reset %1? All "
@@ -3636,11 +3606,6 @@ void spoton::slotSendMail(void)
 
 	QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	mb.setIcon(QMessageBox::Information);
 	mb.setText(tr("E-mail has been queued."));
 	mb.setWindowIcon(windowIcon());
@@ -4925,11 +4890,6 @@ void spoton::slotEmptyTrash(void)
 {
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to empty the Trash folder?"));
@@ -5023,11 +4983,6 @@ void spoton::slotKernelStatus(void)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
@@ -6092,11 +6047,6 @@ void spoton::slotRemoveEmailParticipants(void)
 
   QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected "

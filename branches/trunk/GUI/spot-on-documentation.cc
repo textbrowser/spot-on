@@ -74,11 +74,6 @@ void spoton_documentation::slotAnchorClicked(const QUrl &url)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to open %1?").
@@ -116,9 +111,6 @@ void spoton_documentation::slotPagePrintPreview(void)
   QPrinter printer(QPrinter::HighResolution);
   QPrintPreviewDialog printDialog(&printer, this);
 
-#ifdef Q_OS_MAC
-  printDialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
   printDialog.setWindowModality(Qt::WindowModal);
   connect(&printDialog,
 	  SIGNAL(paintRequested(QPrinter *)),

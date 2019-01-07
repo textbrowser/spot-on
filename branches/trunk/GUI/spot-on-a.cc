@@ -681,11 +681,6 @@ spoton::spoton(void):QMainWindow()
 	break;
       }
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 #if QT_VERSION >= 0x050501
   m_ui.message->setPlaceholderText(tr("Please type a message..."));
 #endif
@@ -755,29 +750,11 @@ spoton::spoton(void):QMainWindow()
   m_notificationsWindow->setWindowFlags
     (m_notificationsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  m_notificationsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#if QT_VERSION >= 0x050000
-  m_notificationsWindow->setWindowFlags
-    (m_notificationsWindow->windowFlags() & ~Qt::WindowFullscreenButtonHint);
-#endif
-#endif
   m_statisticsWindow->setWindowTitle
     (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
   m_statisticsWindow->setWindowFlags
     (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
-#endif
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  m_statisticsWindow->setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#if QT_VERSION >= 0x050000
-  m_statisticsWindow->setWindowFlags
-    (m_statisticsWindow->windowFlags() & ~Qt::WindowFullscreenButtonHint);
-#endif
 #endif
 #ifdef Q_OS_MAC
   foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
@@ -5761,11 +5738,6 @@ void spoton::slotDeactivateKernel(void)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
@@ -6080,11 +6052,6 @@ void spoton::slotSelectGeoIPPath(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -6106,11 +6073,6 @@ void spoton::slotSelectKernelPath(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
-#endif
 
   if(dialog.exec() == QDialog::Accepted)
     saveKernelPath(dialog.selectedFiles().value(0));
@@ -6414,11 +6376,6 @@ void spoton::slotSetPassphrase(void)
     {
       QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
@@ -6574,11 +6531,6 @@ void spoton::slotSetPassphrase(void)
 	    {
 	      QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	      mb.setIcon(QMessageBox::Question);
 	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	      mb.setText(tr("Would you like to generate public key pairs?"));
@@ -6598,11 +6550,6 @@ void spoton::slotSetPassphrase(void)
 	      {
 		QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-		mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 		mb.setIcon(QMessageBox::Question);
 		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		mb.setText
@@ -6662,11 +6609,6 @@ void spoton::slotSetPassphrase(void)
 
 	      QProgressDialog progress(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	      progress.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	      progress.setLabelText(tr("Generating key pairs. "
 				       "Please be patient."));
 	      progress.setMaximum(list.size());
@@ -6841,11 +6783,6 @@ void spoton::slotSetPassphrase(void)
 		{
 		  QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-		  mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 		  mb.setIcon(QMessageBox::Question);
 		  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		  mb.setText(tr("Would you like to exercise your new "
@@ -7054,11 +6991,6 @@ void spoton::slotSetPassphrase(void)
 	      {
 		QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-		mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 		mb.setIcon(QMessageBox::Question);
 		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		mb.setText(tr("Would you like the kernel to be activated?"));
@@ -8120,11 +8052,6 @@ void spoton::sendKeysToKernel(void)
 	    {
 	      QMessageBox mb(this);
 
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-	      mb.setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
 	      mb.setIcon(QMessageBox::Question);
 	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	      mb.setText
@@ -9888,9 +9815,6 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
   dialog.setWindowTitle
     (tr("%1: Authenticate Neighbor Account").
      arg(SPOTON_APPLICATION_NAME));
-#ifdef Q_OS_MAC
-  dialog.setAttribute(Qt::WA_MacMetalStyle, false);
-#endif
 
   if(!message.isEmpty())
     ui.message->setText(message);
