@@ -106,11 +106,6 @@ class spoton_virtual_keyboard: public QDialog
   spoton_virtual_keyboard(QWidget *parent):QDialog(parent)
   {
     m_ui.setupUi(this);
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-    setAttribute(Qt::WA_MacMetalStyle, true);
-#endif
-#endif
     setWindowTitle
       (tr("%1: Virtual Keyboard").arg(SPOTON_APPLICATION_NAME));
     m_ui.passphrase->clear();
