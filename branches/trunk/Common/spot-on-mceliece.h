@@ -33,12 +33,6 @@
 #define _spoton_mceliece_h_
 
 #ifdef SPOTON_MCELIECE_ENABLED
-extern "C"
-{
-#include <limits.h>
-#include <string.h>
-}
-
 #include <NTL/GF2E.h>
 #include <NTL/GF2EX.h>
 #include <NTL/GF2EXFactoring.h>

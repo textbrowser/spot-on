@@ -31,6 +31,8 @@
 #include <QHash>
 #include <QStringList>
 
+#include <limits>
+
 #define SPOTON_VERSION_STR "2019.01.10"
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
@@ -82,7 +84,7 @@ class spoton_common
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
   static const int MAXIMUM_KERNEL_GUI_SERVER_SINGLE_SOCKET_BUFFER_SIZE =
 #ifdef SPOTON_MCELIECE_ENABLED
-    INT_MAX;
+    std::numeric_limits<int>::max();
 #else
     CHAR_BIT * 1024 * 1024;
 #endif
