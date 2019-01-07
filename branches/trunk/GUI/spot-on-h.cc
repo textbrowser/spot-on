@@ -148,7 +148,7 @@ void spoton::slotSetSocketOptions(void)
 
   if(!ui.so_timestamping->isEnabled())
     ui.so_timestamping->setToolTip
-      (tr("TCP, SCTP, if available, and UDP only."));
+      (tr("SCTP, if available, TCP, and UDP only."));
 #else
   ui.so_timestamping->setEnabled(false);
   ui.so_timestamping->setToolTip(tr("SO_TIMESTAMPING is not defined."));
@@ -193,27 +193,28 @@ void spoton::slotSetSocketOptions(void)
     }
   else
     {
-#if QT_VERSION >= 0x050501
-      if(transport == "BLUETOOTH")
+      if(transport != "BLUETOOTH")
+	{
+	  ui.so_rcvbuf->setEnabled(true);
+	  ui.so_sndbuf->setEnabled(true);
+	}
+      else
 	{
 	  ui.so_rcvbuf->setEnabled(false);
 	  ui.so_rcvbuf->setToolTip(tr("SCTP, TCP, UDP neighbors only."));
 	  ui.so_sndbuf->setEnabled(false);
 	  ui.so_sndbuf->setToolTip(tr("SCTP, TCP, UDP neighbors only."));
 	}
-#else
-      ui.so_rcvbuf->setEnabled(false);
-      ui.so_rcvbuf->setToolTip(tr("Qt version 5.5.1 or newer is required."));
-      ui.so_sndbuf->setEnabled(false);
-      ui.so_sndbuf->setToolTip(tr("Qt version 5.5.1 or newer is required."));
-#endif
     }
 
 #ifndef SPOTON_SCTP_ENABLED
-  ui.so_rcvbuf->setEnabled(false);
-  ui.so_rcvbuf->setToolTip(tr("SCTP is not available."));
-  ui.so_sndbuf->setEnabled(false);
-  ui.so_sndbuf->setToolTip(tr("SCTP is not available."));
+  if(transport == "SCTP")
+    {
+      ui.so_rcvbuf->setEnabled(false);
+      ui.so_rcvbuf->setToolTip(tr("SCTP is not available."));
+      ui.so_sndbuf->setEnabled(false);
+      ui.so_sndbuf->setToolTip(tr("SCTP is not available."));
+    }
 #endif
 
   foreach(QString string, list)
