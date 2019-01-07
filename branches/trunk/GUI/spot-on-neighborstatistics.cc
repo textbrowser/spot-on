@@ -53,9 +53,6 @@ spoton_neighborstatistics::spoton_neighborstatistics(QWidget *parent):
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
   setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
-#ifdef Q_OS_MAC
-  statusBar()->setSizeGripEnabled(false);
-#endif
 }
 
 spoton_neighborstatistics::~spoton_neighborstatistics()

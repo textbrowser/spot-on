@@ -47,9 +47,6 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
     (tr("%1: Rosetta").
      arg(SPOTON_APPLICATION_NAME));
   ui.name->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
-#ifdef Q_OS_MAC
-  statusBar()->setSizeGripEnabled(false);
-#endif
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,

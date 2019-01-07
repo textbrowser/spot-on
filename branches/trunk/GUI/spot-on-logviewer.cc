@@ -40,9 +40,6 @@ spoton_logviewer::spoton_logviewer(void):QMainWindow()
   setWindowTitle
     (tr("%1: Log Viewer").
      arg(SPOTON_APPLICATION_NAME));
-#ifdef Q_OS_MAC
-  statusBar()->setSizeGripEnabled(false);
-#endif
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,

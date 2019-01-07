@@ -65,9 +65,6 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   if(settings.value("gui/ontopChatDialogs", false).toBool())
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
-#ifdef Q_OS_MAC
-  statusBar()->setSizeGripEnabled(false);
-#endif
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,

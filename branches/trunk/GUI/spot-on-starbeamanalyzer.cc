@@ -43,9 +43,6 @@ spoton_starbeamanalyzer::spoton_starbeamanalyzer(QWidget *parent):
   setWindowTitle
     (tr("%1: StarBeam Analyzer").
      arg(SPOTON_APPLICATION_NAME));
-#ifdef Q_OS_MAC
-  statusBar()->setSizeGripEnabled(false);
-#endif
   ui.tableWidget->horizontalHeader()->setSortIndicator(4, Qt::AscendingOrder);
   ui.tableWidget->setColumnHidden
     (ui.tableWidget->columnCount() - 1, true); // OID

@@ -45,9 +45,6 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
   ui.setupUi(this);
   setWindowTitle
     (tr("%1: Echo Public Key Share").arg(SPOTON_APPLICATION_NAME));
-#ifdef Q_OS_MAC
-  statusBar()->setSizeGripEnabled(false);
-#endif
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,

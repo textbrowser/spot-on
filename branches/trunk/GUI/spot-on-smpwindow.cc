@@ -43,9 +43,6 @@ spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
   m_ui.secrets->setColumnHidden(0, true); // Stream
   m_ui.secrets->setColumnHidden(m_ui.secrets->columnCount() - 1, true); // OID
   setWindowTitle(tr("%1: SMP").arg(SPOTON_APPLICATION_NAME));
-#ifdef Q_OS_MAC
-  statusBar()->setSizeGripEnabled(false);
-#endif
   connect(m_ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,
