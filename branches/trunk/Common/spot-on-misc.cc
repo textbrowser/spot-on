@@ -6151,7 +6151,7 @@ void spoton_misc::closeSocket
   shutdown((SOCKET) socketDescriptor, SD_BOTH);
   closesocket((SOCKET) socketDescriptor);
 #else
-  shutdown(socketDescriptor, SHUT_RDWR);
-  close(socketDescriptor);
+  shutdown((int) socketDescriptor, SHUT_RDWR);
+  close((int) socketDescriptor);
 #endif
 }
