@@ -25,19 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
-#include <QApplication>
-#else
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <QCoreApplication>
-#else
-#include <QCoreApplication>
-#endif
-#endif
 #include <QDir>
-#ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
-#include <QMainWindow>
-#endif
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QSqlDatabase>
@@ -328,22 +317,15 @@ int main(int argc, char *argv[])
 
   if(sigaction(SIGPIPE, &act, 0))
     std::cerr << "sigaction() failure on SIGPIPE. Continuing." << std::endl;
-
+#endif
 #if QT_VERSION >= 0x050000
   qInstallMessageHandler(qt_message_handler);
 #else
   qInstallMsgHandler(qt_message_handler);
 #endif
-#endif
-#ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
-  QApplication qapplication(argc, argv);
-#else
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+
   QCoreApplication qapplication(argc, argv);
-#else
-  QCoreApplication qapplication(argc, argv);
-#endif
-#endif
+
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000
   /*
@@ -477,16 +459,6 @@ int main(int argc, char *argv[])
       try
 	{
 	  s_kernel = new spoton_kernel();
-
-#ifdef SPOTON_USE_HIDDEN_KERNEL_WINDOW
-	  QMainWindow window;
-
-	  window.showMinimized();
-	  QObject::connect(&qapplication,
-			   SIGNAL(lastWindowClosed(void)),
-			   spoton_kernel::instance(),
-			   SLOT(deleteLater(void)));
-#endif
 
 	  int rc = qapplication.exec();
 
