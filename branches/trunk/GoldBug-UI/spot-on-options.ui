@@ -35,8 +35,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>742</width>
-         <height>3362</height>
+         <width>730</width>
+         <height>3529</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -2438,7 +2438,7 @@
      <x>0</x>
      <y>0</y>
      <width>745</width>
-     <height>31</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
