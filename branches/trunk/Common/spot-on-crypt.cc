@@ -292,7 +292,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   if(cipherAlgorithm > 0)
     {
       if((cipherKeyLength =
-	  gcry_cipher_get_algo_keylen(cipherAlgorithm)) <= 0)
+	  gcry_cipher_get_algo_keylen(cipherAlgorithm)) == 0)
 	{
 	  error = QObject::tr("gcry_cipher_get_algo_keylen() failed");
 	  spoton_misc::logError
@@ -1004,7 +1004,7 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
     {
       size_t blockLength = gcry_cipher_get_algo_blklen(m_cipherAlgorithm);
 
-      if(blockLength <= 0)
+      if(blockLength == 0)
 	{
 	  if(ok)
 	    *ok = false;
@@ -1200,7 +1200,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 
   QReadLocker locker(&m_hashKeyMutex);
 
-  if(!m_hashKey || m_hashKeyLength <= 0)
+  if(!m_hashKey || m_hashKeyLength == 0)
     {
       if(ok)
 	*ok = false;
@@ -1771,7 +1771,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
   QReadLocker locker1(&m_privateKeyMutex);
 
-  if(!m_privateKey || m_privateKeyLength <= 0)
+  if(!m_privateKey || m_privateKeyLength == 0)
     {
       if(ok)
 	*ok = false;
@@ -1980,7 +1980,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
   buffer = gcry_sexp_nth_data(decrypted_t, 1, &length);
 
-  if(!buffer || length <= 0)
+  if(!buffer || length == 0)
     {
       if(ok)
 	*ok = false;
@@ -2561,7 +2561,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
   QReadLocker locker1(&m_privateKeyMutex);
 
-  if(!m_privateKey || m_privateKeyLength <= 0)
+  if(!m_privateKey || m_privateKeyLength == 0)
     {
       if(ok)
 	*ok = false;
@@ -2948,7 +2948,7 @@ size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
 
   if(cipherAlgorithm > 0)
     {
-      if((keyLength = gcry_cipher_get_algo_keylen(cipherAlgorithm)) <= 0)
+      if((keyLength = gcry_cipher_get_algo_keylen(cipherAlgorithm)) == 0)
 	spoton_misc::logError("spoton_crypt::cipherKeyLength(): "
 			      "gcry_cipher_get_algo_keylen() "
 			      "failed.");

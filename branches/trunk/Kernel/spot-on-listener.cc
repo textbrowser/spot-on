@@ -285,7 +285,7 @@ spoton_listener::spoton_listener
   m_transport = transport;
   m_useAccounts = useAccounts;
 
-  if(m_keySize <= 0 || m_transport != "tcp")
+  if(m_keySize == 0 || m_transport != "tcp")
     m_sslControlString = "N/A";
 
 #if QT_VERSION < 0x050000
@@ -542,7 +542,7 @@ void spoton_listener::slotTimeout(void)
 		    else
 		      m_sslControlString = "N/A";
 		  }
-		else if(m_keySize <= 0 || m_transport != "tcp")
+		else if(m_keySize == 0 || m_transport != "tcp")
 		  m_sslControlString = "N/A";
 
 		if(s_crypt)

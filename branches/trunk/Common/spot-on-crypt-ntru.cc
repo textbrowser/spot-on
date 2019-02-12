@@ -132,7 +132,7 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
     *ok = false;
 
 #ifdef SPOTON_LINKED_WITH_LIBNTRU
-  if(data.isEmpty() || !m_privateKey || m_privateKeyLength <= 0 ||
+  if(data.isEmpty() || !m_privateKey || m_privateKeyLength == 0 ||
      m_privateKeyLength <=
      static_cast<size_t> (qstrlen("ntru-private-key-")) ||
      static_cast<uint> (m_publicKey.length()) <= qstrlen("ntru-public-key-"))
@@ -216,7 +216,7 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 
       length = ntru_max_msg_len(&parameters[index]);
 
-      if(length <= 0)
+      if(length == 0)
 	{
 	  spoton_misc::logError
 	    ("spoton_crypt::publicKeyDecryptNTRU(): ntru_max_msg_len() "
@@ -342,7 +342,7 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
 
       length = ntru_enc_len(&parameters[index]);
 
-      if(length <= 0)
+      if(length == 0)
 	{
 	  spoton_misc::logError
 	    ("spoton_crypt::publicKeyEncryptNTRU(): ntru_enc_len() "

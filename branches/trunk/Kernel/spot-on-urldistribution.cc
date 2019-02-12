@@ -495,11 +495,10 @@ void spoton_urldistribution::run(void)
   size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
     (cipherType);
 
-  if(symmetricKeyLength <= 0)
+  if(symmetricKeyLength == 0)
     {
-      spoton_misc::logError
-	("spoton_urldistribution::run(): "
-	 "cipherKeyLength() failure.");
+      spoton_misc::logError("spoton_urldistribution::run(): "
+			    "cipherKeyLength() failure.");
       return;
     }
 

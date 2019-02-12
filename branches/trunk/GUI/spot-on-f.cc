@@ -651,7 +651,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 	size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
 	  (ui.encryption_algorithm->currentText().toLatin1());
 
-	if(symmetricKeyLength <= 0)
+	if(symmetricKeyLength == 0)
 	  {
 	    db.close();
 	    error = tr("Peculiar spoton_crypt error.");

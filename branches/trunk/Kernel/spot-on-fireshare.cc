@@ -483,7 +483,7 @@ void spoton_fireshare::slotTimeout(void)
   size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
     (cipherType);
 
-  if(symmetricKeyLength <= 0)
+  if(symmetricKeyLength == 0)
     {
       spoton_misc::logError
 	("spoton_fireshare::slotTimeout(): "
