@@ -730,7 +730,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 				 ** It may be, however.
 				 */
 
-  if(plaintext_size <= 0) // Unlikely.
+  if(Q_UNLIKELY(plaintext_size == 0))
     return false;
 
   char *p = new (std::nothrow) char[plaintext_size];
@@ -1175,7 +1175,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 			      const size_t plaintext_size,
 			      std::stringstream &ciphertext) const
 {
-  if(!m_publicKey || !m_publicKey->ok() || !plaintext || plaintext_size <= 0)
+  if(!m_publicKey || !m_publicKey->ok() || !plaintext || plaintext_size == 0)
     return false;
 
   if(CHAR_BIT * plaintext_size > static_cast<size_t> (m_k))
