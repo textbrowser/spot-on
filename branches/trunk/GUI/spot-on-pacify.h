@@ -171,7 +171,7 @@ class spoton_pacify
 
   double evaluate(void) const
   {
-    if(!m_passphrase || m_passphrase_length <= 0)
+    if(!m_passphrase || m_passphrase_length == 0)
       return 0.0;
 
     double rc = 0.0;
