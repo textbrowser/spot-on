@@ -98,6 +98,10 @@ void spoton_randomness_download::slotTimeout(void)
     return;
 
   reply = get(QNetworkRequest(QUrl::fromUserInput(m_address.toString())));
+
+  if(!reply)
+    return;
+
   connect(reply,
 	  SIGNAL(error(QNetworkReply::NetworkError)),
 	  this,

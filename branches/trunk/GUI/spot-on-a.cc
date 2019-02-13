@@ -441,7 +441,8 @@ spoton::spoton(void):QMainWindow()
     QNetworkReply *reply = manager.get
       (QNetworkRequest(QUrl::fromUserInput("http://0.0.0.0")));
 
-    reply->deleteLater();
+    if(reply)
+      reply->deleteLater();
 #endif
   }
 

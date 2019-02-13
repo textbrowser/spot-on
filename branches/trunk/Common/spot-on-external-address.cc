@@ -46,6 +46,10 @@ void spoton_external_address::discover(void)
   QNetworkReply *reply = 0;
 
   reply = get(QNetworkRequest(QUrl::fromUserInput("https://api.ipify.org")));
+
+  if(!reply)
+    return;
+
   connect(reply,
 	  SIGNAL(error(QNetworkReply::NetworkError)),
 	  this,

@@ -1722,9 +1722,17 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	    emit logError(error);
 	    reply->deleteLater();
-	    m_networkAccessManager.setNetworkAccessible
-	      (QNetworkAccessManager::Accessible);
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
+
+	    if(!reply)
+	      {
+		emit logError
+		  (QString("QNetworkAccessManager::get() failure on "
+			   "<a href=\"%1\">%1</a>.").
+		   arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
+		return;
+	      }
+
 	    reply->ignoreSslErrors();
 	    reply->setProperty("original-url", originalUrl);
 	    connect(reply,
@@ -2006,10 +2014,16 @@ void spoton_rss::slotDownloadContent(void)
 
       emit logError(error);
 
-      m_networkAccessManager.setNetworkAccessible
-	(QNetworkAccessManager::Accessible);
-
       QNetworkReply *reply = m_networkAccessManager.get(QNetworkRequest(url));
+
+      if(!reply)
+	{
+	  emit logError
+	    (QString("QNetworkAccessManager::get() failure on "
+		     "<a href=\"%1\">%1</a>.").
+	     arg(spoton_misc::urlToEncoded(url).constData()));
+	  return;
+	}
 
       reply->ignoreSslErrors();
       reply->setProperty("original-url", url);
@@ -2030,11 +2044,17 @@ void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
   if(!imageUrl.isEmpty() && imageUrl.isValid() &&
      !url.isEmpty() && url.isValid())
     {
-      m_networkAccessManager.setNetworkAccessible
-	(QNetworkAccessManager::Accessible);
-
       QNetworkReply *reply = m_networkAccessManager.get
 	(QNetworkRequest(imageUrl));
+
+      if(!reply)
+	{
+	  emit logError
+	    (QString("QNetworkAccessManager::get() failure on "
+		     "<a href=\"%1\">%1</a>.").
+	     arg(spoton_misc::urlToEncoded(imageUrl).constData()));
+	  return;
+	}
 
       reply->ignoreSslErrors();
       reply->setProperty("url", url);
@@ -2080,11 +2100,18 @@ void spoton_rss::slotDownloadTimeout(void)
       return;
     }
 
-  m_networkAccessManager.setNetworkAccessible
-    (QNetworkAccessManager::Accessible);
-
   QNetworkReply *reply = m_networkAccessManager.get
     (QNetworkRequest(item->text()));
+
+  if(!reply)
+    {
+      emit logError
+	(QString("QNetworkAccessManager::get() failure on "
+		 "<a href=\"%1\">%1</a>.").
+	 arg(spoton_misc::urlToEncoded(QUrl::fromUserInput(item->text())).
+	     constData()));
+      return;
+    }
 
   reply->ignoreSslErrors();
   connect(reply,
@@ -2167,9 +2194,17 @@ void spoton_rss::slotFeedReplyFinished(void)
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 
 	    emit logError(error);
-	    m_networkAccessManager.setNetworkAccessible
-	      (QNetworkAccessManager::Accessible);
 	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
+
+	    if(!reply)
+	      {
+		emit logError
+		  (QString("QNetworkAccessManager::get() failure on "
+			   "<a href=\"%1\">%1</a>.").
+		   arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
+		return;
+	      }
+
 	    reply->ignoreSslErrors();
 	    connect(reply,
 		    SIGNAL(error(QNetworkReply::NetworkError)),
