@@ -336,17 +336,10 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
 	  if(!(!fileInfo.isReadable() || fileInfo.size() < 8192))
 	    {
-	      player = new (std::nothrow) QMediaPlayer
-		(this, QMediaPlayer::LowLatency);
-
-	      if(player)
-		{
-		  player->setMedia(QUrl::fromLocalFile(str));
-		  player->setVolume(100);
-		  player->play();
-		}
-	      else
-		QApplication::beep();
+	      player = new QMediaPlayer(this, QMediaPlayer::LowLatency);
+	      player->setMedia(QUrl::fromLocalFile(str));
+	      player->setVolume(100);
+	      player->play();
 	    }
 	}
     }

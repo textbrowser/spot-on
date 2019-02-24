@@ -1122,24 +1122,18 @@ void spoton::playSound(const QString &name)
   if(!fileInfo.isReadable() || fileInfo.size() < 8192)
     return;
 
-  player = new (std::nothrow) QMediaPlayer(this, QMediaPlayer::LowLatency);
-
-  if(player)
-    {
-      connect(player,
-	      SIGNAL(error(QMediaPlayer::Error)),
-	      this,
-	      SLOT(slotMediaError(QMediaPlayer::Error)));
-      connect(player,
-	      SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
-	      this,
-	      SLOT(slotMediaStatusChanged(QMediaPlayer::MediaStatus)));
-      player->setMedia(QUrl::fromLocalFile(str));
-      player->setVolume(100);
-      player->play();
-    }
-  else
-    QApplication::beep();
+  player = new QMediaPlayer(this, QMediaPlayer::LowLatency);
+  connect(player,
+	  SIGNAL(error(QMediaPlayer::Error)),
+	  this,
+	  SLOT(slotMediaError(QMediaPlayer::Error)));
+  connect(player,
+	  SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
+	  this,
+	  SLOT(slotMediaStatusChanged(QMediaPlayer::MediaStatus)));
+  player->setMedia(QUrl::fromLocalFile(str));
+  player->setVolume(100);
+  player->play();
 #else
   if(m_locked)
     return;

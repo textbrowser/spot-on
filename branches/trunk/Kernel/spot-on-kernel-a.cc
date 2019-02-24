@@ -410,25 +410,17 @@ int main(int argc, char *argv[])
 
       if(i == 0)
 	{
-	  s_congestion_control_db_path = new (std::nothrow) char[size];
-
-	  if(s_congestion_control_db_path)
-	    {
-	      memset(s_congestion_control_db_path, 0, size);
-	      strncpy(s_congestion_control_db_path,
-		      paths.at(i).toStdString().c_str(), size - 1);
-	    }
+	  s_congestion_control_db_path = new char[size];
+	  memset(s_congestion_control_db_path, 0, size);
+	  strncpy(s_congestion_control_db_path,
+		  paths.at(i).toStdString().c_str(), size - 1);
 	}
       else if(i == 1)
 	{
-	  s_kernel_db_path = new (std::nothrow) char[size];
-
-	  if(s_kernel_db_path)
-	    {
-	      memset(s_kernel_db_path, 0, size);
-	      strncpy(s_kernel_db_path,
-		      paths.at(i).toStdString().c_str(), size - 1);
-	    }
+	  s_kernel_db_path = new char[size];
+	  memset(s_kernel_db_path, 0, size);
+	  strncpy(s_kernel_db_path,
+		  paths.at(i).toStdString().c_str(), size - 1);
 	}
     }
 

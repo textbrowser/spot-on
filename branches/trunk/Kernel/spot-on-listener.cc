@@ -1280,69 +1280,45 @@ void spoton_listener::prepareNetworkInterface(void)
 	  {
 	    if(addresses.at(j).ip() == m_sctpServer->serverAddress())
 	      {
-		m_networkInterface = new (std::nothrow)
-		  QNetworkInterface(list.at(i));
+		m_networkInterface = new QNetworkInterface(list.at(i));
 
-		if(Q_LIKELY(m_networkInterface))
+		if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		  {
-		    if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
-		      {
-			delete m_networkInterface;
-			m_networkInterface = 0;
-		      }
-		    else
-		      break;
+		    delete m_networkInterface;
+		    m_networkInterface = 0;
 		  }
 		else
-		  spoton_misc::logError
-		    ("spoton_listener::prepareNetworkInterface(): "
-		     "memory failure.");
+		  break;
 	      }
 	  }
 	else if(m_tcpServer)
 	  {
 	    if(addresses.at(j).ip() == m_tcpServer->serverAddress())
 	      {
-		m_networkInterface = new (std::nothrow)
-		  QNetworkInterface(list.at(i));
+		m_networkInterface = new QNetworkInterface(list.at(i));
 
-		if(Q_LIKELY(m_networkInterface))
+		if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		  {
-		    if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
-		      {
-			delete m_networkInterface;
-			m_networkInterface = 0;
-		      }
-		    else
-		      break;
+		    delete m_networkInterface;
+		    m_networkInterface = 0;
 		  }
 		else
-		  spoton_misc::logError
-		    ("spoton_listener::prepareNetworkInterface(): "
-		     "memory failure.");
+		  break;
 	      }
 	  }
 	else if(m_udpServer)
 	  {
 	    if(addresses.at(j).ip() == m_udpServer->localAddress())
 	      {
-		m_networkInterface = new (std::nothrow)
-		  QNetworkInterface(list.at(i));
+		m_networkInterface = new QNetworkInterface(list.at(i));
 
-		if(Q_LIKELY(m_networkInterface))
+		if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		  {
-		    if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
-		      {
-			delete m_networkInterface;
-			m_networkInterface = 0;
-		      }
-		    else
-		      break;
+		    delete m_networkInterface;
+		    m_networkInterface = 0;
 		  }
 		else
-		  spoton_misc::logError
-		    ("spoton_listener::prepareNetworkInterface(): "
-		     "memory failure.");
+		  break;
 	      }
 	  }
 	else
@@ -1508,21 +1484,15 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
     {
       if(!m_bluetoothServer)
 	{
-	  m_bluetoothServer = new (std::nothrow) QBluetoothServer
+	  m_bluetoothServer = new QBluetoothServer
 	    (QBluetoothServiceInfo::RfcommProtocol, this);
-
-	  if(Q_LIKELY(m_bluetoothServer))
-	    {
-	      connect(m_bluetoothServer,
-		      SIGNAL(newConnection(void)),
-		      this,
-		      SLOT(slotNewConnection(void)));
-	      m_bluetoothServer->setMaxPendingConnections(m_maximumClients);
-	      m_bluetoothServer->setSecurityFlags
-		(QBluetooth::SecurityFlags(m_keySize));
-	    }
-	  else
-	    return false;
+	  connect(m_bluetoothServer,
+		  SIGNAL(newConnection(void)),
+		  this,
+		  SLOT(slotNewConnection(void)));
+	  m_bluetoothServer->setMaxPendingConnections(m_maximumClients);
+	  m_bluetoothServer->setSecurityFlags
+	    (QBluetooth::SecurityFlags(m_keySize));
 	}
       else
 	return true;

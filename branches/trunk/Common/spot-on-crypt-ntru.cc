@@ -109,9 +109,6 @@ void spoton_crypt::generateNTRUKeys(const QString &keySize,
 	  memset(privateKey_array, 0, length1);
 	  memset(publicKey_array, 0, length2);
 	}
-      else
-	spoton_misc::logError
-	  ("spoton_crypt::generateNTRUKeys(): memory failure.");
 
       delete []privateKey_array;
       delete []publicKey_array;
@@ -242,8 +239,7 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
     }
   else
     spoton_misc::logError
-      ("spoton_crypt::publicKeyDecryptNTRU(): incorrect lengths or "
-       "memory failure.");
+      ("spoton_crypt::publicKeyDecryptNTRU(): incorrect lengths.");
 
  done_label:
   delete []d;

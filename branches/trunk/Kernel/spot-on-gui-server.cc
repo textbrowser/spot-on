@@ -63,90 +63,74 @@ void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
 
   if(error.isEmpty())
     {
-      QPointer<QSslSocket> socket = new (std::nothrow) QSslSocket(this);
+      QPointer<QSslSocket> socket = new QSslSocket(this);
+      bool ok = true;
 
-      if(Q_LIKELY(socket))
+      try
 	{
-	  bool ok = true;
+	  ok = socket->setSocketDescriptor(socketDescriptor);
+	  socket->setSocketOption
+	    (QAbstractSocket::LowDelayOption,
+	     spoton_kernel::setting("kernel/tcp_nodelay", 1).
+	     toInt()); /*
+		       ** Disable Nagle?
+		       */
 
-	  try
+	  if(kernelKeySize > 0)
 	    {
-	      ok = socket->setSocketDescriptor(socketDescriptor);
-	      socket->setSocketOption
-		(QAbstractSocket::LowDelayOption,
-		 spoton_kernel::setting("kernel/tcp_nodelay", 1).
-		 toInt()); /*
-			   ** Disable Nagle?
-			   */
+	      connect(socket,
+		      SIGNAL(encrypted(void)),
+		      this,
+		      SLOT(slotEncrypted(void)));
+	      connect(socket,
+		      SIGNAL(modeChanged(QSslSocket::SslMode)),
+		      this,
+		      SIGNAL(modeChanged(QSslSocket::SslMode)));
 
-	      if(kernelKeySize > 0)
-		{
-		  connect(socket,
-			  SIGNAL(encrypted(void)),
-			  this,
-			  SLOT(slotEncrypted(void)));
-		  connect(socket,
-			  SIGNAL(modeChanged(QSslSocket::SslMode)),
-			  this,
-			  SIGNAL(modeChanged(QSslSocket::SslMode)));
+	      QSslConfiguration configuration;
+	      QString sslCS
+		(spoton_kernel::
+		 setting("gui/sslControlString",
+			 spoton_common::SSL_CONTROL_STRING).toString());
 
-		  QSslConfiguration configuration;
-		  QString sslCS
-		    (spoton_kernel::
-		     setting("gui/sslControlString",
-			     spoton_common::SSL_CONTROL_STRING).toString());
-
-		  configuration.setLocalCertificate
-		    (QSslCertificate(certificate));
-		  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-		  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+	      configuration.setLocalCertificate
+		(QSslCertificate(certificate));
+	      configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
+	      configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 #if QT_VERSION >= 0x040806
-		  configuration.setSslOption
-		    (QSsl::SslOptionDisableCompression, true);
-		  configuration.setSslOption
-		    (QSsl::SslOptionDisableEmptyFragments, true);
-		  configuration.setSslOption
-		    (QSsl::SslOptionDisableLegacyRenegotiation, true);
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableCompression, true);
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableEmptyFragments, true);
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
 #if QT_VERSION >= 0x050501
-		  spoton_crypt::setSslCiphers
-		    (QSslConfiguration::supportedCiphers(),
-		     sslCS,
-		     configuration);
+	      spoton_crypt::setSslCiphers
+		(QSslConfiguration::supportedCiphers(),
+		 sslCS,
+		 configuration);
 #else
-		  spoton_crypt::setSslCiphers
-		    (socket->supportedCiphers(), sslCS, configuration);
+	      spoton_crypt::setSslCiphers
+		(socket->supportedCiphers(), sslCS, configuration);
 #endif
-		  socket->setSslConfiguration(configuration);
-		  socket->startServerEncryption();
-		}
-
-	      m_queue.enqueue(socket);
-	      emit newConnection();
+	      socket->setSslConfiguration(configuration);
+	      socket->startServerEncryption();
 	    }
-	  catch(...)
-	    {
-	      m_queue.removeOne(socket);
-	      socket->deleteLater();
 
-	      if(!ok)
-		spoton_misc::closeSocket(socketDescriptor);
-
-	      spoton_misc::logError("spoton_gui_server_tcp_server::"
-				    "incomingConnection(): socket deleted.");
-	    }
+	  m_queue.enqueue(socket);
+	  emit newConnection();
 	}
-      else
+      catch(...)
 	{
-	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
+	  m_queue.removeOne(socket);
+	  socket->deleteLater();
 
-	  if(socket.setSocketDescriptor(socketDescriptor))
-	    socket.abort();
-	  else
+	  if(!ok)
 	    spoton_misc::closeSocket(socketDescriptor);
 
 	  spoton_misc::logError("spoton_gui_server_tcp_server::"
-				"incomingConnection(): memory failure.");
+				"incomingConnection(): socket deleted.");
 	}
     }
   else
