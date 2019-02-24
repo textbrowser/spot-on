@@ -104,48 +104,45 @@ class spoton_neighbor_udp_socket: public QUdpSocket
     if(m_multicastSocket)
       m_multicastSocket->deleteLater();
 
-    m_multicastSocket = new (std::nothrow) QUdpSocket(this);
+    m_multicastSocket = new QUdpSocket(this);
 
-    if(m_multicastSocket)
+    if(!m_multicastSocket->bind(address,
+				port,
+				QUdpSocket::ReuseAddressHint |
+				QUdpSocket::ShareAddress))
       {
-	if(!m_multicastSocket->bind(address, port,
-				    QUdpSocket::ReuseAddressHint |
-				    QUdpSocket::ShareAddress))
-	  {
-	    m_multicastSocket->deleteLater();
-	    spoton_misc::logError
-	      (QString("spoton_neighbor_udp_socket::initializeMulticast(): "
-		       "bind() failure for %1:%2.").
-	       arg(address.toString()).arg(port));
-	    return;
-	  }
-
-	spoton_socket_options::setSocketOptions
-	  (socketOptions,
-	   "udp",
-	   static_cast<qint64> (m_multicastSocket->socketDescriptor()),
-	   0);
-#if QT_VERSION >= 0x040806
-	if(!m_multicastSocket->joinMulticastGroup(address))
-	  {
-	    m_multicastSocket->deleteLater();
-	    spoton_misc::logError
-	      (QString("spoton_neighbor_udp_socket::initializeMulticast(): "
-		       "joinMulticastGroup() failure for %1:%2.").
-	       arg(address.toString()).arg(port));
-	  }
-	else
-	  m_multicastSocket->setSocketOption
-	    (QAbstractSocket::MulticastLoopbackOption, 1);
-#else
-	if(!spoton_misc::joinMulticastGroup(address,
-					    1, // Enable loopback.
-					    m_multicastSocket->
-					    socketDescriptor(),
-					    port))
-	  m_multicastSocket->deleteLater();
-#endif
+	m_multicastSocket->deleteLater();
+	spoton_misc::logError
+	  (QString("spoton_neighbor_udp_socket::initializeMulticast(): "
+		   "bind() failure for %1:%2.").
+	   arg(address.toString()).arg(port));
+	return;
       }
+
+    spoton_socket_options::setSocketOptions
+      (socketOptions,
+       "udp",
+       static_cast<qint64> (m_multicastSocket->socketDescriptor()),
+       0);
+#if QT_VERSION >= 0x040806
+    if(!m_multicastSocket->joinMulticastGroup(address))
+      {
+	m_multicastSocket->deleteLater();
+	spoton_misc::logError
+	  (QString("spoton_neighbor_udp_socket::initializeMulticast(): "
+		   "joinMulticastGroup() failure for %1:%2.").
+	   arg(address.toString()).arg(port));
+      }
+    else
+      m_multicastSocket->setSocketOption
+	(QAbstractSocket::MulticastLoopbackOption, 1);
+#else
+    if(!spoton_misc::joinMulticastGroup(address,
+					1, // Enable loopback.
+					m_multicastSocket->socketDescriptor(),
+					port))
+      m_multicastSocket->deleteLater();
+#endif
   }
 
   QPointer<QUdpSocket> multicastSocket(void) const

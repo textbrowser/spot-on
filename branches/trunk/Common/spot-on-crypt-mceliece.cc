@@ -45,7 +45,7 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
 
   if(!m_mceliece)
     {
-      m_mceliece = new (std::nothrow) spoton_mceliece
+      m_mceliece = new spoton_mceliece
 	(m_privateKey, m_privateKeyLength, m_publicKey);
 
       if(!m_mceliece->ok())
@@ -120,10 +120,8 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
       mceliece = s_mceliecePeers.value(hash);
     else
       {
-	mceliece = new (std::nothrow) spoton_mceliece(publicKey);
-
-	if(mceliece)
-	  s_mceliecePeers[hash] = mceliece;
+	mceliece = new spoton_mceliece(publicKey);
+	s_mceliecePeers[hash] = mceliece;
       }
   }
 
@@ -163,20 +161,17 @@ QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
   if(!data.startsWith("mceliece-public-key-"))
     return keySize;
 
-  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece
+  spoton_mceliece *mceliece = new spoton_mceliece
     (qCompress(data)); // A compressed key is expected.
 
-  if(mceliece)
-    {
-      if(data.startsWith("mceliece-public-key-000"))
-	keySize = QString("m%1t%2").arg(mceliece->m()).arg(mceliece->t());
-      else if(data.startsWith("mceliece-public-key-foa"))
-	keySize = QString("m%1t%2-fujisaki-okamoto-a").
-	  arg(mceliece->m()).arg(mceliece->t());
-      else
-	keySize = QString("m%1t%2-fujisaki-okamoto-b").
-	  arg(mceliece->m()).arg(mceliece->t());
-    }
+  if(data.startsWith("mceliece-public-key-000"))
+    keySize = QString("m%1t%2").arg(mceliece->m()).arg(mceliece->t());
+  else if(data.startsWith("mceliece-public-key-foa"))
+    keySize = QString("m%1t%2-fujisaki-okamoto-a").
+      arg(mceliece->m()).arg(mceliece->t());
+  else
+    keySize = QString("m%1t%2-fujisaki-okamoto-b").
+      arg(mceliece->m()).arg(mceliece->t());
 
   delete mceliece;
 #else
@@ -264,32 +259,30 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
   else
     return;
 
-  spoton_mceliece *mceliece = new (std::nothrow) spoton_mceliece
-    (conversion, m, t);
+  spoton_mceliece *mceliece = new spoton_mceliece(conversion, m, t);
 
-  if(mceliece)
-    if(mceliece->generatePrivatePublicKeys())
-      {
-	mceliece->privateKeyParameters(privateKey);
+  if(mceliece->generatePrivatePublicKeys())
+    {
+      mceliece->privateKeyParameters(privateKey);
 
-	if(!privateKey.isEmpty())
-	  {
-	    privateKey.prepend(prefix);
-	    privateKey.prepend("mceliece-private-key-");
-	  }
+      if(!privateKey.isEmpty())
+	{
+	  privateKey.prepend(prefix);
+	  privateKey.prepend("mceliece-private-key-");
+	}
 
-	mceliece->publicKeyParameters(publicKey);
+      mceliece->publicKeyParameters(publicKey);
 
-	if(!publicKey.isEmpty())
-	  {
-	    publicKey.prepend(prefix);
-	    publicKey.prepend("mceliece-public-key-");
-	  }
+      if(!publicKey.isEmpty())
+	{
+	  publicKey.prepend(prefix);
+	  publicKey.prepend("mceliece-public-key-");
+	}
 
-	if(!publicKey.isEmpty() && !privateKey.isEmpty())
-	  if(ok)
-	    *ok = true;
-      }
+      if(!publicKey.isEmpty() && !privateKey.isEmpty())
+	if(ok)
+	  *ok = true;
+    }
 
   delete mceliece;
 #else

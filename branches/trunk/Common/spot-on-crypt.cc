@@ -68,12 +68,8 @@ extern "C"
 
   int gcry_qmutex_init(void **mutex)
   {
-    *mutex = static_cast<void *> (new (std::nothrow) QMutex());
-
-    if(*mutex)
-      return 0;
-    else
-      return -1;
+    *mutex = static_cast<void *> (new QMutex());
+    return 0;
   }
 
   int gcry_qmutex_destroy(void **mutex)
@@ -765,15 +761,11 @@ void spoton_crypt::init(const QString &cipherType,
 	{
 	  bool ok = true;
 
-	  m_threefish = new (std::nothrow) spoton_threefish();
+	  m_threefish = new spoton_threefish();
+	  m_threefish->setKey(m_symmetricKey, m_symmetricKeyLength, &ok);
 
-	  if(m_threefish)
-	    {
-	      m_threefish->setKey(m_symmetricKey, m_symmetricKeyLength, &ok);
-
-	      if(ok)
-		m_threefish->setTweak("76543210fedcba98", &ok);
-	    }
+	  if(ok)
+	    m_threefish->setTweak("76543210fedcba98", &ok);
 
 	  if(!ok)
 	    {

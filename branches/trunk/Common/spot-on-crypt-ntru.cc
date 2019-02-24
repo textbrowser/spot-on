@@ -77,8 +77,8 @@ void spoton_crypt::generateNTRUKeys(const QString &keySize,
 
       if(length1 > 0 && length2 > 0)
 	{
-	  privateKey_array = new (std::nothrow) uint8_t[length1];
-	  publicKey_array = new (std::nothrow) uint8_t[length2];
+	  privateKey_array = new uint8_t[length1];
+	  publicKey_array = new uint8_t[length2];
 	}
       else
 	{
@@ -157,9 +157,9 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 
   if(length1 > 0 && length2 > 0)
     {
-      encrypted = new (std::nothrow) uint8_t[data.size()];
-      privateKey_array = new (std::nothrow) uint8_t[length1];
-      publicKey_array = new (std::nothrow) uint8_t[length2];
+      encrypted = new uint8_t[data.size()];
+      privateKey_array = new uint8_t[length1];
+      publicKey_array = new uint8_t[length2];
     }
 
   if(encrypted && privateKey_array && publicKey_array)
@@ -224,14 +224,7 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU
 	  goto done_label;
 	}
 
-      d = new (std::nothrow) uint8_t[length];
-
-      if(!d)
-	{
-	  spoton_misc::logError
-	    ("spoton_crypt::publicKeyDecryptNTRU(): memory failure.");
-	  goto done_label;
-	}
+      d = new uint8_t[length];
 
       if((err = ntru_decrypt(encrypted, &kp, &parameters[index],
 			     d, &decrypted_len)) == NTRU_SUCCESS)
@@ -296,89 +289,68 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
   uint8_t *e = 0;
   uint8_t *publicKey_array = 0;
 
-  data_array = new (std::nothrow) uint8_t[data.length()];
-  publicKey_array = new (std::nothrow)
-    uint8_t[publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
-	    length()];
+  data_array = new uint8_t[data.length()];
+  publicKey_array = new
+    uint8_t[publicKey.
+	    mid(static_cast<int> (qstrlen("ntru-public-key-"))).length()];
 
-  if(data_array && publicKey_array)
+  NtruEncPubKey pk;
+
+  memcpy(data_array, data.constData(), static_cast<size_t> (data.length()));
+  memcpy
+    (publicKey_array,
+     publicKey.
+     mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
+     static_cast<size_t> (publicKey.length() -
+			  static_cast<int> (qstrlen("ntru-public-key-"))));
+  ntru_import_pub(publicKey_array, &pk); /*
+					 ** Returns a value.
+					 */
+  memset
+    (publicKey_array, 0,
+     static_cast<size_t> (publicKey.
+			  mid(static_cast<int> (qstrlen("ntru-public-key-"))).
+			  length()));
+
+  int index = 0;
+  struct NtruEncParams parameters[] = {EES1087EP2, EES1171EP1, EES1499EP1};
+  uint16_t length = 0;
+
+  if(pk.h.N == parameters[0].N)
+    index = 0;
+  else if(pk.h.N == parameters[1].N)
+    index = 1;
+  else if(pk.h.N == parameters[2].N)
+    index = 2;
+  else
+    goto done_label;
+
+  length = ntru_enc_len(&parameters[index]);
+
+  if(length == 0)
     {
-      NtruEncPubKey pk;
+      spoton_misc::logError
+	("spoton_crypt::publicKeyEncryptNTRU(): ntru_enc_len() failure.");
+      goto done_label;
+    }
 
-      memcpy(data_array, data.constData(),
-	     static_cast<size_t> (data.length()));
-      memcpy
-	(publicKey_array,
-	 publicKey.
-	 mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
-	 static_cast<size_t> (publicKey.length() -
-			      static_cast<int> (qstrlen("ntru-"
-							"public-key-"))));
-      ntru_import_pub(publicKey_array, &pk); /*
-					     ** Returns a value.
-					     */
-      memset
-	(publicKey_array, 0,
-	 static_cast<size_t> (publicKey.
-			      mid(static_cast<int> (qstrlen("ntru-"
-							    "public-"
-							    "key-"))).
-			      length()));
+  e = new uint8_t[length];
 
-      int index = 0;
-      struct NtruEncParams parameters[] = {EES1087EP2,
-					   EES1171EP1,
-					   EES1499EP1};
-      uint16_t length = 0;
+  if(ntru_encrypt(data_array,
+		  static_cast<uint16_t> (data.length()),
+		  &pk, &parameters[index],
+		  &rand_ctx_def,
+		  e) == NTRU_SUCCESS)
+    {
+      if(ok)
+	*ok = true;
 
-      if(pk.h.N == parameters[0].N)
-	index = 0;
-      else if(pk.h.N == parameters[1].N)
-	index = 1;
-      else if(pk.h.N == parameters[2].N)
-	index = 2;
-      else
-	goto done_label;
-
-      length = ntru_enc_len(&parameters[index]);
-
-      if(length == 0)
-	{
-	  spoton_misc::logError
-	    ("spoton_crypt::publicKeyEncryptNTRU(): ntru_enc_len() "
-	     "failure.");
-	  goto done_label;
-	}
-
-      e = new (std::nothrow) uint8_t[length];
-
-      if(!e)
-	{
-	  spoton_misc::logError
-	    ("spoton_crypt::publicKeyEncryptNTRU(): memory failure.");
-	  goto done_label;
-	}
-
-      if(ntru_encrypt(data_array,
-		      static_cast<uint16_t> (data.length()),
-		      &pk, &parameters[index],
-		      &rand_ctx_def,
-		      e) == NTRU_SUCCESS)
-	{
-	  if(ok)
-	    *ok = true;
-
-	  encrypted.resize(length);
-	  memcpy(encrypted.data(), e, length);
-	}
-      else
-	spoton_misc::logError
-	  ("spoton_crypt::publicKeyEncryptNTRU(): ntru_encrypt() "
-	   "failure.");
+      encrypted.resize(length);
+      memcpy(encrypted.data(), e, length);
     }
   else
     spoton_misc::logError
-      ("spoton_crypt::publicKeyEncryptNTRU(): memory failure.");
+      ("spoton_crypt::publicKeyEncryptNTRU(): ntru_encrypt() failure.");
 
  done_label:
   delete []data_array;
@@ -404,34 +376,27 @@ QString spoton_crypt::publicKeySizeNTRU(const QByteArray &data)
   if(length <= 0)
     return keySize;
 
-  uint8_t *publicKey_array = new (std::nothrow) uint8_t[length];
+  NtruEncPubKey pk;
+  uint8_t *publicKey_array = new uint8_t[length];
 
-  if(publicKey_array)
-    {
-      NtruEncPubKey pk;
+  memcpy
+    (publicKey_array,
+     data.
+     mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
+     static_cast<size_t> (data.length() -
+			  static_cast<int> (qstrlen("ntru-public-key-"))));
+  ntru_import_pub(publicKey_array, &pk); /*
+					 ** Returns a value.
+					 */
 
-      memcpy
-	(publicKey_array,
-	 data.
-	 mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
-	 static_cast<size_t> (data.length() -
-			      static_cast<int> (qstrlen("ntru-"
-							"public-key-"))));
-      ntru_import_pub(publicKey_array, &pk); /*
-					     ** Returns a value.
-					     */
+  struct NtruEncParams parameters[] = {EES1087EP2, EES1171EP1, EES1499EP1};
 
-      struct NtruEncParams parameters[] = {EES1087EP2,
-					   EES1171EP1,
-					   EES1499EP1};
-
-      if(pk.h.N == parameters[0].N)
-	keySize = "EES1087EP2";
-      else if(pk.h.N == parameters[1].N)
-	keySize = "EES1171EP1";
-      else if(pk.h.N == parameters[2].N)
-	keySize = "EES1499EP1";
-    }
+  if(pk.h.N == parameters[0].N)
+    keySize = "EES1087EP2";
+  else if(pk.h.N == parameters[1].N)
+    keySize = "EES1171EP1";
+  else if(pk.h.N == parameters[2].N)
+    keySize = "EES1499EP1";
 
   delete []publicKey_array;
 #else
