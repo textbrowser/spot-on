@@ -3,6 +3,8 @@ OS X, and Windows Qt 5.x project files.
 Version 9.10.0 of NTL, or newer, is suitable. C++ exceptions must
 be enabled (NTL_EXCEPTIONS)!
 
+On Linux systems, please issue a "./configure" within libNTL/unix.d/src.
+
 To enable McEliece for other systems, please follow the following
 suggestions. Good luck!
 
@@ -14,7 +16,7 @@ project file will reference different libNTL paths (../../../libNTL).
 Please ignore on FreeBSD, OS X, and Windows.
 
 libntl.target = libntl.so
-libntl.commands = cd ../../libNTL/unix.d/src && ./configure && $(MAKE)
+libntl.commands = cd ../../libNTL/unix.d/src && $(MAKE)
 libntl.depends =
 
 3. Modify DEFINES.
