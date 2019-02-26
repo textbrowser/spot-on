@@ -175,6 +175,7 @@ Completed Items
 126.   Hard kernel termination. Control session separation.
 127.   What to do about corrupt database values? Visuals ("error")
        as well as intelligent logic.
+128.   The Poptastic pixmap does not respect a scaled-contents request.
 
 Ignored Items
 
@@ -228,8 +229,7 @@ Remaining Items
        (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
 7.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
-8.     The Poptastic pixmap does not respect a scaled-contents request.
-9.     Own NTRU implementation.
-10.    Python Web interface for the Search machine.
-11.    DTLS.
-12.    Audible.
+8.     Own NTRU implementation.
+9.     Python Web interface for the Search machine.
+10.    DTLS.
+11.    Audible.

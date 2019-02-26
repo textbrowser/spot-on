@@ -73,6 +73,27 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
   m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
   m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
+
+  if(!m_poptasticRetroPhoneSettingsUi.poptastic_label->pixmap() ||
+     m_poptasticRetroPhoneSettingsUi.poptastic_label->pixmap()->isNull())
+    {
+      QPixmap pixmap;
+
+      if(pixmap.load(":/Logo/poptastic.png"))
+	{
+	  pixmap = pixmap.scaled(QSize(256, 256),
+				 Qt::IgnoreAspectRatio,
+				 Qt::SmoothTransformation);
+
+	  if(pixmap.isNull())
+	    m_poptasticRetroPhoneSettingsUi.poptastic_label->setVisible(false);
+	  else
+	    m_poptasticRetroPhoneSettingsUi.poptastic_label->setPixmap(pixmap);
+	}
+      else
+	m_poptasticRetroPhoneSettingsUi.poptastic_label->setVisible(false);
+    }
+
   m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(false);
 
   QList<QHash<QString, QVariant> > list;
