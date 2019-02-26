@@ -594,9 +594,9 @@ spoton_crypt::spoton_crypt(const QByteArray &privateKey,
 	{
 	  m_privateKeyLength = 0;
 	  spoton_misc::logError
-	    ("spoton_crypt::spoton_crypt(): "
-	     "gcry_calloc_secure() "
-	     "failure or m_privateKeyLength is peculiar (%1).");
+	    (QString("spoton_crypt::spoton_crypt(): "
+		     "gcry_calloc_secure() "
+		     "failure or m_privateKeyLength is zero (%1).").arg(m_id));
 	}
     }
   else
@@ -607,8 +607,8 @@ spoton_crypt::spoton_crypt(const QByteArray &privateKey,
 	{
 	  m_privateKeyLength = 0;
 	  spoton_misc::logError
-	    ("spoton_crypt::spoton_crypt(): calloc() "
-	     "failure or m_privateKeyLength is peculiar (%1).");
+	    (QString("spoton_crypt::spoton_crypt(): calloc() "
+		     "failure or m_privateKeyLength is zero (%1).").arg(m_id));
 	}
     }
 
@@ -793,8 +793,7 @@ void spoton_crypt::init(const QString &cipherType,
 		  spoton_misc::logError
 		    (QString("spoton_crypt::init(): "
 			     "gcry_cipher_setkey() "
-			     "failure (%1).").
-		     arg(buffer.constData()));
+			     "failure (%1).").arg(buffer.constData()));
 		}
 	    }
 	  else if(m_cipherType == "threefish")
@@ -1033,8 +1032,7 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 	      encrypted.clear();
 	      spoton_misc::logError
 		(QString("spoton_crypt::encrypted(): "
-			 "QDataStream failure (%1).").
-		 arg(out.status()));
+			 "QDataStream failure (%1).").arg(out.status()));
 	    }
 	  else
 	    {
@@ -1199,7 +1197,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 
       spoton_misc::logError
 	(QString("spoton_crypt::keyedHash(): m_hashKey is not defined or "
-	         "m_hashKeyLength is peculiar (%1).").arg(m_id));
+	         "m_hashKeyLength is zero (%1).").arg(m_id));
       return QByteArray();
     }
 
@@ -1223,8 +1221,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): "
-		     "gcry_md_open() failure (%1).").
-	     arg(buffer.constData()));
+		     "gcry_md_open() failure (%1).").arg(buffer.constData()));
 	}
       else
 	spoton_misc::logError
@@ -1714,7 +1711,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
 	  spoton_misc::logError
 	    (QString("spoton_crypt::initializePrivateKeyContainer(): "
 		     "gcry_calloc_secure() "
-		     "failure or m_privateKeyLength is peculiar (%1).").
+		     "failure or m_privateKeyLength is zero (%1).").
 	     arg(m_id));
 	  return;
 	}
@@ -1732,7 +1729,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
 	  m_privateKeyLength = 0;
 	  spoton_misc::logError
 	    (QString("spoton_crypt::initializePrivateKeyContainer(): calloc() "
-		     "failure or m_privateKeyLength is peculiar (%1).").
+		     "failure or m_privateKeyLength is zero (%1).").
 	     arg(m_id));
 	  return;
 	}
@@ -1770,7 +1767,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
       spoton_misc::logError
 	(QString("spoton_crypt::publicKeyDecrypt(): m_privateKey or "
-	         "m_privateKeyLength is peculiar (%1).").arg(m_id));
+	         "m_privateKeyLength is zero (%1).").arg(m_id));
       return QByteArray();
     }
 
@@ -2560,7 +2557,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
       spoton_misc::logError
 	(QString("spoton_crypt::digitalSignature(): m_privateKey or "
-	         "m_privateKeyLength is peculiar (%1).").arg(m_id));
+	         "m_privateKeyLength is zero (%1).").arg(m_id));
       return QByteArray();
     }
 
@@ -4481,8 +4478,7 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer,
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::shake256(): gcry_md_open() "
-		     "failure (%1).").
-	     arg(buffer.constData()));
+		     "failure (%1).").arg(buffer.constData()));
 	}
       else
 	spoton_misc::logError
@@ -4508,8 +4504,7 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer,
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::shake256(): gcry_md_extract() "
-		     "failure (%1).").
-	     arg(buffer.constData()));
+		     "failure (%1).").arg(buffer.constData()));
 	}
       else
 	spoton_misc::logError

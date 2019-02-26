@@ -169,114 +169,52 @@ Completed Items
 121.   Smoke's Fire requires CTS. Modify Buzz.
 122.   Buzz Cryptographic Discovery.
 123.   SO_TIMESTAMPING socket option, if available.
+124.   Monitor kernel health from the UI.
+125.   Enable SQLite foreign key support via PRAGMA foreign_keys = ON.
+       Where possible.
+126.   Hard kernel termination. Control session separation.
+127.   What to do about corrupt database values? Visuals ("error")
+       as well as intelligent logic.
 
 Ignored Items
 
-1.     The kernel should fetch a node's external IP address. Not ideal for
-       listeners that are connected on interfaces having different external
-       addresses.
-2.     CGI for listeners.
-3.     Hybrid group communications based on deterministic key pairs.
-4.     Introduce spoton_misc::findOptimalKeyLengthForPublicKey(). The method
-       will allow Spot-On to select optimal lengths for digest keys based
-       on provided content and public keys. Version 0.06 introduced
-       digest keys that are restricted to 32 bytes.
-5.     Auto-clear textedit widgets that contain too much data.
-6.     Monitor kernel health from the UI. See
-       spoton::slotGeneralTimerTimeout().
-7.     Participant count may be possible based on asymmetric ciphertexts.
-       Research?
-8.     Create a commanding language. The language could be used to
+1.     Hybrid group communications based on deterministic key pairs.
+2.     Auto-clear textedit widgets that contain too much data.
+3.     Create a commanding language. The language could be used to
        navigate private Spot-On nodes remotely.
-9.     Zero-knowledge passphrase authentication.
-10.    Add SRP for account verification. What is this, the NSA?
-11.    Allow user to bookmark search results. Also allow searching of
+4.     Zero-knowledge passphrase authentication.
+5.     Allow user to bookmark search results. Also allow searching of
        bookmarked entries. Perhaps provide a means of searching the
        global databases as well as bookmarked entries.
-12.    Allow for other ciphers besides AES for e-mail.
-13.    Introduce load balancing of echoes. We're not interested in real-time
-       responses. Congestion control is helpful, however, short graphs
-       tend to be skewed.
-14.    Per request, provide an automatic StarBeam rewind mechanism with a
+6.     Allow for other ciphers besides AES for e-mail.
+7.     Per request, provide an automatic StarBeam rewind mechanism with a
        timer. Private and public libraries.
-15.    Account credentials should not be recorded via reversible encryption.
+8.     Account credentials should not be recorded via reversible encryption.
        Derive keys? I really like the two-step mutual authentication.
-16.    Enable SQLite foreign key support via PRAGMA foreign_keys = ON.
-17.    Database entries containing hashes can be maliciously twisted. Encrypt?
-18.    Artificial trust. All participants must play nicely. Zero-knowledge?
-19.    Scramblers are too periodic.
-20.    Hard kernel termination. Control session separation.
-21.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
-22.    Remote kernel termination.
-23.    An interface for custom functions. Such an interface could be used
-       to transform YouTube data into MP3s.
-24.    What to do about corrupt database values?
-25.    Implement a Qt class in support of DTLS.
-26.    Limit the number of entries that are allowed to be inserted into
+9.     Database entries containing hashes can be maliciously twisted. Encrypt?
+10.    Scramblers are too periodic.
+11.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
+12.    Remote kernel termination.
+13.    Limit the number of entries that are allowed to be inserted into
        a database.
-27.    The data stored in shared.db is not authenticated. Uniqueness
+14.    The data stored in shared.db is not authenticated. Uniqueness
        is not properly defined.
-28.    Android build.
-29.    QFSFileEngine::open: No file name specified: created from
+15.    QFSFileEngine::open: No file name specified: created from
        e-mail. Missing images?
-30.    Counting users is possible. Gathering message attributes is
-       also possible. See group information in MESSAGES.
-31.    Add support for crypto++.
-32.    1-N SCTP support.
-33.    Add log filters.
-34.    Lots of kernel activity may cause libgcrypt fatigue.
-35.    There is some redundant deciphering of data: findMessageType()
+16.    1-N SCTP support.
+17.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
-36.    Move the kernel off of the local machine. Review all Common and
-       GUI source for local database access. libspoton may require
-       changes with respect to kernel presence. Or, create an access library.
-       Or, PostgreSQL!
-37.    The timers that support gathering of external IP addresses burden
-       kernel objects with unnecessary work. If the machine's external IP
-       address changes while connections are already established, the
-       state timers will eventually cause objects to be reset and therefore
-       new attempts will be made to capture the external IP addresses. Review!
-38.    Index the PostgreSQL tables.
-39.    Wormholes for streamed data.
-40.    Sieve machine for better congestion control and less repetitive
-       work.
-41.    User configuration files are not encrypted.
-42.    Artificial pauses. Suppose an inbound packet requires t0 time to
-       process. Pause the current thread for T - t0 seconds, where T is some
-       reasonable time.
-43.    The libgcrypt library supports GCRY_KDF_SCRYPT.
-44.    Weather feeds.
-45.    Create a user's configuration database. Store key types too.
-46.    C++11, unique_ptr and malloc().
-47.    gcry_md_setkey() does not impose minimum key lengths.
-48.    Counting remote accounts is possible.
-49.    How do I trust an external process?
-50.    Per-participant permissions.
-51.    Allow custom addresses for spoton_external_address.
-52.    An account system where the initiator provides both random arrays.
-53.    Audible.
-54.    Provide new digests to lessen public key usage.
-55.    SMP accounts?
-56.    Voice of Spot-On.
-57.    Generate a 2048-bit prime, exchange it with a participant, and
-       perform SMP via the new prime. What do the mathematical connotations
-       show us? May require a generator too.
-58.    Qt 5.5.x supports serial ports.
-59.    Rosetta, support GPG keys (separate) and simple interface
-       into GPG (separate).
-60.    Export/import URLs.
-61.    Large database values (BYTEA) will impede the user experience.
-62.    Per Magical Hero, download specific Web pages on request.
-       Pseudo-proxy.
-63.    Per Schmidt, share StarBeams through Buzz.
-64.    Key pools.
-65.    Personalized status messages.
-66.    Per-neighbor override of required signature proofs during key sharing.
-67.    Poptastic in the Wizard.
-68.    Chat institutions.
-69.    UDP multicast address sharing is flawed in Qt 4.x.
-       (https://bugreports.qt.io/browse/QTBUG-33419)
-70.    URLs statistics.
+18.    Index the PostgreSQL tables.
+19.    The libgcrypt library supports GCRY_KDF_SCRYPT.
+20.    Weather feeds.
+21.    Create a user's configuration database. Store key types too.
+22.    C++11, unique_ptr and malloc().
+23.    gcry_md_setkey() does not impose minimum key lengths.
+24.    Per-participant permissions.
+25.    Allow custom addresses for spoton_external_address.
+26.    Qt 5.5.x supports serial ports.
+27.    Key pools.
+28.    URLs statistics.
 
 Remaining Items
 
@@ -286,9 +224,12 @@ Remaining Items
 3.     Retrieve only the latest e-mails from IMAP/POP3.
 4.     Temporary queues. Will avoid dropped packets.
 5.     Which key types to export and import? A new selection dialog.
-6.     Random sequences for random data (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
+6.     Random sequences for random data
+       (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
 7.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
 8.     The Poptastic pixmap does not respect a scaled-contents request.
 9.     Own NTRU implementation.
 10.    Python Web interface for the Search machine.
+11.    DTLS.
+12.    Audible.
