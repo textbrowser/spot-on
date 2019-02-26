@@ -1406,15 +1406,9 @@ void spoton::slotPopulateStars(void)
 	      if(item1 && item2)
 		{
 		  QFileInfo fileInfo(item2->text());
-		  int percent = static_cast<int>
-		    (100 *
-       		     qAbs(static_cast<double> (fileInfo.size()) /
-			  static_cast<double> (qMax(static_cast<long long int>
-						    (1),
-						    item1->text().
-						    toLongLong()))));
+		  qint64 fileSize = item1->text().toLongLong();
 
-		  if(percent < 100)
+		  if(fileInfo.size() < fileSize)
 		    {
 		      QLinearGradient linearGradient
 			(0,
@@ -1422,6 +1416,10 @@ void spoton::slotPopulateStars(void)
 			 m_ui.received->columnWidth(1),
 			 m_ui.received->rowHeight(row));
 		      QTableWidgetItem *i = new QTableWidgetItem();
+		      int percent = static_cast<int>
+			(100 *
+			 qAbs(static_cast<double> (fileInfo.size()) /
+			      static_cast<double> (qMax(1LL, fileSize))));
 
 		      linearGradient.setColorAt(percent / 100.0,
 						QColor("lightgreen"));

@@ -176,6 +176,8 @@ Completed Items
 127.   What to do about corrupt database values? Visuals ("error")
        as well as intelligent logic.
 128.   The Poptastic pixmap does not respect a scaled-contents request.
+129.   Automatic computations of rapid StarBeam digests may be incorrect.
+       See spoton::slotPopulateStars().
 
 Ignored Items
 
@@ -219,8 +221,7 @@ Ignored Items
 
 Remaining Items
 
-1.     Automatic computations of rapid StarBeam digests may be incorrect.
-       See spoton::slotPopulateStars().
+1.     Audible.
 2.     Open Library.
 3.     Retrieve only the latest e-mails from IMAP/POP3.
 4.     Temporary queues. Will avoid dropped packets.
@@ -232,4 +233,3 @@ Remaining Items
 8.     Own NTRU implementation.
 9.     Python Web interface for the Search machine.
 10.    DTLS.
-11.    Audible.
