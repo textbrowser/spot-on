@@ -1,7 +1,7 @@
 cache()
 include(spot-on-gui-source.pro)
 libntl.target = libntl.so
-libntl.commands = cd ../../libNTL/unix.d/src && $(MAKE)
+libntl.commands = echo
 libntl.depends =
 libntru.target = libntru.so
 libntru.commands = $(MAKE) -C ../../libNTRU
@@ -37,7 +37,7 @@ QMAKE_CLEAN            += Spot-On ../../libNTL/unix.d/src/*.o \
                           ../../libSpotOn/test
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-                          -mtune=native -pie -std=c++11 -O3 \
+                          -mtune=native -pedantic -pie -std=c++11 -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
                           -Wextra -Wno-expansion-to-defined \
                           -Wno-unused \
