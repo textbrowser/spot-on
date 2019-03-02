@@ -3,7 +3,8 @@ OS X, and Windows Qt 5.x project files.
 Version 9.10.0 of NTL, or newer, is suitable. C++ exceptions must
 be enabled (NTL_EXCEPTIONS)!
 
-On Linux systems, please issue a "./configure" within libNTL/unix.d/src.
+On Linux systems, please issue a ./configure followed by a make
+within libNTL/unix.d/src.
 
 To enable McEliece for other systems, please follow the following
 suggestions. Good luck!
