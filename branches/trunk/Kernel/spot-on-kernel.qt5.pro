@@ -1,7 +1,7 @@
 cache()
 include(spot-on-kernel-source.pro)
 libntl.target = libntl.so
-libntl.commands = cd ../../../libNTL/unix.d/src && $(MAKE)
+libntl.commands = echo
 libntl.depends =
 libntru.target = libntru.so
 libntru.commands = $(MAKE) -C ../../../libNTRU
