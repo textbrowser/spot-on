@@ -644,51 +644,97 @@ void spoton::slotTransportChanged(int index)
 	m_ui.ipv4Listener->setChecked(true);
 
       prepareListenerIPCombo();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.days_valid->setEnabled(index == 2 || // TCP
+				  index == 3);  // UDP
+#else
       m_ui.days_valid->setEnabled(index == 2);
+#endif
       m_ui.ipv4Listener->setEnabled(index != 0);
       m_ui.ipv6Listener->setEnabled(index != 0);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.listenerKeySize->setEnabled(index == 2 || // TCP
+				       index == 3);  // UDP
+#else
       m_ui.listenerKeySize->setEnabled(index == 2);
+#endif
 #if defined(Q_OS_WIN)
       m_ui.listenerShareAddress->setEnabled(false);
 #else
       m_ui.listenerShareAddress->setEnabled(index == 3);
 #endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.listenersSslControlString->setEnabled(index == 2 || // TCP
+						 index == 3);  // UDP
+      m_ui.permanentCertificate->setEnabled(index == 2 || // TCP
+					    index == 3);  // UDP
+      m_ui.recordIPAddress->setEnabled(index == 2 || // TCP
+				       index == 3);  // UDP
+#else
       m_ui.listenersSslControlString->setEnabled(index == 2);
       m_ui.permanentCertificate->setEnabled(index == 2);
       m_ui.recordIPAddress->setEnabled(index == 2);
+#endif
 
       if(m_ui.ipv6Listener->isChecked())
 	m_ui.listenerScopeId->setEnabled(index != 0);
       else
 	m_ui.listenerScopeId->setEnabled(false);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.sslListener->setEnabled(index == 2 || // TCP
+				   index == 3);  // UDP
+#else
       m_ui.sslListener->setEnabled(index == 2);
+#endif
     }
   else if(m_ui.neighborTransport == sender())
     {
       if(index == 0)
 	m_ui.ipv4Neighbor->setChecked(true);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.addException->setEnabled(index == 2 || // TCP
+				    index == 3);  // UDP
+#else
       m_ui.addException->setEnabled(index == 2);
+#endif
       m_ui.dynamicdns->setEnabled(index != 0);
       m_ui.ipv4Neighbor->setEnabled(index != 0);
       m_ui.ipv6Neighbor->setEnabled(index != 0);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.neighborKeySize->setEnabled(index == 2 || // TCP
+				       index == 3);  // UDP
+#else
       m_ui.neighborKeySize->setEnabled(index == 2);
+#endif
 
       if(m_ui.ipv6Neighbor->isChecked())
 	m_ui.neighborScopeId->setEnabled(index != 0);
       else
 	m_ui.neighborScopeId->setEnabled(false);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.neighborsSslControlString->setEnabled(index == 2 || // TCP
+						 index == 3);  // UDP
+#else
       m_ui.neighborsSslControlString->setEnabled(index == 2);
+#endif
 
       if(index == 0 || index == 1)
 	m_ui.proxy->setEnabled(false);
       else
 	m_ui.proxy->setEnabled(true);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.requireSsl->setEnabled(index == 2 || // TCP
+				  index == 3);  // UDP
+      m_ui.sslKeySizeLabel->setEnabled(index == 2 || // TCP
+				       index == 3);  // UDP
+#else
       m_ui.requireSsl->setEnabled(index == 2);
       m_ui.sslKeySizeLabel->setEnabled(index == 2);
+#endif
     }
 }
 

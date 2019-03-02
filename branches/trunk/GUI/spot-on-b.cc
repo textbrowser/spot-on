@@ -1418,6 +1418,8 @@ void spoton::slotPublishPeriodicallyToggled(bool state)
 void spoton::prepareListenerIPCombo(void)
 {
   m_ui.listenerIPCombo->clear();
+  m_ui.listenerTransport->repaint();
+  repaint();
 
   QHash<QString, char> hash;
   QStringList list;

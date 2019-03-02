@@ -27,4 +27,4 @@ mkdir -p spot-on-raspbian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.desktop spot-on-raspbian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/RASPBIAN spot-on-raspbian/DEBIAN
 cp -r /usr/local/spot-on spot-on-raspbian/usr/local/.
-fakeroot dpkg-deb --build spot-on-raspbian Spot-On-2019.03.03_armhf.deb
+fakeroot dpkg-deb --build spot-on-raspbian Spot-On-2019.04.04_armhf.deb
