@@ -2625,8 +2625,16 @@ void spoton::slotSetListenerSSLControlString(void)
 	transport = item->text().toUpper();
     }
 
-  if(keySize <= 0 || oid.isEmpty() || transport != "TCP")
+  if(keySize <= 0 || oid.isEmpty())
     return;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  if(!(transport == "TCP" || transport == "UDP"))
+    return;
+#else
+  if(transport != "TCP")
+    return;
+#endif
 
   bool ok = true;
 
@@ -2644,7 +2652,7 @@ void spoton::slotSetListenerSSLControlString(void)
   if(sslCS.isEmpty())
     sslCS = spoton_common::SSL_CONTROL_STRING;
 
-  if(keySize <= 0 || transport != "TCP")
+  if(keySize <= 0)
     sslCS = "N/A";
 
   QString connectionName("");

@@ -1846,7 +1846,12 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
 
   item = m_ui.listeners->item(row, 15); // Transport
 
-  if(!(item && item->text().toLower().trimmed() == "tcp"))
+  if(!(item && (item->text().toLower().trimmed() == "tcp"
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+		|| item->text().toLower().trimmed() == "udp")))
+#else
+    )))
+#endif
     return;
 
   item = m_ui.listeners->item(row, m_ui.listeners->columnCount() - 1); // OID

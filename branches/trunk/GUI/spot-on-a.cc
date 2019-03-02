@@ -3754,10 +3754,19 @@ void spoton::slotAddListener(void)
 	  query.bindValue
 	    (13, crypt->encryptedThenHashed("stream", &ok).toBase64());
 
-	if(sslCS.isEmpty())
-	  sslCS = spoton_common::SSL_CONTROL_STRING;
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	if(m_ui.sslListener->isChecked() && (transport == "tcp" ||
+					     transport == "udp"))
+	  {
+	    if(sslCS.isEmpty())
+	      sslCS = spoton_common::SSL_CONTROL_STRING;
+	  }
+#else
 	if(!m_ui.sslListener->isChecked() || transport != "tcp")
+	  sslCS = "N/A";
+#endif
+
+	if(sslCS.isEmpty())
 	  sslCS = "N/A";
 
 	query.bindValue(14, sslCS);
@@ -4100,7 +4109,7 @@ void spoton::slotAddNeighbor(void)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	    || m_ui.neighborTransport->currentIndex() == 3)) // UDP
 #else
-	   )
+	  ))
 #endif
 	  query.bindValue(20, 1);
 	else
