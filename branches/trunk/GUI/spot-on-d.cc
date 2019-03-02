@@ -2652,9 +2652,6 @@ void spoton::slotSetListenerSSLControlString(void)
   if(sslCS.isEmpty())
     sslCS = spoton_common::SSL_CONTROL_STRING;
 
-  if(keySize <= 0)
-    sslCS = "N/A";
-
   QString connectionName("");
 
   {
@@ -2712,13 +2709,18 @@ void spoton::slotSetNeighborSSLControlString(void)
 	transport = item->text().toUpper();
     }
 
-  if(oid.isEmpty())
+  if(keySize <= 0 || oid.isEmpty())
     return;
 
-  bool ok = true;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  if(!(transport == "TCP" || transport == "UDP"))
+    return;
+#else
+  if(transport != "TCP")
+    return;
+#endif
 
-  if(keySize <= 0 || transport != "TCP")
-    sslCS = "N/A";
+  bool ok = true;
 
   sslCS = QInputDialog::getText
     (this, tr("%1: SSL Control String").arg(SPOTON_APPLICATION_NAME),
@@ -2733,9 +2735,6 @@ void spoton::slotSetNeighborSSLControlString(void)
 
   if(sslCS.isEmpty())
     sslCS = spoton_common::SSL_CONTROL_STRING;
-
-  if(keySize <= 0 || transport != "TCP")
-    sslCS = "N/A";
 
   QString connectionName("");
 

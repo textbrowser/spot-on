@@ -843,7 +843,11 @@ bool spoton::neighborSupportsSslTls(void) const
 
       if(item1 && item2)
 	return item1->text().toInt() > 0 &&
-	  item2->text().toLower().trimmed() == "tcp";
+	  (item2->text().toLower().trimmed() == "tcp"
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	   || item2->text().toLower().trimmed() == "udp"
+#endif
+	   );
     }
 
   return false;
