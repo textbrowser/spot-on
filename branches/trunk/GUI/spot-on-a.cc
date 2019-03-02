@@ -3761,13 +3761,17 @@ void spoton::slotAddListener(void)
 	    if(sslCS.isEmpty())
 	      sslCS = spoton_common::SSL_CONTROL_STRING;
 	  }
+	else
+	  sslCS = "N/A";
 #else
-	if(!m_ui.sslListener->isChecked() || transport != "tcp")
+	if(m_ui.sslListener->isChecked() && transport == "tcp")
+	  {
+	    if(sslCS.isEmpty())
+	      sslCS = spoton_common::SSL_CONTROL_STRING;
+	  }
+	else
 	  sslCS = "N/A";
 #endif
-
-	if(sslCS.isEmpty())
-	  sslCS = "N/A";
 
 	query.bindValue(14, sslCS);
 
@@ -4166,11 +4170,24 @@ void spoton::slotAddNeighbor(void)
 		(26, crypt->encryptedThenHashed("stream", &ok).toBase64());
 	  }
 
-	if(sslCS.isEmpty())
-	  sslCS = spoton_common::SSL_CONTROL_STRING;
-
-	if(!m_ui.requireSsl->isChecked() || transport != "tcp")
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+        if(m_ui.requireSsl->isChecked() && (transport == "tcp" ||
+					    transport == "udp"))
+	  {
+	    if(sslCS.isEmpty())
+	      sslCS = spoton_common::SSL_CONTROL_STRING;
+	  }
+	else
 	  sslCS = "N/A";
+#else
+        if(m_ui.requireSsl->isChecked() && transport == "tcp")
+	  {
+	    if(sslCS.isEmpty())
+	      sslCS = spoton_common::SSL_CONTROL_STRING;
+	  }
+	else
+	  sslCS = "N/A";
+#endif
 
 	query.bindValue(27, sslCS);
 
