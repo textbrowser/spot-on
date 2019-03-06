@@ -599,11 +599,20 @@ spoton_neighbor::spoton_neighbor
   m_kernelInterfaces = spoton_kernel::interfaces();
   m_keySize = qAbs(keySize);
 
-  if(transport == "tcp")
-    if(m_keySize != 0)
-      if(!(m_keySize == 2048 || m_keySize == 3072 ||
-	   m_keySize == 4096))
-	m_keySize = 2048;
+  if(transport == "tcp" || transport == "udp")
+    {
+      if(m_keySize != 0)
+	if(!(m_keySize == 2048 || m_keySize == 3072 ||
+	     m_keySize == 4096))
+	  m_keySize = 2048;
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
+      if(m_transport == "udp")
+	m_keySize = 0;
+#endif
+    }
+  else
+    m_keySize = 0;
 
   m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
@@ -676,6 +685,17 @@ spoton_neighbor::spoton_neighbor
       else
 	m_useSsl = false;
     }
+  else if(m_transport == "udp")
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      if(m_keySize != 0)
+	m_useSsl = true;
+      else
+	m_useSsl = false;
+#else
+      m_useSsl = false;
+#endif
+    }
   else
     m_useSsl = false;
 
@@ -704,7 +724,7 @@ spoton_neighbor::spoton_neighbor
   QByteArray publicKey;
   QString error("");
 
-  if(m_transport == "tcp" && m_useSsl)
+  if((m_transport == "tcp" || m_transport == "udp") && m_useSsl)
     {
       spoton_crypt::generateSslKeys
 	(m_keySize,
