@@ -207,30 +207,31 @@ spoton_listener::spoton_listener
 #endif
   m_sctpServer = 0;
   m_tcpServer = 0;
+  m_transport = transport.toLower().trimmed();
   m_udpServer = 0;
 
-  if(transport == "bluetooth")
+  if(m_transport == "bluetooth")
     {
     }
-  else if(transport == "sctp")
+  else if(m_transport == "sctp")
     m_sctpServer = new spoton_sctp_server(id, this);
-  else if(transport == "tcp")
+  else if(m_transport == "tcp")
     m_tcpServer = new spoton_listener_tcp_server(id, this);
-  else if(transport == "udp")
+  else if(m_transport == "udp")
     m_udpServer = new spoton_listener_udp_server(id, this);
 
   m_address = ipAddress;
   m_certificate = certificate;
   m_echoMode = echoMode;
 
-  if(transport != "bluetooth")
+  if(m_transport != "bluetooth")
     m_externalAddress = new spoton_external_address(this);
   else
     m_externalAddress = 0;
 
   m_keySize = keySize;
 
-  if(transport == "bluetooth")
+  if(m_transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       if(m_keySize > static_cast<unsigned int > (QBluetooth::Authentication |
@@ -240,12 +241,17 @@ spoton_listener::spoton_listener
 	m_keySize = QBluetooth::NoSecurity;
 #endif
     }
-  else if(transport == "tcp")
+  else if(m_transport == "tcp" || m_transport == "udp")
     {
       if(m_keySize != 0)
 	if(!(m_keySize == 2048 || m_keySize == 3072 ||
 	     m_keySize == 4096))
 	  m_keySize = 2048;
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
+      if(m_transport == "udp")
+	m_keySize = 0;
+#endif
     }
   else
     m_keySize = 0;
@@ -282,11 +288,14 @@ spoton_listener::spoton_listener
   if(m_sslControlString.isEmpty())
     m_sslControlString = spoton_common::SSL_CONTROL_STRING;
 
-  m_transport = transport;
   m_useAccounts = useAccounts;
 
-  if(m_keySize == 0 || m_transport != "tcp")
+  if(m_keySize == 0 || m_transport == "bluetooth" || m_transport == "sctp")
     m_sslControlString = "N/A";
+#if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
+  else if(m_transport == "udp")
+    m_sslControlString = "N/A";
+#endif
 
 #if QT_VERSION < 0x050000
   if(m_sctpServer)
@@ -537,13 +546,30 @@ void spoton_listener::slotTimeout(void)
 
 		if(m_sslControlString.isEmpty())
 		  {
-		    if(m_keySize > 0 && m_transport == "tcp")
-		      m_sslControlString = spoton_common::SSL_CONTROL_STRING;
+		    if(m_keySize > 0)
+		      {
+			if(m_transport == "tcp")
+			  m_sslControlString = spoton_common::
+			    SSL_CONTROL_STRING;
+			else if(m_transport == "udp")
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+			  m_sslControlString = spoton_common::
+			    SSL_CONTROL_STRING;
+#else
+			  m_sslControlString = "N/A";
+#endif
+		      }
 		    else
 		      m_sslControlString = "N/A";
 		  }
-		else if(m_keySize == 0 || m_transport != "tcp")
+		else if(m_keySize == 0 ||
+			m_transport == "bluetooth" ||
+			m_transport == "sctp")
 		  m_sslControlString = "N/A";
+#if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
+		else if(m_transport == "udp")
+		  m_sslControlString = "N/A";
+#endif
 
 		if(s_crypt)
 		  {
