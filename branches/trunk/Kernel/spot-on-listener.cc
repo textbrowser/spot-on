@@ -958,8 +958,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
   QString connectionName("");
   QString country
-    (spoton_misc::
-     countryNameFromIPAddress(neighbor->peerAddress()));
+    (spoton_misc::countryNameFromIPAddress(neighbor->peerAddress()));
   qint64 id = -1;
 
   {
@@ -1187,6 +1186,17 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		  query.bindValue(30, spoton_common::SSL_CONTROL_STRING);
 		else
 		  query.bindValue(30, "N/A");
+	      }
+	    else if(m_transport == "udp")
+	      {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+		if(m_keySize > 0)
+		  query.bindValue(30, spoton_common::SSL_CONTROL_STRING);
+		else
+		  query.bindValue(30, "N/A");
+#else
+		query.bindValue(30, "N/A");
+#endif
 	      }
 	    else
 	      query.bindValue(30, "N/A");
