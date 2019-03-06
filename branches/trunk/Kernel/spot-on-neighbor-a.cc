@@ -262,13 +262,32 @@ spoton_neighbor::spoton_neighbor
 
   if(m_transport == "tcp")
     m_requireSsl = true;
+  else if(m_transport == "udp")
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_requireSsl = true;
+#else
+      m_requireSsl = false;
+#endif
+    }
   else
     m_requireSsl = false;
 
-  if(certificate.isEmpty() || m_transport != "tcp" || privateKey.isEmpty())
+  if(certificate.isEmpty() ||
+     m_transport == "bluetooth" ||
+     m_transport == "sctp" ||
+     privateKey.isEmpty())
     m_useSsl = false;
-  else
+  else if(m_transport == "tcp")
     m_useSsl = true;
+  else if(m_transport == "udp")
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_useSsl = true;
+#else
+      m_useSsl = false;
+#endif
+    }
 
   m_waitforbyteswritten_msecs = 0;
 
