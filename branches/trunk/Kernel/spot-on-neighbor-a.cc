@@ -28,6 +28,9 @@
 #include <QAuthenticator>
 #include <QDateTime>
 #include <QDir>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#include <QDtls>
+#endif
 #include <QSqlQuery>
 #include <QSslCipher>
 #include <QSslConfiguration>
@@ -102,6 +105,9 @@ spoton_neighbor::spoton_neighbor
     m_bluetoothSocket->setParent(this);
 #else
   m_bluetoothSocket = 0;
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  m_dtls = 0;
 #endif
   m_passthrough = passthrough;
   m_privateApplicationCredentials = privateApplicationCredentials;
@@ -293,7 +299,7 @@ spoton_neighbor::spoton_neighbor
 
   if(m_useSsl)
     {
-      if(m_tcpSocket)
+      if(m_tcpSocket || m_udpSocket)
 	{
 	  QSslConfiguration configuration;
 
@@ -331,12 +337,20 @@ spoton_neighbor::spoton_neighbor
 		  spoton_crypt::setSslCiphers
 		    (configuration.supportedCiphers(), m_sslControlString,
 		     configuration);
-#else
-		  spoton_crypt::setSslCiphers
-		    (m_tcpSocket->supportedCiphers(), m_sslControlString,
-		     configuration);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+		  if(m_udpSocket)
+		    m_udpSslConfiguration = configuration;
 #endif
-		  m_tcpSocket->setSslConfiguration(configuration);
+#else
+		  if(m_tcpSocket)
+		    spoton_crypt::setSslCiphers
+		      (m_tcpSocket->supportedCiphers(), m_sslControlString,
+		       configuration);
+#endif
+
+		  if(m_tcpSocket)
+		    m_tcpSocket->setSslConfiguration(configuration);
 		}
 	      else
 		{
@@ -513,6 +527,20 @@ spoton_neighbor::spoton_neighbor
     {
       if(m_tcpSocket)
 	m_tcpSocket->startServerEncryption();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      else if(m_udpSocket)
+	{
+	  prepareDtls();
+
+	  if(m_dtls)
+	    {
+	      QByteArray bytes
+		(m_udpSocket->pendingDatagramSize(), Qt::Uninitialized);
+
+	      m_dtls->doHandshake(m_udpSocket, bytes);
+	    }
+	}
+#endif
     }
 
   m_accountTimer.setInterval(2500);
@@ -591,6 +619,9 @@ spoton_neighbor::spoton_neighbor
   m_bytesDiscardedOnWrite = 0;
   m_bytesRead = 0;
   m_bytesWritten = 0;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  m_dtls = 0;
+#endif
   m_echoMode = echoMode;
   m_externalAddress = new spoton_external_address(this);
   m_id = id;
@@ -747,7 +778,7 @@ spoton_neighbor::spoton_neighbor
 
   if(!privateKey.isEmpty())
     {
-      if(m_tcpSocket)
+      if(m_tcpSocket || m_udpSocket)
 	{
 	  QSslConfiguration configuration;
 
@@ -776,12 +807,19 @@ spoton_neighbor::spoton_neighbor
 	      spoton_crypt::setSslCiphers
 		(configuration.supportedCiphers(), m_sslControlString,
 		 configuration);
-#else
-	      spoton_crypt::setSslCiphers
-		(m_tcpSocket->supportedCiphers(), m_sslControlString,
-		 configuration);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	      if(m_udpSocket)
+		m_udpSslConfiguration = configuration;
 #endif
-	      m_tcpSocket->setSslConfiguration(configuration);
+#else
+	      if(m_tcpSocket)
+		spoton_crypt::setSslCiphers
+		  (m_tcpSocket->supportedCiphers(), m_sslControlString,
+		   configuration);
+#endif
+	      if(m_tcpSocket)
+		m_tcpSocket->setSslConfiguration(configuration);
 	    }
 	  else
 	    {
@@ -1456,6 +1494,9 @@ void spoton_neighbor::slotTimeout(void)
 	  {
 	    if(m_udpSocket->state() == QAbstractSocket::UnconnectedState)
 	      {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+		prepareDtls();
+#endif
 		saveStatus("connecting");
 		m_udpSocket->connectToHost(m_address, m_port);
 
@@ -1559,6 +1600,11 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
   QSqlQuery query(db);
   QSslCipher cipher;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  if(m_dtls)
+    cipher = m_dtls->sessionCipher();
+  else
+#endif
   if(m_tcpSocket)
     cipher = m_tcpSocket->sessionCipher();
 
@@ -6417,6 +6463,10 @@ void spoton_neighbor::recordCertificateOrAbort(void)
     {
       if(m_tcpSocket)
 	certificate = m_tcpSocket->sslConfiguration().localCertificate();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      else if(m_udpSocket)
+	certificate = m_udpSslConfiguration.localCertificate();
+#endif
 
       save = true;
     }

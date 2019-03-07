@@ -28,6 +28,10 @@
 #include "spot-on-kernel.h"
 #include "spot-on-neighbor.h"
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#include <QDtls>
+#endif
+
 QAbstractSocket::SocketState spoton_neighbor::state(void) const
 {
   if(m_bluetoothSocket)
@@ -103,6 +107,17 @@ bool spoton_neighbor::isEncrypted(void) const
 {
   if(m_tcpSocket)
     return m_tcpSocket->isEncrypted();
+  else if(m_udpSocket)
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      if(m_dtls)
+	return m_dtls->isConnectionEncrypted();
+      else
+	return false;
+#else
+      return false;
+#endif
+    }
   else
     return false;
 }
@@ -682,3 +697,22 @@ void spoton_neighbor::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
 	spoton_kernel::messagingCacheAdd(message);
     }
 }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+void spoton_neighbor::prepareDtls(void)
+{
+  if(m_dtls)
+    m_dtls->deleteLater();
+
+  if(m_isUserDefined)
+    m_dtls = new QDtls(QSslSocket::SslClientMode, this);
+  else
+    m_dtls = new QDtls(QSslSocket::SslServerMode, this);
+
+  if(m_isUserDefined)
+    {
+      m_dtls->setDtlsConfiguration(m_udpSslConfiguration);
+      m_dtls->setPeer(QHostAddress(m_address), m_port);
+    }
+}
+#endif

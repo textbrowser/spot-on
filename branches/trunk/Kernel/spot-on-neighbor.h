@@ -55,6 +55,10 @@
 #include "Common/spot-on-socket-options.h"
 #include "spot-on-sctp-socket.h"
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+class QDtls;
+#endif
+
 class spoton_neighbor_tcp_socket: public QSslSocket
 {
   Q_OBJECT
@@ -288,6 +292,9 @@ class spoton_neighbor: public QThread
   QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  QDtls *m_dtls;
+#endif
   QList<QFuture<void> > m_privateApplicationFutures;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QMap<quint64, QByteArray> m_privateApplicationMap;
@@ -311,6 +318,9 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_maximumContentLengthMutex;
   QReadWriteLock m_receivedUuidMutex;
   QSslCertificate m_peerCertificate;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  QSslConfiguration m_udpSslConfiguration;
+#endif
   QString m_address;
   QString m_echoMode;
   QString m_ipAddress;
@@ -364,6 +374,9 @@ class spoton_neighbor: public QThread
     (const QByteArray &data,
      const QByteArray &privateApplicationCredentials,
      const qint64 maximumContentLength);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  void prepareDtls(void);
+#endif
   void process0000(int length, const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
   void process0000a(int length, const QByteArray &data,

@@ -712,7 +712,7 @@ T* MakeRaw(Args&&... args) {
    T *p = NTL_NEW_OP T(std::forward<Args>(args)...); 
    if (!p) MemoryError();
    return p;
-};
+}
 
 #endif
 
