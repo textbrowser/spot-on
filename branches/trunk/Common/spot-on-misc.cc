@@ -552,8 +552,10 @@ void spoton_misc::prepareDatabases(void)
 		   "scope_id TEXT, "
 		   "protocol TEXT NOT NULL, "
 		   "status TEXT NOT NULL DEFAULT 'disconnected' CHECK "
-		   "(status IN ('blocked', 'connected', 'deleted', "
-		   "'disconnected')), "
+		   "(status IN ('blocked', 'bound', "
+		   "'connected', 'connecting', 'closing', "
+		   "'deleted', "
+		   "'disconnected', 'host-lookup')), "
 		   "status_control TEXT NOT NULL DEFAULT 'connected' CHECK "
 		   "(status_control IN ('blocked', 'connected', 'deleted', "
 		   "'disconnected')), "
@@ -639,9 +641,6 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING).
 	   arg(std::numeric_limits<int>::max()));
-	query.exec("ALTER TABLE neighbors ADD "
-		   "bytes_discarded_on_write INTEGER NOT NULL DEFAULT 0 "
-		   "CHECK (bytes_discarded_on_write >= 0)");
       }
 
     db.close();
