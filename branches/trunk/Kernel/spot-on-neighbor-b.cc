@@ -709,10 +709,9 @@ void spoton_neighbor::prepareDtls(void)
   else
     m_dtls = new QDtls(QSslSocket::SslServerMode, this);
 
+  m_dtls->setDtlsConfiguration(m_udpSslConfiguration);
+
   if(m_isUserDefined)
-    {
-      m_dtls->setDtlsConfiguration(m_udpSslConfiguration);
-      m_dtls->setPeer(QHostAddress(m_address), m_port);
-    }
+    m_dtls->setPeer(QHostAddress(m_address), m_port);
 }
 #endif

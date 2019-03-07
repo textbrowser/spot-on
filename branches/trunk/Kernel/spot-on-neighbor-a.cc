@@ -836,8 +836,8 @@ spoton_neighbor::spoton_neighbor
   if(m_transport != "bluetooth")
     if(m_address.isEmpty())
       if(!m_ipAddress.isEmpty())
-	QHostInfo::lookupHost(m_ipAddress,
-			      this, SLOT(slotHostFound(const QHostInfo &)));
+	QHostInfo::lookupHost
+	  (m_ipAddress, this, SLOT(slotHostFound(const QHostInfo &)));
 
   if(m_transport != "bluetooth")
     m_scopeId = scopeId;
