@@ -5327,7 +5327,9 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 			    "indefinite lifetime for a neighbor. If "
 			    "not checked, the neighbor will be "
 			    "terminated after some internal "
-			    "timer expires.</html>"));
+			    "timer expires. Please note that the "
+			    "neighbor may be terminated if data "
+			    "has not been received for some time.</html>"));
 	m_ui.neighbors->setItem(row, 0, item);
       }
 
