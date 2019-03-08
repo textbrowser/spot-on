@@ -132,17 +132,16 @@ void spoton_listener_udp_server::slotReadyRead(void)
 
   while(hasPendingDatagrams())
     {
-      qint64 size = pendingDatagramSize();
-
-      if(size <= 0)
-	continue;
-
       QByteArray datagram;
       QHostAddress peerAddress;
       quint16 peerPort = 0;
+      qint64 size = qMax(static_cast<qint64> (0), pendingDatagramSize());
 
       datagram.resize(static_cast<int> (size));
       size = readDatagram(datagram.data(), size, &peerAddress, &peerPort);
+
+      if(size == 0)
+	continue;
 
       if(spoton_kernel::instance() &&
 	 !spoton_kernel::instance()->acceptRemoteConnection(localAddress(),
