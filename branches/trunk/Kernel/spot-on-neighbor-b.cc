@@ -224,6 +224,8 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d)
 	       arg(m_dtls->dtlsErrorString()).
 	       arg(m_address).
 	       arg(m_port));
+	  else if(m_dtls->handshakeState() == QDtls::HandshakeComplete)
+	    recordCertificateOrAbort();
 
 	  return;
 	}

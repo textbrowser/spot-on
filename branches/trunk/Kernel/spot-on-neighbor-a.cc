@@ -7498,19 +7498,17 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	      if(m_dtls)
 		sent = m_dtls->writeDatagramEncrypted
-		  (m_udpSocket,
-		   data + static_cast<size_t> (qMin(udpMinimum, remaining)));
+		  (m_udpSocket, QByteArray(data, qMin(remaining, udpMinimum)));
 	      else
 #endif
-	      sent = m_udpSocket->write(data, qMin(udpMinimum, remaining));
+	      sent = m_udpSocket->write(data, qMin(remaining, udpMinimum));
 	    }
 	  else
 	    {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	      if(m_dtls)
 		sent = m_dtls->writeDatagramEncrypted
-		  (m_udpSocket,
-		   data + static_cast<size_t> (qMin(udpMinimum, remaining)));
+		  (m_udpSocket, QByteArray(data, qMin(remaining, udpMinimum)));
 	      else
 #endif
 	      {
@@ -7518,7 +7516,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 
 		address.setScopeId(m_scopeId);
 		sent = m_udpSocket->writeDatagram
-		  (data, qMin(udpMinimum, remaining), address, m_port);
+		  (data, qMin(remaining, udpMinimum), address, m_port);
 	      }
 	    }
 
@@ -7544,8 +7542,8 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 		  if(udpMinimum > 0)
 		    continue;
 		}
-	      else if(m_udpSocket->error() ==
-		      QAbstractSocket::UnknownSocketError)
+	      else if(m_udpSocket->
+		      error() == QAbstractSocket::UnknownSocketError)
 		{
 		  /*
 		  ** If the end-point is absent, QIODevice::write() may
