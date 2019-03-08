@@ -482,6 +482,8 @@ class spoton_neighbor: public QThread
   void slotExternalAddressDiscovered(const QHostAddress &address);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
   void slotHandshakeTimeout(void);
+#else
+  void slotHandshakeTimeout(void);
 #endif
   void slotHostFound(const QHostInfo &hostInfo);
   void slotLifetimeExpired(void);

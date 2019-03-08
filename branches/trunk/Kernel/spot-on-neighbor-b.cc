@@ -763,4 +763,11 @@ void spoton_neighbor::slotHandshakeTimeout(void)
   if(m_dtls && m_udpSocket)
     m_dtls->handleTimeout(m_udpSocket);
 }
+#else
+void spoton_neighbor::slotHandshakeTimeout(void)
+{
+  /*
+  ** Not used. Qt 4.8.x requires a definition!
+  */
+}
 #endif

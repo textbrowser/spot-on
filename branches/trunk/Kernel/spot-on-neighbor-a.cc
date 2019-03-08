@@ -1834,7 +1834,9 @@ void spoton_neighbor::slotReadyRead(void)
 
   m_bytesRead += static_cast<quint64> (data.length());
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
  next_label:
+#endif
 
   {
     QWriteLocker locker
