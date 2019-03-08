@@ -4109,12 +4109,7 @@ void spoton::slotAddNeighbor(void)
 	  query.bindValue(19, 0);
 
 	if(m_ui.addException->isChecked() &&
-	   (m_ui.neighborTransport->currentIndex() == 2      // TCP
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	    || m_ui.neighborTransport->currentIndex() == 3)) // UDP
-#else
-	  ))
-#endif
+	   m_ui.neighborTransport->currentIndex() == 2) // TCP
 	  query.bindValue(20, 1);
 	else
 	  query.bindValue(20, 0);

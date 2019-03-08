@@ -692,12 +692,7 @@ void spoton::slotTransportChanged(int index)
       if(index == 0)
 	m_ui.ipv4Neighbor->setChecked(true);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      m_ui.addException->setEnabled(index == 2 || // TCP
-				    index == 3);  // UDP
-#else
       m_ui.addException->setEnabled(index == 2);
-#endif
       m_ui.dynamicdns->setEnabled(index != 0);
       m_ui.ipv4Neighbor->setEnabled(index != 0);
       m_ui.ipv6Neighbor->setEnabled(index != 0);
