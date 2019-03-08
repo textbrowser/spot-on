@@ -4393,7 +4393,6 @@ void spoton::slotPopulateListeners(void)
 	int totalRows = 0;
 
 	query.setForwardOnly(true);
-	query.exec("PRAGMA read_uncommitted = True");
 
 	if(query.exec("SELECT COUNT(*) FROM listeners "
 		      "WHERE status_control <> 'deleted'"))
@@ -5628,10 +5627,10 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
 	      if(i == 2)
 		{
-		  if(query->value(i).toString().
-		     toLower() == "connected")
-		    item->setBackground
-		      (QBrush(QColor("lightgreen")));
+		  QString status(query->value(i).toString().toLower());
+
+		  if(status == "bound" || status == "connected")
+		    item->setBackground(QBrush(QColor("lightgreen")));
 		  else
 		    item->setBackground(QBrush());
 

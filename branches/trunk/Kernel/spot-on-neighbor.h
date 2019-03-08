@@ -33,6 +33,9 @@
 #include <qbluetoothsocket.h>
 #endif
 #include <QDateTime>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#include <QDtls>
+#endif
 #include <QFuture>
 #include <QHostAddress>
 #include <QHostInfo>
@@ -54,10 +57,6 @@
 #include "Common/spot-on-send.h"
 #include "Common/spot-on-socket-options.h"
 #include "spot-on-sctp-socket.h"
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-class QDtls;
-#endif
 
 class spoton_neighbor_tcp_socket: public QSslSocket
 {
@@ -292,9 +291,6 @@ class spoton_neighbor: public QThread
   QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-  QDtls *m_dtls;
-#endif
   QList<QFuture<void> > m_privateApplicationFutures;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QMap<quint64, QByteArray> m_privateApplicationMap;
@@ -305,6 +301,9 @@ class spoton_neighbor: public QThread
   QPointer<QBluetoothSocket> m_bluetoothSocket;
 #else
   QPointer<QObject> m_bluetoothSocket;
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  QPointer<QDtls> m_dtls;
 #endif
   QReadWriteLock m_accountClientSentSaltMutex;
   QReadWriteLock m_accountNameMutex;
@@ -486,6 +485,9 @@ class spoton_neighbor: public QThread
   void slotError(const QString &method,
 		 const spoton_sctp_socket::SocketError error);
   void slotExternalAddressDiscovered(const QHostAddress &address);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  void slotHandshakeTimeout(void);
+#endif
   void slotHostFound(const QHostInfo &hostInfo);
   void slotLifetimeExpired(void);
   void slotModeChanged(QSslSocket::SslMode mode);

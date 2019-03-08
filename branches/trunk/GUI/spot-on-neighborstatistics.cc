@@ -83,7 +83,6 @@ QString spoton_neighborstatistics::query(void)
 	    QSqlQuery query(db);
 
 	    query.setForwardOnly(true);
-	    query.exec("PRAGMA read_uncommitted = True");
 	    query.prepare("SELECT * FROM neighbors WHERE "
 			  "oid = ?");
 	    query.bindValue(0, objectName());

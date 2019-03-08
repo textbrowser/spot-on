@@ -1661,7 +1661,8 @@ void spoton_kernel::prepareNeighbors(void)
 	}
       else if(it.value()->state() == QAbstractSocket::UnconnectedState)
 	disconnected += 1;
-      else if(it.value()->state() == QAbstractSocket::ConnectedState)
+      else if(it.value()->state() == QAbstractSocket::BoundState ||
+	      it.value()->state() == QAbstractSocket::ConnectedState)
 	m_activeNeighbors += 1;
     }
 
@@ -5825,16 +5826,17 @@ bool spoton_kernel::acceptRemoteConnection(const QHostAddress &localAddress,
 	{
 	  it.next();
 
-	  if(it.value() &&
-	     it.value()->state() == QAbstractSocket::ConnectedState)
-	    {
-	      QHostAddress address(it.value()->peerAddress());
+	  if(it.value())
+	    if(it.value()->state() == QAbstractSocket::BoundState ||
+	       it.value()->state() == QAbstractSocket::ConnectedState)
+	      {
+		QHostAddress address(it.value()->peerAddress());
 
-	      address.setScopeId(it.value()->scopeId());
+		address.setScopeId(it.value()->scopeId());
 
-	      if(address == peerAddress)
-		count += 1;
-	    }
+		if(address == peerAddress)
+		  count += 1;
+	      }
 	}
 
       if(count >= value)

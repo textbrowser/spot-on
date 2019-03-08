@@ -28,9 +28,7 @@
 #include <QAuthenticator>
 #include <QDateTime>
 #include <QDir>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-#include <QDtls>
-#endif
+#include <QSqlError>
 #include <QSqlQuery>
 #include <QSslCipher>
 #include <QSslConfiguration>
@@ -105,9 +103,6 @@ spoton_neighbor::spoton_neighbor
     m_bluetoothSocket->setParent(this);
 #else
   m_bluetoothSocket = 0;
-#endif
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-  m_dtls = 0;
 #endif
   m_passthrough = passthrough;
   m_privateApplicationCredentials = privateApplicationCredentials;
@@ -340,7 +335,14 @@ spoton_neighbor::spoton_neighbor
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 		  if(m_udpSocket)
-		    m_udpSslConfiguration = configuration;
+		    {
+		      m_udpSslConfiguration = configuration;
+		      m_udpSslConfiguration.
+			setDtlsCookieVerificationEnabled(false);
+		      m_udpSslConfiguration.setPeerVerifyMode
+			(QSslSocket::VerifyNone);
+		      m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
+		    }
 #endif
 #else
 		  if(m_tcpSocket)
@@ -470,12 +472,6 @@ spoton_neighbor::spoton_neighbor
     }
   else if(m_udpSocket)
     {
-      /*
-      ** UDP sockets are connection-less. However, most of the communications
-      ** logic requires connected sockets.
-      */
-
-      m_udpSocket->setSocketState(QAbstractSocket::ConnectedState);
       connect(m_udpSocket,
 	      SIGNAL(disconnected(void)),
 	      this,
@@ -529,17 +525,7 @@ spoton_neighbor::spoton_neighbor
 	m_tcpSocket->startServerEncryption();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
       else if(m_udpSocket)
-	{
-	  prepareDtls();
-
-	  if(m_dtls)
-	    {
-	      QByteArray bytes
-		(m_udpSocket->pendingDatagramSize(), Qt::Uninitialized);
-
-	      m_dtls->doHandshake(m_udpSocket, bytes);
-	    }
-	}
+	prepareDtls();
 #endif
     }
 
@@ -619,9 +605,6 @@ spoton_neighbor::spoton_neighbor
   m_bytesDiscardedOnWrite = 0;
   m_bytesRead = 0;
   m_bytesWritten = 0;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-  m_dtls = 0;
-#endif
   m_echoMode = echoMode;
   m_externalAddress = new spoton_external_address(this);
   m_id = id;
@@ -810,7 +793,10 @@ spoton_neighbor::spoton_neighbor
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	      if(m_udpSocket)
-		m_udpSslConfiguration = configuration;
+		{
+		  m_udpSslConfiguration = configuration;
+		  m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
+		}
 #endif
 #else
 	      if(m_tcpSocket)
@@ -1393,9 +1379,12 @@ void spoton_neighbor::slotTimeout(void)
 		  m_lifetime.start();
 	      }
 	    else if(m_id != -1)
-	      shouldDelete = true;
+	      {
+		if(query.lastError().isValid())
+		  shouldDelete = true;
+	      }
 	  }
-	else if(m_id != -1)
+	else if(m_id != -1 && query.lastError().isValid())
 	  {
 	    QFileInfo fileInfo
 	      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
@@ -1494,9 +1483,6 @@ void spoton_neighbor::slotTimeout(void)
 	  {
 	    if(m_udpSocket->state() == QAbstractSocket::UnconnectedState)
 	      {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-		prepareDtls();
-#endif
 		saveStatus("connecting");
 		m_udpSocket->connectToHost(m_address, m_port);
 
@@ -1521,6 +1507,20 @@ void spoton_neighbor::slotTimeout(void)
 		    deleteLater();
 		    return;
 		  }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+		prepareDtls();
+
+		if(m_dtls)
+		  if(!m_dtls->doHandshake(m_udpSocket))
+		    spoton_misc::logError
+		      (QString("spoton_neighbor::slotTimeout(): "
+			       "DTLS error (%1) failure for "
+			       "%2:%3.").
+		       arg(m_dtls->dtlsErrorString()).
+		       arg(m_address).
+		       arg(m_port));
+#endif
 	      }
 	  }
       }
@@ -1654,7 +1654,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
     {
     case QAbstractSocket::BoundState:
       {
-	query.addBindValue("bound");
+	query.addBindValue("connected");
 	break;
       }
     case QAbstractSocket::ClosingState:
@@ -1678,7 +1678,10 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 	break;
       }
     default:
-      query.addBindValue("disconnected");
+      {
+	query.addBindValue("disconnected");
+	break;
+      }
     }
 
   query.addBindValue(seconds);
@@ -1791,18 +1794,40 @@ void spoton_neighbor::slotReadyRead(void)
     {
       data = m_udpSocket->readAll();
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      if(m_dtls && m_isUserDefined)
+	{
+	  if(m_dtls->isConnectionEncrypted())
+	    data = m_dtls->decryptDatagram(m_udpSocket, data);
+	  else
+	    {
+	      if(!m_dtls->doHandshake(m_udpSocket, data))
+		spoton_misc::logError
+		  (QString("spoton_neighbor::slotReadyRead(): "
+			   "DTLS error (%1) for %2:%3.").
+		   arg(m_dtls->dtlsErrorString()).
+		   arg(m_address).
+		   arg(m_port));
+
+	      m_bytesRead += static_cast<quint64> (data.length());
+	      return;
+	    }
+	}
+#endif
+
       while(m_udpSocket->multicastSocket() &&
 	    m_udpSocket->multicastSocket()->hasPendingDatagrams())
 	{
-	  QByteArray datagram;
-	  qint64 size = 0;
+	  qint64 size = m_udpSocket->multicastSocket()->pendingDatagramSize();
 
-	  datagram.resize
-	    (static_cast<int> (qMax(static_cast<qint64> (0),
-				    m_udpSocket->multicastSocket()->
-				    pendingDatagramSize())));
+	  if(size <= 0)
+	    continue;
+
+	  QByteArray datagram;
+
+	  datagram.resize(static_cast<int> (size));
 	  size = m_udpSocket->multicastSocket()->readDatagram
-	    (datagram.data(), datagram.size(), 0, 0);
+	    (datagram.data(), size);
 
 	  if(size > 0)
 	    data.append(datagram.mid(0, static_cast<int> (size)));
@@ -2725,6 +2750,8 @@ void spoton_neighbor::slotSendMessage
 {
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;
+  else if(!readyToWrite())
+    return;
 
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
@@ -2734,22 +2761,21 @@ void spoton_neighbor::slotSendMessage
 
   message = spoton_send::message0000(data, sendMethod, ae);
 
-  if(readyToWrite())
-    {
-      if(write(message.constData(), message.length()) != message.length())
-	spoton_misc::logError
-	  (QString("spoton_neighbor::slotSendMessage(): write() error "
-		   "for %1:%2.").
-	   arg(m_address).
-	   arg(m_port));
-      else
-	spoton_kernel::messagingCacheAdd(message);
-    }
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotSendMessage(): write() error "
+	       "for %1:%2.").
+       arg(m_address).
+       arg(m_port));
+  else
+    spoton_kernel::messagingCacheAdd(message);
 }
 
 void spoton_neighbor::slotWriteURLs(const QByteArray &data)
 {
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+  else if(!readyToWrite())
     return;
 
   QByteArray message;
@@ -2760,17 +2786,14 @@ void spoton_neighbor::slotWriteURLs(const QByteArray &data)
 
   message = spoton_send::message0080(data, ae);
 
-  if(readyToWrite())
-    {
-      if(write(message.constData(), message.length()) != message.length())
-	spoton_misc::logError
-	  (QString("spoton_neighbor::slotWriteURLs(): write() error "
-		   "for %1:%2.").
-	   arg(m_address).
-	   arg(m_port));
-      else
-	spoton_kernel::messagingCacheAdd(message);
-    }
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotWriteURLs(): write() error "
+	       "for %1:%2.").
+       arg(m_address).
+       arg(m_port));
+  else
+    spoton_kernel::messagingCacheAdd(message);
 }
 
 void spoton_neighbor::slotWrite
@@ -5540,7 +5563,7 @@ void spoton_neighbor::slotSendMOTD(void)
 
   if(m_passthrough)
     return;
-  else if(state() != QAbstractSocket::ConnectedState)
+  else if(!readyToWrite())
     return;
 
   QByteArray message(spoton_send::message0070(m_motd.toUtf8()));
@@ -5564,7 +5587,8 @@ void spoton_neighbor::saveExternalAddress(const QHostAddress &address,
   QSqlQuery query(db);
   bool ok = true;
 
-  if(state == QAbstractSocket::ConnectedState)
+  if(state == QAbstractSocket::BoundState ||
+     state == QAbstractSocket::ConnectedState)
     {
       if(address.isNull())
 	{
@@ -5627,7 +5651,8 @@ void spoton_neighbor::slotExternalAddressDiscovered
 void spoton_neighbor::slotDiscoverExternalAddress(void)
 {
   if(m_externalAddress)
-    if(state() == QAbstractSocket::ConnectedState)
+    if(state() == QAbstractSocket::BoundState ||
+       state() == QAbstractSocket::ConnectedState)
       m_externalAddress->discover();
 }
 
@@ -6534,7 +6559,8 @@ void spoton_neighbor::slotProxyAuthenticationRequired
 
 bool spoton_neighbor::readyToWrite(void)
 {
-  if(state() != QAbstractSocket::ConnectedState)
+  if(!(state() == QAbstractSocket::BoundState ||
+       state() == QAbstractSocket::ConnectedState))
     return false;
 
   if(isEncrypted() && m_useSsl)
@@ -7285,7 +7311,8 @@ void spoton_neighbor::slotSendAccountInformation(void)
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;
 
-  if(state() != QAbstractSocket::ConnectedState)
+  if(!(state() == QAbstractSocket::BoundState ||
+       state() == QAbstractSocket::ConnectedState))
     return;
 
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
@@ -7353,7 +7380,8 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;
 
-  if(state() != QAbstractSocket::ConnectedState)
+  if(!(state() == QAbstractSocket::BoundState ||
+       state() == QAbstractSocket::ConnectedState))
     return;
   else if(name.length() < 32 || password.length() < 32)
     return;
@@ -7394,7 +7422,8 @@ void spoton_neighbor::slotSendAuthenticationRequest(void)
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;
 
-  if(state() != QAbstractSocket::ConnectedState)
+  if(!(state() == QAbstractSocket::BoundState ||
+       state() == QAbstractSocket::ConnectedState))
     return;
 
   QByteArray message(spoton_send::message0052());
@@ -7465,14 +7494,32 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
       else if(m_udpSocket)
 	{
 	  if(m_isUserDefined)
-	    sent = m_udpSocket->write(data, qMin(udpMinimum, remaining));
+	    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	      if(m_dtls)
+		sent = m_dtls->writeDatagramEncrypted
+		  (m_udpSocket,
+		   data + static_cast<size_t> (qMin(udpMinimum, remaining)));
+	      else
+#endif
+	      sent = m_udpSocket->write(data, qMin(udpMinimum, remaining));
+	    }
 	  else
 	    {
-	      QHostAddress address(m_address);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	      if(m_dtls)
+		sent = m_dtls->writeDatagramEncrypted
+		  (m_udpSocket,
+		   data + static_cast<size_t> (qMin(udpMinimum, remaining)));
+	      else
+#endif
+	      {
+		QHostAddress address(m_address);
 
-	      address.setScopeId(m_scopeId);
-	      sent = m_udpSocket->writeDatagram
-		(data, qMin(udpMinimum, remaining), address, m_port);
+		address.setScopeId(m_scopeId);
+		sent = m_udpSocket->writeDatagram
+		  (data, qMin(udpMinimum, remaining), address, m_port);
+	      }
 	    }
 
 	  if(sent > 0)

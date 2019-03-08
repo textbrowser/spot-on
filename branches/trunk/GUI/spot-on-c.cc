@@ -254,7 +254,6 @@ void spoton::slotPopulateEtpMagnets(void)
 	m_ui.addTransmittedMagnets->setSortingEnabled(false);
 	m_ui.addTransmittedMagnets->setRowCount(0);
 	query.setForwardOnly(true);
-	query.exec("PRAGMA read_uncommitted = True");
 
 	if(query.exec("SELECT COUNT(*) FROM magnets"))
 	  if(query.next())
@@ -800,7 +799,6 @@ QList<QPair<QString, QVariant> > spoton::gatherStatistics(void) const
 	    QSqlQuery query(db);
 
 	    query.setForwardOnly(true);
-	    query.exec("PRAGMA read_uncommitted = True");
 
 	    if(query.exec("SELECT statistic, value FROM kernel_statistics "
 			  "ORDER BY statistic"))
@@ -1347,7 +1345,6 @@ void spoton::slotPopulateStars(void)
 	m_ui.received->setSortingEnabled(false);
 	m_ui.received->setRowCount(0);
 	row = 0;
-	query.exec("PRAGMA read_uncommitted = True");
 
 	if(query.exec("SELECT COUNT(*) FROM received"))
 	  if(query.next())
