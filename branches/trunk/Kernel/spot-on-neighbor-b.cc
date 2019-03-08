@@ -152,6 +152,9 @@ void spoton_neighbor::abort(void)
 	m_dtls->deleteLater();
 #endif
       m_udpSocket->abort();
+
+      if(m_udpSocket->multicastSocket())
+	m_udpSocket->multicastSocket()->abort();
     }
 }
 
@@ -188,6 +191,9 @@ void spoton_neighbor::close(void)
 	m_dtls->deleteLater();
 #endif
       m_udpSocket->close();
+
+      if(m_udpSocket->multicastSocket())
+	m_udpSocket->multicastSocket()->close();
     }
 }
 
