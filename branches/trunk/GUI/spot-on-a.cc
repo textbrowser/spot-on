@@ -9772,6 +9772,26 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 
 void spoton::slotCopyAllMyPublicKeys(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyChatPublicKey() + "\n" +
+	       copyMyEmailPublicKey() + "\n" +
+	       copyMyOpenLibraryPublicKey() + "\n" +
+	       copyMyPoptasticPublicKey() + "\n" +
+	       copyMyRosettaPublicKey() + "\n" +
+	       copyMyUrlPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= 10 * 1024 * 1024)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The public keys are too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
@@ -9782,12 +9802,7 @@ void spoton::slotCopyAllMyPublicKeys(void)
       QApplication::processEvents();
 #endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(copyMyChatPublicKey() + "\n" +
-			 copyMyEmailPublicKey() + "\n" +
-			 copyMyOpenLibraryPublicKey() + "\n" +
-			 copyMyPoptasticPublicKey() + "\n" +
-			 copyMyRosettaPublicKey() + "\n" +
-			 copyMyUrlPublicKey());
+      clipboard->setText(text);
       QApplication::restoreOverrideCursor();
     }
 }
