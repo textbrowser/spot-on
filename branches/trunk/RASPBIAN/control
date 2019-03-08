@@ -6,5 +6,5 @@ Priority: optional
 Section: Science
 Version: 2019.04.04
 Description: Spot-On
- Welcome to Spot-On on Pi!
+ Welcome to Spot-On on ARM!
  A spot-on.desktop file will also be installed in /usr/share/applications/.
