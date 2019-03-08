@@ -312,7 +312,7 @@ void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
 
   QApplication::restoreOverrideCursor();
 
-  if(text.length() >= 10 * 1024 * 1024)
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
     {
       QMessageBox::critical
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),

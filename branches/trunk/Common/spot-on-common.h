@@ -81,6 +81,7 @@ class spoton_common
   static const int LOG_FILE_MAXIMUM_SIZE = 8 * 1024 * 1024;
   static const int MAIL_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;
+  static const int MAXIMUM_COPY_KEY_SIZES = 10 * 1024 * 1024;
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
   static const int MAXIMUM_KERNEL_GUI_SERVER_SINGLE_SOCKET_BUFFER_SIZE =
 #ifdef SPOTON_MCELIECE_ENABLED

@@ -3496,6 +3496,8 @@ void spoton::slotCopyEmailKeys(void)
   if(!crypt)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QByteArray name;
   QByteArray publicKeyHash;
   QString oid("");
@@ -3523,6 +3525,7 @@ void spoton::slotCopyEmailKeys(void)
   if(oid.isEmpty() || publicKeyHash.isEmpty())
     {
       clipboard->clear();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -3566,13 +3569,29 @@ void spoton::slotCopyEmailKeys(void)
     (QByteArray::fromBase64(publicKeyHash), crypt);
 
   if(!publicKey.isEmpty() && !signatureKey.isEmpty())
-    clipboard->setText
-      ("K" + QByteArray("email").toBase64() + "@" +
-       name.toBase64() + "@" +
-       publicKey.toBase64() + "@" + QByteArray().toBase64() + "@" +
-       signatureKey.toBase64() + "@" + QByteArray().toBase64());
+    {
+      QString text
+	("K" + QByteArray("email").toBase64() + "@" +
+	 name.toBase64() + "@" +
+	 publicKey.toBase64() + "@" + QByteArray().toBase64() + "@" +
+	 signatureKey.toBase64() + "@" + QByteArray().toBase64());
+
+      if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+	{
+	  QApplication::restoreOverrideCursor();
+	  QMessageBox::critical
+	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	     tr("The e-mail keys are too long (%1 bytes).").
+	     arg(QLocale().toString(text.length())));
+	  return;
+	}
+
+      clipboard->setText(text);
+    }
   else
     clipboard->clear();
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotImpersonate(bool state)
@@ -4565,10 +4584,22 @@ void spoton::slotCopyUrlFriendshipBundle(void)
       return;
     }
 
-  clipboard->setText("R" +
-		     keyInformation.toBase64() + "@" +
-		     data.toBase64() + "@" +
-		     hash.toBase64());
+  QString text("R" +
+	       keyInformation.toBase64() + "@" +
+	       data.toBase64() + "@" +
+	       hash.toBase64());
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QApplication::restoreOverrideCursor();
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The URL bundle is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  clipboard->setText(text);
   QApplication::restoreOverrideCursor();
 }
 

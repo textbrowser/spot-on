@@ -9763,10 +9763,22 @@ void spoton::slotCopyEmailFriendshipBundle(void)
       return;
     }
 
-  clipboard->setText("R" +
-		     keyInformation.toBase64() + "@" +
-		     data.toBase64() + "@" +
-		     hash.toBase64());
+  QString text("R" +
+	       keyInformation.toBase64() + "@" +
+	       data.toBase64() + "@" +
+	       hash.toBase64());
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QApplication::restoreOverrideCursor();
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The e-mail bundle is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  clipboard->setText(text);
   QApplication::restoreOverrideCursor();
 }
 
@@ -9783,7 +9795,7 @@ void spoton::slotCopyAllMyPublicKeys(void)
 
   QApplication::restoreOverrideCursor();
 
-  if(text.length() >= 10 * 1024 * 1024)
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
     {
       QMessageBox::critical
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
