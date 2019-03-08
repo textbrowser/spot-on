@@ -1682,6 +1682,21 @@ bool spoton::isKernelActive(void) const
 
 void spoton::slotCopyMyChatPublicKey(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyChatPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= 10 * 1024 * 1024)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The chat public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
@@ -1692,7 +1707,7 @@ void spoton::slotCopyMyChatPublicKey(void)
       QApplication::processEvents();
 #endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(copyMyChatPublicKey());
+      clipboard->setText(text);
       QApplication::restoreOverrideCursor();
     }
 }
@@ -3700,6 +3715,21 @@ void spoton::slotDeleteAllBlockedNeighbors(void)
 
 void spoton::slotCopyMyEmailPublicKey(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyEmailPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= 10 * 1024 * 1024)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The e-mail public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
@@ -3710,13 +3740,28 @@ void spoton::slotCopyMyEmailPublicKey(void)
       QApplication::processEvents();
 #endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(copyMyEmailPublicKey());
+      clipboard->setText(text);
       QApplication::restoreOverrideCursor();
     }
 }
 
 void spoton::slotCopyMyPoptasticPublicKey(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyPoptasticPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= 10 * 1024 * 1024)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The poptastic public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
@@ -3727,13 +3772,28 @@ void spoton::slotCopyMyPoptasticPublicKey(void)
       QApplication::processEvents();
 #endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(copyMyPoptasticPublicKey());
+      clipboard->setText(text);
       QApplication::restoreOverrideCursor();
     }
 }
 
 void spoton::slotCopyMyRosettaPublicKey(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyRosettaPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= 10 * 1024 * 1024)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The rosetta public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
@@ -3744,7 +3804,7 @@ void spoton::slotCopyMyRosettaPublicKey(void)
       QApplication::processEvents();
 #endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(copyMyRosettaPublicKey());
+      clipboard->setText(text);
       QApplication::restoreOverrideCursor();
     }
 }
@@ -3856,6 +3916,21 @@ QByteArray spoton::copyMyUrlPublicKey(void) const
 
 void spoton::slotCopyMyURLPublicKey(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyUrlPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= 10 * 1024 * 1024)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The URL public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
@@ -3866,7 +3941,7 @@ void spoton::slotCopyMyURLPublicKey(void)
       QApplication::processEvents();
 #endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(copyMyUrlPublicKey());
+      clipboard->setText(text);
       QApplication::restoreOverrideCursor();
     }
 }

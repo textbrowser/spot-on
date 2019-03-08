@@ -306,10 +306,33 @@ void spoton_rosetta::setName(const QString &text)
 
 void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyRosettaPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= 10 * 1024 * 1024)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The rosetta public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
-    clipboard->setText(copyMyRosettaPublicKey());
+    {
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(text);
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 void spoton_rosetta::slotAddContact(void)

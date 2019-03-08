@@ -183,6 +183,21 @@ QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
 
 void spoton::slotCopyMyOpenLibraryPublicKey(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyOpenLibraryPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= 10 * 1024 * 1024)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The open-library public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
@@ -193,7 +208,7 @@ void spoton::slotCopyMyOpenLibraryPublicKey(void)
       QApplication::processEvents();
 #endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(copyMyOpenLibraryPublicKey());
+      clipboard->setText(text);
       QApplication::restoreOverrideCursor();
     }
 }
