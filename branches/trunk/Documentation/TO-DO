@@ -178,6 +178,7 @@ Completed Items
 128.   The Poptastic pixmap does not respect a scaled-contents request.
 129.   Automatic computations of rapid StarBeam digests may be incorrect.
        See spoton::slotPopulateStars().
+130.   DTLS.
 
 Ignored Items
 
@@ -232,4 +233,3 @@ Remaining Items
        E-mail remains.
 8.     Own NTRU implementation.
 9.     Python Web interface for the Search machine.
-10.    DTLS.
