@@ -3849,6 +3849,19 @@ void spoton::slotAddNeighbor(void)
       return;
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  if(m_ui.neighborTransport->currentIndex() == 3 && // UDP
+     m_ui.requireSsl->isChecked() &&
+     spoton_misc::
+     isMulticastAddress(QHostAddress(m_ui.neighborIP->text().trimmed())))
+    {
+      QMessageBox::information
+	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	 tr("DTLS is not functional over multicast!"));
+      return;
+    }
+#endif
+
   prepareDatabasesFromUI();
 
   QString connectionName("");
