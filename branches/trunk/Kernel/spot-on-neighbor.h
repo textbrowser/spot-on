@@ -173,11 +173,6 @@ class spoton_neighbor_udp_socket: public QUdpSocket
     QUdpSocket::setPeerPort(port);
   }
 
-  void setSocketState(QAbstractSocket::SocketState state)
-  {
-    QUdpSocket::setSocketState(state);
-  }
-
  private:
   QPointer<QUdpSocket> m_multicastSocket;
 };
