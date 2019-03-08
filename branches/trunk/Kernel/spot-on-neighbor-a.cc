@@ -1794,6 +1794,8 @@ void spoton_neighbor::slotReadyRead(void)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
       if(m_dtls && m_isUserDefined)
 	{
+	  m_bytesRead += static_cast<quint64> (data.length());
+
 	  if(m_dtls->isConnectionEncrypted())
 	    data = m_dtls->decryptDatagram(m_udpSocket, data);
 	  else
@@ -1806,9 +1808,10 @@ void spoton_neighbor::slotReadyRead(void)
 		   arg(m_address).
 		   arg(m_port));
 
-	      m_bytesRead += static_cast<quint64> (data.length());
 	      return;
 	    }
+
+	  goto next_label;
 	}
 #endif
 
@@ -1830,6 +1833,8 @@ void spoton_neighbor::slotReadyRead(void)
     }
 
   m_bytesRead += static_cast<quint64> (data.length());
+
+ next_label:
 
   {
     QWriteLocker locker
