@@ -91,7 +91,7 @@ preinstall.path             = /Applications/Spot-On_Qt5.d
 preinstall.extra            = rm -rf /Applications/Spot-On_Qt5.d/Spot-On.app/*
 sounds.path                 = /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/MacOS/Sounds
 sounds.files                = Sounds/*.wav
-translations.path 	    = /Applications/Spot-On_Qt5.d/Translations
+translations.path	    = /Applications/Spot-On_Qt5.d/Translations
 translations.files	    = Translations/*.qm
 
 INSTALLS	= preinstall \
