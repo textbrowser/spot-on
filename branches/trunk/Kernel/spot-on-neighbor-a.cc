@@ -532,8 +532,7 @@ spoton_neighbor::spoton_neighbor
   m_accountTimer.setInterval(2500);
   m_authenticationTimer.setInterval
     (spoton_kernel::
-     setting("kernel/server_account_verification_window_msecs",
-	     15000).toInt());
+     setting("kernel/server_account_verification_window_msecs", 15000).toInt());
 
   if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).
      toInt() == 30)
@@ -992,8 +991,7 @@ spoton_neighbor::spoton_neighbor
      setting("kernel/server_account_verification_window_msecs",
 	     15000).toInt());
 
-  if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).
-     toInt() == 30)
+  if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).toInt() == 30)
     m_externalAddressDiscovererTimer.setInterval(30000);
   else if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).
 	  toInt() == 60)
@@ -1525,8 +1523,7 @@ void spoton_neighbor::slotTimeout(void)
 	  }
       }
 
-  int v = spoton_kernel::setting
-    ("gui/kernelExternalIpInterval", -1).toInt();
+  int v = spoton_kernel::setting("gui/kernelExternalIpInterval", -1).toInt();
 
   if(v != -1)
     {
@@ -2554,8 +2551,7 @@ void spoton_neighbor::slotConnected(void)
   ** Initial discovery of the external IP address.
   */
 
-  if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).
-     toInt() != -1)
+  if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).toInt() != -1)
     {
       if(m_externalAddress)
 	{
