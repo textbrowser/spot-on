@@ -122,8 +122,7 @@ void spoton_crypt::generateNTRUKeys(const QString &keySize,
 #endif
 }
 
-QByteArray spoton_crypt::publicKeyDecryptNTRU
-(const QByteArray &data, bool *ok)
+QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
 {
   if(ok)
     *ok = false;

@@ -110,41 +110,26 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
     return QByteArray();
 
   QByteArray bytes;
-  QByteArray hash(sha512Hash(publicKey, 0));
-  spoton_mceliece *mceliece = 0;
-
-  {
-    QWriteLocker locker(&s_mceliecePeersMutex);
-
-    if(s_mceliecePeers.contains(hash))
-      mceliece = s_mceliecePeers.value(hash);
-    else
-      {
-	mceliece = new spoton_mceliece(publicKey);
-	s_mceliecePeers[hash] = mceliece;
-      }
-  }
-
+  spoton_mceliece *mceliece = new spoton_mceliece(publicKey);
   std::stringstream ciphertext;
 
-  if(mceliece)
-    if(mceliece->encrypt(data.constData(),
-			 static_cast<size_t> (data.length()),
-			 ciphertext))
-      {
-	bytes = QByteArray // A deep copy is required.
-	  (ciphertext.str().c_str(),
-	   static_cast<int> (ciphertext.str().size()));
+  if(mceliece->encrypt(data.constData(),
+		       static_cast<size_t> (data.length()),
+		       ciphertext))
+    {
+      bytes = QByteArray // A deep copy is required.
+	(ciphertext.str().c_str(),
+	 static_cast<int> (ciphertext.str().size()));
 
-	if(!bytes.isEmpty())
-	  if(ok)
-	    *ok = true;
-      }
+      if(!bytes.isEmpty())
+	if(ok)
+	  *ok = true;
+    }
 
   if(bytes.isEmpty())
-    spoton_misc::logError("spoton_crypt::publicKeyEncryptMcEliece(): "
-			  "failure.");
+    spoton_misc::logError("spoton_crypt::publicKeyEncryptMcEliece(): failure.");
 
+  delete mceliece;
   return bytes;
 #else
   Q_UNUSED(data);

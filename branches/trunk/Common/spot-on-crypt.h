@@ -244,15 +244,6 @@ class spoton_crypt
 #endif
   spoton_threefish *m_threefish;
   static QAtomicInt s_hasSecureMemory;
-#ifdef SPOTON_MCELIECE_ENABLED
-  static QHash<QByteArray,
-               spoton_mceliece *> s_mceliecePeers; /*
-						   ** Objects will be stored
-						   ** for the duration of the
-						   ** application.
-						   */
-  static QReadWriteLock s_mceliecePeersMutex;
-#endif
   static bool s_cbc_cts_enabled;
   unsigned long int m_iterationCount;
   QByteArray publicKeyDecryptMcEliece(const QByteArray &data, bool *ok);

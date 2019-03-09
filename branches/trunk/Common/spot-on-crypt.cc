@@ -114,10 +114,6 @@ struct gcry_thread_cbs gcry_threads_qt =
 #endif
 
 QAtomicInt spoton_crypt::s_hasSecureMemory = 0;
-#ifdef SPOTON_MCELIECE_ENABLED
-QHash<QByteArray, spoton_mceliece *> spoton_crypt::s_mceliecePeers;
-QReadWriteLock spoton_crypt::s_mceliecePeersMutex;
-#endif
 bool spoton_crypt::s_cbc_cts_enabled = true;
 static bool gcryctl_set_thread_cbs_set = false;
 static bool ssl_library_initialized = false;
