@@ -143,8 +143,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
       reset(false);
     }
 
-  if(c)
-    delete []c;
+  delete []c;
 
   if(!(m_n > m_k && m_t > 0 && m_m * m_t == m_n - m_k))
     reset(false);
