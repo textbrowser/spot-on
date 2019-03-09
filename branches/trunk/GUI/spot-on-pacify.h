@@ -165,14 +165,13 @@ class spoton_pacify
 
   ~spoton_pacify()
   {
-    if(m_passphrase)
-      delete []m_passphrase;
+    delete []m_passphrase;
   }
 
   double evaluate(void) const
   {
     if(!m_passphrase || m_passphrase_length == 0)
-      return 0.0;
+      return 25.0; // Error!
 
     double rc = 0.0;
     long int last = -1;
