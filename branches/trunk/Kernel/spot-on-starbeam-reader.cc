@@ -201,9 +201,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 				      }
 				    catch(...)
 				      {
-					if(m_missingLinksIterator)
-					  delete m_missingLinksIterator;
-
+					delete m_missingLinksIterator;
 					m_missingLinksIterator = 0;
 					spoton_misc::logError
 					  ("spoton_starbeam_reader::"

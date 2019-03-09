@@ -888,8 +888,10 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	{
 	  spoton_sctp_socket socket(this);
 
-	  socket.setSocketDescriptor(static_cast<int> (socketDescriptor));
-	  socket.abort();
+	  if(socket.setSocketDescriptor(static_cast<int> (socketDescriptor)))
+	    socket.abort();
+	  else
+	    spoton_misc::closeSocket(socketDescriptor);
 	}
       else if(m_transport == "tcp")
 	{
@@ -910,9 +912,8 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	  else
 	    spoton_misc::closeSocket(socketDescriptor);
 	}
-      else
-	spoton_misc::closeSocket(socketDescriptor);
 
+      spoton_misc::closeSocket(socketDescriptor); // Force close.
       return;
     }
 
