@@ -151,7 +151,7 @@ void spoton::slotPrepareUrlDatabases(void)
 
   QProgressDialog progress(this);
   bool created = true;
-  
+
   progress.setLabelText(tr("Creating URL databases. Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
@@ -1253,103 +1253,105 @@ void spoton::slotPostgreSQLConnect(void)
 			    toByteArray()), &ok);
   ui.setupUi(&dialog);
   dialog.setWindowTitle
-    (tr("%1: PostgreSQL Connect").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: PostgreSQL Connect").arg(SPOTON_APPLICATION_NAME));
   ui.connection_options->setText
-    (settings.value("gui/postgresql_connection_options", "").
-     toString().trimmed());
-  ui.database->setText(settings.value("gui/postgresql_database", "").
-		       toString().trimmed());
+    (settings.
+     value("gui/postgresql_connection_options", "").toString().trimmed());
+  ui.database->setText
+    (settings.value("gui/postgresql_database", "").toString().trimmed());
   ui.database->selectAll();
   ui.database->setFocus();
-  ui.host->setText(settings.value("gui/postgresql_host", "localhost").
-		   toString().trimmed());
-  ui.name->setText(settings.value("gui/postgresql_name", "").toString().
-		   trimmed());
+  ui.host->setText
+    (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
+  ui.name->setText
+    (settings.value("gui/postgresql_name", "").toString().trimmed());
 
   if(ok)
     ui.password->setText(password);
 
-  ui.port->setValue(settings.value("gui/postgresql_port", 5432).
-		    toInt());
-  ui.ssltls->setChecked(settings.value("gui/postgresql_ssltls", false).
-			toBool());
+  ui.port->setValue(settings.value("gui/postgresql_port", 5432).toInt());
+  ui.ssltls->setChecked
+    (settings.value("gui/postgresql_ssltls", false).toBool());
 
-  if(dialog.exec() == QDialog::Accepted)
+  do
     {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      m_ui.url_database_connection_information->clear();
-      m_urlDatabase.close();
-      m_urlDatabase = QSqlDatabase();
-
-      if(QSqlDatabase::contains("URLDatabase"))
-	QSqlDatabase::removeDatabase("URLDatabase");
-
-      m_urlDatabase = QSqlDatabase::addDatabase("QPSQL", "URLDatabase");
-
-      QString str("connect_timeout=10");
-
-      if(!ui.connection_options->text().trimmed().isEmpty())
-	str.append(";").append(ui.connection_options->text().trimmed());
-
-      if(ui.ssltls->isChecked())
-	str.append(";requiressl=1");
-
-      m_urlDatabase.setConnectOptions(str);
-      m_urlDatabase.setHostName(ui.host->text());
-      m_urlDatabase.setDatabaseName(ui.database->text());
-      m_urlDatabase.setPort(ui.port->value());
-      m_urlDatabase.open(ui.name->text(), ui.password->text());
-      QApplication::restoreOverrideCursor();
-
-      if(!m_urlDatabase.isOpen())
+      if(dialog.exec() == QDialog::Accepted)
 	{
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	  m_ui.url_database_connection_information->clear();
-
-	  QString str(m_urlDatabase.lastError().text().trimmed());
-
+	  m_urlDatabase.close();
 	  m_urlDatabase = QSqlDatabase();
 
 	  if(QSqlDatabase::contains("URLDatabase"))
 	    QSqlDatabase::removeDatabase("URLDatabase");
 
-	  QMessageBox::critical
-	    (this, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Could not open (%1) a database connection.").
-	     arg(str));
+	  m_urlDatabase = QSqlDatabase::addDatabase("QPSQL", "URLDatabase");
+
+	  QString str("connect_timeout=10");
+
+	  if(!ui.connection_options->text().trimmed().isEmpty())
+	    str.append(";").append(ui.connection_options->text().trimmed());
+
+	  if(ui.ssltls->isChecked())
+	    str.append(";requiressl=1");
+
+	  m_urlDatabase.setConnectOptions(str);
+	  m_urlDatabase.setHostName(ui.host->text());
+	  m_urlDatabase.setDatabaseName(ui.database->text());
+	  m_urlDatabase.setPort(ui.port->value());
+	  m_urlDatabase.open(ui.name->text(), ui.password->text());
+	  QApplication::restoreOverrideCursor();
+
+	  if(!m_urlDatabase.isOpen())
+	    {
+	      m_ui.url_database_connection_information->clear();
+
+	      QString str(m_urlDatabase.lastError().text().trimmed());
+
+	      m_urlDatabase = QSqlDatabase();
+
+	      if(QSqlDatabase::contains("URLDatabase"))
+		QSqlDatabase::removeDatabase("URLDatabase");
+
+	      QMessageBox::critical
+		(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+		 tr("Could not open (%1) a database connection.").arg(str));
+	    }
+	  else
+	    {
+	      m_ui.postgresqlConnect->setProperty("user_text", "disconnect");
+	      m_ui.postgresqlConnect->setText(tr("&PostgreSQL Disconnect"));
+	      m_ui.url_database_connection_information->setText
+		(QString("%1@%2/%3").
+		 arg(ui.name->text()).
+		 arg(ui.host->text()).
+		 arg(ui.database->text()));
+	      settings.setValue("gui/postgresql_connection_options",
+				ui.connection_options->text().trimmed());
+	      settings.setValue("gui/postgresql_database", ui.database->text());
+	      settings.setValue("gui/postgresql_host", ui.host->text());
+	      settings.setValue("gui/postgresql_name", ui.name->text());
+
+	      bool ok = true;
+
+	      settings.setValue
+		("gui/postgresql_password",
+		 crypt->encryptedThenHashed(ui.password->text().toUtf8(),
+					    &ok).toBase64());
+
+	      if(!ok)
+		settings.remove("gui/postgresql_password");
+
+	      settings.setValue("gui/postgresql_port", ui.port->value());
+	      settings.setValue
+		("gui/postgresql_ssltls", ui.ssltls->isChecked());
+	      break;
+	    }
 	}
       else
-	{
-	  m_ui.postgresqlConnect->setProperty("user_text", "disconnect");
-	  m_ui.postgresqlConnect->setText(tr("&PostgreSQL Disconnect"));
-	  m_ui.url_database_connection_information->setText
-	    (QString("%1@%2/%3").
-	     arg(ui.name->text()).
-	     arg(ui.host->text()).
-	     arg(ui.database->text()));
-	  settings.setValue("gui/postgresql_connection_options",
-			    ui.connection_options->text().trimmed());
-	  settings.setValue("gui/postgresql_database",
-			    ui.database->text());
-	  settings.setValue("gui/postgresql_host",
-			    ui.host->text());
-	  settings.setValue("gui/postgresql_name", ui.name->text());
-
-	  bool ok = true;
-
-	  settings.setValue
-	    ("gui/postgresql_password",
-	     crypt->encryptedThenHashed(ui.password->text().toUtf8(),
-					&ok).toBase64());
-
-	  if(!ok)
-	    settings.remove("gui/postgresql_password");
-
-	  settings.setValue("gui/postgresql_port", ui.port->value());
-	  settings.setValue("gui/postgresql_ssltls", ui.ssltls->isChecked());
-	}
+	break;
     }
+  while(true);
 }
 
 void spoton::slotSaveCommonUrlCredentials(void)
