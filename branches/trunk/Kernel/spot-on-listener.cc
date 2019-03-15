@@ -140,7 +140,7 @@ void spoton_listener_udp_server::slotReadyRead(void)
       datagram.resize(static_cast<int> (size));
       size = readDatagram(datagram.data(), size, &peerAddress, &peerPort);
 
-      if(size == 0)
+      if(size <= 0)
 	continue;
 
       if(spoton_kernel::instance() &&
@@ -172,7 +172,8 @@ void spoton_listener_udp_server::slotReadyRead(void)
 	    emit newConnection(socketDescriptor(), peerAddress, peerPort);
 
 	  if(!datagram.isEmpty() && size > 0)
-	    emit newDatagram(datagram.mid(0, static_cast<int> (size)));
+	    emit newDatagram
+	      (datagram.mid(0, static_cast<int> (size)), peerAddress, peerPort);
 	}
     }
 }
@@ -932,9 +933,13 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
       neighbor->setProperty("address", address);
       m_udpServer->addClientAddress(address);
       connect(m_udpServer,
-	      SIGNAL(newDatagram(const QByteArray &)),
+	      SIGNAL(newDatagram(const QByteArray &,
+				 const QHostAddress &,
+				 const quint16)),
 	      neighbor,
-	      SLOT(slotNewDatagram(const QByteArray &)));
+	      SLOT(slotNewDatagram(const QByteArray &,
+				   const QHostAddress &,
+				   const quint16)));
       connect(neighbor,
 	      SIGNAL(destroyed(QObject *)),
 	      m_udpServer,

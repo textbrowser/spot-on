@@ -203,9 +203,17 @@ void spoton_neighbor::slotStopTimer(QTimer *timer)
     timer->stop();
 }
 
-void spoton_neighbor::slotNewDatagram(const QByteArray &d)
+void spoton_neighbor::slotNewDatagram(const QByteArray &d,
+				      const QHostAddress &address,
+				      const quint16 port)
 {
   if(d.isEmpty())
+    return;
+  else if(!m_udpSocket)
+    return;
+
+  if(!(address == m_udpSocket->peerAddress() &&
+       m_udpSocket->peerPort() == port))
     return;
 
   QByteArray datagram(d);
@@ -213,7 +221,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d)
   m_bytesRead += static_cast<quint64> (datagram.length());
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-  if(m_dtls && m_udpSocket)
+  if(m_dtls)
     {
       if(m_dtls->isConnectionEncrypted())
 	datagram = m_dtls->decryptDatagram(m_udpSocket, datagram);

@@ -159,7 +159,9 @@ class spoton_listener_udp_server: public QUdpSocket
 		     const QHostAddress &address,
 		     const quint16 port);
 #endif
-  void newDatagram(const QByteArray &datagram);
+  void newDatagram(const QByteArray &datagram,
+		   const QHostAddress &address,
+		   const quint16 port);
 };
 
 class spoton_listener: public QObject

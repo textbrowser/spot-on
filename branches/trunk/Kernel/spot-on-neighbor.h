@@ -488,7 +488,9 @@ class spoton_neighbor: public QThread
   void slotHostFound(const QHostInfo &hostInfo);
   void slotLifetimeExpired(void);
   void slotModeChanged(QSslSocket::SslMode mode);
-  void slotNewDatagram(const QByteArray &datagram);
+  void slotNewDatagram(const QByteArray &datagram,
+		       const QHostAddress &address,
+		       const quint16 port);
   void slotPeerVerifyError(const QSslError &error);
   void slotProxyAuthenticationRequired(const QNetworkProxy &proxy,
 				       QAuthenticator *authenticator);
