@@ -2798,7 +2798,8 @@ void spoton_neighbor::slotWriteURLs(const QByteArray &data)
 }
 
 void spoton_neighbor::slotWrite
-(const QByteArray &data, const qint64 id,
+(const QByteArray &data,
+ const qint64 id,
  const QPairByteArrayByteArray &adaptiveEchoPair)
 {
   /*
@@ -2812,6 +2813,13 @@ void spoton_neighbor::slotWrite
   if(data.length() > m_laneWidth)
     return;
 
+  {
+    QReadLocker locker(&m_echoModeMutex);
+
+    if(m_echoMode != "full")
+      return;
+  }
+
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     {
       m_privateApplicationFutures << QtConcurrent::run
@@ -2823,33 +2831,25 @@ void spoton_neighbor::slotWrite
       return;
     }
 
-  QReadLocker locker1(&m_learnedAdaptiveEchoPairsMutex);
+  {
+    QReadLocker locker(&m_learnedAdaptiveEchoPairsMutex);
 
-  if(!(adaptiveEchoPair == QPair<QByteArray, QByteArray> () ||
-       m_learnedAdaptiveEchoPairs.contains(adaptiveEchoPair)))
-    return;
+    if(!(adaptiveEchoPair == QPair<QByteArray, QByteArray> () ||
+	 m_learnedAdaptiveEchoPairs.contains(adaptiveEchoPair)))
+      return;
+  }
 
-  locker1.unlock();
-
-  QReadLocker locker2(&m_echoModeMutex);
-  QString echoMode(m_echoMode);
-
-  locker2.unlock();
-
-  if(echoMode == "full")
-    if(readyToWrite())
-      {
-	if(write(data.constData(), data.length()) != data.length())
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::slotWrite(): write() "
-		     "error for %1:%2.").
-	     arg(m_address).
-	     arg(m_port));
-	else if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-	  spoton_kernel::messagingCacheAdd(data + QByteArray::number(id));
-	else
-	  spoton_kernel::messagingCacheAdd(data);
-      }
+  if(readyToWrite())
+    {
+      if(write(data.constData(), data.length()) != data.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotWrite(): write() error for %1:%2.").
+	   arg(m_address).arg(m_port));
+      else if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+	spoton_kernel::messagingCacheAdd(data + QByteArray::number(id));
+      else
+	spoton_kernel::messagingCacheAdd(data);
+    }
 }
 
 void spoton_neighbor::slotLifetimeExpired(void)
