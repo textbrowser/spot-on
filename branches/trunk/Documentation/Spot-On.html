@@ -6,7 +6,7 @@
 	<meta name="generator" content="LibreOffice 6.1.5.2 (Linux)"/>
 	<meta name="author" content="Monster "/>
 	<meta name="created" content="2014-10-24T18:38:51"/>
-	<meta name="changed" content="2019-03-24T17:08:19.156986433"/>
+	<meta name="changed" content="2019-03-24T17:14:28.161127100"/>
 	<style type="text/css">
 		@page { size: 8.5in 11in; margin: 0.79in }
 		p { margin-bottom: 0.08in; background: transparent }
@@ -284,15 +284,15 @@ preferences.</p>
 </p>
 <h1 class="western" style="page-break-before: always"><a name="__RefHeading___Toc2133_3263081630"></a>
 Cascading Encryption</h1>
-<p>Spot-On implements multiple-encryption. The general implementation
+<p>Spot-On implements multiple encryption. The general implementation
 is as follows:</p>
 <ol>
 	<li><p>Retrieve random authentication and encryption keys.</p>
 	<li><p>If available, retrieve previously-established authentication
 	and encryption keys. The credentials in #1 are not compared with the
 	credentials in #2.</p>
-	<li><p>Generate a hybrid bundle: RSA(#1) || E(message) || 
-	HMAC(RSA(#1 keys) || E(message)).</p>
+	<li><p>Generate a hybrid bundle: RSA(#1) || AES(message) ||
+	HMAC(RSA(#1 keys) || AES(message)).</p>
 	<li><p>Generate a bundle from the data in step #3 using the keys
 	from step #1: AES(#3) || HMAC(AES(#3)).</p>
 	<li><p>If SSL/TLS is available, funnel the bundle from step #4
