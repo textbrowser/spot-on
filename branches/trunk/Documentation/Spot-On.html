@@ -6,7 +6,7 @@
 	<meta name="generator" content="LibreOffice 6.1.5.2 (Linux)"/>
 	<meta name="author" content="Monster "/>
 	<meta name="created" content="2014-10-24T18:38:51"/>
-	<meta name="changed" content="2019-03-24T17:14:28.161127100"/>
+	<meta name="changed" content="2019-03-24T18:21:58.224344891"/>
 	<style type="text/css">
 		@page { size: 8.5in 11in; margin: 0.79in }
 		p { margin-bottom: 0.08in; background: transparent }
@@ -289,8 +289,7 @@ is as follows:</p>
 <ol>
 	<li><p>Retrieve random authentication and encryption keys.</p>
 	<li><p>If available, retrieve previously-established authentication
-	and encryption keys. The credentials in #1 are not compared with the
-	credentials in #2.</p>
+	and encryption keys. Credentials are verified to be distinct.</p>
 	<li><p>Generate a hybrid bundle: RSA(#1) || AES(message) ||
 	HMAC(RSA(#1 keys) || AES(message)).</p>
 	<li><p>Generate a bundle from the data in step #3 using the keys

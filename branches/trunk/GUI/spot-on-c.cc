@@ -46,6 +46,10 @@
 
 void spoton::slotGenerateEtpKeys(int index)
 {
+  /*
+  ** StarBeam!
+  */
+
   if(m_ui.pairRadio->isChecked())
     {
       if(index == 0)
@@ -4485,7 +4489,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
 				     m_crypts.value("url", 0),
 				     &ok);
 
-  if(!ok || publicKey.isEmpty() || symmetricKey.isEmpty())
+  if(!ok || hashKey.isEmpty() || publicKey.isEmpty() || symmetricKey.isEmpty())
     {
       clipboard->clear();
       QApplication::restoreOverrideCursor();

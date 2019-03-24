@@ -1960,8 +1960,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 				     s_crypt1,
 				     &ok);
 
-  if(!ok || cipherType.isEmpty() || hashKey.isEmpty() ||
-     symmetricKey.isEmpty())
+  if(!ok || cipherType.isEmpty() || hashKey.isEmpty() || symmetricKey.isEmpty())
     return;
 
   stream << QByteArray("0000")

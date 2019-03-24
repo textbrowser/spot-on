@@ -3011,7 +3011,7 @@ void spoton::slotCopyFriendshipBundle(void)
 				     m_crypts.value(keyType, 0),
 				     &ok);
 
-  if(!ok || publicKey.isEmpty() || symmetricKey.isEmpty())
+  if(!ok || hashKey.isEmpty() || publicKey.isEmpty() || symmetricKey.isEmpty())
     {
       clipboard->clear();
       QApplication::restoreOverrideCursor();

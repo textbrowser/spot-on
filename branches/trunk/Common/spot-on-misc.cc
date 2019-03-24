@@ -1287,14 +1287,41 @@ void spoton_misc::retrieveSymmetricData
 						toByteArray()),
 			 ok);
 
-		    symmetricKey.resize
-		      (static_cast<int> (symmetricKeyLength));
-		    symmetricKey = spoton_crypt::strongRandomBytes
-		      (static_cast<size_t> (symmetricKey.length()));
-		    hashKey.resize
-		      (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
-		    hashKey = spoton_crypt::strongRandomBytes
-		      (static_cast<size_t> (hashKey.length()));
+		    bool found = false;
+
+		    for(int i = 0; i < 5; i++)
+		      {
+			symmetricKey = spoton_crypt::strongRandomBytes
+			  (symmetricKeyLength);
+
+			if(!spoton_crypt::memcmp(gemini.first, symmetricKey))
+			  {
+			    found = true;
+			    break;
+			  }
+		      }
+
+		    if(found)
+		      {
+			found = false;
+
+			for(int i = 0; i < 5; i++)
+			  {
+			    hashKey = spoton_crypt::strongRandomBytes
+			      (static_cast<size_t>
+			       (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
+
+			    if(!spoton_crypt::memcmp(gemini.second, hashKey))
+			      {
+				found = true;
+				break;
+			      }
+			  }
+		      }
+
+		    if(!found)
+		      if(ok)
+			*ok = false;
 		  }
 		else
 		  {
