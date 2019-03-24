@@ -5026,14 +5026,47 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 
 		  if(symmetricKeyLength > 0)
 		    {
-		      hashKey.resize
-			(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
-		      hashKey = spoton_crypt::strongRandomBytes
-			(static_cast<size_t> (hashKey.length()));
-		      symmetricKey.resize
-			(static_cast<int> (symmetricKeyLength));
-		      symmetricKey = spoton_crypt::strongRandomBytes
-			(static_cast<size_t> (symmetricKey.length()));
+		      bool found = false;
+
+		      for(int i = 0; i < 5; i++)
+			{
+			  hashKey = spoton_crypt::strongRandomBytes
+			    (static_cast<size_t>
+			     (spoton_crypt::
+			      XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
+
+			  if(!spoton_crypt::memcmp(gemini.second, hashKey))
+			    {
+			      found = true;
+			      break;
+			    }
+			}
+
+		      if(found)
+			{
+			  found = false;
+
+			  for(int i = 0; i < 5; i++)
+			    {
+			      symmetricKey = spoton_crypt::strongRandomBytes
+				(symmetricKeyLength);
+
+			      if(!spoton_crypt::
+				 memcmp(gemini.first, symmetricKey))
+				{
+				  found = true;
+				  break;
+				}
+			    }
+			}
+
+		      if(!found)
+			{
+			  ok = false;
+			  spoton_misc::logError
+			    ("spoton_kernel::slotCallParticipantUsingGemini(): "
+			     "unable to discover distinct keys.");
+			}
 		    }
 		  else
 		    {
