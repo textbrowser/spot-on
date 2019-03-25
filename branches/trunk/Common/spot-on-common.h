@@ -68,6 +68,7 @@ class spoton_common
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int HARVEST_POST_OFFICE_LETTERS_INTERVAL = 5;
+  static const int IDENTICAL_CREDENTIALS_ITERATIONS = 5;
   static const int KERNEL_CERTIFICATE_DAYS_VALID = 7;
   static const int KERNEL_URL_DISPATCHER_INTERVAL_STATIC = 60;
   static const int LANE_WIDTH_DEFAULT = 104857600;

@@ -5028,7 +5028,9 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 		    {
 		      bool found = false;
 
-		      for(int i = 0; i < 5; i++)
+		      for(int i = 1;
+			  i <= spoton_common::IDENTICAL_CREDENTIALS_ITERATIONS;
+			  i++)
 			{
 			  hashKey = spoton_crypt::strongRandomBytes
 			    (static_cast<size_t>
@@ -5046,7 +5048,10 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 			{
 			  found = false;
 
-			  for(int i = 0; i < 5; i++)
+			  for(int i = 1;
+			      i <= spoton_common::
+				IDENTICAL_CREDENTIALS_ITERATIONS;
+			      i++)
 			    {
 			      symmetricKey = spoton_crypt::strongRandomBytes
 				(symmetricKeyLength);

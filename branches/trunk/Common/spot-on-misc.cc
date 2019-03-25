@@ -1289,7 +1289,9 @@ void spoton_misc::retrieveSymmetricData
 
 		    bool found = false;
 
-		    for(int i = 0; i < 5; i++)
+		    for(int i = 1;
+			i <= spoton_common::IDENTICAL_CREDENTIALS_ITERATIONS;
+			i++)
 		      {
 			symmetricKey = spoton_crypt::strongRandomBytes
 			  (symmetricKeyLength);
@@ -1305,7 +1307,10 @@ void spoton_misc::retrieveSymmetricData
 		      {
 			found = false;
 
-			for(int i = 0; i < 5; i++)
+			for(int i = 1;
+			    i <= spoton_common::
+			      IDENTICAL_CREDENTIALS_ITERATIONS;
+			    i++)
 			  {
 			    hashKey = spoton_crypt::strongRandomBytes
 			      (static_cast<size_t>
