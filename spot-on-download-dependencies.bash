@@ -19,6 +19,7 @@ mv pgsql/bin/libxslt.dll PostgreSQL/Libraries.win32/.
 mv pgsql/include/libpq-fe.h PostgreSQL/Include.win32/.
 mv pgsql/include/pg_config_ext.h PostgreSQL/Include.win32/.
 mv pgsql/include/postgres_ext.h PostgreSQL/Include.win32/.
+chmod -x PostgreSQL/Include.win32/*.h
 chmod -x PostgreSQL/Libraries.win32/*.dll
 rm -fr pgsql
 rm -r $postgresql
