@@ -1,4 +1,6 @@
-#/bin/bash
+#!/bin/bash
+
+# Must be executed in the top-level source directory.
 
 # CURL
 
