@@ -49,6 +49,7 @@ rm -f $sqlite
 wget --progress=bar https://sqlite.org/2019/$sqlite
 unzip -o $sqlite
 mv sqlite3.def sqlite3.dll libSpotOn/Libraries.win32/.
+chmod -x libSpotOn/Libraries.win32/*.dll
 rm -f $sqlite
 
 # SQLite Source
