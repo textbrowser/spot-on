@@ -25,7 +25,7 @@ rm -f $openssl.zip
 rm -fr $openssl
 wget --output-document=$openssl.zip \
      --progress=bar \
-     https://bintray.com/vszakats/generic/download_file?file_path=openssl-1.1.1a-win32-mingw.zip
+     https://bintray.com/vszakats/generic/download_file?file_path=$openssl.zip
 unzip -o $openssl.zip
 mv $openssl/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
 mv $openssl/libssl-1_1.dll libOpenSSL/Libraries.win32/.
