@@ -10,12 +10,30 @@ rm -f $curl.zip
 rm -fr $curl
 wget --progress=bar \
      https://curl.haxx.se/windows/dl-7.64.1/$curl.zip
-unzip -o $curl
+unzip -o $curl.zip
 mv $curl/bin/curl-ca-bundle.crt libcURL/.
 mv $curl/bin/libcurl.dll libcURL/Win32.d/bin/.
 mv $curl/include/curl/*.h libcURL/Win32.d/include/curl/.
 rm -f $curl.zip
 rm -fr $curl
+
+# OpenSSL
+
+openssl=openssl-1.1.1a-win32-mingw
+
+rm -f $openssl.zip
+rm -fr $openssl
+wget --output-document=$openssl.zip \
+     --progress=bar \
+     https://bintray.com/vszakats/generic/download_file?file_path=openssl-1.1.1a-win32-mingw.zip
+unzip -o $openssl.zip
+mv $openssl/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
+mv $openssl/libssl-1_1.dll libOpenSSL/Libraries.win32/.
+mv $openssl/include/openssl/*.h libOpenSSL/Include.win32/openssl/.
+chmod +w libOpenSSL/Include.win32/openssl/*.h
+chmod +w,-x libOpenSSL/Libraries.win32/*.dll
+rm -f $openssl.zip
+rm -fr $openssl
 
 # PostgreSQL
 
