@@ -1184,7 +1184,9 @@ void spoton_neighbor::slotTimeout(void)
 	      {
 		status = query.value(0).toString().toLower();
 
-		if(status == "blocked" || status == "disconnected")
+		if(status == "blocked" ||
+		   status == "deleted" ||
+		   status == "disconnected")
 		  {
 		    saveStatus(db, status);
 		    shouldDelete = true;

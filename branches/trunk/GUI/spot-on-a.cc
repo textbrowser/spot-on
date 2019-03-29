@@ -6407,8 +6407,7 @@ void spoton::slotDeleteNeighbor(void)
 	if(!isKernelActive())
 	  {
 	    query.exec("PRAGMA secure_delete = ON");
-	    query.prepare("DELETE FROM neighbors WHERE "
-			  "OID = ?");
+	    query.prepare("DELETE FROM neighbors WHERE OID = ?");
 	  }
 	else
 	  query.prepare("UPDATE neighbors SET status_control = 'deleted' "
