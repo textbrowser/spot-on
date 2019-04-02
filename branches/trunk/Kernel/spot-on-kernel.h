@@ -131,7 +131,6 @@ class spoton_kernel: public QObject
   QFuture<void> m_poptasticPostFuture;
   QFuture<void> m_statisticsFuture;
   QHash<QByteArray, QPair<QByteArray, QByteArray> > m_forwardSecrecyKeys;
-  QHash<QString, qint64> m_poptasticImapUIDs;
   QHash<qint64, QPointer<spoton_listener> > m_listeners;
   QHash<qint64, QPointer<spoton_neighbor> > m_neighbors;
   QHash<qint64, QPointer<spoton_starbeam_reader> > m_starbeamReaders;
@@ -229,10 +228,7 @@ class spoton_kernel: public QObject
 			   const QByteArray &signature,
 			   const QString &messageType);
   void updateStatistics(const QDateTime &uptime,
-			const int interfaces,
-			const int listeners,
-			const int neighbors,
-			const int starbeams);
+			const QVector<int> &integers);
 
  private slots:
   void slotBuzzMagnetReceivedFromUI(const qint64 oid,

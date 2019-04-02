@@ -1059,9 +1059,14 @@ void spoton_kernel::slotPollDatabase(void)
 
   if(m_statisticsFuture.isFinished())
     m_statisticsFuture = QtConcurrent::run
-      (this, &spoton_kernel::updateStatistics,
-       m_uptime, interfaces(), m_activeListeners, m_activeNeighbors,
-       m_activeStarbeams);
+      (this,
+       &spoton_kernel::updateStatistics,
+       m_uptime,
+       QVector<int> () << interfaces()
+                       << m_activeListeners
+	               << m_activeNeighbors
+	               << m_activeStarbeams
+	               << m_urlImportFutures.size());
 }
 
 void spoton_kernel::prepareListeners(void)
@@ -5185,10 +5190,7 @@ QVariant spoton_kernel::setting(const QString &name,
 }
 
 void spoton_kernel::updateStatistics(const QDateTime &uptime,
-				     const int interfaces,
-				     const int listeners,
-				     const int neighbors,
-				     const int starbeams)
+				     const QVector<int> &integers)
 {
   QString connectionName("");
 
@@ -5215,20 +5217,21 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 
 	v1 = s_buzzKeys.size();
 	locker1.unlock();
-	query.bindValue(0, v1);
+	query.bindValue(0, locale.toString(v1));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Active StarBeam Readers', ?)");
-	query.bindValue(0, starbeams);
+	query.bindValue(0, locale.toString(integers.value(3)));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Active Threads', ?)");
 
 	if(QThreadPool::globalInstance())
-	  query.bindValue(0, QThreadPool::globalInstance()->
-			  activeThreadCount());
+	  query.bindValue
+	    (0, locale.toString(QThreadPool::globalInstance()->
+				activeThreadCount()));
 	else
 	  query.bindValue(0, -1);
 
@@ -5236,7 +5239,7 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Attached User Interfaces', ?)");
-	query.bindValue(0, interfaces);
+	query.bindValue(0, locale.toString(integers.value(0)));
 	query.exec();
 
 	QReadLocker locker2(&s_messagingCacheMutex);
@@ -5321,12 +5324,12 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Live Listeners', ?)");
-	query.bindValue(0, listeners);
+	query.bindValue(0, locale.toString(integers.value(1)));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Live Neighbors', ?)");
-	query.bindValue(0, locale.toString(neighbors));
+	query.bindValue(0, locale.toString(integers.value(2)));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
@@ -5334,6 +5337,17 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.bindValue
 	  (0, locale.toString(QSqlDatabase::connectionNames().size()));
 	query.exec();
+
+	{
+	  QReadLocker locker(&m_poptasticCacheMutex);
+
+	  query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+			"(statistic, value) "
+			"VALUES ('Poptastic Cache Size', ?)");
+	  query.bindValue(0, locale.toString(m_poptasticCache.size()));
+	  query.exec();
+	}
+
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Total Neighbors KiB Read / Written', ?)");
@@ -5382,6 +5396,11 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 
 	query.bindValue(0, locale.toString(m_urlList.size()));
 	locker7.unlock();
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
+		      "VALUES ('URL Import Futures', ?)");
+	query.bindValue(0, locale.toString(integers.value(4)));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
