@@ -448,8 +448,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>533</height>
+                <width>429</width>
+                <height>504</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -2064,8 +2064,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>543</height>
+             <width>709</width>
+             <height>440</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2759,7 +2759,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>268</width>
+                     <width>278</width>
                      <height>1466</height>
                     </rect>
                    </property>
@@ -3242,7 +3242,7 @@
              <x>0</x>
              <y>0</y>
              <width>834</width>
-             <height>523</height>
+             <height>263</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4391,8 +4391,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>543</height>
+             <width>630</width>
+             <height>383</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4468,7 +4468,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>796</width>
+                 <width>704</width>
                  <height>667</height>
                 </rect>
                </property>
@@ -5364,7 +5364,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>864</width>
+             <width>895</width>
              <height>1219</height>
             </rect>
            </property>
@@ -6404,9 +6404,6 @@
                    <property name="horizontalScrollMode">
                     <enum>QAbstractItemView::ScrollPerPixel</enum>
                    </property>
-                   <property name="sortingEnabled">
-                    <bool>true</bool>
-                   </property>
                    <attribute name="horizontalHeaderDefaultSectionSize">
                     <number>200</number>
                    </attribute>
@@ -6468,7 +6465,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-33</y>
+             <y>-58</y>
              <width>806</width>
              <height>601</height>
             </rect>
@@ -6581,7 +6578,7 @@
                   <property name="frameShape">
                    <enum>QFrame::NoFrame</enum>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_42" stretch="0,0,0,0">
+                  <layout class="QVBoxLayout" name="verticalLayout_42" stretch="0,0,0">
                    <property name="spacing">
                     <number>5</number>
                    </property>
@@ -6690,13 +6687,6 @@
                     </layout>
                    </item>
                    <item>
-                    <widget class="QLabel" name="label_81">
-                     <property name="text">
-                      <string>Please verify that the generated credentials are distinct!</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
                     <widget class="QFrame" name="pairFrame">
                      <property name="frameShape">
                       <enum>QFrame::NoFrame</enum>
@@ -6708,6 +6698,13 @@
                       <property name="margin">
                        <number>5</number>
                       </property>
+                      <item>
+                       <widget class="QLabel" name="label_81">
+                        <property name="text">
+                         <string>Please verify that the credentials are distinct!</string>
+                        </property>
+                       </widget>
+                      </item>
                       <item>
                        <layout class="QGridLayout" name="gridLayout_7">
                         <property name="spacing">
@@ -7509,8 +7506,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>543</height>
+             <width>696</width>
+             <height>521</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8088,8 +8085,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>543</height>
+             <width>278</width>
+             <height>155</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">

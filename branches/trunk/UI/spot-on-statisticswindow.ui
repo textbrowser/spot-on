@@ -33,9 +33,6 @@
       <property name="horizontalScrollMode">
        <enum>QAbstractItemView::ScrollPerPixel</enum>
       </property>
-      <property name="sortingEnabled">
-       <bool>true</bool>
-      </property>
       <attribute name="horizontalHeaderStretchLastSection">
        <bool>true</bool>
       </attribute>
@@ -49,7 +46,7 @@
      <x>0</x>
      <y>0</y>
      <width>550</width>
-     <height>19</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

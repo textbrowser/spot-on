@@ -859,7 +859,7 @@ void spoton::populateStatistics
       row += 1;
     }
 
-  totalRows += 2;
+  totalRows += 3; // Display statistics!
   m_statisticsModel->setRowCount(totalRows);
 
   QLocale locale;
@@ -878,12 +878,20 @@ void spoton::populateStatistics
   item = new QStandardItem(QString::number(QApplication::applicationPid()));
   item->setEditable(false);
   m_statisticsModel->setItem(row, 1, item);
-  m_statisticsUi.view->setSortingEnabled(true);
+  row += 1;
+  item = new QStandardItem("Display PostgreSQL Connection Faulty Counter");
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 0, item);
+  item = new QStandardItem
+    (locale.toString(m_pqUrlFaultyCounter.fetchAndAddOrdered(0)));
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 1, item);
   m_statisticsUi.view->resizeColumnToContents(0);
   m_statisticsUi.view->horizontalHeader()->setStretchLastSection(true);
-  m_ui.statistics->setSortingEnabled(true);
+  m_statisticsUi.view->sortByColumn(0, Qt::AscendingOrder);
   m_ui.statistics->resizeColumnToContents(0);
   m_ui.statistics->horizontalHeader()->setStretchLastSection(true);
+  m_ui.statistics->sortByColumn(0, Qt::AscendingOrder);
 
   if(focusWidget)
     focusWidget->setFocus();
