@@ -234,3 +234,4 @@ Remaining Items
 8.     Own NTRU implementation.
 9.     Python Web interface for the Search machine.
 10.    Compare random credentials with previously-established credentials.
+       Should two-way calling verify that credentials are distinct?
