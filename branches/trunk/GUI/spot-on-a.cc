@@ -4990,6 +4990,10 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
   if(m_ui.neighborsTemporarilyPause->isChecked())
     {
       delete query;
+
+      if(db)
+	db->close();
+
       delete db;
       QSqlDatabase::removeDatabase(connectionName);
       return;
@@ -4999,6 +5003,10 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
   if(currentTabName() != "neighbors")
     {
       delete query;
+
+      if(db)
+	db->close();
+
       delete db;
       QSqlDatabase::removeDatabase(connectionName);
       return;
@@ -5009,6 +5017,10 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
   if(!crypt || !db || !query)
     {
       delete query;
+
+      if(db)
+	db->close();
+
       delete db;
       QSqlDatabase::removeDatabase(connectionName);
       return;
@@ -5760,6 +5772,10 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
     focusWidget->setFocus();
 
   delete query;
+
+  if(db)
+    db->close();
+
   delete db;
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
@@ -8558,6 +8574,10 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   if(!crypt || !db || !query)
     {
       delete query;
+
+      if(db)
+	db->close();
+
       delete db;
       QSqlDatabase::removeDatabase(connectionName);
       return;
@@ -9110,6 +9130,10 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
     focusWidget->setFocus();
 
   delete query;
+
+  if(db)
+    db->close();
+
   delete db;
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();

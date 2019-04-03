@@ -467,6 +467,8 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 	    spoton_misc::purgeSignatureRelationships
 	      (db, m_crypts.value("chat", 0));
 	  }
+
+	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
@@ -504,6 +506,8 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 		       "status = 'offline' WHERE "
 		       "connections > 0 OR status = 'online'");
 	  }
+
+	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
@@ -542,6 +546,8 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 		       "local_ip_address IS NOT NULL OR local_port IS NOT NULL "
 		       "OR status <> 'disconnected'");
 	  }
+
+	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
@@ -571,6 +577,8 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 		       "status_control <> 'blocked' AND "
 		       "user_defined = 0");
 	  }
+
+	db.close();
       }
 
       QSqlDatabase::removeDatabase(connectionName);
