@@ -464,8 +464,6 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 	    query.exec
 	      ("UPDATE friends_public_keys SET status = 'offline' WHERE "
 	       "status <> 'offline'");
-	    spoton_misc::purgeSignatureRelationships
-	      (db, m_crypts.value("chat", 0));
 	  }
 
 	db.close();
