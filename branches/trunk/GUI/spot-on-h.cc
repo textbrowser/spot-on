@@ -566,7 +566,7 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 	if(db.open())
 	  {
 	    /*
-	    ** Delete random, disconnected peers.
+	    ** Delete disconnected peers.
 	    */
 
 	    QSqlQuery query(db);
