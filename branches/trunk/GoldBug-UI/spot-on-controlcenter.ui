@@ -1236,7 +1236,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>668</width>
-             <height>652</height>
+             <height>636</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -4338,6 +4338,11 @@ color: rgb(255, 255, 255);</string>
                   <column>
                    <property name="text">
                     <string>Socket Options</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Buffered Content</string>
                    </property>
                   </column>
                   <column>
@@ -7768,7 +7773,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>584</width>
+             <width>485</width>
              <height>805</height>
             </rect>
            </property>

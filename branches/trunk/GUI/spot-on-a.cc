@@ -5204,7 +5204,8 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	    "Passthrough: %27\n"
 	    "Wait-For-Bytes-Written: %28\n"
 	    "Silence Time: %29\n"
-	    "Socket Options: %30")).
+	    "Socket Options: %30\n"
+	    "Buffered Content: %31")).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
 					fromBase64(query->
@@ -5322,7 +5323,8 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	arg(query->value(37).toInt() ? tr("Yes") : tr("No")).
 	arg(locale.toString(query->value(38).toInt())).
 	arg(query->value(40).toInt()).
-	arg(query->value(41).toString());
+	arg(query->value(41).toString()).
+	arg(query->value(42).toInt());
 
       {
 	QTableWidgetItem *item = new QTableWidgetItem();

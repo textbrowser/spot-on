@@ -3242,7 +3242,7 @@
              <x>0</x>
              <y>0</y>
              <width>834</width>
-             <height>263</height>
+             <height>523</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3618,6 +3618,11 @@
                   <column>
                    <property name="text">
                     <string>Socket Options</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Buffered Content</string>
                    </property>
                   </column>
                   <column>
@@ -6465,8 +6470,8 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-58</y>
-             <width>806</width>
+             <y>0</y>
+             <width>619</width>
              <height>601</height>
             </rect>
            </property>

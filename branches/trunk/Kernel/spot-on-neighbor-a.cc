@@ -1610,6 +1610,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
   qint64 seconds = qAbs(m_startTime.secsTo(QDateTime::currentDateTime()));
 
   query.prepare("UPDATE neighbors SET "
+		"buffered_content = ?, "
 		"bytes_discarded_on_write = ?, "
 		"bytes_read = ?, "
 		"bytes_written = ?, "
@@ -1618,6 +1619,12 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 		"status = ?, "
 		"uptime = ? "
 		"WHERE OID = ?");
+
+  {
+    QReadLocker locker(&m_dataMutex);
+
+    query.addBindValue(m_data.length());
+  }
 
   {
     QReadLocker locker(&m_bytesDiscardedOnWriteMutex);

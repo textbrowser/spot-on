@@ -665,6 +665,7 @@ void spoton::retrieveNeighbors(void)
 		       "private_application_credentials, "
 		       "silence_time, "
 		       "socket_options, "
+		       "buffered_content, "
 		       "OID "
 		       "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
