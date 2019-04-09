@@ -842,6 +842,7 @@ void spoton::populateStatistics
       m_statisticsModel->setItem(row, 0, item);
       item = new QStandardItem(list.at(i).second.toString());
       item->setEditable(false);
+      item->setToolTip(item->text());
       m_statisticsModel->setItem(row, 1, item);
 
       if(list.at(i).first.toLower().contains("congestion container"))
@@ -867,9 +868,10 @@ void spoton::populateStatistics
 
   item->setEditable(false);
   m_statisticsModel->setItem(row, 0, item);
-  item = new QStandardItem(locale.toString(QSqlDatabase::connectionNames().
-					   size()));
+  item = new QStandardItem
+    (locale.toString(QSqlDatabase::connectionNames().size()));
   item->setEditable(false);
+  item->setToolTip(item->text());
   m_statisticsModel->setItem(row, 1, item);
   row += 1;
   item = new QStandardItem("Display PID");
@@ -877,6 +879,7 @@ void spoton::populateStatistics
   m_statisticsModel->setItem(row, 0, item);
   item = new QStandardItem(QString::number(QApplication::applicationPid()));
   item->setEditable(false);
+  item->setToolTip(item->text());
   m_statisticsModel->setItem(row, 1, item);
   row += 1;
   item = new QStandardItem("Display PostgreSQL Connection Faulty Counter");
@@ -885,6 +888,7 @@ void spoton::populateStatistics
   item = new QStandardItem
     (locale.toString(m_pqUrlFaultyCounter.fetchAndAddOrdered(0)));
   item->setEditable(false);
+  item->setToolTip(item->text());
   m_statisticsModel->setItem(row, 1, item);
   m_statisticsUi.view->resizeColumnToContents(0);
   m_statisticsUi.view->horizontalHeader()->setStretchLastSection(true);
