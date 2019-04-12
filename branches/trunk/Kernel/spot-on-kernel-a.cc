@@ -724,7 +724,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_settingsTimer.setSingleShot(true);
   m_statusTimer.start(1000 * spoton_common::STATUS_INTERVAL);
   m_urlImportFutures.resize
-    (qCeil(2.5 * qMax(1, QThread::idealThreadCount())));
+    (qCeil(1.5 * qMax(1, QThread::idealThreadCount())));
 
   for(int i = 0; i < m_urlImportFutures.size(); i++)
     m_urlImportFutures.replace(i, QFuture<void> ());
