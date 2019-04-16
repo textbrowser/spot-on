@@ -845,10 +845,14 @@ void spoton::populateStatistics
       item->setToolTip(item->text());
       m_statisticsModel->setItem(row, 1, item);
 
-      if(list.at(i).first.toLower().contains("congestion container"))
+      if(list.at(i).first.toLower().contains("percent consumed"))
 	{
-	  if(list.at(i).second.toLongLong() <= 50)
+	  double percent = list.at(i).second.toString().remove('%').toDouble();
+
+	  if(percent <= 50.0)
 	    item->setBackground(QBrush(QColor("lightgreen")));
+	  else if(percent > 50.0 && percent <= 80.0)
+	    item->setBackground(QBrush(QColor(232, 120, 0)));
 	  else
 	    item->setBackground(QBrush(QColor(240, 128, 128)));
 	}
