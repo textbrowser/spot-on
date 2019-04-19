@@ -382,8 +382,9 @@ int main(int argc, char *argv[])
 
   try
     {
-      new spoton();
+      s_gui = new spoton();
       qapplication.exec();
+      delete s_gui;
       curl_global_cleanup();
       spoton_crypt::terminate();
       return EXIT_SUCCESS;
@@ -401,7 +402,6 @@ int main(int argc, char *argv[])
 spoton::spoton(void):QMainWindow()
 {
   m_wizardUi = 0;
-  s_gui = this;
   s_publicKeySizes["dsa"] = QStringList() << "3072";
   s_publicKeySizes["ecdsa"] = QStringList() << "224"
 					    << "256"
