@@ -114,6 +114,7 @@ class spoton_kernel: public QObject
 				       const QString &peerAddress);
   bool acceptRemoteConnection(const QHostAddress &localAddress,
 			      const QHostAddress &peerAddress);
+  bool initialized(void) const;
   bool processPotentialStarBeamData
     (const QByteArray &data,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
@@ -153,6 +154,7 @@ class spoton_kernel: public QObject
   QTimer m_statusTimer;
   QTimer m_urlImportTimer;
   QVector<QFuture<void > > m_urlImportFutures;
+  bool m_initialized;
   int m_activeListeners;
   int m_activeNeighbors;
   int m_activeStarbeams;

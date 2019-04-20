@@ -202,7 +202,6 @@ int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
 static QPointer<spoton_kernel> s_kernel = 0;
 static char *s_congestion_control_db_path = 0; // We're not deleting.
 static char *s_kernel_db_path = 0; // We're not deleting.
-static int s_exit_code = EXIT_SUCCESS;
 
 #if QT_VERSION >= 0x050000
 static void qt_message_handler(QtMsgType type,
@@ -340,15 +339,15 @@ int main(int argc, char *argv[])
   QCoreApplication::setOrganizationName("SpotOn");
   QCoreApplication::setOrganizationDomain("spot-on.sf.net");
   QCoreApplication::setApplicationVersion(SPOTON_VERSION_STR);
-  QSettings::setPath(QSettings::IniFormat, QSettings::UserScope,
-		     spoton_misc::homePath());
+  QSettings::setPath
+    (QSettings::IniFormat, QSettings::UserScope, spoton_misc::homePath());
   QSettings::setDefaultFormat(QSettings::IniFormat);
 
   for(int i = 1; i < argc; i++)
     if(argv && argv[i] && qstrcmp(argv[i], "--terminate") == 0)
       {
-	QString sharedPath(spoton_misc::homePath() + QDir::separator() +
-			   "shared.db");
+	QString sharedPath
+	  (spoton_misc::homePath() + QDir::separator() + "shared.db");
 	libspoton_handle_t libspotonHandle;
 
 	if(libspoton_init_b(sharedPath.toStdString().c_str(),
@@ -448,32 +447,19 @@ int main(int argc, char *argv[])
 
   if(err == LIBSPOTON_ERROR_NONE)
     {
-      try
-	{
-	  s_kernel = new spoton_kernel();
+      s_kernel = new (std::nothrow) spoton_kernel();
 
-	  int rc = qapplication.exec();
+      int rc = 0;
 
-	  curl_global_cleanup();
-	  spoton_crypt::terminate();
-	  return rc;
-	}
-      catch(const std::bad_alloc &exception)
-	{
-	  s_kernel = 0;
-	  std::cerr << "Critical memory failure. Exiting kernel." << std::endl;
-	  curl_global_cleanup();
-	  spoton_crypt::terminate();
-	  return EXIT_FAILURE;
-	}
-      catch(...)
-	{
-	  s_kernel = 0;
-	  std::cerr << "Critical failure. Exiting kernel." << std::endl;
-	  curl_global_cleanup();
-	  spoton_crypt::terminate();
-	  return EXIT_FAILURE;
-	}
+      if(s_kernel && s_kernel->initialized())
+	rc = qapplication.exec();
+      else
+	rc = EXIT_FAILURE;
+
+      delete s_kernel;
+      curl_global_cleanup();
+      spoton_crypt::terminate();
+      return rc;
     }
   else
     {
@@ -505,6 +491,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_activeNeighbors = 0;
   m_activeStarbeams = 0;
   m_guiServer = 0;
+  m_initialized = false;
   m_mailer = 0;
   m_starbeamWriter = 0;
   m_urlImportFutureInterrupt = 0;
@@ -555,11 +542,9 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
 	if(GetConsoleMode(hStdin, &mode) == 0)
 	  {
-	    s_exit_code = EXIT_FAILURE;
 	    std::cerr << "Unable to retrieve the terminal's mode. Exiting."
 		      << std::endl;
-	    deleteLater();
-	    break;
+	    return;
 	  }
 
 	if(SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT)) == 0)
@@ -570,11 +555,9 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
 	if(tcgetattr(STDIN_FILENO, &oldt) != 0)
 	  {
-	    s_exit_code = EXIT_FAILURE;
 	    std::cerr << "Unable to retrieve the terminal's mode. Exiting."
 		      << std::endl;
-	    deleteLater();
-	    break;
+	    return;
 	  }
 
 	newt = oldt;
@@ -622,9 +605,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
 	    if(!initializeSecurityContainers(input1, input2))
 	      {
-		s_exit_code = EXIT_FAILURE;
 		std::cerr << "Invalid input?" << std::endl;
-		deleteLater();
+		return;
 	      }
 	    else
 	      {
@@ -636,11 +618,9 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  }
 	else
 	  {
-	    s_exit_code = EXIT_FAILURE;
 	    std::cerr << "Unable to silence the terminal's echo. Exiting."
 		      << std::endl;
-	    deleteLater();
-	    break;
+	    return;
 	  }
       }
     else if(arguments.at(i) == "--vacuum")
@@ -648,11 +628,9 @@ spoton_kernel::spoton_kernel(void):QObject(0)
       }
     else
       {
-	s_exit_code = EXIT_FAILURE;
 	std::cerr << "Invalid option: " << arguments.at(i).toStdString()
 		  << ". Exiting." << std::endl;
-	deleteLater();
-	break;
+	return;
       }
 
   spoton_misc::prepareDatabases();
@@ -959,6 +937,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
   s_congestion_control_secondary_storage = static_cast<int>
     (setting ("gui/secondary_storage_congestion_control", false).toBool());
+  m_initialized = true;
 }
 
 spoton_kernel::~spoton_kernel()
@@ -1020,7 +999,6 @@ spoton_kernel::~spoton_kernel()
   s_crypts.clear();
   spoton_misc::logError(QString("Kernel %1 about to exit.").
 			arg(QCoreApplication::applicationPid()));
-  QCoreApplication::exit(s_exit_code);
 }
 
 void spoton_kernel::cleanup(void)
@@ -1878,7 +1856,7 @@ void spoton_kernel::slotTerminate(const bool registered)
 	    starbeam->deleteLater();
 	}
 
-      deleteLater();
+      QCoreApplication::instance()->quit();
     }
 }
 

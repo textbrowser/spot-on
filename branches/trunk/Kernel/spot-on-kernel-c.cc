@@ -264,3 +264,8 @@ void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
 			       list.value(4),
 			       QPair<QByteArray, QByteArray> ()));
 }
+
+bool spoton_kernel::initialized(void) const
+{
+  return m_initialized;
+}
