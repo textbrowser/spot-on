@@ -379,24 +379,22 @@ int main(int argc, char *argv[])
 
   spoton_crypt::init
     (integer, settings.value("gui/cbc_cts_enabled", true).toBool());
+  s_gui = new (std::nothrow) spoton();
 
-  try
+  int rc = 0;
+
+  if(s_gui)
+    rc = qapplication.exec();
+  else
     {
-      s_gui = new spoton();
-      qapplication.exec();
-      delete s_gui;
-      curl_global_cleanup();
-      spoton_crypt::terminate();
-      return EXIT_SUCCESS;
-    }
-  catch(const std::bad_alloc &exception)
-    {
-      s_gui = 0;
+      rc = EXIT_FAILURE;
       std::cerr << "Critical memory failure. Exiting." << std::endl;
-      curl_global_cleanup();
-      spoton_crypt::terminate();
-      return EXIT_FAILURE;
     }
+
+  delete s_gui;
+  curl_global_cleanup();
+  spoton_crypt::terminate();
+  return rc;
 }
 
 spoton::spoton(void):QMainWindow()
