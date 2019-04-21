@@ -490,10 +490,12 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_activeListeners = 0;
   m_activeNeighbors = 0;
   m_activeStarbeams = 0;
+  m_fireShare = 0;
   m_guiServer = 0;
   m_initialized = false;
   m_mailer = 0;
   m_starbeamWriter = 0;
+  m_urlDistribution = 0;
   m_urlImportFutureInterrupt = 0;
   m_urlsProcessed = 0;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
@@ -965,12 +967,18 @@ spoton_kernel::~spoton_kernel()
   m_poptasticCache.clear();
   locker2.unlock();
   m_checkForTerminationFuture.cancel();
-  m_fireShare->quit();
+
+  if(m_fireShare)
+    m_fireShare->quit();
+
   m_future.cancel();
   m_poptasticPopFuture.cancel();
   m_poptasticPostFuture.cancel();
   m_statisticsFuture.cancel();
-  m_urlDistribution->quit();
+
+  if(m_urlDistribution)
+    m_urlDistribution->quit();
+
   m_urlImportFutureInterrupt.fetchAndStoreOrdered(1);
 
   for(int i = 0; i < m_urlImportFutures.size(); i++)
@@ -2209,21 +2217,27 @@ void spoton_kernel::slotUpdateSettings(void)
   spoton_misc::enableLog
     (setting("gui/kernelLogEvents", false).toBool());
 
-  if(setting("gui/activeUrlDistribution", false).toBool())
+  if(m_urlDistribution)
     {
-      if(!m_urlDistribution->isRunning())
-	m_urlDistribution->start();
+      if(setting("gui/activeUrlDistribution", false).toBool())
+	{
+	  if(!m_urlDistribution->isRunning())
+	    m_urlDistribution->start();
+	}
+      else
+	m_urlDistribution->quit();
     }
-  else
-    m_urlDistribution->quit();
 
-  if(setting("gui/etpReceivers", false).toBool())
+  if(m_starbeamWriter)
     {
-      if(!m_starbeamWriter->isActive())
-	m_starbeamWriter->start();
+      if(setting("gui/etpReceivers", false).toBool())
+	{
+	  if(!m_starbeamWriter->isActive())
+	    m_starbeamWriter->start();
+	}
+      else
+	m_starbeamWriter->stop();
     }
-  else
-    m_starbeamWriter->stop();
 
   if(setting("gui/impersonate", false).toBool())
     {
@@ -2291,11 +2305,12 @@ void spoton_kernel::connectSignalsToNeighbor
   if(!neighbor)
     return;
 
-  connect(m_fireShare,
-	  SIGNAL(sendURLs(const QByteArray &)),
-	  neighbor,
-	  SLOT(slotWriteURLs(const QByteArray &)),
-	  Qt::UniqueConnection);
+  if(m_fireShare)
+    connect(m_fireShare,
+	    SIGNAL(sendURLs(const QByteArray &)),
+	    neighbor,
+	    SLOT(slotWriteURLs(const QByteArray &)),
+	    Qt::UniqueConnection);
 
   if(m_guiServer)
     connect(m_guiServer,
@@ -2304,18 +2319,21 @@ void spoton_kernel::connectSignalsToNeighbor
 	    SLOT(slotEchoKeyShare(const QByteArrayList &)),
 	    Qt::UniqueConnection);
 
-  connect(m_mailer,
-	  SIGNAL(sendMailFromPostOffice(const QByteArray &,
-					const QPairByteArrayByteArray &)),
-	  neighbor,
-	  SLOT(slotSendMailFromPostOffice(const QByteArray &,
+  if(m_mailer)
+    connect(m_mailer,
+	    SIGNAL(sendMailFromPostOffice(const QByteArray &,
 					  const QPairByteArrayByteArray &)),
-	  Qt::UniqueConnection);
-  connect(m_urlDistribution,
-	  SIGNAL(sendURLs(const QByteArray &)),
-	  neighbor,
-	  SLOT(slotWriteURLs(const QByteArray &)),
-	  Qt::UniqueConnection);
+	    neighbor,
+	    SLOT(slotSendMailFromPostOffice(const QByteArray &,
+					    const QPairByteArrayByteArray &)),
+	    Qt::UniqueConnection);
+
+  if(m_urlDistribution)
+    connect(m_urlDistribution,
+	    SIGNAL(sendURLs(const QByteArray &)),
+	    neighbor,
+	    SLOT(slotWriteURLs(const QByteArray &)),
+	    Qt::UniqueConnection);
 
   if(m_guiServer)
     connect(neighbor,
@@ -2414,19 +2432,22 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SIGNAL(publicizeListenerPlaintext(const QByteArray &,
 					    const qint64)),
 	  Qt::UniqueConnection);
-  connect(neighbor,
-	  SIGNAL(retrieveMail(const QByteArray &,
-			      const QByteArray &,
-			      const QByteArray &,
-			      const QByteArray &,
-			      const QPairByteArrayByteArray &)),
-	  m_mailer,
-	  SLOT(slotRetrieveMail(const QByteArray &,
+
+  if(m_mailer)
+    connect(neighbor,
+	    SIGNAL(retrieveMail(const QByteArray &,
 				const QByteArray &,
 				const QByteArray &,
 				const QByteArray &,
 				const QPairByteArrayByteArray &)),
-	  Qt::UniqueConnection);
+	    m_mailer,
+	    SLOT(slotRetrieveMail(const QByteArray &,
+				  const QByteArray &,
+				  const QByteArray &,
+				  const QByteArray &,
+				  const QPairByteArrayByteArray &)),
+	    Qt::UniqueConnection);
+
   connect(this,
 	  SIGNAL(callParticipant(const QByteArray &,
 				 const QString &)),
@@ -5490,7 +5511,10 @@ bool spoton_kernel::processPotentialStarBeamData
 (const QByteArray &data,
  QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair)
 {
-  return m_starbeamWriter->append(data, discoveredAdaptiveEchoPair);
+  if(m_starbeamWriter)
+    return m_starbeamWriter->append(data, discoveredAdaptiveEchoPair);
+  else
+    return false;
 }
 
 void spoton_kernel::slotImpersonateTimeout(void)
