@@ -1088,6 +1088,7 @@ spoton_neighbor::~spoton_neighbor()
 
 	    query.prepare("UPDATE neighbors SET "
 			  "account_authenticated = NULL, "
+			  "buffered_content = 0, "
 			  "bytes_discarded_on_write = 0, "
 			  "bytes_read = 0, "
 			  "bytes_written = 0, "
