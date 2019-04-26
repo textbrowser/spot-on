@@ -7512,7 +7512,7 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 		  (m_udpSocket, QByteArray(data, qMin(remaining, udpMinimum)));
 	      else
 #endif
-	      sent = m_udpSocket->write(data, qMin(remaining, udpMinimum));
+		sent = m_udpSocket->write(data, qMin(remaining, udpMinimum));
 	    }
 	  else
 	    {
@@ -7522,13 +7522,13 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 		  (m_udpSocket, QByteArray(data, qMin(remaining, udpMinimum)));
 	      else
 #endif
-	      {
-		QHostAddress address(m_address);
+		{
+		  QHostAddress address(m_address);
 
-		address.setScopeId(m_scopeId);
-		sent = m_udpSocket->writeDatagram
-		  (data, qMin(remaining, udpMinimum), address, m_port);
-	      }
+		  address.setScopeId(m_scopeId);
+		  sent = m_udpSocket->writeDatagram
+		    (data, qMin(remaining, udpMinimum), address, m_port);
+		}
 	    }
 
 	  if(sent > 0)
