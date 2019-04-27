@@ -1236,7 +1236,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>668</width>
-             <height>636</height>
+             <height>652</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -5124,7 +5124,7 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-282</y>
                  <width>696</width>
                  <height>624</height>
                 </rect>
@@ -5569,7 +5569,7 @@ QPushButton:pressed {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QGroupBox" name="groupBox_13">
+                 <widget class="QGroupBox" name="dooble_import_groupbox">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
                     <horstretch>0</horstretch>
@@ -7773,7 +7773,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>485</width>
+             <width>584</width>
              <height>805</height>
             </rect>
            </property>
@@ -9037,8 +9037,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>478</width>
-             <height>534</height>
+             <width>604</width>
+             <height>672</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
