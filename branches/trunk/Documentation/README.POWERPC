@@ -17,6 +17,7 @@ sudo cp -p ./Spot-On /usr/local/spot-on/.
 sudo cp -p ./Spot-On-Kernel /usr/local/spot-on/.
 sudo cp -p ./Translations/*.qm /usr/local/spot-on/Translations/.
 sudo cp -pr ./Documentation/* /usr/local/spot-on/Documentation/.
+sudo chmod -x /usr/local/spot-on/Lib/lib*
 sudo chown -Rh root:staff /usr/local/spot-on
 
 Preparing Spot-On-x_powerpc.deb:
