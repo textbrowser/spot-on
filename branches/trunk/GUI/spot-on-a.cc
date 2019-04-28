@@ -5907,20 +5907,22 @@ void spoton::slotDeactivateKernel(void)
 
   QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
   libspoton_handle_t libspotonHandle;
+  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
 
-  if(libspoton_init_b(sharedPath.toStdString().c_str(),
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      &libspotonHandle,
-		      m_settings.value("gui/gcryctl_init_secmem",
-				       spoton_common::
-				       MINIMUM_SECURE_MEMORY_POOL_SIZE).
-		      toInt()) == LIBSPOTON_ERROR_NONE)
+  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     &libspotonHandle,
+			     m_settings.
+			     value("gui/gcryctl_init_secmem",
+				   spoton_common::
+				   MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt())) ==
+     LIBSPOTON_ERROR_GCRY_CHECK_VERSION || err == LIBSPOTON_ERROR_NONE)
     libspoton_deregister_kernel
       (libspoton_registered_kernel_pid(&libspotonHandle, 0),
        &libspotonHandle);
