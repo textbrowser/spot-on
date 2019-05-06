@@ -30,12 +30,12 @@ QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
                           -mtune=native -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
-			  -Werror -Wextra \
+			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
                           -Wstack-protector -Wstrict-overflow=5
 QMAKE_DISTCLEAN        += -r temp
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
-QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/usr/local/spot-on/Lib
+QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/usr/local/spot-on-qt4/Lib
 QMAKE_LFLAGS_RPATH     =
 
 INCLUDEPATH	+= . ../../. GUI /usr/include/postgresql

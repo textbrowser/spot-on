@@ -1638,7 +1638,8 @@ bool spoton::isKernelActive(void) const
 			     0,
 			     0,
 			     &libspotonHandle,
-			     0)) == LIBSPOTON_ERROR_NONE)
+			     0)) ==
+     LIBSPOTON_ERROR_NONE || err == LIBSPOTON_ERROR_GCRY_CHECK_VERSION)
     pid = libspoton_registered_kernel_pid(&libspotonHandle, &err);
 
   libspoton_close(&libspotonHandle);

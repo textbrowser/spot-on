@@ -1,0 +1,31 @@
+Preparing /usr/local/spot-on-qt4:
+
+sudo mkdir -p /usr/local/spot-on-qt4/Documentation
+sudo mkdir -p /usr/local/spot-on-qt4/Lib
+sudo mkdir -p /usr/local/spot-on-qt4/SQL
+sudo mkdir -p /usr/local/spot-on-qt4/Translations
+cd ~/spot-on.d/branches/trunk
+qmake -o Makefile spot-on.pro && make -j 4
+sudo cp -p ../../libNTRU/libntru.so /usr/local/spot-on-qt4/Lib/.
+sudo cp -p ../../libSpotOn/libspoton.so /usr/local/spot-on-qt4/Lib/.
+sudo cp -p ./Data/spot-on-neighbors.txt /usr/local/spot-on-qt4/.
+sudo cp -p ./Icons/Logo/spot-on-logo.png /usr/local/spot-on-qt4/.
+sudo cp -p ./SQL/* /usr/local/spot-on-qt4/SQL/.
+sudo cp -p ./Shell/spot-on-kernel.sh /usr/local/spot-on-qt4/.
+sudo cp -p ./Shell/spot-on.sh /usr/local/spot-on-qt4/.
+sudo cp -p ./Spot-On /usr/local/spot-on-qt4/.
+sudo cp -p ./Spot-On-Kernel /usr/local/spot-on-qt4/.
+sudo cp -p ./Translations/*.qm /usr/local/spot-on-qt4/Translations/.
+sudo cp -pr ./Documentation/* /usr/local/spot-on-qt4/Documentation/.
+sudo chmod -x /usr/local/spot-on-qt4/Lib/lib*
+sudo chown -Rh root:staff /usr/local/spot-on-qt4
+
+Preparing Spot-On-x_qt4_amd64.deb:
+
+cd
+mkdir -p spot-on-debian/usr/local
+mkdir -p spot-on-debian/usr/share/applications
+cp -p ./spot-on.d/branches/trunk/spot-on.desktop spot-on-debian/usr/share/applications/.
+cp -pr ./spot-on.d/branches/trunk/DEBIAN-QT4 spot-on-debian/DEBIAN
+cp -r /usr/local/spot-on-qt4 spot-on-debian/usr/local/.
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2019.05.05_qt4_amd64.deb

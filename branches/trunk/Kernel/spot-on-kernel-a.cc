@@ -348,18 +348,20 @@ int main(int argc, char *argv[])
       {
 	QString sharedPath
 	  (spoton_misc::homePath() + QDir::separator() + "shared.db");
+	libspoton_error_t err = LIBSPOTON_ERROR_NONE;
 	libspoton_handle_t libspotonHandle;
 
-	if(libspoton_init_b(sharedPath.toStdString().c_str(),
-			    0,
-			    0,
-			    0,
-			    0,
-			    0,
-			    0,
-			    0,
-			    &libspotonHandle,
-			    1) == LIBSPOTON_ERROR_NONE)
+	if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
+				   0,
+				   0,
+				   0,
+				   0,
+				   0,
+				   0,
+				   0,
+				   &libspotonHandle,
+				   1)) ==
+	   LIBSPOTON_ERROR_GCRY_CHECK_VERSION || err == LIBSPOTON_ERROR_NONE)
 	  libspoton_deregister_kernel
 	    (libspoton_registered_kernel_pid(&libspotonHandle, 0),
 	     &libspotonHandle);
@@ -437,7 +439,8 @@ int main(int argc, char *argv[])
 			     0,
 			     0,
 			     &libspotonHandle,
-			     integer)) == LIBSPOTON_ERROR_NONE)
+			     integer)) ==
+     LIBSPOTON_ERROR_GCRY_CHECK_VERSION || err == LIBSPOTON_ERROR_NONE)
     err = libspoton_register_kernel
       (static_cast<pid_t> (QCoreApplication::applicationPid()),
        settings.value("gui/forceKernelRegistration", true).toBool(),
@@ -1016,20 +1019,23 @@ void spoton_kernel::cleanup(void)
 
   QString sharedPath(spoton_misc::homePath() + QDir::separator() +
 		     "shared.db");
+  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
   libspoton_handle_t libspotonHandle;
 
-  if(libspoton_init_b(sharedPath.toStdString().c_str(),
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      0,
-		      &libspotonHandle,
-		      setting("kernel/gcryctl_init_secmem",
-			      spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).
-		      toInt()) == LIBSPOTON_ERROR_NONE)
+  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     &libspotonHandle,
+			     setting("kernel/gcryctl_init_secmem",
+				     spoton_common::
+				     MINIMUM_SECURE_MEMORY_POOL_SIZE).
+			     toInt())) == LIBSPOTON_ERROR_GCRY_CHECK_VERSION ||
+     err == LIBSPOTON_ERROR_NONE)
     libspoton_deregister_kernel
       (static_cast<pid_t> (QCoreApplication::applicationPid()),
 			   &libspotonHandle);
@@ -1794,10 +1800,10 @@ void spoton_kernel::checkForTermination(void)
   QString sharedPath(spoton_misc::homePath() + QDir::separator() +
 		     "shared.db");
   bool registered = false;
-  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
 
   if(QFileInfo(sharedPath).exists())
     {
+      libspoton_error_t err = LIBSPOTON_ERROR_NONE;
       libspoton_handle_t libspotonHandle;
 
       if((err =
@@ -1813,7 +1819,8 @@ void spoton_kernel::checkForTermination(void)
 			   setting("kernel/gcryctl_init_secmem",
 				   spoton_common::
 				   MINIMUM_SECURE_MEMORY_POOL_SIZE).
-			   toInt())) == LIBSPOTON_ERROR_NONE)
+			   toInt())) == LIBSPOTON_ERROR_GCRY_CHECK_VERSION ||
+	 err == LIBSPOTON_ERROR_NONE)
 	registered = QCoreApplication::applicationPid() ==
 	  libspoton_registered_kernel_pid(&libspotonHandle, &err);
 

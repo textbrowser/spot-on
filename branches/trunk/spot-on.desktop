@@ -3,9 +3,9 @@
 [Desktop Entry]
 Categories=Net
 Comment=Spot-On
-Exec=/usr/local/spot-on/spot-on.sh
+Exec=/usr/local/spot-on-qt4/spot-on.sh
 GenericName=Spot-On
-Icon=/usr/local/spot-on/spot-on-logo.png
+Icon=/usr/local/spot-on-qt4/spot-on-logo.png
 Name=Spot-On
 StartupNotify=true
 Terminal=false

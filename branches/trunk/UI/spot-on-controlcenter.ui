@@ -448,8 +448,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>429</width>
-                <height>504</height>
+                <width>816</width>
+                <height>533</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -2064,8 +2064,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>709</width>
-             <height>440</height>
+             <width>826</width>
+             <height>543</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2759,7 +2759,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>278</width>
+                     <width>268</width>
                      <height>1466</height>
                     </rect>
                    </property>
@@ -4396,8 +4396,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>383</height>
+             <width>826</width>
+             <height>543</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4472,8 +4472,8 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>704</width>
+                 <y>-368</y>
+                 <width>796</width>
                  <height>667</height>
                 </rect>
                </property>
@@ -4815,7 +4815,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QGroupBox" name="groupBox_13">
+                 <widget class="QGroupBox" name="dooble_import_groupbox">
                   <property name="styleSheet">
                    <string notr="true">QGroupBox::QLabel {\n border: 1px solid gray;\n background-color: lightgreen;\n border-radius: 10px;\n margin: 2px;\n padding: 2px;\n }
 </string>
@@ -5155,21 +5155,21 @@
                      </item>
                     </layout>
                    </item>
-                   <item>
-                    <spacer name="verticalSpacer_10">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>40</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
                   </layout>
                  </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </widget>
@@ -5369,7 +5369,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>895</width>
+             <width>864</width>
              <height>1219</height>
             </rect>
            </property>
@@ -6471,7 +6471,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>619</width>
+             <width>806</width>
              <height>601</height>
             </rect>
            </property>
@@ -7511,8 +7511,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>696</width>
-             <height>521</height>
+             <width>826</width>
+             <height>543</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8090,8 +8090,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>278</width>
-             <height>155</height>
+             <width>826</width>
+             <height>543</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
