@@ -42,7 +42,7 @@ postgresql=postgresql.zip
 rm -f $postgresql
 wget --output-document=$postgresql \
      --progress=bar \
-     "http://get.enterprisedb.com/postgresql/postgresql-9.6.12-2-windows-binaries.zip"
+     "https://get.enterprisedb.com/postgresql/postgresql-9.6.13-1-windows-binaries.zip"
 unzip $postgresql
 mv pgsql/bin/libeay32.dll PostgreSQL/Libraries.win32/.
 mv pgsql/bin/libiconv-2.dll PostgreSQL/Libraries.win32/.
