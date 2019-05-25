@@ -604,8 +604,7 @@ void spoton_rss::import(const int maximumKeywords)
 	query.prepare
 	  ("SELECT content, description, title, url, url_hash, "
 	   "url_redirected "
-	   "FROM rss_feeds_links WHERE "
-	   "imported = 0 AND visited = 1");
+	   "FROM rss_feeds_links WHERE imported = 0 AND visited = 1");
 
 	if(query.exec())
 	  while(query.next())
