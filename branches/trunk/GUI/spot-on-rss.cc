@@ -1423,7 +1423,8 @@ void spoton_rss::saveFeedData(const QString &d,
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+	    (2, crypt->keyedHash(spoton_misc::urlToEncoded(link), &ok).
+	     toBase64());
 
 	if(ok)
 	  query.exec();
@@ -1463,7 +1464,8 @@ void spoton_rss::saveFeedImage(const QByteArray &data, const QString &link)
 
 	if(ok)
 	  query.bindValue
-	    (1, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+	    (1, crypt->keyedHash(spoton_misc::urlToEncoded(link), &ok).
+	     toBase64());
 
 	if(ok)
 	  query.exec();
@@ -1539,11 +1541,14 @@ void spoton_rss::saveFeedLink(const QString &d,
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed(link.toUtf8(), &ok).toBase64());
+	    (5,
+	     crypt->encryptedThenHashed(spoton_misc::urlToEncoded(link), &ok).
+	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->keyedHash(link.toUtf8(), &ok).toBase64());
+	    (6, crypt->keyedHash(spoton_misc::urlToEncoded(link), &ok).
+	     toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -1649,7 +1654,10 @@ void spoton_rss::slotAddFeed(void)
 		      "feed_image, feed_title) "
 		      "VALUES (?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(new_feed.toUtf8(), &ok).toBase64());
+	  (0,
+	   crypt->
+	   encryptedThenHashed(spoton_misc::urlToEncoded(new_feed), &ok).
+			       toBase64());
 
 	if(ok)
 	  query.bindValue(1, crypt->encryptedThenHashed(QByteArray(),
@@ -1657,7 +1665,8 @@ void spoton_rss::slotAddFeed(void)
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->keyedHash(new_feed.toUtf8(), &ok).toBase64());
+	    (2, crypt->keyedHash(spoton_misc::urlToEncoded(new_feed), &ok).
+	     toBase64());
 
 	if(ok)
 	  query.bindValue(3, crypt->encryptedThenHashed(QByteArray(),
