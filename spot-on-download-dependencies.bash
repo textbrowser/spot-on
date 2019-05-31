@@ -4,22 +4,22 @@
 
 # CURL
 
-curl=curl-7.64.1-win32-mingw
+curl=curl-7.65.0_1-win32-mingw
 
 rm -f $curl.zip
 rm -fr $curl
 wget --progress=bar \
-     https://curl.haxx.se/windows/dl-7.64.1/$curl.zip
-unzip -o $curl.zip
-mv $curl/bin/curl-ca-bundle.crt libcURL/.
-mv $curl/bin/libcurl.dll libcURL/Win32.d/bin/.
-mv $curl/include/curl/*.h libcURL/Win32.d/include/curl/.
+     https://curl.haxx.se/windows/dl-7.65.0_1/$curl.zip
+unzip $curl.zip -d curl-temporary.d
+mv curl-temporary.d/*/bin/curl-ca-bundle.crt libcURL/.
+mv curl-temporary.d/*/bin/libcurl.dll libcURL/Win32.d/bin/.
+mv curl-temporary.d/*/include/curl/*.h libcURL/Win32.d/include/curl/.
 rm -f $curl.zip
-rm -fr $curl
+rm -fr curl-temporary.d
 
 # OpenSSL
 
-openssl=openssl-1.1.1a-win32-mingw
+openssl=openssl-1.1.1c-win32-mingw
 
 rm -f $openssl.zip
 rm -fr $openssl
