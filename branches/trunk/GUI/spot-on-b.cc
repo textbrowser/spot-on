@@ -6065,8 +6065,8 @@ void spoton::initializeKernelSocket(void)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       m_sb.status->setText
-	(tr("Generating SSL/TLS %1-bit data for the kernel socket. "
-	    "Please be patient.").arg(m_ui.kernelKeySize->currentText()));
+	(tr("Generating SSL/TLS %1-bit kernel socket credentials.").
+	 arg(m_ui.kernelKeySize->currentText()));
       m_sb.status->repaint();
 
       QByteArray certificate;
