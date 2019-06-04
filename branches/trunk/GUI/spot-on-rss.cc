@@ -405,6 +405,10 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 
 	if(!error.isEmpty())
 	  emit logError(error);
+	else
+	  emit logError
+	    (QString("The URL <a href=\"%1\">%1</a> has been imported.").
+	     arg(spoton_misc::urlToEncoded(url).constData()));
       }
 
     db.close();
@@ -533,8 +537,8 @@ void spoton_rss::import(const int maximumKeywords)
 	query.setForwardOnly(true);
 	query.prepare("SELECT domain, permission FROM distillers WHERE "
 		      "direction_hash = ?");
-	query.bindValue(0, crypt->keyedHash(QByteArray("shared"),
-					    &ok).toBase64());
+	query.bindValue
+	  (0, crypt->keyedHash(QByteArray("shared"), &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())
@@ -745,8 +749,7 @@ void spoton_rss::import(const int maximumKeywords)
       {
 	QSqlQuery query(db);
 
-	for(int i = 0; i < imported.size() && !m_importFuture.isCanceled();
-	    i++)
+	for(int i = 0; i < imported.size() && !m_importFuture.isCanceled(); i++)
 	  {
 	    query.prepare("UPDATE rss_feeds_links "
 			  "SET imported = ? "
