@@ -271,7 +271,7 @@
           <item>
            <widget class="QLabel" name="label_6">
             <property name="text">
-             <string>&amp;Max. Keywords</string>
+             <string>&amp;Maximum Keywords</string>
             </property>
             <property name="buddy">
              <cstring>maximum_keywords</cstring>
@@ -280,6 +280,9 @@
           </item>
           <item>
            <widget class="QSpinBox" name="maximum_keywords">
+            <property name="toolTip">
+             <string>A large value may impede the process.</string>
+            </property>
             <property name="minimum">
              <number>50</number>
             </property>
@@ -434,8 +437,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>710</width>
-             <height>137</height>
+             <width>885</width>
+             <height>477</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -626,7 +629,7 @@
      <x>0</x>
      <y>0</y>
      <width>925</width>
-     <height>27</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

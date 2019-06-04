@@ -34,9 +34,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
-         <width>742</width>
-         <height>3362</height>
+         <y>-1178</y>
+         <width>730</width>
+         <height>3529</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -684,6 +684,9 @@
                 </property>
                 <item>
                  <widget class="QSpinBox" name="maximum_url_keywords_interface">
+                  <property name="toolTip">
+                   <string>A large value may impede the process.</string>
+                  </property>
                   <property name="minimum">
                    <number>50</number>
                   </property>
@@ -1272,6 +1275,9 @@
                 </property>
                 <item>
                  <widget class="QSpinBox" name="maximum_url_keywords_kernel">
+                  <property name="toolTip">
+                   <string>A large value may impede the process.</string>
+                  </property>
                   <property name="minimum">
                    <number>50</number>
                   </property>
@@ -2438,7 +2444,7 @@
      <x>0</x>
      <y>0</y>
      <width>745</width>
-     <height>31</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

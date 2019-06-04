@@ -34,7 +34,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-1184</y>
          <width>730</width>
          <height>3529</height>
         </rect>
@@ -684,6 +684,9 @@
                 </property>
                 <item>
                  <widget class="QSpinBox" name="maximum_url_keywords_interface">
+                  <property name="toolTip">
+                   <string>A large value may impede the process.</string>
+                  </property>
                   <property name="minimum">
                    <number>50</number>
                   </property>
@@ -1272,6 +1275,9 @@
                 </property>
                 <item>
                  <widget class="QSpinBox" name="maximum_url_keywords_kernel">
+                  <property name="toolTip">
+                   <string>A large value may impede the process.</string>
+                  </property>
                   <property name="minimum">
                    <number>50</number>
                   </property>
