@@ -28,6 +28,7 @@
 #ifndef _spoton_misc_h_
 #define _spoton_misc_h_
 
+#include <QAtomicInt>
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <QBluetoothAddress>
 #endif
@@ -136,6 +137,7 @@ class spoton_misc
 			const QSqlDatabase &db,
 			const int maximum_keywords,
 			const bool disable_synchronous_sqlite_writes,
+			QAtomicInt &atomic,
 			QString &error,
 			spoton_crypt *crypt);
   static bool isAcceptedIP(const QHostAddress &address,

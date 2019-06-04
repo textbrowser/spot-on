@@ -28,6 +28,7 @@
 #ifndef _spoton_rss_h_
 #define _spoton_rss_h_
 
+#include <QAtomicInt>
 #include <QFuture>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -50,6 +51,7 @@ class spoton_rss: public QMainWindow
   void show(void);
 
  private:
+  QAtomicInt m_cancelImport;
   QByteArray m_feedDownloadContent;
   QFuture<void> m_importFuture;
   QFuture<void> m_parseXmlFuture;

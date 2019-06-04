@@ -941,6 +941,7 @@ void spoton::slotImportUrls(void)
 
 		    if(ok)
 		      {
+			QAtomicInt atomic(0);
 			QString error("");
 
 			ok = spoton_misc::importUrl
@@ -953,6 +954,7 @@ void spoton::slotImportUrls(void)
 			   m_settings.value("gui/disable_ui_synchronous_"
 					    "sqlite_url_import",
 					    false).toBool(),
+			   atomic,
 			   error,
 			   m_urlCommonCrypt);
 		      }

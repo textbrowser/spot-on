@@ -48,6 +48,7 @@
 
 spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 {
+  m_cancelImport = 0;
   m_currentFeedRow = -1;
   m_ui.setupUi(this);
   m_ui.feeds->horizontalHeader()->setSortIndicator
@@ -308,6 +309,7 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 
 spoton_rss::~spoton_rss()
 {
+  m_cancelImport.fetchAndStoreOrdered(1);
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
@@ -400,6 +402,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 	   maximumKeywords,
 	   settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 			  false).toBool(),
+	   m_cancelImport,
 	   error,
 	   ucc.data());
 
@@ -1094,6 +1097,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
      m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 		    false).toBool(),
+     m_cancelImport,
      error,
      ucc.data());
 
@@ -1602,11 +1606,14 @@ void spoton_rss::slotActivateImport(bool state)
 
   if(state)
     {
+      m_cancelImport.fetchAndStoreOrdered(0);
+
       if(!m_importTimer.isActive()) // Signals.
 	m_importTimer.start();
     }
   else
     {
+      m_cancelImport.fetchAndStoreOrdered(1);
       m_importTimer.stop();
       m_importFuture.cancel();
       m_importFuture.waitForFinished();

@@ -4525,6 +4525,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 			    const QSqlDatabase &db,
 			    const int maximum_keywords,
 			    const bool disable_synchronous_sqlite_writes,
+			    QAtomicInt &atomic,
 			    QString &error,
 			    spoton_crypt *crypt)
 {
@@ -4891,6 +4892,9 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
       for(int i = 0; i < keywords.size(); i++)
 	{
+	  if(atomic.fetchAndAddOrdered(0))
+	    break;
+
 	  if(!discovered.contains(keywords.at(i)))
 	    discovered[keywords.at(i)] = '0';
 	  else

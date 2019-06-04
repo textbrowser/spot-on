@@ -2017,6 +2017,7 @@ void spoton_kernel::importUrls(void)
 						  "synchronous_sqlite_url_"
 						  "download",
 						  false).toBool(),
+					  m_urlImportFutureInterrupt,
 					  error,
 					  crypt))
 		  {
