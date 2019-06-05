@@ -4903,8 +4903,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	  QByteArray keywordHash;
 	  bool ok = true;
 
-	  keywordHash = crypt->keyedHash
-	    (keywords.at(i).toUtf8(), &ok).toHex();
+	  keywordHash = crypt->keyedHash(keywords.at(i).toUtf8(), &ok).toHex();
 
 	  if(!ok)
 	    continue;
@@ -4913,8 +4912,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	    (QString("INSERT INTO spot_on_keywords_%1 ("
 		     "keyword_hash, "
 		     "url_hash) "
-		     "VALUES (?, ?)").arg(keywordHash.mid(0, 2).
-					  constData()));
+		     "VALUES (?, ?)").arg(keywordHash.mid(0, 2).constData()));
 	  query.bindValue(0, keywordHash.constData());
 	  query.bindValue(1, urlHash.constData());
 
