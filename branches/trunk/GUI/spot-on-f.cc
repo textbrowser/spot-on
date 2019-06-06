@@ -30,6 +30,7 @@
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "spot-on.h"
+#include "spot-on-documentation.h"
 #include "spot-on-echo-key-share.h"
 #if SPOTON_GOLDBUG == 0
 #include "spot-on-emailwindow.h"
@@ -1462,13 +1463,16 @@ void spoton::slotLock(void)
   if(m_addParticipantWindow)
     m_addParticipantWindow->close();
 
+  m_documentation->close();
   m_echoKeyShare->close();
   m_encryptFile.close();
   m_logViewer.close();
   m_notificationsWindow->close();
   m_optionsWindow->close();
+  m_releaseNotes->close();
   m_rosetta.close();
   m_rss->close();
+  m_smpWindow.close();
   m_starbeamAnalyzer->close();
   m_statisticsWindow->close();
   m_ui.tab->setCurrentIndex(m_ui.tab->count() - 1);
