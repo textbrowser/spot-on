@@ -28,4 +28,4 @@ mkdir -p spot-on-raspbian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.desktop spot-on-raspbian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/RASPBIAN-QT4 spot-on-raspbian/DEBIAN
 cp -r /usr/local/spot-on-qt4 spot-on-raspbian/usr/local/.
-fakeroot dpkg-deb --build spot-on-raspbian Spot-On-2019.06.06_qt4_armhf.deb
+fakeroot dpkg-deb --build spot-on-raspbian Spot-On-2019.07.07_qt4_armhf.deb
