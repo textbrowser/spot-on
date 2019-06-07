@@ -217,6 +217,13 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 	  SLOT(slotLogError(const QString &)));
   m_originalFindPalette = m_ui.find->palette();
   m_ui.find->setPlaceholderText(tr("Find Text"));
+
+  QActionGroup *actionGroup = new QActionGroup(this);
+
+  actionGroup->addAction(m_ui.action_Insert_Date);
+  actionGroup->addAction(m_ui.action_Publication_Date);
+  actionGroup->setExclusive(true);
+
   QMenu *menu = new QMenu(this);
 
   menu->addAction(tr("Copy selected &link."),
@@ -2991,7 +2998,8 @@ void spoton_rss::slotTabChanged(int index)
 
 void spoton_rss::slotTimeOrderBy(bool state)
 {
-  Q_UNUSED(state);
+  if(!state)
+    return;
 
   QAction *action = qobject_cast<QAction *> (sender());
 
