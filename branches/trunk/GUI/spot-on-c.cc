@@ -38,7 +38,6 @@
 #include <QStandardPaths>
 #endif
 #include <QTableWidgetItem>
-#include <QThread>
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
 #endif
@@ -3339,6 +3338,7 @@ void spoton::prepareContextMenuMirrors(void)
       action->setProperty("type", "neighbors");
       menu->addSeparator();
 
+      QActionGroup *actionGroup = new QActionGroup(menu);
       QList<QPair<QString, QThread::Priority> > list;
       QMenu *subMenu = menu->addMenu(tr("Priority"));
       QPair<QString, QThread::Priority> pair;
@@ -3365,13 +3365,20 @@ void spoton::prepareContextMenuMirrors(void)
       pair.second = QThread::TimeCriticalPriority;
       list << pair;
 
+      QThread::Priority priority = neighborThreadPriority();
+
       for(int i = 0; i < list.size(); i++)
 	{
 	  action = subMenu->addAction
 	    (list.at(i).first,
 	     this,
 	     SLOT(slotSetNeighborPriority(void)));
+	  action->setCheckable(true);
 	  action->setProperty("priority", list.at(i).second);
+	  actionGroup->addAction(action);
+
+	  if(list.at(i).second == priority)
+	    action->setChecked(true);
 	}
 
 #if SPOTON_GOLDBUG == 0

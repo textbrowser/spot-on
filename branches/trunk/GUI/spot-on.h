@@ -71,6 +71,7 @@
 #include <QSqlRecord>
 #include <QSslSocket>
 #include <QStyle>
+#include <QThread>
 #include <QTimer>
 #include <QTranslator>
 #include <QUuid>
@@ -596,6 +597,7 @@ class spoton: public QMainWindow
      spoton_crypt *crypt) const;
   QString savePoptasticAccount(void);
   QStringList parseAEMagnet(const QString &magnet) const;
+  QThread::Priority neighborThreadPriority(void) const;
   bool addFriendsKey(const QByteArray &key, const QString &type,
 		     QWidget *parent);
   bool deleteAllUrls(void);
@@ -607,8 +609,7 @@ class spoton: public QMainWindow
 		  const QString &oid);
   bool updateMailStatus(const QString &oid, const QString &status);
   bool verifyInitializationPassphrase(QWidget *parent);
-  int applyGoldBugToLetter(const QByteArray &goldbug,
-			   const int row);
+  int applyGoldBugToLetter(const QByteArray &goldbug, const int row);
   int tabIndexFromName(const QString &name) const;
   void applyGoldBugToAttachments(const QString &folderOid,
 				 const QSqlDatabase &db,

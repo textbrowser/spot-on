@@ -861,6 +861,21 @@ bool spoton::neighborSupportsSslTls(void) const
   return false;
 }
 
+QThread::Priority spoton::neighborThreadPriority(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item(row, 35);
+
+      if(item)
+	return QThread::Priority(item->data(Qt::UserRole).toInt());
+    }
+
+  return QThread::HighPriority;
+}
+
 QString spoton::neighborTransport(void) const
 {
   int row = -1;

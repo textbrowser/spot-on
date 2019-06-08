@@ -626,7 +626,7 @@ void spoton_misc::prepareDatabases(void)
 					  */
 		   "passthrough INTEGER NOT NULL DEFAULT 0, "
 		   "priority INTEGER NOT NULL DEFAULT 4 CHECK "
-		   "(priority >= 0 AND priority <= 7), " /*
+		   "(priority >= 0 AND priority <= 6), " /*
 							 ** High
 							 ** priority.
 							 */

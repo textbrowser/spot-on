@@ -44,7 +44,6 @@ extern "C"
 #include <QProgressDialog>
 #include <QScopedPointer>
 #include <QStandardItemModel>
-#include <QThread>
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
@@ -2154,8 +2153,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.question_authenticate->setEnabled(false);
   m_ui.resend->setEnabled(false);
   m_sb.kernelstatus->setToolTip
-    (tr("The interface is not connected to the kernel. Is the kernel "
-	"active?"));
+    (tr("The interface is not connected to the kernel. Is the kernel active?"));
   m_sb.listeners->setToolTip(tr("Listeners are offline."));
   m_sb.neighbors->setToolTip(tr("Neighbors are offline."));
   menu = new QMenu(this);
@@ -3247,8 +3245,8 @@ spoton::spoton(void):QMainWindow()
 		 "current working directory. Perhaps a conflict "
 		 "exists. Please resolve!").arg(SPOTON_APPLICATION_NAME);
       else
-	str = tr("The SQLite database driver is not available. "
-		 "Please resolve!");
+	str = tr
+	  ("The SQLite database driver is not available. Please resolve!");
 
       QTimer *timer = new QTimer(this);
 
@@ -5108,7 +5106,9 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
       QByteArray certificateDigest;
       QByteArray sslSessionCipher;
       QString priority("");
+      QString priorityTr("");
       QString tooltip("");
+      QThread::Priority priorityInt = QThread::HighPriority;
       bool isEncrypted = query->value
 	(query->record().indexOf("is_encrypted")).toBool();
       bool ok = true;
@@ -5159,23 +5159,59 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	}
 
       priority = query->value(35).toString().trimmed();
+      priorityInt = QThread::Priority(priority.toInt());
 
-      if(priority.toInt() == 0)
-	priority = "Idle Priority";
-      else if(priority.toInt() == 1)
-	priority = "Lowest Priority";
-      else if(priority.toInt() == 2)
-	priority = "Low Priority";
-      else if(priority.toInt() == 3)
-	priority = "Normal Priority";
-      else if(priority.toInt() == 4)
-	priority = "High Priority";
-      else if(priority.toInt() == 5)
-	priority = "Highest Priority";
-      else if(priority.toInt() == 6)
-	priority = "Time-Critical Priority";
-      else
-	priority = "High Priority";
+      switch(priorityInt)
+	{
+	case QThread::IdlePriority:
+	  {
+	    priority = "Idle Priority";
+	    priorityTr = tr("Idle Priority");
+	    break;
+	  }
+	case QThread::LowestPriority:
+	  {
+	    priority = "Lowest Priority";
+	    priorityTr = tr("Lowest Priority");
+	    break;
+	  }
+	case QThread::LowPriority:
+	  {
+	    priority = "Low Priority";
+	    priorityTr = tr("Low Priority");
+	    break;
+	  }
+	case QThread::NormalPriority:
+	  {
+	    priority = "Normal Priority";
+	    priorityTr = tr("Normal Priority");
+	    break;
+	  }
+	case QThread::HighPriority:
+	  {
+	    priority = "High Priority";
+	    priorityTr = tr("High Priority");
+	    break;
+	  }
+	case QThread::HighestPriority:
+	  {
+	    priority = "Highest Priority";
+	    priorityTr = tr("Highest Priority");
+	    break;
+	  }
+	case QThread::TimeCriticalPriority:
+	  {
+	    priority = "Time-Critical Priority";
+	    priorityTr = tr("Time-Critical Priority");
+	    break;
+	  }
+	default:
+	  {
+	    priority = "High Priority";
+	    priorityTr = tr("High Priority");
+	    break;
+	  }
+	}
 
       tooltip =
 	(tr("UUID: %1\n"
@@ -5504,7 +5540,10 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	  else if(i == 31) // Certificate
 	    item = new QTableWidgetItem(certificate.constData());
 	  else if(i == 35) // Priority
-	    item = new QTableWidgetItem(priority);
+	    {
+	      item = new QTableWidgetItem(priorityTr);
+	      item->setData(Qt::UserRole, priorityInt);
+	    }
 	  else if(i == 36) // Lane Width
 	    {
 	      QComboBox *box = new QComboBox();
@@ -7785,6 +7824,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action->setProperty("type", "neighbors");
       menu.addSeparator();
 
+      QActionGroup *actionGroup = new QActionGroup(&menu);
       QList<QPair<QString, QThread::Priority> > list;
       QMenu *subMenu = menu.addMenu(tr("Priority"));
       QPair<QString, QThread::Priority> pair;
@@ -7811,13 +7851,20 @@ void spoton::slotShowContextMenu(const QPoint &point)
       pair.second = QThread::TimeCriticalPriority;
       list << pair;
 
+      QThread::Priority priority = neighborThreadPriority();
+
       for(int i = 0; i < list.size(); i++)
 	{
 	  action = subMenu->addAction
 	    (list.at(i).first,
 	     this,
 	     SLOT(slotSetNeighborPriority(void)));
+	  action->setCheckable(true);
 	  action->setProperty("priority", list.at(i).second);
+	  actionGroup->addAction(action);
+
+	  if(list.at(i).second == priority)
+	    action->setChecked(true);
 	}
 
 #if SPOTON_GOLDBUG == 0
