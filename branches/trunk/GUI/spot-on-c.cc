@@ -3185,7 +3185,7 @@ void spoton::prepareContextMenuMirrors(void)
 	 this, SLOT(slotResetPrivateApplicationInformation(void)));
       menu->addSeparator();
       menu->addAction
-	(tr("&Prepare new one-year certificate."),
+	(tr("&Prepare New One-Year Certificate"),
 	 this, SLOT(slotGenerateOneYearListenerCertificate(void)))->setEnabled
 	(listenerSupportsSslTls());
       menu->addAction(tr("Set &SSL Control String..."),
