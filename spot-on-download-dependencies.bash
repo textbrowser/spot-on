@@ -4,12 +4,12 @@
 
 # CURL
 
-curl=curl-7.65.0_1-win32-mingw
+curl=curl-7.65.1-win32-mingw
 
 rm -f $curl.zip
 rm -fr $curl
 wget --progress=bar \
-     https://curl.haxx.se/windows/dl-7.65.0_1/$curl.zip
+     https://curl.haxx.se/windows/dl-7.65.1/curl-7.65.1-win32-mingw.zip
 unzip $curl.zip -d curl-temporary.d
 mv curl-temporary.d/*/bin/curl-ca-bundle.crt libcURL/.
 mv curl-temporary.d/*/bin/libcurl.dll libcURL/Win32.d/bin/.
@@ -42,7 +42,7 @@ postgresql=postgresql.zip
 rm -f $postgresql
 wget --output-document=$postgresql \
      --progress=bar \
-     "https://get.enterprisedb.com/postgresql/postgresql-9.6.13-1-windows-binaries.zip"
+     "https://get.enterprisedb.com/postgresql/postgresql-9.6.13-4-windows-binaries.zip"
 unzip $postgresql
 mv pgsql/bin/libeay32.dll PostgreSQL/Libraries.win32/.
 mv pgsql/bin/libiconv-2.dll PostgreSQL/Libraries.win32/.
