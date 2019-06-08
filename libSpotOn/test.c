@@ -59,7 +59,7 @@ int main(void)
     printf("libspoton_save_url() error (%s).\n",
 	   libspoton_strerror(rc));
 
-  url = "http://spot-on.sourceforge.net";
+  url = "https://spot-on.sourceforge.net";
 
   if((rc = libspoton_save_url(url,
 			      strlen(url),
