@@ -361,6 +361,10 @@ void spoton::slotNewEmailWindow(void)
     window = new spoton_emailwindow("", "", "", 0);
 
   connect(this,
+	  SIGNAL(newGlobalName(const QString &)),
+	  window,
+	  SLOT(slotNewGlobalName(const QString &)));
+  connect(this,
 	  SIGNAL(updateEmailWindows(void)),
 	  window,
 	  SLOT(slotUpdate(void)));

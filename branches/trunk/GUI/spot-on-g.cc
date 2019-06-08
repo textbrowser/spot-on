@@ -777,11 +777,17 @@ void spoton::slotNewGlobalName(void)
   bool ok = true;
 
   text = QInputDialog::getText
-    (this, tr("%1: Global Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
-     QLineEdit::Normal, "", &ok).trimmed();
+    (this,
+     tr("%1: Global Name").arg(SPOTON_APPLICATION_NAME),
+     tr("&Name"),
+     QLineEdit::Normal,
+     "",
+     &ok).trimmed();
 
   if(!ok)
     return;
+  else if(text.isEmpty())
+    text = "unknown";
 
   m_rosetta.setName(text);
   m_ui.buzzName->setText(text);
@@ -792,6 +798,7 @@ void spoton::slotNewGlobalName(void)
   slotSaveEmailName();
   slotSaveNodeName();
   slotSaveUrlName();
+  emit newGlobalName(text);
 }
 
 void spoton::slotListenerSourceOfRandomnessChanged(int value)
