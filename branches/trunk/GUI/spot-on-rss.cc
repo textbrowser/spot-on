@@ -226,22 +226,22 @@ spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 
   QMenu *menu = new QMenu(this);
 
-  menu->addAction(tr("Copy selected &link."),
+  menu->addAction(tr("Copy Selected &Link"),
 		  this,
 		  SLOT(slotCopyFeedLink(void)));
   menu->addSeparator();
-  menu->addAction(tr("Delete &all RSS feeds."),
+  menu->addAction(tr("Delete &All RSS Feeds"),
 		  this,
 		  SLOT(slotDeleteAllFeeds(void)));
-  menu->addAction(tr("Delete &selected RSS feed."),
+  menu->addAction(tr("Delete &Selected RSS Feed"),
 		  this,
 		  SLOT(slotDeleteFeed(void)));
   menu->addSeparator();
-  menu->addAction(tr("&Refresh table."),
+  menu->addAction(tr("&Refresh Table"),
 		  this,
 		  SLOT(slotPopulateFeeds(void)));
   menu->addSeparator();
-  menu->addAction(tr("&Schedule selected RSS feed for update."),
+  menu->addAction(tr("&Schedule Selected RSS Feed For Update"),
 		  this, SLOT(slotScheduleFeedUpdate(void)));
   menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.action_menu->setMenu(menu);
@@ -2884,18 +2884,18 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 {
   QMenu menu(this);
 
-  menu.addAction(tr("Copy selected &link."),
+  menu.addAction(tr("Copy Selected &Link"),
 		 this, SLOT(slotCopyFeedLink(void)));
   menu.addSeparator();
-  menu.addAction(tr("Delete &all feeds."),
+  menu.addAction(tr("Delete &All Feeds"),
 		 this, SLOT(slotDeleteAllFeeds(void)));
-  menu.addAction(tr("Delete &selected feed."),
+  menu.addAction(tr("Delete &Selected Feed"),
 		 this, SLOT(slotDeleteFeed(void)));
   menu.addSeparator();
-  menu.addAction(tr("&Refresh table."),
+  menu.addAction(tr("&Refresh Table"),
 		 this, SLOT(slotPopulateFeeds(void)));
   menu.addSeparator();
-  menu.addAction(tr("&Schedule selected feed for update."),
+  menu.addAction(tr("&Schedule Selected Feed For Update"),
 		 this, SLOT(slotScheduleFeedUpdate(void)));
   menu.exec(m_ui.feeds->mapToGlobal(point));
 }

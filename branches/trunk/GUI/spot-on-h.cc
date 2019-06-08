@@ -397,7 +397,7 @@ void spoton::slotMailContextMenu(const QPoint &point)
   QAction *action = 0;
   QMenu menu(this);
 
-  action = menu.addAction(tr("Read in new window..."),
+  action = menu.addAction(tr("Read (New Window)..."),
 			  this,
 			  SLOT(slotNewEmailWindow(void)));
   action->setEnabled(enabled);

@@ -2914,14 +2914,14 @@ void spoton::prepareContextMenuMirrors(void)
 	(QIcon(QString(":/%1/add.png").
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())),
-	 tr("&Add participant as friend."),
+	 tr("&Add Participant As Friend"),
 	 this, SLOT(slotShareChatPublicKeyWithParticipant(void)));
       menu->addSeparator();
       menu->addAction(tr("Chat &Popup..."), this,
 		      SLOT(slotChatPopup(void)));
       menu->addSeparator();
       menu->addAction(QIcon(":/generic/repleo-chat.png"),
-		      tr("&Copy Repleo to the clipboard buffer."),
+		      tr("&Copy Repleo (Clipboard Buffer)"),
 		      this, SLOT(slotCopyFriendshipBundle(void)));
       menu->addSeparator();
 #if SPOTON_GOLDBUG == 1
@@ -2929,82 +2929,82 @@ void spoton::prepareContextMenuMirrors(void)
 				     arg(m_settings.value("gui/iconSet",
 							  "nouve").
 					 toString().toLower())),
-			       tr("MELODICA: &Call friend with new "
-				  "Gemini pair."),
+			       tr("MELODICA: &Call Friend (New "
+				  "Gemini Pair)"),
 			       this, SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling");
       action = menu->addAction(QIcon(QString(":/%1/melodica.png").
 				     arg(m_settings.value("gui/iconSet",
 							  "nouve").
 					 toString().toLower())),
-			       tr("MELODICA: &Call friend with new "
-				  "Gemini pair using the existing "
-				  "Gemini pair."),
+			       tr("MELODICA: &Call Friend (New "
+				  "Gemini Pair Using Existing "
+				  "Gemini Pair)"),
 			       this, SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling_using_gemini");
       action = menu->addAction(QIcon(QString(":/%1/melodica.png").
 				     arg(m_settings.value("gui/iconSet",
 							  "nouve").
 					 toString().toLower())),
-			       tr("MELODICA Two-Way: &Call friend with new "
-				  "Gemini pair."),
+			       tr("MELODICA Two-Way: &Call Friend (New "
+				  "Gemini Pair)"),
 			       this, SLOT(slotCallParticipant(void)));
       action->setEnabled
 	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #else
-      action = menu->addAction(tr("&Call participant."),
+      action = menu->addAction(tr("&Call Participant"),
 			       this, SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling");
-      action = menu->addAction(tr("&Call participant using the "
-				  "existing Gemini pair."),
+      action = menu->addAction(tr("&Call Participant ("
+				  "Existing Gemini Pair)"),
 			       this, SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling_using_gemini");
-      action = menu->addAction(tr("&Two-way calling."),
+      action = menu->addAction(tr("&Two-Way Calling"),
 			       this, SLOT(slotCallParticipant(void)));
       action->setEnabled
 	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #endif
-      action = menu->addAction(tr("&Terminate call."),
+      action = menu->addAction(tr("&Terminate Call"),
 			       this, SLOT(slotCallParticipant(void)));
       action->setProperty("type", "terminating");
       menu->addSeparator();
 #if SPOTON_GOLDBUG == 1
       menu->addAction
-	(tr("&Generate random Gemini pair "
-	    "(AES-256 Key, SHA-512 Key) (without a call)."),
+	(tr("&Generate Random Gemini Pair "
+	    "(AES-256 Key, SHA-512 Key) (Without Call)"),
 	 this, SLOT(slotGenerateGeminiInChat(void)));
 #else
-      menu->addAction(tr("&Generate random Gemini pair "
-			 "(AES-256 Key, SHA-512 Key)."),
+      menu->addAction(tr("&Generate Random Gemini Pair "
+			 "(AES-256 Key, SHA-512 Key)"),
 		      this, SLOT(slotGenerateGeminiInChat(void)));
 #endif
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
-		      tr("&Remove participant(s)."),
+		      tr("&Remove Participant(s)"),
 		      this, SLOT(slotRemoveParticipants(void)));
       menu->addSeparator();
       action = menu->addAction(tr("&Rename Participant..."),
 			       this, SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "chat");
       menu->addSeparator();
-      menu->addAction(tr("&Derive Gemini pair from SMP secret."),
+      menu->addAction(tr("&Derive Gemini Pair From SMP Secret"),
 		      this,
 		      SLOT(slotDeriveGeminiPairViaSMP(void)));
-      menu->addAction(tr("&Reset the SMP machine's internal state to s0."),
+      menu->addAction(tr("&Reset SMP Machine's Internal State (S0)"),
 		      this,
 		      SLOT(slotInitializeSMP(void)));
-      menu->addAction(tr("&Set an SMP Secret..."),
+      menu->addAction(tr("&Set SMP Secret..."),
 		      this,
 		      SLOT(slotPrepareSMP(void)));
-      menu->addAction(tr("&Verify the SMP secret."),
+      menu->addAction(tr("&Verify SMP Secret"),
 		      this,
 		      SLOT(slotVerifySMPSecret(void)));
       menu->addSeparator();
-      menu->addAction(tr("Replay &last %1 messages.").
+      menu->addAction(tr("Replay &Last %1 Messages").
 		      arg(spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE),
 		      this,
 		      SLOT(slotReplayMessages(void)));
@@ -3013,23 +3013,23 @@ void spoton::prepareContextMenuMirrors(void)
 			    arg(m_settings.value("gui/iconSet",
 						 "nouve").
 				toString().toLower())),
-		      tr("Share a &StarBeam with the "
-			 "selected participant(s)..."),
+		      tr("Share &StarBeam With "
+			 "Selected Participant(s)..."),
 		      this,
 		      SLOT(slotShareStarBeam(void)))->setEnabled
 	("chat" == participantKeyType(m_ui.participants));
       menu->addSeparator();
       menu->addAction
-	(tr("Call via Forward &Secrecy credentials."),
+	(tr("Call Via Forward &Secrecy Credentials"),
 	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
       action = menu->addAction(tr("Initiate Forward &Secrecy Exchange(s)..."),
 			       this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "chat");
-      action = menu->addAction(tr("Purge Forward &Secrecy key pair."),
+      action = menu->addAction(tr("Purge Forward &Secrecy Key Pair"),
 			       this, SLOT(slotPurgeEphemeralKeyPair(void)));
       action->setProperty("type", "chat");
       action = menu->addAction
-	(tr("Reset Forward &Secrecy information of selected participant(s)."),
+	(tr("Reset Forward &Secrecy Information of Selected Participant(s)"),
 	 this, SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "chat");
       menu->addSeparator();
@@ -3037,8 +3037,8 @@ void spoton::prepareContextMenuMirrors(void)
 			    arg(m_settings.value("gui/iconSet",
 						 "nouve").
 				toString().toLower())),
-		      tr("Invite selected participant(s) "
-			 "to an anonymous Buzz channel..."),
+		      tr("Invite Selected Participant(s) "
+			 "(Anonymous Buzz Channel)..."),
 		      this,
 		      SLOT(slotBuzzInvite(void)))->setEnabled
 	("chat" == participantKeyType(m_ui.participants));
@@ -3060,7 +3060,7 @@ void spoton::prepareContextMenuMirrors(void)
     {
       QMenu *menu = new QMenu(this);
 
-      menu->addAction(tr("New e-mail window..."),
+      menu->addAction(tr("New E-mail Window..."),
 		      this,
 		      SLOT(slotNewEmailWindow(void)));
       m_ui.clearOutgoing->setMenu(menu);
@@ -3095,22 +3095,22 @@ void spoton::prepareContextMenuMirrors(void)
 	(QIcon(QString(":/%1/add.png").
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())),
-	 tr("&Add participant as friend."),
+	 tr("&Add Participant As Friend"),
 	 this, SLOT(slotShareEmailPublicKeyWithParticipant(void)));
       menu->addSeparator();
-      menu->addAction(QIcon(":/generic/repleo-email.png"),
-		      tr("&Copy Repleo to the clipboard buffer."),
-		      this, SLOT(slotCopyEmailFriendshipBundle(void)));
       menu->addAction(QIcon(QString(":/%1/copy.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
-		      tr("&Copy keys to the clipboard buffer."),
+		      tr("&Copy Keys (Clipboard Buffer)"),
 		      this, SLOT(slotCopyEmailKeys(void)));
+      menu->addAction(QIcon(":/generic/repleo-email.png"),
+		      tr("&Copy Repleo (Clipboard Buffer)"),
+		      this, SLOT(slotCopyEmailFriendshipBundle(void)));
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
-		      tr("&Remove participant(s)."),
+		      tr("&Remove Participant(s)"),
 		      this, SLOT(slotRemoveEmailParticipants(void)));
       menu->addSeparator();
       action = menu->addAction(tr("&Rename Participant..."),
@@ -3120,11 +3120,11 @@ void spoton::prepareContextMenuMirrors(void)
       action = menu->addAction(tr("Initiate Forward &Secrecy Exchange(s)..."),
 			       this, SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "email");
-      action = menu->addAction(tr("Purge Forward &Secrecy key pair."),
+      action = menu->addAction(tr("Purge Forward &Secrecy Key Pair"),
 			       this, SLOT(slotPurgeEphemeralKeyPair(void)));
       action->setProperty("type", "email");
       action = menu->addAction
-	(tr("Reset Forward &Secrecy information."),
+	(tr("Reset Forward &Secrecy Information"),
 	 this, SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "email");
       m_ui.emailWriteActionMenu->setMenu(menu);
@@ -3481,22 +3481,22 @@ void spoton::prepareContextMenuMirrors(void)
 	(QIcon(QString(":/%1/add.png").
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())),
-	 tr("&Add participant as friend."),
+	 tr("&Add Participant As Friend"),
 	 this, SLOT(slotShareUrlPublicKeyWithParticipant(void)));
       menu->addSeparator();
-      menu->addAction(QIcon(":/generic/repleo-url.png"),
-		      tr("&Copy Repleo to the clipboard buffer."),
-		      this, SLOT(slotCopyUrlFriendshipBundle(void)));
       menu->addAction(QIcon(QString(":/%1/copy.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
-		      tr("&Copy keys to the clipboard buffer."),
+		      tr("&Copy Keys (Clipboard Buffer)"),
 		      this, SLOT(slotCopyUrlKeys(void)));
+      menu->addAction(QIcon(":/generic/repleo-url.png"),
+		      tr("&Copy Repleo (Clipboard Buffer)"),
+		      this, SLOT(slotCopyUrlFriendshipBundle(void)));
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
-		      tr("&Remove participant(s)."),
+		      tr("&Remove Participant(s)"),
 		      this, SLOT(slotRemoveUrlParticipants(void)));
       menu->addSeparator();
       action = menu->addAction(tr("&Rename Participant..."),
