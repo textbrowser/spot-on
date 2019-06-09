@@ -8,10 +8,11 @@ libspoton.commands = $(MAKE) -C ../../../libSpotOn library
 libspoton.depends =
 purge.commands = rm -f *~
 
-TEMPLATE	= app
+CONFIG		+= qt release warn_on app_bundle
 LANGUAGE	= C++
 QT		+= bluetooth concurrent network sql
-CONFIG		+= qt release warn_on app_bundle
+QT              -= gui
+TEMPLATE	= app
 
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.

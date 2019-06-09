@@ -11,6 +11,7 @@ purge.commands = rm -f *~
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
 QT		+= bluetooth concurrent network sql
+QT              -= gui
 
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.

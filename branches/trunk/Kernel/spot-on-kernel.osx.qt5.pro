@@ -11,6 +11,7 @@ purge.commands = rm -f *~
 CONFIG		+= qt release warn_on app_bundle
 LANGUAGE	= C++
 QT		+= bluetooth concurrent network sql
+QT              -= gui
 
 DEFINES += SPOTON_BLUETOOTH_ENABLED \
            SPOTON_LINKED_WITH_LIBGEOIP \
