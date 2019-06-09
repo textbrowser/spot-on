@@ -217,7 +217,7 @@ void spoton::slotSetSocketOptions(void)
     }
 #endif
 
-  foreach(QString string, list)
+  foreach(const QString &string, list)
     if(string.startsWith("nodelay="))
       {
 	if(ui.nodelay->isEnabled())

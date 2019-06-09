@@ -667,7 +667,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.postgresqlConnect->setEnabled(false);
   m_ui.postgresqlConnect->setVisible(false);
 
-  foreach(QString driver, QSqlDatabase::drivers())
+  foreach(const QString &driver, QSqlDatabase::drivers())
     if(driver.toLower().contains("qpsql"))
       {
 	m_ui.postgresqlConnect->setEnabled(true);
