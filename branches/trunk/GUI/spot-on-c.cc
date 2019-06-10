@@ -1082,8 +1082,8 @@ void spoton::slotTransmit(void)
 		      "(file, fragmented, "
 		      "hash, missing_links, mosaic, nova, "
 		      "position, pulse_size, "
-		      "status_control, total_size) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "status_control, total_size, ultra) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->
 	   encryptedThenHashed(m_ui.transmittedFile->text().toUtf8(),
@@ -1154,6 +1154,8 @@ void spoton::slotTransmit(void)
 	    (9, crypt->
 	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
 				 &ok).toBase64());
+
+	query.bindValue(10, m_ui.ultra->isChecked() ? 1 : 0);
 
 	if(ok)
 	  query.exec();

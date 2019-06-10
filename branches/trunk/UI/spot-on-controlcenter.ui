@@ -448,8 +448,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>816</width>
-                <height>533</height>
+                <width>429</width>
+                <height>504</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -2064,8 +2064,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>543</height>
+             <width>709</width>
+             <height>440</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2759,7 +2759,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>268</width>
+                     <width>278</width>
                      <height>1466</height>
                     </rect>
                    </property>
@@ -3242,7 +3242,7 @@
              <x>0</x>
              <y>0</y>
              <width>834</width>
-             <height>523</height>
+             <height>263</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3643,7 +3643,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>794</width>
+                  <width>761</width>
                   <height>496</height>
                  </rect>
                 </property>
@@ -4396,8 +4396,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>543</height>
+             <width>630</width>
+             <height>383</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4472,8 +4472,8 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-368</y>
-                 <width>796</width>
+                 <y>0</y>
+                 <width>704</width>
                  <height>667</height>
                 </rect>
                </property>
@@ -5369,7 +5369,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>864</width>
+             <width>895</width>
              <height>1219</height>
             </rect>
            </property>
@@ -7462,6 +7462,19 @@
                        </widget>
                       </item>
                       <item>
+                       <widget class="QCheckBox" name="ultra">
+                        <property name="toolTip">
+                         <string>Reliable StarBeam.</string>
+                        </property>
+                        <property name="text">
+                         <string>&amp;Ultra</string>
+                        </property>
+                        <property name="checked">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QPushButton" name="transmit">
                         <property name="text">
                          <string>Transmit</string>
@@ -7511,8 +7524,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>543</height>
+             <width>696</width>
+             <height>521</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8090,8 +8103,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>826</width>
-             <height>543</height>
+             <width>278</width>
+             <height>155</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8941,6 +8954,7 @@
   <tabstop>etpSelectFile</tabstop>
   <tabstop>fragment_starbeam</tabstop>
   <tabstop>pulseSize</tabstop>
+  <tabstop>ultra</tabstop>
   <tabstop>transmit</tabstop>
   <tabstop>scrollArea_10</tabstop>
   <tabstop>activeUrlDistribution</tabstop>

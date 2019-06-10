@@ -1527,8 +1527,8 @@ void spoton::slotShareStarBeam(void)
 	query.prepare("INSERT INTO transmitted "
 		      "(file, hash, missing_links, mosaic, nova, "
 		      "position, pulse_size, read_interval, "
-		      "status_control, total_size) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "status_control, total_size, ultra) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->
 	   encryptedThenHashed(fileInfo.absoluteFilePath().toUtf8(),
@@ -1578,6 +1578,8 @@ void spoton::slotShareStarBeam(void)
 	    (9, crypt->
 	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
 				 &ok).toBase64());
+
+	query.bindValue(10, 1);
 
 	if(ok)
 	  query.exec();
