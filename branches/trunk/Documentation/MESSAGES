@@ -510,6 +510,7 @@ Optional Nova AES-256 (Base-64)
 6 - Pulse Size
 7 - SHA-1 File Digest
 8 - UTC Date
+9 - Ultra?
 }
 Optional Nova SHA-512
 {

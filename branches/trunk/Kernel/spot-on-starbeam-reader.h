@@ -53,6 +53,7 @@ class spoton_starbeam_reader: public QObject
   QListIterator<QByteArray> *m_missingLinksIterator;
   QTimer m_timer;
   bool m_fragmented;
+  bool m_ultra;
   double m_readInterval;
   int m_neighborIndex;
   qint64 m_id;

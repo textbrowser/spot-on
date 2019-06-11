@@ -41,17 +41,18 @@
 spoton_starbeam_reader::spoton_starbeam_reader
 (const qint64 id, const double readInterval, QObject *parent):QObject(parent)
 {
+  connect(&m_timer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotTimeout(void)));
   m_fragmented = false;
   m_id = id;
   m_missingLinksIterator = 0;
   m_neighborIndex = 0;
   m_position = 0;
   m_readInterval = qBound(0.100, readInterval, 60.000);
-  connect(&m_timer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotTimeout(void)));
   m_timer.start(static_cast<int> (1000 * m_readInterval));
+  m_ultra = true;
 }
 
 spoton_starbeam_reader::~spoton_starbeam_reader()
@@ -129,7 +130,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 	    query.prepare
 	      ("SELECT file, fragmented, hash, missing_links, nova, "
 	       "position, pulse_size, read_interval, status_control, "
-	       "total_size FROM transmitted WHERE OID = ?");
+	       "total_size, ultra FROM transmitted WHERE OID = ?");
 	    query.bindValue(0, m_id);
 
 	    if(query.exec())
@@ -138,6 +139,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 		  m_fragmented = query.value(1).toBool();
 		  m_readInterval = qBound(0.100, query.value(7).toDouble(),
 					  60.000);
+		  m_ultra = query.value(10).toBool();
 		  status = query.value(8).toString().toLower();
 
 		  if(status == "completed")
@@ -455,7 +457,8 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 	 << pulseSize.toLatin1()
 	 << hash
 	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
-            toLatin1();
+            toLatin1()
+	 << QByteArray::number(m_ultra);
 
   if(stream.status() != QDataStream::Ok)
     ok = false;
