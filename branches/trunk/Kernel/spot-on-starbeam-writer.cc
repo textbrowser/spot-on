@@ -98,6 +98,7 @@ void spoton_starbeam_writer::processData
 		     0,
 		     0,
 		     "");
+  static const int expectedEntries = 10;
 
   data = crypt.decrypted(list.value(0), &ok);
 
@@ -151,7 +152,7 @@ void spoton_starbeam_writer::processData
 
 	      QDataStream stream(&bytes, QIODevice::ReadOnly);
 
-	      for(int i = 0; i < 9; i++)
+	      for(int i = 0; i < expectedEntries; i++)
 		{
 		  QByteArray a;
 
@@ -177,7 +178,7 @@ void spoton_starbeam_writer::processData
 
       list.clear();
 
-      for(int i = 0; i < 9; i++)
+      for(int i = 0; i < expectedEntries; i++)
 	{
 	  QByteArray a;
 
@@ -197,8 +198,7 @@ void spoton_starbeam_writer::processData
     return;
 
   QDateTime dateTime
-    (QDateTime::fromString(list.value(list.size() - 1).
-			   constData(), "MMddyyyyhhmmss"));
+    (QDateTime::fromString(list.value(8).constData(), "MMddyyyyhhmmss"));
 
   dateTime.setTimeSpec(Qt::UTC);
 
@@ -248,14 +248,15 @@ void spoton_starbeam_writer::processData
     }
 
   QByteArray hash = list.value(7);
-  int dataSize = qAbs(static_cast<int> (list.value(3).toLongLong()));
-  int pulseSize = qAbs(static_cast<int> (list.value(6).toLongLong()));
+  bool ultra = list.value(9).toShort();
+  qint64 dataSize = qAbs(list.value(3).toLongLong());
   qint64 maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maxMosaicSize", 512).toLongLong();
   qint64 position = qAbs(list.value(2).toLongLong());
+  qint64 pulseSize = qAbs(list.value(6).toLongLong());
   qint64 totalSize = qAbs(list.value(4).toLongLong());
 
-  if(dataSize != list.value(5).length()) // Data
+  if(dataSize != static_cast<qint64> (list.value(5).length())) // Data
     {
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
