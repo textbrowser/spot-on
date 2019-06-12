@@ -798,7 +798,7 @@ void spoton_misc::prepareDatabases(void)
 		   "(status_control IN ('completed', 'deleted', 'paused', "
 		   "'transmitting')), "
 		   "total_size TEXT NOT NULL, "
-		   "ultra INTEGER NOT NULL DEFAULT 1)");
+		   "ultra INTEGER NOT NULL DEFAULT 1)"); // Ignored.
 	query.exec
 	  ("ALTER TABLE transmitted ADD ultra INTEGER NOT NULL DEFAULT 1");
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted_magnets ("

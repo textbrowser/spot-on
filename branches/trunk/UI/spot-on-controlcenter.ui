@@ -7462,19 +7462,6 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QCheckBox" name="ultra">
-                        <property name="toolTip">
-                         <string>Reliable StarBeam.</string>
-                        </property>
-                        <property name="text">
-                         <string>&amp;Ultra</string>
-                        </property>
-                        <property name="checked">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
                        <widget class="QPushButton" name="transmit">
                         <property name="text">
                          <string>Transmit</string>
@@ -8954,7 +8941,6 @@
   <tabstop>etpSelectFile</tabstop>
   <tabstop>fragment_starbeam</tabstop>
   <tabstop>pulseSize</tabstop>
-  <tabstop>ultra</tabstop>
   <tabstop>transmit</tabstop>
   <tabstop>scrollArea_10</tabstop>
   <tabstop>activeUrlDistribution</tabstop>

@@ -134,7 +134,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 	    query.prepare
 	      ("SELECT file, fragmented, hash, missing_links, nova, "
 	       "position, pulse_size, read_interval, status_control, "
-	       "total_size, ultra FROM transmitted WHERE OID = ?");
+	       "total_size FROM transmitted WHERE OID = ?");
 	    query.bindValue(0, m_id);
 
 	    if(query.exec())
@@ -143,7 +143,6 @@ void spoton_starbeam_reader::slotTimeout(void)
 		  m_fragmented = query.value(1).toBool();
 		  m_readInterval = qBound(0.100, query.value(7).toDouble(),
 					  60.000);
-		  m_ultra = query.value(10).toBool();
 		  status = query.value(8).toString().toLower();
 
 		  if(status == "completed")
