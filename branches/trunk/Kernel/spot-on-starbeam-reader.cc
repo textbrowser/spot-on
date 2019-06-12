@@ -45,11 +45,15 @@ spoton_starbeam_reader::spoton_starbeam_reader
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
+  m_acknowledgedPosition = 0;
+  m_expectedReponseWindow = 15000;
   m_fragmented = false;
   m_id = id;
+  m_lastResponse = QDateTime::currentMSecsSinceEpoch();
   m_missingLinksIterator = 0;
   m_neighborIndex = 0;
   m_position = 0;
+  m_read = true;
   m_readInterval = qBound(0.100, readInterval, 60.000);
   m_timer.start(static_cast<int> (1000 * m_readInterval));
   m_ultra = true;
@@ -231,8 +235,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 
 		      if(ok)
 			if(!m_missingLinksIterator)
-			  m_position = s_crypt->
-			    decryptedAfterAuthenticated
+			  m_position = s_crypt->decryptedAfterAuthenticated
 			    (QByteArray::
 			     fromBase64(query.value(5).toByteArray()),
 			     &ok).toLongLong();
@@ -628,4 +631,14 @@ QPair<QByteArray, qint64> spoton_starbeam_reader::read
 
   file.close();
   return pair;
+}
+
+void spoton_starbeam_reader::setAcknowledgedPosition(const qint64 position)
+{
+  if(m_acknowledgedPosition == position)
+    {
+      m_acknowledgedPosition = m_position;
+      m_lastResponse = QDateTime::currentMSecsSinceEpoch();
+      m_read = true;
+    }
 }

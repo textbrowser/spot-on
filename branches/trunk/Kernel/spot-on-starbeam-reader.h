@@ -53,10 +53,14 @@ class spoton_starbeam_reader: public QObject
   QListIterator<QByteArray> *m_missingLinksIterator;
   QTimer m_timer;
   bool m_fragmented;
+  bool m_read;
   bool m_ultra;
   double m_readInterval;
   int m_neighborIndex;
+  qint64 m_acknowledgedPosition;
+  qint64 m_expectedReponseWindow;
   qint64 m_id;
+  qint64 m_lastResponse;
   qint64 m_position;
   QHash<QString, QByteArray> elementsFromMagnet(const QByteArray &magnet,
 						spoton_crypt *crypt);
@@ -75,6 +79,7 @@ class spoton_starbeam_reader: public QObject
 	       const qint64 rc,
 	       spoton_crypt *crypt);
   void savePositionAndStatus(const QString &status, const QSqlDatabase &db);
+  void setAcknowledgedPosition(const qint64 position);
 
  private slots:
   void slotTimeout(void);
