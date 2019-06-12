@@ -4,48 +4,48 @@ Echoed? Yes
 Groups: 3
 Gemini Encryption Key (Base-64)
 {
-0 - 0000
-1 - Message (Groups: 4)
+	0 - 0000
+	1 - Message (Groups: 4)
 }
 EOL
 {
-0 - Keyed (Gemini Digest Key) SHA-512 Message Code (Base-64)
+	0 - Keyed (Gemini Digest Key) SHA-512 Message Code (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	    Preceding Data and Encrypted Timestamp,
+	        Encrypted Timestamp (Base-64)
 }
 
 Groups: 4
 Public Key (Base-64)
 {
-0 - 0000
-1 - Encryption Key
-2 - Digest Key
-3 - Encryption Algorithm
-4 - Digest Algorithm
+	0 - 0000
+	1 - Encryption Key
+	2 - Digest Key
+	3 - Encryption Algorithm
+	4 - Digest Algorithm
 }
 EOL
 Encryption Key (Base-64)
 {
-0 - Dispatcher's SHA-512 Digest
-1 - Name
-2 - Message
-3 - Sequence Number
-4 - UTC Date
-5 - Signature (First Group Items and Previous Five Items) (*)
+	0 - Dispatcher's SHA-512 Digest
+	1 - Name
+	2 - Message
+	3 - Sequence Number
+	4 - UTC Date
+	5 - Signature (First Group Items and Previous Five Items) (*)
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Echo Call
@@ -55,72 +55,72 @@ Groups: 4
 Two-Way Call
 Public Key (Base-64)
 {
-0 - 0000(a | c)
-1 - Encryption Key
-2 - Digest Key
-3 - Encryption Algorithm
-4 - Digest Algorithm
+	0 - 0000(a | c)
+	1 - Encryption Key
+	2 - Digest Key
+	3 - Encryption Algorithm
+	4 - Digest Algorithm
 }
 EOL
 Encryption Key (Base-64)
 {
-0 - Dispatcher's SHA-512 Digest
-1 - Gemini Encryption Key
-2 - Gemini Digest Key
-3 - UTC Date
-4 - Signature (First Group Items and Previous Four Items) (*)
+	0 - Dispatcher's SHA-512 Digest
+	1 - Gemini Encryption Key
+	2 - Gemini Digest Key
+	3 - UTC Date
+	4 - Signature (First Group Items and Previous Four Items) (*)
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Groups: 3
 Call-Within-A-Call
 Gemini Encryption Key (Base-64)
 {
-0 - 0000b
-1 - Dispatcher's SHA-512 Digest
-2 - Gemini Encryption Key
-3 - Gemini Digest Key
-4 - UTC Date
-5 - Signature (Previous Five Items) (*)
+	0 - 0000b
+	1 - Dispatcher's SHA-512 Digest
+	2 - Gemini Encryption Key
+	3 - Gemini Digest Key
+	4 - UTC Date
+	5 - Signature (Previous Five Items) (*)
 }
 EOL
 {
-0 - Keyed (Gemini Digest Key) SHA-512 Message Code (Base-64)
+	0 - Keyed (Gemini Digest Key) SHA-512 Message Code (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Groups: 3
 Forward Secrecy Call
 Symmetric Key (Base-64)
 {
-0 - 0000d
-1 - Gemini Encryption Key
-2 - Gemini Digest Key
-3 - UTC Date
+	0 - 0000d
+	1 - Gemini Encryption Key
+	2 - Gemini Digest Key
+	3 - UTC Date
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Echo Mail
@@ -129,153 +129,153 @@ Echoed? Yes
 Groups: 7
 Public Key
 {
-0 - 0001a (Base-64)
-EOL
-1 - Encryption Key 1 (Base-64)
-EOL
-2 - Digest Key 1 (Base-64)
-EOL
-3 - Encryption Algorithm (Base-64)
-EOL
-4 - Digest Algorithm (Base-64)
+	0 - 0001a (Base-64)
+	EOL
+	1 - Encryption Key 1 (Base-64)
+	EOL
+	2 - Digest Key 1 (Base-64)
+	EOL
+	3 - Encryption Algorithm (Base-64)
+	EOL
+	4 - Digest Algorithm (Base-64)
 }
 EOL
 Encryption Key 1
 {
-0 - Dispatcher's SHA-512 Digest (Base-64)
-EOL
-1 - Recipient's SHA-512 Digest (Base-64)
-EOL
-2 - Signature (First Group Items and Previous Two Items) (Base-64)
+	0 - Dispatcher's SHA-512 Digest (Base-64)
+	EOL
+	1 - Recipient's SHA-512 Digest (Base-64)
+	EOL
+	2 - Signature (First Group Items and Previous Two Items) (Base-64)
 }
 EOL
 Public Key
 {
-0 - 0001b (Base-64)
-EOL
-1 - Encryption Key 2 (Base-64)
-EOL
-2 - Digest Key 2 (Base-64)
-EOL
-3 - Encryption Algorithm (Base-64)
-EOL
-4 - Digest Algorithm (Base-64)
+	0 - 0001b (Base-64)
+	EOL
+	1 - Encryption Key 2 (Base-64)
+	EOL
+	2 - Digest Key 2 (Base-64)
+	EOL
+	3 - Encryption Algorithm (Base-64)
+	EOL
+	4 - Digest Algorithm (Base-64)
 }
 EOL
 Encryption Key 2
 {
-0 - Dispatcher's SHA-512 Digest (Base-64)
-EOL
-1 - Dispatcher's Name (Optional Gold Bug) (Base-64)
-EOL
-2 - Subject (Optional Gold Bug) (Base-64)
-EOL
-3 - Message (Optional Gold Bug) (Base-64)
-EOL
-4 - Date (Optional Gold Bug) (Base-64)
-EOL
-5 - Attachment Data (Optional Gold Bug) (Base-64)
-EOL
-6 - Signature (0001b Group Items and Previous Six Items)
-    (Optional Gold Bug) (Base-64)
-EOL
-7 - Gold Bug Used? (Base-64)
+	0 - Dispatcher's SHA-512 Digest (Base-64)
+	EOL
+	1 - Dispatcher's Name (Optional Gold Bug) (Base-64)
+	EOL
+	2 - Subject (Optional Gold Bug) (Base-64)
+	EOL
+	3 - Message (Optional Gold Bug) (Base-64)
+	EOL
+	4 - Date (Optional Gold Bug) (Base-64)
+	EOL
+	5 - Attachment Data (Optional Gold Bug) (Base-64)
+	EOL
+	6 - Signature (0001b Group Items and Previous Six Items)
+	(Optional Gold Bug) (Base-64)
+	EOL
+	7 - Gold Bug Used? (Base-64)
 }
 EOL
 {
-0 - Keyed 2 Message Code of the Third and Fourth Groups (Base-64)
+	0 - Keyed 2 Message Code of the Third and Fourth Groups (Base-64)
 }
 EOL
 {
-0 - Keyed 1 Message Code of the First, Second, Third, and Fourth
-    Groups (Base-64)
+	0 - Keyed 1 Message Code of the First, Second, Third, and Fourth
+	    Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Groups: 4, 7
 Public Key
 {
-0 - 0001b (Base-64)
-EOL
-1 - Encryption Key (Base-64)
-EOL
-2 - Digest Key (Base-64)
-EOL
-3 - Encryption Algorithm (Base-64)
-EOL
-4 - Digest Algorithm (Base-64)
+	0 - 0001b (Base-64)
+	EOL
+	1 - Encryption Key (Base-64)
+	EOL
+	2 - Digest Key (Base-64)
+	EOL
+	3 - Encryption Algorithm (Base-64)
+	EOL
+	4 - Digest Algorithm (Base-64)
 }
 EOL
 Encryption Key
 {
-0 - Dispatcher's SHA-512 Digest (Base-64)
-EOL
-1 - Dispatcher's Name (Optional Gold Bug) (Base-64)
-EOL
-2 - Subject (Optional Gold Bug) (Base-64)
-EOL
-3 - Message (Optional Gold Bug) (Base-64)
-EOL
-4 - Date (Optional Gold Bug) (Base-64)
-EOL
-5 - Attachment Data (Optional Gold Bug) (Base-64)
-EOL
-6 - Signature (First Group Items and Previous Six Items)
-    (Optional Gold Bug) (Base-64)
-EOL
-7 - Gold Bug Used? (Base-64)
+	0 - Dispatcher's SHA-512 Digest (Base-64)
+	EOL
+	1 - Dispatcher's Name (Optional Gold Bug) (Base-64)
+	EOL
+	2 - Subject (Optional Gold Bug) (Base-64)
+	EOL
+	3 - Message (Optional Gold Bug) (Base-64)
+	EOL
+	4 - Date (Optional Gold Bug) (Base-64)
+	EOL
+	5 - Attachment Data (Optional Gold Bug) (Base-64)
+	EOL
+	6 - Signature (First Group Items and Previous Six Items)
+	(Optional Gold Bug) (Base-64)
+	EOL
+	7 - Gold Bug Used? (Base-64)
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Optional Random Message (Base-64)
+	0 - Optional Random Message (Base-64)
 }
 EOL
 {
-0 - Optional Keyed (Institution Digest Key)
-    Message Code of the Optional Random Message and the Recipient's Public
-    Key (Base-64)
+	0 - Optional Keyed (Institution Digest Key)
+	Message Code of the Optional Random Message and the Recipient's Public
+	Key (Base-64)
 }
 EOL
 {
-0 - Optional Keyed (Institution Digest Key)
-    Message Code of the Preceding Five Groups (Base-64)
+	0 - Optional Keyed (Institution Digest Key)
+	    Message Code of the Preceding Five Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Groups: 3
 Pure Forward Secrecy
 Symmetric Key (Base-64)
 {
-0 - 0001c
-1 - Dispatcher's Name
-2 - Subject
-3 - Message
-4 - Date
-5 - Attachment Data
+	0 - 0001c
+	1 - Dispatcher's Name
+	2 - Subject
+	3 - Message
+	4 - Date
+	5 - Attachment Data
 }
 EOL
 {
-0 - Keyed Message Code (Base-64)
+	0 - Keyed Message Code (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Retrieve Mail
@@ -284,63 +284,63 @@ Echoed? Yes
 Groups: 4
 Public Key
 {
-0 - 0002a (Base-64)
-EOL
-1 - Encryption Key (Base-64)
-EOL
-2 - Digest Key (Base-64)
-EOL
-3 - Encryption Algorithm (Base-64)
-EOL
-4 - Digest Algorithm (Base-64)
+	0 - 0002a (Base-64)
+	EOL
+	1 - Encryption Key (Base-64)
+	EOL
+	2 - Digest Key (Base-64)
+	EOL
+	3 - Encryption Algorithm (Base-64)
+	EOL
+	4 - Digest Algorithm (Base-64)
 }
 EOL
 Encryption Key
 {
-0 - Requester's SHA-512 Digest (Base-64)
-EOL
-1 - Random Message (Base-64)
-EOL
-2 - UTC Date (Base-64)
-EOL
-3 - Signature (First Group Items and Previous Three Items) (Base-64)
+	0 - Requester's SHA-512 Digest (Base-64)
+	EOL
+	1 - Random Message (Base-64)
+	EOL
+	2 - UTC Date (Base-64)
+	EOL
+	3 - Signature (First Group Items and Previous Three Items) (Base-64)
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Groups: 3
 Institution Encryption Key
 {
-0 - 0002b (Base-64)
-EOL
-1 - Random Message (Base-64)
-EOL
-2 - Keyed (Institution Digest Key) Message Code of the Random Message
-    and the Requester's Public Key (Base-64)
-EOL
-3 - Random Message (Base-64)
-EOL
-4 - UTC Date (Base-64)
-EOL
-5 - Signature (Previous Five Items) (Base-64)
+	0 - 0002b (Base-64)
+	EOL
+	1 - Random Message (Base-64)
+	EOL
+	2 - Keyed (Institution Digest Key) Message Code of the Random Message
+	and the Requester's Public Key (Base-64)
+	EOL
+	3 - Random Message (Base-64)
+	EOL
+	4 - UTC Date (Base-64)
+	EOL
+	5 - Signature (Previous Five Items) (Base-64)
 }
 EOL
 {
-0 - Keyed (Institution Digest Key) Message Code (Base-64)
+	0 - Keyed (Institution Digest Key) Message Code (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Key Exchange
@@ -365,47 +365,47 @@ Echoed? Yes
 Groups: 3
 Gemini Encryption Key (Base-64)
 {
-0 - 0013
-1 - Message (Groups: 4)
+	0 - 0013
+	1 - Message (Groups: 4)
 }
 EOL
 {
-0 - Keyed (Gemini Digest Key) SHA-512 Message Code (Base-64)
+	0 - Keyed (Gemini Digest Key) SHA-512 Message Code (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Groups: 4
 Public Key (Base-64)
 {
-0 - 0013
-1 - Encryption Key
-2 - Digest Key
-3 - Encryption Algorithm
-4 - Digest Algorithm
+	0 - 0013
+	1 - Encryption Key
+	2 - Digest Key
+	3 - Encryption Algorithm
+	4 - Digest Algorithm
 }
 EOL
 Encryption Key (Base-64)
 {
-0 - Dispatcher's SHA-512 Digest
-1 - Name
-2 - Status
-3 - UTC Date
-4 - Signature (First Group Items and Previous Four Items) (*)
+	0 - Dispatcher's SHA-512 Digest
+	1 - Name
+	2 - Status
+	3 - UTC Date
+	4 - Signature (First Group Items and Previous Four Items) (*)
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Capabilities Exchange
@@ -438,43 +438,43 @@ Echoed? Yes
 Groups: 3
 Symmetric Key (Base-64)
 {
-0 - 0040a (Base-64)
-EOL
-1 - Name (Base-64)
-EOL
-2 - ID (Base-64)
-EOL
-3 - UTC Date (Base-64)
+	0 - 0040a (Base-64)
+	EOL
+	1 - Name (Base-64)
+	EOL
+	2 - ID (Base-64)
+	EOL
+	3 - UTC Date (Base-64)
 }
 EOL
 {
-0 - Keyed Message Code (Base-64)
+	0 - Keyed Message Code (Base-64)
 }
 EOL
 {
-0 - Destination Code (Base-64)
+	0 - Destination Code (Base-64)
 }
 
 Groups: 3
 Symmetric Key (Base-64)
 {
-0 - 0040b (Base-64)
-EOL
-1 - Name (Base-64)
-EOL
-2 - ID (Base-64)
-EOL
-3 - Message (Base-64)
-EOL
-4 - UTC Date (Base-64)
+	0 - 0040b (Base-64)
+	EOL
+	1 - Name (Base-64)
+	EOL
+	2 - ID (Base-64)
+	EOL
+	3 - Message (Base-64)
+	EOL
+	4 - UTC Date (Base-64)
 }
 EOL
 {
-0 - Keyed Message Code (Base-64)
+	0 - Keyed Message Code (Base-64)
 }
 EOL
 {
-0 - Destination Code (Base-64)
+	0 - Destination Code (Base-64)
 }
 
 Account Authentication
@@ -501,31 +501,57 @@ Symmetric Key
 {
 Optional Nova AES-256 (Base-64)
 {
-0 - 0060
-1 - File Name
-2 - Pulse Offset
-3 - Data Size
-4 - Total Size
-5 - Pulse Data
-6 - Pulse Size
-7 - SHA-1 File Digest
-8 - UTC Date
-9 - Ultra?
+	0 - 0060
+	1 - File Name
+	2 - Pulse Offset
+	3 - Data Size
+	4 - Total Size
+	5 - Pulse Data
+	6 - Pulse Size
+	7 - SHA-1 File Digest
+	8 - UTC Date
+	9 - Ultra?
 }
 Optional Nova SHA-512
 {
-0 - Keyed Message Code (Base-64)
+	0 - Keyed Message Code (Base-64)
 }
 }
 EOL
 {
-0 - Keyed SHA-512 Message Code (Base-64)
+	0 - Keyed SHA-512 Message Code (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	    Preceding Data and Encrypted Timestamp,
+	        Encrypted Timestamp (Base-64)
+}
+
+Groups: 3
+Symmetric Key
+{
+Optional Nova AES-256 (Base-64)
+{
+	0 - 0061
+	1 - File Name
+	2 - Pulse Offset
+	3 - UTC Date
+}
+Optional Nova SHA-512
+{
+	0 - Keyed Message Code (Base-64)
+}
+}
+EOL
+{
+	0 - Keyed SHA-512 Message Code (Base-64)
+}
+EOL
+{
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	    Preceding Data and Encrypted Timestamp,
+	        Encrypted Timestamp (Base-64)
 }
 
 Buzz Magnet Share
@@ -548,38 +574,38 @@ Message Type ("0080")
 Groups: 4
 Public Key (Base-64)
 {
-0 - 0080
-1 - Encryption Key
-2 - Digest Key
-3 - Encryption Algorithm
-4 - Digest Algorithm
+	0 - 0080
+	1 - Encryption Key
+	2 - Digest Key
+	3 - Encryption Algorithm
+	4 - Digest Algorithm
 }
 EOL
 Encryption Key (Base-64)
 {
-0 - Dispatcher's SHA-512 Digest
-1 - URL
-2 - Title
-3 - Description
-4 - Content
-...
-I - URL
-I + 1 - Title
-I + 2 - Description
-I + 3 - Content
-...
-N - 1 - UTC Date
-N - Signature (First Group Items and Previous N - 1 Items) (*)
+	0 - Dispatcher's SHA-512 Digest
+	1 - URL
+	2 - Title
+	3 - Description
+	4 - Content
+	...
+	I - URL
+	I + 1 - Title
+	I + 2 - Description
+	I + 3 - Content
+	...
+	N - 1 - UTC Date
+	N - Signature (First Group Items and Previous N - 1 Items) (*)
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Echo Public Key Share
@@ -588,24 +614,24 @@ Echoed? Yes
 Groups: 3
 Symmetric Key (Base-64)
 {
-0 - 0090
-1 - Key Type
-2 - Dispatcher's Name
-3 - Compressed(Dispatcher's Public Key)
-4 - Dispatcher's Public Key Signature
-5 - Dispatcher's Signature Public Key
-6 - Dispatcher's Signature Public Key Signature
-7 - UTC Date
+	0 - 0090
+	1 - Key Type
+	2 - Dispatcher's Name
+	3 - Compressed(Dispatcher's Public Key)
+	4 - Dispatcher's Public Key Signature
+	5 - Dispatcher's Signature Public Key
+	6 - Dispatcher's Signature Public Key Signature
+	7 - UTC Date
 }
 EOL
 {
-0 - Keyed Message Code (Base-64)
+	0 - Keyed Message Code (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Echo Forward Secrecy
@@ -614,63 +640,63 @@ Echoed? Yes
 Groups: 4
 Public Key (Base-64)
 {
-0 - 0091a
-1 - Encryption Key
-2 - Digest Key
-3 - Encryption Algorithm
-4 - Digest Algorithm
+	0 - 0091a
+	1 - Encryption Key
+	2 - Digest Key
+	3 - Encryption Algorithm
+	4 - Digest Algorithm
 }
 EOL
 Encryption Key (Base-64)
 {
-0 - Dispatcher's SHA-512 Digest
-1 - Dispatcher's Ephemeral Public Key
-2 - UTC Date
-3 - Signature (First Group Items and Previous Three Items)
+	0 - Dispatcher's SHA-512 Digest
+	1 - Dispatcher's Ephemeral Public Key
+	2 - UTC Date
+	3 - Signature (First Group Items and Previous Three Items)
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Groups: 4
 Public Key (Base-64)
 {
-0 - 0091b
-1 - Encryption Key
-2 - Digest Key
-3 - Encryption Algorithm
-4 - Digest Algorithm
+	0 - 0091b
+	1 - Encryption Key
+	2 - Digest Key
+	3 - Encryption Algorithm
+	4 - Digest Algorithm
 }
 EOL
 Encryption Key (Base-64)
 {
-0 - Dispatcher's SHA-512 Digest
-1 - Ephemeral Public Key
-    {
-    0 - Forward Secrecy Authentication Algorithm
-    1 - Forward Secrecy Authentication Key
-    2 - Forward Secrecy Encryption Algorithm
-    3 - Forward Secrecy Encryption Key
-    }
-2 - UTC Date
-3 - Signature (First Group Items and Previous Three Items)
+	0 - Dispatcher's SHA-512 Digest
+	1 - Ephemeral Public Key
+	{
+		0 - Forward Secrecy Authentication Algorithm
+		1 - Forward Secrecy Authentication Key
+		2 - Forward Secrecy Encryption Algorithm
+		3 - Forward Secrecy Encryption Key
+	}
+	2 - UTC Date
+	3 - Signature (First Group Items and Previous Three Items)
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
 Echo SMP
@@ -679,31 +705,32 @@ Echoed? Yes
 Groups: 4
 Public Key (Base-64)
 {
-0 - 0092
-1 - Encryption Key
-2 - Digest Key
-3 - Encryption Algorithm
-4 - Digest Algorithm
+	0 - 0092
+	1 - Encryption Key
+	2 - Digest Key
+	3 - Encryption Algorithm
+	4 - Digest Algorithm
 }
 EOL
 Encryption Key (Base-64)
 {
-0 - Dispatcher's SHA-512 Digest
-1 - Data
-2 - UTC Date
-3 - Signature (First Group Items and Previous Three Items)
+	0 - Dispatcher's SHA-512 Digest
+	1 - Data
+	2 - UTC Date
+	3 - Signature (First Group Items and Previous Three Items)
 }
 EOL
 {
-0 - Keyed Message Code of the First and Second Groups (Base-64)
+	0 - Keyed Message Code of the First and Second Groups (Base-64)
 }
 EOL
 {
-0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-    Preceding Data and Encrypted Timestamp,
-    Encrypted Timestamp (Base-64)
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	Preceding Data and Encrypted Timestamp,
+	Encrypted Timestamp (Base-64)
 }
 
-(*) - Recipient and sender identities are included in the
-digital signature. The recipient's identity is not explicitly included in the
-message bundle as the destination is implied through the encryption process via the destination's public key.
+(*) - Recipient and sender identities are included in the digital signature.
+      The recipient's identity is not explicitly included in the
+      message bundle as the destination is implied through the encryption
+      process via the destination's public key.
