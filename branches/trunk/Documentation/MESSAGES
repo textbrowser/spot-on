@@ -15,7 +15,7 @@ EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
 	    Preceding Data and Encrypted Timestamp,
-	        Encrypted Timestamp (Base-64)
+	    Encrypted Timestamp (Base-64)
 }
 
 Groups: 4
@@ -44,8 +44,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Echo Call
@@ -77,8 +77,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Groups: 3
@@ -99,8 +99,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Groups: 3
@@ -119,8 +119,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Echo Mail
@@ -193,8 +193,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Groups: 4, 7
@@ -252,8 +252,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Groups: 3
@@ -274,8 +274,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Retrieve Mail
@@ -312,8 +312,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Groups: 3
@@ -339,8 +339,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Key Exchange
@@ -375,8 +375,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Groups: 4
@@ -404,8 +404,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Capabilities Exchange
@@ -525,7 +525,7 @@ EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
 	    Preceding Data and Encrypted Timestamp,
-	        Encrypted Timestamp (Base-64)
+	    Encrypted Timestamp (Base-64)
 }
 
 Groups: 3
@@ -551,7 +551,7 @@ EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
 	    Preceding Data and Encrypted Timestamp,
-	        Encrypted Timestamp (Base-64)
+	    Encrypted Timestamp (Base-64)
 }
 
 Buzz Magnet Share
@@ -604,8 +604,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Echo Public Key Share
@@ -630,8 +630,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Echo Forward Secrecy
@@ -661,8 +661,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Groups: 4
@@ -695,8 +695,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 Echo SMP
@@ -726,8 +726,8 @@ EOL
 EOL
 {
 	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
-	Preceding Data and Encrypted Timestamp,
-	Encrypted Timestamp (Base-64)
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
 }
 
 (*) - Recipient and sender identities are included in the digital signature.
