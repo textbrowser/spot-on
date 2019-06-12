@@ -98,7 +98,7 @@ void spoton_starbeam_writer::processData
 		     0,
 		     0,
 		     "");
-  static const int expectedEntries = 10;
+  static const int expectedEntries = 11;
 
   data = crypt.decrypted(list.value(0), &ok);
 
@@ -248,8 +248,9 @@ void spoton_starbeam_writer::processData
     }
 
   QByteArray hash = list.value(7);
-  bool ultra = list.value(9).toShort();
+  bool ultra = list.value(10).toShort();
   qint64 dataSize = qAbs(list.value(3).toLongLong());
+  qint64 id = list.value(9).toLongLong();
   qint64 maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maxMosaicSize", 512).toLongLong();
   qint64 position = qAbs(list.value(2).toLongLong());

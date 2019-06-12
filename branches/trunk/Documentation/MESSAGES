@@ -501,16 +501,17 @@ Symmetric Key
 {
 Optional Nova AES-256 (Base-64)
 {
-	0 - 0060
-	1 - File Name
-	2 - Pulse Offset
-	3 - Data Size
-	4 - Total Size
-	5 - Pulse Data
-	6 - Pulse Size
-	7 - SHA-1 File Digest
-	8 - UTC Date
-	9 - Ultra?
+	0  - 0060
+	1  - File Name
+	2  - Pulse Offset
+	3  - Data Size
+	4  - Total Size
+	5  - Pulse Data
+	6  - Pulse Size
+	7  - SHA-1 File Digest
+	8  - UTC Date
+	9  - ID
+	10 - Ultra?
 }
 Optional Nova SHA-512
 {
@@ -534,9 +535,9 @@ Symmetric Key
 Optional Nova AES-256 (Base-64)
 {
 	0 - 0061
-	1 - File Name
-	2 - Pulse Offset
-	3 - UTC Date
+	1 - Pulse Offset
+	2 - UTC Date
+	3 - ID
 }
 Optional Nova SHA-512
 {
