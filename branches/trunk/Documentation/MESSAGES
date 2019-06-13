@@ -177,7 +177,7 @@ Encryption Key 2
 	5 - Attachment Data (Optional Gold Bug) (Base-64)
 	EOL
 	6 - Signature (0001b Group Items and Previous Six Items)
-	(Optional Gold Bug) (Base-64)
+	    (Optional Gold Bug) (Base-64)
 	EOL
 	7 - Gold Bug Used? (Base-64)
 }
@@ -226,7 +226,7 @@ Encryption Key
 	5 - Attachment Data (Optional Gold Bug) (Base-64)
 	EOL
 	6 - Signature (First Group Items and Previous Six Items)
-	(Optional Gold Bug) (Base-64)
+	    (Optional Gold Bug) (Base-64)
 	EOL
 	7 - Gold Bug Used? (Base-64)
 }
@@ -241,8 +241,8 @@ EOL
 EOL
 {
 	0 - Optional Keyed (Institution Digest Key)
-	Message Code of the Optional Random Message and the Recipient's Public
-	Key (Base-64)
+	    Message Code of the Optional Random Message and the
+	    Recipient's Public Key (Base-64)
 }
 EOL
 {
@@ -324,7 +324,7 @@ Institution Encryption Key
 	1 - Random Message (Base-64)
 	EOL
 	2 - Keyed (Institution Digest Key) Message Code of the Random Message
-	and the Requester's Public Key (Base-64)
+	    and the Requester's Public Key (Base-64)
 	EOL
 	3 - Random Message (Base-64)
 	EOL
