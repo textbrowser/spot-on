@@ -634,9 +634,10 @@ QPair<QByteArray, qint64> spoton_starbeam_reader::read
 
 void spoton_starbeam_reader::setAcknowledgedPosition(const qint64 position)
 {
-  if(position == m_position)
+  if(m_position == position)
     {
       m_lastResponse = QDateTime::currentMSecsSinceEpoch();
+      m_read = false;
 
       QString status("completed");
 
@@ -649,9 +650,11 @@ void spoton_starbeam_reader::setAcknowledgedPosition(const qint64 position)
 	m_position = qAbs(m_position + m_rc); // +=
 
       if(m_position < QFileInfo(m_fileName).size())
-	status = "transmitting";
+	{
+	  m_read = true;
+	  status = "transmitting";
+	}
 
-      m_read = true;
       savePositionAndStatus(status);
     }
 }
