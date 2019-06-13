@@ -370,7 +370,6 @@ void spoton_starbeam_writer::processData
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
 
 	query.prepare
 	  ("INSERT OR REPLACE INTO received "
@@ -379,20 +378,16 @@ void spoton_starbeam_writer::processData
 	   "VALUES (?, ?, ?, "
 	   "(SELECT hash FROM received WHERE file_hash = ?), ?, ?)");
 
-	if(ok)
-	  {
-	    if(hash.isEmpty())
-	      query.bindValue(0, QVariant::String);
-	    else
-	      query.bindValue
-		(0, s_crypt->
-		 encryptedThenHashed(hash, &ok).toBase64());
-	  }
+	if(hash.isEmpty())
+	  query.bindValue(0, QVariant::String);
+	else
+	  query.bindValue
+	    (0, s_crypt->encryptedThenHashed(hash, &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (1, s_crypt->
-	     encryptedThenHashed(fileName.toUtf8(), &ok).toBase64());
+	    (1,
+	     s_crypt->encryptedThenHashed(fileName.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -415,8 +410,10 @@ void spoton_starbeam_writer::processData
 	     toBase64());
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
       }
+    else
+      ok = false;
 
     db.close();
   }
