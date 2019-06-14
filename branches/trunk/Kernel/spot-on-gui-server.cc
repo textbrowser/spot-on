@@ -37,10 +37,10 @@
 #include "spot-on-gui-server.h"
 #include "spot-on-kernel.h"
 
-#if QT_VERSION >= 0x050000
-void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
-#else
+#if QT_VERSION < 0x050000
 void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
+#else
+void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 #endif
 {
   QByteArray certificate;
@@ -213,6 +213,20 @@ spoton_gui_server::~spoton_gui_server()
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton_gui_server::slotAuthenticationRequested
+(const QString &peerInformation)
+{
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
+  QByteArray message;
+
+  message.append("authentication_requested_");
+  message.append(peerInformation);
+  message.append("\n");
+  sendMessageToUIs(message);
+}
+
 void spoton_gui_server::slotClientConnected(void)
 {
   QSslSocket *socket = qobject_cast<QSslSocket *> (nextPendingConnection());
@@ -252,6 +266,162 @@ void spoton_gui_server::slotClientDisconnected(void)
 
   if(m_guiSocketData.isEmpty())
     spoton_kernel::clearBuzzKeysContainer();
+}
+
+void spoton_gui_server::slotEncrypted(void)
+{
+  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
+
+  if(!socket)
+    {
+      spoton_misc::logError("spoton_gui_server::"
+			    "slotEncrypted(): empty socket object.");
+      return;
+    }
+
+  QSslCipher cipher(socket->sessionCipher());
+
+  spoton_misc::logError
+    (QString("spoton_gui_server::slotEncrypted(): "
+	     "using session cipher %1-%2-%3-%4-%5-%6-%7 for %8:%9.").
+     arg(cipher.authenticationMethod()).
+     arg(cipher.encryptionMethod()).
+     arg(cipher.keyExchangeMethod()).
+     arg(cipher.name()).
+     arg(cipher.protocolString()).
+     arg(cipher.supportedBits()).
+     arg(cipher.usedBits()).
+     arg(socket->peerAddress().toString()).
+     arg(socket->peerPort()));
+}
+
+void spoton_gui_server::slotFileChanged(const QString &path)
+{
+  Q_UNUSED(path);
+
+  if(!m_generalTimer.isActive())
+    m_generalTimer.start(2500);
+}
+
+void spoton_gui_server::slotForwardSecrecyRequest
+(const QByteArrayList &list)
+{
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
+  QByteArray message("forward_secrecy_request_");
+
+  message.append(list.value(0).toBase64()); // Key Type
+  message.append("_");
+  message.append(list.value(1).toBase64()); // Public Key Hash
+  message.append("_");
+  message.append(list.value(2).toBase64()); // Public Key
+  message.append("\n");
+  sendMessageToUIs(message);
+}
+
+void spoton_gui_server::slotForwardSecrecyResponse
+(const QByteArrayList &list)
+{
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
+  QByteArray message("forward_secrecy_response_");
+
+  message.append(list.value(0).toBase64()); // Public Key Hash
+  message.append("\n");
+  sendMessageToUIs(message);
+}
+
+void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
+{
+  int keySize = spoton_kernel::setting("gui/kernelKeySize", 2048).toInt();
+
+  foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
+    if(m_guiIsAuthenticated.
+       value(socket->socketDescriptor(), false) && (keySize == 0 ||
+						    socket->isEncrypted()))
+      {
+	qint64 w = 0;
+
+	if((w = socket->write(message.constData(),
+			      message.length())) != message.length())
+	  spoton_misc::logError
+	    (QString("spoton_gui_server::sendMessageToUIs(): "
+		     "write() failure for %1:%2.").
+	     arg(socket->peerAddress().toString()).
+	     arg(socket->peerPort()));
+
+	if(w > 0)
+	  {
+	    QWriteLocker locker
+	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	    spoton_kernel::s_totalUiBytesReadWritten.second +=
+	      static_cast<quint64> (w);
+	  }
+      }
+    else
+      spoton_misc::logError
+	(QString("spoton_gui_server::sendMessageToUIs(): "
+		 "socket %1:%2 is not encrypted, if required, "
+		 "or the user interface "
+		 "has not been authenticated. Ignoring write() request.").
+	 arg(socket->peerAddress().toString()).
+	 arg(socket->peerPort()));
+}
+
+void spoton_gui_server::slotModeChanged(QSslSocket::SslMode mode)
+{
+  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
+
+  if(!socket)
+    {
+      spoton_misc::logError("spoton_gui_server::slotModeChanged(): "
+			    "empty socket object.");
+      return;
+    }
+
+  spoton_misc::logError(QString("spoton_gui_server::slotModeChanged(): "
+				"the connection mode has changed to %1 "
+				"for %2:%3.").
+			arg(mode).
+			arg(socket->peerAddress().toString()).
+			arg(socket->peerPort()));
+
+  if(mode == QSslSocket::UnencryptedMode)
+    {
+      spoton_misc::logError
+	(QString("spoton_gui_server::slotModeChanged(): "
+		 "plaintext mode. Disconnecting kernel socket %1:%2.").
+	 arg(socket->peerAddress().toString()).
+	 arg(socket->peerPort()));
+      socket->abort();
+    }
+}
+
+void spoton_gui_server::slotNewEMailArrived(void)
+{
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
+  sendMessageToUIs("newmail\n");
+}
+
+void spoton_gui_server::slotNotification(const QString &text)
+{
+  if(spoton_kernel::interfaces() == 0 ||
+     !spoton_kernel::setting("gui/monitorEvents", true).toBool())
+    return;
+
+  if(text.trimmed().isEmpty())
+    return;
+
+  QByteArray message("notification_");
+
+  message.append(text);
+  message.append("\n");
+  sendMessageToUIs(message);
 }
 
 void spoton_gui_server::slotReadyRead(void)
@@ -721,53 +891,6 @@ void spoton_gui_server::slotReadyRead(void)
     }
 }
 
-void spoton_gui_server::slotTimeout(void)
-{
-  if(!isListening())
-    if(!listen(QHostAddress("127.0.0.1")))
-      spoton_misc::logError("spoton_gui_server::slotTimeout(): "
-			    "listen() failure. This is a serious problem!");
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "kernel.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	quint16 port = 0;
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT port FROM kernel_gui_server"))
-	  if(query.next())
-	    port = query.value(0).toByteArray().toUShort();
-
-	if(port == 0 || port != serverPort())
-	  {
-	    QSqlQuery updateQuery(db);
-
-	    updateQuery.prepare("INSERT INTO kernel_gui_server (port) "
-				"VALUES (?)");
-	    updateQuery.bindValue(0, serverPort());
-
-	    if(updateQuery.exec())
-	      m_generalTimer.stop();
-	  }
-	else if(port == serverPort())
-	  m_generalTimer.stop();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
 void spoton_gui_server::slotReceivedBuzzMessage
 (const QByteArrayList &list, const QByteArrayList &keys)
 {
@@ -823,88 +946,16 @@ void spoton_gui_server::slotReceivedChatMessage(const QByteArray &message)
   sendMessageToUIs(message);
 }
 
-void spoton_gui_server::slotNewEMailArrived(void)
+void spoton_gui_server::slotSMPMessage(const QByteArrayList &list)
 {
   if(spoton_kernel::interfaces() == 0)
     return;
 
-  sendMessageToUIs("newmail\n");
-}
+  QByteArray message("smp_");
 
-void spoton_gui_server::slotModeChanged(QSslSocket::SslMode mode)
-{
-  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
-
-  if(!socket)
-    {
-      spoton_misc::logError("spoton_gui_server::slotModeChanged(): "
-			    "empty socket object.");
-      return;
-    }
-
-  spoton_misc::logError(QString("spoton_gui_server::slotModeChanged(): "
-				"the connection mode has changed to %1 "
-				"for %2:%3.").
-			arg(mode).
-			arg(socket->peerAddress().toString()).
-			arg(socket->peerPort()));
-
-  if(mode == QSslSocket::UnencryptedMode)
-    {
-      spoton_misc::logError
-	(QString("spoton_gui_server::slotModeChanged(): "
-		 "plaintext mode. Disconnecting kernel socket %1:%2.").
-	 arg(socket->peerAddress().toString()).
-	 arg(socket->peerPort()));
-      socket->abort();
-    }
-}
-
-void spoton_gui_server::slotEncrypted(void)
-{
-  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
-
-  if(!socket)
-    {
-      spoton_misc::logError("spoton_gui_server::"
-			    "slotEncrypted(): empty socket object.");
-      return;
-    }
-
-  QSslCipher cipher(socket->sessionCipher());
-
-  spoton_misc::logError
-    (QString("spoton_gui_server::slotEncrypted(): "
-	     "using session cipher %1-%2-%3-%4-%5-%6-%7 for %8:%9.").
-     arg(cipher.authenticationMethod()).
-     arg(cipher.encryptionMethod()).
-     arg(cipher.keyExchangeMethod()).
-     arg(cipher.name()).
-     arg(cipher.protocolString()).
-     arg(cipher.supportedBits()).
-     arg(cipher.usedBits()).
-     arg(socket->peerAddress().toString()).
-     arg(socket->peerPort()));
-}
-
-void spoton_gui_server::slotFileChanged(const QString &path)
-{
-  Q_UNUSED(path);
-
-  if(!m_generalTimer.isActive())
-    m_generalTimer.start(2500);
-}
-
-void spoton_gui_server::slotAuthenticationRequested
-(const QString &peerInformation)
-{
-  if(spoton_kernel::interfaces() == 0)
-    return;
-
-  QByteArray message;
-
-  message.append("authentication_requested_");
-  message.append(peerInformation);
+  message.append(list.value(0).toBase64()); // Public Key Hash
+  message.append("_");
+  message.append(list.value(1).toBase64()); // Data
   message.append("\n");
   sendMessageToUIs(message);
 }
@@ -924,100 +975,49 @@ void spoton_gui_server::slotStatusMessageReceived
   sendMessageToUIs(message);
 }
 
-void spoton_gui_server::slotForwardSecrecyRequest
-(const QByteArrayList &list)
+void spoton_gui_server::slotTimeout(void)
 {
-  if(spoton_kernel::interfaces() == 0)
-    return;
+  if(!isListening())
+    if(!listen(QHostAddress("127.0.0.1")))
+      spoton_misc::logError("spoton_gui_server::slotTimeout(): "
+			    "listen() failure. This is a serious problem!");
 
-  QByteArray message("forward_secrecy_request_");
+  QString connectionName("");
 
-  message.append(list.value(0).toBase64()); // Key Type
-  message.append("_");
-  message.append(list.value(1).toBase64()); // Public Key Hash
-  message.append("_");
-  message.append(list.value(2).toBase64()); // Public Key
-  message.append("\n");
-  sendMessageToUIs(message);
-}
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
 
-void spoton_gui_server::slotForwardSecrecyResponse
-(const QByteArrayList &list)
-{
-  if(spoton_kernel::interfaces() == 0)
-    return;
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "kernel.db");
 
-  QByteArray message("forward_secrecy_response_");
-
-  message.append(list.value(0).toBase64()); // Public Key Hash
-  message.append("\n");
-  sendMessageToUIs(message);
-}
-
-void spoton_gui_server::slotSMPMessage(const QByteArrayList &list)
-{
-  if(spoton_kernel::interfaces() == 0)
-    return;
-
-  QByteArray message("smp_");
-
-  message.append(list.value(0).toBase64()); // Public Key Hash
-  message.append("_");
-  message.append(list.value(1).toBase64()); // Data
-  message.append("\n");
-  sendMessageToUIs(message);
-}
-
-void spoton_gui_server::slotNotification(const QString &text)
-{
-  if(spoton_kernel::interfaces() == 0 ||
-     !spoton_kernel::setting("gui/monitorEvents", true).toBool())
-    return;
-
-  if(text.trimmed().isEmpty())
-    return;
-
-  QByteArray message("notification_");
-
-  message.append(text);
-  message.append("\n");
-  sendMessageToUIs(message);
-}
-
-void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
-{
-  int keySize = spoton_kernel::setting("gui/kernelKeySize", 2048).toInt();
-
-  foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-    if(m_guiIsAuthenticated.
-       value(socket->socketDescriptor(), false) && (keySize == 0 ||
-						    socket->isEncrypted()))
+    if(db.open())
       {
-	qint64 w = 0;
+	QSqlQuery query(db);
+	quint16 port = 0;
 
-	if((w = socket->write(message.constData(),
-			      message.length())) != message.length())
-	  spoton_misc::logError
-	    (QString("spoton_gui_server::sendMessageToUIs(): "
-		     "write() failure for %1:%2.").
-	     arg(socket->peerAddress().toString()).
-	     arg(socket->peerPort()));
+	query.setForwardOnly(true);
 
-	if(w > 0)
+	if(query.exec("SELECT port FROM kernel_gui_server"))
+	  if(query.next())
+	    port = query.value(0).toByteArray().toUShort();
+
+	if(port == 0 || port != serverPort())
 	  {
-	    QWriteLocker locker
-	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+	    QSqlQuery updateQuery(db);
 
-	    spoton_kernel::s_totalUiBytesReadWritten.second +=
-	      static_cast<quint64> (w);
+	    updateQuery.prepare("INSERT INTO kernel_gui_server (port) "
+				"VALUES (?)");
+	    updateQuery.bindValue(0, serverPort());
+
+	    if(updateQuery.exec())
+	      m_generalTimer.stop();
 	  }
+	else if(port == serverPort())
+	  m_generalTimer.stop();
       }
-    else
-      spoton_misc::logError
-	(QString("spoton_gui_server::sendMessageToUIs(): "
-		 "socket %1:%2 is not encrypted, if required, "
-		 "or the user interface "
-		 "has not been authenticated. Ignoring write() request.").
-	 arg(socket->peerAddress().toString()).
-	 arg(socket->peerPort()));
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
