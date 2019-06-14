@@ -43,7 +43,6 @@
 #include "spot-on-neighbor.h"
 
 class QNetworkInterface;
-
 class spoton_external_address;
 class spoton_sctp_server;
 
@@ -67,10 +66,10 @@ class spoton_listener_tcp_server: public QTcpServer
     QTcpServer::setMaxPendingConnections(qMax(1, maxPendingConnections));
   }
 
-#if QT_VERSION >= 0x050000
-  void incomingConnection(qintptr socketDescriptor);
-#else
+#if QT_VERSION < 0x050000
   void incomingConnection(int socketDescriptor);
+#else
+  void incomingConnection(qintptr socketDescriptor);
 #endif
 
  private:

@@ -29,9 +29,6 @@
 #define _spoton_neighbor_h_
 
 #include <QAtomicInt>
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-#include <qbluetoothsocket.h>
-#endif
 #include <QDateTime>
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 #include <QDtls>
@@ -49,6 +46,9 @@
 #include <QTimer>
 #include <QUdpSocket>
 #include <QUuid>
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+#include <qbluetoothsocket.h>
+#endif
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
