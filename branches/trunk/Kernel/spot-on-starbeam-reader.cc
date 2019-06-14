@@ -98,6 +98,334 @@ spoton_starbeam_reader::~spoton_starbeam_reader()
   m_missingLinksIterator = 0;
 }
 
+QHash<QString, QByteArray> spoton_starbeam_reader::elementsFromMagnet
+(const QByteArray &magnet, spoton_crypt *s_crypt)
+{
+  QByteArray data;
+  QHash<QString, QByteArray> elements;
+  QList<QByteArray> list;
+  bool ok = true;
+
+  if(!s_crypt)
+    goto done_label;
+
+  data = s_crypt->decryptedAfterAuthenticated(magnet, &ok);
+
+  if(!ok)
+    goto done_label;
+
+  list = data.remove
+    (0, static_cast<int> (qstrlen("magnet:?"))).split('&');
+
+  while(!list.isEmpty())
+    {
+      QByteArray bytes(list.takeFirst());
+
+      if(bytes.startsWith("ct=")) // Cipher Type
+	{
+	  bytes.remove(0, 3);
+	  elements.insert("ct", bytes);
+	}
+      else if(bytes.startsWith("ek=")) // Encryption Key
+	{
+	  bytes.remove(0, 3);
+	  elements.insert("ek", bytes);
+	}
+      else if(bytes.startsWith("ht=")) // Hash Type
+	{
+	  bytes.remove(0, 3);
+	  elements.insert("ht", bytes);
+	}
+      else if(bytes.startsWith("mk=")) // MAC Key
+	{
+	  bytes.remove(0, 3);
+	  elements.insert("mk", bytes);
+	}
+      else if(bytes.startsWith("xt="))
+	{
+	  bytes.remove(0, 3);
+
+	  if(bytes == "urn:starbeam")
+	    elements.insert("xt", bytes);
+	}
+    }
+
+  if(!elements.contains("xt"))
+    {
+      elements.clear();
+      goto done_label;
+    }
+
+ done_label:
+  return elements;
+}
+
+QPair<QByteArray, qint64> spoton_starbeam_reader::read
+(const QString &fileName, const QString &pulseSize, const qint64 position)
+{
+  if(position < 0)
+    {
+      spoton_misc::logError
+	("spoton_starbeam_reader::read(): position is negative.");
+      return QPair<QByteArray, qint64> (QByteArray(), 0);
+    }
+
+  QFile file(fileName);
+  QPair<QByteArray, qint64> pair(QByteArray(), 0);
+
+  if(file.open(QIODevice::ReadOnly))
+    {
+      if(file.seek(position))
+	{
+	  if(!file.atEnd())
+	    {
+	      QByteArray buffer
+		(qBound(spoton_common::MINIMUM_STARBEAM_PULSE_SIZE,
+			pulseSize.toInt(),
+			static_cast<int> (spoton_common::
+					  MAXIMUM_STARBEAM_PULSE_SIZE)), 0);
+	      qint64 rc = file.read(buffer.data(), buffer.length());
+
+	      if(rc < 0)
+		spoton_misc::logError
+		  ("spoton_starbeam_reader::read(): read() failure.");
+	      else if(rc > 0)
+		{
+		  pair.first = buffer;
+		  pair.second = rc;
+		}
+	    }
+	}
+      else
+	spoton_misc::logError
+	  ("spoton_starbeam_reader::read(): seek() failure.");
+    }
+  else
+    spoton_misc::logError("spoton_starbeam_reader::read(): open() failure.");
+
+  file.close();
+  return pair;
+}
+
+void spoton_starbeam_reader::populateMagnets(const QSqlDatabase &db)
+{
+  if(!db.isOpen())
+    {
+      spoton_misc::logError("spoton_starbeam_reader::populateMagnets(): "
+			    "db is closed.");
+      return;
+    }
+  else if(!m_magnets.isEmpty())
+    return;
+
+  QSqlQuery query(db);
+
+  query.setForwardOnly(true);
+  query.prepare("SELECT magnet FROM transmitted_magnets WHERE "
+		"transmitted_oid = ?");
+  query.bindValue(0, m_id);
+
+  if(query.exec())
+    while(query.next())
+      m_magnets.append(QByteArray::fromBase64(query.value(0).toByteArray()));
+}
+
+void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
+				     const QString &fileName,
+				     const QString &pulseSize,
+				     const QString &fileSize,
+				     const QByteArray &magnet,
+				     const QByteArray &nova,
+				     const QByteArray &hash,
+				     const qint64 rc,
+				     spoton_crypt *s_crypt)
+{
+  if(m_position < 0)
+    {
+      spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
+			    "m_position is negative.");
+      return;
+    }
+
+  QHash<QString, QByteArray> elements(elementsFromMagnet(magnet, s_crypt));
+
+  if(elements.isEmpty())
+    {
+      spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
+			    "elements is empty.");
+      return;
+    }
+
+  QByteArray bytes;
+  QByteArray data(buffer.mid(0, static_cast<int> (rc)));
+  QByteArray messageCode;
+  QDataStream stream(&bytes, QIODevice::WriteOnly);
+  bool ok = true;
+  int size = 0;
+  spoton_crypt crypt(elements.value("ct").constData(),
+		     elements.value("ht").constData(),
+		     QByteArray(),
+		     elements.value("ek"),
+		     elements.value("mk"),
+		     0,
+		     0,
+		     "");
+
+  data = qCompress(data, 9);
+  size = data.length();
+  stream << QByteArray("0060")
+	 << QFileInfo(fileName).fileName().toUtf8()
+	 << QByteArray::number(m_position)
+	 << QByteArray::number(size)
+	 << fileSize.toLatin1()
+	 << data
+	 << pulseSize.toLatin1()
+	 << hash
+	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
+            toLatin1()
+	 << QByteArray::number(m_id)
+	 << QByteArray::number(m_ultra);
+
+  if(stream.status() != QDataStream::Ok)
+    ok = false;
+  else
+    ok = true;
+
+  if(nova.isEmpty())
+    {
+      if(ok)
+	data = crypt.encrypted(bytes, &ok);
+    }
+  else
+    {
+      QPair<QByteArray, QByteArray> pair;
+
+      pair.first = nova.mid
+	(0, static_cast<int> (spoton_crypt::
+			      cipherKeyLength("aes256")));
+      pair.second = nova.mid(pair.first.length());
+
+      {
+	spoton_crypt crypt("aes256",
+			   "sha512",
+			   QByteArray(),
+			   pair.first,
+			   pair.second,
+			   0,
+			   0,
+			   "");
+
+	if(ok)
+	  data = crypt.encrypted(bytes, &ok);
+
+	if(ok)
+	  data = data + crypt.keyedHash(data, &ok);
+      }
+
+      if(ok)
+	data = crypt.encrypted(data, &ok);
+    }
+
+  if(ok)
+    messageCode = crypt.keyedHash(data, &ok);
+
+  if(ok)
+    data = data.toBase64() + "\n" + messageCode.toBase64();
+
+  if(ok)
+    {
+      if(spoton_kernel::instance())
+	spoton_kernel::instance()->writeMessage0060
+	  (data, m_fragmented ? &m_neighborIndex : 0, &ok);
+      else
+	ok = false;
+    }
+}
+
+void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
+
+    if(db.open())
+      {
+	spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+	if(!s_crypt)
+	  {
+	    spoton_misc::logError
+	      ("spoton_starbeam_reader::savePositionAndStatus(): "
+	       "s_crypt is zero.");
+	    goto done_label;
+	  }
+
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.exec("PRAGMA synchronous = NORMAL");
+	query.prepare("UPDATE transmitted "
+		      "SET position = ?, "
+		      "status_control = CASE WHEN status_control = 'deleted' "
+		      "THEN 'deleted' ELSE ? END "
+		      "WHERE OID = ?");
+	query.bindValue
+	  (0, s_crypt->encryptedThenHashed(QByteArray::number(m_position),
+					   &ok).toBase64());
+	query.bindValue(1, status);
+	query.bindValue(2, m_id);
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+ done_label:
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_starbeam_reader::setAcknowledgedPosition(const qint64 position)
+{
+  if(m_position == position)
+    {
+      m_lastResponse = QDateTime::currentMSecsSinceEpoch();
+      m_read = false;
+
+      QString status("completed");
+
+      if(m_missingLinksIterator)
+	{
+	  if(!m_missingLinksIterator->hasNext())
+	    m_position = QFileInfo(m_fileName).size();
+	}
+      else
+	m_position = qAbs(m_position + m_rc); // +=
+
+      if(m_position < QFileInfo(m_fileName).size())
+	{
+	  m_read = true;
+	  status = "transmitting";
+	}
+
+      savePositionAndStatus(status);
+    }
+}
+
+void spoton_starbeam_reader::setReadInterval(const double readInterval)
+{
+  m_readInterval = qBound(0.100, readInterval, 60.000);
+
+  if(static_cast<int> (1000 * m_readInterval) != m_timer.interval())
+    if(m_timer.isActive())
+      m_timer.start(static_cast<int> (1000 * m_readInterval));
+}
+
 void spoton_starbeam_reader::slotTimeout(void)
 {
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
@@ -329,332 +657,4 @@ void spoton_starbeam_reader::slotTimeout(void)
 
   if(status != "completed")
     setReadInterval(m_readInterval);
-}
-
-void spoton_starbeam_reader::populateMagnets(const QSqlDatabase &db)
-{
-  if(!db.isOpen())
-    {
-      spoton_misc::logError("spoton_starbeam_reader::populateMagnets(): "
-			    "db is closed.");
-      return;
-    }
-  else if(!m_magnets.isEmpty())
-    return;
-
-  QSqlQuery query(db);
-
-  query.setForwardOnly(true);
-  query.prepare("SELECT magnet FROM transmitted_magnets WHERE "
-		"transmitted_oid = ?");
-  query.bindValue(0, m_id);
-
-  if(query.exec())
-    while(query.next())
-      m_magnets.append(QByteArray::fromBase64(query.value(0).toByteArray()));
-}
-
-QHash<QString, QByteArray> spoton_starbeam_reader::elementsFromMagnet
-(const QByteArray &magnet, spoton_crypt *s_crypt)
-{
-  QByteArray data;
-  QHash<QString, QByteArray> elements;
-  QList<QByteArray> list;
-  bool ok = true;
-
-  if(!s_crypt)
-    goto done_label;
-
-  data = s_crypt->decryptedAfterAuthenticated(magnet, &ok);
-
-  if(!ok)
-    goto done_label;
-
-  list = data.remove
-    (0, static_cast<int> (qstrlen("magnet:?"))).split('&');
-
-  while(!list.isEmpty())
-    {
-      QByteArray bytes(list.takeFirst());
-
-      if(bytes.startsWith("ct=")) // Cipher Type
-	{
-	  bytes.remove(0, 3);
-	  elements.insert("ct", bytes);
-	}
-      else if(bytes.startsWith("ek=")) // Encryption Key
-	{
-	  bytes.remove(0, 3);
-	  elements.insert("ek", bytes);
-	}
-      else if(bytes.startsWith("ht=")) // Hash Type
-	{
-	  bytes.remove(0, 3);
-	  elements.insert("ht", bytes);
-	}
-      else if(bytes.startsWith("mk=")) // MAC Key
-	{
-	  bytes.remove(0, 3);
-	  elements.insert("mk", bytes);
-	}
-      else if(bytes.startsWith("xt="))
-	{
-	  bytes.remove(0, 3);
-
-	  if(bytes == "urn:starbeam")
-	    elements.insert("xt", bytes);
-	}
-    }
-
-  if(!elements.contains("xt"))
-    {
-      elements.clear();
-      goto done_label;
-    }
-
- done_label:
-  return elements;
-}
-
-void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
-				     const QString &fileName,
-				     const QString &pulseSize,
-				     const QString &fileSize,
-				     const QByteArray &magnet,
-				     const QByteArray &nova,
-				     const QByteArray &hash,
-				     const qint64 rc,
-				     spoton_crypt *s_crypt)
-{
-  if(m_position < 0)
-    {
-      spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
-			    "m_position is negative.");
-      return;
-    }
-
-  QHash<QString, QByteArray> elements(elementsFromMagnet(magnet, s_crypt));
-
-  if(elements.isEmpty())
-    {
-      spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
-			    "elements is empty.");
-      return;
-    }
-
-  QByteArray bytes;
-  QByteArray data(buffer.mid(0, static_cast<int> (rc)));
-  QByteArray messageCode;
-  QDataStream stream(&bytes, QIODevice::WriteOnly);
-  bool ok = true;
-  int size = 0;
-  spoton_crypt crypt(elements.value("ct").constData(),
-		     elements.value("ht").constData(),
-		     QByteArray(),
-		     elements.value("ek"),
-		     elements.value("mk"),
-		     0,
-		     0,
-		     "");
-
-  data = qCompress(data, 9);
-  size = data.length();
-  stream << QByteArray("0060")
-	 << QFileInfo(fileName).fileName().toUtf8()
-	 << QByteArray::number(m_position)
-	 << QByteArray::number(size)
-	 << fileSize.toLatin1()
-	 << data
-	 << pulseSize.toLatin1()
-	 << hash
-	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
-            toLatin1()
-	 << QByteArray::number(m_id)
-	 << QByteArray::number(m_ultra);
-
-  if(stream.status() != QDataStream::Ok)
-    ok = false;
-  else
-    ok = true;
-
-  if(nova.isEmpty())
-    {
-      if(ok)
-	data = crypt.encrypted(bytes, &ok);
-    }
-  else
-    {
-      QPair<QByteArray, QByteArray> pair;
-
-      pair.first = nova.mid
-	(0, static_cast<int> (spoton_crypt::
-			      cipherKeyLength("aes256")));
-      pair.second = nova.mid(pair.first.length());
-
-      {
-	spoton_crypt crypt("aes256",
-			   "sha512",
-			   QByteArray(),
-			   pair.first,
-			   pair.second,
-			   0,
-			   0,
-			   "");
-
-	if(ok)
-	  data = crypt.encrypted(bytes, &ok);
-
-	if(ok)
-	  data = data + crypt.keyedHash(data, &ok);
-      }
-
-      if(ok)
-	data = crypt.encrypted(data, &ok);
-    }
-
-  if(ok)
-    messageCode = crypt.keyedHash(data, &ok);
-
-  if(ok)
-    data = data.toBase64() + "\n" + messageCode.toBase64();
-
-  if(ok)
-    {
-      if(spoton_kernel::instance())
-	spoton_kernel::instance()->writeMessage0060
-	  (data, m_fragmented ? &m_neighborIndex : 0, &ok);
-      else
-	ok = false;
-    }
-}
-
-void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
-
-    if(db.open())
-      {
-	spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-	if(!s_crypt)
-	  {
-	    spoton_misc::logError
-	      ("spoton_starbeam_reader::savePositionAndStatus(): "
-	       "s_crypt is zero.");
-	    goto done_label;
-	  }
-
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.exec("PRAGMA synchronous = NORMAL");
-	query.prepare("UPDATE transmitted "
-		      "SET position = ?, "
-		      "status_control = CASE WHEN status_control = 'deleted' "
-		      "THEN 'deleted' ELSE ? END "
-		      "WHERE OID = ?");
-	query.bindValue
-	  (0, s_crypt->encryptedThenHashed(QByteArray::number(m_position),
-					   &ok).toBase64());
-	query.bindValue(1, status);
-	query.bindValue(2, m_id);
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
- done_label:
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_starbeam_reader::setReadInterval(const double readInterval)
-{
-  m_readInterval = qBound(0.100, readInterval, 60.000);
-
-  if(static_cast<int> (1000 * m_readInterval) != m_timer.interval())
-    if(m_timer.isActive())
-      m_timer.start(static_cast<int> (1000 * m_readInterval));
-}
-
-QPair<QByteArray, qint64> spoton_starbeam_reader::read
-(const QString &fileName, const QString &pulseSize, const qint64 position)
-{
-  if(position < 0)
-    {
-      spoton_misc::logError
-	("spoton_starbeam_reader::read(): position is negative.");
-      return QPair<QByteArray, qint64> (QByteArray(), 0);
-    }
-
-  QFile file(fileName);
-  QPair<QByteArray, qint64> pair(QByteArray(), 0);
-
-  if(file.open(QIODevice::ReadOnly))
-    {
-      if(file.seek(position))
-	{
-	  if(!file.atEnd())
-	    {
-	      QByteArray buffer
-		(qBound(spoton_common::MINIMUM_STARBEAM_PULSE_SIZE,
-			pulseSize.toInt(),
-			static_cast<int> (spoton_common::
-					  MAXIMUM_STARBEAM_PULSE_SIZE)), 0);
-	      qint64 rc = file.read(buffer.data(), buffer.length());
-
-	      if(rc < 0)
-		spoton_misc::logError
-		  ("spoton_starbeam_reader::read(): read() failure.");
-	      else if(rc > 0)
-		{
-		  pair.first = buffer;
-		  pair.second = rc;
-		}
-	    }
-	}
-      else
-	spoton_misc::logError
-	  ("spoton_starbeam_reader::read(): seek() failure.");
-    }
-  else
-    spoton_misc::logError("spoton_starbeam_reader::read(): open() failure.");
-
-  file.close();
-  return pair;
-}
-
-void spoton_starbeam_reader::setAcknowledgedPosition(const qint64 position)
-{
-  if(m_position == position)
-    {
-      m_lastResponse = QDateTime::currentMSecsSinceEpoch();
-      m_read = false;
-
-      QString status("completed");
-
-      if(m_missingLinksIterator)
-	{
-	  if(!m_missingLinksIterator->hasNext())
-	    m_position = QFileInfo(m_fileName).size();
-	}
-      else
-	m_position = qAbs(m_position + m_rc); // +=
-
-      if(m_position < QFileInfo(m_fileName).size())
-	{
-	  m_read = true;
-	  status = "transmitting";
-	}
-
-      savePositionAndStatus(status);
-    }
 }
