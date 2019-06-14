@@ -162,7 +162,8 @@ void spoton_starbeam_writer::processData
 		     0,
 		     0,
 		     "");
-  static const int expectedEntries = 11;
+  static const int expectedEntries0060 = 11;
+  static const int expectedEntries0061 = 4;
 
   data = crypt.decrypted(list.value(0), &ok);
 
@@ -214,9 +215,10 @@ void spoton_starbeam_writer::processData
 	      found = true;
 	      list.clear();
 
+	      QByteArray type;
 	      QDataStream stream(&bytes, QIODevice::ReadOnly);
 
-	      for(int i = 0; i < expectedEntries; i++)
+	      for(int i = 1;; i++)
 		{
 		  QByteArray a;
 
@@ -229,6 +231,22 @@ void spoton_starbeam_writer::processData
 		    }
 		  else
 		    list << a;
+
+		  if(i == 1)
+		    type = a;
+
+		  if(type == "0060")
+		    {
+		      if(i == expectedEntries0060)
+			break;
+		    }
+		  else if(type == "0061")
+		    {
+		      if(i == expectedEntries0061)
+			break;
+		    }
+		  else
+		    break;
 		}
 
 	      break;
@@ -238,11 +256,12 @@ void spoton_starbeam_writer::processData
 
   if(!found)
     {
+      QByteArray type;
       QDataStream stream(&data, QIODevice::ReadOnly);
 
       list.clear();
 
-      for(int i = 0; i < expectedEntries; i++)
+      for(int i = 1;; i++)
 	{
 	  QByteArray a;
 
@@ -255,10 +274,26 @@ void spoton_starbeam_writer::processData
 	    }
 	  else
 	    list << a;
+
+	  if(i == 1)
+	    type = a;
+
+	  if(type == "0060")
+	    {
+	      if(i == expectedEntries0060)
+		break;
+	    }
+	  else if(type == "0061")
+	    {
+	      if(i == expectedEntries0061)
+		break;
+	    }
+	  else
+	    break;
 	}
     }
 
-  if(list.value(0) != "0060")
+  if(!(list.value(0) == "0060" || list.value(0) == "0061"))
     return;
 
   QDateTime dateTime
