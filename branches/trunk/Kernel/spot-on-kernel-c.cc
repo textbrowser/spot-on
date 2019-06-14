@@ -32,6 +32,11 @@
 #include "Common/spot-on-misc.h"
 #include "spot-on-kernel.h"
 
+bool spoton_kernel::initialized(void) const
+{
+  return m_initialized;
+}
+
 bool spoton_kernel::prepareAlmostAnonymousEmail
 (const QByteArray &attachmentData,
  const QByteArray &fromAccount,
@@ -109,20 +114,6 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
     data.clear();
 
   return ok;
-}
-
-void spoton_kernel::slotPurgeEphemeralKeys(void)
-{
-  QWriteLocker locker(&m_forwardSecrecyKeysMutex);
-
-  m_forwardSecrecyKeys.clear();
-}
-
-void spoton_kernel::slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash)
-{
-  QWriteLocker locker(&m_forwardSecrecyKeysMutex);
-
-  m_forwardSecrecyKeys.remove(publicKeyHash);
 }
 
 void spoton_kernel::slotCallParticipantUsingForwardSecrecy
@@ -254,6 +245,20 @@ void spoton_kernel::slotPrepareObjects(void)
   prepareStarbeamReaders();
 }
 
+void spoton_kernel::slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash)
+{
+  QWriteLocker locker(&m_forwardSecrecyKeysMutex);
+
+  m_forwardSecrecyKeys.remove(publicKeyHash);
+}
+
+void spoton_kernel::slotPurgeEphemeralKeys(void)
+{
+  QWriteLocker locker(&m_forwardSecrecyKeysMutex);
+
+  m_forwardSecrecyKeys.clear();
+}
+
 void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
 {
   if(QByteArray::fromBase64(list.value(0)) == "poptastic")
@@ -263,9 +268,4 @@ void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
 			       list.value(3) + "\n" +
 			       list.value(4),
 			       QPair<QByteArray, QByteArray> ()));
-}
-
-bool spoton_kernel::initialized(void) const
-{
-  return m_initialized;
 }
