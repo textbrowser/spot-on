@@ -29,8 +29,8 @@
 #define _spoton_gui_server_h_
 
 #include <QFileSystemWatcher>
-#include <QQueue>
 #include <QPointer>
+#include <QQueue>
 #include <QSslSocket>
 #include <QTcpServer>
 #include <QTimer>
@@ -65,10 +65,10 @@ class spoton_gui_server_tcp_server: public QTcpServer
       return m_queue.dequeue();
   }
 
-#if QT_VERSION >= 0x050000
-  void incomingConnection(qintptr socketDescriptor);
-#else
+#if QT_VERSION < 0x050000
   void incomingConnection(int socketDescriptor);
+#else
+  void incomingConnection(qintptr socketDescriptor);
 #endif
 
  private:
@@ -89,12 +89,12 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
 
  private:
   QFileSystemWatcher m_fileSystemWatcher;
-#if QT_VERSION >= 0x050000
-  QHash<qintptr, QByteArray> m_guiSocketData;
-  QHash<qintptr, bool> m_guiIsAuthenticated;
-#else
+#if QT_VERSION < 0x050000
   QHash<int, QByteArray> m_guiSocketData;
   QHash<int, bool> m_guiIsAuthenticated;
+#else
+  QHash<qintptr, QByteArray> m_guiSocketData;
+  QHash<qintptr, bool> m_guiIsAuthenticated;
 #endif
   QTimer m_generalTimer;
   void sendMessageToUIs(const QByteArray &message);
@@ -111,9 +111,9 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   void slotNewEMailArrived(void);
   void slotNotification(const QString &text);
   void slotReadyRead(void);
+  void slotReceivedChatMessage(const QByteArray &message);
   void slotReceivedBuzzMessage(const QByteArrayList &list,
 			       const QByteArrayList &keys);
-  void slotReceivedChatMessage(const QByteArray &message);
   void slotSMPMessage(const QByteArrayList &list);
   void slotStatusMessageReceived(const QByteArray &publicKeyHash,
 				 const QString &status);

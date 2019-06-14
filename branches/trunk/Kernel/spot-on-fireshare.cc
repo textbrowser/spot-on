@@ -32,11 +32,10 @@
 #include "../Common/spot-on-common.h"
 #include "../Common/spot-on-crypt.h"
 #include "../Common/spot-on-misc.h"
-#include "spot-on-kernel.h"
 #include "spot-on-fireshare.h"
+#include "spot-on-kernel.h"
 
-spoton_fireshare::spoton_fireshare(QObject *parent):
-  QThread(parent)
+spoton_fireshare::spoton_fireshare(QObject *parent):QThread(parent)
 {
   m_quit = 0;
 }
@@ -65,6 +64,13 @@ void spoton_fireshare::run(void)
 	  SLOT(slotTimeout(void)));
   timer.start(2500);
   exec();
+}
+
+void spoton_fireshare::slotShareLink(const QByteArray &link)
+{
+  QWriteLocker locker(&m_sharedLinksMutex);
+
+  m_sharedLinks.enqueue(link);
 }
 
 void spoton_fireshare::slotTimeout(void)
@@ -581,11 +587,4 @@ void spoton_fireshare::slotTimeout(void)
       if(m_quit.fetchAndAddOrdered(0))
 	return;
     }
-}
-
-void spoton_fireshare::slotShareLink(const QByteArray &link)
-{
-  QWriteLocker locker(&m_sharedLinksMutex);
-
-  m_sharedLinks.enqueue(link);
 }
