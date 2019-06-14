@@ -66,6 +66,338 @@ spoton_mailer::~spoton_mailer()
   m_timer.stop();
 }
 
+void spoton_mailer::moveSentMailToSentFolder(const QList<qint64> &oids,
+					     spoton_crypt *crypt)
+{
+  bool keep = spoton_kernel::setting("gui/saveCopy", true).toBool();
+
+  if(keep)
+    if(!crypt)
+      {
+	spoton_misc::logError
+	  ("spoton_mailer::moveSentMailToSentFolder(): crypt is zero.");
+	return;
+      }
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(keep)
+	  query.prepare("UPDATE folders SET status = ? WHERE "
+			"OID = ?");
+	else
+	  {
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.prepare("DELETE FROM folders WHERE OID = ?");
+	  }
+
+	for(int i = 0; i < oids.size(); i++)
+	  {
+	    bool ok = true;
+
+	    if(keep)
+	      {
+		query.bindValue
+		  (0, crypt->encryptedThenHashed(QByteArray("Sent"),
+						 &ok).toBase64());
+		query.bindValue(1, oids.at(i));
+	      }
+	    else
+	      query.bindValue(0, oids.at(i));
+
+	    if(ok)
+	      if(query.exec())
+		{
+		  s_oids.remove(oids.at(i));
+
+		  if(!keep)
+		    {
+		      QSqlQuery query(db);
+
+		      query.exec("PRAGMA secure_delete = ON");
+		      query.prepare
+			("DELETE FROM folders_attachment WHERE "
+			 "folders_oid = ?");
+		      query.bindValue(0, oids.at(i));
+		      query.exec();
+		    }
+		}
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_mailer::slotReap(void)
+{
+  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+
+  if(!s_crypt)
+    {
+      spoton_misc::logError("spoton_mailer::slotReap(): "
+			    "s_crypt is zero.");
+      return;
+    }
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	int days = spoton_kernel::setting
+	  ("gui/postofficeDays", 1).toInt();
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT date_received, OID FROM post_office"))
+	  while(query.next())
+	    {
+	      QDateTime dateTime;
+	      QDateTime now(QDateTime::currentDateTime());
+	      bool ok = true;
+
+	      dateTime = QDateTime::fromString
+		(s_crypt->
+		 decryptedAfterAuthenticated(QByteArray::
+					     fromBase64(query.value(0).
+							toByteArray()),
+					     &ok).constData(),
+		 Qt::ISODate);
+
+	      if(!ok)
+		dateTime = QDateTime();
+
+	      if(dateTime.isNull() || !dateTime.isValid() ||
+		 dateTime.daysTo(now) > days)
+		{
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM post_office "
+				      "WHERE OID = ?");
+		  deleteQuery.bindValue(0, query.value(1));
+		  deleteQuery.exec();
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_mailer::slotRetrieveMail
+(const QByteArray &data,
+ const QByteArray &publicKeyHash,
+ const QByteArray &timestamp,
+ const QByteArray &signature,
+ const QPairByteArrayByteArray &adaptiveEchoPair)
+{
+  /*
+  ** We must locate the public key that's associated with the provided
+  ** public key hash. Remember, publicKeyHash is the hash of the signature
+  ** public key.
+  */
+
+  QByteArray publicKey
+    (spoton_misc::publicKeyFromHash(publicKeyHash,
+				    spoton_kernel::s_crypts.value("email",
+								  0)));
+
+  if(publicKey.isEmpty())
+    {
+      spoton_misc::logError("spoton_mailer::slotRetrieveMail(): "
+			    "empty public key from hash.");
+      return;
+    }
+
+  if(!spoton_crypt::isValidSignature(data,
+				     publicKey,
+				     signature))
+    {
+      spoton_misc::logError("spoton_mailer::slotRetrieveMail(): "
+			    "invalid signature.");
+      return;
+    }
+
+  publicKey = spoton_misc::publicKeyFromSignaturePublicKeyHash
+    (publicKeyHash, spoton_kernel::s_crypts.value("email", 0));
+
+  if(publicKey.isEmpty())
+    {
+      spoton_misc::logError("spoton_mailer::slotRetrieveMail(): "
+			    "empty public key from signature hash.");
+      return;
+    }
+
+  QByteArray hash;
+  bool ok = true;
+
+  hash = spoton_crypt::sha512Hash(publicKey, &ok);
+
+  if(!ok)
+    {
+      spoton_misc::logError
+	("spoton_mailer::slotRetrieveMail(): "
+	 "spoton_crypt::sha512Hash() failure.");
+      return;
+    }
+
+  QDateTime dateTime
+    (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
+
+  if(!dateTime.isValid())
+    {
+      spoton_misc::logError
+	("spoton_mailer::slotRetrieveMail(): "
+	 "invalid dateTime object.");
+      return;
+    }
+
+  QDateTime now(QDateTime::currentDateTimeUtc());
+
+  dateTime.setTimeSpec(Qt::UTC);
+  now.setTimeSpec(Qt::UTC);
+
+  qint64 secsTo = qAbs(now.secsTo(dateTime));
+
+  if(!(secsTo <= static_cast<qint64> (spoton_common::
+				      MAIL_TIME_DELTA_MAXIMUM)))
+    {
+      spoton_misc::logError
+	(QString("spoton_mailer::slotRetrieveMail(): "
+		 "large time delta (%1).").arg(secsTo));
+      return;
+    }
+  else if(spoton_kernel::duplicateEmailRequests(data))
+    {
+      spoton_misc::logError
+	("spoton_mailer::slotRetrieveMail(): duplicate requests.");
+      return;
+    }
+
+  spoton_kernel::emailRequestCacheAdd(data);
+
+  QList<QByteArray> list;
+
+  list << hash << adaptiveEchoPair.first << adaptiveEchoPair.second;
+
+  if(!m_publicKeyHashesAdaptiveEchoPairs.contains(list))
+    m_publicKeyHashesAdaptiveEchoPairs.append(list);
+
+  if(!m_retrieveMailTimer.isActive())
+    m_retrieveMailTimer.start();
+}
+
+void spoton_mailer::slotRetrieveMailTimeout(void)
+{
+  if(m_publicKeyHashesAdaptiveEchoPairs.isEmpty())
+    {
+      m_retrieveMailTimer.stop();
+      return;
+    }
+
+  /*
+  ** We're assuming that only authenticated participants
+  ** can request their e-mail. Let's hope our implementation
+  ** of digital signatures is correct.
+  */
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
+
+    if(db.open())
+      {
+	QByteArray publicKeyHash(m_publicKeyHashesAdaptiveEchoPairs.
+				 first().value(0));
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT message_bundle, OID FROM post_office "
+		      "WHERE recipient_hash = ?");
+	query.bindValue(0, publicKeyHash.toBase64());
+
+	if(query.exec())
+	  {
+	    if(query.next())
+	      {
+		spoton_crypt *s_crypt =
+		  spoton_kernel::s_crypts.value("email", 0);
+
+		if(s_crypt)
+		  {
+		    /*
+		    ** Is this a letter?
+		    */
+
+		    QByteArray message;
+		    bool ok = true;
+
+		    message = s_crypt->
+		      decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(0).toByteArray()),
+		       &ok);
+
+		    if(ok)
+		      {
+			QPair<QByteArray, QByteArray> pair;
+
+			pair.first = m_publicKeyHashesAdaptiveEchoPairs.
+			  first().value(1);
+			pair.second = m_publicKeyHashesAdaptiveEchoPairs.
+			  first().value(2);
+			emit sendMailFromPostOffice(message, pair);
+
+			QSqlQuery deleteQuery(db);
+
+			deleteQuery.exec("PRAGMA secure_delete = ON");
+			deleteQuery.prepare("DELETE FROM post_office "
+					    "WHERE recipient_hash = ? AND "
+					    "OID = ?");
+			deleteQuery.bindValue(0, publicKeyHash.toBase64());
+			deleteQuery.bindValue(1, query.value(1));
+			deleteQuery.exec();
+		      }
+		  }
+	      }
+	    else
+	      m_publicKeyHashesAdaptiveEchoPairs.removeFirst();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(m_publicKeyHashesAdaptiveEchoPairs.isEmpty())
+    m_retrieveMailTimer.stop();
+}
+
 void spoton_mailer::slotTimeout(void)
 {
   /*
@@ -331,336 +663,4 @@ void spoton_mailer::slotTimeout(void)
 		    vector.value(11).toBool(),
 		    vector.value(12).toLongLong());
     }
-}
-
-void spoton_mailer::slotRetrieveMail
-(const QByteArray &data,
- const QByteArray &publicKeyHash,
- const QByteArray &timestamp,
- const QByteArray &signature,
- const QPairByteArrayByteArray &adaptiveEchoPair)
-{
-  /*
-  ** We must locate the public key that's associated with the provided
-  ** public key hash. Remember, publicKeyHash is the hash of the signature
-  ** public key.
-  */
-
-  QByteArray publicKey
-    (spoton_misc::publicKeyFromHash(publicKeyHash,
-				    spoton_kernel::s_crypts.value("email",
-								  0)));
-
-  if(publicKey.isEmpty())
-    {
-      spoton_misc::logError("spoton_mailer::slotRetrieveMail(): "
-			    "empty public key from hash.");
-      return;
-    }
-
-  if(!spoton_crypt::isValidSignature(data,
-				     publicKey,
-				     signature))
-    {
-      spoton_misc::logError("spoton_mailer::slotRetrieveMail(): "
-			    "invalid signature.");
-      return;
-    }
-
-  publicKey = spoton_misc::publicKeyFromSignaturePublicKeyHash
-    (publicKeyHash, spoton_kernel::s_crypts.value("email", 0));
-
-  if(publicKey.isEmpty())
-    {
-      spoton_misc::logError("spoton_mailer::slotRetrieveMail(): "
-			    "empty public key from signature hash.");
-      return;
-    }
-
-  QByteArray hash;
-  bool ok = true;
-
-  hash = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    {
-      spoton_misc::logError
-	("spoton_mailer::slotRetrieveMail(): "
-	 "spoton_crypt::sha512Hash() failure.");
-      return;
-    }
-
-  QDateTime dateTime
-    (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
-
-  if(!dateTime.isValid())
-    {
-      spoton_misc::logError
-	("spoton_mailer::slotRetrieveMail(): "
-	 "invalid dateTime object.");
-      return;
-    }
-
-  QDateTime now(QDateTime::currentDateTimeUtc());
-
-  dateTime.setTimeSpec(Qt::UTC);
-  now.setTimeSpec(Qt::UTC);
-
-  qint64 secsTo = qAbs(now.secsTo(dateTime));
-
-  if(!(secsTo <= static_cast<qint64> (spoton_common::
-				      MAIL_TIME_DELTA_MAXIMUM)))
-    {
-      spoton_misc::logError
-	(QString("spoton_mailer::slotRetrieveMail(): "
-		 "large time delta (%1).").arg(secsTo));
-      return;
-    }
-  else if(spoton_kernel::duplicateEmailRequests(data))
-    {
-      spoton_misc::logError
-	("spoton_mailer::slotRetrieveMail(): duplicate requests.");
-      return;
-    }
-
-  spoton_kernel::emailRequestCacheAdd(data);
-
-  QList<QByteArray> list;
-
-  list << hash << adaptiveEchoPair.first << adaptiveEchoPair.second;
-
-  if(!m_publicKeyHashesAdaptiveEchoPairs.contains(list))
-    m_publicKeyHashesAdaptiveEchoPairs.append(list);
-
-  if(!m_retrieveMailTimer.isActive())
-    m_retrieveMailTimer.start();
-}
-
-void spoton_mailer::slotRetrieveMailTimeout(void)
-{
-  if(m_publicKeyHashesAdaptiveEchoPairs.isEmpty())
-    {
-      m_retrieveMailTimer.stop();
-      return;
-    }
-
-  /*
-  ** We're assuming that only authenticated participants
-  ** can request their e-mail. Let's hope our implementation
-  ** of digital signatures is correct.
-  */
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "email.db");
-
-    if(db.open())
-      {
-	QByteArray publicKeyHash(m_publicKeyHashesAdaptiveEchoPairs.
-				 first().value(0));
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT message_bundle, OID FROM post_office "
-		      "WHERE recipient_hash = ?");
-	query.bindValue(0, publicKeyHash.toBase64());
-
-	if(query.exec())
-	  {
-	    if(query.next())
-	      {
-		spoton_crypt *s_crypt =
-		  spoton_kernel::s_crypts.value("email", 0);
-
-		if(s_crypt)
-		  {
-		    /*
-		    ** Is this a letter?
-		    */
-
-		    QByteArray message;
-		    bool ok = true;
-
-		    message = s_crypt->
-		      decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(0).toByteArray()),
-		       &ok);
-
-		    if(ok)
-		      {
-			QPair<QByteArray, QByteArray> pair;
-
-			pair.first = m_publicKeyHashesAdaptiveEchoPairs.
-			  first().value(1);
-			pair.second = m_publicKeyHashesAdaptiveEchoPairs.
-			  first().value(2);
-			emit sendMailFromPostOffice(message, pair);
-
-			QSqlQuery deleteQuery(db);
-
-			deleteQuery.exec("PRAGMA secure_delete = ON");
-			deleteQuery.prepare("DELETE FROM post_office "
-					    "WHERE recipient_hash = ? AND "
-					    "OID = ?");
-			deleteQuery.bindValue(0, publicKeyHash.toBase64());
-			deleteQuery.bindValue(1, query.value(1));
-			deleteQuery.exec();
-		      }
-		  }
-	      }
-	    else
-	      m_publicKeyHashesAdaptiveEchoPairs.removeFirst();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(m_publicKeyHashesAdaptiveEchoPairs.isEmpty())
-    m_retrieveMailTimer.stop();
-}
-
-void spoton_mailer::slotReap(void)
-{
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
-
-  if(!s_crypt)
-    {
-      spoton_misc::logError("spoton_mailer::slotReap(): "
-			    "s_crypt is zero.");
-      return;
-    }
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "email.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	int days = spoton_kernel::setting
-	  ("gui/postofficeDays", 1).toInt();
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT date_received, OID FROM post_office"))
-	  while(query.next())
-	    {
-	      QDateTime dateTime;
-	      QDateTime now(QDateTime::currentDateTime());
-	      bool ok = true;
-
-	      dateTime = QDateTime::fromString
-		(s_crypt->
-		 decryptedAfterAuthenticated(QByteArray::
-					     fromBase64(query.value(0).
-							toByteArray()),
-					     &ok).constData(),
-		 Qt::ISODate);
-
-	      if(!ok)
-		dateTime = QDateTime();
-
-	      if(dateTime.isNull() || !dateTime.isValid() ||
-		 dateTime.daysTo(now) > days)
-		{
-		  QSqlQuery deleteQuery(db);
-
-		  deleteQuery.exec("PRAGMA secure_delete = ON");
-		  deleteQuery.prepare("DELETE FROM post_office "
-				      "WHERE OID = ?");
-		  deleteQuery.bindValue(0, query.value(1));
-		  deleteQuery.exec();
-		}
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_mailer::moveSentMailToSentFolder(const QList<qint64> &oids,
-					     spoton_crypt *crypt)
-{
-  bool keep = spoton_kernel::setting("gui/saveCopy", true).toBool();
-
-  if(keep)
-    if(!crypt)
-      {
-	spoton_misc::logError
-	  ("spoton_mailer::moveSentMailToSentFolder(): crypt is zero.");
-	return;
-      }
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(keep)
-	  query.prepare("UPDATE folders SET status = ? WHERE "
-			"OID = ?");
-	else
-	  {
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.prepare("DELETE FROM folders WHERE OID = ?");
-	  }
-
-	for(int i = 0; i < oids.size(); i++)
-	  {
-	    bool ok = true;
-
-	    if(keep)
-	      {
-		query.bindValue
-		  (0, crypt->encryptedThenHashed(QByteArray("Sent"),
-						 &ok).toBase64());
-		query.bindValue(1, oids.at(i));
-	      }
-	    else
-	      query.bindValue(0, oids.at(i));
-
-	    if(ok)
-	      if(query.exec())
-		{
-		  s_oids.remove(oids.at(i));
-
-		  if(!keep)
-		    {
-		      QSqlQuery query(db);
-
-		      query.exec("PRAGMA secure_delete = ON");
-		      query.prepare
-			("DELETE FROM folders_attachment WHERE "
-			 "folders_oid = ?");
-		      query.bindValue(0, oids.at(i));
-		      query.exec();
-		    }
-		}
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }

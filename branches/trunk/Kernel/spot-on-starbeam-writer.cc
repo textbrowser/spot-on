@@ -257,6 +257,9 @@ void spoton_starbeam_writer::processData
   qint64 pulseSize = qAbs(list.value(6).toLongLong());
   qint64 totalSize = qAbs(list.value(4).toLongLong());
 
+  Q_UNUSED(id);
+  Q_UNUSED(ultra);
+
   if(dataSize != static_cast<qint64> (list.value(5).length())) // Data
     {
       spoton_misc::logError
