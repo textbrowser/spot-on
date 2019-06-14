@@ -35,8 +35,17 @@ spoton_external_address::spoton_external_address(QObject *parent):
   m_address = QHostAddress();
 }
 
-spoton_external_address::spoton_external_address(void):
-  QNetworkAccessManager(0)
+spoton_external_address::spoton_external_address(void):QNetworkAccessManager(0)
+{
+  m_address = QHostAddress();
+}
+
+QHostAddress spoton_external_address::address(void) const
+{
+  return m_address;
+}
+
+void spoton_external_address::clear(void)
 {
   m_address = QHostAddress();
 }
@@ -64,6 +73,16 @@ void spoton_external_address::discover(void)
 	  SLOT(slotSslErrors(const QList<QSslError> &)));
 }
 
+void spoton_external_address::slotError(QNetworkReply::NetworkError error)
+{
+  Q_UNUSED(error);
+
+  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+
+  if(reply)
+    reply->deleteLater();
+}
+
 void spoton_external_address::slotFinished(void)
 {
   QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
@@ -88,26 +107,6 @@ void spoton_external_address::slotFinished(void)
       emit ipAddressDiscovered(m_address);
       reply->deleteLater();
     }
-}
-
-QHostAddress spoton_external_address::address(void) const
-{
-  return m_address;
-}
-
-void spoton_external_address::slotError(QNetworkReply::NetworkError error)
-{
-  Q_UNUSED(error);
-
-  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
-
-  if(reply)
-    reply->deleteLater();
-}
-
-void spoton_external_address::clear(void)
-{
-  m_address = QHostAddress();
 }
 
 void spoton_external_address::slotSslErrors(const QList<QSslError> &errors)
