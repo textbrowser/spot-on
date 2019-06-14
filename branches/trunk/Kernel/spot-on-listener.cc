@@ -40,10 +40,10 @@
 #include "spot-on-listener.h"
 #include "spot-on-sctp-server.h"
 
-#if QT_VERSION >= 0x050000
-void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
-#else
+#if QT_VERSION < 0x050000
 void spoton_listener_tcp_server::incomingConnection(int socketDescriptor)
+#else
+void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
 #endif
 {
   if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
@@ -451,341 +451,289 @@ spoton_listener::~spoton_listener()
   spoton_kernel::s_connectionCounts.remove(m_id);
 }
 
-void spoton_listener::slotTimeout(void)
+QHostAddress spoton_listener::externalAddress(void) const
 {
-  /*
-  ** We'll change states here.
-  */
+  if(m_externalAddress)
+    return m_externalAddress->address();
+  else
+    return QHostAddress();
+}
 
-  /*
-  ** Retrieve the interface that this listener is listening on.
-  ** If the interface disappears, destroy the listener.
-  */
-
-  QString connectionName("");
-  bool shouldDelete = false;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	/*
-	** Remove expired entries from
-	** listeners_accounts_consumed_authentications.
-	*/
-
-	query.setForwardOnly(true);
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare
-	  ("DELETE FROM listeners_accounts_consumed_authentications "
-	   "WHERE "
-	   "ABS(strftime('%s', ?) - "
-	   "strftime('%s', insert_date)) > ? AND listener_oid = ?");
-	query.bindValue
-	  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
-	query.bindValue(1, 120);
-	query.bindValue(2, m_id);
-	query.exec();
-	query.prepare("SELECT status_control, "
-		      "maximum_clients, "
-		      "echo_mode, "
-		      "use_accounts, "
-		      "maximum_buffer_size, "
-		      "maximum_content_length, "
-		      "motd, "
-		      "ssl_control_string, "
-		      "lane_width, "
-		      "passthrough, "
-		      "source_of_randomness, "
-		      "private_application_credentials, "
-		      "certificate, "
-		      "private_key, "
-		      "public_key, "
-		      "socket_options "
-		      "FROM listeners WHERE OID = ?");
-	query.bindValue(0, m_id);
-
-	if(query.exec())
-	  {
-	    if(query.next())
-	      {
-		QString echoMode("");
-		QString status(query.value(0).toString().toLower());
-		bool ok = true;
-		spoton_crypt *s_crypt =
-		  spoton_kernel::s_crypts.value("chat", 0);
-
-		m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
-				     query.value(8).toInt(),
-				     spoton_common::LANE_WIDTH_MAXIMUM);
-		m_maximumBufferSize =
-		  qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
-			 query.value(4).toLongLong(),
-			 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
-		m_maximumContentLength =
-		  qBound(spoton_common::MINIMUM_NEIGHBOR_CONTENT_LENGTH,
-			 query.value(5).toLongLong(),
-			 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
-		m_motd = QString::fromUtf8
-		  (query.value(6).toByteArray().constData(),
-		   query.value(6).toByteArray().length()).trimmed();
-		m_passthrough = query.value(9).toInt();
-		m_socketOptions = query.value(15).toString();
-		m_sourceOfRandomness = qBound
-		  (0,
-		   query.value(10).toInt(),
-		   static_cast<int> (std::numeric_limits<unsigned short>::
-				     max()));
-		m_sslControlString = query.value(7).toString().trimmed();
-		m_useAccounts = static_cast<int>
-		  (query.value(3).toLongLong());
-
-		if(m_sslControlString.isEmpty())
-		  {
-		    if(m_keySize > 0)
-		      {
-			if(m_transport == "tcp")
-			  m_sslControlString = spoton_common::
-			    SSL_CONTROL_STRING;
-			else if(m_transport == "udp")
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-			  m_sslControlString = spoton_common::
-			    SSL_CONTROL_STRING;
-#else
-			  m_sslControlString = "N/A";
-#endif
-		      }
-		    else
-		      m_sslControlString = "N/A";
-		  }
-		else if(m_keySize == 0 ||
-			m_transport == "bluetooth" ||
-			m_transport == "sctp")
-		  m_sslControlString = "N/A";
-#if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
-		else if(m_transport == "udp")
-		  m_sslControlString = "N/A";
-#endif
-
-		if(s_crypt)
-		  {
-		    m_certificate = s_crypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(12).toByteArray()),
-		       &ok);
-
-		    if(ok)
-		      echoMode = s_crypt->decryptedAfterAuthenticated
-			(QByteArray::
-			 fromBase64(query.
-				    value(2).
-				    toByteArray()),
-			 &ok).
-			constData();
-
-		    if(ok)
-		      if(echoMode == "full" || echoMode == "half")
-			m_echoMode = echoMode;
-
-		    if(ok)
-		      m_privateKey = s_crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(13).toByteArray()),
-			 &ok);
-
-		    if(query.isNull(11))
-		      m_privateApplicationCredentials.clear();
-		    else
-		      m_privateApplicationCredentials = s_crypt->
-			decryptedAfterAuthenticated(QByteArray::
-						    fromBase64(query.value(11).
-							       toByteArray()),
-						    &ok);
-
-		    if(ok)
-		      m_publicKey = s_crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(14).toByteArray()),
-			 &ok);
-		  }
-
-		if(status == "offline")
-		  close();
-		else if(status == "online")
-		  {
-		    if(!isListening())
-		      {
-			if(!listen(m_address, m_port))
-			  spoton_misc::logError
-			    (QString("spoton_listener::slotTimeout(): "
-				     "listen() failure (%1) for %2:%3.").
-			     arg(errorString()).
-			     arg(m_address).
-			     arg(m_port));
-			else if(m_externalAddress)
-			  {
-			    int v = spoton_kernel::setting
-			      ("gui/kernelExternalIpInterval", -1).toInt();
-
-			    if(v != -1)
-			      /*
-			      ** Initial discovery of the external
-			      ** IP address.
-			      */
-
-			      m_externalAddress->discover();
-			  }
-		      }
-
-		    if(isListening())
-		      if(static_cast<int> (query.value(1).
-					   toLongLong()) !=
-			 maxPendingConnections())
-			{
-			  int maximumPendingConnections =
-			    qAbs(static_cast<int> (query.value(1).
-						   toLongLong()));
-
-			  if(maximumPendingConnections > 0)
-			    {
-			      if(maximumPendingConnections != 1 &&
-				 maximumPendingConnections % 5 != 0)
-				maximumPendingConnections = 5;
-			    }
-			  else
-			    maximumPendingConnections =
-			      std::numeric_limits<int>::max();
-
+QString spoton_listener::errorString(void) const
+{
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-			  if(m_bluetoothServer)
-			    m_bluetoothServer->setMaxPendingConnections
-			      (maximumPendingConnections);
+  if(m_bluetoothServer)
+    return QString("%1").arg(m_bluetoothServer->error());
 #endif
-			  if(m_sctpServer)
-			    m_sctpServer->setMaxPendingConnections
-			      (maximumPendingConnections);
-			  else if(m_tcpServer)
-			    m_tcpServer->setMaxPendingConnections
-			      (maximumPendingConnections);
-			  else if(m_udpServer)
-			    m_udpServer->setMaxPendingConnections
-			      (maximumPendingConnections);
-			}
-		  }
+  if(m_sctpServer)
+    return m_sctpServer->errorString();
+  else if(m_tcpServer)
+    return m_tcpServer->errorString();
+  else if(m_udpServer)
+    return m_udpServer->errorString();
+  else
+    return "";
+}
 
-		if(isListening() && m_externalAddress)
-		  {
-		    int v = 1000 * spoton_kernel::setting
-		      ("gui/kernelExternalIpInterval", -1).toInt();
+QString spoton_listener::orientation(void) const
+{
+  return m_orientation;
+}
 
-		    if(v == 30000 || v == 60000)
-		      {
-			if(v == 30000)
-			  {
-			    if(m_externalAddressDiscovererTimer.
-			       interval() != v)
-			      m_externalAddressDiscovererTimer.start
-				(30000);
-			    else if(!m_externalAddressDiscovererTimer.
-				    isActive())
-			      m_externalAddressDiscovererTimer.start
-				(30000);
-			  }
-			else
-			  {
-			    if(m_externalAddressDiscovererTimer.
-			       interval() != v)
-			      m_externalAddressDiscovererTimer.start
-				(60000);
-			    else if(!m_externalAddressDiscovererTimer.
-				    isActive())
-			      m_externalAddressDiscovererTimer.start
-				(60000);
-			  }
-		      }
-		    else
-		      m_externalAddressDiscovererTimer.stop();
-		  }
-		else
-		  {
-		    m_externalAddressDiscovererTimer.stop();
-		    saveExternalAddress(QHostAddress(), db);
-		  }
+QString spoton_listener::serverAddress(void) const
+{
+  return m_address;
+}
 
-		if(status == "offline" || status == "online")
-		  saveStatus(db);
-	      }
-	    else
-	      {
-		foreach(spoton_neighbor *socket,
-			findChildren<spoton_neighbor *> ())
-		  socket->deleteLater();
+QString spoton_listener::transport(void) const
+{
+  return m_transport;
+}
 
-		shouldDelete = true;
-	      }
-	  }
-	else
-	  {
-	    QFileInfo fileInfo
-	      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
+bool spoton_listener::isListening(void) const
+{
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+  if(m_bluetoothServer)
+    return m_bluetoothServer->isListening();
+#endif
+  if(m_sctpServer)
+    return m_sctpServer->isListening();
+  else if(m_tcpServer)
+    return m_tcpServer->isListening();
+  else if(m_udpServer)
+    return m_udpServer->state() == QAbstractSocket::BoundState;
+  else
+    return false;
+}
 
-	    if(!fileInfo.exists())
-	      {
-		foreach(spoton_neighbor *socket,
-			findChildren<spoton_neighbor *> ())
-		  socket->deleteLater();
-
-		shouldDelete = true;
-	      }
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(shouldDelete)
+bool spoton_listener::listen(const QString &address, const quint16 port)
+{
+  if(m_sctpServer || m_tcpServer || m_udpServer)
     {
-      spoton_misc::logError
-	(QString("spoton_listener::slotTimeout(): instructed "
-		 "to delete listener %1:%2.").
-	 arg(m_address).
-	 arg(m_port));
-      deleteLater();
-      return;
+      m_address = address;
+      m_port = port;
     }
-
-  /*
-  ** Retrieve the interface that this listener is using.
-  ** If the interface disappears, destroy the listener.
-  */
 
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_transport == "bluetooth")
-    return;
+    {
+      if(!m_bluetoothServer)
+	{
+	  m_bluetoothServer = new QBluetoothServer
+	    (QBluetoothServiceInfo::RfcommProtocol, this);
+	  connect(m_bluetoothServer,
+		  SIGNAL(newConnection(void)),
+		  this,
+		  SLOT(slotNewConnection(void)));
+	  m_bluetoothServer->setMaxPendingConnections(m_maximumClients);
+	  m_bluetoothServer->setSecurityFlags
+	    (QBluetooth::SecurityFlags(m_keySize));
+	}
+      else
+	return true;
+
+      m_address = address;
+      m_port = port;
+
+      QBluetoothAddress localAdapter(m_address);
+      bool ok = m_bluetoothServer->listen(localAdapter);
+
+      if(ok)
+	{
+	  QBluetoothServiceInfo::Sequence classId;
+	  QByteArray bytes;
+	  QString serviceUuid;
+
+	  bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
+	  bytes = bytes.rightJustified(12, '0');
+	  serviceUuid.append(bytes.mid(0, 8).constData());
+	  serviceUuid.append("-");
+	  serviceUuid.append(bytes.mid(8).constData());
+	  serviceUuid.append("-0000-0000-");
+	  serviceUuid.append(QString(m_address).remove(":"));
+	  classId << QVariant::fromValue
+	    (QBluetoothUuid(QBluetoothUuid::SerialPort));
+	  m_bluetoothServiceInfo.setAttribute
+	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList,
+	     classId);
+	  classId.prepend(QVariant::fromValue(QBluetoothUuid(serviceUuid)));
+	  m_bluetoothServiceInfo.setAttribute
+	    (QBluetoothServiceInfo::ServiceClassIds, classId);
+	  m_bluetoothServiceInfo.setAttribute
+	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
+	  m_bluetoothServiceInfo.setAttribute
+	    (QBluetoothServiceInfo::ServiceName,
+	     QString("Spot-On-Bluetooth-Server-%1:%2").
+	     arg(m_address).arg(m_port));
+	  m_bluetoothServiceInfo.setAttribute
+	    (QBluetoothServiceInfo::ServiceDescription,
+	     QString("Spot-On-Bluetooth-Server-%1:%2").
+	     arg(m_address).arg(m_port));
+	  m_bluetoothServiceInfo.setAttribute
+	    (QBluetoothServiceInfo::ServiceProvider, "spot-on.sf.net");
+	  m_bluetoothServiceInfo.setServiceUuid(QBluetoothUuid(serviceUuid));
+
+	  QBluetoothServiceInfo::Sequence publicBrowse;
+
+	  publicBrowse << QVariant::fromValue
+	    (QBluetoothUuid(QBluetoothUuid::PublicBrowseGroup));
+	  m_bluetoothServiceInfo.setAttribute
+	    (QBluetoothServiceInfo::BrowseGroupList,
+	     publicBrowse);
+
+	  QBluetoothServiceInfo::Sequence protocol;
+	  QBluetoothServiceInfo::Sequence protocolDescriptorList;
+
+	  protocol << QVariant::fromValue
+	    (QBluetoothUuid(QBluetoothUuid::L2cap));
+	  protocolDescriptorList.append(QVariant::fromValue(protocol));
+	  protocol.clear();
+	  protocol
+	    << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))
+	    << QVariant::fromValue(quint8(m_bluetoothServer->serverPort()));
+	  protocolDescriptorList.append(QVariant::fromValue(protocol));
+	  m_bluetoothServiceInfo.setAttribute
+	    (QBluetoothServiceInfo::ProtocolDescriptorList,
+	     protocolDescriptorList);
+	  ok = m_bluetoothServiceInfo.registerService(localAdapter);
+	}
+
+      if(!ok)
+	{
+	  if(m_bluetoothServiceInfo.isRegistered())
+	    m_bluetoothServiceInfo.unregisterService();
+
+	  m_bluetoothServer->deleteLater();
+	  m_bluetoothServer = 0;
+	}
+
+      return ok;
+    }
 #endif
+  if(m_sctpServer)
+    return m_sctpServer->listen(QHostAddress(address), port, m_socketOptions);
+  else if(m_tcpServer)
+    return m_tcpServer->listen(QHostAddress(address), port);
+  else if(m_udpServer)
+    {
+      QUdpSocket::BindMode flags = QUdpSocket::ReuseAddressHint;
 
-  if(m_udpServer)
-    if(spoton_misc::isMulticastAddress(QHostAddress(m_address)))
+      if(m_shareAddress)
+	flags |= QUdpSocket::ShareAddress;
+      else
+	flags |= QUdpSocket::DontShareAddress;
+
+      return m_udpServer->bind(QHostAddress(address), port, flags);
+    }
+  else
+    return false;
+}
+
+int spoton_listener::maxPendingConnections(void) const
+{
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+  if(m_bluetoothServer)
+    return m_bluetoothServer->maxPendingConnections();
+#endif
+  if(m_sctpServer)
+    return m_sctpServer->maxPendingConnections();
+  else if(m_tcpServer)
+    return m_tcpServer->maxPendingConnections();
+  else if(m_udpServer)
+    return m_udpServer->maxPendingConnections();
+  else
+    return 0;
+}
+
+qint64 spoton_listener::id(void) const
+{
+  return m_id;
+}
+
+quint16 spoton_listener::externalPort(void) const
+{
+  /*
+  ** The external port is currently the local port.
+  */
+
+  return m_externalPort;
+}
+
+quint16 spoton_listener::serverPort(void) const
+{
+  return m_port;
+}
+
+void spoton_listener::close(void)
+{
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+  if(m_bluetoothServiceInfo.isRegistered())
+    m_bluetoothServiceInfo.unregisterService();
+
+  if(m_bluetoothServer)
+    {
+      m_bluetoothServer->deleteLater();
+      m_bluetoothServer = 0;
+    }
+#endif
+  if(m_sctpServer)
+    m_sctpServer->close();
+  else if(m_tcpServer)
+    m_tcpServer->close();
+  else if(m_udpServer)
+    m_udpServer->close();
+}
+
+void spoton_listener::saveExternalAddress(const QHostAddress &address,
+					  const QSqlDatabase &db)
+{
+  if(!db.isOpen())
+    {
+      spoton_misc::logError("spoton_listener::saveExternalAddress(): "
+			    "db is closed.");
       return;
+    }
 
-  prepareNetworkInterface();
+  QSqlQuery query(db);
+  bool ok = true;
 
   if(isListening())
-    if(!m_networkInterface)
-      {
-	spoton_misc::logError
-	  (QString("spoton_listener::slotTimeout(): "
-		   "undefined network interface for %1:%2. "
-		   "Aborting.").
-	   arg(m_address).
-	   arg(m_port));
-	deleteLater();
-      }
+    {
+      if(address.isNull())
+	{
+	  query.prepare("UPDATE listeners SET "
+			"external_ip_address = NULL "
+			"WHERE OID = ? AND external_ip_address IS "
+			"NOT NULL");
+	  query.bindValue(0, m_id);
+	}
+      else
+	{
+	  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+	  if(s_crypt)
+	    {
+	      query.prepare("UPDATE listeners SET external_ip_address = ? "
+			    "WHERE OID = ?");
+	      query.bindValue
+		(0, s_crypt->encryptedThenHashed(address.toString().
+						 toLatin1(), &ok).
+		 toBase64());
+	      query.bindValue(1, m_id);
+	    }
+	  else
+	    ok = false;
+	}
+    }
+  else
+    {
+      query.prepare("UPDATE listeners SET external_ip_address = NULL "
+		    "WHERE OID = ? AND external_ip_address IS NOT NULL");
+      query.bindValue(0, m_id);
+    }
+
+  if(ok)
+    query.exec();
 }
 
 void spoton_listener::saveStatus(const QSqlDatabase &db)
@@ -1261,9 +1209,19 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
     }
 }
 
-void spoton_listener::updateConnectionCount(void)
+void spoton_listener::slotTimeout(void)
 {
+  /*
+  ** We'll change states here.
+  */
+
+  /*
+  ** Retrieve the interface that this listener is listening on.
+  ** If the interface disappears, destroy the listener.
+  */
+
   QString connectionName("");
+  bool shouldDelete = false;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -1275,33 +1233,317 @@ void spoton_listener::updateConnectionCount(void)
       {
 	QSqlQuery query(db);
 
-	query.prepare("UPDATE listeners SET connections = ? "
-		      "WHERE OID = ?");
+	/*
+	** Remove expired entries from
+	** listeners_accounts_consumed_authentications.
+	*/
+
+	query.setForwardOnly(true);
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare
+	  ("DELETE FROM listeners_accounts_consumed_authentications "
+	   "WHERE "
+	   "ABS(strftime('%s', ?) - "
+	   "strftime('%s', insert_date)) > ? AND listener_oid = ?");
 	query.bindValue
-	  (0, QString::number(spoton_kernel::
-			      s_connectionCounts.count(m_id)));
-	query.bindValue(1, m_id);
+	  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
+	query.bindValue(1, 120);
+	query.bindValue(2, m_id);
 	query.exec();
+	query.prepare("SELECT status_control, "
+		      "maximum_clients, "
+		      "echo_mode, "
+		      "use_accounts, "
+		      "maximum_buffer_size, "
+		      "maximum_content_length, "
+		      "motd, "
+		      "ssl_control_string, "
+		      "lane_width, "
+		      "passthrough, "
+		      "source_of_randomness, "
+		      "private_application_credentials, "
+		      "certificate, "
+		      "private_key, "
+		      "public_key, "
+		      "socket_options "
+		      "FROM listeners WHERE OID = ?");
+	query.bindValue(0, m_id);
+
+	if(query.exec())
+	  {
+	    if(query.next())
+	      {
+		QString echoMode("");
+		QString status(query.value(0).toString().toLower());
+		bool ok = true;
+		spoton_crypt *s_crypt =
+		  spoton_kernel::s_crypts.value("chat", 0);
+
+		m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
+				     query.value(8).toInt(),
+				     spoton_common::LANE_WIDTH_MAXIMUM);
+		m_maximumBufferSize =
+		  qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
+			 query.value(4).toLongLong(),
+			 spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
+		m_maximumContentLength =
+		  qBound(spoton_common::MINIMUM_NEIGHBOR_CONTENT_LENGTH,
+			 query.value(5).toLongLong(),
+			 spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
+		m_motd = QString::fromUtf8
+		  (query.value(6).toByteArray().constData(),
+		   query.value(6).toByteArray().length()).trimmed();
+		m_passthrough = query.value(9).toInt();
+		m_socketOptions = query.value(15).toString();
+		m_sourceOfRandomness = qBound
+		  (0,
+		   query.value(10).toInt(),
+		   static_cast<int> (std::numeric_limits<unsigned short>::
+				     max()));
+		m_sslControlString = query.value(7).toString().trimmed();
+		m_useAccounts = static_cast<int>
+		  (query.value(3).toLongLong());
+
+		if(m_sslControlString.isEmpty())
+		  {
+		    if(m_keySize > 0)
+		      {
+			if(m_transport == "tcp")
+			  m_sslControlString = spoton_common::
+			    SSL_CONTROL_STRING;
+			else if(m_transport == "udp")
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+			  m_sslControlString = spoton_common::
+			    SSL_CONTROL_STRING;
+#else
+			  m_sslControlString = "N/A";
+#endif
+		      }
+		    else
+		      m_sslControlString = "N/A";
+		  }
+		else if(m_keySize == 0 ||
+			m_transport == "bluetooth" ||
+			m_transport == "sctp")
+		  m_sslControlString = "N/A";
+#if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
+		else if(m_transport == "udp")
+		  m_sslControlString = "N/A";
+#endif
+
+		if(s_crypt)
+		  {
+		    m_certificate = s_crypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(12).toByteArray()),
+		       &ok);
+
+		    if(ok)
+		      echoMode = s_crypt->decryptedAfterAuthenticated
+			(QByteArray::
+			 fromBase64(query.
+				    value(2).
+				    toByteArray()),
+			 &ok).
+			constData();
+
+		    if(ok)
+		      if(echoMode == "full" || echoMode == "half")
+			m_echoMode = echoMode;
+
+		    if(ok)
+		      m_privateKey = s_crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(13).toByteArray()),
+			 &ok);
+
+		    if(query.isNull(11))
+		      m_privateApplicationCredentials.clear();
+		    else
+		      m_privateApplicationCredentials = s_crypt->
+			decryptedAfterAuthenticated(QByteArray::
+						    fromBase64(query.value(11).
+							       toByteArray()),
+						    &ok);
+
+		    if(ok)
+		      m_publicKey = s_crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(14).toByteArray()),
+			 &ok);
+		  }
+
+		if(status == "offline")
+		  close();
+		else if(status == "online")
+		  {
+		    if(!isListening())
+		      {
+			if(!listen(m_address, m_port))
+			  spoton_misc::logError
+			    (QString("spoton_listener::slotTimeout(): "
+				     "listen() failure (%1) for %2:%3.").
+			     arg(errorString()).
+			     arg(m_address).
+			     arg(m_port));
+			else if(m_externalAddress)
+			  {
+			    int v = spoton_kernel::setting
+			      ("gui/kernelExternalIpInterval", -1).toInt();
+
+			    if(v != -1)
+			      /*
+			      ** Initial discovery of the external
+			      ** IP address.
+			      */
+
+			      m_externalAddress->discover();
+			  }
+		      }
+
+		    if(isListening())
+		      if(static_cast<int> (query.value(1).
+					   toLongLong()) !=
+			 maxPendingConnections())
+			{
+			  int maximumPendingConnections =
+			    qAbs(static_cast<int> (query.value(1).
+						   toLongLong()));
+
+			  if(maximumPendingConnections > 0)
+			    {
+			      if(maximumPendingConnections != 1 &&
+				 maximumPendingConnections % 5 != 0)
+				maximumPendingConnections = 5;
+			    }
+			  else
+			    maximumPendingConnections =
+			      std::numeric_limits<int>::max();
+
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+			  if(m_bluetoothServer)
+			    m_bluetoothServer->setMaxPendingConnections
+			      (maximumPendingConnections);
+#endif
+			  if(m_sctpServer)
+			    m_sctpServer->setMaxPendingConnections
+			      (maximumPendingConnections);
+			  else if(m_tcpServer)
+			    m_tcpServer->setMaxPendingConnections
+			      (maximumPendingConnections);
+			  else if(m_udpServer)
+			    m_udpServer->setMaxPendingConnections
+			      (maximumPendingConnections);
+			}
+		  }
+
+		if(isListening() && m_externalAddress)
+		  {
+		    int v = 1000 * spoton_kernel::setting
+		      ("gui/kernelExternalIpInterval", -1).toInt();
+
+		    if(v == 30000 || v == 60000)
+		      {
+			if(v == 30000)
+			  {
+			    if(m_externalAddressDiscovererTimer.
+			       interval() != v)
+			      m_externalAddressDiscovererTimer.start
+				(30000);
+			    else if(!m_externalAddressDiscovererTimer.
+				    isActive())
+			      m_externalAddressDiscovererTimer.start
+				(30000);
+			  }
+			else
+			  {
+			    if(m_externalAddressDiscovererTimer.
+			       interval() != v)
+			      m_externalAddressDiscovererTimer.start
+				(60000);
+			    else if(!m_externalAddressDiscovererTimer.
+				    isActive())
+			      m_externalAddressDiscovererTimer.start
+				(60000);
+			  }
+		      }
+		    else
+		      m_externalAddressDiscovererTimer.stop();
+		  }
+		else
+		  {
+		    m_externalAddressDiscovererTimer.stop();
+		    saveExternalAddress(QHostAddress(), db);
+		  }
+
+		if(status == "offline" || status == "online")
+		  saveStatus(db);
+	      }
+	    else
+	      {
+		foreach(spoton_neighbor *socket,
+			findChildren<spoton_neighbor *> ())
+		  socket->deleteLater();
+
+		shouldDelete = true;
+	      }
+	  }
+	else
+	  {
+	    QFileInfo fileInfo
+	      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
+
+	    if(!fileInfo.exists())
+	      {
+		foreach(spoton_neighbor *socket,
+			findChildren<spoton_neighbor *> ())
+		  socket->deleteLater();
+
+		shouldDelete = true;
+	      }
+	  }
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
 
-void spoton_listener::slotNeighborDisconnected(void)
-{
-  QPointer<spoton_neighbor> neighbor =
-    qobject_cast<spoton_neighbor *> (sender());
+  if(shouldDelete)
+    {
+      spoton_misc::logError
+	(QString("spoton_listener::slotTimeout(): instructed "
+		 "to delete listener %1:%2.").
+	 arg(m_address).
+	 arg(m_port));
+      deleteLater();
+      return;
+    }
 
-  spoton_kernel::s_connectionCounts.remove(m_id, neighbor);
-  updateConnectionCount();
-}
+  /*
+  ** Retrieve the interface that this listener is using.
+  ** If the interface disappears, destroy the listener.
+  */
 
-qint64 spoton_listener::id(void) const
-{
-  return m_id;
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+  if(m_transport == "bluetooth")
+    return;
+#endif
+
+  if(m_udpServer)
+    if(spoton_misc::isMulticastAddress(QHostAddress(m_address)))
+      return;
+
+  prepareNetworkInterface();
+
+  if(isListening())
+    if(!m_networkInterface)
+      {
+	spoton_misc::logError
+	  (QString("spoton_listener::slotTimeout(): "
+		   "undefined network interface for %1:%2. "
+		   "Aborting.").
+	   arg(m_address).
+	   arg(m_port));
+	deleteLater();
+      }
 }
 
 void spoton_listener::prepareNetworkInterface(void)
@@ -1372,56 +1614,11 @@ void spoton_listener::prepareNetworkInterface(void)
     }
 }
 
-void spoton_listener::saveExternalAddress(const QHostAddress &address,
-					  const QSqlDatabase &db)
+void spoton_listener::slotDiscoverExternalAddress(void)
 {
-  if(!db.isOpen())
-    {
-      spoton_misc::logError("spoton_listener::saveExternalAddress(): "
-			    "db is closed.");
-      return;
-    }
-
-  QSqlQuery query(db);
-  bool ok = true;
-
   if(isListening())
-    {
-      if(address.isNull())
-	{
-	  query.prepare("UPDATE listeners SET "
-			"external_ip_address = NULL "
-			"WHERE OID = ? AND external_ip_address IS "
-			"NOT NULL");
-	  query.bindValue(0, m_id);
-	}
-      else
-	{
-	  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-	  if(s_crypt)
-	    {
-	      query.prepare("UPDATE listeners SET external_ip_address = ? "
-			    "WHERE OID = ?");
-	      query.bindValue
-		(0, s_crypt->encryptedThenHashed(address.toString().
-						 toLatin1(), &ok).
-		 toBase64());
-	      query.bindValue(1, m_id);
-	    }
-	  else
-	    ok = false;
-	}
-    }
-  else
-    {
-      query.prepare("UPDATE listeners SET external_ip_address = NULL "
-		    "WHERE OID = ? AND external_ip_address IS NOT NULL");
-      query.bindValue(0, m_id);
-    }
-
-  if(ok)
-    query.exec();
+    if(m_externalAddress)
+      m_externalAddress->discover();
 }
 
 void spoton_listener::slotExternalAddressDiscovered
@@ -1444,239 +1641,13 @@ void spoton_listener::slotExternalAddressDiscovered
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_listener::slotDiscoverExternalAddress(void)
+void spoton_listener::slotNeighborDisconnected(void)
 {
-  if(isListening())
-    if(m_externalAddress)
-      m_externalAddress->discover();
-}
+  QPointer<spoton_neighbor> neighbor =
+    qobject_cast<spoton_neighbor *> (sender());
 
-QHostAddress spoton_listener::externalAddress(void) const
-{
-  if(m_externalAddress)
-    return m_externalAddress->address();
-  else
-    return QHostAddress();
-}
-
-quint16 spoton_listener::externalPort(void) const
-{
-  /*
-  ** The external port is currently the local port.
-  */
-
-  return m_externalPort;
-}
-
-QString spoton_listener::serverAddress(void) const
-{
-  return m_address;
-}
-
-quint16 spoton_listener::serverPort(void) const
-{
-  return m_port;
-}
-
-void spoton_listener::close(void)
-{
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  if(m_bluetoothServiceInfo.isRegistered())
-    m_bluetoothServiceInfo.unregisterService();
-
-  if(m_bluetoothServer)
-    {
-      m_bluetoothServer->deleteLater();
-      m_bluetoothServer = 0;
-    }
-#endif
-  if(m_sctpServer)
-    m_sctpServer->close();
-  else if(m_tcpServer)
-    m_tcpServer->close();
-  else if(m_udpServer)
-    m_udpServer->close();
-}
-
-bool spoton_listener::isListening(void) const
-{
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  if(m_bluetoothServer)
-    return m_bluetoothServer->isListening();
-#endif
-  if(m_sctpServer)
-    return m_sctpServer->isListening();
-  else if(m_tcpServer)
-    return m_tcpServer->isListening();
-  else if(m_udpServer)
-    return m_udpServer->state() == QAbstractSocket::BoundState;
-  else
-    return false;
-}
-
-bool spoton_listener::listen(const QString &address, const quint16 port)
-{
-  if(m_sctpServer || m_tcpServer || m_udpServer)
-    {
-      m_address = address;
-      m_port = port;
-    }
-
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  if(m_transport == "bluetooth")
-    {
-      if(!m_bluetoothServer)
-	{
-	  m_bluetoothServer = new QBluetoothServer
-	    (QBluetoothServiceInfo::RfcommProtocol, this);
-	  connect(m_bluetoothServer,
-		  SIGNAL(newConnection(void)),
-		  this,
-		  SLOT(slotNewConnection(void)));
-	  m_bluetoothServer->setMaxPendingConnections(m_maximumClients);
-	  m_bluetoothServer->setSecurityFlags
-	    (QBluetooth::SecurityFlags(m_keySize));
-	}
-      else
-	return true;
-
-      m_address = address;
-      m_port = port;
-
-      QBluetoothAddress localAdapter(m_address);
-      bool ok = m_bluetoothServer->listen(localAdapter);
-
-      if(ok)
-	{
-	  QBluetoothServiceInfo::Sequence classId;
-	  QByteArray bytes;
-	  QString serviceUuid;
-
-	  bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
-	  bytes = bytes.rightJustified(12, '0');
-	  serviceUuid.append(bytes.mid(0, 8).constData());
-	  serviceUuid.append("-");
-	  serviceUuid.append(bytes.mid(8).constData());
-	  serviceUuid.append("-0000-0000-");
-	  serviceUuid.append(QString(m_address).remove(":"));
-	  classId << QVariant::fromValue
-	    (QBluetoothUuid(QBluetoothUuid::SerialPort));
-	  m_bluetoothServiceInfo.setAttribute
-	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList,
-	     classId);
-	  classId.prepend(QVariant::fromValue(QBluetoothUuid(serviceUuid)));
-	  m_bluetoothServiceInfo.setAttribute
-	    (QBluetoothServiceInfo::ServiceClassIds, classId);
-	  m_bluetoothServiceInfo.setAttribute
-	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
-	  m_bluetoothServiceInfo.setAttribute
-	    (QBluetoothServiceInfo::ServiceName,
-	     QString("Spot-On-Bluetooth-Server-%1:%2").
-	     arg(m_address).arg(m_port));
-	  m_bluetoothServiceInfo.setAttribute
-	    (QBluetoothServiceInfo::ServiceDescription,
-	     QString("Spot-On-Bluetooth-Server-%1:%2").
-	     arg(m_address).arg(m_port));
-	  m_bluetoothServiceInfo.setAttribute
-	    (QBluetoothServiceInfo::ServiceProvider, "spot-on.sf.net");
-	  m_bluetoothServiceInfo.setServiceUuid(QBluetoothUuid(serviceUuid));
-
-	  QBluetoothServiceInfo::Sequence publicBrowse;
-
-	  publicBrowse << QVariant::fromValue
-	    (QBluetoothUuid(QBluetoothUuid::PublicBrowseGroup));
-	  m_bluetoothServiceInfo.setAttribute
-	    (QBluetoothServiceInfo::BrowseGroupList,
-	     publicBrowse);
-
-	  QBluetoothServiceInfo::Sequence protocol;
-	  QBluetoothServiceInfo::Sequence protocolDescriptorList;
-
-	  protocol << QVariant::fromValue
-	    (QBluetoothUuid(QBluetoothUuid::L2cap));
-	  protocolDescriptorList.append(QVariant::fromValue(protocol));
-	  protocol.clear();
-	  protocol
-	    << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))
-	    << QVariant::fromValue(quint8(m_bluetoothServer->serverPort()));
-	  protocolDescriptorList.append(QVariant::fromValue(protocol));
-	  m_bluetoothServiceInfo.setAttribute
-	    (QBluetoothServiceInfo::ProtocolDescriptorList,
-	     protocolDescriptorList);
-	  ok = m_bluetoothServiceInfo.registerService(localAdapter);
-	}
-
-      if(!ok)
-	{
-	  if(m_bluetoothServiceInfo.isRegistered())
-	    m_bluetoothServiceInfo.unregisterService();
-
-	  m_bluetoothServer->deleteLater();
-	  m_bluetoothServer = 0;
-	}
-
-      return ok;
-    }
-#endif
-  if(m_sctpServer)
-    return m_sctpServer->listen(QHostAddress(address), port, m_socketOptions);
-  else if(m_tcpServer)
-    return m_tcpServer->listen(QHostAddress(address), port);
-  else if(m_udpServer)
-    {
-      QUdpSocket::BindMode flags = QUdpSocket::ReuseAddressHint;
-
-      if(m_shareAddress)
-	flags |= QUdpSocket::ShareAddress;
-      else
-	flags |= QUdpSocket::DontShareAddress;
-
-      return m_udpServer->bind(QHostAddress(address), port, flags);
-    }
-  else
-    return false;
-}
-
-QString spoton_listener::errorString(void) const
-{
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  if(m_bluetoothServer)
-    return QString("%1").arg(m_bluetoothServer->error());
-#endif
-  if(m_sctpServer)
-    return m_sctpServer->errorString();
-  else if(m_tcpServer)
-    return m_tcpServer->errorString();
-  else if(m_udpServer)
-    return m_udpServer->errorString();
-  else
-    return "";
-}
-
-int spoton_listener::maxPendingConnections(void) const
-{
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  if(m_bluetoothServer)
-    return m_bluetoothServer->maxPendingConnections();
-#endif
-  if(m_sctpServer)
-    return m_sctpServer->maxPendingConnections();
-  else if(m_tcpServer)
-    return m_tcpServer->maxPendingConnections();
-  else if(m_udpServer)
-    return m_udpServer->maxPendingConnections();
-  else
-    return 0;
-}
-
-QString spoton_listener::transport(void) const
-{
-  return m_transport;
-}
-
-QString spoton_listener::orientation(void) const
-{
-  return m_orientation;
+  spoton_kernel::s_connectionCounts.remove(m_id, neighbor);
+  updateConnectionCount();
 }
 
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
@@ -2075,3 +2046,32 @@ void spoton_listener::slotNewConnection(void)
     }
 }
 #endif
+
+void spoton_listener::updateConnectionCount(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE listeners SET connections = ? "
+		      "WHERE OID = ?");
+	query.bindValue
+	  (0, QString::number(spoton_kernel::
+			      s_connectionCounts.count(m_id)));
+	query.bindValue(1, m_id);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
