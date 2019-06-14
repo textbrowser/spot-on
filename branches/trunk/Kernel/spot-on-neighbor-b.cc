@@ -87,16 +87,9 @@ QString spoton_neighbor::peerAddress(void) const
     return "";
 }
 
-quint16 spoton_neighbor::peerPort(void) const
+QString spoton_neighbor::transport(void) const
 {
-  if(m_sctpSocket)
-    return m_sctpSocket->peerPort();
-  else if(m_tcpSocket)
-    return m_tcpSocket->peerPort();
-  else if(m_udpSocket)
-    return m_udpSocket->peerPort();
-  else
-    return 0;
+  return m_transport;
 }
 
 bool spoton_neighbor::isEncrypted(void) const
@@ -118,19 +111,16 @@ bool spoton_neighbor::isEncrypted(void) const
     return false;
 }
 
-QString spoton_neighbor::transport(void) const
+quint16 spoton_neighbor::peerPort(void) const
 {
-  return m_transport;
-}
-
-void spoton_neighbor::slotAuthenticationTimerTimeout(void)
-{
-  spoton_misc::logError
-    (QString("spoton_neighbor::slotAuthenticationTimerTimeout(): "
-	     "authentication timer expired for %1:%2. Aborting!").
-     arg(m_address).
-     arg(m_port));
-  deleteLater();
+  if(m_sctpSocket)
+    return m_sctpSocket->peerPort();
+  else if(m_tcpSocket)
+    return m_tcpSocket->peerPort();
+  else if(m_udpSocket)
+    return m_udpSocket->peerPort();
+  else
+    return 0;
 }
 
 void spoton_neighbor::abort(void)
@@ -156,6 +146,40 @@ void spoton_neighbor::abort(void)
       if(m_udpSocket->multicastSocket())
 	m_udpSocket->multicastSocket()->abort();
     }
+}
+
+void spoton_neighbor::bundlePrivateApplicationData
+(const QByteArray &data,
+ const QByteArray &privateApplicationCredentials,
+ const qint64 id,
+ const quint64 sequence)
+{
+  /*
+  ** The container data contains raw application data. We will not insert
+  ** an entry into the congestion-control mechanism here.
+  */
+
+  spoton_crypt *crypt = spoton_misc::parsePrivateApplicationMagnet
+    (privateApplicationCredentials);
+
+  if(!crypt)
+    return;
+
+  QByteArray bytes;
+  bool ok = true;
+
+  bytes = crypt->encryptedThenHashed // Twelve bytes could be conserved.
+    (QByteArray::number(sequence).rightJustified(20, '0') + data, &ok);
+  delete crypt;
+
+  if(ok)
+    emit receivedMessage
+      (spoton_send::messageXYZ(bytes.toBase64(),
+			       QPair<QByteArray, QByteArray> ()),
+       id,
+       QPair<QByteArray, QByteArray> ());
+
+  emit resetKeepAlive();
 }
 
 void spoton_neighbor::close(void)
@@ -195,170 +219,6 @@ void spoton_neighbor::close(void)
       if(m_udpSocket->multicastSocket())
 	m_udpSocket->multicastSocket()->close();
     }
-}
-
-void spoton_neighbor::slotStopTimer(QTimer *timer)
-{
-  if(timer)
-    timer->stop();
-}
-
-void spoton_neighbor::slotNewDatagram(const QByteArray &d,
-				      const QHostAddress &address,
-				      const quint16 port)
-{
-  if(d.isEmpty())
-    return;
-  else if(!m_udpSocket)
-    return;
-
-  if(!(address == m_udpSocket->peerAddress() &&
-       m_udpSocket->peerPort() == port))
-    return;
-
-  QByteArray datagram(d);
-
-  m_bytesRead += static_cast<quint64> (datagram.length());
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-  if(m_dtls)
-    {
-      if(m_dtls->isConnectionEncrypted())
-	datagram = m_dtls->decryptDatagram(m_udpSocket, datagram);
-      else
-	{
-	  /*
-	  ** Complete TLS.
-	  */
-
-	  if(!m_dtls->doHandshake(m_udpSocket, datagram))
-	    spoton_misc::logError
-	      (QString("spoton_neighbor::slotNewDatagram(): "
-		       "DTLS error (%1) for %2:%3.").
-	       arg(m_dtls->dtlsErrorString()).
-	       arg(m_address).
-	       arg(m_port));
-	  else if(m_dtls->handshakeState() == QDtls::HandshakeComplete)
-	    recordCertificateOrAbort();
-
-	  return;
-	}
-    }
-#endif
-
-  if(m_passthrough)
-    {
-      /*
-      ** A private application may not be able to authenticate.
-      */
-
-      if(!m_privateApplicationCredentials.isEmpty())
-	{
-	  if(m_isUserDefined)
-	    {
-	      QMutexLocker locker(&m_privateApplicationMutex);
-	      quint64 sequence = m_privateApplicationSequences.first;
-
-	      m_privateApplicationSequences.first += 1;
-	      locker.unlock();
-	      m_privateApplicationFutures << QtConcurrent::run
-		(this,
-		 &spoton_neighbor::bundlePrivateApplicationData,
-		 datagram,
-		 m_privateApplicationCredentials,
-		 m_id,
-		 sequence);
-	    }
-	  else
-	    {
-	      QMutexLocker locker(&m_privateApplicationMutex);
-	      quint64 sequence = m_privateApplicationSequences.second;
-
-	      m_privateApplicationSequences.second += 1;
-	      locker.unlock();
-	      m_privateApplicationFutures << QtConcurrent::run
-		(this,
-		 &spoton_neighbor::bundlePrivateApplicationData,
-		 datagram,
-		 m_privateApplicationCredentials,
-		 m_id,
-		 sequence);
-	    }
-
-	  return;
-	}
-
-      bool ok = true;
-
-      if(m_useAccounts.fetchAndAddOrdered(0))
-	if(!m_accountAuthenticated.fetchAndAddOrdered(0))
-	  ok = false;
-
-      if(ok)
-	{
-	  if(!spoton_kernel::messagingCacheContains(datagram))
-	    {
-	      emit receivedMessage
-		(datagram, m_id, QPair<QByteArray, QByteArray> ());
-	      spoton_kernel::messagingCacheAdd(datagram);
-	    }
-
-	  emit resetKeepAlive();
-	  return;
-	}
-    }
-
-  QReadLocker locker1(&m_maximumBufferSizeMutex);
-  qint64 maximumBufferSize = m_maximumBufferSize;
-
-  locker1.unlock();
-
-  QWriteLocker locker2(&m_dataMutex);
-  int length = static_cast<int> (maximumBufferSize) - m_data.length();
-
-  if(length > 0)
-    m_data.append(datagram.mid(0, length));
-
-  if(!m_data.isEmpty())
-    {
-      locker2.unlock();
-      emit newData();
-    }
-}
-
-void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
-{
-  if(urls.isEmpty())
-    return;
-
-  if(spoton_kernel::instance())
-    spoton_kernel::instance()->saveUrls(urls);
-}
-
-void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-  else if(!readyToWrite())
-    return;
-
-  QByteArray message;
-  QPair<QByteArray, QByteArray> ae
-    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
-
-  message = spoton_send::message0090
-    (list.value(0) + "\n" + list.value(1), ae);
-
-  if(write(message.constData(), message.length()) != message.length())
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotEchoKeyShare(): write() error "
-	       "for %1:%2.").
-       arg(m_address).
-       arg(m_port));
-  else
-    spoton_kernel::messagingCacheAdd(message);
 }
 
 void spoton_neighbor::deleteLater(void)
@@ -440,57 +300,6 @@ void spoton_neighbor::deleteLater(void)
 #else
   QThread::deleteLater();
 #endif
-}
-
-void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-  else if(!readyToWrite())
-    return;
-
-  QByteArray message;
-  QPair<QByteArray, QByteArray> ae
-    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
-
-  message = spoton_send::message0091a(data, ae);
-
-  if(write(message.constData(), message.length()) != message.length())
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotSendForwardSecrecyPublicKey(): "
-	       "write() error for %1:%2.").
-       arg(m_address).
-       arg(m_port));
-  else
-    spoton_kernel::messagingCacheAdd(message);
-}
-
-void spoton_neighbor::slotSendForwardSecrecySessionKeys
-(const QByteArray &data)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-  else if(!readyToWrite())
-    return;
-
-  QByteArray message;
-  QPair<QByteArray, QByteArray> ae
-    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
-
-  message = spoton_send::message0091b(data, ae);
-
-  if(write(message.constData(), message.length()) != message.length())
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotSendForwardSecrecySessionKeys(): "
-	       "write() error for %1:%2.").
-       arg(m_address).
-       arg(m_port));
-  else
-    spoton_kernel::messagingCacheAdd(message);
 }
 
 void spoton_neighbor::parsePrivateApplicationData
@@ -664,56 +473,210 @@ void spoton_neighbor::parsePrivateApplicationData
     }
 }
 
-void spoton_neighbor::slotWriteParsedApplicationData(const QByteArray &data)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+void spoton_neighbor::prepareDtls(void)
 {
-  /*
-  ** Let's write the raw data to the private application.
-  */
+  if(m_dtls)
+    m_dtls->deleteLater();
 
-  if(data.length() > m_laneWidth)
+  if(!m_useSsl)
     return;
 
-  if(readyToWrite())
-    if(write(data.constData(), data.length()) != data.length())
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotWriteParsedApplicationData(): "
-		 "write() error for %1:%2.").
-	 arg(m_address).
-	 arg(m_port));
+  if(m_isUserDefined)
+    m_dtls = new QDtls(QSslSocket::SslClientMode, this);
+  else
+    m_dtls = new QDtls(QSslSocket::SslServerMode, this);
+
+  m_dtls->setDtlsConfiguration(m_udpSslConfiguration);
+  m_dtls->setPeer(QHostAddress(m_address), m_port);
+  connect(m_dtls,
+	  SIGNAL(handshakeTimeout(void)),
+	  this,
+	  SLOT(slotHandshakeTimeout(void)));
+}
+#endif
+
+void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
+{
+  if(urls.isEmpty())
+    return;
+
+  if(spoton_kernel::instance())
+    spoton_kernel::instance()->saveUrls(urls);
 }
 
-void spoton_neighbor::bundlePrivateApplicationData
-(const QByteArray &data,
- const QByteArray &privateApplicationCredentials,
- const qint64 id,
- const quint64 sequence)
+void spoton_neighbor::slotAuthenticationTimerTimeout(void)
 {
-  /*
-  ** The container data contains raw application data. We will not insert
-  ** an entry into the congestion-control mechanism here.
-  */
+  spoton_misc::logError
+    (QString("spoton_neighbor::slotAuthenticationTimerTimeout(): "
+	     "authentication timer expired for %1:%2. Aborting!").
+     arg(m_address).
+     arg(m_port));
+  deleteLater();
+}
 
-  spoton_crypt *crypt = spoton_misc::parsePrivateApplicationMagnet
-    (privateApplicationCredentials);
-
-  if(!crypt)
+void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+  else if(!readyToWrite())
     return;
 
-  QByteArray bytes;
-  bool ok = true;
+  QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat", 0)));
 
-  bytes = crypt->encryptedThenHashed // Twelve bytes could be conserved.
-    (QByteArray::number(sequence).rightJustified(20, '0') + data, &ok);
-  delete crypt;
+  message = spoton_send::message0090
+    (list.value(0) + "\n" + list.value(1), ae);
 
-  if(ok)
-    emit receivedMessage
-      (spoton_send::messageXYZ(bytes.toBase64(),
-			       QPair<QByteArray, QByteArray> ()),
-       id,
-       QPair<QByteArray, QByteArray> ());
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotEchoKeyShare(): write() error "
+	       "for %1:%2.").
+       arg(m_address).
+       arg(m_port));
+  else
+    spoton_kernel::messagingCacheAdd(message);
+}
 
-  emit resetKeepAlive();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+void spoton_neighbor::slotHandshakeTimeout(void)
+{
+  if(m_dtls && m_udpSocket)
+    m_dtls->handleTimeout(m_udpSocket);
+}
+#else
+void spoton_neighbor::slotHandshakeTimeout(void)
+{
+  /*
+  ** Not used. Qt 4.8.x requires a definition!
+  */
+}
+#endif
+
+void spoton_neighbor::slotNewDatagram(const QByteArray &d,
+				      const QHostAddress &address,
+				      const quint16 port)
+{
+  if(d.isEmpty())
+    return;
+  else if(!m_udpSocket)
+    return;
+
+  if(!(address == m_udpSocket->peerAddress() &&
+       m_udpSocket->peerPort() == port))
+    return;
+
+  QByteArray datagram(d);
+
+  m_bytesRead += static_cast<quint64> (datagram.length());
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  if(m_dtls)
+    {
+      if(m_dtls->isConnectionEncrypted())
+	datagram = m_dtls->decryptDatagram(m_udpSocket, datagram);
+      else
+	{
+	  /*
+	  ** Complete TLS.
+	  */
+
+	  if(!m_dtls->doHandshake(m_udpSocket, datagram))
+	    spoton_misc::logError
+	      (QString("spoton_neighbor::slotNewDatagram(): "
+		       "DTLS error (%1) for %2:%3.").
+	       arg(m_dtls->dtlsErrorString()).
+	       arg(m_address).
+	       arg(m_port));
+	  else if(m_dtls->handshakeState() == QDtls::HandshakeComplete)
+	    recordCertificateOrAbort();
+
+	  return;
+	}
+    }
+#endif
+
+  if(m_passthrough)
+    {
+      /*
+      ** A private application may not be able to authenticate.
+      */
+
+      if(!m_privateApplicationCredentials.isEmpty())
+	{
+	  if(m_isUserDefined)
+	    {
+	      QMutexLocker locker(&m_privateApplicationMutex);
+	      quint64 sequence = m_privateApplicationSequences.first;
+
+	      m_privateApplicationSequences.first += 1;
+	      locker.unlock();
+	      m_privateApplicationFutures << QtConcurrent::run
+		(this,
+		 &spoton_neighbor::bundlePrivateApplicationData,
+		 datagram,
+		 m_privateApplicationCredentials,
+		 m_id,
+		 sequence);
+	    }
+	  else
+	    {
+	      QMutexLocker locker(&m_privateApplicationMutex);
+	      quint64 sequence = m_privateApplicationSequences.second;
+
+	      m_privateApplicationSequences.second += 1;
+	      locker.unlock();
+	      m_privateApplicationFutures << QtConcurrent::run
+		(this,
+		 &spoton_neighbor::bundlePrivateApplicationData,
+		 datagram,
+		 m_privateApplicationCredentials,
+		 m_id,
+		 sequence);
+	    }
+
+	  return;
+	}
+
+      bool ok = true;
+
+      if(m_useAccounts.fetchAndAddOrdered(0))
+	if(!m_accountAuthenticated.fetchAndAddOrdered(0))
+	  ok = false;
+
+      if(ok)
+	{
+	  if(!spoton_kernel::messagingCacheContains(datagram))
+	    {
+	      emit receivedMessage
+		(datagram, m_id, QPair<QByteArray, QByteArray> ());
+	      spoton_kernel::messagingCacheAdd(datagram);
+	    }
+
+	  emit resetKeepAlive();
+	  return;
+	}
+    }
+
+  QReadLocker locker1(&m_maximumBufferSizeMutex);
+  qint64 maximumBufferSize = m_maximumBufferSize;
+
+  locker1.unlock();
+
+  QWriteLocker locker2(&m_dataMutex);
+  int length = static_cast<int> (maximumBufferSize) - m_data.length();
+
+  if(length > 0)
+    m_data.append(datagram.mid(0, length));
+
+  if(!m_data.isEmpty())
+    {
+      locker2.unlock();
+      emit newData();
+    }
 }
 
 void spoton_neighbor::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
@@ -744,38 +707,77 @@ void spoton_neighbor::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
     spoton_kernel::messagingCacheAdd(message);
 }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-void spoton_neighbor::prepareDtls(void)
+void spoton_neighbor::slotStopTimer(QTimer *timer)
 {
-  if(m_dtls)
-    m_dtls->deleteLater();
+  if(timer)
+    timer->stop();
+}
 
-  if(!m_useSsl)
+void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+  else if(!readyToWrite())
     return;
 
-  if(m_isUserDefined)
-    m_dtls = new QDtls(QSslSocket::SslClientMode, this);
+  QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat", 0)));
+
+  message = spoton_send::message0091a(data, ae);
+
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotSendForwardSecrecyPublicKey(): "
+	       "write() error for %1:%2.").
+       arg(m_address).
+       arg(m_port));
   else
-    m_dtls = new QDtls(QSslSocket::SslServerMode, this);
-
-  m_dtls->setDtlsConfiguration(m_udpSslConfiguration);
-  m_dtls->setPeer(QHostAddress(m_address), m_port);
-  connect(m_dtls,
-	  SIGNAL(handshakeTimeout(void)),
-	  this,
-	  SLOT(slotHandshakeTimeout(void)));
+    spoton_kernel::messagingCacheAdd(message);
 }
 
-void spoton_neighbor::slotHandshakeTimeout(void)
+void spoton_neighbor::slotSendForwardSecrecySessionKeys
+(const QByteArray &data)
 {
-  if(m_dtls && m_udpSocket)
-    m_dtls->handleTimeout(m_udpSocket);
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+  else if(!readyToWrite())
+    return;
+
+  QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat", 0)));
+
+  message = spoton_send::message0091b(data, ae);
+
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotSendForwardSecrecySessionKeys(): "
+	       "write() error for %1:%2.").
+       arg(m_address).
+       arg(m_port));
+  else
+    spoton_kernel::messagingCacheAdd(message);
 }
-#else
-void spoton_neighbor::slotHandshakeTimeout(void)
+
+void spoton_neighbor::slotWriteParsedApplicationData(const QByteArray &data)
 {
   /*
-  ** Not used. Qt 4.8.x requires a definition!
+  ** Let's write the raw data to the private application.
   */
+
+  if(data.length() > m_laneWidth)
+    return;
+
+  if(readyToWrite())
+    if(write(data.constData(), data.length()) != data.length())
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotWriteParsedApplicationData(): "
+		 "write() error for %1:%2.").
+	 arg(m_address).
+	 arg(m_port));
 }
-#endif
