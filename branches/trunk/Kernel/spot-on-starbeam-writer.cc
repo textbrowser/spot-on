@@ -53,17 +53,81 @@ spoton_starbeam_writer::~spoton_starbeam_writer()
   wait();
 }
 
-void spoton_starbeam_writer::run(void)
+bool spoton_starbeam_writer::append
+(const QByteArray &data,
+ QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair)
 {
-  spoton_starbeam_writer_worker worker(this);
+  if(data.isEmpty())
+    {
+      spoton_misc::logError("spoton_starbeam_writer::append(): "
+			    "data is empty.");
+      return false;
+    }
 
-  connect(this,
-	  SIGNAL(newData(const QByteArray &,
-			 const QStringByteArrayHash &)),
-	  &worker,
-	  SLOT(slotNewData(const QByteArray &,
-			   const QStringByteArrayHash &)));
-  exec();
+  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+  if(!s_crypt)
+    {
+      spoton_misc::logError("spoton_starbeam_writer::append(): "
+			    "s_crypt is zero.");
+      return false;
+    }
+
+  spoton_kernel::discoverAdaptiveEchoPair
+    (data.trimmed(), discoveredAdaptiveEchoPair);
+
+  QReadLocker locker(&m_keyMutex);
+
+  if(m_magnets.isEmpty())
+    return false;
+
+  QHash<QString, QByteArray> magnet;
+  QList<QByteArray> list(data.trimmed().split('\n'));
+
+  for(int i = 0; i < list.size(); i++)
+    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+  for(int i = 0; i < m_magnets.size(); i++)
+    {
+      QByteArray messageCode;
+      bool ok = true;
+
+      messageCode = spoton_crypt::keyedHash
+	(list.value(0),
+	 m_magnets.at(i).value("mk"),
+	 m_magnets.at(i).value("ht"),
+	 &ok);
+
+      if(ok)
+	if(!list.value(1).isEmpty() && !messageCode.isEmpty() &&
+	   spoton_crypt::memcmp(list.value(1), messageCode))
+	  {
+	    magnet = m_magnets.at(i);
+	    break;
+	  }
+    }
+
+  locker.unlock();
+
+  if(!magnet.isEmpty() &&
+     spoton_kernel::setting("gui/etpReceivers", false).toBool())
+    {
+      /*
+      ** If the thread is not active, it should be!
+      */
+
+      if(!isRunning())
+	start();
+
+      emit newData(data, magnet);
+    }
+
+  return !magnet.isEmpty();
+}
+
+bool spoton_starbeam_writer::isActive(void) const
+{
+  return isRunning();
 }
 
 void spoton_starbeam_writer::processData
@@ -424,27 +488,17 @@ void spoton_starbeam_writer::processData
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_starbeam_writer::start(void)
+void spoton_starbeam_writer::run(void)
 {
-  /*
-  ** Magnets and nova updates from the user interface
-  ** will trigger slotReadKeys().
-  */
+  spoton_starbeam_writer_worker worker(this);
 
-  slotReadKeys();
-  QThread::start();
-}
-
-void spoton_starbeam_writer::stop(void)
-{
-  quit();
-  wait();
-
-  QWriteLocker locker(&m_keyMutex);
-
-  m_magnets.clear();
-  m_novas.clear();
-  locker.unlock();
+  connect(this,
+	  SIGNAL(newData(const QByteArray &,
+			 const QStringByteArrayHash &)),
+	  &worker,
+	  SLOT(slotNewData(const QByteArray &,
+			   const QStringByteArrayHash &)));
+  exec();
 }
 
 void spoton_starbeam_writer::slotReadKeys(void)
@@ -563,79 +617,25 @@ void spoton_starbeam_writer::slotReadKeys(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-bool spoton_starbeam_writer::append
-(const QByteArray &data,
- QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair)
+void spoton_starbeam_writer::start(void)
 {
-  if(data.isEmpty())
-    {
-      spoton_misc::logError("spoton_starbeam_writer::append(): "
-			    "data is empty.");
-      return false;
-    }
+  /*
+  ** Magnets and nova updates from the user interface
+  ** will trigger slotReadKeys().
+  */
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-  if(!s_crypt)
-    {
-      spoton_misc::logError("spoton_starbeam_writer::append(): "
-			    "s_crypt is zero.");
-      return false;
-    }
-
-  spoton_kernel::discoverAdaptiveEchoPair
-    (data.trimmed(), discoveredAdaptiveEchoPair);
-
-  QReadLocker locker(&m_keyMutex);
-
-  if(m_magnets.isEmpty())
-    return false;
-
-  QHash<QString, QByteArray> magnet;
-  QList<QByteArray> list(data.trimmed().split('\n'));
-
-  for(int i = 0; i < list.size(); i++)
-    list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-  for(int i = 0; i < m_magnets.size(); i++)
-    {
-      QByteArray messageCode;
-      bool ok = true;
-
-      messageCode = spoton_crypt::keyedHash
-	(list.value(0),
-	 m_magnets.at(i).value("mk"),
-	 m_magnets.at(i).value("ht"),
-	 &ok);
-
-      if(ok)
-	if(!list.value(1).isEmpty() && !messageCode.isEmpty() &&
-	   spoton_crypt::memcmp(list.value(1), messageCode))
-	  {
-	    magnet = m_magnets.at(i);
-	    break;
-	  }
-    }
-
-  locker.unlock();
-
-  if(!magnet.isEmpty() &&
-     spoton_kernel::setting("gui/etpReceivers", false).toBool())
-    {
-      /*
-      ** If the thread is not active, it should be!
-      */
-
-      if(!isRunning())
-	start();
-
-      emit newData(data, magnet);
-    }
-
-  return !magnet.isEmpty();
+  slotReadKeys();
+  QThread::start();
 }
 
-bool spoton_starbeam_writer::isActive(void) const
+void spoton_starbeam_writer::stop(void)
 {
-  return isRunning();
+  quit();
+  wait();
+
+  QWriteLocker locker(&m_keyMutex);
+
+  m_magnets.clear();
+  m_novas.clear();
+  locker.unlock();
 }
