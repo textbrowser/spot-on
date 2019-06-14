@@ -28,100 +28,6 @@
 #include "spot-on-crypt.h"
 #include "spot-on-misc.h"
 
-void spoton_crypt::generateNTRUKeys(const QString &keySize,
-				    QByteArray &privateKey,
-				    QByteArray &publicKey,
-				    bool *ok)
-{
-  if(ok)
-    *ok = false;
-
-#ifdef SPOTON_LINKED_WITH_LIBNTRU
-  int index = 0;
-  struct NtruEncParams parameters[] = {EES1087EP2,
-				       EES1171EP1,
-				       EES1499EP1};
-
-  if(keySize == "EES1087EP2")
-    index = 0;
-  else if(keySize == "EES1171EP1")
-    index = 1;
-  else if(keySize == "EES1499EP1")
-    index = 2;
-  else
-    {
-      spoton_misc::logError
-	("spoton_crypt::generateNTRUKeys(): parameter is not supported.");
-      return;
-    }
-
-  NtruEncKeyPair kp;
-  NtruRandContext rand_ctx_def;
-#if defined(Q_OS_WIN)
-  NtruRandGen rng_def = NTRU_RNG_DEFAULT;
-#else
-  NtruRandGen rng_def = NTRU_RNG_DEVURANDOM;
-#endif
-
-  if(ntru_rand_init(&rand_ctx_def, &rng_def) != NTRU_SUCCESS)
-    spoton_misc::logError
-      ("spoton_crypt::generateNTRUKeys(): ntru_rand_init() failure.");
-
-  if(ntru_gen_key_pair(&parameters[index], &kp,
-		       &rand_ctx_def) == NTRU_SUCCESS)
-    {
-      uint8_t *privateKey_array = 0;
-      uint8_t *publicKey_array = 0;
-      uint16_t length1 = ntru_priv_len(&parameters[index]);
-      uint16_t length2 = ntru_pub_len(&parameters[index]);
-
-      if(length1 > 0 && length2 > 0)
-	{
-	  privateKey_array = new uint8_t[length1];
-	  publicKey_array = new uint8_t[length2];
-	}
-      else
-	{
-	  if(length1 < 1)
-	    spoton_misc::logError
-	      ("spoton_crypt::generateNTRUKeys(): ntru_priv_len() failure.");
-
-	  if(length2 < 1)
-	    spoton_misc::logError
-	      ("spoton_crypt::generateNTRUKeys(): ntru_pub_len() failure.");
-	}
-
-      if(privateKey_array && publicKey_array)
-	{
-	  if(ok)
-	    *ok = true;
-
-	  ntru_export_priv(&kp.priv, privateKey_array); /*
-							** Returns a value.
-							*/
-	  ntru_export_pub(&kp.pub, publicKey_array);
-	  privateKey.resize(length1);
-	  memcpy(privateKey.data(), privateKey_array, length1);
-	  privateKey.prepend("ntru-private-key-");
-	  publicKey.resize(length2);
-	  memcpy(publicKey.data(), publicKey_array, length2);
-	  publicKey.prepend("ntru-public-key-");
-	  memset(privateKey_array, 0, length1);
-	  memset(publicKey_array, 0, length2);
-	}
-
-      delete []privateKey_array;
-      delete []publicKey_array;
-    }
-
-  ntru_rand_release(&rand_ctx_def);
-#else
-  Q_UNUSED(keySize);
-  Q_UNUSED(privateKey);
-  Q_UNUSED(publicKey);
-#endif
-}
-
 QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
 {
   if(ok)
@@ -417,5 +323,99 @@ QString spoton_crypt::publicKeySizeNTRU(void)
   return publicKeySizeNTRU(m_publicKey);
 #else
   return publicKeySizeNTRU(QByteArray());
+#endif
+}
+
+void spoton_crypt::generateNTRUKeys(const QString &keySize,
+				    QByteArray &privateKey,
+				    QByteArray &publicKey,
+				    bool *ok)
+{
+  if(ok)
+    *ok = false;
+
+#ifdef SPOTON_LINKED_WITH_LIBNTRU
+  int index = 0;
+  struct NtruEncParams parameters[] = {EES1087EP2,
+				       EES1171EP1,
+				       EES1499EP1};
+
+  if(keySize == "EES1087EP2")
+    index = 0;
+  else if(keySize == "EES1171EP1")
+    index = 1;
+  else if(keySize == "EES1499EP1")
+    index = 2;
+  else
+    {
+      spoton_misc::logError
+	("spoton_crypt::generateNTRUKeys(): parameter is not supported.");
+      return;
+    }
+
+  NtruEncKeyPair kp;
+  NtruRandContext rand_ctx_def;
+#if defined(Q_OS_WIN)
+  NtruRandGen rng_def = NTRU_RNG_DEFAULT;
+#else
+  NtruRandGen rng_def = NTRU_RNG_DEVURANDOM;
+#endif
+
+  if(ntru_rand_init(&rand_ctx_def, &rng_def) != NTRU_SUCCESS)
+    spoton_misc::logError
+      ("spoton_crypt::generateNTRUKeys(): ntru_rand_init() failure.");
+
+  if(ntru_gen_key_pair(&parameters[index], &kp,
+		       &rand_ctx_def) == NTRU_SUCCESS)
+    {
+      uint8_t *privateKey_array = 0;
+      uint8_t *publicKey_array = 0;
+      uint16_t length1 = ntru_priv_len(&parameters[index]);
+      uint16_t length2 = ntru_pub_len(&parameters[index]);
+
+      if(length1 > 0 && length2 > 0)
+	{
+	  privateKey_array = new uint8_t[length1];
+	  publicKey_array = new uint8_t[length2];
+	}
+      else
+	{
+	  if(length1 < 1)
+	    spoton_misc::logError
+	      ("spoton_crypt::generateNTRUKeys(): ntru_priv_len() failure.");
+
+	  if(length2 < 1)
+	    spoton_misc::logError
+	      ("spoton_crypt::generateNTRUKeys(): ntru_pub_len() failure.");
+	}
+
+      if(privateKey_array && publicKey_array)
+	{
+	  if(ok)
+	    *ok = true;
+
+	  ntru_export_priv(&kp.priv, privateKey_array); /*
+							** Returns a value.
+							*/
+	  ntru_export_pub(&kp.pub, publicKey_array);
+	  privateKey.resize(length1);
+	  memcpy(privateKey.data(), privateKey_array, length1);
+	  privateKey.prepend("ntru-private-key-");
+	  publicKey.resize(length2);
+	  memcpy(publicKey.data(), publicKey_array, length2);
+	  publicKey.prepend("ntru-public-key-");
+	  memset(privateKey_array, 0, length1);
+	  memset(publicKey_array, 0, length2);
+	}
+
+      delete []privateKey_array;
+      delete []publicKey_array;
+    }
+
+  ntru_rand_release(&rand_ctx_def);
+#else
+  Q_UNUSED(keySize);
+  Q_UNUSED(privateKey);
+  Q_UNUSED(publicKey);
 #endif
 }
