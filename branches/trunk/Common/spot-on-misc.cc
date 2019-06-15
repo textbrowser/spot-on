@@ -114,6 +114,732 @@ QString spoton_misc::homePath(void)
       constData();
 }
 
+bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
+{
+  if(!then.isValid())
+    return false;
+
+  QDateTime now(QDateTime::currentDateTimeUtc());
+
+  now.setTimeSpec(Qt::UTC);
+  return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
+}
+
+bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return false;
+
+  QByteArray bytes;
+  QSettings settings;
+  bool ok = true;
+
+  bytes = crypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.
+			    value("gui/authenticationHint").toByteArray()),
+     &ok);
+  return ok;
+}
+
+void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!query.exec("SELECT EXISTS (SELECT signatures_required FROM "
+		       "echo_key_sharing_secrets)"))
+	  {
+	    /*
+	    ** Perhaps signatures_required does not exist.
+	    */
+
+	    query.exec
+	      ("CREATE TABLE IF NOT EXISTS "
+	       "echo_key_sharing_secrets_temporary ("
+	       "accept TEXT NOT NULL, "
+	       "authentication_key TEXT NOT NULL, "
+	       "category_oid INTEGER NOT NULL, "
+	       "cipher_type TEXT NOT NULL, "
+	       "encryption_key TEXT NOT NULL, "
+	       "hash_type TEXT NOT NULL, "
+	       "iteration_count TEXT NOT NULL, "
+	       "name TEXT NOT NULL, "
+	       "name_hash TEXT NOT NULL, "
+	       "share TEXT NOT NULL, "
+	       "signatures_required TEXT NOT NULL, "
+	       "PRIMARY KEY (category_oid, name_hash))");
+
+	    if(query.exec("SELECT accept, "
+			  "authentication_key, "
+			  "category_oid, "
+			  "cipher_type, "
+			  "encryption_key, "
+			  "hash_type, "
+			  "iteration_count, "
+			  "name, "
+			  "name_hash, "
+			  "share FROM echo_key_sharing_secrets"))
+	      {
+		while(query.next())
+		  {
+		    QSqlQuery insertQuery(db);
+		    bool ok = true;
+
+		    insertQuery.prepare
+		      ("INSERT INTO echo_key_sharing_secrets_temporary "
+		       "(authentication_key, category_oid, cipher_type, "
+		       "encryption_key, hash_type, iteration_count, "
+		       "name, name_hash, share, signatures_required) "
+		       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+		    for(int i = 0; i < query.record().count(); i++)
+		      insertQuery.bindValue(i, query.value(i));
+
+		    insertQuery.bindValue
+		      (10, crypt->encryptedThenHashed(QByteArray("true"),
+						      &ok).toBase64());
+		    insertQuery.exec();
+		  }
+
+		query.exec("DROP TABLE echo_key_sharing_secrets");
+		query.exec("ALTER TABLE echo_key_sharing_secrets_temporary "
+			   "RENAME TO echo_key_sharing_secrets");
+	      }
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("UPDATE friends_public_keys SET status = 'offline' "
+		   "WHERE status <> 'offline'");
+
+	/*
+	** Delete asymmetric keys that were not completely shared.
+	*/
+
+	query.exec("DELETE FROM friends_public_keys WHERE "
+		   "neighbor_oid <> -1");
+	purgeSignatureRelationships(db, crypt);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "kernel.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM kernel_gui_server");
+	query.exec("DELETE FROM kernel_statistics");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM listeners WHERE "
+		   "status_control = 'deleted'");
+	query.exec("DELETE FROM listeners_accounts WHERE "
+		   "listener_oid NOT IN "
+		   "(SELECT OID FROM listeners)");
+	query.exec("DELETE FROM listeners_accounts_consumed_authentications");
+	query.exec("DELETE FROM listeners_allowed_ips WHERE "
+		   "listener_oid NOT IN "
+		   "(SELECT OID FROM listeners)");
+	query.exec("UPDATE listeners SET connections = 0, "
+		   "external_ip_address = NULL, "
+		   "status = 'offline'");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
+
+    if(db.open())
+      {
+	QSettings settings;
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM neighbors WHERE "
+		   "status_control = 'deleted'");
+
+	if(settings.value("gui/keepOnlyUserDefinedNeighbors", true).toBool())
+	  query.exec("DELETE FROM neighbors WHERE "
+		     "status_control <> 'blocked' AND user_defined = 0");
+
+	query.exec("UPDATE neighbors SET "
+		   "account_authenticated = NULL, "
+		   "buffered_content = 0, "
+		   "bytes_discarded_on_write = 0, "
+		   "bytes_read = 0, "
+		   "bytes_written = 0, "
+		   "external_ip_address = NULL, "
+		   "is_encrypted = 0, "
+		   "local_ip_address = NULL, "
+		   "local_port = NULL, "
+		   "ssl_session_cipher = NULL, "
+		   "status = 'disconnected', "
+		   "uptime = 0");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM transmitted WHERE "
+		   "status_control = 'deleted'");
+	query.exec("DELETE FROM transmitted_magnets WHERE "
+		   "transmitted_oid NOT IN "
+		   "(SELECT OID FROM transmitted)");
+	query.exec("DELETE FROM transmitted_scheduled_pulses WHERE "
+		   "transmitted_oid NOT IN "
+		   "(SELECT OID FROM transmitted)");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_misc::closeSocket
+#if QT_VERSION < 0x050000
+(const int socketDescriptor)
+#else
+(const qintptr socketDescriptor)
+#endif
+{
+#if defined(Q_OS_WIN)
+  shutdown((SOCKET) socketDescriptor, SD_BOTH);
+  closesocket((SOCKET) socketDescriptor);
+#else
+  shutdown((int) socketDescriptor, SHUT_RDWR);
+  close((int) socketDescriptor);
+#endif
+}
+
+void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
+{
+  /*
+  ** Attempt to correct flawed configuration settings.
+  */
+
+  QString str("");
+  QStringList list;
+  bool ok = true;
+  double rational = 0.00;
+  int integer = 0;
+
+  integer = qAbs(settings.value("gui/congestionCost", 10000).toInt(&ok));
+
+  if(!ok)
+    integer = 10000;
+  else if(integer < 1000 || integer > 65536)
+    integer = 10000;
+
+  settings.insert("gui/congestionCost", integer);
+  integer = qAbs(settings.value("gui/emailRetrievalInterval", 5).toInt(&ok));
+
+  if(!ok)
+    integer = 5;
+  else if(integer < 5 || integer > 60)
+    integer = 5;
+
+  settings.insert("gui/emailRetrievalInterval", integer);
+  str = settings.value("gui/fsCipherType").toString();
+
+  if(!(str == "aes256" || str == "camellia256" ||
+       str == "serpent256" || str == "twofish"))
+    str = "aes256";
+
+  settings.insert("gui/fsCipherType", str);
+  str = settings.value("gui/fsHashType").toString();
+
+  if(!(str == "sha512" || str == "stribog512" ||
+       str == "whirlpool"))
+    str = "sha512";
+
+  settings.insert("gui/fsHashType", str);
+  integer = qAbs
+    (settings.value("gui/gcryctl_init_secmem",
+		    spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt(&ok));
+
+  if(!ok)
+    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
+  else if(integer == 0)
+    {
+    }
+  else if(integer > 999999999)
+    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
+
+  settings.insert("gui/gcryctl_init_secmem", integer);
+  integer = settings.value("gui/guiExternalIpInterval", -1).toInt(&ok);
+
+  if(!ok)
+    integer = -1;
+  else if(!(integer == -1 || integer == 30 || integer == 60))
+    integer = -1;
+
+  settings.insert("gui/guiExternalIpInterval", integer);
+  str = settings.value("gui/hashType").toString();
+
+  if(!(str == "sha512" || str == "stribog512" ||
+       str == "whirlpool"))
+    str = "sha512";
+
+  settings.insert("gui/hashType", str);
+  str = settings.value("gui/iconSet", "nouve").toString();
+
+  if(!(str == "everaldo" ||
+       str == "meego" ||
+       str == "nouve" ||
+       str == "nuvola"))
+    str = "nouve";
+
+  settings.insert("gui/iconSet", str);
+  integer = qAbs(settings.value("gui/iterationCount", 10000).toInt(&ok));
+
+  if(!ok)
+    integer = 10000;
+  else if(integer < 10000 || integer > 999999999)
+    integer = 10000;
+
+  settings.insert("gui/iterationCount", integer);
+  str = settings.value("gui/kernelCipherType").toString();
+
+  if(!(str == "aes256" || str == "camellia256" ||
+       str == "serpent256" || str == "twofish"))
+    str = "aes256";
+
+  settings.insert("gui/kernelCipherType", str);
+  integer = settings.value("gui/kernelExternalIpInterval", -1).toInt(&ok);
+
+  if(!ok)
+    integer = -1;
+  else if(!(integer == -1 || integer == 30 || integer == 60))
+    integer = -1;
+
+  settings.insert("gui/kernelExternalIpInterval", integer);
+  str = settings.value("gui/kernelHashType").toString();
+
+  if(!(str == "sha512" || str == "stribog512" || str == "whirlpool"))
+    str = "sha512";
+
+  settings.insert("gui/kernelHashType", str);
+  integer = qAbs(settings.value("gui/kernelKeySize", 2048).toInt(&ok));
+
+  if(!ok)
+    integer = 2048;
+  else if(!(integer == 0 ||
+	    integer == 2048 ||
+	    integer == 3072 ||
+	    integer == 4096))
+    integer = 2048;
+
+  settings.insert("gui/kernelKeySize", integer);
+  integer = qAbs(settings.value("gui/kernel_url_batch_size", 5).toInt(&ok));
+
+  if(!ok)
+    integer = 5;
+  else if(integer <= 0 || integer > 15)
+    integer = 5;
+
+  settings.insert("gui/kernel_url_batch_size", integer);
+  integer = qAbs(settings.value("gui/limitConnections", 10).toInt(&ok));
+
+  if(!ok)
+    integer = 10;
+  else if(integer <= 0 || integer > 50)
+    integer = 10;
+
+  settings.insert("gui/limitConnections", integer);
+  integer = qAbs(settings.value("gui/maximum_url_keywords_import_interface",
+				50).toInt(&ok));
+
+  if(!ok)
+    integer = 50;
+  else if(integer < 50 || integer > 65535)
+    integer = 50;
+
+  settings.insert("gui/maximum_url_keywords_import_interface", integer);
+  integer = qAbs(settings.value("gui/maximum_url_keywords_import_kernel",
+				50).toInt(&ok));
+
+  if(!ok)
+    integer = 50;
+  else if(integer < 50 || integer > 65535)
+    integer = 50;
+
+  settings.insert("gui/maximum_url_keywords_import_kernel", integer);
+  integer = qAbs(settings.value("gui/maximumEmailFileSize", 1024).toInt(&ok));
+
+  if(!ok)
+    integer = 1024;
+  else if(integer < 1 || integer > 5000)
+    integer = 1024;
+
+  settings.insert("gui/maximumEmailFileSize", integer);
+  integer = qBound
+    (0,
+     settings.value("gui/postgresql_kernel_url_distribution_timeout", 45000).
+     toInt(&ok),
+     999999999);
+
+  if(!ok)
+    integer = 45000;
+
+  settings.insert("gui/postgresql_kernel_url_distribution_timeout", integer);
+  integer = qAbs(settings.value("gui/postofficeDays", 1).toInt(&ok));
+
+  if(!ok)
+    integer = 1;
+  else if(integer < 1 || integer > 366)
+    integer = 1;
+
+  settings.insert("gui/postofficeDays", integer);
+  integer = qAbs(settings.value("gui/publishedKeySize", 2048).toInt(&ok));
+
+  if(!ok)
+    integer = 2048;
+  else if(!(integer == 2048 || integer == 3072 ||
+	    integer == 4096))
+    integer = 2048;
+
+  settings.insert("gui/publishedKeySize", integer);
+  integer = qAbs(settings.value("gui/maxMosaicSize", 512).toInt(&ok));
+
+  if(!ok)
+    integer = 512;
+  else if(integer < 1 || integer > 5000)
+    integer = 512;
+
+  settings.insert("gui/maxMosaicSize", integer);
+  integer = qAbs(settings.value("gui/saltLength", 512).toInt(&ok));
+
+  if(!ok)
+    integer = 512;
+  else if(integer < 512 || integer > 999999999)
+    integer = 512;
+
+  settings.insert("gui/saltLength", integer);
+  integer = qAbs(settings.value("gui/searchResultsPerPage", 10).toInt(&ok));
+
+  if(!ok)
+    integer = 10;
+  else if(integer < 10 || integer > 1000)
+    integer = 10;
+
+  settings.insert("gui/searchResultsPerPage", integer);
+  rational = qAbs(settings.value("kernel/cachePurgeInterval", 15.00).
+		  toDouble(&ok));
+
+  if(!ok)
+    rational = 15.00;
+  else if(rational < 5.00 || rational > 90.00)
+    rational = 15.00;
+
+  settings.insert("kernel/cachePurgeInterval", rational);
+  integer = qAbs(settings.value("kernel/gcryctl_init_secmem",
+				spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).
+		 toInt(&ok));
+
+  if(!ok)
+    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
+  else if(integer == 0)
+    {
+    }
+  else if(integer > 999999999)
+    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
+
+  settings.insert("kernel/gcryctl_init_secmem", integer);
+  str = settings.value("kernel/messaging_cache_algorithm", "sha224").
+    toString().toLower().trimmed();
+
+  if(!spoton_crypt::congestionHashAlgorithms().contains(str))
+    str = "sha224";
+
+  settings.insert("kernel/messaging_cache_algorithm", str);
+  integer = qAbs
+    (settings.value("kernel/server_account_verification_window_msecs",
+		    15000).toInt(&ok));
+
+  if(!ok)
+    integer = 15000;
+  else if(integer < 1 || integer > 999999999)
+    integer = 15000;
+
+  settings.insert
+    ("kernel/server_account_verification_window_msecs", integer);
+
+  /*
+  ** Correct timer intervals.
+  */
+
+  integer = settings.value("gui/emailRetrievalInterval", 5).toInt(&ok);
+
+  if(!ok)
+    integer = 5;
+  else if(integer < 5 || integer > 60)
+    integer = 5;
+
+  settings.insert("gui/emailRetrievalInterval", integer);
+  integer = settings.value("gui/poptasticNumberOfMessages", 15).toInt(&ok);
+
+  if(!ok)
+    integer = 15;
+  else if(integer < 15 || integer > 999999999)
+    integer = 15;
+
+  settings.insert("gui/poptasticNumberOfMessages", integer);
+  rational = settings.value("gui/poptasticRefreshInterval", 5.00).
+    toDouble(&ok);
+
+  if(!ok)
+    rational = 5.00;
+  else if(rational < 5.00)
+    rational = 5.00;
+
+  settings.insert("gui/poptasticRefreshInterval", rational);
+  list.clear();
+  list << "gui/kernelUpdateTimer"
+       << "gui/listenersUpdateTimer"
+       << "gui/neighborsUpdateTimer"
+       << "gui/participantsUpdateTimer"
+       << "gui/starbeamUpdateTimer";
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      rational = settings.value(list.at(i), 3.50).toDouble(&ok);
+
+      if(!ok)
+	rational = 3.50;
+      else if(rational < 0.50 || rational > 10.00)
+	rational = 3.50;
+
+      settings.insert(list.at(i), rational);
+    }
+}
+
+void spoton_misc::enableLog(const bool state)
+{
+  s_enableLog.fetchAndStoreOrdered(state ? 1 : 0);
+}
+
+void spoton_misc::logError(const QString &error)
+{
+  if(error.trimmed().isEmpty())
+    return;
+  else if(!s_enableLog.fetchAndAddOrdered(0))
+    return;
+
+  QtConcurrent::run(&spoton_misc::logErrorThread, error);
+}
+
+void spoton_misc::logErrorThread(const QString &error)
+{
+  if(error.trimmed().isEmpty())
+    return;
+  else if(!s_enableLog.fetchAndAddOrdered(0))
+    return;
+
+  QWriteLocker locker(&s_logMutex);
+  QFile file(homePath() + QDir::separator() + "error_log.dat");
+
+  if(file.size() > spoton_common::LOG_FILE_MAXIMUM_SIZE)
+    /*
+    ** Too large!
+    */
+
+    file.remove();
+
+  if(file.open(QIODevice::Append | QIODevice::WriteOnly))
+    {
+      QDateTime now(QDateTime::currentDateTime());
+#if defined(Q_OS_WIN)
+      QString eol("\r\n");
+#else
+      QString eol("\n");
+#endif
+
+      file.write(now.toString(Qt::ISODate).toLatin1());
+      file.write(eol.toLatin1());
+      file.write(error.trimmed().toLatin1());
+      file.write(eol.toLatin1());
+      file.write(eol.toLatin1());
+      file.flush();
+    }
+
+  file.close();
+}
+
+void spoton_misc::populateUrlsDatabase(const QList<QList<QVariant> > &list,
+				       spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::populateUrlsDatabase(): crypt is zero.");
+      return;
+    }
+  else if(list.isEmpty())
+    {
+      logError
+	("spoton_misc::populateUrlsDatabase(): list is empty.");
+      return;
+    }
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    /*
+    ** Determine the correct URL database file.
+    */
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("INSERT INTO urls (date_time_inserted, "
+		      "description, hash, title, url) "
+		      "VALUES (?, ?, ?, ?, ?)");
+
+	for(int i = 0; i < list.size(); i++)
+	  {
+	    /*
+	    ** 0: description
+	    ** 1: title
+	    ** 2: url
+	    */
+
+	    QList<QVariant> variants(list.at(i));
+	    bool ok = true;
+
+	    query.bindValue
+	      (0, QDateTime::currentDateTime().toString(Qt::ISODate));
+	    query.bindValue
+	      (1, crypt->encryptedThenHashed
+	       (variants.value(0).toByteArray(), &ok).
+	       toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(2, crypt->keyedHash(variants.value(2).toByteArray(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(3, crypt->encryptedThenHashed
+		 (variants.value(1).toByteArray(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(4, crypt->encryptedThenHashed
+		 (variants.value(2).toByteArray(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_misc::prepareAuthenticationHint(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+
+  QSettings settings;
+
+  if(settings.contains("gui/authenticationHint"))
+    return;
+
+  QByteArray bytes(spoton_crypt::weakRandomBytes(256));
+  bool ok = true;
+
+  bytes = crypt->encryptedThenHashed(bytes, &ok);
+
+  if(!ok)
+    return;
+
+  settings.setValue("gui/authenticationHint", bytes.toBase64());
+}
+
 void spoton_misc::prepareDatabases(void)
 {
   QString connectionName("");
@@ -823,370 +1549,129 @@ void spoton_misc::prepareDatabases(void)
   */
 }
 
-void spoton_misc::logError(const QString &error)
+void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
 {
-  if(error.trimmed().isEmpty())
-    return;
-  else if(!s_enableLog.fetchAndAddOrdered(0))
-    return;
-
-  QtConcurrent::run(&spoton_misc::logErrorThread, error);
-}
-
-void spoton_misc::logErrorThread(const QString &error)
-{
-  if(error.trimmed().isEmpty())
-    return;
-  else if(!s_enableLog.fetchAndAddOrdered(0))
-    return;
-
-  QWriteLocker locker(&s_logMutex);
-  QFile file(homePath() + QDir::separator() + "error_log.dat");
-
-  if(file.size() > spoton_common::LOG_FILE_MAXIMUM_SIZE)
-    /*
-    ** Too large!
-    */
-
-    file.remove();
-
-  if(file.open(QIODevice::Append | QIODevice::WriteOnly))
-    {
-      QDateTime now(QDateTime::currentDateTime());
-#if defined(Q_OS_WIN)
-      QString eol("\r\n");
-#else
-      QString eol("\n");
+  QList<int> list;
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+  struct sigaction act;
 #endif
-
-      file.write(now.toString(Qt::ISODate).toLatin1());
-      file.write(eol.toLatin1());
-      file.write(error.trimmed().toLatin1());
-      file.write(eol.toLatin1());
-      file.write(eol.toLatin1());
-      file.flush();
-    }
-
-  file.close();
-}
-
-QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
-{
-  const char *code = 0;
-
-#ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  QHostAddress address(ipAddress);
-  QString fileName("");
-
-  if(address.protocol() == QAbstractSocket::IPv4Protocol)
-    {
-      QSettings settings;
-
-      fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
-    }
-  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
-    {
-      QSettings settings;
-
-      fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
-    }
-  else
-    return QString("Unknown");
-
-  GeoIP *gi = 0;
-  QFileInfo fileInfo;
-
-  fileInfo.setFile(fileName);
-
-  if(fileInfo.isReadable())
-    {
-      gi = GeoIP_open(fileName.toUtf8().constData(), GEOIP_MEMORY_CACHE);
-
-      if(gi)
-	code = GeoIP_country_code_by_addr
-	  (gi, ipAddress.toLatin1().constData());
-      else
-	logError("spoton_misc::countryCodeFromIPAddress(): gi is zero.");
-    }
-
-  GeoIP_delete(gi);
-#else
-  Q_UNUSED(ipAddress);
+  list << SIGABRT
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+       << SIGBUS
 #endif
-
-  if(!code || qstrnlen(code, 2) == 0)
-    return QString("Unknown");
-  else
-    return QString(code);
-}
-
-QString spoton_misc::countryNameFromIPAddress(const QString &ipAddress)
-{
-  const char *country = 0;
-
-#ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  QHostAddress address(ipAddress);
-  QString fileName("");
-
-  if(address.protocol() == QAbstractSocket::IPv4Protocol)
-    {
-      QSettings settings;
-
-      fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
-    }
-  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
-    {
-      QSettings settings;
-
-      fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
-    }
-  else
-    return QString("Unknown");
-
-  GeoIP *gi = 0;
-  QFileInfo fileInfo;
-
-  fileInfo.setFile(fileName);
-
-  if(fileInfo.isReadable())
-    {
-      gi = GeoIP_open(fileName.toUtf8().constData(), GEOIP_MEMORY_CACHE);
-
-      if(gi)
-	country = GeoIP_country_name_by_addr
-	  (gi, ipAddress.toLatin1().constData());
-      else
-	logError("spoton_misc::countryNameFromIPAddress(): gi is zero.");
-    }
-
-  GeoIP_delete(gi);
-#else
-  Q_UNUSED(ipAddress);
+       << SIGFPE
+       << SIGILL
+       << SIGINT
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+       << SIGQUIT
 #endif
+       << SIGSEGV
+       << SIGTERM;
 
-  if(!country || qstrnlen(country, 256) == 0)
-    return QString("Unknown");
-  else
-    return QString(country);
+  while(!list.isEmpty())
+    {
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+      act.sa_handler = signal_handler;
+      sigemptyset(&act.sa_mask);
+      act.sa_flags = 0;
+
+      if(sigaction(list.first(), &act, 0))
+	logError(QString("spoton_misc::prepareSignalHandler(): "
+			 "sigaction() failure for %1.").arg(list.first()));
+
+      list.removeFirst();
+#else
+      if(signal(list.first(), signal_handler) == SIG_ERR)
+	logError(QString("spoton_misc::prepareSignalHandler(): "
+			 "signal() failure for %1.").arg(list.first()));
+
+      list.removeFirst();
+#endif
+    }
 }
 
-void spoton_misc::populateUrlsDatabase(const QList<QList<QVariant> > &list,
-				       spoton_crypt *crypt)
+void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
+					      spoton_crypt *crypt)
 {
   if(!crypt)
     {
       logError
-	("spoton_misc::populateUrlsDatabase(): crypt is zero.");
+	("spoton_misc::purgeSignatureRelationships(): crypt "
+	 "is zero.");
       return;
     }
-  else if(list.isEmpty())
+  else if(!db.isOpen())
     {
       logError
-	("spoton_misc::populateUrlsDatabase(): list is empty.");
+	("spoton_misc::purgeSignatureRelationships(): db is closed.");
       return;
     }
 
+  QStringList list(spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      QSqlQuery query(db);
+      bool ok = true;
+
+      /*
+      ** Delete relationships that do not have corresponding entries
+      ** in the friends_public_keys table.
+      */
+
+      query.exec("PRAGMA secure_delete = ON");
+      query.prepare("DELETE FROM relationships_with_signatures WHERE "
+		    "public_key_hash NOT IN "
+		    "(SELECT public_key_hash FROM friends_public_keys WHERE "
+		    "key_type_hash <> ?)");
+      query.bindValue
+	(0, crypt->keyedHash(list.at(i).toLatin1(), &ok).toBase64());
+
+      if(ok)
+	query.exec();
+
+      /*
+      ** Delete signature public keys from friends_public_keys that
+      ** do not have relationships.
+      */
+
+      query.prepare
+	("DELETE FROM friends_public_keys WHERE "
+	 "key_type_hash = ? AND public_key_hash NOT IN "
+	 "(SELECT signature_public_key_hash FROM "
+	 "relationships_with_signatures)");
+
+      if(ok)
+	query.bindValue
+	  (0, crypt->keyedHash(list.at(i).toLatin1(), &ok).toBase64());
+
+      if(ok)
+	query.exec();
+    }
+}
+
+void spoton_misc::removeOneTimeStarBeamMagnets(void)
+{
   QString connectionName("");
 
   {
     QSqlDatabase db = database(connectionName);
 
-    /*
-    ** Determine the correct URL database file.
-    */
+    db.setDatabaseName(homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
 
-	query.prepare("INSERT INTO urls (date_time_inserted, "
-		      "description, hash, title, url) "
-		      "VALUES (?, ?, ?, ?, ?)");
-
-	for(int i = 0; i < list.size(); i++)
-	  {
-	    /*
-	    ** 0: description
-	    ** 1: title
-	    ** 2: url
-	    */
-
-	    QList<QVariant> variants(list.at(i));
-	    bool ok = true;
-
-	    query.bindValue
-	      (0, QDateTime::currentDateTime().toString(Qt::ISODate));
-	    query.bindValue
-	      (1, crypt->encryptedThenHashed
-	       (variants.value(0).toByteArray(), &ok).
-	       toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(2, crypt->keyedHash(variants.value(2).toByteArray(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(3, crypt->encryptedThenHashed
-		 (variants.value(1).toByteArray(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(4, crypt->encryptedThenHashed
-		 (variants.value(2).toByteArray(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.exec();
-	  }
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM magnets WHERE "
+		   "one_time_magnet = 1");
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
-				       const QByteArray &n, // Name
-				       const QByteArray &publicKey,
-				       const QByteArray &sPublicKey,
-				       const qint64 neighborOid,
-				       const QSqlDatabase &db,
-				       spoton_crypt *crypt,
-				       const bool useKeyTypeForName)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::saveFriendshipBundle(): crypt is zero.");
-      return false;
-    }
-  else if(!db.isOpen())
-    {
-      logError
-	("spoton_misc::saveFriendshipBundle(): db is closed.");
-      return false;
-    }
-
-  QByteArray name(n);
-  QSqlQuery query(db);
-  bool ok = true;
-
-  query.setForwardOnly(true);
-  query.prepare("SELECT name FROM friends_public_keys WHERE "
-		"name_changed_by_user = 1 AND public_key_hash = ?");
-  query.bindValue(0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
-
-  if(ok && query.exec())
-    if(query.next())
-      name = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
-
-  ok = true;
-  query.prepare("INSERT OR REPLACE INTO friends_public_keys "
-		"(gemini, gemini_hash_key, key_type, key_type_hash, "
-		"name, public_key, public_key_hash, "
-		"neighbor_oid, last_status_update, name_changed_by_user) "
-		"VALUES ((SELECT gemini FROM friends_public_keys WHERE "
-		"public_key_hash = ?), "
-		"(SELECT gemini_hash_key FROM friends_public_keys WHERE "
-		"public_key_hash = ?), "
-		"?, ?, ?, ?, ?, ?, ?, "
-		"(SELECT name_changed_by_user FROM friends_public_keys WHERE "
-		"public_key_hash = ?))");
-  query.bindValue(0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
-
-  if(ok)
-    query.bindValue(1, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
-
-  if(ok)
-    query.bindValue(2, crypt->encryptedThenHashed(keyType, &ok).toBase64());
-
-  if(ok)
-    query.bindValue(3, crypt->keyedHash(keyType, &ok).toBase64());
-
-  if(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(keyType))
-    {
-      if(ok)
-	{
-	  if(name.isEmpty())
-	    {
-	      if(keyType == "poptastic")
-		query.bindValue
-		  (4, crypt->
-		   encryptedThenHashed(QByteArray("unknown@unknown.org"),
-				       &ok).toBase64());
-	      else
-		query.bindValue
-		  (4, crypt->
-		   encryptedThenHashed(QByteArray("unknown"),
-				       &ok).toBase64());
-	    }
-	  else
-	    query.bindValue
-	      (4, crypt->
-	       encryptedThenHashed(name.
-				   mid(0, spoton_common::
-				       NAME_MAXIMUM_LENGTH),
-				   &ok).toBase64());
-	}
-    }
-  else if(ok)
-    {
-      if(useKeyTypeForName)
-	query.bindValue(4, crypt->encryptedThenHashed(keyType, &ok).
-			toBase64());
-      else
-	query.bindValue(4, crypt->encryptedThenHashed(name, &ok).
-			toBase64());
-    }
-
-  if(ok)
-    query.bindValue
-      (5, crypt->encryptedThenHashed(publicKey, &ok).toBase64());
-
-  if(ok)
-    query.bindValue
-      (6, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
-
-  query.bindValue(7, neighborOid);
-  query.bindValue
-    (8, QDateTime::currentDateTime().toString(Qt::ISODate));
-
-  if(ok)
-    query.bindValue(9, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
-
-  if(ok)
-    ok = query.exec();
-
-  if(ok)
-    if(!sPublicKey.isEmpty())
-      {
-	/*
-	** Record the relationship between the public key and the
-	** signature public key.
-	*/
-
-	QSqlQuery query(db);
-
-	query.prepare("INSERT OR REPLACE INTO relationships_with_signatures "
-		      "(public_key_hash, signature_public_key_hash) "
-		      "VALUES (?, ?)");
-	query.bindValue
-	  (0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, spoton_crypt::sha512Hash(sPublicKey, &ok).toBase64());
-
-	if(ok)
-	  ok = query.exec();
-      }
-
-  return ok;
 }
 
 void spoton_misc::retrieveSymmetricData
@@ -1364,325 +1849,39 @@ void spoton_misc::retrieveSymmetricData
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-bool spoton_misc::isAcceptedParticipant(const QByteArray &publicKeyHash,
-					const QString &keyType,
+void spoton_misc::saveParticipantStatus(const QByteArray &name,
+					const QByteArray &publicKeyHash,
+					const QByteArray &status,
+					const QByteArray &timestamp,
+					const int seconds,
 					spoton_crypt *crypt)
 {
-  if(!crypt)
+  QDateTime dateTime
+    (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
+
+  if(!dateTime.isValid())
     {
       logError
-	("spoton_misc::isAcceptedParticipant(): crypt is zero.");
-      return false;
+	("spoton_misc(): saveParticipantStatus(): "
+	 "invalid date-time object.");
+      return;
     }
 
-  QString connectionName("");
-  bool exists = false;
+  QDateTime now(QDateTime::currentDateTimeUtc());
 
-  {
-    QSqlDatabase db = database(connectionName);
+  dateTime.setTimeSpec(Qt::UTC);
+  now.setTimeSpec(Qt::UTC);
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+  qint64 secsTo = qAbs(now.secsTo(dateTime));
 
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT EXISTS(SELECT 1 "
-		      "FROM friends_public_keys WHERE "
-		      "key_type_hash = ? AND "
-		      "neighbor_oid = -1 AND "
-		      "public_key_hash = ?)");
-	query.bindValue
-	  (0, crypt->keyedHash(keyType.toLatin1(), &ok).toBase64());
-	query.bindValue(1, publicKeyHash.toBase64());
-
-	if(ok && query.exec())
-	  if(query.next())
-	    exists = query.value(0).toBool();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return exists;
-}
-
-bool spoton_misc::isPrivateNetwork(const QHostAddress &address)
-{
-  bool isPrivate = false;
-
-  if(address.isNull())
-    return isPrivate;
-  else if(address.protocol() == QAbstractSocket::IPv4Protocol)
-    {
-      QPair<QHostAddress, int> pair1
-	(QHostAddress::parseSubnet("10.0.0.0/8"));
-      QPair<QHostAddress, int> pair2
-	(QHostAddress::parseSubnet("127.0.0.0/8"));
-      QPair<QHostAddress, int> pair3
-	(QHostAddress::parseSubnet("169.254.0.0/16"));
-      QPair<QHostAddress, int> pair4
-	(QHostAddress::parseSubnet("172.16.0.0/12"));
-      QPair<QHostAddress, int> pair5
-	(QHostAddress::parseSubnet("192.168.0.0/16"));
-
-      isPrivate = address.isInSubnet(pair1) || address.isInSubnet(pair2) ||
-	address.isInSubnet(pair3) || address.isInSubnet(pair4) ||
-	address.isInSubnet(pair5);
-    }
-  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
-    {
-      QPair<QHostAddress, int> pair1
-	(QHostAddress::parseSubnet("::1/128"));
-      QPair<QHostAddress, int> pair2
-	(QHostAddress::parseSubnet("fc00::/7"));
-      QPair<QHostAddress, int> pair3
-	(QHostAddress::parseSubnet("fe80::/10"));
-
-      isPrivate = address.isInSubnet(pair1) || address.isInSubnet(pair2) ||
-	address.isInSubnet(pair3);
-    }
-
-  return isPrivate;
-}
-
-QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
-(const QByteArray &data, const QByteArray &hash, spoton_crypt *crypt)
-{
-  QPair<QByteArray, QByteArray> gemini;
-
-  if(crypt && !hash.isEmpty())
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = database(connectionName);
-
-	db.setDatabaseName
-	  (homePath() + QDir::separator() + "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-	    bool ok = true;
-
-	    query.setForwardOnly(true);
-	    query.prepare("SELECT gemini, gemini_hash_key "
-			  "FROM friends_public_keys WHERE "
-			  "gemini IS NOT NULL AND "
-			  "gemini_hash_key IS NOT NULL AND "
-			  "key_type_hash IN (?, ?) AND "
-			  "neighbor_oid = -1");
-	    query.bindValue(0, crypt->keyedHash(QByteArray("chat"), &ok).
-			    toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(1, crypt->keyedHash(QByteArray("poptastic"), &ok).
-		 toBase64());
-
-	    if(ok && query.exec())
-	      while(query.next())
-		{
-		  bool ok = true;
-
-		  gemini.first = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(0).
-					    toByteArray()),
-		     &ok);
-
-		  if(ok)
-		    gemini.second = crypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(1).
-					      toByteArray()),
-		       &ok);
-
-		  if(ok)
-		    if(!gemini.first.isEmpty() && !gemini.second.isEmpty())
-		      {
-			QByteArray computedHash
-			  (spoton_crypt::keyedHash(data, gemini.second,
-						   "sha512", &ok));
-
-			if(ok)
-			  if(!computedHash.isEmpty() && !hash.isEmpty() &&
-			     spoton_crypt::memcmp(computedHash, hash))
-			    break; // We have something!
-		      }
-
-		  gemini.first.clear();
-		  gemini.second.clear();
-		}
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-
-  return gemini;
-}
-
-void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("UPDATE friends_public_keys SET status = 'offline' "
-		   "WHERE status <> 'offline'");
-
-	/*
-	** Delete asymmetric keys that were not completely shared.
-	*/
-
-	query.exec("DELETE FROM friends_public_keys WHERE "
-		   "neighbor_oid <> -1");
-	purgeSignatureRelationships(db, crypt);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() + "kernel.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM kernel_gui_server");
-	query.exec("DELETE FROM kernel_statistics");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() + "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM listeners WHERE "
-		   "status_control = 'deleted'");
-	query.exec("DELETE FROM listeners_accounts WHERE "
-		   "listener_oid NOT IN "
-		   "(SELECT OID FROM listeners)");
-	query.exec("DELETE FROM listeners_accounts_consumed_authentications");
-	query.exec("DELETE FROM listeners_allowed_ips WHERE "
-		   "listener_oid NOT IN "
-		   "(SELECT OID FROM listeners)");
-	query.exec("UPDATE listeners SET connections = 0, "
-		   "external_ip_address = NULL, "
-		   "status = 'offline'");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
-
-    if(db.open())
-      {
-	QSettings settings;
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM neighbors WHERE "
-		   "status_control = 'deleted'");
-
-	if(settings.value("gui/keepOnlyUserDefinedNeighbors", true).toBool())
-	  query.exec("DELETE FROM neighbors WHERE "
-		     "status_control <> 'blocked' AND user_defined = 0");
-
-	query.exec("UPDATE neighbors SET "
-		   "account_authenticated = NULL, "
-		   "buffered_content = 0, "
-		   "bytes_discarded_on_write = 0, "
-		   "bytes_read = 0, "
-		   "bytes_written = 0, "
-		   "external_ip_address = NULL, "
-		   "is_encrypted = 0, "
-		   "local_ip_address = NULL, "
-		   "local_port = NULL, "
-		   "ssl_session_cipher = NULL, "
-		   "status = 'disconnected', "
-		   "uptime = 0");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() + "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM transmitted WHERE "
-		   "status_control = 'deleted'");
-	query.exec("DELETE FROM transmitted_magnets WHERE "
-		   "transmitted_oid NOT IN "
-		   "(SELECT OID FROM transmitted)");
-	query.exec("DELETE FROM transmitted_scheduled_pulses WHERE "
-		   "transmitted_oid NOT IN "
-		   "(SELECT OID FROM transmitted)");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
-					  spoton_crypt *crypt)
-{
-  if(!crypt)
+  if(!(secsTo <= static_cast<qint64> (seconds)))
     {
       logError
-	("spoton_misc::publicKeyFromHash(): crypt is zero.");
-      return QByteArray();
+	(QString("spoton_misc::saveParticipantStatus(): "
+		 "large time delta (%1).").arg(secsTo));
+      return;
     }
 
-  QByteArray publicKey;
   QString connectionName("");
 
   {
@@ -1694,134 +1893,142 @@ QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
 
-	query.setForwardOnly(true);
-	query.prepare("SELECT public_key "
-		      "FROM friends_public_keys WHERE "
-		      "public_key_hash = ?");
-	query.bindValue(0, publicKeyHash.toBase64());
+	if(status.isEmpty())
+	  {
+	    if(name.isEmpty())
+	      {
+		query.prepare("UPDATE friends_public_keys SET "
+			      "last_status_update = ?, "
+			      "status = 'online' "
+			      "WHERE neighbor_oid = -1 AND "
+			      "public_key_hash = ?");
+		query.bindValue
+		  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
+		query.bindValue(1, publicKeyHash.toBase64());
+		query.exec();
+	      }
+	    else if(crypt)
+	      {
+		bool ok = true;
 
-	if(query.exec())
-	  if(query.next())
-	    publicKey = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).
-				      toByteArray()),
-	       &ok);
+		query.prepare("UPDATE friends_public_keys SET "
+			      "last_status_update = ?, "
+			      "status = 'online' "
+			      "WHERE neighbor_oid = -1 AND "
+			      "public_key_hash = ?");
+		query.bindValue
+		  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
+		query.bindValue(1, publicKeyHash.toBase64());
+		query.exec();
+		query.prepare("UPDATE friends_public_keys SET "
+			      "name = ? "
+			      "WHERE name_changed_by_user = 0 AND "
+			      "neighbor_oid = -1 AND "
+			      "public_key_hash = ?");
+		query.bindValue
+		  (0,
+		   crypt->
+		   encryptedThenHashed(name.
+				       mid(0, spoton_common::
+					   NAME_MAXIMUM_LENGTH), &ok).
+		   toBase64());
+		query.bindValue(1, publicKeyHash.toBase64());
+
+		if(ok)
+		  query.exec();
+	      }
+	  }
+	else
+	  {
+	    if(name.isEmpty())
+	      {
+		query.prepare("UPDATE friends_public_keys SET "
+			      "status = ?, "
+			      "last_status_update = ? "
+			      "WHERE neighbor_oid = -1 AND "
+			      "public_key_hash = ?");
+
+		if(status.toLower() == "away" ||
+		   status.toLower() == "busy" ||
+		   status.toLower() == "offline" ||
+		   status.toLower() == "online")
+		  query.bindValue(0, status.toLower());
+		else
+		  query.bindValue
+		    (0, status.
+		     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
+
+		query.bindValue
+		  (1, QDateTime::currentDateTime().toString(Qt::ISODate));
+		query.bindValue(2, publicKeyHash.toBase64());
+		query.exec();
+	      }
+	    else if(crypt)
+	      {
+		QDateTime now(QDateTime::currentDateTime());
+		bool ok = true;
+
+		query.prepare("UPDATE friends_public_keys SET "
+			      "name = ?, "
+			      "status = ?, "
+			      "last_status_update = ? "
+			      "WHERE name_changed_by_user = 0 AND "
+			      "neighbor_oid = -1 AND "
+			      "public_key_hash = ?");
+		query.bindValue
+		  (0,
+		   crypt->
+		   encryptedThenHashed(name.
+				       mid(0, spoton_common::
+					   NAME_MAXIMUM_LENGTH), &ok).
+		   toBase64());
+
+		if(status.toLower() == "away" ||
+		   status.toLower() == "busy" ||
+		   status.toLower() == "offline" ||
+		   status.toLower() == "online")
+		  query.bindValue(1, status.toLower());
+		else
+		  query.bindValue
+		    (1, status.
+		     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
+
+		query.bindValue
+		  (2, now.toString(Qt::ISODate));
+		query.bindValue(3, publicKeyHash.toBase64());
+
+		if(ok)
+		  query.exec();
+
+		query.prepare("UPDATE friends_public_keys SET "
+			      "status = ?, "
+			      "last_status_update = ? "
+			      "WHERE neighbor_oid = -1 AND "
+			      "public_key_hash = ?");
+
+		if(status.toLower() == "away" ||
+		   status.toLower() == "busy" ||
+		   status.toLower() == "offline" ||
+		   status.toLower() == "online")
+		  query.bindValue(0, status.toLower());
+		else
+		  query.bindValue
+		    (0, status.
+		     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
+
+		query.bindValue
+		  (1, now.toString(Qt::ISODate));
+		query.bindValue(2, publicKeyHash.toBase64());
+		query.exec();
+	      }
+	  }
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  return publicKey;
-}
-
-QByteArray spoton_misc::publicKeyFromSignaturePublicKeyHash
-(const QByteArray &signaturePublicKeyHash, spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::publicKeyFromSignaturePublicKeyHash(): crypt "
-	 "is zero.");
-      return QByteArray();
-    }
-
-  /*
-  ** Gather the public key that's associated with the provided
-  ** signature public key hash.
-  */
-
-  QByteArray publicKey;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT public_key "
-		      "FROM friends_public_keys WHERE "
-		      "public_key_hash = (SELECT public_key_hash FROM "
-		      "relationships_with_signatures WHERE "
-		      "signature_public_key_hash = ?)");
-	query.bindValue(0, signaturePublicKeyHash.toBase64());
-
-	if(query.exec())
-	  if(query.next())
-	    publicKey = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).
-				      toByteArray()),
-	       &ok);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return publicKey;
-}
-
-QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
-(const QByteArray &publicKeyHash, spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::signaturePublicKeyFromPublicKeyHash(): crypt "
-	 "is zero.");
-      return QByteArray();
-    }
-
-  /*
-  ** Gather the signature public key that's associated with the
-  ** provided public key hash.
-  */
-
-  QByteArray publicKey;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT public_key "
-		      "FROM friends_public_keys WHERE "
-		      "public_key_hash = (SELECT signature_public_key_hash "
-		      "FROM "
-		      "relationships_with_signatures WHERE "
-		      "public_key_hash = ?)");
-	query.bindValue(0, publicKeyHash.toBase64());
-
-	if(query.exec())
-	  if(query.next())
-	    publicKey = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).
-				      toByteArray()),
-	       &ok);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return publicKey;
 }
 
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
@@ -2298,366 +2505,653 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
-					      spoton_crypt *crypt)
+void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
+{
+  /*
+  ** Issue as soon as possible!
+  */
+
+  QList<int> defaults;
+  QList<int> values;
+  QStringList keys;
+
+  defaults
+    << spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC
+    << spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
+  keys << "gui/chat_time_delta"
+       << "gui/forward_secrecy_time_delta"
+       << "gui/gemini_time_delta"
+       << "gui/kernel_cache_object_lifetime"
+       << "gui/kernel_url_dispatcher_interval"
+       << "gui/poptastic_forward_secrecy_time_delta"
+       << "gui/poptastic_gemini_time_delta"
+       << "gui/retrieve_mail_time_delta";
+
+  for(int i = 0; i < keys.size(); i++)
+    values << settings.value(keys.at(i), defaults.at(i)).toInt();
+
+  spoton_common::CHAT_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(0), 600);
+  spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(1), 600);
+  spoton_common::GEMINI_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(2), 600);
+  spoton_common::CACHE_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(3), 600);
+  spoton_common::KERNEL_URL_DISPATCHER_INTERVAL =
+    qBound(45, values.value(4), 600);
+  spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(5), 600);
+  spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(6), 60 * 60 * 24 * 7);
+  spoton_common::MAIL_TIME_DELTA_MAXIMUM =
+    qBound(5, values.value(7), 600);
+}
+
+void spoton_misc::vacuumAllDatabases(void)
+{
+  QStringList list;
+
+  list << "buzz_channels.db"
+       << "congestion_control.db"
+       << "echo_key_sharing_secrets.db"
+       << "email.db"
+       << "friends_public_keys.db"
+       << "idiotes.db"
+       << "kernel.db"
+       << "listeners.db"
+       << "neighbors.db"
+       << "poptastic.db"
+       << "rss.db"
+       << "secrets.db"
+       << "shared.db"
+       << "starbeam.db"
+       << "urls_distillers_information.db"
+       << "urls_key_information.db";
+
+  while(!list.isEmpty())
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = database(connectionName);
+
+	db.setDatabaseName(homePath() + QDir::separator() + list.takeFirst());
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.exec("VACUUM");
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
+
+QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
+{
+  const char *code = 0;
+
+#ifdef SPOTON_LINKED_WITH_LIBGEOIP
+  QHostAddress address(ipAddress);
+  QString fileName("");
+
+  if(address.protocol() == QAbstractSocket::IPv4Protocol)
+    {
+      QSettings settings;
+
+      fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
+    }
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
+    {
+      QSettings settings;
+
+      fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+    }
+  else
+    return QString("Unknown");
+
+  GeoIP *gi = 0;
+  QFileInfo fileInfo;
+
+  fileInfo.setFile(fileName);
+
+  if(fileInfo.isReadable())
+    {
+      gi = GeoIP_open(fileName.toUtf8().constData(), GEOIP_MEMORY_CACHE);
+
+      if(gi)
+	code = GeoIP_country_code_by_addr
+	  (gi, ipAddress.toLatin1().constData());
+      else
+	logError("spoton_misc::countryCodeFromIPAddress(): gi is zero.");
+    }
+
+  GeoIP_delete(gi);
+#else
+  Q_UNUSED(ipAddress);
+#endif
+
+  if(!code || qstrnlen(code, 2) == 0)
+    return QString("Unknown");
+  else
+    return QString(code);
+}
+
+QString spoton_misc::countryNameFromIPAddress(const QString &ipAddress)
+{
+  const char *country = 0;
+
+#ifdef SPOTON_LINKED_WITH_LIBGEOIP
+  QHostAddress address(ipAddress);
+  QString fileName("");
+
+  if(address.protocol() == QAbstractSocket::IPv4Protocol)
+    {
+      QSettings settings;
+
+      fileName = settings.value("gui/geoipPath4", "GeoIP.dat").toString();
+    }
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
+    {
+      QSettings settings;
+
+      fileName = settings.value("gui/geoipPath6", "GeoIP.dat").toString();
+    }
+  else
+    return QString("Unknown");
+
+  GeoIP *gi = 0;
+  QFileInfo fileInfo;
+
+  fileInfo.setFile(fileName);
+
+  if(fileInfo.isReadable())
+    {
+      gi = GeoIP_open(fileName.toUtf8().constData(), GEOIP_MEMORY_CACHE);
+
+      if(gi)
+	country = GeoIP_country_name_by_addr
+	  (gi, ipAddress.toLatin1().constData());
+      else
+	logError("spoton_misc::countryNameFromIPAddress(): gi is zero.");
+    }
+
+  GeoIP_delete(gi);
+#else
+  Q_UNUSED(ipAddress);
+#endif
+
+  if(!country || qstrnlen(country, 256) == 0)
+    return QString("Unknown");
+  else
+    return QString(country);
+}
+
+bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
+				       const QByteArray &n, // Name
+				       const QByteArray &publicKey,
+				       const QByteArray &sPublicKey,
+				       const qint64 neighborOid,
+				       const QSqlDatabase &db,
+				       spoton_crypt *crypt,
+				       const bool useKeyTypeForName)
 {
   if(!crypt)
     {
       logError
-	("spoton_misc::purgeSignatureRelationships(): crypt "
-	 "is zero.");
-      return;
+	("spoton_misc::saveFriendshipBundle(): crypt is zero.");
+      return false;
     }
   else if(!db.isOpen())
     {
       logError
-	("spoton_misc::purgeSignatureRelationships(): db is closed.");
-      return;
+	("spoton_misc::saveFriendshipBundle(): db is closed.");
+      return false;
     }
 
-  QStringList list(spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
+  QByteArray name(n);
+  QSqlQuery query(db);
+  bool ok = true;
 
-  for(int i = 0; i < list.size(); i++)
+  query.setForwardOnly(true);
+  query.prepare("SELECT name FROM friends_public_keys WHERE "
+		"name_changed_by_user = 1 AND public_key_hash = ?");
+  query.bindValue(0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+
+  if(ok && query.exec())
+    if(query.next())
+      name = crypt->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+  ok = true;
+  query.prepare("INSERT OR REPLACE INTO friends_public_keys "
+		"(gemini, gemini_hash_key, key_type, key_type_hash, "
+		"name, public_key, public_key_hash, "
+		"neighbor_oid, last_status_update, name_changed_by_user) "
+		"VALUES ((SELECT gemini FROM friends_public_keys WHERE "
+		"public_key_hash = ?), "
+		"(SELECT gemini_hash_key FROM friends_public_keys WHERE "
+		"public_key_hash = ?), "
+		"?, ?, ?, ?, ?, ?, ?, "
+		"(SELECT name_changed_by_user FROM friends_public_keys WHERE "
+		"public_key_hash = ?))");
+  query.bindValue(0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+
+  if(ok)
+    query.bindValue(1, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+
+  if(ok)
+    query.bindValue(2, crypt->encryptedThenHashed(keyType, &ok).toBase64());
+
+  if(ok)
+    query.bindValue(3, crypt->keyedHash(keyType, &ok).toBase64());
+
+  if(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(keyType))
     {
-      QSqlQuery query(db);
-      bool ok = true;
-
-      /*
-      ** Delete relationships that do not have corresponding entries
-      ** in the friends_public_keys table.
-      */
-
-      query.exec("PRAGMA secure_delete = ON");
-      query.prepare("DELETE FROM relationships_with_signatures WHERE "
-		    "public_key_hash NOT IN "
-		    "(SELECT public_key_hash FROM friends_public_keys WHERE "
-		    "key_type_hash <> ?)");
-      query.bindValue
-	(0, crypt->keyedHash(list.at(i).toLatin1(), &ok).toBase64());
-
       if(ok)
-	query.exec();
-
-      /*
-      ** Delete signature public keys from friends_public_keys that
-      ** do not have relationships.
-      */
-
-      query.prepare
-	("DELETE FROM friends_public_keys WHERE "
-	 "key_type_hash = ? AND public_key_hash NOT IN "
-	 "(SELECT signature_public_key_hash FROM "
-	 "relationships_with_signatures)");
-
-      if(ok)
-	query.bindValue
-	  (0, crypt->keyedHash(list.at(i).toLatin1(), &ok).toBase64());
-
-      if(ok)
-	query.exec();
+	{
+	  if(name.isEmpty())
+	    {
+	      if(keyType == "poptastic")
+		query.bindValue
+		  (4, crypt->
+		   encryptedThenHashed(QByteArray("unknown@unknown.org"),
+				       &ok).toBase64());
+	      else
+		query.bindValue
+		  (4, crypt->
+		   encryptedThenHashed(QByteArray("unknown"),
+				       &ok).toBase64());
+	    }
+	  else
+	    query.bindValue
+	      (4, crypt->
+	       encryptedThenHashed(name.
+				   mid(0, spoton_common::
+				       NAME_MAXIMUM_LENGTH),
+				   &ok).toBase64());
+	}
     }
+  else if(ok)
+    {
+      if(useKeyTypeForName)
+	query.bindValue(4, crypt->encryptedThenHashed(keyType, &ok).
+			toBase64());
+      else
+	query.bindValue(4, crypt->encryptedThenHashed(name, &ok).
+			toBase64());
+    }
+
+  if(ok)
+    query.bindValue
+      (5, crypt->encryptedThenHashed(publicKey, &ok).toBase64());
+
+  if(ok)
+    query.bindValue
+      (6, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+
+  query.bindValue(7, neighborOid);
+  query.bindValue
+    (8, QDateTime::currentDateTime().toString(Qt::ISODate));
+
+  if(ok)
+    query.bindValue(9, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+
+  if(ok)
+    ok = query.exec();
+
+  if(ok)
+    if(!sPublicKey.isEmpty())
+      {
+	/*
+	** Record the relationship between the public key and the
+	** signature public key.
+	*/
+
+	QSqlQuery query(db);
+
+	query.prepare("INSERT OR REPLACE INTO relationships_with_signatures "
+		      "(public_key_hash, signature_public_key_hash) "
+		      "VALUES (?, ?)");
+	query.bindValue
+	  (0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, spoton_crypt::sha512Hash(sPublicKey, &ok).toBase64());
+
+	if(ok)
+	  ok = query.exec();
+      }
+
+  return ok;
 }
 
-void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
+bool spoton_misc::isAcceptedParticipant(const QByteArray &publicKeyHash,
+					const QString &keyType,
+					spoton_crypt *crypt)
 {
-  /*
-  ** Attempt to correct flawed configuration settings.
-  */
-
-  QString str("");
-  QStringList list;
-  bool ok = true;
-  double rational = 0.00;
-  int integer = 0;
-
-  integer = qAbs(settings.value("gui/congestionCost", 10000).toInt(&ok));
-
-  if(!ok)
-    integer = 10000;
-  else if(integer < 1000 || integer > 65536)
-    integer = 10000;
-
-  settings.insert("gui/congestionCost", integer);
-  integer = qAbs(settings.value("gui/emailRetrievalInterval", 5).toInt(&ok));
-
-  if(!ok)
-    integer = 5;
-  else if(integer < 5 || integer > 60)
-    integer = 5;
-
-  settings.insert("gui/emailRetrievalInterval", integer);
-  str = settings.value("gui/fsCipherType").toString();
-
-  if(!(str == "aes256" || str == "camellia256" ||
-       str == "serpent256" || str == "twofish"))
-    str = "aes256";
-
-  settings.insert("gui/fsCipherType", str);
-  str = settings.value("gui/fsHashType").toString();
-
-  if(!(str == "sha512" || str == "stribog512" ||
-       str == "whirlpool"))
-    str = "sha512";
-
-  settings.insert("gui/fsHashType", str);
-  integer = qAbs
-    (settings.value("gui/gcryctl_init_secmem",
-		    spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt(&ok));
-
-  if(!ok)
-    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
-  else if(integer == 0)
+  if(!crypt)
     {
+      logError
+	("spoton_misc::isAcceptedParticipant(): crypt is zero.");
+      return false;
     }
-  else if(integer > 999999999)
-    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
 
-  settings.insert("gui/gcryctl_init_secmem", integer);
-  integer = settings.value("gui/guiExternalIpInterval", -1).toInt(&ok);
+  QString connectionName("");
+  bool exists = false;
 
-  if(!ok)
-    integer = -1;
-  else if(!(integer == -1 || integer == 30 || integer == 60))
-    integer = -1;
+  {
+    QSqlDatabase db = database(connectionName);
 
-  settings.insert("gui/guiExternalIpInterval", integer);
-  str = settings.value("gui/hashType").toString();
+    db.setDatabaseName(homePath() + QDir::separator() +
+		       "friends_public_keys.db");
 
-  if(!(str == "sha512" || str == "stribog512" ||
-       str == "whirlpool"))
-    str = "sha512";
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
 
-  settings.insert("gui/hashType", str);
-  str = settings.value("gui/iconSet", "nouve").toString();
+	query.setForwardOnly(true);
+	query.prepare("SELECT EXISTS(SELECT 1 "
+		      "FROM friends_public_keys WHERE "
+		      "key_type_hash = ? AND "
+		      "neighbor_oid = -1 AND "
+		      "public_key_hash = ?)");
+	query.bindValue
+	  (0, crypt->keyedHash(keyType.toLatin1(), &ok).toBase64());
+	query.bindValue(1, publicKeyHash.toBase64());
 
-  if(!(str == "everaldo" ||
-       str == "meego" ||
-       str == "nouve" ||
-       str == "nuvola"))
-    str = "nouve";
+	if(ok && query.exec())
+	  if(query.next())
+	    exists = query.value(0).toBool();
+      }
 
-  settings.insert("gui/iconSet", str);
-  integer = qAbs(settings.value("gui/iterationCount", 10000).toInt(&ok));
+    db.close();
+  }
 
-  if(!ok)
-    integer = 10000;
-  else if(integer < 10000 || integer > 999999999)
-    integer = 10000;
+  QSqlDatabase::removeDatabase(connectionName);
+  return exists;
+}
 
-  settings.insert("gui/iterationCount", integer);
-  str = settings.value("gui/kernelCipherType").toString();
+bool spoton_misc::isPrivateNetwork(const QHostAddress &address)
+{
+  bool isPrivate = false;
 
-  if(!(str == "aes256" || str == "camellia256" ||
-       str == "serpent256" || str == "twofish"))
-    str = "aes256";
-
-  settings.insert("gui/kernelCipherType", str);
-  integer = settings.value("gui/kernelExternalIpInterval", -1).toInt(&ok);
-
-  if(!ok)
-    integer = -1;
-  else if(!(integer == -1 || integer == 30 || integer == 60))
-    integer = -1;
-
-  settings.insert("gui/kernelExternalIpInterval", integer);
-  str = settings.value("gui/kernelHashType").toString();
-
-  if(!(str == "sha512" || str == "stribog512" || str == "whirlpool"))
-    str = "sha512";
-
-  settings.insert("gui/kernelHashType", str);
-  integer = qAbs(settings.value("gui/kernelKeySize", 2048).toInt(&ok));
-
-  if(!ok)
-    integer = 2048;
-  else if(!(integer == 0 ||
-	    integer == 2048 ||
-	    integer == 3072 ||
-	    integer == 4096))
-    integer = 2048;
-
-  settings.insert("gui/kernelKeySize", integer);
-  integer = qAbs(settings.value("gui/kernel_url_batch_size", 5).toInt(&ok));
-
-  if(!ok)
-    integer = 5;
-  else if(integer <= 0 || integer > 15)
-    integer = 5;
-
-  settings.insert("gui/kernel_url_batch_size", integer);
-  integer = qAbs(settings.value("gui/limitConnections", 10).toInt(&ok));
-
-  if(!ok)
-    integer = 10;
-  else if(integer <= 0 || integer > 50)
-    integer = 10;
-
-  settings.insert("gui/limitConnections", integer);
-  integer = qAbs(settings.value("gui/maximum_url_keywords_import_interface",
-				50).toInt(&ok));
-
-  if(!ok)
-    integer = 50;
-  else if(integer < 50 || integer > 65535)
-    integer = 50;
-
-  settings.insert("gui/maximum_url_keywords_import_interface", integer);
-  integer = qAbs(settings.value("gui/maximum_url_keywords_import_kernel",
-				50).toInt(&ok));
-
-  if(!ok)
-    integer = 50;
-  else if(integer < 50 || integer > 65535)
-    integer = 50;
-
-  settings.insert("gui/maximum_url_keywords_import_kernel", integer);
-  integer = qAbs(settings.value("gui/maximumEmailFileSize", 1024).toInt(&ok));
-
-  if(!ok)
-    integer = 1024;
-  else if(integer < 1 || integer > 5000)
-    integer = 1024;
-
-  settings.insert("gui/maximumEmailFileSize", integer);
-  integer = qBound
-    (0,
-     settings.value("gui/postgresql_kernel_url_distribution_timeout", 45000).
-     toInt(&ok),
-     999999999);
-
-  if(!ok)
-    integer = 45000;
-
-  settings.insert("gui/postgresql_kernel_url_distribution_timeout", integer);
-  integer = qAbs(settings.value("gui/postofficeDays", 1).toInt(&ok));
-
-  if(!ok)
-    integer = 1;
-  else if(integer < 1 || integer > 366)
-    integer = 1;
-
-  settings.insert("gui/postofficeDays", integer);
-  integer = qAbs(settings.value("gui/publishedKeySize", 2048).toInt(&ok));
-
-  if(!ok)
-    integer = 2048;
-  else if(!(integer == 2048 || integer == 3072 ||
-	    integer == 4096))
-    integer = 2048;
-
-  settings.insert("gui/publishedKeySize", integer);
-  integer = qAbs(settings.value("gui/maxMosaicSize", 512).toInt(&ok));
-
-  if(!ok)
-    integer = 512;
-  else if(integer < 1 || integer > 5000)
-    integer = 512;
-
-  settings.insert("gui/maxMosaicSize", integer);
-  integer = qAbs(settings.value("gui/saltLength", 512).toInt(&ok));
-
-  if(!ok)
-    integer = 512;
-  else if(integer < 512 || integer > 999999999)
-    integer = 512;
-
-  settings.insert("gui/saltLength", integer);
-  integer = qAbs(settings.value("gui/searchResultsPerPage", 10).toInt(&ok));
-
-  if(!ok)
-    integer = 10;
-  else if(integer < 10 || integer > 1000)
-    integer = 10;
-
-  settings.insert("gui/searchResultsPerPage", integer);
-  rational = qAbs(settings.value("kernel/cachePurgeInterval", 15.00).
-		  toDouble(&ok));
-
-  if(!ok)
-    rational = 15.00;
-  else if(rational < 5.00 || rational > 90.00)
-    rational = 15.00;
-
-  settings.insert("kernel/cachePurgeInterval", rational);
-  integer = qAbs(settings.value("kernel/gcryctl_init_secmem",
-				spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).
-		 toInt(&ok));
-
-  if(!ok)
-    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
-  else if(integer == 0)
+  if(address.isNull())
+    return isPrivate;
+  else if(address.protocol() == QAbstractSocket::IPv4Protocol)
     {
+      QPair<QHostAddress, int> pair1
+	(QHostAddress::parseSubnet("10.0.0.0/8"));
+      QPair<QHostAddress, int> pair2
+	(QHostAddress::parseSubnet("127.0.0.0/8"));
+      QPair<QHostAddress, int> pair3
+	(QHostAddress::parseSubnet("169.254.0.0/16"));
+      QPair<QHostAddress, int> pair4
+	(QHostAddress::parseSubnet("172.16.0.0/12"));
+      QPair<QHostAddress, int> pair5
+	(QHostAddress::parseSubnet("192.168.0.0/16"));
+
+      isPrivate = address.isInSubnet(pair1) || address.isInSubnet(pair2) ||
+	address.isInSubnet(pair3) || address.isInSubnet(pair4) ||
+	address.isInSubnet(pair5);
     }
-  else if(integer > 999999999)
-    integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
+    {
+      QPair<QHostAddress, int> pair1
+	(QHostAddress::parseSubnet("::1/128"));
+      QPair<QHostAddress, int> pair2
+	(QHostAddress::parseSubnet("fc00::/7"));
+      QPair<QHostAddress, int> pair3
+	(QHostAddress::parseSubnet("fe80::/10"));
 
-  settings.insert("kernel/gcryctl_init_secmem", integer);
-  str = settings.value("kernel/messaging_cache_algorithm", "sha224").
-    toString().toLower().trimmed();
+      isPrivate = address.isInSubnet(pair1) || address.isInSubnet(pair2) ||
+	address.isInSubnet(pair3);
+    }
 
-  if(!spoton_crypt::congestionHashAlgorithms().contains(str))
-    str = "sha224";
+  return isPrivate;
+}
 
-  settings.insert("kernel/messaging_cache_algorithm", str);
-  integer = qAbs
-    (settings.value("kernel/server_account_verification_window_msecs",
-		    15000).toInt(&ok));
+QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
+(const QByteArray &data, const QByteArray &hash, spoton_crypt *crypt)
+{
+  QPair<QByteArray, QByteArray> gemini;
 
-  if(!ok)
-    integer = 15000;
-  else if(integer < 1 || integer > 999999999)
-    integer = 15000;
+  if(crypt && !hash.isEmpty())
+    {
+      QString connectionName("");
 
-  settings.insert
-    ("kernel/server_account_verification_window_msecs", integer);
+      {
+	QSqlDatabase db = database(connectionName);
+
+	db.setDatabaseName
+	  (homePath() + QDir::separator() + "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+	    bool ok = true;
+
+	    query.setForwardOnly(true);
+	    query.prepare("SELECT gemini, gemini_hash_key "
+			  "FROM friends_public_keys WHERE "
+			  "gemini IS NOT NULL AND "
+			  "gemini_hash_key IS NOT NULL AND "
+			  "key_type_hash IN (?, ?) AND "
+			  "neighbor_oid = -1");
+	    query.bindValue(0, crypt->keyedHash(QByteArray("chat"), &ok).
+			    toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->keyedHash(QByteArray("poptastic"), &ok).
+		 toBase64());
+
+	    if(ok && query.exec())
+	      while(query.next())
+		{
+		  bool ok = true;
+
+		  gemini.first = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(0).
+					    toByteArray()),
+		     &ok);
+
+		  if(ok)
+		    gemini.second = crypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(1).
+					      toByteArray()),
+		       &ok);
+
+		  if(ok)
+		    if(!gemini.first.isEmpty() && !gemini.second.isEmpty())
+		      {
+			QByteArray computedHash
+			  (spoton_crypt::keyedHash(data, gemini.second,
+						   "sha512", &ok));
+
+			if(ok)
+			  if(!computedHash.isEmpty() && !hash.isEmpty() &&
+			     spoton_crypt::memcmp(computedHash, hash))
+			    break; // We have something!
+		      }
+
+		  gemini.first.clear();
+		  gemini.second.clear();
+		}
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+
+  return gemini;
+}
+
+QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
+					  spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::publicKeyFromHash(): crypt is zero.");
+      return QByteArray();
+    }
+
+  QByteArray publicKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT public_key "
+		      "FROM friends_public_keys WHERE "
+		      "public_key_hash = ?");
+	query.bindValue(0, publicKeyHash.toBase64());
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).
+				      toByteArray()),
+	       &ok);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return publicKey;
+}
+
+QByteArray spoton_misc::publicKeyFromSignaturePublicKeyHash
+(const QByteArray &signaturePublicKeyHash, spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::publicKeyFromSignaturePublicKeyHash(): crypt "
+	 "is zero.");
+      return QByteArray();
+    }
 
   /*
-  ** Correct timer intervals.
+  ** Gather the public key that's associated with the provided
+  ** signature public key hash.
   */
 
-  integer = settings.value("gui/emailRetrievalInterval", 5).toInt(&ok);
+  QByteArray publicKey;
+  QString connectionName("");
 
-  if(!ok)
-    integer = 5;
-  else if(integer < 5 || integer > 60)
-    integer = 5;
+  {
+    QSqlDatabase db = database(connectionName);
 
-  settings.insert("gui/emailRetrievalInterval", integer);
-  integer = settings.value("gui/poptasticNumberOfMessages", 15).toInt(&ok);
+    db.setDatabaseName(homePath() + QDir::separator() +
+		       "friends_public_keys.db");
 
-  if(!ok)
-    integer = 15;
-  else if(integer < 15 || integer > 999999999)
-    integer = 15;
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
 
-  settings.insert("gui/poptasticNumberOfMessages", integer);
-  rational = settings.value("gui/poptasticRefreshInterval", 5.00).
-    toDouble(&ok);
+	query.setForwardOnly(true);
+	query.prepare("SELECT public_key "
+		      "FROM friends_public_keys WHERE "
+		      "public_key_hash = (SELECT public_key_hash FROM "
+		      "relationships_with_signatures WHERE "
+		      "signature_public_key_hash = ?)");
+	query.bindValue(0, signaturePublicKeyHash.toBase64());
 
-  if(!ok)
-    rational = 5.00;
-  else if(rational < 5.00)
-    rational = 5.00;
+	if(query.exec())
+	  if(query.next())
+	    publicKey = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).
+				      toByteArray()),
+	       &ok);
+      }
 
-  settings.insert("gui/poptasticRefreshInterval", rational);
-  list.clear();
-  list << "gui/kernelUpdateTimer"
-       << "gui/listenersUpdateTimer"
-       << "gui/neighborsUpdateTimer"
-       << "gui/participantsUpdateTimer"
-       << "gui/starbeamUpdateTimer";
+    db.close();
+  }
 
-  for(int i = 0; i < list.size(); i++)
+  QSqlDatabase::removeDatabase(connectionName);
+  return publicKey;
+}
+
+QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
+(const QByteArray &publicKeyHash, spoton_crypt *crypt)
+{
+  if(!crypt)
     {
-      rational = settings.value(list.at(i), 3.50).toDouble(&ok);
-
-      if(!ok)
-	rational = 3.50;
-      else if(rational < 0.50 || rational > 10.00)
-	rational = 3.50;
-
-      settings.insert(list.at(i), rational);
+      logError
+	("spoton_misc::signaturePublicKeyFromPublicKeyHash(): crypt "
+	 "is zero.");
+      return QByteArray();
     }
+
+  /*
+  ** Gather the signature public key that's associated with the
+  ** provided public key hash.
+  */
+
+  QByteArray publicKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT public_key "
+		      "FROM friends_public_keys WHERE "
+		      "public_key_hash = (SELECT signature_public_key_hash "
+		      "FROM "
+		      "relationships_with_signatures WHERE "
+		      "public_key_hash = ?)");
+	query.bindValue(0, publicKeyHash.toBase64());
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).
+				      toByteArray()),
+	       &ok);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return publicKey;
 }
 
 QSqlDatabase spoton_misc::database(QString &connectionName)
@@ -2684,11 +3178,6 @@ QString spoton_misc::databaseName(void)
   dbId = s_dbId += 1;
   locker.unlock();
   return QString("spoton_database_%1_%2").arg(qrand()).arg(dbId);
-}
-
-void spoton_misc::enableLog(const bool state)
-{
-  s_enableLog.fetchAndStoreOrdered(state ? 1 : 0);
 }
 
 qint64 spoton_misc::participantCount(const QString &keyType,
@@ -3447,91 +3936,6 @@ bool spoton_misc::isValidStarBeamMissingLinksMagnet(const QByteArray &magnet)
   return valid;
 }
 
-void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
-{
-  QList<int> list;
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-  struct sigaction act;
-#endif
-  list << SIGABRT
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-       << SIGBUS
-#endif
-       << SIGFPE
-       << SIGILL
-       << SIGINT
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-       << SIGQUIT
-#endif
-       << SIGSEGV
-       << SIGTERM;
-
-  while(!list.isEmpty())
-    {
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-      act.sa_handler = signal_handler;
-      sigemptyset(&act.sa_mask);
-      act.sa_flags = 0;
-
-      if(sigaction(list.first(), &act, 0))
-	logError(QString("spoton_misc::prepareSignalHandler(): "
-			 "sigaction() failure for %1.").arg(list.first()));
-
-      list.removeFirst();
-#else
-      if(signal(list.first(), signal_handler) == SIG_ERR)
-	logError(QString("spoton_misc::prepareSignalHandler(): "
-			 "signal() failure for %1.").arg(list.first()));
-
-      list.removeFirst();
-#endif
-    }
-}
-
-void spoton_misc::vacuumAllDatabases(void)
-{
-  QStringList list;
-
-  list << "buzz_channels.db"
-       << "congestion_control.db"
-       << "echo_key_sharing_secrets.db"
-       << "email.db"
-       << "friends_public_keys.db"
-       << "idiotes.db"
-       << "kernel.db"
-       << "listeners.db"
-       << "neighbors.db"
-       << "poptastic.db"
-       << "rss.db"
-       << "secrets.db"
-       << "shared.db"
-       << "starbeam.db"
-       << "urls_distillers_information.db"
-       << "urls_key_information.db";
-
-  while(!list.isEmpty())
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = database(connectionName);
-
-	db.setDatabaseName(homePath() + QDir::separator() + list.takeFirst());
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.exec("VACUUM");
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-}
-
 QByteArray spoton_misc::findPublicKeyHashGivenHash
 (const QByteArray &randomBytes,
  const QByteArray &hash, const QByteArray &hashKey,
@@ -4025,188 +4429,6 @@ poptasticSettings(const QString &in_username, spoton_crypt *crypt, bool *ok)
 
   QSqlDatabase::removeDatabase(connectionName);
   return map.values();
-}
-
-void spoton_misc::saveParticipantStatus(const QByteArray &name,
-					const QByteArray &publicKeyHash,
-					const QByteArray &status,
-					const QByteArray &timestamp,
-					const int seconds,
-					spoton_crypt *crypt)
-{
-  QDateTime dateTime
-    (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
-
-  if(!dateTime.isValid())
-    {
-      logError
-	("spoton_misc(): saveParticipantStatus(): "
-	 "invalid date-time object.");
-      return;
-    }
-
-  QDateTime now(QDateTime::currentDateTimeUtc());
-
-  dateTime.setTimeSpec(Qt::UTC);
-  now.setTimeSpec(Qt::UTC);
-
-  qint64 secsTo = qAbs(now.secsTo(dateTime));
-
-  if(!(secsTo <= static_cast<qint64> (seconds)))
-    {
-      logError
-	(QString("spoton_misc::saveParticipantStatus(): "
-		 "large time delta (%1).").arg(secsTo));
-      return;
-    }
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(status.isEmpty())
-	  {
-	    if(name.isEmpty())
-	      {
-		query.prepare("UPDATE friends_public_keys SET "
-			      "last_status_update = ?, "
-			      "status = 'online' "
-			      "WHERE neighbor_oid = -1 AND "
-			      "public_key_hash = ?");
-		query.bindValue
-		  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
-		query.bindValue(1, publicKeyHash.toBase64());
-		query.exec();
-	      }
-	    else if(crypt)
-	      {
-		bool ok = true;
-
-		query.prepare("UPDATE friends_public_keys SET "
-			      "last_status_update = ?, "
-			      "status = 'online' "
-			      "WHERE neighbor_oid = -1 AND "
-			      "public_key_hash = ?");
-		query.bindValue
-		  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
-		query.bindValue(1, publicKeyHash.toBase64());
-		query.exec();
-		query.prepare("UPDATE friends_public_keys SET "
-			      "name = ? "
-			      "WHERE name_changed_by_user = 0 AND "
-			      "neighbor_oid = -1 AND "
-			      "public_key_hash = ?");
-		query.bindValue
-		  (0,
-		   crypt->
-		   encryptedThenHashed(name.
-				       mid(0, spoton_common::
-					   NAME_MAXIMUM_LENGTH), &ok).
-		   toBase64());
-		query.bindValue(1, publicKeyHash.toBase64());
-
-		if(ok)
-		  query.exec();
-	      }
-	  }
-	else
-	  {
-	    if(name.isEmpty())
-	      {
-		query.prepare("UPDATE friends_public_keys SET "
-			      "status = ?, "
-			      "last_status_update = ? "
-			      "WHERE neighbor_oid = -1 AND "
-			      "public_key_hash = ?");
-
-		if(status.toLower() == "away" ||
-		   status.toLower() == "busy" ||
-		   status.toLower() == "offline" ||
-		   status.toLower() == "online")
-		  query.bindValue(0, status.toLower());
-		else
-		  query.bindValue
-		    (0, status.
-		     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
-
-		query.bindValue
-		  (1, QDateTime::currentDateTime().toString(Qt::ISODate));
-		query.bindValue(2, publicKeyHash.toBase64());
-		query.exec();
-	      }
-	    else if(crypt)
-	      {
-		QDateTime now(QDateTime::currentDateTime());
-		bool ok = true;
-
-		query.prepare("UPDATE friends_public_keys SET "
-			      "name = ?, "
-			      "status = ?, "
-			      "last_status_update = ? "
-			      "WHERE name_changed_by_user = 0 AND "
-			      "neighbor_oid = -1 AND "
-			      "public_key_hash = ?");
-		query.bindValue
-		  (0,
-		   crypt->
-		   encryptedThenHashed(name.
-				       mid(0, spoton_common::
-					   NAME_MAXIMUM_LENGTH), &ok).
-		   toBase64());
-
-		if(status.toLower() == "away" ||
-		   status.toLower() == "busy" ||
-		   status.toLower() == "offline" ||
-		   status.toLower() == "online")
-		  query.bindValue(1, status.toLower());
-		else
-		  query.bindValue
-		    (1, status.
-		     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
-
-		query.bindValue
-		  (2, now.toString(Qt::ISODate));
-		query.bindValue(3, publicKeyHash.toBase64());
-
-		if(ok)
-		  query.exec();
-
-		query.prepare("UPDATE friends_public_keys SET "
-			      "status = ?, "
-			      "last_status_update = ? "
-			      "WHERE neighbor_oid = -1 AND "
-			      "public_key_hash = ?");
-
-		if(status.toLower() == "away" ||
-		   status.toLower() == "busy" ||
-		   status.toLower() == "offline" ||
-		   status.toLower() == "online")
-		  query.bindValue(0, status.toLower());
-		else
-		  query.bindValue
-		    (0, status.
-		     mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
-
-		query.bindValue
-		  (1, now.toString(Qt::ISODate));
-		query.bindValue(2, publicKeyHash.toBase64());
-		query.exec();
-	      }
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 bool spoton_misc::prepareUrlDistillersDatabase(void)
@@ -5122,30 +5344,6 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
   return echoKeys;
 }
 
-void spoton_misc::removeOneTimeStarBeamMagnets(void)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() + "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM magnets WHERE "
-		   "one_time_magnet = 1");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
 QByteArray spoton_misc::forwardSecrecyMagnetFromList
 (const QList<QByteArray> &list)
 {
@@ -5388,55 +5586,6 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
     }
 
   return false;
-}
-
-void spoton_misc::setTimeVariables(const QHash<QString, QVariant> &settings)
-{
-  /*
-  ** Issue as soon as possible!
-  */
-
-  QList<int> defaults;
-  QList<int> values;
-  QStringList keys;
-
-  defaults
-    << spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC
-    << spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
-  keys << "gui/chat_time_delta"
-       << "gui/forward_secrecy_time_delta"
-       << "gui/gemini_time_delta"
-       << "gui/kernel_cache_object_lifetime"
-       << "gui/kernel_url_dispatcher_interval"
-       << "gui/poptastic_forward_secrecy_time_delta"
-       << "gui/poptastic_gemini_time_delta"
-       << "gui/retrieve_mail_time_delta";
-
-  for(int i = 0; i < keys.size(); i++)
-    values << settings.value(keys.at(i), defaults.at(i)).toInt();
-
-  spoton_common::CHAT_TIME_DELTA_MAXIMUM =
-    qBound(5, values.value(0), 600);
-  spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
-    qBound(5, values.value(1), 600);
-  spoton_common::GEMINI_TIME_DELTA_MAXIMUM =
-    qBound(5, values.value(2), 600);
-  spoton_common::CACHE_TIME_DELTA_MAXIMUM =
-    qBound(5, values.value(3), 600);
-  spoton_common::KERNEL_URL_DISPATCHER_INTERVAL =
-    qBound(45, values.value(4), 600);
-  spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
-    qBound(5, values.value(5), 600);
-  spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
-    qBound(5, values.value(6), 60 * 60 * 24 * 7);
-  spoton_common::MAIL_TIME_DELTA_MAXIMUM =
-    qBound(5, values.value(7), 600);
 }
 
 QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
@@ -5986,91 +6135,6 @@ QString spoton_misc::prettyFileSize(const qint64 size)
       (QString::number(static_cast<double> (size) / 1048576.0, 'f', 1));
 }
 
-void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
-{
-  if(!crypt)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!query.exec("SELECT EXISTS (SELECT signatures_required FROM "
-		       "echo_key_sharing_secrets)"))
-	  {
-	    /*
-	    ** Perhaps signatures_required does not exist.
-	    */
-
-	    query.exec
-	      ("CREATE TABLE IF NOT EXISTS "
-	       "echo_key_sharing_secrets_temporary ("
-	       "accept TEXT NOT NULL, "
-	       "authentication_key TEXT NOT NULL, "
-	       "category_oid INTEGER NOT NULL, "
-	       "cipher_type TEXT NOT NULL, "
-	       "encryption_key TEXT NOT NULL, "
-	       "hash_type TEXT NOT NULL, "
-	       "iteration_count TEXT NOT NULL, "
-	       "name TEXT NOT NULL, "
-	       "name_hash TEXT NOT NULL, "
-	       "share TEXT NOT NULL, "
-	       "signatures_required TEXT NOT NULL, "
-	       "PRIMARY KEY (category_oid, name_hash))");
-
-	    if(query.exec("SELECT accept, "
-			  "authentication_key, "
-			  "category_oid, "
-			  "cipher_type, "
-			  "encryption_key, "
-			  "hash_type, "
-			  "iteration_count, "
-			  "name, "
-			  "name_hash, "
-			  "share FROM echo_key_sharing_secrets"))
-	      {
-		while(query.next())
-		  {
-		    QSqlQuery insertQuery(db);
-		    bool ok = true;
-
-		    insertQuery.prepare
-		      ("INSERT INTO echo_key_sharing_secrets_temporary "
-		       "(authentication_key, category_oid, cipher_type, "
-		       "encryption_key, hash_type, iteration_count, "
-		       "name, name_hash, share, signatures_required) "
-		       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-		    for(int i = 0; i < query.record().count(); i++)
-		      insertQuery.bindValue(i, query.value(i));
-
-		    insertQuery.bindValue
-		      (10, crypt->encryptedThenHashed(QByteArray("true"),
-						      &ok).toBase64());
-		    insertQuery.exec();
-		  }
-
-		query.exec("DROP TABLE echo_key_sharing_secrets");
-		query.exec("ALTER TABLE echo_key_sharing_secrets_temporary "
-			   "RENAME TO echo_key_sharing_secrets");
-	      }
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
 spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
 (const QByteArray &magnet)
 {
@@ -6131,68 +6195,4 @@ spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
       (ct, ht, QByteArray(), ek, hk, 0, ic, QString(""));
 
   return crypt;
-}
-
-void spoton_misc::prepareAuthenticationHint(spoton_crypt *crypt)
-{
-  if(!crypt)
-    return;
-
-  QSettings settings;
-
-  if(settings.contains("gui/authenticationHint"))
-    return;
-
-  QByteArray bytes(spoton_crypt::weakRandomBytes(256));
-  bool ok = true;
-
-  bytes = crypt->encryptedThenHashed(bytes, &ok);
-
-  if(!ok)
-    return;
-
-  settings.setValue("gui/authenticationHint", bytes.toBase64());
-}
-
-bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
-{
-  if(!crypt)
-    return false;
-
-  QByteArray bytes;
-  QSettings settings;
-  bool ok = true;
-
-  bytes = crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(settings.
-			    value("gui/authenticationHint").toByteArray()),
-     &ok);
-  return ok;
-}
-
-bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
-{
-  if(!then.isValid())
-    return false;
-
-  QDateTime now(QDateTime::currentDateTimeUtc());
-
-  now.setTimeSpec(Qt::UTC);
-  return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
-}
-
-void spoton_misc::closeSocket
-#if QT_VERSION < 0x050000
-(const int socketDescriptor)
-#else
-(const qintptr socketDescriptor)
-#endif
-{
-#if defined(Q_OS_WIN)
-  shutdown((SOCKET) socketDescriptor, SD_BOTH);
-  closesocket((SOCKET) socketDescriptor);
-#else
-  shutdown((int) socketDescriptor, SHUT_RDWR);
-  close((int) socketDescriptor);
-#endif
 }
