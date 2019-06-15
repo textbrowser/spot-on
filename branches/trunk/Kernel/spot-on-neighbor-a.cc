@@ -2354,7 +2354,7 @@ void spoton_neighbor::processData(void)
 			append(discoveredAdaptiveEchoPair);
 		  }
 
-		messageType = "0060";
+		messageType = "starbeam";
 	      }
 
 	  if(spoton_kernel::setting("gui/scramblerEnabled", false).toBool())
@@ -2385,9 +2385,9 @@ void spoton_neighbor::processData(void)
 
 		emit receivedMessage
 		  (originalData, m_id, QPair<QByteArray, QByteArray> ());
-	      else if(messageType == "0060" &&
-		      !discoveredAdaptiveEchoPair.first.isEmpty() &&
-		      !discoveredAdaptiveEchoPair.second.isEmpty())
+	      else if(!discoveredAdaptiveEchoPair.first.isEmpty() &&
+		      !discoveredAdaptiveEchoPair.second.isEmpty() &&
+		      messageType == "starbeam")
 		emit receivedMessage
 		  (originalData, m_id, discoveredAdaptiveEchoPair);
 	    }
