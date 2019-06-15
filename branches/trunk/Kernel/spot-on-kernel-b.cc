@@ -81,18 +81,242 @@ static size_t curl_write_memory_callback
   return nmemb * size;
 }
 
-void spoton_kernel::slotPoptasticPop(void)
+void spoton_kernel::importUrls(void)
 {
-  if(m_poptasticPopFuture.isFinished())
-    m_poptasticPopFuture =
-      QtConcurrent::run(this, &spoton_kernel::popPoptastic);
-}
+  {
+    QReadLocker locker(&m_urlListMutex);
 
-void spoton_kernel::slotPoptasticPost(void)
-{
-  if(m_poptasticPostFuture.isFinished())
-    m_poptasticPostFuture =
-      QtConcurrent::run(this, &spoton_kernel::postPoptastic);
+    if(m_urlList.isEmpty())
+      return;
+  }
+
+  spoton_crypt *crypt = 0;
+  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+
+  crypt = spoton_misc::retrieveUrlCommonCredentials(s_crypt);
+
+  if(!crypt || !s_crypt)
+    {
+      delete crypt;
+
+      QWriteLocker locker(&m_urlListMutex);
+
+      m_urlList.clear();
+      return;
+    }
+
+  QList<QPair<QUrl, QString> > polarizers;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT domain, permission FROM distillers WHERE "
+		      "direction_hash = ?");
+	query.bindValue(0, s_crypt->keyedHash("download", &ok).toBase64());
+
+	if(ok && query.exec())
+	  while(query.next())
+	    {
+	      QByteArray domain;
+	      QByteArray permission;
+	      bool ok = true;
+
+	      domain = s_crypt->
+		decryptedAfterAuthenticated(QByteArray::
+					    fromBase64(query.
+						       value(0).
+						       toByteArray()),
+					    &ok);
+
+	      if(ok)
+		permission = s_crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(1).
+							 toByteArray()),
+					      &ok);
+
+	      if(ok)
+		{
+		  QUrl url(QUrl::fromUserInput(domain));
+
+		  if(!url.isEmpty())
+		    if(url.isValid())
+		      {
+			QPair<QUrl, QString> pair;
+
+			pair.first = url;
+			pair.second = permission.constData();
+			polarizers.append(pair);
+		      }
+		}
+
+	      if(m_urlImportFutureInterrupt.fetchAndAddOrdered(0))
+		break;
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(m_urlImportFutureInterrupt.fetchAndAddOrdered(0))
+    {
+      delete crypt;
+
+      QWriteLocker locker(&m_urlListMutex);
+
+      m_urlList.clear();
+      return;
+    }
+
+  {
+    connectionName = spoton_misc::databaseName();
+
+    QSqlDatabase db;
+
+    if(setting("gui/sqliteSearch", true).toBool())
+      {
+	db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "urls.db");
+	db.open();
+      }
+    else
+      {
+	QByteArray password;
+	QString database
+	  (setting("gui/postgresql_database", "").
+	   toString().trimmed());
+	QString host
+	  (setting("gui/postgresql_host", "localhost").toString().trimmed());
+	QString name
+	  (setting("gui/postgresql_name", "").toString().trimmed());
+	QString str("connect_timeout=10");
+	bool ok = true;
+	bool ssltls = setting("gui/postgresql_ssltls", false).toBool();
+	int port = setting("gui/postgresql_port", 5432).toInt();
+
+	password = s_crypt->decryptedAfterAuthenticated
+	  (QByteArray::
+	   fromBase64(setting("gui/postgresql_password", "").
+		      toByteArray()), &ok);
+
+	if(ssltls)
+	  str.append(";requiressl=1");
+
+	db = QSqlDatabase::addDatabase("QPSQL", connectionName);
+	db.setConnectOptions(str);
+	db.setDatabaseName(database);
+	db.setHostName(host);
+	db.setPort(port);
+
+	if(ok)
+	  db.open(name, password);
+      }
+
+    if(db.isOpen())
+      {
+	do
+	  {
+	    if(m_urlImportFutureInterrupt.fetchAndAddOrdered(0))
+	      break;
+
+	    QWriteLocker locker(&m_urlListMutex);
+
+	    if(m_urlList.isEmpty())
+	      break;
+
+	    QList<QByteArray> urls(m_urlList.mid(0, 4));
+
+	    for(int i = 0; i < urls.size(); i++)
+	      m_urlList.removeAt(0);
+
+	    locker.unlock();
+
+	    QByteArray content(qUncompress(urls.value(3)));
+	    QByteArray description(urls.value(2));
+	    QByteArray title(urls.value(1));
+	    QByteArray url(urls.value(0));
+	    bool ok = false;
+
+	    for(int i = 0; i < polarizers.size(); i++)
+	      {
+		QString type(polarizers.at(i).second);
+		QUrl u1(polarizers.at(i).first);
+		QUrl u2(QUrl::fromUserInput(url.trimmed()));
+
+		if(type == "accept")
+		  {
+		    if(spoton_misc::urlToEncoded(u2).
+		       startsWith(spoton_misc::urlToEncoded(u1)))
+		      {
+			ok = true;
+			break;
+		      }
+		  }
+		else
+		  {
+		    if(spoton_misc::urlToEncoded(u2).
+		       startsWith(spoton_misc::urlToEncoded(u1)))
+		      {
+			ok = false;
+			break;
+		      }
+		  }
+	      }
+
+	    if(ok)
+	      {
+		QString error("");
+
+		if(spoton_misc::importUrl(content,
+					  description,
+					  title,
+					  url,
+					  db,
+					  setting("gui/maximum_url_keywords_"
+						  "import_kernel",
+						  50).toInt(),
+					  setting("gui/disable_kernel_"
+						  "synchronous_sqlite_url_"
+						  "download",
+						  false).toBool(),
+					  m_urlImportFutureInterrupt,
+					  error,
+					  crypt))
+		  {
+		    QWriteLocker locker(&m_urlsProcessedMutex);
+
+		    m_urlsProcessed += 1;
+		  }
+	      }
+	  }
+	while(true);
+      }
+    else
+      {
+	QWriteLocker locker(&m_urlListMutex);
+
+	m_urlList.clear();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  delete crypt;
 }
 
 void spoton_kernel::popPoptastic(void)
@@ -757,6 +981,562 @@ void spoton_kernel::postPoptastic(void)
       else
 	spoton_misc::logError("spoton_kernel::postPoptastic(): "
 			      "curl_easy_init() failure.");
+    }
+}
+
+void spoton_kernel::saveGeminiPoptastic(const QByteArray &publicKeyHash,
+					const QByteArray &gemini,
+					const QByteArray &geminiHashKey,
+					const QByteArray &timestamp,
+					const QByteArray &signature,
+					const QString &messageType)
+{
+  /*
+  ** Some of the following is similar to logic in
+  ** spoton_neighbor.
+  */
+
+  if(!setting("gui/acceptGeminis", true).toBool())
+    return;
+
+  QDateTime dateTime
+    (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
+
+  if(!dateTime.isValid())
+    {
+      spoton_misc::logError
+	("spoton_kernel::saveGeminiPoptastic(): invalid date-time object.");
+      return;
+    }
+
+  QDateTime now(QDateTime::currentDateTimeUtc());
+
+  dateTime.setTimeSpec(Qt::UTC);
+  now.setTimeSpec(Qt::UTC);
+
+  qint64 secsTo = qAbs(now.secsTo(dateTime));
+
+  if(!(secsTo <= static_cast<qint64> (spoton_common::
+				      POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM)))
+    {
+      spoton_misc::logError
+	(QString("spoton_kernel::saveGeminiPoptastic(): "
+		 "large time delta (%1).").arg(secsTo));
+      return;
+    }
+  else if(duplicateGeminis(publicKeyHash +
+			   gemini +
+			   geminiHashKey))
+    {
+      spoton_misc::logError
+	("spoton_kernel::saveGeminiPoptastic(): duplicate keys.");
+      return;
+    }
+
+  geminisCacheAdd(publicKeyHash + gemini + geminiHashKey);
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QPair<QByteArray, QByteArray> geminis;
+	QSqlQuery query(db);
+	bool ok = true;
+
+	geminis.first = gemini;
+	geminis.second = geminiHashKey;
+	query.prepare("UPDATE friends_public_keys SET "
+		      "gemini = ?, gemini_hash_key = ?, "
+		      "last_status_update = ?, status = 'online' "
+		      "WHERE neighbor_oid = -1 AND "
+		      "public_key_hash = ?");
+
+	if(geminis.first.isEmpty() || geminis.second.isEmpty())
+	  {
+	    query.bindValue(0, QVariant(QVariant::String));
+	    query.bindValue(1, QVariant(QVariant::String));
+	  }
+	else
+	  {
+	    spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+
+	    if(s_crypt)
+	      {
+		query.bindValue
+		  (0, s_crypt->encryptedThenHashed(geminis.first, &ok).
+		   toBase64());
+
+		if(ok)
+		  query.bindValue
+		    (1, s_crypt->encryptedThenHashed(geminis.second,
+						     &ok).toBase64());
+	      }
+	    else
+	      {
+		query.bindValue(0, QVariant(QVariant::String));
+		query.bindValue(1, QVariant(QVariant::String));
+	      }
+	  }
+
+	query.bindValue
+	  (2, QDateTime::currentDateTime().toString(Qt::ISODate));
+	query.bindValue(3, publicKeyHash.toBase64());
+
+	if(ok)
+	  if(query.exec())
+	    {
+	      QString notsigned("");
+
+	      if(signature.isEmpty())
+		notsigned = " (unsigned)";
+
+	      if(geminis.first.isEmpty() ||
+		 geminis.second.isEmpty())
+		emit statusMessageReceived
+		  (publicKeyHash,
+		   tr("The participant %1...%2 terminated%3 the call.").
+		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
+		   arg(publicKeyHash.toBase64().right(16).constData()).
+		   arg(notsigned));
+	      else if(messageType == "0000a")
+		emit statusMessageReceived
+		  (publicKeyHash,
+		   tr("The participant %1...%2 initiated a call%3.").
+		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
+		   arg(publicKeyHash.toBase64().right(16).constData()).
+		   arg(notsigned));
+	      else if(messageType == "0000b")
+		emit statusMessageReceived
+		  (publicKeyHash,
+		   tr("The participant %1...%2 initiated a call%3 "
+		      "within a call.").
+		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
+		   arg(publicKeyHash.toBase64().right(16).constData()).
+		   arg(notsigned));
+	      else if(messageType == "0000d")
+		emit statusMessageReceived
+		  (publicKeyHash,
+		   tr("The participant %1...%2 initiated a call "
+		      "via Forward Secrecy.").
+		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
+		   arg(publicKeyHash.toBase64().right(16).constData()));
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_kernel::saveUrls(const QList<QByteArray> &urls)
+{
+  if(urls.isEmpty() || urls.size() % 4 != 0)
+    return;
+
+  QWriteLocker locker1(&m_urlListMutex);
+
+  m_urlList << urls;
+  locker1.unlock();
+}
+
+void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
+(const QByteArrayList &list)
+{
+  if(list.isEmpty())
+    return;
+
+  /*
+  ** list[0]: Destination's Name
+  ** list[1]: Destination's Public Key Hash
+  ** list[2]: Temporary Private Key
+  ** list[3]: Temporary Public Key
+  ** list[4]: Key Type (chat, email, poptastic, etc.)
+  ** list[5]: Widget Type (chat, email)
+  */
+
+  QByteArray keyType(list.value(4));
+
+  if(!(keyType == "chat" || keyType == "email" ||
+       keyType == "open-library" || keyType == "poptastic" ||
+       keyType == "url"))
+    return;
+
+  QByteArray widgetType(list.value(5));
+  bool ok = true;
+  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt2 = s_crypts.value(keyType + "-signature", 0);
+
+  if(!s_crypt1 || !s_crypt2)
+    return;
+
+  QByteArray myPublicKey = s_crypt1->publicKey(&ok);
+
+  if(!ok)
+    return;
+
+  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(myPublicKey, &ok));
+
+  if(!ok)
+    return;
+
+  QByteArray cipherType(setting("gui/fsCipherType",
+				"aes256").toString().toLatin1());
+  QByteArray hashType(setting("gui/fsHashType", "sha512").
+		      toString().toLatin1());
+  QByteArray publicKey
+    (spoton_misc::publicKeyFromHash(list.value(1), s_crypt1));
+
+  if(publicKey.isEmpty())
+    return;
+
+  QByteArray symmetricKey;
+  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
+
+  if(symmetricKeyLength == 0)
+    return;
+
+  QByteArray hashKey;
+
+  hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
+  hashKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (hashKey.length()));
+  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
+  symmetricKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (symmetricKey.length()));
+
+  QByteArray keyInformation;
+
+  {
+    QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+
+    stream << QByteArray("0091a")
+	   << symmetricKey
+	   << hashKey
+	   << cipherType
+	   << hashType;
+
+    if(stream.status() != QDataStream::Ok)
+      return;
+  }
+
+  keyInformation = spoton_crypt::publicKeyEncrypt
+    (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
+
+  if(!ok)
+    return;
+
+  bool sign = true;
+
+  if(keyType == "chat" && !setting("gui/chatSignMessages", true).toBool())
+    sign = false;
+  else if(keyType == "email" && !setting("gui/emailSignMessages", true).
+	  toBool())
+    sign = false;
+  else if(keyType == "poptastic")
+    {
+      if(widgetType == "chat" && !setting("gui/chatSignMessages", true).
+	 toBool())
+	sign = false;
+      else if(widgetType == "email" && !setting("gui/emailSignMessages",
+						true).toBool())
+	sign = false;
+
+      sign = true; // Mandatory signatures!
+    }
+  else if(keyType == "url" && !setting("gui/urlSignMessages", true).toBool())
+    sign = false;
+
+  QByteArray signature;
+  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
+		     toString("MMddyyyyhhmmss").toLatin1());
+
+  if(sign)
+    {
+      QByteArray recipientDigest
+	(spoton_crypt::sha512Hash(publicKey, &ok));
+
+      signature = s_crypt2->digitalSignature
+	("0091a" +
+	 symmetricKey +
+	 hashKey +
+	 cipherType +
+	 hashType +
+	 myPublicKeyHash +
+	 list.value(3) +
+	 utcDate +
+	 recipientDigest,
+	 &ok);
+
+      if(!ok)
+	return;
+    }
+
+  QByteArray data;
+  spoton_crypt crypt(cipherType,
+		     hashType,
+		     QByteArray(),
+		     symmetricKey,
+		     hashKey,
+		     0,
+		     0,
+		     "");
+
+  {
+    QDataStream stream(&data, QIODevice::WriteOnly);
+
+    stream << myPublicKeyHash
+	   << list.value(3)
+	   << utcDate
+	   << signature;
+
+    if(stream.status() != QDataStream::Ok)
+      ok = false;
+
+    if(ok)
+      data = crypt.encrypted(data, &ok);
+
+    if(!ok)
+      return;
+  }
+
+  QByteArray messageCode
+    (crypt.keyedHash(keyInformation + data, &ok));
+
+  if(!ok)
+    return;
+
+  data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
+    messageCode.toBase64();
+
+  if(keyType == "chat" || keyType == "email" || keyType == "url")
+    emit sendForwardSecrecyPublicKey(data);
+  else if(keyType == "poptastic")
+    {
+      QByteArray message
+	(spoton_send::message0091a(data, QPair<QByteArray, QByteArray> ()));
+      QString name(QString::fromUtf8(list.value(0).constData(),
+				     list.value(0).length()));
+
+      postPoptasticMessage(name, message);
+    }
+
+  QPair<QByteArray, QByteArray> keys(list.value(2), list.value(3));
+
+  keys.first = s_crypt1->encryptedThenHashed(keys.first, &ok);
+
+  if(ok)
+    keys.second = s_crypt1->encryptedThenHashed(keys.second, &ok);
+
+  if(ok)
+    {
+      QWriteLocker locker(&m_forwardSecrecyKeysMutex);
+
+      m_forwardSecrecyKeys.insert(list.value(1), keys);
+    }
+}
+
+void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
+(const QByteArrayList &list)
+{
+  if(list.size() != 7)
+    return;
+
+  /*
+  ** list[0]: Destination's Public Key Hash
+  ** list[1]: Temporary Public Key
+  ** list[2]: Key Type (chat, email, poptastic, etc.)
+  ** list[3]: Authentication Algorithm
+  ** list[4]: Authentication Key
+  ** list[5]: Encryption Algorithm
+  ** list[6]: Encryption Key
+  */
+
+  QByteArray keyType(list.value(2));
+
+  if(!(keyType == "chat" || keyType == "email" ||
+       keyType == "open-library" || keyType == "poptastic" ||
+       keyType == "url"))
+    return;
+
+  bool ok = true;
+  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt2 = s_crypts.value(keyType + "-signature", 0);
+
+  if(!s_crypt1 || !s_crypt2)
+    return;
+
+  QByteArray myPublicKey = s_crypt1->publicKey(&ok);
+
+  if(!ok)
+    return;
+
+  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(myPublicKey, &ok));
+
+  if(!ok)
+    return;
+
+  QByteArray cipherType(setting("gui/fsCipherType",
+				"aes256").toString().toLatin1());
+  QByteArray hashType(setting("gui/fsHashType", "sha512").
+		      toString().toLatin1());
+  QByteArray publicKey
+    (spoton_misc::publicKeyFromHash(list.value(0), s_crypt1));
+
+  if(publicKey.isEmpty())
+    return;
+
+  QByteArray symmetricKey;
+  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
+
+  if(symmetricKeyLength == 0)
+    return;
+
+  QByteArray hashKey;
+
+  hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
+  hashKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (hashKey.length()));
+  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
+  symmetricKey = spoton_crypt::strongRandomBytes
+    (static_cast<size_t> (symmetricKey.length()));
+
+  QByteArray keyInformation;
+
+  {
+    QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+
+    stream << QByteArray("0091b")
+	   << symmetricKey
+	   << hashKey
+	   << cipherType
+	   << hashType;
+
+    if(stream.status() != QDataStream::Ok)
+      return;
+  }
+
+  keyInformation = spoton_crypt::publicKeyEncrypt
+    (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
+
+  if(!ok)
+    return;
+
+  QByteArray bundle;
+
+  {
+    QDataStream stream(&bundle, QIODevice::WriteOnly);
+
+    stream << list.value(3)
+	   << list.value(4)
+	   << list.value(5)
+	   << list.value(6);
+
+    if(stream.status() != QDataStream::Ok)
+      return;
+
+    bundle = qCompress(bundle, 9);
+  }
+
+  QByteArray pk(qUncompress(list.value(1)));
+
+  bundle = spoton_crypt::publicKeyEncrypt
+    (bundle, list.value(1), pk.mid(0, 25), &ok);
+
+  if(!ok)
+    return;
+
+  bool sign = true;
+
+  if(keyType == "chat" && !setting("gui/chatSignMessages", true).toBool())
+    sign = false;
+  else if(keyType == "email" && !setting("gui/emailSignMessages", true).
+	  toBool())
+    sign = false;
+  else if(keyType == "poptastic")
+    sign = true; // Mandatory signatures!
+  else if(keyType == "url" && !setting("gui/urlSignMessages", true).toBool())
+    sign = false;
+
+  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
+		     toString("MMddyyyyhhmmss").toLatin1());
+  QByteArray signature;
+
+  if(sign)
+    {
+      QByteArray recipientDigest
+	(spoton_crypt::sha512Hash(publicKey, &ok));
+
+      signature = s_crypt2->digitalSignature
+	("0091b" +
+	 symmetricKey +
+	 hashKey +
+	 cipherType +
+	 hashType +
+	 myPublicKeyHash +
+	 bundle +
+	 utcDate +
+	 recipientDigest,
+	 &ok);
+
+      if(!ok)
+	return;
+    }
+
+  QByteArray data;
+  spoton_crypt crypt(cipherType,
+		     hashType,
+		     QByteArray(),
+		     symmetricKey,
+		     hashKey,
+		     0,
+		     0,
+		     "");
+
+  {
+    QDataStream stream(&data, QIODevice::WriteOnly);
+
+    stream << myPublicKeyHash
+	   << bundle
+	   << utcDate
+	   << signature;
+
+    if(stream.status() != QDataStream::Ok)
+      ok = false;
+
+    if(ok)
+      data = crypt.encrypted(data, &ok);
+
+    if(!ok)
+      return;
+  }
+
+  QByteArray messageCode
+    (crypt.keyedHash(keyInformation + data, &ok));
+
+  if(!ok)
+    return;
+
+  data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
+    messageCode.toBase64();
+
+  if(keyType == "chat" || keyType == "email" || keyType == "url")
+    emit sendForwardSecrecySessionKeys(data);
+  else if(keyType == "poptastic")
+    {
+      QByteArray message
+	(spoton_send::message0091b(data, QPair<QByteArray, QByteArray> ()));
+      QString name
+	(spoton_misc::nameFromPublicKeyHash(list.value(0), s_crypt1));
+
+      postPoptasticMessage(name, message);
     }
 }
 
@@ -1642,809 +2422,18 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     }
 }
 
-void spoton_kernel::saveGeminiPoptastic(const QByteArray &publicKeyHash,
-					const QByteArray &gemini,
-					const QByteArray &geminiHashKey,
-					const QByteArray &timestamp,
-					const QByteArray &signature,
-					const QString &messageType)
+void spoton_kernel::slotPoptasticPop(void)
 {
-  /*
-  ** Some of the following is similar to logic in
-  ** spoton_neighbor.
-  */
-
-  if(!setting("gui/acceptGeminis", true).toBool())
-    return;
-
-  QDateTime dateTime
-    (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
-
-  if(!dateTime.isValid())
-    {
-      spoton_misc::logError
-	("spoton_kernel::saveGeminiPoptastic(): invalid date-time object.");
-      return;
-    }
-
-  QDateTime now(QDateTime::currentDateTimeUtc());
-
-  dateTime.setTimeSpec(Qt::UTC);
-  now.setTimeSpec(Qt::UTC);
-
-  qint64 secsTo = qAbs(now.secsTo(dateTime));
-
-  if(!(secsTo <= static_cast<qint64> (spoton_common::
-				      POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM)))
-    {
-      spoton_misc::logError
-	(QString("spoton_kernel::saveGeminiPoptastic(): "
-		 "large time delta (%1).").arg(secsTo));
-      return;
-    }
-  else if(duplicateGeminis(publicKeyHash +
-			   gemini +
-			   geminiHashKey))
-    {
-      spoton_misc::logError
-	("spoton_kernel::saveGeminiPoptastic(): duplicate keys.");
-      return;
-    }
-
-  geminisCacheAdd(publicKeyHash + gemini + geminiHashKey);
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QPair<QByteArray, QByteArray> geminis;
-	QSqlQuery query(db);
-	bool ok = true;
-
-	geminis.first = gemini;
-	geminis.second = geminiHashKey;
-	query.prepare("UPDATE friends_public_keys SET "
-		      "gemini = ?, gemini_hash_key = ?, "
-		      "last_status_update = ?, status = 'online' "
-		      "WHERE neighbor_oid = -1 AND "
-		      "public_key_hash = ?");
-
-	if(geminis.first.isEmpty() || geminis.second.isEmpty())
-	  {
-	    query.bindValue(0, QVariant(QVariant::String));
-	    query.bindValue(1, QVariant(QVariant::String));
-	  }
-	else
-	  {
-	    spoton_crypt *s_crypt = s_crypts.value("chat", 0);
-
-	    if(s_crypt)
-	      {
-		query.bindValue
-		  (0, s_crypt->encryptedThenHashed(geminis.first, &ok).
-		   toBase64());
-
-		if(ok)
-		  query.bindValue
-		    (1, s_crypt->encryptedThenHashed(geminis.second,
-						     &ok).toBase64());
-	      }
-	    else
-	      {
-		query.bindValue(0, QVariant(QVariant::String));
-		query.bindValue(1, QVariant(QVariant::String));
-	      }
-	  }
-
-	query.bindValue
-	  (2, QDateTime::currentDateTime().toString(Qt::ISODate));
-	query.bindValue(3, publicKeyHash.toBase64());
-
-	if(ok)
-	  if(query.exec())
-	    {
-	      QString notsigned("");
-
-	      if(signature.isEmpty())
-		notsigned = " (unsigned)";
-
-	      if(geminis.first.isEmpty() ||
-		 geminis.second.isEmpty())
-		emit statusMessageReceived
-		  (publicKeyHash,
-		   tr("The participant %1...%2 terminated%3 the call.").
-		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()).
-		   arg(notsigned));
-	      else if(messageType == "0000a")
-		emit statusMessageReceived
-		  (publicKeyHash,
-		   tr("The participant %1...%2 initiated a call%3.").
-		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()).
-		   arg(notsigned));
-	      else if(messageType == "0000b")
-		emit statusMessageReceived
-		  (publicKeyHash,
-		   tr("The participant %1...%2 initiated a call%3 "
-		      "within a call.").
-		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()).
-		   arg(notsigned));
-	      else if(messageType == "0000d")
-		emit statusMessageReceived
-		  (publicKeyHash,
-		   tr("The participant %1...%2 initiated a call "
-		      "via Forward Secrecy.").
-		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()));
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
+  if(m_poptasticPopFuture.isFinished())
+    m_poptasticPopFuture =
+      QtConcurrent::run(this, &spoton_kernel::popPoptastic);
 }
 
-void spoton_kernel::slotUrlImportTimerExpired(void)
+void spoton_kernel::slotPoptasticPost(void)
 {
-  for(int i = 0; i < m_urlImportFutures.size(); i++)
-    if(m_urlImportFutures.at(i).isFinished())
-      {
-	m_urlImportFutures.replace
-	  (i, QtConcurrent::run(this, &spoton_kernel::importUrls));
-	break;
-      }
-}
-
-void spoton_kernel::importUrls(void)
-{
-  {
-    QReadLocker locker(&m_urlListMutex);
-
-    if(m_urlList.isEmpty())
-      return;
-  }
-
-  spoton_crypt *crypt = 0;
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
-
-  crypt = spoton_misc::retrieveUrlCommonCredentials(s_crypt);
-
-  if(!crypt || !s_crypt)
-    {
-      delete crypt;
-
-      QWriteLocker locker(&m_urlListMutex);
-
-      m_urlList.clear();
-      return;
-    }
-
-  QList<QPair<QUrl, QString> > polarizers;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT domain, permission FROM distillers WHERE "
-		      "direction_hash = ?");
-	query.bindValue(0, s_crypt->keyedHash("download", &ok).toBase64());
-
-	if(ok && query.exec())
-	  while(query.next())
-	    {
-	      QByteArray domain;
-	      QByteArray permission;
-	      bool ok = true;
-
-	      domain = s_crypt->
-		decryptedAfterAuthenticated(QByteArray::
-					    fromBase64(query.
-						       value(0).
-						       toByteArray()),
-					    &ok);
-
-	      if(ok)
-		permission = s_crypt->
-		  decryptedAfterAuthenticated(QByteArray::
-					      fromBase64(query.
-							 value(1).
-							 toByteArray()),
-					      &ok);
-
-	      if(ok)
-		{
-		  QUrl url(QUrl::fromUserInput(domain));
-
-		  if(!url.isEmpty())
-		    if(url.isValid())
-		      {
-			QPair<QUrl, QString> pair;
-
-			pair.first = url;
-			pair.second = permission.constData();
-			polarizers.append(pair);
-		      }
-		}
-
-	      if(m_urlImportFutureInterrupt.fetchAndAddOrdered(0))
-		break;
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(m_urlImportFutureInterrupt.fetchAndAddOrdered(0))
-    {
-      delete crypt;
-
-      QWriteLocker locker(&m_urlListMutex);
-
-      m_urlList.clear();
-      return;
-    }
-
-  {
-    connectionName = spoton_misc::databaseName();
-
-    QSqlDatabase db;
-
-    if(setting("gui/sqliteSearch", true).toBool())
-      {
-	db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "urls.db");
-	db.open();
-      }
-    else
-      {
-	QByteArray password;
-	QString database
-	  (setting("gui/postgresql_database", "").
-	   toString().trimmed());
-	QString host
-	  (setting("gui/postgresql_host", "localhost").toString().trimmed());
-	QString name
-	  (setting("gui/postgresql_name", "").toString().trimmed());
-	QString str("connect_timeout=10");
-	bool ok = true;
-	bool ssltls = setting("gui/postgresql_ssltls", false).toBool();
-	int port = setting("gui/postgresql_port", 5432).toInt();
-
-	password = s_crypt->decryptedAfterAuthenticated
-	  (QByteArray::
-	   fromBase64(setting("gui/postgresql_password", "").
-		      toByteArray()), &ok);
-
-	if(ssltls)
-	  str.append(";requiressl=1");
-
-	db = QSqlDatabase::addDatabase("QPSQL", connectionName);
-	db.setConnectOptions(str);
-	db.setDatabaseName(database);
-	db.setHostName(host);
-	db.setPort(port);
-
-	if(ok)
-	  db.open(name, password);
-      }
-
-    if(db.isOpen())
-      {
-	do
-	  {
-	    if(m_urlImportFutureInterrupt.fetchAndAddOrdered(0))
-	      break;
-
-	    QWriteLocker locker(&m_urlListMutex);
-
-	    if(m_urlList.isEmpty())
-	      break;
-
-	    QList<QByteArray> urls(m_urlList.mid(0, 4));
-
-	    for(int i = 0; i < urls.size(); i++)
-	      m_urlList.removeAt(0);
-
-	    locker.unlock();
-
-	    QByteArray content(qUncompress(urls.value(3)));
-	    QByteArray description(urls.value(2));
-	    QByteArray title(urls.value(1));
-	    QByteArray url(urls.value(0));
-	    bool ok = false;
-
-	    for(int i = 0; i < polarizers.size(); i++)
-	      {
-		QString type(polarizers.at(i).second);
-		QUrl u1(polarizers.at(i).first);
-		QUrl u2(QUrl::fromUserInput(url.trimmed()));
-
-		if(type == "accept")
-		  {
-		    if(spoton_misc::urlToEncoded(u2).
-		       startsWith(spoton_misc::urlToEncoded(u1)))
-		      {
-			ok = true;
-			break;
-		      }
-		  }
-		else
-		  {
-		    if(spoton_misc::urlToEncoded(u2).
-		       startsWith(spoton_misc::urlToEncoded(u1)))
-		      {
-			ok = false;
-			break;
-		      }
-		  }
-	      }
-
-	    if(ok)
-	      {
-		QString error("");
-
-		if(spoton_misc::importUrl(content,
-					  description,
-					  title,
-					  url,
-					  db,
-					  setting("gui/maximum_url_keywords_"
-						  "import_kernel",
-						  50).toInt(),
-					  setting("gui/disable_kernel_"
-						  "synchronous_sqlite_url_"
-						  "download",
-						  false).toBool(),
-					  m_urlImportFutureInterrupt,
-					  error,
-					  crypt))
-		  {
-		    QWriteLocker locker(&m_urlsProcessedMutex);
-
-		    m_urlsProcessed += 1;
-		  }
-	      }
-	  }
-	while(true);
-      }
-    else
-      {
-	QWriteLocker locker(&m_urlListMutex);
-
-	m_urlList.clear();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  delete crypt;
-}
-
-void spoton_kernel::saveUrls(const QList<QByteArray> &urls)
-{
-  if(urls.isEmpty() || urls.size() % 4 != 0)
-    return;
-
-  QWriteLocker locker1(&m_urlListMutex);
-
-  m_urlList << urls;
-  locker1.unlock();
-}
-
-void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
-(const QByteArrayList &list)
-{
-  if(list.isEmpty())
-    return;
-
-  /*
-  ** list[0]: Destination's Name
-  ** list[1]: Destination's Public Key Hash
-  ** list[2]: Temporary Private Key
-  ** list[3]: Temporary Public Key
-  ** list[4]: Key Type (chat, email, poptastic, etc.)
-  ** list[5]: Widget Type (chat, email)
-  */
-
-  QByteArray keyType(list.value(4));
-
-  if(!(keyType == "chat" || keyType == "email" ||
-       keyType == "open-library" || keyType == "poptastic" ||
-       keyType == "url"))
-    return;
-
-  QByteArray widgetType(list.value(5));
-  bool ok = true;
-  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
-  spoton_crypt *s_crypt2 = s_crypts.value(keyType + "-signature", 0);
-
-  if(!s_crypt1 || !s_crypt2)
-    return;
-
-  QByteArray myPublicKey = s_crypt1->publicKey(&ok);
-
-  if(!ok)
-    return;
-
-  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(myPublicKey, &ok));
-
-  if(!ok)
-    return;
-
-  QByteArray cipherType(setting("gui/fsCipherType",
-				"aes256").toString().toLatin1());
-  QByteArray hashType(setting("gui/fsHashType", "sha512").
-		      toString().toLatin1());
-  QByteArray publicKey
-    (spoton_misc::publicKeyFromHash(list.value(1), s_crypt1));
-
-  if(publicKey.isEmpty())
-    return;
-
-  QByteArray symmetricKey;
-  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
-
-  if(symmetricKeyLength == 0)
-    return;
-
-  QByteArray hashKey;
-
-  hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
-  hashKey = spoton_crypt::strongRandomBytes
-    (static_cast<size_t> (hashKey.length()));
-  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
-  symmetricKey = spoton_crypt::strongRandomBytes
-    (static_cast<size_t> (symmetricKey.length()));
-
-  QByteArray keyInformation;
-
-  {
-    QDataStream stream(&keyInformation, QIODevice::WriteOnly);
-
-    stream << QByteArray("0091a")
-	   << symmetricKey
-	   << hashKey
-	   << cipherType
-	   << hashType;
-
-    if(stream.status() != QDataStream::Ok)
-      return;
-  }
-
-  keyInformation = spoton_crypt::publicKeyEncrypt
-    (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
-
-  if(!ok)
-    return;
-
-  bool sign = true;
-
-  if(keyType == "chat" && !setting("gui/chatSignMessages", true).toBool())
-    sign = false;
-  else if(keyType == "email" && !setting("gui/emailSignMessages", true).
-	  toBool())
-    sign = false;
-  else if(keyType == "poptastic")
-    {
-      if(widgetType == "chat" && !setting("gui/chatSignMessages", true).
-	 toBool())
-	sign = false;
-      else if(widgetType == "email" && !setting("gui/emailSignMessages",
-						true).toBool())
-	sign = false;
-
-      sign = true; // Mandatory signatures!
-    }
-  else if(keyType == "url" && !setting("gui/urlSignMessages", true).toBool())
-    sign = false;
-
-  QByteArray signature;
-  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
-		     toString("MMddyyyyhhmmss").toLatin1());
-
-  if(sign)
-    {
-      QByteArray recipientDigest
-	(spoton_crypt::sha512Hash(publicKey, &ok));
-
-      signature = s_crypt2->digitalSignature
-	("0091a" +
-	 symmetricKey +
-	 hashKey +
-	 cipherType +
-	 hashType +
-	 myPublicKeyHash +
-	 list.value(3) +
-	 utcDate +
-	 recipientDigest,
-	 &ok);
-
-      if(!ok)
-	return;
-    }
-
-  QByteArray data;
-  spoton_crypt crypt(cipherType,
-		     hashType,
-		     QByteArray(),
-		     symmetricKey,
-		     hashKey,
-		     0,
-		     0,
-		     "");
-
-  {
-    QDataStream stream(&data, QIODevice::WriteOnly);
-
-    stream << myPublicKeyHash
-	   << list.value(3)
-	   << utcDate
-	   << signature;
-
-    if(stream.status() != QDataStream::Ok)
-      ok = false;
-
-    if(ok)
-      data = crypt.encrypted(data, &ok);
-
-    if(!ok)
-      return;
-  }
-
-  QByteArray messageCode
-    (crypt.keyedHash(keyInformation + data, &ok));
-
-  if(!ok)
-    return;
-
-  data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
-    messageCode.toBase64();
-
-  if(keyType == "chat" || keyType == "email" || keyType == "url")
-    emit sendForwardSecrecyPublicKey(data);
-  else if(keyType == "poptastic")
-    {
-      QByteArray message
-	(spoton_send::message0091a(data, QPair<QByteArray, QByteArray> ()));
-      QString name(QString::fromUtf8(list.value(0).constData(),
-				     list.value(0).length()));
-
-      postPoptasticMessage(name, message);
-    }
-
-  QPair<QByteArray, QByteArray> keys(list.value(2), list.value(3));
-
-  keys.first = s_crypt1->encryptedThenHashed(keys.first, &ok);
-
-  if(ok)
-    keys.second = s_crypt1->encryptedThenHashed(keys.second, &ok);
-
-  if(ok)
-    {
-      QWriteLocker locker(&m_forwardSecrecyKeysMutex);
-
-      m_forwardSecrecyKeys.insert(list.value(1), keys);
-    }
-}
-
-void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
-(const QByteArrayList &list)
-{
-  if(list.size() != 7)
-    return;
-
-  /*
-  ** list[0]: Destination's Public Key Hash
-  ** list[1]: Temporary Public Key
-  ** list[2]: Key Type (chat, email, poptastic, etc.)
-  ** list[3]: Authentication Algorithm
-  ** list[4]: Authentication Key
-  ** list[5]: Encryption Algorithm
-  ** list[6]: Encryption Key
-  */
-
-  QByteArray keyType(list.value(2));
-
-  if(!(keyType == "chat" || keyType == "email" ||
-       keyType == "open-library" || keyType == "poptastic" ||
-       keyType == "url"))
-    return;
-
-  bool ok = true;
-  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
-  spoton_crypt *s_crypt2 = s_crypts.value(keyType + "-signature", 0);
-
-  if(!s_crypt1 || !s_crypt2)
-    return;
-
-  QByteArray myPublicKey = s_crypt1->publicKey(&ok);
-
-  if(!ok)
-    return;
-
-  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(myPublicKey, &ok));
-
-  if(!ok)
-    return;
-
-  QByteArray cipherType(setting("gui/fsCipherType",
-				"aes256").toString().toLatin1());
-  QByteArray hashType(setting("gui/fsHashType", "sha512").
-		      toString().toLatin1());
-  QByteArray publicKey
-    (spoton_misc::publicKeyFromHash(list.value(0), s_crypt1));
-
-  if(publicKey.isEmpty())
-    return;
-
-  QByteArray symmetricKey;
-  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
-
-  if(symmetricKeyLength == 0)
-    return;
-
-  QByteArray hashKey;
-
-  hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
-  hashKey = spoton_crypt::strongRandomBytes
-    (static_cast<size_t> (hashKey.length()));
-  symmetricKey.resize(static_cast<int> (symmetricKeyLength));
-  symmetricKey = spoton_crypt::strongRandomBytes
-    (static_cast<size_t> (symmetricKey.length()));
-
-  QByteArray keyInformation;
-
-  {
-    QDataStream stream(&keyInformation, QIODevice::WriteOnly);
-
-    stream << QByteArray("0091b")
-	   << symmetricKey
-	   << hashKey
-	   << cipherType
-	   << hashType;
-
-    if(stream.status() != QDataStream::Ok)
-      return;
-  }
-
-  keyInformation = spoton_crypt::publicKeyEncrypt
-    (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
-
-  if(!ok)
-    return;
-
-  QByteArray bundle;
-
-  {
-    QDataStream stream(&bundle, QIODevice::WriteOnly);
-
-    stream << list.value(3)
-	   << list.value(4)
-	   << list.value(5)
-	   << list.value(6);
-
-    if(stream.status() != QDataStream::Ok)
-      return;
-
-    bundle = qCompress(bundle, 9);
-  }
-
-  QByteArray pk(qUncompress(list.value(1)));
-
-  bundle = spoton_crypt::publicKeyEncrypt
-    (bundle, list.value(1), pk.mid(0, 25), &ok);
-
-  if(!ok)
-    return;
-
-  bool sign = true;
-
-  if(keyType == "chat" && !setting("gui/chatSignMessages", true).toBool())
-    sign = false;
-  else if(keyType == "email" && !setting("gui/emailSignMessages", true).
-	  toBool())
-    sign = false;
-  else if(keyType == "poptastic")
-    sign = true; // Mandatory signatures!
-  else if(keyType == "url" && !setting("gui/urlSignMessages", true).toBool())
-    sign = false;
-
-  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
-		     toString("MMddyyyyhhmmss").toLatin1());
-  QByteArray signature;
-
-  if(sign)
-    {
-      QByteArray recipientDigest
-	(spoton_crypt::sha512Hash(publicKey, &ok));
-
-      signature = s_crypt2->digitalSignature
-	("0091b" +
-	 symmetricKey +
-	 hashKey +
-	 cipherType +
-	 hashType +
-	 myPublicKeyHash +
-	 bundle +
-	 utcDate +
-	 recipientDigest,
-	 &ok);
-
-      if(!ok)
-	return;
-    }
-
-  QByteArray data;
-  spoton_crypt crypt(cipherType,
-		     hashType,
-		     QByteArray(),
-		     symmetricKey,
-		     hashKey,
-		     0,
-		     0,
-		     "");
-
-  {
-    QDataStream stream(&data, QIODevice::WriteOnly);
-
-    stream << myPublicKeyHash
-	   << bundle
-	   << utcDate
-	   << signature;
-
-    if(stream.status() != QDataStream::Ok)
-      ok = false;
-
-    if(ok)
-      data = crypt.encrypted(data, &ok);
-
-    if(!ok)
-      return;
-  }
-
-  QByteArray messageCode
-    (crypt.keyedHash(keyInformation + data, &ok));
-
-  if(!ok)
-    return;
-
-  data = keyInformation.toBase64() + "\n" + data.toBase64() + "\n" +
-    messageCode.toBase64();
-
-  if(keyType == "chat" || keyType == "email" || keyType == "url")
-    emit sendForwardSecrecySessionKeys(data);
-  else if(keyType == "poptastic")
-    {
-      QByteArray message
-	(spoton_send::message0091b(data, QPair<QByteArray, QByteArray> ()));
-      QString name
-	(spoton_misc::nameFromPublicKeyHash(list.value(0), s_crypt1));
-
-      postPoptasticMessage(name, message);
-    }
+  if(m_poptasticPostFuture.isFinished())
+    m_poptasticPostFuture =
+      QtConcurrent::run(this, &spoton_kernel::postPoptastic);
 }
 
 void spoton_kernel::slotSaveForwardSecrecySessionKeys
@@ -2577,4 +2566,15 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
 
   if(ok)
     emit forwardSecrecyResponseReceived(list);
+}
+
+void spoton_kernel::slotUrlImportTimerExpired(void)
+{
+  for(int i = 0; i < m_urlImportFutures.size(); i++)
+    if(m_urlImportFutures.at(i).isFinished())
+      {
+	m_urlImportFutures.replace
+	  (i, QtConcurrent::run(this, &spoton_kernel::importUrls));
+	break;
+      }
 }
