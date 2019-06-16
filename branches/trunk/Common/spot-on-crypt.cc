@@ -2292,7 +2292,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   int cipherAlgorithm = (cipherType == "threefish") ? -1 :
     gcry_cipher_map_name(cipherType.toLatin1().constData());
   int hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
-  size_t cipherKeyLength = 0;
+  size_t keyLength = 0;
 
   if(cipherAlgorithm > 0 && gcry_cipher_test_algo(cipherAlgorithm) != 0)
     {
@@ -2314,8 +2314,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 
   if(cipherAlgorithm > 0)
     {
-      if((cipherKeyLength =
-	  gcry_cipher_get_algo_keylen(cipherAlgorithm)) == 0)
+      if((keyLength = gcry_cipher_get_algo_keylen(cipherAlgorithm)) == 0)
 	{
 	  error = QObject::tr("gcry_cipher_get_algo_keylen() failed");
 	  spoton_misc::logError
@@ -2326,7 +2325,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 	}
     }
   else if(cipherType == "threefish")
-    cipherKeyLength = spoton_crypt::cipherKeyLength(cipherType.toLatin1());
+    keyLength = cipherKeyLength(cipherType.toLatin1());
   else
     {
       error = QObject::tr("unsupported cipher");
@@ -2341,9 +2340,9 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   ** keys.second: hash key.
   */
 
-  key.resize(static_cast<int> (cipherKeyLength) + qAbs(hashKeySize));
-  keys.first.resize(static_cast<int> (cipherKeyLength));
-  keys.second.resize(key.length() - static_cast<int> (cipherKeyLength));
+  key.resize(static_cast<int> (keyLength) + qAbs(hashKeySize));
+  keys.first.resize(static_cast<int> (keyLength));
+  keys.second.resize(key.length() - static_cast<int> (keyLength));
   temporaryKey.resize(key.length());
 
   /*
@@ -2849,6 +2848,27 @@ QString spoton_crypt::publicKeySize(void)
   return publicKeySize(m_publicKey);
 }
 
+QStringList spoton_crypt::buzzHashTypes(void)
+{
+  QStringList types;
+
+  types << "sha3-512"
+	<< "sha384"
+	<< "sha512"
+	<< "stribog512"
+	<< "whirlpool";
+
+  for(int i = types.size() - 1; i >= 0; i--)
+    {
+      int algorithm = gcry_md_map_name(types.at(i).toLatin1().constData());
+
+      if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
+	types.removeAt(i);
+    }
+
+  return types;
+}
+
 QStringList spoton_crypt::cipherTypes(void)
 {
   QStringList types;
@@ -2890,6 +2910,26 @@ QStringList spoton_crypt::congestionHashAlgorithms(void)
 	<< "tiger"
 	<< "tiger1"
 	<< "tiger2";
+
+  for(int i = types.size() - 1; i >= 0; i--)
+    {
+      int algorithm = gcry_md_map_name(types.at(i).toLatin1().constData());
+
+      if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
+	types.removeAt(i);
+    }
+
+  return types;
+}
+
+QStringList spoton_crypt::hashTypes(void)
+{
+  QStringList types;
+
+  types << "sha3-512"
+	<< "sha512"
+	<< "stribog512"
+	<< "whirlpool";
 
   for(int i = types.size() - 1; i >= 0; i--)
     {
@@ -3397,454 +3437,6 @@ qint64 spoton_crypt::publicKeyCount(void)
   return count;
 }
 
-void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
-{
-  if(!gcryctl_set_thread_cbs_set)
-    {
-      gcry_error_t err = 0;
-
-#ifdef SPOTON_LINKED_WITH_LIBPTHREAD
-      /*
-      ** libgcrypt 1.6.x compatibility.
-      */
-#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
-      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread, 0);
-#endif
-#else
-      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_qt, 0);
-#endif
-
-      if(err == 0)
-	gcryctl_set_thread_cbs_set = true;
-      else
-	std::cerr << "spoton_crypt::init(): gcry_control() "
-		  << "failed while initializing threads. Proceeding."
-		  << std::endl;
-    }
-
-  if(!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
-    {
-      s_cbc_cts_enabled = cbc_cts_enabled;
-      s_hasSecureMemory.fetchAndStoreOrdered(0);
-      gcry_control(GCRYCTL_ENABLE_M_GUARD);
-
-      if(!gcry_check_version(GCRYPT_VERSION))
-	{
-	  std::cerr << "spoton_crypt::init(): gcry_check_version() "
-		    << "failure. Perhaps you should verify some "
-		    << "settings."
-		    << std::endl;
-	  spoton_misc::logError
-	    ("spoton_crypt::init(): gcry_check_version() "
-	     "failure. Perhaps you should verify some "
-	     "settings.");
-	}
-
-      if(secureMemorySize == 0)
-	{
-	  std::cerr << "spoton_crypt::init(): disabling secure memory."
-		    << std::endl;
-	  spoton_misc::logError("spoton_crypt::init(): disabling secure "
-				"memory.");
-	  gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
-	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
-	}
-      else
-	{
-	  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
-#ifdef Q_OS_FREEBSD
-	  gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize), 0);
-	  s_hasSecureMemory.fetchAndStoreOrdered(1);
-#else
-	  gcry_error_t err = 0;
-
-	  if((err = gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize),
-				 0)) != 0)
-	    {
-	      QByteArray buffer(64, 0);
-
-	      gpg_strerror_r(err, buffer.data(),
-			     static_cast<size_t> (buffer.length()));
-	      spoton_misc::logError
-		(QString("spoton_crypt::init(): initializing "
-			 "secure memory failure (%1).").
-		 arg(buffer.constData()));
-	    }
-	  else
-	    s_hasSecureMemory.fetchAndStoreOrdered(1);
-#endif
-
-	  gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
-	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
-	}
-    }
-  else
-    spoton_misc::logError
-      ("spoton_crypt::init(): libgcrypt is already initialized.");
-
-  if(!ssl_library_initialized)
-    {
-      ssl_library_initialized = true;
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-      SSL_library_init(); // Always returns 1.
-#else
-#ifdef Q_OS_OPENBSD
-      SSL_library_init(); // Always returns 1.
-#else
-      OPENSSL_init_ssl(0, NULL);
-#endif
-#endif
-    }
-}
-
-QStringList spoton_crypt::buzzHashTypes(void)
-{
-  QStringList types;
-
-  types << "sha3-512"
-	<< "sha384"
-	<< "sha512"
-	<< "stribog512"
-	<< "whirlpool";
-
-  for(int i = types.size() - 1; i >= 0; i--)
-    {
-      int algorithm = gcry_md_map_name(types.at(i).toLatin1().constData());
-
-      if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
-	types.removeAt(i);
-    }
-
-  return types;
-}
-
-QStringList spoton_crypt::hashTypes(void)
-{
-  QStringList types;
-
-  types << "sha3-512"
-	<< "sha512"
-	<< "stribog512"
-	<< "whirlpool";
-
-  for(int i = types.size() - 1; i >= 0; i--)
-    {
-      int algorithm = gcry_md_map_name(types.at(i).toLatin1().constData());
-
-      if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
-	types.removeAt(i);
-    }
-
-  return types;
-}
-
-size_t spoton_crypt::ivLength(const QString &cipherType)
-{
-  return gcry_cipher_get_algo_blklen
-    (gcry_cipher_map_name(cipherType.toLatin1().constData()));
-}
-
-void spoton_crypt::init(const QString &cipherType,
-			const QString &hashType,
-			const QByteArray &passphrase,
-			const QByteArray &symmetricKey,
-			const QByteArray &hashKey,
-			const int saltLength,
-			const unsigned long int iterationCount,
-			const QString &id,
-			const QString &modeOfOperation)
-{
-  Q_UNUSED(passphrase);
-  m_cipherAlgorithm = (cipherType == "threefish") ? -1 :
-    gcry_cipher_map_name(cipherType.toLatin1().constData());
-  m_cipherHandle = 0;
-  m_cipherType = cipherType;
-  m_hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
-  m_hashKey = 0;
-  m_hashKeyLength = 0;
-  m_hashType = hashType;
-  m_id = id;
-  m_isMcEliece.fetchAndStoreOrdered(0);
-  m_iterationCount = iterationCount;
-#ifdef SPOTON_MCELIECE_ENABLED
-  m_mceliece = 0;
-#endif
-  m_privateKey = 0;
-  m_privateKeyLength = 0;
-  m_saltLength = saltLength;
-  m_symmetricKey = 0;
-  m_threefish = 0;
-
-  if(m_cipherAlgorithm > 0)
-    m_symmetricKeyLength = gcry_cipher_get_algo_keylen(m_cipherAlgorithm);
-  else if(m_cipherType == "threefish")
-    m_symmetricKeyLength = spoton_crypt::cipherKeyLength
-      (m_cipherType.toLatin1());
-  else
-    m_symmetricKeyLength = 0;
-
-  setHashKey(hashKey);
-
-  if(m_symmetricKeyLength > 0)
-    m_symmetricKey = static_cast<char *>
-      (gcry_calloc_secure(m_symmetricKeyLength, sizeof(char)));
-  else
-    spoton_misc::logError("spoton_crypt::init(): "
-			  "gcry_cipher_get_algo_keylen() failed.");
-
-  if(m_symmetricKey && m_symmetricKeyLength > 0)
-    {
-      memcpy(m_symmetricKey,
-	     symmetricKey.constData(),
-	     qMin(m_symmetricKeyLength,
-		  static_cast<size_t> (symmetricKey.length())));
-
-      gcry_error_t err = 0;
-
-      if(m_cipherAlgorithm > 0)
-	{
-	  if(modeOfOperation.toLower() == "cbc")
-	    {
-	      unsigned int flags = GCRY_CIPHER_SECURE;
-
-	      if(s_cbc_cts_enabled)
-		flags |= GCRY_CIPHER_CBC_CTS;
-
-	      err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,
-				     GCRY_CIPHER_MODE_CBC,
-				     flags);
-	    }
-#if GCRYPT_VERSION_NUMBER >= 0x010600
-	  else if(modeOfOperation.toLower() == "gcm")
-	    err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,
-				   GCRY_CIPHER_MODE_GCM,
-				   GCRY_CIPHER_SECURE);
-#endif
-	  else
-	    spoton_misc::logError
-	      ("spoton_crypt::init(): mode of operation is not supported.");
-
-	  if(err != 0 || !m_cipherHandle)
-	    {
-	      if(err != 0)
-		{
-		  QByteArray buffer(64, 0);
-
-		  gpg_strerror_r(err, buffer.data(),
-				 static_cast<size_t> (buffer.length()));
-		  spoton_misc::logError
-		    (QString("spoton_crypt::init(): "
-			     "gcry_cipher_open() failure (%1).").
-		     arg(buffer.constData()));
-		}
-	      else
-		spoton_misc::logError("spoton_crypt::init(): "
-				      "gcry_cipher_open() failure.");
-	    }
-	}
-      else if(m_cipherType == "threefish")
-	{
-	  bool ok = true;
-
-	  m_threefish = new spoton_threefish();
-	  m_threefish->setKey(m_symmetricKey, m_symmetricKeyLength, &ok);
-
-	  if(ok)
-	    m_threefish->setTweak("76543210fedcba98", &ok);
-
-	  if(!ok)
-	    {
-	      delete m_threefish;
-	      m_threefish = 0;
-	    }
-	}
-      else
-	spoton_misc::logError("spoton_crypt::init(): "
-			      "m_cipherAlgorithm is zero or unsupported "
-			      "cipher.");
-
-      if(err == 0)
-	{
-	  if(m_cipherHandle)
-	    {
-	      if((err = gcry_cipher_setkey(m_cipherHandle,
-					   m_symmetricKey,
-					   m_symmetricKeyLength)) != 0)
-		{
-		  QByteArray buffer(64, 0);
-
-		  gpg_strerror_r(err, buffer.data(),
-				 static_cast<size_t> (buffer.length()));
-		  spoton_misc::logError
-		    (QString("spoton_crypt::init(): "
-			     "gcry_cipher_setkey() "
-			     "failure (%1).").arg(buffer.constData()));
-		}
-	    }
-	  else if(m_cipherType == "threefish")
-	    {
-	      if(!m_threefish)
-		spoton_misc::logError("spoton_crypt::init(): "
-				      "m_threefish is zero.");
-	    }
-	  else
-	    spoton_misc::logError("spoton_crypt::init(): "
-				  "m_cipherHandle is zero or unsupported "
-				  "cipher.");
-	}
-    }
-  else if(m_symmetricKeyLength > 0)
-    {
-      m_symmetricKeyLength = 0;
-      spoton_misc::logError("spoton_crypt::init(): "
-			    "gcry_calloc_secure() failed.");
-    }
-}
-
-void spoton_crypt::initializePrivateKeyContainer(bool *ok)
-{
-  QReadLocker locker1(&m_privateKeyMutex);
-
-  if(m_privateKey || m_privateKeyLength > 0)
-    {
-      if(ok)
-	*ok = true;
-
-      return;
-    }
-
-  locker1.unlock();
-
-  QByteArray keyData;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT private_key FROM idiotes WHERE id_hash = ?");
-	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
-
-	if(ok && query.exec())
-	  if(query.next())
-	    keyData = QByteArray::fromBase64
-	      (query.value(0).toByteArray());
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(keyData.isEmpty())
-    {
-      if(ok)
-	*ok = false;
-
-      spoton_misc::logError
-	(QString("spoton_crypt::initializePrivateKeyContainer(): "
-	         "empty %1 private key.").arg(m_id));
-      return;
-    }
-
-  {
-    bool ok = true;
-
-    keyData = this->decryptedAfterAuthenticated(keyData, &ok);
-
-    if(!ok)
-      keyData.clear();
-  }
-
-  if(keyData.isEmpty())
-    {
-      if(ok)
-	*ok = false;
-
-      spoton_misc::logError
-	("spoton_crypt::initializePrivateKeyContainer(): "
-	 "decryptedAfterAuthenticated() failure.");
-      return;
-    }
-
-  if(keyData.contains("(private-key") ||
-     keyData.startsWith("mceliece-") ||
-     keyData.startsWith("ntru-private-key-"))
-    {
-      if(keyData.startsWith("mceliece-"))
-	m_isMcEliece.fetchAndStoreOrdered(1);
-    }
-  else
-    {
-      if(ok)
-	*ok = false;
-
-      spoton_misc::logError
-	("spoton_crypt::initializePrivateKeyContainer(): "
-	 "keyData does not contain private-key.");
-      return;
-    }
-
-  QWriteLocker locker2(&m_privateKeyMutex);
-
-  m_privateKeyLength = static_cast<size_t> (keyData.length());
-
-  if(s_hasSecureMemory.fetchAndAddOrdered(0))
-    {
-      if(m_privateKeyLength == 0 ||
-	 (m_privateKey =
-	  static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
-						  sizeof(char)))) == 0)
-	{
-	  if(ok)
-	    *ok = false;
-
-	  m_isMcEliece.fetchAndAddOrdered(0);
-	  m_privateKeyLength = 0;
-	  spoton_misc::logError
-	    (QString("spoton_crypt::initializePrivateKeyContainer(): "
-		     "gcry_calloc_secure() "
-		     "failure or m_privateKeyLength is zero (%1).").
-	     arg(m_id));
-	  return;
-	}
-    }
-  else
-    {
-      if(m_privateKeyLength == 0 ||
-	 (m_privateKey = static_cast<char *> (calloc(m_privateKeyLength,
-						     sizeof(char)))) == 0)
-	{
-	  if(ok)
-	    *ok = false;
-
-	  m_isMcEliece.fetchAndStoreOrdered(0);
-	  m_privateKeyLength = 0;
-	  spoton_misc::logError
-	    (QString("spoton_crypt::initializePrivateKeyContainer(): calloc() "
-		     "failure or m_privateKeyLength is zero (%1).").
-	     arg(m_id));
-	  return;
-	}
-    }
-
-  memcpy(m_privateKey, keyData.constData(), m_privateKeyLength);
-  locker2.unlock();
-  keyData.replace(0, keyData.length(), QByteArray(keyData.length(), 0));
-  keyData.clear();
-
-  if(ok)
-    *ok = true;
-}
-
 size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
 {
   int cipherAlgorithm = (cipherType == "threefish") ? -1 :
@@ -3868,162 +3460,10 @@ size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
   return keyLength;
 }
 
-void spoton_crypt::generateSslKeys(const int rsaKeySize,
-				   QByteArray &certificate,
-				   QByteArray &privateKey,
-				   QByteArray &publicKey,
-				   const QHostAddress &address,
-				   const long int days,
-				   QString &error)
+size_t spoton_crypt::ivLength(const QString &cipherType)
 {
-  BIGNUM *f4 = 0;
-  BIO *privateMemory = 0;
-  BIO *publicMemory = 0;
-  BUF_MEM *bptr;
-  RSA *rsa = 0;
-  char *privateBuffer = 0;
-  char *publicBuffer = 0;
-
-  if(rsaKeySize <= 0)
-    {
-      error = QObject::tr("rsaKeySize is less than or equal to zero");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "rsaKeySize is less than or equal to zero.");
-      goto done_label;
-    }
-  else if(rsaKeySize > 4096)
-    {
-      error = QObject::tr("rsaKeySize is greater than 4096");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "rsaKeySize is greater than 4096.");
-      goto done_label;
-    }
-
-  if(!(f4 = BN_new()))
-    {
-      error = QObject::tr("BN_new() returned zero");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "BN_new() failure.");
-      goto done_label;
-    }
-
-  if(BN_set_word(f4, RSA_F4) != 1)
-    {
-      error = QObject::tr("BN_set_word() failure");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "BN_set_word() failure.");
-      goto done_label;
-    }
-
-  if(!(rsa = RSA_new()))
-    {
-      error = QObject::tr("RSA_new() returned zero");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "RSA_new() failure.");
-      goto done_label;
-    }
-
-  if(RSA_generate_key_ex(rsa, rsaKeySize, f4, 0) == -1)
-    {
-      error = QObject::tr("RSA_generate_key_ex() returned negative one");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "RSA_generate_key_ex() failure.");
-      goto done_label;
-    }
-
-  if(!(privateMemory = BIO_new(BIO_s_mem())))
-    {
-      error = QObject::tr("BIO_new() returned zero");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "BIO_new() failure.");
-      goto done_label;
-    }
-
-  if(!(publicMemory = BIO_new(BIO_s_mem())))
-    {
-      error = QObject::tr("BIO_new() returned zero");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "BIO_new() failure.");
-      goto done_label;
-    }
-
-  if(PEM_write_bio_RSAPrivateKey(privateMemory, rsa, 0, 0, 0, 0, 0) == 0)
-    {
-      error = QObject::tr("PEM_write_bio_RSAPrivateKey() returned zero");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "PEM_write_bio_RSAPrivateKey() failure.");
-      goto done_label;
-    }
-
-  if(PEM_write_bio_RSAPublicKey(publicMemory, rsa) == 0)
-    {
-      error = QObject::tr("PEM_write_bio_RSAPublicKey() returned zero");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "PEM_write_bio_RSAPublicKey() failure.");
-      goto done_label;
-    }
-
-  BIO_get_mem_ptr(privateMemory, &bptr);
-
-  if(bptr->length + 1 <= 0 ||
-     std::numeric_limits<size_t>::max() - bptr->length < 1 ||
-     !(privateBuffer = static_cast<char *> (calloc(bptr->length + 1,
-						   sizeof(char)))))
-    {
-      error = QObject::tr("calloc() failure or bptr->length + 1 is "
-			  "irregular");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "calloc() failure or bptr->length + 1 is "
-			    "irregular.");
-      goto done_label;
-    }
-
-  memcpy(privateBuffer, bptr->data, bptr->length);
-  privateBuffer[bptr->length] = 0;
-  privateKey = privateBuffer;
-  BIO_get_mem_ptr(publicMemory, &bptr);
-
-  if(bptr->length + 1 <= 0 ||
-     std::numeric_limits<size_t>::max() - bptr->length < 1 ||
-     !(publicBuffer = static_cast<char *> (calloc(bptr->length + 1,
-						  sizeof(char)))))
-    {
-      error = QObject::tr("calloc() failure or bptr->length + 1 is "
-			  "irregular");
-      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "calloc() failure or bptr->length + 1 is "
-			    "irregular.");
-      goto done_label;
-    }
-
-  memcpy(publicBuffer, bptr->data, bptr->length);
-  publicBuffer[bptr->length] = 0;
-  publicKey = publicBuffer;
-
-  if(days > 0)
-    generateCertificate(rsa, certificate, address, days, error);
-
- done_label:
-
-  if(!error.isEmpty())
-    {
-      certificate.replace
-	(0, certificate.length(), QByteArray(certificate.length(), 0));
-      certificate.clear();
-      privateKey.replace
-	(0, privateKey.length(), QByteArray(privateKey.length(), 0));
-      privateKey.clear();
-      publicKey.replace
-	(0, publicKey.length(), QByteArray(publicKey.length(), 0));
-      publicKey.clear();
-    }
-
-  BIO_free(privateMemory);
-  BIO_free(publicMemory);
-  BN_free(f4);
-  RSA_free(rsa);
-  free(privateBuffer);
-  free(publicBuffer);
+  return gcry_cipher_get_algo_blklen
+    (gcry_cipher_map_name(cipherType.toLatin1().constData()));
 }
 
 void spoton_crypt::generateCertificate(RSA *rsa,
@@ -4258,6 +3698,564 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   X509_free(x509);
   free(buffer);
   free(commonName);
+}
+
+void spoton_crypt::generateSslKeys(const int rsaKeySize,
+				   QByteArray &certificate,
+				   QByteArray &privateKey,
+				   QByteArray &publicKey,
+				   const QHostAddress &address,
+				   const long int days,
+				   QString &error)
+{
+  BIGNUM *f4 = 0;
+  BIO *privateMemory = 0;
+  BIO *publicMemory = 0;
+  BUF_MEM *bptr;
+  RSA *rsa = 0;
+  char *privateBuffer = 0;
+  char *publicBuffer = 0;
+
+  if(rsaKeySize <= 0)
+    {
+      error = QObject::tr("rsaKeySize is less than or equal to zero");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "rsaKeySize is less than or equal to zero.");
+      goto done_label;
+    }
+  else if(rsaKeySize > 4096)
+    {
+      error = QObject::tr("rsaKeySize is greater than 4096");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "rsaKeySize is greater than 4096.");
+      goto done_label;
+    }
+
+  if(!(f4 = BN_new()))
+    {
+      error = QObject::tr("BN_new() returned zero");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "BN_new() failure.");
+      goto done_label;
+    }
+
+  if(BN_set_word(f4, RSA_F4) != 1)
+    {
+      error = QObject::tr("BN_set_word() failure");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "BN_set_word() failure.");
+      goto done_label;
+    }
+
+  if(!(rsa = RSA_new()))
+    {
+      error = QObject::tr("RSA_new() returned zero");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "RSA_new() failure.");
+      goto done_label;
+    }
+
+  if(RSA_generate_key_ex(rsa, rsaKeySize, f4, 0) == -1)
+    {
+      error = QObject::tr("RSA_generate_key_ex() returned negative one");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "RSA_generate_key_ex() failure.");
+      goto done_label;
+    }
+
+  if(!(privateMemory = BIO_new(BIO_s_mem())))
+    {
+      error = QObject::tr("BIO_new() returned zero");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "BIO_new() failure.");
+      goto done_label;
+    }
+
+  if(!(publicMemory = BIO_new(BIO_s_mem())))
+    {
+      error = QObject::tr("BIO_new() returned zero");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "BIO_new() failure.");
+      goto done_label;
+    }
+
+  if(PEM_write_bio_RSAPrivateKey(privateMemory, rsa, 0, 0, 0, 0, 0) == 0)
+    {
+      error = QObject::tr("PEM_write_bio_RSAPrivateKey() returned zero");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "PEM_write_bio_RSAPrivateKey() failure.");
+      goto done_label;
+    }
+
+  if(PEM_write_bio_RSAPublicKey(publicMemory, rsa) == 0)
+    {
+      error = QObject::tr("PEM_write_bio_RSAPublicKey() returned zero");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "PEM_write_bio_RSAPublicKey() failure.");
+      goto done_label;
+    }
+
+  BIO_get_mem_ptr(privateMemory, &bptr);
+
+  if(bptr->length + 1 <= 0 ||
+     std::numeric_limits<size_t>::max() - bptr->length < 1 ||
+     !(privateBuffer = static_cast<char *> (calloc(bptr->length + 1,
+						   sizeof(char)))))
+    {
+      error = QObject::tr("calloc() failure or bptr->length + 1 is "
+			  "irregular");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "calloc() failure or bptr->length + 1 is "
+			    "irregular.");
+      goto done_label;
+    }
+
+  memcpy(privateBuffer, bptr->data, bptr->length);
+  privateBuffer[bptr->length] = 0;
+  privateKey = privateBuffer;
+  BIO_get_mem_ptr(publicMemory, &bptr);
+
+  if(bptr->length + 1 <= 0 ||
+     std::numeric_limits<size_t>::max() - bptr->length < 1 ||
+     !(publicBuffer = static_cast<char *> (calloc(bptr->length + 1,
+						  sizeof(char)))))
+    {
+      error = QObject::tr("calloc() failure or bptr->length + 1 is "
+			  "irregular");
+      spoton_misc::logError("spoton_crypt::generateSslKeys(): "
+			    "calloc() failure or bptr->length + 1 is "
+			    "irregular.");
+      goto done_label;
+    }
+
+  memcpy(publicBuffer, bptr->data, bptr->length);
+  publicBuffer[bptr->length] = 0;
+  publicKey = publicBuffer;
+
+  if(days > 0)
+    generateCertificate(rsa, certificate, address, days, error);
+
+ done_label:
+
+  if(!error.isEmpty())
+    {
+      certificate.replace
+	(0, certificate.length(), QByteArray(certificate.length(), 0));
+      certificate.clear();
+      privateKey.replace
+	(0, privateKey.length(), QByteArray(privateKey.length(), 0));
+      privateKey.clear();
+      publicKey.replace
+	(0, publicKey.length(), QByteArray(publicKey.length(), 0));
+      publicKey.clear();
+    }
+
+  BIO_free(privateMemory);
+  BIO_free(publicMemory);
+  BN_free(f4);
+  RSA_free(rsa);
+  free(privateBuffer);
+  free(publicBuffer);
+}
+
+void spoton_crypt::init(const QString &cipherType,
+			const QString &hashType,
+			const QByteArray &passphrase,
+			const QByteArray &symmetricKey,
+			const QByteArray &hashKey,
+			const int saltLength,
+			const unsigned long int iterationCount,
+			const QString &id,
+			const QString &modeOfOperation)
+{
+  Q_UNUSED(passphrase);
+  m_cipherAlgorithm = (cipherType == "threefish") ? -1 :
+    gcry_cipher_map_name(cipherType.toLatin1().constData());
+  m_cipherHandle = 0;
+  m_cipherType = cipherType;
+  m_hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
+  m_hashKey = 0;
+  m_hashKeyLength = 0;
+  m_hashType = hashType;
+  m_id = id;
+  m_isMcEliece.fetchAndStoreOrdered(0);
+  m_iterationCount = iterationCount;
+#ifdef SPOTON_MCELIECE_ENABLED
+  m_mceliece = 0;
+#endif
+  m_privateKey = 0;
+  m_privateKeyLength = 0;
+  m_saltLength = saltLength;
+  m_symmetricKey = 0;
+  m_threefish = 0;
+
+  if(m_cipherAlgorithm > 0)
+    m_symmetricKeyLength = gcry_cipher_get_algo_keylen(m_cipherAlgorithm);
+  else if(m_cipherType == "threefish")
+    m_symmetricKeyLength = cipherKeyLength(m_cipherType.toLatin1());
+  else
+    m_symmetricKeyLength = 0;
+
+  setHashKey(hashKey);
+
+  if(m_symmetricKeyLength > 0)
+    m_symmetricKey = static_cast<char *>
+      (gcry_calloc_secure(m_symmetricKeyLength, sizeof(char)));
+  else
+    spoton_misc::logError("spoton_crypt::init(): "
+			  "gcry_cipher_get_algo_keylen() failed.");
+
+  if(m_symmetricKey && m_symmetricKeyLength > 0)
+    {
+      memcpy(m_symmetricKey,
+	     symmetricKey.constData(),
+	     qMin(m_symmetricKeyLength,
+		  static_cast<size_t> (symmetricKey.length())));
+
+      gcry_error_t err = 0;
+
+      if(m_cipherAlgorithm > 0)
+	{
+	  if(modeOfOperation.toLower() == "cbc")
+	    {
+	      unsigned int flags = GCRY_CIPHER_SECURE;
+
+	      if(s_cbc_cts_enabled)
+		flags |= GCRY_CIPHER_CBC_CTS;
+
+	      err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,
+				     GCRY_CIPHER_MODE_CBC,
+				     flags);
+	    }
+#if GCRYPT_VERSION_NUMBER >= 0x010600
+	  else if(modeOfOperation.toLower() == "gcm")
+	    err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,
+				   GCRY_CIPHER_MODE_GCM,
+				   GCRY_CIPHER_SECURE);
+#endif
+	  else
+	    spoton_misc::logError
+	      ("spoton_crypt::init(): mode of operation is not supported.");
+
+	  if(err != 0 || !m_cipherHandle)
+	    {
+	      if(err != 0)
+		{
+		  QByteArray buffer(64, 0);
+
+		  gpg_strerror_r(err, buffer.data(),
+				 static_cast<size_t> (buffer.length()));
+		  spoton_misc::logError
+		    (QString("spoton_crypt::init(): "
+			     "gcry_cipher_open() failure (%1).").
+		     arg(buffer.constData()));
+		}
+	      else
+		spoton_misc::logError("spoton_crypt::init(): "
+				      "gcry_cipher_open() failure.");
+	    }
+	}
+      else if(m_cipherType == "threefish")
+	{
+	  bool ok = true;
+
+	  m_threefish = new spoton_threefish();
+	  m_threefish->setKey(m_symmetricKey, m_symmetricKeyLength, &ok);
+
+	  if(ok)
+	    m_threefish->setTweak("76543210fedcba98", &ok);
+
+	  if(!ok)
+	    {
+	      delete m_threefish;
+	      m_threefish = 0;
+	    }
+	}
+      else
+	spoton_misc::logError("spoton_crypt::init(): "
+			      "m_cipherAlgorithm is zero or unsupported "
+			      "cipher.");
+
+      if(err == 0)
+	{
+	  if(m_cipherHandle)
+	    {
+	      if((err = gcry_cipher_setkey(m_cipherHandle,
+					   m_symmetricKey,
+					   m_symmetricKeyLength)) != 0)
+		{
+		  QByteArray buffer(64, 0);
+
+		  gpg_strerror_r(err, buffer.data(),
+				 static_cast<size_t> (buffer.length()));
+		  spoton_misc::logError
+		    (QString("spoton_crypt::init(): "
+			     "gcry_cipher_setkey() "
+			     "failure (%1).").arg(buffer.constData()));
+		}
+	    }
+	  else if(m_cipherType == "threefish")
+	    {
+	      if(!m_threefish)
+		spoton_misc::logError("spoton_crypt::init(): "
+				      "m_threefish is zero.");
+	    }
+	  else
+	    spoton_misc::logError("spoton_crypt::init(): "
+				  "m_cipherHandle is zero or unsupported "
+				  "cipher.");
+	}
+    }
+  else if(m_symmetricKeyLength > 0)
+    {
+      m_symmetricKeyLength = 0;
+      spoton_misc::logError("spoton_crypt::init(): "
+			    "gcry_calloc_secure() failed.");
+    }
+}
+
+void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
+{
+  if(!gcryctl_set_thread_cbs_set)
+    {
+      gcry_error_t err = 0;
+
+#ifdef SPOTON_LINKED_WITH_LIBPTHREAD
+      /*
+      ** libgcrypt 1.6.x compatibility.
+      */
+#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
+      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread, 0);
+#endif
+#else
+      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_qt, 0);
+#endif
+
+      if(err == 0)
+	gcryctl_set_thread_cbs_set = true;
+      else
+	std::cerr << "spoton_crypt::init(): gcry_control() "
+		  << "failed while initializing threads. Proceeding."
+		  << std::endl;
+    }
+
+  if(!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
+    {
+      s_cbc_cts_enabled = cbc_cts_enabled;
+      s_hasSecureMemory.fetchAndStoreOrdered(0);
+      gcry_control(GCRYCTL_ENABLE_M_GUARD);
+
+      if(!gcry_check_version(GCRYPT_VERSION))
+	{
+	  std::cerr << "spoton_crypt::init(): gcry_check_version() "
+		    << "failure. Perhaps you should verify some "
+		    << "settings."
+		    << std::endl;
+	  spoton_misc::logError
+	    ("spoton_crypt::init(): gcry_check_version() "
+	     "failure. Perhaps you should verify some "
+	     "settings.");
+	}
+
+      if(secureMemorySize == 0)
+	{
+	  std::cerr << "spoton_crypt::init(): disabling secure memory."
+		    << std::endl;
+	  spoton_misc::logError("spoton_crypt::init(): disabling secure "
+				"memory.");
+	  gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
+	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+	}
+      else
+	{
+	  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
+#ifdef Q_OS_FREEBSD
+	  gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize), 0);
+	  s_hasSecureMemory.fetchAndStoreOrdered(1);
+#else
+	  gcry_error_t err = 0;
+
+	  if((err = gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize),
+				 0)) != 0)
+	    {
+	      QByteArray buffer(64, 0);
+
+	      gpg_strerror_r(err, buffer.data(),
+			     static_cast<size_t> (buffer.length()));
+	      spoton_misc::logError
+		(QString("spoton_crypt::init(): initializing "
+			 "secure memory failure (%1).").
+		 arg(buffer.constData()));
+	    }
+	  else
+	    s_hasSecureMemory.fetchAndStoreOrdered(1);
+#endif
+
+	  gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
+	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+	}
+    }
+  else
+    spoton_misc::logError
+      ("spoton_crypt::init(): libgcrypt is already initialized.");
+
+  if(!ssl_library_initialized)
+    {
+      ssl_library_initialized = true;
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+      SSL_library_init(); // Always returns 1.
+#else
+#ifdef Q_OS_OPENBSD
+      SSL_library_init(); // Always returns 1.
+#else
+      OPENSSL_init_ssl(0, NULL);
+#endif
+#endif
+    }
+}
+
+void spoton_crypt::initializePrivateKeyContainer(bool *ok)
+{
+  QReadLocker locker1(&m_privateKeyMutex);
+
+  if(m_privateKey || m_privateKeyLength > 0)
+    {
+      if(ok)
+	*ok = true;
+
+      return;
+    }
+
+  locker1.unlock();
+
+  QByteArray keyData;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT private_key FROM idiotes WHERE id_hash = ?");
+	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
+
+	if(ok && query.exec())
+	  if(query.next())
+	    keyData = QByteArray::fromBase64
+	      (query.value(0).toByteArray());
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(keyData.isEmpty())
+    {
+      if(ok)
+	*ok = false;
+
+      spoton_misc::logError
+	(QString("spoton_crypt::initializePrivateKeyContainer(): "
+	         "empty %1 private key.").arg(m_id));
+      return;
+    }
+
+  {
+    bool ok = true;
+
+    keyData = this->decryptedAfterAuthenticated(keyData, &ok);
+
+    if(!ok)
+      keyData.clear();
+  }
+
+  if(keyData.isEmpty())
+    {
+      if(ok)
+	*ok = false;
+
+      spoton_misc::logError
+	("spoton_crypt::initializePrivateKeyContainer(): "
+	 "decryptedAfterAuthenticated() failure.");
+      return;
+    }
+
+  if(keyData.contains("(private-key") ||
+     keyData.startsWith("mceliece-") ||
+     keyData.startsWith("ntru-private-key-"))
+    {
+      if(keyData.startsWith("mceliece-"))
+	m_isMcEliece.fetchAndStoreOrdered(1);
+    }
+  else
+    {
+      if(ok)
+	*ok = false;
+
+      spoton_misc::logError
+	("spoton_crypt::initializePrivateKeyContainer(): "
+	 "keyData does not contain private-key.");
+      return;
+    }
+
+  QWriteLocker locker2(&m_privateKeyMutex);
+
+  m_privateKeyLength = static_cast<size_t> (keyData.length());
+
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
+    {
+      if(m_privateKeyLength == 0 ||
+	 (m_privateKey =
+	  static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
+						  sizeof(char)))) == 0)
+	{
+	  if(ok)
+	    *ok = false;
+
+	  m_isMcEliece.fetchAndAddOrdered(0);
+	  m_privateKeyLength = 0;
+	  spoton_misc::logError
+	    (QString("spoton_crypt::initializePrivateKeyContainer(): "
+		     "gcry_calloc_secure() "
+		     "failure or m_privateKeyLength is zero (%1).").
+	     arg(m_id));
+	  return;
+	}
+    }
+  else
+    {
+      if(m_privateKeyLength == 0 ||
+	 (m_privateKey = static_cast<char *> (calloc(m_privateKeyLength,
+						     sizeof(char)))) == 0)
+	{
+	  if(ok)
+	    *ok = false;
+
+	  m_isMcEliece.fetchAndStoreOrdered(0);
+	  m_privateKeyLength = 0;
+	  spoton_misc::logError
+	    (QString("spoton_crypt::initializePrivateKeyContainer(): calloc() "
+		     "failure or m_privateKeyLength is zero (%1).").
+	     arg(m_id));
+	  return;
+	}
+    }
+
+  memcpy(m_privateKey, keyData.constData(), m_privateKeyLength);
+  locker2.unlock();
+  keyData.replace(0, keyData.length(), QByteArray(keyData.length(), 0));
+  keyData.clear();
+
+  if(ok)
+    *ok = true;
 }
 
 void spoton_crypt::memcmp_test(void)
