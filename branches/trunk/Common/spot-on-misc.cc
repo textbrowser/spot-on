@@ -99,6 +99,77 @@ QReadWriteLock spoton_misc::s_dbMutex;
 QReadWriteLock spoton_misc::s_logMutex;
 quint64 spoton_misc::s_dbId = 0;
 
+QByteArray spoton_misc::findPublicKeyHashGivenHash
+(const QByteArray &randomBytes,
+ const QByteArray &hash, const QByteArray &hashKey,
+ const QByteArray &hashType, spoton_crypt *crypt)
+{
+  /*
+  ** Locate the public key's hash of the public key whose
+  ** hash is identical to the provided hash.
+  */
+
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::findPublicKeyHashGivenHash(): crypt "
+	 "is zero.");
+      return QByteArray();
+    }
+
+  QByteArray publicKeyHash;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT public_key, public_key_hash FROM "
+		      "friends_public_keys WHERE "
+		      "neighbor_oid = -1"))
+	  while(query.next())
+	    {
+	      QByteArray publicKey;
+	      bool ok = true;
+
+	      publicKey = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		{
+		  QByteArray computedHash;
+
+		  computedHash = spoton_crypt::keyedHash
+		    (randomBytes + publicKey, hashKey, hashType, &ok);
+
+		  if(ok)
+		    if(!computedHash.isEmpty() && !hash.isEmpty() &&
+		       spoton_crypt::memcmp(computedHash, hash))
+		      {
+			publicKeyHash = QByteArray::fromBase64
+			  (query.value(1).toByteArray());
+			break;
+		      }
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return publicKeyHash;
+}
+
 QByteArray spoton_misc::forwardSecrecyMagnetFromList
 (const QList<QByteArray> &list)
 {
@@ -138,6 +209,251 @@ QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
     bytes.append(a[i] ^ b[i]);
 
   return bytes;
+}
+
+QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
+(const QString &communityName, spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::retrieveEchoShareInformation(): crypt "
+	 "is zero.");
+      return QHash<QString, QByteArray> ();
+    }
+
+  QHash<QString, QByteArray> hash;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT "
+		      "accept, "
+		      "authentication_key, "
+		      "cipher_type, "
+		      "encryption_key, "
+		      "hash_type, "
+		      "share "
+		      "FROM echo_key_sharing_secrets "
+		      "WHERE name_hash = ?");
+	query.bindValue
+	  (0, crypt->keyedHash(communityName.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  if(query.exec() && query.next())
+	    for(int i = 0; i < query.record().count(); i++)
+	      {
+		QByteArray bytes;
+		bool ok = true;
+
+		bytes = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.value(i).
+							 toByteArray()),
+					      &ok);
+
+		if(ok)
+		  hash[query.record().fieldName(i)] = bytes;
+		else
+		  {
+		    hash.clear();
+		    break;
+		  }
+	      }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return hash;
+}
+
+QHostAddress spoton_misc::peerAddressAndPort(
+#if defined(Q_OS_WIN)
+					     const SOCKET socketDescriptor,
+#else
+					     const int socketDescriptor,
+#endif
+					     quint16 *port)
+{
+  QHostAddress address;
+  socklen_t length = 0;
+  struct sockaddr_storage peeraddr;
+
+  length = sizeof(peeraddr);
+
+  if(port)
+    *port = 0;
+
+  if(getpeername(socketDescriptor, (struct sockaddr *) &peeraddr,
+		 &length) == 0)
+    {
+      if(peeraddr.ss_family == AF_INET)
+	{
+	  spoton_type_punning_sockaddr_t *sockaddr =
+	    (spoton_type_punning_sockaddr_t *) &peeraddr;
+
+	  if(sockaddr)
+	    {
+	      address.setAddress
+		(ntohl(sockaddr->sockaddr_in.sin_addr.s_addr));
+
+	      if(port)
+		*port = ntohs(sockaddr->sockaddr_in.sin_port);
+	    }
+	}
+      else
+	{
+	  spoton_type_punning_sockaddr_t *sockaddr =
+	    (spoton_type_punning_sockaddr_t *) &peeraddr;
+
+	  if(sockaddr)
+	    {
+	      Q_IPV6ADDR temp;
+
+	      memcpy(&temp.c, &sockaddr->sockaddr_in6.sin6_addr.s6_addr,
+		     qMin(sizeof(sockaddr->sockaddr_in6.sin6_addr.s6_addr),
+			  sizeof(temp.c)));
+	      address.setAddress(temp);
+	      address.setScopeId
+		(QString::number(sockaddr->sockaddr_in6.sin6_scope_id));
+
+	      if(port)
+		*port = ntohs(sockaddr->sockaddr_in6.sin6_port);
+	    }
+	}
+    }
+
+  return address;
+}
+
+QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
+					    const QByteArray &bytes2,
+					    QString &type,
+					    spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::findEchoKeys(): crypt "
+	 "is zero.");
+      return QList<QByteArray> ();
+    }
+
+  /*
+  ** bytes1: encrypted portion.
+  ** bytes2: digest portion.
+  */
+
+  QList<QByteArray> echoKeys;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT "
+		      "accept, "              // 0
+		      "authentication_key, "  // 1
+		      "cipher_type, "         // 2
+		      "encryption_key, "      // 3
+		      "hash_type, "           // 4
+		      "signatures_required "  // 5
+		      "FROM echo_key_sharing_secrets");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QList<QByteArray> list;
+	      bool ok = true;
+
+	      for(int i = 0; i < query.record().count(); i++)
+		{
+		  QByteArray bytes;
+
+		  bytes = crypt->
+		    decryptedAfterAuthenticated(QByteArray::
+						fromBase64(query.value(i).
+							   toByteArray()),
+						&ok);
+
+		  if(ok)
+		    list << bytes;
+		  else
+		    break;
+		}
+
+	      if(!ok)
+		continue;
+	      else if(list.value(0) != "true")
+		continue;
+
+	      {
+		QByteArray computedHash;
+		spoton_crypt crypt(list.value(2).constData(),
+				   list.value(4).constData(),
+				   QByteArray(),
+				   list.value(3),
+				   list.value(1),
+				   0,
+				   0,
+				   "");
+
+		computedHash = crypt.keyedHash(bytes1, &ok);
+
+		if(ok)
+		  if(!computedHash.isEmpty() && !bytes2.isEmpty() &&
+		     spoton_crypt::memcmp(bytes2, computedHash))
+		    {
+		      QByteArray data(crypt.decrypted(bytes1, &ok));
+
+		      if(!ok)
+			break;
+
+		      QByteArray a;
+		      QDataStream stream(&data, QIODevice::ReadOnly);
+
+		      stream >> a;
+
+		      if(stream.status() == QDataStream::Ok)
+			{
+			  echoKeys << list.value(3)
+				   << list.value(2)
+				   << list.value(1)
+				   << list.value(4)
+				   << list.value(5);
+			  type = a;
+			}
+
+		      break;
+		    }
+	      }
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return echoKeys;
 }
 
 QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
@@ -275,6 +591,138 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
   return forwardSecrecyKeys;
 }
 
+QList<QHash<QString, QVariant> > spoton_misc::
+poptasticSettings(const QString &in_username, spoton_crypt *crypt, bool *ok)
+{
+  if(!crypt)
+    {
+      if(ok)
+	*ok = false;
+
+      logError
+	("spoton_misc::poptasticSettings(): crypt "
+	 "is zero.");
+      return QList<QHash<QString, QVariant> > ();
+    }
+
+  QMap<QString, QHash<QString, QVariant> > map;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "poptastic.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(in_username.trimmed().isEmpty())
+	  query.prepare("SELECT * FROM poptastic");
+	else
+	  {
+	    query.prepare
+	      ("SELECT * FROM poptastic WHERE in_username_hash = ?");
+	    query.bindValue(0, crypt->keyedHash(in_username.
+						trimmed().toLatin1(),
+						ok).toBase64());
+	  }
+
+	if(query.exec())
+	  {
+	    while(query.next())
+	      {
+		QHash<QString, QVariant> hash;
+		QSqlRecord record(query.record());
+
+		for(int i = 0; i < record.count(); i++)
+		  {
+		    if(record.fieldName(i) == "proxy_enabled" ||
+		       record.fieldName(i) == "proxy_password" ||
+		       record.fieldName(i) == "proxy_server_address" ||
+		       record.fieldName(i) == "proxy_server_port" ||
+		       record.fieldName(i) == "proxy_username" ||
+		       record.fieldName(i).endsWith("_localname") ||
+		       record.fieldName(i).endsWith("_method") ||
+		       record.fieldName(i).endsWith("_password") ||
+		       record.fieldName(i).endsWith("_server_address") ||
+		       record.fieldName(i).endsWith("_server_port") ||
+		       record.fieldName(i).endsWith("_ssltls") ||
+		       record.fieldName(i).endsWith("_username") ||
+		       record.fieldName(i).endsWith("_verify_host") ||
+		       record.fieldName(i).endsWith("_verify_peer"))
+		      {
+			QByteArray bytes
+			  (QByteArray::fromBase64(record.value(i).
+						  toByteArray()));
+			bool ok = true;
+
+			bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
+
+			if(ok)
+			  hash.insert(record.fieldName(i), bytes);
+			else
+			  break;
+		      }
+		    else
+		      hash.insert(record.fieldName(i), record.value(i));
+		  }
+
+		if(hash.size() != record.count())
+		  {
+		    if(ok)
+		      *ok = false;
+		  }
+		else
+		  {
+		    map.insert(hash.value("in_username").toString(), hash);
+
+		    if(ok)
+		      *ok = true;
+		  }
+	      }
+	  }
+	else if(ok)
+	  *ok = false;
+      }
+    else if(ok)
+      *ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return map.values();
+}
+
+QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
+(const QPair<QByteArray, QByteArray> pair, spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::decryptedAdaptiveEchoPair(): crypt "
+	 "is zero.");
+      return QPair<QByteArray, QByteArray> ();
+    }
+
+  QByteArray t1(pair.first);
+  QByteArray t2(pair.second);
+  bool ok = true;
+
+  t1 = crypt->decryptedAfterAuthenticated(t1, &ok);
+
+  if(ok)
+    t2 = crypt->decryptedAfterAuthenticated(t2, &ok);
+
+  if(ok)
+    return QPair<QByteArray, QByteArray> (t1, t2);
+  else
+    return QPair<QByteArray, QByteArray> ();
+}
+
 QString spoton_misc::homePath(void)
 {
   QByteArray homepath(qgetenv("SPOTON_HOME"));
@@ -355,6 +803,31 @@ QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
 
   QSqlDatabase::removeDatabase(connectionName);
   return keyType;
+}
+
+QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)
+{
+  QString iipp(ip);
+
+  if(protocol == "IPv4")
+    {
+      QStringList digits;
+      QStringList list;
+
+      list = iipp.split(".", QString::KeepEmptyParts);
+
+      for(int i = 0; i < list.size(); i++)
+	digits.append(list.at(i));
+
+      iipp.clear();
+      iipp = QString::number(digits.value(0).toInt()) + "." +
+	QString::number(digits.value(1).toInt()) + "." +
+	QString::number(digits.value(2).toInt()) + "." +
+	QString::number(digits.value(3).toInt());
+      iipp.remove("...");
+    }
+
+  return iipp;
 }
 
 QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
@@ -452,6 +925,421 @@ bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
   return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
 }
 
+bool spoton_misc::importUrl(const QByteArray &c, // Content
+			    const QByteArray &d, // Description
+			    const QByteArray &t, // Title
+			    const QByteArray &u, // URL
+			    const QSqlDatabase &db,
+			    const int maximum_keywords,
+			    const bool disable_synchronous_sqlite_writes,
+			    QAtomicInt &atomic,
+			    QString &error,
+			    spoton_crypt *crypt)
+{
+  if(c.trimmed().isEmpty())
+    {
+      error = "spoton_misc::importUrl(): empty content.";
+      logError(error);
+      return false;
+    }
+
+  if(!crypt)
+    {
+      error = "spoton_misc::importUrl(): crypt is zero.";
+      logError(error);
+      return false;
+    }
+
+  if(!db.isOpen())
+    {
+      error = "spoton_misc::importUrl(): db is closed.";
+      logError(error);
+      return false;
+    }
+
+  QUrl url(QUrl::fromUserInput(u.trimmed()));
+
+  if(url.isEmpty() || !url.isValid())
+    {
+      error = "spoton_misc::importUrl(): empty or invalid URL.";
+      logError(error);
+      return false;
+    }
+
+  QString scheme(url.scheme().toLower().trimmed());
+
+  if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
+    {
+      if(!scheme.isEmpty())
+	error = QString("spoton_misc::importUrl(): the URL scheme %1 "
+			"is not acceptable.").arg(scheme);
+      else
+	error = "spoton_misc::importUrl(): invalid URL scheme.";
+
+      logError(error);
+      return false;
+    }
+
+  url.setScheme(scheme);
+
+  QByteArray all_keywords;
+  QByteArray content(qCompress(c.trimmed(), 9));
+  QByteArray description(d.trimmed());
+  QByteArray title(t.trimmed());
+  bool separate = true;
+
+  if(!description.isEmpty())
+    all_keywords = description;
+
+  if(!title.isEmpty())
+    all_keywords.append(" ").append(title);
+  else if(title.isEmpty())
+    title = urlToEncoded(url).constData();
+
+  all_keywords.append(" ").append(url.toString().toUtf8());
+
+  QByteArray urlHash;
+  bool ok = true;
+
+  urlHash = crypt->keyedHash(urlToEncoded(url), &ok).toHex();
+
+  if(!ok)
+    {
+      error = "spoton_misc::importUrl(): keyedHash() failure.";
+      logError(error);
+      return ok;
+    }
+
+  QSqlQuery query(db);
+
+  query.setForwardOnly(true);
+  query.prepare(QString("SELECT content FROM spot_on_urls_%1 WHERE "
+			"url_hash = ?").
+		arg(urlHash.mid(0, 2).constData()));
+  query.bindValue(0, urlHash.constData());
+
+  if(query.exec())
+    {
+      /*
+      ** We will delegate the correctness of the content
+      ** to the reader process.
+      */
+
+      if(query.next())
+	if(!query.value(0).toByteArray().isEmpty())
+	  {
+	    QByteArray previous(query.value(0).toByteArray());
+
+	    /*
+	    ** Update the current content.
+	    */
+
+	    query.prepare(QString("UPDATE spot_on_urls_%1 "
+				  "SET content = ? "
+				  "WHERE url_hash = ?").
+			  arg(urlHash.mid(0, 2).constData()));
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(content, &ok).toBase64());
+	    query.bindValue(1, urlHash.constData());
+
+	    if(ok)
+	      ok = query.exec();
+
+	    if(!ok)
+	      {
+		error = QString("spoton_misc::importUrl(): a failure occurred "
+				"while attempting to update the URL content. "
+				"The URL is %1").
+		  arg(urlToEncoded(url).constData());
+		logError(error);
+		return ok;
+	      }
+
+	    /*
+	    ** Create a new revision using the previous content if the
+	    ** content has not changed.
+	    */
+
+	    QByteArray original(QByteArray::fromBase64(previous));
+
+	    original = crypt->decryptedAfterAuthenticated(original, &ok);
+	    original = qUncompress(original);
+
+	    QByteArray hash1;
+	    QByteArray hash2;
+
+	    if(ok)
+	      hash1 = crypt->keyedHash(c.trimmed(), &ok);
+
+	    if(ok)
+	      hash2 = crypt->keyedHash(original, &ok);
+
+	    /*
+	    ** Ignore digest errors.
+	    */
+
+	    if(!hash1.isEmpty() && !hash2.isEmpty())
+	      if(spoton_crypt::memcmp(hash1, hash2))
+		return true;
+
+	    ok = true;
+
+	    if(db.driverName() == "QPSQL")
+	      {
+		query.prepare
+		  (QString("INSERT INTO spot_on_urls_revisions_%1 ("
+			   "content, "
+			   "content_hash, "
+			   "date_time_inserted, "
+			   "url_hash) "
+			   "VALUES (?, ?, "
+			   "(SELECT TO_CHAR(NOW(), 'yyyy-mm-ddThh24:mi:ss')), "
+			   "?)").
+		   arg(urlHash.mid(0, 2).constData()));
+		query.bindValue(0, previous);
+
+		if(ok)
+		  query.bindValue
+		    (1, crypt->keyedHash(original, &ok).toBase64());
+
+		query.bindValue(2, urlHash.constData());
+	      }
+	    else
+	      {
+		query.prepare
+		  (QString("INSERT INTO spot_on_urls_revisions_%1 ("
+			   "content, "
+			   "content_hash, "
+			   "date_time_inserted, "
+			   "url_hash) "
+			   "VALUES (?, ?, ?, ?)").
+		   arg(urlHash.mid(0, 2).constData()));
+		query.bindValue(0, previous);
+
+		if(ok)
+		  query.bindValue
+		    (1, crypt->keyedHash(original, &ok).toBase64());
+
+		query.bindValue
+		  (2, QDateTime::currentDateTime().toString(Qt::ISODate));
+		query.bindValue(3, urlHash.constData());
+	      }
+
+	    if(ok)
+	      if(!query.exec())
+		if(!query.lastError().text().toLower().contains("unique"))
+		  ok = false;
+
+	    if(!ok)
+	      {
+		error =
+		  QString("spoton_misc::importUrl(): an error occurred while "
+			  "attempting to create a URL revision. "
+			  "The URL is %1.").
+		  arg(urlToEncoded(url).constData());
+		logError(error);
+	      }
+
+	    return ok;
+	  }
+    }
+  else
+    {
+      ok = false;
+      error = QString("spoton_misc::importUrl(): "
+		      "%1.").arg(query.lastError().text());
+      logError(error);
+      return ok;
+    }
+
+  if(!ok)
+    return ok;
+
+  if(db.driverName() == "QPSQL")
+    {
+      query.prepare
+	(QString("INSERT INTO spot_on_urls_%1 ("
+		 "content, "
+		 "date_time_inserted, "
+		 "description, "
+		 "title, "
+		 "unique_id, "
+		 "url, "
+		 "url_hash) VALUES (?, "
+		 "(SELECT TO_CHAR(now(), 'yyyy-mm-ddThh24:mi:ss')), "
+		 "?, ?, nextval('serial'), "
+		 "?, ?)").
+	 arg(urlHash.mid(0, 2).constData()));
+      query.bindValue(0, crypt->encryptedThenHashed(content, &ok).toBase64());
+
+      if(ok)
+	query.bindValue
+	  (1, crypt->encryptedThenHashed(description, &ok).
+	   toBase64());
+
+      if(ok)
+	query.bindValue
+	  (2, crypt->encryptedThenHashed(title, &ok).toBase64());
+
+      if(ok)
+	query.bindValue
+	  (3, crypt->encryptedThenHashed(urlToEncoded(url), &ok).
+	   toBase64());
+
+      query.bindValue(4, urlHash.constData());
+    }
+  else
+    {
+      qint64 id = -1;
+
+      if(query.exec("INSERT INTO sequence VALUES (NULL)"))
+	{
+	  QVariant variant(query.lastInsertId());
+
+	  if(variant.isValid())
+	    {
+	      id = variant.toLongLong();
+	      query.exec
+		(QString("DELETE FROM sequence WHERE value < %1").arg(id));
+	    }
+	  else
+	    {
+	      ok = false;
+	      error = "spoton_misc::importUrl(): invalid variant.";
+	      logError(error);
+	    }
+	}
+      else
+	{
+	  ok = false;
+	  error = QString("spoton_misc::importUrl(): "
+			  "%1.").arg(query.lastError().text());
+	  logError(error);
+	}
+
+      if(disable_synchronous_sqlite_writes)
+	query.exec("PRAGMA synchronous = OFF");
+      else
+	query.exec("PRAGMA synchronous = NORMAL");
+
+      query.prepare
+	(QString("INSERT INTO spot_on_urls_%1 ("
+		 "content, "
+		 "date_time_inserted, "
+		 "description, "
+		 "title, "
+		 "unique_id, "
+		 "url, "
+		 "url_hash) VALUES (?, ?, ?, ?, ?, ?, ?)").
+	 arg(urlHash.mid(0, 2).constData()));
+
+      if(ok)
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(content, &ok).toBase64());
+
+      query.bindValue(1, QDateTime::currentDateTime().toString(Qt::ISODate));
+
+      if(ok)
+	query.bindValue
+	  (2, crypt->encryptedThenHashed(description, &ok).
+	   toBase64());
+
+      if(ok)
+	query.bindValue
+	  (3, crypt->encryptedThenHashed(title, &ok).toBase64());
+
+      if(id != -1)
+	query.bindValue(4, id);
+
+      if(ok)
+	query.bindValue
+	  (5, crypt->encryptedThenHashed(urlToEncoded(url), &ok).
+	   toBase64());
+
+      query.bindValue(6, urlHash.constData());
+    }
+
+  /*
+  ** If a unique-constraint violation was raised, ignore it.
+  */
+
+  if(ok)
+    if(!query.exec())
+      if(!query.lastError().text().toLower().contains("unique"))
+	{
+	  ok = false;
+	  error = QString("spoton_misc::importUrl(): "
+			  "%1.").arg(query.lastError().text());
+	  logError(error);
+	}
+
+  if(ok)
+    if(all_keywords.isEmpty())
+      separate = false;
+
+  if(ok && separate)
+    {
+      QHash<QString, char> discovered;
+      QSqlQuery query(db);
+      QStringList keywords
+	(QString::fromUtf8(all_keywords.toLower().constData(),
+			   all_keywords.length()).
+	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
+      int count = 0;
+
+      std::sort(keywords.begin(), keywords.end(), lengthGreaterThan);
+
+      if(db.driverName() == "QSQLITE")
+	{
+	  if(disable_synchronous_sqlite_writes)
+	    query.exec("PRAGMA synchronous = OFF");
+	  else
+	    query.exec("PRAGMA synchronous = NORMAL");
+	}
+
+      for(int i = 0; i < keywords.size(); i++)
+	{
+	  if(atomic.fetchAndAddOrdered(0))
+	    break;
+
+	  if(!discovered.contains(keywords.at(i)))
+	    discovered[keywords.at(i)] = '0';
+	  else
+	    continue;
+
+	  QByteArray keywordHash;
+	  bool ok = true;
+
+	  keywordHash = crypt->keyedHash(keywords.at(i).toUtf8(), &ok).toHex();
+
+	  if(!ok)
+	    continue;
+
+	  query.prepare
+	    (QString("INSERT INTO spot_on_keywords_%1 ("
+		     "keyword_hash, "
+		     "url_hash) "
+		     "VALUES (?, ?)").arg(keywordHash.mid(0, 2).constData()));
+	  query.bindValue(0, keywordHash.constData());
+	  query.bindValue(1, urlHash.constData());
+
+	  if(query.exec())
+	    count += 1;
+	  else
+	    {
+	      error = QString("spoton_misc::importUrl(): "
+			      "%1.").arg(query.lastError().text());
+	      logError(error);
+	    }
+
+	  if(count >= maximum_keywords)
+	    break;
+	}
+    }
+
+  return ok;
+}
+
 bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
 {
   if(!crypt)
@@ -466,6 +1354,70 @@ bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
 			    value("gui/authenticationHint").toByteArray()),
      &ok);
   return ok;
+}
+
+bool spoton_misc::isIpBlocked(const QHostAddress &address,
+			      spoton_crypt *crypt)
+{
+  if(address.isNull())
+    {
+      logError
+	("spoton_misc::isIpBlocked(): address is empty.");
+      return true;
+    }
+  else
+    return isIpBlocked(address.toString(), crypt);
+}
+
+bool spoton_misc::isIpBlocked(const QString &address,
+			      spoton_crypt *crypt)
+{
+  if(address.isEmpty())
+    {
+      logError
+	("spoton_misc::isIpBlocked(): address is empty.");
+      return true;
+    }
+  else if(!crypt)
+    {
+      logError
+	("spoton_misc::isIpBlocked(): crypt "
+	 "is zero.");
+      return true;
+    }
+
+  QString connectionName("");
+  bool exists = false;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT EXISTS(SELECT 1 FROM neighbors WHERE "
+		      "remote_ip_address_hash = ? AND "
+		      "status_control = 'blocked')");
+	query.bindValue
+	  (0, crypt->
+	   keyedHash(address.toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  if(query.exec())
+	    if(query.next())
+	      exists = query.value(0).toBool();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return exists;
 }
 
 bool spoton_misc::isMulticastAddress(const QHostAddress &address)
@@ -490,6 +1442,151 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
     }
   else
     return false;
+}
+
+bool spoton_misc::isValidBuzzMagnet(const QByteArray &magnet)
+{
+  QList<QByteArray> list;
+  QStringList starts;
+  bool valid = false;
+  int tokens = 0;
+
+  /*
+  ** Validate the magnet.
+  */
+
+  if(magnet.startsWith("magnet:?"))
+    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
+  else
+    goto done_label;
+
+  starts << "ct="
+	 << "hk="
+	 << "ht="
+	 << "rn="
+	 << "xf="
+	 << "xs="
+	 << "xt=";
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(starts.contains("ct=") && str.startsWith("ct="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::cipherTypes().contains(str))
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("ct=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("rn=") && str.startsWith("rn="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("rn=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("ht=") && str.startsWith("ht="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::buzzHashTypes().contains(str))
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("ht=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("hk=") && str.startsWith("hk="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("hk=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("xf=") && str.startsWith("xf="))
+	{
+	  str.remove(0, 3);
+
+	  bool ok = true;
+	  int integer = str.toInt(&ok);
+
+	  if(integer < 10000 || integer > 999999999 || !ok)
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("xf=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("xs=") && str.startsWith("xs="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("xs=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("xt=") && str.startsWith("xt="))
+	{
+	  str.remove(0, 3);
+
+	  if(str != "urn:buzz")
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("xt=");
+	      tokens += 1;
+	    }
+	}
+    }
+
+  if(tokens == 7)
+    valid = true;
+
+ done_label:
+  return valid;
 }
 
 bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
@@ -597,6 +1694,389 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
     }
 
   return false;
+}
+
+bool spoton_misc::isValidInstitutionMagnet(const QByteArray &magnet)
+{
+  QList<QByteArray> list;
+  QStringList starts;
+  bool valid = false;
+  int tokens = 0;
+
+  /*
+  ** Validate the magnet.
+  */
+
+  if(magnet.startsWith("magnet:?"))
+    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
+  else
+    goto done_label;
+
+  starts << "ct="
+	 << "ht="
+	 << "in="
+	 << "pa="
+	 << "xt=";
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(starts.contains("in=") && str.startsWith("in="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("in=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("ct=") && str.startsWith("ct="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::cipherTypes().contains(str))
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("ct=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("pa=") && str.startsWith("pa="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("pa=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("ht=") && str.startsWith("ht="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::hashTypes().contains(str))
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("ht=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("xt=") && str.startsWith("xt="))
+	{
+	  str.remove(0, 3);
+
+	  if(str != "urn:institution")
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("xt=");
+	      tokens += 1;
+	    }
+	}
+    }
+
+  if(tokens == 5)
+    valid = true;
+
+ done_label:
+  return valid;
+}
+
+bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
+				   QList<QByteArray> &values)
+{
+  QList<QByteArray> list;
+  QStringList starts;
+  bool valid = false;
+  int tokens = 0;
+
+  /*
+  ** Validate the magnet.
+  */
+
+  if(magnet.startsWith("magnet:?"))
+    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
+  else
+    goto done_label;
+
+  starts << "xt=";
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(str.startsWith("value="))
+	{
+	  str.remove(0, 6);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      values.append(QByteArray::fromBase64(str.toLatin1()));
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("xt=") && str.startsWith("xt="))
+	{
+	  str.remove(0, 3);
+
+	  if(str != "urn:smp")
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("xt=");
+	      tokens += 1;
+	    }
+	}
+    }
+
+  if(tokens >= 2 && tokens <= 12)
+    valid = true;
+
+ done_label:
+
+  if(!valid)
+    values.clear();
+
+  return valid;
+}
+
+bool spoton_misc::isValidStarBeamMagnet(const QByteArray &magnet)
+{
+  QList<QByteArray> list;
+  QStringList starts;
+  bool valid = false;
+  int tokens = 0;
+
+  /*
+  ** Validate the magnet.
+  */
+
+  if(magnet.startsWith("magnet:?"))
+    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
+  else
+    goto done_label;
+
+  starts << "ct="
+	 << "ek="
+	 << "ht="
+	 << "mk="
+	 << "xt=";
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(starts.contains("ct=") && str.startsWith("ct="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::cipherTypes().contains(str))
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("ct=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("ek=") && str.startsWith("ek="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("ek=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("ht=") && str.startsWith("ht="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::hashTypes().contains(str))
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("ht=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("mk=") && str.startsWith("mk="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("mk=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("xt=") && str.startsWith("xt="))
+	{
+	  str.remove(0, 3);
+
+	  if(str != "urn:starbeam")
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("xt=");
+	      tokens += 1;
+	    }
+	}
+    }
+
+  if(tokens == 5)
+    valid = true;
+
+ done_label:
+  return valid;
+}
+
+bool spoton_misc::isValidStarBeamMissingLinksMagnet(const QByteArray &magnet)
+{
+  QList<QByteArray> list;
+  QStringList starts;
+  bool valid = false;
+  int tokens = 0;
+
+  /*
+  ** Validate the magnet.
+  */
+
+  if(magnet.startsWith("magnet:?"))
+    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
+  else
+    goto done_label;
+
+  starts << "fn="
+	 << "ml="
+	 << "ps="
+	 << "xt=";
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(starts.contains("fn=") && str.startsWith("fn="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("fn=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("ps=") && str.startsWith("ps="))
+	{
+	  str.remove(0, 3);
+
+	  bool ok = true;
+	  qint64 integer = str.toLongLong(&ok);
+
+	  if(integer < spoton_common::MINIMUM_STARBEAM_PULSE_SIZE || !ok)
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("ps=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("ml=") && str.startsWith("ml="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("ml=");
+	      tokens += 1;
+	    }
+	}
+      else if(starts.contains("xt=") && str.startsWith("xt="))
+	{
+	  str.remove(0, 3);
+
+	  if(str != "urn:starbeam-missing-links")
+	    {
+	      valid = false;
+	      goto done_label;
+	    }
+	  else
+	    {
+	      starts.removeAll("xt=");
+	      tokens += 1;
+	    }
+	}
+    }
+
+  if(tokens == 4)
+    valid = true;
+
+ done_label:
+  return valid;
 }
 
 bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
@@ -711,6 +2191,206 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	    }
 	}
     }
+
+  return ok;
+}
+
+bool spoton_misc::prepareUrlDistillersDatabase(void)
+{
+  QString connectionName("");
+  bool ok = false;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!query.exec("CREATE TABLE IF NOT EXISTS distillers ("
+		       "direction TEXT NOT NULL, "
+		       "direction_hash TEXT NOT NULL, " /*
+							** Keyed hash.
+							*/
+		       "domain TEXT NOT NULL, "
+		       "domain_hash TEXT KEY NOT NULL, " /*
+							 ** Keyed hash.
+							 */
+		       "permission TEXT NOT NULL, "
+		       "PRIMARY KEY (direction_hash, domain_hash))"))
+	  ok = false;
+	else
+	  ok = true;
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return ok;
+}
+
+bool spoton_misc::prepareUrlKeysDatabase(void)
+{
+  QString connectionName("");
+  bool ok = false;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "urls_key_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!query.exec("CREATE TABLE IF NOT EXISTS import_key_information ("
+		       "cipher_type TEXT NOT NULL, "
+		       "symmetric_key TEXT NOT NULL)"))
+	  ok = false;
+	else
+	  ok = true;
+
+	if(!query.exec("CREATE TRIGGER IF NOT EXISTS "
+		       "import_key_information_trigger "
+		       "BEFORE INSERT ON import_key_information "
+		       "BEGIN "
+		       "DELETE FROM import_key_information; "
+		       "END"))
+	  ok = false;
+	else
+	  ok &= true;
+
+	if(!query.exec("CREATE TABLE IF NOT EXISTS remote_key_information ("
+		       "cipher_type TEXT NOT NULL, "
+		       "encryption_key TEXT NOT NULL, "
+		       "hash_key TEXT NOT NULL, "
+		       "hash_type TEXT NOT NULL)"))
+	  ok = false;
+	else
+	  ok &= true;
+
+	if(!query.exec("CREATE TRIGGER IF NOT EXISTS "
+		       "remote_key_information_trigger "
+		       "BEFORE INSERT ON remote_key_information "
+		       "BEGIN "
+		       "DELETE FROM remote_key_information; "
+		       "END"))
+	  ok = false;
+	else
+	  ok &= true;
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return ok;
+}
+
+bool spoton_misc::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
+			     const QString &oid, spoton_crypt *crypt)
+{
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if((ok = db.open()))
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE friends_public_keys SET "
+		      "gemini = ?, gemini_hash_key = ? "
+		      "WHERE OID = ? AND "
+		      "neighbor_oid = -1");
+
+	if(gemini.first.isEmpty() || gemini.second.isEmpty())
+	  {
+	    query.bindValue(0, QVariant(QVariant::String));
+	    query.bindValue(1, QVariant(QVariant::String));
+	  }
+	else
+	  {
+	    if(crypt)
+	      {
+		query.bindValue
+		  (0, crypt->encryptedThenHashed(gemini.first,
+						 &ok).toBase64());
+
+		if(ok)
+		  query.bindValue
+		    (1, crypt->encryptedThenHashed(gemini.second,
+						   &ok).toBase64());
+	      }
+	    else
+	      {
+		query.bindValue(0, QVariant(QVariant::String));
+		query.bindValue(1, QVariant(QVariant::String));
+	      }
+	  }
+
+	query.bindValue(2, oid);
+
+	if(ok)
+	  ok = query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return ok;
+}
+
+bool spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
+					   const QByteArray &hash,
+					   const QString &oid,
+					   spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::saveReceivedStarBeamHash(): crypt "
+	 "is zero.");
+      return false;
+    }
+  else if(!db.isOpen())
+    {
+      logError
+	("spoton_misc::saveReceivedStarBeamHash(): db is closed.");
+      return false;
+    }
+
+  QSqlQuery query(db);
+  bool ok = true;
+
+  query.prepare
+    ("UPDATE received SET hash = ? WHERE OID = ?");
+
+  if(hash.isEmpty())
+    query.bindValue(0, QVariant::String);
+  else
+    query.bindValue
+      (0, crypt->encryptedThenHashed(hash.toHex(), &ok).
+       toBase64());
+
+  query.bindValue(1, oid);
+
+  if(ok)
+    ok = query.exec();
 
   return ok;
 }
@@ -914,6 +2594,13 @@ int spoton_misc::minimumNeighborLaneWidth(void)
   return laneWidth;
 }
 
+quint64 spoton_misc::databaseAccesses(void)
+{
+  QReadLocker locker(&s_dbMutex);
+
+  return s_dbId;
+}
+
 spoton_crypt *spoton_misc::cryptFromForwardSecrecyMagnet
 (const QByteArray &magnet)
 {
@@ -992,6 +2679,79 @@ spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
       (ct, ht, QByteArray(), ek, hk, 0, ic, QString(""));
 
   return crypt;
+}
+
+spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::retrieveUrlCommonCredentials(): crypt "
+	 "is zero.");
+      return 0;
+    }
+
+  QString connectionName("");
+  spoton_crypt *c = 0;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "urls_key_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT cipher_type, encryption_key, "
+		      "hash_key, hash_type FROM "
+		      "remote_key_information") && query.next())
+	  {
+	    QByteArray encryptionKey;
+	    QByteArray hashKey;
+	    QString cipherType("");
+	    QString hashType("");
+	    bool ok = true;
+
+	    cipherType = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()),
+	       &ok).constData();
+
+	    if(ok)
+	      encryptionKey = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(1).toByteArray()),
+		 &ok);
+
+	    if(ok)
+	      hashKey = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(2).toByteArray()),
+		 &ok);
+
+	    if(ok)
+	      hashType = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(3).toByteArray()),
+		 &ok).constData();
+
+	    if(ok)
+	      c = new spoton_crypt(cipherType,
+				   hashType,
+				   QByteArray(),
+				   encryptionKey,
+				   hashKey,
+				   0,
+				   0,
+				   "");
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return c;
 }
 
 void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
@@ -4435,1764 +6195,4 @@ bool spoton_misc::isValidBuzzMagnetData(const QByteArray &data)
 
  done_label:
   return valid;
-}
-
-bool spoton_misc::isValidBuzzMagnet(const QByteArray &magnet)
-{
-  QList<QByteArray> list;
-  QStringList starts;
-  bool valid = false;
-  int tokens = 0;
-
-  /*
-  ** Validate the magnet.
-  */
-
-  if(magnet.startsWith("magnet:?"))
-    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
-  else
-    goto done_label;
-
-  starts << "ct="
-	 << "hk="
-	 << "ht="
-	 << "rn="
-	 << "xf="
-	 << "xs="
-	 << "xt=";
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(starts.contains("ct=") && str.startsWith("ct="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::cipherTypes().contains(str))
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ct=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("rn=") && str.startsWith("rn="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("rn=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("ht=") && str.startsWith("ht="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::buzzHashTypes().contains(str))
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ht=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("hk=") && str.startsWith("hk="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("hk=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("xf=") && str.startsWith("xf="))
-	{
-	  str.remove(0, 3);
-
-	  bool ok = true;
-	  int integer = str.toInt(&ok);
-
-	  if(integer < 10000 || integer > 999999999 || !ok)
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("xf=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("xs=") && str.startsWith("xs="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("xs=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("xt=") && str.startsWith("xt="))
-	{
-	  str.remove(0, 3);
-
-	  if(str != "urn:buzz")
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("xt=");
-	      tokens += 1;
-	    }
-	}
-    }
-
-  if(tokens == 7)
-    valid = true;
-
- done_label:
-  return valid;
-}
-
-bool spoton_misc::isValidStarBeamMagnet(const QByteArray &magnet)
-{
-  QList<QByteArray> list;
-  QStringList starts;
-  bool valid = false;
-  int tokens = 0;
-
-  /*
-  ** Validate the magnet.
-  */
-
-  if(magnet.startsWith("magnet:?"))
-    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
-  else
-    goto done_label;
-
-  starts << "ct="
-	 << "ek="
-	 << "ht="
-	 << "mk="
-	 << "xt=";
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(starts.contains("ct=") && str.startsWith("ct="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::cipherTypes().contains(str))
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ct=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("ek=") && str.startsWith("ek="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ek=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("ht=") && str.startsWith("ht="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::hashTypes().contains(str))
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ht=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("mk=") && str.startsWith("mk="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("mk=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("xt=") && str.startsWith("xt="))
-	{
-	  str.remove(0, 3);
-
-	  if(str != "urn:starbeam")
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("xt=");
-	      tokens += 1;
-	    }
-	}
-    }
-
-  if(tokens == 5)
-    valid = true;
-
- done_label:
-  return valid;
-}
-
-bool spoton_misc::isValidStarBeamMissingLinksMagnet(const QByteArray &magnet)
-{
-  QList<QByteArray> list;
-  QStringList starts;
-  bool valid = false;
-  int tokens = 0;
-
-  /*
-  ** Validate the magnet.
-  */
-
-  if(magnet.startsWith("magnet:?"))
-    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
-  else
-    goto done_label;
-
-  starts << "fn="
-	 << "ml="
-	 << "ps="
-	 << "xt=";
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(starts.contains("fn=") && str.startsWith("fn="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("fn=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("ps=") && str.startsWith("ps="))
-	{
-	  str.remove(0, 3);
-
-	  bool ok = true;
-	  qint64 integer = str.toLongLong(&ok);
-
-	  if(integer < spoton_common::MINIMUM_STARBEAM_PULSE_SIZE || !ok)
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ps=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("ml=") && str.startsWith("ml="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ml=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("xt=") && str.startsWith("xt="))
-	{
-	  str.remove(0, 3);
-
-	  if(str != "urn:starbeam-missing-links")
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("xt=");
-	      tokens += 1;
-	    }
-	}
-    }
-
-  if(tokens == 4)
-    valid = true;
-
- done_label:
-  return valid;
-}
-
-QByteArray spoton_misc::findPublicKeyHashGivenHash
-(const QByteArray &randomBytes,
- const QByteArray &hash, const QByteArray &hashKey,
- const QByteArray &hashType, spoton_crypt *crypt)
-{
-  /*
-  ** Locate the public key's hash of the public key whose
-  ** hash is identical to the provided hash.
-  */
-
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::findPublicKeyHashGivenHash(): crypt "
-	 "is zero.");
-      return QByteArray();
-    }
-
-  QByteArray publicKeyHash;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT public_key, public_key_hash FROM "
-		      "friends_public_keys WHERE "
-		      "neighbor_oid = -1"))
-	  while(query.next())
-	    {
-	      QByteArray publicKey;
-	      bool ok = true;
-
-	      publicKey = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()),
-		 &ok);
-
-	      if(ok)
-		{
-		  QByteArray computedHash;
-
-		  computedHash = spoton_crypt::keyedHash
-		    (randomBytes + publicKey, hashKey, hashType, &ok);
-
-		  if(ok)
-		    if(!computedHash.isEmpty() && !hash.isEmpty() &&
-		       spoton_crypt::memcmp(computedHash, hash))
-		      {
-			publicKeyHash = QByteArray::fromBase64
-			  (query.value(1).toByteArray());
-			break;
-		      }
-		}
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return publicKeyHash;
-}
-
-bool spoton_misc::isValidInstitutionMagnet(const QByteArray &magnet)
-{
-  QList<QByteArray> list;
-  QStringList starts;
-  bool valid = false;
-  int tokens = 0;
-
-  /*
-  ** Validate the magnet.
-  */
-
-  if(magnet.startsWith("magnet:?"))
-    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
-  else
-    goto done_label;
-
-  starts << "ct="
-	 << "ht="
-	 << "in="
-	 << "pa="
-	 << "xt=";
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(starts.contains("in=") && str.startsWith("in="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("in=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("ct=") && str.startsWith("ct="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::cipherTypes().contains(str))
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ct=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("pa=") && str.startsWith("pa="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("pa=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("ht=") && str.startsWith("ht="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::hashTypes().contains(str))
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ht=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("xt=") && str.startsWith("xt="))
-	{
-	  str.remove(0, 3);
-
-	  if(str != "urn:institution")
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("xt=");
-	      tokens += 1;
-	    }
-	}
-    }
-
-  if(tokens == 5)
-    valid = true;
-
- done_label:
-  return valid;
-}
-
-bool spoton_misc::isIpBlocked(const QHostAddress &address,
-			      spoton_crypt *crypt)
-{
-  if(address.isNull())
-    {
-      logError
-	("spoton_misc::isIpBlocked(): address is empty.");
-      return true;
-    }
-  else
-    return isIpBlocked(address.toString(), crypt);
-}
-
-bool spoton_misc::isIpBlocked(const QString &address,
-			      spoton_crypt *crypt)
-{
-  if(address.isEmpty())
-    {
-      logError
-	("spoton_misc::isIpBlocked(): address is empty.");
-      return true;
-    }
-  else if(!crypt)
-    {
-      logError
-	("spoton_misc::isIpBlocked(): crypt "
-	 "is zero.");
-      return true;
-    }
-
-  QString connectionName("");
-  bool exists = false;
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT EXISTS(SELECT 1 FROM neighbors WHERE "
-		      "remote_ip_address_hash = ? AND "
-		      "status_control = 'blocked')");
-	query.bindValue
-	  (0, crypt->
-	   keyedHash(address.toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  if(query.exec())
-	    if(query.next())
-	      exists = query.value(0).toBool();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return exists;
-}
-
-QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
-(const QPair<QByteArray, QByteArray> pair, spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::decryptedAdaptiveEchoPair(): crypt "
-	 "is zero.");
-      return QPair<QByteArray, QByteArray> ();
-    }
-
-  QByteArray t1(pair.first);
-  QByteArray t2(pair.second);
-  bool ok = true;
-
-  t1 = crypt->decryptedAfterAuthenticated(t1, &ok);
-
-  if(ok)
-    t2 = crypt->decryptedAfterAuthenticated(t2, &ok);
-
-  if(ok)
-    return QPair<QByteArray, QByteArray> (t1, t2);
-  else
-    return QPair<QByteArray, QByteArray> ();
-}
-
-QHostAddress spoton_misc::peerAddressAndPort(
-#if defined(Q_OS_WIN)
-					     const SOCKET socketDescriptor,
-#else
-					     const int socketDescriptor,
-#endif
-					     quint16 *port)
-{
-  QHostAddress address;
-  socklen_t length = 0;
-  struct sockaddr_storage peeraddr;
-
-  length = sizeof(peeraddr);
-
-  if(port)
-    *port = 0;
-
-  if(getpeername(socketDescriptor, (struct sockaddr *) &peeraddr,
-		 &length) == 0)
-    {
-      if(peeraddr.ss_family == AF_INET)
-	{
-	  spoton_type_punning_sockaddr_t *sockaddr =
-	    (spoton_type_punning_sockaddr_t *) &peeraddr;
-
-	  if(sockaddr)
-	    {
-	      address.setAddress
-		(ntohl(sockaddr->sockaddr_in.sin_addr.s_addr));
-
-	      if(port)
-		*port = ntohs(sockaddr->sockaddr_in.sin_port);
-	    }
-	}
-      else
-	{
-	  spoton_type_punning_sockaddr_t *sockaddr =
-	    (spoton_type_punning_sockaddr_t *) &peeraddr;
-
-	  if(sockaddr)
-	    {
-	      Q_IPV6ADDR temp;
-
-	      memcpy(&temp.c, &sockaddr->sockaddr_in6.sin6_addr.s6_addr,
-		     qMin(sizeof(sockaddr->sockaddr_in6.sin6_addr.s6_addr),
-			  sizeof(temp.c)));
-	      address.setAddress(temp);
-	      address.setScopeId
-		(QString::number(sockaddr->sockaddr_in6.sin6_scope_id));
-
-	      if(port)
-		*port = ntohs(sockaddr->sockaddr_in6.sin6_port);
-	    }
-	}
-    }
-
-  return address;
-}
-
-bool spoton_misc::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
-			     const QString &oid, spoton_crypt *crypt)
-{
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "friends_public_keys.db");
-
-    if((ok = db.open()))
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE friends_public_keys SET "
-		      "gemini = ?, gemini_hash_key = ? "
-		      "WHERE OID = ? AND "
-		      "neighbor_oid = -1");
-
-	if(gemini.first.isEmpty() || gemini.second.isEmpty())
-	  {
-	    query.bindValue(0, QVariant(QVariant::String));
-	    query.bindValue(1, QVariant(QVariant::String));
-	  }
-	else
-	  {
-	    if(crypt)
-	      {
-		query.bindValue
-		  (0, crypt->encryptedThenHashed(gemini.first,
-						 &ok).toBase64());
-
-		if(ok)
-		  query.bindValue
-		    (1, crypt->encryptedThenHashed(gemini.second,
-						   &ok).toBase64());
-	      }
-	    else
-	      {
-		query.bindValue(0, QVariant(QVariant::String));
-		query.bindValue(1, QVariant(QVariant::String));
-	      }
-	  }
-
-	query.bindValue(2, oid);
-
-	if(ok)
-	  ok = query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return ok;
-}
-
-QList<QHash<QString, QVariant> > spoton_misc::
-poptasticSettings(const QString &in_username, spoton_crypt *crypt, bool *ok)
-{
-  if(!crypt)
-    {
-      if(ok)
-	*ok = false;
-
-      logError
-	("spoton_misc::poptasticSettings(): crypt "
-	 "is zero.");
-      return QList<QHash<QString, QVariant> > ();
-    }
-
-  QMap<QString, QHash<QString, QVariant> > map;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() + "poptastic.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-
-	if(in_username.trimmed().isEmpty())
-	  query.prepare("SELECT * FROM poptastic");
-	else
-	  {
-	    query.prepare
-	      ("SELECT * FROM poptastic WHERE in_username_hash = ?");
-	    query.bindValue(0, crypt->keyedHash(in_username.
-						trimmed().toLatin1(),
-						ok).toBase64());
-	  }
-
-	if(query.exec())
-	  {
-	    while(query.next())
-	      {
-		QHash<QString, QVariant> hash;
-		QSqlRecord record(query.record());
-
-		for(int i = 0; i < record.count(); i++)
-		  {
-		    if(record.fieldName(i) == "proxy_enabled" ||
-		       record.fieldName(i) == "proxy_password" ||
-		       record.fieldName(i) == "proxy_server_address" ||
-		       record.fieldName(i) == "proxy_server_port" ||
-		       record.fieldName(i) == "proxy_username" ||
-		       record.fieldName(i).endsWith("_localname") ||
-		       record.fieldName(i).endsWith("_method") ||
-		       record.fieldName(i).endsWith("_password") ||
-		       record.fieldName(i).endsWith("_server_address") ||
-		       record.fieldName(i).endsWith("_server_port") ||
-		       record.fieldName(i).endsWith("_ssltls") ||
-		       record.fieldName(i).endsWith("_username") ||
-		       record.fieldName(i).endsWith("_verify_host") ||
-		       record.fieldName(i).endsWith("_verify_peer"))
-		      {
-			QByteArray bytes
-			  (QByteArray::fromBase64(record.value(i).
-						  toByteArray()));
-			bool ok = true;
-
-			bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
-
-			if(ok)
-			  hash.insert(record.fieldName(i), bytes);
-			else
-			  break;
-		      }
-		    else
-		      hash.insert(record.fieldName(i), record.value(i));
-		  }
-
-		if(hash.size() != record.count())
-		  {
-		    if(ok)
-		      *ok = false;
-		  }
-		else
-		  {
-		    map.insert(hash.value("in_username").toString(), hash);
-
-		    if(ok)
-		      *ok = true;
-		  }
-	      }
-	  }
-	else if(ok)
-	  *ok = false;
-      }
-    else if(ok)
-      *ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return map.values();
-}
-
-bool spoton_misc::prepareUrlDistillersDatabase(void)
-{
-  QString connectionName("");
-  bool ok = false;
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "urls_distillers_information.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!query.exec("CREATE TABLE IF NOT EXISTS distillers ("
-		       "direction TEXT NOT NULL, "
-		       "direction_hash TEXT NOT NULL, " /*
-							** Keyed hash.
-							*/
-		       "domain TEXT NOT NULL, "
-		       "domain_hash TEXT KEY NOT NULL, " /*
-							 ** Keyed hash.
-							 */
-		       "permission TEXT NOT NULL, "
-		       "PRIMARY KEY (direction_hash, domain_hash))"))
-	  ok = false;
-	else
-	  ok = true;
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return ok;
-}
-
-bool spoton_misc::prepareUrlKeysDatabase(void)
-{
-  QString connectionName("");
-  bool ok = false;
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "urls_key_information.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!query.exec("CREATE TABLE IF NOT EXISTS import_key_information ("
-		       "cipher_type TEXT NOT NULL, "
-		       "symmetric_key TEXT NOT NULL)"))
-	  ok = false;
-	else
-	  ok = true;
-
-	if(!query.exec("CREATE TRIGGER IF NOT EXISTS "
-		       "import_key_information_trigger "
-		       "BEFORE INSERT ON import_key_information "
-		       "BEGIN "
-		       "DELETE FROM import_key_information; "
-		       "END"))
-	  ok = false;
-	else
-	  ok &= true;
-
-	if(!query.exec("CREATE TABLE IF NOT EXISTS remote_key_information ("
-		       "cipher_type TEXT NOT NULL, "
-		       "encryption_key TEXT NOT NULL, "
-		       "hash_key TEXT NOT NULL, "
-		       "hash_type TEXT NOT NULL)"))
-	  ok = false;
-	else
-	  ok &= true;
-
-	if(!query.exec("CREATE TRIGGER IF NOT EXISTS "
-		       "remote_key_information_trigger "
-		       "BEFORE INSERT ON remote_key_information "
-		       "BEGIN "
-		       "DELETE FROM remote_key_information; "
-		       "END"))
-	  ok = false;
-	else
-	  ok &= true;
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return ok;
-}
-
-bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
-				   QList<QByteArray> &values)
-{
-  QList<QByteArray> list;
-  QStringList starts;
-  bool valid = false;
-  int tokens = 0;
-
-  /*
-  ** Validate the magnet.
-  */
-
-  if(magnet.startsWith("magnet:?"))
-    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
-  else
-    goto done_label;
-
-  starts << "xt=";
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(str.startsWith("value="))
-	{
-	  str.remove(0, 6);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      values.append(QByteArray::fromBase64(str.toLatin1()));
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("xt=") && str.startsWith("xt="))
-	{
-	  str.remove(0, 3);
-
-	  if(str != "urn:smp")
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("xt=");
-	      tokens += 1;
-	    }
-	}
-    }
-
-  if(tokens >= 2 && tokens <= 12)
-    valid = true;
-
- done_label:
-
-  if(!valid)
-    values.clear();
-
-  return valid;
-}
-
-bool spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
-					   const QByteArray &hash,
-					   const QString &oid,
-					   spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::saveReceivedStarBeamHash(): crypt "
-	 "is zero.");
-      return false;
-    }
-  else if(!db.isOpen())
-    {
-      logError
-	("spoton_misc::saveReceivedStarBeamHash(): db is closed.");
-      return false;
-    }
-
-  QSqlQuery query(db);
-  bool ok = true;
-
-  query.prepare
-    ("UPDATE received SET hash = ? WHERE OID = ?");
-
-  if(hash.isEmpty())
-    query.bindValue(0, QVariant::String);
-  else
-    query.bindValue
-      (0, crypt->encryptedThenHashed(hash.toHex(), &ok).
-       toBase64());
-
-  query.bindValue(1, oid);
-
-  if(ok)
-    ok = query.exec();
-
-  return ok;
-}
-
-QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)
-{
-  QString iipp(ip);
-
-  if(protocol == "IPv4")
-    {
-      QStringList digits;
-      QStringList list;
-
-      list = iipp.split(".", QString::KeepEmptyParts);
-
-      for(int i = 0; i < list.size(); i++)
-	digits.append(list.at(i));
-
-      iipp.clear();
-      iipp = QString::number(digits.value(0).toInt()) + "." +
-	QString::number(digits.value(1).toInt()) + "." +
-	QString::number(digits.value(2).toInt()) + "." +
-	QString::number(digits.value(3).toInt());
-      iipp.remove("...");
-    }
-
-  return iipp;
-}
-
-spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::retrieveUrlCommonCredentials(): crypt "
-	 "is zero.");
-      return 0;
-    }
-
-  QString connectionName("");
-  spoton_crypt *c = 0;
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "urls_key_information.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT cipher_type, encryption_key, "
-		      "hash_key, hash_type FROM "
-		      "remote_key_information") && query.next())
-	  {
-	    QByteArray encryptionKey;
-	    QByteArray hashKey;
-	    QString cipherType("");
-	    QString hashType("");
-	    bool ok = true;
-
-	    cipherType = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).toByteArray()),
-	       &ok).constData();
-
-	    if(ok)
-	      encryptionKey = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(1).toByteArray()),
-		 &ok);
-
-	    if(ok)
-	      hashKey = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(2).toByteArray()),
-		 &ok);
-
-	    if(ok)
-	      hashType = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(3).toByteArray()),
-		 &ok).constData();
-
-	    if(ok)
-	      c = new spoton_crypt(cipherType,
-				   hashType,
-				   QByteArray(),
-				   encryptionKey,
-				   hashKey,
-				   0,
-				   0,
-				   "");
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return c;
-}
-
-quint64 spoton_misc::databaseAccesses(void)
-{
-  QReadLocker locker(&s_dbMutex);
-
-  return s_dbId;
-}
-
-bool spoton_misc::importUrl(const QByteArray &c, // Content
-			    const QByteArray &d, // Description
-			    const QByteArray &t, // Title
-			    const QByteArray &u, // URL
-			    const QSqlDatabase &db,
-			    const int maximum_keywords,
-			    const bool disable_synchronous_sqlite_writes,
-			    QAtomicInt &atomic,
-			    QString &error,
-			    spoton_crypt *crypt)
-{
-  if(c.trimmed().isEmpty())
-    {
-      error = "spoton_misc::importUrl(): empty content.";
-      logError(error);
-      return false;
-    }
-
-  if(!crypt)
-    {
-      error = "spoton_misc::importUrl(): crypt is zero.";
-      logError(error);
-      return false;
-    }
-
-  if(!db.isOpen())
-    {
-      error = "spoton_misc::importUrl(): db is closed.";
-      logError(error);
-      return false;
-    }
-
-  QUrl url(QUrl::fromUserInput(u.trimmed()));
-
-  if(url.isEmpty() || !url.isValid())
-    {
-      error = "spoton_misc::importUrl(): empty or invalid URL.";
-      logError(error);
-      return false;
-    }
-
-  QString scheme(url.scheme().toLower().trimmed());
-
-  if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
-    {
-      if(!scheme.isEmpty())
-	error = QString("spoton_misc::importUrl(): the URL scheme %1 "
-			"is not acceptable.").arg(scheme);
-      else
-	error = "spoton_misc::importUrl(): invalid URL scheme.";
-
-      logError(error);
-      return false;
-    }
-
-  url.setScheme(scheme);
-
-  QByteArray all_keywords;
-  QByteArray content(qCompress(c.trimmed(), 9));
-  QByteArray description(d.trimmed());
-  QByteArray title(t.trimmed());
-  bool separate = true;
-
-  if(!description.isEmpty())
-    all_keywords = description;
-
-  if(!title.isEmpty())
-    all_keywords.append(" ").append(title);
-  else if(title.isEmpty())
-    title = urlToEncoded(url).constData();
-
-  all_keywords.append(" ").append(url.toString().toUtf8());
-
-  QByteArray urlHash;
-  bool ok = true;
-
-  urlHash = crypt->keyedHash(urlToEncoded(url), &ok).toHex();
-
-  if(!ok)
-    {
-      error = "spoton_misc::importUrl(): keyedHash() failure.";
-      logError(error);
-      return ok;
-    }
-
-  QSqlQuery query(db);
-
-  query.setForwardOnly(true);
-  query.prepare(QString("SELECT content FROM spot_on_urls_%1 WHERE "
-			"url_hash = ?").
-		arg(urlHash.mid(0, 2).constData()));
-  query.bindValue(0, urlHash.constData());
-
-  if(query.exec())
-    {
-      /*
-      ** We will delegate the correctness of the content
-      ** to the reader process.
-      */
-
-      if(query.next())
-	if(!query.value(0).toByteArray().isEmpty())
-	  {
-	    QByteArray previous(query.value(0).toByteArray());
-
-	    /*
-	    ** Update the current content.
-	    */
-
-	    query.prepare(QString("UPDATE spot_on_urls_%1 "
-				  "SET content = ? "
-				  "WHERE url_hash = ?").
-			  arg(urlHash.mid(0, 2).constData()));
-	    query.bindValue
-	      (0, crypt->encryptedThenHashed(content, &ok).toBase64());
-	    query.bindValue(1, urlHash.constData());
-
-	    if(ok)
-	      ok = query.exec();
-
-	    if(!ok)
-	      {
-		error = QString("spoton_misc::importUrl(): a failure occurred "
-				"while attempting to update the URL content. "
-				"The URL is %1").
-		  arg(urlToEncoded(url).constData());
-		logError(error);
-		return ok;
-	      }
-
-	    /*
-	    ** Create a new revision using the previous content if the
-	    ** content has not changed.
-	    */
-
-	    QByteArray original(QByteArray::fromBase64(previous));
-
-	    original = crypt->decryptedAfterAuthenticated(original, &ok);
-	    original = qUncompress(original);
-
-	    QByteArray hash1;
-	    QByteArray hash2;
-
-	    if(ok)
-	      hash1 = crypt->keyedHash(c.trimmed(), &ok);
-
-	    if(ok)
-	      hash2 = crypt->keyedHash(original, &ok);
-
-	    /*
-	    ** Ignore digest errors.
-	    */
-
-	    if(!hash1.isEmpty() && !hash2.isEmpty())
-	      if(spoton_crypt::memcmp(hash1, hash2))
-		return true;
-
-	    ok = true;
-
-	    if(db.driverName() == "QPSQL")
-	      {
-		query.prepare
-		  (QString("INSERT INTO spot_on_urls_revisions_%1 ("
-			   "content, "
-			   "content_hash, "
-			   "date_time_inserted, "
-			   "url_hash) "
-			   "VALUES (?, ?, "
-			   "(SELECT TO_CHAR(NOW(), 'yyyy-mm-ddThh24:mi:ss')), "
-			   "?)").
-		   arg(urlHash.mid(0, 2).constData()));
-		query.bindValue(0, previous);
-
-		if(ok)
-		  query.bindValue
-		    (1, crypt->keyedHash(original, &ok).toBase64());
-
-		query.bindValue(2, urlHash.constData());
-	      }
-	    else
-	      {
-		query.prepare
-		  (QString("INSERT INTO spot_on_urls_revisions_%1 ("
-			   "content, "
-			   "content_hash, "
-			   "date_time_inserted, "
-			   "url_hash) "
-			   "VALUES (?, ?, ?, ?)").
-		   arg(urlHash.mid(0, 2).constData()));
-		query.bindValue(0, previous);
-
-		if(ok)
-		  query.bindValue
-		    (1, crypt->keyedHash(original, &ok).toBase64());
-
-		query.bindValue
-		  (2, QDateTime::currentDateTime().toString(Qt::ISODate));
-		query.bindValue(3, urlHash.constData());
-	      }
-
-	    if(ok)
-	      if(!query.exec())
-		if(!query.lastError().text().toLower().contains("unique"))
-		  ok = false;
-
-	    if(!ok)
-	      {
-		error =
-		  QString("spoton_misc::importUrl(): an error occurred while "
-			  "attempting to create a URL revision. "
-			  "The URL is %1.").
-		  arg(urlToEncoded(url).constData());
-		logError(error);
-	      }
-
-	    return ok;
-	  }
-    }
-  else
-    {
-      ok = false;
-      error = QString("spoton_misc::importUrl(): "
-		      "%1.").arg(query.lastError().text());
-      logError(error);
-      return ok;
-    }
-
-  if(!ok)
-    return ok;
-
-  if(db.driverName() == "QPSQL")
-    {
-      query.prepare
-	(QString("INSERT INTO spot_on_urls_%1 ("
-		 "content, "
-		 "date_time_inserted, "
-		 "description, "
-		 "title, "
-		 "unique_id, "
-		 "url, "
-		 "url_hash) VALUES (?, "
-		 "(SELECT TO_CHAR(now(), 'yyyy-mm-ddThh24:mi:ss')), "
-		 "?, ?, nextval('serial'), "
-		 "?, ?)").
-	 arg(urlHash.mid(0, 2).constData()));
-      query.bindValue(0, crypt->encryptedThenHashed(content, &ok).toBase64());
-
-      if(ok)
-	query.bindValue
-	  (1, crypt->encryptedThenHashed(description, &ok).
-	   toBase64());
-
-      if(ok)
-	query.bindValue
-	  (2, crypt->encryptedThenHashed(title, &ok).toBase64());
-
-      if(ok)
-	query.bindValue
-	  (3, crypt->encryptedThenHashed(urlToEncoded(url), &ok).
-	   toBase64());
-
-      query.bindValue(4, urlHash.constData());
-    }
-  else
-    {
-      qint64 id = -1;
-
-      if(query.exec("INSERT INTO sequence VALUES (NULL)"))
-	{
-	  QVariant variant(query.lastInsertId());
-
-	  if(variant.isValid())
-	    {
-	      id = variant.toLongLong();
-	      query.exec
-		(QString("DELETE FROM sequence WHERE value < %1").arg(id));
-	    }
-	  else
-	    {
-	      ok = false;
-	      error = "spoton_misc::importUrl(): invalid variant.";
-	      logError(error);
-	    }
-	}
-      else
-	{
-	  ok = false;
-	  error = QString("spoton_misc::importUrl(): "
-			  "%1.").arg(query.lastError().text());
-	  logError(error);
-	}
-
-      if(disable_synchronous_sqlite_writes)
-	query.exec("PRAGMA synchronous = OFF");
-      else
-	query.exec("PRAGMA synchronous = NORMAL");
-
-      query.prepare
-	(QString("INSERT INTO spot_on_urls_%1 ("
-		 "content, "
-		 "date_time_inserted, "
-		 "description, "
-		 "title, "
-		 "unique_id, "
-		 "url, "
-		 "url_hash) VALUES (?, ?, ?, ?, ?, ?, ?)").
-	 arg(urlHash.mid(0, 2).constData()));
-
-      if(ok)
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(content, &ok).toBase64());
-
-      query.bindValue(1, QDateTime::currentDateTime().toString(Qt::ISODate));
-
-      if(ok)
-	query.bindValue
-	  (2, crypt->encryptedThenHashed(description, &ok).
-	   toBase64());
-
-      if(ok)
-	query.bindValue
-	  (3, crypt->encryptedThenHashed(title, &ok).toBase64());
-
-      if(id != -1)
-	query.bindValue(4, id);
-
-      if(ok)
-	query.bindValue
-	  (5, crypt->encryptedThenHashed(urlToEncoded(url), &ok).
-	   toBase64());
-
-      query.bindValue(6, urlHash.constData());
-    }
-
-  /*
-  ** If a unique-constraint violation was raised, ignore it.
-  */
-
-  if(ok)
-    if(!query.exec())
-      if(!query.lastError().text().toLower().contains("unique"))
-	{
-	  ok = false;
-	  error = QString("spoton_misc::importUrl(): "
-			  "%1.").arg(query.lastError().text());
-	  logError(error);
-	}
-
-  if(ok)
-    if(all_keywords.isEmpty())
-      separate = false;
-
-  if(ok && separate)
-    {
-      QHash<QString, char> discovered;
-      QSqlQuery query(db);
-      QStringList keywords
-	(QString::fromUtf8(all_keywords.toLower().constData(),
-			   all_keywords.length()).
-	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
-      int count = 0;
-
-      std::sort(keywords.begin(), keywords.end(), lengthGreaterThan);
-
-      if(db.driverName() == "QSQLITE")
-	{
-	  if(disable_synchronous_sqlite_writes)
-	    query.exec("PRAGMA synchronous = OFF");
-	  else
-	    query.exec("PRAGMA synchronous = NORMAL");
-	}
-
-      for(int i = 0; i < keywords.size(); i++)
-	{
-	  if(atomic.fetchAndAddOrdered(0))
-	    break;
-
-	  if(!discovered.contains(keywords.at(i)))
-	    discovered[keywords.at(i)] = '0';
-	  else
-	    continue;
-
-	  QByteArray keywordHash;
-	  bool ok = true;
-
-	  keywordHash = crypt->keyedHash(keywords.at(i).toUtf8(), &ok).toHex();
-
-	  if(!ok)
-	    continue;
-
-	  query.prepare
-	    (QString("INSERT INTO spot_on_keywords_%1 ("
-		     "keyword_hash, "
-		     "url_hash) "
-		     "VALUES (?, ?)").arg(keywordHash.mid(0, 2).constData()));
-	  query.bindValue(0, keywordHash.constData());
-	  query.bindValue(1, urlHash.constData());
-
-	  if(query.exec())
-	    count += 1;
-	  else
-	    {
-	      error = QString("spoton_misc::importUrl(): "
-			      "%1.").arg(query.lastError().text());
-	      logError(error);
-	    }
-
-	  if(count >= maximum_keywords)
-	    break;
-	}
-    }
-
-  return ok;
-}
-
-QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
-(const QString &communityName, spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::retrieveEchoShareInformation(): crypt "
-	 "is zero.");
-      return QHash<QString, QByteArray> ();
-    }
-
-  QHash<QString, QByteArray> hash;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT "
-		      "accept, "
-		      "authentication_key, "
-		      "cipher_type, "
-		      "encryption_key, "
-		      "hash_type, "
-		      "share "
-		      "FROM echo_key_sharing_secrets "
-		      "WHERE name_hash = ?");
-	query.bindValue
-	  (0, crypt->keyedHash(communityName.toUtf8(), &ok).toBase64());
-
-	if(ok)
-	  if(query.exec() && query.next())
-	    for(int i = 0; i < query.record().count(); i++)
-	      {
-		QByteArray bytes;
-		bool ok = true;
-
-		bytes = crypt->
-		  decryptedAfterAuthenticated(QByteArray::
-					      fromBase64(query.value(i).
-							 toByteArray()),
-					      &ok);
-
-		if(ok)
-		  hash[query.record().fieldName(i)] = bytes;
-		else
-		  {
-		    hash.clear();
-		    break;
-		  }
-	      }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return hash;
-}
-
-QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
-					    const QByteArray &bytes2,
-					    QString &type,
-					    spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::findEchoKeys(): crypt "
-	 "is zero.");
-      return QList<QByteArray> ();
-    }
-
-  /*
-  ** bytes1: encrypted portion.
-  ** bytes2: digest portion.
-  */
-
-  QList<QByteArray> echoKeys;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT "
-		      "accept, "              // 0
-		      "authentication_key, "  // 1
-		      "cipher_type, "         // 2
-		      "encryption_key, "      // 3
-		      "hash_type, "           // 4
-		      "signatures_required "  // 5
-		      "FROM echo_key_sharing_secrets");
-
-	if(query.exec())
-	  while(query.next())
-	    {
-	      QList<QByteArray> list;
-	      bool ok = true;
-
-	      for(int i = 0; i < query.record().count(); i++)
-		{
-		  QByteArray bytes;
-
-		  bytes = crypt->
-		    decryptedAfterAuthenticated(QByteArray::
-						fromBase64(query.value(i).
-							   toByteArray()),
-						&ok);
-
-		  if(ok)
-		    list << bytes;
-		  else
-		    break;
-		}
-
-	      if(!ok)
-		continue;
-	      else if(list.value(0) != "true")
-		continue;
-
-	      {
-		QByteArray computedHash;
-		spoton_crypt crypt(list.value(2).constData(),
-				   list.value(4).constData(),
-				   QByteArray(),
-				   list.value(3),
-				   list.value(1),
-				   0,
-				   0,
-				   "");
-
-		computedHash = crypt.keyedHash(bytes1, &ok);
-
-		if(ok)
-		  if(!computedHash.isEmpty() && !bytes2.isEmpty() &&
-		     spoton_crypt::memcmp(bytes2, computedHash))
-		    {
-		      QByteArray data(crypt.decrypted(bytes1, &ok));
-
-		      if(!ok)
-			break;
-
-		      QByteArray a;
-		      QDataStream stream(&data, QIODevice::ReadOnly);
-
-		      stream >> a;
-
-		      if(stream.status() == QDataStream::Ok)
-			{
-			  echoKeys << list.value(3)
-				   << list.value(2)
-				   << list.value(1)
-				   << list.value(4)
-				   << list.value(5);
-			  type = a;
-			}
-
-		      break;
-		    }
-	      }
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return echoKeys;
 }
