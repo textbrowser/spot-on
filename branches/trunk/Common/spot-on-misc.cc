@@ -99,6 +99,30 @@ QReadWriteLock spoton_misc::s_dbMutex;
 QReadWriteLock spoton_misc::s_logMutex;
 quint64 spoton_misc::s_dbId = 0;
 
+QByteArray spoton_misc::urlToEncoded(const QUrl &url)
+{
+#if QT_VERSION < 0x050000
+  QByteArray bytes(url.toEncoded());
+
+  bytes.replace("(", "%28");
+  bytes.replace(")", "%29");
+  return bytes;
+#else
+  return url.toEncoded();
+#endif
+}
+
+QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
+{
+  QByteArray bytes;
+  int length = qMin(a.length(), b.length());
+
+  for(int i = 0; i < length; i++)
+    bytes.append(a[i] ^ b[i]);
+
+  return bytes;
+}
+
 QString spoton_misc::homePath(void)
 {
   QByteArray homepath(qgetenv("SPOTON_HOME"));
@@ -112,6 +136,34 @@ QString spoton_misc::homePath(void)
   else
     return homepath.mid(0, spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH).
       constData();
+}
+
+QString spoton_misc::prettyFileSize(const qint64 size)
+{
+  if(size < 0)
+    return QObject::tr("0 Bytes");
+
+  if(size == 0)
+    return QObject::tr("0 Bytes");
+  else if(size == 1)
+    return QObject::tr("1 Byte");
+  else if(size < 1024)
+    return QString(QObject::tr("%1 Bytes")).arg(size);
+  else if(size < 1048576)
+    return QString(QObject::tr("%1 KiB")).arg
+      (QString::number(qRound(static_cast<double> (size) / 1024.0)));
+  else
+    return QString(QObject::tr("%1 MiB")).arg
+      (QString::number(static_cast<double> (size) / 1048576.0, 'f', 1));
+}
+
+QString spoton_misc::removeSpecialHtmlTags(const QString &text)
+{
+  /*
+  ** We cannot trust the source.
+  */
+
+  return QString(text).remove(QRegExp("<[^>]*>"));
 }
 
 bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
@@ -139,6 +191,208 @@ bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
 			    value("gui/authenticationHint").toByteArray()),
      &ok);
   return ok;
+}
+
+bool spoton_misc::isMulticastAddress(const QHostAddress &address)
+{
+  if(address.protocol() == QAbstractSocket::IPv4Protocol)
+    {
+      quint32 a = address.toIPv4Address();
+
+      if(!((a & 0xf0000000) == 0xe0000000))
+	return false;
+      else
+	return true;
+    }
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
+    {
+      Q_IPV6ADDR a6 = address.toIPv6Address();
+
+      if(a6.c[0] != 0xff)
+	return false;
+      else
+	return true;
+    }
+  else
+    return false;
+}
+
+bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
+				     const QVariant &loop,
+#if defined(Q_OS_WIN)
+				     const SOCKET socketDescriptor,
+#else
+				     const int socketDescriptor,
+#endif
+				     const quint16 port)
+{
+  bool ok = true;
+
+  if(address.protocol() == QAbstractSocket::IPv4Protocol)
+    {
+      ip_mreq mreq4;
+      socklen_t length = sizeof(mreq4);
+
+      memset(&mreq4, 0, sizeof(mreq4));
+      mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
+      mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
+
+#if defined(Q_OS_WIN)
+      if(setsockopt(socketDescriptor, IPPROTO_IP,
+		    IP_ADD_MEMBERSHIP, (const char *) &mreq4, (int) length)
+	 == -1)
+#else
+      if(setsockopt(socketDescriptor, IPPROTO_IP, IP_ADD_MEMBERSHIP,
+		    &mreq4, length) == -1)
+#endif
+	{
+	  ok = false;
+	  spoton_misc::logError
+	    (QString("spoton_misc::joinMulticastGroup(): "
+		     "setsockopt() failure for %1:%2.").
+	     arg(address.toString()).arg(port));
+	}
+      else
+	{
+	  socklen_t length = 0;
+	  u_char option = static_cast<u_char> (loop.toChar().toLatin1());
+
+	  length = sizeof(option);
+
+#if defined(Q_OS_WIN)
+	  if(setsockopt(socketDescriptor,
+			IPPROTO_IP,
+			IP_MULTICAST_LOOP, (const char *) &option, (int) length)
+	     == -1)
+#else
+	  if(setsockopt(socketDescriptor,
+			IPPROTO_IP, IP_MULTICAST_LOOP, &option,
+			length) == -1)
+#endif
+	    {
+	      ok = false;
+	      spoton_misc::logError
+		(QString("spoton_misc::joinMulticastGroup(): "
+			 "setsockopt() failure for %1:%2.").
+		 arg(address.toString()).arg(port));
+	    }
+	}
+    }
+  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
+    {
+      Q_IPV6ADDR ip6 = address.toIPv6Address();
+      ipv6_mreq mreq6;
+      socklen_t length = sizeof(mreq6);
+
+      memset(&mreq6, 0, sizeof(mreq6));
+      memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
+      mreq6.ipv6mr_interface = 0;
+
+#if defined(Q_OS_WIN)
+      if(setsockopt(socketDescriptor, IPPROTO_IPV6,
+		    IPV6_JOIN_GROUP, (const char *) &mreq6,
+		    (int) length) == -1)
+#else
+      if(setsockopt(socketDescriptor, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6,
+		    length) == -1)
+#endif
+	{
+	  ok = false;
+	  spoton_misc::logError
+	    (QString("spoton_misc::joinMulticastGroup(): "
+		     "setsockopt() failure for %1:%2.").
+	     arg(address.toString()).arg(port));
+	}
+      else
+	{
+	  socklen_t length = 0;
+	  u_int option = loop.toUInt();
+
+	  length = sizeof(option);
+
+#if defined(Q_OS_WIN)
+	  if(setsockopt(socketDescriptor,
+			IPPROTO_IPV6,
+			IPV6_MULTICAST_LOOP, (const char *) &option,
+			(int) length) == -1)
+#else
+	  if(setsockopt(socketDescriptor,
+			IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option,
+			length) == -1)
+#endif
+	    {
+	      ok = false;
+	      spoton_misc::logError
+		(QString("spoton_misc::joinMulticastGroup(): "
+			 "setsockopt() failure for %1:%2.").
+		 arg(address.toString()).arg(port));
+	    }
+	}
+    }
+
+  return ok;
+}
+
+spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
+(const QByteArray &magnet)
+{
+  QList<QByteArray> list
+    (QByteArray(magnet.trimmed()).
+     remove(0, static_cast<int> (qstrlen("magnet:?"))).split('&'));
+  QByteArray ek;
+  QByteArray hk;
+  QByteArray xt;
+  QString ct("");
+  QString ht("");
+  spoton_crypt *crypt = 0;
+  unsigned long int ic = 0;
+
+  while(!list.isEmpty())
+    {
+      QByteArray bytes(list.takeFirst());
+
+      if(bytes.startsWith("ct="))
+	{
+	  bytes.remove(0, 3);
+	  ct = bytes;
+	}
+      else if(bytes.startsWith("ht="))
+	{
+	  bytes.remove(0, 3);
+	  ht = bytes;
+	}
+      else if(bytes.startsWith("ic="))
+	{
+	  bytes.remove(0, 3);
+	  ic = qBound(0UL, bytes.toULong(), 999999999UL);
+	}
+      else if(bytes.startsWith("s1="))
+	{
+	  bytes.remove(0, 3);
+	  ek = QByteArray::fromBase64(bytes);
+	}
+      else if(bytes.startsWith("s2="))
+	{
+	  bytes.remove(0, 3);
+	  hk = QByteArray::fromBase64(bytes);
+	}
+      else if(bytes.startsWith("xt"))
+	{
+	  bytes.remove(0, 3);
+	  xt = bytes;
+	}
+      else
+	break;
+    }
+
+  if(ek.length() > 0 && hk.length() > 0 && ic > 0 &&
+     spoton_crypt::cipherTypes().contains(ct) &&
+     spoton_crypt::hashTypes().contains(ht) &&
+     xt == "urn:private-application-credentials")
+    crypt = new spoton_crypt
+      (ct, ht, QByteArray(), ek, hk, 0, ic, QString(""));
+
+  return crypt;
 }
 
 void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
@@ -5941,258 +6195,4 @@ int spoton_misc::minimumNeighborLaneWidth(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   return laneWidth;
-}
-
-bool spoton_misc::isMulticastAddress(const QHostAddress &address)
-{
-  if(address.protocol() == QAbstractSocket::IPv4Protocol)
-    {
-      quint32 a = address.toIPv4Address();
-
-      if(!((a & 0xf0000000) == 0xe0000000))
-	return false;
-      else
-	return true;
-    }
-  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
-    {
-      Q_IPV6ADDR a6 = address.toIPv6Address();
-
-      if(a6.c[0] != 0xff)
-	return false;
-      else
-	return true;
-    }
-  else
-    return false;
-}
-
-bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
-				     const QVariant &loop,
-#if defined(Q_OS_WIN)
-				     const SOCKET socketDescriptor,
-#else
-				     const int socketDescriptor,
-#endif
-				     const quint16 port)
-{
-  bool ok = true;
-
-  if(address.protocol() == QAbstractSocket::IPv4Protocol)
-    {
-      ip_mreq mreq4;
-      socklen_t length = sizeof(mreq4);
-
-      memset(&mreq4, 0, sizeof(mreq4));
-      mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
-      mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
-
-#if defined(Q_OS_WIN)
-      if(setsockopt(socketDescriptor, IPPROTO_IP,
-		    IP_ADD_MEMBERSHIP, (const char *) &mreq4, (int) length)
-	 == -1)
-#else
-      if(setsockopt(socketDescriptor, IPPROTO_IP, IP_ADD_MEMBERSHIP,
-		    &mreq4, length) == -1)
-#endif
-	{
-	  ok = false;
-	  spoton_misc::logError
-	    (QString("spoton_misc::joinMulticastGroup(): "
-		     "setsockopt() failure for %1:%2.").
-	     arg(address.toString()).arg(port));
-	}
-      else
-	{
-	  socklen_t length = 0;
-	  u_char option = static_cast<u_char> (loop.toChar().toLatin1());
-
-	  length = sizeof(option);
-
-#if defined(Q_OS_WIN)
-	  if(setsockopt(socketDescriptor,
-			IPPROTO_IP,
-			IP_MULTICAST_LOOP, (const char *) &option, (int) length)
-	     == -1)
-#else
-	  if(setsockopt(socketDescriptor,
-			IPPROTO_IP, IP_MULTICAST_LOOP, &option,
-			length) == -1)
-#endif
-	    {
-	      ok = false;
-	      spoton_misc::logError
-		(QString("spoton_misc::joinMulticastGroup(): "
-			 "setsockopt() failure for %1:%2.").
-		 arg(address.toString()).arg(port));
-	    }
-	}
-    }
-  else if(address.protocol() == QAbstractSocket::IPv6Protocol)
-    {
-      Q_IPV6ADDR ip6 = address.toIPv6Address();
-      ipv6_mreq mreq6;
-      socklen_t length = sizeof(mreq6);
-
-      memset(&mreq6, 0, sizeof(mreq6));
-      memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
-      mreq6.ipv6mr_interface = 0;
-
-#if defined(Q_OS_WIN)
-      if(setsockopt(socketDescriptor, IPPROTO_IPV6,
-		    IPV6_JOIN_GROUP, (const char *) &mreq6,
-		    (int) length) == -1)
-#else
-      if(setsockopt(socketDescriptor, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6,
-		    length) == -1)
-#endif
-	{
-	  ok = false;
-	  spoton_misc::logError
-	    (QString("spoton_misc::joinMulticastGroup(): "
-		     "setsockopt() failure for %1:%2.").
-	     arg(address.toString()).arg(port));
-	}
-      else
-	{
-	  socklen_t length = 0;
-	  u_int option = loop.toUInt();
-
-	  length = sizeof(option);
-
-#if defined(Q_OS_WIN)
-	  if(setsockopt(socketDescriptor,
-			IPPROTO_IPV6,
-			IPV6_MULTICAST_LOOP, (const char *) &option,
-			(int) length) == -1)
-#else
-	  if(setsockopt(socketDescriptor,
-			IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option,
-			length) == -1)
-#endif
-	    {
-	      ok = false;
-	      spoton_misc::logError
-		(QString("spoton_misc::joinMulticastGroup(): "
-			 "setsockopt() failure for %1:%2.").
-		 arg(address.toString()).arg(port));
-	    }
-	}
-    }
-
-  return ok;
-}
-
-QString spoton_misc::removeSpecialHtmlTags(const QString &text)
-{
-  /*
-  ** We cannot trust the source.
-  */
-
-  return QString(text).remove(QRegExp("<[^>]*>"));
-}
-
-QByteArray spoton_misc::urlToEncoded(const QUrl &url)
-{
-#if QT_VERSION < 0x050000
-  QByteArray bytes(url.toEncoded());
-
-  bytes.replace("(", "%28");
-  bytes.replace(")", "%29");
-  return bytes;
-#else
-  return url.toEncoded();
-#endif
-}
-
-QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
-{
-  QByteArray bytes;
-  int length = qMin(a.length(), b.length());
-
-  for(int i = 0; i < length; i++)
-    bytes.append(a[i] ^ b[i]);
-
-  return bytes;
-}
-
-QString spoton_misc::prettyFileSize(const qint64 size)
-{
-  if(size < 0)
-    return QObject::tr("0 Bytes");
-
-  if(size == 0)
-    return QObject::tr("0 Bytes");
-  else if(size == 1)
-    return QObject::tr("1 Byte");
-  else if(size < 1024)
-    return QString(QObject::tr("%1 Bytes")).arg(size);
-  else if(size < 1048576)
-    return QString(QObject::tr("%1 KiB")).arg
-      (QString::number(qRound(static_cast<double> (size) / 1024.0)));
-  else
-    return QString(QObject::tr("%1 MiB")).arg
-      (QString::number(static_cast<double> (size) / 1048576.0, 'f', 1));
-}
-
-spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
-(const QByteArray &magnet)
-{
-  QList<QByteArray> list
-    (QByteArray(magnet.trimmed()).
-     remove(0, static_cast<int> (qstrlen("magnet:?"))).split('&'));
-  QByteArray ek;
-  QByteArray hk;
-  QByteArray xt;
-  QString ct("");
-  QString ht("");
-  spoton_crypt *crypt = 0;
-  unsigned long int ic = 0;
-
-  while(!list.isEmpty())
-    {
-      QByteArray bytes(list.takeFirst());
-
-      if(bytes.startsWith("ct="))
-	{
-	  bytes.remove(0, 3);
-	  ct = bytes;
-	}
-      else if(bytes.startsWith("ht="))
-	{
-	  bytes.remove(0, 3);
-	  ht = bytes;
-	}
-      else if(bytes.startsWith("ic="))
-	{
-	  bytes.remove(0, 3);
-	  ic = qBound(0UL, bytes.toULong(), 999999999UL);
-	}
-      else if(bytes.startsWith("s1="))
-	{
-	  bytes.remove(0, 3);
-	  ek = QByteArray::fromBase64(bytes);
-	}
-      else if(bytes.startsWith("s2="))
-	{
-	  bytes.remove(0, 3);
-	  hk = QByteArray::fromBase64(bytes);
-	}
-      else if(bytes.startsWith("xt"))
-	{
-	  bytes.remove(0, 3);
-	  xt = bytes;
-	}
-      else
-	break;
-    }
-
-  if(ek.length() > 0 && hk.length() > 0 && ic > 0 &&
-     spoton_crypt::cipherTypes().contains(ct) &&
-     spoton_crypt::hashTypes().contains(ht) &&
-     xt == "urn:private-application-credentials")
-    crypt = new spoton_crypt
-      (ct, ht, QByteArray(), ek, hk, 0, ic, QString(""));
-
-  return crypt;
 }
