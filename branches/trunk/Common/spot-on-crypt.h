@@ -114,8 +114,7 @@ class spoton_crypt
   static QByteArray veryStrongRandomBytes(const size_t size);
   static QByteArray weakRandomBytes(const size_t size);
   static QByteArray whirlpoolHash(const QByteArray &data, bool *ok);
-  static QList<QSslCipher> defaultSslCiphers
-    (const QString &sslControlString);
+  static QList<QSslCipher> defaultSslCiphers(const QString &sslControlString);
   static QString publicKeyAlgorithm(const QByteArray &data);
   static QString publicKeySize(const QByteArray &data);
   static QString publicKeySizeMcEliece(const QByteArray &data);
@@ -172,13 +171,6 @@ class spoton_crypt
 	       const QString &hashType,
 	       const QByteArray &passphrase,
 	       const QByteArray &symmetricKey,
-	       const int saltLength,
-	       const unsigned long int iterationCount,
-	       const QString &id);
-  spoton_crypt(const QString &cipherType,
-	       const QString &hashType,
-	       const QByteArray &passphrase,
-	       const QByteArray &symmetricKey,
 	       const QByteArray &hashKey,
 	       const int saltLength,
 	       const unsigned long int iterationCount,
@@ -192,6 +184,13 @@ class spoton_crypt
 	       const unsigned long int iterationCount,
 	       const QString &id,
 	       const QString &modeOfOperation);
+  spoton_crypt(const QString &cipherType,
+	       const QString &hashType,
+	       const QByteArray &passphrase,
+	       const QByteArray &symmetricKey,
+	       const int saltLength,
+	       const unsigned long int iterationCount,
+	       const QString &id);
   ~spoton_crypt();
   QByteArray decrypted(const QByteArray &data, bool *ok);
   QByteArray decryptedAfterAuthenticated(const QByteArray &data, bool *ok);
