@@ -99,6 +99,23 @@ QReadWriteLock spoton_misc::s_dbMutex;
 QReadWriteLock spoton_misc::s_logMutex;
 quint64 spoton_misc::s_dbId = 0;
 
+QByteArray spoton_misc::forwardSecrecyMagnetFromList
+(const QList<QByteArray> &list)
+{
+  QByteArray magnet;
+
+  magnet.append("magnet:?aa=");
+  magnet.append(list.value(0));
+  magnet.append("&ak=");
+  magnet.append(list.value(1));
+  magnet.append("&ea=");
+  magnet.append(list.value(2));
+  magnet.append("&ek=");
+  magnet.append(list.value(3));
+  magnet.append("&xt=urn:forward-secrecy");
+  return magnet;
+}
+
 QByteArray spoton_misc::urlToEncoded(const QUrl &url)
 {
 #if QT_VERSION < 0x050000
@@ -123,6 +140,141 @@ QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
   return bytes;
 }
 
+QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
+						      const QByteArray &bytes2,
+						      QString &messageType,
+						      spoton_crypt *crypt)
+{
+  messageType.clear();
+
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::findForwardSecrecyKeys(): crypt "
+	 "is zero.");
+      return QList<QByteArray> ();
+    }
+
+  /*
+  ** bytes1: encrypted portion.
+  ** bytes2: digest portion.
+  */
+
+  QList<QByteArray> forwardSecrecyKeys;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT "
+		      "forward_secrecy_authentication_algorithm, " // 0
+		      "forward_secrecy_authentication_key, "       // 1
+		      "forward_secrecy_encryption_algorithm, "     // 2
+		      "forward_secrecy_encryption_key, "           // 3
+		      "public_key_hash "                           // 4
+		      "FROM friends_public_keys WHERE "
+		      "forward_secrecy_authentication_algorithm IS NOT NULL "
+		      "AND "
+		      "forward_secrecy_authentication_key IS NOT NULL AND "
+		      "forward_secrecy_encryption_algorithm IS NOT NULL AND "
+		      "forward_secrecy_encryption_key IS NOT NULL AND "
+		      "neighbor_oid = -1");
+
+	if(ok && query.exec())
+	  while(query.next())
+	    {
+	      QList<QByteArray> list;
+	      bool ok = true;
+
+	      for(int i = 0; i < query.record().count() - 1; i++)
+		{
+		  QByteArray bytes;
+
+		  bytes = crypt->
+		    decryptedAfterAuthenticated(QByteArray::
+						fromBase64(query.value(i).
+							   toByteArray()),
+						&ok);
+
+		  if(ok)
+		    list << bytes;
+		  else
+		    break;
+		}
+
+	      if(!ok)
+		continue;
+
+	      {
+		QByteArray computedHash;
+		spoton_crypt crypt(list.value(2).constData(),
+				   list.value(0).constData(),
+				   QByteArray(),
+				   list.value(3),
+				   list.value(1),
+				   0,
+				   0,
+				   "");
+
+		computedHash = crypt.keyedHash(bytes1, &ok);
+
+		if(ok)
+		  if(!computedHash.isEmpty() && !bytes2.isEmpty() &&
+		     spoton_crypt::memcmp(bytes2, computedHash))
+		    {
+		      QByteArray data(crypt.decrypted(bytes1, &ok));
+
+		      if(!ok)
+			break;
+
+		      QByteArray a;
+		      QDataStream stream(&data, QIODevice::ReadOnly);
+
+		      stream >> a; // Message Type
+
+		      if(stream.status() == QDataStream::Ok)
+			{
+			  messageType = a;
+
+			  /*
+			  ** symmetricKeys[0]: Encryption Key
+			  ** symmetricKeys[1]: Encryption Type
+			  ** symmetricKeys[2]: Hash Key
+			  ** symmetricKeys[3]: Hash Type
+			  ** symmetricKeys[4]: public_key_hash
+			  */
+
+			  forwardSecrecyKeys << list.value(3)
+					     << list.value(2)
+					     << list.value(1)
+					     << list.value(0)
+					     << QByteArray::
+			                        fromBase64(query.value(4).
+							   toByteArray());
+			}
+
+		      break;
+		    }
+	      }
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return forwardSecrecyKeys;
+}
+
 QString spoton_misc::homePath(void)
 {
   QByteArray homepath(qgetenv("SPOTON_HOME"));
@@ -136,6 +288,129 @@ QString spoton_misc::homePath(void)
   else
     return homepath.mid(0, spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH).
       constData();
+}
+
+QString spoton_misc::htmlEncode(const QString &string)
+{
+  QString str("");
+
+  for(int i = 0; i < string.size(); i++)
+    if(string.at(i) == '%')
+      str.append("&amp;");
+    else if(string.at(i) == '<')
+      str.append("&lt;");
+    else if(string.at(i) == '>')
+      str.append("&gt;");
+    else if(string.at(i) == '\"')
+      str.append("&quot;");
+    else if(string.at(i) == '\'')
+      str.append("&apos;");
+    else
+      str.append(string.at(i));
+
+  return str;
+}
+
+QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
+					      spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::keyTypeFromPublicKeyHash(): crypt "
+	 "is zero.");
+      return "";
+    }
+
+  QString connectionName("");
+  QString keyType("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT key_type FROM friends_public_keys "
+		      "WHERE public_key_hash = ?");
+	query.bindValue(0, publicKeyHash.toBase64());
+
+	if(query.exec())
+	  if(query.next())
+	    keyType = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	if(!ok)
+	  keyType.clear();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return keyType;
+}
+
+QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
+					   spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::nameFromPublicKeyHash(): crypt "
+	 "is zero.");
+      return "unknown";
+    }
+
+  QString connectionName("");
+  QString name("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT name FROM friends_public_keys "
+		      "WHERE public_key_hash = ?");
+	query.bindValue(0, publicKeyHash.toBase64());
+
+	if(query.exec())
+	  if(query.next())
+	    {
+	      QByteArray bytes
+		(crypt->
+		 decryptedAfterAuthenticated(QByteArray::
+					     fromBase64(query.
+							value(0).
+							toByteArray()),
+					     &ok));
+
+	      if(ok)
+		name = QString::fromUtf8(bytes.constData(), bytes.length());
+	    }
+
+	if(!ok)
+	  name.clear();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return name;
 }
 
 QString spoton_misc::prettyFileSize(const qint64 size)
@@ -215,6 +490,113 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
     }
   else
     return false;
+}
+
+bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
+					      QList<QByteArray> &values)
+{
+  values.clear();
+
+  if(magnet.isEmpty())
+    return false;
+
+  QByteArray aa;
+  QByteArray ak;
+  QByteArray ea;
+  QByteArray ek;
+  QByteArray urn;
+  QList<QByteArray> list;
+  QStringList starts;
+
+  /*
+  ** Validate the magnet.
+  */
+
+  if(magnet.startsWith("magnet:?"))
+    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
+  else
+    return false;
+
+  starts << "aa="
+	 << "ak="
+	 << "ea="
+	 << "ek="
+	 << "xt=";
+
+  while(!list.isEmpty())
+    {
+      QByteArray str(list.takeFirst());
+
+      if(starts.contains("aa=") && str.startsWith("aa="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::hashTypes().contains(str))
+	    break;
+	  else
+	    {
+	      starts.removeAll("aa=");
+	      aa = str;
+	    }
+	}
+      else if(starts.contains("ak=") && str.startsWith("ak="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    break;
+	  else
+	    {
+	      starts.removeAll("ak=");
+	      ak = str;
+	    }
+	}
+      else if(starts.contains("ea=") && str.startsWith("ea="))
+	{
+	  str.remove(0, 3);
+
+	  if(!spoton_crypt::cipherTypes().contains(str))
+	    break;
+	  else
+	    {
+	      starts.removeAll("ea=");
+	      ea = str;
+	    }
+	}
+      else if(starts.contains("ek=") && str.startsWith("ek="))
+	{
+	  str.remove(0, 3);
+
+	  if(str.isEmpty())
+	    break;
+	  else
+	    {
+	      starts.removeAll("ek=");
+	      ek = str;
+	    }
+	}
+      else if(starts.contains("xt=") && str.startsWith("xt="))
+	{
+	  str.remove(0, 3);
+
+	  if(str != "urn:forward-secrecy")
+	    break;
+	  else
+	    {
+	      starts.removeAll("xt=");
+	      urn = str;
+	    }
+	}
+    }
+
+  if(!aa.isEmpty() && !ak.isEmpty() && !ea.isEmpty() && !ek.isEmpty() &&
+     !urn.isEmpty())
+    {
+      values << aa << ak << ea << ek;
+      return true;
+    }
+
+  return false;
 }
 
 bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
@@ -331,6 +713,223 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
     }
 
   return ok;
+}
+
+bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
+					     spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::storeAlmostAnonymousLetter(): crypt "
+	 "is zero.");
+      return false;
+    }
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "email.db");
+
+    if(db.open())
+      {
+	QByteArray attachmentData(list.value(5));
+	QByteArray message(list.value(4));
+	QByteArray name(list.value(2));
+	QByteArray senderPublicKeyHash(list.value(1));
+	QByteArray subject(list.value(3));
+	QDateTime now(QDateTime::currentDateTime());
+	QSqlQuery query(db);
+
+	query.prepare("INSERT INTO folders "
+		      "(date, "
+		      "folder_index, "
+		      "from_account, "
+		      "goldbug, "
+		      "hash, "
+		      "message, "
+		      "message_code, "
+		      "receiver_sender, "
+		      "receiver_sender_hash, "
+		      "sign, "
+		      "signature, "
+		      "status, "
+		      "subject, "
+		      "participant_oid) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	query.bindValue
+	  (0, crypt->
+	   encryptedThenHashed(now.toString(Qt::ISODate).
+			       toLatin1(), &ok).toBase64());
+	query.bindValue(1, 0); // Inbox Folder
+
+	if(ok)
+	  query.bindValue(2, crypt->encryptedThenHashed(QByteArray(), &ok).
+			  toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, crypt->
+	     encryptedThenHashed(QByteArray::number(0), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (4, crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
+				 message + subject,
+				 &ok).toBase64());
+
+	if(ok)
+	  if(!message.isEmpty())
+	    query.bindValue
+	      (5, crypt->encryptedThenHashed(message,
+					     &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (6, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  if(!name.isEmpty())
+	    query.bindValue
+	      (7, crypt->encryptedThenHashed(name,
+					     &ok).toBase64());
+
+	query.bindValue
+	  (8, senderPublicKeyHash.toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (9, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (10, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (11, crypt->
+	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (12, crypt->encryptedThenHashed(subject, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (13, crypt->
+	     encryptedThenHashed(QByteArray::number(-1), &ok).
+	     toBase64());
+
+	if(ok)
+	  if((ok = query.exec()))
+	    {
+	      if(!attachmentData.isEmpty())
+		{
+		  QVariant variant(query.lastInsertId());
+		  qint64 id = query.lastInsertId().toLongLong();
+
+		  if(variant.isValid())
+		    {
+		      QByteArray data(qUncompress(attachmentData));
+
+		      if(!data.isEmpty())
+			{
+			  QDataStream stream(&data, QIODevice::ReadOnly);
+			  QList<QPair<QByteArray, QByteArray> > attachments;
+
+			  stream >> attachments;
+
+			  if(stream.status() != QDataStream::Ok)
+			    attachments.clear();
+
+			  while(!attachments.isEmpty())
+			    {
+			      QPair<QByteArray, QByteArray> pair
+				(attachments.takeFirst());
+			      QSqlQuery query(db);
+
+			      query.prepare("INSERT INTO folders_attachment "
+					    "(data, folders_oid, name) "
+					    "VALUES (?, ?, ?)");
+			      query.bindValue
+				(0, crypt->encryptedThenHashed(pair.first,
+							       &ok).
+				 toBase64());
+			      query.bindValue(1, id);
+
+			      if(ok)
+				query.bindValue
+				  (2, crypt->
+				   encryptedThenHashed(pair.second,
+						       &ok).toBase64());
+
+			      if(ok)
+				ok = query.exec();
+			    }
+			}
+		    }
+		}
+	    }
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return ok;
+}
+
+int spoton_misc::minimumNeighborLaneWidth(void)
+{
+  QString connectionName("");
+  int laneWidth = spoton_common::LANE_WIDTH_MINIMUM;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT MIN(lane_width) FROM neighbors");
+
+	if(query.exec())
+	  if(query.next())
+	    laneWidth = query.value(0).toInt();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return laneWidth;
+}
+
+spoton_crypt *spoton_misc::cryptFromForwardSecrecyMagnet
+(const QByteArray &magnet)
+{
+  QList<QByteArray> list;
+
+  if(!isValidForwardSecrecyMagnet(magnet, list))
+    return 0;
+
+  return new spoton_crypt(list.value(2),
+			  list.value(0),
+			  QByteArray(),
+			  list.value(3),
+			  list.value(1),
+			  0,
+			  0,
+			  "");
 }
 
 spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
@@ -5596,603 +6195,4 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 
   QSqlDatabase::removeDatabase(connectionName);
   return echoKeys;
-}
-
-QByteArray spoton_misc::forwardSecrecyMagnetFromList
-(const QList<QByteArray> &list)
-{
-  QByteArray magnet;
-
-  magnet.append("magnet:?aa=");
-  magnet.append(list.value(0));
-  magnet.append("&ak=");
-  magnet.append(list.value(1));
-  magnet.append("&ea=");
-  magnet.append(list.value(2));
-  magnet.append("&ek=");
-  magnet.append(list.value(3));
-  magnet.append("&xt=urn:forward-secrecy");
-  return magnet;
-}
-
-QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
-					      spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::keyTypeFromPublicKeyHash(): crypt "
-	 "is zero.");
-      return "";
-    }
-
-  QString connectionName("");
-  QString keyType("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT key_type FROM friends_public_keys "
-		      "WHERE public_key_hash = ?");
-	query.bindValue(0, publicKeyHash.toBase64());
-
-	if(query.exec())
-	  if(query.next())
-	    keyType = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
-
-	if(!ok)
-	  keyType.clear();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return keyType;
-}
-
-spoton_crypt *spoton_misc::cryptFromForwardSecrecyMagnet
-(const QByteArray &magnet)
-{
-  QList<QByteArray> list;
-
-  if(!isValidForwardSecrecyMagnet(magnet, list))
-    return 0;
-
-  return new spoton_crypt(list.value(2),
-			  list.value(0),
-			  QByteArray(),
-			  list.value(3),
-			  list.value(1),
-			  0,
-			  0,
-			  "");
-}
-
-QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
-					   spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::nameFromPublicKeyHash(): crypt "
-	 "is zero.");
-      return "unknown";
-    }
-
-  QString connectionName("");
-  QString name("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT name FROM friends_public_keys "
-		      "WHERE public_key_hash = ?");
-	query.bindValue(0, publicKeyHash.toBase64());
-
-	if(query.exec())
-	  if(query.next())
-	    {
-	      QByteArray bytes
-		(crypt->
-		 decryptedAfterAuthenticated(QByteArray::
-					     fromBase64(query.
-							value(0).
-							toByteArray()),
-					     &ok));
-
-	      if(ok)
-		name = QString::fromUtf8(bytes.constData(), bytes.length());
-	    }
-
-	if(!ok)
-	  name.clear();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return name;
-}
-
-bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
-					      QList<QByteArray> &values)
-{
-  values.clear();
-
-  if(magnet.isEmpty())
-    return false;
-
-  QByteArray aa;
-  QByteArray ak;
-  QByteArray ea;
-  QByteArray ek;
-  QByteArray urn;
-  QList<QByteArray> list;
-  QStringList starts;
-
-  /*
-  ** Validate the magnet.
-  */
-
-  if(magnet.startsWith("magnet:?"))
-    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
-  else
-    return false;
-
-  starts << "aa="
-	 << "ak="
-	 << "ea="
-	 << "ek="
-	 << "xt=";
-
-  while(!list.isEmpty())
-    {
-      QByteArray str(list.takeFirst());
-
-      if(starts.contains("aa=") && str.startsWith("aa="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::hashTypes().contains(str))
-	    break;
-	  else
-	    {
-	      starts.removeAll("aa=");
-	      aa = str;
-	    }
-	}
-      else if(starts.contains("ak=") && str.startsWith("ak="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    break;
-	  else
-	    {
-	      starts.removeAll("ak=");
-	      ak = str;
-	    }
-	}
-      else if(starts.contains("ea=") && str.startsWith("ea="))
-	{
-	  str.remove(0, 3);
-
-	  if(!spoton_crypt::cipherTypes().contains(str))
-	    break;
-	  else
-	    {
-	      starts.removeAll("ea=");
-	      ea = str;
-	    }
-	}
-      else if(starts.contains("ek=") && str.startsWith("ek="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    break;
-	  else
-	    {
-	      starts.removeAll("ek=");
-	      ek = str;
-	    }
-	}
-      else if(starts.contains("xt=") && str.startsWith("xt="))
-	{
-	  str.remove(0, 3);
-
-	  if(str != "urn:forward-secrecy")
-	    break;
-	  else
-	    {
-	      starts.removeAll("xt=");
-	      urn = str;
-	    }
-	}
-    }
-
-  if(!aa.isEmpty() && !ak.isEmpty() && !ea.isEmpty() && !ek.isEmpty() &&
-     !urn.isEmpty())
-    {
-      values << aa << ak << ea << ek;
-      return true;
-    }
-
-  return false;
-}
-
-QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
-						      const QByteArray &bytes2,
-						      QString &messageType,
-						      spoton_crypt *crypt)
-{
-  messageType.clear();
-
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::findForwardSecrecyKeys(): crypt "
-	 "is zero.");
-      return QList<QByteArray> ();
-    }
-
-  /*
-  ** bytes1: encrypted portion.
-  ** bytes2: digest portion.
-  */
-
-  QList<QByteArray> forwardSecrecyKeys;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT "
-		      "forward_secrecy_authentication_algorithm, " // 0
-		      "forward_secrecy_authentication_key, "       // 1
-		      "forward_secrecy_encryption_algorithm, "     // 2
-		      "forward_secrecy_encryption_key, "           // 3
-		      "public_key_hash "                           // 4
-		      "FROM friends_public_keys WHERE "
-		      "forward_secrecy_authentication_algorithm IS NOT NULL "
-		      "AND "
-		      "forward_secrecy_authentication_key IS NOT NULL AND "
-		      "forward_secrecy_encryption_algorithm IS NOT NULL AND "
-		      "forward_secrecy_encryption_key IS NOT NULL AND "
-		      "neighbor_oid = -1");
-
-	if(ok && query.exec())
-	  while(query.next())
-	    {
-	      QList<QByteArray> list;
-	      bool ok = true;
-
-	      for(int i = 0; i < query.record().count() - 1; i++)
-		{
-		  QByteArray bytes;
-
-		  bytes = crypt->
-		    decryptedAfterAuthenticated(QByteArray::
-						fromBase64(query.value(i).
-							   toByteArray()),
-						&ok);
-
-		  if(ok)
-		    list << bytes;
-		  else
-		    break;
-		}
-
-	      if(!ok)
-		continue;
-
-	      {
-		QByteArray computedHash;
-		spoton_crypt crypt(list.value(2).constData(),
-				   list.value(0).constData(),
-				   QByteArray(),
-				   list.value(3),
-				   list.value(1),
-				   0,
-				   0,
-				   "");
-
-		computedHash = crypt.keyedHash(bytes1, &ok);
-
-		if(ok)
-		  if(!computedHash.isEmpty() && !bytes2.isEmpty() &&
-		     spoton_crypt::memcmp(bytes2, computedHash))
-		    {
-		      QByteArray data(crypt.decrypted(bytes1, &ok));
-
-		      if(!ok)
-			break;
-
-		      QByteArray a;
-		      QDataStream stream(&data, QIODevice::ReadOnly);
-
-		      stream >> a; // Message Type
-
-		      if(stream.status() == QDataStream::Ok)
-			{
-			  messageType = a;
-
-			  /*
-			  ** symmetricKeys[0]: Encryption Key
-			  ** symmetricKeys[1]: Encryption Type
-			  ** symmetricKeys[2]: Hash Key
-			  ** symmetricKeys[3]: Hash Type
-			  ** symmetricKeys[4]: public_key_hash
-			  */
-
-			  forwardSecrecyKeys << list.value(3)
-					     << list.value(2)
-					     << list.value(1)
-					     << list.value(0)
-					     << QByteArray::
-			                        fromBase64(query.value(4).
-							   toByteArray());
-			}
-
-		      break;
-		    }
-	      }
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return forwardSecrecyKeys;
-}
-
-bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
-					     spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::storeAlmostAnonymousLetter(): crypt "
-	 "is zero.");
-      return false;
-    }
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() + "email.db");
-
-    if(db.open())
-      {
-	QByteArray attachmentData(list.value(5));
-	QByteArray message(list.value(4));
-	QByteArray name(list.value(2));
-	QByteArray senderPublicKeyHash(list.value(1));
-	QByteArray subject(list.value(3));
-	QDateTime now(QDateTime::currentDateTime());
-	QSqlQuery query(db);
-
-	query.prepare("INSERT INTO folders "
-		      "(date, "
-		      "folder_index, "
-		      "from_account, "
-		      "goldbug, "
-		      "hash, "
-		      "message, "
-		      "message_code, "
-		      "receiver_sender, "
-		      "receiver_sender_hash, "
-		      "sign, "
-		      "signature, "
-		      "status, "
-		      "subject, "
-		      "participant_oid) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	query.bindValue
-	  (0, crypt->
-	   encryptedThenHashed(now.toString(Qt::ISODate).
-			       toLatin1(), &ok).toBase64());
-	query.bindValue(1, 0); // Inbox Folder
-
-	if(ok)
-	  query.bindValue(2, crypt->encryptedThenHashed(QByteArray(), &ok).
-			  toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (3, crypt->
-	     encryptedThenHashed(QByteArray::number(0), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (4, crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
-				 message + subject,
-				 &ok).toBase64());
-
-	if(ok)
-	  if(!message.isEmpty())
-	    query.bindValue
-	      (5, crypt->encryptedThenHashed(message,
-					     &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (6, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	if(ok)
-	  if(!name.isEmpty())
-	    query.bindValue
-	      (7, crypt->encryptedThenHashed(name,
-					     &ok).toBase64());
-
-	query.bindValue
-	  (8, senderPublicKeyHash.toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (9, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (10, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (11, crypt->
-	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (12, crypt->encryptedThenHashed(subject, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (13, crypt->
-	     encryptedThenHashed(QByteArray::number(-1), &ok).
-	     toBase64());
-
-	if(ok)
-	  if((ok = query.exec()))
-	    {
-	      if(!attachmentData.isEmpty())
-		{
-		  QVariant variant(query.lastInsertId());
-		  qint64 id = query.lastInsertId().toLongLong();
-
-		  if(variant.isValid())
-		    {
-		      QByteArray data(qUncompress(attachmentData));
-
-		      if(!data.isEmpty())
-			{
-			  QDataStream stream(&data, QIODevice::ReadOnly);
-			  QList<QPair<QByteArray, QByteArray> > attachments;
-
-			  stream >> attachments;
-
-			  if(stream.status() != QDataStream::Ok)
-			    attachments.clear();
-
-			  while(!attachments.isEmpty())
-			    {
-			      QPair<QByteArray, QByteArray> pair
-				(attachments.takeFirst());
-			      QSqlQuery query(db);
-
-			      query.prepare("INSERT INTO folders_attachment "
-					    "(data, folders_oid, name) "
-					    "VALUES (?, ?, ?)");
-			      query.bindValue
-				(0, crypt->encryptedThenHashed(pair.first,
-							       &ok).
-				 toBase64());
-			      query.bindValue(1, id);
-
-			      if(ok)
-				query.bindValue
-				  (2, crypt->
-				   encryptedThenHashed(pair.second,
-						       &ok).toBase64());
-
-			      if(ok)
-				ok = query.exec();
-			    }
-			}
-		    }
-		}
-	    }
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return ok;
-}
-
-QString spoton_misc::htmlEncode(const QString &string)
-{
-  QString str("");
-
-  for(int i = 0; i < string.size(); i++)
-    if(string.at(i) == '%')
-      str.append("&amp;");
-    else if(string.at(i) == '<')
-      str.append("&lt;");
-    else if(string.at(i) == '>')
-      str.append("&gt;");
-    else if(string.at(i) == '\"')
-      str.append("&quot;");
-    else if(string.at(i) == '\'')
-      str.append("&apos;");
-    else
-      str.append(string.at(i));
-
-  return str;
-}
-
-int spoton_misc::minimumNeighborLaneWidth(void)
-{
-  QString connectionName("");
-  int laneWidth = spoton_common::LANE_WIDTH_MINIMUM;
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT MIN(lane_width) FROM neighbors");
-
-	if(query.exec())
-	  if(query.next())
-	    laneWidth = query.value(0).toInt();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return laneWidth;
 }
