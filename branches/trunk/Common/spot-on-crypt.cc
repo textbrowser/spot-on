@@ -118,104 +118,105 @@ bool spoton_crypt::s_cbc_cts_enabled = true;
 static bool gcryctl_set_thread_cbs_set = false;
 static bool ssl_library_initialized = false;
 
-void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
+QByteArray spoton_crypt::derivedSha1Key
+(const QByteArray &salt,
+ const QString &passphrase,
+ const int hashKeySize,
+ const unsigned long int iterationCount)
 {
-  if(!gcryctl_set_thread_cbs_set)
-    {
-      gcry_error_t err = 0;
-
-#ifdef SPOTON_LINKED_WITH_LIBPTHREAD
-      /*
-      ** libgcrypt 1.6.x compatibility.
-      */
-#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
-      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread, 0);
-#endif
-#else
-      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_qt, 0);
-#endif
-
-      if(err == 0)
-	gcryctl_set_thread_cbs_set = true;
-      else
-	std::cerr << "spoton_crypt::init(): gcry_control() "
-		  << "failed while initializing threads. Proceeding."
-		  << std::endl;
-    }
-
-  if(!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
-    {
-      s_cbc_cts_enabled = cbc_cts_enabled;
-      s_hasSecureMemory.fetchAndStoreOrdered(0);
-      gcry_control(GCRYCTL_ENABLE_M_GUARD);
-
-      if(!gcry_check_version(GCRYPT_VERSION))
-	{
-	  std::cerr << "spoton_crypt::init(): gcry_check_version() "
-		    << "failure. Perhaps you should verify some "
-		    << "settings."
-		    << std::endl;
-	  spoton_misc::logError
-	    ("spoton_crypt::init(): gcry_check_version() "
-	     "failure. Perhaps you should verify some "
-	     "settings.");
-	}
-
-      if(secureMemorySize == 0)
-	{
-	  std::cerr << "spoton_crypt::init(): disabling secure memory."
-		    << std::endl;
-	  spoton_misc::logError("spoton_crypt::init(): disabling secure "
-				"memory.");
-	  gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
-	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
-	}
-      else
-	{
-	  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
-#ifdef Q_OS_FREEBSD
-	  gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize), 0);
-	  s_hasSecureMemory.fetchAndStoreOrdered(1);
-#else
-	  gcry_error_t err = 0;
-
-	  if((err = gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize),
-				 0)) != 0)
-	    {
-	      QByteArray buffer(64, 0);
-
-	      gpg_strerror_r(err, buffer.data(),
-			     static_cast<size_t> (buffer.length()));
-	      spoton_misc::logError
-		(QString("spoton_crypt::init(): initializing "
-			 "secure memory failure (%1).").
-		 arg(buffer.constData()));
-	    }
-	  else
-	    s_hasSecureMemory.fetchAndStoreOrdered(1);
-#endif
-
-	  gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
-	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
-	}
-    }
+  if(gcry_md_test_algo(gcry_md_map_name("sha1")) != 0 || salt.isEmpty())
+    return QByteArray();
   else
-    spoton_misc::logError
-      ("spoton_crypt::init(): libgcrypt is already initialized.");
+    gcry_fast_random_poll();
 
-  if(!ssl_library_initialized)
+  QByteArray key(qAbs(hashKeySize), 0);
+  int hashAlgorithm = gcry_md_map_name("sha1");
+
+  if(gcry_kdf_derive(passphrase.toUtf8().constData(),
+		     static_cast<size_t> (passphrase.toUtf8().length()),
+		     GCRY_KDF_PBKDF2,
+		     hashAlgorithm,
+		     salt.constData(),
+		     static_cast<size_t> (salt.length()),
+		     iterationCount,
+		     static_cast<size_t> (key.length()),
+		     key.data()) != 0)
+    return QByteArray();
+
+  return key;
+}
+
+QByteArray spoton_crypt::shake256(const QByteArray &buffer,
+				  const size_t length,
+				  bool *ok)
+{
+#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010700
+  Q_UNUSED(buffer);
+  Q_UNUSED(length);
+
+  if(ok)
+    *ok = false;
+
+  return QByteArray();
+#else
+  gcry_error_t err = 0;
+  gcry_md_hd_t hd = 0;
+
+  if((err = gcry_md_open(&hd, GCRY_MD_SHAKE256, 0)) != 0 || !hd)
     {
-      ssl_library_initialized = true;
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-      SSL_library_init(); // Always returns 1.
-#else
-#ifdef Q_OS_OPENBSD
-      SSL_library_init(); // Always returns 1.
-#else
-      OPENSSL_init_ssl(0, NULL);
-#endif
-#endif
+      if(ok)
+	*ok = false;
+
+      if(err != 0)
+	{
+	  QByteArray buffer(64, 0);
+
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
+	  spoton_misc::logError
+	    (QString("spoton_crypt::shake256(): gcry_md_open() "
+		     "failure (%1).").arg(buffer.constData()));
+	}
+      else
+	spoton_misc::logError
+	  ("spoton_crypt::shake256(): gcry_md_open() failure.");
+
+      return QByteArray();
     }
+
+  gcry_md_write(hd, buffer.constData(), static_cast<size_t> (buffer.length()));
+
+  QByteArray bytes(static_cast<int> (length), 0);
+
+  if((err = gcry_md_extract(hd, GCRY_MD_SHAKE256, bytes.data(), length)) != 0)
+    {
+      if(ok)
+	*ok = false;
+
+      if(err != 0)
+	{
+	  QByteArray buffer(64, 0);
+
+	  gpg_strerror_r(err, buffer.data(),
+			 static_cast<size_t> (buffer.length()));
+	  spoton_misc::logError
+	    (QString("spoton_crypt::shake256(): gcry_md_extract() "
+		     "failure (%1).").arg(buffer.constData()));
+	}
+      else
+	spoton_misc::logError
+	  ("spoton_crypt::shake256(): gcry_md_extract() failure.");
+
+      gcry_md_close(hd);
+      return QByteArray();
+    }
+
+  if(ok)
+    *ok = true;
+
+  gcry_md_close(hd);
+  return bytes;
+#endif
 }
 
 QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
@@ -399,6 +400,175 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
     (0, temporaryKey.length(), QByteArray(temporaryKey.length(), 0));
   temporaryKey.clear();
   return keys;
+}
+
+bool spoton_crypt::hasShake(void)
+{
+#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010700
+  return false;
+#else
+  return true;
+#endif
+}
+
+bool spoton_crypt::isAuthenticated(void)
+{
+  QString connectionName("");
+  bool authenticated = false;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT public_key FROM idiotes WHERE id_hash = ?");
+	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
+
+	if(ok && query.exec())
+	  while(query.next())
+	    {
+	      QByteArray data;
+	      bool ok = true;
+
+	      data = decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	      if(!data.isEmpty() && ok)
+		authenticated = true;
+	      else
+		spoton_misc::logError
+		  ("spoton_crypt::isAuthenticated(): "
+		   "data is empty or ok is false.");
+
+	      break;
+	    }
+
+	if(query.lastError().isValid())
+	  spoton_misc::logError
+	    (QString("spoton_crypt::isAuthenticated(): "
+		     "QSqlQuery::exec() failure (%1).").
+	     arg(query.lastError().text()));
+	else
+	  authenticated = true; // We know very little.
+      }
+
+    if(db.lastError().isValid())
+      spoton_misc::logError
+	(QString("spoton_crypt::isAuthenticated(): "
+		 "database error (%1).").arg(db.lastError().text()));
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return authenticated;
+}
+
+void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
+{
+  if(!gcryctl_set_thread_cbs_set)
+    {
+      gcry_error_t err = 0;
+
+#ifdef SPOTON_LINKED_WITH_LIBPTHREAD
+      /*
+      ** libgcrypt 1.6.x compatibility.
+      */
+#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
+      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread, 0);
+#endif
+#else
+      err = gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_qt, 0);
+#endif
+
+      if(err == 0)
+	gcryctl_set_thread_cbs_set = true;
+      else
+	std::cerr << "spoton_crypt::init(): gcry_control() "
+		  << "failed while initializing threads. Proceeding."
+		  << std::endl;
+    }
+
+  if(!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
+    {
+      s_cbc_cts_enabled = cbc_cts_enabled;
+      s_hasSecureMemory.fetchAndStoreOrdered(0);
+      gcry_control(GCRYCTL_ENABLE_M_GUARD);
+
+      if(!gcry_check_version(GCRYPT_VERSION))
+	{
+	  std::cerr << "spoton_crypt::init(): gcry_check_version() "
+		    << "failure. Perhaps you should verify some "
+		    << "settings."
+		    << std::endl;
+	  spoton_misc::logError
+	    ("spoton_crypt::init(): gcry_check_version() "
+	     "failure. Perhaps you should verify some "
+	     "settings.");
+	}
+
+      if(secureMemorySize == 0)
+	{
+	  std::cerr << "spoton_crypt::init(): disabling secure memory."
+		    << std::endl;
+	  spoton_misc::logError("spoton_crypt::init(): disabling secure "
+				"memory.");
+	  gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
+	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+	}
+      else
+	{
+	  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
+#ifdef Q_OS_FREEBSD
+	  gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize), 0);
+	  s_hasSecureMemory.fetchAndStoreOrdered(1);
+#else
+	  gcry_error_t err = 0;
+
+	  if((err = gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize),
+				 0)) != 0)
+	    {
+	      QByteArray buffer(64, 0);
+
+	      gpg_strerror_r(err, buffer.data(),
+			     static_cast<size_t> (buffer.length()));
+	      spoton_misc::logError
+		(QString("spoton_crypt::init(): initializing "
+			 "secure memory failure (%1).").
+		 arg(buffer.constData()));
+	    }
+	  else
+	    s_hasSecureMemory.fetchAndStoreOrdered(1);
+#endif
+
+	  gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
+	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+	}
+    }
+  else
+    spoton_misc::logError
+      ("spoton_crypt::init(): libgcrypt is already initialized.");
+
+  if(!ssl_library_initialized)
+    {
+      ssl_library_initialized = true;
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+      SSL_library_init(); // Always returns 1.
+#else
+#ifdef Q_OS_OPENBSD
+      SSL_library_init(); // Always returns 1.
+#else
+      OPENSSL_init_ssl(0, NULL);
+#endif
+#endif
+    }
 }
 
 QByteArray spoton_crypt::saltedPassphraseHash(const QString &hashType,
@@ -4377,148 +4547,6 @@ bool spoton_crypt::exists(const QByteArray &publicKey, spoton_crypt *crypt)
   return exists;
 }
 
-bool spoton_crypt::isAuthenticated(void)
-{
-  QString connectionName("");
-  bool authenticated = false;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT public_key FROM idiotes WHERE id_hash = ?");
-	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
-
-	if(ok && query.exec())
-	  while(query.next())
-	    {
-	      QByteArray data;
-	      bool ok = true;
-
-	      data = decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
-
-	      if(!data.isEmpty() && ok)
-		authenticated = true;
-	      else
-		spoton_misc::logError
-		  ("spoton_crypt::isAuthenticated(): "
-		   "data is empty or ok is false.");
-
-	      break;
-	    }
-
-	if(query.lastError().isValid())
-	  spoton_misc::logError
-	    (QString("spoton_crypt::isAuthenticated(): "
-		     "QSqlQuery::exec() failure (%1).").
-	     arg(query.lastError().text()));
-	else
-	  authenticated = true; // We know very little.
-      }
-
-    if(db.lastError().isValid())
-      spoton_misc::logError
-	(QString("spoton_crypt::isAuthenticated(): "
-		 "database error (%1).").arg(db.lastError().text()));
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return authenticated;
-}
-
-bool spoton_crypt::hasShake(void)
-{
-#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010700
-  return false;
-#else
-  return true;
-#endif
-}
-
-QByteArray spoton_crypt::shake256(const QByteArray &buffer,
-				  const size_t length,
-				  bool *ok)
-{
-#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010700
-  Q_UNUSED(buffer);
-  Q_UNUSED(length);
-
-  if(ok)
-    *ok = false;
-
-  return QByteArray();
-#else
-  gcry_error_t err = 0;
-  gcry_md_hd_t hd = 0;
-
-  if((err = gcry_md_open(&hd, GCRY_MD_SHAKE256, 0)) != 0 || !hd)
-    {
-      if(ok)
-	*ok = false;
-
-      if(err != 0)
-	{
-	  QByteArray buffer(64, 0);
-
-	  gpg_strerror_r(err, buffer.data(),
-			 static_cast<size_t> (buffer.length()));
-	  spoton_misc::logError
-	    (QString("spoton_crypt::shake256(): gcry_md_open() "
-		     "failure (%1).").arg(buffer.constData()));
-	}
-      else
-	spoton_misc::logError
-	  ("spoton_crypt::shake256(): gcry_md_open() failure.");
-
-      return QByteArray();
-    }
-
-  gcry_md_write(hd, buffer.constData(), static_cast<size_t> (buffer.length()));
-
-  QByteArray bytes(static_cast<int> (length), 0);
-
-  if((err = gcry_md_extract(hd, GCRY_MD_SHAKE256, bytes.data(), length)) != 0)
-    {
-      if(ok)
-	*ok = false;
-
-      if(err != 0)
-	{
-	  QByteArray buffer(64, 0);
-
-	  gpg_strerror_r(err, buffer.data(),
-			 static_cast<size_t> (buffer.length()));
-	  spoton_misc::logError
-	    (QString("spoton_crypt::shake256(): gcry_md_extract() "
-		     "failure (%1).").arg(buffer.constData()));
-	}
-      else
-	spoton_misc::logError
-	  ("spoton_crypt::shake256(): gcry_md_extract() failure.");
-
-      gcry_md_close(hd);
-      return QByteArray();
-    }
-
-  if(ok)
-    *ok = true;
-
-  gcry_md_close(hd);
-  return bytes;
-#endif
-}
-
 void spoton_crypt::removeFlawedEntries(spoton_crypt *crypt)
 {
   if(!crypt)
@@ -4563,32 +4591,4 @@ void spoton_crypt::removeFlawedEntries(spoton_crypt *crypt)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-QByteArray spoton_crypt::derivedSha1Key
-(const QByteArray &salt,
- const QString &passphrase,
- const int hashKeySize,
- const unsigned long int iterationCount)
-{
-  if(gcry_md_test_algo(gcry_md_map_name("sha1")) != 0 || salt.isEmpty())
-    return QByteArray();
-  else
-    gcry_fast_random_poll();
-
-  QByteArray key(qAbs(hashKeySize), 0);
-  int hashAlgorithm = gcry_md_map_name("sha1");
-
-  if(gcry_kdf_derive(passphrase.toUtf8().constData(),
-		     static_cast<size_t> (passphrase.toUtf8().length()),
-		     GCRY_KDF_PBKDF2,
-		     hashAlgorithm,
-		     salt.constData(),
-		     static_cast<size_t> (salt.length()),
-		     iterationCount,
-		     static_cast<size_t> (key.length()),
-		     key.data()) != 0)
-    return QByteArray();
-
-  return key;
 }
