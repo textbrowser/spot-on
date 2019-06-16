@@ -47,8 +47,8 @@ class spoton_sqlquery
   void setField(const int index, const QString &field);
 
  private:
-  QHash<int, QString> m_fields;
   QHash<int, QPair<QVariant, bool> > m_current;
+  QHash<int, QString> m_fields;
   QQueue<QHash<int, QPair<QVariant, bool> > > m_queue;
 };
 

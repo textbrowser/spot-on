@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Remko Troncon
+ * Copyright (C) 2008 Remko Troncon.
  */
 
 #ifndef COCOAINITIALIZER_H

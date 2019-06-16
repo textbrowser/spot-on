@@ -796,8 +796,7 @@ void spoton_threefish::setKey(const QByteArray &key, bool *ok)
   setKey(key.constData(), static_cast<size_t> (key.length()), ok);
 }
 
-void spoton_threefish::setKey
-(const char *key, const size_t keyLength, bool *ok)
+void spoton_threefish::setKey(const char *key, const size_t keyLength, bool *ok)
 {
   QWriteLocker locker(&m_locker);
 
