@@ -137,110 +137,6 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   populateContacts();
 }
 
-void spoton_rosetta::slotClose(void)
-{
-  close();
-}
-
-void spoton_rosetta::show(QWidget *parent)
-{
-  showNormal();
-  activateWindow();
-  raise();
-
-  if(parent)
-    {
-      QPoint p(parent->pos());
-      int X = 0;
-      int Y = 0;
-
-      if(parent->width() >= width())
-	X = p.x() + (parent->width() - width()) / 2;
-      else
-	X = p.x() - (width() - parent->width()) / 2;
-
-      if(parent->height() >= height())
-	Y = p.y() + (parent->height() - height()) / 2;
-      else
-	Y = p.y() - (height() - parent->height()) / 2;
-
-      move(X, Y);
-    }
-
-  QSettings settings;
-
-  ui.name->setText
-    (QString::fromUtf8(settings.value("gui/rosettaName", "unknown").
-		       toByteArray().constData(),
-		       settings.value("gui/rosettaName", "unknown").
-		       toByteArray().length()).trimmed());
-  populateContacts();
-}
-
-void spoton_rosetta::keyPressEvent(QKeyEvent *event)
-{
-  if(event)
-    {
-      if(event->key() == Qt::Key_Escape)
-	close();
-    }
-
-  QMainWindow::keyPressEvent(event);
-}
-
-void spoton_rosetta::slotSetIcons(void)
-{
-  QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nuove").toString().
-		  toLower());
-
-  if(!(iconSet == "everaldo" ||
-       iconSet == "meego" ||
-       iconSet == "nouve" ||
-       iconSet == "nuvola"))
-    iconSet = "nouve";
-
-  ui.add->setIcon(QIcon(QString(":/%1/add.png").arg(iconSet)));
-  ui.clearContact->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
-  ui.clearInput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
-  ui.clearOutput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
-  ui.copy->setIcon(QIcon(QString(":/%1/copy.png").arg(iconSet)));
-  ui.save->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
-}
-
-void spoton_rosetta::slotClear(void)
-{
-  if(sender() == ui.clearContact)
-    ui.newContact->clear();
-  else if(sender() == ui.clearInput)
-    {
-      ui.cipher->setCurrentIndex(0);
-      ui.hash->setCurrentIndex(0);
-      ui.input->clear();
-      ui.sign->setChecked(true);
-    }
-  else if(sender() == ui.clearOutput)
-    ui.output->clear();
-}
-
-void spoton_rosetta::slotSaveName(void)
-{
-  QString str(ui.name->text());
-
-  if(str.trimmed().isEmpty())
-    {
-      str = "unknown";
-      ui.name->setText(str);
-    }
-  else
-    ui.name->setText(str.trimmed());
-
-  QSettings settings;
-
-  settings.setValue("gui/rosettaName", str.toUtf8());
-  ui.name->selectAll();
-}
-
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 {
   spoton_crypt *eCrypt = spoton::instance() ? spoton::instance()->crypts().
@@ -298,41 +194,141 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
     }
 }
 
+void spoton_rosetta::keyPressEvent(QKeyEvent *event)
+{
+  if(event)
+    {
+      if(event->key() == Qt::Key_Escape)
+	close();
+    }
+
+  QMainWindow::keyPressEvent(event);
+}
+
+void spoton_rosetta::populateContacts(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			"friends_public_keys.db");
+
+    if(db.open())
+      {
+	QMultiMap<QString, QByteArray> names;
+	QSqlQuery query(db);
+	bool ok = true;
+	spoton_crypt *eCrypt = spoton::instance() ?
+	  spoton::instance()->crypts().value("rosetta", 0) : 0;
+
+	ui.contacts->clear();
+	query.setForwardOnly(true);
+	query.prepare("SELECT name, public_key FROM friends_public_keys "
+		      "WHERE key_type_hash = ?");
+
+	if(eCrypt)
+	  query.bindValue(0, eCrypt->keyedHash(QByteArray("rosetta"), &ok).
+			  toBase64());
+
+	if(ok && query.exec())
+	  while(query.next())
+	    {
+	      QByteArray name;
+	      QByteArray publicKey;
+	      bool ok = true;
+
+	      if(eCrypt)
+		name = eCrypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(0).
+					  toByteArray()),
+		   &ok);
+	      else
+		ok = false;
+
+	      if(ok)
+		{
+		  if(eCrypt)
+		    publicKey = eCrypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(1).
+					      toByteArray()),
+		       &ok);
+		  else
+		    ok = false;
+		}
+
+	      if(ok)
+		names.insert(name, publicKey);
+	    }
+
+	QMapIterator<QString, QByteArray> it(names);
+
+	while(it.hasNext())
+	  {
+	    it.next();
+
+	    QString str(it.key().trimmed());
+
+	    if(str.isEmpty())
+	      ui.contacts->addItem("unknown", it.value());
+	    else
+	      ui.contacts->addItem(str, it.value());
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ui.contacts->count() == 0)
+    ui.contacts->addItem("Empty"); // Please do not translate Empty.
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton_rosetta::setName(const QString &text)
 {
   ui.name->setText(text);
   slotSaveName();
 }
 
-void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
+void spoton_rosetta::show(QWidget *parent)
 {
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  showNormal();
+  activateWindow();
+  raise();
 
-  QString text(copyMyRosettaPublicKey());
-
-  QApplication::restoreOverrideCursor();
-
-  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+  if(parent)
     {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The rosetta public key is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
+      QPoint p(parent->pos());
+      int X = 0;
+      int Y = 0;
+
+      if(parent->width() >= width())
+	X = p.x() + (parent->width() - width()) / 2;
+      else
+	X = p.x() - (width() - parent->width()) / 2;
+
+      if(parent->height() >= height())
+	Y = p.y() + (parent->height() - height()) / 2;
+      else
+	Y = p.y() - (height() - parent->height()) / 2;
+
+      move(X, Y);
     }
 
-  QClipboard *clipboard = QApplication::clipboard();
+  QSettings settings;
 
-  if(clipboard)
-    {
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
-      QApplication::restoreOverrideCursor();
-    }
+  ui.name->setText
+    (QString::fromUtf8(settings.value("gui/rosettaName", "unknown").
+		       toByteArray().constData(),
+		       settings.value("gui/rosettaName", "unknown").
+		       toByteArray().length()).trimmed());
+  populateContacts();
 }
 
 void spoton_rosetta::slotAddContact(void)
@@ -531,103 +527,24 @@ void spoton_rosetta::slotAddContact(void)
     populateContacts();
 }
 
-void spoton_rosetta::slotDecryptToggled(bool state)
+void spoton_rosetta::slotClear(void)
 {
-  ui.cipher->setEnabled(!state);
-  ui.hash->setEnabled(!state);
-  ui.sign->setEnabled(!state);
+  if(sender() == ui.clearContact)
+    ui.newContact->clear();
+  else if(sender() == ui.clearInput)
+    {
+      ui.cipher->setCurrentIndex(0);
+      ui.hash->setCurrentIndex(0);
+      ui.input->clear();
+      ui.sign->setChecked(true);
+    }
+  else if(sender() == ui.clearOutput)
+    ui.output->clear();
 }
 
-void spoton_rosetta::slotEncryptToggled(bool state)
+void spoton_rosetta::slotClose(void)
 {
-  ui.cipher->setEnabled(state);
-  ui.hash->setEnabled(state);
-  ui.sign->setEnabled(state);
-}
-
-void spoton_rosetta::populateContacts(void)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			"friends_public_keys.db");
-
-    if(db.open())
-      {
-	QMultiMap<QString, QByteArray> names;
-	QSqlQuery query(db);
-	bool ok = true;
-	spoton_crypt *eCrypt = spoton::instance() ?
-	  spoton::instance()->crypts().value("rosetta", 0) : 0;
-
-	ui.contacts->clear();
-	query.setForwardOnly(true);
-	query.prepare("SELECT name, public_key FROM friends_public_keys "
-		      "WHERE key_type_hash = ?");
-
-	if(eCrypt)
-	  query.bindValue(0, eCrypt->keyedHash(QByteArray("rosetta"), &ok).
-			  toBase64());
-
-	if(ok && query.exec())
-	  while(query.next())
-	    {
-	      QByteArray name;
-	      QByteArray publicKey;
-	      bool ok = true;
-
-	      if(eCrypt)
-		name = eCrypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(0).
-					  toByteArray()),
-		   &ok);
-	      else
-		ok = false;
-
-	      if(ok)
-		{
-		  if(eCrypt)
-		    publicKey = eCrypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(1).
-					      toByteArray()),
-		       &ok);
-		  else
-		    ok = false;
-		}
-
-	      if(ok)
-		names.insert(name, publicKey);
-	    }
-
-	QMapIterator<QString, QByteArray> it(names);
-
-	while(it.hasNext())
-	  {
-	    it.next();
-
-	    QString str(it.key().trimmed());
-
-	    if(str.isEmpty())
-	      ui.contacts->addItem("unknown", it.value());
-	    else
-	      ui.contacts->addItem(str, it.value());
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(ui.contacts->count() == 0)
-    ui.contacts->addItem("Empty"); // Please do not translate Empty.
-
-  QApplication::restoreOverrideCursor();
+  close();
 }
 
 void spoton_rosetta::slotConvert(void)
@@ -959,6 +876,87 @@ void spoton_rosetta::slotConvert(void)
     }
 }
 
+void spoton_rosetta::slotCopyConverted(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    clipboard->setText(ui.output->toPlainText());
+}
+
+void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyRosettaPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The rosetta public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(text);
+      QApplication::restoreOverrideCursor();
+    }
+}
+
+void spoton_rosetta::slotCopyOrPaste(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QWidget *widget = QApplication::focusWidget();
+
+  if(!widget)
+    return;
+
+  QString a("");
+
+  if(action == ui.action_Copy)
+    a = "copy";
+  else
+    a = "paste";
+
+  if(qobject_cast<QLineEdit *> (widget))
+    {
+      if(a == "copy")
+	qobject_cast<QLineEdit *> (widget)->copy();
+      else
+	qobject_cast<QLineEdit *> (widget)->paste();
+    }
+  else if(qobject_cast<QTextEdit *> (widget))
+    {
+      if(a == "copy")
+	qobject_cast<QTextEdit *> (widget)->copy();
+      else
+	qobject_cast<QTextEdit *> (widget)->paste();
+    }
+}
+
+void spoton_rosetta::slotDecryptToggled(bool state)
+{
+  ui.cipher->setEnabled(!state);
+  ui.hash->setEnabled(!state);
+  ui.sign->setEnabled(!state);
+}
+
 void spoton_rosetta::slotDelete(void)
 {
   if(ui.contacts->itemData(ui.contacts->currentIndex()).isNull())
@@ -1028,47 +1026,11 @@ void spoton_rosetta::slotDelete(void)
     populateContacts();
 }
 
-void spoton_rosetta::slotCopyConverted(void)
+void spoton_rosetta::slotEncryptToggled(bool state)
 {
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    clipboard->setText(ui.output->toPlainText());
-}
-
-void spoton_rosetta::slotCopyOrPaste(void)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QWidget *widget = QApplication::focusWidget();
-
-  if(!widget)
-    return;
-
-  QString a("");
-
-  if(action == ui.action_Copy)
-    a = "copy";
-  else
-    a = "paste";
-
-  if(qobject_cast<QLineEdit *> (widget))
-    {
-      if(a == "copy")
-	qobject_cast<QLineEdit *> (widget)->copy();
-      else
-	qobject_cast<QLineEdit *> (widget)->paste();
-    }
-  else if(qobject_cast<QTextEdit *> (widget))
-    {
-      if(a == "copy")
-	qobject_cast<QTextEdit *> (widget)->copy();
-      else
-	qobject_cast<QTextEdit *> (widget)->paste();
-    }
+  ui.cipher->setEnabled(state);
+  ui.hash->setEnabled(state);
+  ui.sign->setEnabled(state);
 }
 
 void spoton_rosetta::slotRename(void)
@@ -1148,4 +1110,42 @@ void spoton_rosetta::slotRename(void)
 	  "participant."));
   else
     populateContacts();
+}
+
+void spoton_rosetta::slotSaveName(void)
+{
+  QString str(ui.name->text());
+
+  if(str.trimmed().isEmpty())
+    {
+      str = "unknown";
+      ui.name->setText(str);
+    }
+  else
+    ui.name->setText(str.trimmed());
+
+  QSettings settings;
+
+  settings.setValue("gui/rosettaName", str.toUtf8());
+  ui.name->selectAll();
+}
+
+void spoton_rosetta::slotSetIcons(void)
+{
+  QSettings settings;
+  QString iconSet(settings.value("gui/iconSet", "nuove").toString().
+		  toLower());
+
+  if(!(iconSet == "everaldo" ||
+       iconSet == "meego" ||
+       iconSet == "nouve" ||
+       iconSet == "nuvola"))
+    iconSet = "nouve";
+
+  ui.add->setIcon(QIcon(QString(":/%1/add.png").arg(iconSet)));
+  ui.clearContact->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  ui.clearInput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  ui.clearOutput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  ui.copy->setIcon(QIcon(QString(":/%1/copy.png").arg(iconSet)));
+  ui.save->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
 }

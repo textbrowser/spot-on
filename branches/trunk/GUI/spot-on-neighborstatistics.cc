@@ -33,8 +33,8 @@
 #include <QtCore>
 
 #include "Common/spot-on-crypt.h"
-#include "spot-on.h"
 #include "spot-on-neighborstatistics.h"
+#include "spot-on.h"
 
 spoton_neighborstatistics::spoton_neighborstatistics(QWidget *parent):
   QMainWindow(parent)
