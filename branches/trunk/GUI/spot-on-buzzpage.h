@@ -59,10 +59,10 @@ class spoton_buzzpage: public QWidget
   QByteArray hashType(void) const;
   QByteArray key(void) const;
   QString magnet(void) const;
-  void userStatus(const QList<QByteArray> &list);
   void appendMessage(const QList<QByteArray> &list);
   void showUnify(const bool state);
   void unite(void);
+  void userStatus(const QList<QByteArray> &list);
 
  private:
   QByteArray m_channel;
