@@ -158,6 +158,128 @@ void spoton::displayUrlImportResults(const QDateTime &then,
      arg(locale.toString(qAbs(QDateTime::currentDateTime().secsTo(then)))));
 }
 
+void spoton::populateUrlDistillers(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	m_ui.downDistillers->setRowCount(0);
+	m_ui.sharedDistillers->setRowCount(0);
+	m_ui.upDistillers->setRowCount(0);
+
+	QSqlQuery query(db);
+	int dCount = 0;
+	int sCount = 0;
+	int uCount = 0;
+
+	query.setForwardOnly(true);
+	query.prepare
+	  ("SELECT direction, domain, permission, OID FROM distillers");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QByteArray direction;
+	      QByteArray domain;
+	      QByteArray permission;
+	      bool ok = true;
+
+	      direction = crypt->
+		decryptedAfterAuthenticated(QByteArray::
+					    fromBase64(query.value(0).
+						       toByteArray()),
+					    &ok);
+
+	      if(ok)
+		domain = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(1).
+							 toByteArray()),
+					      &ok);
+
+	      if(ok)
+		permission = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.value(2).
+							 toByteArray()),
+					      &ok);
+
+	      if(ok)
+		{
+		  QComboBox *box = new QComboBox();
+		  QTableWidgetItem *item = new QTableWidgetItem
+		    (QString::fromUtf8(domain.constData(), domain.length()));
+
+		  box->addItem("accept");
+		  box->addItem("deny");
+		  box->setProperty
+		    ("oid", query.value(query.record().count() - 1));
+
+		  if(permission == "accept")
+		    box->setCurrentIndex(0);
+		  else
+		    box->setCurrentIndex(1);
+
+		  connect(box,
+			  SIGNAL(currentIndexChanged(int)),
+			  this,
+			  SLOT(slotUrlPolarizerTypeChange(int)));
+		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+		  if(direction == "download")
+		    {
+		      m_ui.downDistillers->setRowCount(dCount + 1);
+		      m_ui.downDistillers->setItem(dCount, 0, item);
+		      m_ui.downDistillers->setCellWidget(dCount, 1, box);
+		      dCount += 1;
+		    }
+		  else if(direction == "shared")
+		    {
+		      m_ui.sharedDistillers->setRowCount(sCount + 1);
+		      m_ui.sharedDistillers->setItem(sCount, 0, item);
+		      m_ui.sharedDistillers->setCellWidget(sCount, 1, box);
+		      sCount += 1;
+		    }
+		  else
+		    {
+		      m_ui.upDistillers->setRowCount(uCount + 1);
+		      m_ui.upDistillers->setItem(uCount, 0, item);
+		      m_ui.upDistillers->setCellWidget(uCount, 1, box);
+		      uCount += 1;
+		    }
+		}
+	    }
+
+	m_ui.downDistillers->sortItems(0);
+	m_ui.downDistillers->resizeColumnToContents(1);
+	m_ui.sharedDistillers->sortItems(0);
+	m_ui.sharedDistillers->resizeColumnToContents(1);
+	m_ui.upDistillers->sortItems(0);
+	m_ui.upDistillers->resizeColumnToContents(1);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::prepareUrlLabels(void)
 {
   QString connectionName("");
@@ -1793,159 +1915,6 @@ void spoton::slotShowUrlSettings(bool state)
     m_ui.urls_import_layout->addWidget(m_ui.importUrls);
 }
 
-void spoton::slotVerify(void)
-{
-  QByteArray computedHash;
-  QByteArray salt
-    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
-  QByteArray saltedPassphraseHash
-    (QByteArray::fromHex(m_ui.urlIniHash->text().toLatin1()));
-  QString error("");
-  bool ok = false;
-
-  computedHash = spoton_crypt::saltedPassphraseHash
-    (m_ui.urlHash->currentText(), m_ui.urlPassphrase->text(), salt, error);
-
-  if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
-     spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
-    if(error.isEmpty())
-      ok = true;
-
-  if(ok)
-    QMessageBox::information
-      (this, tr("%1: Information").
-       arg(SPOTON_APPLICATION_NAME),
-       tr("The provided credentials are correct. Please save the "
-	  "information!"));
-  else
-    QMessageBox::critical
-      (this, tr("%1: Error").
-       arg(SPOTON_APPLICATION_NAME),
-       tr("The provided credentials are incorrect."));
-}
-
-void spoton::populateUrlDistillers(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
-
-    if(db.open())
-      {
-	m_ui.downDistillers->setRowCount(0);
-	m_ui.sharedDistillers->setRowCount(0);
-	m_ui.upDistillers->setRowCount(0);
-
-	QSqlQuery query(db);
-	int dCount = 0;
-	int sCount = 0;
-	int uCount = 0;
-
-	query.setForwardOnly(true);
-	query.prepare
-	  ("SELECT direction, domain, permission, OID FROM distillers");
-
-	if(query.exec())
-	  while(query.next())
-	    {
-	      QByteArray direction;
-	      QByteArray domain;
-	      QByteArray permission;
-	      bool ok = true;
-
-	      direction = crypt->
-		decryptedAfterAuthenticated(QByteArray::
-					    fromBase64(query.value(0).
-						       toByteArray()),
-					    &ok);
-
-	      if(ok)
-		domain = crypt->
-		  decryptedAfterAuthenticated(QByteArray::
-					      fromBase64(query.
-							 value(1).
-							 toByteArray()),
-					      &ok);
-
-	      if(ok)
-		permission = crypt->
-		  decryptedAfterAuthenticated(QByteArray::
-					      fromBase64(query.value(2).
-							 toByteArray()),
-					      &ok);
-
-	      if(ok)
-		{
-		  QComboBox *box = new QComboBox();
-		  QTableWidgetItem *item = new QTableWidgetItem
-		    (QString::fromUtf8(domain.constData(), domain.length()));
-
-		  box->addItem("accept");
-		  box->addItem("deny");
-		  box->setProperty
-		    ("oid", query.value(query.record().count() - 1));
-
-		  if(permission == "accept")
-		    box->setCurrentIndex(0);
-		  else
-		    box->setCurrentIndex(1);
-
-		  connect(box,
-			  SIGNAL(currentIndexChanged(int)),
-			  this,
-			  SLOT(slotUrlPolarizerTypeChange(int)));
-		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-		  if(direction == "download")
-		    {
-		      m_ui.downDistillers->setRowCount(dCount + 1);
-		      m_ui.downDistillers->setItem(dCount, 0, item);
-		      m_ui.downDistillers->setCellWidget(dCount, 1, box);
-		      dCount += 1;
-		    }
-		  else if(direction == "shared")
-		    {
-		      m_ui.sharedDistillers->setRowCount(sCount + 1);
-		      m_ui.sharedDistillers->setItem(sCount, 0, item);
-		      m_ui.sharedDistillers->setCellWidget(sCount, 1, box);
-		      sCount += 1;
-		    }
-		  else
-		    {
-		      m_ui.upDistillers->setRowCount(uCount + 1);
-		      m_ui.upDistillers->setItem(uCount, 0, item);
-		      m_ui.upDistillers->setCellWidget(uCount, 1, box);
-		      uCount += 1;
-		    }
-		}
-	    }
-
-	m_ui.downDistillers->sortItems(0);
-	m_ui.downDistillers->resizeColumnToContents(1);
-	m_ui.sharedDistillers->sortItems(0);
-	m_ui.sharedDistillers->resizeColumnToContents(1);
-	m_ui.upDistillers->sortItems(0);
-	m_ui.upDistillers->resizeColumnToContents(1);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
 void spoton::slotUrlLinkClicked(const QUrl &u)
 {
   QString scheme(u.scheme().toLower().trimmed());
@@ -2471,4 +2440,35 @@ void spoton::slotUrlPolarizerTypeChange(int index)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotVerify(void)
+{
+  QByteArray computedHash;
+  QByteArray salt
+    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
+  QByteArray saltedPassphraseHash
+    (QByteArray::fromHex(m_ui.urlIniHash->text().toLatin1()));
+  QString error("");
+  bool ok = false;
+
+  computedHash = spoton_crypt::saltedPassphraseHash
+    (m_ui.urlHash->currentText(), m_ui.urlPassphrase->text(), salt, error);
+
+  if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
+     spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
+    if(error.isEmpty())
+      ok = true;
+
+  if(ok)
+    QMessageBox::information
+      (this, tr("%1: Information").
+       arg(SPOTON_APPLICATION_NAME),
+       tr("The provided credentials are correct. Please save the "
+	  "information!"));
+  else
+    QMessageBox::critical
+      (this, tr("%1: Error").
+       arg(SPOTON_APPLICATION_NAME),
+       tr("The provided credentials are incorrect."));
 }
