@@ -109,210 +109,6 @@ void spoton_encryptfile_page::abort(void)
   slotCancel();
 }
 
-void spoton_encryptfile_page::slotCancel(void)
-{
-  m_quit = true;
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_future.cancel();
-  m_future.waitForFinished();
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton_encryptfile_page::slotCipherTypeChanged(const QString &text)
-{
-#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
-  Q_UNUSED(text);
-  ui.gcm->setEnabled(false);
-#else
-  if(text == "threefish")
-    {
-      ui.cbc->setChecked(true);
-      ui.gcm->setEnabled(false);
-    }
-  else
-    ui.gcm->setEnabled(true);
-#endif
-}
-
-void spoton_encryptfile_page::slotConvert(void)
-{
-  if(!m_future.isFinished())
-    return;
-
-  QFileInfo destination(ui.destination->text());
-  QFileInfo fileInfo(ui.file->text());
-  QList<QVariant> list;
-  QPair<QByteArray, QByteArray> derivedKeys;
-  QString error("");
-  QString modeOfOperation("");
-  QString password(ui.password->text());
-  QString pin(ui.pin->text());
-
-  if(destination.absoluteFilePath().isEmpty())
-    {
-      error = tr("Please provide a valid destination path.");
-      goto done_label;
-    }
-
-  if(!fileInfo.isReadable())
-    {
-      error = tr("Please provide a valid origin path.");
-      goto done_label;
-    }
-
-  if(ui.file_mode->isChecked())
-    if(destination == fileInfo)
-      {
-	error = tr("The destination and origin should be distinct.");
-	goto done_label;
-      }
-
-  if(password.length() < 16)
-    {
-      error = tr("Please provide a secret that contains at least "
-		 "sixteen characters.");
-      goto done_label;
-    }
-
-  if(pin.isEmpty())
-    {
-      error = tr("Please provide a PIN.");
-      goto done_label;
-    }
-
-  m_occupied = true;
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  ui.status_label->setText
-    (tr("Generating derived keys. Please be patient."));
-  ui.status_label->repaint();
-  derivedKeys = spoton_crypt::derivedKeys
-    (ui.cipher->currentText(),
-     ui.hash->currentText(),
-     static_cast<unsigned long int> (ui.iteration_count->value()),
-     password.toUtf8(),
-     pin.toUtf8(),
-     false,
-     error);
-  ui.status_label->clear();
-  QApplication::restoreOverrideCursor();
-
-  if(!error.isEmpty())
-    {
-      error = tr("An error occurred while deriving keys.");
-      goto done_label;
-    }
-
-  list << ui.cipher->currentText();
-  list << ui.hash->currentText();
-  list << derivedKeys.first;
-  list << derivedKeys.second;
-  list << ui.readSize->currentText();
-  ui.cancel->setVisible(true);
-  ui.convert->setEnabled(false);
-  ui.reset->setEnabled(false);
-  ui.progressBar->setValue(0);
-  ui.progressBar->setVisible(true);
-
-  if(ui.cbc->isChecked())
-    modeOfOperation = "cbc";
-  else
-    modeOfOperation = "gcm";
-
-  m_quit = false;
-
-  if(ui.directory_mode->isChecked())
-    {
-      QStringList filters;
-
-      if(ui.decrypt->isChecked())
-	filters << "*.enc";
-      else
-	filters << "*";
-
-      QDir baseDir(destination.absoluteFilePath());
-      QDir dir(fileInfo.absoluteFilePath());
-      QFileInfoList files(dir.entryInfoList(filters, QDir::Files));
-
-      while(true)
-	{
-	  repaint();
-#ifndef Q_OS_MAC
-	  QApplication::processEvents();
-#endif
-
-	  if(files.isEmpty() || m_quit)
-	    break;
-	  else if(m_future.isRunning())
-	    continue;
-
-	  QFileInfo fileInfo(files.takeFirst());
-
-	  if(ui.decrypt->isChecked())
-	    {
-	      QString destination(baseDir.absolutePath());
-
-	      destination.append(QDir::separator());
-	      destination.append(fileInfo.fileName());
-
-	      if(destination.endsWith(".enc"))
-		destination = destination.mid(0, destination.length() - 4);
-
-	      m_future = QtConcurrent::run
-		(this, &spoton_encryptfile_page::decrypt,
-		 fileInfo.absoluteFilePath(),
-		 destination,
-		 list,
-		 modeOfOperation);
-	    }
-	  else
-	    {
-	      QString destination(baseDir.absolutePath());
-
-	      destination.append(QDir::separator());
-	      destination.append(fileInfo.fileName());
-	      destination.append(".enc");
-	      m_future = QtConcurrent::run
-		(this, &spoton_encryptfile_page::encrypt,
-		 ui.sign->isChecked(),
-		 fileInfo.absoluteFilePath(),
-		 destination,
-		 list,
-		 modeOfOperation);
-	    }
-        }
-
-      ui.cancel->setVisible(false);
-      ui.convert->setEnabled(true);
-      ui.reset->setEnabled(true);
-      ui.progressBar->setVisible(false);
-      ui.status_label->clear();
-    }
-  else
-    {
-      if(ui.decrypt->isChecked())
-	m_future = QtConcurrent::run
-	  (this, &spoton_encryptfile_page::decrypt,
-	   fileInfo.absoluteFilePath(),
-	   destination.absoluteFilePath(),
-	   list,
-	   modeOfOperation);
-      else
-	m_future = QtConcurrent::run
-	  (this, &spoton_encryptfile_page::encrypt,
-	   ui.sign->isChecked(),
-	   fileInfo.absoluteFilePath(),
-	   destination.absoluteFilePath(),
-	   list,
-	   modeOfOperation);
-    }
-
- done_label:
-  m_occupied = false;
-
-  if(!error.isEmpty())
-    ui.status_label->setText(error);
-}
-
 void spoton_encryptfile_page::decrypt(const QString &fileName,
 				      const QString &destination,
 				      const QList<QVariant> &credentials,
@@ -698,6 +494,256 @@ void spoton_encryptfile_page::encrypt(const bool sign,
   emit completed(error);
 }
 
+void spoton_encryptfile_page::slotCancel(void)
+{
+  m_quit = true;
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_future.cancel();
+  m_future.waitForFinished();
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_encryptfile_page::slotCipherTypeChanged(const QString &text)
+{
+#if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
+  Q_UNUSED(text);
+  ui.gcm->setEnabled(false);
+#else
+  if(text == "threefish")
+    {
+      ui.cbc->setChecked(true);
+      ui.gcm->setEnabled(false);
+    }
+  else
+    ui.gcm->setEnabled(true);
+#endif
+}
+
+void spoton_encryptfile_page::slotConvert(void)
+{
+  if(!m_future.isFinished())
+    return;
+
+  QFileInfo destination(ui.destination->text());
+  QFileInfo fileInfo(ui.file->text());
+  QList<QVariant> list;
+  QPair<QByteArray, QByteArray> derivedKeys;
+  QString error("");
+  QString modeOfOperation("");
+  QString password(ui.password->text());
+  QString pin(ui.pin->text());
+
+  if(destination.absoluteFilePath().isEmpty())
+    {
+      error = tr("Please provide a valid destination path.");
+      goto done_label;
+    }
+
+  if(!fileInfo.isReadable())
+    {
+      error = tr("Please provide a valid origin path.");
+      goto done_label;
+    }
+
+  if(ui.file_mode->isChecked())
+    if(destination == fileInfo)
+      {
+	error = tr("The destination and origin should be distinct.");
+	goto done_label;
+      }
+
+  if(password.length() < 16)
+    {
+      error = tr("Please provide a secret that contains at least "
+		 "sixteen characters.");
+      goto done_label;
+    }
+
+  if(pin.isEmpty())
+    {
+      error = tr("Please provide a PIN.");
+      goto done_label;
+    }
+
+  m_occupied = true;
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  ui.status_label->setText
+    (tr("Generating derived keys. Please be patient."));
+  ui.status_label->repaint();
+  derivedKeys = spoton_crypt::derivedKeys
+    (ui.cipher->currentText(),
+     ui.hash->currentText(),
+     static_cast<unsigned long int> (ui.iteration_count->value()),
+     password.toUtf8(),
+     pin.toUtf8(),
+     false,
+     error);
+  ui.status_label->clear();
+  QApplication::restoreOverrideCursor();
+
+  if(!error.isEmpty())
+    {
+      error = tr("An error occurred while deriving keys.");
+      goto done_label;
+    }
+
+  list << ui.cipher->currentText();
+  list << ui.hash->currentText();
+  list << derivedKeys.first;
+  list << derivedKeys.second;
+  list << ui.readSize->currentText();
+  ui.cancel->setVisible(true);
+  ui.convert->setEnabled(false);
+  ui.reset->setEnabled(false);
+  ui.progressBar->setValue(0);
+  ui.progressBar->setVisible(true);
+
+  if(ui.cbc->isChecked())
+    modeOfOperation = "cbc";
+  else
+    modeOfOperation = "gcm";
+
+  m_quit = false;
+
+  if(ui.directory_mode->isChecked())
+    {
+      QStringList filters;
+
+      if(ui.decrypt->isChecked())
+	filters << "*.enc";
+      else
+	filters << "*";
+
+      QDir baseDir(destination.absoluteFilePath());
+      QDir dir(fileInfo.absoluteFilePath());
+      QFileInfoList files(dir.entryInfoList(filters, QDir::Files));
+
+      while(true)
+	{
+	  repaint();
+#ifndef Q_OS_MAC
+	  QApplication::processEvents();
+#endif
+
+	  if(files.isEmpty() || m_quit)
+	    break;
+	  else if(m_future.isRunning())
+	    continue;
+
+	  QFileInfo fileInfo(files.takeFirst());
+
+	  if(ui.decrypt->isChecked())
+	    {
+	      QString destination(baseDir.absolutePath());
+
+	      destination.append(QDir::separator());
+	      destination.append(fileInfo.fileName());
+
+	      if(destination.endsWith(".enc"))
+		destination = destination.mid(0, destination.length() - 4);
+
+	      m_future = QtConcurrent::run
+		(this, &spoton_encryptfile_page::decrypt,
+		 fileInfo.absoluteFilePath(),
+		 destination,
+		 list,
+		 modeOfOperation);
+	    }
+	  else
+	    {
+	      QString destination(baseDir.absolutePath());
+
+	      destination.append(QDir::separator());
+	      destination.append(fileInfo.fileName());
+	      destination.append(".enc");
+	      m_future = QtConcurrent::run
+		(this, &spoton_encryptfile_page::encrypt,
+		 ui.sign->isChecked(),
+		 fileInfo.absoluteFilePath(),
+		 destination,
+		 list,
+		 modeOfOperation);
+	    }
+        }
+
+      ui.cancel->setVisible(false);
+      ui.convert->setEnabled(true);
+      ui.reset->setEnabled(true);
+      ui.progressBar->setVisible(false);
+      ui.status_label->clear();
+    }
+  else
+    {
+      if(ui.decrypt->isChecked())
+	m_future = QtConcurrent::run
+	  (this, &spoton_encryptfile_page::decrypt,
+	   fileInfo.absoluteFilePath(),
+	   destination.absoluteFilePath(),
+	   list,
+	   modeOfOperation);
+      else
+	m_future = QtConcurrent::run
+	  (this, &spoton_encryptfile_page::encrypt,
+	   ui.sign->isChecked(),
+	   fileInfo.absoluteFilePath(),
+	   destination.absoluteFilePath(),
+	   list,
+	   modeOfOperation);
+    }
+
+ done_label:
+  m_occupied = false;
+
+  if(!error.isEmpty())
+    ui.status_label->setText(error);
+}
+
+void spoton_encryptfile_page::slotCompleted(const QString &error)
+{
+  if(ui.directory_mode->isChecked())
+    return;
+
+  ui.cancel->setVisible(false);
+  ui.convert->setEnabled(true);
+  ui.progressBar->setVisible(false);
+  ui.reset->setEnabled(true);
+  ui.status_label->clear();
+
+  if(error.length() == 1)
+    ui.status_label->setText
+      (tr("The conversion process completed successfully. A signature "
+	  "was not discovered."));
+  else if(error.isEmpty())
+    ui.status_label->setText
+      (tr("The conversion process completed successfully."));
+  else
+    ui.status_label->setText(error);
+}
+
+void spoton_encryptfile_page::slotCompleted(const int percentage)
+{
+  ui.progressBar->setValue(percentage);
+}
+
+void spoton_encryptfile_page::slotReset(void)
+{
+  if(!m_future.isFinished())
+    return;
+
+  ui.cbc->setChecked(true);
+  ui.cipher->setCurrentIndex(0);
+  ui.destination->clear();
+  ui.encrypt->setChecked(true);
+  ui.file->clear();
+  ui.file_mode->setChecked(true);
+  ui.hash->setCurrentIndex(0);
+  ui.iteration_count->setValue(ui.iteration_count->minimum());
+  ui.password->clear();
+  ui.pin->clear();
+  ui.readSize->setCurrentIndex(1);
+  ui.sign->setChecked(true);
+}
+
 void spoton_encryptfile_page::slotSelect(void)
 {
   QFileDialog dialog(this);
@@ -745,50 +791,4 @@ void spoton_encryptfile_page::slotSelect(void)
       else
 	ui.destination->setText(dialog.selectedFiles().value(0));
     }
-}
-
-void spoton_encryptfile_page::slotCompleted(const QString &error)
-{
-  if(ui.directory_mode->isChecked())
-    return;
-
-  ui.cancel->setVisible(false);
-  ui.convert->setEnabled(true);
-  ui.progressBar->setVisible(false);
-  ui.reset->setEnabled(true);
-  ui.status_label->clear();
-
-  if(error.length() == 1)
-    ui.status_label->setText
-      (tr("The conversion process completed successfully. A signature "
-	  "was not discovered."));
-  else if(error.isEmpty())
-    ui.status_label->setText
-      (tr("The conversion process completed successfully."));
-  else
-    ui.status_label->setText(error);
-}
-
-void spoton_encryptfile_page::slotCompleted(const int percentage)
-{
-  ui.progressBar->setValue(percentage);
-}
-
-void spoton_encryptfile_page::slotReset(void)
-{
-  if(!m_future.isFinished())
-    return;
-
-  ui.cbc->setChecked(true);
-  ui.cipher->setCurrentIndex(0);
-  ui.destination->clear();
-  ui.encrypt->setChecked(true);
-  ui.file->clear();
-  ui.file_mode->setChecked(true);
-  ui.hash->setCurrentIndex(0);
-  ui.iteration_count->setValue(ui.iteration_count->minimum());
-  ui.password->clear();
-  ui.pin->clear();
-  ui.readSize->setCurrentIndex(1);
-  ui.sign->setChecked(true);
 }
