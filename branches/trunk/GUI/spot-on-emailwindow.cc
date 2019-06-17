@@ -29,9 +29,9 @@
 #include <QPrintPreviewDialog>
 #include <QPrinter>
 
-#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-emailwindow.h"
+#include "spot-on.h"
 
 spoton_emailwindow::spoton_emailwindow
 (const QString &message,

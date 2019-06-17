@@ -30,8 +30,8 @@
 #include <QSettings>
 
 #include "spot-on-defines.h"
-#include "spot-on-encryptfile.h"
 #include "spot-on-encryptfile-page.h"
+#include "spot-on-encryptfile.h"
 #include "spot-on-utilities.h"
 
 spoton_encryptfile::spoton_encryptfile(void):QMainWindow()

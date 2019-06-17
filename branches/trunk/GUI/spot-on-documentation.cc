@@ -29,9 +29,9 @@
 #include <QPrintPreviewDialog>
 #include <QPrinter>
 
-#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-documentation.h"
+#include "spot-on.h"
 
 spoton_documentation::spoton_documentation
 (const QUrl &url, QWidget *parent):QMainWindow(parent)

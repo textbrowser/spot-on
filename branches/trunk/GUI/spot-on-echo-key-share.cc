@@ -32,9 +32,9 @@
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
-#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-echo-key-share.h"
+#include "spot-on.h"
 
 spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 					     QWidget *parent):

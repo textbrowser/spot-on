@@ -32,15 +32,15 @@
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlQuery>
-#include <QtCore>
 #include <QtCore/qmath.h>
+#include <QtCore>
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
-#include "spot-on.h"
 #include "spot-on-buzzpage.h"
 #include "spot-on-defines.h"
+#include "spot-on.h"
 
 spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 				 const QByteArray &channel,

@@ -61,20 +61,15 @@ extern "C"
 #include <QMutex>
 extern "C"
 {
-  int gcry_qthread_init(void)
+  int gcry_qmutex_destroy(void **mutex)
   {
+    delete static_cast<QMutex *> (*mutex);
     return 0;
   }
 
   int gcry_qmutex_init(void **mutex)
   {
     *mutex = static_cast<void *> (new QMutex());
-    return 0;
-  }
-
-  int gcry_qmutex_destroy(void **mutex)
-  {
-    delete static_cast<QMutex *> (*mutex);
     return 0;
   }
 
@@ -102,6 +97,11 @@ extern "C"
       }
     else
       return -1;
+  }
+
+  int gcry_qthread_init(void)
+  {
+    return 0;
   }
 }
 

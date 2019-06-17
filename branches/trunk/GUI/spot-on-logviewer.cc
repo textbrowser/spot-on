@@ -81,17 +81,15 @@ spoton_logviewer::~spoton_logviewer()
   m_timer.stop();
 }
 
-void spoton_logviewer::slotClose(void)
+void spoton_logviewer::keyPressEvent(QKeyEvent *event)
 {
-  close();
-  m_timer.stop();
-}
+  if(event)
+    {
+      if(event->key() == Qt::Key_Escape)
+	close();
+    }
 
-void spoton_logviewer::slotClear(void)
-{
-  QFile::remove
-    (spoton_misc::homePath() + QDir::separator() + "error_log.dat");
-  ui.log->clear();
+  QMainWindow::keyPressEvent(event);
 }
 
 void spoton_logviewer::show(QWidget *parent)
@@ -121,6 +119,43 @@ void spoton_logviewer::show(QWidget *parent)
 
   m_lastModificationTime = QDateTime();
   m_timer.start();
+}
+
+void spoton_logviewer::slotClear(void)
+{
+  QFile::remove
+    (spoton_misc::homePath() + QDir::separator() + "error_log.dat");
+  ui.log->clear();
+}
+
+void spoton_logviewer::slotClose(void)
+{
+  close();
+  m_timer.stop();
+}
+
+void spoton_logviewer::slotEnableLog(bool state)
+{
+  spoton_misc::enableLog(state);
+
+  QSettings settings;
+
+  settings.setValue("gui/guiLogEvents", state);
+}
+
+void spoton_logviewer::slotSetIcons(void)
+{
+  QSettings settings;
+  QString iconSet(settings.value("gui/iconSet", "nuove").toString().
+		  toLower());
+
+  if(!(iconSet == "everaldo" ||
+       iconSet == "meego" ||
+       iconSet == "nouve" ||
+       iconSet == "nuvola"))
+    iconSet = "nouve";
+
+  ui.clear->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
 }
 
 void spoton_logviewer::slotTimeout(void)
@@ -158,39 +193,4 @@ void spoton_logviewer::slotTimeout(void)
 
       file.close();
     }
-}
-
-void spoton_logviewer::keyPressEvent(QKeyEvent *event)
-{
-  if(event)
-    {
-      if(event->key() == Qt::Key_Escape)
-	close();
-    }
-
-  QMainWindow::keyPressEvent(event);
-}
-
-void spoton_logviewer::slotSetIcons(void)
-{
-  QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nuove").toString().
-		  toLower());
-
-  if(!(iconSet == "everaldo" ||
-       iconSet == "meego" ||
-       iconSet == "nouve" ||
-       iconSet == "nuvola"))
-    iconSet = "nouve";
-
-  ui.clear->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
-}
-
-void spoton_logviewer::slotEnableLog(bool state)
-{
-  spoton_misc::enableLog(state);
-
-  QSettings settings;
-
-  settings.setValue("gui/guiLogEvents", state);
 }
