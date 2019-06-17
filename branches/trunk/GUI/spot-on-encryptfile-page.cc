@@ -519,6 +519,33 @@ void spoton_encryptfile_page::slotCipherTypeChanged(const QString &text)
 #endif
 }
 
+void spoton_encryptfile_page::slotCompleted(const QString &error)
+{
+  if(ui.directory_mode->isChecked())
+    return;
+
+  ui.cancel->setVisible(false);
+  ui.convert->setEnabled(true);
+  ui.progressBar->setVisible(false);
+  ui.reset->setEnabled(true);
+  ui.status_label->clear();
+
+  if(error.length() == 1)
+    ui.status_label->setText
+      (tr("The conversion process completed successfully. A signature "
+	  "was not discovered."));
+  else if(error.isEmpty())
+    ui.status_label->setText
+      (tr("The conversion process completed successfully."));
+  else
+    ui.status_label->setText(error);
+}
+
+void spoton_encryptfile_page::slotCompleted(const int percentage)
+{
+  ui.progressBar->setValue(percentage);
+}
+
 void spoton_encryptfile_page::slotConvert(void)
 {
   if(!m_future.isFinished())
@@ -696,33 +723,6 @@ void spoton_encryptfile_page::slotConvert(void)
 
   if(!error.isEmpty())
     ui.status_label->setText(error);
-}
-
-void spoton_encryptfile_page::slotCompleted(const QString &error)
-{
-  if(ui.directory_mode->isChecked())
-    return;
-
-  ui.cancel->setVisible(false);
-  ui.convert->setEnabled(true);
-  ui.progressBar->setVisible(false);
-  ui.reset->setEnabled(true);
-  ui.status_label->clear();
-
-  if(error.length() == 1)
-    ui.status_label->setText
-      (tr("The conversion process completed successfully. A signature "
-	  "was not discovered."));
-  else if(error.isEmpty())
-    ui.status_label->setText
-      (tr("The conversion process completed successfully."));
-  else
-    ui.status_label->setText(error);
-}
-
-void spoton_encryptfile_page::slotCompleted(const int percentage)
-{
-  ui.progressBar->setValue(percentage);
 }
 
 void spoton_encryptfile_page::slotReset(void)
