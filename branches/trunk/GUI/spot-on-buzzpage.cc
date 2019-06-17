@@ -196,20 +196,300 @@ spoton_buzzpage::~spoton_buzzpage()
       }
 }
 
-void spoton_buzzpage::slotSetIcons(void)
+QByteArray spoton_buzzpage::channel(void) const
 {
-  QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nouve").toString().
-		  toLower());
+  return m_channel;
+}
 
-  if(!(iconSet == "everaldo" ||
-       iconSet == "meego" ||
-       iconSet == "nouve" ||
-       iconSet == "nuvola"))
-    iconSet = "nouve";
+QByteArray spoton_buzzpage::channelType(void) const
+{
+  return m_channelType;
+}
 
-  ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
-  ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
+QByteArray spoton_buzzpage::hashKey(void) const
+{
+  return m_hashKeyGenerated.mid(0, 48);
+}
+
+QByteArray spoton_buzzpage::hashType(void) const
+{
+  return m_hashType;
+}
+
+QByteArray spoton_buzzpage::key(void) const
+{
+  return m_key;
+}
+
+QString spoton_buzzpage::magnet(void) const
+{
+  return ui.magnet->text();
+}
+
+void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
+{
+  if(list.size() != 4)
+    return;
+
+  QByteArray id
+    (list.value(1).mid(0, spoton_common::BUZZ_MAXIMUM_ID_LENGTH).trimmed());
+
+  if(id.isEmpty())
+    id = spoton_crypt::
+      strongRandomBytes(spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
+
+  if(id == m_id)
+    /*
+    ** Ignore myself.
+    */
+
+    return;
+
+  QByteArray name
+    (list.value(0).mid(0, spoton_common::NAME_MAXIMUM_LENGTH).trimmed());
+  QByteArray message(list.value(2));
+  QDateTime now(QDateTime::currentDateTime());
+  QDateTime dateTime
+    (QDateTime::fromString(list.value(3).constData(),
+			   "MMddyyyyhhmmss"));
+  QString msg("");
+
+  if(name.isEmpty() || name == "unknown")
+    name = id.mid(0, 16) + "-unknown";
+
+  if(message.isEmpty())
+    message = "unknown";
+
+  msg.append
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]:").
+     arg(now.toString("MM")).
+     arg(now.toString("dd")).
+     arg(now.toString("yyyy")).
+     arg(now.toString("hh")).
+     arg(now.toString("mm")).
+     arg(now.toString("ss")));
+  msg.append
+    (QString("[%1/%2/%3 %4:%5"
+	     "<font color=gray>:%6</font>] ").
+     arg(dateTime.toString("MM")).
+     arg(dateTime.toString("dd")).
+     arg(dateTime.toString("yyyy")).
+     arg(dateTime.toString("hh")).
+     arg(dateTime.toString("mm")).
+     arg(dateTime.toString("ss")));
+  msg.append
+    (QString("<font color=blue>%1: </font>").
+     arg(QString::fromUtf8(name.constData(),
+			   name.length())));
+  msg.append(QString::fromUtf8(message.constData(),
+			       message.length()));
+  ui.messages->append(msg);
+  ui.messages->verticalScrollBar()->setValue
+    (ui.messages->verticalScrollBar()->maximum());
+  emit changed();
+}
+
+void spoton_buzzpage::showUnify(const bool state)
+{
+  ui.unify->setVisible(state);
+}
+
+void spoton_buzzpage::slotBuzzNameChanged(const QByteArray &name)
+{
+  QList<QByteArray> list;
+
+  list << name
+       << m_id
+       << ""; // Artificial date.
+  userStatus(list);
+}
+
+void spoton_buzzpage::slotCopy(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+  else
+    clipboard->setText(ui.magnet->text());
+}
+
+void spoton_buzzpage::slotRemove(void)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is a "
+			       "fatal flaw."));
+      return;
+    }
+
+  QString connectionName("");
+  QString error("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "buzz_channels.db");
+
+    if(db.open())
+      {
+	QByteArray data;
+	QSqlQuery query(db);
+
+	data.append(m_channel.toBase64());
+	data.append("\n");
+	data.append
+	  (QByteArray::number(static_cast<qulonglong> (m_iterationCount)).
+	   toBase64());
+	data.append("\n");
+	data.append(m_channelSalt.toBase64());
+	data.append("\n");
+	data.append(m_channelType.toBase64());
+	data.append("\n");
+	data.append(m_hashKey.toBase64());
+	data.append("\n");
+	data.append(m_hashType.toBase64());
+	data.append("\n");
+	data.append(QByteArray("urn:buzz").toBase64());
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM buzz_channels WHERE "
+		      "data_hash = ?");
+	query.bindValue(0, crypt->keyedHash(data, &ok).toBase64());
+
+	if(ok)
+	  ok = query.exec();
+
+	if(query.lastError().isValid())
+	  error = query.lastError().text();
+      }
+    else
+      {
+	ok = false;
+
+	if(db.lastError().isValid())
+	  error = db.lastError().text();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    {
+      if(error.isEmpty())
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error occurred while attempting to "
+				 "remove the channel data. Please enable "
+				 "logging via the Log Viewer and try again."));
+      else
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error (%1) occurred while attempting to "
+				 "remove the channel data.").arg(error));
+    }
+  else
+    emit channelSaved();
+}
+
+void spoton_buzzpage::slotSave(void)
+{
+  spoton_crypt *crypt = spoton::instance() ?
+    spoton::instance()->crypts().value("chat", 0) : 0;
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      return;
+    }
+
+  spoton::prepareDatabasesFromUI();
+
+  QString connectionName("");
+  QString error("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "buzz_channels.db");
+
+    if(db.open())
+      {
+	QByteArray data;
+	QSqlQuery query(db);
+
+	data.append(m_channel.toBase64());
+	data.append("\n");
+	data.append
+	  (QByteArray::number(static_cast<qulonglong> (m_iterationCount)).
+	   toBase64());
+	data.append("\n");
+	data.append(m_channelSalt.toBase64());
+	data.append("\n");
+	data.append(m_channelType.toBase64());
+	data.append("\n");
+	data.append(m_hashKey.toBase64());
+	data.append("\n");
+	data.append(m_hashType.toBase64());
+	data.append("\n");
+	data.append(QByteArray("urn:buzz").toBase64());
+	query.prepare("INSERT OR REPLACE INTO buzz_channels "
+		      "(data, data_hash) "
+		      "VALUES (?, ?)");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(data, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(1, crypt->keyedHash(data, &ok).toBase64());
+
+	if(ok)
+	  ok = query.exec();
+
+	if(query.lastError().isValid())
+	  error = query.lastError().text();
+      }
+    else
+      {
+	ok = false;
+
+	if(db.lastError().isValid())
+	  error = db.lastError().text();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    {
+      if(error.isEmpty())
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error occurred while attempting to "
+				 "save the channel data. Please enable "
+				 "logging via the Log Viewer and try again."));
+      else
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("An error (%1) occurred while attempting to "
+				 "save the channel data.").arg(error));
+    }
+  else
+    emit channelSaved();
 }
 
 void spoton_buzzpage::slotSendMessage(void)
@@ -318,69 +598,6 @@ void spoton_buzzpage::slotSendMessage(void)
 			  arg(SPOTON_APPLICATION_NAME), error);
 }
 
-void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
-{
-  if(list.size() != 4)
-    return;
-
-  QByteArray id
-    (list.value(1).mid(0, spoton_common::BUZZ_MAXIMUM_ID_LENGTH).trimmed());
-
-  if(id.isEmpty())
-    id = spoton_crypt::
-      strongRandomBytes(spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
-
-  if(id == m_id)
-    /*
-    ** Ignore myself.
-    */
-
-    return;
-
-  QByteArray name
-    (list.value(0).mid(0, spoton_common::NAME_MAXIMUM_LENGTH).trimmed());
-  QByteArray message(list.value(2));
-  QDateTime now(QDateTime::currentDateTime());
-  QDateTime dateTime
-    (QDateTime::fromString(list.value(3).constData(),
-			   "MMddyyyyhhmmss"));
-  QString msg("");
-
-  if(name.isEmpty() || name == "unknown")
-    name = id.mid(0, 16) + "-unknown";
-
-  if(message.isEmpty())
-    message = "unknown";
-
-  msg.append
-    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]:").
-     arg(now.toString("MM")).
-     arg(now.toString("dd")).
-     arg(now.toString("yyyy")).
-     arg(now.toString("hh")).
-     arg(now.toString("mm")).
-     arg(now.toString("ss")));
-  msg.append
-    (QString("[%1/%2/%3 %4:%5"
-	     "<font color=gray>:%6</font>] ").
-     arg(dateTime.toString("MM")).
-     arg(dateTime.toString("dd")).
-     arg(dateTime.toString("yyyy")).
-     arg(dateTime.toString("hh")).
-     arg(dateTime.toString("mm")).
-     arg(dateTime.toString("ss")));
-  msg.append
-    (QString("<font color=blue>%1: </font>").
-     arg(QString::fromUtf8(name.constData(),
-			   name.length())));
-  msg.append(QString::fromUtf8(message.constData(),
-			       message.length()));
-  ui.messages->append(msg);
-  ui.messages->verticalScrollBar()->setValue
-    (ui.messages->verticalScrollBar()->maximum());
-  emit changed();
-}
-
 void spoton_buzzpage::slotSendStatus(void)
 {
   if(!m_kernelSocket)
@@ -425,6 +642,78 @@ void spoton_buzzpage::slotSendStatus(void)
 	       "for %1:%2.").
        arg(m_kernelSocket->peerAddress().toString()).
        arg(m_kernelSocket->peerPort()));
+}
+
+void spoton_buzzpage::slotSetIcons(void)
+{
+  QSettings settings;
+  QString iconSet(settings.value("gui/iconSet", "nouve").toString().
+		  toLower());
+
+  if(!(iconSet == "everaldo" ||
+       iconSet == "meego" ||
+       iconSet == "nouve" ||
+       iconSet == "nuvola"))
+    iconSet = "nouve";
+
+  ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
+}
+
+void spoton_buzzpage::slotStatusTimeout(void)
+{
+  QDateTime now(QDateTime::currentDateTime());
+
+  for(int i = ui.clients->rowCount() - 1; i >= 0; i--)
+    {
+      QTableWidgetItem *item = ui.clients->item(i, 1);
+
+      if(item && item->text() == m_id)
+	continue;
+
+      item = ui.clients->item(i, 2);
+
+      if(item)
+	{
+	  QDateTime dateTime
+	    (QDateTime::fromString(item->text(), Qt::ISODate));
+
+	  if(qAbs(dateTime.secsTo(now)) >= 60)
+	    {
+	      QTableWidgetItem *item = ui.clients->item(i, 0);
+
+	      if(item)
+		{
+		  QDateTime now(QDateTime::currentDateTime());
+		  QString msg("");
+
+		  msg.append
+		    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
+		     arg(now.toString("MM")).
+		     arg(now.toString("dd")).
+		     arg(now.toString("yyyy")).
+		     arg(now.toString("hh")).
+		     arg(now.toString("mm")).
+		     arg(now.toString("ss")));
+		  msg.append(tr("<i>%1 has left %2.</i>").
+			     arg(item->text()).
+			     arg(QString::fromUtf8(m_channel.constData(),
+						   m_channel.length())));
+		  ui.messages->append(msg);
+		  ui.messages->verticalScrollBar()->setValue
+		    (ui.messages->verticalScrollBar()->maximum());
+		  emit changed();
+		}
+
+	      ui.clients->removeRow(i);
+	    }
+	}
+    }
+}
+
+void spoton_buzzpage::unite(void)
+{
+  emit unify();
 }
 
 void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
@@ -547,293 +836,4 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
   ui.clients->setSortingEnabled(true);
   ui.clients->resizeColumnToContents(0);
   ui.clients->horizontalHeader()->setStretchLastSection(true);
-}
-
-void spoton_buzzpage::slotStatusTimeout(void)
-{
-  QDateTime now(QDateTime::currentDateTime());
-
-  for(int i = ui.clients->rowCount() - 1; i >= 0; i--)
-    {
-      QTableWidgetItem *item = ui.clients->item(i, 1);
-
-      if(item && item->text() == m_id)
-	continue;
-
-      item = ui.clients->item(i, 2);
-
-      if(item)
-	{
-	  QDateTime dateTime
-	    (QDateTime::fromString(item->text(), Qt::ISODate));
-
-	  if(qAbs(dateTime.secsTo(now)) >= 60)
-	    {
-	      QTableWidgetItem *item = ui.clients->item(i, 0);
-
-	      if(item)
-		{
-		  QDateTime now(QDateTime::currentDateTime());
-		  QString msg("");
-
-		  msg.append
-		    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
-		     arg(now.toString("MM")).
-		     arg(now.toString("dd")).
-		     arg(now.toString("yyyy")).
-		     arg(now.toString("hh")).
-		     arg(now.toString("mm")).
-		     arg(now.toString("ss")));
-		  msg.append(tr("<i>%1 has left %2.</i>").
-			     arg(item->text()).
-			     arg(QString::fromUtf8(m_channel.constData(),
-						   m_channel.length())));
-		  ui.messages->append(msg);
-		  ui.messages->verticalScrollBar()->setValue
-		    (ui.messages->verticalScrollBar()->maximum());
-		  emit changed();
-		}
-
-	      ui.clients->removeRow(i);
-	    }
-	}
-    }
-}
-
-QByteArray spoton_buzzpage::key(void) const
-{
-  return m_key;
-}
-
-void spoton_buzzpage::slotBuzzNameChanged(const QByteArray &name)
-{
-  QList<QByteArray> list;
-
-  list << name
-       << m_id
-       << ""; // Artificial date.
-  userStatus(list);
-}
-
-void spoton_buzzpage::slotSave(void)
-{
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
-      return;
-    }
-
-  spoton::prepareDatabasesFromUI();
-
-  QString connectionName("");
-  QString error("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "buzz_channels.db");
-
-    if(db.open())
-      {
-	QByteArray data;
-	QSqlQuery query(db);
-
-	data.append(m_channel.toBase64());
-	data.append("\n");
-	data.append
-	  (QByteArray::number(static_cast<qulonglong> (m_iterationCount)).
-	   toBase64());
-	data.append("\n");
-	data.append(m_channelSalt.toBase64());
-	data.append("\n");
-	data.append(m_channelType.toBase64());
-	data.append("\n");
-	data.append(m_hashKey.toBase64());
-	data.append("\n");
-	data.append(m_hashType.toBase64());
-	data.append("\n");
-	data.append(QByteArray("urn:buzz").toBase64());
-	query.prepare("INSERT OR REPLACE INTO buzz_channels "
-		      "(data, data_hash) "
-		      "VALUES (?, ?)");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(data, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue(1, crypt->keyedHash(data, &ok).toBase64());
-
-	if(ok)
-	  ok = query.exec();
-
-	if(query.lastError().isValid())
-	  error = query.lastError().text();
-      }
-    else
-      {
-	ok = false;
-
-	if(db.lastError().isValid())
-	  error = db.lastError().text();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(!ok)
-    {
-      if(error.isEmpty())
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("An error occurred while attempting to "
-				 "save the channel data. Please enable "
-				 "logging via the Log Viewer and try again."));
-      else
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("An error (%1) occurred while attempting to "
-				 "save the channel data.").arg(error));
-    }
-  else
-    emit channelSaved();
-}
-
-void spoton_buzzpage::slotRemove(void)
-{
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is a "
-			       "fatal flaw."));
-      return;
-    }
-
-  QString connectionName("");
-  QString error("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "buzz_channels.db");
-
-    if(db.open())
-      {
-	QByteArray data;
-	QSqlQuery query(db);
-
-	data.append(m_channel.toBase64());
-	data.append("\n");
-	data.append
-	  (QByteArray::number(static_cast<qulonglong> (m_iterationCount)).
-	   toBase64());
-	data.append("\n");
-	data.append(m_channelSalt.toBase64());
-	data.append("\n");
-	data.append(m_channelType.toBase64());
-	data.append("\n");
-	data.append(m_hashKey.toBase64());
-	data.append("\n");
-	data.append(m_hashType.toBase64());
-	data.append("\n");
-	data.append(QByteArray("urn:buzz").toBase64());
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM buzz_channels WHERE "
-		      "data_hash = ?");
-	query.bindValue(0, crypt->keyedHash(data, &ok).toBase64());
-
-	if(ok)
-	  ok = query.exec();
-
-	if(query.lastError().isValid())
-	  error = query.lastError().text();
-      }
-    else
-      {
-	ok = false;
-
-	if(db.lastError().isValid())
-	  error = db.lastError().text();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(!ok)
-    {
-      if(error.isEmpty())
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("An error occurred while attempting to "
-				 "remove the channel data. Please enable "
-				 "logging via the Log Viewer and try again."));
-      else
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("An error (%1) occurred while attempting to "
-				 "remove the channel data.").arg(error));
-    }
-  else
-    emit channelSaved();
-}
-
-QByteArray spoton_buzzpage::channel(void) const
-{
-  return m_channel;
-}
-
-QByteArray spoton_buzzpage::channelType(void) const
-{
-  return m_channelType;
-}
-
-QByteArray spoton_buzzpage::hashKey(void) const
-{
-  return m_hashKeyGenerated.mid(0, 48);
-}
-
-QByteArray spoton_buzzpage::hashType(void) const
-{
-  return m_hashType;
-}
-
-void spoton_buzzpage::slotCopy(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-  else
-    clipboard->setText(ui.magnet->text());
-}
-
-QString spoton_buzzpage::magnet(void) const
-{
-  return ui.magnet->text();
-}
-
-void spoton_buzzpage::showUnify(const bool state)
-{
-  ui.unify->setVisible(state);
-}
-
-void spoton_buzzpage::unite(void)
-{
-  emit unify();
 }
