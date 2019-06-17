@@ -35,10 +35,10 @@
 #include <QStandardItemModel>
 
 #include "Common/spot-on-misc.h"
-#include "spot-on.h"
 #include "spot-on-chatwindow.h"
 #include "spot-on-defines.h"
 #include "spot-on-utilities.h"
+#include "spot-on.h"
 
 spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &id,
@@ -161,31 +161,16 @@ spoton_chatwindow::~spoton_chatwindow()
 {
 }
 
-void spoton_chatwindow::slotSetIcons(void)
-{
-  QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nouve").toString().
-		  toLower());
-
-  if(!(iconSet == "everaldo" ||
-       iconSet == "meego" ||
-       iconSet == "nouve" ||
-       iconSet == "nuvola"))
-    iconSet = "nouve";
-
-  ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
-  ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
-  ui.share->setIcon(QIcon(QString(":/%1/starbeam.png").arg(iconSet)));
-}
-
 QString spoton_chatwindow::id(void) const
 {
   return m_id;
 }
 
-void spoton_chatwindow::closeEvent(QCloseEvent *event)
+void spoton_chatwindow::append(const QString &text)
 {
-  QMainWindow::closeEvent(event);
+  ui.messages->append(text);
+  ui.messages->verticalScrollBar()->setValue
+    (ui.messages->verticalScrollBar()->maximum());
 }
 
 void spoton_chatwindow::center(QWidget *parent)
@@ -193,9 +178,20 @@ void spoton_chatwindow::center(QWidget *parent)
   spoton_utilities::centerWidget(this, parent);
 }
 
-void spoton_chatwindow::slotSendMessage(void)
+void spoton_chatwindow::closeEvent(QCloseEvent *event)
 {
-  sendMessage(0);
+  QMainWindow::closeEvent(event);
+}
+
+void spoton_chatwindow::keyPressEvent(QKeyEvent *event)
+{
+  if(event)
+    {
+      if(event->key() == Qt::Key_Escape)
+	close();
+    }
+
+  QMainWindow::keyPressEvent(event);
 }
 
 void spoton_chatwindow::sendMessage(bool *ok)
@@ -302,7 +298,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
     {
       error = tr("An error occurred while writing to the kernel socket.");
       spoton_misc::logError
-	(QString("spoton_chatwindow::slotSendMessage(): write() failure for "
+	(QString("spoton_chatwindow::sendMessage(): write() failure for "
 		 "%1:%2.").
 	 arg(m_kernelSocket->peerAddress().toString()).
 	 arg(m_kernelSocket->peerPort()));
@@ -358,11 +354,137 @@ void spoton_chatwindow::sendMessage(bool *ok)
     }
 }
 
-void spoton_chatwindow::append(const QString &text)
+void spoton_chatwindow::setName(const QString &name)
 {
-  ui.messages->append(text);
-  ui.messages->verticalScrollBar()->setValue
-    (ui.messages->verticalScrollBar()->maximum());
+  if(!name.trimmed().isEmpty())
+    {
+      setWindowTitle(name.trimmed());
+      ui.name->setText(name.trimmed());
+    }
+  else
+    {
+      if(m_keyType == "chat")
+	{
+	  setWindowTitle("unknown");
+	  ui.name->setText("unknown");
+	}
+      else
+	{
+	  setWindowTitle("unknown@unknown.org");
+	  ui.name->setText("unknown@unknown.org");
+	}
+    }
+}
+
+void spoton_chatwindow::setSMPVerified(const bool state)
+{
+  QDateTime now(QDateTime::currentDateTime());
+
+  if(!state)
+    {
+      ui.smp->setIcon(QIcon(":/generic/smp-unlocked.png"));
+      ui.smp->setToolTip
+	(tr("The Socialist Millionaire Protocol "
+	    "failed on %1.").
+	 arg(now.toString(Qt::ISODate)));
+    }
+  else
+    {
+      ui.smp->setIcon(QIcon(":/generic/smp-locked.png"));
+      ui.smp->setToolTip
+	(tr("The Socialist Millionaire Protocol succeeded on %1.").
+	 arg(now.toString(Qt::ISODate)));
+    }
+}
+
+void spoton_chatwindow::showError(const QString &error)
+{
+  if(error.trimmed().isEmpty())
+    return;
+
+  QMessageBox::critical(this, tr("%1: Error").
+			arg(SPOTON_APPLICATION_NAME), error.trimmed());
+}
+
+void spoton_chatwindow::showNormal(void)
+{
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+  QSettings settings;
+
+  if(settings.value("gui/ontopChatDialogs", false).toBool())
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+  else
+    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+#endif
+  QMainWindow::showNormal();
+}
+
+void spoton_chatwindow::slotDeriveGeminiPairViaSMP(void)
+{
+  emit deriveGeminiPairViaSMP(m_publicKeyHash, m_id);
+}
+
+void spoton_chatwindow::slotInitializeSMP(void)
+{
+  emit initializeSMP(m_publicKeyHash);
+}
+
+void spoton_chatwindow::slotLinkClicked(const QUrl &url)
+{
+  QString scheme(url.scheme().toLower().trimmed());
+
+  if(!(scheme == "ftp" || scheme == "http" || scheme == "https"))
+    return;
+
+  QSettings settings;
+
+  if(!settings.value("gui/openChatUrl", false).toBool())
+    return;
+
+  QMessageBox mb(this);
+  QString str(spoton_misc::urlToEncoded(url).constData());
+
+  if(str.length() > 64)
+    str = str.mid(0, 24) + "..." + str.right(24);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to access %1?").arg(str));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QDesktopServices::openUrl(url);
+}
+
+void spoton_chatwindow::slotPrepareSMP(void)
+{
+  emit prepareSMP(m_publicKeyHash);
+}
+
+void spoton_chatwindow::slotSendMessage(void)
+{
+  sendMessage(0);
+}
+
+void spoton_chatwindow::slotSetIcons(void)
+{
+  QSettings settings;
+  QString iconSet(settings.value("gui/iconSet", "nouve").toString().
+		  toLower());
+
+  if(!(iconSet == "everaldo" ||
+       iconSet == "meego" ||
+       iconSet == "nouve" ||
+       iconSet == "nuvola"))
+    iconSet = "nouve";
+
+  ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
+  ui.share->setIcon(QIcon(QString(":/%1/starbeam.png").arg(iconSet)));
 }
 
 void spoton_chatwindow::slotSetStatus(const QIcon &icon,
@@ -399,80 +521,6 @@ void spoton_chatwindow::slotSetStatus(const QIcon &icon,
 	    }
 	}
     }
-}
-
-void spoton_chatwindow::setName(const QString &name)
-{
-  if(!name.trimmed().isEmpty())
-    {
-      setWindowTitle(name.trimmed());
-      ui.name->setText(name.trimmed());
-    }
-  else
-    {
-      if(m_keyType == "chat")
-	{
-	  setWindowTitle("unknown");
-	  ui.name->setText("unknown");
-	}
-      else
-	{
-	  setWindowTitle("unknown@unknown.org");
-	  ui.name->setText("unknown@unknown.org");
-	}
-    }
-}
-
-void spoton_chatwindow::keyPressEvent(QKeyEvent *event)
-{
-  if(event)
-    {
-      if(event->key() == Qt::Key_Escape)
-	close();
-    }
-
-  QMainWindow::keyPressEvent(event);
-}
-
-void spoton_chatwindow::setSMPVerified(const bool state)
-{
-  QDateTime now(QDateTime::currentDateTime());
-
-  if(!state)
-    {
-      ui.smp->setIcon(QIcon(":/generic/smp-unlocked.png"));
-      ui.smp->setToolTip
-	(tr("The Socialist Millionaire Protocol "
-	    "failed on %1.").
-	 arg(now.toString(Qt::ISODate)));
-    }
-  else
-    {
-      ui.smp->setIcon(QIcon(":/generic/smp-locked.png"));
-      ui.smp->setToolTip
-	(tr("The Socialist Millionaire Protocol succeeded on %1.").
-	 arg(now.toString(Qt::ISODate)));
-    }
-}
-
-void spoton_chatwindow::slotDeriveGeminiPairViaSMP(void)
-{
-  emit deriveGeminiPairViaSMP(m_publicKeyHash, m_id);
-}
-
-void spoton_chatwindow::slotInitializeSMP(void)
-{
-  emit initializeSMP(m_publicKeyHash);
-}
-
-void spoton_chatwindow::slotPrepareSMP(void)
-{
-  emit prepareSMP(m_publicKeyHash);
-}
-
-void spoton_chatwindow::slotVerifySMPSecret(void)
-{
-  emit verifySMPSecret(m_publicKeyHash, m_keyType, m_id);
 }
 
 void spoton_chatwindow::slotShareStarBeam(void)
@@ -692,55 +740,7 @@ void spoton_chatwindow::slotShareStarBeam(void)
     }
 }
 
-void spoton_chatwindow::showError(const QString &error)
+void spoton_chatwindow::slotVerifySMPSecret(void)
 {
-  if(error.trimmed().isEmpty())
-    return;
-
-  QMessageBox::critical(this, tr("%1: Error").
-			arg(SPOTON_APPLICATION_NAME), error.trimmed());
-}
-
-void spoton_chatwindow::showNormal(void)
-{
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
-  QSettings settings;
-
-  if(settings.value("gui/ontopChatDialogs", false).toBool())
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-  else
-    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-#endif
-  QMainWindow::showNormal();
-}
-
-void spoton_chatwindow::slotLinkClicked(const QUrl &url)
-{
-  QString scheme(url.scheme().toLower().trimmed());
-
-  if(!(scheme == "ftp" || scheme == "http" || scheme == "https"))
-    return;
-
-  QSettings settings;
-
-  if(!settings.value("gui/openChatUrl", false).toBool())
-    return;
-
-  QMessageBox mb(this);
-  QString str(spoton_misc::urlToEncoded(url).constData());
-
-  if(str.length() > 64)
-    str = str.mid(0, 24) + "..." + str.right(24);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to access %1?").arg(str));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  QDesktopServices::openUrl(url);
+  emit verifySMPSecret(m_publicKeyHash, m_keyType, m_id);
 }
