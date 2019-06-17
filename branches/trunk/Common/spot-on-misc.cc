@@ -2021,8 +2021,7 @@ bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
   return ok;
 }
 
-bool spoton_misc::isIpBlocked(const QHostAddress &address,
-			      spoton_crypt *crypt)
+bool spoton_misc::isIpBlocked(const QHostAddress &address, spoton_crypt *crypt)
 {
   if(address.isNull())
     {
@@ -2034,8 +2033,7 @@ bool spoton_misc::isIpBlocked(const QHostAddress &address,
     return isIpBlocked(address.toString(), crypt);
 }
 
-bool spoton_misc::isIpBlocked(const QString &address,
-			      spoton_crypt *crypt)
+bool spoton_misc::isIpBlocked(const QString &address, spoton_crypt *crypt)
 {
   if(address.isEmpty())
     {
