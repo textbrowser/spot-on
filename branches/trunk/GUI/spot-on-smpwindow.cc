@@ -30,10 +30,10 @@
 #include <QSettings>
 
 #include "Common/spot-on-crypt.h"
-#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-smpwindow.h"
 #include "spot-on-utilities.h"
+#include "spot-on.h"
 
 spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 {

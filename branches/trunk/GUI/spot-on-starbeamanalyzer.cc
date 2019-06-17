@@ -32,9 +32,9 @@
 #include <QTableWidgetItem>
 #include <QtCore>
 
-#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-starbeamanalyzer.h"
+#include "spot-on.h"
 
 spoton_starbeamanalyzer::spoton_starbeamanalyzer(QWidget *parent):
   QMainWindow(parent)
@@ -102,63 +102,6 @@ spoton_starbeamanalyzer::~spoton_starbeamanalyzer()
       delete pair.first;
       it.remove();
     }
-}
-
-void spoton_starbeamanalyzer::slotClose(void)
-{
-  close();
-}
-
-void spoton_starbeamanalyzer::show(QWidget *parent)
-{
-  showNormal();
-  activateWindow();
-  raise();
-
-  if(parent)
-    {
-      QPoint p(parent->pos());
-      int X = 0;
-      int Y = 0;
-
-      if(parent->width() >= width())
-	X = p.x() + (parent->width() - width()) / 2;
-      else
-	X = p.x() - (width() - parent->width()) / 2;
-
-      if(parent->height() >= height())
-	Y = p.y() + (parent->height() - height()) / 2;
-      else
-	Y = p.y() - (height() - parent->height()) / 2;
-
-      move(X, Y);
-    }
-}
-
-void spoton_starbeamanalyzer::keyPressEvent(QKeyEvent *event)
-{
-  if(event)
-    {
-      if(event->key() == Qt::Key_Escape)
-	close();
-    }
-
-  QMainWindow::keyPressEvent(event);
-}
-
-void spoton_starbeamanalyzer::slotSetIcons(void)
-{
-  QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nuove").toString().
-		  toLower());
-
-  if(!(iconSet == "everaldo" ||
-       iconSet == "meego" ||
-       iconSet == "nouve" ||
-       iconSet == "nuvola"))
-    iconSet = "nouve";
-
-  ui.clear->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
 }
 
 bool spoton_starbeamanalyzer::add(const QString &fileName,
@@ -361,27 +304,75 @@ void spoton_starbeamanalyzer::analyze(const QString &fileName,
     emit updatePercent(fileName, 0);
 }
 
-void spoton_starbeamanalyzer::slotUpdatePercent(const QString &fileName,
-						const int percent)
+void spoton_starbeamanalyzer::keyPressEvent(QKeyEvent *event)
 {
-  QList<QTableWidgetItem *> list
-    (spoton::findItems(ui.tableWidget, fileName, 4));
-
-  if(!list.isEmpty())
+  if(event)
     {
-      QTableWidgetItem *item = ui.tableWidget->item
-	(list.at(0)->row(), 1); // Percent
-
-      if(item)
-	{
-	  if(percent >= 0 && percent <= 100)
-	    item->setText(QString("%1%").arg(percent));
-	  else if(percent < 0)
-	    item->setText("0%");
-	  else
-	    item->setText("100%");
-	}
+      if(event->key() == Qt::Key_Escape)
+	close();
     }
+
+  QMainWindow::keyPressEvent(event);
+}
+
+void spoton_starbeamanalyzer::show(QWidget *parent)
+{
+  showNormal();
+  activateWindow();
+  raise();
+
+  if(parent)
+    {
+      QPoint p(parent->pos());
+      int X = 0;
+      int Y = 0;
+
+      if(parent->width() >= width())
+	X = p.x() + (parent->width() - width()) / 2;
+      else
+	X = p.x() - (width() - parent->width()) / 2;
+
+      if(parent->height() >= height())
+	Y = p.y() + (parent->height() - height()) / 2;
+      else
+	Y = p.y() - (height() - parent->height()) / 2;
+
+      move(X, Y);
+    }
+}
+
+void spoton_starbeamanalyzer::slotCancel(bool state)
+{
+  Q_UNUSED(state);
+
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  if(m_hash.contains(checkBox->property("filename").toString()))
+    {
+      QAtomicInt *interrupt = m_hash
+	[checkBox->property("filename").toString()].first;
+
+      if(interrupt)
+	interrupt->fetchAndStoreOrdered(1);
+    }
+
+  checkBox->setEnabled(false);
+}
+
+void spoton_starbeamanalyzer::slotClose(void)
+{
+  close();
+}
+
+void spoton_starbeamanalyzer::slotCopy(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    clipboard->setText(ui.results->toPlainText());
 }
 
 void spoton_starbeamanalyzer::slotDelete(void)
@@ -412,53 +403,20 @@ void spoton_starbeamanalyzer::slotDelete(void)
   ui.tableWidget->removeRow(row);
 }
 
-void spoton_starbeamanalyzer::slotCancel(bool state)
-{
-  Q_UNUSED(state);
-
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
-
-  if(!checkBox)
-    return;
-
-  if(m_hash.contains(checkBox->property("filename").toString()))
-    {
-      QAtomicInt *interrupt = m_hash
-	[checkBox->property("filename").toString()].first;
-
-      if(interrupt)
-	interrupt->fetchAndStoreOrdered(1);
-    }
-
-  checkBox->setEnabled(false);
-}
-
-void spoton_starbeamanalyzer::slotPotentialProblem(const QString &fileName,
-						   const qint64 pos)
+void spoton_starbeamanalyzer::slotExcessiveProblems(const QString &fileName)
 {
   QList<QTableWidgetItem *> list
     (spoton::findItems(ui.tableWidget, fileName, 4));
 
   if(!list.isEmpty())
     {
-      QTableWidgetItem *item = ui.tableWidget->item
-	(list.at(0)->row(), 1); // Percent
+      QTableWidgetItem *item =
+	ui.tableWidget->item(list.at(0)->row(), 5); // Results
 
       if(item)
-	item->setBackground(QBrush(QColor(240, 128, 128)));
-
-      item = ui.tableWidget->item(list.at(0)->row(), 5); // Results
-
-      if(item)
-	{
-	  QString text(item->text());
-
-	  if(!text.isEmpty())
-	    text.append(",");
-
-	  text.append(QString::number(pos));
-	  item->setText(text);
-	}
+	item->setText
+	  (tr("The number of pulses that are missing is "
+	      "excessive (missing pulses / total pulses >= 75%)."));
     }
 }
 
@@ -497,27 +455,69 @@ void spoton_starbeamanalyzer::slotItemSelected(void)
   ui.results->setText(data);
 }
 
-void spoton_starbeamanalyzer::slotCopy(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    clipboard->setText(ui.results->toPlainText());
-}
-
-void spoton_starbeamanalyzer::slotExcessiveProblems(const QString &fileName)
+void spoton_starbeamanalyzer::slotPotentialProblem(const QString &fileName,
+						   const qint64 pos)
 {
   QList<QTableWidgetItem *> list
     (spoton::findItems(ui.tableWidget, fileName, 4));
 
   if(!list.isEmpty())
     {
-      QTableWidgetItem *item =
-	ui.tableWidget->item(list.at(0)->row(), 5); // Results
+      QTableWidgetItem *item = ui.tableWidget->item
+	(list.at(0)->row(), 1); // Percent
 
       if(item)
-	item->setText
-	  (tr("The number of pulses that are missing is "
-	      "excessive (missing pulses / total pulses >= 75%)."));
+	item->setBackground(QBrush(QColor(240, 128, 128)));
+
+      item = ui.tableWidget->item(list.at(0)->row(), 5); // Results
+
+      if(item)
+	{
+	  QString text(item->text());
+
+	  if(!text.isEmpty())
+	    text.append(",");
+
+	  text.append(QString::number(pos));
+	  item->setText(text);
+	}
+    }
+}
+
+void spoton_starbeamanalyzer::slotSetIcons(void)
+{
+  QSettings settings;
+  QString iconSet(settings.value("gui/iconSet", "nuove").toString().
+		  toLower());
+
+  if(!(iconSet == "everaldo" ||
+       iconSet == "meego" ||
+       iconSet == "nouve" ||
+       iconSet == "nuvola"))
+    iconSet = "nouve";
+
+  ui.clear->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+}
+
+void spoton_starbeamanalyzer::slotUpdatePercent(const QString &fileName,
+						const int percent)
+{
+  QList<QTableWidgetItem *> list
+    (spoton::findItems(ui.tableWidget, fileName, 4));
+
+  if(!list.isEmpty())
+    {
+      QTableWidgetItem *item = ui.tableWidget->item
+	(list.at(0)->row(), 1); // Percent
+
+      if(item)
+	{
+	  if(percent >= 0 && percent <= 100)
+	    item->setText(QString("%1%").arg(percent));
+	  else if(percent < 0)
+	    item->setText("0%");
+	  else
+	    item->setText("100%");
+	}
     }
 }
