@@ -29,8 +29,8 @@
 #include <QMessageBox>
 #include <QNetworkProxy>
 #include <QProgressDialog>
-#include <QSettings>
 #include <QScopedPointer>
+#include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QXmlStreamReader>
@@ -41,10 +41,10 @@
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
-#include "spot-on.h"
 #include "spot-on-pageviewer.h"
 #include "spot-on-rss.h"
 #include "spot-on-utilities.h"
+#include "spot-on.h"
 
 spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
 {
