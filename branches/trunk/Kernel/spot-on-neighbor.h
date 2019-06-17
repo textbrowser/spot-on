@@ -279,9 +279,9 @@ class spoton_neighbor: public QThread
   QAtomicInt m_passthrough;
   QAtomicInt m_useAccounts;
   QAtomicInt m_waitforbyteswritten_msecs;
+  QByteArray m_accountClientSentSalt;
   QByteArray m_accountName;
   QByteArray m_accountPassword;
-  QByteArray m_accountClientSentSalt;
   QByteArray m_data;
   QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;

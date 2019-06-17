@@ -138,8 +138,8 @@ class spoton_kernel: public QObject
   QList<QByteArray> m_urlList;
   QList<QHash<QString, QVariant> > m_poptasticAccounts;
   QQueue<QHash<QString, QVariant> > m_poptasticCache;
-  QReadWriteLock m_poptasticCacheMutex;
   QReadWriteLock m_forwardSecrecyKeysMutex;
+  QReadWriteLock m_poptasticCacheMutex;
   QReadWriteLock m_urlListMutex;
   QReadWriteLock m_urlsProcessedMutex;
   QTimer m_controlDatabaseTimer;
@@ -171,8 +171,8 @@ class spoton_kernel: public QObject
   static QHash<QByteArray, uint> s_emailRequestCache;
   static QHash<QByteArray, uint> s_geminisCache;
   static QHash<QString, QVariant> s_settings;
-  static QMultiMap<uint, QByteArray> s_messagingCacheLookup;
   static QList<QList<QByteArray> > s_institutionKeys;
+  static QMultiMap<uint, QByteArray> s_messagingCacheLookup;
   static QReadWriteLock s_adaptiveEchoPairsMutex;
   static QReadWriteLock s_buzzKeysMutex;
   static QReadWriteLock s_emailRequestCacheMutex;
@@ -256,17 +256,16 @@ class spoton_kernel: public QObject
 				      const qint64 oid);
   void slotDetachNeighbors(const qint64 listenerOid);
   void slotDisconnectNeighbors(const qint64 listenerOid);
-  void slotForwardSecrecyInformationReceivedFromUI
-    (const QByteArrayList &list);
+  void slotForwardSecrecyInformationReceivedFromUI(const QByteArrayList &list);
   void slotForwardSecrecyResponseReceivedFromUI(const QByteArrayList &list);
   void slotImpersonateTimeout(void);
-  void slotMessagingCachePurge(void);
   void slotMessageReceivedFromUI(const qint64 oid,
 				 const QByteArray &name,
 				 const QByteArray &message,
 				 const QByteArray &sequenceNumber,
 				 const QByteArray &utcDate,
 				 const QString &keyType);
+  void slotMessagingCachePurge(void);
   void slotNewNeighbor(QPointer<spoton_neighbor> neighbor);
   void slotPollDatabase(void);
   void slotPoppedMessage(const QByteArray &message);
