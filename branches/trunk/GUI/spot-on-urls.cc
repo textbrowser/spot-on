@@ -40,6 +40,124 @@
 #include "spot-on.h"
 #include "ui_spot-on-postgresql-connect.h"
 
+bool spoton::deleteAllUrls(void)
+{
+  QProgressDialog progress(this);
+  bool deleted = true;
+
+  progress.setLabelText(tr("Deleting URL data... Please be patient."));
+  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMinimum(0);
+  progress.setModal(true);
+  progress.setWindowTitle(tr("%1: Deleting URL Data").
+    arg(SPOTON_APPLICATION_NAME));
+  progress.show();
+  progress.repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QSqlQuery query(m_urlDatabase);
+
+  if(m_urlDatabase.driverName() != "QPSQL")
+    query.exec("PRAGMA secure_delete = ON");
+
+  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
+    for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
+      {
+	if(processed <= progress.maximum())
+	  progress.setValue(processed);
+
+	progress.repaint();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
+
+	if(m_urlDatabase.isOpen())
+	  {
+	    QChar c1;
+	    QChar c2;
+
+	    if(i <= 9)
+	      c1 = QChar(i + 48);
+	    else
+	      c1 = QChar(i + 97 - 10);
+
+	    if(j <= 9)
+	      c2 = QChar(j + 48);
+	    else
+	      c2 = QChar(j + 97 - 10);
+
+	    if(!query.exec(QString("DELETE FROM "
+				   "spot_on_keywords_%1%2").
+			   arg(c1).arg(c2)))
+	      deleted = false;
+
+	    if(!query.exec(QString("DELETE FROM "
+				   "spot_on_urls_%1%2").
+			   arg(c1).arg(c2)))
+	      deleted = false;
+
+	    if(!query.exec(QString("DELETE FROM "
+				   "spot_on_urls_revisions_%1%2").
+			   arg(c1).arg(c2)))
+	      deleted = false;
+	  }
+	else
+	  deleted = false;
+
+	processed += 1;
+      }
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "urls_key_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+
+	if(!query.exec("DELETE FROM import_key_information"))
+	  deleted = false;
+
+	if(!query.exec("DELETE FROM remote_key_information"))
+	  deleted = false;
+      }
+    else
+      deleted = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return deleted;
+}
+
+void spoton::displayUrlImportResults(const QDateTime &then,
+				     const quint64 imported,
+				     const quint64 not_imported,
+				     const quint64 declined)
+{
+  QLocale locale;
+
+  QMessageBox::information
+    (this, tr("%1: Information").
+     arg(SPOTON_APPLICATION_NAME),
+     tr("URLs imported: %1. URLs not imported: %2. "
+	"Some URLs (%3) may have been declined because of distiller rules. "
+	"URLs which were not imported will remain in shared.db. "
+	"The process completed in %4 second(s).").
+     arg(imported).arg(not_imported).arg(declined).
+     arg(locale.toString(qAbs(QDateTime::currentDateTime().secsTo(then)))));
+}
+
 void spoton::prepareUrlLabels(void)
 {
   QString connectionName("");
@@ -110,7 +228,195 @@ void spoton::prepareUrlLabels(void)
       (tr("Common credentials have not been set."));
 }
 
-void spoton::slotPrepareUrlDatabases(void)
+void spoton::saveUrlIniPath(const QString &path)
+{
+  m_settings["gui/urlIniPath"] = path;
+
+  QSettings settings;
+
+  settings.setValue("gui/urlIniPath", path);
+  m_ui.urlIniPath->setText(path);
+  m_ui.urlIniPath->setToolTip(path);
+  m_ui.urlIniPath->selectAll();
+
+  {
+    QSettings settings(path, QSettings::IniFormat);
+
+    for(int i = 0; i < settings.allKeys().size(); i++)
+      {
+	QString key(settings.allKeys().at(i));
+	QVariant value(settings.value(key));
+
+	if(key.toLower().contains("ciphertype"))
+	  {
+	    if(m_ui.urlCipher->findText(value.toString()) >= 0)
+	      m_ui.urlCipher->setCurrentIndex
+		(m_ui.urlCipher->findText(value.toString()));
+	  }
+	else if(key.toLower().contains("hash") &&
+		value.toByteArray().length() >= 64)
+	  m_ui.urlIniHash->setText(value.toByteArray().toHex());
+	else if(key.toLower().contains("hashtype"))
+	  {
+	    if(m_ui.urlHash->findText(value.toString()) >= 0)
+	      m_ui.urlHash->setCurrentIndex
+		(m_ui.urlHash->findText(value.toString()));
+	  }
+	else if(key.toLower().contains("iteration"))
+	  m_ui.urlIteration->setValue(value.toInt());
+	else if(key.toLower().contains("salt") &&
+		value.toByteArray().length() >= 100)
+	  m_ui.urlSalt->setText(value.toByteArray().toHex());
+      }
+  }
+}
+
+void spoton::slotAddDistiller(void)
+{
+  spoton_misc::prepareUrlDistillersDatabase();
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
+
+  QString connectionName("");
+  QString error("");
+  QString scheme("");
+  QUrl url(QUrl::fromUserInput(m_ui.domain->text().trimmed()));
+  bool ok = true;
+
+  if(!(m_ui.downDist->isChecked() ||
+       m_ui.sharedDist->isChecked() ||
+       m_ui.upDist->isChecked()))
+    {
+      error = tr("Please specify at least one direction.");
+      ok = false;
+      goto done_label;
+    }
+  else if(url.isEmpty() || !url.isValid())
+    {
+      error = tr("Invalid domain.");
+      ok = false;
+      goto done_label;
+    }
+
+  scheme = url.scheme().toLower().trimmed();
+  url.setScheme(scheme);
+
+  if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
+    {
+      error = tr("Only ftp, gopher, http, and https schemes are allowed.");
+      ok = false;
+      goto done_label;
+    }
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QByteArray domain
+	  (url.scheme().toLatin1() + "://" +
+	   url.host().toUtf8() + url.path().toUtf8());
+	QSqlQuery query(db);
+	QStringList list;
+
+	if(m_ui.downDist->isChecked())
+	  list << "download";
+
+	if(m_ui.sharedDist->isChecked())
+	  list << "shared";
+
+	if(m_ui.upDist->isChecked())
+	  list << "upload";
+
+	for(int i = 0; i < list.size(); i++)
+	  {
+	    QByteArray permission("accept");
+	    QString direction(list.at(i));
+	    bool ok = true;
+
+	    query.prepare("INSERT INTO distillers "
+			  "(direction, "
+			  "direction_hash, "
+			  "domain, "
+			  "domain_hash, "
+			  "permission) "
+			  "VALUES "
+			  "(?, ?, ?, ?, ?)");
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(direction.toLatin1(),
+					     &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->keyedHash(direction.toLatin1(), &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(2, crypt->encryptedThenHashed(domain, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(3, crypt->keyedHash(domain, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(4, crypt->encryptedThenHashed(permission, &ok).toBase64());
+
+	    if(ok)
+	      ok = query.exec();
+
+	    if(query.lastError().isValid())
+	      {
+		error = query.lastError().text().trimmed();
+		break;
+	      }
+	  }
+      }
+    else
+      {
+	ok = false;
+
+	if(db.lastError().isValid())
+	  error = db.lastError().text();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+ done_label:
+
+  if(ok)
+    {
+      m_ui.domain->clear();
+      populateUrlDistillers();
+    }
+  else if(error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("Unable to add the specified URL domain. "
+			     "Please enable logging via the Log Viewer "
+			     "and try again."));
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error (%1) occurred while attempting "
+			     "to add the specified URL domain.").arg(error));
+}
+
+void spoton::slotCorrectUrlDatabases(void)
 {
   if(!m_urlDatabase.isOpen())
     {
@@ -121,27 +427,37 @@ void spoton::slotPrepareUrlDatabases(void)
       return;
     }
 
-  if(!m_wizardHash.value("accepted", false))
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+
+  if(m_urlDatabase.driverName() == "QPSQL")
+    mb.setText
+      (tr("The database-correction process "
+	  "may require a considerable amount of time to complete. "
+	  "You may experience performance degradation upon completion. "
+	  "The RSS mechanism and the kernel will be deactivated. "
+	  "A brief report will be displayed after the process completes. "
+	  "Proceed?"));
+  else
+    mb.setText
+      (tr("The database-correction process "
+	  "may require a considerable amount of time to complete. "
+	  "The RSS mechanism and the kernel will be deactivated. "
+	  "A brief report will be displayed after the process completes. "
+	  "Proceed?"));
+
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+  else
     {
-      QMessageBox mb(this);
-
-      mb.setIcon(QMessageBox::Question);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Please note that the database-preparation process may "
-		    "require a considerable amount of time to complete. "
-		    "The RSS mechanism and the kernel will be deactivated. "
-		    "Proceed?"));
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-      if(mb.exec() != QMessageBox::Yes)
-	return;
-      else
-	{
-	  m_rss->deactivate();
-	  slotDeactivateKernel();
-	}
+      m_rss->deactivate();
+      slotDeactivateKernel();
     }
 
   repaint();
@@ -150,33 +466,33 @@ void spoton::slotPrepareUrlDatabases(void)
 #endif
 
   QProgressDialog progress(this);
-  bool created = true;
 
-  progress.setLabelText(tr("Creating URL databases. Please be patient."));
+  progress.setLabelText(tr("Deleting orphaned URL keywords. "
+			   "Please be patient."));
   progress.setMaximum(10 * 10 + 6 * 6);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Creating URL Databases").
+  progress.setWindowTitle(tr("%1: Deleting Orphaned URL Keywords").
     arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.repaint();
 #ifndef Q_OS_MAC
   QApplication::processEvents();
 #endif
-  created = spoton_misc::prepareUrlDistillersDatabase();
 
-  if(created)
-    created = spoton_misc::prepareUrlKeysDatabase();
+  QSqlQuery query1(m_urlDatabase);
+  QSqlQuery query2(m_urlDatabase);
+  QSqlQuery query3(m_urlDatabase);
+  qint64 deleted = 0;
 
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
+  query1.setForwardOnly(true);
+  query2.setForwardOnly(true);
 
-  QSqlQuery query(m_urlDatabase);
-
-  if(m_urlDatabase.driverName() == "QSQLITE")
-    query.exec("PRAGMA journal_mode = OFF");
+  if(m_urlDatabase.driverName() != "QPSQL")
+    {
+      query2.exec("PRAGMA secure_delete = ON");
+      query3.exec("PRAGMA secure_delete = ON");
+    }
 
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
@@ -189,153 +505,75 @@ void spoton::slotPrepareUrlDatabases(void)
 	QApplication::processEvents();
 #endif
 
-	if(m_urlDatabase.isOpen())
-	  {
-	    QChar c1;
-	    QChar c2;
+	QChar c1;
+	QChar c2;
 
-	    if(i <= 9)
-	      c1 = QChar(i + 48);
-	    else
-	      c1 = QChar(i + 97 - 10);
-
-	    if(j <= 9)
-	      c2 = QChar(j + 48);
-	    else
-	      c2 = QChar(j + 97 - 10);
-
-	    progress.setLabelText
-	      (tr("Creating spot_on_keywords_%1%2. "
-		  "Please be patient.").arg(c1).arg(c2));
-
-	    if(m_urlDatabase.driverName() == "QPSQL")
-	      {
-		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
-				       "spot_on_keywords_%1%2 ("
-				       "keyword_hash TEXT NOT NULL, "
-				       "url_hash TEXT NOT NULL, "
-				       "PRIMARY KEY "
-				       "(keyword_hash, url_hash))").
-			       arg(c1).arg(c2)))
-		  created = false;
-
-		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
-				       "spot_on_keywords_%1%2 TO "
-				       "spot_on_user").
-			       arg(c1).arg(c2)))
-		  created = false;
-	      }
-	    else
-	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
-				     "spot_on_keywords_%1%2 ("
-				     "keyword_hash TEXT NOT NULL, "
-				     "url_hash TEXT NOT NULL, "
-				     "PRIMARY KEY (keyword_hash, url_hash))").
-			     arg(c1).arg(c2)))
-		created = false;
-
-	    progress.setLabelText
-	      (tr("Creating spot_on_urls_%1%2. "
-		  "Please be patient.").arg(c1).arg(c2));
-
-	    if(m_urlDatabase.driverName() == "QPSQL")
-	      {
-		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
-				       "spot_on_urls_%1%2 ("
-				       "content BYTEA NOT NULL, "
-				       "date_time_inserted TEXT NOT NULL, "
-				       "description BYTEA, "
-				       "title BYTEA NOT NULL, "
-				       "unique_id BIGINT UNIQUE, "
-				       "url BYTEA NOT NULL, "
-				       "url_hash TEXT PRIMARY KEY NOT NULL)").
-			       arg(c1).arg(c2)))
-		  created = false;
-
-		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
-				       "spot_on_urls_%1%2 TO "
-				       "spot_on_user").
-			       arg(c1).arg(c2)))
-		  created = false;
-	      }
-	    else
-	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
-				     "spot_on_urls_%1%2 ("
-				     "content BLOB NOT NULL, "
-				     "date_time_inserted TEXT NOT NULL, "
-				     "description BLOB, "
-				     "title BLOB NOT NULL, "
-				     "unique_id INTEGER NOT NULL, "
-				     "url BLOB NOT NULL, "
-				     "url_hash TEXT PRIMARY KEY NOT NULL)").
-			     arg(c1).arg(c2)))
-		created = false;
-
-	    progress.setLabelText
-	      (tr("Creating spot_on_urls_revisions_%1%2. "
-		  "Please be patient.").arg(c1).arg(c2));
-
-	    if(m_urlDatabase.driverName() == "QPSQL")
-	      {
-		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
-				       "spot_on_urls_revisions_%1%2 ("
-				       "content BYTEA NOT NULL, "
-				       "content_hash TEXT NOT NULL, "
-				       "date_time_inserted TEXT NOT NULL, "
-				       "url_hash TEXT NOT NULL, "
-				       "PRIMARY KEY (content_hash, url_hash), "
-				       "FOREIGN KEY(url_hash) REFERENCES "
-				       "spot_on_urls_%1%2(url_hash) ON "
-				       "DELETE CASCADE)").
-			       arg(c1).arg(c2)))
-		  created = false;
-
-		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
-				       "spot_on_urls_revisions_%1%2 TO "
-				       "spot_on_user").
-			       arg(c1).arg(c2)))
-		  created = false;
-	      }
-	    else
-	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
-				     "spot_on_urls_revisions_%1%2 ("
-				     "content BYTEA NOT NULL, "
-				     "content_hash TEXT NOT NULL, "
-				     "date_time_inserted TEXT NOT NULL, "
-				     "url_hash TEXT NOT NULL, "
-				     "PRIMARY KEY "
-				     "(content_hash, url_hash))").
-			     arg(c1).arg(c2)))
-		created = false;
-	  }
+	if(i <= 9)
+	  c1 = QChar(i + 48);
 	else
-	  created = false;
+	  c1 = QChar(i + 97 - 10);
+
+	if(j <= 9)
+	  c2 = QChar(j + 48);
+	else
+	  c2 = QChar(j + 97 - 10);
+
+	progress.setLabelText
+	  (tr("Reviewing spot_on_keywords_%1%2 for orphaned entries. "
+	      "Please be patient.").arg(c1).arg(c2));
+	query1.prepare
+	  (QString("SELECT url_hash FROM "
+		   "spot_on_keywords_%1%2").arg(c1).arg(c2));
+
+	if(query1.exec())
+	  {
+	    while(query1.next())
+	      if(!m_urlPrefixes.contains(query1.value(0).toString().mid(0, 2)))
+		{
+		  if(progress.wasCanceled())
+		    break;
+
+		  query2.prepare
+		    (QString("DELETE FROM "
+			     "spot_on_keywords_%1%2 WHERE "
+			     "url_hash = ?").
+		     arg(c1).arg(c2));
+		  query2.bindValue(0, query1.value(0));
+
+		  if(query2.exec())
+		    deleted += 1;
+		}
+	      else
+		{
+		  if(progress.wasCanceled())
+		    break;
+
+		  query2.prepare
+		    (QString("SELECT EXISTS(SELECT 1 FROM "
+			     "spot_on_urls_%1 WHERE "
+			     "url_hash = ?)").
+		     arg(query1.value(0).toString().mid(0, 2)));
+		  query2.bindValue(0, query1.value(0));
+
+		  if(query2.exec())
+		    if(query2.next())
+		      if(!query2.value(0).toBool())
+			{
+			  query3.prepare
+			    (QString("DELETE FROM "
+				     "spot_on_keywords_%1%2 WHERE "
+				     "url_hash = ?").
+			     arg(c1).arg(c2));
+			  query3.bindValue(0, query1.value(0));
+
+			  if(query3.exec())
+			    deleted += 1;
+			}
+		}
+	  }
 
 	processed += 1;
       }
-
-  if(created)
-    {
-      if(m_urlDatabase.driverName() == "QPSQL")
-	{
-	  if(!query.exec("CREATE SEQUENCE IF NOT EXISTS serial START 1"))
-	    created = false;
-
-	  if(!query.exec("GRANT SELECT, UPDATE, USAGE ON serial "
-			 "TO spot_on_user"))
-	    created = false;
-	}
-      else
-	{
-	  if(!query.exec("CREATE TABLE IF NOT EXISTS sequence("
-			 "value INTEGER NOT NULL PRIMARY KEY "
-			 "AUTOINCREMENT)"))
-	    created = false;
-	}
-    }
-
-  if(m_urlDatabase.driverName() == "QSQLITE")
-    query.exec("PRAGMA journal_mode = DELETE");
 
   progress.close();
   repaint();
@@ -343,11 +581,13 @@ void spoton::slotPrepareUrlDatabases(void)
   QApplication::processEvents();
 #endif
 
-  if(!created)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("One or more errors occurred while attempting "
-			     "to create the URL databases."));
+  QLocale locale;
+
+  QMessageBox::information
+    (this, tr("%1: Information").
+     arg(SPOTON_APPLICATION_NAME),
+     tr("Approximate orphaned keyword entries deleted: %1.").
+     arg(locale.toString(deleted)));
 }
 
 void spoton::slotDeleteAllUrls(void)
@@ -398,6 +638,75 @@ void spoton::slotDeleteAllUrls(void)
 			     "attempting to delete the URL data. "
 			     "Please verify that you have correct "
 			     "administrator privileges."));
+}
+
+void spoton::slotDeleteUrlDistillers(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QModelIndexList list;
+  QString direction("");
+
+  if(m_ui.urlTab->currentIndex() == 0)
+    {
+      direction = "download";
+      list = m_ui.downDistillers->selectionModel()->selectedRows(0);
+    }
+  else if(m_ui.urlTab->currentIndex() == 1)
+    {
+      direction = "shared";
+      list = m_ui.sharedDistillers->selectionModel()->selectedRows(0);
+    }
+  else
+    {
+      direction = "upload";
+      list = m_ui.upDistillers->selectionModel()->selectedRows(0);
+    }
+
+  if(list.isEmpty())
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      while(!list.isEmpty())
+	{
+	  QSqlQuery query(db);
+	  QString str(list.takeFirst().data().toString());
+	  bool ok = true;
+
+	  query.exec("PRAGMA secure_delete = ON");
+	  query.prepare("DELETE FROM distillers WHERE "
+			"direction_hash = ? AND domain_hash = ?");
+	  query.bindValue
+	    (0, crypt->keyedHash(direction.toLatin1(),
+				 &ok).toBase64());
+
+	  if(ok)
+	    query.bindValue(1, crypt->keyedHash(str.toUtf8(),
+						&ok).toBase64());
+
+	  if(ok)
+	    query.exec();
+	}
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+  populateUrlDistillers();
 }
 
 void spoton::slotDropUrlTables(void)
@@ -518,106 +827,6 @@ void spoton::slotDropUrlTables(void)
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("One or more errors occurred while "
 			     "attempting to destroy the URL tables."));
-}
-
-bool spoton::deleteAllUrls(void)
-{
-  QProgressDialog progress(this);
-  bool deleted = true;
-
-  progress.setLabelText(tr("Deleting URL data... Please be patient."));
-  progress.setMaximum(10 * 10 + 6 * 6);
-  progress.setMinimum(0);
-  progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Deleting URL Data").
-    arg(SPOTON_APPLICATION_NAME));
-  progress.show();
-  progress.repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QSqlQuery query(m_urlDatabase);
-
-  if(m_urlDatabase.driverName() != "QPSQL")
-    query.exec("PRAGMA secure_delete = ON");
-
-  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
-    for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
-      {
-	if(processed <= progress.maximum())
-	  progress.setValue(processed);
-
-	progress.repaint();
-#ifndef Q_OS_MAC
-	QApplication::processEvents();
-#endif
-
-	if(m_urlDatabase.isOpen())
-	  {
-	    QChar c1;
-	    QChar c2;
-
-	    if(i <= 9)
-	      c1 = QChar(i + 48);
-	    else
-	      c1 = QChar(i + 97 - 10);
-
-	    if(j <= 9)
-	      c2 = QChar(j + 48);
-	    else
-	      c2 = QChar(j + 97 - 10);
-
-	    if(!query.exec(QString("DELETE FROM "
-				   "spot_on_keywords_%1%2").
-			   arg(c1).arg(c2)))
-	      deleted = false;
-
-	    if(!query.exec(QString("DELETE FROM "
-				   "spot_on_urls_%1%2").
-			   arg(c1).arg(c2)))
-	      deleted = false;
-
-	    if(!query.exec(QString("DELETE FROM "
-				   "spot_on_urls_revisions_%1%2").
-			   arg(c1).arg(c2)))
-	      deleted = false;
-	  }
-	else
-	  deleted = false;
-
-	processed += 1;
-      }
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "urls_key_information.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-
-	if(!query.exec("DELETE FROM import_key_information"))
-	  deleted = false;
-
-	if(!query.exec("DELETE FROM remote_key_information"))
-	  deleted = false;
-      }
-    else
-      deleted = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return deleted;
 }
 
 void spoton::slotGatherUrlStatistics(void)
@@ -992,227 +1201,6 @@ void spoton::slotImportUrls(void)
   displayUrlImportResults(now, imported, not_imported, declined);
 }
 
-void spoton::displayUrlImportResults(const QDateTime &then,
-				     const quint64 imported,
-				     const quint64 not_imported,
-				     const quint64 declined)
-{
-  QLocale locale;
-
-  QMessageBox::information
-    (this, tr("%1: Information").
-     arg(SPOTON_APPLICATION_NAME),
-     tr("URLs imported: %1. URLs not imported: %2. "
-	"Some URLs (%3) may have been declined because of distiller rules. "
-	"URLs which were not imported will remain in shared.db. "
-	"The process completed in %4 second(s).").
-     arg(imported).arg(not_imported).arg(declined).
-     arg(locale.toString(qAbs(QDateTime::currentDateTime().secsTo(then)))));
-}
-
-void spoton::slotShowUrlSettings(bool state)
-{
-  m_ui.urlSettings->setVisible(state);
-  m_ui.urlsBox->setVisible(!state);
-
-  if(!state)
-    m_ui.urls_settings_layout->addWidget(m_ui.importUrls);
-  else
-    m_ui.urls_import_layout->addWidget(m_ui.importUrls);
-}
-
-void spoton::slotSelectUrlIniPath(void)
-{
-  QFileDialog dialog(this);
-
-  dialog.setWindowTitle
-    (tr("%1: Select INI Path").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-  dialog.setFilter(QDir::AllEntries | QDir::Hidden);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  if(dialog.exec() == QDialog::Accepted)
-    saveUrlIniPath(dialog.selectedFiles().value(0));
-}
-
-void spoton::saveUrlIniPath(const QString &path)
-{
-  m_settings["gui/urlIniPath"] = path;
-
-  QSettings settings;
-
-  settings.setValue("gui/urlIniPath", path);
-  m_ui.urlIniPath->setText(path);
-  m_ui.urlIniPath->setToolTip(path);
-  m_ui.urlIniPath->selectAll();
-
-  {
-    QSettings settings(path, QSettings::IniFormat);
-
-    for(int i = 0; i < settings.allKeys().size(); i++)
-      {
-	QString key(settings.allKeys().at(i));
-	QVariant value(settings.value(key));
-
-	if(key.toLower().contains("ciphertype"))
-	  {
-	    if(m_ui.urlCipher->findText(value.toString()) >= 0)
-	      m_ui.urlCipher->setCurrentIndex
-		(m_ui.urlCipher->findText(value.toString()));
-	  }
-	else if(key.toLower().contains("hash") &&
-		value.toByteArray().length() >= 64)
-	  m_ui.urlIniHash->setText(value.toByteArray().toHex());
-	else if(key.toLower().contains("hashtype"))
-	  {
-	    if(m_ui.urlHash->findText(value.toString()) >= 0)
-	      m_ui.urlHash->setCurrentIndex
-		(m_ui.urlHash->findText(value.toString()));
-	  }
-	else if(key.toLower().contains("iteration"))
-	  m_ui.urlIteration->setValue(value.toInt());
-	else if(key.toLower().contains("salt") &&
-		value.toByteArray().length() >= 100)
-	  m_ui.urlSalt->setText(value.toByteArray().toHex());
-      }
-  }
-}
-
-void spoton::slotSetUrlIniPath(void)
-{
-  saveUrlIniPath(m_ui.urlIniPath->text());
-}
-
-void spoton::slotVerify(void)
-{
-  QByteArray computedHash;
-  QByteArray salt
-    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
-  QByteArray saltedPassphraseHash
-    (QByteArray::fromHex(m_ui.urlIniHash->text().toLatin1()));
-  QString error("");
-  bool ok = false;
-
-  computedHash = spoton_crypt::saltedPassphraseHash
-    (m_ui.urlHash->currentText(), m_ui.urlPassphrase->text(), salt, error);
-
-  if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
-     spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
-    if(error.isEmpty())
-      ok = true;
-
-  if(ok)
-    QMessageBox::information
-      (this, tr("%1: Information").
-       arg(SPOTON_APPLICATION_NAME),
-       tr("The provided credentials are correct. Please save the "
-	  "information!"));
-  else
-    QMessageBox::critical
-      (this, tr("%1: Error").
-       arg(SPOTON_APPLICATION_NAME),
-       tr("The provided credentials are incorrect."));
-}
-
-void spoton::slotSaveUrlCredentials(void)
-{
-  QByteArray salt
-    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
-  QPair<QByteArray, QByteArray> keys;
-  QString error("");
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
-      goto done_label;
-    }
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  keys = spoton_crypt::derivedKeys
-    (m_ui.urlCipher->currentText(),
-     m_ui.urlHash->currentText(),
-     static_cast<unsigned long int> (m_ui.urlIteration->value()),
-     m_ui.urlPassphrase->text(),
-     salt,
-     64, // Dooble 1.x.
-     false,
-     error);
-  QApplication::restoreOverrideCursor();
-
-  if(error.isEmpty())
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() +
-	   "urls_key_information.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-	    bool ok = true;
-
-	    query.prepare
-	      ("INSERT OR REPLACE INTO import_key_information "
-	       "(cipher_type, symmetric_key) "
-	       "VALUES (?, ?)");
-	    query.bindValue
-	      (0, crypt->encryptedThenHashed(m_ui.urlCipher->currentText().
-					     toLatin1(),
-					     &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(1, crypt->
-		 encryptedThenHashed(keys.first, &ok).toBase64());
-
-	    if(ok)
-	      {
-		if(!query.exec())
-		  error = tr
-		    ("Database write error. "
-		     "Is urls_key_information.db properly defined?");
-	      }
-	    else
-	      error = tr("An error occurred with "
-			 "spoton_crypt::encryptedThenHashed().");
-	  }
-	else
-	  error = tr("Unable to access urls_key_information.db.");
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-  else
-    error = tr("Key generation failure.");
-
- done_label:
-
-  if(!error.isEmpty())
-    QMessageBox::critical(this,
-			  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			  error);
-  else
-    {
-      m_ui.urlCipher->setCurrentIndex(0);
-      m_ui.urlHash->setCurrentIndex(0);
-      m_ui.urlIniHash->clear();
-      m_ui.urlIteration->setValue(10000);
-      m_ui.urlPassphrase->clear();
-      m_ui.urlSalt->clear();
-      prepareUrlLabels();
-    }
-}
-
 void spoton::slotPostgreSQLConnect(void)
 {
   if(m_ui.postgresqlConnect->property("user_text").toString() == "disconnect")
@@ -1356,6 +1344,251 @@ void spoton::slotPostgreSQLConnect(void)
   while(true);
 }
 
+void spoton::slotPrepareUrlDatabases(void)
+{
+  if(!m_urlDatabase.isOpen())
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please connect to a URL database."));
+      return;
+    }
+
+  if(!m_wizardHash.value("accepted", false))
+    {
+      QMessageBox mb(this);
+
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Please note that the database-preparation process may "
+		    "require a considerable amount of time to complete. "
+		    "The RSS mechanism and the kernel will be deactivated. "
+		    "Proceed?"));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+      else
+	{
+	  m_rss->deactivate();
+	  slotDeactivateKernel();
+	}
+    }
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QProgressDialog progress(this);
+  bool created = true;
+
+  progress.setLabelText(tr("Creating URL databases. Please be patient."));
+  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMinimum(0);
+  progress.setModal(true);
+  progress.setWindowTitle(tr("%1: Creating URL Databases").
+    arg(SPOTON_APPLICATION_NAME));
+  progress.show();
+  progress.repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  created = spoton_misc::prepareUrlDistillersDatabase();
+
+  if(created)
+    created = spoton_misc::prepareUrlKeysDatabase();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QSqlQuery query(m_urlDatabase);
+
+  if(m_urlDatabase.driverName() == "QSQLITE")
+    query.exec("PRAGMA journal_mode = OFF");
+
+  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
+    for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
+      {
+	if(processed <= progress.maximum())
+	  progress.setValue(processed);
+
+	progress.repaint();
+#ifndef Q_OS_MAC
+	QApplication::processEvents();
+#endif
+
+	if(m_urlDatabase.isOpen())
+	  {
+	    QChar c1;
+	    QChar c2;
+
+	    if(i <= 9)
+	      c1 = QChar(i + 48);
+	    else
+	      c1 = QChar(i + 97 - 10);
+
+	    if(j <= 9)
+	      c2 = QChar(j + 48);
+	    else
+	      c2 = QChar(j + 97 - 10);
+
+	    progress.setLabelText
+	      (tr("Creating spot_on_keywords_%1%2. "
+		  "Please be patient.").arg(c1).arg(c2));
+
+	    if(m_urlDatabase.driverName() == "QPSQL")
+	      {
+		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
+				       "spot_on_keywords_%1%2 ("
+				       "keyword_hash TEXT NOT NULL, "
+				       "url_hash TEXT NOT NULL, "
+				       "PRIMARY KEY "
+				       "(keyword_hash, url_hash))").
+			       arg(c1).arg(c2)))
+		  created = false;
+
+		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
+				       "spot_on_keywords_%1%2 TO "
+				       "spot_on_user").
+			       arg(c1).arg(c2)))
+		  created = false;
+	      }
+	    else
+	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
+				     "spot_on_keywords_%1%2 ("
+				     "keyword_hash TEXT NOT NULL, "
+				     "url_hash TEXT NOT NULL, "
+				     "PRIMARY KEY (keyword_hash, url_hash))").
+			     arg(c1).arg(c2)))
+		created = false;
+
+	    progress.setLabelText
+	      (tr("Creating spot_on_urls_%1%2. "
+		  "Please be patient.").arg(c1).arg(c2));
+
+	    if(m_urlDatabase.driverName() == "QPSQL")
+	      {
+		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
+				       "spot_on_urls_%1%2 ("
+				       "content BYTEA NOT NULL, "
+				       "date_time_inserted TEXT NOT NULL, "
+				       "description BYTEA, "
+				       "title BYTEA NOT NULL, "
+				       "unique_id BIGINT UNIQUE, "
+				       "url BYTEA NOT NULL, "
+				       "url_hash TEXT PRIMARY KEY NOT NULL)").
+			       arg(c1).arg(c2)))
+		  created = false;
+
+		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
+				       "spot_on_urls_%1%2 TO "
+				       "spot_on_user").
+			       arg(c1).arg(c2)))
+		  created = false;
+	      }
+	    else
+	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
+				     "spot_on_urls_%1%2 ("
+				     "content BLOB NOT NULL, "
+				     "date_time_inserted TEXT NOT NULL, "
+				     "description BLOB, "
+				     "title BLOB NOT NULL, "
+				     "unique_id INTEGER NOT NULL, "
+				     "url BLOB NOT NULL, "
+				     "url_hash TEXT PRIMARY KEY NOT NULL)").
+			     arg(c1).arg(c2)))
+		created = false;
+
+	    progress.setLabelText
+	      (tr("Creating spot_on_urls_revisions_%1%2. "
+		  "Please be patient.").arg(c1).arg(c2));
+
+	    if(m_urlDatabase.driverName() == "QPSQL")
+	      {
+		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
+				       "spot_on_urls_revisions_%1%2 ("
+				       "content BYTEA NOT NULL, "
+				       "content_hash TEXT NOT NULL, "
+				       "date_time_inserted TEXT NOT NULL, "
+				       "url_hash TEXT NOT NULL, "
+				       "PRIMARY KEY (content_hash, url_hash), "
+				       "FOREIGN KEY(url_hash) REFERENCES "
+				       "spot_on_urls_%1%2(url_hash) ON "
+				       "DELETE CASCADE)").
+			       arg(c1).arg(c2)))
+		  created = false;
+
+		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
+				       "spot_on_urls_revisions_%1%2 TO "
+				       "spot_on_user").
+			       arg(c1).arg(c2)))
+		  created = false;
+	      }
+	    else
+	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
+				     "spot_on_urls_revisions_%1%2 ("
+				     "content BYTEA NOT NULL, "
+				     "content_hash TEXT NOT NULL, "
+				     "date_time_inserted TEXT NOT NULL, "
+				     "url_hash TEXT NOT NULL, "
+				     "PRIMARY KEY "
+				     "(content_hash, url_hash))").
+			     arg(c1).arg(c2)))
+		created = false;
+	  }
+	else
+	  created = false;
+
+	processed += 1;
+      }
+
+  if(created)
+    {
+      if(m_urlDatabase.driverName() == "QPSQL")
+	{
+	  if(!query.exec("CREATE SEQUENCE IF NOT EXISTS serial START 1"))
+	    created = false;
+
+	  if(!query.exec("GRANT SELECT, UPDATE, USAGE ON serial "
+			 "TO spot_on_user"))
+	    created = false;
+	}
+      else
+	{
+	  if(!query.exec("CREATE TABLE IF NOT EXISTS sequence("
+			 "value INTEGER NOT NULL PRIMARY KEY "
+			 "AUTOINCREMENT)"))
+	    created = false;
+	}
+    }
+
+  if(m_urlDatabase.driverName() == "QSQLITE")
+    query.exec("PRAGMA journal_mode = DELETE");
+
+  progress.close();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  if(!created)
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("One or more errors occurred while attempting "
+			     "to create the URL databases."));
+}
+
+void spoton::slotRefreshUrlDistillers(void)
+{
+  populateUrlDistillers();
+}
+
 void spoton::slotSaveCommonUrlCredentials(void)
 {
   QPair<QByteArray, QByteArray> keys;
@@ -1431,149 +1664,164 @@ void spoton::slotSaveCommonUrlCredentials(void)
     }
 }
 
-void spoton::slotAddDistiller(void)
+void spoton::slotSaveUrlCredentials(void)
 {
-  spoton_misc::prepareUrlDistillersDatabase();
-
+  QByteArray salt
+    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
+  QPair<QByteArray, QByteArray> keys;
+  QString error("");
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
-      return;
-    }
-
-  QString connectionName("");
-  QString error("");
-  QString scheme("");
-  QUrl url(QUrl::fromUserInput(m_ui.domain->text().trimmed()));
-  bool ok = true;
-
-  if(!(m_ui.downDist->isChecked() ||
-       m_ui.sharedDist->isChecked() ||
-       m_ui.upDist->isChecked()))
-    {
-      error = tr("Please specify at least one direction.");
-      ok = false;
-      goto done_label;
-    }
-  else if(url.isEmpty() || !url.isValid())
-    {
-      error = tr("Invalid domain.");
-      ok = false;
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
       goto done_label;
     }
 
-  scheme = url.scheme().toLower().trimmed();
-  url.setScheme(scheme);
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  keys = spoton_crypt::derivedKeys
+    (m_ui.urlCipher->currentText(),
+     m_ui.urlHash->currentText(),
+     static_cast<unsigned long int> (m_ui.urlIteration->value()),
+     m_ui.urlPassphrase->text(),
+     salt,
+     64, // Dooble 1.x.
+     false,
+     error);
+  QApplication::restoreOverrideCursor();
 
-  if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
+  if(error.isEmpty())
     {
-      error = tr("Only ftp, gopher, http, and https schemes are allowed.");
-      ok = false;
-      goto done_label;
-    }
+      QString connectionName("");
 
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
-
-    if(db.open())
       {
-	QByteArray domain
-	  (url.scheme().toLatin1() + "://" +
-	   url.host().toUtf8() + url.path().toUtf8());
-	QSqlQuery query(db);
-	QStringList list;
+	QSqlDatabase db = spoton_misc::database(connectionName);
 
-	if(m_ui.downDist->isChecked())
-	  list << "download";
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() +
+	   "urls_key_information.db");
 
-	if(m_ui.sharedDist->isChecked())
-	  list << "shared";
-
-	if(m_ui.upDist->isChecked())
-	  list << "upload";
-
-	for(int i = 0; i < list.size(); i++)
+	if(db.open())
 	  {
-	    QByteArray permission("accept");
-	    QString direction(list.at(i));
+	    QSqlQuery query(db);
 	    bool ok = true;
 
-	    query.prepare("INSERT INTO distillers "
-			  "(direction, "
-			  "direction_hash, "
-			  "domain, "
-			  "domain_hash, "
-			  "permission) "
-			  "VALUES "
-			  "(?, ?, ?, ?, ?)");
+	    query.prepare
+	      ("INSERT OR REPLACE INTO import_key_information "
+	       "(cipher_type, symmetric_key) "
+	       "VALUES (?, ?)");
 	    query.bindValue
-	      (0, crypt->encryptedThenHashed(direction.toLatin1(),
+	      (0, crypt->encryptedThenHashed(m_ui.urlCipher->currentText().
+					     toLatin1(),
 					     &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(1, crypt->keyedHash(direction.toLatin1(), &ok).toBase64());
+		(1, crypt->
+		 encryptedThenHashed(keys.first, &ok).toBase64());
 
 	    if(ok)
-	      query.bindValue
-		(2, crypt->encryptedThenHashed(domain, &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(3, crypt->keyedHash(domain, &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(4, crypt->encryptedThenHashed(permission, &ok).toBase64());
-
-	    if(ok)
-	      ok = query.exec();
-
-	    if(query.lastError().isValid())
 	      {
-		error = query.lastError().text().trimmed();
-		break;
+		if(!query.exec())
+		  error = tr
+		    ("Database write error. "
+		     "Is urls_key_information.db properly defined?");
 	      }
+	    else
+	      error = tr("An error occurred with "
+			 "spoton_crypt::encryptedThenHashed().");
 	  }
-      }
-    else
-      {
-	ok = false;
+	else
+	  error = tr("Unable to access urls_key_information.db.");
 
-	if(db.lastError().isValid())
-	  error = db.lastError().text();
+	db.close();
       }
 
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+  else
+    error = tr("Key generation failure.");
 
  done_label:
 
-  if(ok)
-    {
-      m_ui.domain->clear();
-      populateUrlDistillers();
-    }
-  else if(error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("Unable to add the specified URL domain. "
-			     "Please enable logging via the Log Viewer "
-			     "and try again."));
+  if(!error.isEmpty())
+    QMessageBox::critical(this,
+			  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+			  error);
   else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error (%1) occurred while attempting "
-			     "to add the specified URL domain.").arg(error));
+    {
+      m_ui.urlCipher->setCurrentIndex(0);
+      m_ui.urlHash->setCurrentIndex(0);
+      m_ui.urlIniHash->clear();
+      m_ui.urlIteration->setValue(10000);
+      m_ui.urlPassphrase->clear();
+      m_ui.urlSalt->clear();
+      prepareUrlLabels();
+    }
+}
+
+void spoton::slotSelectUrlIniPath(void)
+{
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle
+    (tr("%1: Select INI Path").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setFilter(QDir::AllEntries | QDir::Hidden);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  if(dialog.exec() == QDialog::Accepted)
+    saveUrlIniPath(dialog.selectedFiles().value(0));
+}
+
+void spoton::slotSetUrlIniPath(void)
+{
+  saveUrlIniPath(m_ui.urlIniPath->text());
+}
+
+void spoton::slotShowUrlSettings(bool state)
+{
+  m_ui.urlSettings->setVisible(state);
+  m_ui.urlsBox->setVisible(!state);
+
+  if(!state)
+    m_ui.urls_settings_layout->addWidget(m_ui.importUrls);
+  else
+    m_ui.urls_import_layout->addWidget(m_ui.importUrls);
+}
+
+void spoton::slotVerify(void)
+{
+  QByteArray computedHash;
+  QByteArray salt
+    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
+  QByteArray saltedPassphraseHash
+    (QByteArray::fromHex(m_ui.urlIniHash->text().toLatin1()));
+  QString error("");
+  bool ok = false;
+
+  computedHash = spoton_crypt::saltedPassphraseHash
+    (m_ui.urlHash->currentText(), m_ui.urlPassphrase->text(), salt, error);
+
+  if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
+     spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
+    if(error.isEmpty())
+      ok = true;
+
+  if(ok)
+    QMessageBox::information
+      (this, tr("%1: Information").
+       arg(SPOTON_APPLICATION_NAME),
+       tr("The provided credentials are correct. Please save the "
+	  "information!"));
+  else
+    QMessageBox::critical
+      (this, tr("%1: Error").
+       arg(SPOTON_APPLICATION_NAME),
+       tr("The provided credentials are incorrect."));
 }
 
 void spoton::populateUrlDistillers(void)
@@ -1696,80 +1944,6 @@ void spoton::populateUrlDistillers(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotRefreshUrlDistillers(void)
-{
-  populateUrlDistillers();
-}
-
-void spoton::slotDeleteUrlDistillers(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QModelIndexList list;
-  QString direction("");
-
-  if(m_ui.urlTab->currentIndex() == 0)
-    {
-      direction = "download";
-      list = m_ui.downDistillers->selectionModel()->selectedRows(0);
-    }
-  else if(m_ui.urlTab->currentIndex() == 1)
-    {
-      direction = "shared";
-      list = m_ui.sharedDistillers->selectionModel()->selectedRows(0);
-    }
-  else
-    {
-      direction = "upload";
-      list = m_ui.upDistillers->selectionModel()->selectedRows(0);
-    }
-
-  if(list.isEmpty())
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
-
-    if(db.open())
-      while(!list.isEmpty())
-	{
-	  QSqlQuery query(db);
-	  QString str(list.takeFirst().data().toString());
-	  bool ok = true;
-
-	  query.exec("PRAGMA secure_delete = ON");
-	  query.prepare("DELETE FROM distillers WHERE "
-			"direction_hash = ? AND domain_hash = ?");
-	  query.bindValue
-	    (0, crypt->keyedHash(direction.toLatin1(),
-				 &ok).toBase64());
-
-	  if(ok)
-	    query.bindValue(1, crypt->keyedHash(str.toUtf8(),
-						&ok).toBase64());
-
-	  if(ok)
-	    query.exec();
-	}
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-  populateUrlDistillers();
 }
 
 void spoton::slotUrlLinkClicked(const QUrl &u)
@@ -2297,178 +2471,4 @@ void spoton::slotUrlPolarizerTypeChange(int index)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotCorrectUrlDatabases(void)
-{
-  if(!m_urlDatabase.isOpen())
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Please connect to a URL database."));
-      return;
-    }
-
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-
-  if(m_urlDatabase.driverName() == "QPSQL")
-    mb.setText
-      (tr("The database-correction process "
-	  "may require a considerable amount of time to complete. "
-	  "You may experience performance degradation upon completion. "
-	  "The RSS mechanism and the kernel will be deactivated. "
-	  "A brief report will be displayed after the process completes. "
-	  "Proceed?"));
-  else
-    mb.setText
-      (tr("The database-correction process "
-	  "may require a considerable amount of time to complete. "
-	  "The RSS mechanism and the kernel will be deactivated. "
-	  "A brief report will be displayed after the process completes. "
-	  "Proceed?"));
-
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-  else
-    {
-      m_rss->deactivate();
-      slotDeactivateKernel();
-    }
-
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QProgressDialog progress(this);
-
-  progress.setLabelText(tr("Deleting orphaned URL keywords. "
-			   "Please be patient."));
-  progress.setMaximum(10 * 10 + 6 * 6);
-  progress.setMinimum(0);
-  progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Deleting Orphaned URL Keywords").
-    arg(SPOTON_APPLICATION_NAME));
-  progress.show();
-  progress.repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QSqlQuery query1(m_urlDatabase);
-  QSqlQuery query2(m_urlDatabase);
-  QSqlQuery query3(m_urlDatabase);
-  qint64 deleted = 0;
-
-  query1.setForwardOnly(true);
-  query2.setForwardOnly(true);
-
-  if(m_urlDatabase.driverName() != "QPSQL")
-    {
-      query2.exec("PRAGMA secure_delete = ON");
-      query3.exec("PRAGMA secure_delete = ON");
-    }
-
-  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
-    for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
-      {
-	if(processed <= progress.maximum())
-	  progress.setValue(processed);
-
-	progress.repaint();
-#ifndef Q_OS_MAC
-	QApplication::processEvents();
-#endif
-
-	QChar c1;
-	QChar c2;
-
-	if(i <= 9)
-	  c1 = QChar(i + 48);
-	else
-	  c1 = QChar(i + 97 - 10);
-
-	if(j <= 9)
-	  c2 = QChar(j + 48);
-	else
-	  c2 = QChar(j + 97 - 10);
-
-	progress.setLabelText
-	  (tr("Reviewing spot_on_keywords_%1%2 for orphaned entries. "
-	      "Please be patient.").arg(c1).arg(c2));
-	query1.prepare
-	  (QString("SELECT url_hash FROM "
-		   "spot_on_keywords_%1%2").arg(c1).arg(c2));
-
-	if(query1.exec())
-	  {
-	    while(query1.next())
-	      if(!m_urlPrefixes.contains(query1.value(0).toString().mid(0, 2)))
-		{
-		  if(progress.wasCanceled())
-		    break;
-
-		  query2.prepare
-		    (QString("DELETE FROM "
-			     "spot_on_keywords_%1%2 WHERE "
-			     "url_hash = ?").
-		     arg(c1).arg(c2));
-		  query2.bindValue(0, query1.value(0));
-
-		  if(query2.exec())
-		    deleted += 1;
-		}
-	      else
-		{
-		  if(progress.wasCanceled())
-		    break;
-
-		  query2.prepare
-		    (QString("SELECT EXISTS(SELECT 1 FROM "
-			     "spot_on_urls_%1 WHERE "
-			     "url_hash = ?)").
-		     arg(query1.value(0).toString().mid(0, 2)));
-		  query2.bindValue(0, query1.value(0));
-
-		  if(query2.exec())
-		    if(query2.next())
-		      if(!query2.value(0).toBool())
-			{
-			  query3.prepare
-			    (QString("DELETE FROM "
-				     "spot_on_keywords_%1%2 WHERE "
-				     "url_hash = ?").
-			     arg(c1).arg(c2));
-			  query3.bindValue(0, query1.value(0));
-
-			  if(query3.exec())
-			    deleted += 1;
-			}
-		}
-	  }
-
-	processed += 1;
-      }
-
-  progress.close();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QLocale locale;
-
-  QMessageBox::information
-    (this, tr("%1: Information").
-     arg(SPOTON_APPLICATION_NAME),
-     tr("Approximate orphaned keyword entries deleted: %1.").
-     arg(locale.toString(deleted)));
 }
