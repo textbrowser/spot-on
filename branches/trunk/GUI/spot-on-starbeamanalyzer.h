@@ -48,15 +48,19 @@ class spoton_starbeamanalyzer: public QMainWindow
  public:
   spoton_starbeamanalyzer(QWidget *parent);
   ~spoton_starbeamanalyzer();
-  bool add(const QString &fileName, const QString &oid,
-	   const QString &pulseSize, const QString &totalSize);
+  bool add(const QString &fileName,
+	   const QString &oid,
+	   const QString &pulseSize,
+	   const QString &totalSize);
   void show(QWidget *parent);
 
  private:
   QHash<QString, QPair<QAtomicInt *, QFuture<void> > > m_hash;
   Ui_spoton_starbeamanalyzer ui;
-  void analyze(const QString &fileName, const QString &pulseSize,
-	       const QString &totalSize, QAtomicInt *interrupt);
+  void analyze(const QString &fileName,
+	       const QString &pulseSize,
+	       const QString &totalSize,
+	       QAtomicInt *interrupt);
   void keyPressEvent(QKeyEvent *event);
 
  private slots:
