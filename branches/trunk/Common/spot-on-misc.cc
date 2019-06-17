@@ -101,8 +101,10 @@ quint64 spoton_misc::s_dbId = 0;
 
 QByteArray spoton_misc::findPublicKeyHashGivenHash
 (const QByteArray &randomBytes,
- const QByteArray &hash, const QByteArray &hashKey,
- const QByteArray &hashType, spoton_crypt *crypt)
+ const QByteArray &hash,
+ const QByteArray &hashKey,
+ const QByteArray &hashType,
+ spoton_crypt *crypt)
 {
   /*
   ** Locate the public key's hash of the public key whose

@@ -4356,9 +4356,10 @@ void spoton_crypt::purgePrivatePublicKeys(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_crypt::reencodePrivatePublicKeys
-(spoton_crypt *newCrypt, spoton_crypt *oldCrypt, const QString &id,
- QString &error)
+void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
+					     spoton_crypt *oldCrypt,
+					     const QString &id,
+					     QString &error)
 {
   if(!newCrypt)
     {

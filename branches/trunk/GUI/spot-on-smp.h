@@ -64,7 +64,8 @@ class spoton_smp
 			     const int version,
 			     bool *ok) const;
   QList<QByteArray> nextStep(const QList<QByteArray> &other,
-			     bool *ok, bool *passed);
+			     bool *ok,
+			     bool *passed);
   QList<QByteArray> step1(bool *ok);
 
   QString guessString(void) const
@@ -122,7 +123,6 @@ class spoton_smp
   gcry_mpi_t m_pb;
   gcry_mpi_t m_qab;
   gcry_mpi_t m_qb;
-  gcry_mpi_t generateRandomExponent(bool *ok) const;
   int m_step;
   size_t m_guessWhirlLength;
   static const int TERMINAL_STATE = -1;
@@ -131,6 +131,7 @@ class spoton_smp
   QList<QByteArray> step4(const QList<QByteArray> &other,
 			  bool *ok,
 			  bool *passed);
+  gcry_mpi_t generateRandomExponent(bool *ok) const;
   void reset(void);
   void step5(const QList<QByteArray> &other, bool *ok, bool *passed);
 };

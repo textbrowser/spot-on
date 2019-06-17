@@ -404,7 +404,8 @@ QList<QByteArray> spoton_smp::logProof(const gcry_mpi_t g,
 }
 
 QList<QByteArray> spoton_smp::nextStep(const QList<QByteArray> &other,
-				       bool *ok, bool *passed)
+				       bool *ok,
+				       bool *passed)
 {
   /*
   ** A submits the first exchange and transitions to the first state.
@@ -554,8 +555,7 @@ QList<QByteArray> spoton_smp::step1(bool *ok)
   return list;
 }
 
-QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
-				    bool *ok)
+QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other, bool *ok)
 {
   QByteArray bytes;
   QList<QByteArray> list;
@@ -816,8 +816,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other,
   return list;
 }
 
-QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
-				    bool *ok)
+QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other, bool *ok)
 {
   QByteArray bytes;
   QList<QByteArray> list;
@@ -1082,7 +1081,8 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other,
 }
 
 QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
-				    bool *ok, bool *passed)
+				    bool *ok,
+				    bool *passed)
 {
   QByteArray bytes;
   QList<QByteArray> list;
