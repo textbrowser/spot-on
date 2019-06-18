@@ -28,33 +28,6 @@
 #include "spot-on-defines.h"
 #include "spot-on.h"
 
-void spoton::slotDiscover(void)
-{
-  m_ui.searchfor->clear();
-  m_ui.urls->clear();
-  m_ui.url_pages->setText("| 1 |");
-
-  if(!m_urlCommonCrypt)
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Did you prepare common credentials?"));
-      return;
-    }
-
-  if(!m_urlDatabase.isOpen())
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Please connect to a URL database."));
-      return;
-    }
-
-  discoverUrls();
-}
-
 void spoton::discoverUrls(void)
 {
   if(!m_urlCommonCrypt)
@@ -539,6 +512,33 @@ void spoton::showUrls(const QString &link, const QString &querystr)
     m_ui.url_pages->setText("| 1 |");
   else
     m_ui.url_pages->setText(str);
+}
+
+void spoton::slotDiscover(void)
+{
+  m_ui.searchfor->clear();
+  m_ui.urls->clear();
+  m_ui.url_pages->setText("| 1 |");
+
+  if(!m_urlCommonCrypt)
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Did you prepare common credentials?"));
+      return;
+    }
+
+  if(!m_urlDatabase.isOpen())
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please connect to a URL database."));
+      return;
+    }
+
+  discoverUrls();
 }
 
 void spoton::slotPageClicked(const QString &link)
