@@ -26,29 +26,13 @@
 */
 
 #include <QAuthenticator>
-#include <QDateTime>
-#include <QDir>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QSslCipher>
-#include <QSslConfiguration>
 #include <QSslKey>
-#include <QtCore/qmath.h>
 
-#include <limits>
-
-#include "Common/spot-on-common.h"
-#include "Common/spot-on-external-address.h"
-#include "Common/spot-on-misc.h"
-#include "Common/spot-on-receive.h"
 #include "spot-on-kernel.h"
 #include "spot-on-mailer.h"
 #include "spot-on-neighbor.h"
-
-extern "C"
-{
-#include "libSpotOn/libspoton.h"
-}
 
 extern "C"
 {
