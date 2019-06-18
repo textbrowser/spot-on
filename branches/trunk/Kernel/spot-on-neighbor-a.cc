@@ -1121,6 +1121,530 @@ spoton_neighbor::~spoton_neighbor()
   wait();
 }
 
+void spoton_neighbor::slotConnected(void)
+{
+  if(m_sctpSocket)
+    spoton_socket_options::setSocketOptions
+      (m_socketOptions,
+       m_transport,
+       static_cast<qint64> (m_sctpSocket->socketDescriptor()),
+       0);
+  else if(m_tcpSocket)
+    spoton_socket_options::setSocketOptions
+      (m_socketOptions,
+       m_transport,
+       static_cast<qint64> (m_tcpSocket->socketDescriptor()),
+       0);
+  else if(m_udpSocket)
+    if(m_isUserDefined)
+      {
+	spoton_socket_options::setSocketOptions
+	  (m_socketOptions,
+	   m_transport,
+	   static_cast<qint64> (m_udpSocket->socketDescriptor()),
+	   0);
+
+	QHostAddress address(m_address);
+
+	address.setScopeId(m_scopeId);
+	m_udpSocket->initializeMulticast(address, m_port, m_socketOptions);
+
+	if(m_udpSocket->multicastSocket())
+	  connect(m_udpSocket->multicastSocket(),
+		  SIGNAL(readyRead(void)),
+		  this,
+		  SLOT(slotReadyRead(void)),
+		  Qt::UniqueConnection);
+      }
+
+  /*
+  ** The local address is the address of the proxy. Unfortunately,
+  ** we do not have a network interface that has such an address.
+  ** Hence, m_networkInterface will always be zero. The object
+  ** m_networkInterface was removed on 11/08/2013. The following
+  ** logic remains.
+  */
+
+  if(m_tcpSocket)
+    {
+      if(m_tcpSocket->proxy().type() != QNetworkProxy::NoProxy)
+	{
+	  QHostAddress address(m_ipAddress);
+
+	  if(address.protocol() == QAbstractSocket::IPv4Protocol)
+	    m_tcpSocket->setLocalAddress(QHostAddress("127.0.0.1"));
+	  else
+	    m_tcpSocket->setLocalAddress(QHostAddress("::1"));
+	}
+    }
+  else if(m_udpSocket)
+    {
+      if(m_udpSocket->proxy().type() != QNetworkProxy::NoProxy)
+	{
+	  QHostAddress address(m_ipAddress);
+
+	  if(address.protocol() == QAbstractSocket::IPv4Protocol)
+	    m_udpSocket->setLocalAddress(QHostAddress("127.0.0.1"));
+	  else
+	    m_udpSocket->setLocalAddress(QHostAddress("::1"));
+	}
+    }
+
+  if(m_id != -1)
+    {
+      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+      if(s_crypt)
+	{
+	  QString connectionName("");
+
+	  {
+	    QSqlDatabase db = spoton_misc::database(connectionName);
+
+	    db.setDatabaseName
+	      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
+
+	    if(db.open())
+	      {
+		QSqlQuery query(db);
+		QString country("Unknown");
+
+		if(m_sctpSocket)
+		  country = spoton_misc::countryNameFromIPAddress
+		    (m_sctpSocket->peerAddress().isNull() ?
+		     m_sctpSocket->peerName() :
+		     m_sctpSocket->peerAddress().
+		     toString());
+		else if(m_tcpSocket)
+		  country = spoton_misc::countryNameFromIPAddress
+		    (m_tcpSocket->peerAddress().isNull() ?
+		     m_tcpSocket->peerName() :
+		     m_tcpSocket->peerAddress().
+		     toString());
+		else if(m_udpSocket)
+		  country = spoton_misc::countryNameFromIPAddress
+		    (m_udpSocket->peerAddress().isNull() ?
+		     m_udpSocket->peerName() :
+		     m_udpSocket->peerAddress().
+		     toString());
+
+		bool ok = true;
+
+		query.prepare("UPDATE neighbors SET country = ?, "
+			      "is_encrypted = ?, "
+			      "local_ip_address = ?, "
+			      "local_port = ?, qt_country_hash = ?, "
+			      "status = 'connected' "
+			      "WHERE OID = ?");
+		query.bindValue
+		  (0, s_crypt->
+		   encryptedThenHashed(country.toLatin1(), &ok).toBase64());
+		query.bindValue(1, isEncrypted() ? 1 : 0);
+
+		if(m_bluetoothSocket)
+		  {
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+		    query.bindValue
+		      (2, m_bluetoothSocket->localAddress().toString());
+		    query.bindValue
+		      (3, m_bluetoothSocket->localPort());
+#endif
+		  }
+		else if(m_sctpSocket)
+		  {
+		    query.bindValue
+		      (2, m_sctpSocket->localAddress().toString());
+		    query.bindValue(3, m_sctpSocket->localPort());
+		  }
+		else if(m_tcpSocket)
+		  {
+		    query.bindValue
+		      (2, m_tcpSocket->localAddress().toString());
+		    query.bindValue(3, m_tcpSocket->localPort());
+		  }
+		else if(m_udpSocket)
+		  {
+		    query.bindValue
+		      (2, m_udpSocket->localAddress().toString());
+		    query.bindValue(3, m_udpSocket->localPort());
+		  }
+
+		if(ok)
+		  query.bindValue
+		    (4, s_crypt->keyedHash(country.remove(" ").
+					   toLatin1(), &ok).
+		     toBase64());
+
+		query.bindValue(5, m_id);
+
+		if(ok)
+		  query.exec();
+	      }
+
+	    db.close();
+	  }
+
+	  QSqlDatabase::removeDatabase(connectionName);
+	}
+    }
+
+  /*
+  ** Initial discovery of the external IP address.
+  */
+
+  if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).toInt() != -1)
+    {
+      if(m_externalAddress)
+	{
+	  m_externalAddress->discover();
+	  m_externalAddressDiscovererTimer.start();
+	}
+      else
+	m_externalAddressDiscovererTimer.stop();
+    }
+  else
+    {
+      if(m_externalAddress)
+	m_externalAddress->clear();
+
+      m_externalAddressDiscovererTimer.stop();
+    }
+
+  m_lastReadTime = QDateTime::currentDateTime();
+
+  if(!m_keepAliveTimer.isActive())
+    m_keepAliveTimer.start();
+
+  if(m_useAccounts.fetchAndAddOrdered(0))
+    if(!m_useSsl)
+      {
+	m_accountTimer.start();
+	m_authenticationTimer.start();
+      }
+
+  if(!m_useSsl)
+    QTimer::singleShot(250, this, SLOT(slotSendCapabilities(void)));
+
+  QTimer::singleShot(30000, this, SLOT(slotSendMOTD(void)));
+}
+
+void spoton_neighbor::slotLifetimeExpired(void)
+{
+  emit notification
+    (QString("The neighbor %1:%2 generated a fatal error (%3).").
+     arg(m_address).arg(m_port).arg("lifetime expired"));
+  spoton_misc::logError
+    (QString("spoton_neighbor::slotLifetimeExpired(): "
+	     "expiration time reached for %1:%2. Aborting socket.").
+     arg(m_address).
+     arg(m_port));
+  deleteLater();
+}
+
+void spoton_neighbor::slotReadyRead(void)
+{
+  if(m_abort.fetchAndAddOrdered(0))
+    return;
+
+  QByteArray data;
+
+  if(m_bluetoothSocket)
+    {
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+      data = m_bluetoothSocket->readAll();
+#endif
+    }
+  else if(m_sctpSocket)
+    data = m_sctpSocket->readAll();
+  else if(m_tcpSocket)
+    data = m_tcpSocket->readAll();
+  else if(m_udpSocket)
+    {
+      data = m_udpSocket->readAll();
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      if(m_dtls && m_isUserDefined)
+	{
+	  m_bytesRead += static_cast<quint64> (data.length());
+
+	  if(m_dtls->isConnectionEncrypted())
+	    data = m_dtls->decryptDatagram(m_udpSocket, data);
+	  else
+	    {
+	      if(!m_dtls->doHandshake(m_udpSocket, data))
+		spoton_misc::logError
+		  (QString("spoton_neighbor::slotReadyRead(): "
+			   "DTLS error (%1) for %2:%3.").
+		   arg(m_dtls->dtlsErrorString()).
+		   arg(m_address).
+		   arg(m_port));
+
+	      return;
+	    }
+
+	  goto next_label;
+	}
+#endif
+
+      while(m_udpSocket->multicastSocket() &&
+	    m_udpSocket->multicastSocket()->hasPendingDatagrams())
+	{
+	  QByteArray datagram;
+	  qint64 size = qMax
+	    (static_cast<qint64> (0),
+	     m_udpSocket->multicastSocket()->pendingDatagramSize());
+
+	  datagram.resize(static_cast<int> (size));
+	  size = m_udpSocket->multicastSocket()->readDatagram
+	    (datagram.data(), size);
+
+	  if(size > 0)
+	    data.append(datagram.mid(0, static_cast<int> (size)));
+	}
+    }
+
+  m_bytesRead += static_cast<quint64> (data.length());
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+ next_label:
+#endif
+
+  {
+    QWriteLocker locker
+      (&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
+
+    spoton_kernel::s_totalNeighborsBytesReadWritten.first +=
+      static_cast<quint64> (data.length());
+  }
+
+  if(!data.isEmpty() && !isEncrypted() && m_useSsl)
+    {
+      data.clear();
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotReadyRead(): "
+		 "m_useSsl is true, however, isEncrypted() "
+		 "is false "
+		 "for %1:%2. "
+		 "Purging read data.").
+	 arg(m_address).
+	 arg(m_port));
+    }
+
+  if(!data.isEmpty())
+    if(m_passthrough)
+      {
+	/*
+	** A private application may not be able to authenticate.
+	*/
+
+	if(!m_privateApplicationCredentials.isEmpty())
+	  {
+	    if(m_isUserDefined)
+	      {
+		QMutexLocker locker(&m_privateApplicationMutex);
+		quint64 sequence = m_privateApplicationSequences.first;
+
+		m_privateApplicationSequences.first += 1;
+		locker.unlock();
+		m_privateApplicationFutures << QtConcurrent::run
+		  (this,
+		   &spoton_neighbor::bundlePrivateApplicationData,
+		   data,
+		   m_privateApplicationCredentials,
+		   m_id,
+		   sequence);
+	      }
+	    else
+	      {
+		QMutexLocker locker(&m_privateApplicationMutex);
+		quint64 sequence = m_privateApplicationSequences.second;
+
+		m_privateApplicationSequences.second += 1;
+		locker.unlock();
+		m_privateApplicationFutures << QtConcurrent::run
+		  (this,
+		   &spoton_neighbor::bundlePrivateApplicationData,
+		   data,
+		   m_privateApplicationCredentials,
+		   m_id,
+		   sequence);
+	      }
+
+	    return;
+	  }
+
+	bool ok = true;
+
+	if(m_useAccounts.fetchAndAddOrdered(0))
+	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
+	    ok = false;
+
+	if(ok)
+	  {
+	    /*
+	    ** We cannot safely inspect duplicate bytes.
+	    ** For example, an 'a' followed by another 'a' may
+	    ** be acceptable.
+	    */
+
+	    emit receivedMessage(data, m_id, QPair<QByteArray, QByteArray> ());
+	    emit resetKeepAlive();
+	    return;
+	  }
+      }
+
+  if(!data.isEmpty() || m_udpSocket)
+    {
+      QReadLocker locker1(&m_maximumBufferSizeMutex);
+      qint64 maximumBufferSize = m_maximumBufferSize;
+
+      locker1.unlock();
+
+      QWriteLocker locker2(&m_dataMutex);
+      int length = static_cast<int> (maximumBufferSize) - m_data.length();
+
+      if(length > 0)
+	m_data.append(data.mid(0, length));
+
+      if(!m_data.isEmpty())
+	{
+	  locker2.unlock();
+	  emit newData();
+	}
+    }
+  else
+    {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).
+	 arg("zero data received on ready-read signal"));
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotReadyRead(): "
+		 "Did not receive data. Closing connection for "
+		 "%1:%2.").
+	 arg(m_address).
+	 arg(m_port));
+      deleteLater();
+    }
+}
+
+void spoton_neighbor::slotSendMessage
+(const QByteArray &data,
+ const spoton_send::spoton_send_method sendMethod)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+  else if(!readyToWrite())
+    return;
+
+  QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat", 0)));
+
+  message = spoton_send::message0000(data, sendMethod, ae);
+
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotSendMessage(): write() error "
+	       "for %1:%2.").
+       arg(m_address).
+       arg(m_port));
+  else
+    spoton_kernel::messagingCacheAdd(message);
+}
+
+void spoton_neighbor::slotSharePublicKey(const QByteArray &keyType,
+					 const QByteArray &name,
+					 const QByteArray &publicKey,
+					 const QByteArray &signature,
+					 const QByteArray &sPublicKey,
+					 const QByteArray &sSignature)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(m_id == -1)
+    return;
+  else if(!readyToWrite())
+    return;
+
+  QByteArray message;
+
+  message.append(keyType.toBase64());
+  message.append("\n");
+  message.append(name.toBase64());
+  message.append("\n");
+  message.append(publicKey.toBase64());
+  message.append("\n");
+  message.append(signature.toBase64());
+  message.append("\n");
+  message.append(sPublicKey.toBase64());
+  message.append("\n");
+  message.append(sSignature.toBase64());
+  message = spoton_send::message0012(message);
+
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotSharePublicKey(): "
+	       "write() failure for %1:%2.").
+       arg(m_address).
+       arg(m_port));
+  else
+    {
+      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+      if(!s_crypt)
+	return;
+
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() +
+	   "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+	    bool ok = true;
+
+	    query.prepare("UPDATE friends_public_keys SET "
+			  "neighbor_oid = -1 WHERE "
+			  "key_type_hash = ? AND "
+			  "neighbor_oid = ?");
+	    query.bindValue(0, s_crypt->keyedHash(keyType, &ok).toBase64());
+	    query.bindValue(1, m_id);
+
+	    if(ok)
+	      query.exec();
+
+	    query.prepare("UPDATE friends_public_keys SET "
+			  "neighbor_oid = -1 WHERE "
+			  "key_type_hash = ? AND "
+			  "neighbor_oid = ?");
+
+	    if(ok)
+	      query.bindValue
+		(0, s_crypt->keyedHash(keyType + "-signature", &ok).
+		 toBase64());
+
+	    query.bindValue(1, m_id);
+
+	    if(ok)
+	      query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
+
 void spoton_neighbor::slotTimeout(void)
 {
   if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= m_silenceTime)
@@ -1582,1226 +2106,6 @@ void spoton_neighbor::slotTimeout(void)
 	      m_sourceOfRandomness);
 }
 
-void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
-{
-  if(!db.isOpen())
-    {
-      spoton_misc::logError
-	("spoton_neighbor::saveStatistics(): db is closed.");
-      return;
-    }
-  else if(m_id == -1)
-    {
-      spoton_misc::logError
-	("spoton_neighbor::saveStatistics(): m_id is -1.");
-      return;
-    }
-
-  QSqlQuery query(db);
-  QSslCipher cipher;
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-  if(m_dtls)
-    cipher = m_dtls->sessionCipher();
-  else
-#endif
-  if(m_tcpSocket)
-    cipher = m_tcpSocket->sessionCipher();
-
-  qint64 seconds = qAbs(m_startTime.secsTo(QDateTime::currentDateTime()));
-
-  query.prepare("UPDATE neighbors SET "
-		"buffered_content = ?, "
-		"bytes_discarded_on_write = ?, "
-		"bytes_read = ?, "
-		"bytes_written = ?, "
-		"is_encrypted = ?, "
-		"ssl_session_cipher = ?, "
-		"status = ?, "
-		"uptime = ? "
-		"WHERE OID = ?");
-
-  {
-    QReadLocker locker(&m_dataMutex);
-
-    query.addBindValue(m_data.length());
-  }
-
-  {
-    QReadLocker locker(&m_bytesDiscardedOnWriteMutex);
-
-    query.addBindValue(m_bytesDiscardedOnWrite);
-  }
-
-  query.addBindValue(m_bytesRead);
-
-  {
-    QReadLocker locker(&m_bytesWrittenMutex);
-
-    query.addBindValue(m_bytesWritten);
-  }
-
-  query.addBindValue(isEncrypted() ? 1 : 0);
-
-  if(cipher.isNull() || !spoton_kernel::s_crypts.value("chat", 0))
-    query.addBindValue(QVariant::String);
-  else
-    query.addBindValue
-      (spoton_kernel::s_crypts.value("chat")->
-       encryptedThenHashed(QString("%1-%2-%3-%4-%5-%6-%7").
-			   arg(cipher.name()).
-			   arg(cipher.authenticationMethod()).
-			   arg(cipher.encryptionMethod()).
-			   arg(cipher.keyExchangeMethod()).
-			   arg(cipher.protocolString()).
-			   arg(cipher.supportedBits()).
-			   arg(cipher.usedBits()).toUtf8(), 0).toBase64());
-
-  switch(state())
-    {
-    case QAbstractSocket::BoundState:
-      {
-	query.addBindValue("connected");
-	break;
-      }
-    case QAbstractSocket::ClosingState:
-      {
-	query.addBindValue("closing");
-	break;
-      }
-    case QAbstractSocket::ConnectedState:
-      {
-	query.addBindValue("connected");
-	break;
-      }
-    case QAbstractSocket::ConnectingState:
-      {
-	query.addBindValue("connecting");
-	break;
-      }
-    case QAbstractSocket::HostLookupState:
-      {
-	query.addBindValue("host-lookup");
-	break;
-      }
-    default:
-      {
-	query.addBindValue("disconnected");
-	break;
-      }
-    }
-
-  query.addBindValue(seconds);
-  query.addBindValue(m_id);
-  query.exec();
-}
-
-void spoton_neighbor::saveStatus(const QString &status)
-{
-  if(m_id == -1)
-    {
-      spoton_misc::logError
-	("spoton_neighbor::saveStatus(): m_id is -1.");
-      return;
-    }
-  else if(status.trimmed().isEmpty())
-    {
-      spoton_misc::logError
-	("spoton_neighbor::saveStatus(): status is empty.");
-      return;
-    }
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE neighbors SET is_encrypted = ?, status = ? "
-		      "WHERE OID = ? AND status_control <> 'deleted'");
-	query.bindValue(0, isEncrypted() ? 1 : 0);
-	query.bindValue(1, status.trimmed());
-	query.bindValue(2, m_id);
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_neighbor::saveStatus(const QSqlDatabase &db,
-				 const QString &status)
-{
-  if(!db.isOpen())
-    {
-      spoton_misc::logError
-	("spoton_neighbor::saveStatus(): db is closed.");
-      return;
-    }
-  else if(m_id == -1)
-    {
-      spoton_misc::logError
-	("spoton_neighbor::saveStatus(): m_id is -1.");
-      return;
-    }
-  else if(status.trimmed().isEmpty())
-    {
-      spoton_misc::logError
-	("spoton_neighbor::saveStatus(): status is empty.");
-      return;
-    }
-
-  QSqlQuery query(db);
-
-  query.prepare("UPDATE neighbors SET is_encrypted = ?, status = ? "
-		"WHERE OID = ? AND status_control <> 'deleted'");
-  query.bindValue(0, isEncrypted() ? 1 : 0);
-  query.bindValue(1, status.trimmed());
-  query.bindValue(2, m_id);
-  query.exec();
-}
-
-void spoton_neighbor::run(void)
-{
-  spoton_neighbor_worker worker(this);
-
-  connect(this,
-	  SIGNAL(newData(void)),
-	  &worker,
-	  SLOT(slotNewData(void)));
-  exec();
-}
-
-void spoton_neighbor::slotReadyRead(void)
-{
-  if(m_abort.fetchAndAddOrdered(0))
-    return;
-
-  QByteArray data;
-
-  if(m_bluetoothSocket)
-    {
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-      data = m_bluetoothSocket->readAll();
-#endif
-    }
-  else if(m_sctpSocket)
-    data = m_sctpSocket->readAll();
-  else if(m_tcpSocket)
-    data = m_tcpSocket->readAll();
-  else if(m_udpSocket)
-    {
-      data = m_udpSocket->readAll();
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      if(m_dtls && m_isUserDefined)
-	{
-	  m_bytesRead += static_cast<quint64> (data.length());
-
-	  if(m_dtls->isConnectionEncrypted())
-	    data = m_dtls->decryptDatagram(m_udpSocket, data);
-	  else
-	    {
-	      if(!m_dtls->doHandshake(m_udpSocket, data))
-		spoton_misc::logError
-		  (QString("spoton_neighbor::slotReadyRead(): "
-			   "DTLS error (%1) for %2:%3.").
-		   arg(m_dtls->dtlsErrorString()).
-		   arg(m_address).
-		   arg(m_port));
-
-	      return;
-	    }
-
-	  goto next_label;
-	}
-#endif
-
-      while(m_udpSocket->multicastSocket() &&
-	    m_udpSocket->multicastSocket()->hasPendingDatagrams())
-	{
-	  QByteArray datagram;
-	  qint64 size = qMax
-	    (static_cast<qint64> (0),
-	     m_udpSocket->multicastSocket()->pendingDatagramSize());
-
-	  datagram.resize(static_cast<int> (size));
-	  size = m_udpSocket->multicastSocket()->readDatagram
-	    (datagram.data(), size);
-
-	  if(size > 0)
-	    data.append(datagram.mid(0, static_cast<int> (size)));
-	}
-    }
-
-  m_bytesRead += static_cast<quint64> (data.length());
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
- next_label:
-#endif
-
-  {
-    QWriteLocker locker
-      (&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
-
-    spoton_kernel::s_totalNeighborsBytesReadWritten.first +=
-      static_cast<quint64> (data.length());
-  }
-
-  if(!data.isEmpty() && !isEncrypted() && m_useSsl)
-    {
-      data.clear();
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotReadyRead(): "
-		 "m_useSsl is true, however, isEncrypted() "
-		 "is false "
-		 "for %1:%2. "
-		 "Purging read data.").
-	 arg(m_address).
-	 arg(m_port));
-    }
-
-  if(!data.isEmpty())
-    if(m_passthrough)
-      {
-	/*
-	** A private application may not be able to authenticate.
-	*/
-
-	if(!m_privateApplicationCredentials.isEmpty())
-	  {
-	    if(m_isUserDefined)
-	      {
-		QMutexLocker locker(&m_privateApplicationMutex);
-		quint64 sequence = m_privateApplicationSequences.first;
-
-		m_privateApplicationSequences.first += 1;
-		locker.unlock();
-		m_privateApplicationFutures << QtConcurrent::run
-		  (this,
-		   &spoton_neighbor::bundlePrivateApplicationData,
-		   data,
-		   m_privateApplicationCredentials,
-		   m_id,
-		   sequence);
-	      }
-	    else
-	      {
-		QMutexLocker locker(&m_privateApplicationMutex);
-		quint64 sequence = m_privateApplicationSequences.second;
-
-		m_privateApplicationSequences.second += 1;
-		locker.unlock();
-		m_privateApplicationFutures << QtConcurrent::run
-		  (this,
-		   &spoton_neighbor::bundlePrivateApplicationData,
-		   data,
-		   m_privateApplicationCredentials,
-		   m_id,
-		   sequence);
-	      }
-
-	    return;
-	  }
-
-	bool ok = true;
-
-	if(m_useAccounts.fetchAndAddOrdered(0))
-	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
-	    ok = false;
-
-	if(ok)
-	  {
-	    /*
-	    ** We cannot safely inspect duplicate bytes.
-	    ** For example, an 'a' followed by another 'a' may
-	    ** be acceptable.
-	    */
-
-	    emit receivedMessage(data, m_id, QPair<QByteArray, QByteArray> ());
-	    emit resetKeepAlive();
-	    return;
-	  }
-      }
-
-  if(!data.isEmpty() || m_udpSocket)
-    {
-      QReadLocker locker1(&m_maximumBufferSizeMutex);
-      qint64 maximumBufferSize = m_maximumBufferSize;
-
-      locker1.unlock();
-
-      QWriteLocker locker2(&m_dataMutex);
-      int length = static_cast<int> (maximumBufferSize) - m_data.length();
-
-      if(length > 0)
-	m_data.append(data.mid(0, length));
-
-      if(!m_data.isEmpty())
-	{
-	  locker2.unlock();
-	  emit newData();
-	}
-    }
-  else
-    {
-      emit notification
-	(QString("The neighbor %1:%2 generated a fatal error (%3).").
-	 arg(m_address).arg(m_port).
-	 arg("zero data received on ready-read signal"));
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotReadyRead(): "
-		 "Did not receive data. Closing connection for "
-		 "%1:%2.").
-	 arg(m_address).
-	 arg(m_port));
-      deleteLater();
-    }
-}
-
-void spoton_neighbor::processData(void)
-{
-  if(m_abort.fetchAndAddOrdered(0))
-    return;
-
-  QByteArray data;
-
-  {
-    QReadLocker locker(&m_dataMutex);
-
-    data = m_data;
-  }
-
-  QList<QByteArray> list;
-  bool reset_keep_alive = false;
-  int index = -1;
-  int totalBytes = 0;
-
-  while((index = data.indexOf(spoton_send::EOM)) >= 0)
-    {
-      if(m_abort.fetchAndAddOrdered(0))
-	return;
-
-      QByteArray bytes(data.mid(0, index + spoton_send::EOM.length()));
-
-      data.remove(0, bytes.length());
-      totalBytes += bytes.length();
-
-      if(!bytes.isEmpty())
-	{
-	  if(!spoton_kernel::messagingCacheContains(bytes))
-	    list.append(bytes);
-	  else
-	    reset_keep_alive = true;
-	}
-    }
-
-  if(reset_keep_alive)
-    emit resetKeepAlive();
-
-  if(totalBytes > 0)
-    {
-      QWriteLocker locker(&m_dataMutex);
-
-      m_data.remove(0, totalBytes);
-    }
-
-  data.clear();
-
-  qint64 maximumBufferSize = 0;
-
-  {
-    QReadLocker locker(&m_maximumBufferSizeMutex);
-
-    maximumBufferSize = m_maximumBufferSize;
-  }
-
-  {
-    QWriteLocker locker(&m_dataMutex);
-
-    if(m_data.length() >= maximumBufferSize)
-      m_data.clear();
-  }
-
-  if(list.isEmpty())
-    return;
-
-  QByteArray accountClientSentSalt;
-  QString echoMode("");
-  bool useAccounts = false;
-  qint64 maximumContentLength = 0;
-
-  {
-    QReadLocker locker(&m_accountClientSentSaltMutex);
-
-    accountClientSentSalt = m_accountClientSentSalt;
-  }
-
-  {
-    QReadLocker locker(&m_echoModeMutex);
-
-    echoMode = m_echoMode;
-  }
-
-  {
-    QReadLocker locker(&m_maximumContentLengthMutex);
-
-    maximumContentLength = m_maximumContentLength;
-  }
-
-  useAccounts = m_useAccounts.fetchAndAddOrdered(0);
-
-  while(!list.isEmpty())
-    {
-      if(m_abort.fetchAndAddOrdered(0))
-	return;
-
-      QByteArray data(list.takeFirst());
-      QByteArray originalData(data);
-      int index = -1;
-      int length = 0;
-
-      if((index = data.indexOf("Content-Length: ")) >= 0)
-	{
-	  QByteArray contentLength
-	    (data.mid(index + static_cast<int> (qstrlen("Content-Length: "))));
-
-	  if((index = contentLength.indexOf("\r\n")) >= 0)
-	    /*
-	    ** toInt() returns zero on failure.
-	    */
-
-	    length = contentLength.mid(0, index).toInt();
-	}
-      else
-	{
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::processData(): "
-		     "data does not contain Content-Length "
-		     "from node %1:%2.").
-	     arg(m_address).
-	     arg(m_port));
-	  continue;
-	}
-
-      if(length <= 0)
-	{
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::processData(): "
-		     "negative or zero length from node %1:%2. "
-		     "Ignoring.").
-	     arg(m_address).
-	     arg(m_port));
-	  continue;
-	}
-
-      if(length > maximumContentLength)
-	{
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::processData(): "
-		     "the Content-Length header from node %1:%2 "
-		     "contains a lot of data (%3). Ignoring.").
-	     arg(m_address).
-	     arg(m_port).
-	     arg(length));
-	  continue;
-	}
-
-      if(!m_isUserDefined)
-	{
-	  /*
-	  ** We're a server!
-	  */
-
-	  if(useAccounts)
-	    {
-	      if(length > 0 && data.contains("type=0050&content="))
-		if(!m_accountAuthenticated.fetchAndAddOrdered(0))
-		  process0050(length, data);
-
-	      if(!m_accountAuthenticated.fetchAndAddOrdered(0))
-		continue;
-	    }
-	  else if(length > 0 && (data.contains("type=0050&content=") ||
-				 data.contains("type=0051&content=") ||
-				 data.contains("type=0052&content=")))
-	    continue;
-	}
-      else if(useAccounts &&
-	      length > 0 && data.contains("type=0051&content="))
-	{
-	  /*
-	  ** The server responded. Let's determine if the server's
-	  ** response is valid. What if the server solicits a response
-	  ** without the client having requested the authentication?
-	  */
-
-	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
-	    if(accountClientSentSalt.length() >=
-	       spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE)
-	      process0051(length, data);
-
-	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
-	    continue;
-	}
-      else if(length > 0 && data.contains("type=0052&content="))
-	{
-	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
-	    {
-	      if(m_bluetoothSocket)
-		{
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-		  emit authenticationRequested
-		    (QString("%1:%2").
-		     arg(m_bluetoothSocket->peerAddress().toString()).
-		     arg(m_bluetoothSocket->peerPort()));
-#endif
-		}
-	      else if(m_sctpSocket)
-		{
-		  if(m_sctpSocket->peerAddress().scopeId().isEmpty())
-		    emit authenticationRequested
-		      (QString("%1:%2").
-		       arg(m_sctpSocket->peerAddress().toString()).
-		       arg(m_sctpSocket->peerPort()));
-		  else
-		    emit authenticationRequested
-		      (QString("%1:%2:%3").
-		       arg(m_sctpSocket->peerAddress().toString()).
-		       arg(m_sctpSocket->peerPort()).
-		       arg(m_sctpSocket->peerAddress().scopeId()));
-		}
-	      else if(m_tcpSocket)
-		{
-		  if(m_tcpSocket->peerAddress().scopeId().isEmpty())
-		    emit authenticationRequested
-		      (QString("%1:%2").
-		       arg(m_tcpSocket->peerAddress().toString()).
-		       arg(m_tcpSocket->peerPort()));
-		  else
-		    emit authenticationRequested
-		      (QString("%1:%2:%3").
-		       arg(m_tcpSocket->peerAddress().toString()).
-		       arg(m_tcpSocket->peerPort()).
-		       arg(m_tcpSocket->peerAddress().scopeId()));
-		}
-	      else if(m_udpSocket)
-		{
-		  if(m_udpSocket->peerAddress().scopeId().isEmpty())
-		    emit authenticationRequested
-		      (QString("%1:%2").
-		       arg(m_udpSocket->peerAddress().toString()).
-		       arg(m_udpSocket->peerPort()));
-		  else
-		    emit authenticationRequested
-		      (QString("%1:%2:%3").
-		       arg(m_udpSocket->peerAddress().toString()).
-		       arg(m_udpSocket->peerPort()).
-		   arg(m_udpSocket->peerAddress().scopeId()));
-		}
-	    }
-	}
-
-      if(m_isUserDefined)
-	if(useAccounts)
-	  {
-	    if(!m_accountAuthenticated.fetchAndAddOrdered(0))
-	      continue;
-	  }
-
-      if(length > 0 && data.contains("type=0011&content="))
-	process0011(length, data);
-      else if(length > 0 && data.contains("type=0012&content="))
-	process0012(length, data);
-      else if(length > 0 && data.contains("type=0014&content="))
-	process0014(length, data);
-      else if(length > 0 && data.contains("type=0030&content="))
-	process0030(length, data);
-      else if(length > 0 && (data.contains("type=0050&content=") ||
-			     data.contains("type=0051&content=") ||
-			     data.contains("type=0052&content=")))
-	/*
-	** We shouldn't be here!
-	*/
-
-	continue;
-      else if(length > 0 && data.contains("type=0065&content="))
-	process0065(length, data);
-      else if(length > 0 && data.contains("type=0070&content="))
-	process0070(length, data);
-      else if(length > 0 && data.contains("type=0095a&content="))
-	process0095a(length, data);
-      else if(length > 0 && data.contains("type=0095b&content="))
-	process0095b(length, data);
-      else if(length > 0 && data.contains("content="))
-	{
-	  /*
-	  ** Remove some header data.
-	  */
-
-	  length -= static_cast<int> (qstrlen("content="));
-
-	  int indexOf = data.lastIndexOf("\r\n");
-
-	  if(indexOf > -1)
-	    data = data.mid(0, indexOf + 2);
-
-	  indexOf = data.indexOf("content=");
-
-	  if(indexOf > -1)
-	    data.remove(0, indexOf + static_cast<int> (qstrlen("content=")));
-
-	  if(data.length() == length)
-	    {
-	      emit resetKeepAlive();
-	      spoton_kernel::messagingCacheAdd(originalData);
-	    }
-	  else
-	    {
-	      spoton_misc::logError
-		(QString("spoton_neighbor::processData(): "
-			 "data length does not equal content length "
-			 "from node %1:%2. Ignoring.").
-		 arg(m_address).
-		 arg(m_port));
-	      continue;
-	    }
-
-	  if(spoton_kernel::setting("gui/superEcho", 1).toInt() != 1)
-	    /*
-	    ** Super Echo!
-	    */
-
-	    emit receivedMessage
-	      (originalData, m_id, QPair<QByteArray, QByteArray> ());
-
-	  /*
-	  ** Please note that findMessageType() calls
-	  ** participantCount(). Therefore, the process() methods
-	  ** that would do not.
-	  */
-
-	  QList<QByteArray> symmetricKeys;
-	  QPair<QByteArray, QByteArray> discoveredAdaptiveEchoPair;
-
-	  /*
-	  ** The findMessageType() method does not detect StarBeam
-	  ** data.
-	  */
-
-	  QString messageType(findMessageType(data, symmetricKeys,
-					      discoveredAdaptiveEchoPair));
-
-	  if(messageType == "0000")
-	    process0000(length, data, symmetricKeys);
-	  else if(messageType == "0000a" || messageType == "0000c")
-	    process0000a(length, data, messageType);
-	  else if(messageType == "0000b")
-	    process0000b(length, data, symmetricKeys);
-	  else if(messageType == "0000d")
-	    process0000d(length, data, symmetricKeys);
-	  else if(messageType == "0001a")
-	    process0001a(length, data);
-	  else if(messageType == "0001b")
-	    process0001b(length, data, symmetricKeys);
-	  else if(messageType == "0001c")
-	    process0001c(length, data, symmetricKeys);
-	  else if(messageType == "0002a")
-	    process0002a(length, data, discoveredAdaptiveEchoPair);
-	  else if(messageType == "0002b")
-	    process0002b
-	      (length, data, symmetricKeys, discoveredAdaptiveEchoPair);
-	  else if(messageType == "0013")
-	    process0013(length, data, symmetricKeys);
-	  else if(messageType == "0040a")
-	    process0040a(length, data, symmetricKeys);
-	  else if(messageType == "0040b")
-	    process0040b(length, data, symmetricKeys);
-	  else if(messageType == "0080")
-	    process0080(length, data, symmetricKeys);
-	  else if(messageType == "0090")
-	    process0090(length, data, symmetricKeys);
-	  else if(messageType == "0091a")
-	    process0091a(length, data, symmetricKeys);
-	  else if(messageType == "0091b")
-	    process0091b(length, data, symmetricKeys);
-	  else if(messageType == "0092")
-	    process0092(length, data, symmetricKeys);
-	  else
-	    messageType.clear();
-
-	  if(messageType.isEmpty() && data.trimmed().split('\n').size() == 3)
-	    if(spoton_kernel::instance() &&
-	       spoton_kernel::instance()->
-	       processPotentialStarBeamData(data, discoveredAdaptiveEchoPair))
-	      {
-		if(!discoveredAdaptiveEchoPair.first.isEmpty() &&
-		   !discoveredAdaptiveEchoPair.second.isEmpty())
-		  {
-		    QWriteLocker locker(&m_learnedAdaptiveEchoPairsMutex);
-
-		    if(!m_learnedAdaptiveEchoPairs.
-		       contains(discoveredAdaptiveEchoPair))
-		      m_learnedAdaptiveEchoPairs.
-			append(discoveredAdaptiveEchoPair);
-		  }
-
-		messageType = "starbeam";
-	      }
-
-	  if(spoton_kernel::setting("gui/scramblerEnabled", false).toBool())
-	    emit scrambleRequest();
-
-	  if(discoveredAdaptiveEchoPair == QPair<QByteArray, QByteArray> () &&
-	     spoton_kernel::setting("gui/superEcho", 1).toInt() != 1)
-	    {
-	      /*
-	      ** Super Echo!
-	      */
-	    }
-	  else if(echoMode == "full")
-	    {
-	      if(messageType == "0001b" &&
-		 data.trimmed().split('\n').size() == 7)
-		emit receivedMessage
-		  (originalData, m_id, discoveredAdaptiveEchoPair);
-	      else if(messageType.isEmpty() ||
-		      messageType == "0002b" ||
-		      messageType == "0090")
-		emit receivedMessage
-		  (originalData, m_id, discoveredAdaptiveEchoPair);
-	      else if(messageType == "0040a" || messageType == "0040b")
-		/*
-		** Buzz.
-		*/
-
-		emit receivedMessage
-		  (originalData, m_id, QPair<QByteArray, QByteArray> ());
-	      else if(!discoveredAdaptiveEchoPair.first.isEmpty() &&
-		      !discoveredAdaptiveEchoPair.second.isEmpty() &&
-		      messageType == "starbeam")
-		emit receivedMessage
-		  (originalData, m_id, discoveredAdaptiveEchoPair);
-	    }
-	}
-    }
-}
-
-void spoton_neighbor::slotConnected(void)
-{
-  if(m_sctpSocket)
-    spoton_socket_options::setSocketOptions
-      (m_socketOptions,
-       m_transport,
-       static_cast<qint64> (m_sctpSocket->socketDescriptor()),
-       0);
-  else if(m_tcpSocket)
-    spoton_socket_options::setSocketOptions
-      (m_socketOptions,
-       m_transport,
-       static_cast<qint64> (m_tcpSocket->socketDescriptor()),
-       0);
-  else if(m_udpSocket)
-    if(m_isUserDefined)
-      {
-	spoton_socket_options::setSocketOptions
-	  (m_socketOptions,
-	   m_transport,
-	   static_cast<qint64> (m_udpSocket->socketDescriptor()),
-	   0);
-
-	QHostAddress address(m_address);
-
-	address.setScopeId(m_scopeId);
-	m_udpSocket->initializeMulticast(address, m_port, m_socketOptions);
-
-	if(m_udpSocket->multicastSocket())
-	  connect(m_udpSocket->multicastSocket(),
-		  SIGNAL(readyRead(void)),
-		  this,
-		  SLOT(slotReadyRead(void)),
-		  Qt::UniqueConnection);
-      }
-
-  /*
-  ** The local address is the address of the proxy. Unfortunately,
-  ** we do not have a network interface that has such an address.
-  ** Hence, m_networkInterface will always be zero. The object
-  ** m_networkInterface was removed on 11/08/2013. The following
-  ** logic remains.
-  */
-
-  if(m_tcpSocket)
-    {
-      if(m_tcpSocket->proxy().type() != QNetworkProxy::NoProxy)
-	{
-	  QHostAddress address(m_ipAddress);
-
-	  if(address.protocol() == QAbstractSocket::IPv4Protocol)
-	    m_tcpSocket->setLocalAddress(QHostAddress("127.0.0.1"));
-	  else
-	    m_tcpSocket->setLocalAddress(QHostAddress("::1"));
-	}
-    }
-  else if(m_udpSocket)
-    {
-      if(m_udpSocket->proxy().type() != QNetworkProxy::NoProxy)
-	{
-	  QHostAddress address(m_ipAddress);
-
-	  if(address.protocol() == QAbstractSocket::IPv4Protocol)
-	    m_udpSocket->setLocalAddress(QHostAddress("127.0.0.1"));
-	  else
-	    m_udpSocket->setLocalAddress(QHostAddress("::1"));
-	}
-    }
-
-  if(m_id != -1)
-    {
-      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-      if(s_crypt)
-	{
-	  QString connectionName("");
-
-	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
-
-	    db.setDatabaseName
-	      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
-
-	    if(db.open())
-	      {
-		QSqlQuery query(db);
-		QString country("Unknown");
-
-		if(m_sctpSocket)
-		  country = spoton_misc::countryNameFromIPAddress
-		    (m_sctpSocket->peerAddress().isNull() ?
-		     m_sctpSocket->peerName() :
-		     m_sctpSocket->peerAddress().
-		     toString());
-		else if(m_tcpSocket)
-		  country = spoton_misc::countryNameFromIPAddress
-		    (m_tcpSocket->peerAddress().isNull() ?
-		     m_tcpSocket->peerName() :
-		     m_tcpSocket->peerAddress().
-		     toString());
-		else if(m_udpSocket)
-		  country = spoton_misc::countryNameFromIPAddress
-		    (m_udpSocket->peerAddress().isNull() ?
-		     m_udpSocket->peerName() :
-		     m_udpSocket->peerAddress().
-		     toString());
-
-		bool ok = true;
-
-		query.prepare("UPDATE neighbors SET country = ?, "
-			      "is_encrypted = ?, "
-			      "local_ip_address = ?, "
-			      "local_port = ?, qt_country_hash = ?, "
-			      "status = 'connected' "
-			      "WHERE OID = ?");
-		query.bindValue
-		  (0, s_crypt->
-		   encryptedThenHashed(country.toLatin1(), &ok).toBase64());
-		query.bindValue(1, isEncrypted() ? 1 : 0);
-
-		if(m_bluetoothSocket)
-		  {
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-		    query.bindValue
-		      (2, m_bluetoothSocket->localAddress().toString());
-		    query.bindValue
-		      (3, m_bluetoothSocket->localPort());
-#endif
-		  }
-		else if(m_sctpSocket)
-		  {
-		    query.bindValue
-		      (2, m_sctpSocket->localAddress().toString());
-		    query.bindValue(3, m_sctpSocket->localPort());
-		  }
-		else if(m_tcpSocket)
-		  {
-		    query.bindValue
-		      (2, m_tcpSocket->localAddress().toString());
-		    query.bindValue(3, m_tcpSocket->localPort());
-		  }
-		else if(m_udpSocket)
-		  {
-		    query.bindValue
-		      (2, m_udpSocket->localAddress().toString());
-		    query.bindValue(3, m_udpSocket->localPort());
-		  }
-
-		if(ok)
-		  query.bindValue
-		    (4, s_crypt->keyedHash(country.remove(" ").
-					   toLatin1(), &ok).
-		     toBase64());
-
-		query.bindValue(5, m_id);
-
-		if(ok)
-		  query.exec();
-	      }
-
-	    db.close();
-	  }
-
-	  QSqlDatabase::removeDatabase(connectionName);
-	}
-    }
-
-  /*
-  ** Initial discovery of the external IP address.
-  */
-
-  if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).toInt() != -1)
-    {
-      if(m_externalAddress)
-	{
-	  m_externalAddress->discover();
-	  m_externalAddressDiscovererTimer.start();
-	}
-      else
-	m_externalAddressDiscovererTimer.stop();
-    }
-  else
-    {
-      if(m_externalAddress)
-	m_externalAddress->clear();
-
-      m_externalAddressDiscovererTimer.stop();
-    }
-
-  m_lastReadTime = QDateTime::currentDateTime();
-
-  if(!m_keepAliveTimer.isActive())
-    m_keepAliveTimer.start();
-
-  if(m_useAccounts.fetchAndAddOrdered(0))
-    if(!m_useSsl)
-      {
-	m_accountTimer.start();
-	m_authenticationTimer.start();
-      }
-
-  if(!m_useSsl)
-    QTimer::singleShot(250, this, SLOT(slotSendCapabilities(void)));
-
-  QTimer::singleShot(30000, this, SLOT(slotSendMOTD(void)));
-}
-
-void spoton_neighbor::savePublicKey(const QByteArray &keyType,
-				    const QByteArray &name,
-				    const QByteArray &publicKey,
-				    const QByteArray &signature,
-				    const QByteArray &sPublicKey,
-				    const QByteArray &sSignature,
-				    const qint64 neighbor_oid,
-				    const bool ignore_key_permissions,
-				    const bool signatures_required,
-				    const QString &messageType)
-{
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
-
-  if(spoton_crypt::exists(publicKey, s_crypt) ||
-     spoton_crypt::exists(sPublicKey, s_crypt))
-    {
-      spoton_misc::logError("spoton_neighbor::savePublicKey(): "
-			    "attempting to add my own public key(s).");
-      return;
-    }
-
-  if(keyType == "chat" || keyType == "poptastic")
-    {
-      if(!ignore_key_permissions)
-	if(!spoton_kernel::setting("gui/acceptChatKeys", false).toBool())
-	  return;
-    }
-  else if(keyType == "email")
-    {
-      if(!ignore_key_permissions)
-	if(!spoton_kernel::setting("gui/acceptEmailKeys", false).toBool())
-	  return;
-    }
-  else if(keyType == "rosetta")
-    {
-      if(!ignore_key_permissions)
-	/*
-	** Only echo key-share allows sharing of Rosetta key pairs.
-	*/
-
-	return;
-    }
-  else if(keyType == "url")
-    {
-      if(!ignore_key_permissions)
-	if(!spoton_kernel::setting("gui/acceptUrlKeys", false).toBool())
-	  return;
-    }
-  else
-    {
-      spoton_misc::logError
-	(QString("spoton_neighbor::savePublicKey(): unexpected key type "
-		 "for %1:%2.").
-	 arg(m_address).
-	 arg(m_port));
-      return;
-    }
-
-  int noid = neighbor_oid;
-
-  /*
-  ** Save a friendly key.
-  */
-
-  if(signatures_required)
-    if(!spoton_crypt::isValidSignature(publicKey, publicKey, signature))
-      if(messageType == "0090")
-	noid = 0;
-
-  if(signatures_required)
-    if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
-      if(messageType == "0090")
-	noid = 0;
-
-  /*
-  ** If noid (neighbor_oid) is -1, we have bonded two neighbors.
-  */
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	if(noid != -1)
-	  {
-	    /*
-	    ** We have received a request for friendship.
-	    ** Do we already have the neighbor's public key?
-	    */
-
-	    QSqlQuery query(db);
-	    bool exists = false;
-	    bool ok = true;
-
-	    query.setForwardOnly(true);
-	    query.prepare("SELECT neighbor_oid "
-			  "FROM friends_public_keys "
-			  "WHERE public_key_hash = ?");
-	    query.bindValue(0, spoton_crypt::sha512Hash(publicKey,
-							&ok).toBase64());
-
-	    if(ok)
-	      if(query.exec())
-		if(query.next())
-		  if(query.value(0).toLongLong() == -1)
-		    exists = true;
-
-	    if(!exists)
-	      {
-		/*
-		** An error occurred or we do not have the public key.
-		*/
-
-		spoton_misc::saveFriendshipBundle
-		  (keyType, name, publicKey, sPublicKey,
-		   noid, db, s_crypt);
-		spoton_misc::saveFriendshipBundle
-		  (keyType + "-signature", name, sPublicKey,
-		   QByteArray(), noid, db, s_crypt);
-	      }
-	  }
-	else
-	  {
-	    spoton_misc::saveFriendshipBundle
-	      (keyType, name, publicKey, sPublicKey, -1, db, s_crypt);
-	    spoton_misc::saveFriendshipBundle
-	      (keyType + "-signature", name, sPublicKey, QByteArray(), -1,
-	       db, s_crypt);
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_neighbor::setId(const qint64 id)
-{
-  m_id = id;
-}
-
-void spoton_neighbor::slotSendMessage
-(const QByteArray &data,
- const spoton_send::spoton_send_method sendMethod)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-  else if(!readyToWrite())
-    return;
-
-  QByteArray message;
-  QPair<QByteArray, QByteArray> ae
-    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
-
-  message = spoton_send::message0000(data, sendMethod, ae);
-
-  if(write(message.constData(), message.length()) != message.length())
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotSendMessage(): write() error "
-	       "for %1:%2.").
-       arg(m_address).
-       arg(m_port));
-  else
-    spoton_kernel::messagingCacheAdd(message);
-}
-
-void spoton_neighbor::slotWriteURLs(const QByteArray &data)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-  else if(!readyToWrite())
-    return;
-
-  QByteArray message;
-  QPair<QByteArray, QByteArray> ae
-    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
-
-  message = spoton_send::message0080(data, ae);
-
-  if(write(message.constData(), message.length()) != message.length())
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotWriteURLs(): write() error "
-	       "for %1:%2.").
-       arg(m_address).
-       arg(m_port));
-  else
-    spoton_kernel::messagingCacheAdd(message);
-}
-
 void spoton_neighbor::slotWrite
 (const QByteArray &data,
  const qint64 id,
@@ -2857,107 +2161,29 @@ void spoton_neighbor::slotWrite
     }
 }
 
-void spoton_neighbor::slotLifetimeExpired(void)
-{
-  emit notification
-    (QString("The neighbor %1:%2 generated a fatal error (%3).").
-     arg(m_address).arg(m_port).arg("lifetime expired"));
-  spoton_misc::logError
-    (QString("spoton_neighbor::slotLifetimeExpired(): "
-	     "expiration time reached for %1:%2. Aborting socket.").
-     arg(m_address).
-     arg(m_port));
-  deleteLater();
-}
-
-void spoton_neighbor::slotSharePublicKey(const QByteArray &keyType,
-					 const QByteArray &name,
-					 const QByteArray &publicKey,
-					 const QByteArray &signature,
-					 const QByteArray &sPublicKey,
-					 const QByteArray &sSignature)
+void spoton_neighbor::slotWriteURLs(const QByteArray &data)
 {
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(m_id == -1)
     return;
   else if(!readyToWrite())
     return;
 
   QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat", 0)));
 
-  message.append(keyType.toBase64());
-  message.append("\n");
-  message.append(name.toBase64());
-  message.append("\n");
-  message.append(publicKey.toBase64());
-  message.append("\n");
-  message.append(signature.toBase64());
-  message.append("\n");
-  message.append(sPublicKey.toBase64());
-  message.append("\n");
-  message.append(sSignature.toBase64());
-  message = spoton_send::message0012(message);
+  message = spoton_send::message0080(data, ae);
 
   if(write(message.constData(), message.length()) != message.length())
     spoton_misc::logError
-      (QString("spoton_neighbor::slotSharePublicKey(): "
-	       "write() failure for %1:%2.").
+      (QString("spoton_neighbor::slotWriteURLs(): write() error "
+	       "for %1:%2.").
        arg(m_address).
        arg(m_port));
   else
-    {
-      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-      if(!s_crypt)
-	return;
-
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() +
-	   "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-	    bool ok = true;
-
-	    query.prepare("UPDATE friends_public_keys SET "
-			  "neighbor_oid = -1 WHERE "
-			  "key_type_hash = ? AND "
-			  "neighbor_oid = ?");
-	    query.bindValue(0, s_crypt->keyedHash(keyType, &ok).toBase64());
-	    query.bindValue(1, m_id);
-
-	    if(ok)
-	      query.exec();
-
-	    query.prepare("UPDATE friends_public_keys SET "
-			  "neighbor_oid = -1 WHERE "
-			  "key_type_hash = ? AND "
-			  "neighbor_oid = ?");
-
-	    if(ok)
-	      query.bindValue
-		(0, s_crypt->keyedHash(keyType + "-signature", &ok).
-		 toBase64());
-
-	    query.bindValue(1, m_id);
-
-	    if(ok)
-	      query.exec();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
+    spoton_kernel::messagingCacheAdd(message);
 }
 
 void spoton_neighbor::process0000(int length, const QByteArray &dataIn,
