@@ -1121,6 +1121,114 @@ spoton_neighbor::~spoton_neighbor()
   wait();
 }
 
+void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
+					       const QByteArray &name,
+					       const QByteArray &password)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(!(state() == QAbstractSocket::BoundState ||
+       state() == QAbstractSocket::ConnectedState))
+    return;
+  else if(name.length() < 32 || password.length() < 32)
+    return;
+
+  QByteArray hash;
+  QByteArray message;
+  QByteArray salt(spoton_crypt::
+		  strongRandomBytes(spoton_common::
+				    ACCOUNTS_RANDOM_BUFFER_SIZE));
+  bool ok = true;
+
+  /*
+  ** The server authenticated the client's credentials. We'll
+  ** now create a similar response so that the client can
+  ** verify the server. We are the server.
+  */
+
+  hash = spoton_crypt::keyedHash
+    (QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmm").
+     toLatin1() + clientSalt + salt, name + password, "sha512", &ok);
+
+  if(ok)
+    message = spoton_send::message0051(hash, salt);
+
+  if(ok)
+    {
+      if(write(message.constData(), message.length()) != message.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotAccountAuthenticated(): "
+		   "write() error for %1:%2.").
+	   arg(m_address).
+	   arg(m_port));
+    }
+}
+
+void spoton_neighbor::slotCallParticipant(const QByteArray &data,
+					  const QString &messageType)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  QByteArray message;
+  QPair<QByteArray, QByteArray> ae
+    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+					    spoton_kernel::s_crypts.
+					    value("chat", 0)));
+
+  if(spoton_kernel::setting("gui/chatSendMethod", "Artificial_GET").
+     toString().toLower() == "artificial_get")
+    {
+      if(messageType == "0000a" || messageType == "0000c")
+	message = spoton_send::message0000a(data,
+					    spoton_send::
+					    ARTIFICIAL_GET,
+					    ae);
+      else if(messageType == "0000b")
+	message = spoton_send::message0000b(data,
+					    spoton_send::
+					    ARTIFICIAL_GET,
+					    ae);
+      else if(messageType == "0000d")
+	message = spoton_send::message0000d(data,
+					    spoton_send::
+					    ARTIFICIAL_GET,
+					    ae);
+    }
+  else
+    {
+      if(messageType == "0000a" || messageType == "0000c")
+	message = spoton_send::message0000a(data,
+					    spoton_send::
+					    NORMAL_POST,
+					    ae);
+      else if(messageType == "0000b")
+	message = spoton_send::message0000b(data,
+					    spoton_send::
+					    NORMAL_POST,
+					    ae);
+      else if(messageType == "0000d")
+	message = spoton_send::message0000d(data,
+					    spoton_send::
+					    NORMAL_POST,
+					    ae);
+    }
+
+  if(!message.isEmpty() && readyToWrite())
+    {
+      if(write(message.constData(),
+	       message.length()) != message.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotCallParticipant(): write() "
+		   "error for %1:%2.").
+	   arg(m_address).
+	   arg(m_port));
+      else
+	spoton_kernel::messagingCacheAdd(message);
+    }
+}
+
 void spoton_neighbor::slotConnected(void)
 {
   if(m_sctpSocket)
@@ -1328,6 +1436,177 @@ void spoton_neighbor::slotConnected(void)
   QTimer::singleShot(30000, this, SLOT(slotSendMOTD(void)));
 }
 
+void spoton_neighbor::slotDisconnected(void)
+{
+  spoton_misc::logError
+    (QString("spoton_neighbor::slotDisconnected(): "
+	     "aborting socket for %1:%2!").
+     arg(m_address).
+     arg(m_port));
+  deleteLater();
+}
+
+void spoton_neighbor::slotDiscoverExternalAddress(void)
+{
+  if(m_externalAddress)
+    if(state() == QAbstractSocket::BoundState ||
+       state() == QAbstractSocket::ConnectedState)
+      m_externalAddress->discover();
+}
+
+void spoton_neighbor::slotEncrypted(void)
+{
+  recordCertificateOrAbort();
+  QTimer::singleShot(250, this, SLOT(slotSendCapabilities(void)));
+}
+
+void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
+{
+  if(error == QAbstractSocket::DatagramTooLargeError)
+    return;
+  else if(error == QAbstractSocket::SslHandshakeFailedError)
+    {
+      /*
+      ** Do not use SSL.
+      */
+
+      if(!m_requireSsl)
+	{
+	  m_sslControlString = "N/A";
+	  m_useSsl = false;
+
+	  if(m_tcpSocket)
+	    spoton_misc::logError
+	      (QString("spoton_neighbor::slotError(): socket error "
+		       "(%1) for "
+		       "%2:%3. "
+		       "Disabling SSL.").arg(m_tcpSocket->errorString()).
+	       arg(m_address).arg(m_port));
+
+	  return;
+	}
+    }
+
+  if(m_tcpSocket)
+    {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).arg(m_tcpSocket->errorString()));
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotError(): "
+		 "socket error (%1) for %2:%3. "
+		 "Aborting socket.").arg(m_tcpSocket->errorString()).
+	 arg(m_address).
+	 arg(m_port));
+    }
+  else if(m_udpSocket)
+    {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).arg(m_udpSocket->errorString()));
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotError(): "
+		 "socket error (%1) for %2:%3. "
+		 "Aborting socket.").arg(m_udpSocket->errorString()).
+	 arg(m_address).
+	 arg(m_port));
+    }
+  else
+    emit notification
+      (QString("The neighbor %1:%2 generated a fatal error (%3).").
+       arg(m_address).arg(m_port).arg(error));
+
+  deleteLater();
+}
+
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
+{
+  if(m_bluetoothSocket)
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotError(): "
+	       "socket error (%1) for %2:%3.").
+       arg(m_bluetoothSocket->errorString()).
+       arg(m_address).
+       arg(m_port));
+
+  spoton_misc::logError
+    (QString("spoton_neighbor::slotError(): "
+	     "socket error (%1) for %2:%3.").
+     arg(error).
+     arg(m_address).
+     arg(m_port));
+
+  if(error != QBluetoothSocket::UnknownSocketError)
+    {
+      if(m_bluetoothSocket)
+	emit notification
+	  (QString("The neighbor %1:%2 generated a fatal error (%3).").
+	   arg(m_address).arg(m_port).arg(m_bluetoothSocket->errorString()));
+      else
+	emit notification
+	  (QString("The neighbor %1:%2 generated a fatal error (%3).").
+	   arg(m_address).arg(m_port).arg(error));
+
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotError(): "
+		 "socket error (%1) for %2:%3. Aborting.").
+	 arg(error).
+	 arg(m_address).
+	 arg(m_port));
+      deleteLater();
+    }
+}
+#endif
+
+void spoton_neighbor::slotError(const QString &method,
+				const spoton_sctp_socket::SocketError error)
+{
+  emit notification
+    (QString("The neighbor %1:%2 generated a fatal error (%3).").
+     arg(m_address).arg(m_port).arg(error));
+  spoton_misc::logError
+    (QString("spoton_neighbor::slotError(): "
+	     "socket error (%1:%2) for %3:%4. "
+	     "Aborting socket.").
+     arg(method).
+     arg(error).
+     arg(m_address).
+     arg(m_port));
+  deleteLater();
+}
+
+void spoton_neighbor::slotExternalAddressDiscovered
+(const QHostAddress &address)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
+
+    if(db.open())
+      saveExternalAddress(address, db);
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_neighbor::slotHostFound(const QHostInfo &hostInfo)
+{
+  foreach(const QHostAddress &address, hostInfo.addresses())
+    if(!address.isNull())
+      {
+	m_address = address.toString();
+	m_ipAddress = m_address;
+	break;
+      }
+}
+
 void spoton_neighbor::slotLifetimeExpired(void)
 {
   emit notification
@@ -1339,6 +1618,209 @@ void spoton_neighbor::slotLifetimeExpired(void)
      arg(m_address).
      arg(m_port));
   deleteLater();
+}
+
+void spoton_neighbor::slotModeChanged(QSslSocket::SslMode mode)
+{
+  spoton_misc::logError
+    (QString("spoton_neighbor::slotModeChanged(): "
+	     "the connection mode has changed to %1 for %2:%3.").
+     arg(mode).
+     arg(m_address).
+     arg(m_port));
+
+  if(m_useSsl)
+    {
+      if(mode == QSslSocket::UnencryptedMode)
+	{
+	  emit notification
+	    (QString("The neighbor %1:%2 generated a fatal error (%3).").
+	     arg(m_address).arg(m_port).arg("unencrypted connection"));
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotModeChanged(): "
+		     "unencrypted connection mode for %1:%2. Aborting.").
+	     arg(m_address).
+	     arg(m_port));
+	  deleteLater();
+	  return;
+	}
+
+      if(m_useAccounts.fetchAndAddOrdered(0))
+	{
+	  m_accountTimer.start();
+	  m_authenticationTimer.start();
+	}
+    }
+  else
+    m_sslControlString = "N/A";
+}
+
+void spoton_neighbor::slotPeerVerifyError(const QSslError &error)
+{
+  /*
+  ** This method may be called several times!
+  */
+
+  bool shouldDelete = true;
+
+  if(error.error() == QSslError::CertificateUntrusted ||
+     error.error() == QSslError::HostNameMismatch ||
+     error.error() == QSslError::SelfSignedCertificate)
+    shouldDelete = false;
+
+  if(shouldDelete)
+    {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).arg(error.errorString()));
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotPeerVerifyError(): instructed "
+		 "to delete neighbor for %1:%2.").
+	 arg(m_address).
+	 arg(m_port));
+      deleteLater();
+      return;
+    }
+
+  if(!m_allowExceptions)
+    if(m_isUserDefined)
+      if(m_tcpSocket)
+	if(!m_peerCertificate.isNull() &&
+	   !m_tcpSocket->peerCertificate().isNull())
+	  if(!m_peerCertificate.toPem().isEmpty() &&
+	     !m_tcpSocket->peerCertificate().toPem().isEmpty())
+	    if(!spoton_crypt::memcmp(m_peerCertificate.toPem(),
+				     m_tcpSocket->peerCertificate().toPem()))
+	      {
+		emit notification
+		  (QString("The neighbor %1:%2 generated a fatal error (%3).").
+		   arg(m_address).arg(m_port).arg("certificate mismatch"));
+		spoton_misc::logError
+		  (QString("spoton_neighbor::slotPeerVerifyError(): "
+			   "the stored certificate does not match "
+			   "the peer's certificate for %1:%2. This is a "
+			   "serious problem! Aborting.").
+		   arg(m_address).
+		   arg(m_port));
+		deleteLater();
+	      }
+}
+
+void spoton_neighbor::slotProxyAuthenticationRequired
+(const QNetworkProxy &proxy, QAuthenticator *authenticator)
+{
+  Q_UNUSED(proxy);
+
+  if(authenticator)
+    {
+      if(m_tcpSocket)
+	{
+	  authenticator->setPassword(m_tcpSocket->proxy().password());
+	  authenticator->setUser(m_tcpSocket->proxy().user());
+	}
+      else if(m_udpSocket)
+	{
+	  authenticator->setPassword(m_udpSocket->proxy().password());
+	  authenticator->setUser(m_udpSocket->proxy().user());
+	}
+      else
+	*authenticator = QAuthenticator();
+    }
+}
+
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+void spoton_neighbor::slotPublicizeListenerPlaintext
+(const QBluetoothAddress &address,
+ const quint16 port,
+ const QString &orientation)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(!address.isNull())
+    if(readyToWrite())
+      {
+	QByteArray message
+	  (spoton_send::message0030(address, port, orientation));
+
+	if(write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotPublicizeListenerPlaintext(): "
+		     "write() "
+		     "error for %1:%2.").
+	     arg(m_address).
+	     arg(m_port));
+	else
+	  spoton_kernel::messagingCacheAdd(message);
+      }
+}
+#endif
+
+void spoton_neighbor::slotPublicizeListenerPlaintext(const QByteArray &data,
+						     const qint64 id)
+{
+  if(id == m_id)
+    return;
+
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  /*
+  ** A neighbor (id) received a request to publish listener information.
+  ** This neighbor now needs to send the message to its peer.
+  */
+
+  QReadLocker locker(&m_echoModeMutex);
+  QString echoMode(m_echoMode);
+
+  locker.unlock();
+
+  if(echoMode == "full")
+    if(readyToWrite())
+      {
+	QByteArray message(spoton_send::message0030(data));
+
+	if(write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::"
+		     "slotPublicizeListenerPlaintext(): "
+		     "write() "
+		     "error for %1:%2.").
+	     arg(m_address).
+	     arg(m_port));
+	else
+	  spoton_kernel::messagingCacheAdd(message);
+      }
+}
+
+void spoton_neighbor::slotPublicizeListenerPlaintext
+(const QHostAddress &address,
+ const quint16 port,
+ const QString &transport,
+ const QString &orientation)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(!address.isNull())
+    if(readyToWrite())
+      {
+	QByteArray message
+	  (spoton_send::message0030(address, port, transport, orientation));
+
+	if(write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotPublicizeListenerPlaintext(): "
+		     "write() "
+		     "error for %1:%2.").
+	     arg(m_address).
+	     arg(m_port));
+	else
+	  spoton_kernel::messagingCacheAdd(message);
+      }
 }
 
 void spoton_neighbor::slotReadyRead(void)
@@ -1528,9 +2010,300 @@ void spoton_neighbor::slotReadyRead(void)
     }
 }
 
+void spoton_neighbor::slotResetKeepAlive(void)
+{
+  m_lastReadTime = QDateTime::currentDateTime();
+  spoton_kernel::s_sendInitialStatus.testAndSetOrdered(0, 1);
+}
+
+void spoton_neighbor::slotRetrieveMail(const QByteArrayList &list,
+				       const QString &messageType)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(readyToWrite())
+    for(int i = 0; i < list.size(); i++)
+      {
+	QByteArray message;
+	QPair<QByteArray, QByteArray> ae
+	  (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+						  spoton_kernel::s_crypts.
+						  value("chat", 0)));
+
+	if(messageType == "0002a")
+	  message = spoton_send::message0002a(list.at(i), ae);
+	else
+	  message = spoton_send::message0002b(list.at(i), ae);
+
+	if(write(message.constData(), message.length()) != message.length())
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotRetrieveMail(): write() "
+		     "error for %1:%2.").
+	     arg(m_address).
+	     arg(m_port));
+	else
+	  spoton_kernel::messagingCacheAdd(message);
+      }
+}
+
+void spoton_neighbor::slotSendAccountInformation(void)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(!(state() == QAbstractSocket::BoundState ||
+       state() == QAbstractSocket::ConnectedState))
+    return;
+
+  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+  if(!s_crypt)
+    return;
+
+  QByteArray name;
+  QByteArray password;
+  bool ok = true;
+
+  QReadLocker locker1(&m_accountNameMutex);
+
+  name = m_accountName;
+  locker1.unlock();
+
+  QReadLocker locker2(&m_accountPasswordMutex);
+
+  password = m_accountPassword;
+  locker2.unlock();
+  name = s_crypt->decryptedAfterAuthenticated(name, &ok);
+
+  if(ok)
+    password = s_crypt->decryptedAfterAuthenticated(password, &ok);
+
+  if(ok)
+    if(name.length() >= 32 && password.length() >= 32)
+      {
+	QByteArray hash;
+	QByteArray message;
+	QByteArray salt
+	  (spoton_crypt::
+	   strongRandomBytes(spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE));
+
+	hash = spoton_crypt::keyedHash
+	  (QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmm").
+	   toLatin1() + salt, name + password, "sha512", &ok);
+
+	if(ok)
+	  message = spoton_send::message0050(hash, salt);
+
+	if(ok)
+	  {
+	    if(write(message.constData(), message.length()) !=
+	       message.length())
+	      spoton_misc::logError
+		(QString("spoton_neighbor::slotSendAccountInformation(): "
+			 "write() error for %1:%2.").
+		 arg(m_address).
+		 arg(m_port));
+	    else
+	      {
+		QWriteLocker locker(&m_accountClientSentSaltMutex);
+
+		m_accountClientSentSalt = salt;
+	      }
+	  }
+      }
+}
+
+void spoton_neighbor::slotSendAuthenticationRequest(void)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(!(state() == QAbstractSocket::BoundState ||
+       state() == QAbstractSocket::ConnectedState))
+    return;
+
+  QByteArray message(spoton_send::message0052());
+
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotSendAuthenticationRequest(): "
+	       "write() error for %1:%2.").
+       arg(m_address).
+       arg(m_port));
+}
+
+void spoton_neighbor::slotSendBuzz(const QByteArray &data)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(readyToWrite())
+    {
+      if(write(data.constData(), data.length()) != data.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotSendBuzz(): write() error for "
+		   "%1:%2.").
+	   arg(m_address).
+	   arg(m_port));
+      else
+	spoton_kernel::messagingCacheAdd(data);
+    }
+}
+
+void spoton_neighbor::slotSendCapabilities(void)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(m_passthrough)
+    return;
+  else if(!readyToWrite())
+    return;
+
+  QByteArray message;
+  QReadLocker locker(&m_echoModeMutex);
+  QString echoMode(m_echoMode);
+
+  locker.unlock();
+
+  QUuid uuid
+    (spoton_kernel::
+     setting("gui/uuid", "{00000000-0000-0000-0000-000000000000}").toString());
+
+  message = spoton_send::message0014(uuid.toString().toLatin1() + "\n" +
+				     QByteArray::number(m_laneWidth) + "\n" +
+				     echoMode.toLatin1());
+
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotSendCapabilities(): "
+	       "write() error for %1:%2.").
+       arg(m_address).
+       arg(m_port));
+}
+
+void spoton_neighbor::slotSendMOTD(void)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  if(m_passthrough)
+    return;
+  else if(!readyToWrite())
+    return;
+
+  QByteArray message(spoton_send::message0070(m_motd.toUtf8()));
+
+  if(write(message.constData(), message.length()) != message.length())
+    spoton_misc::logError
+      (QString("spoton_neighbor::slotSendMOTD(): write() error for %1:%2.").
+       arg(m_address).
+       arg(m_port));
+}
+
+void spoton_neighbor::slotSendMail
+(const QPairByteArrayInt64List &list, const QString &messageType)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  QList<qint64> oids;
+
+  if(readyToWrite())
+    for(int i = 0; i < list.size(); i++)
+      {
+	QByteArray message;
+	QPair<QByteArray, QByteArray> ae
+	  (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+						  spoton_kernel::s_crypts.
+						  value("chat", 0)));
+	QPair<QByteArray, qint64> pair(list.at(i));
+
+	if(messageType == "0001a")
+	  message = spoton_send::message0001a(pair.first, ae);
+	else if (messageType == "0001b")
+	  message = spoton_send::message0001b(pair.first, ae);
+	else
+	  message = spoton_send::message0001c(pair.first, ae);
+
+	if(write(message.constData(), message.length()) != message.length())
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::slotSendMail(): write() "
+		     "error for %1:%2.").
+	     arg(m_address).
+	     arg(m_port));
+	else
+	  {
+	    /*
+	    ** We may need to store the letter that this node sent if
+	    ** the node is also a post office box.
+	    ** Almost-anonymous e-mail shall not be archived.
+	    */
+
+	    if(messageType != "0001c")
+	      if(spoton_kernel::setting("gui/postoffice_enabled",
+					false).toBool())
+		{
+		  QWriteLocker locker(&m_dataMutex);
+
+		  m_data.append(message);
+		  locker.unlock();
+		  processData();
+		}
+
+	    oids.append(pair.second);
+	    spoton_kernel::messagingCacheAdd(message);
+	  }
+      }
+
+  if(!oids.isEmpty())
+    {
+      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+
+      spoton_mailer::moveSentMailToSentFolder(oids, s_crypt);
+    }
+}
+
+void spoton_neighbor::slotSendMailFromPostOffice
+(const QByteArray &data, const QPairByteArrayByteArray &adaptiveEchoPair)
+{
+  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+    return;
+
+  bool adaptiveEcho = false;
+
+  QReadLocker locker(&m_learnedAdaptiveEchoPairsMutex);
+
+  if(adaptiveEchoPair == QPair<QByteArray, QByteArray> () ||
+     m_learnedAdaptiveEchoPairs.contains(adaptiveEchoPair))
+    adaptiveEcho = true;
+
+  locker.unlock();
+
+  if(adaptiveEcho && readyToWrite())
+    {
+      QByteArray message;
+      QPair<QByteArray, QByteArray> ae
+	(spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+						spoton_kernel::s_crypts.
+						value("chat", 0)));
+
+      message = spoton_send::message0001b(data, ae);
+
+      if(write(message.constData(), message.length()) != message.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotSendMailFromPostOffice(): write() "
+		   "error for %1:%2.").
+	   arg(m_address).
+	   arg(m_port));
+      else
+	spoton_kernel::messagingCacheAdd(data);
+    }
+}
+
 void spoton_neighbor::slotSendMessage
-(const QByteArray &data,
- const spoton_send::spoton_send_method sendMethod)
+(const QByteArray &data, const spoton_send::spoton_send_method sendMethod)
 {
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;
@@ -1670,6 +2443,16 @@ void spoton_neighbor::slotSharePublicKey(const QByteArray &keyType,
 
       QSqlDatabase::removeDatabase(connectionName);
     }
+}
+
+void spoton_neighbor::slotSslErrors(const QList<QSslError> &errors)
+{
+  for(int i = 0; i < errors.size(); i++)
+    spoton_misc::logError(QString("spoton_neighbor::slotSslErrors(): "
+				  "error (%1) occurred from %2:%3.").
+			  arg(errors.at(i).errorString()).
+			  arg(m_address).
+			  arg(m_port));
 }
 
 void spoton_neighbor::slotTimeout(void)
@@ -2211,1699 +2994,4 @@ void spoton_neighbor::slotWriteURLs(const QByteArray &data)
        arg(m_port));
   else
     spoton_kernel::messagingCacheAdd(message);
-}
-
-void spoton_neighbor::saveParticipantStatus(const QByteArray &publicKeyHash)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE friends_public_keys SET "
-		      "last_status_update = ?, status = 'online' "
-		      "WHERE neighbor_oid = -1 AND "
-		      "public_key_hash = ?");
-	query.bindValue
-	  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
-	query.bindValue(1, publicKeyHash.toBase64());
-     	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_neighbor::saveParticipantStatus(const QByteArray &name,
-					    const QByteArray &publicKeyHash)
-{
-  saveParticipantStatus
-    (name, publicKeyHash, QByteArray(),
-     QDateTime::currentDateTime().toUTC().
-     toString("MMddyyyyhhmmss").toLatin1());
-}
-
-void spoton_neighbor::saveParticipantStatus(const QByteArray &name,
-					    const QByteArray &publicKeyHash,
-					    const QByteArray &status,
-					    const QByteArray &timestamp)
-{
-  spoton_misc::saveParticipantStatus
-    (name, publicKeyHash, status, timestamp,
-     static_cast<int> (2.5 * spoton_common::STATUS_INTERVAL),
-     spoton_kernel::s_crypts.value("chat", 0));
-}
-
-void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
-{
-  if(error == QAbstractSocket::DatagramTooLargeError)
-    return;
-  else if(error == QAbstractSocket::SslHandshakeFailedError)
-    {
-      /*
-      ** Do not use SSL.
-      */
-
-      if(!m_requireSsl)
-	{
-	  m_sslControlString = "N/A";
-	  m_useSsl = false;
-
-	  if(m_tcpSocket)
-	    spoton_misc::logError
-	      (QString("spoton_neighbor::slotError(): socket error "
-		       "(%1) for "
-		       "%2:%3. "
-		       "Disabling SSL.").arg(m_tcpSocket->errorString()).
-	       arg(m_address).arg(m_port));
-
-	  return;
-	}
-    }
-
-  if(m_tcpSocket)
-    {
-      emit notification
-	(QString("The neighbor %1:%2 generated a fatal error (%3).").
-	 arg(m_address).arg(m_port).arg(m_tcpSocket->errorString()));
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotError(): "
-		 "socket error (%1) for %2:%3. "
-		 "Aborting socket.").arg(m_tcpSocket->errorString()).
-	 arg(m_address).
-	 arg(m_port));
-    }
-  else if(m_udpSocket)
-    {
-      emit notification
-	(QString("The neighbor %1:%2 generated a fatal error (%3).").
-	 arg(m_address).arg(m_port).arg(m_udpSocket->errorString()));
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotError(): "
-		 "socket error (%1) for %2:%3. "
-		 "Aborting socket.").arg(m_udpSocket->errorString()).
-	 arg(m_address).
-	 arg(m_port));
-    }
-  else
-    emit notification
-      (QString("The neighbor %1:%2 generated a fatal error (%3).").
-       arg(m_address).arg(m_port).arg(error));
-
-  deleteLater();
-}
-
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
-{
-  if(m_bluetoothSocket)
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotError(): "
-	       "socket error (%1) for %2:%3.").
-       arg(m_bluetoothSocket->errorString()).
-       arg(m_address).
-       arg(m_port));
-
-  spoton_misc::logError
-    (QString("spoton_neighbor::slotError(): "
-	     "socket error (%1) for %2:%3.").
-     arg(error).
-     arg(m_address).
-     arg(m_port));
-
-  if(error != QBluetoothSocket::UnknownSocketError)
-    {
-      if(m_bluetoothSocket)
-	emit notification
-	  (QString("The neighbor %1:%2 generated a fatal error (%3).").
-	   arg(m_address).arg(m_port).arg(m_bluetoothSocket->errorString()));
-      else
-	emit notification
-	  (QString("The neighbor %1:%2 generated a fatal error (%3).").
-	   arg(m_address).arg(m_port).arg(error));
-
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotError(): "
-		 "socket error (%1) for %2:%3. Aborting.").
-	 arg(error).
-	 arg(m_address).
-	 arg(m_port));
-      deleteLater();
-    }
-}
-#endif
-
-void spoton_neighbor::slotError(const QString &method,
-				const spoton_sctp_socket::SocketError error)
-{
-  emit notification
-    (QString("The neighbor %1:%2 generated a fatal error (%3).").
-     arg(m_address).arg(m_port).arg(error));
-  spoton_misc::logError
-    (QString("spoton_neighbor::slotError(): "
-	     "socket error (%1:%2) for %3:%4. "
-	     "Aborting socket.").
-     arg(method).
-     arg(error).
-     arg(m_address).
-     arg(m_port));
-  deleteLater();
-}
-
-void spoton_neighbor::slotSendCapabilities(void)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(m_passthrough)
-    return;
-  else if(!readyToWrite())
-    return;
-
-  QByteArray message;
-  QReadLocker locker(&m_echoModeMutex);
-  QString echoMode(m_echoMode);
-
-  locker.unlock();
-
-  QUuid uuid
-    (spoton_kernel::
-     setting("gui/uuid", "{00000000-0000-0000-0000-000000000000}").toString());
-
-  message = spoton_send::message0014(uuid.toString().toLatin1() + "\n" +
-				     QByteArray::number(m_laneWidth) + "\n" +
-				     echoMode.toLatin1());
-
-  if(write(message.constData(), message.length()) != message.length())
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotSendCapabilities(): "
-	       "write() error for %1:%2.").
-       arg(m_address).
-       arg(m_port));
-}
-
-void spoton_neighbor::slotSendMOTD(void)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(m_passthrough)
-    return;
-  else if(!readyToWrite())
-    return;
-
-  QByteArray message(spoton_send::message0070(m_motd.toUtf8()));
-
-  if(write(message.constData(), message.length()) != message.length())
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotSendMOTD(): write() error for %1:%2.").
-       arg(m_address).
-       arg(m_port));
-}
-
-void spoton_neighbor::saveExternalAddress(const QHostAddress &address,
-					  const QSqlDatabase &db)
-{
-  if(!db.isOpen())
-    return;
-  else if(m_id == -1)
-    return;
-
-  QAbstractSocket::SocketState state = this->state();
-  QSqlQuery query(db);
-  bool ok = true;
-
-  if(state == QAbstractSocket::BoundState ||
-     state == QAbstractSocket::ConnectedState)
-    {
-      if(address.isNull())
-	{
-	  query.prepare("UPDATE neighbors SET "
-			"external_ip_address = NULL "
-			"WHERE OID = ? AND external_ip_address IS "
-			"NOT NULL");
-	  query.bindValue(0, m_id);
-	}
-      else
-	{
-	  spoton_crypt *s_crypt =
-	    spoton_kernel::s_crypts.value("chat", 0);
-
-	  if(s_crypt)
-	    {
-	      query.prepare("UPDATE neighbors SET external_ip_address = ? "
-			    "WHERE OID = ?");
-	      query.bindValue
-		(0, s_crypt->encryptedThenHashed(address.toString().
-						 toLatin1(), &ok).
-		 toBase64());
-	      query.bindValue(1, m_id);
-	    }
-	  else
-	    ok = false;
-	}
-    }
-  else if(state == QAbstractSocket::UnconnectedState)
-    {
-      query.prepare("UPDATE neighbors SET external_ip_address = NULL "
-		    "WHERE OID = ? AND external_ip_address IS NOT NULL");
-      query.bindValue(0, m_id);
-    }
-
-  if(ok)
-    query.exec();
-}
-
-void spoton_neighbor::slotExternalAddressDiscovered
-(const QHostAddress &address)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
-
-    if(db.open())
-      saveExternalAddress(address, db);
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_neighbor::slotDiscoverExternalAddress(void)
-{
-  if(m_externalAddress)
-    if(state() == QAbstractSocket::BoundState ||
-       state() == QAbstractSocket::ConnectedState)
-      m_externalAddress->discover();
-}
-
-void spoton_neighbor::slotSendMail
-(const QPairByteArrayInt64List &list, const QString &messageType)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  QList<qint64> oids;
-
-  if(readyToWrite())
-    for(int i = 0; i < list.size(); i++)
-      {
-	QByteArray message;
-	QPair<QByteArray, QByteArray> ae
-	  (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-						  spoton_kernel::s_crypts.
-						  value("chat", 0)));
-	QPair<QByteArray, qint64> pair(list.at(i));
-
-	if(messageType == "0001a")
-	  message = spoton_send::message0001a(pair.first, ae);
-	else if (messageType == "0001b")
-	  message = spoton_send::message0001b(pair.first, ae);
-	else
-	  message = spoton_send::message0001c(pair.first, ae);
-
-	if(write(message.constData(), message.length()) != message.length())
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::slotSendMail(): write() "
-		     "error for %1:%2.").
-	     arg(m_address).
-	     arg(m_port));
-	else
-	  {
-	    /*
-	    ** We may need to store the letter that this node sent if
-	    ** the node is also a post office box.
-	    ** Almost-anonymous e-mail shall not be archived.
-	    */
-
-	    if(messageType != "0001c")
-	      if(spoton_kernel::setting("gui/postoffice_enabled",
-					false).toBool())
-		{
-		  QWriteLocker locker(&m_dataMutex);
-
-		  m_data.append(message);
-		  locker.unlock();
-		  processData();
-		}
-
-	    oids.append(pair.second);
-	    spoton_kernel::messagingCacheAdd(message);
-	  }
-      }
-
-  if(!oids.isEmpty())
-    {
-      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
-
-      spoton_mailer::moveSentMailToSentFolder(oids, s_crypt);
-    }
-}
-
-void spoton_neighbor::slotSendMailFromPostOffice
-(const QByteArray &data,
- const QPairByteArrayByteArray &adaptiveEchoPair)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  bool adaptiveEcho = false;
-
-  QReadLocker locker(&m_learnedAdaptiveEchoPairsMutex);
-
-  if(adaptiveEchoPair == QPair<QByteArray, QByteArray> () ||
-     m_learnedAdaptiveEchoPairs.contains(adaptiveEchoPair))
-    adaptiveEcho = true;
-
-  locker.unlock();
-
-  if(adaptiveEcho && readyToWrite())
-    {
-      QByteArray message;
-      QPair<QByteArray, QByteArray> ae
-	(spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-						spoton_kernel::s_crypts.
-						value("chat", 0)));
-
-      message = spoton_send::message0001b(data, ae);
-
-      if(write(message.constData(), message.length()) != message.length())
-	spoton_misc::logError
-	  (QString("spoton_neighbor::slotSendMailFromPostOffice(): write() "
-		   "error for %1:%2.").
-	   arg(m_address).
-	   arg(m_port));
-      else
-	spoton_kernel::messagingCacheAdd(data);
-    }
-}
-
-void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
-				  const QByteArray &symmetricKeyAlgorithm,
-				  const QByteArray &hashKey,
-				  const QByteArray &hashKeyAlgorithm,
-				  const QByteArray &senderPublicKeyHash,
-				  const QByteArray &name,
-				  const QByteArray &subject,
-				  const QByteArray &message,
-				  const QByteArray &date,
-				  const QByteArray &attachmentData,
-				  const QByteArray &signature,
-				  const bool goldbugUsed)
-{
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "email.db");
-  qint64 maximumSize = 1048576 * spoton_kernel::setting
-    ("gui/maximumEmailFileSize", 1024).toLongLong();
-
-  if(fileInfo.size() >= maximumSize)
-    {
-      spoton_misc::logError("spoton_neighbor::storeLetter(): "
-			    "email.db has exceeded the specified limit.");
-      return;
-    }
-
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
-
-  if(!s_crypt)
-    return;
-
-  if(!spoton_misc::isAcceptedParticipant(senderPublicKeyHash, "email",
-					 s_crypt))
-    return;
-
-  if(!goldbugUsed &&
-     spoton_kernel::setting("gui/emailAcceptSignedMessagesOnly",
-			    true).toBool())
-    if(!spoton_misc::
-       isValidSignature("0001b" +
-			symmetricKey +
-			hashKey +
-			symmetricKeyAlgorithm +
-			hashKeyAlgorithm +
-			senderPublicKeyHash +
-			name +
-			subject +
-			message +
-			date +
-			attachmentData,
-			senderPublicKeyHash,
-			signature, s_crypt))
-      {
-	spoton_misc::logError
-	  ("spoton_neighbor::storeLetter(): invalid signature.");
-	return;
-      }
-
-  /*
-  ** We need to remember that the information here may have been
-  ** encoded with a goldbug. The interface will prompt the user
-  ** for the symmetric key.
-  */
-
-  if(!spoton_misc::isAcceptedParticipant(senderPublicKeyHash, "email",
-					 s_crypt))
-    return;
-
-  if(goldbugUsed)
-    saveParticipantStatus(senderPublicKeyHash);
-  else
-    saveParticipantStatus(name, senderPublicKeyHash);
-
-  QByteArray attachmentData_l(attachmentData);
-  QByteArray date_l(date);
-  QByteArray message_l(message);
-  QByteArray name_l(name);
-  QByteArray subject_l(subject);
-  QString connectionName("");
-  bool goldbugUsed_l = goldbugUsed;
-
-  if(goldbugUsed_l)
-    {
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-	    bool ok = true;
-
-	    query.setForwardOnly(true);
-	    query.prepare
-	      ("SELECT forward_secrecy_authentication_algorithm, "
-	       "forward_secrecy_authentication_key, "
-	       "forward_secrecy_encryption_algorithm, "
-	       "forward_secrecy_encryption_key FROM "
-	       "friends_public_keys WHERE "
-	       "neighbor_oid = -1 AND "
-	       "public_key_hash = ?");
-	    query.bindValue(0, senderPublicKeyHash.toBase64());
-
-	    if(query.exec() && query.next())
-	      if(!query.isNull(0) && !query.isNull(1) &&
-		 !query.isNull(2) && !query.isNull(3))
-		{
-		  QByteArray aa;
-		  QByteArray ak;
-		  QByteArray ea;
-		  QByteArray ek;
-		  QByteArray magnet;
-
-		  if(ok)
-		    aa = s_crypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(0).
-					      toByteArray()),
-		       &ok);
-
-		  if(ok)
-		    ak = s_crypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(1).
-					      toByteArray()),
-		       &ok);
-
-		  if(ok)
-		    ea = s_crypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(2).
-					      toByteArray()),
-		       &ok);
-
-		  if(ok)
-		    ek = s_crypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(3).
-					      toByteArray()),
-		       &ok);
-
-		  if(ok)
-		    {
-		      magnet = spoton_misc::forwardSecrecyMagnetFromList
-			(QList<QByteArray> () << aa << ak << ea << ek);
-
-		      spoton_crypt *crypt =
-			spoton_misc::cryptFromForwardSecrecyMagnet
-			(magnet);
-
-		      if(crypt)
-			{
-			  attachmentData_l = crypt->
-			    decryptedAfterAuthenticated(attachmentData_l,
-							&ok);
-
-			  if(ok)
-			    date_l = crypt->
-			      decryptedAfterAuthenticated
-			      (date_l, &ok);
-
-			  if(ok)
-			    message_l = crypt->
-			      decryptedAfterAuthenticated
-			      (message_l, &ok);
-
-			  if(ok)
-			    name_l = crypt->
-			      decryptedAfterAuthenticated(name_l, &ok);
-
-			  if(ok)
-			    subject_l = crypt->
-			      decryptedAfterAuthenticated
-			      (subject_l, &ok);
-
-			  if(ok)
-			    goldbugUsed_l = false;
-			  else
-			    {
-			      /*
-			      ** Reset the local variables.
-			      */
-
-			      attachmentData_l = attachmentData;
-			      date_l = date;
-			      message_l = message;
-			      name_l = name;
-			      subject_l = subject;
-			    }
-			}
-
-		      delete crypt;
-		    }
-		}
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	bool ok = true;
-	QSqlQuery query(db);
-
-	query.prepare("INSERT INTO folders "
-		      "(date, folder_index, from_account, goldbug, hash, "
-		      "message, message_code, "
-		      "receiver_sender, receiver_sender_hash, sign, "
-		      "signature, "
-		      "status, subject, participant_oid) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	query.bindValue
-	  (0, s_crypt->
-	   encryptedThenHashed(date_l, &ok).toBase64());
-	query.bindValue(1, 0); // Inbox Folder
-
-	if(ok)
-	  query.bindValue(2, s_crypt->encryptedThenHashed(QByteArray(), &ok).
-			  toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (3, s_crypt->
-	     encryptedThenHashed(QByteArray::number(goldbugUsed_l), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (4, s_crypt->keyedHash(date_l + message_l + subject_l,
-				   &ok).toBase64());
-
-	if(ok)
-	  if(!message_l.isEmpty())
-	    query.bindValue
-	      (5, s_crypt->encryptedThenHashed(message_l, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (6, s_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	if(ok)
-	  if(!name.isEmpty())
-	    query.bindValue
-	      (7, s_crypt->encryptedThenHashed(name_l, &ok).toBase64());
-
-	query.bindValue
-	  (8, senderPublicKeyHash.toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (9, s_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (10, s_crypt->encryptedThenHashed(signature, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (11, s_crypt->
-	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (12, s_crypt->encryptedThenHashed(subject_l, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (13, s_crypt->
-	     encryptedThenHashed(QByteArray::number(-1), &ok).
-	     toBase64());
-
-	if(ok)
-	  if(query.exec())
-	    {
-	      if(!attachmentData_l.isEmpty())
-		{
-		  QVariant variant(query.lastInsertId());
-		  qint64 id = query.lastInsertId().toLongLong();
-
-		  if(variant.isValid())
-		    {
-		      QByteArray data;
-
-		      if(!goldbugUsed_l)
-			data = qUncompress(attachmentData_l);
-		      else
-			data = attachmentData_l;
-
-		      if(!data.isEmpty())
-			{
-			  QList<QPair<QByteArray, QByteArray> > attachments;
-
-			  if(!goldbugUsed_l)
-			    {
-			      QDataStream stream(&data, QIODevice::ReadOnly);
-
-			      stream >> attachments;
-
-			      if(stream.status() != QDataStream::Ok)
-				attachments.clear();
-			    }
-			  else
-			    attachments << QPair<QByteArray, QByteArray>
-			      (data, data);
-
-			  while(!attachments.isEmpty())
-			    {
-			      QPair<QByteArray, QByteArray> pair
-				(attachments.takeFirst());
-			      QSqlQuery query(db);
-
-			      query.prepare("INSERT INTO folders_attachment "
-					    "(data, folders_oid, name) "
-					    "VALUES (?, ?, ?)");
-			      query.bindValue
-				(0, s_crypt->encryptedThenHashed(pair.first,
-								 &ok).
-				 toBase64());
-			      query.bindValue(1, id);
-
-			      if(ok)
-				query.bindValue
-				  (2, s_crypt->
-				   encryptedThenHashed(pair.second,
-						       &ok).toBase64());
-
-			      if(ok)
-				query.exec();
-			    }
-			}
-		    }
-		}
-
-	      emit newEMailArrived();
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
-				  const QByteArray &recipientHash)
-{
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "email.db");
-  qint64 maximumSize = 1048576 * spoton_kernel::setting
-    ("gui/maximumEmailFileSize", 1024).toLongLong();
-
-  if(fileInfo.size() >= maximumSize)
-    {
-      spoton_misc::logError("spoton_neighbor::storeLetter(): "
-			    "email.db has exceeded the specified limit.");
-      return;
-    }
-
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
-
-  if(!s_crypt)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.prepare("INSERT INTO post_office "
-		      "(date_received, message_bundle, "
-		      "message_bundle_hash, recipient_hash) "
-		      "VALUES (?, ?, ?, ?)");
-	query.bindValue
-	  (0, s_crypt->
-	   encryptedThenHashed(QDateTime::currentDateTime().
-			       toString(Qt::ISODate).
-			       toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  {
-	    QByteArray data;
-
-	    data =
-	      list.value(0).toBase64() + "\n" + // Symmetric Key Bundle
-	      list.value(1).toBase64() + "\n" + // Data
-	      list.value(2).toBase64();         // Message Code
-	    query.bindValue
-	      (1, s_crypt->encryptedThenHashed(data, &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(2, s_crypt->keyedHash(data, &ok).
-		 toBase64());
-	  }
-
-	query.bindValue(3, recipientHash.toBase64());
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_neighbor::slotRetrieveMail(const QByteArrayList &list,
-				       const QString &messageType)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(readyToWrite())
-    for(int i = 0; i < list.size(); i++)
-      {
-	QByteArray message;
-	QPair<QByteArray, QByteArray> ae
-	  (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-						  spoton_kernel::s_crypts.
-						  value("chat", 0)));
-
-	if(messageType == "0002a")
-	  message = spoton_send::message0002a(list.at(i), ae);
-	else
-	  message = spoton_send::message0002b(list.at(i), ae);
-
-	if(write(message.constData(), message.length()) != message.length())
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::slotRetrieveMail(): write() "
-		     "error for %1:%2.").
-	     arg(m_address).
-	     arg(m_port));
-	else
-	  spoton_kernel::messagingCacheAdd(message);
-      }
-}
-
-void spoton_neighbor::slotHostFound(const QHostInfo &hostInfo)
-{
-  foreach(const QHostAddress &address, hostInfo.addresses())
-    if(!address.isNull())
-      {
-	m_address = address.toString();
-	m_ipAddress = m_address;
-	break;
-      }
-}
-
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-void spoton_neighbor::slotPublicizeListenerPlaintext
-(const QBluetoothAddress &address,
- const quint16 port,
- const QString &orientation)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(!address.isNull())
-    if(readyToWrite())
-      {
-	QByteArray message
-	  (spoton_send::message0030(address, port, orientation));
-
-	if(write(message.constData(), message.length()) !=
-	   message.length())
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::slotPublicizeListenerPlaintext(): "
-		     "write() "
-		     "error for %1:%2.").
-	     arg(m_address).
-	     arg(m_port));
-	else
-	  spoton_kernel::messagingCacheAdd(message);
-      }
-}
-#endif
-
-void spoton_neighbor::slotPublicizeListenerPlaintext
-(const QHostAddress &address, const quint16 port, const QString &transport,
- const QString &orientation)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(!address.isNull())
-    if(readyToWrite())
-      {
-	QByteArray message
-	  (spoton_send::message0030(address, port, transport, orientation));
-
-	if(write(message.constData(), message.length()) !=
-	   message.length())
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::slotPublicizeListenerPlaintext(): "
-		     "write() "
-		     "error for %1:%2.").
-	     arg(m_address).
-	     arg(m_port));
-	else
-	  spoton_kernel::messagingCacheAdd(message);
-      }
-}
-
-void spoton_neighbor::slotPublicizeListenerPlaintext(const QByteArray &data,
-						     const qint64 id)
-{
-  if(id == m_id)
-    return;
-
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  /*
-  ** A neighbor (id) received a request to publish listener information.
-  ** This neighbor now needs to send the message to its peer.
-  */
-
-  QReadLocker locker(&m_echoModeMutex);
-  QString echoMode(m_echoMode);
-
-  locker.unlock();
-
-  if(echoMode == "full")
-    if(readyToWrite())
-      {
-	QByteArray message(spoton_send::message0030(data));
-
-	if(write(message.constData(), message.length()) !=
-	   message.length())
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::"
-		     "slotPublicizeListenerPlaintext(): "
-		     "write() "
-		     "error for %1:%2.").
-	     arg(m_address).
-	     arg(m_port));
-	else
-	  spoton_kernel::messagingCacheAdd(message);
-      }
-}
-
-void spoton_neighbor::slotSslErrors(const QList<QSslError> &errors)
-{
-  for(int i = 0; i < errors.size(); i++)
-    spoton_misc::logError(QString("spoton_neighbor::slotSslErrors(): "
-				  "error (%1) occurred from %2:%3.").
-			  arg(errors.at(i).errorString()).
-			  arg(m_address).
-			  arg(m_port));
-}
-
-void spoton_neighbor::slotPeerVerifyError(const QSslError &error)
-{
-  /*
-  ** This method may be called several times!
-  */
-
-  bool shouldDelete = true;
-
-  if(error.error() == QSslError::CertificateUntrusted ||
-     error.error() == QSslError::HostNameMismatch ||
-     error.error() == QSslError::SelfSignedCertificate)
-    shouldDelete = false;
-
-  if(shouldDelete)
-    {
-      emit notification
-	(QString("The neighbor %1:%2 generated a fatal error (%3).").
-	 arg(m_address).arg(m_port).arg(error.errorString()));
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotPeerVerifyError(): instructed "
-		 "to delete neighbor for %1:%2.").
-	 arg(m_address).
-	 arg(m_port));
-      deleteLater();
-      return;
-    }
-
-  if(!m_allowExceptions)
-    if(m_isUserDefined)
-      if(m_tcpSocket)
-	if(!m_peerCertificate.isNull() &&
-	   !m_tcpSocket->peerCertificate().isNull())
-	  if(!m_peerCertificate.toPem().isEmpty() &&
-	     !m_tcpSocket->peerCertificate().toPem().isEmpty())
-	    if(!spoton_crypt::memcmp(m_peerCertificate.toPem(),
-				     m_tcpSocket->peerCertificate().toPem()))
-	      {
-		emit notification
-		  (QString("The neighbor %1:%2 generated a fatal error (%3).").
-		   arg(m_address).arg(m_port).arg("certificate mismatch"));
-		spoton_misc::logError
-		  (QString("spoton_neighbor::slotPeerVerifyError(): "
-			   "the stored certificate does not match "
-			   "the peer's certificate for %1:%2. This is a "
-			   "serious problem! Aborting.").
-		   arg(m_address).
-		   arg(m_port));
-		deleteLater();
-	      }
-}
-
-void spoton_neighbor::slotModeChanged(QSslSocket::SslMode mode)
-{
-  spoton_misc::logError
-    (QString("spoton_neighbor::slotModeChanged(): "
-	     "the connection mode has changed to %1 for %2:%3.").
-     arg(mode).
-     arg(m_address).
-     arg(m_port));
-
-  if(m_useSsl)
-    {
-      if(mode == QSslSocket::UnencryptedMode)
-	{
-	  emit notification
-	    (QString("The neighbor %1:%2 generated a fatal error (%3).").
-	     arg(m_address).arg(m_port).arg("unencrypted connection"));
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::slotModeChanged(): "
-		     "unencrypted connection mode for %1:%2. Aborting.").
-	     arg(m_address).
-	     arg(m_port));
-	  deleteLater();
-	  return;
-	}
-
-      if(m_useAccounts.fetchAndAddOrdered(0))
-	{
-	  m_accountTimer.start();
-	  m_authenticationTimer.start();
-	}
-    }
-  else
-    m_sslControlString = "N/A";
-}
-
-void spoton_neighbor::slotDisconnected(void)
-{
-  spoton_misc::logError
-    (QString("spoton_neighbor::slotDisconnected(): "
-	     "aborting socket for %1:%2!").
-     arg(m_address).
-     arg(m_port));
-  deleteLater();
-}
-
-void spoton_neighbor::slotEncrypted(void)
-{
-  recordCertificateOrAbort();
-  QTimer::singleShot(250, this, SLOT(slotSendCapabilities(void)));
-}
-
-void spoton_neighbor::recordCertificateOrAbort(void)
-{
-  QSslCertificate certificate;
-  bool save = false;
-
-  if(m_isUserDefined)
-    {
-      if(m_tcpSocket)
-	{
-	  if(m_peerCertificate.isNull() &&
-	     !m_tcpSocket->peerCertificate().isNull())
-	    {
-	      certificate = m_peerCertificate = m_tcpSocket->peerCertificate();
-	      save = true;
-	    }
-	  else if(!m_allowExceptions)
-	    {
-	      if(m_tcpSocket->peerCertificate().isNull())
-		{
-		  emit notification
-		    (QString("The neighbor %1:%2 generated a fatal "
-			     "error (%3).").
-		     arg(m_address).arg(m_port).arg("empty peer certificate"));
-		  spoton_misc::logError
-		    (QString("spoton_neighbor::recordCertificateOrAbort(): "
-			     "null peer certificate for %1:%2. Aborting.").
-		     arg(m_address).
-		     arg(m_port));
-		  deleteLater();
-		  return;
-		}
-	      else if(!spoton_crypt::
-		      memcmp(m_peerCertificate.toPem(),
-			     m_tcpSocket->peerCertificate().toPem()))
-		{
-		  emit notification
-		    (QString("The neighbor %1:%2 generated a fatal "
-			     "error (%3).").
-		     arg(m_address).arg(m_port).arg("certificate mismatch"));
-		  spoton_misc::logError
-		    (QString("spoton_neighbor::recordCertificateOrAbort(): "
-			     "the stored certificate does not match "
-			     "the peer's certificate for %1:%2. This is a "
-			     "serious problem! Aborting.").
-		     arg(m_address).
-		     arg(m_port));
-		  deleteLater();
-		  return;
-		}
-	    }
-	}
-    }
-  else
-    {
-      if(m_tcpSocket)
-	certificate = m_tcpSocket->sslConfiguration().localCertificate();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      else if(m_udpSocket)
-	certificate = m_udpSslConfiguration.localCertificate();
-#endif
-
-      save = true;
-    }
-
-  if(!save)
-    return;
-
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-  if(!s_crypt)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.prepare
-	  ("UPDATE neighbors SET certificate = ? WHERE OID = ?");
-	query.bindValue
-	  (0, s_crypt->encryptedThenHashed(certificate.toPem(),
-					   &ok).toBase64());
-	query.bindValue(1, m_id);
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_neighbor::slotProxyAuthenticationRequired
-(const QNetworkProxy &proxy,
- QAuthenticator *authenticator)
-{
-  Q_UNUSED(proxy);
-
-  if(authenticator)
-    {
-      if(m_tcpSocket)
-	{
-	  authenticator->setPassword(m_tcpSocket->proxy().password());
-	  authenticator->setUser(m_tcpSocket->proxy().user());
-	}
-      else if(m_udpSocket)
-	{
-	  authenticator->setPassword(m_udpSocket->proxy().password());
-	  authenticator->setUser(m_udpSocket->proxy().user());
-	}
-      else
-	*authenticator = QAuthenticator();
-    }
-}
-
-void spoton_neighbor::slotSendBuzz(const QByteArray &data)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(readyToWrite())
-    {
-      if(write(data.constData(), data.length()) != data.length())
-	spoton_misc::logError
-	  (QString("spoton_neighbor::slotSendBuzz(): write() error for "
-		   "%1:%2.").
-	   arg(m_address).
-	   arg(m_port));
-      else
-	spoton_kernel::messagingCacheAdd(data);
-    }
-}
-
-void spoton_neighbor::slotResetKeepAlive(void)
-{
-  m_lastReadTime = QDateTime::currentDateTime();
-  spoton_kernel::s_sendInitialStatus.testAndSetOrdered(0, 1);
-}
-
-void spoton_neighbor::slotCallParticipant(const QByteArray &data,
-					  const QString &messageType)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  QByteArray message;
-  QPair<QByteArray, QByteArray> ae
-    (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
-
-  if(spoton_kernel::setting("gui/chatSendMethod", "Artificial_GET").
-     toString().toLower() == "artificial_get")
-    {
-      if(messageType == "0000a" || messageType == "0000c")
-	message = spoton_send::message0000a(data,
-					    spoton_send::
-					    ARTIFICIAL_GET,
-					    ae);
-      else if(messageType == "0000b")
-	message = spoton_send::message0000b(data,
-					    spoton_send::
-					    ARTIFICIAL_GET,
-					    ae);
-      else if(messageType == "0000d")
-	message = spoton_send::message0000d(data,
-					    spoton_send::
-					    ARTIFICIAL_GET,
-					    ae);
-    }
-  else
-    {
-      if(messageType == "0000a" || messageType == "0000c")
-	message = spoton_send::message0000a(data,
-					    spoton_send::
-					    NORMAL_POST,
-					    ae);
-      else if(messageType == "0000b")
-	message = spoton_send::message0000b(data,
-					    spoton_send::
-					    NORMAL_POST,
-					    ae);
-      else if(messageType == "0000d")
-	message = spoton_send::message0000d(data,
-					    spoton_send::
-					    NORMAL_POST,
-					    ae);
-    }
-
-  if(!message.isEmpty() && readyToWrite())
-    {
-      if(write(message.constData(),
-	       message.length()) != message.length())
-	spoton_misc::logError
-	  (QString("spoton_neighbor::slotCallParticipant(): write() "
-		   "error for %1:%2.").
-	   arg(m_address).
-	   arg(m_port));
-      else
-	spoton_kernel::messagingCacheAdd(message);
-    }
-}
-
-void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
-				 const QByteArray &gemini,
-				 const QByteArray &geminiHashKey,
-				 const QByteArray &timestamp,
-				 const QByteArray &signature,
-				 const QString &messageType)
-{
-  /*
-  ** Some of the following is similar to logic in
-  ** spot-on-kernel-b.cc.
-  */
-
-  if(!spoton_kernel::setting("gui/acceptGeminis", true).toBool())
-    return;
-
-  QDateTime dateTime
-    (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
-
-  if(!dateTime.isValid())
-    {
-      spoton_misc::logError
-	("spoton_neighbor::saveGemini(): invalid date-time object.");
-      return;
-    }
-
-  QDateTime now(QDateTime::currentDateTimeUtc());
-
-  dateTime.setTimeSpec(Qt::UTC);
-  now.setTimeSpec(Qt::UTC);
-
-  qint64 secsTo = qAbs(now.secsTo(dateTime));
-
-  if(!(secsTo <= static_cast<qint64> (spoton_common::
-				      GEMINI_TIME_DELTA_MAXIMUM)))
-    {
-      spoton_misc::logError
-	(QString("spoton_neighbor::saveGemini(): "
-		 "large time delta (%1).").arg(secsTo));
-      return;
-    }
-  else if(spoton_kernel::duplicateGeminis(publicKeyHash +
-					  gemini +
-					  geminiHashKey))
-    {
-      spoton_misc::logError
-	(QString("spoton_neighbor::saveGemini(): duplicate keys, "
-		 "message type %1.").arg(messageType));
-      return;
-    }
-
-  spoton_kernel::geminisCacheAdd(publicKeyHash + gemini + geminiHashKey);
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QByteArray bytes1;
-	QByteArray bytes2;
-	QPair<QByteArray, QByteArray> geminis;
-	QSqlQuery query(db);
-	bool ok = true;
-	bool respond = false;
-
-	geminis.first = gemini;
-	geminis.second = geminiHashKey;
-
-	if(messageType == "0000a")
-	  if(!gemini.isEmpty() && !geminiHashKey.isEmpty())
-	    if(static_cast<size_t> (gemini.length()) ==
-	       spoton_crypt::cipherKeyLength("aes256") / 2 &&
-	       geminiHashKey.length() ==
-	       spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2)
-	      {
-		bytes1 = spoton_crypt::strongRandomBytes
-		  (spoton_crypt::cipherKeyLength("aes256") / 2);
-		bytes2 = spoton_crypt::strongRandomBytes
-		  (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2);
-		geminis.first.append(bytes1);
-		geminis.second.append(bytes2);
-		respond = true;
-	      }
-
-	if(messageType == "0000c")
-	  if(!gemini.isEmpty() && !geminiHashKey.isEmpty())
-	    if(static_cast<size_t> (gemini.length()) ==
-	       spoton_crypt::cipherKeyLength("aes256") / 2 &&
-	       geminiHashKey.length() ==
-	       spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2)
-	      {
-		/*
-		** We may be processing a two-way call.
-		*/
-
-		spoton_crypt *s_crypt =
-		  spoton_kernel::s_crypts.value("chat", 0);
-
-		if(s_crypt)
-		  {
-		    query.setForwardOnly(true);
-		    query.prepare("SELECT gemini, gemini_hash_key "
-				  "FROM friends_public_keys WHERE "
-				  "neighbor_oid = -1 AND "
-				  "public_key_hash = ?");
-		    query.bindValue(0, publicKeyHash.toBase64());
-
-		    if(query.exec() && query.next())
-		      {
-			if(!query.isNull(0))
-			  bytes1 = s_crypt->decryptedAfterAuthenticated
-			    (QByteArray::fromBase64(query.value(0).
-						    toByteArray()),
-			     &ok);
-
-			if(ok)
-			  if(!query.isNull(1))
-			    bytes2 = s_crypt->decryptedAfterAuthenticated
-			      (QByteArray::fromBase64(query.value(1).
-						      toByteArray()),
-			       &ok);
-
-			if(ok)
-			  {
-			    /*
-			    ** This is a response.
-			    */
-
-			    geminis.first.prepend
-			      (bytes1.mid(0, gemini.length()));
-			    geminis.second.prepend
-			      (bytes2.mid(0, geminiHashKey.length()));
-			  }
-		      }
-		  }
-	      }
-
-	query.prepare("UPDATE friends_public_keys SET "
-		      "gemini = ?, gemini_hash_key = ?, "
-		      "last_status_update = ?, status = 'online' "
-		      "WHERE neighbor_oid = -1 AND "
-		      "public_key_hash = ?");
-
-	if(geminis.first.isEmpty() || geminis.second.isEmpty())
-	  {
-	    query.bindValue(0, QVariant(QVariant::String));
-	    query.bindValue(1, QVariant(QVariant::String));
-	  }
-	else
-	  {
-	    spoton_crypt *s_crypt =
-	      spoton_kernel::s_crypts.value("chat", 0);
-
-	    if(s_crypt)
-	      {
-		query.bindValue
-		  (0, s_crypt->encryptedThenHashed(geminis.first, &ok).
-		   toBase64());
-
-		if(ok)
-		  query.bindValue
-		    (1, s_crypt->encryptedThenHashed(geminis.second,
-						     &ok).toBase64());
-	      }
-	    else
-	      {
-		query.bindValue(0, QVariant(QVariant::String));
-		query.bindValue(1, QVariant(QVariant::String));
-	      }
-	  }
-
-	query.bindValue
-	  (2, QDateTime::currentDateTime().toString(Qt::ISODate));
-	query.bindValue(3, publicKeyHash.toBase64());
-
-	if(ok)
-	  if(query.exec())
-	    {
-	      QString notsigned("");
-
-	      if(signature.isEmpty())
-		notsigned = " (unsigned)";
-
-	      if(geminis.first.isEmpty() ||
-		 geminis.second.isEmpty())
-		emit statusMessageReceived
-		  (publicKeyHash,
-		   tr("The participant %1...%2 terminated%3 the call "
-		      "via %4:%5.").
-		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()).
-		   arg(notsigned).
-		   arg(m_address).
-		   arg(m_port));
-	      else if(messageType == "0000a")
-		{
-		  if(respond)
-		    emit statusMessageReceived
-		      (publicKeyHash,
-		       tr("The participant %1...%2 may have "
-			  "initiated a two-way call%3 via %4:%5. "
-			  "Response dispatched.").
-		       arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		       arg(publicKeyHash.toBase64().right(16).constData()).
-		       arg(notsigned).
-		       arg(m_address).
-		       arg(m_port));
-		  else
-		    emit statusMessageReceived
-		      (publicKeyHash,
-		       tr("The participant %1...%2 initiated a call%3 "
-			  "via %4:%5.").
-		       arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		       arg(publicKeyHash.toBase64().right(16).constData()).
-		       arg(notsigned).
-		       arg(m_address).
-		       arg(m_port));
-		}
-	      else if(messageType == "0000b")
-		emit statusMessageReceived
-		  (publicKeyHash,
-		   tr("The participant %1...%2 initiated a call%3 "
-		      "within a call via %4:%5.").
-		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()).
-		   arg(notsigned).
-		   arg(m_address).
-		   arg(m_port));
-	      else if(messageType == "0000c")
-		emit statusMessageReceived
-		  (publicKeyHash,
-		   tr("Received a two-way call response%1 from "
-		      "participant %2...%3 via %4:%5.").
-		   arg(notsigned).
-		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()).
-		   arg(m_address).
-		   arg(m_port));
-	      else if(messageType == "0000d")
-		emit statusMessageReceived
-		  (publicKeyHash,
-		   tr("The participant %1...%2 initiated a call via "
-		      "Forward Secrecy via %3:%4.").
-		   arg(publicKeyHash.toBase64().mid(0, 16).constData()).
-		   arg(publicKeyHash.toBase64().right(16).constData()).
-		   arg(m_address).
-		   arg(m_port));
-
-	      /*
-	      ** Respond to this call with a new pair of half keys.
-	      */
-
-	      if(respond)
-		emit callParticipant(publicKeyHash, bytes1, bytes2);
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_neighbor::addToBytesWritten(const qint64 bytesWritten)
-{
-  QWriteLocker locker(&m_bytesWrittenMutex);
-
-  m_bytesWritten += static_cast<quint64> (qAbs(bytesWritten));
-  locker.unlock();
-
-  {
-    QWriteLocker locker
-      (&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
-
-    spoton_kernel::s_totalNeighborsBytesReadWritten.second +=
-      static_cast<quint64> (qAbs(bytesWritten));
-  }
-}
-
-void spoton_neighbor::slotSendAccountInformation(void)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(!(state() == QAbstractSocket::BoundState ||
-       state() == QAbstractSocket::ConnectedState))
-    return;
-
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-  if(!s_crypt)
-    return;
-
-  QByteArray name;
-  QByteArray password;
-  bool ok = true;
-
-  QReadLocker locker1(&m_accountNameMutex);
-
-  name = m_accountName;
-  locker1.unlock();
-
-  QReadLocker locker2(&m_accountPasswordMutex);
-
-  password = m_accountPassword;
-  locker2.unlock();
-  name = s_crypt->decryptedAfterAuthenticated(name, &ok);
-
-  if(ok)
-    password = s_crypt->decryptedAfterAuthenticated(password, &ok);
-
-  if(ok)
-    if(name.length() >= 32 && password.length() >= 32)
-      {
-	QByteArray hash;
-	QByteArray message;
-	QByteArray salt
-	  (spoton_crypt::
-	   strongRandomBytes(spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE));
-
-	hash = spoton_crypt::keyedHash
-	  (QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmm").
-	   toLatin1() + salt, name + password, "sha512", &ok);
-
-	if(ok)
-	  message = spoton_send::message0050(hash, salt);
-
-	if(ok)
-	  {
-	    if(write(message.constData(), message.length()) !=
-	       message.length())
-	      spoton_misc::logError
-		(QString("spoton_neighbor::slotSendAccountInformation(): "
-			 "write() error for %1:%2.").
-		 arg(m_address).
-		 arg(m_port));
-	    else
-	      {
-		QWriteLocker locker(&m_accountClientSentSaltMutex);
-
-		m_accountClientSentSalt = salt;
-	      }
-	  }
-      }
-}
-
-void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
-					       const QByteArray &name,
-					       const QByteArray &password)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(!(state() == QAbstractSocket::BoundState ||
-       state() == QAbstractSocket::ConnectedState))
-    return;
-  else if(name.length() < 32 || password.length() < 32)
-    return;
-
-  QByteArray hash;
-  QByteArray message;
-  QByteArray salt(spoton_crypt::
-		  strongRandomBytes(spoton_common::
-				    ACCOUNTS_RANDOM_BUFFER_SIZE));
-  bool ok = true;
-
-  /*
-  ** The server authenticated the client's credentials. We'll
-  ** now create a similar response so that the client can
-  ** verify the server. We are the server.
-  */
-
-  hash = spoton_crypt::keyedHash
-    (QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmm").
-     toLatin1() + clientSalt + salt, name + password, "sha512", &ok);
-
-  if(ok)
-    message = spoton_send::message0051(hash, salt);
-
-  if(ok)
-    {
-      if(write(message.constData(), message.length()) != message.length())
-	spoton_misc::logError
-	  (QString("spoton_neighbor::slotAccountAuthenticated(): "
-		   "write() error for %1:%2.").
-	   arg(m_address).
-	   arg(m_port));
-    }
-}
-
-void spoton_neighbor::slotSendAuthenticationRequest(void)
-{
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
-    return;
-
-  if(!(state() == QAbstractSocket::BoundState ||
-       state() == QAbstractSocket::ConnectedState))
-    return;
-
-  QByteArray message(spoton_send::message0052());
-
-  if(write(message.constData(), message.length()) != message.length())
-    spoton_misc::logError
-      (QString("spoton_neighbor::slotSendAuthenticationRequest(): "
-	       "write() error for %1:%2.").
-       arg(m_address).
-       arg(m_port));
 }
