@@ -154,6 +154,80 @@ bool spoton::verifyInitializationPassphrase(QWidget *parent)
   return true;
 }
 
+void spoton::slotCloseTab(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString name(action->property("name").toString());
+
+  if(name == "buzz")
+    m_ui.action_Buzz->setChecked(false);
+  else if(name == "listeners")
+    m_ui.action_Listeners->setChecked(false);
+  else if(name == "neighbors")
+    m_ui.action_Neighbors->setChecked(false);
+  else if(name == "search")
+    m_ui.action_Search->setChecked(false);
+  else if(name == "starbeam")
+    m_ui.action_StarBeam->setChecked(false);
+  else if(name == "urls")
+    m_ui.action_Urls->setChecked(false);
+}
+
+void spoton::slotCopyMyOpenLibraryPublicKey(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyOpenLibraryPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= 10 * 1024 * 1024)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The open-library public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(text);
+      QApplication::restoreOverrideCursor();
+    }
+}
+
+void spoton::slotRemoveAttachment(const QUrl &url)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QStringList list(m_ui.attachment->toPlainText().split('\n'));
+
+  m_ui.attachment->clear();
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(str != url.toString())
+	m_ui.attachment->append(QString("<a href=\"%1\">%1</a>").arg(str));
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
   if(m_locked)
@@ -197,48 +271,6 @@ void spoton::slotShowMainTabContextMenu(const QPoint &point)
   menu.exec(m_ui.tab->tabBar()->mapToGlobal(point));
 }
 
-void spoton::slotCloseTab(void)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QString name(action->property("name").toString());
-
-  if(name == "buzz")
-    m_ui.action_Buzz->setChecked(false);
-  else if(name == "listeners")
-    m_ui.action_Listeners->setChecked(false);
-  else if(name == "neighbors")
-    m_ui.action_Neighbors->setChecked(false);
-  else if(name == "search")
-    m_ui.action_Search->setChecked(false);
-  else if(name == "starbeam")
-    m_ui.action_StarBeam->setChecked(false);
-  else if(name == "urls")
-    m_ui.action_Urls->setChecked(false);
-}
-
-void spoton::slotRemoveAttachment(const QUrl &url)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QStringList list(m_ui.attachment->toPlainText().split('\n'));
-
-  m_ui.attachment->clear();
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(str != url.toString())
-	m_ui.attachment->append(QString("<a href=\"%1\">%1</a>").arg(str));
-    }
-
-  QApplication::restoreOverrideCursor();
-}
-
 void spoton::slotShowNotificationsWindow(void)
 {
   bool wasVisible = m_notificationsWindow->isVisible();
@@ -249,38 +281,6 @@ void spoton::slotShowNotificationsWindow(void)
 
   if(!wasVisible)
     spoton_utilities::centerWidget(m_notificationsWindow, this);
-}
-
-void spoton::slotCopyMyOpenLibraryPublicKey(void)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString text(copyMyOpenLibraryPublicKey());
-
-  QApplication::restoreOverrideCursor();
-
-  if(text.length() >= 10 * 1024 * 1024)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The open-library public key is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
-    }
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    {
-      m_ui.toolButtonCopyToClipboard->menu()->repaint();
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
-      QApplication::restoreOverrideCursor();
-    }
 }
 
 void spoton::slotShareOpenLibraryPublicKey(void)
