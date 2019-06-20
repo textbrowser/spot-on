@@ -154,6 +154,32 @@ bool spoton::verifyInitializationPassphrase(QWidget *parent)
   return true;
 }
 
+void spoton::cancelUrlQuery(void)
+{
+  if(m_urlDatabase.driverName() != "QPSQL")
+    return;
+  else if(!m_urlDatabase.driver())
+    return;
+
+  QVariant handle(m_urlDatabase.driver()->handle());
+
+  if(handle.typeName() != QString("PGconn") || !handle.isValid())
+    return;
+
+  PGconn *connection = *static_cast<PGconn **> (handle.data());
+
+  if(!connection)
+    return;
+
+  PGcancel *cancel = PQgetCancel(connection);
+
+  if(!cancel)
+    return;
+
+  PQcancel(cancel, 0, 0);
+  PQfreeCancel(cancel);
+}
+
 void spoton::joinBuzzChannel(const QUrl &url)
 {
   QString channel("");
@@ -730,6 +756,177 @@ void spoton::slotCopyMyOpenLibraryPublicKey(void)
     }
 }
 
+void spoton::slotCopyPrivateApplicationMagnet(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  int row = -1;
+
+  if(action->property("type") == "listeners")
+    row = m_ui.listeners->currentRow();
+  else if(action->property("type") == "neighbors")
+    row = m_ui.neighbors->currentRow();
+  else
+    return;
+
+  if(row < 0)
+    return;
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+  else
+    clipboard->clear();
+
+  QTableWidgetItem *item = 0;
+
+  if(action->property("type") == "listeners")
+    item = m_ui.listeners->item(row, 23); // private_application_credentials
+  else
+    item = m_ui.neighbors->item(row, 39); // private_application_credentials
+
+  if(!item)
+    return;
+
+  clipboard->setText(item->text());
+}
+
+void spoton::slotCopyStyleSheet(void)
+{
+#if SPOTON_GOLDBUG == 0
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QWidget *widget = findChild<QWidget *> (action->property("widget_name").
+					  toString());
+
+  if(!widget)
+    return;
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  clipboard->setText(widget->styleSheet());
+#endif
+}
+
+void spoton::slotCopyUrlKeys(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QByteArray name;
+  QByteArray publicKeyHash;
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.urlParticipants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.urlParticipants->
+	item(row, 0); // Name
+
+      if(item)
+	name.append(item->text());
+
+      item = m_ui.urlParticipants->item(row, 1); // OID
+
+      if(item)
+	oid = item->text();
+
+      item = m_ui.urlParticipants->item(row, 3); // public_key_hash
+
+      if(item)
+	publicKeyHash.append(item->text());
+    }
+
+  if(oid.isEmpty() || publicKeyHash.isEmpty())
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  if(name.isEmpty())
+    name = "unknown";
+
+  QByteArray publicKey;
+  QByteArray signatureKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT public_key "
+		      "FROM friends_public_keys WHERE "
+		      "OID = ?");
+	query.bindValue(0, oid);
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).
+				      toByteArray()),
+	       &ok);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  signatureKey = spoton_misc::signaturePublicKeyFromPublicKeyHash
+    (QByteArray::fromBase64(publicKeyHash), crypt);
+
+  if(!publicKey.isEmpty() && !signatureKey.isEmpty())
+    {
+      QString text("K" + QByteArray("url").toBase64() + "@" +
+		   name.toBase64() + "@" +
+		   publicKey.toBase64() + "@" + QByteArray().toBase64() + "@" +
+		   signatureKey.toBase64() + "@" + QByteArray().toBase64());
+
+      if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+	{
+	  QApplication::restoreOverrideCursor();
+	  QMessageBox::critical
+	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	     tr("The URL keys are too long (%1 bytes).").
+	     arg(QLocale().toString(text.length())));
+	  return;
+	}
+
+      clipboard->setText(text);
+    }
+  else
+    clipboard->clear();
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotEmailSecretsActionSelected(void)
 {
   QAction *action = qobject_cast<QAction *> (sender());
@@ -950,6 +1147,39 @@ void spoton::slotListenerSourceOfRandomnessChanged(int value)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotNeighborSilenceTimeChanged(int value)
+{
+  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
+
+  if(!spinBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE neighbors SET "
+		      "silence_time = ? "
+		      "WHERE OID = ?");
+	query.bindValue(0, value);
+	query.bindValue(1, spinBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotNewGlobalName(void)
 {
   QString text("");
@@ -980,6 +1210,15 @@ void spoton::slotNewGlobalName(void)
   emit newGlobalName(text);
 }
 
+void spoton::slotNotificationsEnabled(bool state)
+{
+  m_settings["gui/automaticNotifications"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/automaticNotifications", state);
+}
+
 void spoton::slotPlaySounds(bool state)
 {
   m_settings["gui/play_sounds"] = state;
@@ -987,6 +1226,148 @@ void spoton::slotPlaySounds(bool state)
   QSettings settings;
 
   settings.setValue("gui/play_sounds", state);
+}
+
+void spoton::slotPrepareAndShowInstallationWizard(void)
+{
+  QMessageBox mb(this);
+
+  /*
+  ** Must agree with the UI settings!
+  */
+
+  m_wizardHash["accepted"] = false;
+  m_wizardHash["initialize_public_keys"] = true;
+  m_wizardHash["launch_kernel"] = true;
+  m_wizardHash["shown"] = false;
+  m_wizardHash["url_create_sqlite_db"] = false;
+  m_wizardHash["url_credentials"] = true;
+  m_wizardHash["url_distribution"] = false;
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Would you like to launch the initialization wizard?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() == QMessageBox::Yes)
+    {
+      m_wizardHash["shown"] = true;
+
+      QDialog dialog(this);
+
+      if(m_wizardUi)
+	delete m_wizardUi;
+
+      m_ui.setPassphrase->setVisible(false);
+      m_wizardUi = new Ui_spoton_wizard;
+      m_wizardUi->setupUi(&dialog);
+      m_wizardUi->initialize->setVisible(false);
+      m_wizardUi->previous->setDisabled(true);
+      qobject_cast<QBoxLayout *> (m_wizardUi->passphrase_frame->layout())->
+	insertWidget(2, m_ui.passphraseGroupBox);
+      connect(m_wizardUi->cancel,
+	      SIGNAL(clicked(void)),
+	      &dialog,
+	      SLOT(reject(void)));
+      connect(m_wizardUi->initialize,
+	      SIGNAL(clicked(void)),
+	      &dialog,
+	      SLOT(accept(void)));
+      connect(m_wizardUi->next,
+	      SIGNAL(clicked(void)),
+	      this,
+	      SLOT(slotWizardButtonClicked(void)));
+      connect(m_wizardUi->prepare_sqlite_urls_db,
+	      SIGNAL(clicked(void)),
+	      this,
+	      SLOT(slotWizardCheckClicked(void)));
+      connect(m_wizardUi->previous,
+	      SIGNAL(clicked(void)),
+	      this,
+	      SLOT(slotWizardButtonClicked(void)));
+      dialog.show();
+      dialog.resize(dialog.sizeHint());
+      spoton_utilities::centerWidget(&dialog, this);
+
+      if(dialog.exec() == QDialog::Accepted)
+	{
+	  m_wizardHash["accepted"] = true;
+	  m_wizardHash["initialize_public_keys"] =
+	    m_wizardUi->initialize_public_keys->isChecked();
+	  m_wizardHash["launch_kernel"] =
+	    m_wizardUi->launch_kernel->isChecked();
+	  m_wizardHash["shown"] = false;
+	  m_wizardHash["url_create_sqlite_db"] = m_wizardUi->
+	    prepare_sqlite_urls_db->isChecked();
+	  m_wizardHash["url_credentials"] =
+	    m_wizardUi->url_credentials->isChecked();
+	  m_wizardHash["url_distribution"] = m_wizardUi->
+	    enable_url_distribution->isChecked();
+	  repaint();
+#ifndef Q_OS_MAC
+	  QApplication::processEvents();
+#endif
+	  slotSetPassphrase();
+
+	  if(m_wizardUi->prepare_sqlite_urls_db->isChecked())
+	    slotPrepareUrlDatabases();
+	}
+      else
+	{
+	  m_ui.passphrase1->clear();
+	  m_ui.passphrase2->clear();
+	  m_ui.passphrase_rb->setChecked(true);
+	  m_ui.username->clear();
+	  m_ui.username->setFocus();
+	}
+
+      m_ui.setPassphrase->setVisible(true);
+      m_ui.settingsVerticalLayout->insertWidget(1, m_ui.passphraseGroupBox);
+    }
+
+  m_wizardHash["shown"] = false;
+}
+
+void spoton::slotPreviewStyleSheet(void)
+{
+#if SPOTON_GOLDBUG == 0
+  QPushButton *pushButton = qobject_cast<QPushButton *> (sender());
+
+  if(!pushButton)
+    return;
+
+  QWidget *widget = findChild<QWidget *> (pushButton->property("widget_name").
+					  toString());
+
+  if(!widget)
+    return;
+
+  QWidget *parent = pushButton->parentWidget();
+
+  if(!parent)
+    return;
+
+  do
+    {
+      if(qobject_cast<QDialog *> (parent))
+	break;
+
+      if(parent)
+	parent = parent->parentWidget();
+    }
+  while(parent != 0);
+
+  if(!parent)
+    return;
+
+  QTextEdit *textEdit = parent->findChild<QTextEdit *> ();
+
+  if(!textEdit)
+    return;
+
+  widget->setStyleSheet(textEdit->toPlainText());
+#endif
 }
 
 void spoton::slotRemoveAttachment(const QUrl &url)
@@ -1006,6 +1387,98 @@ void spoton::slotRemoveAttachment(const QUrl &url)
     }
 
   QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotResetAllStyleSheets(void)
+{
+#if SPOTON_GOLDBUG == 0
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to reset all custom widget "
+		"style sheets?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QSettings settings;
+
+  foreach(QWidget *widget, findChildren<QWidget *> ())
+    if(widget->property("original_style_sheet").isValid())
+      {
+	widget->setStyleSheet
+	  (widget->property("original_style_sheet").toString());
+
+	QString str(widget->styleSheet().trimmed());
+
+	m_settings[QString("gui/widget_stylesheet_%1").
+		   arg(widget->objectName())] = str;
+	settings.setValue
+	  (QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
+      }
+
+  QApplication::restoreOverrideCursor();
+#endif
+}
+
+void spoton::slotResetPrivateApplicationInformation(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QModelIndexList list;
+
+  if(action->property("type") == "listeners")
+    list = m_ui.listeners->selectionModel()->selectedRows
+      (m_ui.listeners->columnCount() - 1); // OID
+  else if(action->property("type") == "neighbors")
+    list = m_ui.neighbors->selectionModel()->selectedRows
+      (m_ui.neighbors->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    if(action->property("type") == "listeners")
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "listeners.db");
+    else
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(action->property("type") == "listeners")
+	  query.prepare("UPDATE listeners SET "
+			"private_application_credentials = NULL "
+			"WHERE OID = ?");
+	else
+	  query.prepare("UPDATE neighbors SET "
+			"private_application_credentials = NULL "
+			"WHERE OID = ?");
+
+	query.bindValue(0, list.at(0).data());
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotResetStyleSheet(void)
@@ -1062,486 +1535,6 @@ void spoton::slotSeparateBuzzPage(void)
   mainWindow->show();
   page->show();
   page->showUnify(true);
-}
-
-void spoton::slotShareOpenLibraryPublicKey(void)
-{
-  if(!m_crypts.value("open-library", 0) ||
-     !m_crypts.value("open-library-signature", 0))
-    return;
-  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  if(m_ui.neighborsActionMenu->menu())
-    m_ui.neighborsActionMenu->menu()->repaint();
-
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, m_ui.neighbors->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray publicKey;
-  QByteArray signature;
-  bool ok = true;
-
-  publicKey = m_crypts.value("open-library")->publicKey(&ok);
-
-  if(ok)
-    signature = m_crypts.value("open-library")->digitalSignature
-      (publicKey, &ok);
-
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-
-  if(ok)
-    sPublicKey = m_crypts.value("open-library-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("open-library-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    {
-      QByteArray message;
-      QByteArray name(m_settings.value("gui/openLibraryName", "unknown").
-		      toByteArray());
-
-      if(name.isEmpty())
-	name = "unknown";
-
-      message.append("sharepublickey_");
-      message.append(oid);
-      message.append("_");
-      message.append(QByteArray("open-library").toBase64());
-      message.append("_");
-      message.append(name.toBase64());
-      message.append("_");
-      message.append(qCompress(publicKey).toBase64());
-      message.append("_");
-      message.append(signature.toBase64());
-      message.append("_");
-      message.append(sPublicKey.toBase64());
-      message.append("_");
-      message.append(sSignature.toBase64());
-      message.append("\n");
-
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
-	spoton_misc::logError
-	  (QString("spoton::slotShareOpenLibraryPublicKey(): write() failure "
-		   "for %1:%2.").
-	   arg(m_kernelSocket.peerAddress().toString()).
-	   arg(m_kernelSocket.peerPort()));
-    }
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotShowBuzzDetails(bool state)
-{
-  m_ui.buzz_frame->setVisible(state);
-}
-
-void spoton::slotShowBuzzTabContextMenu(const QPoint &point)
-{
-  QAction *action = 0;
-  QMenu menu(this);
-
-  action = menu.addAction(tr("&Separate..."), this,
-			  SLOT(slotSeparateBuzzPage(void)));
-  action->setProperty("index", m_ui.buzzTab->tabBar()->tabAt(point));
-  menu.exec(m_ui.buzzTab->tabBar()->mapToGlobal(point));
-}
-
-void spoton::slotShowMainTabContextMenu(const QPoint &point)
-{
-  if(m_locked)
-    return;
-
-  QWidget *widget = m_ui.tab->widget(m_ui.tab->tabBar()->tabAt(point));
-
-  if(!widget)
-    return;
-  else if(!widget->isEnabled())
-    return;
-
-  QMapIterator<int, QWidget *> it(m_tabWidgets);
-  QString name("");
-
-  while(it.hasNext())
-    {
-      it.next();
-
-      if(it.value() == widget)
-	{
-	  name = m_tabWidgetsProperties[it.key()].value("name").toString();
-	  break;
-	}
-    }
-
-  bool enabled = true;
-
-  if(!(name == "buzz" || name == "listeners" || name == "neighbors" ||
-       name == "search" || name == "starbeam" || name == "urls"))
-    enabled = false;
-  else if(name.isEmpty())
-    enabled = false;
-
-  QAction *action = 0;
-  QMenu menu(this);
-
-  action = menu.addAction(tr("&Close Page"), this, SLOT(slotCloseTab(void)));
-  action->setEnabled(enabled);
-  action->setProperty("name", name);
-  menu.exec(m_ui.tab->tabBar()->mapToGlobal(point));
-}
-
-void spoton::slotShowNeighborStatistics(void)
-{
-#if SPOTON_GOLDBUG == 0
-  QModelIndexList list;
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (m_ui.neighbors->columnCount() - 1); // OID
-
-  if(list.isEmpty())
-    return;
-
-  qint64 oid = list.at(0).data().toLongLong();
-  spoton_neighborstatistics *s = findChild<spoton_neighborstatistics *>
-    (QString::number(oid));
-
-  if(!s)
-    {
-      s = new spoton_neighborstatistics(this);
-      s->setObjectName(QString::number(oid));
-      connect(QCoreApplication::instance(),
-	      SIGNAL(aboutToQuit(void)),
-	      s,
-	      SLOT(deleteLater(void)));
-    }
-
-  s->show(); // Custom.
-  s->showNormal();
-  s->activateWindow();
-  s->raise();
-  spoton_utilities::centerWidget(s, this);
-#endif
-}
-
-void spoton::slotShowNotificationsWindow(void)
-{
-  bool wasVisible = m_notificationsWindow->isVisible();
-
-  m_notificationsWindow->showNormal();
-  m_notificationsWindow->activateWindow();
-  m_notificationsWindow->raise();
-
-  if(!wasVisible)
-    spoton_utilities::centerWidget(m_notificationsWindow, this);
-}
-
-void spoton::slotShowSMPWindow(void)
-{
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-  m_smpWindow.show(this);
-  spoton_utilities::centerWidget(&m_smpWindow, this);
-}
-
-void spoton::slotUnifyBuzz(void)
-{
-  spoton_buzzpage *page = qobject_cast<spoton_buzzpage *> (sender());
-
-  if(!page)
-    return;
-
-  QMainWindow *mainWindow = qobject_cast<QMainWindow *> (page->parentWidget());
-
-  page->setParent(this);
-
-  if(mainWindow)
-    {
-      mainWindow->setCentralWidget(0);
-      mainWindow->deleteLater();
-    }
-
-  page->showUnify(false);
-  m_ui.buzzTab->addTab(page, QString::fromUtf8(page->channel().constData(),
-					       page->channel().length()));
-  m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
-}
-
-void spoton::slotShowAddParticipant(void)
-{
-#if SPOTON_GOLDBUG == 0
-  m_addParticipantWindow->showNormal();
-  m_addParticipantWindow->activateWindow();
-  m_addParticipantWindow->raise();
-  spoton_utilities::centerWidget(m_addParticipantWindow, this);
-#endif
-}
-
-void spoton::cancelUrlQuery(void)
-{
-  if(m_urlDatabase.driverName() != "QPSQL")
-    return;
-  else if(!m_urlDatabase.driver())
-    return;
-
-  QVariant handle(m_urlDatabase.driver()->handle());
-
-  if(handle.typeName() != QString("PGconn") || !handle.isValid())
-    return;
-
-  PGconn *connection = *static_cast<PGconn **> (handle.data());
-
-  if(!connection)
-    return;
-
-  PGcancel *cancel = PQgetCancel(connection);
-
-  if(!cancel)
-    return;
-
-  PQcancel(cancel, 0, 0);
-  PQfreeCancel(cancel);
-}
-
-void spoton::slotNotificationsEnabled(bool state)
-{
-  m_settings["gui/automaticNotifications"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/automaticNotifications", state);
-}
-
-void spoton::slotCopyUrlKeys(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QByteArray name;
-  QByteArray publicKeyHash;
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.urlParticipants->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.urlParticipants->
-	item(row, 0); // Name
-
-      if(item)
-	name.append(item->text());
-
-      item = m_ui.urlParticipants->item(row, 1); // OID
-
-      if(item)
-	oid = item->text();
-
-      item = m_ui.urlParticipants->item(row, 3); // public_key_hash
-
-      if(item)
-	publicKeyHash.append(item->text());
-    }
-
-  if(oid.isEmpty() || publicKeyHash.isEmpty())
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  if(name.isEmpty())
-    name = "unknown";
-
-  QByteArray publicKey;
-  QByteArray signatureKey;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT public_key "
-		      "FROM friends_public_keys WHERE "
-		      "OID = ?");
-	query.bindValue(0, oid);
-
-	if(query.exec())
-	  if(query.next())
-	    publicKey = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).
-				      toByteArray()),
-	       &ok);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  signatureKey = spoton_misc::signaturePublicKeyFromPublicKeyHash
-    (QByteArray::fromBase64(publicKeyHash), crypt);
-
-  if(!publicKey.isEmpty() && !signatureKey.isEmpty())
-    {
-      QString text("K" + QByteArray("url").toBase64() + "@" +
-		   name.toBase64() + "@" +
-		   publicKey.toBase64() + "@" + QByteArray().toBase64() + "@" +
-		   signatureKey.toBase64() + "@" + QByteArray().toBase64());
-
-      if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-	{
-	  QApplication::restoreOverrideCursor();
-	  QMessageBox::critical
-	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	     tr("The URL keys are too long (%1 bytes).").
-	     arg(QLocale().toString(text.length())));
-	  return;
-	}
-
-      clipboard->setText(text);
-    }
-  else
-    clipboard->clear();
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotCopyPrivateApplicationMagnet(void)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  int row = -1;
-
-  if(action->property("type") == "listeners")
-    row = m_ui.listeners->currentRow();
-  else if(action->property("type") == "neighbors")
-    row = m_ui.neighbors->currentRow();
-  else
-    return;
-
-  if(row < 0)
-    return;
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-  else
-    clipboard->clear();
-
-  QTableWidgetItem *item = 0;
-
-  if(action->property("type") == "listeners")
-    item = m_ui.listeners->item(row, 23); // private_application_credentials
-  else
-    item = m_ui.neighbors->item(row, 39); // private_application_credentials
-
-  if(!item)
-    return;
-
-  clipboard->setText(item->text());
-}
-
-void spoton::slotResetPrivateApplicationInformation(void)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QModelIndexList list;
-
-  if(action->property("type") == "listeners")
-    list = m_ui.listeners->selectionModel()->selectedRows
-      (m_ui.listeners->columnCount() - 1); // OID
-  else if(action->property("type") == "neighbors")
-    list = m_ui.neighbors->selectionModel()->selectedRows
-      (m_ui.neighbors->columnCount() - 1); // OID
-
-  if(list.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    if(action->property("type") == "listeners")
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "listeners.db");
-    else
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(action->property("type") == "listeners")
-	  query.prepare("UPDATE listeners SET "
-			"private_application_credentials = NULL "
-			"WHERE OID = ?");
-	else
-	  query.prepare("UPDATE neighbors SET "
-			"private_application_credentials = NULL "
-			"WHERE OID = ?");
-
-	query.bindValue(0, list.at(0).data());
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotSetPrivateApplicationInformation(void)
@@ -1755,105 +1748,336 @@ void spoton::slotSetPrivateApplicationInformation(void)
     }
 }
 
-void spoton::slotPrepareAndShowInstallationWizard(void)
+void spoton::slotSetStyleSheet(void)
 {
-  QMessageBox mb(this);
+#if SPOTON_GOLDBUG == 0
+  QAction *action = qobject_cast<QAction *> (sender());
 
-  /*
-  ** Must agree with the UI settings!
-  */
+  if(!action)
+    return;
 
-  m_wizardHash["accepted"] = false;
-  m_wizardHash["initialize_public_keys"] = true;
-  m_wizardHash["launch_kernel"] = true;
-  m_wizardHash["shown"] = false;
-  m_wizardHash["url_create_sqlite_db"] = false;
-  m_wizardHash["url_credentials"] = true;
-  m_wizardHash["url_distribution"] = false;
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Would you like to launch the initialization wizard?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+  QWidget *widget =
+    findChild<QWidget *> (action->property("widget_name").toString());
 
-  if(mb.exec() == QMessageBox::Yes)
+  if(!widget)
+    return;
+
+  QDialog dialog(this);
+  QString str(widget->styleSheet());
+  Ui_spoton_stylesheet ui;
+
+  ui.setupUi(&dialog);
+  ui.preview->setProperty("widget_name", widget->objectName());
+  ui.textEdit->setText(action->property("widget_stylesheet").toString());
+  dialog.setWindowTitle
+    (tr("Spot-On: Widget Style Sheet (%1)").arg(widget->objectName()));
+  connect(ui.preview,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotPreviewStyleSheet(void)));
+
+  if(dialog.exec() == QDialog::Accepted)
     {
-      m_wizardHash["shown"] = true;
+      QString str(ui.textEdit->toPlainText().trimmed());
 
-      QDialog dialog(this);
+      widget->setStyleSheet(str);
 
-      if(m_wizardUi)
-	delete m_wizardUi;
+      QSettings settings;
 
-      m_ui.setPassphrase->setVisible(false);
-      m_wizardUi = new Ui_spoton_wizard;
-      m_wizardUi->setupUi(&dialog);
-      m_wizardUi->initialize->setVisible(false);
-      m_wizardUi->previous->setDisabled(true);
-      qobject_cast<QBoxLayout *> (m_wizardUi->passphrase_frame->layout())->
-	insertWidget(2, m_ui.passphraseGroupBox);
-      connect(m_wizardUi->cancel,
-	      SIGNAL(clicked(void)),
-	      &dialog,
-	      SLOT(reject(void)));
-      connect(m_wizardUi->initialize,
-	      SIGNAL(clicked(void)),
-	      &dialog,
-	      SLOT(accept(void)));
-      connect(m_wizardUi->next,
-	      SIGNAL(clicked(void)),
-	      this,
-	      SLOT(slotWizardButtonClicked(void)));
-      connect(m_wizardUi->prepare_sqlite_urls_db,
-	      SIGNAL(clicked(void)),
-	      this,
-	      SLOT(slotWizardCheckClicked(void)));
-      connect(m_wizardUi->previous,
-	      SIGNAL(clicked(void)),
-	      this,
-	      SLOT(slotWizardButtonClicked(void)));
-      dialog.show();
-      dialog.resize(dialog.sizeHint());
-      spoton_utilities::centerWidget(&dialog, this);
+      m_settings[QString("gui/widget_stylesheet_%1").
+		 arg(widget->objectName())] = str;
+      settings.setValue
+	(QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
+    }
+  else
+    widget->setStyleSheet(str);
 
-      if(dialog.exec() == QDialog::Accepted)
-	{
-	  m_wizardHash["accepted"] = true;
-	  m_wizardHash["initialize_public_keys"] =
-	    m_wizardUi->initialize_public_keys->isChecked();
-	  m_wizardHash["launch_kernel"] =
-	    m_wizardUi->launch_kernel->isChecked();
-	  m_wizardHash["shown"] = false;
-	  m_wizardHash["url_create_sqlite_db"] = m_wizardUi->
-	    prepare_sqlite_urls_db->isChecked();
-	  m_wizardHash["url_credentials"] =
-	    m_wizardUi->url_credentials->isChecked();
-	  m_wizardHash["url_distribution"] = m_wizardUi->
-	    enable_url_distribution->isChecked();
-	  repaint();
-#ifndef Q_OS_MAC
-	  QApplication::processEvents();
 #endif
-	  slotSetPassphrase();
+}
 
-	  if(m_wizardUi->prepare_sqlite_urls_db->isChecked())
-	    slotPrepareUrlDatabases();
-	}
-      else
-	{
-	  m_ui.passphrase1->clear();
-	  m_ui.passphrase2->clear();
-	  m_ui.passphrase_rb->setChecked(true);
-	  m_ui.username->clear();
-	  m_ui.username->setFocus();
-	}
+void spoton::slotSetWidgetStyleSheet(const QPoint &point)
+{
+#if SPOTON_GOLDBUG == 0
+  QWidget *widget = qobject_cast<QWidget *> (sender());
 
-      m_ui.setPassphrase->setVisible(true);
-      m_ui.settingsVerticalLayout->insertWidget(1, m_ui.passphraseGroupBox);
+  if(!widget)
+    return;
+
+  QAction *action = 0;
+  QMenu menu(this);
+
+  action = menu.addAction(tr("&Copy Style Sheet"),
+			  this,
+			  SLOT(slotCopyStyleSheet(void)));
+  action->setProperty("widget_name", widget->objectName());
+  action = menu.addAction(tr("&Reset Widget Style Sheet"),
+			  this,
+			  SLOT(slotResetStyleSheet(void)));
+  action->setProperty("widget_name", widget->objectName());
+  action = menu.addAction(tr("Set Widget &Style Sheet..."),
+			  this,
+			  SLOT(slotSetStyleSheet(void)));
+  action->setProperty("widget_name", widget->objectName());
+  action->setProperty("widget_stylesheet", widget->styleSheet());
+  menu.addSeparator();
+  menu.addAction(tr("Reset &All Widget Style Sheets"),
+		 this,
+		 SLOT(slotResetAllStyleSheets(void)));
+  menu.exec(widget->mapToGlobal(point));
+#else
+  Q_UNUSED(point);
+#endif
+}
+
+void spoton::slotShareOpenLibraryPublicKey(void)
+{
+  if(!m_crypts.value("open-library", 0) ||
+     !m_crypts.value("open-library-signature", 0))
+    return;
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
     }
 
-  m_wizardHash["shown"] = false;
+  if(oid.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray publicKey;
+  QByteArray signature;
+  bool ok = true;
+
+  publicKey = m_crypts.value("open-library")->publicKey(&ok);
+
+  if(ok)
+    signature = m_crypts.value("open-library")->digitalSignature
+      (publicKey, &ok);
+
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+
+  if(ok)
+    sPublicKey = m_crypts.value("open-library-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("open-library-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    {
+      QByteArray message;
+      QByteArray name(m_settings.value("gui/openLibraryName", "unknown").
+		      toByteArray());
+
+      if(name.isEmpty())
+	name = "unknown";
+
+      message.append("sharepublickey_");
+      message.append(oid);
+      message.append("_");
+      message.append(QByteArray("open-library").toBase64());
+      message.append("_");
+      message.append(name.toBase64());
+      message.append("_");
+      message.append(qCompress(publicKey).toBase64());
+      message.append("_");
+      message.append(signature.toBase64());
+      message.append("_");
+      message.append(sPublicKey.toBase64());
+      message.append("_");
+      message.append(sSignature.toBase64());
+      message.append("\n");
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::slotShareOpenLibraryPublicKey(): write() failure "
+		   "for %1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotShowAddParticipant(void)
+{
+#if SPOTON_GOLDBUG == 0
+  m_addParticipantWindow->showNormal();
+  m_addParticipantWindow->activateWindow();
+  m_addParticipantWindow->raise();
+  spoton_utilities::centerWidget(m_addParticipantWindow, this);
+#endif
+}
+
+void spoton::slotShowBuzzDetails(bool state)
+{
+  m_ui.buzz_frame->setVisible(state);
+}
+
+void spoton::slotShowBuzzTabContextMenu(const QPoint &point)
+{
+  QAction *action = 0;
+  QMenu menu(this);
+
+  action = menu.addAction(tr("&Separate..."), this,
+			  SLOT(slotSeparateBuzzPage(void)));
+  action->setProperty("index", m_ui.buzzTab->tabBar()->tabAt(point));
+  menu.exec(m_ui.buzzTab->tabBar()->mapToGlobal(point));
+}
+
+void spoton::slotShowDocumentation(void)
+{
+  m_documentation->showNormal();
+  m_documentation->activateWindow();
+  m_documentation->raise();
+  spoton_utilities::centerWidget(m_documentation, this);
+}
+
+void spoton::slotShowMainTabContextMenu(const QPoint &point)
+{
+  if(m_locked)
+    return;
+
+  QWidget *widget = m_ui.tab->widget(m_ui.tab->tabBar()->tabAt(point));
+
+  if(!widget)
+    return;
+  else if(!widget->isEnabled())
+    return;
+
+  QMapIterator<int, QWidget *> it(m_tabWidgets);
+  QString name("");
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value() == widget)
+	{
+	  name = m_tabWidgetsProperties[it.key()].value("name").toString();
+	  break;
+	}
+    }
+
+  bool enabled = true;
+
+  if(!(name == "buzz" || name == "listeners" || name == "neighbors" ||
+       name == "search" || name == "starbeam" || name == "urls"))
+    enabled = false;
+  else if(name.isEmpty())
+    enabled = false;
+
+  QAction *action = 0;
+  QMenu menu(this);
+
+  action = menu.addAction(tr("&Close Page"), this, SLOT(slotCloseTab(void)));
+  action->setEnabled(enabled);
+  action->setProperty("name", name);
+  menu.exec(m_ui.tab->tabBar()->mapToGlobal(point));
+}
+
+void spoton::slotShowNeighborStatistics(void)
+{
+#if SPOTON_GOLDBUG == 0
+  QModelIndexList list;
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (m_ui.neighbors->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    return;
+
+  qint64 oid = list.at(0).data().toLongLong();
+  spoton_neighborstatistics *s = findChild<spoton_neighborstatistics *>
+    (QString::number(oid));
+
+  if(!s)
+    {
+      s = new spoton_neighborstatistics(this);
+      s->setObjectName(QString::number(oid));
+      connect(QCoreApplication::instance(),
+	      SIGNAL(aboutToQuit(void)),
+	      s,
+	      SLOT(deleteLater(void)));
+    }
+
+  s->show(); // Custom.
+  s->showNormal();
+  s->activateWindow();
+  s->raise();
+  spoton_utilities::centerWidget(s, this);
+#endif
+}
+
+void spoton::slotShowNotificationsWindow(void)
+{
+  bool wasVisible = m_notificationsWindow->isVisible();
+
+  m_notificationsWindow->showNormal();
+  m_notificationsWindow->activateWindow();
+  m_notificationsWindow->raise();
+
+  if(!wasVisible)
+    spoton_utilities::centerWidget(m_notificationsWindow, this);
+}
+
+void spoton::slotShowSMPWindow(void)
+{
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  m_smpWindow.show(this);
+  spoton_utilities::centerWidget(&m_smpWindow, this);
+}
+
+void spoton::slotUnifyBuzz(void)
+{
+  spoton_buzzpage *page = qobject_cast<spoton_buzzpage *> (sender());
+
+  if(!page)
+    return;
+
+  QMainWindow *mainWindow = qobject_cast<QMainWindow *> (page->parentWidget());
+
+  page->setParent(this);
+
+  if(mainWindow)
+    {
+      mainWindow->setCentralWidget(0);
+      mainWindow->deleteLater();
+    }
+
+  page->showUnify(false);
+  m_ui.buzzTab->addTab(page, QString::fromUtf8(page->channel().constData(),
+					       page->channel().length()));
+  m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
 }
 
 void spoton::slotWizardButtonClicked(void)
@@ -1917,230 +2141,6 @@ void spoton::slotWizardButtonClicked(void)
     default:
       break;
     }
-}
-
-void spoton::slotNeighborSilenceTimeChanged(int value)
-{
-  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
-
-  if(!spinBox)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE neighbors SET "
-		      "silence_time = ? "
-		      "WHERE OID = ?");
-	query.bindValue(0, value);
-	query.bindValue(1, spinBox->property("oid"));
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotShowDocumentation(void)
-{
-  m_documentation->showNormal();
-  m_documentation->activateWindow();
-  m_documentation->raise();
-  spoton_utilities::centerWidget(m_documentation, this);
-}
-
-void spoton::slotSetWidgetStyleSheet(const QPoint &point)
-{
-#if SPOTON_GOLDBUG == 0
-  QWidget *widget = qobject_cast<QWidget *> (sender());
-
-  if(!widget)
-    return;
-
-  QAction *action = 0;
-  QMenu menu(this);
-
-  action = menu.addAction(tr("&Copy Style Sheet"),
-			  this,
-			  SLOT(slotCopyStyleSheet(void)));
-  action->setProperty("widget_name", widget->objectName());
-  action = menu.addAction(tr("&Reset Widget Style Sheet"),
-			  this,
-			  SLOT(slotResetStyleSheet(void)));
-  action->setProperty("widget_name", widget->objectName());
-  action = menu.addAction(tr("Set Widget &Style Sheet..."),
-			  this,
-			  SLOT(slotSetStyleSheet(void)));
-  action->setProperty("widget_name", widget->objectName());
-  action->setProperty("widget_stylesheet", widget->styleSheet());
-  menu.addSeparator();
-  menu.addAction(tr("Reset &All Widget Style Sheets"),
-		 this,
-		 SLOT(slotResetAllStyleSheets(void)));
-  menu.exec(widget->mapToGlobal(point));
-#else
-  Q_UNUSED(point);
-#endif
-}
-
-void spoton::slotSetStyleSheet(void)
-{
-#if SPOTON_GOLDBUG == 0
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QWidget *widget =
-    findChild<QWidget *> (action->property("widget_name").toString());
-
-  if(!widget)
-    return;
-
-  QDialog dialog(this);
-  QString str(widget->styleSheet());
-  Ui_spoton_stylesheet ui;
-
-  ui.setupUi(&dialog);
-  ui.preview->setProperty("widget_name", widget->objectName());
-  ui.textEdit->setText(action->property("widget_stylesheet").toString());
-  dialog.setWindowTitle
-    (tr("Spot-On: Widget Style Sheet (%1)").arg(widget->objectName()));
-  connect(ui.preview,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotPreviewStyleSheet(void)));
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      QString str(ui.textEdit->toPlainText().trimmed());
-
-      widget->setStyleSheet(str);
-
-      QSettings settings;
-
-      m_settings[QString("gui/widget_stylesheet_%1").
-		 arg(widget->objectName())] = str;
-      settings.setValue
-	(QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
-    }
-  else
-    widget->setStyleSheet(str);
-
-#endif
-}
-
-void spoton::slotCopyStyleSheet(void)
-{
-#if SPOTON_GOLDBUG == 0
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QWidget *widget = findChild<QWidget *> (action->property("widget_name").
-					  toString());
-
-  if(!widget)
-    return;
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-
-  clipboard->setText(widget->styleSheet());
-#endif
-}
-
-void spoton::slotPreviewStyleSheet(void)
-{
-#if SPOTON_GOLDBUG == 0
-  QPushButton *pushButton = qobject_cast<QPushButton *> (sender());
-
-  if(!pushButton)
-    return;
-
-  QWidget *widget = findChild<QWidget *> (pushButton->property("widget_name").
-					  toString());
-
-  if(!widget)
-    return;
-
-  QWidget *parent = pushButton->parentWidget();
-
-  if(!parent)
-    return;
-
-  do
-    {
-      if(qobject_cast<QDialog *> (parent))
-	break;
-
-      if(parent)
-	parent = parent->parentWidget();
-    }
-  while(parent != 0);
-
-  if(!parent)
-    return;
-
-  QTextEdit *textEdit = parent->findChild<QTextEdit *> ();
-
-  if(!textEdit)
-    return;
-
-  widget->setStyleSheet(textEdit->toPlainText());
-#endif
-}
-
-void spoton::slotResetAllStyleSheets(void)
-{
-#if SPOTON_GOLDBUG == 0
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to reset all custom widget "
-		"style sheets?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QSettings settings;
-
-  foreach(QWidget *widget, findChildren<QWidget *> ())
-    if(widget->property("original_style_sheet").isValid())
-      {
-	widget->setStyleSheet
-	  (widget->property("original_style_sheet").toString());
-
-	QString str(widget->styleSheet().trimmed());
-
-	m_settings[QString("gui/widget_stylesheet_%1").
-		   arg(widget->objectName())] = str;
-	settings.setValue
-	  (QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
-      }
-
-  QApplication::restoreOverrideCursor();
-#endif
 }
 
 void spoton::slotWizardCheckClicked(void)
