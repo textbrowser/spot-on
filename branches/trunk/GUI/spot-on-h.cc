@@ -34,13 +34,624 @@
 #include <limits>
 
 #include "Common/spot-on-crypt.h"
-#include "spot-on.h"
 #include "spot-on-documentation.h"
 #if SPOTON_GOLDBUG == 0
 #include "spot-on-emailwindow.h"
 #endif
 #include "spot-on-utilities.h"
+#include "spot-on.h"
 #include "ui_spot-on-socket-options.h"
+
+QMap<QString, QByteArray> spoton::SMPWindowStreams
+(const QStringList &keyTypes) const
+{
+  return m_smpWindow.streams(keyTypes);
+}
+
+QString spoton::listenerTransport(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item(row, 15);
+
+      if(item)
+	return item->text();
+    }
+
+  return QString("");
+}
+
+QString spoton::neighborTransport(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item(row, 27);
+
+      if(item)
+	return item->text();
+    }
+
+  return QString("");
+}
+
+QString spoton::participantKeyType(QTableWidget *table) const
+{
+  if(!table)
+    return QString("");
+
+  int row = -1;
+
+  if((row = table->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = table->item(row, 1); // OID
+
+      if(item)
+	return item->data
+	  (Qt::ItemDataRole(Qt::UserRole + 1)).toString().toLower();
+    }
+
+  return QString("");
+}
+
+QThread::Priority spoton::neighborThreadPriority(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item(row, 35);
+
+      if(item)
+	return QThread::Priority(item->data(Qt::UserRole).toInt());
+    }
+
+  return QThread::HighPriority;
+}
+
+bool spoton::listenerSupportsSslTls(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item1 = m_ui.listeners->item(row, 2);
+      QTableWidgetItem *item2 = m_ui.listeners->item(row, 15);
+
+      if(item1 && item2)
+	return item1->text().toInt() > 0 &&
+	  (item2->text().toLower().trimmed() == "tcp"
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	  || item2->text().toLower().trimmed() == "udp"
+#endif
+	   );
+    }
+
+  return false;
+}
+
+bool spoton::neighborSupportsSslTls(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item1 = m_ui.neighbors->item(row, 3);
+      QTableWidgetItem *item2 = m_ui.neighbors->item(row, 27);
+
+      if(item1 && item2)
+	return item1->text().toInt() > 0 &&
+	  (item2->text().toLower().trimmed() == "tcp"
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	   || item2->text().toLower().trimmed() == "udp"
+#endif
+	   );
+    }
+
+  return false;
+}
+
+void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
+{
+  if(!settings.value("is_kernel_active").toBool())
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() +
+			   QDir::separator() +
+			   "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    /*
+	    ** OK, so the kernel is inactive. All participants are offline.
+	    */
+
+	    query.exec
+	      ("UPDATE friends_public_keys SET status = 'offline' WHERE "
+	       "status <> 'offline'");
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "listeners.db");
+
+	if(db.isOpen())
+	  {
+	    QSqlQuery query(db);
+
+	    /*
+	    ** OK, so the kernel is inactive. Discover the
+	    ** listeners that have not been deleted and update some of their
+	    ** information.
+	    */
+
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.exec("DELETE FROM listeners WHERE "
+		       "status_control = 'deleted'");
+	    query.exec("DELETE FROM listeners_accounts WHERE "
+		       "listener_oid NOT IN "
+		       "(SELECT OID FROM listeners)");
+	    query.exec
+	      ("DELETE FROM listeners_accounts_consumed_authentications "
+	       "WHERE listener_oid >= 0");
+	    query.exec("DELETE FROM listeners_allowed_ips WHERE "
+		       "listener_oid NOT IN "
+		       "(SELECT OID FROM listeners)");
+	    query.exec("UPDATE listeners SET connections = 0, "
+		       "external_ip_address = NULL, "
+		       "status = 'offline' WHERE "
+		       "connections > 0 OR status = 'online'");
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    /*
+	    ** OK, so the kernel is inactive. Discover the
+	    ** neighbors that have not been deleted and not disconnected
+	    ** and update some of their information.
+	    */
+
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.exec("DELETE FROM neighbors WHERE "
+		       "status_control = 'deleted'");
+	    query.exec("UPDATE neighbors SET "
+		       "account_authenticated = NULL, "
+		       "buffered_content = 0, "
+		       "bytes_discarded_on_write = 0, "
+		       "bytes_read = 0, "
+		       "bytes_written = 0, "
+		       "external_ip_address = NULL, "
+		       "is_encrypted = 0, "
+		       "local_ip_address = NULL, "
+		       "local_port = NULL, "
+		       "ssl_session_cipher = NULL, "
+		       "status = 'disconnected', "
+		       "uptime = 0 WHERE "
+		       "local_ip_address IS NOT NULL OR local_port IS NOT NULL "
+		       "OR status <> 'disconnected'");
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+
+  if(settings.value("keep_only_user_defined_neighbors").toBool())
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
+
+	if(db.open())
+	  {
+	    /*
+	    ** Delete disconnected peers.
+	    */
+
+	    QSqlQuery query(db);
+
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.exec("DELETE FROM neighbors WHERE "
+		       "status <> 'connected' AND "
+		       "status_control <> 'blocked' AND "
+		       "user_defined = 0");
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
+
+void spoton::inspectPQUrlDatabase(const QByteArray &password)
+{
+  QSettings settings;
+  QSqlDatabase db;
+  QString connectionName(spoton_misc::databaseName());
+  QString options
+    (settings.value("gui/postgresql_connection_options", "").
+     toString().trimmed());
+  QString str("connect_timeout=5");
+
+  if(!options.isEmpty())
+    {
+      str.append(";");
+      str.append(options);
+    }
+
+  if(settings.value("gui/postgresql_ssltls", false).toBool())
+    str.append(";requiressl=1");
+
+  db = QSqlDatabase::addDatabase("QPSQL", connectionName);
+  db.setConnectOptions(str);
+  db.setDatabaseName
+    (settings.value("gui/postgresql_database", "").toString().trimmed());
+  db.setHostName
+    (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
+  db.setPort(settings.value("gui/postgresql_port", 5432).toInt());
+
+  if(!db.open(settings.value("gui/postgresql_name", "").toString().trimmed(),
+	      password))
+    {
+      if(m_pqUrlFaultyCounter.fetchAndAddOrdered(1) > 5)
+	emit pqUrlDatabaseFaulty();
+    }
+  else
+    m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
+
+  db.close();
+  db = QSqlDatabase();
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::retrieveNeighbors(void)
+{
+  QFileInfo fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
+
+  if(fileInfo.exists())
+    {
+      if(fileInfo.lastModified() >= m_neighborsLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_neighborsLastModificationTime)
+	    m_neighborsLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_neighborsLastModificationTime = fileInfo.lastModified();
+	}
+      else
+	return;
+    }
+  else
+    m_neighborsLastModificationTime = QDateTime();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase *db = new QSqlDatabase(spoton_misc::database(connectionName));
+
+    db->setDatabaseName(fileInfo.absoluteFilePath());
+
+    if(db->open())
+      {
+	QSqlQuery *query = new QSqlQuery(*db);
+	int size = 0;
+
+	query->setForwardOnly(true);
+
+	if(query->exec("SELECT COUNT(*) FROM neighbors "
+		       "WHERE status_control <> 'deleted'"))
+	  if(query->next())
+	    size = query->value(0).toInt();
+
+	if(query->exec("SELECT sticky, "
+		       "uuid, "
+		       "status, "
+		       "ssl_key_size, "
+		       "status_control, "
+		       "local_ip_address, "
+		       "local_port, "
+		       "external_ip_address, "
+		       "external_port, "
+		       "country, "
+		       "remote_ip_address, "
+		       "remote_port, "
+		       "scope_id, "
+		       "protocol, "
+		       "proxy_hostname, "
+		       "proxy_port, "
+		       "maximum_buffer_size, "
+		       "maximum_content_length, "
+		       "echo_mode, "
+		       "uptime, "
+		       "allow_exceptions, "
+		       "certificate, "
+		       "bytes_read, "
+		       "bytes_written, "
+		       "ssl_session_cipher, "
+		       "account_name, "
+		       "account_authenticated, "
+		       "transport, "
+		       "orientation, "
+		       "motd, "
+		       "is_encrypted, "
+		       "0, " // Certificate
+		       "ae_token, "
+		       "ae_token_type, "
+		       "ssl_control_string, "
+		       "priority, "
+		       "lane_width, "
+		       "passthrough, "
+		       "waitforbyteswritten_msecs, "
+		       "private_application_credentials, "
+		       "silence_time, "
+		       "socket_options, "
+		       "buffered_content, "
+		       "OID "
+		       "FROM neighbors WHERE status_control <> 'deleted'"))
+	  {
+	    emit neighborsQueryReady(db, query, connectionName, size);
+	    return;
+	  }
+
+	db->close();
+	delete db;
+	delete query;
+      }
+    else
+      delete db;
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::retrieveParticipants(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+
+  QFileInfo fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+  if(fileInfo.exists())
+    {
+      if(fileInfo.lastModified() >= m_participantsLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_participantsLastModificationTime)
+	    m_participantsLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_participantsLastModificationTime = fileInfo.lastModified();
+	}
+      else
+	return;
+    }
+  else
+    m_participantsLastModificationTime = QDateTime();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase *db = new QSqlDatabase(spoton_misc::database(connectionName));
+
+    db->setDatabaseName(fileInfo.absoluteFilePath());
+
+    if(db->open())
+      {
+	QSqlQuery *query = new QSqlQuery(*db);
+	bool ok = true;
+
+	query->setForwardOnly(true);
+	query->prepare("SELECT "
+		       "name, "               // 0
+		       "OID, "                // 1
+		       "neighbor_oid, "       // 2
+		       "public_key_hash, "    // 3
+		       "status, "             // 4
+		       "last_status_update, " // 5
+		       "gemini, "             // 6
+		       "gemini_hash_key, "    // 7
+		       "key_type, "           // 8
+		       "public_key "          // 9
+		       "FROM friends_public_keys "
+		       "WHERE key_type_hash IN (?, ?, ?, ?)");
+	query->bindValue
+	  (0, crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
+
+	if(ok)
+	  query->bindValue
+	    (1, crypt->keyedHash(QByteArray("email"), &ok).toBase64());
+
+	if(ok)
+	  query->bindValue
+	    (2, crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
+
+	if(ok)
+	  query->bindValue
+	    (3, crypt->keyedHash(QByteArray("url"), &ok).toBase64());
+
+	if(ok && query->exec())
+	  {
+	    emit participantsQueryReady(db, query, connectionName);
+	    return;
+	  }
+
+	db->close();
+	delete db;
+	delete query;
+      }
+    else
+      delete db;
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotKeysIndexChanged(const QString &text)
+{
+#ifndef SPOTON_OPEN_LIBRARY_SUPPORTED
+  if(text == "Open Library")
+    m_ui.regenerate->setEnabled(false);
+  else
+    m_ui.regenerate->setEnabled(true);
+#else
+  Q_UNUSED(text);
+#endif
+}
+
+void spoton::slotMailContextMenu(const QPoint &point)
+{
+#if SPOTON_GOLDBUG == 0
+  QModelIndexList list
+    (m_ui.mail->selectionModel()->selectedRows(5)); // Gold Bug
+  bool enabled = false;
+
+  if(!list.isEmpty())
+    {
+      if(list.at(0).data().toString() == "0")
+	enabled = true;
+      else
+	enabled = false;
+    }
+
+  QAction *action = 0;
+  QMenu menu(this);
+
+  action = menu.addAction(tr("Read (New Window)..."),
+			  this,
+			  SLOT(slotNewEmailWindow(void)));
+  action->setEnabled(enabled);
+
+  if(enabled)
+    {
+      action->setProperty("message", m_ui.mailMessage->toHtml());
+      list = m_ui.mail->selectionModel()->selectedRows(3); // Subject
+      action->setProperty("subject", list.value(0).data().toString());
+      list = m_ui.mail->selectionModel()->
+	selectedRows(8); // receiver_sender_hash
+      action->setProperty
+	("receiver_sender_hash", list.value(0).data().toString());
+    }
+
+  menu.exec(m_ui.mail->mapToGlobal(point));
+#else
+  Q_UNUSED(point);
+#endif
+}
+
+void spoton::slotMonitorEvents(bool state)
+{
+  m_settings["gui/monitorEvents"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/monitorEvents", state);
+}
+
+void spoton::slotNewEmailWindow(void)
+{
+#if SPOTON_GOLDBUG == 0
+  QAction *action = qobject_cast<QAction *> (sender());
+  spoton_emailwindow *window = 0;
+
+  if(action)
+    window = new spoton_emailwindow
+      (action->property("message").toString(),
+       action->property("subject").toString(),
+       action->property("receiver_sender_hash").toString(),
+       0);
+  else
+    window = new spoton_emailwindow("", "", "", 0);
+
+  connect(this,
+	  SIGNAL(newGlobalName(const QString &)),
+	  window,
+	  SLOT(slotNewGlobalName(const QString &)));
+  connect(this,
+	  SIGNAL(updateEmailWindows(void)),
+	  window,
+	  SLOT(slotUpdate(void)));
+  connect(window,
+	  SIGNAL(configurePoptastic(void)),
+	  this,
+	  SLOT(slotConfigurePoptastic(void)));
+  window->show();
+  spoton_utilities::centerWidget(window, this);
+#endif
+}
+
+void spoton::slotPQUrlDatabaseFaulty(void)
+{
+  m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
+  slotPostgreSQLDisconnect(0);
+}
+
+void spoton::slotPopulateNeighbors(void)
+{
+  if(currentTabName() != "neighbors")
+    return;
+  else if(m_ui.neighborsTemporarilyPause->isChecked())
+    return;
+
+  if(m_neighborsFuture.isFinished())
+    m_neighborsFuture = QtConcurrent::run(this, &spoton::retrieveNeighbors);
+}
+
+void spoton::slotPopulateParticipants(void)
+{
+  if(m_participantsFuture.isFinished())
+    m_participantsFuture = QtConcurrent::run
+      (this, &spoton::retrieveParticipants, m_crypts.value("chat", 0));
+}
+
+void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)
+{
+  m_settings["gui/postgresql_kernel_url_distribution_timeout"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/postgresql_kernel_url_distribution_timeout", value);
+}
+
+void spoton::slotPrepareContextMenuMirrors(void)
+{
+  prepareContextMenuMirrors();
+}
 
 void spoton::slotSetSocketOptions(void)
 {
@@ -328,578 +939,6 @@ void spoton::slotSetSocketOptions(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)
-{
-  m_settings["gui/postgresql_kernel_url_distribution_timeout"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/postgresql_kernel_url_distribution_timeout", value);
-}
-
-void spoton::slotShowReleaseNotes(void)
-{
-  m_releaseNotes->showNormal();
-  m_releaseNotes->activateWindow();
-  m_releaseNotes->raise();
-  spoton_utilities::centerWidget(m_releaseNotes, this);
-}
-
-void spoton::slotNewEmailWindow(void)
-{
-#if SPOTON_GOLDBUG == 0
-  QAction *action = qobject_cast<QAction *> (sender());
-  spoton_emailwindow *window = 0;
-
-  if(action)
-    window = new spoton_emailwindow
-      (action->property("message").toString(),
-       action->property("subject").toString(),
-       action->property("receiver_sender_hash").toString(),
-       0);
-  else
-    window = new spoton_emailwindow("", "", "", 0);
-
-  connect(this,
-	  SIGNAL(newGlobalName(const QString &)),
-	  window,
-	  SLOT(slotNewGlobalName(const QString &)));
-  connect(this,
-	  SIGNAL(updateEmailWindows(void)),
-	  window,
-	  SLOT(slotUpdate(void)));
-  connect(window,
-	  SIGNAL(configurePoptastic(void)),
-	  this,
-	  SLOT(slotConfigurePoptastic(void)));
-  window->show();
-  spoton_utilities::centerWidget(window, this);
-#endif
-}
-
-QMap<QString, QByteArray> spoton::SMPWindowStreams
-(const QStringList &keyTypes) const
-{
-  return m_smpWindow.streams(keyTypes);
-}
-
-void spoton::slotMailContextMenu(const QPoint &point)
-{
-#if SPOTON_GOLDBUG == 0
-  QModelIndexList list
-    (m_ui.mail->selectionModel()->selectedRows(5)); // Gold Bug
-  bool enabled = false;
-
-  if(!list.isEmpty())
-    {
-      if(list.at(0).data().toString() == "0")
-	enabled = true;
-      else
-	enabled = false;
-    }
-
-  QAction *action = 0;
-  QMenu menu(this);
-
-  action = menu.addAction(tr("Read (New Window)..."),
-			  this,
-			  SLOT(slotNewEmailWindow(void)));
-  action->setEnabled(enabled);
-
-  if(enabled)
-    {
-      action->setProperty("message", m_ui.mailMessage->toHtml());
-      list = m_ui.mail->selectionModel()->selectedRows(3); // Subject
-      action->setProperty("subject", list.value(0).data().toString());
-      list = m_ui.mail->selectionModel()->
-	selectedRows(8); // receiver_sender_hash
-      action->setProperty
-	("receiver_sender_hash", list.value(0).data().toString());
-    }
-
-  menu.exec(m_ui.mail->mapToGlobal(point));
-#else
-  Q_UNUSED(point);
-#endif
-}
-
-void spoton::slotTerminateKernelOnUIExit(bool state)
-{
-  m_settings["gui/terminate_kernel_on_ui_exit"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/terminate_kernel_on_ui_exit", state);
-}
-
-void spoton::slotKeysIndexChanged(const QString &text)
-{
-#ifndef SPOTON_OPEN_LIBRARY_SUPPORTED
-  if(text == "Open Library")
-    m_ui.regenerate->setEnabled(false);
-  else
-    m_ui.regenerate->setEnabled(true);
-#else
-  Q_UNUSED(text);
-#endif
-}
-
-void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
-{
-  if(!settings.value("is_kernel_active").toBool())
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() +
-			   QDir::separator() +
-			   "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    /*
-	    ** OK, so the kernel is inactive. All participants are offline.
-	    */
-
-	    query.exec
-	      ("UPDATE friends_public_keys SET status = 'offline' WHERE "
-	       "status <> 'offline'");
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "listeners.db");
-
-	if(db.isOpen())
-	  {
-	    QSqlQuery query(db);
-
-	    /*
-	    ** OK, so the kernel is inactive. Discover the
-	    ** listeners that have not been deleted and update some of their
-	    ** information.
-	    */
-
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.exec("DELETE FROM listeners WHERE "
-		       "status_control = 'deleted'");
-	    query.exec("DELETE FROM listeners_accounts WHERE "
-		       "listener_oid NOT IN "
-		       "(SELECT OID FROM listeners)");
-	    query.exec
-	      ("DELETE FROM listeners_accounts_consumed_authentications "
-	       "WHERE listener_oid >= 0");
-	    query.exec("DELETE FROM listeners_allowed_ips WHERE "
-		       "listener_oid NOT IN "
-		       "(SELECT OID FROM listeners)");
-	    query.exec("UPDATE listeners SET connections = 0, "
-		       "external_ip_address = NULL, "
-		       "status = 'offline' WHERE "
-		       "connections > 0 OR status = 'online'");
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    /*
-	    ** OK, so the kernel is inactive. Discover the
-	    ** neighbors that have not been deleted and not disconnected
-	    ** and update some of their information.
-	    */
-
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.exec("DELETE FROM neighbors WHERE "
-		       "status_control = 'deleted'");
-	    query.exec("UPDATE neighbors SET "
-		       "account_authenticated = NULL, "
-		       "buffered_content = 0, "
-		       "bytes_discarded_on_write = 0, "
-		       "bytes_read = 0, "
-		       "bytes_written = 0, "
-		       "external_ip_address = NULL, "
-		       "is_encrypted = 0, "
-		       "local_ip_address = NULL, "
-		       "local_port = NULL, "
-		       "ssl_session_cipher = NULL, "
-		       "status = 'disconnected', "
-		       "uptime = 0 WHERE "
-		       "local_ip_address IS NOT NULL OR local_port IS NOT NULL "
-		       "OR status <> 'disconnected'");
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-
-  if(settings.value("keep_only_user_defined_neighbors").toBool())
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
-
-	if(db.open())
-	  {
-	    /*
-	    ** Delete disconnected peers.
-	    */
-
-	    QSqlQuery query(db);
-
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.exec("DELETE FROM neighbors WHERE "
-		       "status <> 'connected' AND "
-		       "status_control <> 'blocked' AND "
-		       "user_defined = 0");
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-}
-
-void spoton::retrieveNeighbors(void)
-{
-  QFileInfo fileInfo
-    (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
-
-  if(fileInfo.exists())
-    {
-      if(fileInfo.lastModified() >= m_neighborsLastModificationTime)
-	{
-	  if(fileInfo.lastModified() == m_neighborsLastModificationTime)
-	    m_neighborsLastModificationTime = fileInfo.lastModified().
-	      addMSecs(1);
-	  else
-	    m_neighborsLastModificationTime = fileInfo.lastModified();
-	}
-      else
-	return;
-    }
-  else
-    m_neighborsLastModificationTime = QDateTime();
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase *db = new QSqlDatabase(spoton_misc::database(connectionName));
-
-    db->setDatabaseName(fileInfo.absoluteFilePath());
-
-    if(db->open())
-      {
-	QSqlQuery *query = new QSqlQuery(*db);
-	int size = 0;
-
-	query->setForwardOnly(true);
-
-	if(query->exec("SELECT COUNT(*) FROM neighbors "
-		       "WHERE status_control <> 'deleted'"))
-	  if(query->next())
-	    size = query->value(0).toInt();
-
-	if(query->exec("SELECT sticky, "
-		       "uuid, "
-		       "status, "
-		       "ssl_key_size, "
-		       "status_control, "
-		       "local_ip_address, "
-		       "local_port, "
-		       "external_ip_address, "
-		       "external_port, "
-		       "country, "
-		       "remote_ip_address, "
-		       "remote_port, "
-		       "scope_id, "
-		       "protocol, "
-		       "proxy_hostname, "
-		       "proxy_port, "
-		       "maximum_buffer_size, "
-		       "maximum_content_length, "
-		       "echo_mode, "
-		       "uptime, "
-		       "allow_exceptions, "
-		       "certificate, "
-		       "bytes_read, "
-		       "bytes_written, "
-		       "ssl_session_cipher, "
-		       "account_name, "
-		       "account_authenticated, "
-		       "transport, "
-		       "orientation, "
-		       "motd, "
-		       "is_encrypted, "
-		       "0, " // Certificate
-		       "ae_token, "
-		       "ae_token_type, "
-		       "ssl_control_string, "
-		       "priority, "
-		       "lane_width, "
-		       "passthrough, "
-		       "waitforbyteswritten_msecs, "
-		       "private_application_credentials, "
-		       "silence_time, "
-		       "socket_options, "
-		       "buffered_content, "
-		       "OID "
-		       "FROM neighbors WHERE status_control <> 'deleted'"))
-	  {
-	    emit neighborsQueryReady(db, query, connectionName, size);
-	    return;
-	  }
-
-	db->close();
-	delete db;
-	delete query;
-      }
-    else
-      delete db;
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::retrieveParticipants(spoton_crypt *crypt)
-{
-  if(!crypt)
-    return;
-
-  QFileInfo fileInfo
-    (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
-
-  if(fileInfo.exists())
-    {
-      if(fileInfo.lastModified() >= m_participantsLastModificationTime)
-	{
-	  if(fileInfo.lastModified() == m_participantsLastModificationTime)
-	    m_participantsLastModificationTime = fileInfo.lastModified().
-	      addMSecs(1);
-	  else
-	    m_participantsLastModificationTime = fileInfo.lastModified();
-	}
-      else
-	return;
-    }
-  else
-    m_participantsLastModificationTime = QDateTime();
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase *db = new QSqlDatabase(spoton_misc::database(connectionName));
-
-    db->setDatabaseName(fileInfo.absoluteFilePath());
-
-    if(db->open())
-      {
-	QSqlQuery *query = new QSqlQuery(*db);
-	bool ok = true;
-
-	query->setForwardOnly(true);
-	query->prepare("SELECT "
-		       "name, "               // 0
-		       "OID, "                // 1
-		       "neighbor_oid, "       // 2
-		       "public_key_hash, "    // 3
-		       "status, "             // 4
-		       "last_status_update, " // 5
-		       "gemini, "             // 6
-		       "gemini_hash_key, "    // 7
-		       "key_type, "           // 8
-		       "public_key "          // 9
-		       "FROM friends_public_keys "
-		       "WHERE key_type_hash IN (?, ?, ?, ?)");
-	query->bindValue
-	  (0, crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
-
-	if(ok)
-	  query->bindValue
-	    (1, crypt->keyedHash(QByteArray("email"), &ok).toBase64());
-
-	if(ok)
-	  query->bindValue
-	    (2, crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
-
-	if(ok)
-	  query->bindValue
-	    (3, crypt->keyedHash(QByteArray("url"), &ok).toBase64());
-
-	if(ok && query->exec())
-	  {
-	    emit participantsQueryReady(db, query, connectionName);
-	    return;
-	  }
-
-	db->close();
-	delete db;
-	delete query;
-      }
-    else
-      delete db;
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotPopulateNeighbors(void)
-{
-  if(currentTabName() != "neighbors")
-    return;
-  else if(m_ui.neighborsTemporarilyPause->isChecked())
-    return;
-
-  if(m_neighborsFuture.isFinished())
-    m_neighborsFuture = QtConcurrent::run(this, &spoton::retrieveNeighbors);
-}
-
-void spoton::slotPopulateParticipants(void)
-{
-  if(m_participantsFuture.isFinished())
-    m_participantsFuture = QtConcurrent::run
-      (this, &spoton::retrieveParticipants, m_crypts.value("chat", 0));
-}
-
-QString spoton::participantKeyType(QTableWidget *table) const
-{
-  if(!table)
-    return QString("");
-
-  int row = -1;
-
-  if((row = table->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = table->item(row, 1); // OID
-
-      if(item)
-	return item->data
-	  (Qt::ItemDataRole(Qt::UserRole + 1)).toString().toLower();
-    }
-
-  return QString("");
-}
-
-bool spoton::listenerSupportsSslTls(void) const
-{
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item1 = m_ui.listeners->item(row, 2);
-      QTableWidgetItem *item2 = m_ui.listeners->item(row, 15);
-
-      if(item1 && item2)
-	return item1->text().toInt() > 0 &&
-	  (item2->text().toLower().trimmed() == "tcp"
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	  || item2->text().toLower().trimmed() == "udp"
-#endif
-	   );
-    }
-
-  return false;
-}
-
-QString spoton::listenerTransport(void) const
-{
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item(row, 15);
-
-      if(item)
-	return item->text();
-    }
-
-  return QString("");
-}
-
-bool spoton::neighborSupportsSslTls(void) const
-{
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item1 = m_ui.neighbors->item(row, 3);
-      QTableWidgetItem *item2 = m_ui.neighbors->item(row, 27);
-
-      if(item1 && item2)
-	return item1->text().toInt() > 0 &&
-	  (item2->text().toLower().trimmed() == "tcp"
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	   || item2->text().toLower().trimmed() == "udp"
-#endif
-	   );
-    }
-
-  return false;
-}
-
-QThread::Priority spoton::neighborThreadPriority(void) const
-{
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item(row, 35);
-
-      if(item)
-	return QThread::Priority(item->data(Qt::UserRole).toInt());
-    }
-
-  return QThread::HighPriority;
-}
-
-QString spoton::neighborTransport(void) const
-{
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item(row, 27);
-
-      if(item)
-	return item->text();
-    }
-
-  return QString("");
-}
-
-void spoton::slotPrepareContextMenuMirrors(void)
-{
-  prepareContextMenuMirrors();
-}
-
 void spoton::slotShowErrorMessage(void)
 {
   QTimer *timer = qobject_cast<QTimer *> (sender());
@@ -914,58 +953,19 @@ void spoton::slotShowErrorMessage(void)
     (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), str);
 }
 
-void spoton::slotMonitorEvents(bool state)
+void spoton::slotShowReleaseNotes(void)
 {
-  m_settings["gui/monitorEvents"] = state;
+  m_releaseNotes->showNormal();
+  m_releaseNotes->activateWindow();
+  m_releaseNotes->raise();
+  spoton_utilities::centerWidget(m_releaseNotes, this);
+}
+
+void spoton::slotTerminateKernelOnUIExit(bool state)
+{
+  m_settings["gui/terminate_kernel_on_ui_exit"] = state;
 
   QSettings settings;
 
-  settings.setValue("gui/monitorEvents", state);
-}
-
-void spoton::slotPQUrlDatabaseFaulty(void)
-{
-  m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
-  slotPostgreSQLDisconnect(0);
-}
-
-void spoton::inspectPQUrlDatabase(const QByteArray &password)
-{
-  QSettings settings;
-  QSqlDatabase db;
-  QString connectionName(spoton_misc::databaseName());
-  QString options
-    (settings.value("gui/postgresql_connection_options", "").
-     toString().trimmed());
-  QString str("connect_timeout=5");
-
-  if(!options.isEmpty())
-    {
-      str.append(";");
-      str.append(options);
-    }
-
-  if(settings.value("gui/postgresql_ssltls", false).toBool())
-    str.append(";requiressl=1");
-
-  db = QSqlDatabase::addDatabase("QPSQL", connectionName);
-  db.setConnectOptions(str);
-  db.setDatabaseName
-    (settings.value("gui/postgresql_database", "").toString().trimmed());
-  db.setHostName
-    (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
-  db.setPort(settings.value("gui/postgresql_port", 5432).toInt());
-
-  if(!db.open(settings.value("gui/postgresql_name", "").toString().trimmed(),
-	      password))
-    {
-      if(m_pqUrlFaultyCounter.fetchAndAddOrdered(1) > 5)
-	emit pqUrlDatabaseFaulty();
-    }
-  else
-    m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
-
-  db.close();
-  db = QSqlDatabase();
-  QSqlDatabase::removeDatabase(connectionName);
+  settings.setValue("gui/terminate_kernel_on_ui_exit", state);
 }
