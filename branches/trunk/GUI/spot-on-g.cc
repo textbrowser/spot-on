@@ -32,16 +32,127 @@ extern "C"
 
 #include <QSqlDriver>
 
-#include "spot-on.h"
 #include "spot-on-documentation.h"
 #if SPOTON_GOLDBUG == 0
 #include "spot-on-neighborstatistics.h"
 #endif
 #include "spot-on-utilities.h"
+#include "spot-on.h"
 #include "ui_spot-on-private-application-credentials.h"
 #if SPOTON_GOLDBUG == 0
 #include "ui_spot-on-stylesheet.h"
 #endif
+
+QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
+{
+  if(!m_crypts.value("open-library", 0) ||
+     !m_crypts.value("open-library-signature", 0))
+    return QByteArray();
+
+  QByteArray name;
+  QByteArray mPublicKey;
+  QByteArray mSignature;
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+  bool ok = true;
+
+  name = m_settings.value("gui/openLibraryName", "unknown").toByteArray();
+  mPublicKey = m_crypts.value("open-library")->publicKey(&ok);
+
+  if(ok)
+    mSignature = m_crypts.value("open-library")->
+      digitalSignature(mPublicKey, &ok);
+
+  if(ok)
+    sPublicKey = m_crypts.value("open-library-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("open-library-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    return "K" + QByteArray("open-library").toBase64() + "@" +
+      name.toBase64() + "@" +
+      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      sPublicKey.toBase64() + "@" + sSignature.toBase64();
+  else
+    return QByteArray();
+}
+
+QByteArray spoton::poptasticNameEmail(void) const
+{
+  return m_settings.value("gui/poptasticNameEmail").toByteArray();
+}
+
+bool spoton::verifyInitializationPassphrase(QWidget *parent)
+{
+  QString str1(m_ui.passphrase1->text());
+  QString str2(m_ui.passphrase2->text());
+  QString str3(m_ui.username->text());
+
+  if(str3.trimmed().isEmpty())
+    {
+      str3 = "unknown";
+      m_ui.username->setText(str3);
+    }
+  else
+    m_ui.username->setText(str3.trimmed());
+
+  if(!m_ui.passphrase_rb->isChecked())
+    {
+      str1 = m_ui.question->text();
+      str2 = m_ui.answer->text();
+    }
+
+  if(str1.length() < 8 || str2.length() < 8)
+    {
+      if(m_ui.passphrase_rb->isChecked())
+	QMessageBox::critical(parent, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("The passphrases must contain at least "
+				 "eight characters each."));
+      else
+	QMessageBox::critical(parent, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("The answer and question must contain "
+				 "at least eight characters each."));
+
+      if(m_ui.passphrase_rb->isChecked())
+	{
+	  m_ui.passphrase1->selectAll();
+	  m_ui.passphrase1->setFocus();
+	}
+      else
+	{
+	  m_ui.question->selectAll();
+	  m_ui.question->setFocus();
+	}
+
+      return false;
+    }
+
+  if(m_ui.passphrase_rb->isChecked() && str1 != str2)
+    {
+      QMessageBox::critical(parent, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("The passphrases are not identical."));
+      m_ui.passphrase1->selectAll();
+      m_ui.passphrase1->setFocus();
+      return false;
+    }
+
+  if(str3.isEmpty())
+    {
+      QMessageBox::critical(parent, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Please provide a name."));
+      m_ui.username->selectAll();
+      m_ui.username->setFocus();
+      return false;
+    }
+
+  return true;
+}
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
 {
@@ -128,11 +239,6 @@ void spoton::slotRemoveAttachment(const QUrl &url)
   QApplication::restoreOverrideCursor();
 }
 
-QByteArray spoton::poptasticNameEmail(void) const
-{
-  return m_settings.value("gui/poptasticNameEmail").toByteArray();
-}
-
 void spoton::slotShowNotificationsWindow(void)
 {
   bool wasVisible = m_notificationsWindow->isVisible();
@@ -143,42 +249,6 @@ void spoton::slotShowNotificationsWindow(void)
 
   if(!wasVisible)
     spoton_utilities::centerWidget(m_notificationsWindow, this);
-}
-
-QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
-{
-  if(!m_crypts.value("open-library", 0) ||
-     !m_crypts.value("open-library-signature", 0))
-    return QByteArray();
-
-  QByteArray name;
-  QByteArray mPublicKey;
-  QByteArray mSignature;
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-  bool ok = true;
-
-  name = m_settings.value("gui/openLibraryName", "unknown").toByteArray();
-  mPublicKey = m_crypts.value("open-library")->publicKey(&ok);
-
-  if(ok)
-    mSignature = m_crypts.value("open-library")->
-      digitalSignature(mPublicKey, &ok);
-
-  if(ok)
-    sPublicKey = m_crypts.value("open-library-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("open-library-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    return "K" + QByteArray("open-library").toBase64() + "@" +
-      name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
-      sPublicKey.toBase64() + "@" + sSignature.toBase64();
-  else
-    return QByteArray();
 }
 
 void spoton::slotCopyMyOpenLibraryPublicKey(void)
@@ -1478,76 +1548,6 @@ void spoton::slotWizardButtonClicked(void)
     default:
       break;
     }
-}
-
-bool spoton::verifyInitializationPassphrase(QWidget *parent)
-{
-  QString str1(m_ui.passphrase1->text());
-  QString str2(m_ui.passphrase2->text());
-  QString str3(m_ui.username->text());
-
-  if(str3.trimmed().isEmpty())
-    {
-      str3 = "unknown";
-      m_ui.username->setText(str3);
-    }
-  else
-    m_ui.username->setText(str3.trimmed());
-
-  if(!m_ui.passphrase_rb->isChecked())
-    {
-      str1 = m_ui.question->text();
-      str2 = m_ui.answer->text();
-    }
-
-  if(str1.length() < 8 || str2.length() < 8)
-    {
-      if(m_ui.passphrase_rb->isChecked())
-	QMessageBox::critical(parent, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("The passphrases must contain at least "
-				 "eight characters each."));
-      else
-	QMessageBox::critical(parent, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("The answer and question must contain "
-				 "at least eight characters each."));
-
-      if(m_ui.passphrase_rb->isChecked())
-	{
-	  m_ui.passphrase1->selectAll();
-	  m_ui.passphrase1->setFocus();
-	}
-      else
-	{
-	  m_ui.question->selectAll();
-	  m_ui.question->setFocus();
-	}
-
-      return false;
-    }
-
-  if(m_ui.passphrase_rb->isChecked() && str1 != str2)
-    {
-      QMessageBox::critical(parent, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("The passphrases are not identical."));
-      m_ui.passphrase1->selectAll();
-      m_ui.passphrase1->setFocus();
-      return false;
-    }
-
-  if(str3.isEmpty())
-    {
-      QMessageBox::critical(parent, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Please provide a name."));
-      m_ui.username->selectAll();
-      m_ui.username->setFocus();
-      return false;
-    }
-
-  return true;
 }
 
 void spoton::slotNeighborSilenceTimeChanged(int value)
