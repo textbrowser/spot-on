@@ -46,6 +46,229 @@
 #include "ui_spot-on-forward-secrecy-algorithms-selection.h"
 #include "ui_spot-on-unlock.h"
 
+QByteArray spoton::copiedPublicKeyPairToMagnet(const QByteArray &data) const
+{
+  QByteArray magnet;
+  QList<QByteArray> list(data.mid(1).split('@')); // Remove K.
+
+  magnet.append("magnet:?kt=");
+  magnet.append(list.value(0));
+  magnet.append("&n=");
+  magnet.append(list.value(1));
+  magnet.append("&ek=");
+  magnet.append(list.value(2));
+  magnet.append("&eks=");
+  magnet.append(list.value(3));
+  magnet.append("&sk=");
+  magnet.append(list.value(4));
+  magnet.append("&sks=");
+  magnet.append(list.value(5));
+  return magnet;
+}
+
+QList<QByteArray> spoton::retrieveForwardSecrecyInformation
+(const QString &oid, bool *ok1) const
+{
+  if(ok1)
+    *ok1 = false;
+
+  QList<QByteArray> list;
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return list;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT forward_secrecy_authentication_algorithm, "
+		      "forward_secrecy_authentication_key, "
+		      "forward_secrecy_encryption_algorithm, "
+		      "forward_secrecy_encryption_key FROM "
+		      "friends_public_keys WHERE OID = ?");
+	query.bindValue(0, oid);
+
+	if(query.exec())
+	  {
+	    if(query.next())
+	      {
+		QByteArray bytes;
+		bool ok2 = true;
+
+		if(!query.isNull(0))
+		  {
+		    bytes = crypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(0).toByteArray()),
+		       &ok2);
+
+		    if(ok2)
+		      list << bytes;
+		  }
+
+		if(ok2)
+		  if(!query.isNull(1))
+		    {
+		      bytes = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(1).toByteArray()),
+			 &ok2);
+
+		      if(ok2)
+			list << bytes;
+		    }
+
+		if(ok2)
+		  if(!query.isNull(2))
+		    {
+		      bytes = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(2).toByteArray()),
+			 &ok2);
+
+		      if(ok2)
+			list << bytes;
+		    }
+
+		if(ok2)
+		  if(!query.isNull(3))
+		    {
+		      bytes = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(3).toByteArray()),
+			 &ok2);
+
+		      if(ok2)
+			list << bytes;
+		    }
+
+		if(ok2)
+		  if(ok1)
+		    *ok1 = true;
+	      }
+	    else if(ok1)
+	      *ok1 = true;
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return list;
+}
+
+QSqlDatabase spoton::urlDatabase(void) const
+{
+  return m_urlDatabase;
+}
+
+QString spoton::saveCommonUrlCredentials
+(const QPair<QByteArray, QByteArray> &keys,
+ const QString &cipherType, const QString &hashType,
+ spoton_crypt *crypt) const
+{
+  if(!crypt)
+    return tr("Invalid spoton_crypt object. This is a fatal flaw.");
+
+  prepareDatabasesFromUI();
+
+  QString connectionName("");
+  QString error("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "urls_key_information.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare
+	  ("INSERT OR REPLACE INTO remote_key_information "
+	   "(cipher_type, encryption_key, hash_key, hash_type) "
+	   "VALUES (?, ?, ?, ?)");
+	query.bindValue
+	  (0,
+	   crypt->encryptedThenHashed(cipherType.toLatin1(),
+				      &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->
+	     encryptedThenHashed(keys.first, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->
+	     encryptedThenHashed(keys.second, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, crypt->
+	     encryptedThenHashed(hashType.toLatin1(),
+				 &ok).toBase64());
+
+	if(ok)
+	  {
+	    if(!query.exec())
+	      error = tr
+		("Database write error. Is urls_key_information.db "
+		 "properly defined?");
+	  }
+	else
+	  error = tr("An error occurred with "
+		     "spoton_crypt::encryptedThenHashed().");
+      }
+    else
+      error = tr("Unable to access urls_key_information.db.");
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return error;
+}
+
+int spoton::tabIndexFromName(const QString &name) const
+{
+  /*
+  ** Returns the index of the page having the given name.
+  ** If the page is hidden, a negative one is returned.
+  */
+
+  QMapIterator<int, QHash<QString, QVariant> > it(m_tabWidgetsProperties);
+  int index = -1;
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value().value("name").toString() == name)
+	{
+	  index = m_ui.tab->indexOf(m_tabWidgets[it.key()]);
+	  break;
+	}
+    }
+
+  return index;
+}
+
+spoton_crypt *spoton::urlCommonCrypt(void) const
+{
+  return m_urlCommonCrypt;
+}
+
 void spoton::slotDuplicateTransmittedMagnet(void)
 {
   QListWidgetItem *item = m_ui.transmittedMagnets->currentItem();
@@ -432,104 +655,6 @@ void spoton::slotEstablishForwardSecrecy(void)
   if(!error.isEmpty())
     QMessageBox::critical
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
-}
-
-QList<QByteArray> spoton::retrieveForwardSecrecyInformation
-(const QString &oid, bool *ok1) const
-{
-  if(ok1)
-    *ok1 = false;
-
-  QList<QByteArray> list;
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return list;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT forward_secrecy_authentication_algorithm, "
-		      "forward_secrecy_authentication_key, "
-		      "forward_secrecy_encryption_algorithm, "
-		      "forward_secrecy_encryption_key FROM "
-		      "friends_public_keys WHERE OID = ?");
-	query.bindValue(0, oid);
-
-	if(query.exec())
-	  {
-	    if(query.next())
-	      {
-		QByteArray bytes;
-		bool ok2 = true;
-
-		if(!query.isNull(0))
-		  {
-		    bytes = crypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(0).toByteArray()),
-		       &ok2);
-
-		    if(ok2)
-		      list << bytes;
-		  }
-
-		if(ok2)
-		  if(!query.isNull(1))
-		    {
-		      bytes = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(1).toByteArray()),
-			 &ok2);
-
-		      if(ok2)
-			list << bytes;
-		    }
-
-		if(ok2)
-		  if(!query.isNull(2))
-		    {
-		      bytes = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(2).toByteArray()),
-			 &ok2);
-
-		      if(ok2)
-			list << bytes;
-		    }
-
-		if(ok2)
-		  if(!query.isNull(3))
-		    {
-		      bytes = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(3).toByteArray()),
-			 &ok2);
-
-		      if(ok2)
-			list << bytes;
-		    }
-
-		if(ok2)
-		  if(ok1)
-		    *ok1 = true;
-	      }
-	    else if(ok1)
-	      *ok1 = true;
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return list;
 }
 
 void spoton::slotRespondToForwardSecrecy(void)
@@ -1718,77 +1843,6 @@ void spoton::slotLaneWidthChanged(int index)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-QString spoton::saveCommonUrlCredentials
-(const QPair<QByteArray, QByteArray> &keys,
- const QString &cipherType, const QString &hashType,
- spoton_crypt *crypt) const
-{
-  if(!crypt)
-    return tr("Invalid spoton_crypt object. This is a fatal flaw.");
-
-  prepareDatabasesFromUI();
-
-  QString connectionName("");
-  QString error("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "urls_key_information.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.prepare
-	  ("INSERT OR REPLACE INTO remote_key_information "
-	   "(cipher_type, encryption_key, hash_key, hash_type) "
-	   "VALUES (?, ?, ?, ?)");
-	query.bindValue
-	  (0,
-	   crypt->encryptedThenHashed(cipherType.toLatin1(),
-				      &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, crypt->
-	     encryptedThenHashed(keys.first, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (2, crypt->
-	     encryptedThenHashed(keys.second, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (3, crypt->
-	     encryptedThenHashed(hashType.toLatin1(),
-				 &ok).toBase64());
-
-	if(ok)
-	  {
-	    if(!query.exec())
-	      error = tr
-		("Database write error. Is urls_key_information.db "
-		 "properly defined?");
-	  }
-	else
-	  error = tr("An error occurred with "
-		     "spoton_crypt::encryptedThenHashed().");
-      }
-    else
-      error = tr("Unable to access urls_key_information.db.");
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return error;
-}
-
 void spoton::slotSaveCongestionAlgorithm(const QString &text)
 {
   QString str("");
@@ -1803,26 +1857,6 @@ void spoton::slotSaveCongestionAlgorithm(const QString &text)
   QSettings settings;
 
   settings.setValue("kernel/messaging_cache_algorithm", str);
-}
-
-QByteArray spoton::copiedPublicKeyPairToMagnet(const QByteArray &data) const
-{
-  QByteArray magnet;
-  QList<QByteArray> list(data.mid(1).split('@')); // Remove K.
-
-  magnet.append("magnet:?kt=");
-  magnet.append(list.value(0));
-  magnet.append("&n=");
-  magnet.append(list.value(1));
-  magnet.append("&ek=");
-  magnet.append(list.value(2));
-  magnet.append("&eks=");
-  magnet.append(list.value(3));
-  magnet.append("&sk=");
-  magnet.append(list.value(4));
-  magnet.append("&sks=");
-  magnet.append(list.value(5));
-  return magnet;
 }
 
 void spoton::slotBluetoothSecurityChanged(int index)
@@ -1980,16 +2014,6 @@ void spoton::slotShowRss(void)
   m_rss->center(this);
 }
 
-spoton_crypt *spoton::urlCommonCrypt(void) const
-{
-  return m_urlCommonCrypt;
-}
-
-QSqlDatabase spoton::urlDatabase(void) const
-{
-  return m_urlDatabase;
-}
-
 void spoton::slotMaximumUrlKeywordsChanged(int value)
 {
   QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
@@ -2131,30 +2155,6 @@ void spoton::prepareVisiblePages(void)
 	m_ui.tab->addTab(widget, icon, hash.value("label").toString());
       }
   }
-}
-
-int spoton::tabIndexFromName(const QString &name) const
-{
-  /*
-  ** Returns the index of the page having the given name.
-  ** If the page is hidden, a negative one is returned.
-  */
-
-  QMapIterator<int, QHash<QString, QVariant> > it(m_tabWidgetsProperties);
-  int index = -1;
-
-  while(it.hasNext())
-    {
-      it.next();
-
-      if(it.value().value("name").toString() == name)
-	{
-	  index = m_ui.tab->indexOf(m_tabWidgets[it.key()]);
-	  break;
-	}
-    }
-
-  return index;
 }
 
 void spoton::slotStarBeamFragmented(bool state)
