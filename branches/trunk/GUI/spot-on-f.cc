@@ -29,7 +29,6 @@
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
-#include "spot-on.h"
 #include "spot-on-documentation.h"
 #include "spot-on-echo-key-share.h"
 #if SPOTON_GOLDBUG == 0
@@ -43,6 +42,7 @@
 #include "spot-on-rss.h"
 #include "spot-on-starbeamanalyzer.h"
 #include "spot-on-utilities.h"
+#include "spot-on.h"
 #include "ui_spot-on-forward-secrecy-algorithms-selection.h"
 #include "ui_spot-on-unlock.h"
 
