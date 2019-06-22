@@ -390,6 +390,87 @@ void spoton::popForwardSecrecyRequest(const QByteArray &publicKeyHash)
     }
 }
 
+void spoton::prepareTabIcons(void)
+{
+  QString iconSet
+    (m_settings.value("gui/iconSet", "nouve").toString());
+  QStringList list;
+
+#if SPOTON_GOLDBUG == 0
+  list << "buzz.png" << "chat.png" << "email.png"
+       << "add-listener.png" << "neighbors.png" << "search.png"
+       << "settings.png" << "starbeam.png" << "urls.png"
+       << "spot-on-logo.png";
+#else
+  list << "buzz.png" << "chat.png" << "email.png"
+       << "server.png" << "connect.png" << "search.png"
+       << "settings.png" << "starbeam.png" << "urls.png"
+       << "key.png" << "goldbug.png";
+#endif
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      QPixmap pixmap;
+
+      if(m_ui.tab->tabPosition() == QTabWidget::North ||
+	 m_ui.tab->tabPosition() == QTabWidget::South)
+	pixmap = QPixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
+      else
+	{
+	  QTransform transform;
+
+	  pixmap = QPixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
+
+	  if(m_ui.tab->tabPosition() == QTabWidget::East)
+	    transform.rotate(-90);
+	  else
+	    transform.rotate(90);
+
+	  pixmap = pixmap.transformed(transform, Qt::SmoothTransformation);
+	}
+
+      QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
+
+      hash["icon"] = QIcon(pixmap);
+      m_tabWidgetsProperties[i] = hash;
+    }
+
+  for(int i = 0; i < m_ui.tab->count(); i++)
+    {
+      /*
+      ** May be slow... although we have a few pages.
+      */
+
+      int index = m_tabWidgets.key(m_ui.tab->widget(i));
+
+      m_ui.tab->setTabIcon
+	(i, m_tabWidgetsProperties[index].value("icon").value<QIcon> ());
+    }
+}
+
+void spoton::slotAllowFSRequest(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  if(checkBox == m_optionsUi.chat_fs_request)
+    {
+      QSettings settings;
+
+      m_settings["gui/allowChatFSRequest"] = state;
+      settings.setValue("gui/allowChatFSRequest", state);
+    }
+  else if(checkBox == m_optionsUi.email_fs_request)
+    {
+      QSettings settings;
+
+      m_settings["gui/allowEmailFSRequest"] = state;
+      settings.setValue("gui/allowEmailFSRequest", state);
+    }
+}
+
 void spoton::slotDuplicateTransmittedMagnet(void)
 {
   QListWidgetItem *item = m_ui.transmittedMagnets->currentItem();
@@ -440,6 +521,21 @@ void spoton::slotDuplicateTransmittedMagnet(void)
 
   if(ok)
     askKernelToReadStarBeamKeys();
+}
+
+void spoton::slotEmailFsGb(int index)
+{
+  if(index == 1)
+    {
+      m_ui.emailSecrets->setVisible(true);
+      m_ui.goldbug->setEnabled(true);
+    }
+  else
+    {
+      m_ui.emailSecrets->setVisible(false);
+      m_ui.goldbug->clear();
+      m_ui.goldbug->setEnabled(false);
+    }
 }
 
 void spoton::slotEstablishForwardSecrecy(void)
@@ -675,6 +771,72 @@ void spoton::slotEstablishForwardSecrecy(void)
   if(!error.isEmpty())
     QMessageBox::critical
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+}
+
+void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
+{
+  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+
+  if(!comboBox)
+    return;
+
+  QWidget *parent = comboBox->parentWidget();
+
+  if(!parent)
+    return;
+
+  do
+    {
+      if(qobject_cast<QDialog *> (parent))
+	break;
+
+      if(parent)
+	parent = parent->parentWidget();
+    }
+  while(parent != 0);
+
+  if(!parent)
+    return;
+
+  comboBox = parent->findChild<QComboBox *> ("encryption_key_size");
+
+  if(!comboBox)
+    return;
+
+  QStringList list;
+
+  if(index == 0)
+    list << s_publicKeySizes["elgamal"];
+  else if(index == 1)
+    list << s_publicKeySizes["mceliece"];
+  else if(index == 2)
+    list << s_publicKeySizes["ntru"];
+  else
+    list << s_publicKeySizes["rsa"];
+
+  comboBox->clear();
+  comboBox->addItems(list);
+  comboBox->setCurrentIndex(0);
+
+  for(int i = 0; i < comboBox->count(); i++)
+    comboBox->model()->setData
+      (comboBox->model()->index(i, 0), 1 | 32, Qt::UserRole - 1);
+
+  if(index == 1 && !spoton_crypt::hasShake())
+    {
+      QStringList list;
+
+      list << "m11t51-fujisaki-okamoto-b" << "m12t68-fujisaki-okamoto-b";
+
+      for(int i = 0; i < list.size(); i++)
+	{
+	  int index = s_publicKeySizes.value("mceliece").indexOf(list.at(i));
+
+	  if(index >= 0)
+	    comboBox->model()->setData
+	      (comboBox->model()->index(index, 0), 0, Qt::UserRole - 1);
+	}
+    }
 }
 
 void spoton::slotReplayMessages(void)
@@ -1022,168 +1184,6 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(!error.isEmpty())
     QMessageBox::critical
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
-}
-
-void spoton::prepareTabIcons(void)
-{
-  QString iconSet
-    (m_settings.value("gui/iconSet", "nouve").toString());
-  QStringList list;
-
-#if SPOTON_GOLDBUG == 0
-  list << "buzz.png" << "chat.png" << "email.png"
-       << "add-listener.png" << "neighbors.png" << "search.png"
-       << "settings.png" << "starbeam.png" << "urls.png"
-       << "spot-on-logo.png";
-#else
-  list << "buzz.png" << "chat.png" << "email.png"
-       << "server.png" << "connect.png" << "search.png"
-       << "settings.png" << "starbeam.png" << "urls.png"
-       << "key.png" << "goldbug.png";
-#endif
-
-  for(int i = 0; i < list.size(); i++)
-    {
-      QPixmap pixmap;
-
-      if(m_ui.tab->tabPosition() == QTabWidget::North ||
-	 m_ui.tab->tabPosition() == QTabWidget::South)
-	pixmap = QPixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
-      else
-	{
-	  QTransform transform;
-
-	  pixmap = QPixmap(QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
-
-	  if(m_ui.tab->tabPosition() == QTabWidget::East)
-	    transform.rotate(-90);
-	  else
-	    transform.rotate(90);
-
-	  pixmap = pixmap.transformed(transform, Qt::SmoothTransformation);
-	}
-
-      QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
-
-      hash["icon"] = QIcon(pixmap);
-      m_tabWidgetsProperties[i] = hash;
-    }
-
-  for(int i = 0; i < m_ui.tab->count(); i++)
-    {
-      /*
-      ** May be slow... although we have a few pages.
-      */
-
-      int index = m_tabWidgets.key(m_ui.tab->widget(i));
-
-      m_ui.tab->setTabIcon
-	(i, m_tabWidgetsProperties[index].value("icon").value<QIcon> ());
-    }
-}
-
-void spoton::slotEmailFsGb(int index)
-{
-  if(index == 1)
-    {
-      m_ui.emailSecrets->setVisible(true);
-      m_ui.goldbug->setEnabled(true);
-    }
-  else
-    {
-      m_ui.emailSecrets->setVisible(false);
-      m_ui.goldbug->clear();
-      m_ui.goldbug->setEnabled(false);
-    }
-}
-
-void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
-{
-  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
-
-  if(!comboBox)
-    return;
-
-  QWidget *parent = comboBox->parentWidget();
-
-  if(!parent)
-    return;
-
-  do
-    {
-      if(qobject_cast<QDialog *> (parent))
-	break;
-
-      if(parent)
-	parent = parent->parentWidget();
-    }
-  while(parent != 0);
-
-  if(!parent)
-    return;
-
-  comboBox = parent->findChild<QComboBox *> ("encryption_key_size");
-
-  if(!comboBox)
-    return;
-
-  QStringList list;
-
-  if(index == 0)
-    list << s_publicKeySizes["elgamal"];
-  else if(index == 1)
-    list << s_publicKeySizes["mceliece"];
-  else if(index == 2)
-    list << s_publicKeySizes["ntru"];
-  else
-    list << s_publicKeySizes["rsa"];
-
-  comboBox->clear();
-  comboBox->addItems(list);
-  comboBox->setCurrentIndex(0);
-
-  for(int i = 0; i < comboBox->count(); i++)
-    comboBox->model()->setData
-      (comboBox->model()->index(i, 0), 1 | 32, Qt::UserRole - 1);
-
-  if(index == 1 && !spoton_crypt::hasShake())
-    {
-      QStringList list;
-
-      list << "m11t51-fujisaki-okamoto-b" << "m12t68-fujisaki-okamoto-b";
-
-      for(int i = 0; i < list.size(); i++)
-	{
-	  int index = s_publicKeySizes.value("mceliece").indexOf(list.at(i));
-
-	  if(index >= 0)
-	    comboBox->model()->setData
-	      (comboBox->model()->index(index, 0), 0, Qt::UserRole - 1);
-	}
-    }
-}
-
-void spoton::slotAllowFSRequest(bool state)
-{
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
-
-  if(!checkBox)
-    return;
-
-  if(checkBox == m_optionsUi.chat_fs_request)
-    {
-      QSettings settings;
-
-      m_settings["gui/allowChatFSRequest"] = state;
-      settings.setValue("gui/allowChatFSRequest", state);
-    }
-  else if(checkBox == m_optionsUi.email_fs_request)
-    {
-      QSettings settings;
-
-      m_settings["gui/allowEmailFSRequest"] = state;
-      settings.setValue("gui/allowEmailFSRequest", state);
-    }
 }
 
 void spoton::prepareTimeWidgets(void)
