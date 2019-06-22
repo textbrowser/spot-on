@@ -448,6 +448,64 @@ void spoton::prepareTabIcons(void)
     }
 }
 
+void spoton::prepareTimeWidgets(void)
+{
+  if(!m_optionsWindow)
+    return;
+
+  foreach(QSlider *slider, m_optionsWindow->findChildren<QSlider *> ())
+    connect(slider,
+	    SIGNAL(valueChanged(int)),
+	    this,
+	    SLOT(slotTimeSliderValueChanged(int)),
+	    Qt::UniqueConnection);
+
+  m_optionsUi.chat_time_delta->setValue
+    (spoton_common::CHAT_TIME_DELTA_MAXIMUM);
+  m_optionsUi.forward_secrecy_time_delta->setValue
+    (spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.gemini_time_delta->setValue
+    (spoton_common::GEMINI_TIME_DELTA_MAXIMUM);
+  m_optionsUi.kernel_cache_object_lifetime->setValue
+    (spoton_common::CACHE_TIME_DELTA_MAXIMUM);
+  m_optionsUi.kernel_url_dispatcher->setValue
+    (spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
+  m_optionsUi.poptastic_forward_secrecy_time_delta->setValue
+    (spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.poptastic_gemini_time_delta->setValue
+    (spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM);
+  m_optionsUi.retrieve_mail_time_delta->setValue
+    (spoton_common::MAIL_TIME_DELTA_MAXIMUM);
+
+  foreach(QSlider *slider, m_optionsWindow->findChildren<QSlider *> ())
+    {
+      int value = slider->value();
+
+      if(m_optionsUi.chat_time_delta == slider)
+	m_optionsUi.chat_time_delta_current->setText(QString::number(value));
+      else if(m_optionsUi.forward_secrecy_time_delta == slider)
+	m_optionsUi.forward_secrecy_time_delta_current->setText
+	  (QString::number(value));
+      else if(m_optionsUi.gemini_time_delta == slider)
+	m_optionsUi.gemini_time_delta_current->setText(QString::number(value));
+      else if(m_optionsUi.kernel_cache_object_lifetime == slider)
+	m_optionsUi.kernel_cache_object_lifetime_current->setText
+	  (QString::number(value));
+      else if(m_optionsUi.kernel_url_dispatcher == slider)
+	m_optionsUi.kernel_url_dispatcher_current->setText
+	  (QString::number(value));
+      else if(m_optionsUi.poptastic_forward_secrecy_time_delta == slider)
+	m_optionsUi.poptastic_forward_secrecy_time_delta_current->setText
+	  (QString::number(value));
+      else if(m_optionsUi.poptastic_gemini_time_delta == slider)
+	m_optionsUi.poptastic_gemini_time_delta_current->setText
+	  (QString::number(value));
+      else if(m_optionsUi.retrieve_mail_time_delta == slider)
+	m_optionsUi.retrieve_mail_time_delta_current->setText
+	  (QString::number(value));
+    }
+}
+
 void spoton::slotAllowFSRequest(bool state)
 {
   QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
@@ -1184,64 +1242,6 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(!error.isEmpty())
     QMessageBox::critical
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
-}
-
-void spoton::prepareTimeWidgets(void)
-{
-  if(!m_optionsWindow)
-    return;
-
-  foreach(QSlider *slider, m_optionsWindow->findChildren<QSlider *> ())
-    connect(slider,
-	    SIGNAL(valueChanged(int)),
-	    this,
-	    SLOT(slotTimeSliderValueChanged(int)),
-	    Qt::UniqueConnection);
-
-  m_optionsUi.chat_time_delta->setValue
-    (spoton_common::CHAT_TIME_DELTA_MAXIMUM);
-  m_optionsUi.forward_secrecy_time_delta->setValue
-    (spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
-  m_optionsUi.gemini_time_delta->setValue
-    (spoton_common::GEMINI_TIME_DELTA_MAXIMUM);
-  m_optionsUi.kernel_cache_object_lifetime->setValue
-    (spoton_common::CACHE_TIME_DELTA_MAXIMUM);
-  m_optionsUi.kernel_url_dispatcher->setValue
-    (spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
-  m_optionsUi.poptastic_forward_secrecy_time_delta->setValue
-    (spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
-  m_optionsUi.poptastic_gemini_time_delta->setValue
-    (spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM);
-  m_optionsUi.retrieve_mail_time_delta->setValue
-    (spoton_common::MAIL_TIME_DELTA_MAXIMUM);
-
-  foreach(QSlider *slider, m_optionsWindow->findChildren<QSlider *> ())
-    {
-      int value = slider->value();
-
-      if(m_optionsUi.chat_time_delta == slider)
-	m_optionsUi.chat_time_delta_current->setText(QString::number(value));
-      else if(m_optionsUi.forward_secrecy_time_delta == slider)
-	m_optionsUi.forward_secrecy_time_delta_current->setText
-	  (QString::number(value));
-      else if(m_optionsUi.gemini_time_delta == slider)
-	m_optionsUi.gemini_time_delta_current->setText(QString::number(value));
-      else if(m_optionsUi.kernel_cache_object_lifetime == slider)
-	m_optionsUi.kernel_cache_object_lifetime_current->setText
-	  (QString::number(value));
-      else if(m_optionsUi.kernel_url_dispatcher == slider)
-	m_optionsUi.kernel_url_dispatcher_current->setText
-	  (QString::number(value));
-      else if(m_optionsUi.poptastic_forward_secrecy_time_delta == slider)
-	m_optionsUi.poptastic_forward_secrecy_time_delta_current->setText
-	  (QString::number(value));
-      else if(m_optionsUi.poptastic_gemini_time_delta == slider)
-	m_optionsUi.poptastic_gemini_time_delta_current->setText
-	  (QString::number(value));
-      else if(m_optionsUi.retrieve_mail_time_delta == slider)
-	m_optionsUi.retrieve_mail_time_delta_current->setText
-	  (QString::number(value));
-    }
 }
 
 void spoton::slotTimeSliderValueChanged(int value)
