@@ -269,6 +269,127 @@ spoton_crypt *spoton::urlCommonCrypt(void) const
   return m_urlCommonCrypt;
 }
 
+void spoton::addMessageToReplayQueue(const QString &message1,
+				     const QByteArray &message2,
+				     const QString &publicKeyHash)
+{
+  if(message1.isEmpty() || message2.isEmpty() || publicKeyHash.isEmpty())
+    return;
+
+  QPair<QQueue<QString>, QQueue<QByteArray> > pair
+    (m_chatQueues.value(publicKeyHash));
+
+  {
+    QQueue<QString> queue(pair.first);
+
+    if(queue.size() >= spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE)
+      if(!queue.isEmpty())
+	queue.dequeue();
+
+    queue.enqueue(message1);
+    pair.first = queue;
+  }
+
+  {
+    QQueue<QByteArray> queue(pair.second);
+
+    if(queue.size() >= spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE)
+      if(!queue.isEmpty())
+	queue.dequeue();
+
+    queue.enqueue(message2);
+    pair.second = queue;
+  }
+
+  m_chatQueues.insert(publicKeyHash, pair);
+}
+
+void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
+{
+  QString keyType(QByteArray::fromBase64(list.value(0)).constData());
+
+  if(!(keyType == "chat" || keyType == "email" ||
+       keyType == "open-library" || keyType == "poptastic" ||
+       keyType == "url"))
+    return;
+
+  QByteArray publicKeyHash(QByteArray::fromBase64(list.value(1)));
+
+  if(publicKeyHash.size() != spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES)
+    return;
+
+  if(m_forwardSecrecyRequests.contains(publicKeyHash))
+    return;
+  else
+    {
+      spoton_forward_secrecy s;
+
+      s.key_type = keyType;
+      s.public_key = QByteArray::fromBase64(list.value(2));
+      s.public_key_hash = publicKeyHash;
+      m_forwardSecrecyRequests.insert(publicKeyHash, s);
+    }
+
+  if(!m_sb.forward_secrecy_request->isVisible())
+    {
+      QString name = spoton_misc::nameFromPublicKeyHash
+	(publicKeyHash, m_crypts.value("chat", 0));
+      QString keyType = spoton_misc::keyTypeFromPublicKeyHash
+	(publicKeyHash, m_crypts.value("chat", 0));
+
+      if(name.isEmpty())
+	{
+	  if(keyType == "poptastic")
+	    name = "unknown@unknown.org";
+	  else
+	    name = "unknown";
+	}
+
+      QString str(publicKeyHash.toBase64().constData());
+
+      notify(QDateTime::currentDateTime().toString());
+      notify
+	(tr("Participant <b>%1</b> (%2) is "
+	    "requesting forward secrecy "
+	    "credentials.<br>").
+	 arg(name).
+	 arg(str.mid(0, 16) + "..." + str.right(16)));
+      m_sb.forward_secrecy_request->setProperty
+	("public_key_hash", publicKeyHash);
+      m_sb.forward_secrecy_request->
+	setToolTip(tr("Participant %1 is requesting forward secrecy "
+		      "credentials.").arg(str.mid(0, 16) +
+					  "..." +
+					  str.right(16)));
+      m_sb.forward_secrecy_request->setVisible(true);
+    }
+}
+
+void spoton::popForwardSecrecyRequest(const QByteArray &publicKeyHash)
+{
+  m_forwardSecrecyRequests.remove(publicKeyHash);
+
+  if(m_forwardSecrecyRequests.isEmpty())
+    {
+      m_sb.forward_secrecy_request->setProperty("public_key_hash", QVariant());
+      m_sb.forward_secrecy_request->setToolTip("");
+      m_sb.forward_secrecy_request->setVisible(false);
+    }
+  else
+    {
+      QByteArray publicKeyHash(m_forwardSecrecyRequests.keys().value(0));
+      QString str(publicKeyHash.toBase64().constData());
+
+      m_sb.forward_secrecy_request->setProperty
+	("public_key_hash", publicKeyHash);
+      m_sb.forward_secrecy_request->
+	setToolTip(tr("Participant %1 is requesting forward secrecy "
+		      "credentials.").arg(str.mid(0, 16) +
+					  "..." +
+					  str.right(16)));
+    }
+}
+
 void spoton::slotDuplicateTransmittedMagnet(void)
 {
   QListWidgetItem *item = m_ui.transmittedMagnets->currentItem();
@@ -319,107 +440,6 @@ void spoton::slotDuplicateTransmittedMagnet(void)
 
   if(ok)
     askKernelToReadStarBeamKeys();
-}
-
-void spoton::addMessageToReplayQueue(const QString &message1,
-				     const QByteArray &message2,
-				     const QString &publicKeyHash)
-{
-  if(message1.isEmpty() || message2.isEmpty() || publicKeyHash.isEmpty())
-    return;
-
-  QPair<QQueue<QString>, QQueue<QByteArray> > pair
-    (m_chatQueues.value(publicKeyHash));
-
-  {
-    QQueue<QString> queue(pair.first);
-
-    if(queue.size() >= spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE)
-      if(!queue.isEmpty())
-	queue.dequeue();
-
-    queue.enqueue(message1);
-    pair.first = queue;
-  }
-
-  {
-    QQueue<QByteArray> queue(pair.second);
-
-    if(queue.size() >= spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE)
-      if(!queue.isEmpty())
-	queue.dequeue();
-
-    queue.enqueue(message2);
-    pair.second = queue;
-  }
-
-  m_chatQueues.insert(publicKeyHash, pair);
-}
-
-void spoton::slotReplayMessages(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QTableWidgetItem *item = m_ui.participants->item
-    (m_ui.participants->currentRow(), 3); // public_key_hash
-
-  if(!item)
-    return;
-
-  if(!m_chatQueues.contains(item->text()))
-    return;
-
-  QDateTime now(QDateTime::currentDateTime());
-  QQueue<QString> queue1(m_chatQueues.value(item->text()).first);
-  QPointer<spoton_chatwindow> chat = m_chatWindows.value(item->text(), 0);
-  QString msg("");
-
-  msg.append
-    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
-     arg(now.toString("MM")).
-     arg(now.toString("dd")).
-     arg(now.toString("yyyy")).
-     arg(now.toString("hh")).
-     arg(now.toString("mm")).
-     arg(now.toString("ss")));
-  msg.append(tr("<i>Replay activated.</i>"));
-  m_ui.messages->append(msg);
-
-  if(chat)
-    chat->append(msg);
-
-  for(int i = 0; i < queue1.size(); i++)
-    {
-      QString msg(queue1.at(i));
-
-      m_ui.messages->append(msg);
-      m_ui.messages->verticalScrollBar()->setValue
-	(m_ui.messages->verticalScrollBar()->maximum());
-
-      if(chat)
-	chat->append(msg);
-    }
-
-  QQueue<QByteArray> queue2(m_chatQueues.value(item->text()).second);
-
-  for(int i = 0; i < queue2.size(); i++)
-    {
-      QByteArray message(queue2.at(i));
-
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
-	spoton_misc::logError
-	  (QString("spoton::slotReplayMessages(): write() failure for "
-		   "%1:%2.").
-	   arg(m_kernelSocket.peerAddress().toString()).
-	   arg(m_kernelSocket.peerPort()));
-      else
-	m_chatInactivityTimer.start();
-    }
 }
 
 void spoton::slotEstablishForwardSecrecy(void)
@@ -657,6 +677,133 @@ void spoton::slotEstablishForwardSecrecy(void)
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
 }
 
+void spoton::slotReplayMessages(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QTableWidgetItem *item = m_ui.participants->item
+    (m_ui.participants->currentRow(), 3); // public_key_hash
+
+  if(!item)
+    return;
+
+  if(!m_chatQueues.contains(item->text()))
+    return;
+
+  QDateTime now(QDateTime::currentDateTime());
+  QQueue<QString> queue1(m_chatQueues.value(item->text()).first);
+  QPointer<spoton_chatwindow> chat = m_chatWindows.value(item->text(), 0);
+  QString msg("");
+
+  msg.append
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
+     arg(now.toString("MM")).
+     arg(now.toString("dd")).
+     arg(now.toString("yyyy")).
+     arg(now.toString("hh")).
+     arg(now.toString("mm")).
+     arg(now.toString("ss")));
+  msg.append(tr("<i>Replay activated.</i>"));
+  m_ui.messages->append(msg);
+
+  if(chat)
+    chat->append(msg);
+
+  for(int i = 0; i < queue1.size(); i++)
+    {
+      QString msg(queue1.at(i));
+
+      m_ui.messages->append(msg);
+      m_ui.messages->verticalScrollBar()->setValue
+	(m_ui.messages->verticalScrollBar()->maximum());
+
+      if(chat)
+	chat->append(msg);
+    }
+
+  QQueue<QByteArray> queue2(m_chatQueues.value(item->text()).second);
+
+  for(int i = 0; i < queue2.size(); i++)
+    {
+      QByteArray message(queue2.at(i));
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::slotReplayMessages(): write() failure for "
+		   "%1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+      else
+	m_chatInactivityTimer.start();
+    }
+}
+
+void spoton::slotResetForwardSecrecyInformation(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString type(action->property("type").toString());
+
+  if(!(type == "email" || type == "chat"))
+    return;
+
+  QModelIndexList publicKeyHashes;
+
+  if(type == "chat")
+    publicKeyHashes =
+      m_ui.participants->selectionModel()->
+      selectedRows(3); // public_key_hash
+  else
+    publicKeyHashes =
+      m_ui.emailParticipants->selectionModel()->
+      selectedRows(3); // public_key_hash
+
+  if(publicKeyHashes.isEmpty())
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	for(int i = 0; i < publicKeyHashes.size(); i++)
+	  {
+	    query.prepare
+	      ("UPDATE friends_public_keys "
+	       "SET forward_secrecy_authentication_algorithm = NULL, "
+	       "forward_secrecy_authentication_key = NULL, "
+	       "forward_secrecy_encryption_algorithm = NULL, "
+	       "forward_secrecy_encryption_key = NULL WHERE "
+	       "public_key_hash = ?");
+	    query.bindValue(0, publicKeyHashes.at(i).data().toByteArray());
+	    query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotRespondToForwardSecrecy(void)
 {
   QByteArray hashKey;
@@ -875,153 +1022,6 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(!error.isEmpty())
     QMessageBox::critical
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
-}
-
-void spoton::slotResetForwardSecrecyInformation(void)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QString type(action->property("type").toString());
-
-  if(!(type == "email" || type == "chat"))
-    return;
-
-  QModelIndexList publicKeyHashes;
-
-  if(type == "chat")
-    publicKeyHashes =
-      m_ui.participants->selectionModel()->
-      selectedRows(3); // public_key_hash
-  else
-    publicKeyHashes =
-      m_ui.emailParticipants->selectionModel()->
-      selectedRows(3); // public_key_hash
-
-  if(publicKeyHashes.isEmpty())
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	for(int i = 0; i < publicKeyHashes.size(); i++)
-	  {
-	    query.prepare
-	      ("UPDATE friends_public_keys "
-	       "SET forward_secrecy_authentication_algorithm = NULL, "
-	       "forward_secrecy_authentication_key = NULL, "
-	       "forward_secrecy_encryption_algorithm = NULL, "
-	       "forward_secrecy_encryption_key = NULL WHERE "
-	       "public_key_hash = ?");
-	    query.bindValue(0, publicKeyHashes.at(i).data().toByteArray());
-	    query.exec();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
-{
-  QString keyType(QByteArray::fromBase64(list.value(0)).constData());
-
-  if(!(keyType == "chat" || keyType == "email" ||
-       keyType == "open-library" || keyType == "poptastic" ||
-       keyType == "url"))
-    return;
-
-  QByteArray publicKeyHash(QByteArray::fromBase64(list.value(1)));
-
-  if(publicKeyHash.size() != spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES)
-    return;
-
-  if(m_forwardSecrecyRequests.contains(publicKeyHash))
-    return;
-  else
-    {
-      spoton_forward_secrecy s;
-
-      s.key_type = keyType;
-      s.public_key = QByteArray::fromBase64(list.value(2));
-      s.public_key_hash = publicKeyHash;
-      m_forwardSecrecyRequests.insert(publicKeyHash, s);
-    }
-
-  if(!m_sb.forward_secrecy_request->isVisible())
-    {
-      QString name = spoton_misc::nameFromPublicKeyHash
-	(publicKeyHash, m_crypts.value("chat", 0));
-      QString keyType = spoton_misc::keyTypeFromPublicKeyHash
-	(publicKeyHash, m_crypts.value("chat", 0));
-
-      if(name.isEmpty())
-	{
-	  if(keyType == "poptastic")
-	    name = "unknown@unknown.org";
-	  else
-	    name = "unknown";
-	}
-
-      QString str(publicKeyHash.toBase64().constData());
-
-      notify(QDateTime::currentDateTime().toString());
-      notify
-	(tr("Participant <b>%1</b> (%2) is "
-	    "requesting forward secrecy "
-	    "credentials.<br>").
-	 arg(name).
-	 arg(str.mid(0, 16) + "..." + str.right(16)));
-      m_sb.forward_secrecy_request->setProperty
-	("public_key_hash", publicKeyHash);
-      m_sb.forward_secrecy_request->
-	setToolTip(tr("Participant %1 is requesting forward secrecy "
-		      "credentials.").arg(str.mid(0, 16) +
-					  "..." +
-					  str.right(16)));
-      m_sb.forward_secrecy_request->setVisible(true);
-    }
-}
-
-void spoton::popForwardSecrecyRequest(const QByteArray &publicKeyHash)
-{
-  m_forwardSecrecyRequests.remove(publicKeyHash);
-
-  if(m_forwardSecrecyRequests.isEmpty())
-    {
-      m_sb.forward_secrecy_request->setProperty("public_key_hash", QVariant());
-      m_sb.forward_secrecy_request->setToolTip("");
-      m_sb.forward_secrecy_request->setVisible(false);
-    }
-  else
-    {
-      QByteArray publicKeyHash(m_forwardSecrecyRequests.keys().value(0));
-      QString str(publicKeyHash.toBase64().constData());
-
-      m_sb.forward_secrecy_request->setProperty
-	("public_key_hash", publicKeyHash);
-      m_sb.forward_secrecy_request->
-	setToolTip(tr("Participant %1 is requesting forward secrecy "
-		      "credentials.").arg(str.mid(0, 16) +
-					  "..." +
-					  str.right(16)));
-    }
 }
 
 void spoton::prepareTabIcons(void)
