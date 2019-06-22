@@ -529,6 +529,90 @@ void spoton::slotAllowFSRequest(bool state)
     }
 }
 
+void spoton::slotDeleteKey(void)
+{
+  QString keyType("chat");
+
+  if(m_ui.keys->currentText() == "Chat")
+    keyType = "chat";
+  else if(m_ui.keys->currentText() == "E-Mail")
+    keyType = "email";
+  else if(m_ui.keys->currentText() == "Open Library")
+    keyType = "open-library";
+  else if(m_ui.keys->currentText() == "Poptastic")
+    keyType = "poptastic";
+  else if(m_ui.keys->currentText() == "Rosetta")
+    keyType = "rosetta";
+  else if(m_ui.keys->currentText() == "URL")
+    keyType = "url";
+
+  spoton_crypt *crypt1 = m_crypts.value(keyType, 0);
+  spoton_crypt *crypt2 = m_crypts.value
+    (QString("%1-signature").arg(keyType), 0);
+
+  if(!(crypt1 && crypt2))
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt objects. This is "
+			       "a fatal flaw."));
+      return;
+    }
+
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+
+  if(keyType == "chat")
+    mb.setText(tr("Are you sure that you wish to delete the selected "
+		  "key pair? StarBeam digest computations will be "
+		  "interrupted. The kernel will also be deactivated."));
+  else
+    mb.setText(tr("Are you sure that you wish to delete the selected "
+		  "key pair? The kernel will be deactivated."));
+
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  if(keyType == "chat")
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_generalFuture.cancel();
+      m_generalFuture.waitForFinished();
+      m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
+
+      while(!m_starbeamDigestFutures.isEmpty())
+	{
+	  QFuture<void> future(m_starbeamDigestFutures.takeFirst());
+
+	  future.cancel();
+	  future.waitForFinished();
+	}
+
+      QApplication::restoreOverrideCursor();
+    }
+
+  slotDeactivateKernel();
+
+  if(crypt1)
+    crypt1->purgePrivatePublicKeys();
+
+  if(crypt2)
+    crypt2->purgePrivatePublicKeys();
+
+  updatePublicKeysLabel();
+}
+
 void spoton::slotDuplicateTransmittedMagnet(void)
 {
   QListWidgetItem *item = m_ui.transmittedMagnets->currentItem();
@@ -897,6 +981,186 @@ void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
     }
 }
 
+void spoton::slotLock(void)
+{
+  if(!m_locked)
+    {
+      QMessageBox mb(this);
+
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to lock the application? "
+		    "All other windows will be closed. Buzz windows will be "
+		    "united with the main window."));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").
+			arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+      else
+	m_locked = !m_locked;
+    }
+  else
+    {
+      /*
+      ** Authenticate.
+      */
+
+      QDialog dialog(this);
+      Ui_spoton_unlock ui;
+
+      ui.setupUi(&dialog);
+      dialog.setWindowTitle
+	(tr("%1: Unlock").arg(SPOTON_APPLICATION_NAME));
+      connect(ui.radio_1,
+	      SIGNAL(toggled(bool)),
+	      ui.passphrase,
+	      SLOT(setEnabled(bool)));
+      connect(ui.radio_2,
+	      SIGNAL(toggled(bool)),
+	      ui.answer,
+	      SLOT(setEnabled(bool)));
+      connect(ui.radio_2,
+	      SIGNAL(toggled(bool)),
+	      ui.question,
+	      SLOT(setEnabled(bool)));
+      ui.radio_2->setChecked(true);
+      ui.radio_1->setChecked(true);
+      ui.passphrase->setFocus();
+
+      if(dialog.exec() != QDialog::Accepted)
+	return;
+
+      QByteArray computedHash;
+      QByteArray hashType
+	(m_settings.value("gui/hashType", "sha512").toByteArray());
+      QByteArray salt(m_settings.value("gui/salt", "").toByteArray());
+      QByteArray saltedPassphraseHash
+	(m_settings.value("gui/saltedPassphraseHash", "").toByteArray());
+      QString error("");
+      bool authenticated = false;
+
+      if(ui.radio_1->isChecked())
+	computedHash = spoton_crypt::saltedPassphraseHash
+	  (hashType, ui.passphrase->text(), salt, error);
+      else
+	{
+	  bool ok = true;
+
+	  computedHash = spoton_crypt::keyedHash
+	    (ui.question->text().toUtf8(),
+	     ui.answer->text().toUtf8(),
+	     hashType,
+	     &ok);
+
+	  if(!ok)
+	    error = "keyed hash failure";
+	}
+
+      if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
+	 spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
+	if(error.isEmpty())
+	  authenticated = true;
+
+      if(!authenticated)
+	return;
+
+      m_locked = !m_locked;
+    }
+
+  if(m_locked)
+    m_sb.lock->setText(tr("Unlock"));
+  else
+    m_sb.lock->setText(tr("Lock"));
+
+  QHashIterator<QString, QPointer<spoton_chatwindow> > it
+    (m_chatWindows);
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value())
+	it.value()->close();
+    }
+
+  foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
+    if(m_sb.lock != toolButton)
+      toolButton->setEnabled(!m_locked);
+
+  foreach(QWidget *widget, QApplication::topLevelWidgets())
+    {
+#if SPOTON_GOLDBUG == 0
+      spoton_emailwindow *window = qobject_cast<spoton_emailwindow *> (widget);
+
+      if(window)
+	window->close();
+#endif
+
+#if SPOTON_GOLDBUG == 0
+      spoton_neighborstatistics *neighborStatistics = qobject_cast
+	<spoton_neighborstatistics *> (widget);
+
+      if(neighborStatistics)
+	neighborStatistics->close();
+#endif
+
+      spoton_pageviewer *pageViewer = qobject_cast<spoton_pageviewer *>
+	(widget);
+
+      if(pageViewer)
+	pageViewer->deleteLater();
+    }
+
+  if(m_addParticipantWindow)
+    m_addParticipantWindow->close();
+
+  m_documentation->close();
+  m_echoKeyShare->close();
+  m_encryptFile.close();
+  m_logViewer.close();
+  m_notificationsWindow->close();
+  m_optionsWindow->close();
+  m_releaseNotes->close();
+  m_rosetta.close();
+  m_rss->close();
+  m_smpWindow.close();
+  m_starbeamAnalyzer->close();
+  m_statisticsWindow->close();
+  m_ui.tab->setCurrentIndex(m_ui.tab->count() - 1);
+
+  /*
+  ** Lock everything!
+  */
+
+  m_sb.status->setEnabled(!m_locked);
+  m_ui.menubar->setEnabled(!m_locked);
+  m_ui.tab->setEnabled(!m_locked);
+
+  /*
+  ** Unite Buzz windows.
+  */
+
+  foreach(QWidget *widget, QApplication::topLevelWidgets())
+    if(widget->isWindow())
+      {
+	QMainWindow *window = qobject_cast<QMainWindow *> (widget);
+
+	if(!window)
+	  continue;
+
+	spoton_buzzpage *page = qobject_cast<spoton_buzzpage *>
+	  (window->centralWidget());
+
+	if(!page)
+	  continue;
+
+	page->unite();
+      }
+}
+
 void spoton::slotReplayMessages(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
@@ -1244,6 +1508,64 @@ void spoton::slotRespondToForwardSecrecy(void)
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
 }
 
+void spoton::slotTimeSliderDefaults(void)
+{
+  QList<int> defaults;
+  QStringList keys;
+
+  defaults
+    << spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC
+    << spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC
+    << spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
+  keys << "gui/chat_time_delta"
+       << "gui/forward_secrecy_time_delta"
+       << "gui/gemini_time_delta"
+       << "gui/kernel_cache_object_lifetime"
+       << "gui/kernel_url_dispatcher_interval"
+       << "gui/poptastic_forward_secrecy_time_delta"
+       << "gui/poptastic_gemini_time_delta"
+       << "gui/retrieve_mail_time_delta";
+
+  QSettings settings;
+
+  for(int i = 0; i < keys.size(); i++)
+    {
+      m_settings[keys.at(i)] = defaults.at(i);
+      settings.setValue(keys.at(i), defaults.at(i));
+    }
+
+  spoton_common::CHAT_TIME_DELTA_MAXIMUM = defaults.value(0);
+  spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM = defaults.value(1);
+  spoton_common::GEMINI_TIME_DELTA_MAXIMUM = defaults.value(2);
+  spoton_common::CACHE_TIME_DELTA_MAXIMUM = defaults.value(3);
+  spoton_common::KERNEL_URL_DISPATCHER_INTERVAL = defaults.value(4);
+  spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
+    defaults.value(5);
+  spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM = defaults.value(6);
+  spoton_common::MAIL_TIME_DELTA_MAXIMUM = defaults.value(7);
+  m_optionsUi.chat_time_delta->setValue
+    (spoton_common::CHAT_TIME_DELTA_MAXIMUM);
+  m_optionsUi.forward_secrecy_time_delta->setValue
+    (spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.gemini_time_delta->setValue
+    (spoton_common::GEMINI_TIME_DELTA_MAXIMUM);
+  m_optionsUi.kernel_cache_object_lifetime->setValue
+    (spoton_common::CACHE_TIME_DELTA_MAXIMUM);
+  m_optionsUi.kernel_url_dispatcher->setValue
+    (spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
+  m_optionsUi.poptastic_forward_secrecy_time_delta->setValue
+    (spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
+  m_optionsUi.poptastic_gemini_time_delta->setValue
+    (spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM);
+  m_optionsUi.retrieve_mail_time_delta->setValue
+    (spoton_common::MAIL_TIME_DELTA_MAXIMUM);
+}
+
 void spoton::slotTimeSliderValueChanged(int value)
 {
   QSlider *slider = qobject_cast<QSlider *> (sender());
@@ -1308,328 +1630,6 @@ void spoton::slotTimeSliderValueChanged(int value)
   QSettings settings;
 
   settings.setValue(str, value);
-}
-
-void spoton::slotTimeSliderDefaults(void)
-{
-  QList<int> defaults;
-  QStringList keys;
-
-  defaults
-    << spoton_common::CHAT_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::GEMINI_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC
-    << spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC
-    << spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
-  keys << "gui/chat_time_delta"
-       << "gui/forward_secrecy_time_delta"
-       << "gui/gemini_time_delta"
-       << "gui/kernel_cache_object_lifetime"
-       << "gui/kernel_url_dispatcher_interval"
-       << "gui/poptastic_forward_secrecy_time_delta"
-       << "gui/poptastic_gemini_time_delta"
-       << "gui/retrieve_mail_time_delta";
-
-  QSettings settings;
-
-  for(int i = 0; i < keys.size(); i++)
-    {
-      m_settings[keys.at(i)] = defaults.at(i);
-      settings.setValue(keys.at(i), defaults.at(i));
-    }
-
-  spoton_common::CHAT_TIME_DELTA_MAXIMUM = defaults.value(0);
-  spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM = defaults.value(1);
-  spoton_common::GEMINI_TIME_DELTA_MAXIMUM = defaults.value(2);
-  spoton_common::CACHE_TIME_DELTA_MAXIMUM = defaults.value(3);
-  spoton_common::KERNEL_URL_DISPATCHER_INTERVAL = defaults.value(4);
-  spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
-    defaults.value(5);
-  spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM = defaults.value(6);
-  spoton_common::MAIL_TIME_DELTA_MAXIMUM = defaults.value(7);
-  m_optionsUi.chat_time_delta->setValue
-    (spoton_common::CHAT_TIME_DELTA_MAXIMUM);
-  m_optionsUi.forward_secrecy_time_delta->setValue
-    (spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
-  m_optionsUi.gemini_time_delta->setValue
-    (spoton_common::GEMINI_TIME_DELTA_MAXIMUM);
-  m_optionsUi.kernel_cache_object_lifetime->setValue
-    (spoton_common::CACHE_TIME_DELTA_MAXIMUM);
-  m_optionsUi.kernel_url_dispatcher->setValue
-    (spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
-  m_optionsUi.poptastic_forward_secrecy_time_delta->setValue
-    (spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM);
-  m_optionsUi.poptastic_gemini_time_delta->setValue
-    (spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM);
-  m_optionsUi.retrieve_mail_time_delta->setValue
-    (spoton_common::MAIL_TIME_DELTA_MAXIMUM);
-}
-
-void spoton::slotDeleteKey(void)
-{
-  QString keyType("chat");
-
-  if(m_ui.keys->currentText() == "Chat")
-    keyType = "chat";
-  else if(m_ui.keys->currentText() == "E-Mail")
-    keyType = "email";
-  else if(m_ui.keys->currentText() == "Open Library")
-    keyType = "open-library";
-  else if(m_ui.keys->currentText() == "Poptastic")
-    keyType = "poptastic";
-  else if(m_ui.keys->currentText() == "Rosetta")
-    keyType = "rosetta";
-  else if(m_ui.keys->currentText() == "URL")
-    keyType = "url";
-
-  spoton_crypt *crypt1 = m_crypts.value(keyType, 0);
-  spoton_crypt *crypt2 = m_crypts.value
-    (QString("%1-signature").arg(keyType), 0);
-
-  if(!(crypt1 && crypt2))
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt objects. This is "
-			       "a fatal flaw."));
-      return;
-    }
-
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-
-  if(keyType == "chat")
-    mb.setText(tr("Are you sure that you wish to delete the selected "
-		  "key pair? StarBeam digest computations will be "
-		  "interrupted. The kernel will also be deactivated."));
-  else
-    mb.setText(tr("Are you sure that you wish to delete the selected "
-		  "key pair? The kernel will be deactivated."));
-
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  if(keyType == "chat")
-    {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      m_generalFuture.cancel();
-      m_generalFuture.waitForFinished();
-      m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
-
-      while(!m_starbeamDigestFutures.isEmpty())
-	{
-	  QFuture<void> future(m_starbeamDigestFutures.takeFirst());
-
-	  future.cancel();
-	  future.waitForFinished();
-	}
-
-      QApplication::restoreOverrideCursor();
-    }
-
-  slotDeactivateKernel();
-
-  if(crypt1)
-    crypt1->purgePrivatePublicKeys();
-
-  if(crypt2)
-    crypt2->purgePrivatePublicKeys();
-
-  updatePublicKeysLabel();
-}
-
-void spoton::slotLock(void)
-{
-  if(!m_locked)
-    {
-      QMessageBox mb(this);
-
-      mb.setIcon(QMessageBox::Question);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Are you sure that you wish to lock the application? "
-		    "All other windows will be closed. Buzz windows will be "
-		    "united with the main window."));
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").
-			arg(SPOTON_APPLICATION_NAME));
-
-      if(mb.exec() != QMessageBox::Yes)
-	return;
-      else
-	m_locked = !m_locked;
-    }
-  else
-    {
-      /*
-      ** Authenticate.
-      */
-
-      QDialog dialog(this);
-      Ui_spoton_unlock ui;
-
-      ui.setupUi(&dialog);
-      dialog.setWindowTitle
-	(tr("%1: Unlock").arg(SPOTON_APPLICATION_NAME));
-      connect(ui.radio_1,
-	      SIGNAL(toggled(bool)),
-	      ui.passphrase,
-	      SLOT(setEnabled(bool)));
-      connect(ui.radio_2,
-	      SIGNAL(toggled(bool)),
-	      ui.answer,
-	      SLOT(setEnabled(bool)));
-      connect(ui.radio_2,
-	      SIGNAL(toggled(bool)),
-	      ui.question,
-	      SLOT(setEnabled(bool)));
-      ui.radio_2->setChecked(true);
-      ui.radio_1->setChecked(true);
-      ui.passphrase->setFocus();
-
-      if(dialog.exec() != QDialog::Accepted)
-	return;
-
-      QByteArray computedHash;
-      QByteArray hashType
-	(m_settings.value("gui/hashType", "sha512").toByteArray());
-      QByteArray salt(m_settings.value("gui/salt", "").toByteArray());
-      QByteArray saltedPassphraseHash
-	(m_settings.value("gui/saltedPassphraseHash", "").toByteArray());
-      QString error("");
-      bool authenticated = false;
-
-      if(ui.radio_1->isChecked())
-	computedHash = spoton_crypt::saltedPassphraseHash
-	  (hashType, ui.passphrase->text(), salt, error);
-      else
-	{
-	  bool ok = true;
-
-	  computedHash = spoton_crypt::keyedHash
-	    (ui.question->text().toUtf8(),
-	     ui.answer->text().toUtf8(),
-	     hashType,
-	     &ok);
-
-	  if(!ok)
-	    error = "keyed hash failure";
-	}
-
-      if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
-	 spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
-	if(error.isEmpty())
-	  authenticated = true;
-
-      if(!authenticated)
-	return;
-
-      m_locked = !m_locked;
-    }
-
-  if(m_locked)
-    m_sb.lock->setText(tr("Unlock"));
-  else
-    m_sb.lock->setText(tr("Lock"));
-
-  QHashIterator<QString, QPointer<spoton_chatwindow> > it
-    (m_chatWindows);
-
-  while(it.hasNext())
-    {
-      it.next();
-
-      if(it.value())
-	it.value()->close();
-    }
-
-  foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
-    if(m_sb.lock != toolButton)
-      toolButton->setEnabled(!m_locked);
-
-  foreach(QWidget *widget, QApplication::topLevelWidgets())
-    {
-#if SPOTON_GOLDBUG == 0
-      spoton_emailwindow *window = qobject_cast<spoton_emailwindow *> (widget);
-
-      if(window)
-	window->close();
-#endif
-
-#if SPOTON_GOLDBUG == 0
-      spoton_neighborstatistics *neighborStatistics = qobject_cast
-	<spoton_neighborstatistics *> (widget);
-
-      if(neighborStatistics)
-	neighborStatistics->close();
-#endif
-
-      spoton_pageviewer *pageViewer = qobject_cast<spoton_pageviewer *>
-	(widget);
-
-      if(pageViewer)
-	pageViewer->deleteLater();
-    }
-
-  if(m_addParticipantWindow)
-    m_addParticipantWindow->close();
-
-  m_documentation->close();
-  m_echoKeyShare->close();
-  m_encryptFile.close();
-  m_logViewer.close();
-  m_notificationsWindow->close();
-  m_optionsWindow->close();
-  m_releaseNotes->close();
-  m_rosetta.close();
-  m_rss->close();
-  m_smpWindow.close();
-  m_starbeamAnalyzer->close();
-  m_statisticsWindow->close();
-  m_ui.tab->setCurrentIndex(m_ui.tab->count() - 1);
-
-  /*
-  ** Lock everything!
-  */
-
-  m_sb.status->setEnabled(!m_locked);
-  m_ui.menubar->setEnabled(!m_locked);
-  m_ui.tab->setEnabled(!m_locked);
-
-  /*
-  ** Unite Buzz windows.
-  */
-
-  foreach(QWidget *widget, QApplication::topLevelWidgets())
-    if(widget->isWindow())
-      {
-	QMainWindow *window = qobject_cast<QMainWindow *> (widget);
-
-	if(!window)
-	  continue;
-
-	spoton_buzzpage *page = qobject_cast<spoton_buzzpage *>
-	  (window->centralWidget());
-
-	if(!page)
-	  continue;
-
-	page->unite();
-      }
 }
 
 void spoton::slotCallParticipantViaForwardSecrecy(void)
