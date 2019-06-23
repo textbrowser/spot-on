@@ -529,6 +529,88 @@ void spoton::slotAllowFSRequest(bool state)
     }
 }
 
+void spoton::slotCallParticipantViaForwardSecrecy(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QString forwardSecrecyInformation("");
+  QString keyType("");
+  QString oid("");
+  bool temporary = true;
+  int row = -1;
+
+  if((row = m_ui.participants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+
+      if(item)
+	{
+	  keyType = item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString();
+	  oid = item->text();
+	  temporary = item->data(Qt::UserRole).toBool();
+	}
+
+      item = m_ui.participants->item(row, 8); // Forward Secrecy Information
+
+      if(item)
+	forwardSecrecyInformation = item->text();
+    }
+
+  QList<QByteArray> values;
+
+  if(!spoton_misc::isValidForwardSecrecyMagnet(forwardSecrecyInformation.
+					       toLatin1(), values))
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+  else if(oid.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+  else if(temporary) // Temporary friend?
+    {
+      QApplication::restoreOverrideCursor();
+      return; // Not allowed!
+    }
+
+  /*
+  ** Do we have forward secrecy keys?
+  */
+
+  slotGenerateGeminiInChat();
+
+  QByteArray message;
+
+  message.append("call_participant_using_forward_secrecy_");
+  message.append(keyType);
+  message.append("_");
+  message.append(oid);
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotCallParticipantViaForwardSecrecy(): "
+	       "write() failure for %1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotDeleteKey(void)
 {
   QString keyType("chat");
@@ -611,6 +693,27 @@ void spoton::slotDeleteKey(void)
     crypt2->purgePrivatePublicKeys();
 
   updatePublicKeysLabel();
+}
+
+void spoton::slotDisableSynchronousUrlImport(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  QString str("");
+
+  if(checkBox == m_optionsUi.disable_kernel_synchronous_download)
+    str = "gui/disable_kernel_synchronous_sqlite_url_download";
+  else
+    str = "gui/disable_ui_synchronous_sqlite_url_import";
+
+  m_settings[str] = state;
+
+  QSettings settings;
+
+  settings.setValue(str, state);
 }
 
 void spoton::slotDuplicateTransmittedMagnet(void)
@@ -981,6 +1084,49 @@ void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
     }
 }
 
+void spoton::slotLaneWidthChanged(int index)
+{
+  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+
+  if(!comboBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    if(comboBox->property("table") == "listeners")
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "listeners.db");
+    else
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(comboBox->property("table") == "listeners")
+	  query.prepare("UPDATE listeners SET "
+			"lane_width = ? "
+			"WHERE OID = ?");
+	else
+	  query.prepare("UPDATE neighbors SET "
+			"lane_width = ? "
+			"WHERE OID = ?");
+
+	query.bindValue(0, comboBox->itemText(index).toInt());
+	query.bindValue(1, comboBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotLock(void)
 {
   if(!m_locked)
@@ -1159,6 +1305,71 @@ void spoton::slotLock(void)
 
 	page->unite();
       }
+}
+
+void spoton::slotPurgeEphemeralKeyPair(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString type(action->property("type").toString());
+
+  if(!(type == "email" || type == "chat"))
+    return;
+
+  QModelIndexList publicKeyHashes;
+
+  if(type == "chat")
+    publicKeyHashes =
+      m_ui.participants->selectionModel()->
+      selectedRows(3); // public_key_hash
+  else
+    publicKeyHashes =
+      m_ui.emailParticipants->selectionModel()->
+      selectedRows(3); // public_key_hash
+
+  if(publicKeyHashes.isEmpty())
+    return;
+
+  QByteArray message("purge_ephemeral_key_pair_");
+
+  message.append(publicKeyHashes.value(0).data().toByteArray());
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotPurgeEphemeralKeyPair(): write() failure for "
+	       "%1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
+}
+
+void spoton::slotPurgeEphemeralKeys(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QByteArray message("purge_ephemeral_keys\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotPurgeEphemeralKeys(): write() failure for "
+	       "%1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
 }
 
 void spoton::slotReplayMessages(void)
@@ -1630,217 +1841,6 @@ void spoton::slotTimeSliderValueChanged(int value)
   QSettings settings;
 
   settings.setValue(str, value);
-}
-
-void spoton::slotCallParticipantViaForwardSecrecy(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QString forwardSecrecyInformation("");
-  QString keyType("");
-  QString oid("");
-  bool temporary = true;
-  int row = -1;
-
-  if((row = m_ui.participants->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
-
-      if(item)
-	{
-	  keyType = item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString();
-	  oid = item->text();
-	  temporary = item->data(Qt::UserRole).toBool();
-	}
-
-      item = m_ui.participants->item(row, 8); // Forward Secrecy Information
-
-      if(item)
-	forwardSecrecyInformation = item->text();
-    }
-
-  QList<QByteArray> values;
-
-  if(!spoton_misc::isValidForwardSecrecyMagnet(forwardSecrecyInformation.
-					       toLatin1(), values))
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-  else if(oid.isEmpty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-  else if(temporary) // Temporary friend?
-    {
-      QApplication::restoreOverrideCursor();
-      return; // Not allowed!
-    }
-
-  /*
-  ** Do we have forward secrecy keys?
-  */
-
-  slotGenerateGeminiInChat();
-
-  QByteArray message;
-
-  message.append("call_participant_using_forward_secrecy_");
-  message.append(keyType);
-  message.append("_");
-  message.append(oid);
-  message.append("\n");
-
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
-    spoton_misc::logError
-      (QString("spoton::slotCallParticipantViaForwardSecrecy(): "
-	       "write() failure for %1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotPurgeEphemeralKeys(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QByteArray message("purge_ephemeral_keys\n");
-
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
-    spoton_misc::logError
-      (QString("spoton::slotPurgeEphemeralKeys(): write() failure for "
-	       "%1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
-}
-
-void spoton::slotPurgeEphemeralKeyPair(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QString type(action->property("type").toString());
-
-  if(!(type == "email" || type == "chat"))
-    return;
-
-  QModelIndexList publicKeyHashes;
-
-  if(type == "chat")
-    publicKeyHashes =
-      m_ui.participants->selectionModel()->
-      selectedRows(3); // public_key_hash
-  else
-    publicKeyHashes =
-      m_ui.emailParticipants->selectionModel()->
-      selectedRows(3); // public_key_hash
-
-  if(publicKeyHashes.isEmpty())
-    return;
-
-  QByteArray message("purge_ephemeral_key_pair_");
-
-  message.append(publicKeyHashes.value(0).data().toByteArray());
-  message.append("\n");
-
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
-    spoton_misc::logError
-      (QString("spoton::slotPurgeEphemeralKeyPair(): write() failure for "
-	       "%1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
-}
-
-void spoton::slotDisableSynchronousUrlImport(bool state)
-{
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
-
-  if(!checkBox)
-    return;
-
-  QString str("");
-
-  if(checkBox == m_optionsUi.disable_kernel_synchronous_download)
-    str = "gui/disable_kernel_synchronous_sqlite_url_download";
-  else
-    str = "gui/disable_ui_synchronous_sqlite_url_import";
-
-  m_settings[str] = state;
-
-  QSettings settings;
-
-  settings.setValue(str, state);
-}
-
-void spoton::slotLaneWidthChanged(int index)
-{
-  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
-
-  if(!comboBox)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    if(comboBox->property("table") == "listeners")
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "listeners.db");
-    else
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(comboBox->property("table") == "listeners")
-	  query.prepare("UPDATE listeners SET "
-			"lane_width = ? "
-			"WHERE OID = ?");
-	else
-	  query.prepare("UPDATE neighbors SET "
-			"lane_width = ? "
-			"WHERE OID = ?");
-
-	query.bindValue(0, comboBox->itemText(index).toInt());
-	query.bindValue(1, comboBox->property("oid"));
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotSaveCongestionAlgorithm(const QString &text)
