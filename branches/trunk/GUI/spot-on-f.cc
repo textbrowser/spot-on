@@ -390,6 +390,89 @@ void spoton::popForwardSecrecyRequest(const QByteArray &publicKeyHash)
     }
 }
 
+void spoton::prepareDatabasesFromUI(void)
+{
+  QCursor *cursor = QApplication::overrideCursor();
+  bool cursorIsBusy = false;
+
+  if(cursor && (cursor->shape() == Qt::BusyCursor ||
+		cursor->shape() == Qt::WaitCursor))
+    cursorIsBusy = true;
+
+  if(!cursorIsBusy)
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  spoton_misc::prepareDatabases();
+
+  if(!cursorIsBusy)
+    QApplication::restoreOverrideCursor();
+}
+
+void spoton::prepareVisiblePages(void)
+{
+  QMap<QString, QAction *> actions;
+  QMap<QString, int> pages;
+
+  actions["buzz"] = m_ui.action_Buzz;
+  actions["listeners"] = m_ui.action_Listeners;
+  actions["neighbors"] = m_ui.action_Neighbors;
+  actions["search"] = m_ui.action_Search;
+  actions["starbeam"] = m_ui.action_StarBeam;
+  actions["urls"] = m_ui.action_Urls;
+  pages["buzz"] = 0;
+  pages["chat"] = 1;
+  pages["email"] = 2;
+  pages["listeners"] = 3;
+  pages["neighbors"] = 4;
+  pages["search"] = 5;
+  pages["settings"] = 6;
+  pages["starbeam"] = 7;
+  pages["urls"] = 8;
+#if SPOTON_GOLDBUG == 1
+  pages["x_add_friend"] = 9; // Sorted keys.
+  pages["y_about"] = 10; // Sorted keys.
+#else
+  pages["x_about"] = 9; // Sorted keys.
+#endif
+
+  {
+    QMapIterator<QString, QAction *> it(actions);
+
+    while(it.hasNext())
+      {
+	it.next();
+
+	if(!it.value()->isChecked())
+	  pages.remove(it.key());
+      }
+  }
+
+  int count = m_ui.tab->count();
+
+  for(int i = 0; i < count; i++)
+    m_ui.tab->removeTab(0);
+
+  {
+    QMapIterator<QString, int> it(pages);
+
+    while(it.hasNext())
+      {
+	it.next();
+
+	QWidget *widget = m_tabWidgets.value(it.value());
+
+	if(!widget)
+	  continue;
+
+	QHash<QString, QVariant> hash
+	  (m_tabWidgetsProperties.value(it.value()));
+	QIcon icon(hash.value("icon").value<QIcon> ());
+
+	m_ui.tab->addTab(widget, icon, hash.value("label").toString());
+      }
+  }
+}
+
 void spoton::prepareTabIcons(void)
 {
   QString iconSet
@@ -529,6 +612,39 @@ void spoton::slotAllowFSRequest(bool state)
     }
 }
 
+void spoton::slotBluetoothSecurityChanged(int index)
+{
+  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+
+  if(!comboBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE listeners SET "
+		      "ssl_key_size = ? "
+		      "WHERE OID = ?");
+	query.bindValue(0, index);
+	query.bindValue(1, comboBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotCallParticipantViaForwardSecrecy(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
@@ -609,6 +725,15 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
        arg(m_kernelSocket.peerPort()));
 
   QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotChatTimestamps(bool state)
+{
+  m_settings["gui/chatTimestamps"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/chatTimestamps", state);
 }
 
 void spoton::slotDeleteKey(void)
@@ -1084,6 +1209,14 @@ void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
     }
 }
 
+void spoton::slotKernelUrlBatchSizeChanged(int value)
+{
+  QSettings settings;
+
+  m_settings["gui/kernel_url_batch_size"] = value;
+  settings.setValue("gui/kernel_url_batch_size", value);
+}
+
 void spoton::slotLaneWidthChanged(int index)
 {
   QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
@@ -1125,6 +1258,35 @@ void spoton::slotLaneWidthChanged(int index)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotLinkClicked(const QUrl &url)
+{
+  QString scheme(url.scheme().toLower().trimmed());
+
+  if(!(scheme == "ftp" || scheme == "http" || scheme == "https"))
+    return;
+
+  if(!m_settings.value("gui/openChatUrl", false).toBool())
+    return;
+
+  QMessageBox mb(this);
+  QString str(spoton_misc::urlToEncoded(url).constData());
+
+  if(str.length() > 64)
+    str = str.mid(0, 24) + "..." + str.right(24);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to access the URL %1?").arg(str));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QDesktopServices::openUrl(url);
 }
 
 void spoton::slotLock(void)
@@ -1305,6 +1467,130 @@ void spoton::slotLock(void)
 
 	page->unite();
       }
+}
+
+void spoton::slotMaximumUrlKeywordsChanged(int value)
+{
+  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
+
+  if(!spinBox)
+    return;
+
+  if(spinBox == m_optionsUi.maximum_url_keywords_interface)
+    {
+      QSettings settings;
+
+      m_settings["gui/maximum_url_keywords_import_interface"] = value;
+      settings.setValue("gui/maximum_url_keywords_import_interface", value);
+    }
+  else if(spinBox == m_optionsUi.maximum_url_keywords_kernel)
+    {
+      QSettings settings;
+
+      m_settings["gui/maximum_url_keywords_import_kernel"] = value;
+      settings.setValue("gui/maximum_url_keywords_import_kernel", value);
+    }
+}
+
+void spoton::slotNeighborWaitForBytesWrittenChanged(int value)
+{
+  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
+
+  if(!spinBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE neighbors SET "
+		      "waitforbyteswritten_msecs = ? "
+		      "WHERE OID = ?");
+	query.bindValue(0, value);
+	query.bindValue(1, spinBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotOpenChatUrlChecked(bool state)
+{
+  m_settings["gui/openChatUrl"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/openChatUrl", state);
+}
+
+void spoton::slotPassphraseChanged(const QString &text)
+{
+  m_ui.passphrase_strength_indicator->setStyleSheet("");
+
+  if(text.isEmpty())
+    {
+      m_ui.passphrase_strength_indicator->setVisible(false);
+      return;
+    }
+  else
+    m_ui.passphrase_strength_indicator->setVisible(true);
+
+  double maximum = 500.00;
+  double result = 0.0;
+  spoton_pacify pacify(text.toStdString());
+
+  result = 100.00 * pacify.evaluate() / maximum;
+  m_ui.passphrase_strength_indicator->setMaximum(100);
+  m_ui.passphrase_strength_indicator->setMinimum(0);
+  m_ui.passphrase_strength_indicator->setValue(static_cast<int> (result));
+
+  if(result >= 0.00 && result <= 25.00)
+    m_ui.passphrase_strength_indicator->setStyleSheet
+      ("QProgressBar::chunk"
+       "{"
+       "background: red; "
+       "border-bottom-right-radius: 0px; "
+       "border-bottom-left-radius: 0px; "
+       "border: 1px solid black;"
+       "}");
+  else if(result > 25.00 && result <= 50.00)
+    m_ui.passphrase_strength_indicator->setStyleSheet
+      ("QProgressBar::chunk"
+       "{"
+       "background: yellow; "
+       "border-bottom-right-radius: 0px; "
+       "border-bottom-left-radius: 0px; "
+       "border: 1px solid black;"
+       "}");
+  else if(result > 50.00 && result <= 75.00)
+    m_ui.passphrase_strength_indicator->setStyleSheet
+      ("QProgressBar::chunk"
+       "{"
+       "background: orange; "
+       "border-bottom-right-radius: 0px; "
+       "border-bottom-left-radius: 0px; "
+       "border: 1px solid black;"
+       "}");
+  else
+    m_ui.passphrase_strength_indicator->setStyleSheet
+      ("QProgressBar::chunk"
+       "{"
+       "background: green; "
+       "border-bottom-right-radius: 0px; "
+       "border-bottom-left-radius: 0px; "
+       "border: 1px solid black;"
+       "}");
 }
 
 void spoton::slotPurgeEphemeralKeyPair(void)
@@ -1719,6 +2005,108 @@ void spoton::slotRespondToForwardSecrecy(void)
       (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
 }
 
+void spoton::slotSaveCongestionAlgorithm(const QString &text)
+{
+  QString str("");
+
+  if(text == "n/a")
+    str = "sha224";
+  else
+    str = text;
+
+  m_settings["kernel/messaging_cache_algorithm"] = str;
+
+  QSettings settings;
+
+  settings.setValue("kernel/messaging_cache_algorithm", str);
+}
+
+void spoton::slotSaveSecondaryStorage(bool state)
+{
+  m_settings["gui/secondary_storage_congestion_control"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/secondary_storage_congestion_control", state);
+}
+
+void spoton::slotShowPage(bool state)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+  QString str("");
+
+  if(action == m_ui.action_Buzz)
+    str = "gui/showBuzzPage";
+  else if(action == m_ui.action_Listeners)
+    str = "gui/showListenersPage";
+  else if(action == m_ui.action_Neighbors)
+    str = "gui/showNeighborsPage";
+  else if(action == m_ui.action_Search)
+    str = "gui/showSearchPage";
+  else if(action == m_ui.action_StarBeam)
+    str = "gui/showStarBeamPage";
+  else if(action == m_ui.action_Urls)
+    str = "gui/showUrlsPage";
+
+  if(!str.isEmpty())
+    {
+      m_settings[str] = state;
+
+      QSettings settings;
+
+      settings.setValue(str, state);
+      prepareVisiblePages();
+    }
+}
+
+void spoton::slotShowRss(void)
+{
+  m_rss->showNormal();
+  m_rss->activateWindow();
+  m_rss->raise();
+  m_rss->center(this);
+}
+
+void spoton::slotShowStatisticsWindow(void)
+{
+  m_statisticsWindow->showNormal();
+  m_statisticsWindow->activateWindow();
+  m_statisticsWindow->raise();
+  spoton_utilities::centerWidget(m_statisticsWindow, this);
+}
+
+void spoton::slotStarBeamFragmented(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE transmitted SET fragmented = ? "
+		      "WHERE OID = ? AND status_control <> 'deleted'");
+	query.bindValue(0, state ? 1 : 0);
+	query.bindValue(1, checkBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotTimeSliderDefaults(void)
 {
   QList<int> defaults;
@@ -1843,361 +2231,6 @@ void spoton::slotTimeSliderValueChanged(int value)
   settings.setValue(str, value);
 }
 
-void spoton::slotSaveCongestionAlgorithm(const QString &text)
-{
-  QString str("");
-
-  if(text == "n/a")
-    str = "sha224";
-  else
-    str = text;
-
-  m_settings["kernel/messaging_cache_algorithm"] = str;
-
-  QSettings settings;
-
-  settings.setValue("kernel/messaging_cache_algorithm", str);
-}
-
-void spoton::slotBluetoothSecurityChanged(int index)
-{
-  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
-
-  if(!comboBox)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE listeners SET "
-		      "ssl_key_size = ? "
-		      "WHERE OID = ?");
-	query.bindValue(0, index);
-	query.bindValue(1, comboBox->property("oid"));
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotLinkClicked(const QUrl &url)
-{
-  QString scheme(url.scheme().toLower().trimmed());
-
-  if(!(scheme == "ftp" || scheme == "http" || scheme == "https"))
-    return;
-
-  if(!m_settings.value("gui/openChatUrl", false).toBool())
-    return;
-
-  QMessageBox mb(this);
-  QString str(spoton_misc::urlToEncoded(url).constData());
-
-  if(str.length() > 64)
-    str = str.mid(0, 24) + "..." + str.right(24);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to access the URL %1?").arg(str));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  QDesktopServices::openUrl(url);
-}
-
-void spoton::slotOpenChatUrlChecked(bool state)
-{
-  m_settings["gui/openChatUrl"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/openChatUrl", state);
-}
-
-void spoton::slotChatTimestamps(bool state)
-{
-  m_settings["gui/chatTimestamps"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/chatTimestamps", state);
-}
-
-void spoton::slotPassphraseChanged(const QString &text)
-{
-  m_ui.passphrase_strength_indicator->setStyleSheet("");
-
-  if(text.isEmpty())
-    {
-      m_ui.passphrase_strength_indicator->setVisible(false);
-      return;
-    }
-  else
-    m_ui.passphrase_strength_indicator->setVisible(true);
-
-  double maximum = 500.00;
-  double result = 0.0;
-  spoton_pacify pacify(text.toStdString());
-
-  result = 100.00 * pacify.evaluate() / maximum;
-  m_ui.passphrase_strength_indicator->setMaximum(100);
-  m_ui.passphrase_strength_indicator->setMinimum(0);
-  m_ui.passphrase_strength_indicator->setValue(static_cast<int> (result));
-
-  if(result >= 0.00 && result <= 25.00)
-    m_ui.passphrase_strength_indicator->setStyleSheet
-      ("QProgressBar::chunk"
-       "{"
-       "background: red; "
-       "border-bottom-right-radius: 0px; "
-       "border-bottom-left-radius: 0px; "
-       "border: 1px solid black;"
-       "}");
-  else if(result > 25.00 && result <= 50.00)
-    m_ui.passphrase_strength_indicator->setStyleSheet
-      ("QProgressBar::chunk"
-       "{"
-       "background: yellow; "
-       "border-bottom-right-radius: 0px; "
-       "border-bottom-left-radius: 0px; "
-       "border: 1px solid black;"
-       "}");
-  else if(result > 50.00 && result <= 75.00)
-    m_ui.passphrase_strength_indicator->setStyleSheet
-      ("QProgressBar::chunk"
-       "{"
-       "background: orange; "
-       "border-bottom-right-radius: 0px; "
-       "border-bottom-left-radius: 0px; "
-       "border: 1px solid black;"
-       "}");
-  else
-    m_ui.passphrase_strength_indicator->setStyleSheet
-      ("QProgressBar::chunk"
-       "{"
-       "background: green; "
-       "border-bottom-right-radius: 0px; "
-       "border-bottom-left-radius: 0px; "
-       "border: 1px solid black;"
-       "}");
-}
-
-void spoton::slotShowStatisticsWindow(void)
-{
-  m_statisticsWindow->showNormal();
-  m_statisticsWindow->activateWindow();
-  m_statisticsWindow->raise();
-  spoton_utilities::centerWidget(m_statisticsWindow, this);
-}
-
-void spoton::slotShowRss(void)
-{
-  m_rss->showNormal();
-  m_rss->activateWindow();
-  m_rss->raise();
-  m_rss->center(this);
-}
-
-void spoton::slotMaximumUrlKeywordsChanged(int value)
-{
-  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
-
-  if(!spinBox)
-    return;
-
-  if(spinBox == m_optionsUi.maximum_url_keywords_interface)
-    {
-      QSettings settings;
-
-      m_settings["gui/maximum_url_keywords_import_interface"] = value;
-      settings.setValue("gui/maximum_url_keywords_import_interface", value);
-    }
-  else if(spinBox == m_optionsUi.maximum_url_keywords_kernel)
-    {
-      QSettings settings;
-
-      m_settings["gui/maximum_url_keywords_import_kernel"] = value;
-      settings.setValue("gui/maximum_url_keywords_import_kernel", value);
-    }
-}
-
-void spoton::slotKernelUrlBatchSizeChanged(int value)
-{
-  QSettings settings;
-
-  m_settings["gui/kernel_url_batch_size"] = value;
-  settings.setValue("gui/kernel_url_batch_size", value);
-}
-
-void spoton::prepareDatabasesFromUI(void)
-{
-  QCursor *cursor = QApplication::overrideCursor();
-  bool cursorIsBusy = false;
-
-  if(cursor && (cursor->shape() == Qt::BusyCursor ||
-		cursor->shape() == Qt::WaitCursor))
-    cursorIsBusy = true;
-
-  if(!cursorIsBusy)
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  spoton_misc::prepareDatabases();
-
-  if(!cursorIsBusy)
-    QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotShowPage(bool state)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-  QString str("");
-
-  if(action == m_ui.action_Buzz)
-    str = "gui/showBuzzPage";
-  else if(action == m_ui.action_Listeners)
-    str = "gui/showListenersPage";
-  else if(action == m_ui.action_Neighbors)
-    str = "gui/showNeighborsPage";
-  else if(action == m_ui.action_Search)
-    str = "gui/showSearchPage";
-  else if(action == m_ui.action_StarBeam)
-    str = "gui/showStarBeamPage";
-  else if(action == m_ui.action_Urls)
-    str = "gui/showUrlsPage";
-
-  if(!str.isEmpty())
-    {
-      m_settings[str] = state;
-
-      QSettings settings;
-
-      settings.setValue(str, state);
-      prepareVisiblePages();
-    }
-}
-
-void spoton::prepareVisiblePages(void)
-{
-  QMap<QString, QAction *> actions;
-  QMap<QString, int> pages;
-
-  actions["buzz"] = m_ui.action_Buzz;
-  actions["listeners"] = m_ui.action_Listeners;
-  actions["neighbors"] = m_ui.action_Neighbors;
-  actions["search"] = m_ui.action_Search;
-  actions["starbeam"] = m_ui.action_StarBeam;
-  actions["urls"] = m_ui.action_Urls;
-  pages["buzz"] = 0;
-  pages["chat"] = 1;
-  pages["email"] = 2;
-  pages["listeners"] = 3;
-  pages["neighbors"] = 4;
-  pages["search"] = 5;
-  pages["settings"] = 6;
-  pages["starbeam"] = 7;
-  pages["urls"] = 8;
-#if SPOTON_GOLDBUG == 1
-  pages["x_add_friend"] = 9; // Sorted keys.
-  pages["y_about"] = 10; // Sorted keys.
-#else
-  pages["x_about"] = 9; // Sorted keys.
-#endif
-
-  {
-    QMapIterator<QString, QAction *> it(actions);
-
-    while(it.hasNext())
-      {
-	it.next();
-
-	if(!it.value()->isChecked())
-	  pages.remove(it.key());
-      }
-  }
-
-  int count = m_ui.tab->count();
-
-  for(int i = 0; i < count; i++)
-    m_ui.tab->removeTab(0);
-
-  {
-    QMapIterator<QString, int> it(pages);
-
-    while(it.hasNext())
-      {
-	it.next();
-
-	QWidget *widget = m_tabWidgets.value(it.value());
-
-	if(!widget)
-	  continue;
-
-	QHash<QString, QVariant> hash
-	  (m_tabWidgetsProperties.value(it.value()));
-	QIcon icon(hash.value("icon").value<QIcon> ());
-
-	m_ui.tab->addTab(widget, icon, hash.value("label").toString());
-      }
-  }
-}
-
-void spoton::slotStarBeamFragmented(bool state)
-{
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
-
-  if(!checkBox)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE transmitted SET fragmented = ? "
-		      "WHERE OID = ? AND status_control <> 'deleted'");
-	query.bindValue(0, state ? 1 : 0);
-	query.bindValue(1, checkBox->property("oid"));
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotSaveSecondaryStorage(bool state)
-{
-  m_settings["gui/secondary_storage_congestion_control"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/secondary_storage_congestion_control", state);
-}
-
 void spoton::slotVacuumDatabases(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -2208,37 +2241,4 @@ void spoton::slotVacuumDatabases(void)
 #endif
   spoton_misc::vacuumAllDatabases();
   QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotNeighborWaitForBytesWrittenChanged(int value)
-{
-  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
-
-  if(!spinBox)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE neighbors SET "
-		      "waitforbyteswritten_msecs = ? "
-		      "WHERE OID = ?");
-	query.bindValue(0, value);
-	query.bindValue(1, spinBox->property("oid"));
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
