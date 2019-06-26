@@ -299,6 +299,16 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
 }
 
+void spoton::slotPoptasticSettingsReset(bool state)
+{
+  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(state);
+  m_poptasticRetroPhoneSettingsUi.proxy_password->clear();
+  m_poptasticRetroPhoneSettingsUi.proxy_server_address->clear();
+  m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue(1);
+  m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
+  m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
+}
+
 void spoton::slotTestPoptasticPop3Settings(void)
 {
   CURL *curl = 0;
@@ -584,16 +594,6 @@ void spoton::slotTestPoptasticSmtpSettings(void)
        tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!\nError: %1.").arg(error));
-}
-
-void spoton::slotPoptasticSettingsReset(bool state)
-{
-  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(state);
-  m_poptasticRetroPhoneSettingsUi.proxy_password->clear();
-  m_poptasticRetroPhoneSettingsUi.proxy_server_address->clear();
-  m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue(1);
-  m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
-  m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
 }
 
 void spoton::slotPoptasticSettingsReset(void)
