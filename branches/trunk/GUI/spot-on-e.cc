@@ -299,6 +299,184 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
 }
 
+void spoton::slotDeletePoptasticAccount(void)
+{
+  if(m_poptasticRetroPhoneSettingsUi.account->currentText().trimmed().isEmpty())
+    return;
+
+  QMessageBox mb(m_poptasticRetroPhoneDialog);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to delete the specified "
+		"Poptastic account?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "poptastic.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM poptastic WHERE in_username_hash = ?");
+	query.bindValue
+	  (0, crypt->keyedHash(m_poptasticRetroPhoneSettingsUi.
+			       account->currentText().toLatin1(), &ok).
+	   toBase64());
+
+	if(ok)
+	  ok = query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+
+  if(ok)
+    {
+      QList<QHash<QString, QVariant> > list;
+      bool ok = true;
+
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      list = spoton_misc::poptasticSettings("", crypt, &ok);
+      QApplication::restoreOverrideCursor();
+
+      if(ok)
+	{
+	  populatePoptasticWidgets(list.value(0));
+	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
+	  m_poptasticRetroPhoneSettingsUi.account->clear();
+	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+	  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
+
+	  for(int i = 0; i < list.size(); i++)
+	    {
+	      m_poptasticRetroPhoneSettingsUi.account->addItem
+		(list.at(i).value("in_username").toString());
+	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
+		(list.at(i).value("in_username").toString());
+	      m_poptasticRetroPhoneSettingsUi.email_primary_account->addItem
+		(list.at(i).value("in_username").toString());
+	    }
+
+	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
+
+	  int index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	    findText(m_settings.value("gui/poptasticName").toByteArray());
+
+	  if(index >= 0)
+	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	      setCurrentIndex(index);
+	  else
+	    {
+	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+		setCurrentIndex(0);
+	      m_settings["gui/poptasticName"] =
+		m_poptasticRetroPhoneSettingsUi.
+		chat_primary_account->currentText().toLatin1();
+
+	      QSettings settings;
+
+	      settings.setValue
+		("gui/poptasticName",
+		 crypt->encryptedThenHashed(m_settings.
+					    value("gui/poptasticName").
+					    toByteArray(), &ok).toBase64());
+	    }
+
+	  index = m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	    findText(m_settings.value("gui/poptasticNameEmail").toByteArray());
+
+	  if(index >= 0)
+	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	      setCurrentIndex(index);
+	  else
+	    {
+	      m_poptasticRetroPhoneSettingsUi.email_primary_account->
+		setCurrentIndex(0);
+	      m_settings["gui/poptasticNameEmail"] =
+		m_poptasticRetroPhoneSettingsUi.
+		email_primary_account->currentText().toLatin1();
+
+	      QSettings settings;
+
+	      settings.setValue
+		("gui/poptasticNameEmail",
+		 crypt->
+		 encryptedThenHashed(m_settings.
+				     value("gui/poptasticNameEmail").
+				     toByteArray(), &ok).toBase64());
+	    }
+	}
+
+      if(list.isEmpty())
+	{
+	  m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
+	  m_poptasticRetroPhoneSettingsUi.in_password->clear();
+	  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip("");
+	  m_poptasticRetroPhoneSettingsUi.in_remove_remote->setChecked(true);
+	  m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
+	  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
+	  m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
+	  m_poptasticRetroPhoneSettingsUi.in_username->clear();
+	  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked(false);
+	  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked(false);
+	  m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
+	  m_poptasticRetroPhoneSettingsUi.out_password->clear();
+	  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip("");
+	  m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
+	  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
+	  m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
+	  m_poptasticRetroPhoneSettingsUi.out_username->clear();
+	  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked(false);
+	  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked(false);
+	}
+
+      slotReloadEmailNames();
+    }
+}
+
+void spoton::slotPoptasticAccountChanged(const QString &text)
+{
+  QList<QHash<QString, QVariant> > list;
+  bool ok = true;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  list = spoton_misc::poptasticSettings(text, m_crypts.value("chat", 0), &ok);
+  QApplication::restoreOverrideCursor();
+
+  if(ok)
+    populatePoptasticWidgets(list.value(0));
+}
+
 void spoton::slotPoptasticSettingsReset(bool state)
 {
   m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(state);
@@ -395,6 +573,30 @@ void spoton::slotPoptasticSettingsReset(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotReloadEmailNames(void)
+{
+  m_ui.emailName->clear();
+  m_ui.emailName->addItem
+    (QString::fromUtf8(m_settings.value("gui/emailName", "unknown").
+		       toByteArray().constData(),
+		       m_settings.value("gui/emailName", "unknown").
+		       toByteArray().length()).trimmed());
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QList<QHash<QString, QVariant> > list
+    (spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), 0));
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      if(i == 0)
+	m_ui.emailName->insertSeparator(1);
+
+      m_ui.emailName->addItem(list.at(i).value("in_username").toString());
+    }
+
   QApplication::restoreOverrideCursor();
 }
 
@@ -2375,206 +2577,4 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     (hash.value("proxy_username").toString());
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
     (hash.value("smtp_localname", "localhost").toString());
-}
-
-void spoton::slotPoptasticAccountChanged(const QString &text)
-{
-  QList<QHash<QString, QVariant> > list;
-  bool ok = true;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  list = spoton_misc::poptasticSettings(text, m_crypts.value("chat", 0), &ok);
-  QApplication::restoreOverrideCursor();
-
-  if(ok)
-    populatePoptasticWidgets(list.value(0));
-}
-
-void spoton::slotDeletePoptasticAccount(void)
-{
-  if(m_poptasticRetroPhoneSettingsUi.account->currentText().trimmed().isEmpty())
-    return;
-
-  QMessageBox mb(m_poptasticRetroPhoneDialog);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to delete the specified "
-		"Poptastic account?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
-      return;
-    }
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "poptastic.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM poptastic WHERE in_username_hash = ?");
-	query.bindValue
-	  (0, crypt->keyedHash(m_poptasticRetroPhoneSettingsUi.
-			       account->currentText().toLatin1(), &ok).
-	   toBase64());
-
-	if(ok)
-	  ok = query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-
-  if(ok)
-    {
-      QList<QHash<QString, QVariant> > list;
-      bool ok = true;
-
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      list = spoton_misc::poptasticSettings("", crypt, &ok);
-      QApplication::restoreOverrideCursor();
-
-      if(ok)
-	{
-	  populatePoptasticWidgets(list.value(0));
-	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
-	  m_poptasticRetroPhoneSettingsUi.account->clear();
-	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
-	  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
-
-	  for(int i = 0; i < list.size(); i++)
-	    {
-	      m_poptasticRetroPhoneSettingsUi.account->addItem
-		(list.at(i).value("in_username").toString());
-	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
-		(list.at(i).value("in_username").toString());
-	      m_poptasticRetroPhoneSettingsUi.email_primary_account->addItem
-		(list.at(i).value("in_username").toString());
-	    }
-
-	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
-
-	  int index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
-	    findText(m_settings.value("gui/poptasticName").toByteArray());
-
-	  if(index >= 0)
-	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
-	      setCurrentIndex(index);
-	  else
-	    {
-	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->
-		setCurrentIndex(0);
-	      m_settings["gui/poptasticName"] =
-		m_poptasticRetroPhoneSettingsUi.
-		chat_primary_account->currentText().toLatin1();
-
-	      QSettings settings;
-
-	      settings.setValue
-		("gui/poptasticName",
-		 crypt->encryptedThenHashed(m_settings.
-					    value("gui/poptasticName").
-					    toByteArray(), &ok).toBase64());
-	    }
-
-	  index = m_poptasticRetroPhoneSettingsUi.email_primary_account->
-	    findText(m_settings.value("gui/poptasticNameEmail").toByteArray());
-
-	  if(index >= 0)
-	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
-	      setCurrentIndex(index);
-	  else
-	    {
-	      m_poptasticRetroPhoneSettingsUi.email_primary_account->
-		setCurrentIndex(0);
-	      m_settings["gui/poptasticNameEmail"] =
-		m_poptasticRetroPhoneSettingsUi.
-		email_primary_account->currentText().toLatin1();
-
-	      QSettings settings;
-
-	      settings.setValue
-		("gui/poptasticNameEmail",
-		 crypt->
-		 encryptedThenHashed(m_settings.
-				     value("gui/poptasticNameEmail").
-				     toByteArray(), &ok).toBase64());
-	    }
-	}
-
-      if(list.isEmpty())
-	{
-	  m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
-	  m_poptasticRetroPhoneSettingsUi.in_password->clear();
-	  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip("");
-	  m_poptasticRetroPhoneSettingsUi.in_remove_remote->setChecked(true);
-	  m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
-	  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
-	  m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
-	  m_poptasticRetroPhoneSettingsUi.in_username->clear();
-	  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked(false);
-	  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked(false);
-	  m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
-	  m_poptasticRetroPhoneSettingsUi.out_password->clear();
-	  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip("");
-	  m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
-	  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
-	  m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
-	  m_poptasticRetroPhoneSettingsUi.out_username->clear();
-	  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked(false);
-	  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked(false);
-	}
-
-      slotReloadEmailNames();
-    }
-}
-
-void spoton::slotReloadEmailNames(void)
-{
-  m_ui.emailName->clear();
-  m_ui.emailName->addItem
-    (QString::fromUtf8(m_settings.value("gui/emailName", "unknown").
-		       toByteArray().constData(),
-		       m_settings.value("gui/emailName", "unknown").
-		       toByteArray().length()).trimmed());
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QList<QHash<QString, QVariant> > list
-    (spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), 0));
-
-  for(int i = 0; i < list.size(); i++)
-    {
-      if(i == 0)
-	m_ui.emailName->insertSeparator(1);
-
-      m_ui.emailName->addItem(list.at(i).value("in_username").toString());
-    }
-
-  QApplication::restoreOverrideCursor();
 }
